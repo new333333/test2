@@ -74,14 +74,16 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 	public void modifyDefinitionName(String id, String name, String title) {
 		Definition def = getDefinition(id);
 		if (def != null) {
-			def.setName(name);
-			def.setTitle(title);
 			
 			//Also store the name and title in the definition document
 			Document defDoc = def.getDefinition();
 			defDoc.getRootElement().addAttribute("name", name);
 			defDoc.getRootElement().addAttribute("caption", title);
 			def.setDefintion(defDoc);
+			//set name after we get definition, so file will exist
+			def.setName(name);
+			def.setTitle(title);
+
 		}
 	}
 	
