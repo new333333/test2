@@ -258,12 +258,12 @@
 	<!-- ================================ Security Service =============================== -->
 	
 	<!--
-	<bean id="accessControlManager" class="com.sitescape.ef.security.AccessControlManagerImpl">
+	<bean id="accessControlManager" class="com.sitescape.ef.security.impl.AccessControlManagerImpl">
 		<property name="functionManager"><ref local="functionManager"/></property>
 		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
 	</bean> -->
 	
-	<bean id="accessControlManager" class="com.sitescape.ef.security.NullAccessControlManager">
+	<bean id="accessControlManager" class="com.sitescape.ef.security.impl.NullAccessControlManager">
 	</bean>
 	
 	<bean id="aclManager" class="com.sitescape.ef.security.acl.AclManagerImpl">
