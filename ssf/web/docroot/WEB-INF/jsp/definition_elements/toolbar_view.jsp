@@ -58,8 +58,7 @@ function ss_toolbarPopupUrl(url) {
 <c:set var="delimiter" value=""/>
 <c:forEach var="toolbarMenu" items="${toolbar}">
   <jsp:useBean id="toolbarMenu" type="java.util.Map.Entry"/>
-  <span class="portlet-font"><c:out value="${delimiter}" /></span>
-  <div class="ss_toolbar_item">
+    <span class="ss_toolbar_item"><c:out value="${delimiter}" /></span>
     <c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}">
 	  <a class="ss_toolbar_item" href="javascript: ;" 
 	  onClick="activateMenuLayer('toolbar_${toolbarMenu.key}');">
@@ -103,7 +102,6 @@ function ss_toolbarPopupUrl(url) {
 	  </c:choose>
     </c:if>
     <c:out value="${toolbarMenu.value.title}" /></a>
-  </div>
   <c:set var="delimiter" value=" | "/>
 </c:forEach>
 </div>
