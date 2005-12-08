@@ -512,7 +512,8 @@
 	
 	<!-- ================================ Presence Service =============================== -->
 	<bean id="presenceService" class="com.sitescape.ef.presence.impl.PresenceServiceImpl">
-		<property name="jabberServer"><value>http://localhost:5555</value></property>
+		<property name="jabberServer"><value>iic.homedns.org</value></property>
+		<property name="jabberServerPort"><value>5353</value></property>
 	</bean>
 	
 </beans>
