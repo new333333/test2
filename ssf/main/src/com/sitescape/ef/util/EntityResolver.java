@@ -77,7 +77,7 @@ public class EntityResolver implements org.xml.sax.EntityResolver {
 				if (publicId.equals(IDS[i].getKey())) {
 					InputStream is =
 						getClass().getClassLoader().getResourceAsStream(
-							"com/sitescape/ef/resources/" + IDS[i].getValue());
+							"dtd/" + IDS[i].getValue());
 	
 					return new InputSource(is);
 	
@@ -89,7 +89,7 @@ public class EntityResolver implements org.xml.sax.EntityResolver {
 	        String dtdOrXsdFile = systemId.substring(systemId.lastIndexOf("/") + 1);
 			InputStream is =
 				getClass().getClassLoader().getResourceAsStream(
-					"com/sitescape/ef/resources/" + dtdOrXsdFile);
+					"dtd/" + dtdOrXsdFile);
 
 			return new InputSource(is);
 	    }

@@ -3,7 +3,7 @@
 
 <beans>
 
-	<!-- ============================= Infrastructural Beans =========================== -->
+	<!-- =========================== Basic Infrastructural Beans ========================== -->
 
 	<!-- Configurer that replaces ${...} placeholders with values from a properties file -->
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -129,14 +129,135 @@
 	<bean id="userPreloadInterceptor" class="com.sitescape.ef.web.portlet.handler.UserPreloadInterceptor">
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>	
+
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName"><value>java:comp/env/jdbc/SiteScapePool</value></property>
+	</bean>
+  
+<!-- oracle only
+	<bean id="oracleExtractor" class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor">
+	</bean>
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler">
+		<property name="nativeJdbcExtractor"><ref local="oracleExtractor"/></property>
+	  </bean>
+-->
+
+	<bean id="performanceMonitorInterceptor" class="org.springframework.aop.interceptor.PerformanceMonitorInterceptor">
+	</bean>
 	
-	<!-- ============================= Business =========================== -->
+	<!--
+	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="dataSource"><ref local="dataSource"/></property>
+		<property name="autoStartup"><value>false</value></property>
+		<property name="quartzProperties">
+		<props>
+			<prop key="org.quartz.threadPool.makeThreadsDaemons">true</prop>
+			<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.MSSQLDelegate</prop>
+			<prop key="org.quartz.jobStore.tablePrefix">QRTZ_</prop>
+			<prop key="org.quartz.plugin.triggHistory.class">org.quartz.plugins.history.LoggingJobHistoryPlugin</prop>
+			<prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS WITH (UPDLOCK ROWLOCK) WHERE LOCK_NAME = ?</prop>
+		</props>
+		</property>		
+	</bean>
+	-->
+
+	<bean id="baseTransactionProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+			abstract="true">
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="preInterceptors">
+			<list>
+				<ref bean="performanceMonitorInterceptor"/>
+				<ref bean="indexSynchronizationManagerInterceptor"/>
+			</list>
+		</property>
+		<!-- Warning: When used with jta, specified isolation levels are ignored and ISOLATION_DEFAULT is used instead. -->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="bulk*">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
+				<prop key="show*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="modelProcessorManager" class="com.sitescape.ef.modelprocessor.ProcessorManager">
+		<property name="config">
+			<bean class="com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles">
+				<property name="configFiles">
+					<list>
+						<value>config/model-processor-mapping.xml</value>
+					</list>		
+				</property>
+				<property name="validating"><value>true</value></property>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- ============================ Indexing/Search Service =========================== -->
+	
+	<bean id="luceneSessionFactory" class = "com.sitescape.ef.search.local.LocalLuceneSessionFactory">
+	</bean>
+	
+	<bean id="objectIndexMapping" class = "com.sitescape.ef.search.docbuilder.mapped.ObjectIndexMapping">
+		<property name="mappingFilePath"><value>config/object-index-mapping.xml</value></property>
+	</bean>
+	
+	<bean id="indexSynchronizationManager" class="com.sitescape.ef.search.IndexSynchronizationManager">
+		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
+	</bean>
+	
+	<bean id="mappedIndexDocumentBuilder" class="com.sitescape.ef.search.docbuilder.mapped.MappedIndexDocumentBuilder">
+		<property name="objectIndexMapping"><ref local="objectIndexMapping"/></property>		
+	</bean>
+
+	<bean id="indexSynchronizationManagerInterceptor" class="com.sitescape.ef.search.interceptor.IndexSynchronizationManagerInterceptor">
+	</bean>	
+	
+	<!-- ============================== Document Converter ============================ -->
+	
+    <bean id="docConverter" class="com.sitescape.ef.docconverter.DocConverter">
+        <property name="converterConfiguration"><value>config/docconverter.cfg</value></property>
+    </bean>
+	
+	<!-- ================================ Security Service =============================== -->
+	
+	<!--
+	<bean id="accessControlManager" class="com.sitescape.ef.security.AccessControlManagerImpl">
+		<property name="functionManager"><ref local="functionManager"/></property>
+		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
+	</bean> -->
+	
+	<bean id="accessControlManager" class="com.sitescape.ef.security.NullAccessControlManager">
+	</bean>
+	
+	<bean id="aclManager" class="com.sitescape.ef.security.acl.AclManagerImpl">
+	</bean>
+
+	<bean id="functionManager" class="com.sitescape.ef.security.function.FunctionManagerImpl">
+		<property name="securityDao"><ref local="securityDao"/></property>
+	</bean>
+
+	<bean id="workAreaFunctionMembershipManager" class="com.sitescape.ef.security.function.WorkAreaFunctionMembershipManagerImpl">
+		<property name="securityDao"><ref local="securityDao"/></property>		
+	</bean>
+	
+	<bean id="securityDao" class="com.sitescape.ef.security.dao.SecurityDaoImpl">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+	
+	<!-- =========================== Business Components =========================== -->
 	
 	<bean id="employeeModule" class="com.sitescape.ef.module.sample.impl.EmployeeModuleImpl">
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>
 
-	<!-- ============================= Data Access (DAO) =========================== -->
+	<!-- ========================= Data Access (DAO) Components ====================== -->
 	
 	<bean id="coreDao" class="com.sitescape.ef.dao.impl.CoreDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
