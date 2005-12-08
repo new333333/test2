@@ -91,6 +91,12 @@ public class EntityResolver implements org.xml.sax.EntityResolver {
 				getClass().getClassLoader().getResourceAsStream(
 					"dtd/" + dtdOrXsdFile);
 
+			// If failed to load the resource above, try loading it using
+			// the context class loader of the thread. 
+			if(is == null) {
+				is = Thread.currentThread().getContextClassLoader().getResourceAsStream("dtd/" + dtdOrXsdFile);
+			}
+			
 			return new InputSource(is);
 	    }
 	   
