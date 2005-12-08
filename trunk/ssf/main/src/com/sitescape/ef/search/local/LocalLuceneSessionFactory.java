@@ -7,6 +7,7 @@ import com.sitescape.ef.search.AbstractLuceneSessionFactory;
 import com.sitescape.ef.search.LuceneException;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.util.FileHelper;
+import com.sitescape.ef.util.SPropsUtil;
 
 /**
  * @author Jong Kim
@@ -16,13 +17,13 @@ public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory {
     
 	private String rootDirPath;
 	
-    public void setRootDirPath(String rootPath) throws IOException {
-		this.rootDirPath = new File(rootPath).getCanonicalPath();
+	public void setRootDirProperty(String rootDirProperty) throws IOException {
+		this.rootDirPath = new File(SPropsUtil.getString(rootDirProperty)).getCanonicalPath();
 		
 		if(!rootDirPath.endsWith(File.separator))
 			rootDirPath += File.separator;
 		
-		FileHelper.mkdirsIfNecessary(rootDirPath);
+		FileHelper.mkdirsIfNecessary(rootDirPath);		
 	}
 
 	public LuceneSession openSession(String indexName) {
