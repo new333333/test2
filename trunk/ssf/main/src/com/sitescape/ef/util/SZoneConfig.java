@@ -60,10 +60,10 @@ public class SZoneConfig {
 		return get(RequestContextHolder.getRequestContext().getZoneName(), key);
 	}
 	public static String getString(String zoneName, String key) {
-		return get(RequestContextHolder.getRequestContext().getZoneName(), key);
+		return get(zoneName, key);
 	}
 	public static String getString(String zoneName, String key, String defValue) {
-		String val = get(RequestContextHolder.getRequestContext().getZoneName(), key);
+		String val = get(zoneName, key);
 		if(val == null)
 			return defValue;
 		else

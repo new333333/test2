@@ -110,6 +110,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		
 			SpringContextUtil.applyDependencies(sender, "mailSender");
 			sender.setSession((javax.mail.Session)jndiAccessor.getJndiTemplate().lookup(jndiName));
+			sender.setName(jndiName);
 			mailSenders.put(jndiName, sender);
 			return sender;
 		} catch (Exception ex) {

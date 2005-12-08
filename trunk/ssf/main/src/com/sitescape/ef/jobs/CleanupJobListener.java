@@ -23,6 +23,8 @@ import org.apache.commons.logging.LogFactory;
 public class CleanupJobListener implements JobListener {
 	public static final Integer DeleteJob = new Integer(1);
 	public static final Integer DeleteJobOnError = new Integer(2);
+	public static final Integer UnscheduleJob = new Integer(3);
+	public static final Integer UnscheduleJobOnError = new Integer(4);
 	protected Log logger = LogFactory.getLog(getClass());
 	public static final String name = "SS_CleanupJobListener";
 	/* (non-Javadoc)
@@ -59,23 +61,24 @@ public class CleanupJobListener implements JobListener {
 		JobDetail job = ctx.getJobDetail();
 		Integer result = (Integer)ctx.getResult();
 		
-		if (exc == null) {
-			if (result == DeleteJob) {
-				try {
+		try {
+			if (exc == null) {
+				if (result == DeleteJob) {
 					scheduler.deleteJob(job.getName(),job.getGroup());
-				} catch (SchedulerException se) {
-					//what to do?
+				} else if (result == UnscheduleJob) {
+					scheduler.unscheduleJob(job.getName(), job.getGroup());
 				}
-			}
-		} else {
-			if (result == DeleteJobOnError) {
-				try {
+			} else {
+				if (result == DeleteJobOnError) {
 					logger.error("Removing job " + job.getFullName() + " after error " + exc.getCause());
 					scheduler.deleteJob(job.getName(),job.getGroup());
-				} catch (SchedulerException se) {
-					//what to do?
-				}			
+				} else if (result == UnscheduleJobOnError) {
+					logger.error("Unscheduling job " + job.getFullName() + " after error " + exc.getCause());
+					scheduler.unscheduleJob(job.getName(), job.getGroup());
+				}
 			}
+		} catch (SchedulerException ex) {
+			//TODO??
 		}
 
 	}

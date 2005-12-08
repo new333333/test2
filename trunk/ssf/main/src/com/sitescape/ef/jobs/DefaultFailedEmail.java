@@ -42,6 +42,7 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail{
 			String name = (String)jobDataMap.get("mailSender");
 			if (mail.sendMail(name, fs) == true) {
 				context.setResult(CleanupJobListener.DeleteJob);
+				file.delete();
 			}
 		} catch (ConfigurationException cf) {
 			throw new JobExecutionException(cf);
