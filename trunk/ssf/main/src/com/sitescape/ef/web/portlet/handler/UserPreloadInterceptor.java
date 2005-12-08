@@ -29,17 +29,14 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
     	throws Exception {
 		RequestContext requestContext = RequestContextHolder.getRequestContext();
 		
-		// TODO testing for now...
-		try {
-		User user = getCoreDao().findUserByNameOnlyIfEnabled
-			(requestContext.getUserName(), requestContext.getZoneName());
-		
-		requestContext.setUser(user);
-		}
-		catch(Exception e) {
-			// TODO This should be removed. 
-			User user = getCoreDao().findUserByNameOnlyIfEnabled("wf_admin", "liferay.com");
-			requestContext.setUser(user);
+		// Load user only if it hasn't already been done for the current
+		// requesting thread. Since this handler is called once per SSF portlet, 
+		// it's possible that we end up loading the same user object multiple 
+		// times when the single user interaction involves invocation of 
+		// multiple SSF portlets (e.g. re-drawing of a portal page). 
+		// This checking will prevent the inefficiency from happening. 
+		if(requestContext.getUser() == null) {
+			loadUser(requestContext);
 		}
 		
 		return true;
@@ -55,4 +52,10 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 			throws Exception {
 	}
 
+	private void loadUser(RequestContext reqCxt) {
+		User user = getCoreDao().findUserByNameOnlyIfEnabled(
+				reqCxt.getUserName(), reqCxt.getZoneName());
+
+		reqCxt.setUser(user);
+	}
 }

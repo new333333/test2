@@ -30,6 +30,8 @@
 	<bean id="defaultHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="interceptors">
 			<list>
+				<!-- Check session to ensure that the request sequence is valid -->
+				<ref bean="sessionValidationInterceptor"/>
 				<!-- Set up RequestContext -->
 				<ref bean="initRequestContextInterceptor"/>
 				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
@@ -49,6 +51,8 @@
 			</map>
 		</property>
 	</bean>
+
+	<bean id="sessionValidationInterceptor" class="com.sitescape.ef.web.servlet.handler.SessionValidationInterceptor"/>
 
 	<bean id="initRequestContextInterceptor" class="com.sitescape.ef.web.servlet.handler.InitRequestContextInterceptor"/>
 

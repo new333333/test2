@@ -6,7 +6,10 @@ public class WebKeys {
 	public static final String JAVAX_PORTLET_REQUEST = "javax.portlet.request";
 	public static final String JAVAX_PORTLET_RESPONSE = "javax.portlet.response";
 
-    public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
+	
+	
+
+	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
     public static final String LOCALE = "ss_locale";
     public static final String SESSION_LAST_ENTRY_VIEWED = "last_entry_viewed";
     public static final String SESSION_LAST_HISTORY_ENTRY_VIEWED = "last_history_entry_viewed";
@@ -43,7 +46,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_VIEW_ENTRY_PREVIOUS = "entry_previous";
 	public static final String FORUM_OPERATION_VIEW_FILE = "view_file";
 		
-    // MODEL TAGS
+    // MODEL TAGS & Attributes
 	public static final String ACTION = "action";
 	public static final String ADMIN_TREE="ssAdminDomTree";
     public static final String CONFIG_ELEMENT="ssConfigElement";
@@ -77,9 +80,11 @@ public class WebKeys {
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
     public static final String SELECTED_USERS="ssSelectedUsers";
     public static final String USERS="ssUsers";
+	public static final String USER_NAME = "com.sitescape.username";
     public static final String USER_PROPERTIES="ssUserProperties";
     public static final String WORKSPACE="ssWorkspace";
     public static final String WORKSPACE_DOM_TREE="ssWsDomTree";
+	public static final String ZONE_NAME = "com.sitescape.zonename";
 
     //View names
     public static final String VIEW_CONFIGURE = "forum/configure";
