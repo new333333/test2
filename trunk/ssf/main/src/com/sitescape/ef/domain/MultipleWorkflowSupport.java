@@ -8,9 +8,11 @@ import java.util.List;
  */
 public interface MultipleWorkflowSupport {
     /**
-     * @return Returns an order list of <code>WorkflowStatus</code>.
+     * @return Returns a list of <code>WorkflowStates</code>.
      */
-    public List getWorkflows();
-    public void setWorkflows(List workflows);    
+    public List getWorkflowStates();
+    public void setWorkflowStates(List workflowStates);   
+    public void addWorkflowState(WorkflowState workflowState);
+    public void removeWorkflowState(WorkflowState workflowState);
 
 }
