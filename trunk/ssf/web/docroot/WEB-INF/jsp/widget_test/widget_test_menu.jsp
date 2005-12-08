@@ -1,4 +1,4 @@
-<%
+%
 /**
  * Copyright (c) 2005 SiteScape, Inc. All rights reserved.
  *
