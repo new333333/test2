@@ -253,4 +253,8 @@ public class PortletRequestImpl implements PortletRequest, MultipartFileSupport 
 		else
 			throw new InternalException();
 	}
+	
+	public PortletContext getPortletContext() {
+		return portletContext;
+	}
 }
