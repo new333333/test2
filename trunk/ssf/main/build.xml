@@ -214,4 +214,48 @@
 			     </schemaupdate>
 		    </target>
 			
+	<target name="compile-test" depends="compile">
+		<mkdir dir="${test.classes.dir}"/>
+		<javac
+			compiler="${javac.compiler}"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${test.classes.dir}"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}"
+			srcdir="${test.source.dir}">
+			<classpath location="${test.classes.dir}"/>
+			<classpath refid="project.classpath"/>
+		</javac>
+	</target>
+	
+	<target name="test" depends="compile-test">
+		<mkdir dir="${test.report.dir}"/>
+		<property name="tests" value="Test*"/>
+
+		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
+			<classpath location="${test.classes.dir}"/>
+			<classpath refid="project.classpath"/>
+
+			<formatter type="plain" usefile="false"/>
+			<!--<formatter type="brief" usefile="false"/>-->
+			<formatter type="xml"/>
+
+			<batchtest todir="${test.report.dir}">
+				<fileset dir="${test.classes.dir}" includes="${test.includes}" excludes="${test.excludes}"/>
+			</batchtest>
+		</junit>
+	</target>
+	
+	<target name="report-test" depends="test">
+		<mkdir dir="${test.report.dir}/html"/>
+		<junitreport todir="${test.report.dir}">
+			<fileset dir="${test.report.dir}">
+				<include name="TEST-*.xml"/>
+			</fileset>
+			<report todir="${test.report.dir}/html"/>
+		</junitreport>
+	</target>
+	
 </project>
