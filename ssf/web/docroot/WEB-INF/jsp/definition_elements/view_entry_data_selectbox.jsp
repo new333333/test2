@@ -1,5 +1,5 @@
 <% //Selectbox view %>
-<div class="entryContent">
+<div class="ss_entryContent">
 <table cellpadding="0" cellspacing="0">
 <tr>
 <td valign="top"><c:out value="${property_caption}" /></td>

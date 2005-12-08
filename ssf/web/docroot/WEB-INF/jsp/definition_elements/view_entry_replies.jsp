@@ -5,7 +5,7 @@
 
 <% // Process the replies only if this is the top level entry being displayed %>
 <c:if test="${ssFolderEntry == ssDefinitionEntry}" >
-<div class="entryContent">
+<div class="ss_entryContent">
 <table width="100%">
 <tr>
   <th align="left"><c:out value="${property_caption}"/></th>
@@ -14,7 +14,7 @@
 <jsp:useBean id="reply" type="com.sitescape.ef.domain.FolderEntry" />
 <tr>
   <td>
-    <div class="entryContent">
+    <div class="ss_entryContent">
 	  <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
 		configElement="<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']") %>" 
 		configJspStyle="<%= ssConfigJspStyle %>" 

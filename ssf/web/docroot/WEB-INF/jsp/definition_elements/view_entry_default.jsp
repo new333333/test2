@@ -6,7 +6,7 @@
 <%@ include file="/jsp/definition_elements/title_view.jsp" %>
 
 <div class="formBreak">
-<div class="entryContent">
+<div class="ss_entryContent">
 <c:out value="${ssFolderEntry.description.text}"/>
 </div>
 </div>

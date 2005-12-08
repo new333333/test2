@@ -388,7 +388,6 @@ div.ss_portlet {
 div.ss_toolbar_item {
   display: inline;
   text-align: left;
-  text-decoration: none;
   MARGIN: 2px;
   PADDING-RIGHT: 2px;
   PADDING-LEFT: 2px;
@@ -402,23 +401,8 @@ div.ss_toolbar_menu {
 	visibility: hidden;
 	background-color: #FFFFFF; 
 	color: #000000;
-	font-size: 11px;
-	text-decoration: none;
-	font-family: arial, helvetica, sans-serif;
 	border: 1px #3366cc solid;
 	padding: 10px;
 	width: 300px;
 }
-
-div.ss_forms {
-  margin: 0px 15px 0px 15px;
-  }
-
-div.ss_divider {
-  background-color: #3366cc;
-  border-top: 1px solid #f7f7f7;
-  border-bottom: 1px solid #666666;
-  margin-top: 12px;
-  margin-bottom: 12px;
-  }
 

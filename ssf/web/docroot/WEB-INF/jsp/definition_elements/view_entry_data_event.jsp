@@ -1,5 +1,5 @@
 <% //Event view %>
-<div class="entryContent">
+<div class="ss_entryContent">
 <c:out value="${property_caption}" /> 
 <c:choose>
 <c:when test="${empty ssFolderEntry.customAttributes[property_name]}" >
