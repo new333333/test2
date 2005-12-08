@@ -2,17 +2,17 @@ package com.sitescape.ef.util;
 
 import com.sitescape.ef.exception.UncheckedException;
 
-public class ConfigPropsUtilException extends UncheckedException {
-    public ConfigPropsUtilException() {
+public class ConfigPropertyNotFoundException extends UncheckedException {
+    public ConfigPropertyNotFoundException() {
         super();
     }
-    public ConfigPropsUtilException(String message) {
+    public ConfigPropertyNotFoundException(String message) {
         super(message);
     }
-    public ConfigPropsUtilException(String message, Throwable cause) {
+    public ConfigPropertyNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
-    public ConfigPropsUtilException(Throwable cause) {
+    public ConfigPropertyNotFoundException(Throwable cause) {
         super(cause);
     }
 
