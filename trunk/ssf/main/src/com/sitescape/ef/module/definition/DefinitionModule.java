@@ -52,12 +52,11 @@ public interface DefinitionModule {
 	/**
 	 * Routine to process the input data and return a map of only the entry data
 	 * 
-	 * @param folder
-	 * @param entry
+	 * @param def
 	 * @param inputData
 	 * @return
 	 */
-	public Map getEntryData(Folder folder, FolderEntry entry, Map inputData, Map fileItems);
+	public Map getEntryData(Definition def, Map inputData, Map fileItems);
 	public List getDefinitions();
 	
 	public void addIndexFieldsForEntry(org.apache.lucene.document.Document indexDoc, Folder folder, Entry entry);

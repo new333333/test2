@@ -4,6 +4,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class FileUploadItem {
 
+	public static final int TYPE_FILE = 1;
+	public static final int TYPE_ATTACHMENT = 2;
+	
+	private int type;
+	
 	private String name; // This is NOT file name.
 	
 	private MultipartFile mf;
@@ -12,10 +17,15 @@ public class FileUploadItem {
 
 	// path info?
 	
-	public FileUploadItem(String name, MultipartFile mf, String repositoryServiceName) {
+	public FileUploadItem(int type, String name, MultipartFile mf, String repositoryServiceName) {
+		this.type = type;
 		this.name = name;
 		this.mf = mf;
 		this.repositoryServiceName = repositoryServiceName;
+	}
+	
+	public int getType() {
+		return type;
 	}
 	
 	public String getName() {
