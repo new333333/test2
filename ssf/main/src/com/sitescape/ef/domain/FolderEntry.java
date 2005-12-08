@@ -36,8 +36,7 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
     protected FolderEntry topEntry;
     protected FolderEntry parentEntry;
     protected String owningFolderSortKey;
- //   private WorkflowStatus wfp1,wfp2,wfp3;
-    
+    protected List workflowStates;   
     
     //missing
     String docProps;
@@ -67,9 +66,8 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
 	* @hibernate.bag lazy="true" inverse="true" cascade="all,delete-orphan" 
     * @hibernate.key column="folderEntry"
     * @hibernate.one-to-many class="com.sitescape.ef.domain.Event"
-     * @return
+    * @return
     */
-    //In order to get the foreign keys correct, need a mapping table because events are owned by <any>
     private List getHEvents() {return allEvents;}
     private void setHEvents(List events) {this.allEvents = events;}   	
     /**
@@ -146,19 +144,51 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
         this.sendMail = sendMail;
     }
     
-   // allow for multiple, but don't support yet
-    public List getWorkflows() {
-        List result = new ArrayList();
-//        if (wfp1.getWorkflowDef() != null) {
-//            result.add(wfp1);
-//        }
-        return result;
+    /**
+	 * @hibernate.bag lazy="true" inverse="true" cascade="all,delete-orphan" 
+     * @hibernate.key column="folderEntry"
+     * @hibernate.one-to-many class="com.sitescape.ef.domain.WorkflowStateObject"
+     * @return
+     */
+     public List getHWorkflowStates() {
+        return workflowStates;
         
+     }
+     public void setHWorkflowStates(List workflowStates) {
+        this.workflowStates = workflowStates;
+     }
+
+     public List getWorkflowStates() {
+   	 	if (workflowStates == null) return new ArrayList();
+   	 	return workflowStates;  
+     }
+     public void setWorkflowStates(List workflowStates) {
+    	 //Since ids are assigned on WorkflowState, don't need to do anything
+    	 //special to reduce updates.
+    	 this.workflowStates = workflowStates;
+     }
+   
+     public void addWorkflowState(WorkflowState state) {
+    	List wf = getWorkflowStates();
+    	
+    	for (int i=0; i<wf.size(); ++i) {
+    		WorkflowState c = (WorkflowState)wf.get(i);
+    		if (c.getTokenId().equals(state.getTokenId())) {
+    			wf.remove(c);
+    		}
+    	}
+    	wf.add(state);
     }
-    public void setWorkflows(List workflows) {
-        
+    public void removeWorkflowState(WorkflowState state) {
+    	List wf = getWorkflowStates();
+    	
+    	for (int i=0; i<wf.size(); ++i) {
+    		WorkflowState c = (WorkflowState)wf.get(i);
+    		if (c.getTokenId().equals(state.getTokenId())) {
+    			wf.remove(c);
+    		}
+    	}
     }
- 
     /**
      * @hibernate.component class="com.sitescape.ef.domain.HKey" prefix="entry_"
      */
