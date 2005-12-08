@@ -10,8 +10,8 @@ import java.io.Serializable;
  * @author Janet McCann
  * This is an immutable object.  Its value cannot be changed.  This allows
  * lazy value loading to work.  If not, the deepcopy method of a user type, would have
- * to read the value for later comparision. 
- *  
+ * to read the value for later comparision. If the object is in the secondary cache, using  
+ * this type is a waste, cause the value has to be loaded to cache anyway.
  * Create new instancs to change values 
  */
 public class SSBlobSerializable implements Serializable {
@@ -34,7 +34,8 @@ public class SSBlobSerializable implements Serializable {
     	    	 if (is == null) return null;
     	    	 ObjectInputStream ois = new ObjectInputStream(is);
     	    	 try {
-    	    	 	return ois.readObject();
+    	    	 	value = ois.readObject();
+    	    	 	return value;
     	    	 }  catch (ClassNotFoundException ex) {
     	    	 	throw new IOException("Could not deserialize BLOB contents: " + ex.getMessage());
     	    	 } finally {
