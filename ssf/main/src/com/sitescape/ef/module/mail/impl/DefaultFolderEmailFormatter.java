@@ -174,15 +174,16 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 	protected void doEntry(Element element, FolderEntry entry, Date notifyDate, Notify notifyDef, boolean hasChanges) {
 		HistoryStamp stamp;
 		if (hasChanges) {
+			//style sheet will translate these tags
 			element.addAttribute("hasChanges", "true");
 			if (checkDate(entry.getCreation(), notifyDate) > 0) {
-				element.addAttribute("notifyType", NLT.get("notify.new", notifyDef.getLocale()));
+				element.addAttribute("notifyType", "newEntry");
 				stamp = entry.getCreation();
 			} else if (checkDate(entry.getWorkflowChange(), entry.getModification()) > 0) {
 				stamp = entry.getWorkflowChange();
-				element.addAttribute("notifyType", NLT.get("notify.workflow", notifyDef.getLocale()));
+				element.addAttribute("notifyType", "workflowEntry");
 			} else {
-				element.addAttribute("notifyType", NLT.get("notify.modify", notifyDef.getLocale()));
+				element.addAttribute("notifyType", "modifiedEntry");
 				stamp = entry.getModification();
 			} 
 		} else {
@@ -214,7 +215,7 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 		} catch (Exception e) {
 			
 		}
-		element.addAttribute("url", entryUrl);
+		element.addAttribute("href", entryUrl);
 		definitionModule.addNotifyElementForEntry(element, notifyDef, entry);		
 	}
 	// get cached template.  If not cached yet,load it
@@ -228,7 +229,6 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 			String templateName = (String)obj;
 			Source xsltSource = new StreamSource(new File(SpringContextUtil.getWebRootName(),templateName));
 			trans = transFactory.newTemplates(xsltSource);
-			Properties props = trans.getOutputProperties();
 			//replace name with actual template
 			if (GetterUtil.getBoolean((String)getProperty(zoneName, NOTIFY_TEMPLATE_CACHE_DISABLED), false) == false)
 				setProperty(zoneName, type, trans);
@@ -239,10 +239,11 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 		
 	}
 
-	protected String doTransform(Document document, String zoneName, String type) {
+	protected String doTransform(Document document, String zoneName, String type, Locale locale) {
 		StreamResult result = new StreamResult(new StringWriter());
 		try {
 			Transformer trans = getTransformer(zoneName, type);
+			trans.setParameter("Lang", locale.toString());
 			trans.transform(new DocumentSource(document), result);
 		} catch (Exception ex) {
 			return ex.getMessage();
@@ -250,7 +251,7 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 		return result.getWriter().toString();
 	}
 
-	public Map buildNotificationMessage(Folder folder, Collection entries,  Locale locale) {
+	public Map buildNotificationMessage(Folder folder, Collection entries,  Notify notify) {
 	    Map result = new HashMap();
 	    Date notifyDate = folder.getNotificationDef().getLastNotification();
 	    if (notifyDate == null) return result;
@@ -258,8 +259,7 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 		Document mailDigest = DocumentHelper.createDocument();
 		
     	Element rootElement = mailDigest.addElement("mail");
-    	rootElement.addAttribute("locale", locale.getLanguage());
-       	rootElement.addAttribute("isDigest", "true");
+       	rootElement.addAttribute("summary", String.valueOf(notify.isSummary()));
 		Element element;
 		Folder lastFolder=null;
 		Element fElement=null;
@@ -267,11 +267,6 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 		element = rootElement.addElement("topFolder");
 		element.addAttribute("changeCount", String.valueOf(entries.size()));
       	element.addAttribute("title", folder.getTitle());
- 		Notify notify = new Notify();
- 
- 		notify.setLocale(locale);
- 		notify.setDateFormat(DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, locale));
- 		notify.setFull(true);
  		
 		for (Iterator i=entries.iterator();i.hasNext();) {
 			parentChain.clear();
@@ -301,8 +296,8 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 		}
 		
 		
-		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), NOTIFY_TEMPLATE_TEXT));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, folder.getZoneName(), NOTIFY_TEMPLATE_HTML));
+		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), NOTIFY_TEMPLATE_TEXT, notify.getLocale()));
+		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, folder.getZoneName(), NOTIFY_TEMPLATE_HTML, notify.getLocale()));
 		
 		return result;
 	}
@@ -314,11 +309,11 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
     	row[1] = userIds;
     	return result;
 	}
-	public String getSubject(Folder folder, Locale locale) {
+	public String getSubject(Folder folder, Notify notify) {
 		String subject = (String)getProperty(folder.getZoneName(), NOTIFY_SUBJECT);
 		//if not specified, us a localized default
 		if (Validator.isNull(subject))
-			return NLT.get("notify.subject", locale) + folder.toString();
+			return NLT.get("notify.subject", notify.getLocale()) + " " + folder.toString();
 		return subject;
 	}
 	

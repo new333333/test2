@@ -1033,7 +1033,7 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
                                     if (notifyDef.isFull() && notifyElem.attributeValue("full")
                                             .equals("true"))
                                         applyNotify = true;
-                                    else if (notifyDef.isSummary() && notifyElem.attributeValue("digest")
+                                    else if (notifyDef.isSummary() && notifyElem.attributeValue("summary")
                                             .equals("true"))
                                         applyNotify = true;
 
