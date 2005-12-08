@@ -46,7 +46,7 @@ public class FileHelper {
 				return;
 		
 			try {
-				Thread.currentThread().sleep(1);
+				Thread.sleep(1);
 			} 
 			catch (InterruptedException e) {}
 			
