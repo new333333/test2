@@ -197,12 +197,16 @@ public class TreeTag extends TagSupport {
 			sb.append(".create();\n");
 			sb.append("</script>\n\n\n");
 			
-			if (displayStyle == null || !displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+				//This user is in accessibility mode, output a flat version of the tree
+				outputTreeNodesFlat(treeRoot, recursedNodes);
+				
+			} else {
 				jspOut.print(sb.toString());
+				
+				//Output the tree
+				outputTreeNodes(treeRoot, recursedNodes);
 			}
-			
-			//Output the tree
-			outputTreeNodes(treeRoot, recursedNodes);
 			
 		}
 	    catch(Exception e) {
@@ -383,6 +387,131 @@ public class TreeTag extends TagSupport {
 					outputTreeNodes((Element) it2.next(), recursedNodes);
 				}
 	
+				jspOut.print("</div>\n");
+			}
+	
+			// Pop last line or empty icon
+			recursedNodes.remove(0);
+		}
+	    catch(Exception ex) {
+	        throw new JspException(ex);
+	    }
+	}
+
+	private void outputTreeNodesFlat(Element e, List recursedNodes) throws JspException {
+		try {
+			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
+			RenderResponse renderResponse = (RenderResponse) req.getAttribute("javax.portlet.response");
+
+			//Output the element divs
+			JspWriter jspOut = pageContext.getOut();
+			
+			//NodeId
+			String s_nodeId = e.attributeValue("treeNodeId");
+			
+			//ParentId
+			String s_parentId = e.attributeValue("treeParentId");
+	
+			//0 or 1 to indicate that there are no more elements in the list
+			String s_ls = e.attributeValue("treeLS");
+	
+			//Text
+			String s_text = e.attributeValue("title");
+	
+			//id
+			String s_id = e.attributeValue("id");
+			String titleClass = className;
+			if ((s_id != null) && s_id.equals(this.highlightNode)) titleClass = "ss_highlight_gamma";
+	
+			//Image
+			String s_image = getImage(e.attributeValue("image"));
+			String s_imageOpen = getImageOpen(e.attributeValue("image"));
+			boolean displayOnly = GetterUtil.getBoolean((String)e.attributeValue("displayOnly"));
+			
+			//Url = null value means 
+			String s_url = (String) e.attributeValue("url");
+			if (s_url == null) {
+				Element url = e.element("url");
+				s_url = "";
+				if (url != null && url.attributes().size() > 0) {
+					PortletURL portletURL = renderResponse.createActionURL();
+					Iterator attrs = url.attributeIterator();
+					while (attrs.hasNext()) {
+						Attribute attr = (Attribute) attrs.next();
+						portletURL.setParameter(attr.getName(), attr.getValue());
+					}
+					portletURL.setWindowState(WindowState.MAXIMIZED);
+					portletURL.setPortletMode(PortletMode.VIEW);
+					s_url = portletURL.toString();
+				} 
+			}
+			
+			//Write out the divs for this branch
+			boolean ls = (s_ls == "1") ? true : false;
+			boolean hcn = (e.attributeValue("treeHasChildren") == "1") ? true : false;
+	
+			jspOut.print("<table cellspacing='0' cellpadding='0' style='display:inline;'>\n<tr>\n<td valign='top' nowrap>");
+			for (int j = recursedNodes.size() - 1; j >= 0; j--) {
+				if ((String) recursedNodes.get(j) != "1") {
+					jspOut.print("<img align='absmiddle' border='0' height='20' hspace='0' src='" + getImage("spacer") + "' vspace='0' width='19'>");
+				} else {
+					jspOut.print("<img align='absmiddle' border='0' height='20' hspace='0' src='" + getImage("line") + "' vspace='0' width='19'>");
+				}
+			}
+	
+			// Line and empty icons
+			if (ls) {
+				recursedNodes.add(0, "0");
+			} else {
+				recursedNodes.add(0, "1");
+			}
+	
+			// Write out join icons
+			if (ls) {
+				jspOut.print("<img align='absmiddle' border='0' height='20' hspace='0' src='" + getImage("join_bottom") + "' vspace='0' width='19'>");
+			} else {
+				jspOut.print("<img align='absmiddle' border='0' height='20' hspace='0' src='" + getImage("join") + "' vspace='0' width='19'>");
+			}
+	
+			// Link
+			if (hcn) {
+				jspOut.print("<img align=\"absmiddle\" border=\"0\" height=\"20\" hspace=\"0\" id=\"");
+				jspOut.print(this.treeName);
+				jspOut.print("icon" + s_nodeId + "\" src=\"");
+				jspOut.print(s_imageOpen); // e.g., folder_open.gif
+				jspOut.print("\" vspace=\"0\" width=\"19\">");
+			}
+			else {
+				jspOut.print("<img align=\"absmiddle\" border=\"0\" height=\"20\" hspace=\"0\" id=\"");
+				jspOut.print(this.treeName);
+				jspOut.print("icon" + s_nodeId + "\" src=\"" + s_image + "\" vspace=\"0\" width=\"19\">");
+			}
+	
+			jspOut.print("&nbsp;</td>\n<td>");			
+			if (!displayOnly) {
+				jspOut.print("<a class=\"" + className + "\" href=\"" + s_url + "\" ");
+				if (s_id != null && !s_id.equals("")) {
+					jspOut.print("onClick=\"if (self."+this.treeName+"_showId) {return "+this.treeName+"_showId('"+s_id+"', this);}\" ");
+				}
+				jspOut.print("style=\"text-decoration: none;\">");
+			}
+			jspOut.print("<font class=\"" + titleClass + "\" size=\"1\">");
+			jspOut.print(s_text);
+			jspOut.print("</font>");
+			
+			if (!displayOnly) jspOut.print("</a>");
+			
+			jspOut.print("</td></tr>\n</table><br>");
+	
+			// Recurse if node has children
+	
+			if (hcn) {
+				jspOut.print("\n<div class=\"treeWidget\" id=\"" + this.treeName + "div" + s_nodeId + "\">\n");
+	
+				ListIterator it2 = e.elements("child").listIterator();
+				while (it2.hasNext()) {
+					outputTreeNodesFlat((Element) it2.next(), recursedNodes);
+				}
 				jspOut.print("</div>\n");
 			}
 	
