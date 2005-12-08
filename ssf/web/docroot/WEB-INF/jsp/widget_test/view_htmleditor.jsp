@@ -18,12 +18,8 @@
 <%@ page import="java.util.Map" %>
 
 
-<liferay:box top="/html/common/box_top.jsp" bottom="/html/common/box_bottom.jsp">
-	<liferay:param name="box_title" value="<%= LanguageUtil.get(pageContext, \"view-htmleditor\") %>" />
-
 
 <%
-	String background = GetterUtil.get(request.getParameter("body_background"), skin.getGamma().getBackground());
 
 	String textfield1 = (String)request.getAttribute("textfield1");
 	String textfield2 = (String)request.getAttribute("textfield2");
@@ -38,7 +34,7 @@
 
 %>
 
-	You entered: 
+<center>	You entered: 
 	<table border="1">
 	<th>
 	First editor:
@@ -58,12 +54,13 @@
 	</table>
 	<p>
 	Care to try again?
+	</center>
 <%
 	}
 %>
 
 <form method="POST" action="" name="htmleditortest">
-<span align="center">SiteScape Forum Widget Tester -  HTML Editor widget
+<span align="center">SiteScape Forum Widget Tester -  HTML Editor widget <p>
 Two HTML Editors on one form. <br>
 First editor has height=150, second one has no size specified, so defaults to 250 (pixels).
 <br />
@@ -80,7 +77,7 @@ First editor has height=150, second one has no size specified, so defaults to 25
 					<div>
 					<ssf:htmleditor id="editor1" 
 						formName="editortest"
-						height="150" color="<%= background %>"
+						height="150"
 						initText="<%= textfield1 %>" />
 					</div>
 				</td>
@@ -90,7 +87,7 @@ First editor has height=150, second one has no size specified, so defaults to 25
 					Second editor:
 					<div>
 					<ssf:htmleditor id="editor2" 
-						formName="editortest"  color="<%= background %>"
+						formName="editortest"  
 						initText="<%= textfield2 %>" />
 					</div>
 				</td>
