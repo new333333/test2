@@ -59,7 +59,7 @@ public class PortletAdapterController extends SAbstractController {
 				
 				params = actionRes.getRenderParameters();
 				
-				params.put(KeyNames.PORTLET_URL_PORTLET_NAME, portletName);	
+				params.put(KeyNames.PORTLET_URL_PORTLET_NAME, new String[] {portletName});
 			} 
 			
 			RenderRequestImpl renderReq = new RenderRequestImpl(req,
