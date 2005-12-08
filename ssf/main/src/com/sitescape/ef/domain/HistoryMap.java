@@ -2,10 +2,13 @@
 package com.sitescape.ef.domain;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.sitescape.ef.ObjectKeys;
 
@@ -65,6 +68,11 @@ public class HistoryMap {
 		this.lastPrune = lastPrune;
 	}
 
+	public void setSeenInPlace(Entry entry, Date now) {
+      	Long id = entry.getId();
+		historyMap.put(id, now);
+		pruneMap(now);
+	}
 	public void setSeen(Entry entry) {
 		setSeen(entry, new Date());
 	}
@@ -94,12 +102,24 @@ public class HistoryMap {
     		setLastPrune(now);
 		}
     }
+    
+    public void sortMap() {
+    	Comparator c = new HistoryMapComparator();
+    	SortedSet ss = new TreeSet(c);
+    	ss.addAll(historyMap.entrySet());
+    	historyMap.clear();
+    	Iterator it = ss.iterator();
+    	while (it.hasNext()) {
+    		Map.Entry me = (Map.Entry) it.next();
+    		historyMap.put(me.getKey(), me.getValue());
+    	}
+    }
 
 	public Long getNextHistoryEntry() {
 		Long entryId = null;
-		//No entryId was specified, so get the first on the list
+		//No entryId was specified, so get the most recent entry on the list (which is the last on the list)
 		Iterator it = historyMap.entrySet().iterator();
-		if (it.hasNext()) {
+		while (it.hasNext()) {
 			Map.Entry me = (Map.Entry) it.next();
 			entryId = (Long) me.getKey();
 		}
@@ -112,12 +132,9 @@ public class HistoryMap {
 			while (it.hasNext()) {
 				Map.Entry me = (Map.Entry) it.next();
 				if (((Long)me.getKey()).equals(currentEntryId)) {
-					if (it.hasNext()) {
-						Map.Entry nextMe = (Map.Entry) it.next();
-						entryId = (Long) nextMe.getKey();
-						break;
-					}
+					break;
 				}
+				entryId = (Long)me.getKey();
 			}
 		}
 		return entryId;
@@ -129,9 +146,14 @@ public class HistoryMap {
 			while (it.hasNext()) {
 				Map.Entry me = (Map.Entry) it.next();
 				if (((Long)me.getKey()).equals(currentEntryId)) {
-					break;
+					if (it.hasNext()) {
+						Map.Entry nextMe = (Map.Entry) it.next();
+						entryId = (Long) nextMe.getKey();
+						break;
+					} else {
+						break;
+					}
 				}
-				entryId = (Long)me.getKey();
 			}
 		}
 		return entryId;
