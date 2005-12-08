@@ -72,14 +72,14 @@ public class Datepicker extends TagSupport {
 	        // load support for datapicker 
 	        sb.append("<script language=\"JavaScript\" src=\"")
 		  .append(contextPath)
-		  .append("/html/js/datepicker/CalendarPopup.js\"></script>\n");
+		  .append("/js/datepicker/CalendarPopup.js\"></script>\n");
 	        sb.append("<script language=\"JavaScript\" src=\"")
 		  .append(contextPath)
-		  .append("/html/js/common/AnchorPosition.js\"></script>\n");
+		  .append("/js/common/AnchorPosition.js\"></script>\n");
 	        sb.append("<script language=\"JavaScript\" src=\"")
 		  .append(contextPath)
-		  .append("/html/js/common/PopupWindow.js\"></script>\n");
-	        sb.append("<script language=\"JavaScript\" src=\"").append(contextPath).append("/html/js/datepicker/date.js\"></script>\n");
+		  .append("/js/common/PopupWindow.js\"></script>\n");
+	        sb.append("<script language=\"JavaScript\" src=\"").append(contextPath).append("/js/datepicker/date.js\"></script>\n");
 
 		String varname = prefix; // for some backward compatibility
 			// we have to keep the instance name and the setMultipleValues function name unique
@@ -240,7 +240,7 @@ public class Datepicker extends TagSupport {
 			  .append("\"")
 			  .append("><IMG BORDER=\"0\" SRC=\"")
 			  .append(contextPath)
-			  .append("/html/pics/sym_s_cal.gif\"></A>\n");
+			  .append("/images/pics/sym_s_cal.gif\"></A>\n");
 			sb.append("<input type=\"hidden\" name=\"")
 			  .append(prefix)
 			  .append("_hidden\" value=\"\">\n");
