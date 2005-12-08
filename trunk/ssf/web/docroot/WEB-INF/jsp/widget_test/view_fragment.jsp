@@ -104,6 +104,7 @@ function ss_showForumEntryInIframe(url) {
 
     if (wObj.src && wObj.src == url) {
     	wObj.src = "_blank";
+    	alert("blanked")
     }
     //wObj.style.height = parseInt(wObj1.style.height) - 50 + "px";
     wObj.src = url
@@ -160,13 +161,19 @@ createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
 <table><tr><td valign="top">
 <div id="showbutton" class="ss_portlet" style="display:block; margin:2;">
 <a href="<ssf:url 
-    webPath="viewFragment" >
+    adapter="true" 
+    portletName="ss_widgettest" 
+    action="fragment" 
+    actionUrl="true" >
 	<ssf:param name="operation" value="viewFragment" />
     </ssf:url>"
 	onClick="ss_showForumEntryInIframe(this.href);return false;" 
  	>Show the fragment in an iframe</a><br>
 <a href="<ssf:url 
-    webPath="viewFragment" >
+    adapter="true" 
+    portletName="ss_widgettest" 
+    action="fragment" 
+    actionUrl="true" >
 	<ssf:param name="operation" value="viewFragment" />
     </ssf:url>"
 	onClick="ss_showForumEntryInWindow(this.href);return false;" 
