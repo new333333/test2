@@ -3,7 +3,7 @@ package com.sitescape.ef.util;
 import junit.framework.TestCase;
 
 /**
- * Provides logic unit test for InvokeUtil class.
+ * Provides logic unit test for <code>InvokeUtil</code> class.
  * 
  * @author Jong Kim
  */

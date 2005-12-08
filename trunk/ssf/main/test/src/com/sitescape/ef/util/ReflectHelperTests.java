@@ -4,6 +4,11 @@ import java.lang.reflect.Method;
 
 import junit.framework.TestCase;
 
+/**
+ * Logic unit test for <code>ReflectHelper</code>.
+ * 
+ * @author Jong Kim
+ */
 public class ReflectHelperTests extends TestCase {
 	
 	public void testClassForNameOk() {
