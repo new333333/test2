@@ -7,12 +7,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.sitescape.ef.PropertyNotFoundException;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Entry;
 
 import com.sitescape.ef.domain.UpdateAttributeSupport;
 import com.sitescape.ef.util.InvokeUtil;
+import com.sitescape.ef.util.PropertyNotFoundException;
 import com.sitescape.ef.ConfigurationException;
 
 /**
