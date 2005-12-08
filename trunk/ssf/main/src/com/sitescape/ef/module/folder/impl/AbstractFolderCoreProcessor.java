@@ -564,10 +564,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractModuleImpl
     	throws WriteFilesException {
     	WriteFilesException wfe = new WriteFilesException();
     	
+    	FileManager fileManager = getFileManager();
     	for(int i = 0; i < fileData.size(); i++) {
     		FileUploadItem fui = (FileUploadItem) fileData.get(i);
     		try {
-				getFileManager().writeFile(folder, entry, fui);
+				fileManager.writeFile(folder, entry, fui);
 			} catch (Exception e) {
 				wfe.addException(e);
 			}
