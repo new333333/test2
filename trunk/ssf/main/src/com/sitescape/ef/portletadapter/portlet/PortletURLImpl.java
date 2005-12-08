@@ -16,10 +16,12 @@ public class PortletURLImpl extends AdaptedPortletURL implements PortletURL {
 	}
 	
 	public void setWindowState(WindowState windowState) throws WindowStateException {
-		throw new UnsupportedOperationException();
+		// Non-standard: simply ignore
+		//throw new UnsupportedOperationException();
 	}
 
 	public void setPortletMode(PortletMode portletMode) throws PortletModeException {
-		throw new UnsupportedOperationException();
+		// Non-standard: simply ignore
+		//throw new UnsupportedOperationException();
 	}
 }
