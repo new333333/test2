@@ -48,9 +48,6 @@
 						<portlet:param name="action" value="definition_builder" />
 					</portlet:actionURL>">Definition builder</a><br>
 				
-				<a href="<portlet:actionURL windowState="maximized">
-						<portlet:param name="action" value="mail" />
-					</portlet:actionURL>">Fetch mail</a><br>
 				
 			</td>
 		</tr>
