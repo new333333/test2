@@ -307,7 +307,29 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 	/**
 	 * populate the bean for weekly calendar view.
 	 * used by getEvents
-	 * argument results is a map keyed by dates; for each date, the val is a list maps of entries and events
+	 * returns a list of length 7, one for each day of the week. Each entry in the list is a daymap, 
+	 * a map with info about the day, such as the day of the week, day of the month, and a boolean 
+	 * indicating whether the day is today. The daymap also contains a sorted map of event info,
+	 * called eventdatamap, whose keys are the event times in millis; this is so that the interator
+	 * will return the day's events in chronological order. Each key-value is a list of events 
+	 * at that starting time (since you can have multiple events that start at the same time.
+	 * and each list entry is a dataMap, which contains both event and entry information for the event 
+	 * suitable for displaying on the view calendar page.
+	 * 
+	 * So the picture looks like this:
+	 *   weekBean -- list for the whole week
+	 *     dayMap -- map for each day of the week
+	 *        day-of-wee  - string
+	 *        day-of-month - string
+	 *        isToday - Boolean
+	 *        dayEvents -- sorted map of event occurrences for the day, keyed by start time
+	 *           timeEvents -- list of event occurrences for a specific time
+	 *              dataMap -- for each occurrence, a map of stuff about the instance
+	 *                 e -- entry
+	 *                 ev -- event
+	 *                 starttime -- string
+	 *                 endtime -- string
+	 *              
 	 */
 	private void getWeekBean (Calendar startCal, Calendar endCal, Map eventDates, Map model) {
 		List weekBean = new ArrayList();
@@ -339,6 +361,7 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 					Entry e = (Entry) thisMap.get("entry");
 					Event ev = (Event) thisMap.get("event");
 					SimpleDateFormat sdf2 = new SimpleDateFormat("hh:mm a");
+					// we build up the dataMap for this instance
 					dataMap.put("entry", e);
 					dataMap.put("entry_tostring", e.getId().toString());
 					dataMap.put(WebKeys.CALENDAR_STARTTIMESTRING, sdf2.format(ev.getDtStart().getTime()));
@@ -346,7 +369,17 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 					
 					// dayEvents is sorted by time in millis; must make a Long object though
 					Long millis = new Long(ev.getDtStart().getTime().getTime());
-					dayEvents.put(millis, dataMap);
+					// must see if this key already has stuff; 
+					// build a list of all dataMaps that occur at the same time on this particular day
+					ArrayList thisTime = (ArrayList) dayEvents.get(millis);
+					ArrayList resList = new ArrayList();
+					if (thisTime == null) {
+						resList.add(dataMap);
+					} else {
+						resList.addAll(thisTime);
+						resList.add(dataMap);
+					}
+					dayEvents.put(millis, resList);
 				}
 				daymap.put(WebKeys.CALENDAR_EVENTDATAMAP, dayEvents);
 			}
