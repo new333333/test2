@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
-
+import javax.activation.FileTypeMap;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FolderEntry;
@@ -16,6 +16,8 @@ import com.sitescape.ef.portlet.forum.ActionUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.servlet.SAbstractController;
 import com.sitescape.util.FileUtil;
+import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.ef.repository.RepositoryServiceUtil;
 
 public class ViewFileController extends SAbstractController {
 	
@@ -33,7 +35,8 @@ public class ViewFileController extends SAbstractController {
 		FolderEntry entry = getFolderModule().getEntry(Long.valueOf(forumId), Long.valueOf(entryId));
 		//Set up the beans needed by the jsps
 		FileAttachment fa = null;
-		String fileId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_FILE);
+		String fileId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_FILE_ID);
+		
 		if (fileId.equals("")) {
 			String name = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ATTRIBUTE); 
 			if (!name.equals("")) {
@@ -44,36 +47,19 @@ public class ViewFileController extends SAbstractController {
 			fa = (FileAttachment)entry.getAttachment(fileId);
 		}
 		if (fa != null) {
-			FileInputStream fIn = new FileInputStream("c:/home/sitescape/forum/" + 
-    				entry.getParentFolder().getStringId() + "/" + 
-					entry.getStringId() + "/" + 
-					fa.getFileItem().getName());
-			try {
-				byte[] byteArray = new byte[20000];
-				fIn.read(byteArray);
-	
-				String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());
-	
-				response.setContentType("application/octet-stream");
-				response.setHeader("Cache-Control", "private");
-				response.setHeader("Pragma", "no-cache");
-				response.setHeader(
+			
+			String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
+			FileTypeMap mimeTypes = (FileTypeMap)SpringContextUtil.getBean("mimeTypes");
+			response.setContentType(mimeTypes.getContentType(shortFileName));
+			response.setHeader("Cache-Control", "private");
+			response.setHeader("Pragma", "no-cache");
+			response.setHeader(
 						"Content-Disposition",
 						"attachment; filename=\"" + shortFileName + "\"");
-				response.getOutputStream().write(byteArray);
-				response.getOutputStream().flush();
+			RepositoryServiceUtil.read(entry.getParentFolder(), entry, 
+						"fileRepositoryService", fa.getFileItem().getName(), response.getOutputStream()); 
 
-				OutputStream out = response.getOutputStream();
-				byte[] buffer = new byte[4096];
-				int count;
-				while((count = fIn.read(buffer)) > -1) {
-					out.write(buffer, 0, count);
-				}
-				out.flush();
-			}
-			finally {
-				fIn.close();
-			}
+			response.getOutputStream().flush();
 		}
 		return null;
 	}

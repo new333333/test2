@@ -6,17 +6,13 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 
-//import org.apache.commons.fileupload.FileUploadUtil;
-
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
+import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
 
 /**
@@ -33,9 +29,7 @@ public class ModifyEntryController extends SAbstractForumController {
 		//See if the add entry form was submitted
 		if (formData.containsKey("okBtn")) {
 			//The form was submitted. Go process it
-			// Returns a map where key is form field name (String) and value is LiferayFileItem.
-//				Map fileItems = FileUploadUtil.getFileItems(req);
-			getFolderModule().modifyEntry(folderId, Long.valueOf(entryId), formData, null);
+			getFolderModule().modifyEntry(folderId, Long.valueOf(entryId), formData, ((MultipartFileSupport) request).getFileMap());
 			//Get the jsp objects again, but this time get the "view_forum" values
 			//response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_ENTRY);
 			response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());

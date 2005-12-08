@@ -6,12 +6,12 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-//import org.apache.commons.fileupload.FileUploadUtil;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 
@@ -31,13 +31,13 @@ public class AddEntryController extends SAbstractForumController {
 		if (formData.containsKey("okBtn")) {
 			//The form was submitted. Go process it
 			// Returns a map where key is form field name (String) and value is LiferayFileItem.
-			Map fileItems=new HashMap(); // = FileUploadUtil.getFileItems(request);
 			String entryType = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_TYPE);
 			if (action.equals(WebKeys.FORUM_ACTION_ADD_ENTRY)) {
-				entryId = getFolderModule().addEntry(folderId, entryType, formData, fileItems).toString();
+				//entryId = getFolderModule().addEntry(folderId, entryType, formData, ((MultipartFileSupport) request).getFileMap()).toString();
+				entryId = getFolderModule().addEntry(folderId, entryType, formData, new HashMap()).toString();
 			} else if (action.equals(WebKeys.FORUM_ACTION_ADD_REPLY)) {
 				entryId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_ID);				
-				getFolderModule().addReply(folderId, Long.valueOf(entryId), entryType, formData, fileItems);
+				getFolderModule().addReply(folderId, Long.valueOf(entryId), entryType, formData, ((MultipartFileSupport) request).getFileMap());
 			}
 			//response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 			//response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
