@@ -27,11 +27,12 @@
 <%
 String bodyClassName = ParamUtil.get(request, "box_body_class", "bg");
 
-int width = (int)ParamUtil.get(request, "box_width", 600);
+int iWidth = (int)ParamUtil.get(request, "box_width", 600);
+String width = Integer.toString(iWidth);
 
 String wildWidth = "*";
 try {
-	wildWidth = Integer.toString(width - 2);
+	wildWidth = Integer.toString(iWidth - 2);
 }
 catch (Exception e) {
 }
@@ -53,7 +54,7 @@ boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", true);
 </tr>
 </table>
 
-<table border="0" cellpadding="0" cellspacing="0" width="<%= width %>">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
 
 <tr>
 	<td rowspan="2" width="5"><img border="0" height="5" hspace="0" src="<html:imagesPath/>box/<%= bodyClassName %>_edge_bl.gif" width="5" vspace="0"></td>
@@ -67,7 +68,7 @@ boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", true);
 </table>
 
 <c:if test="<%= !BrowserSniffer.is_ns_4(request) %>">
-	<table border="0" cellpadding="0" cellspacing="0" width="<%= width %>">
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
 
 		<td width="2"><img border="0" height="1" hspace="0" src="<html:imagesPath/>pics/spacer.gif" vspace="0" width="2"></td>
@@ -82,3 +83,5 @@ boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", true);
 	</table>
 </c:if>
 <%@ include file="/WEB-INF/jsp/box/box_bottom-ext.jsp" %>
+</div>
+
