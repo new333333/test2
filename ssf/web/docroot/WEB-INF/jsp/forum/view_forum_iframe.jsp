@@ -9,7 +9,7 @@
 </div>
 
 <div id="showentrydiv" style="position:absolute; visibility:hidden; x:0; y:0;
-  width:<%= ss_entryWindowWidth %>; height:80%; display:none;">
+  width:<%= ss_entryWindowWidth %>; height:80%; display:none; z-index:100;">
   <div style="width:90%;">
     <table cellspacing="0" cellpadding="0" width="100%">
       <tr>

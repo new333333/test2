@@ -226,7 +226,7 @@ function highlightLineById(id) {
 <c:if test="<%= !op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY) %>">
 
 <div id="showentryhighwatermark" style="position:absolute; visibility:visible;">
-<img src="<html:imagesPath/>1pix.gif">
+<img src="<html:imagesPath/>pics/1pix.gif">
 </div>
 <%
 	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL)) {
