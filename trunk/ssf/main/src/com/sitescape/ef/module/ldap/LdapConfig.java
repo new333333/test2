@@ -16,9 +16,6 @@ import com.sitescape.ef.jobs.Schedule;
  * Manage the ldap properties for a workspace. 
  */
 public class LdapConfig {
-	public static final int USERS=1;
-	public static final int GROUPS=2;
-	public static final int MEMBERSHIP=3;
 
 	public static final String SESSION_REGISTER_USERS = "ldap.session.register";
 	public static final String SESSION_SYNC = "ldap.session.sync";
@@ -33,21 +30,6 @@ public class LdapConfig {
 	public static final String DISABLE_GROUPS = "ldap.groups.disable";
 	public static final String REGISTER_GROUPS = "ldap.groups.register";
 	public static final String SYNC_GROUPS = "ldap.groups.sync";
-	
-	public static final Set LDAPPROPS = new TreeSet();
-	static {
-		LDAPPROPS.add(SESSION_REGISTER_USERS);
-		LDAPPROPS.add(SESSION_SYNC);
-		LDAPPROPS.add(QUARTZ_SCHEDULE);
-		LDAPPROPS.add(ENABLE_SCHEDULE);
-		LDAPPROPS.add(DISABLE_USERS);
-		LDAPPROPS.add(REGISTER_USERS);
-		LDAPPROPS.add(SYNC_USERS);
-		LDAPPROPS.add(DISABLE_GROUPS);
-		LDAPPROPS.add(REGISTER_GROUPS);
-		LDAPPROPS.add(SYNC_GROUPS);
-		LDAPPROPS.add(SYNC_MEMBERSHIP);
-	};
 	
     
 	//seconds minutes hours dayOfMonth months days year"
@@ -131,16 +113,4 @@ public class LdapConfig {
 		workspace.setProperty(QUARTZ_SCHEDULE, schedule.getQuartzSchedule());
 	}
 
-	public void updateProperties(Map props) {
-		Iterator iter = props.keySet().iterator();
-		while (iter.hasNext()) {
-			String key = (String)iter.next();
-			if (LDAPPROPS.contains(key)) {
-				workspace.setProperty(key, props.get(key));
-			} else if (key.equals(SCHEDULE)) {
-				//save string, not objects
-				workspace.setProperty(QUARTZ_SCHEDULE, ((Schedule)props.get(key)).getQuartzSchedule());
-			}
-		}
-	}
 }

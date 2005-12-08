@@ -47,7 +47,7 @@ public class DefaultFolderEmailNotification extends SSStatefulJob implements Fol
 			this.forum = forum;
 		}
 		public  String getSchedule() {
-			return forum.getNotificationDef().getSchedule();
+			return forum.getNotificationDef().getSchedule().getQuartzSchedule();
 		}
     	public  String getDescription() {
     		return "Email notification for " + forum;
@@ -59,7 +59,7 @@ public class DefaultFolderEmailNotification extends SSStatefulJob implements Fol
 			return data;
     	}
     	public  boolean isEnabled() {
-    		return !forum.getNotificationDef().isDisabled();
+    		return forum.getNotificationDef().isEnabled();
     	}
     	public String getName() {
     		return forum.getZoneName() + ":" + forum.getName() + ":" + forum.getId();

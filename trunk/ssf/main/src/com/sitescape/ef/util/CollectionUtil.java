@@ -34,21 +34,12 @@ public class CollectionUtil {
     		oColl.clear();
     		return oColl;
     	}
- 		//remove members not in new set
-    	for (Iterator iter=oColl.iterator(); iter.hasNext();) {
-    		o=iter.next();
-			if (!nColl.contains(o)) {
-				oColl.remove(o);
-    		}
-    	}
-    	//add new members
-    	for (Iterator iter=nColl.iterator(); iter.hasNext();) {
-    		o=iter.next();
-			if (!oColl.contains(o)) {
-				oColl.add(o);
-    		}
-    	}
-    	return oColl;
+       	Set coll = differences(oColl,nColl);
+       	oColl.removeAll(coll);
+       	coll = differences(nColl, oColl);
+       	oColl.addAll(coll);
+       	
+   	return oColl;
 	}
 	public static Set differences(Collection coll1, Collection coll2) {
 	   	Object o;

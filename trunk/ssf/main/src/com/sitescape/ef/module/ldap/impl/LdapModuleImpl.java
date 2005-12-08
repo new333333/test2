@@ -38,6 +38,7 @@ import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.Membership;
 import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.module.shared.EntryBuilder;
+import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.module.profile.ProfileModule;
@@ -184,7 +185,7 @@ public class LdapModuleImpl implements LdapModule {
 	public void updateLdapConfig(Map props) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		Workspace ws = (Workspace)coreDao.findTopWorkspace(zoneName);
-		ws.getLdapConfig().updateProperties(props);
+    	ObjectBuilder.updateObject(ws.getLdapConfig(), props);
    		LdapSynchronization process = (LdapSynchronization)processorManager.getProcessor(ws, LdapSynchronization.PROCESSOR_KEY);
    		process.checkSchedule(scheduler, ws);
 	}

@@ -14,24 +14,35 @@ package com.sitescape.ef.domain;
  * 
  */
 public class Notification extends PersistentObject {
-    private Binder owningForum;
+    private Binder binder;
     private Principal principal;
+    private String type;
     public Notification() {
     	
     }
-    public Notification(Binder f, Principal p) {
-    	owningForum=f;
+    public Notification(Binder b, Principal p) {
+    	binder=b;
     	principal=p;
     }
     /**
+     * @hibernate.property length="1" insert="false" update="false"
+     *
+     */
+    public String getType() {
+    	return type;
+    }
+    public void setType(String type) {
+    	this.type = type;
+    }
+   /**
      * @hibernate.many-to-one 
      * @return
      */
-    public Binder getOwningForum() {
-        return owningForum;
+    public Binder getBinder() {
+        return binder;
     }
-    public void setOwningForum(Binder owner)  {
-        this.owningForum = owner;
+    public void setBinder(Binder owner)  {
+        this.binder = owner;
     }
     /**
      * @hibernate.many-to-one
@@ -53,7 +64,7 @@ public class Notification extends PersistentObject {
  
         Notification o = (Notification) obj;
         //Don't use id - may not be saved yet
-        if (principal.equals(o.getSendTo()) && owningForum.equals(o.getOwningForum()))
+        if (principal.equals(o.getSendTo()) && binder.equals(o.getBinder()))
             return true;
                 
         return false;
@@ -61,7 +72,7 @@ public class Notification extends PersistentObject {
     public int hashCode() {
     	int hash = 7;
     	hash = 31*hash + principal.hashCode();
-    	hash = 31*hash + owningForum.hashCode();
+    	hash = 31*hash + binder.hashCode();
     	return hash;
     }
   

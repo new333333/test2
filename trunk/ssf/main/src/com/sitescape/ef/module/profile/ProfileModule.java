@@ -27,15 +27,18 @@ public interface ProfileModule {
     public void bulkUpdateGroups(Collection ids, Map update);
     public List bulkCreateGroups(Map groups);
     public void bulkDisableGroups(Collection groups);
+    public List getGroups();
+    
     public UserProperties setUserFolderProperty(Long userId, Long folderId, String property, Object value);
     public UserProperties getUserFolderProperties(Long userId, Long folderId);
     public UserProperties setUserProperty(Long userId, String property, Object value);
     public UserProperties getUserProperties(Long userId);
+    public List getUsers();
     public SeenMap getUserSeenMap(Long userId, Long folderId);
     public void updateUserSeenEntry(Long userId, Long folderId, Entry entry);
     public void updateUserSeenEntry(Long userId, Long folderId, List entries);
     public HistoryMap getUserHistory(Long userId, Long folderId);
     public void updateUserHistory(Long userId, Long folderId, Entry entry);
     public void updateUserHistory(HistoryMap history);
-
+    
 }

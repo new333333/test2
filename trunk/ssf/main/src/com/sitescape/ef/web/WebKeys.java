@@ -32,6 +32,7 @@ public class WebKeys {
 	public static final String FORUM_ACTION_VIEW_FORUM = "view_forum";
 	public static final String FORUM_ACTION_VIEW_ENTRY = "view_entry";
 	public static final String LDAP_ACTION_CONFIGURE="configure_ldap";
+	public static final String NOTIFY_ACTION_CONFIGURE="configure_notify";
 	//oerations
  	public static final String FORUM_OPERATION_ADMINISTRATION = "administration";
 	public static final String FORUM_OPERATION_SET_DISPLAY_STYLE = "set_display_style";
@@ -44,9 +45,12 @@ public class WebKeys {
 		
     // MODEL TAGS
 	public static final String ACTION = "action";
+	public static final String ADMIN_TREE="ssAdminDomTree";
     public static final String CONFIG_ELEMENT="ssConfigElement";
     public static final String CONFIG_DEFINITION="ssConfigDefinition";
     public static final String CONFIG_JSP_STYLE="ssConfigJspStyle";
+    public static final String DEFAULT_FOLDER_DEFINITION="ssDefaultFolderDefinition";
+    public static final String DEFAULT_FOLDER_DEFINITION_ID="ssDefaultFolderDefinitionId";
     public static final String DEFINITION="ssDefinition";
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
     public static final String ENTRY_DEFINITION="ssEntryDefinition";
@@ -60,14 +64,19 @@ public class WebKeys {
     public static final String FOLDER_ENTRY_ANCESTORS="ssFolderEntryAncestors";
     public static final String FOLDER_ENTRY_TOOLBAR="ssFolderEntryToolbar";
     public static final String FOLDER_TOOLBAR="ssFolderToolbar";
+    public static final String GROUPS="ssGroups";
     public static final String HISTORY_CACHE="ssHistoryCache";
     public static final String HISTORY_MAP="ssHistoryMap";
+    public static final String LDAP_CONFIG="ssLdapConfig";
+    public static final String NOTIFICATION="ssNotification";
     public static final String PUBLIC_DEFINITIONS="ssPublicDefinitions";
     public static final String PUBLIC_ENTRY_DEFINITIONS="ssPublicEntryDefinitions";
     public static final String PUBLIC_FOLDER_DEFINITIONS="ssPublicFolderDefinitions";
     public static final String SEEN_MAP="ssSeenMap";
-    public static final String DEFAULT_FOLDER_DEFINITION="ssDefaultFolderDefinition";
-    public static final String DEFAULT_FOLDER_DEFINITION_ID="ssDefaultFolderDefinitionId";
+    public static final String SELECTED_GROUPS="ssSelectedGroups";
+    public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
+    public static final String SELECTED_USERS="ssSelectedUsers";
+    public static final String USERS="ssUsers";
     public static final String USER_PROPERTIES="ssUserProperties";
     public static final String WORKSPACE="ssWorkspace";
     public static final String WORKSPACE_DOM_TREE="ssWsDomTree";

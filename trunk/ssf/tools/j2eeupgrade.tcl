@@ -53,7 +53,6 @@ array set ::j2ee_Forum_class_MAP {
    notify_lastNotification {notify_lastNotification timestamp}
    notify_event    {notify_event int32}
    notify_schedule {notify_schedule "varchar 256"}
-   notify_disabled {notify_disabled boolean}
    notify_email    {notify_email blob}
    defaultReplyDef {defaultReplyDef uuid}
    featureMask			{featureMask int32}
@@ -796,11 +795,9 @@ proc doZone {zoneName {cName {liferay.com}}} {
 	#need to set default column values
     if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {
 		wimsql_rw "update SS_Forums set notify_teamOn=B'0' where notify_teamOn is null;"
-		wimsql_rw "update SS_Forums set notify_disabled=B'1' where notify_disabled is null;"
 		wimsql_rw "update SS_Principals set reserved=B'1' where name='wf_admin' or name='avf_admin';"
 	} else {
 		wimsql_rw "update SS_Forums set notify_teamOn=0 where notify_teamOn is null;"
-		wimsql_rw "update SS_Forums set notify_disabled=1 where notify_disabled is null;"
 		wimsql_rw "update SS_Principals set reserved=1 where name='wf_admin' or name='avf_admin';"
 	}
 	wimsql_rw "update SS_Forums set notify_contextLevel=2 where notify_contextLevel is null;"
@@ -1359,11 +1356,7 @@ proc doNotifications {zoneName forumName ats} {
 	} else {
 		set attrs(notify_contextLevel) 2
 	}
-	if {[isnull $notifyEnabled ]} {
-		set attrs(notify_disabled) true
-	} else {
-		set attrs(notify_disabled) false
-	}
+
 	set	dayString ""
 	foreach day [wim property get -aca $zoneName -name $forumName notifyDays] {
 		switch -- $day {
@@ -1406,19 +1399,19 @@ proc doNotifications {zoneName forumName ats} {
 	foreach group [wim property get -aca $zoneName -name $forumName notifyDefaultGroups] {
 		try {
 			set id $::groupIds($group)
-			wimsql_rw "INSERT INTO SS_Notifications (id,lockVersion,forum,type,sendTo) values ('[newuuid]',1,$forumId,'N',$id);"
+			wimsql_rw "INSERT INTO SS_Notifications (id,lockVersion,binder,type,sendTo) values ('[newuuid]',1,$forumId,'N',$id);"
 		}
 	}
 
 	foreach user [wim property get -aca $zoneName -name $forumName notifyDefaultUsers] {
 		try {
 			set id $::userIds($user)
-			wimsql_rw "INSERT INTO SS_Notifications (id,lockVersion,forum,type,sendTo) values ('[newuuid]',1,$forumId,'N',$id);"
+			wimsql_rw "INSERT INTO SS_Notifications (id,lockVersion,binder,type,sendTo) values ('[newuuid]',1,$forumId,'N',$id);"
 		}
 	}
 
 	set nattrs(lockVersion) 1
-	set nattrs(forum) $forumId
+	set nattrs(binder) $forumId
 	set nattrs(type) "U"
 	set nattrs(style) 1
 	set nattrs(disabled) 0

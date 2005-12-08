@@ -15,7 +15,7 @@
 				<entry key="view">
 					<map>
 						<entry key="view_forum"><ref bean="forumViewController"/></entry>
-						<entry key="view_entry*"><ref bean="forumViewController"/></entry>
+						<entry key="view_entry"><ref bean="forumViewController"/></entry>
 					</map>
 				</entry>
 				<entry key="edit">
