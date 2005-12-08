@@ -51,27 +51,14 @@ public class ModifyEntryController extends SAbstractForumController {
 		Map formData = request.getParameterMap();
 
 		Long folderId = ActionUtil.getForumId(formData, request);
-			
-		String op = ActionUtil.getStringValue(formData, PortletKeys.ACTION);
-		//See if the add entry form was submitted
+		Map model;	
 		try {
-			getForumActionModule().getModifyEntry(formData, request, folderId);
+			model = getForumActionModule().getModifyEntry(formData, request, folderId);
 		} catch (NoDefinitionByTheIdException nd) {
-			//Get the jsp objects again, but this time get the "view_forum" values
 			return returnToViewForum(request, formData, folderId);
 		}
 			
-		//Set up the beans needed by the add_entry jsp
-		Definition def = (Definition) request.getAttribute("ss_forum_entry_definition");
-		if (def == null) {return returnToViewForum(request, formData, folderId);}
-		Document configDoc = def.getDefinition();
-		if (configDoc == null) {return returnToViewForum(request, formData, folderId);}
-			Element configRoot = configDoc.getRootElement();
-		if (configRoot == null) {return returnToViewForum(request, formData, folderId);}
-		Element configEle = (Element) configRoot.selectSingleNode("//item[@name='entryForm']");
-		
-		request.setAttribute("ss_forum_config", configEle);							
-		return new ModelAndView(PortletKeys.VIEW_MODIFY_ENTRY);
+		return new ModelAndView(PortletKeys.VIEW_MODIFY_ENTRY, model);
 	}
 }
 

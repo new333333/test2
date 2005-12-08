@@ -40,7 +40,6 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			RenderRequest renderRequest = (RenderRequest) req.getAttribute("javax.portlet.request");
 			RenderResponse renderResponse = (RenderResponse) req.getAttribute("javax.portlet.response");
 
-			PortletURL portletURL = renderResponse.createRenderURL();
 			
 			//See if a url was specified
 			if (!this.url.equals("")) {
@@ -53,6 +52,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			}
 
 			//There was no explicit url specified, so build the url
+			PortletURL portletURL;
 			if (this.actionUrl) {
 				portletURL = renderResponse.createActionURL();
 			}

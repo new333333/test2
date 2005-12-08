@@ -6,9 +6,12 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+import org.dom4j.Document;
+import org.dom4j.Element;
 
 import org.springframework.web.servlet.ModelAndView;
-
+import com.sitescape.ef.util.Toolbar;
+import com.sitescape.ef.util.NLT;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.ArrayList;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.HistoryMap;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.portlet.PortletKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.util.Validator;
@@ -25,7 +29,7 @@ import com.sitescape.ef.domain.NoFolderByTheIdException;
  * @author Peter Hurley
  *
  */
-public class ViewController  extends SAbstractController {
+public class ViewController  extends SAbstractForumController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 	}
@@ -76,18 +80,11 @@ public class ViewController  extends SAbstractController {
 			setHistorySeen(model, ses, folderId, false); 
 			ses.setAttribute(PortletKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, null);
 		} else if (op.equals("") || op.equals(PortletKeys.FORUM_OPERATION_VIEW_FORUM)) {
-			request.setAttribute(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_VIEW_FORUM);
-			model = getForumActionModule().getShowFolder(formData, request, folderId);
-			Object obj = model.get(PortletKeys.CONFIG_ELEMENT);
-			if ((obj == null) || (obj.equals(""))) 
-				return new ModelAndView(PortletKeys.VIEW_NO_DEFINITION, model);
-			obj = model.get(PortletKeys.CONFIG_DEFINITION);
-			if ((obj == null) || (obj.equals(""))) 
-				return new ModelAndView(PortletKeys.VIEW_NO_DEFINITION, model);
+			return returnToViewForum(request, formData, folderId);
 		} else if (op.equals(PortletKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
    			String displayStyle = ActionUtil.getStringValue(formData,PortletKeys.FORUM_URL_VALUE);
    			getProfileModule().setUserProperty(null,ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, displayStyle);
-			model = getForumActionModule().getShowFolder(formData, request, folderId);
+			return returnToViewForum(request, formData, folderId);
 		} else if (op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_NEXT) ||
 			op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_PREVIOUS)) {
 			model = getForumActionModule().getShowEntry(formData, request, folderId);
@@ -126,7 +123,46 @@ public class ViewController  extends SAbstractController {
 
 		return new ModelAndView(viewPath, model);
 	} 
-
+	protected void buildToolbar(Map model, String folderId, String entryId) {
+		
+		Element entryViewElement = (Element)model.get(PortletKeys.CONFIG_ELEMENT);
+		Document entryView = entryViewElement.getDocument();
+		Definition def = (Definition)model.get(PortletKeys.ENTRY_DEFINITION);
+		String entryDefId = def.getId().toString();
+	    //Build the toolbar array
+		Toolbar toolbar = new Toolbar();
+	    //The "Reply" menu
+		String replyStyle = (String) entryView.getRootElement().attributeValue("replyStyle", "");
+		Map urlParams;
+		if (!replyStyle.equals("")) {
+			urlParams = new HashMap();
+			urlParams.put(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_ADD_REPLY);
+	    	urlParams.put(PortletKeys.FORUM_URL_FORUM_ID, folderId);
+	    	urlParams.put(PortletKeys.FORUM_URL_ENTRY_TYPE, replyStyle);
+	    	urlParams.put(PortletKeys.FORUM_URL_ENTRY_ID, entryId);
+			toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), urlParams);
+		}
+	    
+	    //The "Modify" menu
+		urlParams = new HashMap();
+		urlParams.put(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_MODIFY_ENTRY);
+		urlParams.put(PortletKeys.FORUM_URL_FORUM_ID, folderId);
+		urlParams.put(PortletKeys.FORUM_URL_ENTRY_TYPE, entryDefId);
+		urlParams.put(PortletKeys.FORUM_URL_ENTRY_ID, entryId);
+		toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), urlParams);
+		
+	    
+	    //The "Delete" menu
+		urlParams = new HashMap();
+		urlParams.put(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_DELETE_ENTRY);
+		urlParams.put(PortletKeys.FORUM_URL_FORUM_ID, folderId);
+		urlParams.put(PortletKeys.FORUM_URL_ENTRY_TYPE, entryDefId);
+		urlParams.put(PortletKeys.FORUM_URL_ENTRY_ID, entryId); 
+		toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), urlParams);
+	    
+		model.put(PortletKeys.FOLDER_ENTRY_TOOLBAR, toolbar.getToolbar());
+		
+	}
 	protected void setHistorySeen(Map model, PortletSession ses, Long folderId, boolean inPlace) {
 		Entry entry = setSeen(model, folderId);
 		HistoryMap history = (HistoryMap)model.get(PortletKeys.HISTORY_MAP);
