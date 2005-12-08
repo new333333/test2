@@ -12,6 +12,13 @@ public class VersionAttachment extends FileAttachment {
     
     public VersionAttachment() {
     }
+    public void setOwner(AnyOwner owner) {
+    	setOwner(owner.getEntry());
+    } 
+ 	public void setOwner(Entry entry) {
+		//don't set foreign key, so not read in to entry
+  		owner = new AnyOwner(entry, false);
+  	}
 
     /**
      * @hibernate.property 

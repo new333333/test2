@@ -8,7 +8,7 @@ import java.io.Serializable;
  *
  */
 public class UserPerFolderPK implements Serializable {
-	private int serializableVersion=1;
+	private final static long serialVersionUID=1;
 	private Long folderId, principalId;
 	public UserPerFolderPK() {
 		
@@ -45,6 +45,9 @@ public class UserPerFolderPK implements Serializable {
 				seen.getFolderId().equals(folderId)) return true;
 		}
 		return false;
+	}
+	public int hashCode() {
+		return 31*folderId.hashCode() + principalId.hashCode();
 	}
 	
 }

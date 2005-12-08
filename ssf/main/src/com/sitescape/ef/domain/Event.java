@@ -345,7 +345,21 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
   }
 
   /**
-   * @hibernate.property not-null="true"
+   * Internal routines for hibernate.  Since all features of calendar are
+   * not saved in the sql column, comparisons fail on dirty check.  So,
+   * use internal setup to persist only fields that can be compared.
+   * @hibernate.property 
+   * @hibernate.column name="dtStart" not-null="true"
+   */
+  protected Date getHdtStart() {
+  	return dtStart.getTime();
+  }
+  protected void setHdtStart(Date start) {
+  	Calendar newD = new GregorianCalendar();
+  	newD.setTime(start);
+  	setDtStart(newD);
+  }
+  /**
    * Get the start time of the recurrence.
    * @return The start time.
    */
@@ -417,9 +431,20 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
     setDuration(d);
   }
 
-
   /**
+   * Internal routines for hibernate.  Since all features of calendar are
+   * not saved in the sql column, comparisons fail on dirty check.  So,
+   * use internal setup to persist only fields that can be compared.
    * @hibernate.property
+   * @hibernate.column name="dtEnd"
+   */
+  protected Date getHdtEnd() {
+  	return getDtEnd().getTime();
+  }
+  protected void setHdtEnd(Date end) {
+  	//don't really use it.  It is calculated and perisisted only for lookups
+  }
+  /**
    * Get the end time of the recurrence.
    * The broken-down time of the returned dtEnd will be correct, though
    * its time in milliseconds may not be.
@@ -466,7 +491,7 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
 
   /**
    * @hibernate.property
-   *    * Get the frequency of the recurrence.
+   * Get the frequency of the recurrence.
    * @return The recurrence frequency (one of
    *         {@link Recurrence#SECONDLY}, {@link Recurrence#MINUTELY},
    *         {@link Recurrence#HOURLY},
@@ -634,9 +659,25 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
     interval = i;
   }
 
-
   /**
+   * Internal routines for hibernate.  Since all features of calendar are
+   * not saved in the sql column, comparisons fail on dirty check.  So,
+   * use internal setup to persist only fields that can be compared.
    * @hibernate.property
+   * @hibernate.column name="until"
+   */
+  protected Date getHuntil() {
+  	if (getCount() == -1) return getUntil().getTime();
+   	return null;
+  }
+  protected void setHuntil(Date until) {
+  	if (until == null) this.until = null;
+  	else {
+  		this.until = new GregorianCalendar();
+  		this.until.setTime(until);
+  	}
+  }
+  /**
    * Get the upper bound of the recurrence.
    * If <code>count</code> has been set, this computes
    * <code>until</code> from <code>count</code>.
@@ -2866,25 +2907,32 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
 		setByHour(byHour);
 	}
 	/**
-	 * @hibernate.property length="32" not-null="true"
+	 * @hibernate.property  
+	 * @hibernate.column name="duration" length="32" not-null="true"
 	 * Get the duration of the recurrence, represented as a string.
 	 * @return A string representing the duration.
 	 */
-	private String getDurationI() {
+	private String getHduration() {
 		return getDuration().getString();
 	}
 
-	private void setDurationI(String durationString) {
+	private void setHduration(String durationString) {
 		setDuration(new Duration(durationString));
 	}	
 	public void update(Object obj) {
 		Event newEvent = (Event)obj;
 		setDtStart(newEvent.getDtStart());
 		setDuration(newEvent.getDuration());
-		setCount(newEvent.getCount());
-		setFrequency(newEvent.getFrequency());
+	    if (newEvent.getCount() == -1) {
+	    	setCount(0);
+			setUntil(newEvent.getUntil());
+	    } else {
+	    	setUntil((Calendar)null);
+	    	setCount(newEvent.getCount());
+	    }
+	    setFrequency(newEvent.getFrequency());
 		setInterval(newEvent.getInterval());
-	    setUntil(newEvent.getUntil());
+		setTimeZoneSensitive(newEvent.isTimeZoneSensitive());
 	    setBySecond(newEvent.getBySecond());
 	    setByMinute(newEvent.getByMinute());
 	    setByHour(newEvent.getByHour());

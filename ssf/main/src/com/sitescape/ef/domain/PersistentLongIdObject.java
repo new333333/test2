@@ -56,10 +56,14 @@ public class PersistentLongIdObject implements PersistentLongId {
         if(this == obj)
             return true;
 
-        if ((obj == null) || (obj.getClass() != getClass()))
+        //objects can be proxied so don't compare classes.
+        if (obj == null)
             return false;
       
         PersistentLongIdObject o = (PersistentLongIdObject) obj;
+        //assume object not persisted yet
+        if (o.getId() == null) return false;
+        if (getId() == null) return false;
         if (this.id.equals(o.getId()))
             return true;
                 

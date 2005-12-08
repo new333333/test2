@@ -3,7 +3,6 @@ package com.sitescape.ef.domain;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import com.sitescape.ef.util.Constants;
-
 /**
  * @author Jong Kim
  *
@@ -52,6 +51,9 @@ public class PersistentObject implements PersistentStringId {
             return false;
         
         PersistentObject o = (PersistentObject) obj;
+        //assume not persisted yet
+        if (o.getId() == null) return false;
+        if (getId() == null) return false;
         if (this.id.equals(o.getId()))
             return true;
                 
