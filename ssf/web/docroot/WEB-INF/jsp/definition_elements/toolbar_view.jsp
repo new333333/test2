@@ -5,7 +5,7 @@
 	<div class="ss_toolbar_menu" width="100%" id="toolbar_<c:out value="${toolbarMenu.key}" />">
 	  <c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}">
 	    <c:if test="${empty toolbarMenuCategory.key}">
-	      <span class="ss_contentbold"><c:out value="${toolbarMenuCategory.key}" /></span>
+	      <span class="portlet-font"><b><c:out value="${toolbarMenuCategory.key}" /></b></span>
 	    </c:if>
 	    <ul class="ss_dropdownmenu">
 	    <c:forEach var="toolbarMenuCategoryItem" items="${toolbarMenuCategory.value}">
@@ -19,8 +19,11 @@
 	            <ssf:param name="<%= key %>" value="<%= value %>" />
 	          </c:forEach>
 	        </ssf:url>" 
-	        onClick="return(ss_openUrlInPortlet(this.href));"><c:out 
-	        value="${toolbarMenuCategoryItem.key}" /></a></li>
+	        onClick="return(ss_openUrlInPortlet(this.href));"
+	        ><span 
+	        class="portlet-font" 
+	        style="font-size: smaller; text-decoration: none;"
+	        ><c:out value="${toolbarMenuCategoryItem.key}" /></span></a></li>
 	    </c:forEach>
 	    </ul>
 	  </c:forEach>
@@ -33,7 +36,7 @@
   test="${!empty ss_toolbarWidth}"><c:out value="${ss_toolbarWidth}"/></c:if>;">
 <c:set var="delimiter" value=""/>
 <c:forEach var="toolbarMenu" items="${toolbar}">
-<span class="content"><c:out value="${delimiter}" /></span>
+<span class="portlet-font"><c:out value="${delimiter}" /></span>
 <div class="ss_toolbar_item">
   <c:if test="${empty toolbarMenu.value.url}">
 	<a class="ss_toolbar_item" href="javascript: ;" 
@@ -50,7 +53,7 @@
       </c:forEach>
     </ssf:url>"  onClick="return(ss_openUrlInPortlet(this.href));">
   </c:if>
-<c:out value="${toolbarMenu.value.title}" /></a>
+<span class="portlet-font"><c:out value="${toolbarMenu.value.title}" /></span></a>
 </div>
 <c:set var="delimiter" value=" | "/>
 </c:forEach>
