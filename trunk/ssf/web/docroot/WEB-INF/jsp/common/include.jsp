@@ -14,6 +14,8 @@
 <portlet:defineObjects />
 
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="com.sitescape.ef.ObjectKeys" %>
+<%@ page import="com.sitescape.ef.portlet.PortletKeys" %>
 <%
 //Set some default colors
 String alphaColor = "#775325";
