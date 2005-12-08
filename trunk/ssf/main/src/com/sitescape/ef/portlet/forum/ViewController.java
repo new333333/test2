@@ -17,6 +17,7 @@ import java.util.Date;
 
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebHelper;
+import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
@@ -61,6 +62,11 @@ public class ViewController  extends SAbstractForumController {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd");
 			Date newdate = sdf.parse(urldate);
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, newdate);
+		}
+		if (op.equals(WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE)) {
+			PortletSession ps = WebHelper.getRequiredPortletSession(request);
+			Date dt = DateHelper.getDateFromMap(formData, "ssCalNavBar", "goto");
+			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, dt);
 		}
 
 		return returnToViewForum(request, response, formData, folderId);
