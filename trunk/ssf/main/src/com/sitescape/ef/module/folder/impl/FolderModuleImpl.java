@@ -22,6 +22,7 @@ import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
@@ -36,35 +37,9 @@ import com.sitescape.ef.domain.NoDefinitionByTheIdException;
  *
  * @author Jong Kim
  */
-public class FolderModuleImpl implements FolderModule {
+public class FolderModuleImpl extends AbstractModuleImpl implements FolderModule {
     
-	protected ProcessorManager processorManager;
-    protected CoreDao coreDao;
-    protected FolderDao folderDao;
     protected DefinitionModule definitionModule;
-    protected AccessControlManager accessControlManager;
-    protected AclManager aclManager;
-
-     protected ProcessorManager getProcessorManager() {
-        return processorManager;
-    }
-    public void setProcessorManager(ProcessorManager processorManager) {
-        this.processorManager = processorManager;
-    }
-    
-   public void setCoreDao(CoreDao coreDao) {
-        this.coreDao = coreDao;
-    }
-    protected CoreDao getCoreDao() {
-        return this.coreDao;
-    }
-    
-    public void setFolderDao(FolderDao folderDao) {
-        this.folderDao = folderDao;
-    }
-    public FolderDao getFolderDao() {
-        return this.folderDao;
-    }    
      
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
@@ -72,20 +47,6 @@ public class FolderModuleImpl implements FolderModule {
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
 	}
-    protected AccessControlManager getAccessControlManager() {
-        return accessControlManager;
-    }
-    public void setAccessControlManager(
-            AccessControlManager accessControlManager) {
-        this.accessControlManager = accessControlManager;
-    }
-    protected AclManager getAclManager() {
-        return aclManager;
-    }
-    public void setAclManager(AclManager aclManager) {
-        this.aclManager = aclManager;
-    }
-	 
 
 	public Folder getFolder(Long folderId)
 		throws NoFolderByTheIdException, AccessControlException {
