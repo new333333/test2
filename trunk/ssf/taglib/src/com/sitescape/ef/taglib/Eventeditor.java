@@ -77,7 +77,9 @@ public class Eventeditor extends TagSupport {
       req.setAttribute("hasRecurrence", hasRecurrence);
       req.setAttribute("startDate", startDate);
       req.setAttribute("endDate", endDate);
-
+      HashMap attMap = new HashMap();
+      attMap.put("hasDur", hasDuration);
+      req.setAttribute("attMap", attMap);
       
       StringServletResponse res =
           new StringServletResponse((HttpServletResponse)pageContext.getResponse());
@@ -117,10 +119,5 @@ public class Eventeditor extends TagSupport {
       this.initEvent = initEvent;
   }
   
-  public HashMap getAttMap() {
-      HashMap attMap = new HashMap();
-      attMap.put("hasDuration", hasDuration);
-      return attMap;
-  }
 }
 
