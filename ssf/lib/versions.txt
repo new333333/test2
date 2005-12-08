@@ -24,6 +24,7 @@ JBPM-Identity 3.0
 JDOM 1.0
 JTA 1.0.1b
 JTDS 0.9.1
+JUnit 3.8.1
 Log4j 1.2.8
 Lucene 1.4.2
 md5crypt.jar
