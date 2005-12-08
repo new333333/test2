@@ -27,7 +27,15 @@
 	<tr>
 		<td align="left">
 			<div>
-			<ssf:tree treeName="wsTree" treeDocument="<%= ss_wsDomTree %>"  rootOpen="false" />
+			<c:choose>
+			<c:when test="${renderRequest.windowState == 'normal'}">
+				<ssf:tree treeName="wsTree" treeDocument="<%= ss_wsDomTree %>"  rootOpen="false" />
+			</c:when>
+			<c:when test="${renderRequest.windowState == 'maximized'}">
+				<ssf:tree treeName="wsTree" treeDocument="<%= ss_wsDomTree %>"  rootOpen="true" />
+			</c:when>
+			</c:choose>			
+
 			</div>
 		</td>
 	</tr>
