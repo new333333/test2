@@ -773,6 +773,13 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		buildFolderToolbar(response, model, forumId);
 		return model;
 	}
+	public Map getDefinitionXml(HttpServletRequest req, String currentId) throws PortletRequestBindingException {
+		Map model = new HashMap();
+		if (!currentId.equals("")) {
+			model.put(WebKeys.DEFINITION, getDefinitionModule().getDefinition(currentId));
+		}
+		return model;
+	}
 	public Map getDefinitionBuilder(Map formData, RenderRequest req, String currentId) throws PortletRequestBindingException {
 		Map model = new HashMap();
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");

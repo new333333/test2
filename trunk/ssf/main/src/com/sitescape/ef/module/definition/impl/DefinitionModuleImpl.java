@@ -5,6 +5,7 @@ import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
 import com.sitescape.ef.repository.RepositoryService;
+import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -15,6 +16,7 @@ import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FileItem;
+import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.EventHelper;
@@ -46,6 +48,8 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 	    
 	public Definition getDefinition(String id) {
 		String companyId = RequestContextHolder.getRequestContext().getZoneName();
+		Workspace workspace = getCoreDao().findTopWorkspace(companyId);
+        accessControlManager.checkOperation(workspace, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS);        
  		return coreDao.loadDefinition(id, companyId);
 	}
 	

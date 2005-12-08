@@ -46,6 +46,7 @@
 				<entry key="/uploadFile"><ref local="uploadFile"/></entry>				
 				<entry key="/viewFile"><ref local="viewFile"/></entry>				
 				<entry key="/viewCss"><ref local="viewCss"/></entry>				
+				<entry key="/viewDefinitionXml"><ref local="viewDefinitionXml"/></entry>				
 				<entry key="/viewFragment"><ref local="viewFragment"/></entry>
 			</map>
 		</property>
@@ -80,6 +81,7 @@
 	<bean id="uploadFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.sample.UploadFileController"/>
 	<bean id="viewFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ViewFileController"/>
 	<bean id="viewCss" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ViewCssController"/>
+	<bean id="viewDefinitionXml" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.definition.ViewDefinitionXmlController"/>
 	<bean id="viewFragment" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.widget_test.FragmentController"/>
 
 </beans>

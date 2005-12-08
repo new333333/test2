@@ -4,6 +4,8 @@ import java.util.Map;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 /**
  * @author Janet McCann
@@ -18,5 +20,6 @@ public interface ForumActionModule {
 	public Map getDeleteEntry(Map formData, RenderRequest request, Long folderId) throws PortletRequestBindingException;
 	public Map getModifyEntry(Map formData, RenderRequest request, Long folderId) throws PortletRequestBindingException;
 	public Map getAddReply(Map formData, RenderRequest request, Long folderId) throws PortletRequestBindingException;
+	public Map getDefinitionXml(HttpServletRequest request, String defId) throws PortletRequestBindingException;
 	public Map getDefinitionBuilder(Map formData, RenderRequest request, String defId) throws PortletRequestBindingException;
 }
