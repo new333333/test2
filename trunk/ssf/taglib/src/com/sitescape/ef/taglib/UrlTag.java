@@ -1,6 +1,7 @@
 package com.sitescape.ef.taglib;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
     private String entryId = "";
     private String operation = "";
     private boolean popup = false;
+    private String webPath = "";
     private boolean actionUrl = true;
     private boolean stayInFrame = false;
 	private Map _params;
@@ -42,9 +44,9 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 
 			
 			//See if a url was specified
+			String ctxPath = renderRequest.getContextPath();
 			if (!this.url.equals("")) {
 				//Yes, a url was explicitly specified. Just add the portal context and return
-				String ctxPath = renderRequest.getContextPath();
 				String fullUrl = ctxPath + "/" + this.url;
 				pageContext.getOut().print(fullUrl);
 
@@ -52,16 +54,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			}
 
 			//There was no explicit url specified, so build the url
-			PortletURL portletURL;
-			if (this.actionUrl) {
-				portletURL = renderResponse.createActionURL();
-			}
-			else {
-				portletURL = renderResponse.createRenderURL();
-			}
-
-			portletURL.setWindowState(new WindowState(WindowState.MAXIMIZED.toString()));
-			//Add the SiteScape url parameters
+			//Get the SiteScape url parameters
 			Map params = new HashMap();
 			
 			if (this.popup) {
@@ -90,15 +83,40 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			} else {
 				this.operation = "";
 			}
-			portletURL.setParameters(params);
+
+			if (!this.webPath.equals("")) {
+				String webUrl = ctxPath + "/web/" + webPath + "?";
+				Iterator it = params.entrySet().iterator();
+				while (it.hasNext()) {
+					Map.Entry me = (Map.Entry) it.next();
+					webUrl += me.getKey() + "=" + me.getValue() + "&";
+				}
+				if (_params != null ) {
+					Iterator _it = _params.entrySet().iterator();
+					while (_it.hasNext()) {
+						Map.Entry me = (Map.Entry) _it.next();
+						webUrl += me.getKey() + "=" + me.getValue() + "&";
+					}
+				}
+				pageContext.getOut().print(webUrl);
 			
-			if (_params != null) {
-				portletURL.setParameters(_params);
+			} else {
+				PortletURL portletURL = null;
+				if (this.actionUrl) {
+					portletURL = renderResponse.createActionURL();
+				} else {
+					portletURL = renderResponse.createRenderURL();
+				}
+				portletURL.setWindowState(new WindowState(WindowState.MAXIMIZED.toString()));
+				portletURL.setParameters(params);
+				if (_params != null) {
+					portletURL.setParameters(_params);
+				}
+
+				String portletURLToString = portletURL.toString();
+
+				pageContext.getOut().print(portletURLToString);
 			}
-
-			String portletURLToString = portletURL.toString();
-
-			pageContext.getOut().print(portletURLToString);
 
 			return SKIP_BODY;
 		}
@@ -126,6 +144,10 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 
 	public void setEntryId(String entryId) {
 	    this.entryId = entryId;
+	}
+
+	public void setWebPath(String webPath) {
+	    this.webPath = webPath;
 	}
 
 	public void setPopup(boolean popup) {
