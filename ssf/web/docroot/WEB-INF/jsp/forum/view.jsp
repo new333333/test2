@@ -69,7 +69,13 @@ function ss_getUnseenCounts() {
 	<c:forEach var="folder" items="<%= ssFolderList %>">
 		document.getElementById("count_<c:out value="${folder.id}"/>").style.color = "silver";
 	</c:forEach>
-	var url = "<ssf:servletrooturl/>listUnseen?operation=unseen_counts"
+	var url = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="view_unseen" 
+    	actionUrl="true" >
+		<ssf:param name="operation" value="unseen_counts" />
+    	</ssf:url>"
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("unseenCountForm")
 	ajaxRequest.setEchoDebugInfo();
