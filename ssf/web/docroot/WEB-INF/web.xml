@@ -24,16 +24,9 @@
 	
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<!-- If using JTA, comment out this element -->
 		<param-value>
 			/WEB-INF/context/applicationContext.xml
-			/WEB-INF/context/spring-transaction-local.xml
 		</param-value>
-		<!-- If using local transaction, comment out this element -->
-		<!--<param-value>
-			/WEB-INF/context/applicationContext.xml
-			/WEB-INF/context/spring-transaction-jta.xml
-		</param-value>-->
 	</context-param>
 
 	<!-- TODO This will NOT work...
