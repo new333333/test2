@@ -59,5 +59,7 @@ Unknown view mode: ${ssCalendarViewMode}
 </c:otherwise>
 </c:choose>
 
+<%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %>
+
 
 </div>
