@@ -18,7 +18,6 @@ import javax.servlet.jsp.tagext.TagSupport;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.liferay.portal.util.PropsUtil;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
@@ -43,9 +42,12 @@ public class Eventtext extends TagSupport {
         if (event == null) {
         	throw new JspException("You must provide an event"); 
         }
-        
+
+      /* TODO To be removed - JK 8/23/05 commented out for now
       ServletContext ctx =
           pageContext.getServletContext().getContext(PropsUtil.get(PropsUtil.PORTAL_CTX));
+      */
+      ServletContext ctx = null;
       if (ctx == null) {
           ctx = pageContext.getServletContext();
       }
