@@ -25,7 +25,7 @@ array set ::j2ee_Principals_class_MAP {
    organization {organization "varchar 256"}
    phone        {phone "varchar 128"}
    webPubDir    {webPubDir "varchar 256"}
-   companyId    {companyId "varchar 100"}
+   zoneId    {zoneId "varchar 100"}
    timeZoneId   {timeZoneId "varchar 10"}
    greeting		{greeting "varchar 256"}
    loginDate	{loginDate timestamp}
@@ -48,7 +48,7 @@ array set ::j2ee_Principals_class_MAP {
 array set ::j2ee_Forum_class_MAP {
    id           {id int32}
    lockVersion {lockVersion int32}
-   companyId {companyId "varchar 100"}
+   zoneId {zoneId "varchar 100"}
    type         {type "varchar 16"}
    name         {name "maxfname"}
    title        {title "varchar 1024"}
@@ -342,7 +342,7 @@ proc doRoles {} {
 				"User" "Wiki Admin"] {
 
 		set roleIds($name) [newuuid]
-		wimsql_rw "insert into SS_Roles (id, lockVersion, companyId, name) values ('$roleIds($name)', 1, '[sql_quote_value $::companyId]', '$name');"
+		wimsql_rw "insert into SS_Roles (id, lockVersion, zoneId, name) values ('$roleIds($name)', 1, '[sql_quote_value $::zoneId]', '$name');"
 		if {$name != "Guest"} {
 			wimsql_rw "insert into SS_RoleMembership (role,principal) values ('$roleIds($name)',$::userIds(wf_admin));"
 			wimsql_rw "insert into SS_RoleMembership (role,principal) values ('$roleIds($name)',$::groupIds(avf_admin));"
@@ -401,9 +401,9 @@ proc doUsers {userList} {
     array unset attrs
     array unset attrs1
 	#setup default user
-	set attrs(companyId) "default"
+	set attrs(zoneId) "default"
     set attrs(passwordEncrypted) 0
-	set attrs(name) ${::companyId}.default
+	set attrs(name) ${::zoneId}.default
 	set attrs(password) "password"
 	set attrs(firstName) ""
 	set attrs(lastName) ""
@@ -437,7 +437,7 @@ proc doUsers {userList} {
     set cmd [lindex $cmdList 0] 
     wimsql_rw "Insert into SS_Principals $cmd ;" [lindex $cmdList 1]
 				
-	set attrs(companyId) $::companyId
+	set attrs(zoneId) $::zoneId
     set attrs(passwordEncrypted) 0
 	set attrs(passwordReset) 0
 	set attrs(reserved) 0
@@ -557,7 +557,7 @@ proc doUsers {userList} {
 		incr bunchIndex $bunchSize
     }
 	user_property unload -filter defaultSummit
-	wimsql_rw "update SS_Principals set emailAddress='[sql_quote_value test@${::companyId}]' where name='wf_admin';"
+	wimsql_rw "update SS_Principals set emailAddress='[sql_quote_value test@${::zoneId}]' where name='wf_admin';"
     wimsql_rw commit
 }
 
@@ -567,7 +567,7 @@ proc doGroups {groupList} {
 	set bunchSize 500
     set map ::j2ee_Principals_class_MAP
     array unset attrs
-	set attrs(companyId) $::companyId
+	set attrs(zoneId) $::zoneId
 	set attrs(id) [new_user_uuid]
 	set ::generalGuestGroup $attrs(id)
 	set attrs(layoutIds) "$attrs(id).1,"
@@ -678,7 +678,7 @@ proc doAllZones {} {
 }
 proc doZone {zoneName {cName {liferay.com}}} {
     global Wgw_CurrentUser
-	set ::companyId $cName
+	set ::zoneId $cName
     set path [file join $::Wgw_HiddenBaseDirectory $zoneName]
     if {![file isdirectory $path]} {return}
     set ::Wgw_CurrentACA $zoneName
@@ -722,9 +722,9 @@ proc doZone {zoneName {cName {liferay.com}}} {
         } else {
             set type "BINDER"
         }
-        wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, owningWorkspace, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, companyId) VALUES ($::forumIds($forum),1, $::forumIds(_admin), '$forum', '$type',0,0,0,'[sql_quote_value $::companyId]');"
+        wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, owningWorkspace, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneId) VALUES ($::forumIds($forum),1, $::forumIds(_admin), '$forum', '$type',0,0,0,'[sql_quote_value $::zoneId]');"
     }
-    wimsql_rw "Update SS_Forums set owningWorkspace=null,name='[sql_quote_value $::companyId]' where name='_admin';"
+    wimsql_rw "Update SS_Forums set owningWorkspace=null,name='[sql_quote_value $::zoneId]' where name='_admin';"
     wimsql_rw commit
     if {$::dialect == "mssql"} {
         wimsql_rw "SET IDENTITY_INSERT SS_Forums OFF;"
@@ -745,7 +745,7 @@ proc doZone {zoneName {cName {liferay.com}}} {
         set ::userIds($user) [new_user_uuid]
 
         #need to save so foreign key constraings are met.
-        wimsql_rw "INSERT INTO SS_Principals (id,lockVersion,type,companyId) VALUES ($::userIds($user),1,'U','[sql_quote_value $::companyId]');"
+        wimsql_rw "INSERT INTO SS_Principals (id,lockVersion,type,zoneId) VALUES ($::userIds($user),1,'U','[sql_quote_value $::zoneId]');"
     }
     wimsql_rw commit
 	doUsers $personList 
@@ -924,7 +924,7 @@ proc doFolders {forum folder level hKey parentID} {
 		set attrs(functionMembershipInherited) 1
 		set attrs(acl_inheritFromParent) 1
 		set attrs(type) "FOLDER"
-		set attrs(companyId) $::companyId
+		set attrs(zoneId) $::zoneId
 		set attrs(name) [namify -targetlength 128 ${forum}_$attrs(title)]
 	    set results [setupColVals $map attrs insert]
     	set cmdList [lindex $results 1]
