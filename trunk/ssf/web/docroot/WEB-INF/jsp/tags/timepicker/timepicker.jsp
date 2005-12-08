@@ -98,7 +98,7 @@ var <c:out value="${prefix}" />_popupContents  = "";
 // pop up the time picker 
 function <c:out value="${prefix}" />_popupTimepicker() {
    var win = new PopupWindow();
-   win.setSize(350,60);
+   win.setSize(400,125);
    win.autoHide();
    // should be conditional on IE
    win.offsetY = 25;
