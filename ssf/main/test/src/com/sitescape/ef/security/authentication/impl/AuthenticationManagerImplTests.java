@@ -9,6 +9,11 @@ import com.sitescape.ef.security.authentication.UserDoesNotExistException;
 
 import junit.framework.TestCase;
 
+/**
+ * Logic unit test for <code>AuthenticationManagerImpl</code>.
+ * 
+ * @author Jong Kim
+ */
 public class AuthenticationManagerImplTests extends TestCase {
 
 	MockControl coreDaoControl;
