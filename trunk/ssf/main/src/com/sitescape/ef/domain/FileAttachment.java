@@ -21,6 +21,7 @@ import com.sitescape.ef.util.CollectionUtil;
 public class FileAttachment extends Attachment {
     private List fileVersions;
     private Integer lastVersion;
+    private String repositoryServiceName;
 
     private FileItem fileItem;
     
@@ -119,4 +120,16 @@ public class FileAttachment extends Attachment {
     	FileAttachment f = (FileAttachment)newVal;
     	setFileItem(f.getFileItem());
     }
+    
+    /**
+     * @hibernate.property length="128"
+     * @return
+     */
+	public String getRepositoryServiceName() {
+		return repositoryServiceName;
+	}
+	public void setRepositoryServiceName(String repositoryServiceName) {
+		this.repositoryServiceName = repositoryServiceName;
+	}
+    
 }
