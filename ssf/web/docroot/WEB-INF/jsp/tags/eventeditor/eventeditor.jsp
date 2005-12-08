@@ -130,9 +130,73 @@ function ${prefix}_toggleRecur(name) {
   <c:set var="freqval" value="month" />
   </c:when>
   <c:otherwise>
-  <c:set var="freqval" value="" />
+  <c:set var="freqval" value="none" />
   </c:otherwise>
   </c:choose>
+
+  <c:set var="day0sel" value="" />
+  <c:set var="day1sel" value="" />
+  <c:set var="day2sel" value="" />
+  <c:set var="day3sel" value="" />
+  <c:set var="day4sel" value="" />
+  <c:set var="day5sel" value="" />
+  <c:set var="day6sel" value="" />
+  <c:set var="daynum" value="" />
+  <c:set var="dowstring" value="" />
+
+  <c:forEach var="daypos" items="${initEvent.byDay}">
+
+  <c:choose>
+  <c:when test="${daypos.dayOfWeek == 1}">
+  <c:set var="day0sel" value="yes" />
+  </c:when>
+  <c:when test="${daypos.dayOfWeek == 2}">
+  <c:set var="day1sel" value="yes" />
+  </c:when>
+  <c:when test="${daypos.dayOfWeek == 3}">
+  <c:set var="day2sel" value="yes" />
+  </c:when>
+  <c:when test="${daypos.dayOfWeek == 4}">
+  <c:set var="day3sel" value="yes" />
+  </c:when>
+  <c:when test="${daypos.dayOfWeek == 5}">
+  <c:set var="day4sel" value="yes" />
+  </c:when>
+  <c:when test="${daypos.dayOfWeek == 6}">
+  <c:set var="day5sel" value="yes" />
+  </c:when>
+  <c:when test="${daypos.dayOfWeek == 7}">
+  <c:set var="day6sel" value="yes" />
+  </c:when>
+  </c:choose>
+  <% // we only implement daynum (onDayCard) for months... in that case,
+     // there will only be one DayPositiion entry in the array
+  %>
+  <c:choose>
+  <c:when test="${daypos.dayPosition == 0}" >
+  <c:set var="daystring" value="none" />
+  </c:when>
+  <c:when test="${daypos.dayPosition == 1}" >
+  <c:set var="daystring" value="first" />
+  </c:when>
+  <c:when test="${daypos.dayPosition == 2}" >
+  <c:set var="daystring" value="second" />
+  </c:when>
+  <c:when test="${daypos.dayPosition == 3}" >
+  <c:set var="daystring" value="third" />
+  </c:when>
+  <c:when test="${daypos.dayPosition == 4}" >
+  <c:set var="daystring" value="fourth" />
+  </c:when>
+  <c:when test="${daypos.dayPosition == 5}" >
+  <c:set var="daystring" value="last" />
+  </c:when>
+  </c:choose>
+
+  <c:set var="dowstring" value="${daypos.dayOfWeekString}" />
+
+  </c:forEach>
+  
 
   <div style="text-align:left; ">
      <a href="javascript: ;" onClick="${prefix}_toggleRecur('${prefix}_recur_div')" >
@@ -182,34 +246,32 @@ function ${prefix}_toggleRecur(name) {
       <ssf:nlt tag="event.every" /> <input type="text" name="everyNweek" size="2" 
        value="${initEvent.interval}" > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> 
 
-   <input type="checkbox" name="day0" id="day0
-   checked="checked"
+   <input type="checkbox" name="${prefix}_day0" id="${prefix}_day0"
+   <c:if test="${day0sel == 'yes'}"> checked="checked" </c:if>
    >
    <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.su" /></font>
-   <input type="checkbox" name="day1" id="day1"
-    checked="checked"
+   <input type="checkbox" name="${prefix}_day1" id="${prefix}_day1"
+   <c:if test="${day1sel == 'yes'}"> checked="checked" </c:if>
    >
    <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.mo" /></font>
-  <input type="checkbox" name="day2" id="day2"
-   checked="checked"
+  <input type="checkbox" name="${prefix}_day2" id="${prefix}_day2"
+   <c:if test="${day2sel == 'yes'}"> checked="checked" </c:if>
    >
    <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.tu" /></font>
-   <input type="checkbox" name="day3" id="day3"
-   checked="checked"
-
+   <input type="checkbox" name="${prefix}_day3" id="${prefix}_day3"
+   <c:if test="${day3sel == 'yes'}"> checked="checked" </c:if>
    >
    <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.we" /></font>
-   <input type="checkbox" name="day4" id="day4"
-   checked="checked"
-
+   <input type="checkbox" name="${prefix}_day4" id="${prefix}_day4"
+   <c:if test="${day4sel == 'yes'}"> checked="checked" </c:if>
    >
    <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.th" /></font>
-   <input type="checkbox" name="day5" id="day5"
-   checked="checked"
+   <input type="checkbox" name="${prefix}_day5" id="${prefix}_day5"
+   <c:if test="${day5sel == 'yes'}"> checked="checked" </c:if>
    >
    <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.fr" /></font>
-   <input type="checkbox" name="day6" id="day6"
-   checked="checked" 
+   <input type="checkbox" name="${prefix}_day6" id="${prefix}_day6"
+   <c:if test="${day6sel == 'yes'}"> checked="checked" </c:if>
    >
    <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.sa" /></font>
    </tr>
@@ -224,57 +286,56 @@ function ${prefix}_toggleRecur(name) {
       <ssf:nlt tag="event.every" /> <input type="text"  size="2"
       name="everyNmonth" value="${initEvent.interval}"
     > month(s) on the
-   <select  name="onDayCardSel" title="select which week in the month on which this calendar entry will occur" name="onDayCardSel" > 
+   <select  name="${prefix}_onDayCard" title="select which week in the month on which this calendar entry will occur" > 
    <option  value="none"
-   selected="selected"
+   <c:if test="${daystring == 'none'}" > selected="selected" </c:if>
    ><ssf:nlt tag="general.please_select" /></option> 
    <option  value="first"
-   selected="selected"
+   <c:if test="${daystring == 'first'}" > selected="selected" </c:if>
    ><ssf:nlt tag="event.whichweek.first" /></option> 
    <option  value="second"
-   selected="selected"
-
+   <c:if test="${daystring == 'second'}" > selected="selected" </c:if>
    ><ssf:nlt tag="event.whichweek.second" /></option> 
    <option  value="third"
-   selected="selected"
+   <c:if test="${daystring == 'third'}" > selected="selected" </c:if>
    ><ssf:nlt tag="event.whichweek.third" /></option> 
    <option  value="fourth"
-   selected="selected"
+   <c:if test="${daystring == 'fourth'}" > selected="selected" </c:if>
    ><ssf:nlt tag="event.whichweek.fourth" /></option> 
    <option  value="last"
-   selected="selected"
+   <c:if test="${daystring == 'last'}" > selected="selected" </c:if>
    ><ssf:nlt tag="event.whichweek.last" /></option> 
    </select> 
-   <select  name="dow" title="select the day of the week on which the repeated entry will occur" > 
+   <select  name="${prefix}_dow" title="select the day of the week on which the repeated entry will occur" > 
    <option  value="none"
-   selected="selecte"
+   <c:if test="${dowstring == 'none'}"> selected="selected" </c:if>
    ><ssf:nlt tag="general.please_select" /></option> 
    <option  value="Sunday"
-   selected="selected"
+   <c:if test="${dowstring == 'Sunday'}"> selected="selected" </c:if>
    ><ssf:nlt tag="calendar.day.names.su" /></option> 
    <option  value="Monday"
-   selected="selected"
+   <c:if test="${dowstring == 'Monday'}"> selected="selected" </c:if>
    ><ssf:nlt tag="calendar.day.names.mo" /></option> 
    <option  value="Tuesday"
-   selected="selected"
+   <c:if test="${dowstring == 'Tuesday'}"> selected="selected" </c:if>
    ><ssf:nlt tag="calendar.day.names.tu" /></option> 
    <option  value="Wednesday"
-   selected="selected"
+   <c:if test="${dowstring == 'Wednesday'}"> selected="selected" </c:if>
    ><ssf:nlt tag="calendar.day.names.we" /></option> 
    <option  value="Thursday"
-   selected="selected"
+   <c:if test="${dowstring == 'Thursday'}"> selected="selected" </c:if>
    ><ssf:nlt tag="calendar.day.names.th" /></option> 
    <option  value="Friday"
-   selected="selected"
+   <c:if test="${dowstring == 'Friday'}"> selected="selected" </c:if>
    ><ssf:nlt tag="calendar.day.names.fr" /></option> 
    <option  value="Saturday"
-   selected="selected"
+   <c:if test="${dowstring == 'Saturday'}"> selected="selected" </c:if>
    ><ssf:nlt tag="calendar.day.names.sa" /></option> 
    <option  value="weekday"
-   selected="selected"
+   <c:if test="${dowstring == 'weekday'}"> selected="selected" </c:if>
    ><ssf:nlt tag="calendar.day.names.weekday" /></option> 
    <option  value="weekendday"
-   selected="selected"
+   <c:if test="${dowstring == 'weekendday'}"> selected="selected" </c:if>
    ><ssf:nlt tag="calendar.day.names.weekendday" /></option> 
    </select> </td>
 
@@ -299,80 +360,6 @@ function ${prefix}_toggleRecur(name) {
 </c:otherwise>
 </c:choose>
 
-<c:set var="day0sel" value="" />
-<c:set var="day1sel" value="" />
-<c:set var="day2sel" value="" />
-<c:set var="day3sel" value="" />
-<c:set var="day4sel" value="" />
-<c:set var="day5sel" value="" />
-<c:set var="day6sel" value="" />
-<c:set var="daynum" value="" />
-<c:set var="dowstring" value="" />
-
-<c:forEach var="daypos" items="${initEvent.byDay}">
-<c:choose>
-<c:when test="${daypos.dayOfWeek == 1}">
-<c:set var="day0sel" value="yes" />
-</c:when>
-<c:when test="${daypos.dayOfWeek == 2}">
-<c:set var="day1sel" value="yes" />
-</c:when>
-<c:when test="${daypos.dayOfWeek == 3}">
-<c:set var="day2sel" value="yes" />
-</c:when>
-<c:when test="${daypos.dayOfWeek == 4}">
-<c:set var="day3sel" value="yes" />
-</c:when>
-<c:when test="${daypos.dayOfWeek == 5}">
-<c:set var="day4sel" value="yes" />
-</c:when>
-<c:when test="${daypos.dayOfWeek == 6}">
-<c:set var="day5sel" value="yes" />
-</c:when>
-<c:when test="${daypos.dayOfWeek == 7}">
-<c:set var="day6sel" value="yes" />
-</c:when>
-</c:choose>
-
-<% // we only implement daynum (onDayCard) for months... in that case,
-   // there will only be one DayPositiion entry in the array
-%>
-<c:choose>
-<c:when test="${daypos.dayPosition == 0}" >
-<c:set var="daystring" value="none" />
-</c:when>
-<c:when test="${daypos.dayPosition == 1}" >
-<c:set var="daystring" value="first" />
-</c:when>
-<c:when test="${daypos.dayPosition == 2}" >
-<c:set var="daystring" value="second" />
-</c:when>
-<c:when test="${daypos.dayPosition == 3}" >
-<c:set var="daystring" value="third" />
-</c:when>
-<c:when test="${daypos.dayPosition == 4}" >
-<c:set var="daystring" value="fourth" />
-</c:when>
-<c:when test="${daypos.dayPosition == 5}" >
-<c:set var="daystring" value="last" />
-</c:when>
-</c:choose>
-
-<c:set var="dowstring" value="${daypos.dayOfWeekString}" />
-
-</c:forEach>
-
-<input type="hidden" name="${prefix}_day0" value="${day0sel}">
-<input type="hidden" name="${prefix}_day1" value="${day1sel}">
-<input type="hidden" name="${prefix}_day2" value="${day2sel}">
-<input type="hidden" name="${prefix}_day3" value="${day3sel}">
-<input type="hidden" name="${prefix}_day4" value="${day4sel}">
-<input type="hidden" name="${prefix}_day5" value="${day5sel}">
-<input type="hidden" name="${prefix}_day6" value="${day6sel}">
-<input type="hidden" name="${prefix}_onDayCard" value="${daystring}">
-<input type="hidden" name="${prefix}_dow" value="${dowstring}">
-
-<% // end of recurrence hidden fields %>
 </c:if>
 
 
