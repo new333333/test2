@@ -141,6 +141,7 @@
 				<prop key="bulk*">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
 				<prop key="show*">PROPAGATION_REQUIRED,readOnly</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="index*">PROPAGATION_REQUIRED,readOnly</prop>
 			</props>
 		</property>
 	</bean>
