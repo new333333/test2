@@ -3,7 +3,6 @@ package com.sitescape.ef.module.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.Scheduler;
-import org.springframework.mail.MailSender;
 
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
@@ -16,6 +15,10 @@ import com.sitescape.ef.security.function.FunctionManager;
 /**
  * This abstract class provides a central place where dependent
  * components are injected. 
+ * 
+ * Warning: Do NOT inject module components in this class because it
+ * could cause recursive dependencies among modules. Only managers
+ * and services can be added here.
  * 
  * @author jong
  *
