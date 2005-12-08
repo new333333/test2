@@ -182,14 +182,43 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         return processor.getFolderEntries(folder, maxChildEntries);
     }
     
-    public Hits getRecentEntries(List folders, Map seenMaps) {
-    	Hits hits = null;
+
+    public Map getUnseenCounts(List folderIds) {
+    	//search engine will do acl checks
+        User user = RequestContextHolder.getRequestContext().getUser();
+        List seenMaps = folderDao.loadSeenMaps(user.getId(), folderIds);
+        Map fToSm = new HashMap();
+        List folders = new ArrayList();
+        for (int i=0; i<seenMaps.size(); ++i) {
+        	SeenMap sm = (SeenMap)seenMaps.get(i);
+        	fToSm.put(sm.getId().getFolderId().toString(), sm);
+        	try {
+        		folders.add(folderDao.loadFolder(sm.getId().getFolderId(), user.getZoneName()));
+        	} catch (NoFolderByTheIdException nf) {} 
+        }
+        //this doesn't make sense when we have a bunch of folders
         FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
     	  (folders.get(0), FolderCoreProcessor.PROCESSOR_KEY);
-        hits = processor.getUnseenEntries(folders, seenMaps);
-    	return hits;
+        Hits hits = processor.getRecentEntries(folders);
+        Map unseenCounts = new HashMap();
+        for (int i = 0; i < hits.length(); i++) {
+			String folderIdString = hits.doc(i).getField("_folderId").stringValue();
+			Counter cnt = (Counter)unseenCounts.get(folderIdString);
+			if (cnt == null) {
+				cnt = new Counter();
+				unseenCounts.put(folderIdString, cnt);
+			}
+			cnt.increment();
+		}
+        Map results = new HashMap();
+        for (int i=0; i<folders.size(); ++i) {
+        	Folder f = (Folder)folders.get(i);
+        	Counter cnt = (Counter)unseenCounts.get(f.getId().toString());
+        	if (cnt == null) cnt = new Counter();
+        	results.put(f, cnt);
+        }
+       return results;
     }
-     
     public Long addFolder(Long folderId, Folder folder) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Folder parentFolder = folderDao.loadFolder(folderId, user.getZoneName());
@@ -228,5 +257,19 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	(parentFolder, FolderCoreProcessor.PROCESSOR_KEY);
         processor.deleteEntry(parentFolder, entryId);
     }
-    
+    public class Counter {
+    	long count=0;
+    	protected Counter() {	
+    	}
+    	public void increment() {
+    		++count;
+    	}
+    	public long getCount() {
+    		return count;
+    	}
+    	public String toString() {
+    		return String.valueOf(count);
+    	}
+    	
+    }
  }

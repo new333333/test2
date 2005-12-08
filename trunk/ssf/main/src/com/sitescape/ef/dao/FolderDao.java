@@ -66,6 +66,7 @@ public interface FolderDao {
 
     public UserProperties loadUserFolderProperties(Long userId, Long folderId);
     public SeenMap loadSeenMap(Long userId, Long folderId);
+	public List loadSeenMaps(Long userId, List folderIds);
     public HistoryMap loadHistoryMap(Long userId, Long folderId);
 
 }

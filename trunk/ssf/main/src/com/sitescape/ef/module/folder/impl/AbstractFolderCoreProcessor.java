@@ -491,7 +491,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
      
     }
 
-    public Hits getUnseenEntries(List folders, Map seenMaps) {
+    public Hits getRecentEntries(List folders) {
     	Hits results = null;
        	// Build the query
     	org.dom4j.Document qTree = DocumentHelper.createDocument();

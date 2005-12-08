@@ -43,28 +43,10 @@ public class ListUnseenController  extends SAbstractForumController {
 			for (int i = 0; i < forumList.length; i++) {
 				folderIds.add(new Long(forumList[i]));
 			}
-			Map unseenCounts = new HashMap();
-			List folders = getFolderModule().getFolders(folderIds);
-			Iterator itFolders = folders.iterator();
-			while (itFolders.hasNext()) {
-				Folder folder = (Folder) itFolders.next();
-				seenMaps.put(folder.getId(), getProfileModule().getUserSeenMap(user.getId(), folder.getId()));
-				unseenCounts.put(folder.getId().toString(), new Integer(0));
-			}
-			Hits hits = getFolderModule().getRecentEntries(folders, seenMaps);
-			for (int i = 0; i < hits.length(); i++) {
-				String folderIdString = hits.doc(i).getField("_folderId").stringValue();
-				if (!unseenCounts.containsKey(folderIdString)) {
-					unseenCounts.put(folderIdString, new Integer(0));
-				}
-				Integer count = (Integer) unseenCounts.get(folderIdString);
-				count = new Integer(count.intValue()+1);
-				unseenCounts.put(folderIdString, count);
-			}
+			Map unseenCounts = getFolderModule().getUnseenCounts(folderIds);
 
 			response.setContentType("text/xml");
 			
-			model.put("forums", folders);
 			model.put("unseenCounts", unseenCounts);
 			return new ModelAndView("forum/unseen_counts", model);
 			

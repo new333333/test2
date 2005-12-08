@@ -7,23 +7,28 @@
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 <%@ page contentType="text/xml" %>
 <%@ page import="com.sitescape.ef.domain.Folder" %>
-<jsp:useBean id="forums" type="java.util.List" scope="request" />
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.Map.Entry" %>
+<%@ page import="java.util.Iterator" %>
 <jsp:useBean id="unseenCounts" type="java.util.Map" scope="request" />
 <taconite-root xml:space="preserve">
-<c:forEach var="f" items="${forums}" >
-<c:set var="fid" value="${f.id}" />
+<c:forEach var="f" items="${unseenCounts}" >
+<c:set var="fid" value="${f.key.id}" />
 <c:set var="fid2" value="this is good" />
 <jsp:useBean id="fid" type="java.lang.String" />
 <jsp:useBean id="fid2" type="java.lang.String" />
 	<span>This is bogus: <%= fid %></span>
 	<span>This is good: <%= fid2 %></span>
+
 </c:forEach >
+
 <%
-	for (int i = 0; i < forums.size(); i++) {
-		Folder forum = (Folder)forums.get(i);
+	for (Iterator iter=unseenCounts.entrySet().iterator(); iter.hasNext();) {
+		Map.Entry entry = (Map.Entry)iter.next();
+		Folder forum = (Folder)entry.getKey();
 %>
 	<taconite-replace contextNodeID="count_<%= forum.getId().toString() %>" parseInBrowser="true">
-		<span id="count_<%= forum.getId().toString() %>"><%= unseenCounts.get(forum.getId().toString()) %></span>
+		<span id="count_<%= forum.getId().toString() %>"><%= entry.getValue() %></span>
 	</taconite-replace>
 <%
 	}
