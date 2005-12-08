@@ -1,5 +1,5 @@
 <% // Folders %>
-<h1 class="ss_folderTitle">Folders</h1>
+<h1 class="ss_entryTitle">Folders</h1>
 <table width="100%" border="0" cellpadding="2" cellspacing="0">
  <tr>
   <td>
