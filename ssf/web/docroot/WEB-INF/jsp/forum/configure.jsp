@@ -21,7 +21,7 @@
 
 <div class="forms">
 <form method="post" action="<portlet:actionURL>
-					<portlet:param name="action" value="configure"/>
+					<portlet:param name="action" value="configure_forum"/>
 					<portlet:param name="forumId" value="${ssFolder.id}"/>
 					</portlet:actionURL>" style="display:inline;">
 
