@@ -22,7 +22,7 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinitionInvalidOperation;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 
-import com.sitescape.ef.portlet.forum.ActionUtil;
+import com.sitescape.ef.util.PortletRequestUtils;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
@@ -39,42 +39,39 @@ public class ViewController extends SAbstractController {
 
 		Map formData = request.getParameterMap();
 
-		String selectedItem = "";
-		if (formData.containsKey("sourceDefinitionId")) {
-			selectedItem = ActionUtil.getStringValue(formData, "sourceDefinitionId");
-		}
+		String selectedItem = PortletRequestUtils.getStringParameter(request,"sourceDefinitionId", "");
 			
 		//See if there is an operation to perform
 		if (formData.containsKey("cancelBtn")) {
 			//The operation was canceled. Go back to the top screen
 				
 		} else if (formData.containsKey("operation")) {
-			String operation = ActionUtil.getStringValue(formData,"operation");
+			String operation = PortletRequestUtils.getStringParameter(request,"operation", "");
 				
 			try {
 				if (operation.equals("addDefinition")) {
 					//Add a new definition type
-					String name = ActionUtil.getStringValue(formData,"propertyId_name");
-					String caption = ActionUtil.getStringValue(formData, "propertyId_caption");
-					String operationItem = ActionUtil.getStringValue(formData, "operationItem");
-					Integer type = ActionUtil.getIntegerValue(formData, "definitionType_"+operationItem);
+					String name = PortletRequestUtils.getStringParameter(request,"propertyId_name", "");
+					String caption = PortletRequestUtils.getStringParameter(request, "propertyId_caption", "");
+					String operationItem = PortletRequestUtils.getStringParameter(request, "operationItem", "");
+					Integer type = PortletRequestUtils.getIntParameter(request, "definitionType_"+operationItem);
 					if (!name.equals("") && type != null) {
 						selectedItem = getDefinitionModule().addDefinition(name, caption, type.intValue(), formData).getId();							
 					}
 					
 				} else if (operation.equals("modifyDefinition")) {
 					//Modify the name of the selected item
-					selectedItem = ActionUtil.getStringValue(formData, "selectedId");
+					selectedItem = PortletRequestUtils.getStringParameter(request, "selectedId", "");
 					if (!selectedItem.equals("") ) {
-						String definitionName = ActionUtil.getStringValue(formData, "propertyId_name");
-						String definitionCaption = ActionUtil.getStringValue(formData,"propertyId_caption");
+						String definitionName = PortletRequestUtils.getStringParameter(request, "propertyId_name", "");
+						String definitionCaption = PortletRequestUtils.getStringParameter(request, "propertyId_caption", "");
 						getDefinitionModule().modifyDefinitionName(selectedItem, definitionName, definitionCaption);
 						getDefinitionModule().modifyDefinitionProperties(selectedItem, formData);
 					}
 					
 				} else if (operation.equals("deleteDefinition")) {
 					//Delete the selected item
-					selectedItem = ActionUtil.getStringValue(formData, "selectedId");
+					selectedItem = PortletRequestUtils.getStringParameter(request, "selectedId", "");
 					if (!selectedItem.equals("") ) {
 						try {
 							getDefinitionModule().deleteDefinition(selectedItem);
@@ -85,42 +82,42 @@ public class ViewController extends SAbstractController {
 					}
 					
 				} else if (operation.equals("addItem")) {
-					selectedItem = selectedItem = ActionUtil.getStringValue(formData, "sourceDefinitionId");
+					selectedItem = PortletRequestUtils.getStringParameter(request, "sourceDefinitionId", "");
 					if (!selectedItem.equals("") ) {
 						//Add the new item
-						String itemId = ((String[])formData.get("selectedId"))[0];
-						String itemToAdd = ((String[])formData.get("operationItem"))[0];
+						String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
+						String itemToAdd = PortletRequestUtils.getStringParameter(request, "operationItem", "");
 						getDefinitionModule().addItem(selectedItem, itemId, itemToAdd, formData);
 					}
 						
 				} else if (operation.equals("modifyItem")) {
-					selectedItem = selectedItem = ActionUtil.getStringValue(formData, "sourceDefinitionId");
+					selectedItem = PortletRequestUtils.getStringParameter(request, "sourceDefinitionId", "");
 					if (!selectedItem.equals("") ) {
 						//Modify the item
-						String itemId = ActionUtil.getStringValue(formData, "selectedId");
+						String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
 						getDefinitionModule().modifyItem(selectedItem, itemId, formData);
 					}
 					
 				} else if (operation.equals("deleteItem")) {
-					selectedItem = selectedItem = ActionUtil.getStringValue(formData, "sourceDefinitionId");
+					selectedItem = PortletRequestUtils.getStringParameter(request, "sourceDefinitionId", "");
 					if (!selectedItem.equals("") ) {
 						//Delete the item
-						String itemId = ActionUtil.getStringValue(formData, "selectedId");
+						String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
 						getDefinitionModule().deleteItem(selectedItem, itemId);
 					}
 					
 				} else if (operation.equals("moveItem")) {
-					selectedItem = selectedItem = ActionUtil.getStringValue(formData, "sourceDefinitionId");
+					selectedItem = PortletRequestUtils.getStringParameter(request, "sourceDefinitionId", "");
 					if (!selectedItem.equals("") ) {
 						//Delete the item
-						String itemId = ActionUtil.getStringValue(formData, "operationItem");
-						String targetItemId = ActionUtil.getStringValue(formData, "selectedId");
-						String location = ActionUtil.getStringValue(formData, "moveTo");
+						String itemId = PortletRequestUtils.getStringParameter(request, "operationItem", "");
+						String targetItemId = PortletRequestUtils.getStringParameter(request, "selectedId", "");
+						String location = PortletRequestUtils.getStringParameter(request, "moveTo", "");
 						getDefinitionModule().moveItem(selectedItem, itemId, targetItemId, location);
 					}
 					
 				} else if (operation.equals("selectId")) {
-					selectedItem = ((String[])formData.get("selectedId"))[0];
+					selectedItem = PortletRequestUtils.getStringParameter(request, "selectedId", "");
 				}
 			} catch (DefinitionInvalidOperation e) {
 				//An error occurred while processing the operation; pass the error message back to the jsp
@@ -143,11 +140,11 @@ public class ViewController extends SAbstractController {
 		Map model;
 		Map formData = request.getParameterMap();
 
-		String selectedItem = ActionUtil.getStringValue(formData, "selectedItem");
+		String selectedItem = PortletRequestUtils.getStringParameter(request, "selectedItem", "");
 		String selectedItemTitle = "";
 
 		//See if there is a definition type requested
-		String definitionType = ActionUtil.getStringValue(formData, WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE);
+		String definitionType = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, "");
 
         model = getForumActionModule().getDefinitionBuilder(formData, request, selectedItem);
 
@@ -156,10 +153,8 @@ public class ViewController extends SAbstractController {
 		Document definitionConfig = (Document)model.get(WebKeys.CONFIG_DEFINITION);
 			
 		//Open the item that was selected
-		String nodeOpen = "";
-		if (formData.containsKey("selectedId")) {
-			nodeOpen = ActionUtil.getStringValue(formData, "selectedId");
-		}
+		String nodeOpen = PortletRequestUtils.getStringParameter(request, "selectedId", "");
+		
 		data.put("nodeOpen", nodeOpen);
 			
 		Map idData = new HashMap();
@@ -246,22 +241,16 @@ public class ViewController extends SAbstractController {
 			}
 		}
 		//Set up the other data items
-		String option = "";
-		if (formData.containsKey("option")) {
-			option = ActionUtil.getStringValue(formData, "option");
-		}
+		String option = PortletRequestUtils.getStringParameter(request, "option", "");
+		
 		data.put("option", option);
 		
-		String itemId = "";
-		if (formData.containsKey("itemId")) {
-			itemId = ActionUtil.getStringValue(formData, "itemId");
-		}
+		String itemId = PortletRequestUtils.getStringParameter(request, "itemId", "");
+		
 		data.put("itemId", itemId);
 		
-		String itemName = "";
-		if (formData.containsKey("itemName")) {
-			itemName = ActionUtil.getStringValue(formData, "itemName");
-		}
+		String itemName = PortletRequestUtils.getStringParameter(request, "itemName", "");
+		
 		data.put("itemName", itemName);
 		
         //There is a forum specified, so get the forum object

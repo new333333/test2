@@ -12,34 +12,28 @@ import javax.activation.FileTypeMap;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.portlet.forum.ActionUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.servlet.SAbstractController;
 import com.sitescape.util.FileUtil;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.repository.RepositoryServiceNames;
 import com.sitescape.ef.repository.RepositoryServiceUtil;
+import org.springframework.web.bind.RequestUtils;
 
 public class ViewFileController extends SAbstractController {
 	
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-		
-		Map formData = request.getParameterMap();
+            HttpServletResponse response) throws Exception {		
 
-		String forumId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_FORUM_ID);
-		String entryId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_ID);
-		if (forumId.equals("") || entryId.equals("")) {
-			//There is no forum or entry specified.
-		    return null;		
-		}
-		FolderEntry entry = getFolderModule().getEntry(Long.valueOf(forumId), Long.valueOf(entryId));
+		Long forumId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_FORUM_ID));
+		Long entryId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_ENTRY_ID));
+		FolderEntry entry = getFolderModule().getEntry(forumId, entryId);
 		//Set up the beans needed by the jsps
 		FileAttachment fa = null;
-		String fileId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_FILE_ID);
+		String fileId = RequestUtils.getStringParameter(request, WebKeys.FORUM_URL_FILE_ID, "");
 		
 		if (fileId.equals("")) {
-			String name = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ATTRIBUTE); 
+			String name = RequestUtils.getStringParameter(request, WebKeys.FORUM_URL_ATTRIBUTE, ""); 
 			if (!name.equals("")) {
 				CustomAttribute attr = entry.getCustomAttribute(name);
 				if (attr != null)

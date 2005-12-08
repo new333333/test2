@@ -37,7 +37,7 @@ import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
-
+import com.sitescape.ef.util.PortletRequestUtils;
 import com.sitescape.ef.portlet.forum.ActionUtil;
 import com.sitescape.ef.portlet.forum.ForumActionModule;
 import com.sitescape.ef.util.NLT;
@@ -48,6 +48,7 @@ import com.sitescape.ef.domain.DefinitionInvalidException;
 import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -497,19 +498,19 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
 		
 	}
-	public Map getDeleteEntry(Map formData, RenderRequest req, Long folderId)  {
+	public Map getDeleteEntry(Map formData, RenderRequest req, Long folderId) throws PortletRequestBindingException {
 		Map model = new HashMap();
-		String entryId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_ID);
-		FolderEntry entry = getFolderModule().getEntry(folderId, Long.valueOf(entryId));
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(req, WebKeys.FORUM_URL_ENTRY_ID));
+		FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
 		model.put(WebKeys.FOLDER_ENTRY, entry);
 		model.put(WebKeys.FOLDER, entry.getParentFolder());
 		return model;
 	}
-	public Map getModifyEntry(Map formData, RenderRequest req, Long folderId) {
+	public Map getModifyEntry(Map formData, RenderRequest req, Long folderId) throws PortletRequestBindingException {
 		Map model = new HashMap();
 		FolderEntry entry=null;
-		String entryId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_ID);
-		if (!entryId.equals("")) entry  = getFolderModule().getEntry(folderId, Long.valueOf(entryId));
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(req, WebKeys.FORUM_URL_ENTRY_ID));
+		entry  = getFolderModule().getEntry(folderId, entryId);
 		
 		model.put(WebKeys.FOLDER_ENTRY, entry);
 		model.put(WebKeys.FOLDER, entry.getParentFolder());
@@ -520,20 +521,13 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		
 	}
 
+
 	public Map getShowEntry(Map formData, RenderRequest req, RenderResponse response, Long folderId)  {
-		HistoryMap history = getHistory(req, folderId);
-		Map model = getShowEntry(formData, history, folderId);
-		String entryId = (String) model.get(WebKeys.ENTRY_ID);
-		if (!entryId.equals("")) {
-			buildEntryToolbar(response, model, folderId.toString(), entryId);
-		}
-		return model;
-	}
-	public Map getShowEntry(Map formData, HistoryMap history, Long folderId)  {
 		Map model = new HashMap();
+		HistoryMap history = getHistory(req, folderId);
 		model.put(WebKeys.HISTORY_MAP, history);
-		String entryId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_ID);
-		String op = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_OPERATION);
+		String entryId = PortletRequestUtils.getStringParameter(req, WebKeys.FORUM_URL_ENTRY_ID, "");
+		String op = PortletRequestUtils.getStringParameter(req, WebKeys.FORUM_URL_OPERATION, "");
 		Folder folder = null;
 		FolderEntry entry = null;
 		Map folderEntries = null;
@@ -637,9 +631,12 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		if (getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
 			getDefaultEntryView(model);
 		}
+		if (!entryId.equals("")) {
+			buildEntryToolbar(response, model, folderId.toString(), entryId);
+		}
 		return model;
 	}
-	public Map getShowFolder(Map formData, RenderRequest req, RenderResponse response,Long folderId)  {
+	public Map getShowFolder(Map formData, RenderRequest req, RenderResponse response,Long folderId) throws PortletRequestBindingException {
 		Map folderEntries;
 		Map model = new HashMap();
 		String forumId = folderId.toString();
@@ -666,7 +663,7 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		buildFolderToolbar(response, model, forumId);
 		return model;
 	}
-	public Map getDefinitionBuilder(Map formData, RenderRequest req, String currentId) {
+	public Map getDefinitionBuilder(Map formData, RenderRequest req, String currentId) throws PortletRequestBindingException {
 		Map model = new HashMap();
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.CONFIG_DEFINITION, getDefinitionModule().getDefinitionConfig());
@@ -690,12 +687,12 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		getDefinitions(folder, model);
 		return model;
 	}
-	public Map getAddEntry(Map formData, RenderRequest req, Long folderId) {
+	public Map getAddEntry(Map formData, RenderRequest req, Long folderId) throws PortletRequestBindingException {
 		Map model = new HashMap();
 		Folder folder = getFolderModule().getFolder(folderId);
 		//Adding an entry; get the specific definition
 		Map folderEntryDefs = ActionUtil.getEntryDefsAsMap(folder);
-		String entryType = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_TYPE);
+		String entryType = PortletRequestUtils.getStringParameter(req, WebKeys.FORUM_URL_ENTRY_TYPE, "");
 		model.put(WebKeys.FOLDER, folder);
 		model.put(WebKeys.ENTRY_DEFINTION_MAP, folderEntryDefs);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
@@ -708,11 +705,11 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		return model;
 		
 	}
-    public Map getAddReply(Map formData, RenderRequest req, Long folderId) {
-    	String entryId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_ID);
-    	req.setAttribute(WebKeys.FORUM_URL_ENTRY_ID,entryId);
+    public Map getAddReply(Map formData, RenderRequest req, Long folderId) throws PortletRequestBindingException {
+    	Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(req, WebKeys.FORUM_URL_ENTRY_ID));
+    	req.setAttribute(WebKeys.FORUM_URL_ENTRY_ID,entryId.toString());
     	Map model = new HashMap();
-    	FolderEntry entry = getFolderModule().getEntry(folderId, Long.valueOf(entryId));
+    	FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
     	model.put(WebKeys.DEFINITION_ENTRY, entry);
     	Folder folder = entry.getParentFolder();
     	model.put(WebKeys.FOLDER, folder); 
@@ -731,7 +728,7 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
    	
     	//Adding an entry; get the specific definition
 		Map folderEntryDefs = ActionUtil.getEntryDefsAsMap(folder);
-    	String entryType = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_TYPE);
+    	String entryType = PortletRequestUtils.getStringParameter(req, WebKeys.FORUM_URL_ENTRY_TYPE, "");
     	model.put(WebKeys.ENTRY_DEFINTION_MAP, folderEntryDefs);
     	model.put(WebKeys.CONFIG_JSP_STYLE, "form");
     	

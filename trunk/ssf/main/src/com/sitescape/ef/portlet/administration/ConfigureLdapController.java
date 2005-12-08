@@ -13,9 +13,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.portlet.forum.ActionUtil;
+import com.sitescape.ef.util.PortletRequestUtils;
 import com.sitescape.ef.module.ldap.LdapConfig;
-import com.sitescape.util.GetterUtil;
 import com.sitescape.ef.web.util.ScheduleHelper;
 
 public class ConfigureLdapController extends  SAbstractController {
@@ -25,25 +24,16 @@ public class ConfigureLdapController extends  SAbstractController {
 		if (formData.containsKey("okBtn")) {
 			Map input = new HashMap();
 			String val; 
-			val = ActionUtil.getStringValue(formData, "sessionSync");
-			input.put("sessionSync", Boolean.valueOf(GetterUtil.getBoolean(val, false)));
-			val = ActionUtil.getStringValue(formData, "sessionRegister");
-			input.put("sessionRegister", Boolean.valueOf(GetterUtil.getBoolean(val, false)));
-			val = ActionUtil.getStringValue(formData, "userDisable");
-			input.put("userDisable", Boolean.valueOf(GetterUtil.getBoolean(val, false)));
-			val = ActionUtil.getStringValue(formData, "groupDisable");
-			input.put("groupDisable", Boolean.valueOf(GetterUtil.getBoolean(val, false)));
-			val = ActionUtil.getStringValue(formData, "userRegister");
-			input.put("userRegister", Boolean.valueOf(GetterUtil.getBoolean(val, false)));
-			val = ActionUtil.getStringValue(formData, "groupRegister");
-			input.put("groupRegister", Boolean.valueOf(GetterUtil.getBoolean(val, false)));
-			val = ActionUtil.getStringValue(formData, "userSync");
-			input.put("userSync", Boolean.valueOf(GetterUtil.getBoolean(val, false)));
-			val = ActionUtil.getStringValue(formData, "membershipSync");
-			input.put("membershipSync", Boolean.valueOf(GetterUtil.getBoolean(val, false)));
-			val = ActionUtil.getStringValue(formData, "scheduleEnabled");
-			input.put("scheduleEnabled", Boolean.valueOf(GetterUtil.getBoolean(val, false)));
-			input.put("schedule", ScheduleHelper.getSchedule(formData));
+			input.put("sessionSync", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "sessionSync", false)));
+			input.put("sessionRegister", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "sessionRegister", false)));
+			input.put("userDisable", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "userDisable", false)));
+			input.put("groupDisable", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "groupDisable", false)));
+			input.put("userRegister", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "userRegister", false)));
+			input.put("groupRegister", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "groupRegister", false)));
+			input.put("userSync", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "userSync", false)));
+			input.put("membershipSync", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false)));
+			input.put("scheduleEnabled", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "scheduleEnabled", false)));
+			input.put("schedule", ScheduleHelper.getSchedule(request));
 			getLdapModule().modifyLdapConfig(input);
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn")) {

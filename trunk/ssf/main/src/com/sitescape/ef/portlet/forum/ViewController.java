@@ -1,6 +1,7 @@
 package com.sitescape.ef.portlet.forum;
 
 import javax.portlet.ActionRequest;
+import com.sitescape.ef.util.PortletRequestUtils;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -31,17 +32,17 @@ public class ViewController  extends SAbstractForumController {
 		Map formData = request.getParameterMap();
 		Long folderId=null;
 		try {
-			folderId = ActionUtil.getForumId(formData, request);
+			folderId = ActionUtil.getForumId(request);
 		} catch (NoFolderByTheIdException nf) {
 			return new ModelAndView(WebKeys.VIEW);
 		}
 		if (request.getWindowState().equals(WindowState.NORMAL)) {
 			return new ModelAndView(WebKeys.VIEW, WebKeys.FOLDER, getFolderModule().getFolder(folderId));
 		}
-		String op = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_OPERATION);
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_OPERATION, "");
 		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
 			Map updates = new HashMap();
-			updates.put("displayStyle", ActionUtil.getStringValue(formData,WebKeys.FORUM_URL_VALUE));
+			updates.put("displayStyle", PortletRequestUtils.getStringParameter(request,WebKeys.FORUM_URL_VALUE,""));
 			getProfileModule().modifyUser(user.getId(), updates);
 		}
 

@@ -21,6 +21,7 @@ import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.util.Validator;
+import com.sitescape.ef.util.PortletRequestUtils;
 
 public class ViewEntryController extends SAbstractForumController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
@@ -38,7 +39,7 @@ public class ViewEntryController extends SAbstractForumController {
 
 		Long folderId=null;
 		try {
-			folderId = ActionUtil.getForumId(formData, request);
+			folderId = ActionUtil.getForumId(request);
 		} catch (NoFolderByTheIdException nf) {
 			return new ModelAndView(WebKeys.VIEW);
 		}
@@ -54,7 +55,7 @@ public class ViewEntryController extends SAbstractForumController {
          * This controller routine will forward to the desired jsp
          */
 			        
-		String op = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_OPERATION);
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_OPERATION, "");
 	
 		formData.put(WebKeys.SESSION_LAST_ENTRY_VIEWED, ses.getAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED));
 		formData.put(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, ses.getAttribute(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED));

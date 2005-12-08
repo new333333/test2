@@ -14,6 +14,7 @@ import java.util.Map;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.util.PortletRequestUtils;
 
 /**
  * @author Peter Hurley
@@ -24,29 +25,24 @@ public class ModifyEntryController extends SAbstractForumController {
 	throws Exception {
 
 		Map formData = request.getParameterMap();
-		Long folderId = ActionUtil.getForumId(formData, request);
-		String entryId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_ID);				
+		Long folderId = ActionUtil.getForumId(request);
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_ENTRY_ID));				
 		//See if the add entry form was submitted
 		if (formData.containsKey("okBtn")) {
 			//The form was submitted. Go process it
-			getFolderModule().modifyEntry(folderId, Long.valueOf(entryId), formData, ((MultipartFileSupport) request).getFileMap());
-			//Get the jsp objects again, but this time get the "view_forum" values
-			//response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_ENTRY);
-			response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
-			response.setRenderParameter(WebKeys.FORUM_URL_ENTRY_ID, entryId.toString());
+			getFolderModule().modifyEntry(folderId, entryId, formData, ((MultipartFileSupport) request).getFileMap());
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
-			//Get the jsp objects again, but this time get the "view_forum" values
-			//response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_ENTRY);
-			response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
-			response.setRenderParameter(WebKeys.FORUM_URL_ENTRY_ID, entryId.toString());
 		}
 		response.setRenderParameters(formData);
+		response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
+		response.setRenderParameter(WebKeys.FORUM_URL_ENTRY_ID, entryId.toString());
+		
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 		RenderResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		Long folderId = ActionUtil.getForumId(formData, request);
+		Long folderId = ActionUtil.getForumId(request);
 
 		Map model = new HashMap();	
 		String path = WebKeys.VIEW_MODIFY_ENTRY;
@@ -55,8 +51,8 @@ public class ModifyEntryController extends SAbstractForumController {
 			model.put(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
 			request.setAttribute(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_ENTRY);
 			try {
-				String entryId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_ID);				
-				model.put(WebKeys.FORUM_URL_ENTRY_ID, entryId);
+				Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_ENTRY_ID));				
+				model.put(WebKeys.FORUM_URL_ENTRY_ID, entryId.toString());
 				model = getForumActionModule().getShowEntry(model, request, response, folderId);
 			} catch (NoDefinitionByTheIdException nd) {
 				return returnToViewForum(request, response, formData, folderId);

@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
  *
  */
 public class SAbstractForumController extends SAbstractController {
-	public ModelAndView returnToViewForum(RenderRequest request, RenderResponse response, Map formData, Long folderId) {
+	public ModelAndView returnToViewForum(RenderRequest request, RenderResponse response, Map formData, Long folderId) throws Exception {
 		request.setAttribute(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 		Map model = getForumActionModule().getShowFolder(formData, request, response, folderId);
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);

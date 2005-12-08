@@ -10,6 +10,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.PortletRequest;
 import javax.portlet.WindowState;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletURL;
@@ -20,12 +21,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.portlet.forum.ActionUtil;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.ObjectBuilder;
-import com.sitescape.util.GetterUtil;
 import com.sitescape.util.StringUtil;
-import com.sitescape.ef.jobs.Schedule;
+import com.sitescape.ef.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.ScheduleHelper;
 
 import com.sitescape.ef.domain.Folder;
@@ -39,15 +38,18 @@ public class ConfigureNotifyController extends  SAbstractController  {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
-			Long folderId = ActionUtil.getForumId(formData);
-			Map input = getFormData(formData);
+			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_FORUM_ID));
 			Set userList = new HashSet();
-			Set gIds = ActionUtil.getLongSet(formData, "sendToGroups");
-			Set uIds = ActionUtil.getLongSet(formData, "sendToUsers");
-			userList.addAll(gIds);
-			userList.addAll(uIds);
+			long [] gIds = PortletRequestUtils.getLongParameters(request, "sendToGroups");
+			for (int i=0; i<gIds.length; ++i) {
+				userList.add(new Long(gIds[i]));
+			}
+			long [] uIds = PortletRequestUtils.getLongParameters(request, "sendToUsers");
+			for (int i=0; i<uIds.length; ++i) {
+				userList.add(new Long(uIds[i]));
+			}
 			
-			getAdminModule().modifyNotification(folderId, input, userList);
+			getAdminModule().modifyNotification(folderId, getFormData(request), userList);
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, "");
@@ -66,23 +68,23 @@ public class ConfigureNotifyController extends  SAbstractController  {
 		Map formData = request.getParameterMap();
 		try {
 			Map model = new HashMap();
-			Long folderId = ActionUtil.getForumId(formData);
+			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_FORUM_ID));
 			Folder folder = getFolderModule().getFolder(folderId);
 			model.put(WebKeys.FOLDER, folder);
 
 			List groups = getProfileModule().getGroups();
 			model.put(WebKeys.GROUPS, groups);
-			if (ActionUtil.getStringValue(formData, "showUsers").equals("1")) {
+			if (PortletRequestUtils.getStringParameter(request, "showUsers", "0").equals("1")) {
 				//get any partially entered data
-				Map input = getFormData(formData);
+				Map input = getFormData(request);
 				NotificationDef notify = new NotificationDef();
 		    	ObjectBuilder.updateObject(notify, input);
 				model.put(WebKeys.NOTIFICATION, notify); 
 				Map gList = new HashMap();
 				Map uList = new HashMap();
-				Set gIds = ActionUtil.getLongSet(formData, "sendToGroups");
-				for (Iterator iter=gIds.iterator(); iter.hasNext();) {
-					gList.put(iter.next(), Boolean.TRUE);
+				long [] gIds = PortletRequestUtils.getLongParameters(request, "sendToGroups");
+				for (int i=0; i<gIds.length; ++i) {
+					gList.put(new Long(gIds[i]),Boolean.TRUE);
 				}
 				List users = getProfileModule().getUsers();
 				model.put(WebKeys.USERS, users );
@@ -119,10 +121,10 @@ public class ConfigureNotifyController extends  SAbstractController  {
 		}
 		
 	}
-	private Map getFormData(Map formData) {
+	private Map getFormData(PortletRequest request) {
 		Map input = new HashMap();
 		String val;
-		val = ActionUtil.getStringValue(formData, "contextLevel");
+		val = PortletRequestUtils.getStringParameter(request,  "contextLevel", "");
 		if (val.equals("title"))
 			input.put("contextLevel", new Integer(NotificationDef.CONTEXT_LEVEL_SEND_TITLES_ONLY));
 		else if (val.equals("summary"))
@@ -130,11 +132,11 @@ public class ConfigureNotifyController extends  SAbstractController  {
 		else
 			input.put("contextLevel", new Integer(NotificationDef.CONTEXT_LEVEL_DISABLE_EMAIL_NOTIFICATION));
 
-		input.put("summaryLines",new Integer(GetterUtil.get(ActionUtil.getStringValue(formData,"summaryLines"), 5)));
-		val = ActionUtil.getStringValue(formData, "emailAddress");
+		input.put("summaryLines",new Integer(PortletRequestUtils.getIntParameter(request, "summaryLines", 5)));
+		val = PortletRequestUtils.getStringParameter(request, "emailAddress", "");
 		input.put("emailAddress", StringUtil.split(val, "\n"));
 		
-		input.put("schedule", ScheduleHelper.getSchedule(formData));
+		input.put("schedule", ScheduleHelper.getSchedule(request));
 		return input;
 		
 	}

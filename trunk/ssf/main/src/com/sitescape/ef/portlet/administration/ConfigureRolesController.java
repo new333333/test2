@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.portlet.forum.ActionUtil;
+import com.sitescape.ef.util.PortletRequestUtils;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.NLT;
@@ -29,7 +29,7 @@ public class ConfigureRolesController extends  SAbstractController {
 		if (formData.containsKey("addBtn") && formData.containsKey("roleName")) {
 			//Get the list of workAreaOperations to be added to this new role/function
 			Function function = new Function();
-			function.setName(ActionUtil.getStringValue(formData, "roleName"));
+			function.setName(PortletRequestUtils.getStringParameter(request, "roleName"));
 			Iterator itWorkAreaOperations = WorkAreaOperation.getWorkAreaOperations();
 			while (itWorkAreaOperations.hasNext()) {
 				WorkAreaOperation operation = (WorkAreaOperation) itWorkAreaOperations.next();
@@ -41,7 +41,7 @@ public class ConfigureRolesController extends  SAbstractController {
 		
 		} else if (formData.containsKey("modifyBtn") && formData.containsKey("roleId")) {
 			//Get the function id from the form
-			Long functionId = new Long(ActionUtil.getStringValue(formData, "roleId"));
+			Long functionId = PortletRequestUtils.getLongParameter(request, "roleId");
 			
 			//Add the list of workAreaOperations that can be added to each function
 			Map updates = new HashMap();

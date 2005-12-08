@@ -1,50 +1,48 @@
 package com.sitescape.ef.web.util;
-import java.util.Map;
 
 import com.sitescape.ef.jobs.Schedule;
-import com.sitescape.ef.portlet.forum.ActionUtil;
-
-import com.sitescape.util.Validator;
+import com.sitescape.ef.util.PortletRequestUtils;
+import javax.portlet.PortletRequest;
 
 public class ScheduleHelper {
-	public static Schedule getSchedule(Map formData) {
+	public static Schedule getSchedule(PortletRequest request) {
 		String val;
 		Schedule schedule = new Schedule();
-		val = ActionUtil.getStringValue(formData, "minuteType");
+		val = PortletRequestUtils.getStringParameter(request, "minuteType", "");
 		if (val.equals("repeat")) {
-			val = ActionUtil.getStringValue(formData, "minutesRepeat");
-			if (!Validator.isNull(val))
-				schedule.setMinutes("0/" + ActionUtil.getStringValue(formData, "minutesRepeat"));
+			int iVal = PortletRequestUtils.getIntParameter(request, "minutesRepeat", 0);
+			if (iVal != 0)
+				schedule.setMinutes("0/" + iVal);
 			else 
 				schedule.setMinutes("0");				
 		} else {
-			schedule.setMinutes(ActionUtil.getStringValue(formData, "schedMinutes"));			
+			schedule.setMinutes(Integer.toString(PortletRequestUtils.getIntParameter(request, "schedMinutes", 5)));			
 		}		
 		
-		val = ActionUtil.getStringValue(formData, "hourType");
+		val = PortletRequestUtils.getStringParameter(request, "hourType", "");
 		if (val.equals("repeat")) {
-			val = ActionUtil.getStringValue(formData, "hoursRepeat");
-			if (!Validator.isNull(val))
-				schedule.setHours("0/" + ActionUtil.getStringValue(formData, "hoursRepeat"));
+			int iVal = PortletRequestUtils.getIntParameter(request, "hoursRepeat", 0);
+			if (iVal != 0)
+				schedule.setHours("0/" + iVal);
 			else
 				schedule.setHours("*");	
 		} else {
-			schedule.setHours(ActionUtil.getStringValue(formData, "schedHours"));			
+			schedule.setHours(Integer.toString(PortletRequestUtils.getIntParameter(request, "schedHours", 14)));			
 		}		
 		
 		
-		val = ActionUtil.getStringValue(formData, "schedType");
+		val = PortletRequestUtils.getStringParameter(request, "schedType", "");
 		if (val.equals("daily")) {
 			schedule.setDaily(true);
 		} else {
 			schedule.setDaily(false);
-			if (formData.containsKey("onday_sun")) schedule.setOnSunday(true);
-			if (formData.containsKey("onday_mon")) schedule.setOnMonday(true);
-			if (formData.containsKey("onday_tue")) schedule.setOnTuesday(true);
-			if (formData.containsKey("onday_wed")) schedule.setOnWednesday(true);
-			if (formData.containsKey("onday_thu")) schedule.setOnThursday(true);
-			if (formData.containsKey("onday_fri")) schedule.setOnFriday(true);
-			if (formData.containsKey("onday_sat")) schedule.setOnSaturday(true);
+			schedule.setOnSunday(PortletRequestUtils.getBooleanParameter(request, "onday_sun", false));
+			schedule.setOnMonday(PortletRequestUtils.getBooleanParameter(request, "onday_mon", false));
+			schedule.setOnTuesday(PortletRequestUtils.getBooleanParameter(request, "onday_tue", false));
+			schedule.setOnWednesday(PortletRequestUtils.getBooleanParameter(request, "onday_wed", false));
+			schedule.setOnThursday(PortletRequestUtils.getBooleanParameter(request, "onday_thu", false));
+			schedule.setOnFriday(PortletRequestUtils.getBooleanParameter(request, "onday_fri", false));
+			schedule.setOnSaturday(PortletRequestUtils.getBooleanParameter(request, "onday_sat", false));
 			
 		}
 		return schedule;
