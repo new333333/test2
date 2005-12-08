@@ -11,8 +11,10 @@ String betaColor = "#B89257";
 String gammaColor = "#CCCC99";
 
 //Set up the user object
-User user = RequestContextHolder.getRequestContext().getUser();
-request.setAttribute("ssUser", user);
+if(RequestContextHolder.getRequestContext() != null) {
+	User user = RequestContextHolder.getRequestContext().getUser();
+	request.setAttribute("ssUser", user);
+}
 
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
