@@ -243,222 +243,229 @@ function ${prefix}_onsub() {
 createOnSubmitObj('${prefix}onsub', 
      '${formName}', ${prefix}_onsub);
      
-var ${prefix}_popupContents = "";
-${prefix}_popupContents += '<form method="post" submit="" name="recurPopupForm">\n';
+function ${prefix}_generatePopupContents() {
+  // pc holds the string being built
+  var pc = '';
 
-${prefix}_popupContents += '<table border="0" cellpadding="4" cellspacing="0">\n';
-${prefix}_popupContents += ' <tr>\n';
-${prefix}_popupContents += '  <td colspan="3" class="contentbold">\n';
+  pc += '<form method="post" submit="" name="recurPopupForm">\n';
 
-${prefix}_popupContents += '  &nbsp;<ssf:nlt tag="event.frequency" />\n';
-${prefix}_popupContents += ' </td>\n';
-${prefix}_popupContents += ' </tr>\n';
-${prefix}_popupContents += ' <tr>\n';
-${prefix}_popupContents += '  <td colspan="2" class="content"><input type="radio"  \n';
-${prefix}_popupContents += '   name="repeatUnit" value="none" id="norepeat"\n';
-${prefix}_popupContents += '   checked="checked"><label for="norepeat"><ssf:nlt tag="event.no_repeat" /></label></td>\n';
-${prefix}_popupContents += ' </tr>\n';
-${prefix}_popupContents += ' <tr>\n';
-${prefix}_popupContents += '  <td nowrap="nowrap" class="content">\n';
+  pc += '<table border="0" cellpadding="4" cellspacing="0">\n';
+  pc += ' <tr>\n';
+  pc += '  <td colspan="3" class="contentbold">\n';
 
-${prefix}_popupContents += '   <input type="radio" name="repeatUnit" id="repeatday"\n';
-${prefix}_popupContents += '   value="day"  > \n';
-${prefix}_popupContents += '   <ssf:nlt tag="event.every" /> <input type="text" name="everyNday" size="2" \n';
-${prefix}_popupContents += '   class="content" value="1"> <ssf:nlt tag="event.days" /></td>\n';
-${prefix}_popupContents += ' </tr>\n';
-${prefix}_popupContents += ' <tr>\n';
-${prefix}_popupContents += '  <td class="content" valign="top" nowrap="nowrap">\n';
-${prefix}_popupContents += '   <input type="radio" name="repeatUnit" id="repeatweek"\n';
-${prefix}_popupContents += '   value="week" >\n';
-${prefix}_popupContents += '   <ssf:nlt tag="event.every" /> <input type="text" name="everyNweek" size="2" \n';
-${prefix}_popupContents += '   class="content" value="1" > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> \n';
+  pc += '  &nbsp;<ssf:nlt tag="event.frequency" />\n';
+  pc += ' </td>\n';
+  pc += ' </tr>\n';
+  pc += ' <tr>\n';
+  pc += '  <td colspan="2" class="content"><input type="radio"  \n';
+  pc += '   name="repeatUnit" value="none" id="norepeat"\n';
+  pc += '   checked="checked"><label for="norepeat"><ssf:nlt tag="event.no_repeat" /></label></td>\n';
+  pc += ' </tr>\n';
+  pc += ' <tr>\n';
+  pc += '  <td nowrap="nowrap" class="content">\n';
 
-${prefix}_popupContents += '<input type="checkbox" name="day0" id="day0" value="">\n';
-${prefix}_popupContents += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.su" /></font>\n';
-${prefix}_popupContents += '<input type="checkbox" name="day1" id="day1" value="">\n';
-${prefix}_popupContents += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.mo" /></font>\n';
-${prefix}_popupContents += '<input type="checkbox" name="day2" id="day2" value="">\n';
-${prefix}_popupContents += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.tu" /></font>\n';
-${prefix}_popupContents += '<input type="checkbox" name="day3" id="day3" value="">\n';
-${prefix}_popupContents += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.we" /></font>\n';
-${prefix}_popupContents += '<input type="checkbox" name="day4" id="day4" value="">\n';
-${prefix}_popupContents += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.th" /></font>\n';
-${prefix}_popupContents += '<input type="checkbox" name="day5" id="day5" value="">\n';
-${prefix}_popupContents += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.fr" /></font>\n';
-${prefix}_popupContents += '<input type="checkbox" name="day6" id="day6" value="">\n';
-${prefix}_popupContents += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.sa" /></font>\n';
-${prefix}_popupContents += '</tr>\n';
+  pc += '   <input type="radio" name="repeatUnit" id="repeatday"\n';
+  pc += '   value="day"  > \n';
+  pc += '   <ssf:nlt tag="event.every" /> <input type="text" name="everyNday" size="2" \n';
+  pc += '   class="content" value="1"> <ssf:nlt tag="event.days" /></td>\n';
+  pc += ' </tr>\n';
+  pc += ' <tr>\n';
+  pc += '  <td class="content" valign="top" nowrap="nowrap">\n';
+  pc += '   <input type="radio" name="repeatUnit" id="repeatweek"\n';
+  pc += '   value="week" >\n';
+  pc += '   <ssf:nlt tag="event.every" /> <input type="text" name="everyNweek" size="2" \n';
+  pc += '   class="content" value="1" > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> \n';
+
+  pc += '<input type="checkbox" name="day0" id="day0" value="">\n';
+  pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.su" /></font>\n';
+  pc += '<input type="checkbox" name="day1" id="day1" value="">\n';
+  pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.mo" /></font>\n';
+  pc += '<input type="checkbox" name="day2" id="day2" value="">\n';
+  pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.tu" /></font>\n';
+  pc += '<input type="checkbox" name="day3" id="day3" value="">\n';
+  pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.we" /></font>\n';
+  pc += '<input type="checkbox" name="day4" id="day4" value="">\n';
+  pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.th" /></font>\n';
+  pc += '<input type="checkbox" name="day5" id="day5" value="">\n';
+  pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.fr" /></font>\n';
+  pc += '<input type="checkbox" name="day6" id="day6" value="">\n';
+  pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.sa" /></font>\n';
+  pc += '</tr>\n';
  
-${prefix}_popupContents += ' <tr>\n';
+  pc += ' <tr>\n';
 
-${prefix}_popupContents += '  <td class="content" valign="top" nowrap="nowrap"><input \n';
-${prefix}_popupContents += '   type="radio" name="repeatUnit" id="repeatmonth"\n';
-${prefix}_popupContents += '   value="month" " >\n';
-${prefix}_popupContents += '   <ssf:nlt tag="event.every" /> <input type="text" class="content" size="2"\n';
-${prefix}_popupContents += '   name="everyNmonth" value="1" > month(s) on the\n';
-${prefix}_popupContents += '<select class="content" name="onDayCardSel" title="select which week in the month on which this calendar entry will occur" name="onDayCardSel" > \n';
-${prefix}_popupContents += '<option class="content" value="none"><ssf:nlt tag="general.please_select" /></option> \n';
-${prefix}_popupContents += '<option class="content" value="first" ><ssf:nlt tag="event.whichweek.first" /></option> \n';
-${prefix}_popupContents += '<option class="content" value="second" ><ssf:nlt tag="event.whichweek.second" /></option> \n';
-${prefix}_popupContents += '<option class="content" value="third" ><ssf:nlt tag="event.whichweek.third" /></option> \n';
-${prefix}_popupContents += '<option class="content" value="fourth" ><ssf:nlt tag="event.whichweek.fourth" /></option> \n';
-${prefix}_popupContents += '<option class="content" value="last" ><ssf:nlt tag="event.whichweek.last" /></option> \n';
-${prefix}_popupContents += '</select> \n';
-${prefix}_popupContents += '<select class="content" name="dow" title="select the day of the week on which the repeated entry will occur" > \n';
-${prefix}_popupContents += '<option class="content" value="none"><ssf:nlt tag="general.please_select" /></option> \n';
-${prefix}_popupContents += '<option class="content" value="Sunday" ><ssf:nlt tag="calendar.day.names.su" /></option> \n';
-${prefix}_popupContents += '<option class="content" value="Monday" ><ssf:nlt tag="calendar.day.names.mo" /></option> \n';
-${prefix}_popupContents += '<option class="content" value="Tuesday" ><ssf:nlt tag="calendar.day.names.tu" /></option> \n';
-${prefix}_popupContents += '<option class="content" value="Wednesday" ><ssf:nlt tag="calendar.day.names.we" /></option> \n';
-${prefix}_popupContents += '<option class="content" value="Thursday" ><ssf:nlt tag="calendar.day.names.th" /></option> \n';
-${prefix}_popupContents += '<option class="content" value="Friday" ><ssf:nlt tag="calendar.day.names.fr" /></option> \n';
-${prefix}_popupContents += '<option class="content" value="Saturday" ><ssf:nlt tag="calendar.day.names.sa" /></option> \n';
-${prefix}_popupContents += '<option class="content" value="weekday" ><ssf:nlt tag="calendar.day.names.weekday" /></option> \n';
-${prefix}_popupContents += '<option class="content" value="weekend day" ><ssf:nlt tag="calendar.day.names.weekendday" /></option> \n';
-${prefix}_popupContents += '</select> </td>\n';
+  pc += '  <td class="content" valign="top" nowrap="nowrap"><input \n';
+  pc += '   type="radio" name="repeatUnit" id="repeatmonth"\n';
+  pc += '   value="month" " >\n';
+  pc += '   <ssf:nlt tag="event.every" /> <input type="text" class="content" size="2"\n';
+  pc += '   name="everyNmonth" value="1" > month(s) on the\n';
+  pc += '<select class="content" name="onDayCardSel" title="select which week in the month on which this calendar entry will occur" name="onDayCardSel" > \n';
+  pc += '<option class="content" value="none"><ssf:nlt tag="general.please_select" /></option> \n';
+  pc += '<option class="content" value="first" ><ssf:nlt tag="event.whichweek.first" /></option> \n';
+  pc += '<option class="content" value="second" ><ssf:nlt tag="event.whichweek.second" /></option> \n';
+  pc += '<option class="content" value="third" ><ssf:nlt tag="event.whichweek.third" /></option> \n';
+  pc += '<option class="content" value="fourth" ><ssf:nlt tag="event.whichweek.fourth" /></option> \n';
+  pc += '<option class="content" value="last" ><ssf:nlt tag="event.whichweek.last" /></option> \n';
+  pc += '</select> \n';
+  pc += '<select class="content" name="dow" title="select the day of the week on which the repeated entry will occur" > \n';
+  pc += '<option class="content" value="none"><ssf:nlt tag="general.please_select" /></option> \n';
+  pc += '<option class="content" value="Sunday" ><ssf:nlt tag="calendar.day.names.su" /></option> \n';
+  pc += '<option class="content" value="Monday" ><ssf:nlt tag="calendar.day.names.mo" /></option> \n';
+  pc += '<option class="content" value="Tuesday" ><ssf:nlt tag="calendar.day.names.tu" /></option> \n';
+  pc += '<option class="content" value="Wednesday" ><ssf:nlt tag="calendar.day.names.we" /></option> \n';
+  pc += '<option class="content" value="Thursday" ><ssf:nlt tag="calendar.day.names.th" /></option> \n';
+  pc += '<option class="content" value="Friday" ><ssf:nlt tag="calendar.day.names.fr" /></option> \n';
+  pc += '<option class="content" value="Saturday" ><ssf:nlt tag="calendar.day.names.sa" /></option> \n';
+  pc += '<option class="content" value="weekday" ><ssf:nlt tag="calendar.day.names.weekday" /></option> \n';
+  pc += '<option class="content" value="weekend day" ><ssf:nlt tag="calendar.day.names.weekendday" /></option> \n';
+  pc += '</select> </td>\n';
 
-${prefix}_popupContents += ' </tr>\n';
-${prefix}_popupContents += '</table>	\n';
+  pc += ' </tr>\n';
+  pc += '</table>	\n';
 
-${prefix}_popupContents += '<br>\n';
-${prefix}_popupContents += '<center>\n';
-${prefix}_popupContents += '<table border="0" style="border:1px solid;">\n';
-${prefix}_popupContents += '<tr><td align="center">\n';
-${prefix}_popupContents += '<a href="javascript: ;" onClick="setOpenerHiddenFields(); self.close(); ">\n';
-${prefix}_popupContents += '<ssf:nlt tag="button.ok" /></a></td></tr></table>\n';
-${prefix}_popupContents += '</center>\n';
+  pc += '<br>\n';
+  pc += '<center>\n';
+  pc += '<table border="0" style="border:1px solid;">\n';
+  pc += '<tr><td align="center">\n';
+  pc += '<a href="javascript: ;" onClick="setOpenerHiddenFields(); self.close(); ">\n';
+  pc += '<ssf:nlt tag="button.ok" /></a></td></tr></table>\n';
+  pc += '</center>\n';
 
-${prefix}_popupContents += "</form>\n";
-
-
-${prefix}_popupContents += "<scr"
-${prefix}_popupContents += "ipt language='Javascript'>\n";
-
-${prefix}_popupContents += "var fieldref = self.document.recurPopupForm;\n";
-
-${prefix}_popupContents += "function getRadioButtonIdx(ptr, type, val) {\n";
-${prefix}_popupContents += "    for (i=0; i< ptr.length; i++) {\n";
-${prefix}_popupContents += "        if (ptr.elements[type][i].value ==  val) {\n";
-${prefix}_popupContents += "            return i;\n";
-${prefix}_popupContents += "        }\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "}\n";
-
-${prefix}_popupContents += "var norptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'none');\n";
-${prefix}_popupContents += "var dayrptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'day');\n";
-${prefix}_popupContents += "var weekrptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'week');\n";
-${prefix}_popupContents += "var monthrptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'month');\n";
+  pc += "</form>\n";
 
 
-// write data back to the opener
-${prefix}_popupContents += "function setOpenerHiddenFields() {\n";
-${prefix}_popupContents += "  if (fieldref.repeatUnit[norptidx].checked) {\n";
-${prefix}_popupContents += "    self.opener.setHiddenField('${formName}', '${evid}', 'repeatUnit', 'none');\n";
-${prefix}_popupContents += "  }\n";
-${prefix}_popupContents += "  if (fieldref.repeatUnit[dayrptidx].checked) {\n";
-${prefix}_popupContents += "    self.opener.setHiddenField('${formName}', '${evid}', 'repeatUnit', 'day');\n";
-${prefix}_popupContents += "    self.opener.setHiddenField('${formName}', '${evid}', 'everyN', fieldref.everyNday.value);\n";
-${prefix}_popupContents += "  }\n";
-${prefix}_popupContents += "  if (fieldref.repeatUnit[weekrptidx].checked) {\n";
-${prefix}_popupContents += "    self.opener.setHiddenField('${formName}', '${evid}', 'repeatUnit', 'week');\n";
-${prefix}_popupContents += "    self.opener.setHiddenField('${formName}', '${evid}', 'everyN', fieldref.everyNweek.value);\n";
+  pc += "<scr";
+  pc += "ipt language='Javascript'>\n";
 
-${prefix}_popupContents += "    if (fieldref.day0.checked) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day0', 'yes')\n";
-${prefix}_popupContents += "    } else {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day0', 'no')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.day1.checked) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day1', 'yes')\n";
-${prefix}_popupContents += "    } else {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day1', 'no')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.day2.checked) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day2', 'yes')\n";
-${prefix}_popupContents += "    } else {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day2', 'no')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.day3.checked) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day3', 'yes')\n";
-${prefix}_popupContents += "    } else {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day3', 'no')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.day4.checked) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day4', 'yes')\n";
-${prefix}_popupContents += "    } else {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day4', 'no')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.day5.checked) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day5', 'yes')\n";
-${prefix}_popupContents += "    } else {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day5', 'no')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.day6.checked) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day6', 'yes')\n";
-${prefix}_popupContents += "    } else {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day6', 'no')\n";
-${prefix}_popupContents += "    }\n";
+  pc += "var fieldref = self.document.recurPopupForm;\n";
 
-${prefix}_popupContents += "  }\n";
-${prefix}_popupContents += "  if (fieldref.repeatUnit[monthrptidx].checked) {\n";
-${prefix}_popupContents += "    self.opener.setHiddenField('${formName}', '${evid}', 'repeatUnit', 'month');\n";
-${prefix}_popupContents += "    self.opener.setHiddenField('${formName}', '${evid}', 'everyN', fieldref.everyNmonth.value);\n";
-${prefix}_popupContents += "    if (fieldref.onDayCardSel.options[0].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'none')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.onDayCardSel.options[1].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'first')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.onDayCardSel.options[2].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'second')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.onDayCardSel.options[3].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'third')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "     if (fieldref.onDayCardSel.options[4].selected) {\n";
-${prefix}_popupContents += "     self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'fourth')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.onDayCardSel.options[5].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'last')\n";
-${prefix}_popupContents += "    }\n";
+  pc += "function getRadioButtonIdx(ptr, type, val) {\n";
+  pc += "    for (i=0; i< ptr.length; i++) {\n";
+  pc += "        if (ptr.elements[type][i].value ==  val) {\n";
+  pc += "            return i;\n";
+  pc += "        }\n";
+  pc += "    }\n";
+  pc += "}\n";
 
-${prefix}_popupContents += "    if (fieldref.dow.options[0].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'none')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.dow.options[1].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Sunday')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.dow.options[2].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Monday')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.dow.options[3].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Tuesday')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.dow.options[4].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Wednesday')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.dow.options[5].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Thursday')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.dow.options[6].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Friday')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.dow.options[7].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Saturday')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.dow.options[8].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'weekday')\n";
-${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.dow.options[9].selected) {\n";
-${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'weekendday')\n";
-${prefix}_popupContents += "    }\n";
+  pc += "var norptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'none');\n";
+  pc += "var dayrptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'day');\n";
+  pc += "var weekrptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'week');\n";
+  pc += "var monthrptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'month');\n";
 
 
-${prefix}_popupContents += "  }\n";
-${prefix}_popupContents += "}   \n";
+  // write data back to the opener
+  pc += "function setOpenerHiddenFields() {\n";
+  pc += "  if (fieldref.repeatUnit[norptidx].checked) {\n";
+  pc += "    self.opener.setHiddenField('${formName}', '${evid}', 'repeatUnit', 'none');\n";
+  pc += "  }\n";
+  pc += "  if (fieldref.repeatUnit[dayrptidx].checked) {\n";
+  pc += "    self.opener.setHiddenField('${formName}', '${evid}', 'repeatUnit', 'day');\n";
+  pc += "    self.opener.setHiddenField('${formName}', '${evid}', 'everyN', fieldref.everyNday.value);\n";
+  pc += "  }\n";
+  pc += "  if (fieldref.repeatUnit[weekrptidx].checked) {\n";
+  pc += "    self.opener.setHiddenField('${formName}', '${evid}', 'repeatUnit', 'week');\n";
+  pc += "    self.opener.setHiddenField('${formName}', '${evid}', 'everyN', fieldref.everyNweek.value);\n";
 
-${prefix}_popupContents += "</sc";
-${prefix}_popupContents += "ript>\n";
+  pc += "    if (fieldref.day0.checked) {\n";
+  pc += "      self.opener.setHiddenField('${formName}','${evid}', 'day0', 'yes')\n";
+  pc += "    } else {\n";
+  pc += "      self.opener.setHiddenField('${formName}','${evid}', 'day0', 'no')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.day1.checked) {\n";
+  pc += "      self.opener.setHiddenField('${formName}','${evid}', 'day1', 'yes')\n";
+  pc += "    } else {\n";
+  pc += "      self.opener.setHiddenField('${formName}','${evid}', 'day1', 'no')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.day2.checked) {\n";
+  pc += "      self.opener.setHiddenField('${formName}','${evid}', 'day2', 'yes')\n";
+  pc += "    } else {\n";
+  pc += "      self.opener.setHiddenField('${formName}','${evid}', 'day2', 'no')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.day3.checked) {\n";
+  pc += "      self.opener.setHiddenField('${formName}','${evid}', 'day3', 'yes')\n";
+  pc += "    } else {\n";
+  pc += "      self.opener.setHiddenField('${formName}','${evid}', 'day3', 'no')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.day4.checked) {\n";
+  pc += "      self.opener.setHiddenField('${formName}','${evid}', 'day4', 'yes')\n";
+  pc += "    } else {\n";
+  pc += "      self.opener.setHiddenField('${formName}','${evid}', 'day4', 'no')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.day5.checked) {\n";
+  pc += "      self.opener.setHiddenField('${formName}','${evid}', 'day5', 'yes')\n";
+  pc += "    } else {\n";
+  pc += "      self.opener.setHiddenField('${formName}','${evid}', 'day5', 'no')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.day6.checked) {\n";
+  pc += "      self.opener.setHiddenField('${formName}','${evid}', 'day6', 'yes')\n";
+  pc += "    } else {\n";
+  pc += "      self.opener.setHiddenField('${formName}','${evid}', 'day6', 'no')\n";
+  pc += "    }\n";
+
+  pc += "  }\n";
+  pc += "  if (fieldref.repeatUnit[monthrptidx].checked) {\n";
+  pc += "    self.opener.setHiddenField('${formName}', '${evid}', 'repeatUnit', 'month');\n";
+  pc += "    self.opener.setHiddenField('${formName}', '${evid}', 'everyN', fieldref.everyNmonth.value);\n";
+  pc += "    if (fieldref.onDayCardSel.options[0].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'none')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.onDayCardSel.options[1].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'first')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.onDayCardSel.options[2].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'second')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.onDayCardSel.options[3].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'third')\n";
+  pc += "    }\n";
+  pc += "     if (fieldref.onDayCardSel.options[4].selected) {\n";
+  pc += "     self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'fourth')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.onDayCardSel.options[5].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'last')\n";
+  pc += "    }\n";
+
+  pc += "    if (fieldref.dow.options[0].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'none')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.dow.options[1].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Sunday')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.dow.options[2].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Monday')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.dow.options[3].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Tuesday')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.dow.options[4].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Wednesday')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.dow.options[5].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Thursday')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.dow.options[6].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Friday')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.dow.options[7].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Saturday')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.dow.options[8].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'weekday')\n";
+  pc += "    }\n";
+  pc += "    if (fieldref.dow.options[9].selected) {\n";
+  pc += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'weekendday')\n";
+  pc += "    }\n";
+
+
+  pc += "  }\n";
+  pc += "}   \n";
+
+  pc += "</sc";
+  pc += "ript>\n";
+
+  return pc;
+}
+
 
 // pop up the recurrence stuff
 function ${prefix}_popupRecurrenceWindow() {;
@@ -467,7 +474,7 @@ function ${prefix}_popupRecurrenceWindow() {;
    win.autoHide();
    // should be conditional on IE
    win.offsetY = 25;
-   win.populate(${prefix}_popupContents);
+   win.populate(${prefix}_generatePopupContents());
    win.showPopup('${prefix}_anchor');
 }
 
