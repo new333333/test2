@@ -21,6 +21,8 @@ public class InvokeUtil {
     private static BasicPropertyAccessor propertyAccessor = new BasicPropertyAccessor();
     private static Map getters = new HashMap(); // Cache of getters
     private static Map setters = new HashMap(); // Cache of setters
+    private static SessionFactoryImplementor factory;
+    private static boolean factorySpecified = false;
     
     public static Object invokeGetter(Object target, String propertyName) 
     	throws com.sitescape.ef.util.ObjectPropertyNotFoundException, InvokeException {
@@ -57,12 +59,20 @@ public class InvokeUtil {
     	}
     	
     	try {
-    		setter.set(target, value, (SessionFactoryImplementor)SpringContextUtil.getBean("sessionFactory"));
+    		if(!factorySpecified)
+    			setSessionFactoryImplementor((SessionFactoryImplementor)SpringContextUtil.getBean("sessionFactory"));
+    		
+    		setter.set(target, value, factory);
+
     	} catch (HibernateException e) {
     		throw new InvokeException(e);
     	}
     }    
     private static String makeKey(Object target, String propertyName) {
         return target.getClass().getName() + DELIM + propertyName;
+    }
+    static void setSessionFactoryImplementor(SessionFactoryImplementor f) {
+    	factory = f;
+    	factorySpecified = true;
     }
 }
