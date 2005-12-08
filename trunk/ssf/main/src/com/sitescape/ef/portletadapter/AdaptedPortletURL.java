@@ -24,11 +24,35 @@ public class AdaptedPortletURL {
 	private final String ACTION_FALSE = "0";
 	private final String ACTION_TRUE = "1";
 
+	/**
+	 * Construct an adapted portlet URL from the information passed in.
+	 * 
+	 * @param req
+	 * @param portletName
+	 * @param action
+	 */
 	public AdaptedPortletURL(HttpServletRequest req, String portletName, boolean action) {
 		this.req = req;
 		this.portletName = portletName;
 		this.action = action;
 		this.secure = req.isSecure();
+		this.params = new HashMap();
+	}
+	
+	/**
+	 * Construct an adapted portlet URL without using a <code>HttpServletRequest</code>.
+	 * The necessary information such as hostname, port number, etc., are read in
+	 * from the system configuration file (i.e., they are statically configured)
+	 * as opposed to being read from the <code>HttpServletRequest</code>. 
+	 *  
+	 * @param portletName
+	 * @param action
+	 */
+	public AdaptedPortletURL(String portletName, boolean action) {
+		this.req = null;
+		this.portletName = portletName;
+		this.action = action;
+		this.secure = false;
 		this.params = new HashMap();
 	}
 	
