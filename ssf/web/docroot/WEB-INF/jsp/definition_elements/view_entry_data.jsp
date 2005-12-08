@@ -41,6 +41,6 @@
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_user_list.jsp" %><%
 		
 	} else if (itemType.equals("event")) {
-		%>Event not working yet<%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_event.jsp" %><%
 	}
 %>
