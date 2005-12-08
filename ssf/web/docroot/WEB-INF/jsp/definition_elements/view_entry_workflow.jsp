@@ -5,3 +5,8 @@
 
 <h1 class="ss_entryTitle"><c:out value="${property_caption}"/></h1>
 
+<c:forEach var="workflow" items="ssDefinitionEntry.workflowStates">
+Workflow state: <c:out value="${workflow.state}"/>
+<br>
+<br>
+</c:forEach>
