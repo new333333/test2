@@ -43,7 +43,6 @@ import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.NoUserByTheNameException;
-import com.sitescape.ef.domain.NoRoleByTheIdException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.Workspace;
 
@@ -268,15 +267,44 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
               
     }
     /* 
-     * Use a set as input, so no duplicates.
-     * Remove null Id if present
      * Optimization to load principals in bulk
      */
-    public List loadPrincipals(Collection ids) {
-    	return loadObjects(ids, Principal.class);
-    }
+    public List loadPrincipals(final Collection ids, final String zoneName) {
+        List result = (List)getHibernateTemplate().execute(
+           	new HibernateCallback() {
+            		public Object doInHibernate(Session session) throws HibernateException {
+            			return session.createQuery("from com.sitescape.ef.domain.Principal p where p.zoneName = :zone and p.id in (:pList)")
+            			.setString("zone", zoneName)
+            			.setParameterList("pList", ids)
+            			.list();
+            		}
+           	}
+        );
+        return result;
+     }
   
- 
+    public void disablePrincipals(final Collection ids, final String zoneName) {
+    	List result = loadPrincipals(ids, zoneName);
+    	for (int i=0; i<result.size(); ++i) {
+    		Principal p = (Principal)result.get(i);
+    		p.setDisabled(true);
+    	}
+ /* TODO - this isn't working, but should      
+  * getHibernateTemplate().execute(
+        	new HibernateCallback() {
+        		public Object doInHibernate(Session session) throws HibernateException {
+        			session.createQuery("UPDATE Principal set disabled = :disable where reserved = :reserve and zoneName = :zone and id in (:pList)")
+        			.setBoolean("disable", true)
+        			.setBoolean("reserve", false)
+        			.setString("zone", zoneName)
+        			.setParameterList("pList", ids)
+        			.executeUpdate();
+        			return null;
+        		}
+        	}
+        );
+ */
+    	}
     /*
      *  (non-Javadoc)
      * @see com.sitescape.ef.dao.CoreDao#loadUser(java.lang.Long, java.lang.Long)

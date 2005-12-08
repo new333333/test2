@@ -117,7 +117,7 @@ public class AdminModuleImpl implements AdminModule {
    		current.setContextLevel(definition.getContextLevel());
    		current.setEmailAddress(definition.getEmailAddress());
  		//	Pre-load for performance
-   		coreDao.loadPrincipals(users);
+   		coreDao.loadPrincipals(users,companyId);
    		for (Iterator iter=users.iterator(); iter.hasNext();) {
    			//	make sure user exists and is in this zone
    			p = coreDao.loadPrincipal((Long)iter.next(),companyId);
