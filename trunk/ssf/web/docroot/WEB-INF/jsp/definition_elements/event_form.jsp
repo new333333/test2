@@ -18,9 +18,15 @@
 	Boolean hasDur = new Boolean(hD);
 	Boolean hasRecur = new Boolean(hR);
 	if (caption == null) {caption = "";}
+	String required = (String) request.getAttribute("property_required");
+	if (required == null) {required = "";}
+	if (required.equals("true")) {
+		required = "<span class=\"ss_required\">*</span>";
+	} else {
+		required = "";
+	}
 %>
-<div class="formBreak">
-<div class="labelAbove"><%= caption %></div>
+<span class="ss_labelAbove"><%= caption %><%= required %></span>
 
 <c:if test="${!empty ssFolderEntry.customAttributes[property_name]}" >
 <c:set var="ev" value="${ssFolderEntry.customAttributes[property_name].value}" />
@@ -33,3 +39,4 @@
          hasDuration="<%= hasDur %>"
          hasRecurrence="<%= hasRecur %>" />
 </div>
+<div class="ss_divider"></div>
