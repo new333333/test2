@@ -359,6 +359,17 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
+		<attribute>
+			<name>adapter</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>		
+		<attribute>
+			<name>portletName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
 	</tag>
 
 	<tag>

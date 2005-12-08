@@ -1,7 +1,6 @@
 package com.sitescape.ef.portlet.widget_test;
 
-import java.io.OutputStream;
-import java.util.Enumeration;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -16,6 +15,7 @@ public class FragmentController extends SAbstractController {
 
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response)
 	throws Exception {
+		response.setRenderParameters(request.getParameterMap());
 		//There is no action. Just go to the render phase
 	}
 	
@@ -26,7 +26,7 @@ public class FragmentController extends SAbstractController {
 		String operation = request.getParameter("operation");
 		
 		if (operation != null) {
-			if (operation.equals("showFragment")) {
+			if (operation.equals("viewFragment")) {
 				path = "widget_test/view_fragment2";
 			}
 		}
