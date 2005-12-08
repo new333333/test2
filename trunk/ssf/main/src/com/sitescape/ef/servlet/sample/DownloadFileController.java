@@ -13,24 +13,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.servlet.SAbstractController;
+import com.sitescape.ef.web.util.DebugHelper;
 
 public class DownloadFileController extends SAbstractController {
 	
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 		
-    	// To test cross context session sharing: 
-		if(1 == 2) {
-			String loginName = request.getRemoteUser();
-			HttpSession ses = request.getSession();
-			ses.setAttribute("set-by-download-file", "Oh!");
-			System.out.println("*** DownloadFileController login name: " + loginName);
-			System.out.println("*** DownloadFileController session id: " + ses.getId()); 
-			System.out.println("*** DownloadFileController set-by-main-servlet: " + ses.getAttribute("set-by-main-servlet")); 
-			System.out.println("*** DownloadFileController set-by-employees: " + ses.getAttribute("set-by-employees"));
-			System.out.println("*** DownloadFileController set-by-portlet-adapter: " + ses.getAttribute("set-by-portlet-adapter"));
-		}
-		// test ends:
+    	// Print debug information pertaining to cross context session sharing
+		DebugHelper.testRequestEnv("DownloadFileController", request);
 
 		// I expect filespec parameter to be present, so validate that it is.
 		String filespec = RequestUtils.getRequiredStringParameter(request, WebKeys.FORUM_URL_FILE);

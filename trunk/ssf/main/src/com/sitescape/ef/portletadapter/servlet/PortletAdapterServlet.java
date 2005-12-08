@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import com.sitescape.ef.portletadapter.support.KeyNames;
+import com.sitescape.ef.web.util.DebugHelper;
 
 /**
  * This servlet is loaded at the system startup time to set up a runtime
@@ -33,17 +34,9 @@ public class PortletAdapterServlet extends DispatcherServlet {
     	try {
 	    	HttpSession ses = req.getSession();
 	
-	    	// To test cross context session sharing: 
-	    	if(1 == 2) {
-				String loginName = req.getRemoteUser();
-				ses.setAttribute("set-by-portlet-adapter", "Hi");
-				System.out.println("*** PortletAdapterServlet login name: " + loginName);
-				System.out.println("*** PortletAdapterServlet session id: " + ses.getId()); 
-				System.out.println("*** PortletAdapterServlet set-by-main-servlet: " + ses.getAttribute("set-by-main-servlet")); 
-				System.out.println("*** PortletAdapterServlet set-by-employees: " + ses.getAttribute("set-by-employees"));
-				System.out.println("*** PortletAdapterServlet set-by-download-file: " + ses.getAttribute("set-by-download-file"));
-	    	}
-			// test ends:
+	    	
+	    	// Print debug information pertaining to cross context session sharing
+			DebugHelper.testRequestEnv("PortletAdapterServlet", req);
 	    	
 			super.service(req, res);
     	}
