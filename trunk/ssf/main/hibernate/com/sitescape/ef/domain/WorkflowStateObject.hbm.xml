@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class table="SS_WorkflowStates" name="com.sitescape.ef.domain.WorkflowStateObject">
+    <id name="tokenId" type="long">
+      <generator class="assigned"/>
+    </id>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <component name="owner" class="com.sitescape.ef.domain.AnyOwner">
+      <many-to-one name="folderEntry"/>
+      <many-to-one name="principal"/>
+      <any name="HEntry" id-type="java.lang.Long" meta-type="string">
+        <meta-value class="com.sitescape.ef.domain.FolderEntry" value="doc"/>
+        <meta-value class="com.sitescape.ef.domain.Principal" value="principal"/>
+        <column name="ownerType" length="16"/>
+        <column name="owner"/>
+      </any>
+      <property name="owningFolderSortKey" length="512"/>
+    </component>
+    <property name="state" length="64"/>
+  </class>
+</hibernate-mapping>
