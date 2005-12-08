@@ -70,7 +70,7 @@ public class WorkflowController extends SAbstractController {
 		    	      "  <end-state name='end' />" +
 		    	      "</process-definition>"
 		    	    );
-		    results.put("workflowId", String.valueOf(processDefinition.getId()));
+		    wId = String.valueOf(processDefinition.getId());
 		 } else if (operation.equals("new")) {
 		    	//pick the first
 		    	if (Validator.isNull(wId)) {
@@ -98,11 +98,13 @@ public class WorkflowController extends SAbstractController {
 		    	// deployed above. 
 			 	pId=PortletRequestUtils.getRequiredStringParameter(request,"processId");
 		    	ProcessInstance processInstance = getWorkflowModule().setNode(Long.valueOf(pId), "orphan");
-		    
-		    	Token token = processInstance.getRootToken(); 
-			    state= token.getNode().getName();
-			    wId = String.valueOf(processInstance.getProcessDefinition().getId());
-
+		    	if (processInstance == null) {
+		    		state = "not found";
+		    	} else {
+		    		Token token = processInstance.getRootToken(); 
+		    		state= token.getNode().getName();
+		    		wId = String.valueOf(processInstance.getProcessDefinition().getId());
+		    	}
 		 } else if (operation.equals("listDef")) {
 		    	// Now we can query the database for the list of process definitions 
 		    	List definitions = getWorkflowModule().getAllDefinitions();
