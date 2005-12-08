@@ -17,7 +17,7 @@ import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import com.liferay.portal.util.SpringUtil;
+import com.sitescape.ef.util.SpringContextUtil;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -46,8 +46,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 	protected String zoneName;
 	
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
-    	ctx = SpringUtil.getContext();
-    	coreDao = (CoreDao)ctx.getBean("coreDao");
+    	coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
     	jobDataMap = context.getJobDetail().getJobDataMap();
     	SessionFactory sessionFactory = (SessionFactory)ctx.getBean("sessionFactory");
 		//open shared session
