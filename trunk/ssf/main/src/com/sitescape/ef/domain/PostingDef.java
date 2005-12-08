@@ -20,7 +20,7 @@ public class PostingDef extends PersistentObject {
     public static final int POST_AS_A_NEW_TOPIC = 2;
     
     private int replyPostingOption = RETURN_TO_SENDER;
-    private boolean enabled=false;
+    private boolean enabled=true;
     private String subject;
     private Binder binder;
     private Long emailId;
