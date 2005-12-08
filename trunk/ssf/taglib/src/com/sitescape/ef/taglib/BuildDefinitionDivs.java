@@ -314,12 +314,14 @@ public class BuildDefinitionDivs extends TagSupport {
 				operationElement.addAttribute("name", "moveItem");
 				operationElement.addAttribute("caption", "__move");
 				
-				if (rootElement.attributeValue("multipleAllowed", "").equalsIgnoreCase("true") || 
+				/**
+				 if (rootElement.attributeValue("multipleAllowed", "").equalsIgnoreCase("true") || 
 						sourceRoot.selectSingleNode("//item[@name='"+rootElementName+"']") == null) {
 					operationElement = operations.addElement("operation");
 					operationElement.addAttribute("name", "cloneItem");
 					operationElement.addAttribute("caption", "__clone");
-				}
+					}
+				 **/
 				
 			}
 			Iterator itOperations = operations.elementIterator("operation");

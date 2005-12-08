@@ -9,7 +9,7 @@
 	
 	<definition name="workflowProcessDefinition" definitionType="2" caption="__workflow_processes" canBeDeleted="false">
 		<operations>
-			<operation name="addDefinition" item="workflowProcess" caption="__add_a_new_workflow_process" />
+			<operation name="addDefinition" item="workflowProcessType" caption="__add_a_new_workflow_process" />
 		</operations>
 	</definition>
 	
@@ -32,14 +32,24 @@
 		</options>
 	</item>
 	
-	<item name="workflowProcess" definitionType="2" caption="__workflow_process">
+	<item name="workflowProcessType" definitionType="2" caption="__workflow_process">
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
 		</properties>
 		
 		<options>
-			<option name="state" caption="__state" initial="true" multipleAllowed="true" />
+			<option name="workflowProcess" initial="true" />
+		</options>
+	</item>
+	
+	<item name="workflowProcess" caption="__workflow_process" canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+
+		<options>
+			<option name="state" caption="__state" multipleAllowed="true" />
 		</options>
 	</item>
 	
@@ -659,7 +669,7 @@
 	
 	<item name="transition" caption="__transition" category="transitionLayout">
 		<properties>
-			<property name="toState" caption="__toState" type="text" />
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@category='transitionLayout']" />
 		</properties>
 		<options>
 			<option name="transitionDecision" />
