@@ -47,13 +47,5 @@
 			<name>mail.pop3.auth</name>
 			<value>true</value>
 		</parameter>
-		<parameter>
-			<name>mail.pop3.user</name>
-			<value>mccann@sitescape.com</value>
-		</parameter>
-		<parameter>
-			<name>mail.pop3.password</name>
-			<value>kellyjenny</value>
-		</parameter>
 	</ResourceParams>
 </Context>
