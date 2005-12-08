@@ -13,6 +13,8 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.Group;
 public interface ProfileModule {
     /**
      * @param userId
@@ -28,7 +30,8 @@ public interface ProfileModule {
     public List bulkCreateGroups(Map groups);
     public void bulkDisableGroups(Collection groups);
     public List getGroups();
-    
+    public User modifyUser(Long id, Map updates);
+    public Group modifyGroup(Long id, Map updates);
     public UserProperties setUserFolderProperty(Long userId, Long folderId, String property, Object value);
     public UserProperties getUserFolderProperties(Long userId, Long folderId);
     public UserProperties setUserProperty(Long userId, String property, Object value);
