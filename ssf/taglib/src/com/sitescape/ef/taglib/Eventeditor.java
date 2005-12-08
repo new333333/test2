@@ -7,6 +7,7 @@ package com.sitescape.ef.taglib;
 import java.lang.Boolean;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -62,23 +63,33 @@ public class Eventeditor extends TagSupport {
       // if initEvent is provided, take it apart and pass in two dates
       Date startDate = new Date();
       Date endDate = new Date();
+      // initialize the event, if none was provided
       if (initEvent != null) {
           Calendar startCal = initEvent.getDtStart();
           Calendar endCal = initEvent.getDtEnd();
           startDate = startCal.getTime();
           endDate = endCal.getTime();
+      } else {
+    	  initEvent = new Event();
+    	  GregorianCalendar startCal = new GregorianCalendar();
+    	  initEvent.setDtStart(startCal);
+    	  if (hasDuration.booleanValue()) {
+    		  GregorianCalendar endCal = new GregorianCalendar();
+    		  initEvent.setDtEnd(endCal);
+    	  }
       }
-
+      
       // any attributes we might want to pass into the jsp go here
+      req.setAttribute("initEvent", initEvent);
+      // these need to be beans because the jsp page will pass them on to other tags
       req.setAttribute("evid", id);
       req.setAttribute("formName", formName);
-      req.setAttribute("recurIcon", icon);
-      req.setAttribute("hasDuration", hasDuration);
-      req.setAttribute("hasRecurrence", hasRecurrence);
       req.setAttribute("startDate", startDate);
       req.setAttribute("endDate", endDate);
+      // any other miscellaneous pieces can go here, for access by JSTL on the JSP page
       HashMap attMap = new HashMap();
       attMap.put("hasDur", hasDuration);
+      attMap.put("hasRecur", hasRecurrence);
       req.setAttribute("attMap", attMap);
       
       StringServletResponse res =

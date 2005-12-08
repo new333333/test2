@@ -97,8 +97,8 @@
 
 <c:if test="${attMap.hasRecur}">
 <tr><td colspan="2" align="center">
-   <a name="<c:out value="${prefix}" />_anchor" id="<c:out value="${prefix}" />_anchor"></a>
-   <a href="javascript: ;" onClick="<c:out value="${prefix}" />_popupRecurrenceWindow();" >
+   <a name="${prefix}_anchor" id="${prefix}_anchor"></a>
+   <a href="javascript: ;" onClick="${prefix}_popupRecurrenceWindow();" >
    <table style="border: 1px solid;">
    <tr><td>
    <img border="0" align="middle" src="<html:imagesPath />pics/sym_s_repeat.gif">
