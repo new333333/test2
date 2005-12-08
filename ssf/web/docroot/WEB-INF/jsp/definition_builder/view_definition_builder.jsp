@@ -37,6 +37,7 @@
 %>
 <script language="javascript">
 
+var rn = Math.round(Math.random()*999999)
 var selectedId = null;
 var selectedIdMapped = null;
 var lastSelectedId = null;
@@ -57,13 +58,34 @@ var sourceDefinitionId = '';
 var sourceDefinitionId = '<%= data.get("selectedItem") %>';
 <%
 	}
+
+	String definitionType = "";
+	if (data.containsKey("definitionType")) {
+		definitionType = (String) data.get("definitionType");
+	}
 %>
 
 function initializeStateMachine() {
 	ss_hideAllDeclaredDivs()
 	ss_setDivHtml("displaydiv", "")
 	ss_addToDiv("displaydiv", "info_select")
+	ss_showHideObj('definitionbuilder_tree_loading', 'hidden', 'none')
 	ss_showHideObj('definitionbuilder_tree', 'visible', 'block')
+}
+
+function loadDiv(option, itemId, itemName) {
+	var url = "<ssf:url adapter="true" portletName="ss_administration" action="definition_builder" actionUrl="true" />";
+	if (sourceDefinitionId != "") {url += "\&sourceDefinitionId=" + sourceDefinitionId;}
+	url += "\&option=" + option
+	if (itemId != "") {url += "\&itemId=" + itemId;}
+	if (itemName != "") {url += "\&itemName=" + itemName;}
+	url += "\&rn=" + rn++
+	//alert(url)
+	fetch_url(url, loadDivCallback)
+}
+
+function loadDivCallback(s) {
+	ss_addHtmlToDiv("displaydiv", s)
 }
 
 function t_<portlet:namespace/>_definitionTree_showId(id, obj) {
@@ -123,9 +145,13 @@ function t_<portlet:namespace/>_definitionTree_showId(id, obj) {
 	} else {
 		//This id has no info div. Put up the standard "view" and "delete" options
 		operationSelection = "viewDefinitionOptions";
-		operationSelectedItem = "";
-		setStateMachine("view_definition_options")
-		return false
+		operationSelectedItem = "";		
+		if (sourceDefinitionId == mappedId) {
+			setStateMachine("view_definition_options")
+			return false
+		} else {
+			return viewDefinition();
+		}
 	}
 	return true;
 }
@@ -232,7 +258,6 @@ function showProperties(id, name, item) {
 var state = "";
 function setStateMachine(newState) {
 	state = newState
-	//alert('setStateMachine: ' + state)
 	if (state == "definition_selected") {
 		//Hide: selection instructions
 		//Show: definition info, definition operations
@@ -244,6 +269,7 @@ function setStateMachine(newState) {
 			ss_setDivHtml("displaydiv", "")
 			ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
 			ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
+			//loadDiv('properties', "", operationSelectedItem)
 		} else if (operationSelection == "addOption") {
 			ss_addToDiv("displaydiv", "options_"+selectedIdMapped)
 		} else {
@@ -257,17 +283,7 @@ function setStateMachine(newState) {
 		ss_addToDiv("displaydiv", "infoDefinitionOptions")
 	} else if (state == "modifyDefinition") {
 		ss_setDivHtml("displaydiv", "")
-		ss_addToDiv("displaydiv", "modify_definition")		
-		self.document.forms['definitionbuilder'].modifyDefinitionName.value = selectedIdText;
-		self.document.forms['definitionbuilder'].modifyDefinitionCaption.value = selectedCaptionText;
-		if (self.document.forms['definitionbuilder'].modifyDefinitionReplyStyle) {
-			var selObj = self.document.forms['definitionbuilder'].modifyDefinitionReplyStyle
-			for (var i = 0; i < selObj.length; i++) {
-				if (selObj.options[i].value == selectedReplyStyle) {
-					selObj.options[i].selected = true;
-				}
-			}
-		}
+		loadDiv('properties', "", "")
 	} else if (state == "deleteDefinitionConfirm") {
 		ss_setDivHtml("displaydiv", "")
 		var selectedIdNameText = "<span class='ss_contentbold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
@@ -278,12 +294,12 @@ function setStateMachine(newState) {
 		ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
 	} else if (state == "addItem") {
 		ss_setDivHtml("displaydiv", "")
-		ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
-		ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
+		//ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
+		//ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
+		loadDiv('properties', "", operationSelectedItem)
 	} else if (state == "modifyItem") {
 		ss_setDivHtml("displaydiv", "")
-		ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
-		ss_addToDiv("displaydiv", "properties_"+selectedIdMapped)
+		loadDiv('properties', selectedIdMapped, "")
 	} else if (state == "deleteItem") {
 		ss_setDivHtml("displaydiv", "")
 		ss_addToDiv("displaydiv", "info_"+selectedId)
@@ -328,6 +344,7 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 <span class="ss_titlebold">
 <a href="<portlet:actionURL windowState="maximized">
 	<portlet:param name="action" value="definition_builder" />
+	<portlet:param name="definition_type" value="<%= definitionType %>" />
 	</portlet:actionURL>">
 <ssf:nlt tag="definition.builder" text="Definition builder" />
 </a>
@@ -344,6 +361,9 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 <br>
 
 <form action="" method="post" name="definitionbuilder" onSubmit="setSubmitData(this)" >
+<div id="definitionbuilder_tree_loading">
+<span class="ss_content"><ssf:nlt tag="definition.loading" text="Loading..."/></span><br>
+</div>
 <table width="100%">
 	<tr>
 		<td width="50%" valign="top">

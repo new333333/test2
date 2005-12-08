@@ -16,6 +16,7 @@
     <xsd:sequence>
       <xsd:element name="definition" type="definitionType" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="item" type="itemType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="properties" type="propertiesType"  minOccurs="0" maxOccurs="1"/>
    </xsd:sequence>
   </xsd:complexType>
 

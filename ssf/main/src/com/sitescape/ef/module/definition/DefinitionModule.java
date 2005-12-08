@@ -18,12 +18,13 @@ import com.sitescape.ef.domain.Folder;
  */
 public interface DefinitionModule {
 	public Definition getDefinition(String id);
-	public Definition addDefinition(String name, String title, int type);
+	public Definition addDefinition(String name, String title, int type, Map formData);
 	public void deleteDefinition(String id);
-	public Document getDefaultDefinition(String name, String title, int type);
+	public Document getDefaultDefinition(String name, String title, int type, Map formData);
 	public Document getDefinitionConfig();
 	public void modifyDefinitionName(String id, String name, String caption);
 	public void modifyDefinitionAttribute(String id, String key, String value);
+	public void modifyDefinitionProperties(String id, Map formData);
 
 	/**
 	 * Adds an item to an item in a definition tree.
