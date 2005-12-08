@@ -232,6 +232,28 @@
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
 	</item>
 	
+	<item name="event" caption="Scheduled event" type="data" category="entryData">
+		<properties>
+			<property name="name" caption="Data name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>The "data name" is the key used to store this element in the data base. 
+					This value must be unique across elements in this entry type. 
+					It should start with an alphabetic character and not contain any spaces. 
+					Legal characters include alphabetic characters (a-z), numeric characters, hyphen and underscore.
+				</help>
+			</property>
+			<property name="caption" caption="Caption" type="text"/>
+			<property name="hasDuration" caption="Has a duration (start and end times)?" type="boolean" default="true"/>
+			<property name="hasRecurrence" caption="Can recur?" type="boolean" default="true"/>
+			<property name="required" caption="Required" type="boolean" default="false" >
+				<help>Marking an item as "required" means that the item must be filled-in before the entry form can be submitted.</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
+	</item>
+	
 	<item name="description" caption="Description" type="data" multipleAllowed="false" category="entryData">
 		<properties>
 			<property name="name" caption="Data name" type="text" value="description" readonly="true">
