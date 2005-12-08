@@ -405,11 +405,6 @@ proc doUsers {userList} {
 		foreach user $bunchList {      
             set attrs(disabled) [::profile::aval disabled $user]
             set attrs(lcName) [::profile::aval lcName $user]
-            set attrs(ntAccountInfo) [doClob [::profile::aval ntAccountInfo $user] ]
-          	if {[isnull $attrs(ntAccountInfo)]} {
-          		unset attrs(ntAccountInfo)
-          	}
-            set attrs(pwd) $user          
             set attrs(name) $user
             set attrs(title) [::profile::aval title $user]
             set attrs(languageId) [::profile::aval nativeLanguage $user] 
@@ -452,10 +447,6 @@ proc doUsers {userList} {
             wimsql_rw "UPDATE SS_Principals $cmd  where id=$::userIds($user);" [lindex $cmdList 1]
             if {$::dialect == "oracle"} {
                 set rowid [lindex [wimsql_rw "select rowid from SS_Principals where id=$::userIds($user);" ] 0]
-                set data  [::profile::aval ntAccountInfo $user]
-                if {![isnull $data]} {
-                    wimsql_rw clob SS_Principals ntAccountInfo $rowid $data
-                }
                 set data [::profile::aval comment $user]
                 if {![isnull $data]} {
                     wimsql_rw clob SS_Principals description_text $rowid $data
