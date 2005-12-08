@@ -12,16 +12,6 @@
 <%@ page import="java.util.Iterator" %>
 <jsp:useBean id="unseenCounts" type="java.util.Map" scope="request" />
 <taconite-root xml:space="preserve">
-<c:forEach var="f" items="${unseenCounts}" >
-<c:set var="fid" value="${f.key.id}" />
-<c:set var="fid2" value="this is good" />
-<jsp:useBean id="fid" type="java.lang.String" />
-<jsp:useBean id="fid2" type="java.lang.String" />
-	<span>This is bogus: <%= fid %></span>
-	<span>This is good: <%= fid2 %></span>
-
-</c:forEach >
-
 <%
 	for (Iterator iter=unseenCounts.entrySet().iterator(); iter.hasNext();) {
 		Map.Entry entry = (Map.Entry)iter.next();

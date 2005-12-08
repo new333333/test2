@@ -190,6 +190,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	//search engine will do acl checks
         User user = RequestContextHolder.getRequestContext().getUser();
         List seenMaps = folderDao.loadSeenMaps(user.getId(), folderIds);
+        Map results = new HashMap();
         Map fToSm = new HashMap();
         List folders = new ArrayList();
         for (int i=0; i<seenMaps.size(); ++i) {
@@ -199,36 +200,37 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         		folders.add(folderDao.loadFolder(sm.getId().getFolderId(), user.getZoneName()));
         	} catch (NoFolderByTheIdException nf) {} 
         }
-        //this doesn't make sense when we have a bunch of folders
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	  (folders.get(0), FolderCoreProcessor.PROCESSOR_KEY);
-        Hits hits = processor.getRecentEntries(folders);
-        Map unseenCounts = new HashMap();
-        for (int i = 0; i < hits.length(); i++) {
-			String folderIdString = hits.doc(i).getField(IndexUtils.FOLDERID_FIELD).stringValue();
-			String entryIdString = hits.doc(i).getField(IndexUtils.DOCID_FIELD).stringValue();
-			Long entryId = null;
-			if (entryIdString != null && !entryIdString.equals("")) {
-				entryId = new Long(entryIdString);
+        if (folders.size() > 0) {
+	        //this doesn't make sense when we have a bunch of folders
+	        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
+	    	  (folders.get(0), FolderCoreProcessor.PROCESSOR_KEY);
+	        Hits hits = processor.getRecentEntries(folders);
+	        Map unseenCounts = new HashMap();
+	        for (int i = 0; i < hits.length(); i++) {
+				String folderIdString = hits.doc(i).getField(IndexUtils.FOLDERID_FIELD).stringValue();
+				String entryIdString = hits.doc(i).getField(IndexUtils.DOCID_FIELD).stringValue();
+				Long entryId = null;
+				if (entryIdString != null && !entryIdString.equals("")) {
+					entryId = new Long(entryIdString);
+				}
+				Date modifyDate = DateField.stringToDate(hits.doc(i).getField(IndexUtils.MODIFICATION_DATE_FIELD).stringValue());
+				Counter cnt = (Counter)unseenCounts.get(folderIdString);
+				if (cnt == null) {
+					cnt = new Counter();
+					unseenCounts.put(folderIdString, cnt);
+				}
+				if (entryId != null && (!fToSm.containsKey(folderIdString) || !((SeenMap)fToSm.get(folderIdString)).checkAndSetSeen(entryId, modifyDate, false))) {
+					cnt.increment();
+				}
 			}
-			Date modifyDate = DateField.stringToDate(hits.doc(i).getField(IndexUtils.MODIFICATION_DATE_FIELD).stringValue());
-			Counter cnt = (Counter)unseenCounts.get(folderIdString);
-			if (cnt == null) {
-				cnt = new Counter();
-				unseenCounts.put(folderIdString, cnt);
-			}
-			if (entryId != null && (!fToSm.containsKey(folderIdString) || !((SeenMap)fToSm.get(folderIdString)).checkAndSetSeen(entryId, modifyDate, false))) {
-				cnt.increment();
-			}
-		}
-        Map results = new HashMap();
-        for (int i=0; i<folders.size(); ++i) {
-        	Folder f = (Folder)folders.get(i);
-        	Counter cnt = (Counter)unseenCounts.get(f.getId().toString());
-        	if (cnt == null) cnt = new Counter();
-        	results.put(f, cnt);
+	        for (int i=0; i<folders.size(); ++i) {
+	        	Folder f = (Folder)folders.get(i);
+	        	Counter cnt = (Counter)unseenCounts.get(f.getId().toString());
+	        	if (cnt == null) cnt = new Counter();
+	        	results.put(f, cnt);
+	        }
         }
-       return results;
+        return results;
     }
     public Long addFolder(Long folderId, Folder folder) {
         User user = RequestContextHolder.getRequestContext().getUser();
