@@ -343,4 +343,8 @@
 		</java>
 	</target>
 
+	<target name="test" description="Run unit tests">
+  		<ant dir="main" target="test" />
+	</target>
+	
 </project>
