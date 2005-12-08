@@ -87,7 +87,7 @@
 	
 	<bean id="springContextUtil" class="com.sitescape.ef.util.SpringContextUtil"/>
 	
-	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+	<bean id="dataSource" class="com.sitescape.ef.util.JndiObjectFactoryBean">
 		<property name="jndiName"><value>java:comp/env/jdbc/SiteScapePool</value></property>
 	</bean>
   
