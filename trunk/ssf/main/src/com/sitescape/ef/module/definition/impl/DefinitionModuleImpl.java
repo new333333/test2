@@ -3,6 +3,7 @@ package com.sitescape.ef.module.definition.impl;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
+import com.sitescape.ef.repository.RepositoryServiceNames;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
@@ -680,7 +681,7 @@ public class DefinitionModuleImpl implements DefinitionModule {
 								    	if (myFile.getOriginalFilename().equals("")) continue;
 								    	FileUploadItem fui = new FileUploadItem(myFile);
 								    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
-								    	fui.setRepositoryServiceName(storageElem.attributeValue("value", "fileRepositoryService"));
+								    	fui.setRepositoryServiceName(storageElem.attributeValue("value", RepositoryServiceNames.FILE_REPOSITORY_SERVICE));
 								    	// TODO Take care of path info?
 								    	FileAttachment fAtt = new FileAttachment(nameValue);
 								    	FileItem fItem = new FileItem();
@@ -707,7 +708,7 @@ public class DefinitionModuleImpl implements DefinitionModule {
 										    	if (myFile.getOriginalFilename().equals("")) continue;
 										    	FileUploadItem fui = new FileUploadItem(myFile);
 										    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
-										    	fui.setRepositoryServiceName(storageElem.attributeValue("value", "fileRepositoryService"));
+										    	fui.setRepositoryServiceName(storageElem.attributeValue("value", RepositoryServiceNames.FILE_REPOSITORY_SERVICE));
 										    	// TODO Take care of path info?
 										    	FileAttachment fAtt = new FileAttachment(fileEleName);
 										    	FileItem fItem = new FileItem();
