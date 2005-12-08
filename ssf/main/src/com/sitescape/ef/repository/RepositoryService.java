@@ -12,34 +12,13 @@ public interface RepositoryService {
 
 	//public static final String DEFAULT_REPOSITORY_SERVICE = "defaultWebdavRepositoryService";
 	public static final String DEFAULT_REPOSITORY_SERVICE = "fileRepositoryService";
-			
-	/**
-	 * Returns a list of URIs for all versions of the specified resource that
-	 * exist.
-	 * <p>
-	 * If the repository service does not support versioning, it returns 
-	 * <code>null</code>. 
-	 * 
-	 * @param folder
-	 * @param entry
-	 * @param relativeFilePath
-	 * @return
-	 * @throws RepositoryServiceException
-	 */
-	public List fileVersionsURIs(Folder folder, FolderEntry entry, String relativeFilePath)
-		throws RepositoryServiceException;
-	
+				
 	/**
 	 * Writes the file resource to the repository system. 
 	 * <p>
-	 * If the underlying repository system supports versioning and the specified
-	 * file resource already exists, it creates a new version. If the repository
-	 * does not support versioning, it overrides the existing resource. 
-	 * <p>
-	 * If the underlying repository system supports checkout/checkin and the
-	 * specified resource already exists, it is expected that the caller has
-	 * already checked out the resource prior to calling this method. 
-	 * If the condition is not met, it throws an exception. 
+	 * If it is an existing resource, it should already have been checked out
+	 * under the caller's name prior to invoking this method. If this condition
+	 * is not met, it throws an exception. 
 	 * 
 	 * @param folder
 	 * @param entry
@@ -48,7 +27,8 @@ public interface RepositoryService {
 	 * @param mf
 	 * @throws RepositoryServiceException
 	 */
-	public void write(Folder folder, FolderEntry entry, String relativeFilePath, MultipartFile mf) 
+	public void write(Folder folder, FolderEntry entry, 
+			String relativeFilePath, MultipartFile mf) 
 		throws RepositoryServiceException;
 	
 	/**
@@ -56,7 +36,7 @@ public interface RepositoryService {
 	 * system. 
 	 * <p>
 	 * The content being read is identical to the latest checked-in version 
-	 * of the file resource.
+	 * of the resource.
 	 * 
 	 * @param folder
 	 * @param entry
@@ -65,34 +45,29 @@ public interface RepositoryService {
 	 * @param out
 	 * @throws RepositoryServiceException
 	 */
-	public void read(Folder folder, FolderEntry entry, String relativeFilePath, OutputStream out) 
+	public void read(Folder folder, FolderEntry entry, 
+			String relativeFilePath, OutputStream out) 
 		throws RepositoryServiceException;
 	
 	/**
 	 * Reads from the repository system the content of the specified version 
-	 * of the file resource identified by the file version URI.
-	 * <p>
-	 * If the specified version does not exist, it throws <code>RepositoryServiceException</code>.
-	 * If the repository service does not support versioning, it throws 
-	 * <code>UnsupportedOperationException</code>. It is because this API
-	 * provides no mechanism for the caller to obtain a valid file version URI
-	 * from the repository system with no versioning support, hence runtime
-	 * invocation of this method is considered a programming error. See
-	 * {@link #fileVersionsURIs} for more info.
-	 *
-	 * @param fileVersionURI
+	 * of the file resource. 
+	 * 
+	 * @param folder
+	 * @param entry
+	 * @param relativeFilePath A pathname of the file relative to the entry. This may
+	 * simply be the name of the file. 
+	 * @param versionName the name of the version
 	 * @param out
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryServiceException thrown if the specified version does
+	 * not exist, or if some other error occurs
 	 */
-	public void readVersion(String fileVersionURI, OutputStream out) 
-		throws RepositoryServiceException, UnsupportedOperationException;
+	public void readVersion(Folder folder, FolderEntry entry, 
+			String relativeFilePath, String versionName, OutputStream out) 
+		throws RepositoryServiceException;
 	
 	/**
 	 * Checks out the specified file resource. 
-	 * <p>
-	 * If the underlying repository system does not support checkout/checkin,
-	 * this silently ignores the request. It allows for application to be written
-	 * identically whether or not the repository system supports checkout/checkin.
 	 * 
 	 * @param folder
 	 * @param entry
@@ -100,14 +75,13 @@ public interface RepositoryService {
 	 * simply be the name of the file. 
 	 * @throws RepositoryServiceException
 	 */
-	public void checkout(Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException;
+	public void checkout(Folder folder, FolderEntry entry, 
+			String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
-	 * Checks in the specified file resource. 
-	 * <p>
-	 * If the underlying repository system does not support checkout/checkin,
-	 * this silently ignores the request. It allows for application to be written
-	 * identically whether or not the repository system supports checkout/checkin. 
+	 * Cancels the checkout for the specified file resource. It is an error to
+	 * apply this method to a resource that has not been previously checked out 
+	 * under the caller's name. 
 	 * 
 	 * @param folder
 	 * @param entry
@@ -115,20 +89,34 @@ public interface RepositoryService {
 	 * simply be the name of the file. 
 	 * @throws RepositoryServiceException
 	 */
-	public void checkin(Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException;
+	public void uncheckout(Folder folder, FolderEntry entry, 
+			String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
-	 * Returns whether the repository service supports versioning or not. 
-	 * @return
-	 */
-	public boolean supportVersioning();
-	
-	/**
-	 * Returns whether the repository service supports checkout/checkin feature.
+	 * Checks in the specified file resource creating a new version.
 	 * 
-	 * @return
+	 * @param folder
+	 * @param entry
+	 * @param relativeFilePath A pathname of the file relative to the entry. This may
+	 * simply be the name of the file. 
+	 * @return the name of the new version
+	 * @throws RepositoryServiceException
 	 */
-	public boolean supportCheckout();
+	public String checkin(Folder folder, FolderEntry entry, 
+			String relativeFilePath) throws RepositoryServiceException;
+	
+	/**
+	 * Returns whether the specified file resource is currently checked out
+	 * or not. This does not tell who checked it out though. 
+	 * 
+	 * @param folder
+	 * @param entry
+	 * @param relativeFilePath
+	 * @return
+	 * @throws RepositoryServiceException
+	 */
+	public boolean isCheckedOut(Folder folder, FolderEntry entry, 
+			String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
 	 * Returns whether the repository service allows users to delete individual

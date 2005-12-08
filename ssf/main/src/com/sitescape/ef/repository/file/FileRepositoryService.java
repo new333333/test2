@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,9 +15,10 @@ import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.util.FileHelper;
 
 /**
- * An implementation of file-based repository. This class should never be 
- * used for production system. Also this implementation will NOT work
- * if the pathname for file represents anything other than a flat file name.  
+ * An implementation of file-based repository which supports neither versioning
+ * nor checkout/checkin features. This class should never be used for production
+ * system. Also this implementation will NOT work if the pathname for file 
+ * represents anything other than a flat file name.  
  * 
  * @author jong
  *
@@ -60,8 +60,6 @@ public class FileRepositoryService implements RepositoryService {
 	public void read(Folder folder, FolderEntry entry, String relativeFilePath, OutputStream out) throws RepositoryServiceException {
 		String filePath = getFilePath(folder, entry, relativeFilePath);
 		
-		// In this implementation, file version URI that the caller hands in is 
-		// simply identical to the actual pathname of the file. 
 		FileInputStream in = null;
 		
 		try {
@@ -82,30 +80,28 @@ public class FileRepositoryService implements RepositoryService {
 		}	
 	}
 
-	public void readVersion(String fileVersionURI, OutputStream out) throws RepositoryServiceException {
-		throw new UnsupportedOperationException();
-	}
-
-	public List fileVersionsURIs(Folder folder, FolderEntry entry, String filePath) 
-		throws RepositoryServiceException {
-		//return new String[] {getFilePath(folder, entry, fileName)};
-		return null;
+	public void readVersion(Folder folder, FolderEntry entry, String relativeFilePath, String versionName, OutputStream out) throws RepositoryServiceException {
+		// Simply ignore version name. 
+		read(folder, entry, relativeFilePath, out);
 	}
 
 	public void checkout(Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
-		// Noop 
+		// Silently ignore this request so that application can continue to 
+		// work even with this crappy implementation. 
 	}
 
-	public void checkin(Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
-		// Noop
+	public void uncheckout(Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+		// Simply ignore it. 
 	}
 
-	public boolean supportVersioning() {
-		return false;
+	public String checkin(Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
+		// Simply return an empty string for version name.  
+		return "";
 	}
 
-	public boolean supportCheckout() {
-		return false;
+	public boolean isCheckedOut(Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+		// Simply say no - this is a noxious implementation :)
+		return false; 
 	}
 
 	public boolean supportVersionDeletion() {
