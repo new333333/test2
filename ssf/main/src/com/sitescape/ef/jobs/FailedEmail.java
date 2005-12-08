@@ -12,7 +12,7 @@ public interface FolderFailedEmail {
      * This key is used to uniquely identify a type of processor (ie, a 
      * concrete class implementing this interface).
      */
-    public static final String PROCESSOR_KEY = "processorKey_folderFailedEmail";
+    public static final String PROCESSOR_KEY = "processorKey_failedEmailJob";
 	public static final String RETRY_NOTIFICATION_GROUP="retry-send-email-notification";
 
     public void schedule(Scheduler scheduler, Folder folder, JavaMailSender mailSender, MimeMessage mail);
