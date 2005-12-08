@@ -12,7 +12,7 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebUrlUtil;
 
 /**
-* Handle unammed attachments in mail notification.  This implememtation will
+* Handle unnamed attachments in mail notification.  This implememtation will
 * send the file name on a summary type notification and will send the actual
 * attached file on a full notification.
 * @author Janet McCann
