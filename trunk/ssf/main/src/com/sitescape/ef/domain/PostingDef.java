@@ -21,9 +21,9 @@ public class PostingDef extends PersistentObject {
     
     private int replyPostingOption = RETURN_TO_SENDER;
     private boolean enabled=false;
-    private String emailAddress;
     private String subject;
     private Binder binder;
+    private Long emailId;
  
     /**
      * @hibernate.property 
@@ -46,14 +46,15 @@ public class PostingDef extends PersistentObject {
     	this.binder = binder;
     }
     /**
-     * @hibernate.property length="256" 
+     * The mapping from id to address is kept in the scheduler.
+     * @hibernate.property
      * @return
      */
-    public String getEmailAddress() {
-        return emailAddress;
+    public Long getEmailId() {
+    	return emailId;
     }
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    public void setEmailId(Long emailId) {
+    	this.emailId = emailId;
     }
     /**
      * @hibernate.property length="256" 
@@ -65,7 +66,9 @@ public class PostingDef extends PersistentObject {
     public void setSubject(String subject) {
         this.subject = subject;
     }
-    public SearchTerm getSearchTerm() {
+    public SearchTerm getSearchTerm(String emailAddress) {
+    	if (emailId == null) return null;
+    	
     	if (Validator.isNull(emailAddress)) return null;
     	if (Validator.isNull(subject)) {
     		return new RecipientStringTerm(Message.RecipientType.TO,emailAddress);

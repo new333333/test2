@@ -10,8 +10,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.Date;
+import java.util.Collection;
 import java.text.ParseException;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -27,13 +29,13 @@ import com.sitescape.ef.jobs.EmailPosting;
 import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.module.mail.PostingConfig;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.FunctionExistsException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.jobs.Schedule;
-import com.sitescape.ef.module.admin.PostingConfig;
+import com.sitescape.ef.domain.PostingDef;
 /**
  * @author Janet McCann
  *
@@ -130,11 +132,75 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
        	getPostingObject().enable(enable);
     }
  
+    /**
+     * Update the schedule and alias list.  The alias map should map String names to a Long.  In the case of a name change
+     * we accept a List of longs.  This code will update existing forum mappings.
+     */
     public void setPostingConfig(PostingConfig postingConfig) throws ParseException {
+    	PostingConfig old = new PostingConfig(getPostingObject().getScheduleInfo());
+    	Collection oldA = old.getAliases().values();
+    	Collection newA = postingConfig.getAliases().values();
+    	List postings = getCoreDao().loadPostings();
+    	//first combine alias values into 1 id.  This handles a rename when the new nae is the same as an oldname.
+    	// support this so the UI( doesn't have to go and modify all the forum mappings
+       	for (Iterator iter=postingConfig.getAliases().entrySet().iterator(); iter.hasNext(); ) {
+       		//id is null if new mapping
+    		Map.Entry newE = (Map.Entry)iter.next();
+    		if ((newE.getValue() != null) && (newE.getValue() instanceof Collection)) {
+        		Long value = null;
+    			Collection values = (Collection)newE.getValue();
+    			for (Iterator x=values.iterator(); x.hasNext();) {
+   					Long pValue = (Long)x.next();
+   	   				if (pValue != null) {
+   	   					if (value == null) {
+   	   						value = pValue;
+   	   					} else {
+   	   						//fix up existing binder mappings - 2 aliases have been combined into 1
+   	   						for (int i=0; i<postings.size(); ++i) {
+   	   							PostingDef post = (PostingDef)postings.get(i);
+   	   							if (pValue.equals(post.getEmailId())) {
+   	   								post.setEmailId(value);
+   	   							}
+   	   						}
+   	   					}	
+   	   				}
+   	   				
+    			}
+    			postingConfig.getAliases().put(newE.getKey(), value);
+    		}
+    	}
+    	//remove entries that are not in the new set
+    	long maxId=-1;
+    	for (Iterator iter=oldA.iterator(); iter.hasNext(); ) {
+    		Long id = (Long)iter.next();
+    		if (id != null) {
+    			if (newA.contains(id)) {
+    	   			if (id.longValue() > maxId) maxId = id.longValue();
+    			} else {
+    				//need to remove from existing postings - assume list isn't that big
+    				for (int i=0; i<postings.size(); ++i) {
+    					PostingDef post = (PostingDef)postings.get(i);
+    					if (id.equals(post.getEmailId())) {
+    						post.setEmailId(null);
+    					}
+    				}
+    			}
+    		}
+    	}
+    	//build map of new entries
+    	HashMap additions = new HashMap();
+       	for (Iterator iter=postingConfig.getAliases().entrySet().iterator(); iter.hasNext(); ) {
+       		//id is null if new mapping
+    		Map.Entry newE = (Map.Entry)iter.next();
+    		if (newE.getValue() == null) {
+    			additions.put(newE.getKey(), new Long(++maxId));
+    		}
+    	}
+       	postingConfig.getAliases().putAll(additions);
     	getPostingObject().setScheduleInfo(postingConfig);
     	
     }
-    public PostingConfig getPostingConfig() {	
+    public PostingConfig getPostingConfig() {
        	return new PostingConfig(getPostingObject().getScheduleInfo());
     }
     public List getPostingDefs() {
@@ -158,6 +224,31 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
                     "Cannot instantiate EmailPosting of type '"
                             + emailPostingClass + "'");
         }
+    }
+    public void modifyPosting(Long binderId, String postingId, Map updates) {
+    	//posting defs are defined by admin
+    	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
+//TODO: acl check
+    	//Locate the posting
+   		PostingDef post = binder.getPosting(postingId); 
+    	if (post != null) ObjectBuilder.updateObject(post, updates);
+    }
+    public void addPosting(Long binderId, Map updates) {
+       	//posting defs are defined by admin
+    	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
+//TODO: acl check
+   		PostingDef post = new PostingDef();
+		ObjectBuilder.updateObject(post, updates);
+		binder.addPosting(post);
+    }    	
+    public void deletePosting(Long binderId, String postingId) {
+       	//posting defs are defined by admin
+    	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
+//TODO: acl check
+   		PostingDef post = binder.getPosting(postingId); 
+    	if (post != null) binder.removePosting(post);
+    }
+    public void setPostings(Long binderId, List updates) {
     }
  
     public void addFunction(Function function) {

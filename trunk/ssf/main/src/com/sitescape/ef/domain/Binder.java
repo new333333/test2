@@ -145,16 +145,32 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
         this.notificationDef = notificationDef;
     }
     /**
-     * @hibernate.bag  lazy="true" cascade="all" inverse="true" optimistic-lock="false" 
+     * @hibernate.bag  lazy="true" cascade="all,delete-orphan" inverse="true" optimistic-lock="false" 
      * @hibernate.key column="binder" 
      * @hibernate.one-to-many class="com.sitescape.ef.domain.PostingDef" 
      * @return
      */
     public List getPostings() {
-        return postings;
+    	if (postings == null) return new ArrayList();
+    	return postings;
     }
     public void setPostings(List postings) {
         this.postings = postings;
+    }
+    public void addPosting(PostingDef post) {
+    	post.setBinder(this);
+    	postings.add(post);
+    }
+    public void removePosting(PostingDef post) {
+    	postings.remove(post);
+    }
+    public PostingDef getPosting(String postingId) {
+       	for (int i=0; i<postings.size(); ++i) {
+    		PostingDef post = (PostingDef)postings.get(i);
+    		if (post.getId().equals(postingId)) 
+    			return post;
+       	}
+       	return null;
     }
     /**
      * @hibernate.component prefix="owner_" node="owner"

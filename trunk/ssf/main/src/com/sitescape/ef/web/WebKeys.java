@@ -90,6 +90,7 @@ public class WebKeys {
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_ID = "ssEntryId";
     public static final String FOLDER = "ssFolder";
+    public static final String FOLDERS = "ssFolders";
     public static final String FOLDER_DOM_TREE="ssFolderDomTree";
     public static final String FOLDER_ENTRY="ssFolderEntry";
     public static final String FOLDER_ENTRIES="ssFolderEntries";
@@ -138,7 +139,6 @@ public class WebKeys {
     public static final String VIEW_ADMIN_CONFIGURE_NOTIFICATION="administration/configureNotify";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING="administration/configurePosting";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING_JOB="administration/configurePostingJob";
-    public static final String VIEW_ADMIN_CONFIGURE_ALIASES="administration/configurePostingAliases";
     //servlet paths
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";

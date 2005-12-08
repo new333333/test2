@@ -1,4 +1,4 @@
-package com.sitescape.ef.module.admin;
+package com.sitescape.ef.module.mail;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
@@ -28,6 +28,17 @@ public class PostingConfig extends ScheduleInfo {
 	}
 	public void setAliases(Map aliases) {
 		getDetails().put("aliases", aliases);
+	}
+	public Map getIds() {
+		Map aliases = (Map)getDetails().get("aliases");
+		if (aliases == null) return new HashMap();
+		Map ids = new HashMap();
+		//invert map
+		for (Iterator iter=aliases.entrySet().iterator(); iter.hasNext(); ) {
+     		Map.Entry newE = (Map.Entry)iter.next();
+     		ids.put(newE.getValue(), newE.getKey());
+		}
+		return ids;
 	}
 	public String getAlias(Long id) {
       	if (id == null) return null;
