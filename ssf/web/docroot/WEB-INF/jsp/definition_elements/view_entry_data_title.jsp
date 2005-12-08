@@ -5,7 +5,7 @@
 <%
 	if (!ssSeenMap.checkIfSeen(ssDefinitionEntry)) {
 		ssSeenMap.setSeen(ssDefinitionEntry);
-		%><img border="0" src="<html:imagesPath/>sym_s_unseen.gif"><%
+		%><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
 	}
 %>
 <c:out value="${ssDefinitionEntry.docNumber}"/>. 
