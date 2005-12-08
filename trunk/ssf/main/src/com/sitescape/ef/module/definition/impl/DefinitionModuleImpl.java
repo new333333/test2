@@ -8,6 +8,7 @@ import com.sitescape.ef.repository.RepositoryServiceNames;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
+import com.sitescape.ef.util.PortletRequestUtils;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Definition;
@@ -75,15 +76,15 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 		Definition def = getDefinition(id);
 		if (def != null) {
 			
-			//Also store the name and title in the definition document
+			//Store the name and title (If they are not blank) in the definition object and in the definition document
 			Document defDoc = def.getDefinition();
-			defDoc.getRootElement().addAttribute("name", name);
-			defDoc.getRootElement().addAttribute("caption", title);
+			if (!name.equals("")) defDoc.getRootElement().addAttribute("name", name);
+			if (!title.equals("")) defDoc.getRootElement().addAttribute("caption", title);
+			
+			//set definition name after we get definition, so definition doc file will be found before the name is changed
+			if (!name.equals("")) def.setName(name);
+			if (!title.equals("")) def.setTitle(title);
 			def.setDefintion(defDoc);
-			//set name after we get definition, so file will exist
-			def.setName(name);
-			def.setTitle(title);
-
 		}
 	}
 	
@@ -98,6 +99,18 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 	public void modifyDefinitionProperties(String id, Map formData) {
 		Definition def = getDefinition(id);
 		if (def != null) {			
+			String definitionName = "";
+			if (formData.containsKey("propertyId_name")) {
+				definitionName = ((String[]) formData.get("propertyId_name"))[0];
+			}
+			if (definitionName.equals("")) definitionName = def.getName();
+			String definitionCaption = "";
+			if (formData.containsKey("propertyId_caption")) {
+				definitionCaption = ((String[]) formData.get("propertyId_caption"))[0];
+			}
+			if (definitionCaption.equals("")) definitionCaption = def.getTitle();
+			modifyDefinitionName(id, definitionName, definitionCaption);
+			
 			//Store the properties in the definition document
 			Document defDoc = def.getDefinition();
 			this.getDefinitionConfig();
@@ -105,8 +118,12 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 			String type = String.valueOf(def.getType());
 			Element definition = (Element) configRoot.selectSingleNode("item[@definitionType='"+type+"']");
 			if (definition != null) {
+				//Make sure the definition name and caption remain consistent
+				Map formData2 = new HashMap(formData);
+				formData2.put("propertyId_name", new String[]{def.getName()});
+				formData2.put("propertyId_caption", new String[]{def.getTitle()});
 				//Add the properties
-				processProperties(def.getId(), definition, defDoc.getRootElement(), formData);
+				processProperties(def.getId(), definition, defDoc.getRootElement(), formData2);
 			}
 			def.setDefintion(defDoc);
 		}
