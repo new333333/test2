@@ -20,6 +20,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.util.FileHelper;
+import com.sitescape.ef.util.SPropsUtil;
 
 /**
  * An implementation of file-based repository which supports neither versioning
@@ -37,13 +38,9 @@ public class FileRepositoryService implements RepositoryService {
 	private static final String TEMP_STRING = "_ssftempfile_";
 	
 	private String rootDirPath;
-	
-	public String getRootDirPath() {
-		return rootDirPath;
-	}
 
-	public void setRootDirPath(String rootPath) throws IOException {
-		this.rootDirPath = new File(rootPath).getCanonicalPath();
+	public void setRootDirProperty(String rootDirProperty) throws IOException {
+		this.rootDirPath = new File(SPropsUtil.getString(rootDirProperty)).getCanonicalPath();
 		
 		if(!rootDirPath.endsWith(File.separator))
 			rootDirPath += File.separator;
