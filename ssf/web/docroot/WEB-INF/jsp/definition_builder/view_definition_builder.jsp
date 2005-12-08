@@ -394,8 +394,11 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 <%
 	//Show the preview area
 	if (data.containsKey("selectedItem") && !data.get("selectedItem").equals("")) {
+		String selectedItem = (String)data.get("selectedItem");
+		//See if this is an entry definition
 		Element configElement = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='entryForm']");
 		if (configElement != null) {
+			//This is an entry definition; so show the preview of the form
 			String definitionName = (String) ((Document) data.get("sourceDefinition")).getRootElement().attributeValue("caption","");
 			request.setAttribute("definitionEntry", new FolderEntry());
 			request.setAttribute("configElement", configElement);
@@ -425,6 +428,46 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 </div>
 
 <%
+		} else {
+	 		//See if this is a workflow definition
+	 		Element workflowElement = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='workflowProcess']");
+			if (workflowElement != null) {
+				//This is a workflow definition, show the applet
+				String definitionName = (String) ((Document) data.get("sourceDefinition")).getRootElement().attributeValue("caption","");
+%>
+
+<br>
+<hr class="portlet-section-header">
+<br>
+
+<div class="ss_portlet">
+<div align="center" width="100%">
+  <span class="ss_titlebold">
+    <ssf:nlt tag="definition.workflow_preview" text="Workflow Preview"/><br><%= definitionName %>
+  </span>
+
+<br>
+	<applet archive="workflow-viewer/workflow-viewer.jar,colt.jar,commons-collections-3.1.jar,jung-1.7.0.jar,dom4j.jar,jaxen.jar" 
+	  code="com.sitescape.ef.applets.workflowviewer.WorkflowViewer" 
+	  codebase="<html:rootPath/>applets" height="600" width="100%" >
+	  <param name="xmlGetUrl" value="<ssf:url 
+    		webPath="viewDefinitionXml" >
+			<ssf:param name="id" value="<%= selectedItem %>" />
+    		</ssf:url>"/>
+	  <param name="xmlPostUrl" value="<ssf:url 
+		    adapter="true" 
+		    portletName="ss_administration" 
+		    action="viewDefinitionXml" 
+		    actionUrl="true" >
+			<ssf:param name="id" value="<%= selectedItem %>" />
+		    </ssf:url>"/>
+	  <param name="nltSaveLayout" value="<ssf:nlt tag="definition.workflow_save_layout" text="Save layout"/>"/>
+	</applet>
+</div>
+<br>
+</div>
+<%
+			}
 		}
 	}
 %>

@@ -26,6 +26,7 @@ public interface DefinitionModule {
 	public void modifyDefinitionName(String id, String name, String caption);
 	public void modifyDefinitionAttribute(String id, String key, String value);
 	public void modifyDefinitionProperties(String id, Map formData);
+	public void saveDefinitionLayout(String id, Map formData);
 
 	/**
 	 * Adds an item to an item in a definition tree.
