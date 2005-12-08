@@ -239,25 +239,36 @@ public class PortletRequestImpl implements PortletRequest, MultipartFileSupport 
 		return req;
 	}
 
+	/**
+	 * Return iterator over file names if they exist.
+	 * Otherwise, returns <code>null</code>.
+	 */
 	public Iterator getFileNames() {
 		if(req instanceof MultipartHttpServletRequest)
 			return ((MultipartHttpServletRequest) req).getFileNames();
 		else
-			throw new InternalException();
+			return null;
 	}
 
+	/**
+	 * Returns Spring's MultipartFile datastsructure if relevant. 
+	 * Otherwise, returns <code>null</code>.
+	 */
 	public MultipartFile getFile(String name) {
 		if(req instanceof MultipartHttpServletRequest)
 			return ((MultipartHttpServletRequest) req).getFile(name);
 		else
-			throw new InternalException();
+			return null;
 	}
 
+	/**
+	 * Returns file map if they exist. Otherwise returns <code>null</code>.
+	 */
 	public Map getFileMap() {
 		if(req instanceof MultipartHttpServletRequest)
 			return ((MultipartHttpServletRequest) req).getFileMap();
 		else
-			throw new InternalException();
+			return null;
 	}
 	
 	public PortletContext getPortletContext() {
