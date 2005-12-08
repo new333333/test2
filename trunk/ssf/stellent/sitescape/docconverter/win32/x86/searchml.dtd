@@ -1,0 +1,123 @@
+<!-- SearchML XML DTD v2.0 -->
+<!-- 
+
+		Copyright (C) 2000-2005 Stellent, Inc.
+		All rights reserved.
+
+		This work is protected by United States and international copyright
+		laws and contains certain trade secret information. All use of this
+		work is governed by the terms of agreements between Stellent
+		and its licensees or potential licensees. Disclosure of the contents
+		is prohibited.
+	
+ -->
+<!-- Predefined entities from the XML specification -->
+<!ENTITY lt "&#38;#60;">
+<!ENTITY gt "&#62;">
+<!ENTITY amp "&#38;#38;">
+<!ENTITY apos "&#39;">
+<!ENTITY quot "&#34;">
+
+<!ENTITY % hexBinary "CDATA">
+<!ENTITY % integer "CDATA">
+<!ENTITY % nonNegativeInteger "CDATA">
+<!ENTITY % string "CDATA">
+<!-- EDocContentType Enumeration -->
+<!ENTITY % EDocContentType "(body | sub_doc | frame | text_box )">
+<!-- EOnOff Enumeration -->
+<!ENTITY % EOnOff "(on | off )">
+<!-- begin_tag Element -->
+<!ELEMENT begin_tag EMPTY>
+<!ATTLIST begin_tag
+	type %string; #REQUIRED
+>
+<!-- doc_content Element -->
+<!ELEMENT doc_content (p | document | doc_content)*>
+<!ATTLIST doc_content
+	type %EDocContentType; #REQUIRED
+>
+<!-- doc_properties Element -->
+<!ELEMENT doc_properties (doc_property)*>
+<!ATTLIST doc_properties
+>
+<!-- doc_property Element -->
+<!ELEMENT doc_property (#PCDATA)>
+<!ATTLIST doc_property
+	type %string; #IMPLIED
+><!-- 
+	Common values for the doc_property types:<br><br>
+
+	comment, keyword, last_saved_by,<br>
+	primary_author, subject, title, abstract,<br>
+	account, address, attachments,<br>
+	authorization, backup_date,<br>
+	bill_to, blind_copy, carbon_copy,<br>
+	category, checked_by, client,<br>
+	completed_date, character_count,<br>
+	page_count, word_count, creation_date,<br>
+	department, destination, disposition,<br>
+	division, edit_minutes, editor, forward_to,<br>
+	group, language, last_print_date,<br>
+	mail_stop, matter, office, operator,<br>
+	owner, project, publisher, purpose,<br>
+	received_from, recorded_by,<br>
+	recorded_date, reference, revision_date,<br>
+	revision_notes, revision_number,<br>
+	secondary_author, section, security,<br>
+	source, status, doc_type, typist,<br>
+	version_date, version_notes, version_number,<br>
+	base_file_location, manager, company
+				 -->
+
+<!-- document Element -->
+<!ELEMENT document (doc_properties | doc_content)*>
+<!ATTLIST document
+	type %string; #IMPLIED
+>
+<!-- end_tag Element -->
+<!ELEMENT end_tag EMPTY>
+<!ATTLIST end_tag
+	type %string; #REQUIRED
+>
+<!-- offset Element -->
+<!ELEMENT offset EMPTY>
+<!ATTLIST offset
+	value %nonNegativeInteger; #REQUIRED
+>
+<!-- generated Element -->
+<!ELEMENT generated (#PCDATA | r | record)*>
+<!-- record Element -->
+<!ELEMENT record (p)*>
+<!-- p Element -->
+<!ELEMENT p (#PCDATA | begin_tag | end_tag | document | doc_content | doc_property | r | offset | generated | record)*>
+<!ATTLIST p
+	fli %integer; #IMPLIED
+	h %string; #IMPLIED
+	li %integer; #IMPLIED
+	oce %hexBinary; #IMPLIED
+	offset %nonNegativeInteger; #IMPLIED
+	ri %integer; #IMPLIED
+	s %string; #IMPLIED
+	spacing %string; #IMPLIED
+>
+<!-- r Element -->
+<!ELEMENT r (#PCDATA | offset | begin_tag | end_tag)*>
+<!ATTLIST r
+	allcaps %EOnOff; #IMPLIED
+	b %EOnOff; #IMPLIED
+	du %EOnOff; #IMPLIED
+	hidden %EOnOff; #IMPLIED
+	i %EOnOff; #IMPLIED
+	oce %hexBinary; #IMPLIED
+	outline %EOnOff; #IMPLIED
+	smallcaps %EOnOff; #IMPLIED
+	so %EOnOff; #IMPLIED
+	u %EOnOff; #IMPLIED
+	unknown_mapping %EOnOff; #IMPLIED
+>
+<!-- searchml Element -->
+<!ELEMENT searchml (document)>
+<!ATTLIST searchml
+	xmlns CDATA #FIXED "http://www.outsideinsdk.com/xmlns/searchml2"
+	xmlns %string; #FIXED "http://www.outsideinsdk.com/xmlns/searchml2"
+>

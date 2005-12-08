@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<project name="war" basedir="." default="war">
+	<target name="init">
+		<echo message="##### WAR #####" />
+		<property environment="env" />
+  		<property name="project.dir" value=".." />
+  		<property file="${project.dir}/app.server.${user.name}.properties" />
+  		<property file="${project.dir}/app.server.properties" />
+  		<property file="${project.dir}/build.${user.name}.properties" />
+  		<property file="${project.dir}/build.properties" />
+  		<property file="${project.dir}/release.${user.name}.properties" />
+  		<property file="${project.dir}/release.properties" />
+		<path id="project.classpath">
+			<pathelement path="${classpath}" />
+			<fileset dir="${project.dir}/lib" includes="*.jar" />
+		</path>
+		<taskdef classpathref="project.classpath" resource="axis-tasks.properties" />
+		<property name="war.file" value="ssf.war" />
+	</target>
+
+	<target name="clean" depends="init">
+		<delete>
+			<fileset dir="." includes="${war.file}" />
+		</delete>
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="pro-war" />
+		</delete>
+	</target>
+
+	<target name="war" depends="init">
+
+		<copy todir="pro-war/WEB-INF/classes">
+			<fileset dir="${project.dir}/main/classes" includes="**/*.hbm.xml" />
+		</copy>
+		
+		<copy todir="pro-war/WEB-INF/lib">
+			<fileset dir="${project.dir}/main" includes="ssf-main.jar" />
+			<fileset dir="${project.dir}/util" includes="ssf-util.jar" />
+			<fileset dir="${project.dir}/taglib" includes="ssf-taglib.jar" />
+			<fileset dir="${project.dir}/indexer-lucene" includes="ssf-luceneapi.jar" />
+			<fileset dir="${project.dir}/lib" includes="${libraries.current}" />
+			<fileset dir="${project.dir}/lib" includes="jms.jar,jta.jar,mail.jar" />
+		</copy>
+
+		<copy file="${project.dir}/web/ssf-web.war" tofile="${war.file}" overwrite="yes" />
+		<war
+			basedir="pro-war"
+			destfile="${war.file}"
+			update="yes"
+		/>
+
+	</target>
+	
+</project>

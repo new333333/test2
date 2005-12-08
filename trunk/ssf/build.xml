@@ -1,0 +1,682 @@
+<?xml version="1.0"?>
+
+<project name="ssf" basedir="." default="compile">
+	<target name="init-app-server">
+		<property environment="env" />
+  		<property file="app.server.${user.name}.properties" />
+  		<property file="app.server.properties" />
+		<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+			<classpath>
+				<pathelement location="lib/ant-contrib.jar" />
+			</classpath>
+		</taskdef>
+		<propertycopy name="app.server.dir" from="app.server.${app.server.type}.dir" />
+		<propertycopy name="app.server.bin.dir" from="app.server.${app.server.type}.bin.dir" />
+		<propertycopy name="app.server.deploy.dir" from="app.server.${app.server.type}.deploy.dir" />
+		<propertycopy name="app.server.lib.dir" from="app.server.${app.server.type}.lib.dir" />
+		<propertycopy name="app.server.server.dir" from="app.server.${app.server.type}.server.dir" />
+	</target>
+
+	<target name="init-build">
+		<property environment="env" />
+  		<property file="build.${user.name}.properties" />
+  		<property file="build.properties" />
+	</target>
+
+	<target name="init-release">
+		<property environment="env" />
+  		<property file="release.${user.name}.properties" />
+  		<property file="release.properties" />
+	</target>
+
+	<target name="all" depends="clean,start,deploy-liferay" />
+
+	<target name="start">
+		<antcall target="compile" />
+		<!--
+  		<ant dir="main" target="build-db" />
+		<ant dir="main" target="build-newscategories" />-->
+<!--		<ant dir="main" target="build-reverendfun" /> -->
+		<!--
+  		<ant dir="main" target="build-skin" />
+  		<ant dir="main" target="build-website" />-->
+		<antcall target="jar" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${tmp.dir}" />
+		<delete dir="liferay/temp" />
+		<ant dir="util" target="clean" />
+		<ant dir="indexer-lucene" target="clean" />
+
+		<ant dir="applets" target="clean" />
+
+		<ant dir="main" target="clean" />
+		<ant dir="taglib" target="clean" />
+
+		<ant dir="web" target="clean" />
+
+		<ant dir="war" target="clean" />
+	</target>
+
+	<target name="compile">
+		<ant dir="util" target="compile" />
+		<ant dir="indexer-lucene" target="compile" />
+		<ant dir="main" target="compile-common" />
+
+		<ant dir="applets" target="compile" />
+
+		<ant dir="main" target="compile" />
+		<!--<ant dir="taglib" target="deploy-local" />-->
+		<ant dir="taglib" target="compile" />
+	</target>
+
+	<target name="jar">
+		<ant dir="util" target="jar" />
+		<ant dir="indexer-lucene" target="jar" />
+
+		<ant dir="applets" target="deploy-local" />
+
+		<ant dir="main" target="compile-common" />
+		<ant dir="main" target="jar" />
+		<ant dir="taglib" target="jar" />
+		<!--<ant dir="taglib" target="deploy-local" />-->
+
+		<ant dir="web" target="war" />
+
+		<ant dir="war" target="war" />
+	</target>
+
+	<target name="java2html">
+		<delete dir="api" />
+
+		<ant dir="util" target="java2html" />
+
+		<ant dir="applets" target="java2html" />
+
+		<ant dir="main" target="java2html" />
+		<ant dir="indexer-lucene" target="java2html" />
+		<ant dir="taglib" target="java2html" />
+	</target>
+
+	<target name="javadoc">
+		<ant dir="util" target="javadoc" />
+		<ant dir="indexer-lucene" target="javadoc" />
+
+		<ant dir="applets" target="javadoc" />
+
+		<ant dir="main" target="javadoc" />
+		<ant dir="filters" target="javadoc" />
+		<ant dir="taglib" target="javadoc" />
+	</target>
+
+	<target name="deploy-liferay-init" depends="init-app-server,init-build">
+		<if>
+			<equals arg1="${app.server.type}" arg2="tomcat" />
+			<then>
+				<path id="deploy.liferay.classpath">
+					<pathelement location="${env.ANT_HOME}/lib/ant.jar" />
+					<fileset dir="${app.server.dir}/common/lib/ext" />
+					<pathelement location="${app.server.dir}/common/lib/servlet-api.jar" />
+				</path>
+				<property name="deploy.liferay.portlet.tld" value="${app.server.dir}/liferay/WEB-INF/tld/liferay-portlet.tld" />
+				<property name="deploy.liferay.taglib.jar" value="${app.server.dir}/liferay/WEB-INF/lib/util-taglib.jar" />
+				<property name="deploy.liferay.util.jar" value="${app.server.dir}/common/lib/ext/util-java.jar" />
+			</then>
+			<elseif>
+				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
+				<then>
+					<path id="deploy.liferay.classpath">
+						<pathelement location="${app.server.deploy.dir}/ext.ear/portal-ejb.jar" />
+						<pathelement location="${env.ANT_HOME}/lib/ant.jar" />
+						<fileset dir="${app.server.deploy.dir}/ext.ear/lib" />
+						<pathelement location="${app.server.deploy.dir}/../lib/javax.servlet.jar" />
+					</path>
+					<property name="deploy.liferay.portlet.tld" value="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/WEB-INF/tld/liferay-portlet.tld" />
+					<property name="deploy.liferay.taglib.jar" value="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/WEB-INF/lib/util-taglib.jar" />
+					<property name="deploy.liferay.util.jar" value="${app.server.deploy.dir}/ext.ear/lib/util-java.jar" />
+				</then>
+			</elseif>
+		</if>
+	</target>
+	
+	<target name="deploy-liferay" depends="deploy-liferay-init">
+		<delete dir="liferay/temp" />
+		<!--<delete>
+			<fileset dir="liferay/temp" defaultexcludes="no">
+				<include name="*.war" />
+			</fileset>
+		</delete>-->
+		<copy file="war/ssf.war" todir="liferay/temp" />
+		
+		<java
+			classname="com.liferay.portal.tools.PortletDeployer"
+			classpathref="deploy.liferay.classpath"
+			fork="true"
+			newenvironment="true">
+
+				<!-- Required Arguments -->
+
+				<jvmarg value="-Ddeployer.base.dir=liferay/temp/" />
+				<jvmarg value="-Ddeployer.dest.dir=${app.server.deploy.dir}" />
+				<jvmarg value="-Ddeployer.app.server.type=${app.server.type}" />
+				<jvmarg value="-Ddeployer.portlet.taglib.dtd=${deploy.liferay.portlet.tld}" />
+
+				<!-- Optional Arguments -->
+
+				<jvmarg value="-Ddeployer.jboss.prefix=1" />
+				<jvmarg value="-Ddeployer.tomcat.lib.dir=${app.server.dir}/common/lib/ext" />
+
+				<!-- Dependent Libraries -->
+
+				<arg value="${deploy.liferay.taglib.jar}" />
+				<arg value="${deploy.liferay.util.jar}" />
+				<!--<arg value="${app.server.deploy.dir}/ext.ear/lib/util-jsf.jar" />-->
+		</java>
+	</target>
+		
+		
+		
+	<target name="clean-app-server" depends="init-release">
+		<if>
+			<or>
+				<equals arg1="${app.server.type}" arg2="jetty" />
+				<equals arg1="${app.server.type}" arg2="tomcat" />
+			</or>
+			<then>
+				<delete dir="${app.server.dir}/ssf" />
+			</then>
+			<else>
+				<delete dir="${app.server.deploy.dir}/ssf.ear" />
+			</else>
+		</if>
+
+		<!--<if>
+			<equals arg1="${app.server.type}" arg2="tomcat" />
+			<then>
+				<delete dir="${app.server.dir}/common/classes" />
+				<mkdir dir="${app.server.dir}/common/classes" />
+			</then>
+		</if>
+
+		<delete dir="${app.server.lib.dir}" />
+		<mkdir dir="${app.server.lib.dir}" />-->
+
+		<if>
+			<or>
+				<equals arg1="${app.server.type}" arg2="jboss-jetty" />
+				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
+			</or>
+			<then>
+				<if>
+					<equals arg1="${logs.truncate}" arg2="on" />
+					<then>
+						<delete dir="${app.server.server.dir}/log" />
+						<mkdir dir="${app.server.server.dir}/log" />
+					</then>
+				</if>
+
+				<delete dir="${app.server.server.dir}/tmp" />
+				<mkdir dir="${app.server.server.dir}/tmp" />
+
+				<delete dir="${app.server.server.dir}/work" />
+				<mkdir dir="${app.server.server.dir}/work" />
+			</then>
+			<elseif>
+				<equals arg1="${app.server.type}" arg2="jetty" />
+				<then>
+					<if>
+						<equals arg1="${logs.truncate}" arg2="on" />
+						<then>
+							<delete dir="${app.server.dir}/logs" />
+							<mkdir dir="${app.server.dir}/logs" />
+						</then>
+					</if>
+
+					<delete dir="${app.server.dir}/webapps" />
+					<mkdir dir="${app.server.dir}/webapps" />
+
+					<delete dir="${app.server.dir}/work" />
+					<mkdir dir="${app.server.dir}/work" />
+				</then>
+			</elseif>
+			<elseif>
+				<or>
+					<equals arg1="${app.server.type}" arg2="jonas-jetty" />
+					<equals arg1="${app.server.type}" arg2="jonas-tomcat" />
+				</or>
+				<then>
+					<delete dir="${app.server.dir}/conf/jonas" />
+
+					<if>
+						<equals arg1="${logs.truncate}" arg2="on" />
+						<then>
+							<delete>
+								<fileset dir="${app.server.dir}/logs" includes="jonas*.*,*.txt" />
+							</delete>
+						</then>
+					</if>
+
+					<delete dir="${app.server.dir}/work" />
+					<mkdir dir="${app.server.dir}/work" />
+				</then>
+			</elseif>
+			<elseif>
+				<or>
+					<equals arg1="${app.server.type}" arg2="oc4j" />
+					<equals arg1="${app.server.type}" arg2="orion" />
+				</or>
+				<then>
+					<delete dir="${app.server.dir}/application-deployments" />
+					<mkdir dir="${app.server.dir}/application-deployments" />
+
+					<if>
+						<equals arg1="${logs.truncate}" arg2="on" />
+						<then>
+							<delete dir="${app.server.dir}/log" />
+							<mkdir dir="${app.server.dir}/log" />
+						</then>
+					</if>
+
+					<delete dir="${app.server.dir}/persistence" />
+					<mkdir dir="${app.server.dir}/persistence/ejb" />
+				</then>
+			</elseif>
+			<elseif>
+				<equals arg1="${app.server.type}" arg2="rexip" />
+				<then>
+					<delete dir="${app.server.bin.dir}/work" />
+					<mkdir dir="${app.server.bin.dir}/work" />
+				</then>
+			</elseif>
+			<elseif>
+				<equals arg1="${app.server.type}" arg2="tomcat" />
+				<then>
+					<if>
+						<equals arg1="${logs.truncate}" arg2="on" />
+						<then>
+							<delete dir="${app.server.dir}/logs" />
+							<mkdir dir="${app.server.dir}/logs" />
+						</then>
+					</if>
+
+					<delete dir="${app.server.dir}/temp" />
+					<mkdir dir="${app.server.dir}/temp" />
+
+					<delete dir="${app.server.dir}/webapps" />
+					<mkdir dir="${app.server.dir}/webapps" />
+
+					<delete dir="${app.server.dir}/work" />
+					<mkdir dir="${app.server.dir}/work" />
+				</then>
+			</elseif>
+			<elseif>
+				<equals arg1="${app.server.type}" arg2="weblogic" />
+				<then>
+					<delete>
+						<fileset dir="${app.server.bin.dir}" includes="config.xml.*,mydomain.log*" />
+					</delete>
+					<delete dir="${app.server.bin.dir}/applications/.wlnotdelete" />
+					<delete>
+						<fileset dir="${app.server.bin.dir}/myserver" excludes=".app_poller_lastrun" />
+					</delete>
+					<delete dir="${app.server.bin.dir}/myserver/.internal" />
+					<delete dir="${app.server.bin.dir}/myserver/.wlnotdelete" />
+					<delete dir="${app.server.bin.dir}/myserver/ldap" />
+				</then>
+			</elseif>
+		</if>
+
+		<ant dir="ext-ejb" target="clean" inheritAll="false" />
+		<ant dir="ext-web" target="clean" inheritAll="false" />
+
+		<if>
+			<or>
+				<equals arg1="${app.server.type}" arg2="jonas-jetty" />
+				<equals arg1="${app.server.type}" arg2="jonas-tomcat" />
+			</or>
+			<then>
+				<delete>
+					<fileset dir="${app.server.bin.dir}/nt" includes="test.*" />
+				</delete>
+				<delete>
+					<fileset dir="${app.server.bin.dir}/unix" includes="test.*" />
+				</delete>
+			</then>
+			<else>
+				<delete>
+					<fileset dir="${app.server.bin.dir}" includes="test.*" />
+				</delete>
+			</else>
+		</if>
+	</target>
+
+	<target name="deploy-from-ext" depends="init-release">
+		<if>
+			<or>
+				<equals arg1="${app.server.type}" arg2="jetty" />
+				<equals arg1="${app.server.type}" arg2="rexip" />
+				<equals arg1="${app.server.type}" arg2="tomcat" />
+			</or>
+			<then>
+				<property name="ear.lib.dir" value="${app.server.lib.dir}" />
+			</then>
+			<else>
+				<property name="ear.lib.dir" value="${app.server.deploy.dir}/ext.ear/lib" />
+			</else>
+		</if>
+
+		<copy todir="${ear.lib.dir}">
+			<fileset
+				dir="lib"
+				includes="${libraries.current.ss},${libraries.current.3rd}"
+			/>
+		</copy>
+
+		<if>
+			<or>
+				<equals arg1="${app.server.type}" arg2="jetty" />
+				<equals arg1="${app.server.type}" arg2="tomcat" />
+			</or>
+			<then>
+				<copy todir="${ear.lib.dir}">
+					<fileset
+						dir="lib"
+						includes="jms.jar,jta.jar,mail.jar"
+					/>
+				</copy>
+			</then>
+		</if>
+
+		<if>
+			<equals arg1="${app.server.type}" arg2="tomcat" />
+			<then>
+				<unjar src="lib/log4j.jar" dest="${app.server.dir}/common/classes">
+					<patternset>
+						<include name="org/apache/log4j/xml/log4j.dtd" />
+					</patternset>
+				</unjar>
+				<move file="${app.server.dir}/common/classes/org/apache/log4j/xml/log4j.dtd" tofile="${app.server.dir}/common/classes/META-INF/log4j.dtd" />
+				<delete dir="${app.server.dir}/common/classes/org" />
+
+				<copy file="servers/tomcat.log4j.properties" tofile="${app.server.dir}/common/classes/log4j.properties" />
+			</then>
+		</if>
+
+		<delete>
+			<fileset
+				dir="${ear.lib.dir}"
+				includes="${libraries.old}"
+			/>
+		</delete>
+
+		<copy todir="${app.server.lib.dir}">
+			<fileset dir="ext-lib" />
+		</copy>
+
+		<if>
+			<or>
+				<equals arg1="${app.server.type}" arg2="oc4j" />
+				<equals arg1="${app.server.type}" arg2="orion" />
+				<equals arg1="${app.server.type}" arg2="rexip" />
+				<equals arg1="${app.server.type}" arg2="tomcat" />
+				<equals arg1="${app.server.type}" arg2="weblogic" />
+			</or>
+			<then>
+				<copy file="lib/hsql.jar" todir="${app.server.lib.dir}" />
+			</then>
+		</if>
+
+		<ant dir="ext-ear" target="deploy" inheritAll="false" />
+		<ant dir="ext-ejb" target="deploy" inheritAll="false" />
+		<ant dir="ext-web" target="deploy" inheritAll="false" />
+
+		<if>
+			<or>
+				<equals arg1="${app.server.type}" arg2="jonas-jetty" />
+				<equals arg1="${app.server.type}" arg2="jonas-tomcat" />
+			</or>
+			<then>
+				<copy todir="${app.server.bin.dir}/nt">
+					<fileset dir="sql">
+						<include name="test.*" />
+					</fileset>
+				</copy>
+				<copy todir="${app.server.bin.dir}/unix">
+					<fileset dir="sql">
+						<include name="test.*" />
+					</fileset>
+				</copy>
+			</then>
+			<else>
+				<copy todir="${app.server.bin.dir}">
+					<fileset dir="sql">
+						<include name="test.*" />
+					</fileset>
+				</copy>
+			</else>
+		</if>
+	</target>
+	
+		
+			
+			
+	<target name="clean-tomcat" depends="init-release">
+		<delete dir="${app.server.dir}/liferay" />
+		<delete dir="${app.server.dir}/common/classes" />
+		<mkdir dir="${app.server.dir}/common/classes" />
+		<delete dir="${app.server.lib.dir}" />
+		<mkdir dir="${app.server.lib.dir}" />
+	</target>
+			
+	<target name="clean-jboss-tomcat" depends="init-release">
+		<delete dir="${app.server.deploy.dir}/ext.ear" />
+		<delete dir="${app.server.lib.dir}" />
+		<mkdir dir="${app.server.lib.dir}" />
+	</target>
+						
+	<target name="clean-ext" depends="init-release">
+		<echo file="${lp.ext.dir}/app.server.${user.name}.properties">
+			lp.ext.dir=${lp.ext.dir}
+			app.server.type=jboss-jetty
+		</echo>
+		<ant dir="${lp.ext.dir}" target="clean" />
+
+		<echo file="${lp.ext.dir}/app.server.${user.name}.properties">
+			lp.ext.dir=${lp.ext.dir}
+			app.server.type=jboss-tomcat
+		</echo>
+		<ant dir="${lp.ext.dir}" target="clean" />
+
+		<echo file="${lp.ext.dir}/app.server.${user.name}.properties">
+			lp.ext.dir=${lp.ext.dir}
+			app.server.type=jetty
+		</echo>
+		<ant dir="${lp.ext.dir}" target="clean" />
+
+		<echo file="${lp.ext.dir}/app.server.${user.name}.properties">
+			lp.ext.dir=${lp.ext.dir}
+			app.server.type=jonas-jetty
+		</echo>
+		<ant dir="${lp.ext.dir}" target="clean" />
+
+		<echo file="${lp.ext.dir}/app.server.${user.name}.properties">
+			lp.ext.dir=${lp.ext.dir}
+			app.server.type=jonas-tomcat
+		</echo>
+		<ant dir="${lp.ext.dir}" target="clean" />
+
+		<echo file="${lp.ext.dir}/app.server.${user.name}.properties">
+			lp.ext.dir=${lp.ext.dir}
+			app.server.type=tomcat
+		</echo>
+		<ant dir="${lp.ext.dir}" target="clean" />
+	</target>
+
+	<target name="clean-ext-tomcat" depends="init-release">
+		<echo file="${lp.ext.dir}/app.server.${user.name}.properties">
+			lp.ext.dir=${lp.ext.dir}
+			app.server.type=tomcat
+		</echo>
+		<ant dir="${lp.ext.dir}" target="clean" />
+	</target>
+
+	<target name="clean-ext-jboss-tomcat" depends="init-release">
+		<echo file="${lp.ext.dir}/app.server.${user.name}.properties">
+			lp.ext.dir=${lp.ext.dir}
+			app.server.type=jboss-tomcat
+		</echo>
+		<ant dir="${lp.ext.dir}" target="clean" />
+	</target>
+
+	<target name="zip">
+		<antcall target="zip-api" />
+		<antcall target="zip-jboss" />
+		<antcall target="zip-jetty" />
+		<antcall target="zip-jonas" />
+		<antcall target="zip-sql" />
+		<antcall target="zip-src" />
+		<antcall target="zip-tomcat" />
+  		<ant dir="indexer-lucene" target="zip" />
+  		<ant dir="stellent" target="zip" />
+	</target>
+
+	<target name="zip-api" depends="init-release">
+		<delete file="liferay-portal-ent-${lp.version}-doc.zip" failonerror="false" />
+		<zip zipfile="liferay-portal-ent-${lp.version}-doc.zip"
+			basedir="."
+			includes="api/**/*.css,api/**/*.gif,api/**/*.html"
+		/>
+	</target>
+
+	<target name="zip-jboss" depends="init-release">
+		<delete file="liferay-portal-ent-${lp.version}-jboss-jetty.zip" failonerror="false" />
+		<zip zipfile="liferay-portal-ent-${lp.version}-jboss-jetty.zip"
+			basedir="${lp.ext.dir}/servers/jboss-jetty"
+		/>
+
+		<delete file="liferay-portal-ent-${lp.version}-jboss-tomcat.zip" failonerror="false" />
+		<zip zipfile="liferay-portal-ent-${lp.version}-jboss-tomcat.zip"
+			basedir="${lp.ext.dir}/servers/jboss-tomcat"
+		/>
+	</target>
+
+	<target name="zip-jetty" depends="init-release">
+		<delete file="liferay-portal-pro-${lp.version}-jetty.zip" failonerror="false" />
+		<zip zipfile="liferay-portal-pro-${lp.version}-jetty.zip"
+			basedir="${lp.ext.dir}/servers/jetty"
+		/>
+	</target>
+
+	<target name="zip-jonas" depends="init-release">
+		<delete file="liferay-portal-ent-${lp.version}-jonas-jetty.zip" failonerror="false" />
+		<zip zipfile="liferay-portal-ent-${lp.version}-jonas-jetty.zip"
+			basedir="${lp.ext.dir}/servers/jonas-jetty"
+		/>
+
+		<delete file="liferay-portal-ent-${lp.version}-jonas-tomcat.zip" failonerror="false" />
+		<zip zipfile="liferay-portal-ent-${lp.version}-jonas-tomcat.zip"
+			basedir="${lp.ext.dir}/servers/jonas-tomcat"
+		/>
+	</target>
+
+	<target name="zip-sql" depends="init-release">
+		<delete file="liferay-portal-ent-${lp.version}-sql.zip" failonerror="false" />
+		<zip zipfile="liferay-portal-ent-${lp.version}-sql.zip"
+			basedir="sql"
+			includes="**/*.sql"
+		/>
+	</target>
+
+	<target name="zip-src" depends="init-release">
+		<delete file="liferay-portal-ent-${lp.version}-src.zip" failonerror="false" />
+		<zip zipfile="liferay-portal-ent-${lp.version}-src.zip"
+			basedir="${lp.source.dir}"
+			excludes="**/CVS/**"
+		/>
+	</target>
+
+	<target name="zip-tomcat" depends="init-release">
+		<delete file="liferay-portal-pro-${lp.version}-tomcat.zip" failonerror="false" />
+		<zip zipfile="liferay-portal-pro-${lp.version}-tomcat.zip"
+			basedir="${lp.ext.dir}/servers/tomcat"
+		/>
+	</target>
+
+	<target name="release" depends="init-release">
+		<!--
+		<cvs
+			cvsRoot=":ext:bwchan@cvs.sourceforge.net:/cvsroot/lportal"
+			cvsRsh="ssh"
+			command="update -CdP"
+			package="portal"
+			dest="${lp.source.dir}"
+		/>
+
+		<cvs
+			cvsRoot=":ext:bwchan@cvs.sourceforge.net:/cvsroot/lportal"
+			cvsRsh="ssh"
+			command="tag -c ${lp.cvs.tag}"
+			package="portal"
+			dest="${lp.source.dir}"
+		/>
+		-->
+
+		<delete>
+			<fileset dir="${lp.source.dir}" defaultexcludes="no">
+				<include name="**/.#*" />
+			</fileset>
+		</delete>
+
+		<antcall target="clean" />
+		<antcall target="start" />
+		<antcall target="java2html" />
+		<antcall target="build-ext" />
+		<antcall target="build-ext-jboss-jetty" />
+		<antcall target="build-ext-jboss-tomcat" />
+		<antcall target="build-ext-jetty" />
+		<antcall target="build-ext-jonas-jetty" />
+		<antcall target="build-ext-jonas-tomcat" />
+		<antcall target="build-ext-tomcat" />
+		<antcall target="zip" />
+
+		<copy file="ear/ssf.ear" tofile="ssf-${lp.version}.ear" />
+		<copy file="ear/ssf.war" tofile="ssf-${lp.version}.war" />
+
+		<!--
+		<ftp server="upload.sourceforge.net"
+			userid="anonymous"
+			password="anonymous@anonymous.com"
+			remotedir="/incoming"
+			verbose="yes"
+		>
+			<fileset dir="." includes="*${lp.version}*.*" />
+		</ftp>
+		-->
+	</target>
+
+	<target name="test-release" depends="init-release">
+		<antcall target="clean" />
+		<antcall target="start" />
+		<antcall target="build-ext" />
+		<antcall target="build-ext-jboss-jetty" />
+		<antcall target="build-ext-jboss-tomcat" />
+		<antcall target="build-ext-jetty" />
+		<antcall target="build-ext-jonas-jetty" />
+		<antcall target="build-ext-jonas-tomcat" />
+		<antcall target="build-ext-tomcat" />
+	</target>
+
+	<target name="tcpmon" description="Run Apache Axis tcpmon utility">
+		<java classname="org.apache.axis.utils.tcpmon" fork="true" failonerror="true">
+			<arg value="8079"/> 		<!-- Listen port tcpmon is monitoring -->
+			<arg value="localhost"/>	<!-- Target host to forward to --> 
+			<arg value="8080"/>			<!-- Target port to forward to -->
+			<classpath>
+				<pathelement location="lib/axis.jar" />
+				<pathelement location="lib/axis-ant.jar" />
+			</classpath>
+		</java>
+	</target>
+
+</project>

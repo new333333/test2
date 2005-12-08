@@ -1,0 +1,48 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory name="ssf">
+		
+		<!-- Set the JNDI location of the SiteScape datasource. -->
+		<property name="connection.datasource">jdbc/SiteScapePool</property>
+		<!-- Use the SIteScape connection provider to lookup JNDI datasource
+		     because it works across multiple J2EE servers. -->
+		<property name="connection.provider_class">com.sitescape.util.dao.hibernate.DSConnectionProvider</property>
+		<!-- Use the SIteScape SQL dialect because it will automatically detect 
+		     the proper SQL dialect based on your connection URL. -->
+		<property name="dialect">com.sitescape.util.dao.hibernate.DynamicDialect</property>
+		<!-- Other miscellaneous Hibernate properties. -->
+		<property name="max_fetch_depth">3</property>
+		<property name="use_outer_join">false</property>
+		<property name="cache.use_query_cache">true</property>
+		<property name="statement_cache.size">20</property>
+		<property name="jdbc.batch_size">0</property>
+		<property name="jdbc.use_scrollable_resultset">true</property>
+		<property name="cglib.use_reflection_optimizer">false</property>
+		<!--<property name="cache.provider_class">net.sf.hibernate.cache.EhCacheProvider</property>-->
+		<property name="show_sql">true</property>
+	
+		<!-- Mappings -->
+		<mapping resource="com/sitescape/ef/security/function/Function.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/security/function/WorkAreaFunctionMembership.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/Binder.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/Principal.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/Attachment.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/Membership.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/CustomAttribute.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/Notification.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/WorkflowDef.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/WorkflowStateDef.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/FolderEntry.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/Role.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/Definition.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/Event.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/FolderCounts.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/HistoryMap.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/SeenMap.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/UserProperties.hbm.xml"/>
+	    
+	</session-factory>
+</hibernate-configuration>

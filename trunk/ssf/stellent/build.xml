@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<project name="stellent" basedir="." default="zip">
+	<target name="init">
+		<echo message="##### STELLENT #####" />
+	</target>
+		
+	<target name="init-release" depends="init">
+        <property environment="env" />
+    	<property name="zip.name" value="sitescape-docconverter" />
+  		<property file="../release.${user.name}.properties" />
+  		<property file="../release.properties" />
+	</target>
+
+	<target name="zip" depends="init-release">
+		<delete file="../${zip.name}-${docconverter.version}.zip" failonerror="false" />
+		<zip destfile="../${zip.name}-${docconverter.version}.zip"
+			basedir="."
+			includes="sitescape/**/*"
+		/>
+	</target>
+
+</project>
