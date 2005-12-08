@@ -1,0 +1,13 @@
+<strings>
+   <str xml:lang="en" name="TOC">Table of contents</str>
+   <str xml:lang="en" name="forumLabel">Forum:</str>
+   <str xml:lang="en" name="ChangedOne">changed entry in </str>
+   <str xml:lang="en" name="ChangedMany">changed entries in </str>
+   <str xml:lang="en" name="fromLabel">From</str>
+   <str xml:lang="en" name="dateLabel">Date</str>
+   <str xml:lang="en" name="folderLabel">Folder</str>
+   <str xml:lang="en" name="newEntry">new</str>
+   <str xml:lang="en" name="modifiedEntry">modified</str>
+   <str xml:lang="en" name="workflowEntry">Workflow state modified</str>
+
+</strings>
