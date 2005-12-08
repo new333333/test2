@@ -16,9 +16,16 @@
 	} else {
 		caption = "<b>"+caption+"</b><br>";
 	}
+	String required = (String) request.getAttribute("property_required");
+	if (required == null) {required = "";}
+	if (required.equals("true")) {
+		required = "<span class=\"ss_required\">*</span>";
+	} else {
+		required = "";
+	}
 %>
 <div class="ss_entryContent">
-<div class="ss_labelAbove"><%= caption %></div>
+<span class="ss_labelAbove"><%= caption %><%= required %></span>
 <textarea name="<%= elementName %>" wrap="virtual"
   rows="<%= rows %>" <%= width %> 
 ><c:out value="${ssFolderEntry.customAttributes[property_name].value}"/></textarea>

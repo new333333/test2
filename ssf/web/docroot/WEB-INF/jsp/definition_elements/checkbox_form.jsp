@@ -13,13 +13,19 @@
 	} else {
 		inline = "block";
 	}
+	String required = (String) request.getAttribute("property_required");
+	if (required == null) {required = "";}
+	if (required.equals("true")) {
+		required = "<span class=\"ss_required\">*</span>";
+	} else {
+		required = "";
+	}
 %>
 <c:set var="cb_checked" value=""/>
 <c:if test="${ssFolderEntry.customAttributes[property_name].value}" >
 <c:set var="cb_checked" value="checked"/>
 </c:if>
-<div class="formBreak">
-<div style="display:<%= inline %>;">
-<input type="checkbox" name="<%= elementName %>" <c:out value="${cb_checked}"/>>&nbsp;<span class="ss_content"><%= caption %></span></checkbox>
+<div class="ss_contentEntry" style="display:<%= inline %>;">
+<input type="checkbox" name="<%= elementName %>" <c:out value="${cb_checked}"/>>&nbsp;<span class="ss_labelRight"><%= caption %><%= required %></span></checkbox>
 </div>
-</div>
+<div class="ss_divider"></div>

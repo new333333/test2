@@ -13,7 +13,7 @@
 	if (caption == null || caption.equals("")) {
 		caption = "";
 	} else {
-		caption = "<b>"+caption+"</b><br>";
+		caption = caption;
 	}
 	if (inline == null) {inline = "block";}
 	if (inline.equals("true")) {
@@ -21,7 +21,16 @@
 	} else {
 		inline = "block";
 	}
+	String required = (String) request.getAttribute("property_required");
+	if (required == null) {required = "";}
+	if (required.equals("true")) {
+		required = "<span class=\"ss_required\">*</span>";
+	} else {
+		required = "";
+	}
 %>
-<div style="display:<%= inline %>;"><%= caption %>
+<div class="ss_entryContent" style="display:<%= inline %>;">
+<span class="ss_labelAbove"><%= caption %><%= required %></span>
 <input type="file" name="<%= elementName %>" <%= width %> >
 </div>
+<div class="ss_divider"></div>

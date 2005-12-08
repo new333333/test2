@@ -10,12 +10,19 @@
 	request.setAttribute("radioGroupName", elementName);
 	String caption = (String) request.getAttribute("property_caption");
 	if (caption != null && !caption.equals("")) {
-		caption = "<span class='content'>" + caption + "</span>\n<br/>\n";
+		caption = caption;
 	}
 	String checked = "";
+	String required = (String) request.getAttribute("property_required");
+	if (required == null) {required = "";}
+	if (required.equals("true")) {
+		required = "<span class=\"ss_required\">*</span>";
+	} else {
+		required = "";
+	}
 %>
 <div class="ss_entryContent">
-<div class="ss_labelLeft"><%= caption %></div>
+<span class="ss_labelAbove"><%= caption %><%= required %></span>
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= item %>" 
   configJspStyle="<%= ssConfigJspStyle %>" />
