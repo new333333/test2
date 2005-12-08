@@ -1,4 +1,4 @@
-package com.sitescape.ef.security.acl;
+package com.sitescape.ef.security.acl.impl;
 
 import java.util.Iterator;
 import java.util.List;
