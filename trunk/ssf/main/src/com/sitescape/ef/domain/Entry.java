@@ -398,7 +398,7 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     			
     			Iterator vIter=vals.iterator();
     			if (vIter.hasNext()) {
-    				Object obj = iter.next();
+    				Object obj = vIter.next();
     				//see if set of attachments
     				if (obj instanceof Attachment) {
     					vals.remove(attachment);
