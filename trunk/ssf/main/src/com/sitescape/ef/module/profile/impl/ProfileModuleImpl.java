@@ -235,17 +235,9 @@ public class ProfileModuleImpl implements ProfileModule {
     	}
     }
     public void bulkDisableUsers(Collection ids) {
-    	Collection users = coreDao.loadUsers(ids);
-    	for (Iterator iter=users.iterator(); iter.hasNext();) {
-    		User user = (User)iter.next();
-    		if (!user.isReserved()) user.setDisabled(true);
-    	}
+    	coreDao.disablePrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
     }
     public void bulkDisableGroups(Collection ids) {
-    	Collection groups = coreDao.loadGroups(ids);
-    	for (Iterator iter=groups.iterator(); iter.hasNext();) {
-    		Group group = (Group)iter.next();
-    		if (!group.isReserved()) group.setDisabled(true);
-    	}
-    }
+    	coreDao.disablePrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+   }
 }

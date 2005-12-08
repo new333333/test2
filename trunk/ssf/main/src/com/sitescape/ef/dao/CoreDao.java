@@ -69,8 +69,9 @@ public interface CoreDao {
      * @param ids
      * @return
      */
-    public List loadPrincipals(Collection ids);
-    /**
+    public List loadPrincipals(Collection ids, String zoneName);
+    public void disablePrincipals(Collection ids, String zoneName);
+   /**
      * Check that user is in zone
      * @param userId
      * @param zoneName

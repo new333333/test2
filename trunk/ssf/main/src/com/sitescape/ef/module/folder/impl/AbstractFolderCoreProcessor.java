@@ -531,7 +531,7 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
            ids.add(entry.getModification().getPrincipal().getId());
        if (entry.getReservedDoc() != null) 
            ids.add(entry.getReservedDoc().getPrincipal().getId());
-       getCoreDao().loadPrincipals(ids);
+       getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
     } 
    
     protected void loadEntryHistory(List pList) {
@@ -547,7 +547,7 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
            if (entry.getReservedDoc() != null) 
                ids.add(entry.getReservedDoc().getPrincipal().getId());
        }
-       getCoreDao().loadPrincipals(ids);
+       getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
     }     
     public Document buildIndexDocumentFromEntry(Folder folder, FolderEntry entry) {
         Document indexDoc = new Document();
