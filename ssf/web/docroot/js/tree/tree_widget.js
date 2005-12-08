@@ -51,8 +51,8 @@ function Tree_defineNode(nodeId, parentId, image, imageOpen) {
 		var c = this.nodeList[parentId].childCount++;
 		this.nodeList[parentId].children[c] = nodeId;
 	}
-	n.imageClosed = this.imageBase + "/" + image;
-	n.imageOpen = this.imageBase + "/" + imageOpen;
+	n.imageClosed = this.imageBase + image;
+	n.imageOpen = this.imageBase + imageOpen;
 }
 
 function Tree_getNode(nodeId) {
@@ -330,15 +330,15 @@ function Tree_defineBasicIcons(tree) {
 	
 	// More icons
 	
-	treeIconsClosed['doc'] = tree.imageBase + "/document_library/doc.gif";
-	treeIconsClosed['pdf'] = tree.imageBase + "/document_library/pdf.gif";
-	treeIconsClosed['ppt'] = tree.imageBase + "/document_library/ppt.gif";
-	treeIconsClosed['rtf'] = tree.imageBase + "/document_library/rtf.gif";
-	treeIconsClosed['sxc'] = tree.imageBase + "/document_library/sxc.gif";
-	treeIconsClosed['sxi'] = tree.imageBase + "/document_library/sxi.gif";
-	treeIconsClosed['sxw'] = tree.imageBase + "/document_library/sxw.gif";
-	treeIconsClosed['txt'] = tree.imageBase + "/document_library/txt.gif";
-	treeIconsClosed['xls'] = tree.imageBase + "/document_library/xls.gif";
+	treeIconsClosed['doc'] = tree.imageBase + "/trees/file_types/doc.gif";
+	treeIconsClosed['pdf'] = tree.imageBase + "/trees/file_types/pdf.gif";
+	treeIconsClosed['ppt'] = tree.imageBase + "/trees/file_types/ppt.gif";
+	treeIconsClosed['rtf'] = tree.imageBase + "/trees/file_types/rtf.gif";
+	treeIconsClosed['sxc'] = tree.imageBase + "/trees/file_types/sxc.gif";
+	treeIconsClosed['sxi'] = tree.imageBase + "/trees/file_types/sxi.gif";
+	treeIconsClosed['sxw'] = tree.imageBase + "/trees/file_types/sxw.gif";
+	treeIconsClosed['txt'] = tree.imageBase + "/trees/file_types/txt.gif";
+	treeIconsClosed['xls'] = tree.imageBase + "/trees/file_types/xls.gif";
 
 	tree.defineIcons(treeIcons, treeIconsClosed, treeIconsOpen)
 }
