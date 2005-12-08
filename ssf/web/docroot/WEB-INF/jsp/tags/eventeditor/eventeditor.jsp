@@ -152,10 +152,11 @@
 <c:set var="day4sel" value="" />
 <c:set var="day5sel" value="" />
 <c:set var="day6sel" value="" />
+<c:set var="daynum" value="" />
+<c:set var="dowstring" value="" />
 
 <c:forEach var="daypos" items="${initEvent.byDay}">
 <c:choose>
-
 <c:when test="${daypos.dayOfWeek == 1}">
 <c:set var="day0sel" value="yes" />
 </c:when>
@@ -177,8 +178,34 @@
 <c:when test="${daypos.dayOfWeek == 7}">
 <c:set var="day6sel" value="yes" />
 </c:when>
-
 </c:choose>
+
+<% // we only implement daynum (onDayCard) for months... in that case,
+   // there will only be one DayPositiion entry in the array
+%>
+<c:choose>
+<c:when test="${daypos.dayPosition == 0}" >
+<c:set var="daystring" value="none" />
+</c:when>
+<c:when test="${daypos.dayPosition == 1}" >
+<c:set var="daystring" value="first" />
+</c:when>
+<c:when test="${daypos.dayPosition == 2}" >
+<c:set var="daystring" value="second" />
+</c:when>
+<c:when test="${daypos.dayPosition == 3}" >
+<c:set var="daystring" value="third" />
+</c:when>
+<c:when test="${daypos.dayPosition == 4}" >
+<c:set var="daystring" value="fourth" />
+</c:when>
+<c:when test="${daypos.dayPosition == 5}" >
+<c:set var="daystring" value="last" />
+</c:when>
+</c:choose>
+
+<c:set var="dowstring" value="${daypos.dayOfWeekString}" />
+
 </c:forEach>
 
 <input type="hidden" name="${prefix}_day0" value="${day0sel}">
@@ -188,8 +215,8 @@
 <input type="hidden" name="${prefix}_day4" value="${day4sel}">
 <input type="hidden" name="${prefix}_day5" value="${day5sel}">
 <input type="hidden" name="${prefix}_day6" value="${day6sel}">
-<input type="hidden" name="${prefix}_onDayCard">
-<input type="hidden" name="${prefix}_dow">
+<input type="hidden" name="${prefix}_onDayCard" value="${daystring}">
+<input type="hidden" name="${prefix}_dow" value="${dowstring}">
 
 <% // end of recurrence hidden fields %>
 </c:if>
