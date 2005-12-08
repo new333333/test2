@@ -187,12 +187,22 @@ h1.ss_entryTitle {
   margin-bottom: .5em;
   margin-top: .5em;
   }
-  
+ 
 /* spacer between form/view elements */
 div.ss_divider {
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-bottom: .5em;
+  margin-top: .5em;
+  background: url("/html/pics/1pix.gif") fixed no-repeat;
   }  
+
+/* container for entry content: description, signature, attachments, data gathered from entry form */
+div.ss_entryContent {
+  margin: 0px 0px 0px 0px;
+  padding: 2px;
+  border-style: solid;
+  border-width: thin;
+  border-color: #efefef;
+}
 
 /* styles for labels: required for forms; optional for views */
 .ss_labelAbove {
@@ -256,22 +266,10 @@ span.ss_toolLeft {
   }
   
 /* div.ss_toolbar is dynamically defined in view_css.jsp to specify the background color */
-/* div.ss_toolbar_item is the div that contains each item on the Forum toolbar */
-div.ss_toolbar_item {
-  display: inline;
-  text-align: left;
-  margin: 2px;
-  padding-right: 2px;
-  padding-left: 2px;
-  padding-bottom: 2px;
-  padding-top: 2px;
-  }
-
-/* span.ss_toolbar_item specifies the font and positioning of tools on the Forum toolbar */
-
 /* Link text on the toolbar */
 a.ss_toolbar_item {
   display: inline;
+  text-align: left;
   font-weight: bold;
   font-size:smaller;
   text-decoration: none;
@@ -299,7 +297,8 @@ a.ss_toolbar_item:hover {
   }
 
 /* drop-down menu */
-/* Font and positioning for tool menu popup (icon is hot) and toolbar delimiters (not hot) */
+/* span.ss_toolbar_item specifies the font and positioning of tools on the Forum toolbar */
+/* for tool menu popup (icon is hot, not text) and toolbar delimiters (not hot) */
 span.ss_toolbar_item {
   display: inline;
   font-weight: bold;
@@ -329,7 +328,7 @@ div.ss_toolbar_menu {
 
 /* These are for the Next/Prev History and Next/Prev Entries buttons. */
 /* Useful if the goal is to put a button on the far left and a button on the far right. */
-span.ss_toolLeft {
+span.ss_buttonBarLeft {
   display: inline;
   text-align: left;
   float: left;
@@ -337,9 +336,10 @@ span.ss_toolLeft {
   font-size: smaller;
   color: #000000;
   font-family: arial, helvetica, sans-serif;
+  padding: 5px;
   }
   
-span.ss_toolRight {
+span.ss_buttonBarRight {
   display: inline;
   text-align: right;
   float: right;
@@ -481,19 +481,15 @@ input.ss_submit:hover {
 
 /* ------------------------------------------------------------------------ */
 /* folder styles */
+/* folders use ss_entryTitle */
 div.ss_folder {
   margin: 0em .8em 0em .8em;
   }
 
-h1.ss_folderTitle {
-  font-weight: bold;
-  font-size: small;
-  font-family: arial, helvetica, sans-serif;
-  color: #000000;
-  margin-bottom: .5em;
-  margin-top: .5em;
-  }
-  
+.highlightEntry {
+  background-color: #cccccc;
+}
+
 /* Widgets */
 /* box for small widgets (to avoid using tables to format. */
 /* use for date, time, event pickers, etc. */
