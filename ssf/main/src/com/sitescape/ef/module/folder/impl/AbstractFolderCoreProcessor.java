@@ -45,6 +45,7 @@ import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AclManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 //import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryBuilder;
 /**
  *
@@ -309,33 +310,25 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         IndexSynchronizationManager.addDocument(indexDoc);        
     }
     //***********************************************************************************************************
-    public org.dom4j.Document getDomFolderTree(Folder top) {
+    public org.dom4j.Document getDomFolderTree(Folder top, DomTreeBuilder domTreeHelper) {
        	getAccessControlManager().checkOperation(top, WorkAreaOperation.VIEW);
         User user = RequestContextHolder.getRequestContext().getUser();
     	Comparator c = new BinderComparator(user.getLocale());
     	    	
     	org.dom4j.Document wsTree = DocumentHelper.createDocument();
-    	Element rootElement = wsTree.addElement("root");
+    	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
     	      	
-  	    buildFolderDomTree(rootElement, (Folder)top, c);
+  	    buildFolderDomTree(rootElement, (Folder)top, c, domTreeHelper);
   	    return wsTree;
   	}
     
-    protected void buildFolderDomTree(Element current, Folder top, Comparator c) {
+    protected void buildFolderDomTree(Element current, Folder top, Comparator c, DomTreeBuilder domTreeHelper) {
        	Element next; 
        	Folder f;
-       	Workspace w;
-       	Element url;
     	   	
-       	current.addAttribute("type", "forum");
-    	current.addAttribute("title", top.getTitle());
-    	current.addAttribute("id", top.getId().toString());
-       	current.addAttribute("image", "forum");
-       	url = current.addElement("url");
-       	url.addAttribute("action", "view_forum");
-       	url.addAttribute(ObjectKeys.FORUM_ID, top.getId().toString());
-
-    	TreeSet folders = new TreeSet(c);
+       	//callback to setup tree
+    	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, top, current);
+     	TreeSet folders = new TreeSet(c);
     	folders.addAll(top.getFolders());
        	for (Iterator iter=folders.iterator(); iter.hasNext();) {
        		f = (Folder)iter.next();
@@ -345,8 +338,8 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
             } catch (AccessControlException ac) {
                	continue;
             }
-       		next = current.addElement("child");
-       		buildFolderDomTree(next, f, c);
+       		next = current.addElement(DomTreeBuilder.NODE_CHILD);
+       		buildFolderDomTree(next, f, c, domTreeHelper);
        	}
     }
     //***********************************************************************************************************
