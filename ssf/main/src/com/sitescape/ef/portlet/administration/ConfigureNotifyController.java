@@ -48,9 +48,7 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			userList.addAll(uIds);
 			
 			getAdminModule().updateNotification(folderId, input, userList);
-			response.setRenderParameter(WebKeys.ACTION, "");
-			response.setWindowState(WindowState.NORMAL);
-			response.setPortletMode(PortletMode.VIEW);
+			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, "");
 			response.setWindowState(WindowState.NORMAL);
@@ -112,12 +110,12 @@ public class ConfigureNotifyController extends  SAbstractController  {
 				model.put(WebKeys.SELECTED_USERS, uList);
 				model.put(WebKeys.SELECTED_GROUPS, gList);
 			}
-			return new ModelAndView("administration/configureNotify", model);		
+			return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_NOTIFICATION, model);		
 			
 		} catch (Exception e) {
 			//assume not selected yet
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(new TreeHelper(response));
-			return new ModelAndView("administration/configureNotify", WebKeys.WORKSPACE_DOM_TREE, wsTree);		
+			return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_NOTIFICATION, WebKeys.WORKSPACE_DOM_TREE, wsTree);		
 		}
 		
 	}

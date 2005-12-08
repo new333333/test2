@@ -98,4 +98,6 @@ public class WebKeys {
     public static final String VIEW_EDIT="forum/edit";
     public static final String VIEW_ADD_ENTRY = "forum/add_entry";
     public static final String VIEW_DEFINITION="definition_builder/view_definition_builder";
+    public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
+    public static final String VIEW_ADMIN_CONFIGURE_NOTIFICATION="administration/configureNotify";
 }
