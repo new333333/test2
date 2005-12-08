@@ -347,6 +347,7 @@ div.ss_widgetContent {
     PADDING-LEFT: 2px;
     FONT-SIZE: 10pt;
     visibility: hidden;
+    display: none;
     PADDING-BOTTOM: 2px;
     MARGIN: 2px;
     PADDING-TOP: 2px;
@@ -359,6 +360,7 @@ div.ss_widgetContent {
 	position: absolute;
 	z-index: 10;
 	visibility: hidden;
+	display: none;
 	background-color: #FFFFFF; 
 	color: #000000;
 	font-size: 11px;
