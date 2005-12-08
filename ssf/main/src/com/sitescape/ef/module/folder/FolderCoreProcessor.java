@@ -1,5 +1,6 @@
 package com.sitescape.ef.module.folder;
 
+import java.util.List;
 import java.util.Map;
 
 import org.dom4j.Document;
@@ -7,6 +8,7 @@ import org.dom4j.Document;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.security.AccessControlException;
 
@@ -43,7 +45,8 @@ public interface FolderCoreProcessor {
     	throws AccessControlException, WriteFilesException;
     public Document getDomFolderTree(Folder folder, DomTreeBuilder domTreeHelper);
 	public Map getFolderEntries(Folder folder, int maxNumEntries) throws AccessControlException;
-
+	public Hits getUnseenEntries(List folders, Map seenMaps);
+	
 	public Long addFolder(Folder parentFolder, Folder folder) throws AccessControlException;
     	  
     public FolderEntry getEntry(Folder parentFolderId, Long entryId, int type) throws AccessControlException;
