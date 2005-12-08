@@ -7,12 +7,10 @@ import org.apache.commons.logging.LogFactory;
 import com.liferay.portal.auth.AuthException;
 import com.liferay.portal.auth.Authenticator;
 
-import com.liferay.portal.util.SpringUtil;
+import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.domain.NoUserByTheNameException;
-
-import org.springframework.context.ApplicationContext;
 
 /**
  * @author Janet McCann
@@ -35,8 +33,7 @@ public class LdapPreAuth implements Authenticator {
 	 */
 	public int authenticateByUserId(String companyId, String loginName,
 			String password) throws AuthException {
-		ApplicationContext ctx = SpringUtil.getContext();
-    	LdapModule ldap = (LdapModule)ctx.getBean("ldapModule");
+    	LdapModule ldap = (LdapModule)SpringContextUtil.getBean("ldapModule");
  		try {
 			if (ldap.authenticate(companyId, loginName, password) == true) return Authenticator.SUCCESS;
 			return Authenticator.FAILURE;
