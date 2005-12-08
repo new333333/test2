@@ -256,11 +256,156 @@
 	<bean id="employeeModule" class="com.sitescape.ef.module.sample.impl.EmployeeModuleImpl">
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>
+	<bean id="workspaceModule" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="com.sitescape.ef.module.workspace.impl.WorkspaceModuleImpl">
+				<property name="coreDao"><ref local="coreDao"/></property>
+				<property name="accessControlManager"><ref local="accessControlManager"/></property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="profileModule" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="com.sitescape.ef.module.profile.impl.ProfileModuleImpl">
+				<property name="coreDao"><ref local="coreDao"/></property>
+				<property name="folderDao"><ref local="folderDao"/></property>
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="adminModule" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="com.sitescape.ef.module.admin.impl.AdminModuleImpl">
+				<property name="coreDao"><ref local="coreDao"/></property>
+<!--				<property name="scheduler"><ref local="scheduler"/></property> -->
+				<property name="processorManager"><ref local="modelProcessorManager"/></property>
+			</bean>
+		</property>
+	</bean>
+	<bean id="folderModule" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="com.sitescape.ef.module.folder.impl.FolderModuleImpl">
+				<property name="coreDao"><ref local="coreDao"/></property>
+				<property name="folderDao"><ref local="folderDao"/></property>
+				<property name="accessControlManager"><ref local="accessControlManager"/></property>
+				<property name="aclManager"><ref local="aclManager"/></property>
+				<property name="processorManager"><ref local="modelProcessorManager"/></property>
+				<property name="definitionModule"><ref local="definitionModule"/></property>
+			</bean>
+		</property>
+	</bean>
+	<bean id="defaultFolderCoreProcessor" class="com.sitescape.ef.module.folder.impl.LibraryCoreProcessor">
+		<property name="coreDao"><ref local="coreDao"/></property>
+		<property name="folderDao"><ref local="folderDao"/></property>
+		<property name="accessControlManager"><ref local="accessControlManager"/></property>
+		<property name="aclManager"><ref local="aclManager"/></property>
+		<property name="definitionModule"><ref local="definitionModule"/></property>
+	</bean>
+
+	<bean id="binderModule" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="com.sitescape.ef.module.binder.impl.BinderModuleImpl">
+				<property name="coreDao"><ref local="coreDao"/></property>
+				<property name="accessControlManager"><ref local="accessControlManager"/></property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="definitionModule" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="com.sitescape.ef.module.definition.impl.DefinitionModuleImpl">
+				<property name="definitionBuilderConfig">
+					<bean class="com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles">
+						<property name="configFiles">
+							<list>
+								<value>META-INF/definition_builder_config.xml</value>
+							</list>		
+						</property>
+						<!-- TODO: We must use validation! -->
+						<property name="validating"><value>true</value></property>
+					</bean>
+				</property>
+				<property name="coreDao"><ref local="coreDao"/></property>
+				<property name="accessControlManager"><ref local="accessControlManager"/></property>				
+			</bean>
+		</property>
+	</bean>
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host"><value>mail.mycompany.com</value></property>
+	</bean>
+	<bean id="mailMessage" class="org.springframework.mail.SimpleMailMessage">
+		<property name="from"><value>forum@sitescape.com</value></property>
+	</bean>
+	<bean id="mailModule" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager">
+			<ref bean="transactionManager"/>
+		</property>
+		<property name="target">
+			<ref bean="mailTarget"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="sendNotifications">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
+				<prop key="send*">PROPAGATION_REQUIRES_NEW,readOnly</prop>
+			</props>
+		</property>
+	</bean>	
+		
+	<bean id="mailTarget" class="com.sitescape.ef.module.mail.impl.MailModuleImpl">
+		<property name="coreDao"><ref local="coreDao"/></property>
+		<property name="processorManager"><ref local="modelProcessorManager"/></property>
+		<property name="mailSender"><ref bean="mailSender"/></property>
+		<property name="sampleMessage"><ref bean="mailMessage"/></property>
+!--		<property name="scheduler"><ref local="scheduler"/></property> -->
+	</bean>	
+	
+	<bean id="ldapModule" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager">
+			<ref bean="transactionManager"/>
+		</property>
+		<property name="target">
+			<ref bean="ldapTarget"/>
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="authenticate">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
+				<prop key="sync*">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
+				<prop key="set*">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
+				<prop key="get*">PROPAGATION_REQUIRES_NEW,readOnly</prop>
+			</props>
+		</property>
+	</bean>	
+		
+	<bean id="ldapTarget" class="com.sitescape.ef.module.ldap.impl.LdapModuleImpl">
+		<property name="coreDao"><ref local="coreDao"/></property>
+		<property name="processorManager"><ref local="modelProcessorManager"/></property>
+<!--		<property name="scheduler"><ref local="scheduler"/></property> -->
+		<property name="profileModule"><ref local="profileModule"/></property>
+	</bean>	
+	
+<-- =========================Portlet support =========================================================== -->	
+	<bean id="forumActionModule" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="com.sitescape.ef.portlet.forum.action.impl.ForumActionModuleImpl">
+				<property name="workspaceModule"><ref local="workspaceModule"/></property>		
+				<property name="profileModule"><ref local="profileModule"/></property>		
+				<property name="adminModule"><ref local="adminModule"/></property>		
+				<property name="folderModule"><ref local="folderModule"/></property>		
+				<property name="definitionModule"><ref local="definitionModule"/></property>		
+				<property name="mailModule"><ref local="mailModule"/></property>
+			</bean>
+		</property>
+	</bean>
 
 	<!-- ========================= Data Access (DAO) Components ====================== -->
 	
 	<bean id="coreDao" class="com.sitescape.ef.dao.impl.CoreDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+	<bean id="folderDao" class="com.sitescape.ef.dao.impl.FolderDaoImpl">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>
 
 	<bean id="authenticationManager" class="com.sitescape.ef.security.authentication.impl.AuthenticationManagerImpl">
