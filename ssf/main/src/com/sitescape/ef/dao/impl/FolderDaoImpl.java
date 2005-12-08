@@ -46,8 +46,6 @@ import com.sitescape.ef.util.Constants;
 public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	private String[] cfAttrs = new String[]{"parentFolder", "HKey.level"};
 	private OrderBy cfOrder = new OrderBy("HKey.sortKey", OrderBy.DESCENDING);
-	private Object[] cfValues = new Object[]{null, new Integer(1)};
-	private FilterControls childFilter = new FilterControls(cfAttrs, cfValues, cfOrder);
 	private CoreDao coreDao;
 	
 	public void setCoreDao(CoreDao coreDao) {
@@ -102,9 +100,9 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     }
  
     public Iterator queryChildEntries(Folder parentFolder) throws DataAccessException {
+    	Object[] cfValues = new Object[]{parentFolder, new Integer(1)};
     	// use default query
-    	cfValues[0] = parentFolder;
-    	return queryEntries(childFilter);
+     	return queryEntries(new FilterControls(cfAttrs, cfValues, cfOrder));
     }
     public List loadEntryAncestors(final FolderEntry entry) throws DataAccessException { 
         List result = (List)getHibernateTemplate().execute(

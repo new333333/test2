@@ -32,7 +32,7 @@ public class ObjectControls {
 		if ((attrNames!=null) && (attrNames.length != 0)) {
   	 		query.append("select ");
    	 		for (int i=0; i<attrNames.length; ++i) {
-   	 			query.append("x." + attrNames[i] + ",");
+   	 			query.append(alias + "." + attrNames[i] + ",");
    	 		}
    	 		//trim off trailing ,
    	 		query.deleteCharAt(query.length() -1);

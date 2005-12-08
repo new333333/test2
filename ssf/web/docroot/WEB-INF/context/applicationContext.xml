@@ -321,7 +321,7 @@
 					<bean class="com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles">
 						<property name="configFiles">
 							<list>
-								<value>META-INF/definition_builder_config.xml</value>
+								<value>config/definition_builder_config.xml</value>
 							</list>		
 						</property>
 						<!-- TODO: We must use validation! -->
@@ -358,7 +358,7 @@
 		<property name="coreDao"><ref local="coreDao"/></property>
 		<property name="processorManager"><ref local="modelProcessorManager"/></property>
 		<property name="mailSender"><ref bean="mailSender"/></property>
-		<property name="sampleMessage"><ref bean="mailMessage"/></property>
+		<property name="message"><ref bean="mailMessage"/></property>
 <!--		<property name="scheduler"><ref local="scheduler"/></property> -->
 	</bean>	
 	
