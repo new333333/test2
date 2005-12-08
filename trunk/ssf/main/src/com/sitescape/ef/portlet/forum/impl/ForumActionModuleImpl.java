@@ -2,11 +2,13 @@
 package com.sitescape.ef.portlet.forum.impl;
 
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.portlet.PortletURL;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderResponse;
+import java.text.SimpleDateFormat;
 
 import java.util.Calendar;
 import java.util.Iterator;
@@ -41,6 +43,7 @@ import com.sitescape.ef.util.PortletRequestUtils;
 import com.sitescape.ef.portlet.forum.ActionUtil;
 import com.sitescape.ef.portlet.forum.ForumActionModule;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.util.Toolbar;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebHelper;
@@ -48,6 +51,7 @@ import com.sitescape.ef.domain.DefinitionInvalidException;
 import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 import org.dom4j.Document;
@@ -246,6 +250,7 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		endViewCal.set(Calendar.SECOND, 0);
 		model.put(WebKeys.CALENDAR_CURRENT_VIEW_STARTDATE, startViewCal.getTime());
 		model.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE, endViewCal.getTime());
+		// these two longs will be used to determine if an event is in range
 		long startMillis = startViewCal.getTime().getTime();
 		long endMillis = endViewCal.getTime().getTime();
 		
@@ -255,6 +260,7 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 			Map customAttrs = e.getCustomAttributes();
 			Set keyset = customAttrs.keySet();
 			Iterator attIt = keyset.iterator();
+			// look through the custom attrs of this entry for any of type EVENT
 			while (attIt.hasNext()) {
 				CustomAttribute att = (CustomAttribute) customAttrs.get(attIt.next());
 				if (att.getValueType() == CustomAttribute.EVENT) {
@@ -263,21 +269,77 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 					long thisDateMillis = ev.getDtStart().getTime().getTime();
 					if (thisDateMillis < endMillis && startMillis < thisDateMillis) {
 						ArrayList entryList = new ArrayList();
+						// reslist is going to be a list of maps; each map will carry the entry and 
+						// also the event that caused this entry to be in range
 						ArrayList resList = new ArrayList();
+						Map res = new HashMap();
+						res.put("event", ev);
+						res.put("entry", e);
 						entryList  = (ArrayList) results.get(ev.getDtStart().getTime());
 						if (entryList == null) {
-							resList.add(e);
+							resList.add(res);
 						} else {
 							resList.addAll(entryList);
-							resList.add(e);
+							resList.add(res);
 						}
-						results.put(ev.getDtStart().getTime(), resList);
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+						String dateKey = sdf.format(ev.getDtStart().getTime());
+						results.put(dateKey, resList);
 					}
 				}
 			}
 		}
 		model.put(WebKeys.CALENDAR_EVENTDATES, results);
+		if (viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK)) {
+			getWeekBean(startViewCal, endViewCal, results, model);
+		}
 	}
+	
+	/**
+	 * populate the bean for weekly calendar view.
+	 * used by getEvents
+	 * argument results is a map keyed by dates; for each date, the val is a list maps of entries and events
+	 */
+	private void getWeekBean (Calendar startCal, Calendar endCal, Map eventDates, Map model) {
+		List weekBean = new ArrayList();
+		GregorianCalendar loopCal = new GregorianCalendar();
+		loopCal.setTime(startCal.getTime());
+		int i;
+		for (i=0; i<7; i++) {
+			HashMap daymap = new HashMap();
+			daymap.put(WebKeys.CALENDAR_DOW, DateHelper.getDayAbbrevString(loopCal.get(Calendar.DAY_OF_WEEK)));
+			daymap.put(WebKeys.CALENDAR_DOM, Integer.toString(loopCal.get(Calendar.DAY_OF_MONTH)));
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+			String dateKey = sdf.format(loopCal.getTime());
+			if (eventDates.containsKey(dateKey)) {
+				List evList = (List) eventDates.get(dateKey);
+				Iterator evIt = evList.iterator();
+				TreeMap dayEvents = new TreeMap();
+				while (evIt.hasNext()) {
+					// thisMap is the next entry, event pair
+					HashMap thisMap = (HashMap) evIt.next();
+					// dataMap is the map of data for the bean, to be keyed by the time
+					HashMap dataMap = new HashMap();
+					Entry e = (Entry) thisMap.get("entry");
+					Event ev = (Event) thisMap.get("event");
+					SimpleDateFormat sdf2 = new SimpleDateFormat("hh:mm a");
+					dataMap.put(WebKeys.CALENDAR_ENTRYTITLE, e.getTitle());
+					dataMap.put(WebKeys.CALENDAR_STARTTIMESTRING, sdf2.format(ev.getDtStart().getTime()));
+					dataMap.put(WebKeys.CALENDAR_ENDTIMESTRING, sdf2.format(ev.getDtEnd().getTime()));
+					
+					// dayEvents is sorted by time in millis; must make a Long object though
+					Long millis = new Long(ev.getDtStart().getTime().getTime());
+					dayEvents.put(millis, dataMap);
+				}
+				daymap.put(WebKeys.CALENDAR_EVENTDATAMAP, dayEvents);
+			}
+			
+			loopCal.roll(Calendar.DATE, true);
+			weekBean.add(daymap);
+		}
+		model.put(WebKeys.CALENDAR_VIEWBEAN, weekBean);
+	}
+	
 	
 	/**
 	 * Fill in the model values for a definition.  Return false if definition isn't
