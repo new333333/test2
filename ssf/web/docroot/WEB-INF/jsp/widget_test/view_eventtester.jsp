@@ -129,7 +129,6 @@ This one has a duration
     formName="eventtestertest"
     initEvent="<%= e2 %>"
     hasDuration="<% nodur %>"
-    hasRecurrence="<% norecur %>"
     />
 </td></tr>
 </table>
