@@ -54,7 +54,7 @@ import com.sitescape.ef.domain.UserNotification;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.definition.notify.Notify;
-import com.sitescape.ef.module.impl.AbstractModuleImpl;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.mail.FolderEmailFormatter;
 import com.sitescape.ef.repository.RepositoryService;
@@ -73,7 +73,7 @@ import com.sitescape.util.Validator;
  * @author Janet McCann
  *
  */
-public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
+public class MailModuleImpl extends CommonDependencyInjection implements MailModule {
 	protected Log logger = LogFactory.getLog(getClass());
 	protected XmlClassPathConfigFiles configDocs;
 	protected Map zoneProps = new HashMap();

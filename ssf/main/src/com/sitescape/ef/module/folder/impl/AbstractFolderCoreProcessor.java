@@ -46,7 +46,7 @@ import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.index.IndexUtils;
-import com.sitescape.ef.module.impl.AbstractModuleImpl;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
@@ -61,7 +61,7 @@ import com.sitescape.ef.module.shared.EntryBuilder;
  *
  * @author Jong Kim
  */
-public abstract class AbstractFolderCoreProcessor extends AbstractModuleImpl 
+public abstract class AbstractFolderCoreProcessor extends CommonDependencyInjection 
 	implements FolderCoreProcessor {
     
 	private static final int DEFAULT_MAX_CHILD_ENTRIES = 20;

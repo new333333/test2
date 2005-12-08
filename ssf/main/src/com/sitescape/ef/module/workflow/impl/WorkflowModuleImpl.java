@@ -6,7 +6,7 @@ import java.util.List;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.module.definition.DefinitionModule;
-import com.sitescape.ef.module.impl.AbstractModuleImpl;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AclManager;
@@ -21,7 +21,7 @@ import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
-public class WorkflowModuleImpl extends AbstractModuleImpl implements WorkflowModule {
+public class WorkflowModuleImpl extends CommonDependencyInjection implements WorkflowModule {
 	protected DefinitionModule definitionModule;
 	protected WorkflowFactory workflowFactory;
 	

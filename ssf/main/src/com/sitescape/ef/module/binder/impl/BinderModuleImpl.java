@@ -7,7 +7,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.module.binder.BinderModule;
-import com.sitescape.ef.module.impl.AbstractModuleImpl;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
@@ -16,7 +16,7 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
  * @author Janet McCann
  *
  */
-public class BinderModuleImpl extends AbstractModuleImpl implements BinderModule {
+public class BinderModuleImpl extends CommonDependencyInjection implements BinderModule {
 	    
 	public Binder findBinder(String binderName) 
    			throws NoBinderByTheNameException, AccessControlException {

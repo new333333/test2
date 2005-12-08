@@ -34,7 +34,7 @@ import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.portlet.forum.HistoryCache;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderModule;
-import com.sitescape.ef.module.impl.AbstractModuleImpl;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
@@ -61,7 +61,7 @@ import org.dom4j.Element;
  * @author Janet McCann
  *
  */
-public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumActionModule,DomTreeBuilder {
+public class ForumActionModuleImpl extends CommonDependencyInjection implements ForumActionModule,DomTreeBuilder {
 
 	protected WorkspaceModule workspaceModule;;
 	protected ProfileModule profileModule;

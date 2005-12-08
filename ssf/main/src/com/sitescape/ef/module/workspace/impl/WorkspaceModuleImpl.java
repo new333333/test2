@@ -16,7 +16,7 @@ import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.module.binder.BinderComparator;
-import com.sitescape.ef.module.impl.AbstractModuleImpl;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -26,7 +26,7 @@ import org.dom4j.Element;
  * @author Jong Kim
  *
  */
-public class WorkspaceModuleImpl extends AbstractModuleImpl implements WorkspaceModule {
+public class WorkspaceModuleImpl extends CommonDependencyInjection implements WorkspaceModule {
 
 	public Workspace getWorkspace() 
    		throws NoWorkspaceByTheIdException, AccessControlException {

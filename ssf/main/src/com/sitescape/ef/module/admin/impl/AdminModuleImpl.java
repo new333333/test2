@@ -23,7 +23,7 @@ import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.jobs.EmailNotification;
 import com.sitescape.ef.jobs.EmailPosting;
 import com.sitescape.ef.module.admin.AdminModule;
-import com.sitescape.ef.module.impl.AbstractModuleImpl;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.FunctionExistsException;
 import com.sitescape.ef.util.ReflectHelper;
@@ -35,7 +35,7 @@ import com.sitescape.ef.jobs.Schedule;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class AdminModuleImpl extends AbstractModuleImpl implements AdminModule {
+public class AdminModuleImpl extends CommonDependencyInjection implements AdminModule {
 	protected String emailPostingClass;
 	public void setEmailPostingJobClass(String className) {
 		this.emailPostingClass = className;
