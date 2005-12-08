@@ -1,7 +1,5 @@
 package com.sitescape.ef.portlet.widget_test;
 
-import java.util.Map;
-
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
@@ -9,11 +7,15 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 
 public class WidgetTestController extends SAbstractController {
 
+	public void handleActionRequestInternal(ActionRequest request, ActionResponse response)
+	throws Exception {
+		//There is no action. Just go to the render phase
+	}
+	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		//Dispatch the the desired jsp
