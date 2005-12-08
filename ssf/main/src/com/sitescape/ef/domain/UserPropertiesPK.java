@@ -39,6 +39,16 @@ public class UserPropertiesPK implements Serializable {
 	public void setFolderId(Long folderId) {
 		this.folderId = folderId;
 	}
+	public boolean equals(Object obj) {
+		if (obj == null) return false;
+		if (obj == this) return true;
+		if (obj instanceof UserPropertiesPK) {
+			UserPropertiesPK pk = (UserPropertiesPK) obj;
+			if (pk.getPrincipalId().equals(principalId) && 
+					pk.getFolderId().equals(folderId)) return true;
+		}
+		return false;
+	}
 	public int hashCode() {
 		return 31*folderId.hashCode() + principalId.hashCode();
 	}
