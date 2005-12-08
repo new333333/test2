@@ -19,6 +19,7 @@ import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.util.Validator;
 
 public class ViewEntryController extends SAbstractForumController {
@@ -28,7 +29,7 @@ public class ViewEntryController extends SAbstractForumController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model;		
-		PortletSession ses = request.getPortletSession();
+		PortletSession ses = WebHelper.getRequiredPortletSession(request);
 		request.setAttribute(WebKeys.HISTORY_CACHE, ses.getAttribute(WebKeys.HISTORY_CACHE));
 		request.setAttribute(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_ENTRY);
 

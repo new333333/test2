@@ -14,7 +14,10 @@ public class InitRequestContextInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, 
 			Object handler) throws Exception {
 	    
-    	HttpSession ses = request.getSession();
+    	HttpSession ses = request.getSession(false);
+    	
+    	if(ses == null)
+    		throw new IllegalStateException("No session in place - Illegal request sequence.");
     	
 		RequestContextUtil.setThreadContext((String) ses.getAttribute(WebKeys.ZONE_NAME),
 				(String) ses.getAttribute(WebKeys.USER_NAME));

@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
+import com.sitescape.ef.portletadapter.support.KeyNames;
 import com.sitescape.ef.portletadapter.support.PortletInfo;
 
 public class PortletRequestImpl implements PortletRequest, MultipartFileSupport {
@@ -29,7 +30,6 @@ public class PortletRequestImpl implements PortletRequest, MultipartFileSupport 
 	protected HttpServletRequest req;
 	protected PortletInfo portletInfo;
 	protected PortletContext portletContext;
-	protected PortletSessionImpl portletSession;
 	
 	public PortletRequestImpl(HttpServletRequest req, PortletInfo portletInfo,
 			PortletContext portletContext) {
@@ -64,20 +64,20 @@ public class PortletRequestImpl implements PortletRequest, MultipartFileSupport 
 	}
 
 	public PortletSession getPortletSession(boolean create) {
-		if(portletSession != null)
-			return portletSession;
+		PortletSession pses = null;
 		
 		HttpSession httpSes = req.getSession(create);
-		
-		if(httpSes == null)
-			return null;
-		
-		if(create) {
-			this.portletSession = new PortletSessionImpl(httpSes,
-				portletInfo.getName(), portletContext);
+
+		if(create || httpSes != null) {
+			pses = (PortletSession) httpSes.getAttribute(KeyNames.SESSION);
+			if(pses == null) {
+				pses = new PortletSessionImpl(httpSes,
+						portletInfo.getName(), portletContext);
+				httpSes.setAttribute(KeyNames.SESSION, pses);
+			}
 		}
 		
-		return portletSession;
+		return pses;
 	}
 
 	public String getProperty(String arg0) {
@@ -178,12 +178,18 @@ public class PortletRequestImpl implements PortletRequest, MultipartFileSupport 
 	}
 
 	public String getRequestedSessionId() {
-		return req.getSession().getId();
+		HttpSession ses = req.getSession(false);
+		if(ses != null)
+			return ses.getId();
+		else
+			return null;
 	}
 
 	public boolean isRequestedSessionIdValid() {
-		if (portletSession != null) {
-			return portletSession.isValid();
+		PortletSessionImpl pses = (PortletSessionImpl) this.getPortletSession(false);
+		
+		if(pses != null) {
+			return pses.isValid();
 		}
 		else {
 			return req.isRequestedSessionIdValid();

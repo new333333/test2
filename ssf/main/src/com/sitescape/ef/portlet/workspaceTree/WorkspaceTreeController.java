@@ -21,6 +21,7 @@ import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.WebHelper;
 
 /**
  * @author Peter Hurley
@@ -33,7 +34,7 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
-		PortletSession ses = request.getPortletSession();
+		PortletSession ses = WebHelper.getRequiredPortletSession(request);
 		
 
 		Map model = new HashMap();

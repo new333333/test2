@@ -11,5 +11,7 @@ public class KeyNames {
 	public static final String PORTLET_URL_ACTION = PORTLET_URL_PREFIX + "action";
 	
 	// Attribute names
-	public static final String CTX = "com.sitescape.ctx";
+	public static final String CTX = "com.sitescape.portletadapter.context";
+	
+	public static final String SESSION = "com.sitescape.portletadapter.session";
 }
