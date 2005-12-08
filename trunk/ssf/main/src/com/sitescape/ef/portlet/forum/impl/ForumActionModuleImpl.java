@@ -323,6 +323,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
+		
 		//	The "Display styles" menu
 		toolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.display_styles"));
 		//vertical
@@ -353,6 +354,14 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
 		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_iframe"), url);
+		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
+		//popup
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
+		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_POPUP);
+		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_popup"), url);
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
 		
 	}
