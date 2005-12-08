@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" destroy-method="close">
+		<property name="driverClassName"><value>net.sourceforge.jtds.jdbc.Driver</value></property>
+		<property name="url"><value>jdbc:jtds:sqlserver://localhost/sitescape</value></property>
+		<property name="username"><value>sitescape</value></property>
+		<property name="password"><value>sitescape</value></property>
+	</bean>
+
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler"/>
+
+	<!-- Hibernate session factory: Different from our production configuration 
+	     in an effort to be able to test the code in as much isolation as possible.
+	     For example, this configuration does not depend upon JNDI for datasource
+	     lookup, etc. -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource"><ref local="dataSource"/></property>
+		<property name="lobHandler"><ref local="lobHandler"/></property>
+		<!-- Sitescape mappings only -->
+		<property name="mappingResources">
+			<list>
+			<value>com/sitescape/ef/security/function/Function.hbm.xml</value>
+		    <value>com/sitescape/ef/security/function/WorkAreaFunctionMembership.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/Attachment.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/Binder.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/CustomAttribute.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/Definition.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/Event.hbm.xml</value> 
+		    <value>com/sitescape/ef/domain/FolderCounts.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/FolderEntry.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/HistoryMap.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/Membership.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/Notification.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/PostingDef.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/Principal.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/SeenMap.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/UserProperties.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/WorkflowStateObject.hbm.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="coreDaoImpl" class="com.sitescape.ef.dao.impl.CoreDaoImpl">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+
+	<!-- Local transaction manager. -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+
+</beans>
