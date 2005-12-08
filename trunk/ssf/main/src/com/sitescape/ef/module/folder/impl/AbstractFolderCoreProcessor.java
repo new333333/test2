@@ -226,10 +226,14 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
 
     protected void modifyEntry_postFillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData) {
     }
+    
     protected void modifyEntry_indexAdd(Folder folder, FolderEntry entry, Map inputData) {
         
         // Create an index document from the entry object.
         org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(folder, entry);
+        
+        // Delete the document that's currently in the index.
+        IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
         
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
@@ -476,7 +480,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     	QueryBuilder qb = new QueryBuilder();
     	SearchObject so = qb.buildQuery(qTree);
     	
-    	//System.out.println("Query is: " + foo.toString());
+    	//System.out.println("Query is: " + qTree.asXML());
     	
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         
@@ -625,6 +629,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         deleteEntry_preDelete(parentFolder, entry);
         deleteEntry_delete(parentFolder, entry);
         deleteEntry_postDelete(parentFolder, entry);
+        deleteEntry_indexDel(entry);
     }
     protected void deleteEntry_accessControl(Folder parentFolder, FolderEntry entry) {
         getAccessControlManager().checkOperation(parentFolder, WorkAreaOperation.DELETE_ENTRIES);
@@ -650,6 +655,12 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     }
     protected void deleteEntry_postDelete(Folder parentFolder, FolderEntry entry) {
     }
+
+    protected void deleteEntry_indexDel(FolderEntry entry) {
+        // Delete the document that's currently in the index.
+        IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
+    }
+    
     //***********************************************************************************************************
     /*
      * Load all principals assocated with an entry.  
