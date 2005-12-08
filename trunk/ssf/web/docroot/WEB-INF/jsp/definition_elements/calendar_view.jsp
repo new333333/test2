@@ -39,7 +39,12 @@ function highlightLineById(id) {
 %>
 <% // get the folder tree %>
 <div class="ss_folder">
+<% // First include the folder tree %>
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
+<% // Then include the navigation widgets for this view %>
+<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+
+<%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %></td>
 
 <c:choose>
 <c:when test="${ssCalendarViewMode == 'day'}">
@@ -58,8 +63,5 @@ function highlightLineById(id) {
 Unknown view mode: ${ssCalendarViewMode}
 </c:otherwise>
 </c:choose>
-
-<%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %>
-
 
 </div>

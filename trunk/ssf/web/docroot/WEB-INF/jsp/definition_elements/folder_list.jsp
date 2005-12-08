@@ -33,19 +33,35 @@ function highlightLineById(id) {
 </script>
 
 <div class="ss_folder">
+<% // First include the folder tree %>
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
-
-<table width="100%" border="0" cellpadding="2" cellspacing="0">
- <tr>
+<% // Then include the navigation widgets for this view %>
+<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+<br />
+<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_borderTable">
+ <tr class="ss_headerRow">
   <td class="ss_contentbold"><img border="0" alt="Unread entries" src="<html:imagesPath/>pics/sym_s_unseen_header.gif"></td>
   <td class="ss_contentbold">Number</td>
   <td class="ss_contentbold">Title</td>
   <td class="ss_contentbold">Author</td>
   <td class="ss_contentbold">Date</td>
 </tr>
+
+<c:set var="rowClass" value="ss_highlightGray"/>
 <c:forEach var="entry" items="${ssFolderEntries}" >
 <jsp:useBean id="entry" type="com.sitescape.ef.domain.FolderEntry" />
-<tr id="folderLine_<c:out value="${entry.id}"/>">
+
+<c:choose>
+<c:when test="${rowClass == 'ss_highlightGray'}">
+  <c:set var="rowClass" value=""/>
+  <tr id="folderLine_<c:out value="${entry.id}"/>">
+</c:when>
+<c:otherwise>
+  <c:set var="rowClass" value="ss_highlightGray"/>
+  <tr id="folderLine_<c:out value="${entry.id}"/>"  class="<c:out value="${rowClass}"/>">
+</c:otherwise>
+</c:choose>
+
   <td align="right" valign="top" width="1%" class="ss_content">
 <%
 	if (ssSeenMap.checkIfSeen(entry)) {

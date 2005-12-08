@@ -75,7 +75,7 @@ span.ss_rightbold {
   float: right;
   font-family: arial, helvetica, sans-serif;
   font-weight: bold;
-  color: #999999; 
+  color: #999999;
   }
   
 span.ss_right {
@@ -83,8 +83,9 @@ span.ss_right {
   text-align: right;
   float: right;
   font-family: arial, helvetica, sans-serif;
-  color: #999999; 
+  color: #999999;
   }
+
 /* ------------------------------------------------------------------------ */
 /* entry styles: common to entry views and entry forms */
 
@@ -401,6 +402,35 @@ div.ss_portlet {
 
 /* ------------------------------------------------------------------------ */
 /* table styles */
+
+/* rules around the table and under the headers (ss_headerRow), but not between rows */
+/* used for folder listings of entries, usually with alternating shaded rows  */
+table.ss_borderTable {
+  border-left: 1px solid #666666; 
+  border-right: 1px solid #666666; 
+  border-bottom: 1px solid #666666;
+  margin-top: 3px;
+  }
+
+table.ss_borderTable tr td {
+  padding-top: 4px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 2px;
+} 
+
+table.ss_borderTable tr.ss_headerRow td {
+  padding-top: 4px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 2px;
+  border-top: 1px solid #666666;
+  border-bottom: 1px solid #666666;
+  background-color: #f7f7f7;
+}
+
+/* rules around the table and between rows */
+/* used for event (calendar) views */
 table.ss_ruledTable {
   border-top: 1px #666666 solid;
   border-left: 1px #666666 solid;

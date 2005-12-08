@@ -9,14 +9,16 @@ function getFilteredEntries() {
 //alert("cal view entryList "+ss_entryCount)
 }
 </script>
+<c:set var="delimiter" value=" | "/>
+
 <table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_ruledTable">
 <tr class="ss_bglightgray">
-<td colspan="2" class="ss_contentbold">Week beginning 
+<td colspan="2"><span class="ss_toolbar_item">Week beginning 
    <fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
-<a href="${set_day_view}">Day view</a>
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
-<a href="${set_month_view}">Month view</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Views:&nbsp;<a href="${set_day_view}">Day</a><c:out value="${delimiter}" /><a href="${set_month_view}">Month</a>
+<c:out value="${delimiter}" />
+</span>
 </td>
 </tr>
 
@@ -37,7 +39,7 @@ function getFilteredEntries() {
 </c:otherwise>
 </c:choose>
 <td align="center" width="1%" valign="top"><a class="ss_link_nodec" href="${daymap.dayURL}"><span class="ss_content">${daymap.cal_dow}</span>
- <span class="ss_contentbold">${daymap.cal_dom}</a></td>
+<br /><span class="ss_contentbold">${daymap.cal_dom}</a></td>
 
 <c:choose>
 <c:when test="${empty daymap.cal_eventdatamap}">
