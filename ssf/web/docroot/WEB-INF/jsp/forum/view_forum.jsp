@@ -55,7 +55,8 @@ function showMessageInDiv(str) {
     savedScrollPositionTop = self.document.body.scrollTop;
     
 <%
-	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME)) {
+	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME) || 
+		displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_POPUP)) {
 %>
 	return false
 <%
@@ -70,7 +71,8 @@ var historyBackLine = new Array();
 var historyForwardLine = new Array();
 function showForumEntry(url, callbackRoutine) {
 <%
-	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME)) {
+	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME) || 
+		displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_POPUP)) {
 %>
 	return showForumEntryInIframe(url);
 <%
@@ -236,6 +238,10 @@ function highlightLineById(id) {
 %>
 <%@ include file="/WEB-INF/jsp/forum/view_forum_iframe.jsp" %>
 <%
+	} else if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_POPUP)) {
+%>
+<%@ include file="/WEB-INF/jsp/forum/view_forum_popup.jsp" %>
+<%
 	} else {
 %>
 <%@ include file="/WEB-INF/jsp/forum/view_forum_vertical.jsp" %>
@@ -291,6 +297,16 @@ if (self.parent && self.parent.highlightLineById) {
 	} else if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME)) {
 		toolbarWidth = entryWindowWidth - 20;
 		renderRequest.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
+%>
+	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
+	  configElement="<%= ssConfigElement %>" 
+	  configJspStyle="<%= ssConfigJspStyle %>"
+	  processThisItem="true" 
+	  folderEntry="<%= ssFolderEntry %>" />
+<%
+	
+	//Popup view
+	} else if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME)) {
 %>
 	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
 	  configElement="<%= ssConfigElement %>" 
