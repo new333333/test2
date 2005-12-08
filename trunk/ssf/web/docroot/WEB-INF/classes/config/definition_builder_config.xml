@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../resources/definition_builder_config.xsd">
+	<definition name="entryTypeDefinition" definitionType="1" caption="Entry definitions" canBeDeleted="false" replyStyle="">		
+		<operations>
+			<operation name="addDefinition" item="entryType" caption="Add a new entry definition" />
+		</operations>
+	</definition>
+	
+	<definition name="workflowProcessDefinition" definitionType="2" caption="Workflow processes" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="workflowProcess" caption="Add a new workflow process" />
+		</operations>
+	</definition>
+	
+	<definition name="forumViewDefinition" definitionType="5" caption="Forum views" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="forumViewType" caption="Add a new forum view" />
+		</operations>
+	</definition>
+	
+	<item name="entryType" definitionType="1" caption="Entry definition">		
+		<properties>
+			<property name="name" caption="Name" type="text" />
+			<property name="caption" caption="Caption" type="text" />
+		</properties>
+		
+		<options>
+			<option name="entryForm" initial="true" />
+			<option name="entryView" initial="true" />
+		</options>
+	</item>
+	
+	<item name="workflowProcess" definitionType="2" caption="Workflow process">
+		<properties>
+			<property name="name" caption="Name" type="text" />
+			<property name="caption" caption="Caption" type="text" />
+		</properties>
+		
+		<options>
+			<option name="state" caption="State" initial="true" multipleAllowed="true" />
+		</options>
+	</item>
+	
+	<item name="forumViewType" definitionType="5" caption="Forum view definition">		
+		<properties>
+			<property name="name" caption="Name" type="text" />
+			<property name="caption" caption="Caption" type="text" />
+		</properties>
+		
+		<options>
+			<option name="forumView" caption="Forum view" initial="true" multipleAllowed="false" />
+		</options>
+	</item>
+	
+	<item name="forumView" definitionType="5" caption="Forum view" canBeDeleted="false" multipleAllowed="false" >		
+		<options>
+			<option_select path="//item[@category='forumView']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="Layout options" />
+		</options>
+	</item>
+	
+	<item name="entryForm" caption="Entry form definition" canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="Add an item" />
+		</operations>
+
+		<options>
+			<option name="entryFormForm" initial="true" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="Layout options" />
+		</options>
+		
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/entry_form.jsp" />
+		</jsps>
+	</item>
+
+	<item name="entryView" caption="Entry view definition" canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="Add an item" />
+		</operations>
+
+		<options>
+			<option name="entryDataItem" caption="Entry data item" />
+			<option name="entryAttachments" caption="Entry attachments" />
+			<option name="entryReplies" caption="Entry replies" />
+			<option_select path="//item[@category='entryLayout']" optionCaption="Entry layout options" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="General layout options" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/html/portlet/forum/elements/entry_view.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="entryDataItem" type="dataView" caption="Entry data item" category="entryViewData">
+		<properties>
+			<property name="name" caption="Data item name" type="selectbox">
+			    <option_entry_data select_type="data" optionCaption="Data items from the Entry Form" />
+			</property>
+			<property name="caption" caption="Caption" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/html/portlet/forum/elements/view_entry_data.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryAttachments" type="dataView" caption="Entry attachments" category="entryViewData">
+		<properties>
+			<property name="caption" caption="Caption" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/html/portlet/forum/elements/view_entry_attachments.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryReplies" type="dataView" caption="Entry replies" category="entryViewData">
+		<properties>
+			<property name="caption" caption="Caption" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/html/portlet/forum/elements/view_entry_replies.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryFormForm" caption="Form" canBeDeleted="false" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="Form name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName"/>
+		</properties>
+		<options>
+			<option name="title" initial="true" />
+			<option name="entryFormButtons" initial="true" />
+			<option_select path="//item[@category='entryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="Layout options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/form_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="title" caption="Title" type="data" canBeDeleted="false" multipleAllowed="false" category="entryData">
+		<properties>
+			<property name="name" caption="Data name" type="text" value="title" readonly="true">
+				<help>The "data name" is the key used to store this element in the data base. 
+					This value must be unique across elements in this entry type. 
+					It should start with an alphabetic character and not contain any spaces. 
+					Legal characters include alphabetic characters (a-z), numeric characters, hyphen and underscore.
+				</help>
+			</property>
+			<property name="caption" caption="Caption" type="text" value="Title"/>
+			<property name="width" caption="Width" type="text"/>
+			<property name="inline" caption="Inline" type="boolean">
+				<help>Mark an item as "Inline" if you want to put multiple items on the same line.</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/title_form.jsp" />
+			<jsp name="view" value="/html/portlet/forum/elements/title_view.jsp" />
+		</jsps>
+		<help>The Title field must always be included in the entry. It can appear only once, and it cannot be deleted.</help>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderTitle" />
+	</item>
+	
+	<item name="text" caption="Text" type="data" category="entryData">
+		<properties>
+			<property name="name" caption="Data name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>The "data name" is the key used to store this element in the data base. 
+					This value must be unique across elements in this entry type. 
+					It should start with an alphabetic character and not contain any spaces. 
+					Legal characters include alphabetic characters (a-z), numeric characters, hyphen and underscore.
+				</help>
+			</property>
+			<property name="caption" caption="Caption" type="text"/>
+			<property name="width" caption="Width" type="text"/>
+			<property name="inline" caption="Inline" type="boolean">
+				<help>Mark an item as "Inline" if you want to put multiple items on the same line.</help>
+			</property>
+			<property name="required" caption="Required" type="boolean" default="false">
+				<help>Marking an item as "required" means that the item must be filled-in before the entry form can be submitted.</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderText" />
+	</item>
+	
+	<item name="textarea" caption="Simple text area" type="data" category="entryData">
+		<properties>
+			<property name="name" caption="Data name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>The "data name" is the key used to store this element in the data base. 
+					This value must be unique across elements in this entry type. 
+					It should start with an alphabetic character and not contain any spaces. 
+					Legal characters include alphabetic characters (a-z), numeric characters, hyphen and underscore.
+				</help>
+			</property>
+			<property name="caption" caption="Caption" type="text"/>
+			<property name="width" caption="Width" type="text"/>
+			<property name="rows" caption="Rows" type="text"/>
+			<property name="inline" caption="Inline" type="boolean">
+				<help>Mark an item as "Inline" if you want to put multiple items on the same line.</help>
+			</property>
+			<property name="required" caption="Required" type="boolean" default="false">
+				<help>Marking an item as "required" means that the item must be filled-in before the entry form can be submitted.</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/textarea_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderText" />
+	</item>
+	
+	<item name="htmlEditorTextarea" caption="HTML editor text area" type="data" category="entryData">
+		<properties>
+			<property name="name" caption="Data name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>The "data name" is the key used to store this element in the data base. 
+					This value must be unique across elements in this entry type. 
+					It should start with an alphabetic character and not contain any spaces. 
+					Legal characters include alphabetic characters (a-z), numeric characters, hyphen and underscore.
+				</help>
+			</property>
+			<property name="caption" caption="Caption" type="text"/>
+			<property name="height" caption="Height (px)" type="text"/>
+			<property name="required" caption="Required" type="boolean" default="false">
+				<help>Marking an item as "required" means that the item must be filled-in before the entry form can be submitted.</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/html_editor_textarea_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
+	</item>
+	
+	<item name="description" caption="Description" type="data" multipleAllowed="false" category="entryData">
+		<properties>
+			<property name="name" caption="Data name" type="text" value="description" readonly="true">
+				<help>The "data name" is the key used to store this element in the data base. 
+					This value must be unique across elements in this entry type. 
+					It should start with an alphabetic character and not contain any spaces. 
+					Legal characters include alphabetic characters (a-z), numeric characters, hyphen and underscore.
+				</help>
+			</property>
+			<property name="caption" caption="Caption" type="text"/>
+			<property name="height" caption="Height (px)" type="text"/>
+			<property name="required" caption="Required" type="boolean" default="false">
+				<help>Marking an item as "required" means that the item must be filled-in before the entry form can be submitted.</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/html_editor_textarea_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
+	</item>
+	
+	<item name="selectbox" caption="Selectbox" type="data" category="entryData">
+		<properties>
+			<property name="name" caption="Data name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>The "data name" is the key used to store this element in the data base. 
+					This value must be unique across elements in this entry type. 
+					It should start with an alphabetic character and not contain any spaces. 
+					Legal characters include alphabetic characters (a-z), numeric characters, hyphen and underscore.
+				</help>
+			</property>
+			<property name="caption" caption="Caption" type="text"/>
+			<property name="multipleAllowed" caption="Allow multiple" type="boolean" default="false"></property>
+			<property name="size" caption="Size" type="text"/>
+			<property name="inline" caption="Inline" type="boolean">
+				<help>Mark an item as "Inline" if you want to put multiple items on the same line.</help>
+			</property>
+			<property name="required" caption="Required" type="boolean" default="false">
+				<help>Marking an item as "required" means that the item must be filled-in before the entry form can be submitted.</help>
+			</property>
+		</properties>
+		<options>
+			<option name="selectboxSelection" caption="Selectbox option" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/selectbox_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderSelect" />
+	</item>
+
+	<item name="selectboxSelection" caption="Selection">
+		<properties>
+			<property name="name" caption="Selection data name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>Enter a unique name, consisting of lowercase alpha-numeric characters or "_" only, starting with an alphabetic character. 
+					This name is used to uniquely identify this selection when it gets stored in the database.
+				</help>
+			</property>
+			<property name="caption" caption="Selection string" type="text">
+				<help>
+					Enter the string to be displayed in the selectbox.
+				</help>
+			</property>			
+		</properties>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/selectbox_selection_form.jsp" />
+		</jsps>
+	</item>
+
+	<item name="radio" caption="Radio buttons" type="data" category="entryData">
+		<properties>
+			<property name="name" caption="Data name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>The "data name" is the key used to store this element in the data base. 
+					This value must be unique across elements in this entry type. 
+					It should start with an alphabetic character and not contain any spaces. 
+					Legal characters include alphabetic characters (a-z), numeric characters, hyphen and underscore.
+				</help>
+			</property>
+			<property name="caption" caption="Caption" type="text"/>
+			<property name="inline" caption="Inline" type="boolean">
+				<help>Mark an item as "Inline" if you want to put multiple items on the same line.</help>
+			</property>
+			<property name="required" caption="Required" type="boolean" default="false">
+				<help>Marking an item as "required" means that the item must be filled-in before the entry form can be submitted.</help>
+			</property>
+		</properties>
+		<options>
+			<option name="radioSelection" caption="Radio button option" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/radio_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderSelect" />
+	</item>
+	
+	<item name="radioSelection" caption="Radio button">
+		<properties>
+			<property name="name" caption="Selection data name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>Enter a unique name, consisting of lowercase alpha-numeric characters or "_" only, starting with an alphabetic character. 
+					This name is used to uniquely identify this selection when it gets stored in the database.
+				</help>
+			</property>
+			<property name="caption" caption="Selection string" type="text">
+				<help>
+					Enter the string to be displayed next to the radio button.
+				</help>
+			</property>			
+		</properties>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/radio_selection_form.jsp" />
+		</jsps>
+	</item>
+
+	<item name="checkbox" caption="Checkbox" type="data" category="entryData">
+		<properties>
+			<property name="name" caption="Data name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>The "data name" is the key used to store this element in the data base. 
+					This value must be unique across elements in this entry type. 
+					It should start with an alphabetic character and not contain any spaces. 
+					Legal characters include alphabetic characters (a-z), numeric characters, hyphen and underscore.
+				</help>
+			</property>
+			<property name="caption" caption="Caption" type="text"/>
+			<property name="inline" caption="Inline" type="boolean">
+				<help>Mark an item as "Inline" if you want to put multiple items on the same line.</help>
+			</property>
+			<property name="required" caption="Required" type="boolean" default="false">
+				<help>Marking an item as "required" means that the item must be filled-in before the entry form can be submitted.</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/checkbox_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderCheck" />
+	</item>
+
+	<item name="attachFiles" caption="Attach files" multipleAllowed="false" category="entryData">
+		<properties>
+			<property name="name" caption="Data name" type="text" value="ss_attachFile" readonly="true"/>
+			<property name="caption" caption="Caption" type="text"/>
+			<property name="width" caption="Width" type="text"/>
+			<property name="number" caption="Number of file select boxes to be shown" type="integer"/>
+			<property name="storage" caption="Storage media" type="selectbox" default="fileRepositoryService">
+				<option name="fileRepositoryService" caption="File system" />
+				<option name="dbRepositoryService" caption="Database" />
+				<help>This field specifies where the uploaded files will be stored.</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/attach_files_form.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="file" caption="File upload" type="data" category="entryData">
+		<properties>
+			<property name="name" caption="Data name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>The "data name" is the key used to store this element in the data base. 
+					This value must be unique across elements in this entry type. 
+					It should start with an alphabetic character and not contain any spaces. 
+					Legal characters include alphabetic characters (a-z), numeric characters, hyphen and underscore.
+				</help>
+			</property>
+			<property name="caption" caption="Caption" type="text"/>
+			<property name="width" caption="Width" type="text"/>
+			<property name="storage" caption="Storage media" type="selectbox" default="fileRepositoryService">
+				<option name="fileRepositoryService" caption="File system" />
+				<option name="dbRepositoryService" caption="Database" />
+				<help>This field specifies where the uploaded files will be stored.</help>
+			</property>
+			<property name="inline" caption="Inline" type="boolean">
+				<help>Mark an item as "Inline" if you want to put multiple items on the same line.</help>
+			</property>
+			<property name="required" caption="Required" type="boolean" default="false">
+				<help>Marking an item as "required" means that the item must be filled-in before the entry form can be submitted.</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/file_form.jsp" />
+			<jsp name="form" value="/html/portlet/forum/elements/view_entry_data_file.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="date" caption="Date" type="data" category="entryData">
+		<properties>
+			<property name="name" caption="Data name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>The "data name" is the key used to store this element in the data base. 
+					This value must be unique across elements in this entry type. 
+					It should start with an alphabetic character and not contain any spaces. 
+					Legal characters include alphabetic characters (a-z), numeric characters, hyphen and underscore.
+				</help>
+			</property>
+			<property name="caption" caption="Text" type="text"/>
+			<property name="inline" caption="Inline" type="boolean">
+				<help>Mark an item as "Inline" if you want to put multiple items on the same line.</help>
+			</property>
+			<property name="required" caption="Required" type="boolean" default="false">
+				<help>Marking an item as "required" means that the item must be filled-in before the entry form can be submitted.</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/date_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDate" />
+	</item>
+	
+	<item name="user_list" caption="User list" type="data" category="entryData">
+		<properties>
+			<property name="name" caption="Data name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>The "data name" is the key used to store this element in the data base. 
+					This value must be unique across elements in this entry type. 
+					It should start with an alphabetic character and not contain any spaces. 
+					Legal characters include alphabetic characters (a-z), numeric characters, hyphen and underscore.
+				</help>
+			</property>
+			<property name="caption" caption="Text" type="text"/>
+			<property name="inline" caption="Inline" type="boolean">
+				<help>Mark an item as "Inline" if you want to put multiple items on the same line.</help>
+			</property>
+			<property name="required" caption="Required" type="boolean" default="false">
+				<help>Marking an item as "required" means that the item must be filled-in before the entry form can be submitted.</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/userlist_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderUserlist" />
+	</item>
+		
+	<item name="div" caption="Div" category="generalLayout">
+		<properties>
+			<property name="id" caption="ID" type="text"/>
+			<property name="style" caption="Style" type="text"/>
+		</properties>
+		<options>
+			<option_select path="//item[@category='entryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/div.jsp" />
+			<jsp name="view" value="/html/portlet/forum/elements/div.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="divider" caption="Divider" category="generalLayout">
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/divider.jsp" />
+			<jsp name="view" value="/html/portlet/forum/elements/divider.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="table2" caption="Two column table" category="generalLayout">
+		<properties>
+			<property name="name" caption="Name" type="text"/>
+			<property name="caption" caption="Text" type="text"/>
+			<property name="required" caption="Required" type="boolean" default="false">
+				<help>Marking an item as "required" means that the item must be filled-in before the entry form can be submitted.</help>
+			</property>
+		</properties>
+		<options>
+			<option name="entryDataItem" caption="Entry data item" />
+			<option_select path="//item[@category='entryData']" optionCaption="Form elements" />
+			<option_select path="//item[@category='entryLayout']" optionCaption="Entry layout options"  />
+			<option_select path="//item[@category='generalLayout']" optionCaption="General layout options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/table2.jsp" />
+			<jsp name="view" value="/html/portlet/forum/elements/table2.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="table3" caption="Three column table" category="generalLayout">
+		<properties>
+			<property name="name" caption="Name" type="text"/>
+			<property name="caption" caption="Text" type="text"/>
+			<property name="required" caption="Required" type="boolean" default="false">
+				<help>Marking an item as "required" means that the item must be filled-in before the entry form can be submitted.</help>
+			</property>
+		</properties>
+		<options>
+			<option_select path="//item[@category='entryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="Layout options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/table3.jsp" />
+			<jsp name="view" value="/html/portlet/forum/elements/table3.jsp" />
+		</jsps>
+	</item>
+
+	<item name="html" caption="HTML" category="generalLayout">
+		<properties>
+			<property name="name" caption="Name" type="text"/>
+			<property name="caption" caption="Caption" type="text"/>
+			<property name="htmlTop" caption="HTML top" type="textarea"/>
+			<property name="htmlBottom" caption="HTML bottom" type="textarea"/>
+		</properties>
+		<options>
+			<option_select path="//item[@category='entryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="Layout options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/html.jsp" />
+			<jsp name="view" value="/html/portlet/forum/elements/html.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="form" caption="Form" category="entryLayout">
+		<properties>
+			<property name="name" caption="Form name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName"/>
+		</properties>
+		<options>
+			<option_select path="//item[@category='entryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="Layout options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/form_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryFormButtons" caption="Form buttons" category="entryLayout">
+		<properties>
+		    <property name="alignment" caption="Alignment" type="selectbox" default="left">
+				<option name="left" caption="Left" />
+				<option name="right" caption="Right" />
+			    <help>Select whether the buttons should be aligned to the right or left on the page.</help>
+		    </property>
+		</properties>
+		<options>
+			<option name="okButton" caption="OK button" initial="true" />
+			<option name="cancelButton" caption="Cancel button" initial="true" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/form_buttons_form.jsp" />
+			<jsp name="view" value="/html/portlet/forum/elements/form_buttons_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="okButton" caption="OK button" category="entryLayout">
+		<properties>
+			<property name="caption" caption="Button text" type="text" value="OK"/>
+			<property name="onClick" caption="OnClick routine" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/ok_button_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="cancelButton" caption="Cancel button" category="entryLayout">
+		<properties>
+			<property name="caption" caption="Button text" type="text" value="Cancel"/>
+			<property name="onClick" caption="OnClick routine" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/cancel_button_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="customJsp" caption="Custom jsp" category="generalLayout">
+		<properties>
+			<property name="formJsp" caption="Form jsp name" type="text"/>
+			<property name="viewJsp" caption="View jsp name" type="text"/>
+		</properties>
+		<options>
+			<option_select path="//item[@category='entryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="Layout options" />
+		</options>
+	</item>
+		
+	<item name="toolBar" caption="Tool bar" category="forumView">
+		<jsps>
+			<jsp name="view" value="/html/portlet/forum/elements/toolbar.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="navBar" caption="Navigation bar" category="forumView">
+		<jsps>
+			<jsp name="view" value="/html/portlet/forum/elements/navbar.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="filterBar" caption="Filter bar" category="forumView">
+		<jsps>
+			<jsp name="view" value="/html/portlet/forum/elements/filterbar.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="folderList" caption="Folder listing" category="forumView">
+		<jsps>
+			<jsp name="view" value="/html/portlet/forum/elements/folder_list.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="viewEntry" caption="View entry selectbox" category="forumView">
+		<jsps>
+			<jsp name="view" value="/html/portlet/forum/elements/view_entry_selectbox.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="defaultEntryView" caption="Default entry view">
+		<jsps>
+			<jsp name="view" value="/html/portlet/forum/elements/view_entry_default.jsp" />
+		</jsps>
+	</item>
+		
+		
+</definitions>

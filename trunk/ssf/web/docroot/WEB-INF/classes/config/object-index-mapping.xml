@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE object-index-mapping SYSTEM "../../../resources/object-index-mapping-1_0_0.dtd">
+
+<object-index-mapping>
+	<!-- Full java class name -->
+	<class name="com.sitescape.ef.domain.Entry" doctype="entry">
+		<!-- ID property always maps to a String-valued keyword field -->
+		<idProperty name="id" />
+		<!-- URL property always maps to a String-valued unindexed field -->
+		<!-- <url name="url" field="url"/> -->
+
+		<property name="creation.date">
+			<keyword name="creationDate" type="java.util.Date" />
+		</property>
+
+		<!-- Property of Object type doesn't have to specify its actual type -->
+		<property name="title">
+			<!-- This property maps to a String-valued text field -->
+			<text name="title" store-term-vector="false" />
+		</property>
+		<property name="description">
+			<!-- This property maps to a unstored field -->
+			<unstored name="description" />
+			<!-- <field name="description" store="true" index="true" token="true" store-term-vector="false" boost="1.0"/> -->
+		</property>
+		
+		<subclass name="com.sitescape.ef.domain.FolderEntry">
+			<!-- Property of primitive type must specify its type -->
+			<property name="allowEdits">
+				<!-- This property maps to a String-valued keyword field -->
+				<keyword name="allowEdits" type="java.lang.String"/>
+				<to-string-converter class="com.sitescape.ef.search.docbuilder.mapped.property.YesNoBooleanConverter" />
+			</property>
+		</subclass>
+		
+	</class>
+	
+	<!-- Define additional classes here...
+	<class name="...">
+	</class>
+	-->
+</object-index-mapping>
