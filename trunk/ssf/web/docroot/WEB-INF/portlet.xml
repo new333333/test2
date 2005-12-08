@@ -66,8 +66,7 @@
 		</init-param>
         <expiration-cache>300</expiration-cache>
         <supports>
-            <mime-type>text/xml</mime-type>
-            <mime-type>text/html</mime-type>
+            <mime-type>*/*</mime-type>
             <portlet-mode>view</portlet-mode>
             <portlet-mode>edit</portlet-mode>
         </supports>
