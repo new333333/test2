@@ -206,7 +206,7 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 	 * Returns: side-effects the bean "model" and adds a key called CALENDAR_EVENTDATES which is a
 	 * hashMap whose keys are dates and whose values are lists of events that occur on the given day.
 	 */
-	public void getEvents(ArrayList entrylist, Map model, RenderRequest req) {
+	public void getEvents(ArrayList entrylist, Map model, RenderRequest req, RenderResponse response) {
 		Iterator entryIterator = entrylist.listIterator();
 		PortletSession ps = WebHelper.getRequiredPortletSession(req);
 		// view mode is one of day, week, or month
@@ -223,6 +223,15 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, new Date());	
 			currentDate = new Date();
 		} 
+		// urls for common calendar links
+		PortletURL url;
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
+//		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
+		url.setParameter(WebKeys.FORUM_URL_VALUE, WebKeys.CALENDAR_VIEW_DAY);
+		model.put("set_day_view", url.toString());
+		
 		// calculate the start and end of the range as defined by current date and current view
 		GregorianCalendar startViewCal = new GregorianCalendar();
 		// this trick zeros the low order parts of the time
@@ -268,6 +277,8 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 					// range check to see if this event is in range
 					long thisDateMillis = ev.getDtStart().getTime().getTime();
 					if (thisDateMillis < endMillis && startMillis < thisDateMillis) {
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+						String dateKey = sdf.format(ev.getDtStart().getTime());
 						ArrayList entryList = new ArrayList();
 						// reslist is going to be a list of maps; each map will carry the entry and 
 						// also the event that caused this entry to be in range
@@ -275,15 +286,13 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 						Map res = new HashMap();
 						res.put("event", ev);
 						res.put("entry", e);
-						entryList  = (ArrayList) results.get(ev.getDtStart().getTime());
+						entryList  = (ArrayList) results.get(dateKey);
 						if (entryList == null) {
 							resList.add(res);
 						} else {
 							resList.addAll(entryList);
 							resList.add(res);
 						}
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-						String dateKey = sdf.format(ev.getDtStart().getTime());
 						results.put(dateKey, resList);
 					}
 				}
@@ -719,7 +728,7 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId(), folder.getId()));
 		getDefinitions(folder, model);
 		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.FOLDER_ENTRIES);
-		getEvents(entries, model, req);
+		getEvents(entries, model, req, response);
 		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
 		buildFolderToolbar(response, model, forumId);
 		return model;
