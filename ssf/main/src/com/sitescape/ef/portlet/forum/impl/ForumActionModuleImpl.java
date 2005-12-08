@@ -379,8 +379,14 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		ArrayList dayList = null;
 		// this trick enables the main loop code to start a new week and reset/wrap dayCtr at same time
 		int dayCtr = 6;
+		// build string for date to stick in url -- note that it cannot contain "/"s so we use "_"
+		SimpleDateFormat urldatesdf = new SimpleDateFormat("yyyy_MM_dd");
+		String urldatestring;
+		String urldatestring2;
+		PortletURL url;
 		// main loop, loops through days in the range, periodically recycling the week stuff
 		while (loopCal.getTime().getTime() < endCal.getTime().getTime()) {
+			urldatestring = urldatesdf.format(loopCal.getTime());
 			if (++dayCtr > 6) {
 				dayCtr = 0;
 				// before starting a new week, write out the old one (except first time through)
@@ -393,11 +399,6 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 				SimpleDateFormat sdfweeknum = new SimpleDateFormat("w");
 				String wn = sdfweeknum.format(loopCal.getTime());
 				weekMap.put("weekNum", wn);
-				// also put out URL to jump to this week -- 
-				// build string for date to stick in url -- note that it cannot contain "/"s so we use "_"
-				SimpleDateFormat sdfurlweek = new SimpleDateFormat("yyyy_MM_dd");
-				String weekurlstring;
-				weekurlstring = sdfurlweek.format(loopCal.getTime());
 
 				// before starting a new dayList, check if this is the first week of a month view
 				if (dayList == null && viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
@@ -407,12 +408,20 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 					// when does the week that includes the first day of the month begin?
 					gcal.set(Calendar.DAY_OF_WEEK, gcal.getFirstDayOfWeek());
 					// note that the week url must include this date instead of the startCal date
-					weekurlstring = sdfurlweek.format(gcal.getTime());
+					urldatestring = urldatesdf.format(gcal.getTime());
 					while (gcal.getTime().getTime() < startCal.getTime().getTime()) {
 						// fill in the dayList with blank days
 						HashMap emptyDayMap = new HashMap();
 						emptyDayMap.put(WebKeys.CALENDAR_DOM, Integer.toString(gcal.get(Calendar.DAY_OF_MONTH)));
 						emptyDayMap.put("inView", new Boolean(false));
+						// because this loop is adding extra days, we need to build their URLs into the daymap here
+						urldatestring2 = urldatesdf.format(gcal.getTime());
+						url = response.createRenderURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+						url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
+						url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
+						url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring2);
+						emptyDayMap.put("dayURL", url.toString());
 						dayCtr++;
 						dayList.add(emptyDayMap);
 						gcal.add(Calendar.DATE, 1);
@@ -420,17 +429,25 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 				} else {
 					dayList = new ArrayList();
 				}
-				PortletURL url;
 				url = response.createRenderURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 				url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
 				url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "week");
-				url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, weekurlstring);
+				url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring);
 				weekMap.put("weekURL", url.toString());
 			}
 			HashMap daymap = new HashMap();
 			daymap.put(WebKeys.CALENDAR_DOW, DateHelper.getDayAbbrevString(loopCal.get(Calendar.DAY_OF_WEEK)));
 			daymap.put(WebKeys.CALENDAR_DOM, Integer.toString(loopCal.get(Calendar.DAY_OF_MONTH)));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+			url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
+			url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
+			url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring);
+			daymap.put("dayURL", url.toString());
+
+			
+			
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 			String dateKey = sdf.format(loopCal.getTime());
 			// is this loop date today? We need to beanify that fact so that the calendar view can shade it
