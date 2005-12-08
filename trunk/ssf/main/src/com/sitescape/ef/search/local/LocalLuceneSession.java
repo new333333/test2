@@ -150,7 +150,9 @@ public class LocalLuceneSession implements LuceneSession {
             org.apache.lucene.search.Hits hits = indexSearcher.search(query);
             if(size < 0)
                 size = hits.length();
-            return com.sitescape.ef.lucene.Hits.transfer(hits, offset, size);
+            com.sitescape.ef.lucene.Hits tempHits = com.sitescape.ef.lucene.Hits.transfer(hits, offset, size);
+            tempHits.setTotalHits(hits.length());
+            return tempHits;
         } 
         catch (IOException e) {
             throw new LuceneException("Error searching index [" + indexPath + "]", e);
@@ -185,7 +187,9 @@ public class LocalLuceneSession implements LuceneSession {
         		hits = indexSearcher.search(query,sort);
             if(size < 0)
                 size = hits.length();
-            return com.sitescape.ef.lucene.Hits.transfer(hits, offset, size);
+            com.sitescape.ef.lucene.Hits tempHits = com.sitescape.ef.lucene.Hits.transfer(hits, offset, size);
+            tempHits.setTotalHits(hits.length());
+            return tempHits;
         } 
         catch (IOException e) {
             throw new LuceneException("Error searching index [" + indexPath + "]", e);

@@ -348,7 +348,9 @@ public class IndexObject  {
         try {
             org.apache.lucene.search.Hits hits = indexSearcher.search(query);
             System.out.println("SEARCH: There were " + hits.length() + " matching hits on query: " + query.toString());
-            return com.sitescape.ef.lucene.Hits.transfer(hits,offset,size);
+            com.sitescape.ef.lucene.Hits tempHits = com.sitescape.ef.lucene.Hits.transfer(hits,offset,size);
+            tempHits.setTotalHits(hits.length());
+            return tempHits;
         } catch (IOException e) {
             throw new RemoteException("Error searching index '" + indexName + "'", e);
         }
@@ -378,7 +380,9 @@ public class IndexObject  {
         try {
             org.apache.lucene.search.Hits hits = indexSearcher.search(query, sort);
             System.out.println("SEARCH: There were " + hits.length() + " matching hits on query: " + query.toString());
-            return com.sitescape.ef.lucene.Hits.transfer(hits,offset,size);
+            com.sitescape.ef.lucene.Hits tempHits = com.sitescape.ef.lucene.Hits.transfer(hits,offset,size);
+            tempHits.setTotalHits(hits.length());
+            return tempHits;
         } catch (IOException e) {
             throw new RemoteException("Error searching index '" + indexName + "'", e);
         }
