@@ -1,4 +1,6 @@
 package com.sitescape.ef.jobs;
+import java.util.Map;
+import java.util.HashMap;
 import com.sitescape.util.Validator;
 
 public class Schedule {
@@ -6,7 +8,7 @@ public class Schedule {
 	private String hours="12";
 	private String minutes="15";
 	private boolean onMonday,onTuesday,onWednesday,onThursday,onFriday,onSaturday,onSunday;
-
+	private Map jobDetails;
 	public Schedule() {
 	}
 	public Schedule(String schedule) {
@@ -183,5 +185,12 @@ public class Schedule {
 		}
 			
 		return schedule.toString();
+	}
+	public Map getDetails() {
+		return jobDetails;
+		
+	}
+	public void setDetails(Map jobDetails) {
+		this.jobDetails = jobDetails;
 	}
 }

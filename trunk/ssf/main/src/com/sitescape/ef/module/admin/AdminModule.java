@@ -5,12 +5,13 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 package com.sitescape.ef.module.admin;
-
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.sitescape.ef.jobs.Schedule;
+import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.security.function.Function;
 
 /**
@@ -27,7 +28,9 @@ public interface AdminModule {
     public void modifyNotification(Long binderId, Map updates, Set users); 
     public void disableNotification(Long binderId);
     public void enableNotification(Long binderId);
-    public void disablePosting();
-    public void enablePosting(Schedule schedule);
+    public void setEnablePostings(boolean enable);
+    public PostingConfig getPostingConfig();
+    public void setPostingConfig(PostingConfig postingConfig) throws ParseException;
+    public List getPostingDefs();
 
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Date;
+import java.text.ParseException;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
@@ -22,6 +23,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.jobs.EmailNotification;
 import com.sitescape.ef.jobs.EmailPosting;
+import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.security.function.Function;
@@ -29,6 +31,7 @@ import com.sitescape.ef.security.function.FunctionExistsException;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.jobs.Schedule;
+import com.sitescape.ef.module.admin.PostingConfig;
 /**
  * @author Janet McCann
  *
@@ -116,19 +119,24 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
    		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
    		process.checkSchedule(scheduler, binder);
     } 
+ 
     /**
-     * Disable email posting.
+     * Enable/disable email posting.
      * @param id
      */
-    public void disablePosting() {
-    	getPostingObject().disable(scheduler);
+    public void setEnablePostings(boolean enable) {
+       	getPostingObject().enable(enable);
     }
-    /**
-     * Enable email posting.
-     * @param id
-     */
-    public void enablePosting(Schedule schedule) {
-       	getPostingObject().enable(scheduler, schedule);
+ 
+    public void setPostingConfig(PostingConfig postingConfig) throws ParseException {
+    	getPostingObject().setScheduleInfo(postingConfig);
+    	
+    }
+    public PostingConfig getPostingConfig() {	
+       	return new PostingConfig(getPostingObject().getScheduleInfo());
+    }
+    public List getPostingDefs() {
+    	return getCoreDao().loadPostings();
     }
     private EmailPosting getPostingObject() {
         try {

@@ -10,6 +10,8 @@
 	<bean id="adminConfigureLdapController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigureLdapController" />
 	<bean id="adminConfigureRolesController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigureRolesController" />
 	<bean id="adminConfigureNotifyController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigureNotifyController" />
+	<bean id="adminConfigurePostingJobController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigurePostingJobController" />
+	<bean id="adminConfigurePostingController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigurePostingController" />
 	<!-- Handlers -->
 
 	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
@@ -22,6 +24,8 @@
 						<entry key="configure_ldap"><ref bean="adminConfigureLdapController"/></entry>
 						<entry key="configure_roles"><ref bean="adminConfigureRolesController"/></entry>
 						<entry key="configure_notify"><ref bean="adminConfigureNotifyController"/></entry>
+						<entry key="configure_posting_job"><ref bean="adminConfigurePostingJobController"/></entry>
+						<entry key="configure_posting"><ref bean="adminConfigurePostingController"/></entry>
 					</map>
 				</entry>
 				<entry key="edit">

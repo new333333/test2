@@ -60,6 +60,7 @@ public class WebKeys {
 	public static final String LDAP_ACTION_CONFIGURE="configure_ldap";
 	public static final String NOTIFY_ACTION_CONFIGURE="configure_notify";
 	public static final String POSTING_ACTION_CONFIGURE="configure_posting";
+	public static final String POSTINGJOB_ACTION_CONFIGURE="configure_posting_job";
 	//oerations
  	public static final String FORUM_OPERATION_ADMINISTRATION = "administration";
 	public static final String FORUM_OPERATION_SET_DISPLAY_STYLE = "set_display_style";
@@ -72,8 +73,10 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE = "set_cal_display_mode";
 	public static final String FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE = "set_cal_display_date";
 	public static final String FORUM_OPERATION_CALENDAR_GOTO_DATE = "cal_goto_date";
-		
-    // MODEL TAGS & Attributes
+	public static final String OPERATION_POSTING_ALIASES="alias";
+	public static final String OPERATION_ADD_POSTING_ALIASES="addAlias";
+	public static final String OPERATION_MODIFY_POSTING_ALIASES="modifyAlias";
+	    // MODEL TAGS & Attributes
 	public static final String ACTION = "action";
 	public static final String ADMIN_TREE="ssAdminDomTree";
     public static final String CONFIG_ELEMENT="ssConfigElement";
@@ -99,14 +102,17 @@ public class WebKeys {
     public static final String HISTORY_MAP="ssHistoryMap";
     public static final String LDAP_CONFIG="ssLdapConfig";
     public static final String NOTIFICATION="ssNotification";
-    public static final String POSTING="ssPosting";
+    public static final String POSTINGS="ssPostings";
+    public static final String POSTING_CONFIG="ssPostingConfig";
     public static final String PUBLIC_DEFINITIONS="ssPublicDefinitions";
     public static final String PUBLIC_ENTRY_DEFINITIONS="ssPublicEntryDefinitions";
     public static final String PUBLIC_FOLDER_DEFINITIONS="ssPublicFolderDefinitions";
+    public static final String SCHEDULE="ssSchedule";
     public static final String SEEN_MAP="ssSeenMap";
     public static final String SELECTED_GROUPS="ssSelectedGroups";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
     public static final String SELECTED_USERS="ssSelectedUsers";
+    public static final String TOOLBAR="ssToolbar";
     public static final String USERS="ssUsers";
 	public static final String USER_NAME = "com.sitescape.username";
 	public static final String USER_PRINCIPAL = "com.sitescape.principal";
@@ -131,7 +137,8 @@ public class WebKeys {
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
     public static final String VIEW_ADMIN_CONFIGURE_NOTIFICATION="administration/configureNotify";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING="administration/configurePosting";
-    
+    public static final String VIEW_ADMIN_CONFIGURE_POSTING_JOB="administration/configurePostingJob";
+    public static final String VIEW_ADMIN_CONFIGURE_ALIASES="administration/configurePostingAliases";
     //servlet paths
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";
