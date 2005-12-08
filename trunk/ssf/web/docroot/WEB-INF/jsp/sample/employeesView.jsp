@@ -56,12 +56,17 @@ return false;
 		</tr>
 		<tr>
 			<td colspan="4">
-				<a href="<html:webPath/>downloadFile?file=C:\liferay-portal-pro-3.5.0-tomcat\RUNNING.txt">Download File</a>
+				<a href="<html:webPath/>downloadFile?file=C:\liferay-portal-pro-3.5.0-tomcat\RUNNING.txt">Download File (using pure servlet)</a>
 			</td>
 		</tr>
 		<tr>
 			<td colspan="4">
-				<a href="<html:webPath/>uploadFile" onClick="return popup(this, 'notes')">Upload File</a>
+				<a href="<html:webPath/>uploadFile" onClick="return popup(this, 'notes')">Upload File (using pure servlet)</a>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4">
+				<a href="<html:adapterPath/>do?p_a_name=ss_employees&p_a_action=0&action=uploadFile" onClick="return popup(this, 'notes')">Upload File (using portlet adapter)</a>
 			</td>
 		</tr>
 </table>

@@ -70,6 +70,16 @@
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 
+	<servlet>
+		<servlet-name>portletAdapter</servlet-name>
+		<servlet-class>com.sitescape.ef.portletadapter.servlet.PortletAdapterServlet</servlet-class>
+		<init-param>
+			<param-name>namespace</param-name>
+			<param-value>context/adapter-servlet</param-value>
+		</init-param>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>viewRendererServlet</servlet-name>
 		<url-pattern>/WEB-INF/servlet/view</url-pattern>
@@ -78,6 +88,11 @@
 	<servlet-mapping>
 		<servlet-name>web</servlet-name>
 		<url-pattern>/web/*</url-pattern>		
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>portletAdapter</servlet-name>
+		<url-pattern>/adapter/*</url-pattern>		
 	</servlet-mapping>
 
     <taglib>

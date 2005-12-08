@@ -7,13 +7,13 @@
         <portlet-name>ss_employees</portlet-name>
         <display-name xml:lang="en">SiteScape Employees</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-			<init-param>
-				<name>contextConfigLocation</name>
-				<value>/WEB-INF/context/portlet/employees.xml</value>
-			</init-param>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/employees.xml</value>
+		</init-param>
         <expiration-cache>0</expiration-cache>
         <supports>
-            <mime-type>text/html</mime-type>
+            <mime-type>*/*</mime-type>
             <portlet-mode>view</portlet-mode>
             <portlet-mode>help</portlet-mode>
         </supports>
@@ -26,10 +26,10 @@
         <portlet-name>ss_widgettest</portlet-name>
         <display-name xml:lang="en">Widget tester</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-			<init-param>
-				<name>contextConfigLocation</name>
-				<value>/WEB-INF/context/portlet/widgetTest.xml</value>
-			</init-param>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/widgetTest.xml</value>
+		</init-param>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -43,10 +43,10 @@
         <portlet-name>ss_workspacetree</portlet-name>
         <display-name xml:lang="en">Workspace Tree</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-			<init-param>
-				<name>contextConfigLocation</name>
-				<value>/WEB-INF/context/portlet/workspaceTree.xml</value>
-			</init-param>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/workspaceTree.xml</value>
+		</init-param>
         <expiration-cache>300</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -60,10 +60,10 @@
         <portlet-name>ss_forum</portlet-name>
         <display-name xml:lang="en">Forum</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-			<init-param>
-				<name>contextConfigLocation</name>
-				<value>/WEB-INF/context/portlet/forum.xml</value>
-			</init-param>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/forum.xml</value>
+		</init-param>
         <expiration-cache>300</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -84,10 +84,10 @@
         <portlet-name>ss_administration</portlet-name>
         <display-name xml:lang="en">Administration</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-			<init-param>
-				<name>contextConfigLocation</name>
-				<value>/WEB-INF/context/portlet/administration.xml</value>
-			</init-param>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/administration.xml</value>
+		</init-param>
         <expiration-cache>300</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
