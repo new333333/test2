@@ -110,7 +110,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     public void setDefintion(Definition def, Document doc) {
     	//If this is a workflow definition, build the corresponding JBPM workflow definition
     	// Try to do this first before the changed definition gets modified on disk
+    	// Thus, if an error occurs in JBPM, the user gets told before writing out the def
     	if (def.getType() == Definition.WORKFLOW) {
+    		//Make sure there is actually a definition to use
+    		if (def.getDefinition() == null) def.setDefintion(doc);
+    		
     		//Use the definition id as the workflow process name
     		getWorkflowModule().buildProcessDefinition(def.getId(), def);
     	}
