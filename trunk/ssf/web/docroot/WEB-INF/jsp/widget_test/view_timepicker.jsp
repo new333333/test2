@@ -14,7 +14,7 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/html/common/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.text.SimpleDateFormat" %>
@@ -96,10 +96,10 @@ This test page shows timepickers for the current date and an unspecified date.
 			<tr>
 				<td>
 					First timepicker:<br>
-					<sitescape:datepicker id="date1" 
+					<ssf:datepicker id="date1" 
 						formName="timepickertest"
 						initDate="<%=initDate%>" />
-					<sitescape:timepicker id="date1"
+					<ssf:timepicker id="date1"
 						formName="timepickertest"
 						initDate="<%=initDate%>" />
 				</td>
@@ -107,10 +107,10 @@ This test page shows timepickers for the current date and an unspecified date.
 			<tr>
 				<td>
 					Second timepicker:<br>
-					<sitescape:datepicker id="date2" 
+					<ssf:datepicker id="date2" 
 						formName="timepickertest"
 						 />
-					<sitescape:timepicker id="date2"
+					<ssf:timepicker id="date2"
 						formName="timepickertest"
 						/>
 			

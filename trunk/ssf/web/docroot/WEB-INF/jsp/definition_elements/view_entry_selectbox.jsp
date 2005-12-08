@@ -14,10 +14,8 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<jsp:useBean id="ss_forum_forum" type="com.sitescape.ef.domain.Binder" scope="request" />
 <jsp:useBean id="ss_forum_config_definition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ss_forum_config" type="org.dom4j.Element" scope="request" />
 <jsp:useBean id="ss_forum_configJspStyle" type="String" scope="request" />
-<%@ include file="/html/common/init.jsp" %>
 <div><b><i>***view entry selectbox***</i></b>
 </div>

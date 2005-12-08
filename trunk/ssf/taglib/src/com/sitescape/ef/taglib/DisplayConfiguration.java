@@ -3,6 +3,7 @@ package com.sitescape.ef.taglib;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
@@ -18,6 +19,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.util.servlet.DynamicServletRequest;
+import com.sitescape.util.servlet.StringServletResponse;
 
 
 /**
@@ -61,14 +64,18 @@ public class DisplayConfiguration extends TagSupport {
 								String jsp = jspEle.attributeValue("value", "");
 								if (!jsp.equals("")) {
 									RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
-				
-									httpReq.setAttribute("item", nextItem);
+									
+									ServletRequest req = null;
+									req = new DynamicServletRequest(
+										(HttpServletRequest)pageContext.getRequest());
+									
+									req.setAttribute("item", nextItem);
 									
 									//Each item property that has a value is added as a "request attribute". 
 									//  The key name is "property_xxx" where xxx is the property name.
 									//At a minimum, make sure the name and caption variables are defined
-									httpReq.setAttribute("property_name", "");
-									httpReq.setAttribute("property_caption", "");
+									req.setAttribute("property_name", "");
+									req.setAttribute("property_caption", "");
 									
 									//Also set up the default values for all properties defined in the definition configuration
 									//  These will be overwritten by the real values (if they exist) below
@@ -83,7 +90,7 @@ public class DisplayConfiguration extends TagSupport {
 											propertyDefaultValue = itemProperty.attributeValue("value", propertyDefaultValue);
 										}
 										if (!propertyName.equals("")) {
-											httpReq.setAttribute("property_"+propertyName, propertyDefaultValue);
+											req.setAttribute("property_"+propertyName, propertyDefaultValue);
 										}
 									}
 									
@@ -93,7 +100,7 @@ public class DisplayConfiguration extends TagSupport {
 										String propertyName = property.attributeValue("name", "");
 										
 										if (!propertyName.equals("")) {												
-											httpReq.setAttribute("property_"+propertyName, "");
+											req.setAttribute("property_"+propertyName, "");
 
 											//Get the type from the config definition
 											Element propertyConfig = (Element) itemDefinition.selectSingleNode("properties/property[@name='"+propertyName+"']");
@@ -110,7 +117,7 @@ public class DisplayConfiguration extends TagSupport {
 											} else {
 												propertyValue = property.attributeValue("value", "");
 											}
-											httpReq.setAttribute("property_"+propertyName, propertyValue);
+											req.setAttribute("property_"+propertyName, propertyValue);
 										}
 									}
 									
@@ -128,18 +135,19 @@ public class DisplayConfiguration extends TagSupport {
 												(Element)nextItem.selectSingleNode("properties/property[@name='"+propertyName+"']");
 											if (configProperty != null) {
 												String value = configProperty.attributeValue("value", "");
-												savedReqAttributes.put(reqAttrName, httpReq.getAttribute(reqAttrName));
-												httpReq.setAttribute(reqAttrName, value);
+												savedReqAttributes.put(reqAttrName, req.getAttribute(reqAttrName));
+												req.setAttribute(reqAttrName, value);
 											}
 										}
 									}
 									//Store the entry object
 									if (this.folderEntry != null) {
-										httpReq.setAttribute("ss_definition_folder_entry", this.folderEntry);
+										req.setAttribute("ss_definition_folder_entry", this.folderEntry);
 									}
 				
-									rd.include(httpReq, httpRes);
-									//pageContext.getOut().print(httpRes.toString());
+									StringServletResponse res = new StringServletResponse(httpRes);
+									rd.include(req, res);
+									pageContext.getOut().print(res.getString());
 
 									//Restore the saved properties
 									itProperties = itemDefinition.selectNodes("properties/property[@name='setAttribute']").iterator();
@@ -147,8 +155,8 @@ public class DisplayConfiguration extends TagSupport {
 										Element property = (Element) itProperties.next();
 										String reqAttrName = property.attributeValue("setAttribute", "");
 										if (!reqAttrName.equals("")) {
-											savedReqAttributes.put(reqAttrName, httpReq.getAttribute(reqAttrName));
-											httpReq.setAttribute(reqAttrName, httpReq.getAttribute(reqAttrName));
+											savedReqAttributes.put(reqAttrName, req.getAttribute(reqAttrName));
+											req.setAttribute(reqAttrName, req.getAttribute(reqAttrName));
 										}
 									}
 								} else {

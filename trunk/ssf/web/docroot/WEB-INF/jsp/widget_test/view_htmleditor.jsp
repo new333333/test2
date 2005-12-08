@@ -14,7 +14,7 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/html/common/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="java.util.Map" %>
 
 
@@ -78,7 +78,7 @@ First editor has height=150, second one has no size specified, so defaults to 25
 				<td>
 					First editor:
 					<div>
-					<sitescape:htmleditor id="editor1" 
+					<ssf:htmleditor id="editor1" 
 						formName="editortest"
 						height="150" color="<%= background %>"
 						initText="<%= textfield1 %>" />
@@ -89,7 +89,7 @@ First editor has height=150, second one has no size specified, so defaults to 25
 				<td>
 					Second editor:
 					<div>
-					<sitescape:htmleditor id="editor2" 
+					<ssf:htmleditor id="editor2" 
 						formName="editortest"  color="<%= background %>"
 						initText="<%= textfield2 %>" />
 					</div>

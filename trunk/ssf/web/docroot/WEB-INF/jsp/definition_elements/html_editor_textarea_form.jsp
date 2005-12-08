@@ -1,6 +1,5 @@
 <% // The html editor widget %>
-<%@ include file="/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ss_forum_forum" type="com.sitescape.ef.domain.Binder" scope="request" />
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ss_forum_config_definition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ss_forum_config" type="org.dom4j.Element" scope="request" />
 <%
@@ -17,7 +16,7 @@
 		caption = "<b>"+caption+"</b><br>";
 	}
 
-String background = GetterUtil.get(request.getParameter("body_background"), skin.getGamma().getBackground());
+String background = gammaColor;
 %>
 <c:set var="textValue" value=""/>
 <c:if test="${!empty ss_forum_entry}">
@@ -31,7 +30,7 @@ String background = GetterUtil.get(request.getParameter("body_background"), skin
 <jsp:useBean id="textValue" type="java.lang.String" />
 <div class="formBreak">
   <div class="labelLeft"><%= caption %>
-    <sitescape:htmleditor id="<%= elementName %>" 
+    <ssf:htmleditor id="<%= elementName %>" 
       formName="<%= formName %>" height="<%= height %>" color="<%= background %>"
       initText="<%= textValue %>" />
   </div>

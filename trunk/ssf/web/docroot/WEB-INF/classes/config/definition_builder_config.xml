@@ -71,7 +71,7 @@
 		</options>
 		
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/entry_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
 		</jsps>
 	</item>
 
@@ -89,7 +89,7 @@
 		</options>
 		
 		<jsps>
-			<jsp name="view" value="/html/portlet/forum/elements/entry_view.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/entry_view.jsp" />
 		</jsps>
 	</item>
 	
@@ -101,7 +101,7 @@
 			<property name="caption" caption="Caption" type="text"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/html/portlet/forum/elements/view_entry_data.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp" />
 		</jsps>
 	</item>
 		
@@ -110,7 +110,7 @@
 			<property name="caption" caption="Caption" type="text"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/html/portlet/forum/elements/view_entry_attachments.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
 		</jsps>
 	</item>
 		
@@ -119,7 +119,7 @@
 			<property name="caption" caption="Caption" type="text"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/html/portlet/forum/elements/view_entry_replies.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_replies.jsp" />
 		</jsps>
 	</item>
 		
@@ -135,7 +135,7 @@
 			<option_select path="//item[@category='generalLayout']" optionCaption="Layout options" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/form_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
 		</jsps>
 	</item>
 		
@@ -155,8 +155,8 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/title_form.jsp" />
-			<jsp name="view" value="/html/portlet/forum/elements/title_view.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/title_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/title_view.jsp" />
 		</jsps>
 		<help>The Title field must always be included in the entry. It can appear only once, and it cannot be deleted.</help>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderTitle" />
@@ -181,7 +181,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/text_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderText" />
 	</item>
@@ -206,7 +206,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/textarea_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/textarea_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderText" />
 	</item>
@@ -227,7 +227,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/html_editor_textarea_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
 	</item>
@@ -248,7 +248,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/html_editor_textarea_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
 	</item>
@@ -276,7 +276,7 @@
 			<option name="selectboxSelection" caption="Selectbox option" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/selectbox_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/selectbox_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderSelect" />
 	</item>
@@ -295,7 +295,7 @@
 			</property>			
 		</properties>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/selectbox_selection_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/selectbox_selection_form.jsp" />
 		</jsps>
 	</item>
 
@@ -320,7 +320,7 @@
 			<option name="radioSelection" caption="Radio button option" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/radio_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/radio_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderSelect" />
 	</item>
@@ -339,7 +339,7 @@
 			</property>			
 		</properties>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/radio_selection_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/radio_selection_form.jsp" />
 		</jsps>
 	</item>
 
@@ -361,7 +361,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/checkbox_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/checkbox_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderCheck" />
 	</item>
@@ -379,7 +379,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/attach_files_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/attach_files_form.jsp" />
 		</jsps>
 	</item>
 	
@@ -407,8 +407,8 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/file_form.jsp" />
-			<jsp name="form" value="/html/portlet/forum/elements/view_entry_data_file.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/file_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/view_entry_data_file.jsp" />
 		</jsps>
 	</item>
 	
@@ -430,7 +430,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/date_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/date_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDate" />
 	</item>
@@ -453,7 +453,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/userlist_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/userlist_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderUserlist" />
 	</item>
@@ -469,15 +469,15 @@
 			<option_select path="//item[@category='generalLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/div.jsp" />
-			<jsp name="view" value="/html/portlet/forum/elements/div.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/div.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/div.jsp" />
 		</jsps>
 	</item>
 		
 	<item name="divider" caption="Divider" category="generalLayout">
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/divider.jsp" />
-			<jsp name="view" value="/html/portlet/forum/elements/divider.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
 		</jsps>
 	</item>
 		
@@ -496,8 +496,8 @@
 			<option_select path="//item[@category='generalLayout']" optionCaption="General layout options" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/table2.jsp" />
-			<jsp name="view" value="/html/portlet/forum/elements/table2.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
 		</jsps>
 	</item>
 		
@@ -515,8 +515,8 @@
 			<option_select path="//item[@category='generalLayout']" optionCaption="Layout options" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/table3.jsp" />
-			<jsp name="view" value="/html/portlet/forum/elements/table3.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
 		</jsps>
 	</item>
 
@@ -533,8 +533,8 @@
 			<option_select path="//item[@category='generalLayout']" optionCaption="Layout options" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/html.jsp" />
-			<jsp name="view" value="/html/portlet/forum/elements/html.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/html.jsp" />
 		</jsps>
 	</item>
 		
@@ -548,7 +548,7 @@
 			<option_select path="//item[@category='generalLayout']" optionCaption="Layout options" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/form_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
 		</jsps>
 	</item>
 		
@@ -565,8 +565,8 @@
 			<option name="cancelButton" caption="Cancel button" initial="true" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/form_buttons_form.jsp" />
-			<jsp name="view" value="/html/portlet/forum/elements/form_buttons_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_buttons_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/form_buttons_form.jsp" />
 		</jsps>
 	</item>
 		
@@ -576,7 +576,7 @@
 			<property name="onClick" caption="OnClick routine" type="text"/>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/ok_button_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/ok_button_form.jsp" />
 		</jsps>
 	</item>
 		
@@ -586,7 +586,7 @@
 			<property name="onClick" caption="OnClick routine" type="text"/>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/cancel_button_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/cancel_button_form.jsp" />
 		</jsps>
 	</item>
 		
@@ -604,37 +604,37 @@
 		
 	<item name="toolBar" caption="Tool bar" category="forumView">
 		<jsps>
-			<jsp name="view" value="/html/portlet/forum/elements/toolbar.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/toolbar.jsp" />
 		</jsps>
 	</item>
 		
 	<item name="navBar" caption="Navigation bar" category="forumView">
 		<jsps>
-			<jsp name="view" value="/html/portlet/forum/elements/navbar.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 		</jsps>
 	</item>
 		
 	<item name="filterBar" caption="Filter bar" category="forumView">
 		<jsps>
-			<jsp name="view" value="/html/portlet/forum/elements/filterbar.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/filterbar.jsp" />
 		</jsps>
 	</item>
 		
 	<item name="folderList" caption="Folder listing" category="forumView">
 		<jsps>
-			<jsp name="view" value="/html/portlet/forum/elements/folder_list.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
 		</jsps>
 	</item>
 		
 	<item name="viewEntry" caption="View entry selectbox" category="forumView">
 		<jsps>
-			<jsp name="view" value="/html/portlet/forum/elements/view_entry_selectbox.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_selectbox.jsp" />
 		</jsps>
 	</item>
 		
 	<item name="defaultEntryView" caption="Default entry view">
 		<jsps>
-			<jsp name="view" value="/html/portlet/forum/elements/view_entry_default.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_default.jsp" />
 		</jsps>
 	</item>
 		

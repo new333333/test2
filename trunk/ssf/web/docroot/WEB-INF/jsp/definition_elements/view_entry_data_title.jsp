@@ -9,7 +9,7 @@
 	}
 %>
 <c:out value="${ss_definition_folder_entry.docNumber}"/>. 
-<a href="<sitescape:url 
+<a href="<ssf:url 
     folderId="<%= ss_definition_folder_entry.getParentFolder().getStringId() %>" 
     operation="view_entry"
     entryId="<%= ss_definition_folder_entry.getId().toString() %>"

@@ -9,7 +9,7 @@
 %>
 <script language="javascript">
 function loadEntry(obj,id) {
-	<c:out value="${showEntryMessageRoutine}"/>("<sitescape:nlt tag="loading" text="Loading..."/>");
+	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
 	highlightLineById(id);
 	showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
 	return false;
@@ -24,7 +24,7 @@ function loadEntry(obj,id) {
 <tr>
   <td>
 	<div>
-	  <sitescape:tree treeName="folderTree" treeDocument="<%= ss_folder_tree %>" 
+	  <ssf:tree treeName="folderTree" treeDocument="<%= ss_folder_tree %>" 
 	    commonImg="<%= COMMON_IMG %>" rootOpen="false" 
 	    nodeOpen="<%= parentFolderId %>" highlightNode="<%= folderId %>" />
 	</div>
@@ -54,7 +54,7 @@ function loadEntry(obj,id) {
 %>
   </td>
   <td valign="top" width="40%">
-    <a href="<sitescape:url folderId="<%= folderId %>" operation="view_entry" 
+    <a href="<ssf:url folderId="<%= folderId %>" operation="view_entry" 
     entryId="<%= fileEntry.getId().toString() %>" popup="true" />" 
     onClick="loadEntry(this,'folderLine_<c:out value="${fileEntry.id}"/>');return false;" >
     <c:if test="${empty fileEntry.title}">

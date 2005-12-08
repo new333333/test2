@@ -1,7 +1,5 @@
 <% // 2 column table %>
-<%@ include file="/html/common/init.jsp" %>
 <%@ page import="org.dom4j.Element" %>
-<jsp:useBean id="ss_forum_forum" type="com.sitescape.ef.domain.Binder" scope="request" />
 <jsp:useBean id="ss_forum_config_definition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ss_forum_config" type="org.dom4j.Element" scope="request" />
 <jsp:useBean id="ss_forum_configJspStyle" type="String" scope="request" />
@@ -23,7 +21,7 @@
 				Element tdItem1 = (Element) itItems.next();
 %>
 <td>
-<sitescape:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
+<ssf:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
   configElement="<%= tdItem1 %>" configJspStyle="<%= ss_forum_configJspStyle %>" 
   processThisItem="true" />
 </td>
@@ -33,7 +31,7 @@
 					Element tdItem2 = (Element) itItems.next();
 %>
 <td>
-<sitescape:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
+<ssf:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
   configElement="<%= tdItem2 %>" configJspStyle="<%= ss_forum_configJspStyle %>" 
   processThisItem="true" />
 </td>

@@ -1,5 +1,5 @@
 <% // View entry replies %>
-<%@ include file="/jsp/definition_elements/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ss_forum_config_definition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ss_forum_configJspStyle" type="String" scope="request" />
 <jsp:useBean id="ss_forum_config" type="org.dom4j.Element" scope="request" />
@@ -17,7 +17,7 @@
 <tr>
   <td>
     <div class="entryContent">
-	  <sitescape:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
+	  <ssf:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
 		configElement="<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']") %>" 
 		configJspStyle="<%= ss_forum_configJspStyle %>" 
 		processThisItem="false" 
