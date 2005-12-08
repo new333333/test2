@@ -44,7 +44,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 
 			
 			//See if a url was specified
-			String ctxPath = renderRequest.getContextPath();
+			String ctxPath = req.getContextPath();
 			if (!this.url.equals("")) {
 				//Yes, a url was explicitly specified. Just add the portal context and return
 				String fullUrl = ctxPath + "/" + this.url;
@@ -89,13 +89,13 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				Iterator it = params.entrySet().iterator();
 				while (it.hasNext()) {
 					Map.Entry me = (Map.Entry) it.next();
-					webUrl += me.getKey() + "=" + me.getValue() + "&";
+					webUrl += me.getKey() + "=" + ((String[])me.getValue())[0] + "&";
 				}
 				if (_params != null ) {
 					Iterator _it = _params.entrySet().iterator();
 					while (_it.hasNext()) {
 						Map.Entry me = (Map.Entry) _it.next();
-						webUrl += me.getKey() + "=" + me.getValue() + "&";
+						webUrl += me.getKey() + "=" + ((String[])me.getValue())[0] + "&";
 					}
 				}
 				pageContext.getOut().print(webUrl);
