@@ -45,7 +45,7 @@ renderRequest.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
 %>
 <jsp:useBean id="ss_entryWindowWidth" type="java.lang.Integer" scope="request" />
 <jsp:useBean id="ss_toolbarWidth" type="java.lang.Integer" scope="request" />
-<c_rt:if test="<%= !op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY) %>">
+<c:if test="<%= !op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY) %>">
 <c:set var="showEntryCallbackRoutine" value="showEntryInDiv" scope="request"/>
 <c:set var="showEntryMessageRoutine" value="showMessageInDiv" scope="request"/>
 <script language="javascript">
@@ -221,9 +221,9 @@ function highlightLineById(id) {
 
 
 </script>
-</c_rt:if>
+</c:if>
 
-<c_rt:if test="<%= !op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY) %>">
+<c:if test="<%= !op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY) %>">
 
 <div id="showentryhighwatermark" style="position:absolute; visibility:visible;">
 <img src="<html:imagesPath/>1pix.gif">
@@ -243,10 +243,10 @@ function highlightLineById(id) {
 <%
 	}
 %>
-</c_rt:if>
-<c_rt:if test="<%= op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY) %>">
+</c:if>
+<c:if test="<%= op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY) %>">
 <jsp:useBean id="ssFolderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
-  <c_rt:if test="<%= !statePopUp %>">
+  <c:if test="<%= !statePopUp %>">
 <script language="javascript">
 function loadEntry(obj,id) {
 	self.location.href = obj.href;
@@ -263,9 +263,9 @@ function loadEntry(obj,id) {
 	    processThisItem="true" 
 	    folderEntry="<%= ssFolderEntry %>" />
     </liferay:box>
-  </c_rt:if>
+  </c:if>
   
-  <c_rt:if test="<%= statePopUp %>">
+  <c:if test="<%= statePopUp %>">
 <script language="javascript">
 if (self.parent && self.parent.highlightLineById) {
 	self.parent.highlightLineById("folderLine_<c:out value="${ssFolderEntry.id}"/>");
@@ -310,5 +310,5 @@ if (self.parent && self.parent.highlightLineById) {
 <%
 	}
 %>
-  </c_rt:if>
-</c_rt:if>
+  </c:if>
+</c:if>
