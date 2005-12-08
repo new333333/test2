@@ -252,7 +252,8 @@
 	<!-- ============================ Indexing/Search Service =========================== -->
 	
 	<bean id="luceneSessionFactory" class = "com.sitescape.ef.search.local.LocalLuceneSessionFactory" depends-on="sPropsUtil">
-		<property name="rootDirProperty"><value>local.lucene.root.dir</value></property>			
+		<property name="dataRootDirProperty"><value>data.root.dir</value></property>	
+		<property name="subDirName"><value>lucene</value></property>
 	</bean>
 	
 	<bean id="objectIndexMapping" class = "com.sitescape.ef.search.docbuilder.mapped.ObjectIndexMapping">
@@ -495,7 +496,8 @@
 	</bean>
 	
 	<bean id="fileRepositoryService" class="com.sitescape.ef.repository.file.FileRepositoryService" depends-on="sPropsUtil">
-		<property name="rootDirProperty"><value>file.repository.root.dir</value></property>
+		<property name="dataRootDirProperty"><value>data.root.dir</value></property>	
+		<property name="subDirName"><value>filerepository</value></property>
 	</bean>
 
 	<bean id="internalWebdavRepositoryService" class="com.sitescape.ef.repository.webdav.GenericWebdavRepositoryService">		

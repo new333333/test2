@@ -1,5 +1,7 @@
 package com.sitescape.ef.util;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
 
 import com.sitescape.ef.SingletonViolationException;
@@ -85,6 +87,13 @@ public class SPropsUtil {
 			return defValue;
 		else
 			return Integer.parseInt(val);		
+	}
+	
+	public static String getDirPath(String key) throws ConfigPropertyNotFoundException, IOException {
+		String dirPath = new File(getString(key)).getCanonicalPath();
+		if(!dirPath.endsWith(File.separator))
+			dirPath += File.separator;
+		return dirPath;
 	}
 	
 	private static String get(String key) {
