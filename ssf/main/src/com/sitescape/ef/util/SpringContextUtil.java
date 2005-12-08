@@ -7,6 +7,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.io.Resource;
 
 import com.sitescape.ef.SingletonViolationException;
@@ -48,10 +49,13 @@ public class SpringContextUtil implements ApplicationContextAware {
 	protected static SpringContextUtil getInstance() {
 		return sc;
 	}	
+	protected static ConfigurableListableBeanFactory getBeanFactory() {
+		return ((AbstractApplicationContext) getInstance().ac).getBeanFactory();
+	}
 	
     public static void applyDependencies(Object externalBean, String beanSpringName) { 
         ConfigurableListableBeanFactory configurableListableBeanFactory = 
-            (ConfigurableListableBeanFactory) getInstance().ac; 
+        	getBeanFactory();
         AbstractBeanDefinition bd = (AbstractBeanDefinition) 
         	configurableListableBeanFactory.getBeanDefinition(beanSpringName); 
         int autowireMode = bd.getAutowireMode(); 
@@ -68,7 +72,7 @@ public class SpringContextUtil implements ApplicationContextAware {
     public static Object getBean(String name) {
         return getInstance().ac.getBean(name);
     }
-
+    
     /*
      * I don't want to expose this method unless it is absolutely necessary. 
     public static ApplicationContext getApplicationContext() {
