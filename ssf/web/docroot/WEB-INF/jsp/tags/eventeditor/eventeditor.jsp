@@ -291,19 +291,54 @@ function ${prefix}_generatePopupContents() {
   pc += everyNtext;
   pc += '" > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> \n';
 
-  pc += '<input type="checkbox" name="day0" id="day0" value="">\n';
+  var day0checked = getHiddenField('${formName}', '${evid}', 'day0');
+  pc += '<input type="checkbox" name="day0" id="day0" ';
+  if (day0checked == 'yes') {
+    pc += 'checked="checked" ';
+  }
+  pc += '>\n';
   pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.su" /></font>\n';
-  pc += '<input type="checkbox" name="day1" id="day1" value="">\n';
+  var day1checked = getHiddenField('${formName}', '${evid}', 'day1');
+  pc += '<input type="checkbox" name="day1" id="day1" ';
+  if (day1checked == 'yes') {
+    pc += 'checked="checked" ';
+  }
+  pc += '>\n';
   pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.mo" /></font>\n';
-  pc += '<input type="checkbox" name="day2" id="day2" value="">\n';
+  var day2checked = getHiddenField('${formName}', '${evid}', 'day2');
+  pc += '<input type="checkbox" name="day2" id="day2" ';
+  if (day2checked == 'yes') {
+    pc += 'checked="checked" ';
+  }
+  pc += '>\n';
   pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.tu" /></font>\n';
-  pc += '<input type="checkbox" name="day3" id="day3" value="">\n';
+  var day3checked = getHiddenField('${formName}', '${evid}', 'day3');
+  pc += '<input type="checkbox" name="day3" id="day3" ';
+  if (day3checked == 'yes') {
+    pc += 'checked="checked" ';
+  }
+  pc += '>\n';
   pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.we" /></font>\n';
-  pc += '<input type="checkbox" name="day4" id="day4" value="">\n';
+  var day4checked = getHiddenField('${formName}', '${evid}', 'day4');
+  pc += '<input type="checkbox" name="day4" id="day4" ';
+  if (day4checked == 'yes') {
+    pc += 'checked="checked" ';
+  }
+  pc += '>\n';
   pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.th" /></font>\n';
-  pc += '<input type="checkbox" name="day5" id="day5" value="">\n';
+  var day5checked = getHiddenField('${formName}', '${evid}', 'day5');
+  pc += '<input type="checkbox" name="day5" id="day5" ';
+  if (day5checked == 'yes') {
+    pc += 'checked="checked" ';
+  }
+  pc += '>\n';
   pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.fr" /></font>\n';
-  pc += '<input type="checkbox" name="day6" id="day6" value="">\n';
+  var day6checked = getHiddenField('${formName}', '${evid}', 'day6');
+  pc += '<input type="checkbox" name="day6" id="day6" ';
+  if (day6checked == 'yes') {
+    pc += 'checked="checked" ';
+  }
+  pc += '>\n';
   pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.sa" /></font>\n';
   pc += '</tr>\n';
  
