@@ -14,11 +14,6 @@ import java.util.ArrayList;
  * @hibernate.mapping auto-import="false"
  * need auto-import = false so names don't collide with jbpm
  * <code>FolderEntry</code> represents a entry or a reply.
- * 
- * Note: I believe that we've decided to blur the distinction between
- * an entry
- * 
- * @author Jong Kim
  *
  */
 public class FolderEntry extends AclControlledEntry implements MultipleWorkflowSupport {
@@ -41,7 +36,7 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
     protected FolderEntry topEntry;
     protected FolderEntry parentEntry;
     protected String owningFolderSortKey;
-    private WorkflowStatus wfp1,wfp2,wfp3;
+ //   private WorkflowStatus wfp1,wfp2,wfp3;
     
     
     //missing
@@ -151,33 +146,19 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
         this.sendMail = sendMail;
     }
     
-    /**
-     * @hibernate.component class="com.sitescape.ef.domain.WorkflowStatus" prefix="wfp1_"
-     */
-    public WorkflowStatus getWfp1() {
-        return this.wfp1;
-    }
-    public void setWfp1(WorkflowStatus wfp1) {
-        this.wfp1 = wfp1;
-    }
-    // allow for multiple, but don't support yet
+   // allow for multiple, but don't support yet
     public List getWorkflows() {
         List result = new ArrayList();
-        if (wfp1.getWorkflowDef() != null) {
-            result.add(wfp1);
-        }
+//        if (wfp1.getWorkflowDef() != null) {
+//            result.add(wfp1);
+//        }
         return result;
         
     }
     public void setWorkflows(List workflows) {
         
     }
-    public void addWorkflowDef(WorkflowDef workflowDef) {
-        
-    }
-    public void removeWorkflowDef(WorkflowDef workflowDef) {
-        
-    }
+ 
     /**
      * @hibernate.component class="com.sitescape.ef.domain.HKey" prefix="entry_"
      */
