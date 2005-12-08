@@ -3,6 +3,7 @@ package com.sitescape.ef.repository.webdav;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.apache.commons.httpclient.HttpURL;
 import org.apache.commons.logging.Log;
@@ -17,7 +18,6 @@ import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.util.Constants;
 import com.sitescape.ef.util.FileHelper;
-import com.sitescape.ef.util.WebdavUtil;
 
 public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactory implements RepositoryService {
 
@@ -42,6 +42,11 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	}
 
 	public void read(Folder folder, FolderEntry entry, String relativeFilePath, OutputStream out) throws RepositoryServiceException {
+		
+		List versions = fileVersionsURIs(folder, entry, relativeFilePath);
+
+		
+		
 		try {
 			readInternal(folder, entry, relativeFilePath, out);
 		} catch (IOException e) {
@@ -51,15 +56,54 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 
 	public void readVersion(String fileVersionURI, OutputStream out) throws RepositoryServiceException {
 		try {
-			readInternal(fileVersionURI, out);
+			readInternal(fileVersionURIToResourcePath(fileVersionURI), out);
 		} catch (IOException e) {
 			throw new RepositoryServiceException(e);
 		}
 	}
+	
+	/**
+	 * Translates the file version URI into a resource path that can be used for
+	 * Webdav request to the current server. This hook is useful when the 
+	 * backing Webdav server has been migrated and somehow the server paths for 
+	 * the versioned resources have subsequently changed.
+	 * This method provides a hook for subclass to override so that the URI can 
+	 * be translated from old format (which users may still have around, for
+	 * example, in email notifications, etc.) into new one without major effort.
+	 * 
+	 * @param fileVersionURI
+	 * @return
+	 */
+	protected String fileVersionURIToResourcePath(String fileVersionURI) {
+		return fileVersionURI; // this is default implementation
+	}
 
-	public String[] fileVersionsURIs(Folder folder, FolderEntry entry, String fileName) {
-		// TODO Auto-generated method stub
-		return null;
+	public List fileVersionsURIs(Folder folder, FolderEntry entry, 
+			String relativeFilePath) throws RepositoryServiceException {
+		try {
+			WebdavResource wdr = openSession();
+			
+			try {
+				String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+				
+				String value = WebdavUtil.getSingleHrefValue(wdr, 
+						resourcePath, "version-history");
+				
+				if(value == null)
+					throw new RepositoryServiceException("Cannot find version-history property for " + resourcePath);
+				
+				return WebdavUtil.getHrefValues(wdr, value, "version-set");
+			}
+			catch(IOException e) {
+				logError(wdr);
+				throw e;
+			}
+			finally {
+				wdr.close();
+			}
+		} catch (IOException e) {
+			throw new RepositoryServiceException(e);
+		}
 	}
 
 	public void checkout(Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
@@ -111,7 +155,15 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	public boolean supportCheckout() {
 		return true;
 	}
-	
+
+	public boolean supportVersionDeletion() {
+		// It appears that the Slide server we use does not allows this.
+		// It doesn't appear to me to be a restriction by the DeltaV spec
+		// itself, but some Slide specific misbehavior (or mis-configuration).
+		// It requires more investigation...
+		return false; // for now
+	}
+
 	private void writeInternal(Folder folder, FolderEntry entry, String relativeFilePath, 
 			MultipartFile mf) throws IOException {
 		WebdavResource wdr = openSession();
@@ -183,8 +235,31 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	
 	private void readInternal(String resourcePath, OutputStream out) throws IOException {
 		WebdavResource wdr = openSession();
-		
+				
+		boolean result = false;
 		try {
+			/* for debugging
+			WebdavUtil.dumpProp(wdr, "/slide/history/101/1.2", "version-name");
+			WebdavUtil.dumpProp(wdr, "/slide/history/101/1.2", "no-version-delete");	
+			WebdavUtil.dumpProp(wdr, "/slide/history/101/1.2", "predecessor-set");	
+			WebdavUtil.dumpProp(wdr, "/slide/files/sitescape/document/liferay.com/74/493/junk.txt", "no-version-delete");	
+			
+			if(wdr.headMethod("/slide/history/101/1.2")) { // failed
+				result = wdr.deleteMethod("/slide/history/101/1.2");
+			}
+			
+			if(wdr.headMethod("/slide/history/1")) { // successful
+				result = wdr.deleteMethod("/slide/history/1");
+			}
+			
+			if(wdr.headMethod("/slide/files/sitescape/document/liferay.com/74/489/license.html")) // successful
+				result = wdr.deleteMethod("/slide/files/sitescape/document/liferay.com/74/489/license.html");
+			
+			String value = WebdavUtil.getSinglePropertyValue(wdr, "/slide/files/sitescape/document/liferay.com/74/493/junk.txt", "version-history");
+			value = WebdavUtil.getHrefValue(value);
+			WebdavUtil.dumpProp(wdr, "/slide/history/101", "version-set");
+			*/
+			
 			InputStream is = wdr.getMethodData(resourcePath);
 			
 			FileHelper.copyContent(is, out);
@@ -228,5 +303,4 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	private String getResourcePath(Folder folder, FolderEntry entry, String relativeFilePath) {
 		return getResourcePath(getEntryDirPath(folder, entry), relativeFilePath);
 	}
-
 }

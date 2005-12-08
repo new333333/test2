@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,16 +60,12 @@ public class FileRepositoryService implements RepositoryService {
 	public void read(Folder folder, FolderEntry entry, String relativeFilePath, OutputStream out) throws RepositoryServiceException {
 		String filePath = getFilePath(folder, entry, relativeFilePath);
 		
-		readVersion(filePath, out);
-	}
-
-	public void readVersion(String fileVersionURI, OutputStream out) throws RepositoryServiceException {
 		// In this implementation, file version URI that the caller hands in is 
 		// simply identical to the actual pathname of the file. 
 		FileInputStream in = null;
 		
 		try {
-			in = new FileInputStream(fileVersionURI);
+			in = new FileInputStream(filePath);
 		
 			FileHelper.copyContent(in, out);
 		}
@@ -85,8 +82,14 @@ public class FileRepositoryService implements RepositoryService {
 		}	
 	}
 
-	public String[] fileVersionsURIs(Folder folder, FolderEntry entry, String fileName) {
-		return new String[] {getFilePath(folder, entry, fileName)};
+	public void readVersion(String fileVersionURI, OutputStream out) throws RepositoryServiceException {
+		throw new UnsupportedOperationException();
+	}
+
+	public List fileVersionsURIs(Folder folder, FolderEntry entry, String filePath) 
+		throws RepositoryServiceException {
+		//return new String[] {getFilePath(folder, entry, fileName)};
+		return null;
 	}
 
 	public void checkout(Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
@@ -105,6 +108,10 @@ public class FileRepositoryService implements RepositoryService {
 		return false;
 	}
 
+	public boolean supportVersionDeletion() {
+		return false;
+	}
+	
 	private String getDirPath(Folder folder, FolderEntry entry) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		

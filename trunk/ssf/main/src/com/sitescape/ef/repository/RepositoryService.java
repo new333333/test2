@@ -1,6 +1,7 @@
 package com.sitescape.ef.repository;
 
 import java.io.OutputStream;
+import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,14 +15,19 @@ public interface RepositoryService {
 			
 	/**
 	 * Returns a list of URIs for all versions of the specified resource that
-	 * exist. 
+	 * exist.
+	 * <p>
+	 * If the repository service does not support versioning, it returns 
+	 * <code>null</code>. 
 	 * 
 	 * @param folder
 	 * @param entry
-	 * @param fileName
+	 * @param relativeFilePath
 	 * @return
+	 * @throws RepositoryServiceException
 	 */
-	public String[] fileVersionsURIs(Folder folder, FolderEntry entry, String fileName);
+	public List fileVersionsURIs(Folder folder, FolderEntry entry, String relativeFilePath)
+		throws RepositoryServiceException;
 	
 	/**
 	 * Writes the file resource to the repository system. 
@@ -50,9 +56,7 @@ public interface RepositoryService {
 	 * system. 
 	 * <p>
 	 * The content being read is identical to the latest checked-in version 
-	 * of the file resource corresponding to the specified file URI. 
-	 * <p>
-	 * Note that the specified file URI is NOT a file version URI. 
+	 * of the file resource.
 	 * 
 	 * @param folder
 	 * @param entry
@@ -68,14 +72,20 @@ public interface RepositoryService {
 	 * Reads from the repository system the content of the specified version 
 	 * of the file resource identified by the file version URI.
 	 * <p>
-	 * If the specified version does not exist, it throws an exception. 
+	 * If the specified version does not exist, it throws <code>RepositoryServiceException</code>.
+	 * If the repository service does not support versioning, it throws 
+	 * <code>UnsupportedOperationException</code>. It is because this API
+	 * provides no mechanism for the caller to obtain a valid file version URI
+	 * from the repository system with no versioning support, hence runtime
+	 * invocation of this method is considered a programming error. See
+	 * {@link #fileVersionsURIs} for more info.
 	 *
 	 * @param fileVersionURI
 	 * @param out
 	 * @throws RepositoryServiceException
 	 */
 	public void readVersion(String fileVersionURI, OutputStream out) 
-		throws RepositoryServiceException;
+		throws RepositoryServiceException, UnsupportedOperationException;
 	
 	/**
 	 * Checks out the specified file resource. 
@@ -120,4 +130,15 @@ public interface RepositoryService {
 	 */
 	public boolean supportCheckout();
 	
+	/**
+	 * Returns whether the repository service allows users to delete individual
+	 * versions of a resource without deleting the entire resource. In other
+	 * words, for repository system that does not support this, the only way
+	 * to remove a particular resource is to delete it in its entirety which
+	 * deletes all of its versions as well. Repository system that does not
+	 * support versioning must return <code>false</code> from this method.   
+	 * 
+	 * @return
+	 */
+	public boolean supportVersionDeletion();
 }
