@@ -228,6 +228,9 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 							}
 						}
 					}
+					int nextItemId = Integer.valueOf(root.attributeValue("nextId")).intValue();;
+					nextItemId = populateNewDefinitionTree(itemEleToAdd, newItem, configRoot, nextItemId);
+					root.addAttribute("nextId", Integer.toString(nextItemId));
 				}
 			}
 		}
