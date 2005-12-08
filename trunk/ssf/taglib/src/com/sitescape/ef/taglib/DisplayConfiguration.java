@@ -139,7 +139,7 @@ public class DisplayConfiguration extends TagSupport {
 									}
 				
 									rd.include(httpReq, httpRes);
-									//pageContext.getOut().print(httpRes.getString());
+									//pageContext.getOut().print(httpRes.toString());
 
 									//Restore the saved properties
 									itProperties = itemDefinition.selectNodes("properties/property[@name='setAttribute']").iterator();
