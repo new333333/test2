@@ -295,8 +295,6 @@ div.ss_requiredLegend {
 /* ------------------------------------------------------------------------ */
 /* navigation */
 
-
-
 /* box for small widgets (to avoid using tables to format. */
 /* use for date, time, event pickers, etc. */
 div.ss_widgetContent { 
@@ -385,6 +383,43 @@ div.ss_portlet {
   width: 100%;
   text-align: left;
   }
+
+/* ------------------------------------------------------------------------ */
+/* table styles */
+table.ss_ruledTable {
+  border-top: 1px #666666 solid;
+  border-left: 1px #666666 solid;
+  margin 0px;
+}
+
+table.ss_ruledTable td {
+  border-bottom: 1px #666666 solid;
+  border-right: 1px #666666 solid;
+  margin: 0px;
+}
+
+table.ss_ruledTable th {
+  margin: 0px;
+  font-weight: bold;
+  text-align: center;
+}
+
+table.ss_ruledTable td table {
+  border-bottom: 0px #ffffff solid;
+  border-right: 0px #ffffff solid;
+  margin: 0px;
+}
+
+table.ss_ruledTable td table.monthgrid {
+  border-bottom: 1px #666666 solid;
+  border-right: 1px #666666 solid;
+}
+
+table.ss_ruledTable td table td {
+  border-bottom: 0px #ffffff solid;
+  border-right: 0px #ffffff solid;
+  margin: 0px;
+}
 
 /* ------------------------------------------------------------------------ */
 /* color styles */
