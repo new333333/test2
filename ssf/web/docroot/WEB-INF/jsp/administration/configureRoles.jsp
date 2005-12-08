@@ -34,7 +34,7 @@
 		<c:out value="${operation.value}"/><br>
 	</c:forEach>		
 
-	<input type="submit" name="addBtn" value="<ssf:nlt tag="common.add" text="Add"/>">
+	<input type="submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
 
 <br>
@@ -59,7 +59,7 @@
 	</c:forEach>		
 	<input type="hidden" name="roleId" value="${function.id}">
 	<input type="submit" name="modifyBtn"
-	 value="<ssf:nlt tag="common.modify" text="Modify"/>">
+	 value="<ssf:nlt tag="button.modify" text="Modify"/>">
 </form>
 
 <br>
@@ -72,6 +72,6 @@
 			<portlet:param name="action" value="configure_roles"/>
 		</portlet:actionURL>">
 
-	<input type="submit" name="closeBtn" value="<ssf:nlt tag="common.close" text="Close"/>">
+	<input type="submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
 </div>
