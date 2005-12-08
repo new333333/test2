@@ -112,6 +112,15 @@
 		</property>
 	</bean>
 
+	<!-- Local transaction manager. If using JTA, comment out this element -->
+	<!--
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>-->
+
+	<!-- JTA transaction manager. If using local transaction, comment out this element -->	
+	<bean id="transactionManager" class="com.sitescape.ef.util.JtaTransactionManager" />
+
 	<bean id="baseTransactionProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
 			abstract="true">
 		<property name="transactionManager"><ref bean="transactionManager"/></property>
