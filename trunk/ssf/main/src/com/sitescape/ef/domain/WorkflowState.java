@@ -9,6 +9,7 @@ package com.sitescape.ef.domain;
 public class WorkflowState {
     protected String state;
     protected Long tokenId;
+    protected Definition definition;
  	
     /**
  	 * @hibernate.property type="long" 
@@ -32,7 +33,16 @@ public class WorkflowState {
  		this.state = state;
  	}
 
- 	
+    /**
+     * @hibernate.many-to-one
+     * @return
+     */
+    public Definition getDefinition() {
+    	return definition;
+    }
+    public void setDefinition(Definition definition) {
+    	this.definition = definition;
+    } 	
  	/**
  	 * Compare tokenIds.  A token can have only 1 state
  	 */
