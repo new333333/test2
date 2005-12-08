@@ -54,6 +54,7 @@
 
 %>
 
+<center>
 <b>You chose:</b>
 <br>
 <table border="1">
@@ -71,6 +72,7 @@
 </tr>
 
 </table>
+</center>
 <p>
 
 <%

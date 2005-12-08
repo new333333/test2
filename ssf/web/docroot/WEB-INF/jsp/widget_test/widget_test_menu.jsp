@@ -31,7 +31,7 @@
 				<a href="<portlet:renderURL windowState="maximized">
 						<portlet:param name="action" value="htmledit" />
 					</portlet:renderURL>">Html Editor test</a><br>
-				<a href="<portlet:renderURL windowState="maximized">
+				<a href="<portlet:actionURL windowState="maximized">
 						<portlet:param name="action" value="event" />
 					</portlet:renderURL>">Event tester</a><br>
 				<br>
