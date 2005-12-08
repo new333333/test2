@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.portlet.Constants;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
@@ -54,12 +55,12 @@ public class ActionUtil {
 	 */
 	public static Long getForumId(Map formData, PortletRequest req) throws NoFolderByTheIdException {
 		String forumId = "";
-		if (formData.containsKey(ObjectKeys.FORUM_URL_FORUM_ID)) {
-			Object obj = formData.get(ObjectKeys.FORUM_URL_FORUM_ID);
+		if (formData.containsKey(Constants.FORUM_URL_FORUM_ID)) {
+			Object obj = formData.get(Constants.FORUM_URL_FORUM_ID);
 			if (obj instanceof String[]) {
-				forumId = ((String[]) formData.get(ObjectKeys.FORUM_URL_FORUM_ID))[0];
+				forumId = ((String[]) formData.get(Constants.FORUM_URL_FORUM_ID))[0];
 			} else {
-				forumId = (String) formData.get(ObjectKeys.FORUM_URL_FORUM_ID);
+				forumId = (String) formData.get(Constants.FORUM_URL_FORUM_ID);
 			}
 		}
 		if (forumId.equals("")) {
@@ -67,7 +68,7 @@ public class ActionUtil {
 			PortletPreferences prefs = req.getPreferences();
 			forumId = prefs.getValue("forumId", "");
 		}
-		req.setAttribute(ObjectKeys.FORUM_URL_FORUM_ID,forumId);
+		req.setAttribute(Constants.FORUM_URL_FORUM_ID,forumId);
 		try {
 			return Long.valueOf(forumId);
 		} catch (NumberFormatException nf) {

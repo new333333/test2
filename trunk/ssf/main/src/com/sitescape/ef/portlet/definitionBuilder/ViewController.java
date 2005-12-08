@@ -1,4 +1,4 @@
-package com.sitescape.ef.portlet.definition_builder;
+package com.sitescape.ef.portlet.definitionBuilder;
 
 import java.lang.Integer;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import com.sitescape.util.Validator;
  * @author hurley
  *
  */
-public class DefinitionBuilderController extends SAbstractController {
+public class ViewController extends SAbstractController {
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
