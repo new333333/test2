@@ -6,8 +6,9 @@
 <jsp:useBean id="recurIcon" type="String" scope="request" />
 <jsp:useBean id="startDate" type="java.util.Date" scope="request" />
 <jsp:useBean id="endDate" type="java.util.Date" scope="request" />
+<jsp:useBean id="hasDuration" type="Boolean" scope="request" />
+<jsp:useBean id="hasRecurrence" type="Boolean" scope="request" />
 
-<c:set var="hasDuration" value="${attMap[hasDuration]}" />
 
 <% 
    String dateId;
