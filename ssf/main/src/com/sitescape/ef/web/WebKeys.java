@@ -65,6 +65,7 @@ public class WebKeys {
 	public static final String NOTIFY_ACTION_CONFIGURE="configure_notify";
 	public static final String POSTING_ACTION_CONFIGURE="configure_posting";
 	public static final String POSTINGJOB_ACTION_CONFIGURE="configure_posting_job";
+	public static final String SEARCH_INDEX_ACTION_CONFIGURE="configure_search_index";
 	
 	//oerations
  	public static final String FORUM_OPERATION_ADMINISTRATION = "administration";
@@ -152,6 +153,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_CONFIGURE_NOTIFICATION="administration/configureNotify";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING="administration/configurePosting";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING_JOB="administration/configurePostingJob";
+    public static final String VIEW_ADMIN_CONFIGURE_SEARCH_INDEX="administration/configureSearchIndex";
     
     //servlet paths
     public static final String SERVLET_VIEW_FILE="viewFile";

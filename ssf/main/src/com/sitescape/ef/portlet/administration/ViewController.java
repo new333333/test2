@@ -119,6 +119,16 @@ public class ViewController extends  SAbstractController {
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
+		
+		//Search index
+		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", NLT.get("administration.configure_search_index"));
+		element.addAttribute("image", "page");
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.SEARCH_INDEX_ACTION_CONFIGURE);
+		url.setWindowState(WindowState.MAXIMIZED);
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
 
 		return new ModelAndView("administration/view", WebKeys.ADMIN_TREE, adminTree);
 	}
