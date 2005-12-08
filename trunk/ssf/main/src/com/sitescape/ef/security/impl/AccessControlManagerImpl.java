@@ -1,4 +1,4 @@
-package com.sitescape.ef.security;
+package com.sitescape.ef.security.impl;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -6,10 +6,12 @@ import java.util.Set;
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
+import com.sitescape.ef.security.acl.AclAccessControlException;
 import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.FunctionManager;
+import com.sitescape.ef.security.function.OperationAccessControlException;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
@@ -77,10 +79,8 @@ public class AccessControlManagerImpl implements AccessControlManager {
     
     public void checkOperation(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) throws AccessControlException {
         if(!testOperation(user, workArea, workAreaOperation))
-            throw new AccessControlException("The user '" + user.getId() + 
-                    "' is not authorized to perform the operation '" + 
-                    workAreaOperation.toString() + "' to the work area '" + 
-                    workArea.getWorkAreaId() + "'");            
+        	throw new OperationAccessControlException(user.getName(), workAreaOperation.toString(),
+        			workArea.getWorkAreaId());
     }
     
     public boolean testOperation(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) {
@@ -112,9 +112,8 @@ public class AccessControlManagerImpl implements AccessControlManager {
     }
     
     public void checkAcl(User user, AclContainer parent, AclControlled aclControlledObj, AccessType accessType) throws AccessControlException {
-        if(!testAcl(user, parent, aclControlledObj, accessType))
-            throw new AccessControlException("The user '" + user.getId() + 
-                    "' has no '" + accessType.toString() + "' access to the object");
+        if(!testAcl(user, parent, aclControlledObj, accessType))     	
+            throw new AclAccessControlException(user.getName(), accessType.toString()); 
     }
     
     public boolean testAcl(User user, AclContainer parent, AclControlled aclControlledObj, AccessType accessType) {

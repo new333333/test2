@@ -31,7 +31,7 @@ import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
-import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.ef.security.AccessControlNonCodedException;
 
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
     
@@ -71,7 +71,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
            modUser.setModification(new HistoryStamp(user));
            EntryBuilder.updateEntry(modUser, updates);
        } else {
-    	   throw new AccessControlException();
+    	   throw new AccessControlNonCodedException();
        }
        return modUser;
        
