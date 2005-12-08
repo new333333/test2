@@ -37,7 +37,8 @@ public class Hits implements Serializable {
 
     public static Hits transfer(org.apache.lucene.search.Hits hits,
             int offset, int maxSize) throws IOException {
-        int length = hits.length();
+        if (hits == null) return new Hits(0);
+    	int length = hits.length();
         if (maxSize > 0) {
           length = Math.min(hits.length() - offset, maxSize);
         }
