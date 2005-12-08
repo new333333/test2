@@ -1,11 +1,11 @@
-package com.sitescape.ef.util.spring;
+package com.sitescape.ef.util;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import com.sitescape.ef.SingletonViolationException;
 
@@ -19,12 +19,12 @@ import com.sitescape.ef.SingletonViolationException;
  * @author Jong Kim
  *
  */
-public class SpringContextUtil implements BeanFactoryAware {
+public class SpringContextUtil implements ApplicationContextAware {
 	// This is a singleton class.
 	
 	private static SpringContextUtil sc; // singleton instance
 	
-	private BeanFactory beanFactory;
+	protected ApplicationContext ac;
 	
 	public SpringContextUtil() {
 		if(sc == null)
@@ -33,12 +33,8 @@ public class SpringContextUtil implements BeanFactoryAware {
 			throw new SingletonViolationException(SpringContextUtil.class);
 	}
 	
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
-    } 
-    
-    protected BeanFactory getBeanFactory() {
-        return beanFactory;
+    public void setApplicationContext(ApplicationContext ac) throws BeansException {
+        this.ac = ac;
     } 
 
 	protected static SpringContextUtil getInstance() {
@@ -47,7 +43,7 @@ public class SpringContextUtil implements BeanFactoryAware {
 	
     public static void applyDependencies(Object externalBean, String beanSpringName) { 
         ConfigurableListableBeanFactory configurableListableBeanFactory = 
-            (ConfigurableListableBeanFactory) getInstance().getBeanFactory(); 
+            (ConfigurableListableBeanFactory) getInstance().ac; 
         AbstractBeanDefinition bd = (AbstractBeanDefinition) 
         	configurableListableBeanFactory.getBeanDefinition(beanSpringName); 
         int autowireMode = bd.getAutowireMode(); 
@@ -62,7 +58,13 @@ public class SpringContextUtil implements BeanFactoryAware {
     }
     
     public static Object getBean(String name) {
-        return getInstance().getBeanFactory().getBean(name);
+        return getInstance().ac.getBean(name);
     }
 
+    /*
+     * I don't want to expose this method unless it is absolutely necessary. 
+    public static ApplicationContext getApplicationContext() {
+    	return getInstance().ac;
+    }
+    */
 }
