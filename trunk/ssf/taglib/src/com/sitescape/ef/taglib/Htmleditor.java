@@ -40,7 +40,11 @@ public class Htmleditor extends TagSupport {
       if (height == null) {
           height = "250";
       }
-			
+
+      if (initText == null) {
+    	  initText = "";
+      }
+      
       if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 
       StringBuffer sb = new StringBuffer();
