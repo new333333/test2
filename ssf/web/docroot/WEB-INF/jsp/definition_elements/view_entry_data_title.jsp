@@ -13,6 +13,6 @@
     folderId="<%= ssDefinitionEntry.getParentFolder().getId().toString() %>" 
     action="view_entry"
     entryId="<%= ssDefinitionEntry.getId().toString() %>"
-    />" onClick="return(ss_openUrlInPortlet(this.href, false));"><c:if test="${empty ssDefinitionEntry.title}">
+    />"><c:if test="${empty ssDefinitionEntry.title}">
     <span class="ss_contentbold"><i>(no title)</i></span>
     </c:if><c:out value="${ssDefinitionEntry.title}"/></a></span>

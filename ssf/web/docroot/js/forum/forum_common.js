@@ -59,11 +59,11 @@ function ss_openUrlInPortlet(url, popup) {
 		return;
 	}
 	//Are we at the top window?
-	if (self.window != self.top && parent.ss_openUrlInPortlet) {
-		parent.ss_openUrlInPortlet(url, popup)
+	if (self.window != self.top) {
+		parent.location.href = url;
 		return false
-	} else if (self.opener && self.opener.ss_openUrlInPortlet) {
-		self.opener.ss_openUrlInPortlet(url, popup)
+	} else if (self.opener) {
+		self.opener.location.href = url
 		setTimeout('self.window.close();', 200)
 		return false
 	} else {
