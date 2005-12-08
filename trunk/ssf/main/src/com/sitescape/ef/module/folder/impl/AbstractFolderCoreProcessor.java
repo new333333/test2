@@ -26,9 +26,11 @@ import org.dom4j.Element;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
+import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.AclControlledEntry;
 import com.sitescape.ef.domain.CustomAttribute;
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileItem;
 import com.sitescape.ef.domain.FolderHierarchyException;
 import com.sitescape.ef.domain.FolderEntry;
@@ -320,6 +322,41 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
     }
+    
+    public void indexFolder(Folder folder) {
+        //do actual db query
+    	FilterControls filter = new FilterControls("parentFolder", folder);
+        SFQuery query = (SFQuery)getFolderDao().queryEntries(filter);
+        
+        //iterate through results
+        ArrayList childEntries = new ArrayList();
+        try {
+ 	        while (query.hasNext()) {
+	            Object obj = query.next();
+	            if (obj instanceof Object[])
+	                obj = ((Object [])obj)[0];
+	            childEntries.add(obj);
+	        }
+        } finally {
+	        query.close();
+        }
+        Iterator itEntries = childEntries.iterator();
+        while (itEntries.hasNext()) {
+        	FolderEntry entry = (FolderEntry) itEntries.next();
+        	
+            // Create an index document from the entry object.
+            org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(folder, entry);
+            
+            System.out.println("Indexing (" + folder.getId().toString() + ") " + entry.getDocNumber() + ": " + indexDoc.toString());
+            
+            // Delete the document that's currently in the index.
+            IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
+            
+            // Register the index document for indexing.
+            IndexSynchronizationManager.addDocument(indexDoc);        
+        }
+    }
+    
     //***********************************************************************************************************
     public org.dom4j.Document getDomFolderTree(Folder top, DomTreeBuilder domTreeHelper) {
        	getAccessControlManager().checkOperation(top, WorkAreaOperation.VIEW);
@@ -480,7 +517,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     	QueryBuilder qb = new QueryBuilder();
     	SearchObject so = qb.buildQuery(qTree);
     	
-    	//System.out.println("Query is: " + qTree.asXML());
+    	System.out.println("Query is: " + qTree.asXML());
     	
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         
@@ -747,8 +784,11 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         // Add Doc Id
         IndexUtils.addDocId(indexDoc, entry);
 
-        // Add Doc Id
+        // Add Doc number
         IndexUtils.addDocNumber(indexDoc, entry);
+        
+        // Add Doc title
+        IndexUtils.addTitle(indexDoc, entry);
         
         // Add command definition
         IndexUtils.addCommandDefinition(indexDoc, entry); 

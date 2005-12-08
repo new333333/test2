@@ -46,6 +46,7 @@ public interface FolderCoreProcessor {
     public Document getDomFolderTree(Folder folder, DomTreeBuilder domTreeHelper);
 	public Map getFolderEntries(Folder folder, int maxNumEntries) throws AccessControlException;
 	public Hits getRecentEntries(List folders);
+	public void indexFolder(Folder folder);
 	
 	public Long addFolder(Folder parentFolder, Folder folder) throws AccessControlException;
     	  

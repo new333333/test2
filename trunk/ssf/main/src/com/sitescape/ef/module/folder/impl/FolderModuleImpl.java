@@ -161,6 +161,48 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
      	
 		folder.setDefinitions(definitions);
     }
+    
+    public void indexFolders(Long folderId) {
+		String companyId = RequestContextHolder.getRequestContext().getZoneName();
+		Folder folder = getFolderDao().loadFolders(folderId, companyId);
+        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor(
+            	folder, FolderCoreProcessor.PROCESSOR_KEY);
+    	try {
+    		//Should this check even be done?
+    		getAccessControlManager().checkAcl(folder, AccessType.READ);
+    	}
+    	catch(AccessControlException e) {
+    		//Skip folders to which access is denied
+    	}
+    	processor.indexFolder(folder);
+
+    	//Now do the sub-folders
+    	Iterator itFolders = folder.getFolders().iterator();
+		while (itFolders.hasNext()) {
+	    	folder = (Folder) itFolders.next();
+	    	try {
+	    		//Should this check even be done?
+	    		getAccessControlManager().checkAcl(folder, AccessType.READ);
+	    	}
+	    	catch(AccessControlException e) {
+	    		//Skip folders to which access is denied
+	    		continue;
+	    	}
+	        processor = (FolderCoreProcessor) getProcessorManager().getProcessor(
+	            	folder, FolderCoreProcessor.PROCESSOR_KEY);
+	    	processor.indexFolder(folder);
+		}
+    }
+    
+    public void indexFolder(Long folderId) {
+		String companyId = RequestContextHolder.getRequestContext().getZoneName();
+		Folder folder = getFolderDao().loadFolder(folderId, companyId);
+    	getAccessControlManager().checkAcl(folder, AccessType.READ);
+
+        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor(
+            	folder, FolderCoreProcessor.PROCESSOR_KEY);
+        processor.indexFolder(folder);
+    }
 
  
     public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper) {
