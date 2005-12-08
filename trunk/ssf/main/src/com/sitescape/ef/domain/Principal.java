@@ -35,8 +35,6 @@ public class Principal extends Entry {
     protected String signature="";    
     protected String stringId;
     protected String zoneName;
-    protected String layoutIds;
-    protected List roles;
     protected Long preferredWorkspaceId;
     protected boolean reserved;
     protected boolean defaultIdentity;
@@ -114,16 +112,7 @@ public class Principal extends Entry {
     public void setZoneName(String id) {
     	this.zoneName = id;
     }
- 	/**
-	 * @hibernate.property length="100"
-	 * @return
-	 */
-	public String getLayoutIds() {
-		return this.layoutIds;
-	}
-	public void setLayoutIds(String layoutIds) {
-		this.layoutIds = layoutIds;
-	}    
+
 	/**
      * @hibernate.property length="256"
 	 * @return
@@ -235,52 +224,15 @@ public class Principal extends Entry {
    		if (memberOf == null) memberOf = new ArrayList();
 		Set newM = CollectionUtil.differences(groups, memberOf);
 		Set remM = CollectionUtil.differences(memberOf, groups);
-		this.roles.addAll(newM);
-		this.roles.removeAll(remM);
 		for (Iterator iter=newM.iterator(); iter.hasNext();) {
 			Group g = (Group)iter.next();
 			g.getMembers().add(this);
 		}
-		for (Iterator iter=newM.iterator(); iter.hasNext();) {
+		for (Iterator iter=remM.iterator(); iter.hasNext();) {
 			Group g = (Group)iter.next();
 			g.getMembers().remove(this);
 		}
      } 	
-
-    /**
-     * Role membership is managed by the Role.
-     * @hibernate.bag table="SS_RoleMembership" lazy="true" inverse="true" cascade="persist,merge,save-update" optimistic-lock="false" embed-xml="false"
-     * @hibernate.key column="principal"
-	 * @hibernate.many-to-many fetch="join" class="com.sitescape.ef.domain.Role" 
-	 * @hibernate.column name="role" sql-type="char(32)"
-     */
-    private List getHRoles() {return roles;}
-    private void setHRoles(List roles) {this.roles = roles;}
-    
-    public List getRoles() {
-    	if (roles == null) roles = new ArrayList();
-    	return roles;
-    }
-   	/**
-	 * Remove the current roles from the group and add new roles.
-	 * This method will also add/remove the group from each role as needed.
-	 * @param groups
-	 */
-    public void setRoles(Collection newRoles) {
-		if (roles == null) roles = new ArrayList();
-		Set newM = CollectionUtil.differences(newRoles, roles);
-		Set remM = CollectionUtil.differences(roles, newRoles);
-		this.roles.addAll(newM);
-		this.roles.removeAll(remM);
-		for (Iterator iter=newM.iterator(); iter.hasNext();) {
-			Principal p = (Principal)iter.next();
-			p.getRoles().add(this);
-		}
-		for (Iterator iter=newM.iterator(); iter.hasNext();) {
-			Principal p = (Principal)iter.next();
-			p.getRoles().remove(this);
-		}
-   	} 	
 
  
     protected static String encodeXmlRef(Long id) {
