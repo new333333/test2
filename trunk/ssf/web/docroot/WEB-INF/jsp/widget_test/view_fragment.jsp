@@ -17,6 +17,15 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <script language="javascript">
+
+var baseUrl = "<portlet:renderURL/>";
+function ss_showUrlInPortlet(params) {
+	var url = baseUrl + params
+	self.location.href = url;
+	return false;
+}
+
+
 function loadEntry(obj) {
 	showEntryMessageInDiv("Loading...");
 	showForumEntry(obj.href, showEntryInDiv);
@@ -75,8 +84,36 @@ function showEntryInDiv(str) {
 	}
 }
 
+function showForumEntryInIframe(url) {
+	positionEntryDiv();
+    var wObj
+    if (isNSN || isNSN6 || isMoz5) {
+        wObj = self.document.getElementById('showentryframe')
+    } else {
+        wObj = self.document.all['showentryframe']
+    }
+    
+    var wObj1 = null
+    if (isNSN || isNSN6 || isMoz5) {
+        wObj1 = self.document.getElementById('showentrydiv')
+    } else {
+        wObj1 = self.document.all['showentrydiv']
+    }
+    wObj1.style.display = "block";
+    wObj1.style.visibility = "visible";
+
+    if (wObj.src && wObj.src == url) {
+    	wObj.src = "_blank";
+    }
+    //wObj.style.height = parseInt(wObj1.style.height) - 50 + "px";
+    wObj.src = url
+    return false;
+}
+
+
 var entryWindowWidth = 400;
 function positionEntryDiv() {
+return
     var wObj1 = null
     if (isNSN || isNSN6 || isMoz5) {
         wObj1 = self.document.getElementById('showentrydiv')
@@ -103,18 +140,30 @@ createOnLoadObj('positionEntryDiv', positionEntryDiv)
 <br />
 <br />
 
+<table><tr><td>
 <div id="showbutton" class="ss_portlet" style="display:block; margin:2;">
 <a href="<portlet:renderURL>
 	<portlet:param name="action" value="fragment" />
 	<portlet:param name="operation" value="showFragment" />
 	</portlet:renderURL>" 
-	onClick="loadEntry(this);return false;" 
+	onClick="showForumEntryInIframe(this.href);return false;" 
  	>Show the fragment</a>
 </div>
-
-<div id="showentrydiv" style="position:absolute; visibility:hidden; x:0; y:0;
-  width:400; height:80%; display:none;">
-  <div id="showentry" style="width:100%;">
+</td><td>
+<div id="showentrydiv" style="display:block; margin:2; width:400; height:80%;">
+  <div style="width:90%;">
+    <table cellspacing="0" cellpadding="0" width="100%">
+      <tr>
+        <td align="right">
+          <a href="javascript: ;" onClick="hideEntryDiv();return false;">Close</a>
+        </td>
+      </tr>
+    </table>
   </div>
-</div>
+  <iframe id="showentryframe" name="showentryframe" 
+    src="<html:rootPath/>js/forum/null.html" height="250" width="400" 
+    frameBorder="no" >xxx</iframe>
+</di</td></tr>
+</table>
+
 

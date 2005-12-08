@@ -27,18 +27,6 @@ public class FragmentController extends SAbstractController {
 		
 		if (operation != null) {
 			if (operation.equals("showFragment")) {
-				byte[] b = new byte[10];
-				b[0] = 'H';
-				b[1] = 'e';
-				b[2] = 'l';
-				b[3] = 'l';
-				b[4] = 'o';
-				
-				//Write out the bytes
-				Enumeration ct = request.getResponseContentTypes();
-				response.setContentType("text/html");
-				response.getPortletOutputStream().write(b);
-				response.getPortletOutputStream().flush();
 				path = "widget_test/view_fragment2";
 			}
 		}

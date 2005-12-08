@@ -14,4 +14,33 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-xxxxxxxxxxxx
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<script language="javascript">
+function showUrl(params) {
+	if (parent.ss_showUrlInPortlet) {
+		alert('Calling parent portlet: '+ params)
+		parent.ss_showUrlInPortlet(params)
+		return false
+	} else {
+		alert('no parent found')
+		return true
+	}
+}
+</script>
+
+<div class="ss_portlet" align="left">
+<a href="<portlet:renderURL/>" onClick="return showUrl('action=fragment&operation=showFragment&')">
+show url in portlet
+</a>
+
+<br>
+
+<a href="<portlet:renderURL>
+         <portlet:param name="action" value="fragment"/>
+         <portlet:param name="operation" value="showFragment"/>
+         </portlet:renderURL>" onClick="alert(this.href)">
+show url in iframe
+</a>
+
+</div>
