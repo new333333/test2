@@ -21,7 +21,7 @@ Jaxen 1.1-beta-5
 JAXRPC 1.1
 JBPM 3.0
 JBPM-Identity 3.0
-JDOM Beta 8
+JDOM 1.0
 JTA 1.0.1b
 JTDS 0.9.1
 Log4j 1.2.8
@@ -35,6 +35,7 @@ Portlet 1.0
 Qdox 1.6-snapshot
 Quartz 1.4.5
 Servlet 2.3.1/JSP 1.2.1
+Slide WebDAV client library 2.1
 Spring 1.2.2
 Spring Portlet spring-portlet.jar
 Trove 1.0.2
