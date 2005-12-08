@@ -28,6 +28,7 @@
 		    <value>com/sitescape/ef/domain/Binder.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/CustomAttribute.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/Definition.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/EmailAlias.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/Event.hbm.xml</value> 
 		    <value>com/sitescape/ef/domain/FolderCounts.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/FolderEntry.hbm.xml</value>
