@@ -3,7 +3,6 @@ package com.sitescape.ef.jobs;
 import java.text.ParseException;
 import java.util.TimeZone;
 import java.util.Map;
-import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,9 +19,9 @@ import org.quartz.JobDataMap;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.module.mail.MailModule;
+import com.sitescape.ef.module.mail.PostingConfig;
 import com.sitescape.ef.util.SessionUtil;
 import com.sitescape.ef.util.SpringContextUtil;
-import com.sun.rsasign.i;
 
 public class DefaultEmailPosting implements StatefulJob, EmailPosting {
 	protected Log logger = LogFactory.getLog(getClass());
@@ -30,7 +29,8 @@ public class DefaultEmailPosting implements StatefulJob, EmailPosting {
 		SessionUtil.sessionStartup();
     	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 		try {
-			mail.receivePostings();
+			ScheduleInfo config = new ScheduleInfo((Map)(context.getJobDetail().getJobDataMap()));
+			mail.receivePostings(config);
 		} catch (ConfigurationException cf) {
 			throw new JobExecutionException(cf);
 		} catch (Exception e){
@@ -44,12 +44,9 @@ public class DefaultEmailPosting implements StatefulJob, EmailPosting {
 		ScheduleInfo info = new ScheduleInfo();
 		try {
 			Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");		
-			CronTrigger trigger = (CronTrigger)scheduler.getTrigger(EmailPosting.POSTING_NAME, EmailPosting.POSTING_NAME);
 			JobDetail jobDetail=scheduler.getJobDetail(EmailPosting.POSTING_NAME, EmailPosting.POSTING_NAME);
 			if (jobDetail == null) return info;
-			if (trigger == null) return info;
 			
-			info.setSchedule(new Schedule(trigger.getCronExpression()));
 			int state = scheduler.getTriggerState(EmailPosting.POSTING_NAME, EmailPosting.POSTING_NAME);
 			if (state == Trigger.STATE_PAUSED)
 				info.setEnabled(true);
@@ -63,19 +60,19 @@ public class DefaultEmailPosting implements StatefulJob, EmailPosting {
 	}
 	public void setScheduleInfo(ScheduleInfo info) throws ParseException {
 		try {
-			Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");		
+			Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
 		 	JobDetail jobDetail=scheduler.getJobDetail(EmailPosting.POSTING_NAME, EmailPosting.POSTING_NAME);
 		 	//never been scheduled -start now
 		 	if (jobDetail == null) {
 		 		jobDetail = new JobDetail(EmailPosting.POSTING_NAME, EmailPosting.POSTING_NAME,
 		 				this.getClass(),false, true, false);
 		 		jobDetail.setDescription(EmailPosting.POSTING_NAME);
-		 		jobDetail.setJobDataMap(info.getDetails());
+		 		jobDetail.setJobDataMap((JobDataMap)info.getDetails());
 				scheduler.addJob(jobDetail, true);
 		 	} else {
 		 		//update data if necessary
 		 		if (!jobDetail.equals(info.getDetails())) {
-			 		jobDetail.setJobDataMap(info.getDetails());	 			
+			 		jobDetail.setJobDataMap((JobDataMap)info.getDetails());	 			
 		 			scheduler.addJob(jobDetail, true);
 		 		}
 		 	}

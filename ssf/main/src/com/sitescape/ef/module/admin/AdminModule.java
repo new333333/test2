@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.sitescape.ef.jobs.Schedule;
 import com.sitescape.ef.jobs.ScheduleInfo;
+import com.sitescape.ef.module.mail.PostingConfig;
 import com.sitescape.ef.security.function.Function;
 
 /**
@@ -32,5 +33,8 @@ public interface AdminModule {
     public PostingConfig getPostingConfig();
     public void setPostingConfig(PostingConfig postingConfig) throws ParseException;
     public List getPostingDefs();
+    public void modifyPosting(Long binderId, String postingId, Map updates);
+    public void addPosting(Long binderId, Map updates);
+    public void deletePosting(Long binderId, String postingId);
 
 }

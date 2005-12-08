@@ -35,14 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.xpath.DefaultXPath;
-import org.quartz.JobDataMap;
-import org.quartz.SimpleTrigger;
-import org.quartz.JobDetail;
-import org.quartz.SchedulerException;
 
-import com.sitescape.ef.jobs.EmailNotification;
-import com.sitescape.ef.jobs.SSStatefulJob;
-import com.sitescape.ef.jobs.EmailPosting;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.domain.FileAttachment;
@@ -57,6 +50,8 @@ import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.mail.FolderEmailFormatter;
+import com.sitescape.ef.module.mail.PostingConfig;
+import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.util.XmlClassPathConfigFiles;
@@ -148,10 +143,11 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	}
 
 	/**
-	 * Read mail for this folder
+	 * Read mail from all incomming mail servers.
 	 *
 	 */
-	public void receivePostings() {
+	public void receivePostings(ScheduleInfo info) {
+		PostingConfig config = new PostingConfig(info);
 		String storeProtocol, prefix, auth;
 		for (int i=0; i<mailPostingSessions.size(); ++i) {
 			Session session = (Session)mailPostingSessions.get(i);
@@ -180,7 +176,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				List pDefs = getCoreDao().loadPostings();
 				for (int j=0; j<pDefs.size(); ++j) {
 					PostingDef pDef = (PostingDef)pDefs.get(j); 
-					SearchTerm term = pDef.getSearchTerm();
+					SearchTerm term = pDef.getSearchTerm(config.getAlias(pDef.getEmailId()));
 					if (term != null) {
 						Message msgs[] = mFolder.search(term);
 						if (pDef.isEnabled()) {
