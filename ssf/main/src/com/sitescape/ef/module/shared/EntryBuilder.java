@@ -12,7 +12,7 @@ import com.sitescape.ef.domain.Entry;
 
 import com.sitescape.ef.domain.UpdateAttributeSupport;
 import com.sitescape.ef.util.InvokeUtil;
-import com.sitescape.ef.util.PropertyNotFoundException;
+import com.sitescape.ef.util.ObjectPropertyNotFoundException;
 import com.sitescape.ef.ConfigurationException;
 
 /**
@@ -49,7 +49,7 @@ public class EntryBuilder {
 			Object val = entry.getValue();
 			try {
 				InvokeUtil.invokeSetter(target, attr, val);
-			} catch (PropertyNotFoundException pe) {
+			} catch (ObjectPropertyNotFoundException pe) {
 				if (val == null) continue;
 				target.addCustomAttribute(attr, val);
 			}				
@@ -89,7 +89,7 @@ public class EntryBuilder {
 			Object val = entry.getValue();
 			try {
 				InvokeUtil.invokeSetter(target, attr, val);
-			} catch (PropertyNotFoundException pe) {
+			} catch (ObjectPropertyNotFoundException pe) {
 				if (val == null) 
 					target.removeCustomAttribute(attr);
 				else {
