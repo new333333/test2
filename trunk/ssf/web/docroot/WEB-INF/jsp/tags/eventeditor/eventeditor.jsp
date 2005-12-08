@@ -338,42 +338,67 @@ function ${prefix}_toggleRecur(name) {
    <c:if test="${dowstring == 'weekendday'}"> selected="selected" </c:if>
    ><ssf:nlt tag="calendar.day.names.weekendday" /></option> 
    </select> </td>
+   </tr>
+   <% /* 
+       * Until stuff works like this:
+       *   count == 0 means repeats forever
+       *   count == -1 means until was specified and we don't know the count
+       *   count > 0 means we do know the count and the until member is also there and computed from count
+       */
+   %>
+   <c:choose>
+   <c:when test="${empty event.count}"> 
+   <c:set var="count" value="0" />
+   </c:when>
+   <c:otherwise>
+   <c:set var="count" value="${event.count}" />
+   </c:otherwise>
+   </c:choose>   
 
-    </tr>
+   <tr>
+   <td>
+   <br>&nbsp;<ssf:nlt tag="event.repeatrange" />
+   </td>
+   </tr>
+   <tr>
+   <td>
+   <input type="radio" name="${prefix}_rangeSel" value="count"
+   <c:if test="${count > 0}" > checked="checked" </c:if>
+   >
+   <ssf:nlt tag="event.repeat" />
+   <input type="text" size="2" name="${prefix}_repeatCount"
+   <c:choose>
+   <c:when test="${count > 0}" > value="${count}" </c:when>
+   <c:otherwise> value="10" </c:otherwise>
+   </c:choose>    
+   >
+   <ssf:nlt tag="event.times" />
+   </td>
+   </tr>
 
-    <tr>
-    <td>
-    <br>&nbsp;<ssf:nlt tag="event.repeatrange" />
-    </td>
-    </tr>
-    <tr>
-    <td>
-    <input type="radio" name="${prefix}_rangeSel" value="count"> 
-    <ssf:nlt tag="event.repeat" />
-    <input type="text" size="2" value="10" name="${prefix}_repeatCount">
-    <ssf:nlt tag="event.times" />
-    </td>
-    </tr>
-
-    <tr>
-    <td>
-    <input type="radio" name="${prefix}_rangeSel" value="until"> 
-    <ssf:nlt tag="event.repeat_until" /> 
-    <ssf:datepicker formName="<%= formName %>" id="<%= endrangeId %>" />
+   <tr>
+   <td>
+   <input type="radio" name="${prefix}_rangeSel" value="until"
+   <c:if test="${count == -1}"> checked="checked" </c:if>
+   > 
+   <ssf:nlt tag="event.repeat_until" /> 
+   <ssf:datepicker formName="<%= formName %>" id="<%= endrangeId %>" />
     
-    </td>
-    </tr>
-    <tr>
-    <td>
-    <input type="radio" name="${prefix}_rangeSel" value="forever" checked="checked"> 
-    <ssf:nlt tag="event.repeat_forever" /> 
+   </td>
+   </tr>
+   <tr>
+   <td>
+   <input type="radio" name="${prefix}_rangeSel" value="forever" 
+   <c:if test="${count == 0}"> checked="checked" </c:if>
+   > 
+   <ssf:nlt tag="event.repeat_forever" /> 
     
-    </td>
-    </tr>
+   </td>
+   </tr>
 
-    </table>
+   </table>
 
-   </div>
+  </div>
 </c:if>
 
 </td></tr></table>
