@@ -90,9 +90,7 @@ public class CustomAttribute  {
    	}
  	protected void setOwner(Entry entry) {
  		if (entry == null) {
- 			if (valueType == ATTACHMENT) 
- 				owner.getEntry().removeNamedAttachment(name);
- 			else if (valueType == EVENT)
+ 			if (valueType == EVENT)
  				owner.getEntry().removeNamedEvent(name);
  		}
   		owner = new AnyOwner(entry); 		
@@ -215,7 +213,6 @@ public class CustomAttribute  {
         if ((xmlValue != null) && (xmlValue.getValue() != null))
          	xmlValue = null;
         if (valueType == EVENT) owner.getEntry().removeNamedEvent(name);
-        if (valueType == ATTACHMENT) owner.getEntry().removeNamedAttachment(name);
         //let hibernate delete the existing objects.
         if (values != null) values.clear();
         
@@ -293,8 +290,8 @@ public class CustomAttribute  {
          	clearVals();
          	valueType = ATTACHMENT;
          	Attachment att = (Attachment)value; 
-         	att.setName(name);
-         	owner.getEntry().addNamedAttachment(att);
+         	owner.getEntry().addAttachment(att);
+         	stringValue=att.getId();
          } else if (value instanceof Event) {
          	clearVals();
          	valueType = EVENT;  
@@ -336,7 +333,7 @@ public class CustomAttribute  {
        		case EVENT:
     		    return owner.getEntry().getNamedEvent(name);
     		case ATTACHMENT:
-    			return owner.getEntry().getNamedAttachment(name);
+    			return owner.getEntry().getAttachment(stringValue);
  	    }
 	    return null;
 	}
