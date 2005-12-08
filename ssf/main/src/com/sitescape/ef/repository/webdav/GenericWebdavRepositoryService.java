@@ -277,8 +277,39 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public boolean supportVersioning() {
-		return true;
+	public long getContentLength(Object session, Folder folder, 
+			FolderEntry entry, String relativeFilePath) 
+		throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;
+		
+		try {
+			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+		
+			wdr.setPath(resourcePath);
+			
+			return wdr.getGetContentLength();
+		} catch (IOException e) {
+			logError(wdr);
+			throw new RepositoryServiceException(e);
+		}
+	}
+	
+	public long getContentLength(Object session, Folder folder, 
+			FolderEntry entry, String relativeFilePath, String versionName) 
+		throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;
+		
+		try {
+			String versionResourcePath = getVersionResourcePath(wdr, folder, entry, 
+					relativeFilePath, versionName);			
+			
+			wdr.setPath(versionResourcePath);
+			
+			return wdr.getGetContentLength();
+		} catch (IOException e) {
+			logError(wdr);
+			throw new RepositoryServiceException(e);
+		}
 	}
 	
 	public boolean supportVersionDeletion() {

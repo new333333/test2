@@ -10,6 +10,10 @@ public abstract class UncheckedCodedException extends UncheckedException impleme
     private String errorCode;
     private Object[] errorArgs;
     
+    public UncheckedCodedException(String errorCode) {
+    	super();
+    	setErrorCode(errorCode);
+    }
     public UncheckedCodedException(String errorCode, Object[] errorArgs) {
         super();
         setErrorCode(errorCode);
@@ -43,10 +47,11 @@ public abstract class UncheckedCodedException extends UncheckedException impleme
         return errorArgs;
     }
 
+    public void setErrorArgs(Object[] errorArgs) {
+        this.errorArgs = errorArgs;
+    }
+
     private void setErrorCode(String errorCode) {
         this.errorCode = errorCode;
-    }
-    private void setErrorArgs(Object[] errorArgs) {
-        this.errorArgs = errorArgs;
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.mail.MailSender;
 
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
+import com.sitescape.ef.file.FileManager;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AclManager;
@@ -30,6 +31,7 @@ public class AbstractModuleImpl {
 	protected AclManager aclManager;
 	protected ProcessorManager processorManager;
 	protected Scheduler scheduler;
+	protected FileManager fileManager;
 	
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
@@ -52,6 +54,9 @@ public class AbstractModuleImpl {
 	public void setScheduler(Scheduler scheduler) {
 		this.scheduler = scheduler;
 	}
+	public void setFileManager(FileManager fileManager) {
+		this.fileManager = fileManager;
+	}
 	
 	protected AccessControlManager getAccessControlManager() {
 		return accessControlManager;
@@ -73,5 +78,8 @@ public class AbstractModuleImpl {
 	}
 	protected Scheduler getScheduler() {
 		return scheduler;
+	}
+	protected FileManager getFileManager() {
+		return fileManager;
 	}
 }

@@ -281,6 +281,10 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
+	<bean id="authenticationManager" class="com.sitescape.ef.security.authentication.impl.AuthenticationManagerImpl">
+		<property name="coreDao"><ref local="coreDao"/></property>
+	</bean>
+	
 	<!-- =========================== Business Components =========================== -->
 	
 	<!-- Template for the common dependency injection for modules.
@@ -299,6 +303,7 @@
 		<property name="aclManager"><ref local="aclManager"/></property>
 		<property name="scheduler"><ref local="scheduler"/></property>
 		<property name="processorManager"><ref local="modelProcessorManager"/></property>
+		<property name="fileManager"><ref local="fileManager"/></property>
 	</bean>
 	
 	<bean id="employeeModule" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.sample.impl.EmployeeModuleImpl">
@@ -338,11 +343,7 @@
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
 	</bean>
 
-	<bean id="defaultFolderCoreProcessor" class="com.sitescape.ef.module.folder.impl.LibraryCoreProcessor">
-		<property name="coreDao"><ref local="coreDao"/></property>
-		<property name="folderDao"><ref local="folderDao"/></property>
-		<property name="accessControlManager"><ref local="accessControlManager"/></property>
-		<property name="aclManager"><ref local="aclManager"/></property>
+	<bean id="defaultFolderCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.LibraryCoreProcessor">
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 	</bean>
 
@@ -482,10 +483,11 @@
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>
 
-	<bean id="authenticationManager" class="com.sitescape.ef.security.authentication.impl.AuthenticationManagerImpl">
+	<!-- ======================== File & Repository Services ====================== -->
+	
+	<bean id="fileManager" class="com.sitescape.ef.file.FileManager">
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>
-		<!-- ======================== Repository Services =============== -->
 	
 	<bean id="fileRepositoryService" class="com.sitescape.ef.repository.file.FileRepositoryService">
 		<property name="rootDirPath"><value>/home/sitescape/document/</value></property>

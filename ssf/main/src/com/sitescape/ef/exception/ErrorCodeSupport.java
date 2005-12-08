@@ -12,6 +12,7 @@ public interface ErrorCodeSupport {
      * @return
      */
     public String getErrorCode();
+    
     /**
      * Returns an array of arguments that will be filled in for params
      * within the identified message, or <code>null</code> if none. 
@@ -19,4 +20,11 @@ public interface ErrorCodeSupport {
      * @return
      */
     public Object[] getErrorArgs();
+    
+    /**
+     * sets an array of arguments. 
+     * 
+     * @param errorArgs
+     */
+    public void setErrorArgs(Object[] errorArgs);
 }

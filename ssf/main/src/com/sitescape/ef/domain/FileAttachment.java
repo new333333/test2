@@ -25,6 +25,8 @@ public class FileAttachment extends Attachment {
 
     private FileItem fileItem;
     
+    private HistoryStamp checkout;
+
     public FileAttachment() {
         
     }
@@ -137,4 +139,13 @@ public class FileAttachment extends Attachment {
 		this.repositoryServiceName = repositoryServiceName;
 	}
     
+    /**
+     * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="checkout_"
+     */
+    public HistoryStamp getCheckout() {
+        return this.checkout;
+    }
+    public void setCheckout(HistoryStamp stamp) {
+        this.checkout = stamp;
+    }
 }
