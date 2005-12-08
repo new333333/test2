@@ -104,7 +104,7 @@ function ss_showForumEntryInIframe(url) {
 
     if (wObj.src && wObj.src == url) {
     	wObj.src = "_blank";
-    	alert("blanked")
+    	alert("iframe blanked")
     }
     //wObj.style.height = parseInt(wObj1.style.height) - 50 + "px";
     wObj.src = url
