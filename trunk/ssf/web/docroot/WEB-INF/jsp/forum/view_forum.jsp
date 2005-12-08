@@ -21,25 +21,25 @@ if (ssReloadUrl == null) ssReloadUrl = "";
 boolean reloadCaller = false;
 if (!ssReloadUrl.equals("")) reloadCaller = true;
 
-String displayStyle = ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL;
+String displayStyle = ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME;
 if (ssUserProperties.containsKey(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
 	displayStyle = (String) ssUserProperties.get(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE);
 }
 
-boolean statePopUp = false;
+boolean isViewEntry = false;
 if (op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY)) {
-	statePopUp = true;
+	isViewEntry = true;
 }
 	
 int entryWindowWidth = 0;
 String autoScroll = "true";
-if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL) && !statePopUp) {
+if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL) && !isViewEntry) {
 	autoScroll = "false";
 }
 renderRequest.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth));
 %>
 <jsp:useBean id="ss_entryWindowWidth" type="java.lang.Integer" scope="request" />
-<c:if test="<%= !op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY) %>">
+<c:if test="<%= !isViewEntry %>">
 <c:set var="showEntryCallbackRoutine" value="ss_showEntryInDiv" scope="request"/>
 <c:set var="showEntryMessageRoutine" value="ss_showMessageInDiv" scope="request"/>
 <script language="javascript">
@@ -217,7 +217,7 @@ function highlightLineById(id) {
 </script>
 </c:if>
 
-<c:if test="<%= !op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY) %>">
+<c:if test="<%= !isViewEntry %>">
 
 <div id="ss_showentryhighwatermark" style="position:absolute; visibility:visible;">
 <img src="<html:imagesPath/>pics/1pix.gif">
@@ -242,31 +242,15 @@ function highlightLineById(id) {
 	}
 %>
 </c:if>
-<c:if test="<%= op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY) %>">
-<c:if test="<%= reloadCaller %>">
+<c:if test="<%= isViewEntry %>">
+  <c:if test="<%= reloadCaller %>">
 <script language="javascript">
 	//Open the current url in the opener window
 	ss_reloadOpener('<%= ssReloadUrl %>')
 </script>
-</c:if>
-<c:if test="<%= !reloadCaller %>">
-<jsp:useBean id="ssFolderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
-  <c:if test="<%= !statePopUp %>">
-<script language="javascript">
-function ss_loadEntry(obj,id) {
-	self.location.href = obj.href;
-	return false;
-}
-</script>
-<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
-	  <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-	    configElement="<%= ssConfigElement %>" 
-	    configJspStyle="<%= ssConfigJspStyle %>"
-	    processThisItem="true" 
-	    folderEntry="<%= ssFolderEntry %>" />
   </c:if>
-  
-  <c:if test="<%= statePopUp %>">
+  <c:if test="<%= !reloadCaller %>">
+<jsp:useBean id="ssFolderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
 <script language="javascript">
 if (self.parent && self.parent.highlightLineById) {
 	self.parent.highlightLineById("folderLine_<c:out value="${ssFolderEntry.id}"/>");
@@ -319,7 +303,6 @@ if (self.parent && self.parent.highlightLineById) {
 	}
 %>
   </c:if>
-</c:if>
 </c:if>
 
 <ssf:ifadapter>
