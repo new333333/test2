@@ -30,9 +30,8 @@
 
 // Duration -- represent an iCal duration.
 
-package edu.columbia.cpl;
+package com.sitescape.util.cal;
 
-import edu.columbia.cpl.Recurrence;
 
 /**
  * <code>Duration</code> represents a duration field in an iCalendar recurrence
