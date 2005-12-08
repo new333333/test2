@@ -60,7 +60,7 @@
 			debug="${javac.debug}"
 			deprecation="${javac.deprecation}"
 			destdir="${classes.dir}"
-			includes="**/portal/PortalException.java,**/portal/SystemException.java,**/portal/util/HibernateUtil.java,**/portal/util/Lucene*.java,**/portal/util/PropsUtil.java"
+			includes="**/portal/PortalException.java,**/portal/SystemException.java,**/portal/util/HibernateUtil.java,**/portal/util/Lucene*.java"
 			fork="${javac.fork}"
 			memoryMaximumSize="${javac.memoryMaximumSize}"
 			nowarn="${javac.nowarn}"
