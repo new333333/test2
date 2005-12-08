@@ -96,10 +96,9 @@ public class WorkspaceModuleImpl implements WorkspaceModule {
 		current.addAttribute("id", top.getId().toString());
     	current.addAttribute("image", "workspace");
     	url = current.addElement("url");
-    	url.addAttribute("struts_action", "/forum/view_forum");
-     	url.addAttribute(ObjectKeys.FORUM_URL_FORUM_ID, top.getId().toString());
-    	url.addAttribute(ObjectKeys.FORUM_URL_OPERATION, ObjectKeys.FORUM_OPERATION_VIEW_FORUM);
-
+    	url.addAttribute("action", "view_forum");
+     	url.addAttribute(ObjectKeys.FORUM_ID, top.getId().toString());
+ 
        	TreeSet ws = new TreeSet(c);
     	ws.addAll(top.getFolders());
       	for (Iterator iter=ws.iterator(); iter.hasNext();) {
@@ -116,10 +115,8 @@ public class WorkspaceModuleImpl implements WorkspaceModule {
     	   	next.addAttribute("id", f.getId().toString());
     		next.addAttribute("image", "forum");
         	url = next.addElement("url");
-        	url.addAttribute(ObjectKeys.FORUM_URL_STRUTS_ACTION, "/forum/view_forum");
-
-        	url.addAttribute(ObjectKeys.FORUM_URL_FORUM_ID, f.getId().toString());
-        	url.addAttribute(ObjectKeys.FORUM_URL_OPERATION, ObjectKeys.FORUM_OPERATION_VIEW_FORUM);
+        	url.addAttribute("action", "view_forum");
+        	url.addAttribute(ObjectKeys.FORUM_ID, f.getId().toString());
         }
     	ws.clear();
     	ws.addAll(top.getWorkspaces());
