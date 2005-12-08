@@ -216,6 +216,7 @@
 	<!-- ============================ Indexing/Search Service =========================== -->
 	
 	<bean id="luceneSessionFactory" class = "com.sitescape.ef.search.local.LocalLuceneSessionFactory">
+		<property name="rootDirPath"><value>/home/liferay/lucene/</value></property>			
 	</bean>
 	
 	<bean id="objectIndexMapping" class = "com.sitescape.ef.search.docbuilder.mapped.ObjectIndexMapping">
