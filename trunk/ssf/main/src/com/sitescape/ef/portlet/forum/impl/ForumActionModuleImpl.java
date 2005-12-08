@@ -311,11 +311,11 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		}
 		model.put(WebKeys.CALENDAR_EVENTDATES, results);
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK)) {
-			getWeekBean(startViewCal, endViewCal, results, model);
+			getCalendarViewBean(startViewCal, endViewCal, results, model);
 		}
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_DAY)) {
 			
-			getWeekBean(startViewCal, endViewCal, results, model);
+			getCalendarViewBean(startViewCal, endViewCal, results, model);
 		}
 	}
 	
@@ -346,12 +346,12 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 	 *                 endtime -- string
 	 *              
 	 */
-	private void getWeekBean (Calendar startCal, Calendar endCal, Map eventDates, Map model) {
+	private void getCalendarViewBean (Calendar startCal, Calendar endCal, Map eventDates, Map model) {
 		List weekBean = new ArrayList();
 		GregorianCalendar loopCal = new GregorianCalendar();
 		loopCal.setTime(startCal.getTime());
 		int i;
-		for (i=0; i<7; i++) {
+		while (loopCal.getTime().getTime() < endCal.getTime().getTime()) {
 			HashMap daymap = new HashMap();
 			daymap.put(WebKeys.CALENDAR_DOW, DateHelper.getDayAbbrevString(loopCal.get(Calendar.DAY_OF_WEEK)));
 			daymap.put(WebKeys.CALENDAR_DOM, Integer.toString(loopCal.get(Calendar.DAY_OF_MONTH)));
