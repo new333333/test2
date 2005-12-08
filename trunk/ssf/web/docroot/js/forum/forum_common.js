@@ -86,10 +86,10 @@ function ss_reloadOpener(fallBackUrl) {
 	}
 }
 
-// Change an image (e.g. expand/collapse arrows)
-function swapImage(imgName, img) {
+// Replace an image (e.g. expand/collapse arrows)
+function ss_replaceImage(imgName, imgPath) {
     if (document.images) {
-        eval('if (document.images[\''+imgName+'\']) {document.images[\''+imgName+'\'].src = img}');
+        eval('if (document.images[\''+imgName+'\']) {document.images[\''+imgName+'\'].src = imgPath}');
     }
 }
 
