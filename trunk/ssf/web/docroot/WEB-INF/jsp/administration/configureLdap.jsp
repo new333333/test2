@@ -17,9 +17,19 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <h3>Configure Ldap Synchronization</h3>
-<form method="post" action="<portlet:actionURL>
+<form name="<portlet:namespace/>ldapForm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_ldap"/>
 		</portlet:actionURL>">
+<script language="javascript" type="text/javascript">
+function <portlet:namespace/>setEnable() {
+	if (document.<portlet:namespace/>ldapForm.disableSchedule.checked) {
+		document.<portlet:namespace/>ldapForm.enableSchedule.value = "false";
+	} else {
+		document.<portlet:namespace/>ldapForm.enableSchedule.value = "true";
+	}
+}
+</script>
+<input type="hidden" id="enableSchedule" name="ldap.schedule.enable" value="${ssLdapConfig.scheduleEnabled}"/>
 
 <table border ="1" cellspacing="0" cellpadding="3">
   <tr>
@@ -62,8 +72,8 @@
 </td><td class="content"  valign="top">
    <table border="0" cellpadding="0" cellspacing="2">
    <tr>
-   <td class="content">	<input type="checkbox" class="content" name="ldap.schedule.enable" <c:if test="${ssLdapConfig.scheduleEnabled}">checked</c:if>>
-   <span class="content">Enable schedule</span></input><br/>
+   <td class="content">	<input type="checkbox" class="content" id="disableSchedule" name="disableSchedule" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssLdapConfig.scheduleEnabled}">checked</c:if>>
+   <span class="content">Disable schedule</span></input><br/>
    
     <label for="schedTime">At time (hh:mm)</label>
    <input type="text" class="content" name="schedTime" id="schedTime" size="6" value="${ssLdapConfig.schedule.hoursMinutes}"><br><br>

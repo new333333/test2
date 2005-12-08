@@ -318,29 +318,9 @@ proc doGM {} {
         wimsql_rw "INSERT INTO SS_PrincipalMembership (groupId,userId) VALUES ($gId,$uId);"
 
     }
-	foreach user [array names ::userIds] {
-        wimsql_rw "INSERT INTO SS_PrincipalMembership (groupId,userId) VALUES ($::generalGuestGroup,$::userIds($user));"
-        wimsql_rw "INSERT INTO SS_PrincipalMembership (groupId,userId) VALUES ($::CMSGroup,$::userIds($user));"
-	}
     wimsql_rw commit
 }
-proc doRoles {} {
-	array unset ::roleIds
-	foreach name [list "Administrator" "Bookmarks Admin" "Calendar Admin" "Document Library Admin" "Guest" \
-				"Journal Admin" "Journal Designer" "Journal Writer" "Journal Editor" \
-				"Message Boards Admin" "Polls Admin" "Power User" "Project Admin" "Shopping Admin" \
-				"User" "Wiki Admin"] {
 
-		set roleIds($name) [newuuid]
-		wimsql_rw "insert into SS_Roles (id, lockVersion, zoneName, name) values ('$roleIds($name)', 1, '[sql_quote_value $::zoneName]', '$name');"
-		if {$name != "Guest"} {
-			wimsql_rw "insert into SS_RoleMembership (role,principal) values ('$roleIds($name)',$::userIds(wf_admin));"
-			wimsql_rw "insert into SS_RoleMembership (role,principal) values ('$roleIds($name)',$::groupIds(avf_admin));"
-		}
-	}
-	wimsql_rw commit
-
-}
 #create uuuid for users so we can store them in createdby/createdOn fields
 #
 proc mapName {name {defaultIt {1}}} {
@@ -392,7 +372,6 @@ proc doUsers {userList} {
     array unset attrs1
 	#setup default user
 	set attrs(zoneName) "default"
-    set attrs(passwordEncrypted) 0
 	set attrs(name) ${::zoneName}.default
 	set attrs(password) "password"
 	set attrs(firstName) ""
@@ -400,19 +379,12 @@ proc doUsers {userList} {
 	set attrs(middleName) ""
 	set attrs(title) ""
 	set attrs(signature) ""
-	set attrs(greeting) ""
 	set attrs(organization) ""
 	set attrs(phone) ""
 	set attrs(webPubDir) ""
 	set attrs(type) "U"	
 	set attrs(id) [new_user_uuid]
 	set attrs(lockVersion) 1
-	set attrs(dottedSkins) 0
-	set attrs(passwordReset) 0
-	set attrs(failedLoginAttempts) 0
-    set attrs(refreshRate) 900
-	set attrs(resolution) "800x600"
-	set attrs(skinId) "01"
 	set attrs(disabled) 0
 	set attrs(reserved) 1
 	set attrs(defaultIdentity) 1
@@ -428,8 +400,6 @@ proc doUsers {userList} {
     wimsql_rw "Insert into SS_Principals $cmd ;" [lindex $cmdList 1]
 				
 	set attrs(zoneName) $::zoneName
-    set attrs(passwordEncrypted) 0
-	set attrs(passwordReset) 0
 	set attrs(reserved) 0
 	set attrs(defaultIdentity) 0
 	
@@ -554,55 +524,16 @@ proc doUsers {userList} {
 }
 
 proc doGroups {groupList} {
-	wimsql_rw "Delete from Layout;"
     set bunchIndex 0
 	set bunchSize 500
     set map ::j2ee_Principals_class_MAP
     array unset attrs
 	set attrs(zoneName) $::zoneName
-	set attrs(id) [new_user_uuid]
-	set ::generalGuestGroup $attrs(id)
-	set attrs(layoutIds) "$attrs(id).1,"
-	set attrs(name) "General Guest"
-	set attrs(title) $attrs(name)
-	set attrs(signature) $attrs(name)
 	set attrs(type) "G"
 	set attrs(lockVersion) 1
 	set attrs(disabled) 0
-	set attrs(reserved) 1
 	set attrs(defaultIdentity) 0
-	set attrs(description_format) 2
-    set attrs(creation_date) [date_time current] 
-    set attrs(creation_principal) $::userIds(wf_admin)
-    set attrs(modification_date) $attrs(creation_date)
-    set attrs(modification_principal) $::userIds(wf_admin)
-    set results [setupColVals $map attrs insert]
-    set cmdList [lindex $results 1]
-    set cmd [lindex $cmdList 0] 
-    wimsql_rw "Insert into SS_Principals $cmd ;" [lindex $cmdList 1]
-	wimsql_rw "insert into Layout (layoutId, userId, name, columnOrder, narrow1, narrow2, wide) values ('$attrs(id).1', 'group.$attrs(id)', 'Welcome', 'n1,w,', '59,', '', '2,54,');"
-	set attrs(name) "General User"
-	set attrs(id) [new_user_uuid]
-	set attrs(title) $attrs(name)
-	set attrs(signature) $attrs(name)
-	unset attrs(layoutIds) 
-    set results [setupColVals $map attrs insert]
-    set cmdList [lindex $results 1]
-    set cmd [lindex $cmdList 0] 
-    wimsql_rw "Insert into SS_Principals $cmd ;" [lindex $cmdList 1]
-
-	set attrs(name) "CMS"
-	set attrs(id) [new_user_uuid]
-	set ::CMSGroup $attrs(id)
-	set attrs(layoutIds) "$attrs(id).1,"
-    set results [setupColVals $map attrs insert]
-    set cmdList [lindex $results 1]
-    set cmd [lindex $cmdList 0] 
-    wimsql_rw "Insert into SS_Principals $cmd ;" [lindex $cmdList 1]
-	wimsql_rw "insert into Layout (layoutId, userId, name, columnOrder, narrow1, narrow2, wide, stateMax) values ('$attrs(id).1', 'group.$attrs(id)', 'CMS', 'n1,w,', '', '', '15,31,', '');"
-
-	unset attrs(layoutIds)
-	set attrs(reserved) 0
+ 	set attrs(reserved) 0
 	
 	while {[llength [set bunchList [lrange $groupList $bunchIndex [expr {$bunchIndex + $bunchSize - 1}]]]]} {
         ::profile::select -type group -filter userName $bunchList -hint @
@@ -657,7 +588,6 @@ proc cleanup {} {
     wimsql_rw "delete from SS_Attachments;"
     wimsql_rw "delete from SS_PrincipalMembership;"
 	wimsql_rw "delete from SS_RoleMembership;"
-	wimsql_rw "delete from SS_Roles;"
     wimsql_rw "delete from SS_Principals;"
     wimsql_rw commit
 }
@@ -752,8 +682,7 @@ proc doZone {zoneName {cName {liferay.com}}} {
 
     #map group membership
     doGM
-	doRoles
-	
+
 
     if {[catch {
 
