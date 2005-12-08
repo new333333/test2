@@ -125,8 +125,27 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("title", NLT.get("administration.configure_search_index"));
 		element.addAttribute("image", "page");
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.SEARCH_INDEX_ACTION_CONFIGURE);
+		url.setParameter(WebKeys.ACTION, WebKeys.FOLDER_INDEX_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
+
+		//User index
+		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", NLT.get("administration.configure_profile_index"));
+		element.addAttribute("image", "page");
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.PROFILE_INDEX_ACTION_CONFIGURE);
+		url.setWindowState(WindowState.NORMAL);
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
+
+		//Definition import
+		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", NLT.get("administration.importDefinitions"));
+		element.addAttribute("image", "page");
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.DEFINITION_ACTION_IMPORT);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 

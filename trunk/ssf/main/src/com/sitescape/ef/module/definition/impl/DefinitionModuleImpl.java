@@ -56,7 +56,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	protected WorkflowModule getWorkflowModule() {
 		return workflowModule;
 	}
-	
+	public String addDefinition(Document doc) {
+		Definition def = new Definition();
+		Element root = doc.getRootElement();
+		def.setName(root.attributeValue("name"));
+		def.setTitle(root.attributeValue("caption"));
+		String type = root.attributeValue("type");
+		def.setType(Integer.parseInt(type));
+		def.setZoneName(RequestContextHolder.getRequestContext().getZoneName());
+		setDefinition(def,doc);
+		coreDao.save(def);
+		return def.getId();
+	}
 	public Definition getDefinition(String id) {
 		String companyId = RequestContextHolder.getRequestContext().getZoneName();
 		Workspace workspace = getCoreDao().findTopWorkspace(companyId);
@@ -79,7 +90,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		newDefinition.setTitle(title);
 		newDefinition.setType(type);
 		newDefinition.setZoneName(companyId);
-		setDefintion(newDefinition, getDefaultDefinition(name, title, type, formData));
+		setDefinition(newDefinition, getDefaultDefinition(name, title, type, formData));
 		coreDao.save(newDefinition);
 		return newDefinition;
 	}
@@ -96,7 +107,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			//set definition name after we get definition, so definition doc file will be found before the name is changed
 			if (!name.equals("")) def.setName(name);
 			if (!title.equals("")) def.setTitle(title);
-			setDefintion(def, defDoc);
+			setDefinition(def, defDoc);
 		}
 	}
 	
@@ -105,10 +116,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		//Store this attribute in the definition document
 		Document defDoc = def.getDefinition();
 		defDoc.getRootElement().addAttribute(key, value);
-		setDefintion(def, defDoc);
+		setDefinition(def, defDoc);
 	}
 	
-    public void setDefintion(Definition def, Document doc) {
+    protected void setDefinition(Definition def, Document doc) {
     	//If this is a workflow definition, build the corresponding JBPM workflow definition
     	// Try to do this first before the changed definition gets modified on disk
     	// Thus, if an error occurs in JBPM, the user gets told before writing out the def
@@ -154,7 +165,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				//Add the properties
 				processProperties(def.getId(), definition, defDoc.getRootElement(), formData2);
 			}
-			setDefintion(def, defDoc);
+			setDefinition(def, defDoc);
 		}
 	}
 	
@@ -194,7 +205,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	            	}
 	            }
 	        }
-			setDefintion(def, defDoc);
+			setDefinition(def, defDoc);
 		}
 	}
 	
@@ -246,7 +257,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Element newItem = addItemToDefinitionDocument(def.getId(), definitionTree, itemId, itemNameToAdd, formData);
 		if (newItem != null) {
 			//Save the updated document
-			setDefintion(def, definitionTree);
+			setDefinition(def, definitionTree);
 		}
 		return newItem;
 	}
@@ -455,7 +466,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						}
 					}
 					
-					setDefintion(def, definitionTree);
+					setDefinition(def, definitionTree);
 				}
 			}
 		}
@@ -491,7 +502,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 						}
 					}
-					setDefintion(def, definitionTree);
+					setDefinition(def, definitionTree);
 				}
 			}
 		}
@@ -541,7 +552,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							List sourceParentContent2 = sourceParent.content();
 						}
 						//Write the new document back into the definition
-						setDefintion(def, definitionTree);
+						setDefinition(def, definitionTree);
 					} else {
 						//Target item is no longer defined as a valid item
 						throw new DefinitionInvalidException(defId, "error");

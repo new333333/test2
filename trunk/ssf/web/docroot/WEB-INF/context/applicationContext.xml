@@ -326,6 +326,7 @@
 		<property name="scheduler"><ref local="scheduler"/></property>
 		<property name="processorManager"><ref local="modelProcessorManager"/></property>
 		<property name="fileManager"><ref local="fileManager"/></property>
+		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 	</bean>
 	
 	<bean id="employeeModule" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.sample.impl.EmployeeModuleImpl">
@@ -364,12 +365,10 @@
 	</bean>
 	<bean id="folderModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.FolderModuleImpl">
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
-		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 	</bean>
 
 	<bean id="defaultFolderCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.DefaultFolderCoreProcessor">
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
-		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 	</bean>
 
 	<bean id="binderModule" parent="baseTransactionProxy">

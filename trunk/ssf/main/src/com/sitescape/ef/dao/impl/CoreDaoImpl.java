@@ -2,6 +2,7 @@ package com.sitescape.ef.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -17,7 +18,6 @@ import org.hibernate.criterion.Conjunction;
 import org.hibernate.Criteria;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.TreeSet;
 import java.util.List;
@@ -53,7 +53,9 @@ import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
+import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.util.Constants;
+import com.sitescape.util.Validator;
 /**
  * @author Jong Kim
  *
@@ -120,11 +122,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	            	StringBuffer query = objs.getSelectAndFrom("x");
                  	filter.appendFilter("x", query);
                   	Query q = session.createQuery(query.toString());
-            		Object [] filterValues = filter.getFilterValues();
-            		if (filterValues != null) {
-            			for (int i=0; i<filterValues.length; ++i) {
-            				q.setParameter(i, filterValues[i]);
-            			}
+            		List filterValues = filter.getFilterValues();
+           			for (int i=0; i<filterValues.size(); ++i) {
+           				q.setParameter(i, filterValues.get(i));
             		}
  	                return q.list();
 	            }
@@ -137,7 +137,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	 * @param className
 	 * @return
 	 */
-   private List loadObjects(final Collection ids, final Class className) {
+   private List loadObjects(final Collection ids, final Class className, final String zoneName) {
         if ((ids == null) || ids.isEmpty()) return new ArrayList();
         List result = (List)getHibernateTemplate().execute(
             new HibernateCallback() {
@@ -157,7 +157,15 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                                 dis.add(Expression.eq(Constants.ID, id));
                             }
                         }
-                        crit.add(dis);
+                        if (Validator.isNull(zoneName))
+                        	crit.add(dis);
+                        else {
+                        	Conjunction con = Expression.conjunction();
+                        	con.add(Expression.eq("zoneName", zoneName));
+                        	con.add(dis);
+                        	crit.add(con);
+                        	
+                        }
                         return crit.list();
                         
                     }
@@ -174,11 +182,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                   	query.append(" select count(*) from x in class " + clazz.getName());
                  	filter.appendFilter("x", query);
                   	Query q = session.createQuery(query.toString());
-            		Object [] filterValues = filter.getFilterValues();
-            		if (filterValues != null) {
-            			for (int i=0; i<filterValues.length; ++i) {
-            				q.setParameter(i, filterValues[i]);
-            			}
+            		List filterValues = filter.getFilterValues();
+            		for (int i=0; i<filterValues.size(); ++i) {
+            			q.setParameter(i, filterValues.get(i));
             		}
  	                 List result = q.list();
                   	 Iterator itr = result.iterator();
@@ -329,12 +335,12 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         }        
         return user;
     }
-
-	public List loadUsers(Collection ids) {
-		return loadObjects(ids, User.class);
+	
+	public List loadUsers(Collection ids, String zoneName) {
+		return loadObjects(ids, User.class, zoneName);
 	}
-	public List loadEnabledUsers(Collection ids) {
-		List users = loadUsers(ids);
+	public List loadEnabledUsers(Collection ids, String zoneName) {
+		List users = loadUsers(ids, zoneName);
 		List result = new ArrayList();
 		for (Iterator iter=users.iterator();iter.hasNext();) {
 			User u = (User)iter.next();
@@ -373,17 +379,60 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         return user;
     }    
      
+    public SFQuery queryUsers(FilterControls filter, String zoneName) throws DataAccessException { 
+    	filter.add("zoneName", zoneName);
+       	return queryPrincipals(filter, User.class.getName());
+    }
+    public SFQuery queryGroups(FilterControls filter, String zoneName) throws DataAccessException { 
+    	filter.add("zoneName", zoneName);
+    	return queryPrincipals(filter, Group.class.getName());
+    }  
+    private SFQuery queryPrincipals(final FilterControls filter, final String clazz) throws DataAccessException { 
+        Query query = (Query)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        //sqlqueries, filters and criteria don't help with frontbase problem
+                        //
+                        Query query = session.createQuery("from " + clazz + " u " + filter.getFilterString("u"));
+                		List filterValues = filter.getFilterValues();
+               			for (int i=0; i<filterValues.size(); ++i) {
+                			query.setParameter(i, filterValues.get(i));
+                		}
+                       return query;
+                    }
+                }
+            );  
+       return new SFQuery(query);
+    }    
+    public List loadUsers(FilterControls filter, String zoneName) throws DataAccessException { 
+    	filter.add("zoneName", zoneName);
+    	return loadPrincipals(filter, User.class.getName());
+    }
+    public List loadGroups(FilterControls filter, String zoneName) throws DataAccessException { 
+    	filter.add("zoneName", zoneName);
+    	return loadPrincipals(filter, Group.class.getName());
+    }  
+    private List loadPrincipals(final FilterControls filter, final String clazz) throws DataAccessException { 
+        return (List)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        //sqlqueries, filters and criteria don't help with frontbase problem
+                        //
+                        Query query = session.createQuery("from " + clazz + " u " + filter.getFilterString("u"));
+                		List filterValues = filter.getFilterValues();
+               			for (int i=0; i<filterValues.size(); ++i) {
+                			query.setParameter(i, filterValues.get(i));
+                		}
+                       return query.list();
+                    }
+                }
+            );  
+    }    
     public int countUsers(FilterControls filter) {
     	return countObjects(User.class, filter);
     }    
 
-    public List filterUsers(FilterControls filter) {
-  		return loadObjects(userControls, filter);
-    }
-  	public List filterUsers(Principal principal, FilterControls filter) {
-   		//TODO
-   		return new ArrayList();
-   	}   	
+ 	
     public UserProperties loadUserProperties(Long userId) {
     	UserPropertiesPK id = new UserPropertiesPK(userId);
         UserProperties uProps = (UserProperties)getHibernateTemplate().get(UserProperties.class, id);         
@@ -403,8 +452,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         if ((zoneName != null ) && !group.getZoneName().equals(zoneName)) {throw new NoGroupByTheIdException(groupId);}
 		return group;
 	}
-	public List loadGroups(Collection ids) {
-		return loadObjects(ids, Group.class);
+	public List loadGroups(Collection ids, String zoneName) {
+		return loadObjects(ids, Group.class, zoneName);
 	}
     /**
      * Return count of users matching filter
@@ -412,19 +461,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     public int countGroups(FilterControls filter) {
        	return countObjects(Group.class, filter);
     }   
-    /**
-     * Return list of users matching filter
-     */
  
-    public List filterGroups(final FilterControls filter) {
-        return loadObjects(groupControls, filter);
-    }
-   	public List filterGroups(Principal principal, FilterControls filter) {
-   		//TODO
-   		return new ArrayList();
-   	}
-
-
 	/**
 	 * Given a set of principal ids, return all userIds that represent userIds in 
 	 * the original list, or members of groups and their nested groups.

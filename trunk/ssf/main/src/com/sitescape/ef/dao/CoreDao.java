@@ -2,6 +2,7 @@ package com.sitescape.ef.dao;
 
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.List;
 import java.util.Collection;
@@ -20,6 +21,7 @@ import com.sitescape.ef.domain.EmailAlias;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
+import com.sitescape.ef.dao.util.SFQuery;
 
 /**
  * @author Jong Kim
@@ -111,19 +113,20 @@ public interface CoreDao {
      */
     public User findUserByNameOnlyIfEnabled(final String userName, final String zoneName);
 
-    public List loadUsers(Collection usersIds);
-    public List loadEnabledUsers (Collection usersIds);
+    public List loadUsers(Collection usersIds, String zoneName);
+    public List loadEnabledUsers (Collection usersIds, String zoneName);
+    public SFQuery queryUsers(FilterControls filter, String zoneName) throws DataAccessException; 
+    public List loadUsers(FilterControls filter, String zoneName) throws DataAccessException; 
+
     public int countUsers(FilterControls filter);
-    public List filterUsers(FilterControls filter);
-   	public List filterUsers(Principal principal, FilterControls filter);
     public UserProperties loadUserProperties(Long userId);
     
     public Group loadGroup(Long groupId, String zoneName);
-    public List loadGroups(Collection groupsIds);
+    public List loadGroups(Collection groupsIds, String zoneName);
     public int countGroups(FilterControls filter);
-    public List filterGroups(FilterControls filter);
-   	public List filterGroups(Principal principal, FilterControls filter);
-	public Set explodeGroups(Set ids); 
+    public SFQuery queryGroups(FilterControls filter, String zoneName) throws DataAccessException; 
+    public List loadGroups(FilterControls filter, String zoneName) throws DataAccessException; 
+ 	public Set explodeGroups(Set ids); 
 	public List getMembership(Long groupId);
 	public Set getAllGroupMembership(Long principalId);
 

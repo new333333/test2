@@ -22,7 +22,7 @@
 <table width="100%"><tr><td>
 
 <form action="<portlet:actionURL>
-			  <portlet:param name="action" value="configure_search_index"/>
+			  <portlet:param name="action" value="configure_folder_index"/>
 		      </portlet:actionURL>" method="post" name="<portlet:namespace />fm">
 
 <br>
