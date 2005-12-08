@@ -1,4 +1,4 @@
-package com.sitescape.ef.security;
+package com.sitescape.ef.security.impl;
 
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.security.AccessControlException;
