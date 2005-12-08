@@ -30,12 +30,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <c:if test="${empty ssf_support_files_loaded}">
 <link rel="stylesheet" type="text/css" href="<html:rootPath/>css/forum.css">
-<c_rt:if test="<%= isIE %>">
+<c:if test="<%= isIE %>">
 <link rel="stylesheet" type="text/css" href="<html:rootPath/>css/forum_ie.css">
-</c_rt:if>
-<c_rt:if test="<%= !isIE %>">
+</c:if>
+<c:if test="<%= !isIE %>">
 <link rel="stylesheet" type="text/css" href="<html:rootPath/>css/forum_nn.css">
-</c_rt:if>
+</c:if>
 <style>
 /* colored bar (formerly "blueBar") that divides pages (usually forms) */
 div.ss_hr { 
