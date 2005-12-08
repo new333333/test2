@@ -10,19 +10,19 @@
 
 <c:set var="prefix" value="${formName}_${tpid}_${sequenceNumber}" />
 
-<script language="Javascript" src="/js/common/PopupWindow.js"></script>
-<script language="Javascript" src="/js/common/AnchorPosition.js"></script>
+<script language="Javascript" src="<html:rootPath />js/common/PopupWindow.js"></script>
+<script language="Javascript" src="<html:rootPath />js/common/AnchorPosition.js"></script>
 <script language="Javascript">
 
 var <c:out value="${prefix}" />_popupContents  = "";
 
 <c:out value="${prefix}" />_popupContents += "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
 <c:out value="${prefix}" />_popupContents += "<ht"+"ml><head>";
-<c:out value="${prefix}" />_popupContents += "<link rel=\"stylesheet\" href=\"/ssf/css/forum.css\" type=\"text/css\"> \n";
+<c:out value="${prefix}" />_popupContents += "<link rel=\"stylesheet\" href=\"<html:rootPath />css/forum.css\" type=\"text/css\"> \n";
 <c:out value="${prefix}" />_popupContents += "<title>Select a time</title>  \n";
 <c:out value="${prefix}" />_popupContents += "</head><body>";
 
-<c:out value="${prefix}" />_popupContents += "<table border=\"0\" class=\"fineprint\"><tr><td>\n";
+<c:out value="${prefix}" />_popupContents += "<table border=\"0\" class=\"portlet-section-body\" style=\"font-size:smaller\"><tr><td>\n";
 <c:out value="${prefix}" />_popupContents += " <tr><td>Select hour:</td><td>minutes:</td></tr><td>\n";
 
 <c:out value="${prefix}" />_popupContents += "<table border=\"0\" cellpadding=\"4\" cellspacing=\"0\"  style=\"border: 1px solid #666666;\">\n";
@@ -199,7 +199,7 @@ function getTimeMilliseconds(formName, id) {
  <td class="content">
   <select name="<c:out value="${prefix}_minute" />" id="<c:out value="${prefix}_minute" />" size="1" 
   class="content" >
-<option class="content" value="99" > -- </option> 
+<option class="content"  value="99" > -- </option> 
 <c:forEach var="i" begin="0" end="11" step="1">
    <option class-"content" value="<fmt:formatNumber value="${i*5}" minIntegerDigits="2" />"<c:if test="${minute==i*5}"> selected</c:if>><fmt:formatNumber value="${i*5}" minIntegerDigits="2" /></option> 
 </c:forEach>
