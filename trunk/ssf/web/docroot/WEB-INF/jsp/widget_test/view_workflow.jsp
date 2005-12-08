@@ -53,6 +53,13 @@ Current State:<c:out value="${workflowState}"/><br/>
 			  		
 				<a href="<portlet:actionURL windowState="maximized">
 						<portlet:param name="action" value="workflow" />
+						<portlet:param name="operation" value="startParallel" />
+						<portlet:param name="processId" value="${processId}" />
+						<portlet:param name="workflowId" value="${workflowId}" />
+					</portlet:actionURL>">Start parallel instance</a><br>
+
+				<a href="<portlet:actionURL windowState="maximized">
+						<portlet:param name="action" value="workflow" />
 						<portlet:param name="operation" value="listDef" />
 						<portlet:param name="workflowId" value="${workflowId}" />
 						<portlet:param name="processId" value="${processId}" />
@@ -81,7 +88,7 @@ Current State:<c:out value="${workflowState}"/><br/>
 <c:forEach var="definition" items="${definitions}">
 	<a href="<portlet:actionURL windowState="maximized">
 						<portlet:param name="action" value="workflow" />
-						<portlet:param name="operation" value="null" />
+						<portlet:param name="operation" value="listInst" />
 						<portlet:param name="processId" value="" />
 						<portlet:param name="workflowId" value="${definition.id}" />
 					</portlet:actionURL>"><font color="blue"><c:out value="${definition.name}"/></font></a> 
@@ -104,7 +111,12 @@ Current State:<c:out value="${workflowState}"/><br/>
 <b>Instances:</b>
 <br>
 <c:forEach var="instance" items="${instances}">
-Id: <c:out value="${instance.id}"/>, 
+Id: <a href="<portlet:actionURL windowState="maximized">
+		<portlet:param name="action" value="workflow" />
+		<portlet:param name="operation" value="listInst" />
+		<portlet:param name="processId" value="${instance.id}" />
+		<portlet:param name="workflowId" value="${instance.processDefinition.id}" />
+	</portlet:actionURL>"><font color="blue"><c:out value="${instance.id}"/></font></a> , 
  Definition: <c:out value="${instance.processDefinition.name}"/>
  (Id: <c:out value="${instance.processDefinition.id}"/>, 
  Version: <c:out value="${instance.processDefinition.version}"/>)<br>

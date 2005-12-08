@@ -77,6 +77,11 @@ public class WorkflowController extends SAbstractController {
 		    	      "  <state name='orphan2'>" +
 		    	      "    <transition to='orphan' />" +
 		    	      "  </state>" +
+		    	      "  <state name='parallel_1'>" +
+		    	      "    <transition to='parallel_2' />" +
+		    	      "  </state>" +
+		    	      "  <state name='parallel_2'>" +
+		    	      "  </state>" +
 		    	      "  <end-state name='end' />" +
 		    	      "</process-definition>"
 		    	    );
@@ -255,7 +260,29 @@ public class WorkflowController extends SAbstractController {
 			    	}
 		    		getWorkflowModule().deleteProcessDefinition(new Long(pD.getId()));
 		    	}
-		 }
+
+		 } else if (operation.equals("startParallel")) {
+		    	//pick the first
+		    	if (Validator.isNull(wId)) {
+		    		List defs = getWorkflowModule().getLatestDefinitions();
+		    		wId = String.valueOf(((ProcessDefinition)defs.get(0)).getId());
+		    	}
+		    	ProcessInstance processInstance = getWorkflowModule().addWorkflowInstance(Long.valueOf(wId));
+		    	pId = String.valueOf(processInstance.getId());
+		    	Token token = processInstance.getRootToken(); 
+
+				    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+				    try {
+				    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
+					    processInstance = getWorkflowModule().setNode(Long.valueOf(pId), "parallel_1");
+				    	txManager.commit(status);
+				    } catch (Exception e) {
+				    	txManager.rollback(status);
+				    } 
+
+			    state= token.getNode().getName();
+
+}
     	// Now we can query the database for the process definition that we 
     	// deployed above. 
     	if (!Validator.isNull(pId)) {
@@ -275,6 +302,11 @@ public class WorkflowController extends SAbstractController {
 		    }
     	} 
 
+    	if (!Validator.isNull(wId)) {
+    		List processInstances = getWorkflowModule().getProcessInstances(Long.valueOf(wId));
+        	results.put("instances", processInstances);
+    	}
+    	
 	    results.put("processId", pId);
 	    results.put("workflowState", state);
 	    results.put("workflowId", wId);
