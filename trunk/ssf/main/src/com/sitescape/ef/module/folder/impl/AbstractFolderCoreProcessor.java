@@ -688,6 +688,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     public void deleteEntry(Folder parentFolder, FolderEntry entry) {
         deleteEntry_accessControl(parentFolder, entry);
         deleteEntry_preDelete(parentFolder, entry);
+        deleteEntry_processFiles(parentFolder, entry);
         deleteEntry_delete(parentFolder, entry);
         deleteEntry_postDelete(parentFolder, entry);
         deleteEntry_indexDel(entry);
@@ -711,6 +712,10 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         }
     }
         
+    protected void deleteEntry_processFiles(Folder parentFolder, FolderEntry entry) {
+    	getFileManager().deleteFiles(parentFolder, entry);
+    }
+    
     protected void deleteEntry_delete(Folder parentFolder, FolderEntry entry) {
     	List atts = entry.getAttachments();
     	//need to get all attachments associated with replies
