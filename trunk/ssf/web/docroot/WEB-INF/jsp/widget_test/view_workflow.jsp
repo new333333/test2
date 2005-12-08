@@ -17,14 +17,22 @@ Current State:<c:out value="${workflowState}"/><br/>
 						<portlet:param name="action" value="workflow" />
 						<portlet:param name="operation" value="proceed" />
 						<portlet:param name="processId" value="${processId}" />
+						<portlet:param name="workflowId" value="${workflowId}" />
 					</portlet:actionURL>">Move to next state</a><br>
 
 				<a href="<portlet:actionURL windowState="maximized">
 						<portlet:param name="action" value="workflow" />
 						<portlet:param name="operation" value="orphan" />
 						<portlet:param name="processId" value="${processId}" />
+						<portlet:param name="workflowId" value="${workflowId}" />
 					</portlet:actionURL>">Move to orphan state</a><br>
 
+				<a href="<portlet:actionURL windowState="maximized">
+						<portlet:param name="action" value="workflow" />
+						<portlet:param name="operation" value="modifyNodeName" />
+						<portlet:param name="processId" value="${processId}" />
+						<portlet:param name="workflowId" value="${workflowId}" />
+			  		</portlet:actionURL>">Modify Node Name(orphan->orphan3) (orphan3->orphan)</a><br>
 				<a href="<portlet:actionURL windowState="maximized">
 						<portlet:param name="action" value="workflow" />
 						<portlet:param name="operation" value="listDef" />
@@ -38,6 +46,12 @@ Current State:<c:out value="${workflowState}"/><br/>
 						<portlet:param name="workflowId" value="${workflowId}" />
 						<portlet:param name="processId" value="${processId}" />
 					</portlet:actionURL>">List instances</a><br>
+				<a href="<portlet:actionURL windowState="maximized">
+						<portlet:param name="action" value="workflow" />
+						<portlet:param name="operation" value="deleteAll" />
+						<portlet:param name="processId" value="${processId}" />
+						<portlet:param name="workflowId" value="${workflowId}" />
+					</portlet:actionURL>">Delete all</a><br>
 					
 <c:if test="${!empty definitions}">
 <br>
@@ -48,8 +62,8 @@ Definitions:
  (Id: <c:out value="${definition.id}"/>, 
  Version: <c:out value="${definition.version}"/>)<br>
  Nodes:<br>
- <c:forEach var="nodeList" items="${nodeMap[definition.id].value}">
- <c:out value="${nodeList}"/><br>
+ <c:forEach var="nodeList" items="${definition.nodes}">
+ <c:out value="${nodeList.name}"/><br>
  </c:forEach>
  <br><br>
 </c:forEach>
