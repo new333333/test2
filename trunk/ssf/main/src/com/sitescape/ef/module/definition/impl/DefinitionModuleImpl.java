@@ -182,11 +182,18 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 	public Element addItemToDefinitionDocument(String defId, Document definitionTree, String itemId, String itemNameToAdd, Map formData) throws DefinitionInvalidException {
 		this.getDefinitionConfig();
 		Element configRoot = this.definitionConfig.getRootElement();
-		Map uniqueNames = getUniqueNameMap(configRoot);
-
 		Element newItem = null;
 		if (definitionTree != null) {
 			Element root = definitionTree.getRootElement();
+			Map uniqueNames = getUniqueNameMap(configRoot, root, itemNameToAdd);
+			if (formData.containsKey("propertyId_name")) {
+				String name = ((String[]) formData.get("propertyId_name"))[0];
+				if (uniqueNames.containsKey(name)) {
+					//This name is not unique
+					throw new DefinitionInvalidException(defId, "Error: name not unique - "+name);
+				}
+			}
+
 			//Find the element to add to
 			Element item = (Element) root.selectSingleNode("//item[@id='"+itemId+"']");
 			if (item != null) {
@@ -319,11 +326,10 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 	
 	public void modifyItem(String defId, String itemId, Map formData) throws DefinitionInvalidException {
 		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneName());
+		Document definitionTree = def.getDefinition();
 		this.getDefinitionConfig();
 		Element configRoot = this.definitionConfig.getRootElement();
-		Map uniqueNames = getUniqueNameMap(configRoot);
 
-		Document definitionTree = def.getDefinition();
 		if (definitionTree != null) {
 			Element root = definitionTree.getRootElement();
 			//Find the element to modify
@@ -331,6 +337,14 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 			if (item != null) {
 				//Find the selected item type in the configuration document
 				String itemType = item.attributeValue("name", "");
+				Map uniqueNames = getUniqueNameMap(configRoot, root, itemType);
+				if (formData.containsKey("propertyId_name")) {
+					String name = ((String[]) formData.get("propertyId_name"))[0];
+					if (uniqueNames.containsKey(name)) {
+						//This name is not unique
+						throw new DefinitionInvalidException(defId, "Error: name not unique - "+name);
+					}
+				}
 				Element itemTypeEle = (Element) configRoot.selectSingleNode("item[@name='"+itemType+"']");
 				if (itemTypeEle != null) {
 					//Set the values of each property from the form data
@@ -574,9 +588,30 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 		return id;
 	}
 	
-	private Map getUniqueNameMap(Element configRoot) {
+	private Map getUniqueNameMap(Element configRoot, Element definitionTree, String itemType) {
 		Map uniqueNames = new HashMap();
-		
+
+		Element itemTypeEle = (Element) configRoot.selectSingleNode("item[@name='"+itemType+"']");
+		if (itemTypeEle != null) {
+			Element itemTypeName = (Element) itemTypeEle.selectSingleNode("properties/property[@name='name']");
+			if (itemTypeName != null) {
+				//See if this item requires a unique name
+				String uniquePath = itemTypeName.attributeValue("unique", "");
+				if (!uniquePath.equals("")) {
+					//There is a request for uniqueness, so get the list from the definition file
+					Iterator itNames = definitionTree.selectNodes(uniquePath).iterator();
+					while (itNames.hasNext()) {
+						//Find the name property of all items in the specified path
+						Element itemEleName = (Element)((Element) itNames.next()).selectSingleNode("properties/property[@name='name']");
+						String itemEleNameValue = itemEleName.attributeValue("value", "");
+						if (!itemEleNameValue.equals("")) {
+							//We found a name, so add it to the map
+							uniqueNames.put(itemEleNameValue, itemEleNameValue);
+						}
+					}
+				}
+			}
+		}
 		return uniqueNames;
 	}
 
