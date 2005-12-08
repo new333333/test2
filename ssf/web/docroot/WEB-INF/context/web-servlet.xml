@@ -43,6 +43,7 @@
 		<property name="urlMap">
 			<map>
 				<entry key="/downloadFile"><ref local="downloadFile"/></entry>				
+				<entry key="/uploadFile"><ref local="uploadFile"/></entry>				
 			</map>
 		</property>
 	</bean>
@@ -74,5 +75,7 @@
 	<!-- Controllers -->
 
 	<bean id="downloadFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.file.DownloadFileController"/>
+
+	<bean id="uploadFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.file.UploadFileController"/>
 
 </beans>
