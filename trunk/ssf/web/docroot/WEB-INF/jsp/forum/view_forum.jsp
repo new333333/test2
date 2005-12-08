@@ -130,14 +130,14 @@ function showEntryInDiv(str) {
         wObj2 = self.document.all['showentry']
     }
     
-    //If the entry div needs dynamic positioning, do it now
-    positionEntryDiv()
-    
     if (str.indexOf('<body onLoad="self.location =') >= 0) {self.loaction.reload();}
     wObj1.style.display = "block";
     wObj2.innerHTML = str;
     wObj1.style.visibility = "visible";
-    
+
+    //If the entry div needs dynamic positioning after adding the entry, do it now
+    if (self.ss_positionEntryDiv) {ss_positionEntryDiv();}
+        
     //Keep a high water mark for the page so the scrolling doesn't bounce around
     setWindowHighWaterMark('showentryhighwatermark');
     
@@ -167,9 +167,6 @@ function showEntryInDiv(str) {
 	}
 }
 
-//This gets overwritten if desired
-function positionEntryDiv() {}
-
 var savedScrollPositionTop = null;
 function scrollToSavedLocation() {
 	if (autoScroll == "true") {
@@ -183,7 +180,6 @@ var highlightBgColor = "<%= betaColor %>"
 var highlightedLine = null;
 var savedHighlightedLineBgCollor = null;
 function highlightLine(obj) {
-	alert("highlightLine")
 	if (highlightedLine != null) {
 		if (highlightedLine.offsetParent.parentElement) {
 			highlightedLine.offsetParent.parentElement.bgColor = savedHighlightedLineBgCollor;

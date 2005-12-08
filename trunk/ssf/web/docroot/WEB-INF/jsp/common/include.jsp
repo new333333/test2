@@ -74,6 +74,144 @@ div.ss_historybar {
   color: <%= alphaColor %>;  
   }
 
+/* Box styles */
+.ssf-box-container {
+	margin-top: -5px;
+}
+
+.ssf-box {
+	background-color: #FFFFFF;
+	border: 1px solid <%= gammaColor %>;
+	height: auto;
+<c:if test="<%= !isIE %>">
+	height: 100%;
+</c:if>
+	padding: 15px 0 0 0;
+}
+
+.ssf-box-minimum-height {
+	height: 1px;
+}
+
+.ssf-box-header-bar {
+	background-color: none;
+	position: relative;
+	width:100%;
+	top: 9px;
+	z-index: 2;
+}
+
+.ssf-box-title {
+	background: <%= gammaColor %> url(<html:imagesPath/>box/box_title_bg_gradient.gif) repeat-x;
+	color: #4A517D;
+	font-family: Tahoma, Arial;
+	height: 27px;
+	left: 10px;
+	padding: 0px 3px 0px 3px;
+	position: absolute;
+}
+
+.ssf-box-small-icon-bar {
+	height: 1em;
+	padding-right: 10px;
+	position:relative;
+    setObjectWidth(wObj1, ss_entryWindowWidth);
+	text-align: right;
+	top: 8px;
+}
+
+.ssf-box-small-icon {
+	height: 14px;
+	margin: -1px;
+	width: 14px;
+}
+
+.ssf-box-corner-ul {
+	background: #FFFFFF url(<html:imagesPath/>box/box_corner_ul.gif) no-repeat;
+	height: 5px;
+	left: 0px;
+	overflow: hidden;
+	position: absolute;
+	top: 0px;
+	width: 5px;
+}
+
+.ssf-box-corner-ur {
+	background: #FFFFFF url(<html:imagesPath/>box/box_corner_ur.gif) no-repeat;
+	height: 5px;
+	overflow: hidden;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	width: 5px;
+}
+
+.ssf-box-corner-bl {
+	background: #FFFFFF url(<html:imagesPath/>box/box_corner_bl.gif) no-repeat;
+	height: 5px;
+	left: 0px;
+	overflow: hidden;
+	position: absolute;
+	top: 0px;
+	width: 5px;
+}
+
+.ssf-box-corner-br {
+	background: #FFFFFF url(<html:imagesPath/>box/box_corner_br.gif) no-repeat;
+	height: 5px;
+	overflow: hidden;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	width: 5px;
+}
+
+.ssf-box-corner-2-bl {
+	background: #FFFFFF url(<html:imagesPath/>box/shadow_left.gif) no-repeat;
+	height: 6px;
+	left: 0px;
+	overflow: hidden;
+	position: absolute;
+	top: 0px;
+	width: 6px;
+}
+
+.ssf-box-corner-2-br {
+	background: #FFFFFF url(<html:imagesPath/>box/shadow_right.gif) no-repeat;
+	height: 6px;
+	overflow: hidden;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	width: 6px;
+}
+
+.ssf-box-top-decoration {
+	height: 5px;
+	position: relative;
+	top: 5px;
+	width: 100%;
+	z-index: 1;
+}
+
+.ssf-box-bottom-decoration {
+	height: 5px;
+	position: relative;
+	top: -5px;
+	width: 100%;
+	z-index: 2;
+}
+
+.ssf-box-bottom-decoration-2 {
+	background: url(<html:imagesPath/>box/shadow_middle.gif) repeat-x;
+	height: 6px;
+	position: relative;
+	top: -5px;
+	width: 100%;
+    margin-right:2;
+    margin-left:2;
+	z-index: 2;
+}
 
 </style>
 <script language="JavaScript" src="<html:rootPath/>js/forum/forum_common.js"></script>

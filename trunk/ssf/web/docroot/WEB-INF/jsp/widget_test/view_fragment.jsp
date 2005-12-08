@@ -52,7 +52,7 @@ function showEntryInDiv(str) {
     }
     
     //If the entry div needs dynamic positioning, do it now
-    positionEntryDiv()
+    ss_positionEntryDiv()
     
     wObj1.style.display = "block";
     wObj2.innerHTML = str;
@@ -85,7 +85,7 @@ function showEntryInDiv(str) {
 }
 
 function showForumEntryInIframe(url) {
-	positionEntryDiv();
+	ss_positionEntryDiv();
     var wObj
     if (isNSN || isNSN6 || isMoz5) {
         wObj = self.document.getElementById('showentryframe')
@@ -118,7 +118,7 @@ function showForumEntryInWindow(url) {
 
 
 var entryWindowWidth = 400;
-function positionEntryDiv() {
+function ss_positionEntryDiv() {
 return
     var wObj1 = null
     if (isNSN || isNSN6 || isMoz5) {
@@ -149,7 +149,7 @@ function hideEntryDiv() {
     wObj1.style.visibility = "hidden";
 }
 
-createOnLoadObj('positionEntryDiv', positionEntryDiv)
+createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
 
 </script>
 
