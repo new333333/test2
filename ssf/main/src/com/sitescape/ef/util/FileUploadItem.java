@@ -4,30 +4,29 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class FileUploadItem {
 
+	private String name; // This is NOT file name.
+	
 	private MultipartFile mf;
 	
 	private String repositoryServiceName;
 
 	// path info?
 	
-	public FileUploadItem(MultipartFile mf, String repositoryServiceName) {
-		setMultipartFile(mf);
-		setRepositoryServiceName(repositoryServiceName);
+	public FileUploadItem(String name, MultipartFile mf, String repositoryServiceName) {
+		this.name = name;
+		this.mf = mf;
+		this.repositoryServiceName = repositoryServiceName;
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	public MultipartFile getMultipartFile() {
 		return mf;
 	}
 
-	public void setMultipartFile(MultipartFile mf) {
-		this.mf = mf;
-	}
-
 	public String getRepositoryServiceName() {
 		return repositoryServiceName;
-	}
-
-	public void setRepositoryServiceName(String repositoryServiceName) {
-		this.repositoryServiceName = repositoryServiceName;
 	}
 }

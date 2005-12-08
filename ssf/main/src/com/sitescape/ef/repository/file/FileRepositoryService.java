@@ -52,7 +52,7 @@ public class FileRepositoryService implements RepositoryService {
 	public void closeRepositorySession(Object session) throws RepositoryServiceException {
 	}
 	
-	public void write(Object session, Folder folder, FolderEntry entry, String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
+	public String create(Object session, Folder folder, FolderEntry entry, String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
 		
 		// This implementation doesn't really follow the API spec in that
 		// it completely ignores relativeFilePath. 
@@ -62,6 +62,22 @@ public class FileRepositoryService implements RepositoryService {
 		if(!dir.exists())
 			dir.mkdirs();
     	
+        try {
+        	mf.transferTo(new File(dir, mf.getOriginalFilename()));
+		} catch (Exception e) {
+			throw new RepositoryServiceException(e);
+		}
+		
+		return null;
+	}
+
+	public void update(Object session, Folder folder, FolderEntry entry, String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
+		
+		// This implementation doesn't really follow the API spec in that
+		// it completely ignores relativeFilePath. 
+		
+		File dir = getDir(folder, entry);
+		
         try {
         	mf.transferTo(new File(dir, mf.getOriginalFilename()));
 		} catch (Exception e) {

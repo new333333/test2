@@ -11,6 +11,7 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Entry;
@@ -18,6 +19,10 @@ import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FileItem;
+import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.Workspace;
 
 import com.sitescape.ef.web.WebKeys;
@@ -674,16 +679,15 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
     	return this.definitionConfig;
     }
     
-    public Map getEntryData(Definition def, Map inputData, Map fileItems) {
+    public Map getEntryData(Folder folder, FolderEntry entry, Map inputData, Map fileItems) {
+    	Definition def = entry.getEntryDef();
 		this.getDefinitionConfig();
 		Element configRoot = this.definitionConfig.getRootElement();
 		
     	// entryData will contain the Map of entry data as gleaned from the input data
 		Map entryDataAll = new HashMap();
 		Map entryData = new HashMap();
-		List fileData = new ArrayList();
 		entryDataAll.put("entryData", entryData);
-		entryDataAll.put("fileData", fileData);
 	//	entryDataAll.put("eventData", eventData);
 		
 		Document definitionTree = def.getDefinition();
@@ -764,21 +768,23 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 								} else if (itemName.equals("file")) {
 								    if(fileItems != null && fileItems.containsKey(nameValue)) {
 								    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
-								    	if (myFile.getOriginalFilename().equals("")) continue;
+								    	String fileName = myFile.getOriginalFilename();
+								    	if (fileName.equals("")) continue;
+								    	
 								    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
 								    	String repositoryServiceName = storageElem.attributeValue("value",
 								    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
-								    	FileUploadItem fui = new FileUploadItem(myFile, repositoryServiceName);
-								    	fui.setRepositoryServiceName(repositoryServiceName);
-								    	// TODO Take care of path info?
-								    	FileAttachment fAtt = new FileAttachment(nameValue);
-								    	FileItem fItem = new FileItem();
-								    	fItem.setName(myFile.getOriginalFilename());
-								    	fItem.setLength(myFile.getSize());
-								    	fAtt.setFileItem(fItem);
-								    	fAtt.setRepositoryServiceName(repositoryServiceName);
-								    	fileData.add(fui);
-								    	entryData.put(nameValue, fAtt);
+								    	FileUploadItem fui = new FileUploadItem(nameValue, myFile, repositoryServiceName);
+								    	
+								    	CustomAttribute ca = entry.getCustomAttribute(nameValue);
+								    	if(ca == null) { // New file
+								    		FileAttachment fAtt = createFile(folder, entry, fui);
+								    		entry.addCustomAttribute(nameValue, fAtt);
+								    	}
+								    	else { // Existing file
+								    		// No metadata update is necessary until checkin time.
+								    		RepositoryServiceUtil.update(folder, entry, fui);
+								    	}					    		
 									}
 								} else if (itemName.equals("attachFiles")) {
 								    if(fileItems != null) {
@@ -789,30 +795,30 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 												number = Integer.parseInt(attachmentNumber.attributeValue("value"));
 											}
 										}
-										List fAtts = new ArrayList();
 										for (int i=1;i <= number;i++) {
 											String fileEleName = nameValue + Integer.toString(i);
 											if (fileItems.containsKey(fileEleName)) {												
 										    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
-										    	if (myFile.getOriginalFilename().equals("")) continue;
+										    	String fileName = myFile.getOriginalFilename();
+										    	if (fileName.equals("")) continue;
+										    	
 										    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
 										    	String repositoryServiceName = storageElem.attributeValue("value",
 										    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
-										    	FileUploadItem fui = new FileUploadItem(myFile, repositoryServiceName);
-										    	fui.setRepositoryServiceName(repositoryServiceName);
-										    	// TODO Take care of path info?
-										    	FileAttachment fAtt = new FileAttachment(fileEleName);
-										    	FileItem fItem = new FileItem();
-										    	fItem.setName(myFile.getOriginalFilename());
-										    	fItem.setLength(myFile.getSize());
-										    	fAtt.setFileItem(fItem);
-										    	fAtt.setRepositoryServiceName(repositoryServiceName);
-										    	fileData.add(fui);
-										    	fAtts.add(fAtt);
+										    	FileUploadItem fui = new FileUploadItem(fileEleName, myFile, repositoryServiceName);
+										    	
+										    	// Find file attachment by 'fileName' not by 'name'.
+										    	FileAttachment fAtt = entry.getFileAttachment(fileName);
+										    	
+										    	if(fAtt == null) { // New file
+										    		fAtt = createFile(folder, entry, fui);
+										    		entry.addAttachment(fAtt);
+										    	}
+										    	else { // Existing file
+										    		// No metadata update is necessary until checkin time.
+										    		RepositoryServiceUtil.update(folder, entry, fui);
+										    	}
 											}
-										}
-										if (!fAtts.isEmpty()) {
-											entryData.put("attachments", fAtts);
 										}
 								    }
 								} else {
@@ -1069,4 +1075,32 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
         }
     }
 
+	private FileAttachment createFile(Folder folder, FolderEntry entry, 
+			FileUploadItem fui) {
+    	// TODO Take care of file path info?
+    	
+        User user = RequestContextHolder.getRequestContext().getUser();
+
+        String fileName = fui.getMultipartFile().getOriginalFilename();
+	
+		FileAttachment fAtt = new FileAttachment(fui.getName());
+		fAtt.setOwner(entry);
+		fAtt.setCreation(new HistoryStamp(user));
+		fAtt.setModification(fAtt.getCreation());
+		fAtt.setLastVersion(new Integer(1));
+    	fAtt.setRepositoryServiceName(fui.getRepositoryServiceName());
+
+    	FileItem fItem = new FileItem();
+    	fItem.setName(fileName);
+    	fItem.setLength(fui.getMultipartFile().getSize());
+    	fAtt.setFileItem(fItem);
+
+		VersionAttachment vAtt = new VersionAttachment();
+		vAtt.setCreation(fAtt.getCreation()); // we don't need mod time for version
+		String versionName = RepositoryServiceUtil.create(folder, entry, fui);
+		vAtt.setVersionName(versionName);
+		fAtt.addFileVersion(vAtt);
+
+    	return fAtt;
+	}
 }

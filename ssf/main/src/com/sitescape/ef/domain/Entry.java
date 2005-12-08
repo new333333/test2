@@ -192,6 +192,27 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     	}
     	return result;
     }
+    
+    /**
+     * Return unnamed FileAttachment corresponding to the specified file name.
+     * @param fileName
+     * @return
+     */
+    public FileAttachment getFileAttachment(String fileName) {
+    	List atts = getAttachments();
+    	Attachment att;
+    	FileAttachment fatt;
+    	for (int i=0; i<atts.size(); ++i) {
+    		att = (Attachment)atts.get(i);
+    		if (att instanceof FileAttachment) {
+    			fatt = (FileAttachment) att;
+    			if(fatt.getFileItem().getName().equals(fileName))
+    				return fatt;
+    		}
+    	}
+    	return null;
+    }
+    
     /**
      * Return list of unnamed bookmark Attachments
      * @return

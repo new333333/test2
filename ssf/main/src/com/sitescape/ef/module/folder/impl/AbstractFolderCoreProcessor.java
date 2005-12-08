@@ -99,20 +99,19 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         
         addEntry_accessControl(folder);
         
-        Map entryDataAll = addEntry_toEntryData(folder, def, inputData, fileItems);
-        Map entryData = (Map) entryDataAll.get("entryData");
-        List fileData = (List) entryDataAll.get("fileData");
-        
         FolderEntry entry = addEntry_create();
         entry.setEntryDef(def);
         
-        addEntry_fillIn(folder, entry, inputData, entryData, fileData);
+        Map entryDataAll = addEntry_toEntryData(folder, entry, inputData, fileItems);
+        Map entryData = (Map) entryDataAll.get("entryData");
         
-        addEntry_preSave(folder, entry, inputData, entryData, fileData);
+        addEntry_fillIn(folder, entry, inputData, entryData);
+        
+        addEntry_preSave(folder, entry, inputData, entryData);
         
         addEntry_save(entry);
         
-        addEntry_postSave(folder, entry, inputData, entryData, fileData);
+        addEntry_postSave(folder, entry, inputData, entryData);
         
         // This must be done in a separate step after persisting the entry,
         // because we need the entry's persistent ID for indexing. 
@@ -126,16 +125,16 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         accessControlManager.checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);        
     }
     
-    protected Map addEntry_toEntryData(Folder folder, Definition def, Map inputData, Map fileItems) {
+    protected Map addEntry_toEntryData(Folder folder, FolderEntry entry, Map inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
-        return getDefinitionModule().getEntryData(def, inputData, fileItems);
+        return getDefinitionModule().getEntryData(folder, entry, inputData, fileItems);
     }
     
      protected FolderEntry addEntry_create() {
     	return new FolderEntry();
     }
     
-    protected void addEntry_fillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData, List fileData) {  
+    protected void addEntry_fillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData) {  
     	folder.addEntry(entry, getFolderDao().allocateEntryNumbers(folder, 1));         
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setCreation(new HistoryStamp(user));
@@ -148,19 +147,14 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         EntryBuilder.buildEntry(entry, entryData);
     }
     
-    protected void addEntry_preSave(Folder folder, FolderEntry entry, Map inputData, Map entryData, List fileData) {
+    protected void addEntry_preSave(Folder folder, FolderEntry entry, Map inputData, Map entryData) {
     }
     
     protected void addEntry_save(FolderEntry entry) {
         getCoreDao().save(entry);
     }
     
-    protected void addEntry_postSave(Folder folder, FolderEntry entry, Map inputData, Map entryData, List fileData) {
-        // Save file attachments here. 
-        for (int i=0; i<fileData.size(); ++i) {
-            FileUploadItem fui = (FileUploadItem) fileData.get(i);
-            RepositoryServiceUtil.write(folder, entry, fui);
-        }
+    protected void addEntry_postSave(Folder folder, FolderEntry entry, Map inputData, Map entryData) {
     }
     protected void addEntry_indexAdd(Folder folder, FolderEntry entry, Map inputData) {
         
@@ -188,12 +182,10 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
  
         Map entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
         Map entryData = (Map) entryDataAll.get("entryData");
-        List fileData = (List) entryDataAll.get("fileData");
         
-        
-        modifyEntry_fillIn(folder, entry, inputData, entryData, fileData);
+        modifyEntry_fillIn(folder, entry, inputData, entryData);
                     
-        modifyEntry_postFillIn(folder, entry, inputData, entryData, fileData);
+        modifyEntry_postFillIn(folder, entry, inputData, entryData);
         
         modifyEntry_indexAdd(folder, entry, inputData);
           
@@ -206,21 +198,16 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
     }
     protected Map modifyEntry_toEntryData(FolderEntry entry, Map inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
-        return getDefinitionModule().getEntryData(entry.getEntryDef(), inputData, fileItems);
+        return getDefinitionModule().getEntryData(entry.getParentFolder(), entry, inputData, fileItems);
     }
-    protected void modifyEntry_fillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData, List fileData) {  
+    protected void modifyEntry_fillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setModification(new HistoryStamp(user));
         EntryBuilder.updateEntry(entry, entryData);
 
     }
 
-    protected void modifyEntry_postFillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData, List fileData) {
-        // Save file attachments here. 
-        for (int i=0; i<fileData.size(); ++i) {
-            FileUploadItem fui = (FileUploadItem) fileData.get(i);
-            RepositoryServiceUtil.write(folder, entry, fui);
-        }
+    protected void modifyEntry_postFillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData) {
      }
     protected void modifyEntry_indexAdd(Folder folder, FolderEntry entry, Map inputData) {
         
@@ -237,20 +224,19 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         
         addReply_accessControl(parent);
         
-        Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems);
-        Map entryData = (Map) entryDataAll.get("entryData");
-        List fileData = (List) entryDataAll.get("fileData");
-        
         FolderEntry entry = addReply_create();
         entry.setEntryDef(def);
         
-        addReply_fillIn(parent, entry, inputData, entryData, fileData);
+        Map entryDataAll = addReply_toEntryData(parent, entry, inputData, fileItems);
+        Map entryData = (Map) entryDataAll.get("entryData");
         
-        addReply_preSave(parent, entry, inputData, entryData, fileData);
+        addReply_fillIn(parent, entry, inputData, entryData);
+        
+        addReply_preSave(parent, entry, inputData, entryData);
         
         addReply_save(entry);
         
-        addReply_postSave(parent, entry, inputData, entryData, fileData);
+        addReply_postSave(parent, entry, inputData, entryData);
         
         addReply_indexAdd(parent, entry, inputData, entryData);
         
@@ -262,9 +248,9 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
    		getAccessControlManager().checkOperation(parent.getParentFolder(), WorkAreaOperation.ADD_REPLIES);
     }
     
-    protected Map addReply_toEntryData(FolderEntry parent, Definition def, Map inputData, Map fileItems) {
+    protected Map addReply_toEntryData(FolderEntry parent, FolderEntry entry, Map inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
-        return getDefinitionModule().getEntryData(def, inputData, fileItems);
+        return getDefinitionModule().getEntryData(parent.getParentFolder(), entry, inputData, fileItems);
     }
     
     /**
@@ -275,7 +261,7 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         return new FolderEntry();
     }
     
-    protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData, List fileData) {  
+    protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData) {  
         parent.addReply(entry);         
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setCreation(new HistoryStamp(user));
@@ -287,19 +273,14 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         EntryBuilder.buildEntry(entry, entryData);
     }
     
-    protected void addReply_preSave(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData, List fileData) {
+    protected void addReply_preSave(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData) {
     }
     
     protected void addReply_save(FolderEntry entry) {
         getCoreDao().save(entry);
     }
     
-    protected void addReply_postSave(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData, List fileData) {
-        // Save file attachments here. 
-        for (int i=0; i<fileData.size(); ++i) {
-            FileUploadItem fui = (FileUploadItem) fileData.get(i);
-            RepositoryServiceUtil.write(entry.getParentFolder(), entry, fui);
-        }
+    protected void addReply_postSave(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData) {
      }
     
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData) {

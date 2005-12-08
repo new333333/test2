@@ -1,5 +1,7 @@
 package com.sitescape.ef.module.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.quartz.Scheduler;
 import org.springframework.mail.MailSender;
 
@@ -18,6 +20,8 @@ import com.sitescape.ef.security.function.FunctionManager;
  *
  */
 public class AbstractModuleImpl {
+
+	protected Log logger = LogFactory.getLog(getClass());
 
 	protected CoreDao coreDao;
 	protected FolderDao folderDao;
