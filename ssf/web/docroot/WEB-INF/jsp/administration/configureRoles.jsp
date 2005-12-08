@@ -23,6 +23,8 @@
 <form name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_roles"/>
 		</portlet:actionURL>">
+		
+		<h3>Not much implemented yet!</h3>
 
 	<input type="submit" name="okBtn" value="Ok">
 	<input type="submit" name="cancelBtn" value="Cancel">
