@@ -397,7 +397,7 @@ div.ss_toolbar_item {
 
 div.ss_toolbar_menu {
 	position: absolute;
-	z-index: 10;
+	z-index: 100;
 	visibility: hidden;
 	background-color: #FFFFFF; 
 	color: #000000;

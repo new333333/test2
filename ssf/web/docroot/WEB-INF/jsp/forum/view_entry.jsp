@@ -219,7 +219,7 @@ function showEntryInDiv(str) {
     }
     
     //If the entry div needs dynamic positioning, do it now
-    positionEntryDiv()
+    if (self.ss_positionEntryDiv) {ss_positionEntryDiv();}
     
     if (str.indexOf('<body onLoad="self.location =') >= 0) {self.loaction.reload();}
     wObj1.style.display = "block";
@@ -254,9 +254,6 @@ function showEntryInDiv(str) {
 	    }
 	}
 }
-
-//This gets overwritten if desired
-function positionEntryDiv() {}
 
 var savedScrollPositionTop = null;
 function scrollToSavedLocation() {
