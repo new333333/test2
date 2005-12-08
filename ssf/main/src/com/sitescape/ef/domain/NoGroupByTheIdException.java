@@ -6,7 +6,7 @@ package com.sitescape.ef.domain;
  *
  */
 public class NoGroupByTheIdException extends NoObjectByTheIdException {
-	   private static final String NoGroupByTheIdException_ErrorCode = "error.no.group.by.the.Id";
+	   private static final String NoGroupByTheIdException_ErrorCode = "errorcode.no.group.by.the.Id";
 	    
 	    public NoGroupByTheIdException(Long groupId) {
 	        super(NoGroupByTheIdException_ErrorCode, groupId);

@@ -12,7 +12,7 @@ public interface EmployeeModule {
 
     public int addEmployee (String author, String title, Integer count);
 
-    public void incrementSalary(Integer key, Integer increment);
+    public void incrementSalary(Integer key, Integer increment) throws SalaryMaxedOutException;
     
     public void updateEmployee (Employee employee);
 

@@ -8,7 +8,7 @@ import com.sitescape.ef.exception.UncheckedCodedException;
  *
  */
 public class LibraryEntryExistsException extends UncheckedCodedException {
-	private static final String FolderExistsException_ErrorCode = "error.library.folderentry.exists";
+	private static final String FolderExistsException_ErrorCode = "errorcode.library.folderentry.exists";
     public LibraryEntryExistsException(String title) {
         super(FolderExistsException_ErrorCode, new Object[]{title});
     }

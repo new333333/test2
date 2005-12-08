@@ -206,6 +206,8 @@
 		<property name="defaultErrorView"><value>common/defError</value></property>
 		<property name="exceptionMappings">
 			<props>
+				<prop key="com.sitescape.ef.exception.CheckedCodedException">common/defCodedError</prop>
+				<prop key="com.sitescape.ef.exception.UncheckedCodedException">common/defCodedError</prop>
 				<prop key="javax.portlet.PortletSecurityException">common/notAuthorized</prop>
 				<prop key="javax.portlet.UnavailableException">common/notAvailable</prop>
 			</props>

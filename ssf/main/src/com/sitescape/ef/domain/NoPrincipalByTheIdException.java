@@ -13,7 +13,7 @@ package com.sitescape.ef.domain;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class NoPrincipalByTheIdException extends NoObjectByTheIdException {
-    private static final String NoPrincipalByTheIdException_ErrorCode = "error.no.principal.by.the.id";
+    private static final String NoPrincipalByTheIdException_ErrorCode = "errorcode.no.principal.by.the.id";
     
     public NoPrincipalByTheIdException(Long userId) {
         super(NoPrincipalByTheIdException_ErrorCode, userId);

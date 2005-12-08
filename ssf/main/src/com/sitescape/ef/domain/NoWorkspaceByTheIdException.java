@@ -5,7 +5,7 @@ package com.sitescape.ef.domain;
  *
  */
 public class NoWorkspaceByTheIdException extends NoObjectByTheIdException {
-    private static final String NoWorkspaceByTheIdException_ErrorCode = "error.no.workspace.by.the.id";
+    private static final String NoWorkspaceByTheIdException_ErrorCode = "errorcode.no.workspace.by.the.id";
     
     public NoWorkspaceByTheIdException(Long workspaceId) {
         super(NoWorkspaceByTheIdException_ErrorCode, workspaceId);

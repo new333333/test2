@@ -6,7 +6,7 @@ package com.sitescape.ef.domain;
  *
  */
 public class NoRoleByTheIdException extends NoObjectByTheIdException {
-   private static final String NoRoleByTheIdException_ErrorCode = "error.no.role.by.the.id";
+   private static final String NoRoleByTheIdException_ErrorCode = "errorcode.no.role.by.the.id";
   
     public NoRoleByTheIdException(String roleId) {
        super(NoRoleByTheIdException_ErrorCode, roleId);

@@ -14,7 +14,7 @@ package com.sitescape.ef.domain;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class NoFolderEntryByTheIdException extends NoObjectByTheIdException {
-    private static final String NoDocshareEntryByTheIdException_ErrorCode = "docshare.error.no.docshareEntry.by.the.id";
+    private static final String NoDocshareEntryByTheIdException_ErrorCode = "errorcode.no.folder.entry.by.the.id";
     
     public NoFolderEntryByTheIdException(Long entryId) {
         super(NoDocshareEntryByTheIdException_ErrorCode, entryId);

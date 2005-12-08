@@ -9,7 +9,7 @@ import com.sitescape.ef.exception.UncheckedCodedException;
  *
  */
 public class DefinitionInvalidOperation extends UncheckedCodedException {
-	private static final String DefinitionInvalidOperation_ErrorCode = "error.definition.operation.invalid";
+	private static final String DefinitionInvalidOperation_ErrorCode = "errorcode.definition.operation.invalid";
 
 	public DefinitionInvalidOperation() {
         super(DefinitionInvalidOperation_ErrorCode, new Object[]{""});

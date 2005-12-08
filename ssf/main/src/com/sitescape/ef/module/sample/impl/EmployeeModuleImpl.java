@@ -7,25 +7,28 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.module.sample.Employee;
 import com.sitescape.ef.module.sample.EmployeeModule;
+import com.sitescape.ef.module.sample.SalaryMaxedOutException;
 import com.sitescape.ef.util.NLT;
 
 public class EmployeeModuleImpl extends AbstractModuleImpl implements EmployeeModule {
 	
 	private SortedMap employees = Collections.synchronizedSortedMap(new TreeMap());
+	
+	private static final int MAX_SALARY = 10000;
 
 	public EmployeeModuleImpl() {
-		addEmployee("Dave", "Griffin", new Integer(10000));
-		addEmployee("Peter", "Hurley", new Integer(10000));
-		addEmployee("Roy", "Klein", new Integer(10000));
-		addEmployee("Janet", "McCann", new Integer(10000));
-		addEmployee("Meyer", "Billmers", new Integer(10000));
-		addEmployee("Mary", "Utt", new Integer(10000));
-		addEmployee("Jong", "Kim", new Integer(10000));
+		// Let's give all of them maximum salary!
+		addEmployee("Dave", "Griffin", new Integer(MAX_SALARY));
+		addEmployee("Peter", "Hurley", new Integer(MAX_SALARY));
+		addEmployee("Roy", "Klein", new Integer(MAX_SALARY));
+		addEmployee("Janet", "McCann", new Integer(MAX_SALARY));
+		addEmployee("Meyer", "Billmers", new Integer(MAX_SALARY));
+		addEmployee("Mary", "Utt", new Integer(MAX_SALARY));
+		addEmployee("Jong", "Kim", new Integer(MAX_SALARY));
 	}
 	
     public Employee getEmployee (Integer key) {
@@ -58,17 +61,20 @@ public class EmployeeModuleImpl extends AbstractModuleImpl implements EmployeeMo
 
     public void incrementSalary(Integer key, Integer increment) {
     	Employee employee = getEmployee(key);
-    	employee.incrementSalary(increment);
     	
+    	if(increment.intValue() > 0 && (employee.getSalary().intValue() + increment.intValue() > MAX_SALARY))
+    		throw new SalaryMaxedOutException(employee.getFirstName(), MAX_SALARY);
+    	
+    	employee.incrementSalary(increment);
     	
 		// Just to see whether RequestContext works or not. 
 		User user = RequestContextHolder.getRequestContext().getUser();
     	
 		// Test NLT
-		System.out.println(NLT.get("exception.contactAdmin"));
-		System.out.println(NLT.get("a.b.c.d"));
-		System.out.println(NLT.get("exception.notAuthorized.message", "Hi!"));
-		System.out.println(NLT.get("x.y.z", "Hi!"));	
+		//System.out.println(NLT.get("exception.contactAdmin"));
+		//System.out.println(NLT.get("a.b.c.d"));
+		//System.out.println(NLT.get("exception.notAuthorized.message", "Hi!"));
+		//System.out.println(NLT.get("x.y.z", "Hi!"));	
     }
 
     public void updateEmployee (Employee employee) {

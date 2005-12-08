@@ -42,62 +42,93 @@ public class NLT implements ApplicationContextAware {
 		return nlt;
 	}
 	
-	public String getMessage(String tag) {
+	private String getMessageWithTagAsDefault(String tag) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		return getMessage(tag, user.getLocale());
+		return getMessageWithTagAsDefault(tag, null, user.getLocale());
 	}
- 	public String getMessage(String tag, Locale locale) {
+	
+	private String getMessageWithTagAsDefault(String tag, Object[] args) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		return getMessageWithTagAsDefault(tag, args, user.getLocale());		
+	}
+	
+	private String getMessageWithTagAsDefault(String tag, Locale locale) {
+ 		return getMessageWithTagAsDefault(tag, null, locale);
+	}
+	
+	private String getMessageWithTagAsDefault(String tag, Object[] args, Locale locale) {
+		return getMessageWithDefault(tag, args, tag, locale);
+	}
+	
+	private String getMessageWithTextAsDefault(String tag, String text) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		return getMessageWithTextAsDefault(tag, null, text, user.getLocale());
+	}
+	
+	private String getMessageWithTextAsDefault(String tag, Object[] args, String text) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		return getMessageWithTextAsDefault(tag, args, text, user.getLocale());
+	}
+	
+	private String getMessageWithTextAsDefault(String tag, String text, Locale locale) {
+		return getMessageWithTextAsDefault(tag, null, text, locale);
+	}
+	
+	private String getMessageWithTextAsDefault(String tag, Object[] args, String text, Locale locale) {
+		return getMessageWithDefault(tag, args, text, locale);
+	}
+	
+	private String getMessageWithDefault(String tag, Object[] args, String defaultMessage, Locale locale) {
     	String translation = "";
     	try {
-    		translation = getApplicationContext().getMessage(tag, null, locale);
+    		translation = getApplicationContext().getMessage(tag, args, locale);
     	} catch (NoSuchMessageException e) {
     	    logger.warn(e);
-    		translation = tag;
+    		translation = defaultMessage;
     	}
-    	return translation;		
+    	return translation;				
 	}
 	
 	public static String getDef(String tag) {
 		if (tag.startsWith("__")) {
 			//If the tag starts with "__" it is a tag to be translated
-			return getInstance().getMessage(tag);
+			return get(tag);
 		}
-		//Otherwise, this is just a string, so return it unchanged.
-		return tag;
+		else {
+			//Otherwise, this is just a string, so return it unchanged.
+			return tag;
+		}
 	}
 
 	public static String get(String tag) {
-		return getInstance().getMessage(tag);
+		return getInstance().getMessageWithTagAsDefault(tag);
+	}
+	
+	public static String get(String tag, Object[] args) {
+		return getInstance().getMessageWithTagAsDefault(tag, args);
 	}
 
 	public static String get(String tag, Locale locale) {
-		return getInstance().getMessage(tag, locale);
+		return getInstance().getMessageWithTagAsDefault(tag, locale);
 	}
 
-	public String getMessage(String tag, String text) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		return getMessage(tag, text, user.getLocale());
+	public static String get(String tag, Object[] args, Locale locale) {
+		return getInstance().getMessageWithTagAsDefault(tag, args, locale);
 	}
-	public String getMessage(String tag, String text, Locale locale) {
-   	String translation = "";
-    	try {
-    		String notfound = "___notfound___";
-    		translation = getApplicationContext().getMessage(tag, null, notfound, locale);
-    		if (translation.equals(notfound)) {
-    			logger.warn("Translation not found: " + tag + " = " + text);
-    			translation = text;
-    		}
-    	} catch (NoSuchMessageException e) {
-    	    logger.warn(e);
-    		translation = text;
-    	}
-    	return translation;
+
+	public static String get(String tag, String text) {
+		return getInstance().getMessageWithTextAsDefault(tag, text);
 	}
 	
-	public static String get(String tag, String text) {
-		return getInstance().getMessage(tag, text);
+	public static String get(String tag, Object[] args,  String text) {
+		return getInstance().getMessageWithTextAsDefault(tag, args, text);
 	}
+	
 	public static String get(String tag, String text, Locale locale) {
-		return getInstance().getMessage(tag, text, locale);
+		return getInstance().getMessageWithTextAsDefault(tag, text, locale);
+	}
+	
+	public static String get(String tag, Object[] args, String text, Locale locale) {
+		return getInstance().getMessageWithTextAsDefault(tag, args, text, locale);
 	}
 }

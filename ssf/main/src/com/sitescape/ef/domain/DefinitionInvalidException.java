@@ -7,7 +7,7 @@ import com.sitescape.ef.exception.UncheckedCodedException;
  *
  */
 public class DefinitionInvalidException extends UncheckedCodedException {
-	private static final String DefinitionInvalidException_ErrorCode = "error.definition.invalid";
+	private static final String DefinitionInvalidException_ErrorCode = "errorcode.definition.invalid";
 	 
 	   public DefinitionInvalidException(String id) {
 	        super(DefinitionInvalidException_ErrorCode, new Object[]{id});

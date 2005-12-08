@@ -5,7 +5,7 @@ package com.sitescape.ef.domain;
  *
  */
 public class NoWorkspaceByTheNameException extends NoObjectByTheNameException {
-    private static final String NoWorkspaceByTheNameException_ErrorCode = "error.no.workspace.by.the.name";
+    private static final String NoWorkspaceByTheNameException_ErrorCode = "errorcode.no.workspace.by.the.name";
     
     public NoWorkspaceByTheNameException(String workspaceName) {
         super(NoWorkspaceByTheNameException_ErrorCode, workspaceName);
