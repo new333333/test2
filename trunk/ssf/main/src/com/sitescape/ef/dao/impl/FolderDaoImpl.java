@@ -1,5 +1,6 @@
 package com.sitescape.ef.dao.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -143,7 +144,59 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
          );  
          return result;
      } 
-    /*
+	public List loadFolderUpdates(Folder folder, Date since, Date before) {
+		return loadFolderUpdates(folder, since, before, new OrderBy(Constants.ID));
+	}
+	public List loadFolderUpdates(final Folder folder, final Date since, final Date before, final OrderBy order) {
+        List entries = (List)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                    	List results = session.createFilter(folder.getEntries(), 
+                    			"where (this.creation.date > :cDate and this.creation.date <= :c2Date) or " +
+									    "(this.modification.date > :mDate and this.modification.date <= :m2Date) or " +
+									    "(this.wfp1.modification.date > :wDate and this.wfp1.modification.date <= :w2Date)" +
+								" order by " + order.getOrderByClause("this"))
+								.setTimestamp("cDate", since)
+								.setTimestamp("c2Date", before)
+								.setTimestamp("mDate", since)
+								.setTimestamp("m2Date", before)
+								.setTimestamp("wDate", since)
+								.setTimestamp("w2Date", before)
+								.list();
+													
+                    	return results;
+                    }
+                }
+            );
+		return entries;
+    }
+	public List loadFolderTreeUpdates(Folder folder, Date since, Date before) {
+		return loadFolderTreeUpdates(folder, since, before, new OrderBy(Constants.ID));
+	}
+
+	public List loadFolderTreeUpdates(final Folder folder, final Date since, final Date before, final OrderBy order) {
+        List entries = (List)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                    	Query q  = session.createQuery("from com.sitescape.ef.domain.FolderEntry x where owningFolderSortKey like '" + 
+                    			folder.getFolderHKey().getSortKey() + "%' and ((x.creation.date > ? and x.creation.date <= ?) or " +
+									    "(x.modification.date > ? and x.modification.date <= ?) or " +
+									    "(x.wfp1.modification.date > ? and x.wfp1.modification.date <= ?)) order by " + order.getOrderByClause("x"));
+						
+                		int i=0;
+						q.setTimestamp(i++, since);
+						q.setTimestamp(i++, before);
+						q.setTimestamp(i++, since);
+						q.setTimestamp(i++, before);
+						q.setTimestamp(i++, since);
+						q.setTimestamp(i++, before);
+						return q.list();
+                    }
+                }
+            );
+		return entries;
+    }	
+	/*
      * In one call load the ancestors and descendants of an entry
      */
     public List loadEntryTree(final FolderEntry entry) throws DataAccessException { 

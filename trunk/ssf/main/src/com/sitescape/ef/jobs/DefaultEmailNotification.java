@@ -23,7 +23,7 @@ public class DefaultFolderEmailNotification extends SSStatefulJob implements Fol
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
     	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 		try {
-			mail.sendNotifications(new Long(jobDataMap.getLong("forum")));
+			mail.sendNotifications(new Long(jobDataMap.getLong("folder")));
 		} catch (NoFolderByTheIdException nf) {
 			removeJobOnError(context,nf);
 		} catch (ConfigurationException cf) {
@@ -33,36 +33,36 @@ public class DefaultFolderEmailNotification extends SSStatefulJob implements Fol
 	protected void removeJobOnError(JobExecutionContext context, Exception e) throws JobExecutionException {
 		if (e instanceof NoUserByTheIdException) {
 			AdminModule admin = (AdminModule)SpringContextUtil.getBean("adminModule");
-			admin.disableNotification(new Long(jobDataMap.getLong("forum")));
+			admin.disableNotification(new Long(jobDataMap.getLong("folder")));
 		}
 		super.removeJobOnError(context,e);	
 	}
-	public void checkSchedule(Scheduler scheduler, Binder forum) {
-		JobDescription job = new MailJobDescription(forum);
+	public void checkSchedule(Scheduler scheduler, Binder folder) {
+		JobDescription job = new MailJobDescription(folder);
 		verifySchedule(scheduler, job);
 	}
 	public class MailJobDescription implements JobDescription {
-		private Binder forum;
-		public MailJobDescription(Binder forum) {
-			this.forum = forum;
+		private Binder folder;
+		public MailJobDescription(Binder folder) {
+			this.folder = folder;
 		}
 		public  String getSchedule() {
-			return forum.getNotificationDef().getSchedule().getQuartzSchedule();
+			return folder.getNotificationDef().getSchedule().getQuartzSchedule();
 		}
     	public  String getDescription() {
-    		return "Email notification for " + forum;
+    		return "Email notification for " + folder;
     	}
     	public  JobDataMap getData() {
 			JobDataMap data = new JobDataMap();
-			data.put("forum",forum.getId());
-			data.put("zoneName",forum.getZoneName());
+			data.put("folder",folder.getId());
+			data.put("zoneName",folder.getZoneName());
 			return data;
     	}
     	public  boolean isEnabled() {
-    		return forum.getNotificationDef().isEnabled();
+    		return folder.getNotificationDef().isEnabled();
     	}
     	public String getName() {
-    		return forum.getZoneName() + ":" + forum.getName() + ":" + forum.getId();
+    		return folder.getZoneName() + ":" + folder.getName() + ":" + folder.getId();
     	}
     	public String getGroup() {
     		return FolderEmailNotification.NOTIFICATION_GROUP;
