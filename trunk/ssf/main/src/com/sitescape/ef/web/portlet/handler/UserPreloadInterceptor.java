@@ -2,6 +2,7 @@ package com.sitescape.ef.web.portlet.handler;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -12,6 +13,9 @@ import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.WebHelper;
+import com.sitescape.util.Validator;
 
 public class UserPreloadInterceptor implements HandlerInterceptor {
 
@@ -36,7 +40,7 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 		// multiple SSF portlets (e.g. re-drawing of a portal page). 
 		// This checking will prevent the inefficiency from happening. 
 		if(requestContext.getUser() == null) {
-			loadUser(requestContext);
+			loadUser(request, requestContext);
 		}
 		
 		return true;
@@ -52,10 +56,17 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 			throws Exception {
 	}
 
-	private void loadUser(RequestContext reqCxt) {
-		User user = getCoreDao().findUserByNameOnlyIfEnabled(
-				reqCxt.getUserName(), reqCxt.getZoneName());
-
+	private void loadUser(PortletRequest request, RequestContext reqCxt) {
+    	User user;
+		PortletSession ses = WebHelper.getRequiredPortletSession(request);
+    	Long userId = (Long)ses.getAttribute(WebKeys.USER_ID, PortletSession.APPLICATION_SCOPE);
+		if (userId == null) { 
+			user = getCoreDao().findUserByNameOnlyIfEnabled(
+					reqCxt.getUserName(), reqCxt.getZoneName());
+			ses.setAttribute(WebKeys.USER_ID, user.getId(), PortletSession.APPLICATION_SCOPE);
+		} else {
+			user = getCoreDao().loadUser(userId, reqCxt.getZoneName());
+		}
 		reqCxt.setUser(user);
 	}
 }
