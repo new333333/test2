@@ -40,6 +40,7 @@ public class User extends Principal {
 	protected TimeZone timeZone;
 	protected String timeZoneName;
     protected Date loginDate;
+    protected String displayStyle;
 	public User() {
     }
 	public TimeZone getTimeZone() {
@@ -50,6 +51,17 @@ public class User extends Principal {
 			timeZone = TimeZone.getTimeZone(timeZoneName);
 		}
 		return timeZone;
+	}
+
+	/**
+	 * @hibernate.property length="32" 
+	 * @return
+	 */
+	public String getDisplayStyle() {
+		return displayStyle;
+	}
+	public void setDisplayStyle(String displayStyle) {
+		this.displayStyle = displayStyle;
 	}
 
 	/**
