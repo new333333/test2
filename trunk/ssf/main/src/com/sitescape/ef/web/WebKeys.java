@@ -60,6 +60,7 @@ public class WebKeys {
 	public static final String FORUM_ACTION_MODIFY_ENTRY = "modify_entry";
 	public static final String FORUM_ACTION_VIEW_FORUM = "view_forum";
 	public static final String FORUM_ACTION_VIEW_ENTRY = "view_entry";
+	public static final String FORUM_ACTION_UNSEEN = "view_unseen";
 	public static final String LDAP_ACTION_CONFIGURE="configure_ldap";
 	public static final String NOTIFY_ACTION_CONFIGURE="configure_notify";
 	public static final String POSTING_ACTION_CONFIGURE="configure_posting";
@@ -77,6 +78,8 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE = "set_cal_display_mode";
 	public static final String FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE = "set_cal_display_date";
 	public static final String FORUM_OPERATION_CALENDAR_GOTO_DATE = "cal_goto_date";
+	public static final String FORUM_OPERATION_UNSEEN_COUNTS = "unseen_counts";
+	public static final String FORUM_OPERATION_UNSEEN_LIST = "unseen_list";
 	public static final String OPERATION_POSTING_ALIASES="alias";
 	public static final String OPERATION_ADD_POSTING_ALIASES="addAlias";
 	public static final String OPERATION_MODIFY_POSTING_ALIASES="modifyAlias";

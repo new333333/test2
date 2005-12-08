@@ -16,6 +16,8 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <jsp:useBean id="ssFolderList" type="java.util.List" scope="request" />
+<c:set var="folderIdList" value=""/>
+<jsp:useBean id="folderIdList" type="java.lang.String" />
 
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
@@ -30,12 +32,20 @@
 				<c:if test="${!empty ssFolderList}">
 					<table cellspacing="0" cellpadding="0">
 					<c:forEach var="folder" items="<%= ssFolderList %>">
+					<jsp:useBean id="folder" type="com.sitescape.ef.domain.Folder" />
 					  <tr><td>
 						<a href="<portlet:renderURL windowState="maximized">
 								<portlet:param name="action" value="view_forum"/>
 								<portlet:param name="forumId" value="${folder.id}"/>
 							</portlet:renderURL>"><c:out value="${folder.title}"/></a>
-					  </td></tr>
+					  </td>
+					  <td>&nbsp;&nbsp;&nbsp;</td>
+					  <td><span id="count_<c:out value="${folder.id}"/>"></span></td>
+					  </tr>
+					  <%
+					  	if (!folderIdList.equals("")) folderIdList += " ";
+					  	folderIdList += folder.getId().toString();
+					  %>
 					</c:forEach>
 					</table>
 				 </c:if>
@@ -46,4 +56,25 @@
 	</td>
 </tr>
 </table>
+
+<script language="JavaScript" src="<html:rootPath/>js/common/taconite-client.js"></script>
+<script language="JavaScript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
+<script language="javascript">
+var count = 0
+function getUnseenCounts() {
+	var url = "<ssf:servletrooturl/>listUnseen?operation=unseen_counts"
+	document.forms.unseenCountForm.count.value = count++
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addFormElements("unseenCountForm")
+	ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.sendRequest();  //Send the request
+}
+</script>
+<form id="unseenCountForm" onSubmit="getUnseenCounts();return false;">
+<input type="hidden" name="count" >
+<input type="hidden" name="forumList" value="<%= folderIdList %>">
+<input type="submit" name="showCounts" value="Show unseen counts">
+</form>
+<div id="unseenCounts">
+</div>
 

@@ -48,6 +48,7 @@
 				<entry key="/viewCss"><ref local="viewCss"/></entry>				
 				<entry key="/viewDefinitionXml"><ref local="viewDefinitionXml"/></entry>				
 				<entry key="/viewFragment"><ref local="viewFragment"/></entry>
+				<entry key="/listUnseen"><ref local="listUnseen"/></entry>
 			</map>
 		</property>
 	</bean>
@@ -83,5 +84,6 @@
 	<bean id="viewCss" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ViewCssController"/>
 	<bean id="viewDefinitionXml" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.definition.ViewDefinitionXmlController"/>
 	<bean id="viewFragment" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.widget_test.FragmentController"/>
+	<bean id="listUnseen" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ListUnseenController"/>
 
 </beans>

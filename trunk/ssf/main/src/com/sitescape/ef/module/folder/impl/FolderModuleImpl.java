@@ -22,6 +22,7 @@ import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
@@ -179,7 +180,15 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	(folder, FolderCoreProcessor.PROCESSOR_KEY);
     
         return processor.getFolderEntries(folder, maxChildEntries);
- }
+    }
+    
+    public Hits getRecentEntries(List folders, Map seenMaps) {
+    	Hits hits = null;
+        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
+    	  (folders.get(0), FolderCoreProcessor.PROCESSOR_KEY);
+        hits = processor.getUnseenEntries(folders, seenMaps);
+    	return hits;
+    }
      
     public Long addFolder(Long folderId, Folder folder) {
         User user = RequestContextHolder.getRequestContext().getUser();

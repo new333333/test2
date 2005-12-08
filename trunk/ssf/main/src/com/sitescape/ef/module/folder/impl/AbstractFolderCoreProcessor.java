@@ -69,6 +69,7 @@ import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AclManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryBuilder;
 /**
@@ -486,7 +487,44 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         return hits;
      
     }
-    //***********************************************************************************************************
+
+    public Hits getUnseenEntries(List folders, Map seenMaps) {
+    	Hits results = null;
+       	// Build the query
+    	org.dom4j.Document qTree = DocumentHelper.createDocument();
+    	Element rootElement = qTree.addElement("QUERY");
+    	//Element boolElement = rootElement.addElement("AND");
+    	//boolElement.addElement("USERACL");
+    	Element boolElement = rootElement.addElement("OR");
+    	Iterator itFolders = folders.iterator();
+    	while (itFolders.hasNext()) {
+    		Folder folder = (Folder) itFolders.next();
+        	Element field = boolElement.addElement("FIELD");
+        	field.addAttribute("fieldname","_folderId");
+        	Element child = field.addElement("TERMS");
+    		child.setText(folder.getId().toString());
+    	}
+    	
+    	//Create the Lucene query
+    	QueryBuilder qb = new QueryBuilder();
+    	SearchObject so = qb.buildQuery(qTree);
+    	
+    	System.out.println("Query is: " + so.getQueryString());
+    	
+    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+        
+        try {
+	        results = luceneSession.search(so.getQuery(),so.getSortBy(),0,0);
+        }
+        finally {
+            luceneSession.close();
+        }
+
+    	
+        return results;
+     
+    }
+//***********************************************************************************************************
     public Long addFolder(Folder parentFolder, Folder folder) {
         addFolder_accessControl(parentFolder);
         
