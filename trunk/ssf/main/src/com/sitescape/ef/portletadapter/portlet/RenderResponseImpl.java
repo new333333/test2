@@ -10,7 +10,7 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletResponse;
 
-import com.sitescape.ef.portletadapter.PortletAdapterUtil;
+import com.sitescape.ef.portletadapter.support.PortletAdapterUtil;
 
 public class RenderResponseImpl extends PortletResponseImpl implements RenderResponse {
 
