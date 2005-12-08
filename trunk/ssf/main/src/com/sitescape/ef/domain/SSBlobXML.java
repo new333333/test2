@@ -34,7 +34,8 @@ public class SSBlobXML implements Serializable {
     		    if (ois == null) return null;
     		    XMLDecoder d = new XMLDecoder(ois);
     		    try {
-    		        return d.readObject();
+    		        value = d.readObject();
+    		        return value;
     		    }
     		    finally {
     		        d.close();
