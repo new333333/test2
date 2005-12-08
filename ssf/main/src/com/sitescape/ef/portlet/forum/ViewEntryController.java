@@ -1,6 +1,7 @@
 package com.sitescape.ef.portlet.forum;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.SeenMap;
@@ -29,7 +31,10 @@ public class ViewEntryController extends SAbstractForumController {
 		PortletSession ses = request.getPortletSession();
 		request.setAttribute(WebKeys.HISTORY_CACHE, ses.getAttribute(WebKeys.HISTORY_CACHE));
 		request.setAttribute(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_ENTRY);
-		Map formData = request.getParameterMap();
+
+		Map formData1 = request.getParameterMap();
+		Map formData = new HashMap((Map)formData1);
+
 		Long folderId=null;
 		try {
 			folderId = ActionUtil.getForumId(formData, request);
@@ -66,6 +71,8 @@ public class ViewEntryController extends SAbstractForumController {
 			ses.setAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
 			setHistorySeen(model, ses, folderId, false); 
 			ses.setAttribute(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, null);
+		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY)) {
+			viewPath=WebKeys.VIEW_ENTRY;
 		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_NEXT) ||
 			op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_PREVIOUS)) {
 			if (!Validator.isNull(entryId)) {
@@ -127,7 +134,7 @@ public class ViewEntryController extends SAbstractForumController {
 	}
 	protected Entry setSeen(Map model, Long folderId) {
 		SeenMap seen = (SeenMap)model.get(WebKeys.SEEN_MAP);
-		Entry entry = (Entry)model.get(WebKeys.FOLDER_ENTRY);
+		FolderEntry entry = (FolderEntry)model.get(WebKeys.FOLDER_ENTRY);
 		//only start transaction if necessary
 		List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
 		if (replies != null)  {
