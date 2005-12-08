@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.sitescape.ef.domain.PersistentLongIdObject;
+
 /**
  * @hibernate.class table="SS_Functions" dynamic-update="true" lazy="false"
  * @hibernate.cache usage="nonstrict-read-write"
@@ -63,7 +65,7 @@ public class Function {
     }
 
     /**
-     * @hibernate.version 
+     * @hibernate.version type="long" 
      */
     private long getLockVersion() {
         return this.lockVersion;
@@ -135,5 +137,25 @@ public class Function {
                 operationNames.add(operation.getName());
             }
         }
+    }
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+
+        //objects can be proxied so don't compare classes.
+        if (obj == null)
+            return false;
+      
+        Function o = (Function) obj;
+        //assume object not persisted yet
+        if (!o.getName().equals(name)) return false;
+        if (!o.getZoneName().equals(zoneName)) return false;               
+        return true;
+    }
+    public int hashCode() {
+       	int hash = 7;
+    	hash = 31*hash + name.hashCode();
+    	hash = 31*hash + zoneName.hashCode();
+    	return hash;
     }
 }
