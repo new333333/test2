@@ -1,16 +1,29 @@
 package com.sitescape.ef.module.folder.index;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+
+import javax.portlet.PortletSession;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
 import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclManager;
+import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.WebHelper;
 
 /**
  *
@@ -27,11 +40,14 @@ public class IndexUtils {
     public static final String MODIFICATIONID_FIELD = "_modificationId";
     public static final String READ_ACL_FIELD = "_readAcl";
     public static final String DOCID_FIELD = "_docId";
+    public static final String DOCNUMBER_FIELD = "_docNum";
     public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
     public static final String TITLE_FIELD = "_title";
     public static final String TITLE1_FIELD = "_title1";
     public static final String DESC_FIELD = "_desc";
     public static final String FOLDERID_FIELD = "_folderId";
+    public static final String CUSTOMATTRS_FIELD = "_customAttributes";
+    public static final String EVENT_COUNT_FIELD = "_eventCount";
     
     // Defines field values
     public static final String READ_ACL_ALL = "all";
@@ -55,6 +71,37 @@ public class IndexUtils {
     	Field modificationDateField = Field.Keyword(MODIFICATION_DATE_FIELD, entry.getModification().getDate());
     	doc.add(modificationDateField);
     }
+
+    public static void addEvents(Document doc, Entry entry) {
+    	int count = 0;
+    	String eventName;
+    	Field evDtStartField = null;
+    	Field evDtEndField = null;
+		Map customAttrs = entry.getCustomAttributes();
+		Set keyset = customAttrs.keySet();
+		Iterator attIt = keyset.iterator();
+		// look through the custom attrs of this entry for any of type EVENT
+		while (attIt.hasNext()) {
+			CustomAttribute att = (CustomAttribute) customAttrs.get(attIt.next());
+			if (att.getValueType() == CustomAttribute.EVENT) {
+				// set the event name to event + count
+				eventName = "_event" + count;
+				Event ev = (Event) att.getValue();
+				// range check to see if this event is in range
+		    	evDtStartField = Field.Keyword(eventName+"StartDate", ev.getDtStart().getTime());
+		    	doc.add(evDtStartField);
+		    	evDtEndField = Field.Keyword(eventName+"EndDate", ev.getDtEnd().getTime());
+		    	doc.add(evDtEndField);
+		    	//SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+				//String dateKey = sdf.format(ev.getDtStart().getTime());
+		    	//doc.add(evDtStartField);
+		    	count++;
+			}
+		}    	
+		// Add event count field
+    	Field eventCountField = Field.Keyword(EVENT_COUNT_FIELD, Integer.toString(count));
+    	doc.add(eventCountField);
+    }
     
     public static void addCommandDefinition(Document doc, Entry entry) {
         Field cdefField = Field.Keyword(COMMAND_DEFINITION_FIELD, entry.getEntryDef().getId());
@@ -77,7 +124,13 @@ public class IndexUtils {
     	//Add the id of the creator (no, not that one...)
         Field docIdField = Field.Keyword(DOCID_FIELD, entry.getStringId());
         doc.add(docIdField);
-    }       
+    }
+
+    public static void addDocNumber(Document doc, FolderEntry entry) {
+    	//Add the id of the creator (no, not that one...)
+        Field docNumField = Field.Keyword(DOCNUMBER_FIELD, entry.getDocNumber());
+        doc.add(docNumField);
+    }    
 
     public static void addFolderId(Document doc, Folder folder) {
     	//Add the folder id to the document in the index

@@ -685,6 +685,9 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         
         // Add Doc Id
         IndexUtils.addDocId(indexDoc, entry);
+
+        // Add Doc Id
+        IndexUtils.addDocNumber(indexDoc, entry);
         
         // Add command definition
         IndexUtils.addCommandDefinition(indexDoc, entry); 
@@ -697,6 +700,9 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         
         // Add ACL field. We only need to index ACLs for read access.
         IndexUtils.addReadAcls(indexDoc, folder, entry, getAclManager());
+        
+        // add the events
+        IndexUtils.addEvents(indexDoc, entry);
         
         return indexDoc;
     }
