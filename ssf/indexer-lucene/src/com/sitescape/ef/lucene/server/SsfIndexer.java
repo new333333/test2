@@ -28,6 +28,7 @@ import com.sitescape.ef.lucene.SsfIndexInterface;
  *
  * @author Roy Klein
  *
+ *
  */
 public class SsfIndexer
     extends UnicastRemoteObject implements SsfIndexInterface {
