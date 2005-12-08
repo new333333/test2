@@ -37,7 +37,7 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
     protected FolderEntry parentEntry;
     protected String owningFolderSortKey;
     protected List workflowStates;   
-    
+    protected HistoryStamp workflowChange;
     //missing
     String docProps;
  
@@ -189,6 +189,16 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
     		}
     	}
     }
+    /**
+     * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="wrk_" 
+     */
+    public HistoryStamp getWorkflowChange() {
+        return this.workflowChange;
+    }
+    public void setWorkflowChange(HistoryStamp workflowChange) {
+        this.workflowChange = workflowChange;
+    }
+
     /**
      * @hibernate.component class="com.sitescape.ef.domain.HKey" prefix="entry_"
      */

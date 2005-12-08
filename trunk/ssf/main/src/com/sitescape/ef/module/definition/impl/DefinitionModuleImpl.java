@@ -4,6 +4,8 @@ import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
+import com.sitescape.ef.module.definition.notify.NotifyBuilderUtil;
+import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
@@ -17,10 +19,10 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FileItem;
 import com.sitescape.ef.domain.Workspace;
+
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.EventHelper;
-
 import org.apache.lucene.document.Field;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -871,7 +873,7 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 
                                     String fieldBuilder = indexingElem
                                             .attributeValue("fieldBuilder");
-                                    Map indexingArgs = getIndexingArgs(indexingElem);
+                                    Map indexingArgs = getOptionalArgs(indexingElem);
                                     fields = FieldBuilderUtil.buildField(entry,
                                             nameValue, fieldBuilder,
                                             indexingArgs);
@@ -889,7 +891,7 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
         }
     }
 
-    private Map getIndexingArgs(Element indexingElem) {
+    private Map getOptionalArgs(Element indexingElem) {
         Map map = new HashMap();
         for (Iterator it = indexingElem.selectNodes("./args/arg")
                 .listIterator(); it.hasNext();) {
@@ -918,6 +920,111 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
             map.put(key, value);
         }
         return map;
+    }
+	public void addNotifyElementForEntry(Element element, Notify notifyDef, Entry entry) {
+
+        Element configRoot = getDefinitionConfig().getRootElement();
+        Definition def = entry.getEntryDef();
+
+        Document definitionTree = def.getDefinition();
+        if (definitionTree != null) {
+            Element root = definitionTree.getRootElement();
+
+            //Get a list of all of the items in the definition
+            Element entryFormItem = (Element) root
+                    .selectSingleNode("item[@name='entryForm']");
+            if (entryFormItem != null) {
+                Iterator itItems = entryFormItem.selectNodes("//item")
+                        .listIterator();
+                if (itItems != null) {
+                    while (itItems.hasNext()) {
+                        Element nextItem = (Element) itItems.next();
+
+                        //Get the form element name (property name)
+                        Element nameProperty = (Element) nextItem
+                                .selectSingleNode("./properties/property[@name='name']");
+                        if (nameProperty != null) {
+                            //Find the item in the configuration definition
+                            // to see if it is a data item
+                            String itemName = (String) nextItem
+                                    .attributeValue("name");
+                            Element configItem = (Element) configRoot
+                                    .selectSingleNode("//item[@name='"
+                                            + itemName + "']");
+                            if (configItem != null) {
+                                if (configItem.attributeValue("category", "")
+                                        .equals("entryData")) {
+                                    String nameValue = nameProperty
+                                            .attributeValue("value", "");
+                                    if (nameValue.equals("")) {
+                                        nameValue = nextItem
+                                                .attributeValue("name");
+                                    }
+
+                                    boolean applyNotify = false;
+
+                                    Element notifyElem = (Element) nextItem
+                                            .selectSingleNode("./notify");
+                                    if (notifyElem == null) {
+                                        // The current item in the entry
+                                        // definition does not contain
+                                        // indexing information. Check the
+                                        // corresponding item in the default
+                                        // config definition to see if it
+                                        // has it.
+                                        // This two level mechanism allows
+                                        // entry definition (more specific
+                                        // one) to override the settings
+                                        // in the default config definition
+                                        // (more general one). This
+                                        // overriding
+                                        // works in its entirity only, that
+                                        // is, partial overriding is not
+                                        // supported.
+                                    	notifyElem = (Element) configItem
+                                                .selectSingleNode("./notify");
+                                    }
+
+                                    if (notifyElem == null)
+                                        continue;
+
+                                    if (notifyDef.isFull() && notifyElem.attributeValue("full")
+                                            .equals("true"))
+                                        applyNotify = true;
+                                    else if (notifyDef.isSummary() && notifyElem.attributeValue("digest")
+                                            .equals("true"))
+                                        applyNotify = true;
+
+                                    if (!applyNotify)
+                                        continue;
+
+                                    String fieldBuilder = notifyElem
+                                            .attributeValue("notifyBuilder");
+                                    
+                               
+                                    Map notifyArgs = getOptionalArgs(notifyElem);
+                                    if (!notifyArgs.containsKey("caption")) {
+                                    	Element captionProperty = (Element) nextItem
+                                    		.selectSingleNode("./properties/property[@name='caption']");
+                                    	String captionValue = captionProperty
+                                    		.attributeValue("value", "");
+                                    	if (captionValue.equals("")) {
+                                    		captionValue = nextItem
+                                    			.attributeValue("caption");
+                                    	} 
+                                    	notifyArgs.put("_caption", captionValue);
+                                    	notifyArgs.put("_itemName", itemName);
+                                    }
+                                    NotifyBuilderUtil.buildElement(element, notifyDef, entry,
+                                            nameValue, fieldBuilder,
+                                            notifyArgs);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

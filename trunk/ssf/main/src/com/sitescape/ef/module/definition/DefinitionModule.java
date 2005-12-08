@@ -11,6 +11,7 @@ import com.sitescape.ef.domain.DefinitionInvalidException;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.module.definition.notify.Notify;
 
 /**
  * @author hurley
@@ -57,4 +58,5 @@ public interface DefinitionModule {
 	public List getDefinitions();
 	
 	public void addIndexFieldsForEntry(org.apache.lucene.document.Document indexDoc, Folder folder, Entry entry);
+	public void addNotifyElementForEntry(Element element, Notify notifyDef, Entry entry);
 }

@@ -73,8 +73,10 @@
 		<property name="hibernateConfiguration"><ref local="hibernateConfiguration"/></property>
 	</bean> 
 
-	<bean id="springContextUtil" class="com.sitescape.ef.util.SpringContextUtil"/>
-	
+	<bean id="springContextUtil" class="com.sitescape.ef.util.SpringContextUtil">
+		<property name="webRoot"><value>/WEB-INF/xslt</value></property>
+	</bean>
+
 	<bean id="dataSource" class="com.sitescape.ef.util.JndiObjectFactoryBean">
 		<property name="jndiName"><value>java:comp/env/jdbc/SiteScapePool</value></property>
 	</bean>
@@ -382,18 +384,15 @@
 		<property name="defaultEncoding"><value>utf-8</value></property>
 		<property name="defaultFileTypeMap"><ref local="mimeTypes"/></property>
 	</bean>
-	<bean id="mailModule" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager">
-			<ref bean="transactionManager"/>
+	<bean id="mailModule" parent="baseTransactionProxy">
+		<property name="transactionAttributes">
+			<props>
+				<prop key="sendNotifications">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="send*">PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
 		</property>
 		<property name="target">
 			<ref bean="mailModuleTarget"/>
-		</property>
-		<property name="transactionAttributes">
-			<props>
-				<prop key="sendNotifications">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
-				<prop key="send*">PROPAGATION_REQUIRES_NEW,readOnly</prop>
-			</props>
 		</property>
 	</bean>	
 		
@@ -407,6 +406,7 @@
 	<bean id="defaultFolderEmailFormatter" class="com.sitescape.ef.module.mail.impl.DefaultFolderEmailFormatter"  init-method="init">
 		<property name="accessControlManager"><ref local="accessControlManager"/></property>
 		<property name="aclManager"><ref local="aclManager"/></property>
+		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
 		<property name="configDocs">
 			<bean class="com.sitescape.ef.util.XmlClassPathConfigFiles">
 				<property name="configFiles">

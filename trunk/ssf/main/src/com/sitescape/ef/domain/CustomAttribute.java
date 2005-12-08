@@ -221,11 +221,13 @@ public class CustomAttribute  {
         
     }
     public void setValue(Object value) {
+    	//don't do unnecessary updates - especially for descriptions
+    	if ((value != null) && value.equals(getValue())) return;
     	setValue(value, true);
     }
 
     protected void setValue(Object value, boolean allowed) {
-        if (value instanceof String) {
+    	if (value instanceof String) {
             clearVals();
             valueType = STRING;
             String val = (String) value;

@@ -154,7 +154,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                     	List results = session.createFilter(folder.getEntries(), 
                     			"where (this.creation.date > :cDate and this.creation.date <= :c2Date) or " +
 									    "(this.modification.date > :mDate and this.modification.date <= :m2Date) or " +
-									    "(this.wfp1.modification.date > :wDate and this.wfp1.modification.date <= :w2Date)" +
+									    "(this.workflowChange.date > :wDate and this.workflowChange.date <= :w2Date)" +
 								" order by " + order.getOrderByClause("this"))
 								.setTimestamp("cDate", since)
 								.setTimestamp("c2Date", before)
@@ -181,7 +181,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                     	Query q  = session.createQuery("from com.sitescape.ef.domain.FolderEntry x where owningFolderSortKey like '" + 
                     			folder.getFolderHKey().getSortKey() + "%' and ((x.creation.date > ? and x.creation.date <= ?) or " +
 									    "(x.modification.date > ? and x.modification.date <= ?) or " +
-									    "(x.wfp1.modification.date > ? and x.wfp1.modification.date <= ?)) order by " + order.getOrderByClause("x"));
+									    "(x.workflowChange.date > ? and x.workflowChange.date <= ?)) order by " + order.getOrderByClause("x"));
 						
                 		int i=0;
 						q.setTimestamp(i++, since);

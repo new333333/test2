@@ -39,11 +39,18 @@ public abstract class Entry extends PersistentLongIdTimestampObject
         return this.description;
     }
     public void setDescription(Description description) {
-        this.description = description; 
+        if (this.description != null)
+        	// try to avoid unecessary updates
+        	if (this.description.equals(description)) return;
+    	this.description = description; 
     }
   
     public void setDescription(String descriptionText) {
-        this.description = new Description(descriptionText); 
+		Description tmp = new Description(descriptionText);
+    	if (description != null) {
+    		if (description.equals(tmp)) return;
+    	}
+        this.description = tmp; 
     }
    /**
      * @hibernate.property length="1024"

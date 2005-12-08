@@ -68,4 +68,19 @@ public class Description {
     public void setFormat(int format) {
         this.format = new Integer(format);
     }
+    public boolean equals(Object obj1) {
+    	if (obj1 == null) return false;
+    	if (obj1 instanceof Description) {
+    		Description desc = (Description)obj1;
+    		if (getFormat() != desc.getFormat()) return false;
+    		if (!getText().equals(desc.getText())) return false;
+    		return true;
+    	}
+    	return false;
+    }
+    public int hashCode() {
+       	int hash = getFormat();
+    	hash = 31*hash + getText().hashCode();
+    	return hash;
+    }    
 }
