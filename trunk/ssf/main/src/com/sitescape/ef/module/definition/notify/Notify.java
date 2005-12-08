@@ -1,13 +1,40 @@
 package com.sitescape.ef.module.definition.notify;
 import java.util.Locale;
+import java.util.Set;
+import java.util.HashSet;
 import java.text.DateFormat;
 
+import com.sitescape.ef.domain.FileAttachment;
+
 public class Notify {
-	private boolean full=false;
-	private int summaryLines;
-	private Locale locale;
-	private DateFormat dateFormat;
+	public static final String FULL="full";
+	public static final String SUMMARY="summary";
+
+	protected boolean full=false;
+	protected Locale locale;
+	protected DateFormat dateFormat;
+	protected HashSet files= null;
 	
+	public Set getAttachments() {
+		if (files == null) files = new HashSet();
+		return files;
+	}
+	public void addAttachment(FileAttachment att) {
+		getAttachments().add(att);
+	}
+	public void clearAttachments() {
+		if (files != null) files.clear();
+	}
+	
+	public String getType() {
+		if (isFull()) return FULL;
+		return SUMMARY;
+	}
+	public void setType(String type) {
+		if (FULL.equals(type)) setFull(true);
+		else if (SUMMARY.equals(type)) setSummary(true);
+		else throw new IllegalArgumentException("Illegal type value");
+	}
 	public boolean isFull() {
 		return full;
 	}
@@ -17,15 +44,10 @@ public class Notify {
 	public boolean isSummary() {
 		return !full;
 	}
-	public void setSummary(boolean full) {
-		this.full = !full;
+	public void setSummary(boolean summary) {
+		this.full = !summary;
 	}
-	public int getSummaryLines() {
-		return summaryLines;
-	}
-	public void setSummaryLines(int summaryLines) {
-		this.summaryLines = summaryLines;
-	}
+
 	public Locale getLocale() {
 		return this.locale;
 	}

@@ -6,7 +6,7 @@ import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.util.InvokeUtil;
 import com.sitescape.ef.util.ObjectPropertyNotFoundException;
-
+import com.sitescape.ef.util.NLT;
 /**
  *
  * @author Jong Kim
@@ -18,8 +18,15 @@ public abstract class AbstractNotifyBuilder implements NotifyBuilder {
     	element.addAttribute("caption", (String)args.get("_caption"));
         element.addAttribute("type", (String)args.get("_itemName"));
         CustomAttribute attribute = entry.getCustomAttribute(dataElemName);
-    	if (attribute != null) return build(element, notifyDef, attribute, args);
-    	else return build(element, notifyDef, entry, dataElemName, args);
+		try {
+			if (attribute != null) 
+    			return build(element, notifyDef, attribute, args);
+			else 
+    			return build(element, notifyDef, entry, dataElemName, args);
+		} catch (Exception e) {
+			element.setText(NLT.get("notify.error.attribute", notifyDef.getLocale()));
+			return true;
+    	}
     }
 	protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
 	   	Object obj = attribute.getValue();
@@ -34,7 +41,7 @@ public abstract class AbstractNotifyBuilder implements NotifyBuilder {
 		   	if (obj != null) {
 		   		element.setText(obj.toString());
 		   	}
-		} catch (com.sitescape.ef.util.ObjectPropertyNotFoundException ex) {
+		} catch (ObjectPropertyNotFoundException ex) {
 	   		return false;
 	   	}
 	   	return true;
