@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import com.sitescape.ef.module.ldap.LdapInfo;
+import com.sitescape.ef.module.ldap.LdapConfig;
 
 /**
  * @hibernate.subclass discriminator-value="WORKSPACE" dynamic-update="true"
@@ -23,7 +23,7 @@ public class Workspace extends Binder  {
     protected Set dataForums;
     protected boolean forumsParsed;
     protected List forums;
-    protected LdapInfo ldapInfo;
+    protected LdapConfig ldapInfo;
     /**
      * @hibernate.bag lazy="true"  cascade="all" inverse="true" optimistic-lock="false"
 	 * @hibernate.key column="owningWorkspace" 
@@ -100,8 +100,8 @@ public class Workspace extends Binder  {
     }
     //content is persisted in zone properties
     //keep here so we have a cached pointer to the object
-    public LdapInfo getLdapInfo() {
-    	if (ldapInfo == null) ldapInfo = new LdapInfo(this);
+    public LdapConfig getLdapInfo() {
+    	if (ldapInfo == null) ldapInfo = new LdapConfig(this);
     	return ldapInfo;
     }
     

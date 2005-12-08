@@ -27,19 +27,7 @@ array set ::j2ee_Principals_class_MAP {
    webPubDir    {webPubDir "varchar 256"}
    zoneName    {zoneName "varchar 100"}
    timeZoneId   {timeZoneId "varchar 10"}
-   greeting		{greeting "varchar 256"}
    loginDate	{loginDate timestamp}
-   loginIP		{loginIP "varchar 16"}
-   lastLoginIP	{lastLoginIP "varchar 16"}
-   passwordExpirationDate {passwordExpirationDate timestamp}
-   passwordReset	{passwordReset boolean}
-   resolution    {resolution "varchar 16"}
-   refreshRate   {refreshRate "varchar 16"}
-   skinId		{skinId "varchar 32"}
-   dottedSkins  {dottedSkins boolean}
-   failedLoginAttempts {failedLoginAttempts int32}
-   passwordEncrypted {passwordEncrypted boolean}
-   layoutIds     {layoutIds "varchar 100"}
    preferredWorkspace {preferredWorkspace int32}
    defaultIdentity	{defaultIdentity boolean}
    reserved	{reserved boolean}

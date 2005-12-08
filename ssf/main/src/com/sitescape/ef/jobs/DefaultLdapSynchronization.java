@@ -40,7 +40,7 @@ public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSyn
 			this.workspace = workspace;
 		}
 		public  String getSchedule() {
-			return workspace.getLdapInfo().getSchedule();
+			return workspace.getLdapInfo().getSchedule().getQuartzSchedule();
 		}
     	public  String getDescription() {
     		return "Ldap synchronization " + workspace;
