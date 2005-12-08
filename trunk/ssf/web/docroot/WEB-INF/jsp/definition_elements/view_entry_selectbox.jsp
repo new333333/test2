@@ -16,5 +16,6 @@
 %>
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
-<div><b><i>***view entry selectbox***</i></b>
+<div class="ss_entryContent">
+<span class="ss_contentgray">[ view entry textbox ]</span>
 </div>
