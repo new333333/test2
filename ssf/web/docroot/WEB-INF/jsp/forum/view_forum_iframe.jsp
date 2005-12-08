@@ -1,5 +1,7 @@
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
 
+<ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
+	<ssf:param name="box_title" value="${ssFolder.title}" />
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
 
 <div id="showfolder" class="ss_portlet" style="display:block; margin:2;">
@@ -10,20 +12,17 @@
 
 <div id="showentrydiv" style="position:absolute; visibility:hidden; x:0; y:0;
   width:<%= ss_entryWindowWidth %>; height:80%; display:none; z-index:100;">
-  <div style="width:90%;">
-    <table cellspacing="0" cellpadding="0" width="100%">
-      <tr>
-        <td align="right">
-          <a href="javascript: ;" onClick="hideEntryDiv();return false;">Close</a>
-        </td>
-      </tr>
-    </table>
-  </div>
+  <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
+    <ssf:param name="box_width" value="<%= new Integer(entryWindowWidth).toString() %>" />
+    <ssf:param name="box_show_close_icon" value="true" />
+    <ssf:param name="box_show_close_routine" value="hideEntryDiv()" />
   <iframe id="showentryframe" name="showentryframe" 
     src="<html:rootPath/>js/forum/null.html" height="95%" width="100%" 
     frameBorder="no" >xxx</iframe>
+  </ssf:box>
 </div>
 
+</ssf:box>
 
 <script language="javascript">
 var entryWindowWidth = <%= ss_entryWindowWidth %>;
