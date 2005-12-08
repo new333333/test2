@@ -47,7 +47,6 @@ var operationSelectedItemName = "";
 
 var selectedIdText = null;
 var selectedCaptionText = null;
-var selectedReplyStyle = null;
 <%
 	if (!data.containsKey("selectedItem") || data.get("selectedItem").equals("")) {
 %>
@@ -108,12 +107,6 @@ function t_<portlet:namespace/>_definitionTree_showId(id, obj) {
 		selectedCaptionText = idCaptions[id]
 	} else {
 		selectedCaptionText = "";
-	}
-	
-	if (idReplyStyles[id]) {
-		selectedReplyStyle = idReplyStyles[id]
-	} else {
-		selectedReplyStyle = "";
 	}
 	
 	//See if waiting for an item to be selected
@@ -463,10 +456,6 @@ idNames['<c:out value="${item.key}"/>'] = '<c:out value="${item.value}"/>';
 
 <c:forEach var="item" items="${data.idData.captions}">
 idCaptions['<c:out value="${item.key}"/>'] = '<c:out value="${item.value}"/>';
-</c:forEach>
-
-<c:forEach var="item" items="${data.idData.replyStyles}">
-idReplyStyles['<c:out value="${item.key}"/>'] = '<c:out value="${item.value}"/>';
 </c:forEach>
 
 </script>
