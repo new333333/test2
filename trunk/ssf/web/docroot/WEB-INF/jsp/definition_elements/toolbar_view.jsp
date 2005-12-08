@@ -51,15 +51,8 @@
 	onClick="activateMenuLayer('toolbar_<c:out value="${toolbarMenu.key}" />');">
   </c:if>
   <c:if test="${!empty toolbarMenu.value.url}">
-	<a class="ss_toolbar_item" href="<ssf:url>
-      <c:forEach var="p" items="${toolbarMenu.value.url}">
-		<c:set var="key2" value="${p.key}"/>
-		<c:set var="value2" value="${p.value}"/>
-	    <jsp:useBean id="key2" type="java.lang.String" />
-	    <jsp:useBean id="value2" type="java.lang.String" />
-        <ssf:param name="<%= key2 %>" value="<%= value2 %>"/>
-      </c:forEach>
-    </ssf:url>"  onClick="return(ss_openUrlInPortlet(this.href));">
+	<a class="ss_toolbar_item" href="<c:out value="${toolbarMenu.value.url}"/>"  
+	onClick="return(ss_openUrlInPortlet(this.href));">
   </c:if>
 <span class="portlet-font"><c:out value="${toolbarMenu.value.title}" /></span></a>
 </div>
