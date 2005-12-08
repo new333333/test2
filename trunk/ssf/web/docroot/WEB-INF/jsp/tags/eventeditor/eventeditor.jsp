@@ -25,9 +25,8 @@
 <script language="Javascript" src="<html:rootPath />js/common/AnchorPosition.js"></script>
 <c:set var="prefix" value="${formName}_${evid}" />
 
-<table border="1">
- <tr><td>
 
+<table border="0" cellpadding="20"><tr><td>
  <table border="0" cellpadding="4" cellspacing="0">
  <c:choose>
  <c:when test="${attMap.hasDur}">
@@ -94,25 +93,169 @@
 
 </c:otherwise>
 </c:choose>
+</table>
+
+
+<script language="Javascript">
+
+var ${prefix}_isRecurVisible=false;
+
+function ${prefix}_toggleRecur(name) {
+   if (${prefix}_isRecurVisible) {
+     ss_showHideObj(name, 'hidden', 'none');
+     ${prefix}_isRecurVisible = false;
+     ss_replaceImage('${prefix}_expandgif', '<html:imagesPath />pics/sym_s_expand.gif');
+   } else {
+     ss_showHideObj(name, 'visible', 'block');
+     ${prefix}_isRecurVisible = true;
+     ss_replaceImage('${prefix}_expandgif', '<html:imagesPath />pics/sym_s_collapse.gif');
+   }
+     
+}
+</script>
 
 <c:if test="${attMap.hasRecur}">
-<tr><td colspan="2" align="center">
-   <a name="${prefix}_anchor" id="${prefix}_anchor"></a>
-   <a href="javascript: ;" onClick="${prefix}_popupRecurrenceWindow();" >
-   <table style="border: 1px solid;">
-   <tr><td>
-   <img border="0" align="middle" src="<html:imagesPath />pics/sym_s_repeat.gif">
-   </td>
-   <td> <ssf:nlt tag="event.recurrence" /> </td>
+  <div style="text-align:left; ">
+     <a href="javascript: ;" onClick="${prefix}_toggleRecur('${prefix}_recur_div')" >
+     <img border="0" src="<html:imagesPath />pics/sym_s_expand.gif" name="${prefix}_expandgif" />
+     <img border="0" src="<html:imagesPath />pics/sym_s_repeat.gif" /> 
+     <b><ssf:nlt tag="event.recurrence" /></b></a><br>
+  </div>
+   <div name="${prefix}_recur_div" id="${prefix}_recur_div" style="visibility:hidden; display:none;">
+     <table border="0" cellpadding="4" cellspacing="0">
+
+     <tr>
+     <td colspan="3" class="contentbold">
+
+     &nbsp;<ssf:nlt tag="event.frequency" />
+    </td>
+    </tr>
+    <tr>
+     <td colspan="2" class="content"><input type="radio"  
+      name="repeatUnit" value="none" id="norepeat"
+      checked="checked"
+   ><label for="norepeat"><ssf:nlt tag="event.no_repeat" /></label></td>
+    </tr>
+    <tr>
+     <td nowrap="nowrap" class="content">
+
+      <input type="radio" name="repeatUnit" id="repeatday"
+      checked="checked"
+      value="day"  > 
+      <ssf:nlt tag="event.every" /> <input type="text" name="everyNday" size="2" 
+      class="content" value=""
+   "> <ssf:nlt tag="event.days" /></td>
+    </tr>
+
+    <tr>
+     <td class="content" valign="top" nowrap="nowrap">
+      <input type="radio" name="repeatUnit" id="repeatweek"
+      checked="checked"
+      value="week" >
+      <ssf:nlt tag="event.every" /> <input type="text" name="everyNweek" size="2" 
+      class="content" value=" " > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> 
+
+   <input type="checkbox" name="day0" id="day0
+   checked="checked"
+   >
+   <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.su" /></font>
+   <input type="checkbox" name="day1" id="day1"
+    checked="checked"
+   >
+   <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.mo" /></font>
+  <input type="checkbox" name="day2" id="day2"
+   checked="checked"
+   >
+   <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.tu" /></font>
+   <input type="checkbox" name="day3" id="day3"
+   checked="checked"
+
+   >
+   <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.we" /></font>
+   <input type="checkbox" name="day4" id="day4"
+   checked="checked"
+
+   >
+   <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.th" /></font>
+   <input type="checkbox" name="day5" id="day5"
+   checked="checked"
+   >
+   <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.fr" /></font>
+   <input type="checkbox" name="day6" id="day6"
+   checked="checked" 
+   >
+   <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.sa" /></font>
    </tr>
-   </table>
-   </a>
-</td></tr>
+
+    <tr>
+     <td class="content" valign="top" nowrap="nowrap"><input 
+      type="radio" name="repeatUnit" id="repeatmonth"
+      checked="checked"
+      value="month" " >
+      <ssf:nlt tag="event.every" /> <input type="text" class="content" size="2"
+      name="everyNmonth" value=""
+   " > month(s) on the
+   <select class="content" name="onDayCardSel" title="select which week in the month on which this calendar entry will occur" name="onDayCardSel" > 
+   <option class="content" value="none"
+   selected="selected"
+   ><ssf:nlt tag="general.please_select" /></option> 
+   <option class="content" value="first"
+   selected="selecte"
+   ><ssf:nlt tag="event.whichweek.first" /></option> 
+   <option class="content" value="second"
+   selected="selected"
+
+   ><ssf:nlt tag="event.whichweek.second" /></option> 
+   <option class="content" value="third"
+   selected="selected"
+   ><ssf:nlt tag="event.whichweek.third" /></option> 
+   <option class="content" value="fourth"
+   selected="selected"
+   ><ssf:nlt tag="event.whichweek.fourth" /></option> 
+   <option class="content" value="last"
+   selected="selected"
+   ><ssf:nlt tag="event.whichweek.last" /></option> 
+   </select> 
+   <select class="content" name="dow" title="select the day of the week on which the repeated entry will occur" > 
+   <option class="content" value="none"
+   selected="selecte"
+   ><ssf:nlt tag="general.please_select" /></option> 
+   <option class="content" value="Sunday"
+   selected="selected"
+   ><ssf:nlt tag="calendar.day.names.su" /></option> 
+   <option class="content" value="Monday"
+   selected="selected"
+   ><ssf:nlt tag="calendar.day.names.mo" /></option> 
+   <option class="content" value="Tuesday"
+   selected="selected"
+   ><ssf:nlt tag="calendar.day.names.tu" /></option> 
+   <option class="content" value="Wednesday"
+   selected="selected"
+   ><ssf:nlt tag="calendar.day.names.we" /></option> 
+   <option class="content" value="Thursday"
+   selected="selected"
+   ><ssf:nlt tag="calendar.day.names.th" /></option> 
+   <option class="content" value="Friday"
+   selected="selected"
+   ><ssf:nlt tag="calendar.day.names.fr" /></option> 
+   <option class="content" value="Saturday"
+   selected="selected"
+   ><ssf:nlt tag="calendar.day.names.sa" /></option> 
+   <option class="content" value="weekday"
+   selected="selected"
+   ><ssf:nlt tag="calendar.day.names.weekday" /></option> 
+   <option class="content" value="weekendday"
+   selected="selected"
+   ><ssf:nlt tag="calendar.day.names.weekendday" /></option> 
+   </select> </td>
+
+    </tr>
+    </table>
+
+   </div>
 </c:if>
 
-</table>
-</td></tr>
-</table>
+</td></tr></table>
 
 <% // recurrence stuff; emit and initialize various hidden fields from the initEvent %>
 <c:if test="${attMap.hasRecur}">
@@ -445,6 +588,9 @@ function ${prefix}_generatePopupContents() {
   pc += ' </tr>\n';
   pc += '</table>	\n';
 
+  pc += '<ssf:nlt tag="event.repeatrange" /><br>\n';
+  pc += '<' + 'ssf:datepicker formName="recurPopupForm" id="untildate" />\n';
+
   pc += '<br>\n';
   pc += '<center>\n';
   pc += '<table border="0" style="border:1px solid;">\n';
@@ -610,13 +756,4 @@ function getHiddenField(formName, id, fn) {
 }
 
 </script>
-
-
-
-
-
-
-
-
-
 
