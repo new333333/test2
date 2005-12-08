@@ -28,7 +28,7 @@ public class NotifyBuilderAttachmentsSend extends AbstractNotifyBuilder {
 		    		value.setText(att.getFileItem().getName());
 		    		if (notifyDef.isFull())	
 		    			notifyDef.addAttachment(att);
-		    		else if (entry instanceof FolderEntry) {
+		    		if (entry instanceof FolderEntry) {
 		    			FolderEntry fEntry = (FolderEntry)entry;
 		    		
 		    			String webUrl = WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?" +
