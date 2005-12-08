@@ -90,7 +90,7 @@ public class SPropsUtil {
 	}
 	
 	public static String getDirPath(String key) throws ConfigPropertyNotFoundException, IOException {
-		String dirPath = new File(getString(key)).getCanonicalPath();
+		String dirPath = new File(getString(key)).getAbsolutePath();
 		if(!dirPath.endsWith(File.separator))
 			dirPath += File.separator;
 		return dirPath;
