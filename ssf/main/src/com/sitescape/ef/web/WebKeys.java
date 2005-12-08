@@ -28,8 +28,8 @@ public class WebKeys {
     public static final String LOCALE = "ss_locale";
     public static final String SESSION_LAST_ENTRY_VIEWED = "last_entry_viewed";
     public static final String SESSION_LAST_HISTORY_ENTRY_VIEWED = "last_history_entry_viewed";
-    public static final String EVENT - "event";
-    public static final String ENTRY - "entry";
+    public static final String EVENT = "event";
+    public static final String ENTRY = "entry";
     
     
     //URL parameters
