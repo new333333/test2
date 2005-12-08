@@ -54,7 +54,7 @@ function ss_getPreviousEntryId() {
 
 </script>
 
- <span class="ss_toolLeft">&nbsp;<a  
+ <span class="ss_buttonBarLeft">&nbsp;<a  
           href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
@@ -74,7 +74,7 @@ function ss_getPreviousEntryId() {
           actionUrl="false"
  		  />"
           onClick="ss_loadEntry(this,'');return false;" ><img 
-          border="0" src="<html:imagesPath/>pics/sym_s_next.gif"></a></span><span class="ss_toolRight"><a  
+          border="0" src="<html:imagesPath/>pics/sym_s_next.gif"></a></span><span class="ss_buttonBarRight"><a  
           href="<ssf:url
           adapter="true"
           portletName="ss_forum" 

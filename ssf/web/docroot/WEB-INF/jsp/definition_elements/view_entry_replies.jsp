@@ -17,6 +17,7 @@
 		processThisItem="false" 
 		folderEntry="<%= reply %>" />
  </div>
+ <div class="ss_divider"></div>
 </c:forEach>
 </c:if>
 </c:if>

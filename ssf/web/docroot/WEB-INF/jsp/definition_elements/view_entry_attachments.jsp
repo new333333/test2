@@ -3,6 +3,7 @@
 <jsp:useBean id="ssFolderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
 
 <c:if test="${!empty ssFolderEntry.fileAttachments}">
+<div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}"/></span>
 
 <span class="ss_content">
@@ -16,4 +17,5 @@
     </ssf:url>"><c:out value="${selection.fileItem.name}"/></a><br>
  </c:forEach>
  </span>
+</div>
 </c:if>
