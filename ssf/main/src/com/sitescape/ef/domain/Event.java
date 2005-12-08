@@ -312,7 +312,8 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
     }
   /**
 	* @hibernate.bag table="SS_AssignmentsMap" lazy="true" inverse="false" cascade="persist,merge,save-update"
-	* @hibernate.key-column name="event" length="32"
+	* @hibernate.key column="event" 
+	* hibernate.key-column name="event" sql-type="char(32)"
 	* @hibernate.many-to-many column="principal" fetch="join" class="com.sitescape.ef.domain.Principal"
 	*/
   private List getHAssignees() {return assignees;}
