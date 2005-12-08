@@ -34,6 +34,7 @@ import com.sitescape.ef.domain.NoFolderByTheIdException;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -67,6 +68,23 @@ public class ActionUtil {
 			//Get the preferences settings to see if there is a forum defined
 			PortletPreferences prefs = req.getPreferences();
 			forumId = prefs.getValue("forumId", "");
+		}
+		req.setAttribute(PortletKeys.FORUM_URL_FORUM_ID,forumId);
+		try {
+			return Long.valueOf(forumId);
+		} catch (NumberFormatException nf) {
+			throw new NoFolderByTheIdException(new Long(0), nf);
+		}
+	}
+	public static Long getForumId(Map formData, HttpServletRequest req) throws NoFolderByTheIdException {
+		String forumId = "";
+		if (formData.containsKey(PortletKeys.FORUM_URL_FORUM_ID)) {
+			Object obj = formData.get(PortletKeys.FORUM_URL_FORUM_ID);
+			if (obj instanceof String[]) {
+				forumId = ((String[]) formData.get(PortletKeys.FORUM_URL_FORUM_ID))[0];
+			} else {
+				forumId = (String) formData.get(PortletKeys.FORUM_URL_FORUM_ID);
+			}
 		}
 		req.setAttribute(PortletKeys.FORUM_URL_FORUM_ID,forumId);
 		try {
