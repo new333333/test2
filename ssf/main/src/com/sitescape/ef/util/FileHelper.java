@@ -1,6 +1,9 @@
 package com.sitescape.ef.util;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author Jong Kim
@@ -8,6 +11,8 @@ import java.io.File;
  */
 public class FileHelper {
     
+	private static final int BUFFER_SIZE = 4096;
+	
     /**
      * Creates directory.
      * 
@@ -34,4 +39,14 @@ public class FileHelper {
     public static void mkdirsIfNecessary(String dirPath) {
         mkdirsIfNecessary(new File(dirPath));
     }
+    
+	public static void copyContent(InputStream in, OutputStream out) throws IOException {
+		int len;
+		byte[] buffer = new byte[BUFFER_SIZE];
+		while((len = in.read(buffer)) != -1) {
+			out.write(buffer, 0, len);
+		}
+		out.flush();
+	}
+
 }

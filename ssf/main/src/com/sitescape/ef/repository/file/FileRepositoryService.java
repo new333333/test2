@@ -3,38 +3,32 @@ package com.sitescape.ef.repository.file;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
+import com.sitescape.ef.util.FileHelper;
 
 public class FileRepositoryService implements RepositoryService {
 
-	private static final int BUFFER_SIZE = 4096;
-	
 	private String rootDirPath;
 	
 	public String getRootDirPath() {
 		return rootDirPath;
 	}
 
-	public void setRootDirPath(String rootDirPath) {
-		File rootDir = new File(rootDirPath);
-		if(!rootDir.exists()) {
-			rootDir.mkdirs();
-		}
-		if(!rootDir.isDirectory())
-			throw new IllegalArgumentException("Specified path '" + rootDirPath + "' is not a directory");
-			
+	public void setRootDirPath(String rootPath) throws IOException {
+		this.rootDirPath = new File(rootPath).getCanonicalPath();
+		
 		if(!rootDirPath.endsWith(File.separator))
 			rootDirPath += File.separator;
 		
-		this.rootDirPath = rootDirPath;
+		FileHelper.mkdirsIfNecessary(rootDirPath);
 	}
 
 	public void write(Folder folder, FolderEntry entry, MultipartFile mf) throws RepositoryServiceException {
@@ -59,7 +53,7 @@ public class FileRepositoryService implements RepositoryService {
 		try {
 			in = new FileInputStream(filePath);
 		
-			copyContent(in, out);
+			FileHelper.copyContent(in, out);
 		}
 		catch(IOException e) {
 			throw new RepositoryServiceException(e);
@@ -75,7 +69,9 @@ public class FileRepositoryService implements RepositoryService {
 	}
 
 	private String getDirPath(Folder folder, FolderEntry entry) {
-		return new StringBuffer(rootDirPath).append(folder.getId()).append(File.separator).append(entry.getId()).append(File.separatorChar).toString();
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		
+		return new StringBuffer(rootDirPath).append(zoneName).append(File.separator).append(folder.getId()).append(File.separator).append(entry.getId()).append(File.separator).toString();
 	}
 	
 	private File getDir(Folder folder, FolderEntry entry) {
@@ -84,14 +80,5 @@ public class FileRepositoryService implements RepositoryService {
 	
 	private String getFilePath(Folder folder, FolderEntry entry, String fileName) {
 		return new StringBuffer(getDirPath(folder, entry)).append(fileName).toString();
-	}
-	
-	private void copyContent(InputStream in, OutputStream out) throws IOException {
-		int len;
-		byte[] buffer = new byte[BUFFER_SIZE];
-		while((len = in.read(buffer)) != -1) {
-			out.write(buffer, 0, len);
-		}
-		out.flush();
 	}
 }

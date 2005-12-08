@@ -473,4 +473,15 @@
 		<property name="rootDirPath"><value>/home/sitescape/document/</value></property>
 	</bean>
 
+	<bean id="defaultWebdavRepositoryService" class="com.sitescape.ef.repository.webdav.WebdavRepositoryService">
+		<property name="webdavResourceFactory"><ref local="genericWebdavResourceFactory"/></property>
+	</bean>
+
+	<!-- =================== WebDAV Support (Client Services) ==================== -->
+	
+	<bean id="genericWebdavResourceFactory" class="com.sitescape.ef.webdav.client.GenericWebdavResourceFactory">
+		<property name="httpUrl"><value>http://peace2:8080/slide/</value></property>
+		<property name="docRootDir"><value>/slide/files/sitescape/document/</value></property>
+	</bean>
+	
 </beans>
