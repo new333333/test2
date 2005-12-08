@@ -4,6 +4,10 @@ import java.util.Map;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.sitescape.ef.domain.HistoryMap;
 
 /**
  * @author Janet McCann
@@ -12,6 +16,8 @@ import javax.portlet.RenderResponse;
 public interface ForumActionModule {
 
 	public Map getShowEntry(Map formData, RenderRequest request, RenderResponse response, Long folderId);
+	public Map getShowEntry(Map formData, HttpServletRequest request, HttpServletResponse response, Long folderId);
+	public Map getShowEntry(Map formData, HistoryMap history, Long folderId);
 	public Map getShowFolder(Map formData, RenderRequest request, RenderResponse response, Long folderId);
 	public Map getConfigureForum(Map formData, RenderRequest request, Long folderId);
 	public Map getAddEntry(Map formData, RenderRequest request, Long folderId);
