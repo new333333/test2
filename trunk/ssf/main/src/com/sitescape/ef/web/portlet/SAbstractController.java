@@ -27,7 +27,6 @@ public abstract class SAbstractController extends AbstractController {
 	private DefinitionModule definitionModule;
 	private ForumActionModule forumActionModule;
 	private LdapModule ldapModule;
-	private FunctionManager functionManager;
 	private WorkflowModule workflowModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
@@ -88,14 +87,6 @@ public abstract class SAbstractController extends AbstractController {
 	}
 	protected LdapModule getLdapModule() {
 		return ldapModule;
-	}
-
-	protected FunctionManager getFunctionManager() {
-		return functionManager;
-	}
-
-	public void setFunctionManager(FunctionManager functionManager) {
-		this.functionManager = functionManager;
 	}
 	
 	protected WorkflowModule getWorkflowModule() {
