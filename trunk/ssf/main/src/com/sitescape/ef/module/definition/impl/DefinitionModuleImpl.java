@@ -90,8 +90,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		newDefinition.setTitle(title);
 		newDefinition.setType(type);
 		newDefinition.setZoneName(companyId);
-		setDefinition(newDefinition, getDefaultDefinition(name, title, type, formData));
 		coreDao.save(newDefinition);
+		setDefinition(newDefinition, getDefaultDefinition(name, title, type, formData));
 		return newDefinition;
 	}
 	
