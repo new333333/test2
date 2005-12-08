@@ -851,95 +851,96 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
         Element configRoot = getDefinitionConfig().getRootElement();
         Definition def = entry.getEntryDef();
-
-        Field[] fields;
-
-        Document definitionTree = def.getDefinition();
-        if (definitionTree != null) {
-            Element root = definitionTree.getRootElement();
-
-            //Get a list of all of the items in the definition
-            Element entryFormItem = (Element) root
-                    .selectSingleNode("item[@name='entryForm']");
-            if (entryFormItem != null) {
-                Iterator itItems = entryFormItem.selectNodes("//item")
-                        .listIterator();
-                if (itItems != null) {
-                    while (itItems.hasNext()) {
-                        Element nextItem = (Element) itItems.next();
-
-                        //Get the form element name (property name)
-                        Element nameProperty = (Element) nextItem
-                                .selectSingleNode("./properties/property[@name='name']");
-                        if (nameProperty != null) {
-                            //Find the item in the configuration definition
-                            // to see if it is a data item
-                            String itemName = (String) nextItem
-                                    .attributeValue("name");
-                            Element configItem = (Element) configRoot
-                                    .selectSingleNode("//item[@name='"
-                                            + itemName + "']");
-                            if (configItem != null) {
-                                if (configItem.attributeValue("category", "")
-                                        .equals("entryData")) {
-                                    String nameValue = nameProperty
-                                            .attributeValue("value", "");
-                                    if (nameValue.equals("")) {
-                                        nameValue = nextItem
-                                                .attributeValue("name");
-                                    }
-
-                                    boolean applyIndexing = false;
-
-                                    Element indexingElem = (Element) nextItem
-                                            .selectSingleNode("./index");
-                                    if (indexingElem == null) {
-                                        // The current item in the entry
-                                        // definition does not contain
-                                        // indexing information. Check the
-                                        // corresponding item in the default
-                                        // config definition to see if it
-                                        // has it.
-                                        // This two level mechanism allows
-                                        // entry definition (more specific
-                                        // one) to override the settings
-                                        // in the default config definition
-                                        // (more general one). This
-                                        // overriding
-                                        // works in its entirity only, that
-                                        // is, partial overriding is not
-                                        // supported.
-                                        indexingElem = (Element) configItem
-                                                .selectSingleNode("./index");
-                                    }
-
-                                    if (indexingElem == null)
-                                        continue;
-
-                                    if (indexingElem.attributeValue("apply")
-                                            .equals("true"))
-                                        applyIndexing = true;
-
-                                    if (!applyIndexing)
-                                        continue;
-
-                                    String fieldBuilder = indexingElem
-                                            .attributeValue("fieldBuilder");
-                                    Map indexingArgs = getOptionalArgs(indexingElem);
-                                    fields = FieldBuilderUtil.buildField(entry,
-                                            nameValue, fieldBuilder,
-                                            indexingArgs);
-                                    if (fields != null) {
-                                        for (int i = 0; i < fields.length; i++) {
-                                            indexDoc.add(fields[i]);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        if (def != null) {
+	        Field[] fields;
+	
+	        Document definitionTree = def.getDefinition();
+	        if (definitionTree != null) {
+	            Element root = definitionTree.getRootElement();
+	
+	            //Get a list of all of the items in the definition
+	            Element entryFormItem = (Element) root
+	                    .selectSingleNode("item[@name='entryForm']");
+	            if (entryFormItem != null) {
+	                Iterator itItems = entryFormItem.selectNodes("//item")
+	                        .listIterator();
+	                if (itItems != null) {
+	                    while (itItems.hasNext()) {
+	                        Element nextItem = (Element) itItems.next();
+	
+	                        //Get the form element name (property name)
+	                        Element nameProperty = (Element) nextItem
+	                                .selectSingleNode("./properties/property[@name='name']");
+	                        if (nameProperty != null) {
+	                            //Find the item in the configuration definition
+	                            // to see if it is a data item
+	                            String itemName = (String) nextItem
+	                                    .attributeValue("name");
+	                            Element configItem = (Element) configRoot
+	                                    .selectSingleNode("//item[@name='"
+	                                            + itemName + "']");
+	                            if (configItem != null) {
+	                                if (configItem.attributeValue("category", "")
+	                                        .equals("entryData")) {
+	                                    String nameValue = nameProperty
+	                                            .attributeValue("value", "");
+	                                    if (nameValue.equals("")) {
+	                                        nameValue = nextItem
+	                                                .attributeValue("name");
+	                                    }
+	
+	                                    boolean applyIndexing = false;
+	
+	                                    Element indexingElem = (Element) nextItem
+	                                            .selectSingleNode("./index");
+	                                    if (indexingElem == null) {
+	                                        // The current item in the entry
+	                                        // definition does not contain
+	                                        // indexing information. Check the
+	                                        // corresponding item in the default
+	                                        // config definition to see if it
+	                                        // has it.
+	                                        // This two level mechanism allows
+	                                        // entry definition (more specific
+	                                        // one) to override the settings
+	                                        // in the default config definition
+	                                        // (more general one). This
+	                                        // overriding
+	                                        // works in its entirity only, that
+	                                        // is, partial overriding is not
+	                                        // supported.
+	                                        indexingElem = (Element) configItem
+	                                                .selectSingleNode("./index");
+	                                    }
+	
+	                                    if (indexingElem == null)
+	                                        continue;
+	
+	                                    if (indexingElem.attributeValue("apply")
+	                                            .equals("true"))
+	                                        applyIndexing = true;
+	
+	                                    if (!applyIndexing)
+	                                        continue;
+	
+	                                    String fieldBuilder = indexingElem
+	                                            .attributeValue("fieldBuilder");
+	                                    Map indexingArgs = getOptionalArgs(indexingElem);
+	                                    fields = FieldBuilderUtil.buildField(entry,
+	                                            nameValue, fieldBuilder,
+	                                            indexingArgs);
+	                                    if (fields != null) {
+	                                        for (int i = 0; i < fields.length; i++) {
+	                                            indexDoc.add(fields[i]);
+	                                        }
+	                                    }
+	                                }
+	                            }
+	                        }
+	                    }
+	                }
+	            }
+	        }
         }
     }
 

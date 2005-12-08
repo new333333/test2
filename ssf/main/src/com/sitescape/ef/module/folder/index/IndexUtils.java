@@ -69,23 +69,44 @@ public class IndexUtils {
         return new Field(ALL_TEXT_FIELD, text, false, true, true);
     }
     
+    public static void addTitle(Document doc, Entry entry) {
+        // Add the title field
+    	if (entry.getTitle() != null) {
+    		String title = entry.getTitle();
+    		title = title.trim();
+            
+            if(title.length() > 0) {
+    	        Field allTextField = IndexUtils.allTextField(title);
+    	        Field titleField = new Field(IndexUtils.TITLE_FIELD, title, true, true, true); 
+    	        Field title1Field = Field.Keyword(IndexUtils.TITLE1_FIELD, title.substring(0, 1));
+                doc.add(titleField);
+                doc.add(title1Field);
+                doc.add(allTextField);
+            }
+    	}
+    }
+    
     public static void addCreationDate(Document doc, Entry entry) {
         // Add creation-date field
-    	Date creationDate = entry.getCreation().getDate();
-        Field creationDateField = Field.Keyword(CREATION_DATE_FIELD, creationDate);
-        doc.add(creationDateField);
-        Field creationDayField = Field.Keyword(CREATION_DAY_FIELD, formatDayString(creationDate));
-        doc.add(creationDayField);
+    	if (entry.getCreation() != null) {
+    		Date creationDate = entry.getCreation().getDate();
+            Field creationDateField = Field.Keyword(CREATION_DATE_FIELD, creationDate);
+            doc.add(creationDateField);
+            Field creationDayField = Field.Keyword(CREATION_DAY_FIELD, formatDayString(creationDate));
+            doc.add(creationDayField);
+    	}
         
     }
     
     public static void addModificationDate(Document doc, Entry entry) {
     	// Add modification-date field
-    	Date modDate = entry.getModification().getDate();
-    	Field modificationDateField = Field.Keyword(MODIFICATION_DATE_FIELD, modDate);
-    	doc.add(modificationDateField);        
-    	Field modificationDayField = Field.Keyword(MODIFICATION_DAY_FIELD, formatDayString(modDate));
-        doc.add(modificationDayField);
+    	if (entry.getModification() != null ) {
+    		Date modDate = entry.getModification().getDate();
+        	Field modificationDateField = Field.Keyword(MODIFICATION_DATE_FIELD, modDate);
+        	doc.add(modificationDateField);        
+        	Field modificationDayField = Field.Keyword(MODIFICATION_DAY_FIELD, formatDayString(modDate));
+            doc.add(modificationDayField);
+    	}
     }
 
     public static void addEvents(Document doc, Entry entry) {
@@ -120,20 +141,26 @@ public class IndexUtils {
     }
     
     public static void addCommandDefinition(Document doc, Entry entry) {
-        Field cdefField = Field.Keyword(COMMAND_DEFINITION_FIELD, entry.getEntryDef().getId());
-        doc.add(cdefField);
+        if (entry.getEntryDef() != null) {
+        	Field cdefField = Field.Keyword(COMMAND_DEFINITION_FIELD, entry.getEntryDef().getId());
+            doc.add(cdefField);
+        }
     }
         
     public static void addCreationPrincipleId(Document doc, Entry entry) {
     	//Add the id of the creator (no, not that one...)
-        Field creationIdField = Field.Keyword(CREATORID_FIELD, entry.getCreation().getPrincipal().getId().toString());
-        doc.add(creationIdField);
+        if (entry.getCreation() != null && entry.getCreation().getPrincipal() != null) {
+        	Field creationIdField = Field.Keyword(CREATORID_FIELD, entry.getCreation().getPrincipal().getId().toString());
+            doc.add(creationIdField);
+        }
     }   
 
     public static void addModificationPrincipleId(Document doc, Entry entry) {
     	//Add the id of the creator (no, not that one...)
-        Field modificationIdField = Field.Keyword(MODIFICATIONID_FIELD, entry.getModification().getPrincipal().getId().toString());
-        doc.add(modificationIdField);
+        if (entry.getModification() != null && entry.getModification().getPrincipal() != null) {
+        	Field modificationIdField = Field.Keyword(MODIFICATIONID_FIELD, entry.getModification().getPrincipal().getId().toString());
+        	doc.add(modificationIdField);
+        }
     }   
 
     public static void addDocId(Document doc, Entry entry) {

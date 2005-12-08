@@ -48,6 +48,13 @@ public class ManageSearchIndexController extends  SAbstractController {
 				}
 			}
 			
+			//Now, index the forums
+			Iterator itForums = forumIdList.iterator();
+			while (itForums.hasNext()) {
+				Long folderId = new Long((String)itForums.next());
+				getFolderModule().indexFolders(folderId);
+			}
+			
 			response.setRenderParameter(WebKeys.ACTION, "");
 			response.setWindowState(WindowState.NORMAL);
 			response.setPortletMode(PortletMode.VIEW);
