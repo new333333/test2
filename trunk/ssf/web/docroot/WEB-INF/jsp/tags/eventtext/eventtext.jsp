@@ -76,23 +76,26 @@
 	onString += days[ii.intValue()];
       }
     }
-    untilString += "<br>Repeats: ";
-    if (event.getCount() == 0) {
-        untilString += "indefinitely";
-    } else {
-        untilString += "until " + sdf.format(un.getTime()) + " (" + event.getCount() + " occurrences)";
+    if (event.getFrequencyString() != null) {
+        untilString += "<br>Repeats: ";
+        if (event.getCount() == 0) {
+            untilString += "indefinitely";
+        } else if (event.getCount() == -1) {
+            untilString += "until " + sdf.format(un.getTime());
+        } else {
+            untilString += "until " + sdf.format(un.getTime()) + " (" + event.getCount() + " occurrences)";
+        }
     }
-
 	
 %>
 
 <%
     if (interval > 0) {
 %>
-    Start: <%= startString %> End: <%= endString %> <br>Frequency: <%= freqString %> <%= onString %> <%= untilString %>
+    Start: <%= startString %> <br>End: <%= endString %> <br>Frequency: <%= freqString %> <%= onString %> <%= untilString %>
 <%
     } else {
-%>
+%> 
     When: <%= startString %> <br>Frequency: <%= freqString %> <%= onString %> <%= untilString %>
 <%
     }
