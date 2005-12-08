@@ -2,18 +2,21 @@ package com.sitescape.ef.security.dao;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
+import java.util.HashSet;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
-
+import org.hibernate.FetchMode;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.sitescape.ef.security.function.Function;
+import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 
 /**
  *
@@ -21,7 +24,7 @@ import com.sitescape.ef.security.function.Function;
  */
 public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao {
 
-    private static final String COMPANY_ID = "zoneName"; 
+    private static final String ZONE_ID = "zoneName"; 
     private static final String WORK_AREA_ID = "workAreaId";
     private static final String WORK_AREA_TYPE = "workAreaType";
     private static final String WORK_AREA_OPERATION_NAME = "operationName";
@@ -38,15 +41,24 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
     public void delete(Object obj) {
         getHibernateTemplate().delete(obj);
     }
-
+    public Function loadFunction(Long id) {
+        return (Function)getHibernateTemplate().get(Function.class, id);
+    }
+    public WorkAreaFunctionMembership loadWorkAreaFunctionMembership(Long id) {
+        return (WorkAreaFunctionMembership)getHibernateTemplate().get(WorkAreaFunctionMembership.class, id);
+           	
+    }
     public List findFunctions(final String zoneName) {
         return (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
-                        return session.getNamedQuery("find-Functions-ByCompany")
-                        	.setString(COMPANY_ID, zoneName)
+                        List results = session.createCriteria(Function.class)
+                        	.add(Expression.eq(ZONE_ID, zoneName))
+                        	.setFetchMode("operationNames", FetchMode.JOIN)
                         	.setCacheable(true)
                         	.list();
+                    	//since we eagerly fetch, results are not unique
+                    	return new ArrayList(new HashSet(results));
                     }
                 }
             );
@@ -57,14 +69,19 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
         return (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
-                        return session.getNamedQuery("find-FunctionMemberships-ByCompanyAndWorkArea")
-                       		.setString(COMPANY_ID, zoneName)
-                           	.setLong(WORK_AREA_ID, workAreaId.longValue())
-                        	.setString(WORK_AREA_TYPE, workAreaType)
-                        	.setCacheable(true)
-                        	.list();
-                    }
-                }
+                    	List results = session.createCriteria(WorkAreaFunctionMembership.class)
+                                .add(Expression.conjunction() 
+                               			.add(Expression.eq(ZONE_ID, zoneName))
+                               			.add(Expression.eq(WORK_AREA_ID, workAreaId))
+                               			.add(Expression.eq(WORK_AREA_TYPE, workAreaType))
+                               		)
+                               	.setFetchMode("memberIds", FetchMode.JOIN)
+                               	.setCacheable(true)
+                               	.list();
+                    	//since we eagerly fetch, results are not unique
+                    	return new ArrayList(new HashSet(results));
+                    	}
+                	}
             );
     }
     
@@ -90,7 +107,7 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
                         // SELECT statement that would have been normally required otherwise. 
                         // So, in summary, this query is as efficient as it can get. 
                         return session.getNamedQuery("check-WorkAreaFunctionMembership")
-                       		.setString(COMPANY_ID, zoneName)
+                       		.setString(ZONE_ID, zoneName)
                             .setLong(WORK_AREA_ID, workAreaId.longValue())
                         	.setString(WORK_AREA_TYPE, workAreaType)
                         	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
