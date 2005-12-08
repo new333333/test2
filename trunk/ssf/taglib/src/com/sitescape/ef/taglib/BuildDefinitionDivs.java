@@ -179,14 +179,14 @@ public class BuildDefinitionDivs extends TagSupport {
 				}
 			}
 			if (propertyCaptionValue.equals("")) {
-				propertyCaptionValue = NLT.getDef(rootElement.attributeValue("caption"));
+				propertyCaptionValue = rootElement.attributeValue("caption");
 			}
 			sb.append("</span>\n<br><br>\n");
 			sb.append("</div>\n");
 			sb.append("<script language='javascript'>\n");
 			sb.append("    self.ss_setDeclaredDiv('info_" + rootElementId + "')\n");
 			sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-			sb.append("    idMapCaption['"+rootElementId+"'] = '"+propertyCaptionValue.replaceAll("'", "\'")+"';\n");
+			sb.append("    idMapCaption['"+rootElementId+"'] = '"+NLT.getDef(propertyCaptionValue).replaceAll("'", "\'")+"';\n");
 			sb.append("</script>\n");
 		}
 
