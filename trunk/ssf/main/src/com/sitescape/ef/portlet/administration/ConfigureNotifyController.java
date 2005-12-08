@@ -47,7 +47,7 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			userList.addAll(gIds);
 			userList.addAll(uIds);
 			
-			getAdminModule().updateNotification(folderId, input, userList);
+			getAdminModule().modifyNotification(folderId, input, userList);
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, "");

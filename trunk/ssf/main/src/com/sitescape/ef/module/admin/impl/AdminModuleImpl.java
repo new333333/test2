@@ -116,7 +116,7 @@ public class AdminModuleImpl implements AdminModule {
      * @param users - Set of Long userIds; Used to build the distribution list
      * @throws NoPrincipalByTheIdException
      */
-    public void updateNotification(Long forumId, Map definition, Set principals) 
+    public void modifyNotification(Long forumId, Map updates, Set principals) 
     {
         Principal p;
 		Set notifyUsers = new HashSet();
@@ -129,7 +129,7 @@ public class AdminModuleImpl implements AdminModule {
     		forum.setNotificationDef(current);
     		current.setLastNotification(new Date());    		
     	}
-    	ObjectBuilder.updateObject(current, definition);
+    	ObjectBuilder.updateObject(current, updates);
   		//	Pre-load for performance
    		coreDao.loadPrincipals(principals,companyId);
    		for (Iterator iter=principals.iterator(); iter.hasNext();) {
@@ -163,7 +163,7 @@ public class AdminModuleImpl implements AdminModule {
 		functionManager.addFunction(function);
 	 
     }
-    public void updateFunction(Long id, Map updates) {
+    public void modifyFunction(Long id, Map updates) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//TODO: what acl check is needed
 		

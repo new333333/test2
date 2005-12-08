@@ -182,7 +182,7 @@ public class LdapModuleImpl implements LdapModule {
 	 * @param zoneId
 	 * @param props
 	 */
-	public void updateLdapConfig(Map props) {
+	public void modifyLdapConfig(Map props) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		Workspace ws = (Workspace)coreDao.findTopWorkspace(zoneName);
     	ObjectBuilder.updateObject(ws.getLdapConfig(), props);
