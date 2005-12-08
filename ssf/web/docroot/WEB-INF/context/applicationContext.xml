@@ -34,15 +34,16 @@
 
 	<!-- Template for the common dependency injection for controllers -->
 	<bean id="controllerDependencyTemplate" lazy-init="true" abstract="true">
-		<property name="employeeModule"><ref bean="employeeModule"/></property>
-		<property name="workspaceModule"><ref bean="workspaceModule"/></property>
-		<property name="folderModule"><ref bean="folderModule"/></property>
 		<property name="adminModule"><ref bean="adminModule"/></property>
-		<property name="profileModule"><ref bean="profileModule"/></property>
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
+		<property name="employeeModule"><ref bean="employeeModule"/></property>
+		<property name="folderModule"><ref bean="folderModule"/></property>
 		<property name="forumActionModule"><ref bean="forumActionModule"/></property>
-		<property name="ldapModule"><ref bean="ldapModule"/></property>
 		<property name="functionManager"><ref bean="functionManager"/></property>
+		<property name="ldapModule"><ref bean="ldapModule"/></property>
+		<property name="profileModule"><ref bean="profileModule"/></property>
+		<property name="workflowModule"><ref bean="workflowModule"/></property>
+		<property name="workspaceModule"><ref bean="workspaceModule"/></property>
 		
 	</bean>
 
@@ -68,7 +69,7 @@
 		<property name="sessionFactoryBean"><ref bean="&amp;sessionFactory"/></property>
 	</bean>
 	
-	<bean id="jbpmSessionFactory" class="org.springframework.workflow.jbpm.LocalJbpmSessionFactoryBean">
+	<bean id="workflowFactory" class="com.sitescape.ef.module.workflow.impl.WorkflowFactory">
 		<property name="hibernateSessionFactory"><ref local="sessionFactory"/></property>
 		<property name="hibernateConfiguration"><ref local="hibernateConfiguration"/></property>
 	</bean> 
@@ -209,9 +210,9 @@
 	</bean>
 
 	<!-- Used for open-session-in-view pattern -->
-	<bean id="portletOpenSessionInViewInterceptor" class="org.springframework.web.portlet.support.hibernate3.OpenSessionInViewInterceptor">
+	<bean id="portletOpenSessionInViewInterceptor" class="com.sitescape.ef.web.portlet.handler.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
-		<!--<property name="singleSession"><value>false</value></property>-->
+		<property name="workflowFactory"><ref local="workflowFactory"/></property>
 	</bean>
 	
 	<bean id="portletInitRequestContextInterceptor" class="com.sitescape.ef.web.portlet.handler.InitRequestContextInterceptor"/>
@@ -429,6 +430,18 @@
 			</bean>
 		</property>
 	</bean>	
+	<bean id="workflowModule" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl">
+				<property name="coreDao"><ref local="coreDao"/></property>
+				<property name="folderDao"><ref local="folderDao"/></property>
+				<property name="accessControlManager"><ref local="accessControlManager"/></property>
+				<property name="aclManager"><ref local="aclManager"/></property>
+				<property name="workflowFactory"><ref local="workflowFactory"/></property>
+				<property name="definitionModule"><ref local="definitionModule"/></property>
+			</bean>
+		</property>
+	</bean>
 	
 <!-- =========================Portlet support =========================================================== -->	
 	<bean id="forumActionModule" parent="baseTransactionProxy">

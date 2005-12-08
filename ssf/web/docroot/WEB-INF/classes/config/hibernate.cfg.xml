@@ -13,6 +13,8 @@
 		<!-- Use the SIteScape SQL dialect because it will automatically detect 
 		     the proper SQL dialect based on your connection URL. -->
 		<property name="dialect">com.sitescape.util.dao.hibernate.DynamicDialect</property>
+		<!-- Need this for bulk Delete statements -->
+		<property name="hibernate.query.factory_class">org.hibernate.hql.ast.ASTQueryTranslatorFactory</property>
 		<!-- Other miscellaneous Hibernate properties. -->
 		<property name="max_fetch_depth">3</property>
 		<property name="use_outer_join">false</property>
