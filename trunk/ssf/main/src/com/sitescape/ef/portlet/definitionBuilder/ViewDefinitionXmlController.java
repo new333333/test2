@@ -45,12 +45,13 @@ public class ViewDefinitionXmlController extends SAbstractController {
 
 		Map formData = request.getParameterMap();
 
-		String selectedItem = PortletRequestUtils.getStringParameter(request,"sourceDefinitionId", "");
+		String selectedItem = PortletRequestUtils.getStringParameter(request,"id", "");
 			
 		//See if there is an operation to perform
 		if (formData.containsKey("saveLayout")) {
 			//This is a request to save the x,y layout of the workflow state graph
-				
+			String xmlData = PortletRequestUtils.getStringParameter(request,"xmlData", "");
+			getDefinitionModule().saveDefinitionLayout(selectedItem, formData);
 		}
 		
 		//Pass the selection id to be shown on to the rendering phase

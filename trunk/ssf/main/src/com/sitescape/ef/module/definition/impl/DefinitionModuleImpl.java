@@ -132,6 +132,46 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 		}
 	}
 	
+	public void saveDefinitionLayout(String id, Map formData) {
+		Definition def = getDefinition(id);
+		Document defDoc = def.getDefinition();
+		
+		if (formData.containsKey("xmlData") && def != null) {
+			Document appletDef;
+			try {
+				appletDef = DocumentHelper.parseText(((String[])formData.get("xmlData"))[0]);
+			} catch(Exception e) {
+				return;
+			}
+			if (appletDef == null) return;
+			
+	    	//Iterate through the current definition looking for states
+			List states = defDoc.getRootElement().selectNodes("//item[@name='state']");
+	    	if (states == null) return;
+	    	
+	    	Iterator itStates = states.iterator();
+	        while (itStates.hasNext()) {
+	            Element state = (Element) itStates.next();
+	            Element stateName = (Element) state.selectSingleNode("properties/property[@name='name']");
+	            if (stateName != null) {
+	            	String name = stateName.attributeValue("value", "");
+	            	if (!name.equals("")) {
+			            Element appletState = (Element) appletDef.getRootElement().selectSingleNode("//item[@name='state']/properties/property[@name='name' and @value='"+name+"']");
+			            if (appletState != null) {
+			            	String x = appletState.getParent().getParent().attributeValue("x", "");
+			            	String y = appletState.getParent().getParent().attributeValue("y", "");
+			            	if (!x.equals("") && !y.equals("")) {
+			            		state.addAttribute("x", x);
+			            		state.addAttribute("y", y);
+			            	}
+			            }
+	            	}
+	            }
+	        }
+			def.setDefintion(defDoc);
+		}
+	}
+	
 	public void deleteDefinition(String id) {
 		Definition def = getDefinition(id);
 		coreDao.delete(def);
