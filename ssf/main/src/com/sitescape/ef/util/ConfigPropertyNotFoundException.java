@@ -1,8 +1,8 @@
 package com.sitescape.ef.util;
 
-import com.sitescape.ef.exception.UncheckedException;
+import com.sitescape.ef.ConfigurationException;
 
-public class ConfigPropertyNotFoundException extends UncheckedException {
+public class ConfigPropertyNotFoundException extends ConfigurationException {
     public ConfigPropertyNotFoundException() {
         super();
     }

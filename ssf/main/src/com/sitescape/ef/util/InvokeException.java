@@ -1,4 +1,4 @@
-package com.sitescape.ef;
+package com.sitescape.ef.util;
 
 import com.sitescape.ef.exception.UncheckedException;
 
