@@ -10,6 +10,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.web.WebKeys;
 
@@ -44,6 +45,7 @@ public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
 			ses.setAttribute(WebKeys.USER_ID, user.getId());
 		} else {
 			user = getCoreDao().loadUser(userId, reqCxt.getZoneName());
+			if (user.isDisabled()) throw new NoUserByTheIdException(userId);
 		}
 
 		reqCxt.setUser(user);
