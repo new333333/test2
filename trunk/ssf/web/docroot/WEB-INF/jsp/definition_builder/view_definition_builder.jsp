@@ -370,7 +370,7 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 <div class="ss_portlet">
 <div align="center" width="100%">
   <span class="ss_titlebold">
-    "<%= definitionName %>" Form Preview
+    Form Preview<br><%= definitionName %>
   </span>
 </div>
 <br>
