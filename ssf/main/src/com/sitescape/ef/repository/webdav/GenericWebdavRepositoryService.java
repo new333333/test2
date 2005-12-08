@@ -1,8 +1,11 @@
 package com.sitescape.ef.repository.webdav;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.webdav.lib.WebdavResource;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +21,8 @@ import com.sitescape.ef.webdav.client.WebdavUtil;
 
 public class WebdavRepositoryService implements RepositoryService {
 
+	protected Log logger = LogFactory.getLog(getClass());
+	
 	private WebdavResourceFactory webdavResourceFactory;
 	
 	protected WebdavResourceFactory getWebdavResourceFactory() {
@@ -31,7 +36,7 @@ public class WebdavRepositoryService implements RepositoryService {
 	public void write(Folder folder, FolderEntry entry, MultipartFile mf) throws RepositoryServiceException {
 		try {
 			writeInternal(folder, entry, mf);
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new RepositoryServiceException(e);
 		}
 	}
@@ -39,16 +44,19 @@ public class WebdavRepositoryService implements RepositoryService {
 	public void read(Folder folder, FolderEntry entry, String fileName, OutputStream out) throws RepositoryServiceException {
 		try {
 			readInternal(folder, entry, fileName, out);
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new RepositoryServiceException(e);
 		}
 	}
 
-	private void writeInternal(Folder folder, FolderEntry entry, MultipartFile mf) throws Exception {
+	private void writeInternal(Folder folder, FolderEntry entry, MultipartFile mf) throws IOException {
 		// How do we get WebDAV username/password for individual users??
 		WebdavResource wdr = getWebdavResourceFactory().openSession("root", "root");
 		
+		boolean result;
+		
 		try {
+			// Get the path for the entry containing the file. 
 			String entryDirPath = getEntryDirPath(folder, entry);
 
 			/*
@@ -60,18 +68,49 @@ public class WebdavRepositoryService implements RepositoryService {
 			System.out.println("Status Message: " + wdr.getStatusMessage());
 			*/
 			
+			// If necessary, create containing collections (recursively) before
+			// writing the file itself. 
 			WebdavUtil.createCollectionIfNecessary(wdr, entryDirPath);
 			
+			// Get the path for the file resource. 
 			String filePath = entryDirPath + mf.getOriginalFilename();
 			
-			boolean result = wdr.putMethod(filePath, mf.getInputStream());
+			if(wdr.headMethod(filePath)) {
+				// The file resource already exists.
+				// Since we always put file resource under version control as 
+				// soon as it is created, it's largely unnecessary to do it
+				// again here. But we can think of a couple of scenarios where
+				// the file may not have been put into version control propertly.
+				// For example, the file was created successfully but the 
+				// subsequent command for turning it into a version controlled
+				// resource failed. Another example would be that the file was
+				// created through some other means (i.e., other than this
+				// interface), although it's very unlikely. 
+				// The following command will be noop if the resource was already
+				// version controlled. 
+				result = wdr.versionControlMethod(filePath);
+				// Write the file creating a new version. 
+				result = wdr.putMethod(filePath, mf.getInputStream());
+			}
+			else {
+				// The file resource does not exist. 
+				// We must write the file first. 
+				result = wdr.putMethod(filePath, mf.getInputStream());
+				// Put the file under version control. 
+				result = wdr.versionControlMethod(filePath);
+			}
+		}
+		catch(IOException e) {
+			// Log the HTTP status code and error message.
+			logger.error("status code=" + wdr.getStatusCode() + ", status message=[" + wdr.getStatusMessage() + "]");
+			// The actual exception object will be logged higher up.
 		}
 		finally {
 			wdr.close();
 		}
 	}
 	
-	public void readInternal(Folder folder, FolderEntry entry, String fileName, OutputStream out) throws Exception {
+	public void readInternal(Folder folder, FolderEntry entry, String fileName, OutputStream out) throws IOException {
 		// How do we get WebDAV username/password for individual users??
 		WebdavResource wdr = getWebdavResourceFactory().openSession("root", "root");
 		
@@ -81,6 +120,15 @@ public class WebdavRepositoryService implements RepositoryService {
 			InputStream is = wdr.getMethodData(filePath);
 			
 			FileHelper.copyContent(is, out);
+
+			WebdavUtil.dumpAllProps(wdr, filePath); // for debugging	
+			
+			WebdavUtil.dumpAllProps(wdr, "/slide/history/101"); // for debugging
+		}
+		catch(IOException e) {
+			// Log the HTTP status code and error message.
+			logger.error("status code=" + wdr.getStatusCode() + ", status message=[" + wdr.getStatusMessage() + "]");
+			// The actual exception object will be logged higher up.
 		}
 		finally {
 			wdr.close();
