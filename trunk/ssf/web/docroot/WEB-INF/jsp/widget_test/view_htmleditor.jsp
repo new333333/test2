@@ -17,8 +17,6 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="java.util.Map" %>
 
-
-
 <%
 
 	String textfield1 = (String)request.getAttribute("textfield1");
@@ -100,5 +98,3 @@ First editor has height=150, second one has no size specified, so defaults to 25
 	<hr>
 	<input type="submit" name="OK" value="OK">
 </form>
-</liferay:box>
-

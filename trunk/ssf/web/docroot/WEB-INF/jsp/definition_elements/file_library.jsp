@@ -8,10 +8,10 @@
 	}
 %>
 <script language="javascript">
-function loadEntry(obj,id) {
+function ss_loadEntry(obj,id) {
 	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
 	highlightLineById(id);
-	showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
+	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
 	return false;
 }
 
@@ -56,7 +56,7 @@ function loadEntry(obj,id) {
   <td valign="top" width="40%">
     <a href="<ssf:url folderId="<%= folderId %>" action="view_entry" 
     entryId="<%= fileEntry.getId().toString() %>" popup="true" />" 
-    onClick="loadEntry(this,'folderLine_<c:out value="${fileEntry.id}"/>');return false;" >
+    onClick="ss_loadEntry(this,'folderLine_<c:out value="${fileEntry.id}"/>');return false;" >
     <c:if test="${empty fileEntry.title}">
     <span class="fineprint"><i>(no title)</i></span>
     </c:if>

@@ -551,7 +551,7 @@ function getBodyWidth() {
 }
 
 function smoothScroll(x, y) {
-	smoothScrollInTime(x,y,5)
+	smoothScrollInTime(x,y,10)
 }
 
 function smoothScrollInTime(x, y, steps) {
@@ -572,7 +572,7 @@ function smoothScrollInTime(x, y, steps) {
 	    }
 		window.scroll(newX, newY)
 		steps = steps - 1
-		eval("setTimeout('smoothScrollInTime("+x+", "+y+", "+steps+")', 10)")
+		eval("setTimeout('smoothScrollInTime("+x+", "+y+", "+steps+")', 8)")
     }
 }
 

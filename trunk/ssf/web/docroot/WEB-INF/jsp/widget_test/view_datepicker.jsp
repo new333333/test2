@@ -21,10 +21,6 @@
 
 <jsp:useBean id="ss_formData" type="java.util.Map" scope="request" />
 
-<liferay:box top="/html/common/box_top.jsp" bottom="/html/common/box_bottom.jsp">
-	<liferay:param name="box_title" value="<%= LanguageUtil.get(pageContext, \"view-datepicker\") %>" />
-
-
 <%
 	Date initDate = (Date)request.getAttribute("initDate");
 	Date initDate2 = (Date)request.getAttribute("initDate2");
@@ -117,5 +113,3 @@ This test page shows datepickers for the current date and an unspecified date.
 	<hr>
 	<input type="submit" name="OK" value="OK">
 </form>
-</liferay:box>
-
