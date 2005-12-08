@@ -264,12 +264,20 @@ public class WorkflowController extends SAbstractController {
     	// Now we can query the database for the process definition that we 
     	// deployed above. 
     	if (!Validator.isNull(pId)) {
-    		ProcessInstance processInstance = getWorkflowModule().getProcessInstance(Long.valueOf(pId));
-		    ProcessDefinition pD = processInstance.getProcessDefinition();
-		    Writer writer = new StringWriter();
-		    JpdlXmlWriter jpdl = new JpdlXmlWriter(writer);
-		    jpdl.write(pD);
-		    results.put("definitionXml", writer.toString());
+    		ProcessInstance processInstance = null;
+    		try {
+    			processInstance = getWorkflowModule().getProcessInstance(Long.valueOf(pId));
+     		} catch(Exception e) {
+    			//The process instance may no longer exist, so skip showing the definition
+    			pId = "";
+    		}
+		    if (processInstance != null) {
+		    	ProcessDefinition pD = processInstance.getProcessDefinition();
+	   		    Writer writer = new StringWriter();
+    		    JpdlXmlWriter jpdl = new JpdlXmlWriter(writer);
+    		    jpdl.write(pD);
+    		    results.put("definitionXml", writer.toString());
+		    }
     	} 
 
 	    results.put("processId", pId);
