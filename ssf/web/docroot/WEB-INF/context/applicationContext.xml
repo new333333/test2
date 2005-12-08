@@ -170,7 +170,7 @@
 			<list>
 				<ref bean="portletParameterMappingInterceptor"/>
 				<!-- Make sure that a session is set up -->
-				<ref bean="portletSessionSetupInterceptor"/>
+				<!--<ref bean="portletSessionSetupInterceptor"/>-->
 				<!-- Set up request context -->
 				<ref bean="portletInitRequestContextInterceptor"/>
 				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
@@ -189,7 +189,7 @@
 		<property name="interceptors">
 			<list>
 				<!-- Make sure that a session is set up -->
-				<ref bean="portletSessionSetupInterceptor"/>
+				<!--<ref bean="portletSessionSetupInterceptor"/>-->
 				<ref bean="portletInitRequestContextInterceptor"/>
 				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
 				     This must come before userPreloadInterceptor since it
@@ -218,7 +218,7 @@
 		<!--<property name="singleSession"><value>false</value></property>-->
 	</bean>
 	
-	<bean id="portletSessionSetupInterceptor" class="com.sitescape.ef.web.portlet.handler.SessionSetupInterceptor"/>
+	<!--<bean id="portletSessionSetupInterceptor" class="com.sitescape.ef.web.portlet.handler.SessionSetupInterceptor"/>-->
 	
 	<bean id="portletInitRequestContextInterceptor" class="com.sitescape.ef.web.portlet.handler.InitRequestContextInterceptor"/>
 		
