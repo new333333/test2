@@ -204,6 +204,9 @@ function ss_loadEntry(obj,id) {
 	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
 	if (window.highlightLineById) {
 		highlightLineById(folderLine);
+		if (window.swapImages && window.restoreImages) {
+			restoreImages(id);
+		}
 	}
 	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
 	return false;
@@ -213,7 +216,7 @@ function ss_loadEntryUrl(url,id) {
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
 	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
-	if (highlightLineById()) {
+	if (window.highlightLineById()) {
 		highlightLineById(folderLine);
 	}
 	ss_showForumEntry(url, <c:out value="${showEntryCallbackRoutine}"/>);
