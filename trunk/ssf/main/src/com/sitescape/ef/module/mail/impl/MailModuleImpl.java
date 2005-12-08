@@ -6,12 +6,17 @@ import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.Locale;
+import java.io.FileOutputStream;
+import java.io.File;
+
 import javax.activation.DataSource;
 
 import javax.mail.MessagingException;
@@ -20,11 +25,16 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.xpath.DefaultXPath;
 import org.quartz.JobDataMap;
 import org.quartz.SimpleTrigger;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 
+import com.sitescape.ef.jobs.FolderEmailNotification;
+import com.sitescape.ef.jobs.SSStatefulJob;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.domain.FileAttachment;
@@ -40,9 +50,9 @@ import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.mail.FolderEmailFormatter;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.util.SpringContextUtil;
-
-
-import org.springframework.mail.javamail.JavaMailSender;
+import com.sitescape.ef.util.XmlClassPathConfigFiles;
+import com.sitescape.ef.module.mail.JavaMailSender;
+import com.sitescape.ef.jobs.FolderFailedEmail;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.mail.MailParseException;
@@ -55,13 +65,78 @@ import com.sitescape.util.Validator;
  *
  */
 public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
-	private Log logger = LogFactory.getLog(getClass());
-	private static String RETRY_NOTIFICATION_GROUP="retry-send-email-notification";
-	private JavaMailSender mailSender;
-	public void setMailSender(JavaMailSender mailSender) {
-		this.mailSender = mailSender;
+	protected Log logger = LogFactory.getLog(getClass());
+	protected XmlClassPathConfigFiles configDocs;
+	protected Map zoneProps = new HashMap();
+	protected Map mailPostingSessions;
+
+	public void setMailPostingSessions(Map mailPostingSessions) {
+		this.mailPostingSessions = mailPostingSessions;
+	}
+	public void setConfigDocs(XmlClassPathConfigFiles configDocs) {
+		this.configDocs = configDocs;
+	}
+	public XmlClassPathConfigFiles getConfigDocs() {
+		return configDocs;
+	}
+	public String getAttribute(String node, String name, String zoneName) {
+		Document doc = configDocs.getAsDom4jDocument(0);
+		Element root = doc.getRootElement();
+		String value = null;
+		Element nElement;
+		DefaultXPath path=new DefaultXPath("/mail-configuration/zone[@name=" + zoneName + "]/" + node);
+		Object obj = path.selectObject(root);
+		if (obj != null && (obj instanceof Element)) {
+			nElement = (Element)obj;
+			value = nElement.attributeValue(name);
+		}
+		
+		if (!Validator.isNull(value)) return value;
+		path=new DefaultXPath("/mail-configuration/zone[@name='']/" + node);
+		obj = path.selectObject(root);
+		if (obj != null && (obj instanceof Element)) {
+			nElement = (Element)obj;
+			value = nElement.attributeValue(name);
+		}
+		return value;
+	}
+	public String getAttribute(String node, String name, Folder folder) {
+		Document doc = configDocs.getAsDom4jDocument(0);
+		Element root = doc.getRootElement();
+		String value = null;
+		Element nElement;
+		DefaultXPath path = new DefaultXPath("/mail-configuration/folder[@id=" + folder.getId().toString() +
+							"]/" + node);
+		Object obj = path.selectObject(root);
+		if (obj != null && (obj instanceof Element)) {
+			nElement = (Element)obj;
+			value = nElement.attributeValue(name);
+		}
+		if (!Validator.isNull(value)) return value;
+		return getAttribute(node, name, folder.getZoneName());
 	}
 
+	public JavaMailSender getMailSender(Folder folder) {
+		JavaMailSender sender=null;
+		String bean = getAttribute("notify", "bean", folder);
+		if (!Validator.isNull(bean)) 
+			sender =(JavaMailSender)SpringContextUtil.getBean(bean);
+		if (sender == null) throw new ConfigurationException("Missing JavaMailSender bean");
+		return sender;
+	}
+
+	public JavaMailSender getMailSender(String zoneName) {
+		JavaMailSender sender=null;
+		String bean = getAttribute("notify", "bean", zoneName);
+		if (!Validator.isNull(bean)) 
+			sender =(JavaMailSender)SpringContextUtil.getBean(bean);
+		if (sender == null) throw new ConfigurationException("Missing JavaMailSender bean");
+		return sender;
+	}
+
+	public void receivePostings() {
+		
+	}
     public Date sendNotifications(Long folderId) {
         String zoneName = RequestContextHolder.getRequestContext().getZoneName();
  		Folder folder = (Folder)coreDao.loadBinder(folderId, zoneName); 
@@ -91,9 +166,10 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 		//TODO: need to check access for each user against each entry
 		//expect results will maintain order used to do lookup
 		Object[] results = processor.validateIdList(entries, userIds);
-		MimeHelper mHelper = new MimeHelper(processor, folder);
+		JavaMailSender mailSender = getMailSender(folder);
+		MimeHelper mHelper = new MimeHelper(mailSender, processor, folder);
 		mHelper.setAddrs(us);
-		
+
 		for (int i=0; i<results.length; ++i) {
 			Object row[] = (Object [])results[i];
 			//Eventually need to remove individual users from user list and make
@@ -109,8 +185,9 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 				mailSender.send(mHelper);
 			} catch (MailSendException sx) {
 	    		logger.error("Error sending mail:" + sx.getMessage());
-				scheduleMailRetry(folder, mHelper.getMessage());
-	    	} catch (Exception ex) {
+		  		FolderFailedEmail process = (FolderFailedEmail)processorManager.getProcessor(folder, FolderFailedEmail.PROCESSOR_KEY);
+		   		process.schedule(scheduler, folder, mailSender, mHelper.getMessage());
+ 	    	} catch (Exception ex) {
 	       		logger.error(ex.getMessage());
 	    	} 
 		}
@@ -119,7 +196,31 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 	
 		return current;
 	}
+    public boolean sendMail(String mailSenderName, java.io.InputStream input) {
+    	JavaMailSender mailSender = (JavaMailSender)SpringContextUtil.getBean(mailSenderName);
+    	try {
+        	MimeMessage mailMsg = new MimeMessage(mailSender.getSession(), input);
+			mailSender.send(mailMsg);
+		} catch (MailParseException px) {
+       		logger.error(px.getMessage());
+    		return false;
+    		
+    	} catch (MailSendException sx) {
+    		logger.error("Error sending mail:" + sx.getMessage());
+    		return false;
+    	} catch (MailAuthenticationException ax) {
+       		logger.error("Authentication Exception:" + ax.getMessage());
+    		return false;    		
+		} catch (MessagingException mx) {
+       		logger.error(mx.getMessage());
+    		return false;
+    	}
+    	return true;
+    }
     public boolean sendMail(MimeMessage mailMsg) {
+        String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+        JavaMailSender mailSender = getMailSender(zoneName);
+
     	try {
 			mailSender.send(mailMsg);
 		} catch (MailParseException px) {
@@ -135,6 +236,7 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
     	}
     	return true;
     }
+
     /*
      * Parse the distribution list.  Explode all groups in the list to
      * their user member ids.  Keep list of users requesting individual style
@@ -178,37 +280,6 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 		indivUserIds.retainAll(userIds);
 	}
 		
-
-	//Create a new job to retry the mail
-	private void scheduleMailRetry(Folder folder, MimeMessage mail) throws ConfigurationException {
-		GregorianCalendar start = new GregorianCalendar();
-		start.add(Calendar.HOUR_OF_DAY, 1);
-		//add time to jobName - may have multple from same folder
- 		String jobName = folder.toString() + ":" + start.getTime();
-   		
- 		String className = "com.sitescape.ef.jobs.SendMail";
-  		try {		
-			JobDetail jobDetail = new JobDetail(jobName, RETRY_NOTIFICATION_GROUP, 
-					Class.forName(className),false, false, false);
-			jobDetail.setDescription("Send email notification for " + folder);
-			JobDataMap data = new JobDataMap();
-			data.put("folder",folder.getId());
-			data.put("zoneName",folder.getZoneName());
-			data.put("mailMessage", mail);
-			jobDetail.setJobDataMap(data);
-			jobDetail.addJobListener(com.sitescape.ef.jobs.CleanupJobListener.name);
-
-  			SimpleTrigger trigger = new SimpleTrigger(jobName, RETRY_NOTIFICATION_GROUP, jobName, RETRY_NOTIFICATION_GROUP, start.getTime(), null, 24, 1000*60*60);
-  			trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
-  			trigger.setVolatility(false);
-			scheduler.scheduleJob(jobDetail, trigger);				
-		} catch (ClassNotFoundException cnf) {
-			throw new ConfigurationException("Send email notification class " + className + "not found");		
-  		} catch (SchedulerException se) {
-   			throw new ConfigurationException("Cannot start folder scheduler", se);
-   		}
-  			
-	}
 	private class MimeHelper implements MimeMessagePreparator {
 		FolderEmailFormatter processor;
 		Folder folder;
@@ -216,13 +287,13 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 		Collection entries;
 		String[] addrs;
 		MimeMessage message;
-		String from;
 		String messageType;
+		JavaMailSender mailSender;
 
-		private MimeHelper(FolderEmailFormatter processor, Folder folder) {
+		private MimeHelper(JavaMailSender mailSender, FolderEmailFormatter processor, Folder folder) {
 			this.processor = processor;
 			this.folder = folder;
-			this.from = processor.getFrom(folder);
+			this.mailSender = mailSender;
 			
 		}
 		protected MimeMessage getMessage() {
@@ -249,7 +320,6 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 			message = null;
 			String zoneName = folder.getZoneName();
 			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-			helper.setFrom(from);
 			if ((toIds != null) && !toIds.isEmpty()) {
 				User user = coreDao.loadUser((Long)toIds.iterator().next(), zoneName);
 				locale = user.getLocale();
@@ -272,7 +342,11 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 				notify.setDateFormat(DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, locale));
 				helper.setSubject(processor.getSubject(folder, notify));				
 			}
-
+			String from = processor.getFrom(folder, notify);
+			if (Validator.isNull(from)) {
+				from = mailSender.getDefaultFrom();
+			}
+			helper.setFrom(from);
 			if (addrs != null) { 
 				for (int i=0; i<addrs.length; ++i) {
 					String email = addrs[i];

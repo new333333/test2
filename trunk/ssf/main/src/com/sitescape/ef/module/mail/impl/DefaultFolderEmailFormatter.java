@@ -310,14 +310,19 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
     	return result;
 	}
 	public String getSubject(Folder folder, Notify notify) {
-		String subject = (String)getProperty(folder.getZoneName(), NOTIFY_SUBJECT);
+		String subject = folder.getNotificationDef().getSubject();
+		if (Validator.isNull(subject))
+			subject = (String)getProperty(folder.getZoneName(), NOTIFY_SUBJECT);
 		//if not specified, us a localized default
 		if (Validator.isNull(subject))
 			return NLT.get("notify.subject", notify.getLocale()) + " " + folder.toString();
 		return subject;
 	}
 	
-	public String getFrom(Folder folder) {
-		return (String)getProperty(folder.getZoneName(), NOTIFY_FROM);
+	public String getFrom(Folder folder, Notify notify) {
+		String from = folder.getNotificationDef().getFromAddress();
+		if (Validator.isNull(from))
+			from = (String)getProperty(folder.getZoneName(), NOTIFY_FROM);
+		return from;
 	}
 }
