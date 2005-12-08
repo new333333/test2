@@ -22,6 +22,8 @@ public class WebKeys {
 	public static final String CALENDAR_ENDTIMESTRING = "cal_endtimestring";
 	public static final String CALENDAR_VIEWBEAN = "ssCalendarViewBean";	
 	public static final String CALENDAR_EVENTDATAMAP = "cal_eventdatamap";	
+	public static final String CALENDAR_URL_VIEWMODE = "cal_url_viewmode";	
+	public static final String CALENDAR_URL_NEWVIEWDATE = "cal_url_newviewdate";	
 	
 	// miscellaneous
 	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
