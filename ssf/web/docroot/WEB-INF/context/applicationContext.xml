@@ -113,6 +113,8 @@
 		<!--<property name="singleSession"><value>false</value></property>-->
 	</bean>
 	
+	<bean id="springContextUtil" class="com.sitescape.ef.util.SpringContextUtil"/>
+	
 	<!-- ============================= Business =========================== -->
 	
 	<bean id="employeeModule" class="com.sitescape.ef.module.sample.impl.EmployeeModuleImpl">

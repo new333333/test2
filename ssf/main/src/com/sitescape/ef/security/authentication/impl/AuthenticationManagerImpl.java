@@ -27,8 +27,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     	catch(NoUserByTheNameException e) {
     		throw new UserDoesNotExistException(e);
     	}
-    	// TODO Skip this for now
-    	//if(!user.getPassword().equals(password))
-    	//	throw new PasswordDoesNotMatchException();
+
+    	if(!user.getPassword().equals(password))
+    		throw new PasswordDoesNotMatchException();
 	}
 }
