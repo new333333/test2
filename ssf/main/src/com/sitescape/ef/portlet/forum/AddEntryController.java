@@ -32,13 +32,18 @@ public class AddEntryController extends SAbstractForumController {
 			//The form was submitted. Go process it
 			// Returns a map where key is form field name (String) and value is LiferayFileItem.
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_ENTRY_TYPE, "");
+			Map fileMap=null;
+			if (request instanceof MultipartFileSupport) {
+				fileMap = ((MultipartFileSupport) request).getFileMap();
+			} else {
+				fileMap = new HashMap();
+			}
 			if (action.equals(WebKeys.FORUM_ACTION_ADD_ENTRY)) {
-				//entryId = getFolderModule().addEntry(folderId, entryType, formData, ((MultipartFileSupport) request).getFileMap()).toString();
-				Long id = getFolderModule().addEntry(folderId, entryType, formData, new HashMap());
+				Long id = getFolderModule().addEntry(folderId, entryType, formData, fileMap);
 				entryId = id.toString();
 			} else if (action.equals(WebKeys.FORUM_ACTION_ADD_REPLY)) {
 				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_ENTRY_ID));				
-				getFolderModule().addReply(folderId, id, entryType, formData, ((MultipartFileSupport) request).getFileMap());
+				getFolderModule().addReply(folderId, id, entryType, formData, fileMap );
 				entryId = id.toString();
 			}
 			//response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);

@@ -30,7 +30,13 @@ public class ModifyEntryController extends SAbstractForumController {
 		//See if the add entry form was submitted
 		if (formData.containsKey("okBtn")) {
 			//The form was submitted. Go process it
-			getFolderModule().modifyEntry(folderId, entryId, formData, ((MultipartFileSupport) request).getFileMap());
+			Map fileMap=null;
+			if (request instanceof MultipartFileSupport) {
+				fileMap = ((MultipartFileSupport) request).getFileMap();
+			} else {
+				fileMap = new HashMap();
+			}
+			getFolderModule().modifyEntry(folderId, entryId, formData, fileMap);
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 		}
