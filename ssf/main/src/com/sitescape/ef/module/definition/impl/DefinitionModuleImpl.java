@@ -4,13 +4,10 @@ import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
-import com.sitescape.ef.repository.RepositoryServiceNames;
-import com.sitescape.ef.security.AccessControlManager;
+import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
-import com.sitescape.ef.util.PortletRequestUtils;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Entry;
@@ -724,13 +721,15 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 								    	if (myFile.getOriginalFilename().equals("")) continue;
 								    	FileUploadItem fui = new FileUploadItem(myFile);
 								    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
-								    	fui.setRepositoryServiceName(storageElem.attributeValue("value", RepositoryServiceNames.FILE_REPOSITORY_SERVICE));
+								    	String repositoryServiceName = storageElem.attributeValue("value", RepositoryService.DEFAULT_REPOSITORY_SERVICE);
+								    	fui.setRepositoryServiceName(repositoryServiceName);
 								    	// TODO Take care of path info?
 								    	FileAttachment fAtt = new FileAttachment(nameValue);
 								    	FileItem fItem = new FileItem();
 								    	fItem.setName(myFile.getOriginalFilename());
 								    	fItem.setLength(myFile.getSize());
 								    	fAtt.setFileItem(fItem);
+								    	fAtt.setRepositoryServiceName(repositoryServiceName);
 								    	fileData.add(fui);
 								    	entryData.put(nameValue, fAtt);
 									}
@@ -751,13 +750,15 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 										    	if (myFile.getOriginalFilename().equals("")) continue;
 										    	FileUploadItem fui = new FileUploadItem(myFile);
 										    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
-										    	fui.setRepositoryServiceName(storageElem.attributeValue("value", RepositoryServiceNames.FILE_REPOSITORY_SERVICE));
+										    	String repositoryServiceName = storageElem.attributeValue("value", RepositoryService.DEFAULT_REPOSITORY_SERVICE);
+										    	fui.setRepositoryServiceName(repositoryServiceName);
 										    	// TODO Take care of path info?
 										    	FileAttachment fAtt = new FileAttachment(fileEleName);
 										    	FileItem fItem = new FileItem();
 										    	fItem.setName(myFile.getOriginalFilename());
 										    	fItem.setLength(myFile.getSize());
 										    	fAtt.setFileItem(fItem);
+										    	fAtt.setRepositoryServiceName(repositoryServiceName);
 										    	fileData.add(fui);
 										    	fAtts.add(fAtt);
 											}

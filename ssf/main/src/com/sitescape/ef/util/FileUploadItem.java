@@ -2,13 +2,13 @@ package com.sitescape.ef.util;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sitescape.ef.repository.RepositoryServiceNames;
+import com.sitescape.ef.repository.RepositoryService;
 
 public class FileUploadItem {
 
 	private MultipartFile mf;
 	
-	private String repositoryServiceName = RepositoryServiceNames.FILE_REPOSITORY_SERVICE; // default
+	private String repositoryServiceName = RepositoryService.DEFAULT_REPOSITORY_SERVICE;
 
 	// path info?
 	

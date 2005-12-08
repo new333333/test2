@@ -9,6 +9,8 @@ import com.sitescape.ef.domain.Folder;
 
 public interface RepositoryService {
 
+	public static final String DEFAULT_REPOSITORY_SERVICE = "fileRepositoryService";
+	
 	public void write(Folder folder, FolderEntry entry, MultipartFile mf) 
 		throws RepositoryServiceException;
 	
