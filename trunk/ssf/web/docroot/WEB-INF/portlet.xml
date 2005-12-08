@@ -26,6 +26,29 @@
         </portlet-info>
     </portlet>
 
+    <portlet>
+        <description xml:lang="en">SiteScape Widget Tester Portlet</description>
+        <portlet-name>ss_widgettest</portlet-name>
+        <display-name xml:lang="en">Widget tester</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+			<init-param>
+				<name>contextConfigLocation</name>
+				<value>/WEB-INF/context/portlet/widgetTest.xml</value>
+			</init-param>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+        <!--<supported-locale>en</supported-locale>-->
+        <!--<resource-bundle>...</resource-bundle>-->
+        <portlet-info>
+        	<title>Widget test</title>
+        	<short-title>Widget test</short-title>
+        	<keywords>Widget test</keywords>
+        </portlet-info>
+    </portlet>
+
     <user-attribute>
         <description xml:lang="en">User Name</description>
         <name>user.name</name>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../../dtd/spring-beans.dtd">
+<beans>
+
+	<!-- Controllers -->
+
+	<bean id="widgetTestController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.widget_test.WidgetTestController" />
+	<bean id="treeController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.widget_test.TreeController" />
+
+	<!-- Handlers -->
+
+	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
+			<property name="portletModeParameterMap">
+			<map>
+				<entry key="view">
+					<map>
+						<entry key="tree"><ref bean="treeController"/></entry>
+						<entry key="date"><ref bean="widgetTestController"/></entry>
+						<entry key="time"><ref bean="widgetTestController"/></entry>
+						<entry key="event"><ref bean="widgetTestController"/></entry>
+						<entry key="htmledit"><ref bean="widgetTestController"/></entry>
+					</map>
+				</entry>
+				<entry key="edit">
+					<map>
+					</map>
+				</entry>
+				<entry key="help">
+					<map>
+					</map>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="portletModeHandlerMapping" parent="portletModeHandlerMappingTemplate">
+		<property name="portletModeMap">
+			<map>
+				<entry key="view"><ref bean="widgetTestController"/></entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="defaultExceptionHandler" parent="defaultExceptionHandlerTemplate"/>
+
+</beans>
