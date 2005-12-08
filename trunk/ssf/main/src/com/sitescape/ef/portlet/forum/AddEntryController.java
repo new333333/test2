@@ -71,7 +71,11 @@ public class AddEntryController extends SAbstractForumController {
 			String entryId = request.getParameter(WebKeys.ENTRY_ID);
 			formData.put(WebKeys.FORUM_URL_ENTRY_ID, entryId);
 			try {
-				model = getForumActionModule().getShowEntry(formData, request, response, folderId);
+				if (entryId.equals("")) {
+					return returnToViewForum(request, response, formData, folderId);
+				} else {
+					model = getForumActionModule().getShowEntry(formData, request, response, folderId);
+				}
 			} catch (NoDefinitionByTheIdException nd) {
 				return returnToViewForum(request, response, formData, folderId);
 			}
