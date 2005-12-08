@@ -132,6 +132,17 @@ return
     setObjectHeight(wObj1, "");
     wObj1.style.background = "#ffffff"
 }
+
+function hideEntryDiv() {
+    var wObj1 = null
+    if (isNSN || isNSN6 || isMoz5) {
+        wObj1 = self.document.getElementById('showentrydiv')
+    } else {
+        wObj1 = self.document.all['showentrydiv']
+    }
+    wObj1.style.visibility = "hidden";
+}
+
 createOnLoadObj('positionEntryDiv', positionEntryDiv)
 
 </script>
@@ -140,30 +151,28 @@ createOnLoadObj('positionEntryDiv', positionEntryDiv)
 <br />
 <br />
 
-<table><tr><td>
+<table><tr><td valign="top">
 <div id="showbutton" class="ss_portlet" style="display:block; margin:2;">
-<a href="<portlet:renderURL>
-	<portlet:param name="action" value="fragment" />
-	<portlet:param name="operation" value="showFragment" />
-	</portlet:renderURL>" 
+<a href="<ssf:url 
+    webPath="viewFragment" >
+	<ssf:param name="operation" value="viewFragment" />
+    </ssf:url>"
 	onClick="showForumEntryInIframe(this.href);return false;" 
  	>Show the fragment</a>
 </div>
+</td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<td>
 </td><td>
-<div id="showentrydiv" style="display:block; margin:2; width:400; height:80%;">
-  <div style="width:90%;">
-    <table cellspacing="0" cellpadding="0" width="100%">
-      <tr>
-        <td align="right">
-          <a href="javascript: ;" onClick="hideEntryDiv();return false;">Close</a>
-        </td>
-      </tr>
-    </table>
-  </div>
+<div id="showentrydiv" style="display:block; margin:2; wwidth:400; height:80%;">
+  <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
+    <ssf:param name="box_width" value="400" />
+    <ssf:param name="box_show_close_icon" value="true" />
+    <ssf:param name="box_show_close_routine" value="hideEntryDiv()" />
   <iframe id="showentryframe" name="showentryframe" 
-    src="<html:rootPath/>js/forum/null.html" height="250" width="400" 
+    src="<html:rootPath/>js/forum/null.html" height="250" width="100%" 
     frameBorder="no" >xxx</iframe>
-</di</td></tr>
+  </ssf:box>
+</div>
+</td></tr>
 </table>
 
 
