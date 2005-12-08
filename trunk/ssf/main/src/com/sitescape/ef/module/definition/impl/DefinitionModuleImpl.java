@@ -2,6 +2,7 @@ package com.sitescape.ef.module.definition.impl;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
 import com.sitescape.ef.module.definition.notify.NotifyBuilderUtil;
@@ -52,7 +53,16 @@ import com.sitescape.ef.domain.DefinitionInvalidException;
 public class DefinitionModuleImpl extends CommonDependencyInjection implements DefinitionModule {
 	private Document definitionConfig;
 	private MergeableXmlClassPathConfigFiles definitionBuilderConfig;
+	
+	private WorkflowModule workflowModule;
 	    
+	public void setWorkflowModule(WorkflowModule workflowModule) {
+		this.workflowModule = workflowModule;
+	}
+	protected WorkflowModule getWorkflowModule() {
+		return workflowModule;
+	}
+	
 	public Definition getDefinition(String id) {
 		String companyId = RequestContextHolder.getRequestContext().getZoneName();
 		Workspace workspace = getCoreDao().findTopWorkspace(companyId);
@@ -75,7 +85,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		newDefinition.setTitle(title);
 		newDefinition.setType(type);
 		newDefinition.setZoneName(companyId);
-		newDefinition.setDefintion(getDefaultDefinition(name, title, type, formData));
+		setDefintion(newDefinition, getDefaultDefinition(name, title, type, formData));
 		coreDao.save(newDefinition);
 		return newDefinition;
 	}
@@ -92,7 +102,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			//set definition name after we get definition, so definition doc file will be found before the name is changed
 			if (!name.equals("")) def.setName(name);
 			if (!title.equals("")) def.setTitle(title);
-			def.setDefintion(defDoc);
+			setDefintion(def, defDoc);
 		}
 	}
 	
@@ -101,8 +111,21 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		//Store this attribute in the definition document
 		Document defDoc = def.getDefinition();
 		defDoc.getRootElement().addAttribute(key, value);
-		def.setDefintion(defDoc);
+		setDefintion(def, defDoc);
 	}
+	
+    public void setDefintion(Definition def, Document doc) {
+    	//If this is a workflow definition, build the corresponding JBPM workflow definition
+    	// Try to do this first before the changed definition gets modified on disk
+    	if (def.getType() == Definition.WORKFLOW) {
+    		//Use the definition id as the workflow process name
+    		getWorkflowModule().buildProcessDefinition(def.getId(), def);
+    	}
+    	
+    	//Write out the new definition file
+    	def.setDefintion(doc);
+    }
+
 	
 	public void modifyDefinitionProperties(String id, Map formData) {
 		Definition def = getDefinition(id);
@@ -133,7 +156,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				//Add the properties
 				processProperties(def.getId(), definition, defDoc.getRootElement(), formData2);
 			}
-			def.setDefintion(defDoc);
+			setDefintion(def, defDoc);
 		}
 	}
 	
@@ -173,7 +196,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	            	}
 	            }
 	        }
-			def.setDefintion(defDoc);
+			setDefintion(def, defDoc);
 		}
 	}
 	
@@ -225,7 +248,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Element newItem = addItemToDefinitionDocument(def.getId(), definitionTree, itemId, itemNameToAdd, formData);
 		if (newItem != null) {
 			//Save the updated document
-			def.setDefintion(definitionTree);
+			setDefintion(def, definitionTree);
 		}
 		return newItem;
 	}
@@ -434,7 +457,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						}
 					}
 					
-					def.setDefintion(definitionTree);
+					setDefintion(def, definitionTree);
 				}
 			}
 		}
@@ -470,7 +493,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 						}
 					}
-					def.setDefintion(definitionTree);
+					setDefintion(def, definitionTree);
 				}
 			}
 		}
@@ -520,7 +543,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							List sourceParentContent2 = sourceParent.content();
 						}
 						//Write the new document back into the definition
-						def.setDefintion(definitionTree);
+						setDefintion(def, definitionTree);
 					} else {
 						//Target item is no longer defined as a valid item
 						throw new DefinitionInvalidException(defId, "error");

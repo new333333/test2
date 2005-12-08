@@ -6,8 +6,11 @@ import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
 
+import com.sitescape.ef.domain.Definition;
+
 public interface WorkflowModule {
 	public List getAllDefinitions();
+	public List getAllDefinitions(String name);
 	public List getLatestDefinitions();
 	public List getNodes(Long id);
 	public List getProcessInstances(Long id);
@@ -15,11 +18,13 @@ public interface WorkflowModule {
 	public ProcessDefinition getWorkflow(Long id);
 	public ProcessDefinition addWorkflow(String xmlString);
 	public ProcessInstance addWorkflowInstance(Long id);
+	public Token addWorkflowSubToken(Long processInstanceId, String name);
 	public void deleteProcessInstance(Long processInstanceId);
 	public void deleteProcessDefinition(Long id);
 	public ProcessInstance setNextTransition(Long processInstanceId);
 	public ProcessInstance setTransition(Long processInstanceId, String transitionId);
 	public ProcessInstance setNode(Long processInstanceId, String nodeId);
-
+	public void buildProcessDefinition(String definitionName, Definition def);
+	public void updateProcessDefinition(ProcessDefinition pD, Definition def);
 
 }
