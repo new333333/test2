@@ -13,6 +13,7 @@ import org.hibernate.StaleObjectStateException;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.FetchMode;
+import org.hibernate.criterion.Order;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -126,13 +127,17 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                  public Object doInHibernate(Session session) throws HibernateException {
                      //sqlqueries, filters and criteria don't help with frontbase problem
                      //
-                     List query = session.createQuery("from FolderEntry d where d.HKey.level>:docLevel and d.HKey.sortKey like :sortKey")
-//don't need anymore                     .setLong("parentFolder", entry.getParentFolder().getId().longValue())
-                     .setInteger("docLevel", entry.getDocLevel())
-                     .setString("sortKey", ((FolderEntry)entry).getHKey().getSortKey() + "%")
-                     .list();
-   //TODO: add order by when get new frontbase                      
-                   return query;
+                     Criteria crit = session.createCriteria(FolderEntry.class);
+                     crit.add(Expression.conjunction()  
+                            .add(Expression.gt("HKey.level", new Integer(entry.getDocLevel())))
+                            .add(Expression.like("HKey.sortKey", ((FolderEntry)entry).getHKey().getSortKey() + "%"))
+                     );
+                     crit.setFetchMode("topEntry", FetchMode.SELECT);
+                     crit.setFetchMode("parentEntry", FetchMode.SELECT);
+                     crit.setFetchMode("entryDef", FetchMode.SELECT);
+                     
+                     crit.addOrder(Order.asc("HKey.sortKey"));
+                     return crit.list();
                  }
              }
          );  
@@ -157,7 +162,6 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                                dis.add(Expression.eq("HKey.sortKey", keys[i]));
                             };
                             Criteria crit = session.createCriteria(FolderEntry.class);
- //not needed anymore                           crit.add(Expression.eq("parentFolder", entry.getParentFolder()));
                             crit.add(Expression.disjunction()
                                    .add(dis)
                                    .add(Expression.conjunction()  
@@ -168,9 +172,9 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                             crit.setFetchMode("topEntry", FetchMode.SELECT);
                             crit.setFetchMode("parentEntry", FetchMode.SELECT);
                             crit.setFetchMode("entryDef", FetchMode.SELECT);
-                           List query = crit.list();
-  //TODO: add order by when get new frontbase   
-                            return query;
+                            
+                            crit.addOrder(Order.asc("HKey.sortKey"));
+                            return crit.list();
                        }
                   }
                   
@@ -186,16 +190,18 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
              new HibernateCallback() {
                  public Object doInHibernate(Session session) throws HibernateException {
                      //Hibernate doesn't like the ? in the in clause
-                     Disjunction dis = Expression.disjunction();
+                     Criteria crit = session.createCriteria(FolderEntry.class);
+                      Disjunction dis = Expression.disjunction();
                       for (int i=0; i<keys.length; ++i) {
                           dis.add(Expression.eq("folderHKey.sortKey", keys[i]));
                       };
-                     return session.createCriteria(Folder.class)
- //don't need with new sortkey                    .add(Expression.eq("topFolder", folder.getTopFolder()))
-                     .add(dis)
-                     //                  .add(Expression.in("folderHKey.sortKey", keys))
-                     .list();
-  //TODO: add order by when get new frontbase  
+                     crit.add(dis);
+                     crit.setFetchMode("topEntry", FetchMode.SELECT);
+                     crit.setFetchMode("parentEntry", FetchMode.SELECT);
+                     crit.setFetchMode("entryDef", FetchMode.SELECT);
+                     
+                     crit.addOrder(Order.asc("HKey.sortKey"));
+                     return crit.list();
                  }
              }
          );  
