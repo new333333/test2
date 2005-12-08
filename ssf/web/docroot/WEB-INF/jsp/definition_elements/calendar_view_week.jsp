@@ -12,10 +12,21 @@ function getFilteredEntries() {
 <td colspan="2" class="ss_contentbold">Week beginning 
    <fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" /></td>
 </tr>
-
+<%
+System.out.print("---------------------------------------------------START");
+%>
 <c:forEach var="daymap" items="${ssCalendarViewBean}">
-
+<%
+System.out.print("---------------------------------------------------loop 0");
+%>
+<c:choose>
+<c:when test="daymap.isToday">
+<tr class="ss_todayHighlight">
+</c:when>
+<c:otherwise>
 <tr>
+</c:otherwise>
+</c:choose>
 <td align="center" width="1%" valign="top"><span class="ss_content">${daymap.cal_dow}</span>
  <span class="ss_contentbold">${daymap.cal_dom}</td>
 
@@ -24,17 +35,26 @@ function getFilteredEntries() {
 <td class="ss_content">&nbsp;</td>
 </c:when>
 <c:otherwise>
+
 <td class="ss_content" valign="top">
 <c:forEach var="ev" items="${daymap.cal_eventdatamap}">
-<jsp:useBean id="ev" type="java.util.Map.Entry" />
+<jsp:useBean id="ev" type="java.util.List" />
 <%
-    Map m = (Map) ev.getValue();
+System.out.print("-------------------------------------------loop 1");
+%>
+<c:forEach var="evi" items="${ev}"> 
+<%
+System.out.print("---------------------------------------loop 2");
+%>
+<jsp:useBean id="evi" type="java.util.Map.Entry" />
+<%
+    Map m = (Map) evi.getValue();
     FolderEntry e = (FolderEntry) m.get("entry");
 %>
 <script language="javascript">
-getFilteredEntries()
+//getFilteredEntries()
 </script>
-<div id="folderLine_<c:out value="${ev.value.entry.id}"/>">	
+<div id="folderLine_<c:out value="${evi.value.entry.id}"/>">	
 <%
 if (ssSeenMap.checkIfSeen(e)) {
 %><img src="<html:imagesPath/>pics/1pix.gif" width="7px" alt="" \><%
@@ -42,15 +62,16 @@ if (ssSeenMap.checkIfSeen(e)) {
 %><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif" alt="unread entry" \><%
 	}
 %>
-    ${ev.value.cal_starttimestring}-${ev.value.cal_endtimestring}: 
+    ${evi.value.cal_starttimestring}-${evi.value.cal_endtimestring}: 
     <a class="ss_link" href="<ssf:url 
     adapter="true" 
     portletName="ss_forum" 
     folderId="<%= folderId %>" 
     action="view_entry" 
     entryId="<%= e.getId().toString() %>" actionUrl="false" />"
-    onClick="ss_loadEntry(this,'<c:out value="${ev.value.entry.id}"/>');return false;" >${ev.value.entry.title}</a></div>
+    onClick="ss_loadEntry(this,'<c:out value="${evi.value.entry.id}"/>');return false;" >${evi.value.entry.title}</a></div>
 
+</c:forEach>
 </c:forEach></td>
 
 </c:otherwise>
