@@ -40,7 +40,14 @@ public class FileRepositoryService implements RepositoryService {
 		FileHelper.mkdirsIfNecessary(rootDirPath);
 	}
 
-	public void write(Folder folder, FolderEntry entry, String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
+	public Object openRepositorySession() throws RepositoryServiceException {
+		return null;
+	}
+
+	public void closeRepositorySession(Object session) throws RepositoryServiceException {
+	}
+	
+	public void write(Object session, Folder folder, FolderEntry entry, String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
 		
 		// This implementation doesn't really follow the API spec in that
 		// it completely ignores relativeFilePath. 
@@ -57,7 +64,7 @@ public class FileRepositoryService implements RepositoryService {
 		}
 	}
 
-	public void read(Folder folder, FolderEntry entry, String relativeFilePath, OutputStream out) throws RepositoryServiceException {
+	public void read(Object session, Folder folder, FolderEntry entry, String relativeFilePath, OutputStream out) throws RepositoryServiceException {
 		String filePath = getFilePath(folder, entry, relativeFilePath);
 		
 		FileInputStream in = null;
@@ -80,26 +87,26 @@ public class FileRepositoryService implements RepositoryService {
 		}	
 	}
 
-	public void readVersion(Folder folder, FolderEntry entry, String relativeFilePath, String versionName, OutputStream out) throws RepositoryServiceException {
+	public void readVersion(Object session, Folder folder, FolderEntry entry, String relativeFilePath, String versionName, OutputStream out) throws RepositoryServiceException {
 		// Simply ignore version name. 
-		read(folder, entry, relativeFilePath, out);
+		read(session, folder, entry, relativeFilePath, out);
 	}
 
-	public void checkout(Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
+	public void checkout(Object session, Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
 		// Silently ignore this request so that application can continue to 
 		// work even with this crappy implementation. 
 	}
 
-	public void uncheckout(Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+	public void uncheckout(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
 		// Simply ignore it. 
 	}
 
-	public String checkin(Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
+	public String checkin(Object session, Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
 		// Simply return an empty string for version name.  
 		return "";
 	}
 
-	public boolean isCheckedOut(Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+	public boolean isCheckedOut(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
 		// Simply say no - this is a noxious implementation :)
 		return false; 
 	}
@@ -108,6 +115,12 @@ public class FileRepositoryService implements RepositoryService {
 		return false;
 	}
 	
+
+	public boolean exists(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+		String filePath = getFilePath(folder, entry, relativeFilePath);
+		return new File(filePath).exists();
+	}
+
 	private String getDirPath(Folder folder, FolderEntry entry) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		

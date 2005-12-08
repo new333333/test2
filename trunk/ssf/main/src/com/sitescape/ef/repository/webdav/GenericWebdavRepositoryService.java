@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpURL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,19 +21,34 @@ import com.sitescape.ef.util.FileHelper;
 public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactory implements RepositoryService {
 
 	protected Log logger = LogFactory.getLog(getClass());
-	
-	public SWebdavResource openSession(String userName, String password) 
-		throws IOException {
-		HttpURL hrl = new HttpURL(httpUrl);
-		hrl.setUserinfo(userName, password);
-		SWebdavResource wdr = new SWebdavResource(hrl);
-		
-		//WebdavUtil.dump(wdr);
-		
-		return wdr;
+
+	protected String docRootDir;
+
+	public String getDocRootDir() {
+		return docRootDir;
 	}
 
-	public void write(Folder folder, FolderEntry entry, String relativeFilePath, 
+	public void setDocRootDir(String docRootDir) {
+		this.docRootDir = docRootDir;
+	}
+	
+	public Object openRepositorySession() throws RepositoryServiceException{
+		try {
+			return openResource();
+		} catch (IOException e) {
+			throw new RepositoryServiceException(e);
+		}
+	}
+	
+	public void closeRepositorySession(Object session) throws RepositoryServiceException{
+		try {
+			((SWebdavResource) session).close();
+		} catch (IOException e) {
+			throw new RepositoryServiceException(e);			
+		}
+	}
+
+	public void write(Object session, Folder folder, FolderEntry entry, String relativeFilePath, 
 			MultipartFile mf) throws RepositoryServiceException {
 		/*
 		boolean checkedOut = isCheckedOut(folder, entry, relativeFilePath);
@@ -42,225 +56,176 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			checkout(folder, entry, relativeFilePath);
 		checkedOut = isCheckedOut(folder, entry, relativeFilePath);
 		*/
-
+		
+		SWebdavResource wdr = (SWebdavResource) session;
+		
 		try {
-			SWebdavResource wdr = openSession();
-			
-			try {
-				writeInternal(wdr, folder, entry, relativeFilePath, mf);
-			}
-			catch(IOException e) {
-				logError(wdr);
-				throw e;
-			}
-			finally {
-				wdr.close();
-			}
+			writeResource(wdr, folder, entry, relativeFilePath, mf);
 		} catch (IOException e) {
+			logError(wdr);
 			throw new RepositoryServiceException(e);
 		}
 		
 		//checkin(folder, entry, relativeFilePath);
 	}
 
-	public void read(Folder folder, FolderEntry entry, String relativeFilePath, 
+	public void read(Object session, Folder folder, FolderEntry entry, String relativeFilePath, 
 			OutputStream out) throws RepositoryServiceException {	
+		SWebdavResource wdr = (SWebdavResource) session;
+		
 		try {
-			SWebdavResource wdr = openSession();
-			
-			try {
-				readInternal(wdr, getResourcePath(folder, entry, relativeFilePath), out);
-			}
-			catch(IOException e) {
-				logError(wdr);
-				throw e;
-			}
-			finally {
-				wdr.close();
-			}
+			readResource(wdr, getResourcePath(folder, entry, relativeFilePath), out);
 		} catch (IOException e) {
+			logError(wdr);
 			throw new RepositoryServiceException(e);
 		}
 	}
 
 	// obsolete
-	public void readVersion(String fileVersionURI, OutputStream out) throws RepositoryServiceException {
+	public void readVersion(Object session, String fileVersionURI, OutputStream out) throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;
+		
 		try {
-			SWebdavResource wdr = openSession();
-			
-			try {
-				readInternal(wdr, fileVersionURIToResourcePath(fileVersionURI), out);
-			}
-			catch(IOException e) {
-				logError(wdr);
-				throw e;
-			}
-			finally {
-				wdr.close();
-			}
+			readResource(wdr, fileVersionURIToResourcePath(fileVersionURI), out);
 		} catch (IOException e) {
+			logError(wdr);
 			throw new RepositoryServiceException(e);
 		}
 	}
 
-	public void readVersion(Folder folder, FolderEntry entry, String relativeFilePath, 
+	public void readVersion(Object session, Folder folder, FolderEntry entry, String relativeFilePath, 
 			String versionName, OutputStream out) throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;
+		
 		try {
-			SWebdavResource wdr = openSession();
+			String versionResourcePath = getVersionResourcePath(wdr, folder, entry, 
+					relativeFilePath, versionName);			
 			
-			try {
-				String versionResourcePath = getVersionResourcePath(wdr, folder, entry, 
-						relativeFilePath, versionName);			
-				
-				readInternal(wdr, versionResourcePath, out);
-			}
-			catch(IOException e) {
-				logError(wdr);
-				throw e;
-			}
-			finally {
-				wdr.close();
-			}
+			readResource(wdr, versionResourcePath, out);
 		} catch (IOException e) {
+			logError(wdr);
 			throw new RepositoryServiceException(e);
 		}
 	}
 	
 	// obsolete
-	public List fileVersionsURIs(Folder folder, FolderEntry entry, 
+	public List fileVersionsURIs(Object session, Folder folder, FolderEntry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;
+		
 		try {
-			SWebdavResource wdr = openSession();
+			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
 			
-			try {
-				String resourcePath = getResourcePath(folder, entry, relativeFilePath);
-				
-				String value = WebdavUtil.getSingleHrefValue(wdr, 
-						resourcePath, "version-history");
-				
-				if(value == null || value.length() == 0)
-					throw new RepositoryServiceException("Cannot find version-history property for " + resourcePath);
-				
-				return WebdavUtil.getHrefValues(wdr, value, "version-set");
-			}
-			catch(IOException e) {
-				logError(wdr);
-				throw e;
-			}
-			finally {
-				wdr.close();
-			}
+			String value = WebdavUtil.getSingleHrefValue(wdr, 
+					resourcePath, "version-history");
+			
+			if(value == null || value.length() == 0)
+				throw new RepositoryServiceException("Cannot find version-history property for " + resourcePath);
+			
+			return WebdavUtil.getHrefValues(wdr, value, "version-set");
+
 		} catch (IOException e) {
+			logError(wdr);
 			throw new RepositoryServiceException(e);
 		}
 	}
 
-	public void checkout(Folder folder, FolderEntry entry, String relativeFilePath) 
+	public void checkout(Object session, Folder folder, FolderEntry entry, String relativeFilePath) 
 		throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;
+		
 		try {
-			SWebdavResource wdr = openSession();
-			
-			try {
-				String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+			if(!isCheckedOut(wdr, resourcePath)) {
 				boolean result = wdr.checkoutMethod(resourcePath);
 				if(!result)
 					throw new RepositoryServiceException("Failed to checkout [" + resourcePath + "]");
 			}
-			catch(IOException e) {
-				logError(wdr);
-				throw e;
-			}
-			finally {
-				wdr.close();
-			}
 		} catch (IOException e) {
+			logError(wdr);
 			throw new RepositoryServiceException(e);
 		}
 	}
 
-	public void uncheckout(Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+	public void uncheckout(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;
+		
 		try {
-			SWebdavResource wdr = openSession();
-			
-			try {
-				String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+			if(isCheckedOut(wdr, resourcePath)) {
 				boolean result = wdr.uncheckoutMethod(resourcePath);
 				if(!result)
 					throw new RepositoryServiceException("Failed to uncheckout [" + resourcePath + "]");
 			}
-			catch(IOException e) {
-				logError(wdr);
-				throw e;
-			}
-			finally {
-				wdr.close();
-			}
 		} catch (IOException e) {
+			logError(wdr);
 			throw new RepositoryServiceException(e);
 		}
 	}
 
-	public String checkin(Folder folder, FolderEntry entry, String relativeFilePath) 
+	public String checkin(Object session, Folder folder, FolderEntry entry, String relativeFilePath) 
 		throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;
+		
 		try {
-			SWebdavResource wdr = openSession();
-			
-			try {
-				String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+			String checkedInVersionResourcePath = getCheckedInVersionResourcePath(wdr, resourcePath);
+			String versionResourcePath = null;
+			String versionName = null;
+			if(checkedInVersionResourcePath == null || checkedInVersionResourcePath.length() == 0) {
+				// The resource is currently checked out. 
 				String location = wdr.checkin(resourcePath);
 				
 				if(location == null || location.length() == 0)
 					throw new RepositoryServiceException("Failed to checkin [" + resourcePath + "]");
 				
-				String versionResourcePath = locationURLToResourcePath(location);
+				String newVersionResourcePath = locationURLToResourcePath(location);
 				
-				String versionName = getVersionName(wdr, versionResourcePath);
-				
-				if(versionName == null || versionName.length() == 0)
-					throw new RepositoryServiceException("Failed to get version name for [" + versionResourcePath + "]");
-				
-				return versionName;
+				versionResourcePath = newVersionResourcePath;
 			}
-			catch(IOException e) {
-				logError(wdr);
-				throw e;
-			}
-			finally {
-				wdr.close();
-			}
+			else {
+				// The resource is currently checked in. 
+				versionResourcePath = checkedInVersionResourcePath;
+			}			
+			versionName = getVersionName(wdr, versionResourcePath);
+			
+			if(versionName == null || versionName.length() == 0)
+				throw new RepositoryServiceException("Failed to get version name for [" + versionResourcePath + "]");
+			
+			return versionName;
 		} catch (IOException e) {
+			logError(wdr);
 			throw new RepositoryServiceException(e);
 		}
 	}
 	
-	public boolean isCheckedOut(Folder folder, FolderEntry entry, String relativeFilePath) 
+	public boolean isCheckedOut(Object session, Folder folder, FolderEntry entry, String relativeFilePath) 
 		throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;
+		
 		try {
-			SWebdavResource wdr = openSession();
+			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
 			
-			try {
-				String resourcePath = getResourcePath(folder, entry, relativeFilePath);
-				
-				String checkedInValue = WebdavUtil.getSingleStringValue(wdr, 
-						resourcePath, "checked-in");
-				
-				if(checkedInValue == null || checkedInValue.length() == 0)
-					return true;
-				else
-					return false; 
-			}
-			catch(IOException e) {
-				logError(wdr);
-				throw e;
-			}
-			finally {
-				wdr.close();
-			}
+			return isCheckedOut(wdr, resourcePath);
 		} catch (IOException e) {
+			logError(wdr);
 			throw new RepositoryServiceException(e);
-		}	
+		}
 	}
-
+	
+	public boolean exists(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;
+		
+		try {
+			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+			
+			return exists(wdr, resourcePath);
+		} catch (IOException e) {
+			logError(wdr);
+			throw new RepositoryServiceException(e);
+		}
+	}
+	
 	public boolean supportVersionDeletion() {
 		// It appears that the Slide server we use does not allows this.
 		// It doesn't appear to me to be a restriction by the DeltaV spec
@@ -329,6 +294,21 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		return versionHistoryResourcePath + "/" + versionName;
 	}
 	
+	private boolean isCheckedOut(SWebdavResource wdr, String resourcePath) 
+		throws HttpException, IOException {		
+		String checkedInValue = getCheckedInVersionResourcePath(wdr, resourcePath);
+		
+		if(checkedInValue == null || checkedInValue.length() == 0)
+			return true;
+		else
+			return false; 
+	}
+
+	private String getCheckedInVersionResourcePath(SWebdavResource wdr, String resourcePath) 
+		throws HttpException, IOException {		
+		return WebdavUtil.getSingleStringValue(wdr, resourcePath, "checked-in");		
+	}
+	
 	private String getVersionName(SWebdavResource wdr, String versionResourcePath) 
 		throws HttpException, IOException {
 		return WebdavUtil.getSingleStringValue(wdr, versionResourcePath, "version-name");
@@ -351,7 +331,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 				versionControlledResourcePath, "version-history");
 	}
 
-	private void writeInternal(SWebdavResource wdr, Folder folder,
+	private void writeResource(SWebdavResource wdr, Folder folder,
 			FolderEntry entry, String relativeFilePath, MultipartFile mf)
 			throws IOException {
 		boolean result = false;
@@ -375,7 +355,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		// Get the path for the file resource.
 		String resourcePath = getResourcePath(entryDirPath, relativeFilePath);
 
-		if (wdr.headMethod(resourcePath)) {
+		if(exists(wdr, resourcePath)) {
 			// The file resource already exists.
 			// Since we always put file resource under version control as
 			// soon as it is created, it's largely unnecessary to do it
@@ -400,13 +380,13 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			result = wdr.versionControlMethod(resourcePath);
 		}
 	}
-
-	private SWebdavResource openSession() throws IOException {
-		// How do we get WebDAV username/password for individual users??
-		return openSession("root", "root");
+	
+	private boolean exists(SWebdavResource wdr, String resourcePath) 
+		throws HttpException, IOException {
+		return wdr.headMethod(resourcePath);
 	}
 	
-	private void readInternal(SWebdavResource wdr, String resourcePath,
+	private void readResource(SWebdavResource wdr, String resourcePath,
 			OutputStream out) throws IOException {
 
 		/*
