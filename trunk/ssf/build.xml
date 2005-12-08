@@ -203,6 +203,8 @@
 		</java>
 
 		<antcall target="deploy-liferay-post" />
+		
+		<copy file="tomcat/resources/ssf.xml" todir="${app.server.dir}/conf/Catalina/localhost" />		
 	</target>
 		
 	<target name="deploy-liferay-jboss-tomcat" depends="init-liferay">	
