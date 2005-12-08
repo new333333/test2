@@ -81,7 +81,7 @@ import com.sitescape.ef.module.shared.EntryBuilder;
 public abstract class AbstractFolderCoreProcessor extends CommonDependencyInjection 
 	implements FolderCoreProcessor {
     
-	private static final int DEFAULT_MAX_CHILD_ENTRIES = 20;
+	private static final int DEFAULT_MAX_CHILD_ENTRIES = ObjectKeys.FOLDER_MAX_PAGE_SIZE;
     protected DefinitionModule definitionModule;
      
 	protected DefinitionModule getDefinitionModule() {
