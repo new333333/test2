@@ -10,7 +10,7 @@ import org.apache.lucene.document.Field;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.util.InvokeUtil;
-import com.sitescape.ef.util.PropertyNotFoundException;
+import com.sitescape.ef.util.ObjectPropertyNotFoundException;
 
 /**
  *
@@ -34,7 +34,7 @@ public abstract class AbstractFieldBuilder implements FieldBuilder {
 	    try {
 	        dataElemValue = InvokeUtil.invokeGetter(entry, dataElemName);
 	    }
-	    catch (PropertyNotFoundException pe) {
+	    catch (ObjectPropertyNotFoundException pe) {
 	        CustomAttribute cAttr = entry.getCustomAttribute(dataElemName);
 	        if(cAttr != null)
 	            dataElemValue = cAttr.getValue();

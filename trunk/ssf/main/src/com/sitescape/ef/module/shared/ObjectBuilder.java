@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.sitescape.ef.util.InvokeUtil;
-import com.sitescape.ef.util.PropertyNotFoundException;
+import com.sitescape.ef.util.ObjectPropertyNotFoundException;
 
 public class ObjectBuilder  {
 	public static void updateObject(Object target, Map data)  {
@@ -17,7 +17,7 @@ public class ObjectBuilder  {
 			Object val = entry.getValue();
 			try {
 				InvokeUtil.invokeSetter(target, attr, val);
-			} catch (PropertyNotFoundException pe) {
+			} catch (ObjectPropertyNotFoundException pe) {
 				//just skip it
 			}
 		}

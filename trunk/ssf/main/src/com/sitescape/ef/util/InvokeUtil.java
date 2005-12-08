@@ -23,7 +23,7 @@ public class InvokeUtil {
     private static Map setters = new HashMap(); // Cache of setters
     
     public static Object invokeGetter(Object target, String propertyName) 
-    	throws com.sitescape.ef.util.PropertyNotFoundException, InvokeException {
+    	throws com.sitescape.ef.util.ObjectPropertyNotFoundException, InvokeException {
         String key = makeKey(target, propertyName);
         Getter getter = (Getter) getters.get(key);
         
@@ -31,7 +31,7 @@ public class InvokeUtil {
             try {
                 getter = propertyAccessor.getGetter(target.getClass(), propertyName);
             } catch (PropertyNotFoundException e) {
-                throw new com.sitescape.ef.util.PropertyNotFoundException(e);
+                throw new com.sitescape.ef.util.ObjectPropertyNotFoundException(e);
             }
             getters.put(key, getter);
         }
@@ -43,7 +43,7 @@ public class InvokeUtil {
         }
     }
     public static void invokeSetter(Object target, String propertyName, Object value) 
-		throws com.sitescape.ef.util.PropertyNotFoundException, InvokeException {
+		throws com.sitescape.ef.util.ObjectPropertyNotFoundException, InvokeException {
     	String key = makeKey(target, propertyName);
     	Setter setter = (Setter) setters.get(key);
     
@@ -51,7 +51,7 @@ public class InvokeUtil {
     		try {
     			setter = propertyAccessor.getSetter(target.getClass(), propertyName);
     		} catch (PropertyNotFoundException e) {
-    			throw new com.sitescape.ef.util.PropertyNotFoundException(e);
+    			throw new com.sitescape.ef.util.ObjectPropertyNotFoundException(e);
     		}
     		setters.put(key, setter);
     	}

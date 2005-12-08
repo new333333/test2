@@ -6,17 +6,17 @@ import com.sitescape.ef.exception.UncheckedException;
  *
  * @author Jong Kim
  */
-public class PropertyNotFoundException extends UncheckedException {
-    public PropertyNotFoundException() {
+public class ObjectPropertyNotFoundException extends UncheckedException {
+    public ObjectPropertyNotFoundException() {
         super();
     }
-    public PropertyNotFoundException(String message) {
+    public ObjectPropertyNotFoundException(String message) {
         super(message);
     }
-    public PropertyNotFoundException(String message, Throwable cause) {
+    public ObjectPropertyNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
-    public PropertyNotFoundException(Throwable cause) {
+    public ObjectPropertyNotFoundException(Throwable cause) {
         super(cause);
     }
 }
