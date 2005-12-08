@@ -3,6 +3,7 @@ package com.sitescape.ef.search;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
 import com.sitescape.ef.lucene.Hits;
 
 /**
@@ -82,6 +83,34 @@ public interface LuceneSession {
      * @throws LuceneException
      */
     public Hits search(Query query, int offset, int size) throws LuceneException;
+    
+    /**
+     * Force the <code>LuceneSession</code> to flush.
+     * <p>
+     * Flushing is the process of synchronizing the underlying persistent store
+     * (ie, index files on disk) with persistable state held in memory.
+     * 
+     * @throws LuceneException
+     *
+     */
+    
+    /**
+     * Search and return the entire result set.
+     * 
+     * @throws LuceneException
+     */
+    public Hits search(Query query, Sort sort) throws LuceneException;
+    
+    /**
+     * Search and return only the portion of the result specified.
+     * 
+     * @param searchobject
+     * @param offset
+     * @param size
+     * @return
+     * @throws LuceneException
+     */
+    public Hits search(Query query, Sort sort, int offset, int size) throws LuceneException;
     
     /**
      * Force the <code>LuceneSession</code> to flush.

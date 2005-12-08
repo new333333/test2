@@ -4,6 +4,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
 
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.lucene.SsfIndexInterface;
@@ -72,6 +73,20 @@ public class RemoteLuceneSession implements LuceneSession {
     }
 
     public Hits search(Query query, int offset, int size) throws LuceneException {
+    	Hits hits;
+    	try {
+    		hits = index.search(indexName, query,offset,size);
+    	} catch (RemoteException re) {throw new LuceneException(re);}
+        return hits;
+    }
+
+    public Hits search(Query query, Sort sort) throws LuceneException {
+    	try {
+    		return index.search(indexName, query);
+    	} catch (RemoteException re) {throw new LuceneException(re);}
+    }
+
+    public Hits search(Query query, Sort sort, int offset, int size) throws LuceneException {
     	Hits hits;
     	try {
     		hits = index.search(indexName, query,offset,size);
