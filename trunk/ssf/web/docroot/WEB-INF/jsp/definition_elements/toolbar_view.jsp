@@ -14,7 +14,7 @@ function ss_toolbarPopupUrl(url) {
 	<div class="ss_toolbar_menu" width="100%" id="toolbar_<c:out value="${toolbarMenu.key}" />">
 	  <c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}">
 	    <c:if test="${empty toolbarMenuCategory.key}">
-	      <span class="portlet-font"><b><c:out value="${toolbarMenuCategory.key}" /></b></span>
+	      <span class="portlet-font; font-size:smaller;font-weight:bold;"><c:out value="${toolbarMenuCategory.key}" /></span>
 	    </c:if>
 	    <ul class="ss_dropdownmenu">
 	      <c:forEach var="toolbarMenuCategoryItem" items="${toolbarMenuCategory.value}">
@@ -44,8 +44,7 @@ function ss_toolbarPopupUrl(url) {
 	            </c:otherwise>
 	   		  </c:choose>
 	          onClick="return(ss_openUrlInPortlet(this.href, ${popup}));">
-	          <span class="portlet-font" 
-	          style="font-size: smaller; text-decoration: none;">
+	          <span class="portlet-font" style="font-size: smaller;">
 	          <c:out value="${toolbarMenuCategoryItem.key}" /></span></a>
 	        </li>
 	      </c:forEach>
@@ -55,8 +54,7 @@ function ss_toolbarPopupUrl(url) {
    </c:if>
  </c:forEach>
 
-<div class="portlet-section-header" style="margin-top: 8px; margin-bottom: 8px; 
-  margin-left: 0px; margin-right: 0px; width:100%; display:block;">
+<div class="ss_toolbar">
 <c:set var="delimiter" value=""/>
 <c:forEach var="toolbarMenu" items="${toolbar}">
   <jsp:useBean id="toolbarMenu" type="java.util.Map.Entry"/>
@@ -83,6 +81,8 @@ function ss_toolbarPopupUrl(url) {
 	    </c:when>
 	    <c:when test="${!empty toolbarMenu.value.urlParams}">
 	      <a 
+	      	title="here"
+	        class="ss_toolbar_item"
 	        href="<ssf:url>
 	        <c:forEach var="p2" items="${toolbarMenu.value.urlParams}">
 			  <c:set var="key2" value="${p2.key}"/>
@@ -102,7 +102,7 @@ function ss_toolbarPopupUrl(url) {
 	    </c:otherwise>
 	  </c:choose>
     </c:if>
-    <span class="portlet-font"><c:out value="${toolbarMenu.value.title}" /></span></a>
+    <c:out value="${toolbarMenu.value.title}" /></a>
   </div>
   <c:set var="delimiter" value=" | "/>
 </c:forEach>

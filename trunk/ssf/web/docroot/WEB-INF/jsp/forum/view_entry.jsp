@@ -186,24 +186,25 @@ function scrollToSavedLocation() {
 	}
 }
 
-var highlightBgColor = "<%= betaColor %>"
+// var highlightBgColor = "<%= betaColor %>"
+var highlightBgColor = "#efefef"
 var highlightedLine = null;
-var savedHighlightedLineBgCollor = null;
+var savedHighlightedLineBgColor = null;
 function highlightLine(obj) {
 	alert("highlightLine")
 	if (highlightedLine != null) {
 		if (highlightedLine.offsetParent.parentElement) {
-			highlightedLine.offsetParent.parentElement.bgColor = savedHighlightedLineBgCollor;
+			highlightedLine.offsetParent.parentElement.bgColor = savedHighlightedLineBgColor;
 		} else {
-			highlightedLine.offsetParent.bgColor = savedHighlightedLineBgCollor;
+			highlightedLine.offsetParent.bgColor = savedHighlightedLineBgColor;
 		}
 	}
 	highlightedLine = obj;
 	if (obj.offsetParent.parentElement) {
-		savedHighlightedLineBgCollor = highlightedLine.offsetParent.parentElement.bgColor;
+		savedHighlightedLineBgColor = highlightedLine.offsetParent.parentElement.bgColor;
 		highlightedLine.offsetParent.parentElement.bgColor = highlightBgColor;
 	} else {
-		savedHighlightedLineBgCollor = highlightedLine.offsetParent.bgColor;
+		savedHighlightedLineBgColor = highlightedLine.offsetParent.bgColor;
 		highlightedLine.offsetParent.bgColor = highlightBgColor;
 	}
 }
@@ -218,11 +219,11 @@ function highlightLineById(id) {
     }
     
 	if (highlightedLine != null) {
-		highlightedLine.bgColor = savedHighlightedLineBgCollor;
+		highlightedLine.bgColor = savedHighlightedLineBgColor;
 	}
 	if (obj != null) {
 		highlightedLine = obj;
-		savedHighlightedLineBgCollor = highlightedLine.bgColor;
+		savedHighlightedLineBgColor = highlightedLine.bgColor;
 		highlightedLine.bgColor = highlightBgColor;
 	}
 }

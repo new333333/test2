@@ -1,6 +1,6 @@
 <% //Description view %>
 <c:if test="${!empty ssDefinitionEntry.description}">
 <div class="ss_entryContent">
-<c:out value="${ssDefinitionEntry.description.text}" escapeXml="false"/>
+ <span class="ss_content"><c:out value="${ssDefinitionEntry.description.text}" escapeXml="false"/></span>
 </div>
 </c:if>

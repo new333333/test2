@@ -32,48 +32,39 @@ function ss_loadEntryUrl(url,id) {
 }
 
 </script>
-<div class="folder">
-<table width="100%">
-<tr>
-  <th align="left">Folders</th>
-</tr>
-<tr>
+<div class="ss_folder">
+<h1 class="ss_folderTitle">Folders</h1>
+<table width="100%" border="0" cellpadding="2" cellspacing="0">
+ <tr>
   <td>
-	<div>
 	  <ssf:tree treeName="folderTree" treeDocument="<%= ssFolderDomTree %>" 
 	    rootOpen="false" 
-	    nodeOpen="<%= parentFolderId %>" highlightNode="<%= folderId %>" />
-	</div>
-  </td>
-</tr>
+	    nodeOpen="<%= parentFolderId %>" highlightNode="<%= folderId %>" /></td>
+ </tr>
 </table>
-</div>
-<br>
-<div class="folder">
-<table width="100%">
-<tr>
-  <th align="left"><img border="0" src="<html:imagesPath/>pics/sym_s_unseen_header.gif"></th>
-  <th align="left">Number</th>
-  <th align="left">Title</th>
-  <th align="left">Author</th>
-  <th align="left">Date</th>
+
+<table width="100%" border="0" cellpadding="2" cellspacing="0">
+ <tr>
+  <td class="ss_contentbold"><img border="0" alt="Unread entries" src="<html:imagesPath/>pics/sym_s_unseen_header.gif"></td>
+  <td class="ss_contentbold">Number</td>
+  <td class="ss_contentbold">Title</td>
+  <td class="ss_contentbold">Author</td>
+  <td class="ss_contentbold">Date</td>
 </tr>
 <c:forEach var="entry" items="${ssFolderEntries}" >
 <jsp:useBean id="entry" type="com.sitescape.ef.domain.FolderEntry" />
 <tr id="folderLine_<c:out value="${entry.id}"/>">
-  <td align="right" valign="top" width="1%">
+  <td align="right" valign="top" width="1%" class="ss_content">
 <%
 	if (ssSeenMap.checkIfSeen(entry)) {
 %>&nbsp;<%
 	} else {
 %><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
 	}
-%>
-  </td>
-  <td align="right" valign="top" width="5%">
-	<c:out value="${entry.docNumber}"/>.&nbsp;&nbsp;&nbsp;
-  </td>
-  <td valign="top" width="40%">
+%></td>
+  <td align="right" valign="top" width="5%" class="ss_content">
+	<c:out value="${entry.docNumber}"/>.&nbsp;&nbsp;&nbsp;</td>
+  <td valign="top" width="40%" class="ss_content">
     <a href="<ssf:url 
     adapter="true" 
     portletName="ss_forum" 
@@ -82,17 +73,14 @@ function ss_loadEntryUrl(url,id) {
     entryId="<%= entry.getId().toString() %>" actionUrl="false" popup="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry.id}"/>');return false;" >
     <c:if test="${empty entry.title}">
-    <span class="fineprint"><i>(no title)</i></span>
+    <span class="fineprint">--no title--</span>
     </c:if>
-    <c:out value="${entry.title}"/></a>
-  </td>
-  <td valign="top" width="30%">
-    <c:out value="${entry.creation.principal.title}"/>
-  </td>
-  <td valign="top" width="20%">
-    <c:out value="${entry.modification.date}"/>
-  </td>
-</tr>
+    <c:out value="${entry.title}"/></a></td>
+  <td valign="top" width="30%" class="ss_content">
+    <c:out value="${entry.creation.principal.title}"/></td>
+  <td valign="top" width="24%" class="ss_content">
+    <c:out value="${entry.modification.date}"/></td>
+ </tr>
 </c:forEach>
 </table>
 </div>

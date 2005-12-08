@@ -53,12 +53,8 @@ function ss_getPreviousEntryId() {
 }
 
 </script>
-<div class="portlet-section-header" 
-  style="margin-top: 8px; margin-bottom: 8px; margin-right:2px; margin-left:2px; 
-    width:100%; display:block;">
-  <table cellpadding="0" cellspacing="0" width="100%" style="display:block;">
-    <tr>
-      <td nowrap align="left" width="10%">
+<div class="ss_toolbar">
+ <div class="ss_toolbar_item">
         <a href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
@@ -69,7 +65,7 @@ function ss_getPreviousEntryId() {
           />"
           onClick="ss_loadEntry(this,'');return false;" ><img 
           border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a>
-        <span class="portlet-font">History</span>
+        <span class="ss_toolbar_item">History</span>
         <a href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
@@ -80,10 +76,10 @@ function ss_getPreviousEntryId() {
  		  />"
           onClick="ss_loadEntry(this,'');return false;" ><img 
           border="0" src="<html:imagesPath/>pics/sym_s_next.gif"></a>
-      </td>
-      <td width="80%">&nbsp;</td>
-      <td nowrap align="right" width="10%">
-        <a href="<ssf:url
+      </div>
+      <div class="ss_toolbar_item">
+        <a  
+          href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
           folderId="<%= ssFolder.getId().toString() %>"
@@ -93,8 +89,10 @@ function ss_getPreviousEntryId() {
           />"
           onClick="ss_getNextEntryId();return false;" ><img 
           border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a>
-        <span class="portlet-font">Entries</span>
-        <a href="<ssf:url
+        <span class="ss_toolbar_item">Entries</span>
+        <a 
+          class="ss_toolbar_item" 
+          href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
           folderId="<%= ssFolder.getId().toString() %>"
@@ -104,10 +102,8 @@ function ss_getPreviousEntryId() {
           />"
           onClick="ss_getPreviousEntryId(ss_currentEntryId);return false;" ><img 
           border="0" src="<html:imagesPath/>pics/sym_s_next.gif"></a>
-      </td>
-    </tr>
-  </table>
-</div>
+      </div>
+ </div>
 
 <% // Debugging code (turned off) %>
 <c:if test="">
