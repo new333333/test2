@@ -66,15 +66,21 @@ div.ss_historybar {
   
 /* highlights */
 .ss_highlight_alpha {
+  font-size: smaller;
+  font-family: arial, helvetica, sans-serif;
+  font-weight: bold;
   background-color: <%= alphaColor %>;
   }
   
 .ss_highlight_beta {
+  font-size: smaller;
+  font-family: arial, helvetica, sans-serif;
+  font-weight: bold;
   background-color: <%= betaColor %>;
   }
   
 .ss_highlight_gamma {
-  font-size: .7em;
+  font-size: smaller;
   font-family: arial, helvetica, sans-serif;
   font-weight: bold;
   color: <%= betaColor %>;
@@ -82,7 +88,7 @@ div.ss_historybar {
   
 .ss_titlebold {
   font-family: arial, helvetica, sans-serif;
-  font-size: 13px;
+  font-size: medium;
   font-weight: bold;
   color: <%= alphaColor %>;  
   }
@@ -117,7 +123,8 @@ div.ss_historybar {
 .ssf-box-title {
 	background: <%= gammaColor %> url(<html:imagesPath/>box/box_title_bg_gradient.gif) repeat-x;
 	color: #4A517D;
-	font-family: Tahoma, Arial;
+	font-family: arial, helvetica, sans-serif;
+	font-size: smaller;
 	height: 27px;
 	left: 10px;
 	padding: 0px 3px 0px 3px;
