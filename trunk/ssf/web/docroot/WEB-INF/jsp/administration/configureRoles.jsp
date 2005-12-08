@@ -24,9 +24,41 @@
 			<portlet:param name="action" value="configure_roles"/>
 		</portlet:actionURL>">
 		
-		<h3>Not much implemented yet!</h3>
+	<span><b><ssf:nlt tag="admin.roles.add" text="Add a new role"/></b></span>
+	<span><b><ssf:nlt tag="admin.roles.name" text="Name"/></b></span>
+	<input type="text" size="100" name="roleName"><br>
+		
+	<c:forEach var="operation" items="${ssWorkAreaOperations}">
+		<input type="checkbox" name="<c:out value="${operation.key}"/>">
+		<c:out value="${operation.value}"/><br>
+	</c:forEach>		
 
-	<input type="submit" name="okBtn" value="Ok">
-	<input type="submit" name="cancelBtn" value="Cancel">
+	<input type="submit" name="addBtn" value="<ssf:nlt tag="common.add" text="Add"/>">
+<form>
+
+<br>
+<hr>
+<br>
+
+<form name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
+			<portlet:param name="action" value="configure_roles"/>
+		</portlet:actionURL>">
+
+		<c:forEach var="function" items="${ssFunctions}">
+		<c:out value="${function.value.id}"/><br>
+		</c:forEach>
+	<input type="submit" name="modifyBtn"
+	 value="<ssf:nlt tag="common.modify" text="Modify"/>">
+<form>
+
+<br>
+<hr>
+<br>
+
+<form name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
+			<portlet:param name="action" value="configure_roles"/>
+		</portlet:actionURL>">
+
+	<input type="submit" name="cancelBtn" value="<ssf:nlt tag="common.cancel" text="Cancel"/>">
 <form>
 

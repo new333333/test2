@@ -1,4 +1,6 @@
 package com.sitescape.ef.portlet.administration;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -11,41 +13,85 @@ import javax.portlet.PortletMode;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.portlet.forum.ActionUtil;
+import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.FunctionManager;
+import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.module.ldap.LdapConfig;
 import com.sitescape.util.GetterUtil;
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.jobs.Schedule;
+import com.sitescape.ef.util.NLT;
 
 public class ConfigureRolesController extends  SAbstractController {
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		if (formData.containsKey("okBtn")) {
-			Map input = new HashMap();
-			String val;
-			//val = ActionUtil.getStringValue(formData, LdapConfig.SESSION_SYNC);
-			//input.put(LdapConfig.SESSION_SYNC, Boolean.toString(GetterUtil.getBoolean(val, false)));
-			//getLdapModule().updateLdapConfig(input);
-			response.setRenderParameter(WebKeys.ACTION, "");
-			response.setWindowState(WindowState.NORMAL);
-			response.setPortletMode(PortletMode.VIEW);
-		} else if (formData.containsKey("cancelBtn")) {
-			response.setRenderParameter(WebKeys.ACTION, "");
-			response.setWindowState(WindowState.NORMAL);
-			response.setPortletMode(PortletMode.VIEW);
-		} else
-			response.setRenderParameters(formData);
+		if (formData.containsKey("addBtn") && formData.containsKey("roleName")) {
+	        User user = RequestContextHolder.getRequestContext().getUser();
+			FunctionManager functionManager = getFunctionManager();
+			
+			List zoneFunctions = functionManager.findFunctions(user.getZoneName());
+			if (zoneFunctions.contains(ActionUtil.getStringValue(formData, "roleName"))) {
+				//Role already exists
+
+			} else {
+				//Get the list of workAreaOperations to be added to this new role/function
+				Function function = new Function();
+				function.setZoneName(user.getZoneName());
+				function.setName(ActionUtil.getStringValue(formData, "roleName"));
+				Iterator itWorkAreaOperations = WorkAreaOperation.getWorkAreaOperations();
+				while (itWorkAreaOperations.hasNext()) {
+					WorkAreaOperation operation = (WorkAreaOperation) itWorkAreaOperations.next();
+					if (formData.containsKey(operation.toString())) {
+						function.addOperation(operation);
+					}
+				}
+				functionManager.addFunction(function);
+			}
 		
+		} else if (formData.containsKey("modifyBtn")) {
+	        User user = RequestContextHolder.getRequestContext().getUser();
+			FunctionManager functionManager = getFunctionManager();
+
+			//Add the list of workAreaOperations that can be added to each function
+			Map operations = new HashMap();
+			Iterator itWorkAreaOperations = WorkAreaOperation.getWorkAreaOperations();
+			while (itWorkAreaOperations.hasNext()) {
+				String operationName = (String) ((WorkAreaOperation) itWorkAreaOperations.next()).toString();
+				operations.put(operationName, NLT.get(ObjectKeys.WORKAREA_OPERATION + "." + operationName));
+			}
+		
+		} else {
+			response.setRenderParameter(WebKeys.ACTION, "");
+			response.setWindowState(WindowState.NORMAL);
+			response.setPortletMode(PortletMode.VIEW);
+		}
 	}
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		FunctionManager functionManager = getFunctionManager();
+		Map model = new HashMap();
 		
-		return new ModelAndView("administration/configureRoles");
+		//Add the list of existing functions for this zone
+		model.put("ssFunctions", functionManager.findFunctions(user.getZoneName()));
+		
+		//Add the list of workAreaOperations that can be added to each function
+		Map operations = new HashMap();
+		Iterator itWorkAreaOperations = WorkAreaOperation.getWorkAreaOperations();
+		while (itWorkAreaOperations.hasNext()) {
+			String operationName = (String) ((WorkAreaOperation) itWorkAreaOperations.next()).toString();
+			operations.put(operationName, NLT.get(ObjectKeys.WORKAREA_OPERATION + "." + operationName));
+		}
+		model.put("ssWorkAreaOperations", operations);
+		
+		return new ModelAndView("administration/configureRoles", model);
 		
 	}
 }

@@ -1,6 +1,7 @@
 package com.sitescape.ef.security.function;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -64,4 +65,15 @@ public class WorkAreaOperation {
     public String toString() {
         return getName();
     }
+    
+    /**
+     * Returns an iterator over <code>WorkAreaOperation</code>s.
+     * The returned datastructure should never be modified by the caller. 
+     * 
+     * @return
+     */
+    public static Iterator getWorkAreaOperations() {
+    	return Instances.values().iterator();
+    }
+
 }
