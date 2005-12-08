@@ -14,7 +14,7 @@ import java.util.Map;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
-
+import com.sitescape.ef.util.PortletRequestUtils;
 
 /**
  * @author Peter Hurley
@@ -24,20 +24,22 @@ public class AddEntryController extends SAbstractForumController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
-		Long folderId = ActionUtil.getForumId(formData, request);
-		String entryId = "";
-		String action = ActionUtil.getStringValue(formData, WebKeys.ACTION);
+		Long folderId = ActionUtil.getForumId(request);
+		String entryId="";
+		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		//See if the add entry form was submitted
 		if (formData.containsKey("okBtn")) {
 			//The form was submitted. Go process it
 			// Returns a map where key is form field name (String) and value is LiferayFileItem.
-			String entryType = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_TYPE);
+			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_ENTRY_TYPE, "");
 			if (action.equals(WebKeys.FORUM_ACTION_ADD_ENTRY)) {
 				//entryId = getFolderModule().addEntry(folderId, entryType, formData, ((MultipartFileSupport) request).getFileMap()).toString();
-				entryId = getFolderModule().addEntry(folderId, entryType, formData, new HashMap()).toString();
+				Long id = getFolderModule().addEntry(folderId, entryType, formData, new HashMap());
+				entryId = id.toString();
 			} else if (action.equals(WebKeys.FORUM_ACTION_ADD_REPLY)) {
-				entryId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_ID);				
-				getFolderModule().addReply(folderId, Long.valueOf(entryId), entryType, formData, ((MultipartFileSupport) request).getFileMap());
+				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_ENTRY_ID));				
+				getFolderModule().addReply(folderId, id, entryType, formData, ((MultipartFileSupport) request).getFileMap());
+				entryId = id.toString();
 			}
 			//response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 			//response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
@@ -46,7 +48,7 @@ public class AddEntryController extends SAbstractForumController {
 			//response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
 			if (action.equals(WebKeys.FORUM_ACTION_ADD_ENTRY)) {
 			} else if (action.equals(WebKeys.FORUM_ACTION_ADD_REPLY)) {
-				entryId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_ID);				
+				entryId = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_ENTRY_ID, "");				
 			}
 		}
 		
@@ -61,9 +63,9 @@ public class AddEntryController extends SAbstractForumController {
 		Map model;
 		Map formData1 = request.getParameterMap();
 		Map formData = new HashMap((Map)formData1);
-		Long folderId = ActionUtil.getForumId(formData, request);
+		Long folderId = ActionUtil.getForumId(request);
 			
-		String action = ActionUtil.getStringValue(formData, WebKeys.ACTION);
+		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		String path = WebKeys.VIEW_ADD_ENTRY;
 		
 		//See if the add entry form was submitted

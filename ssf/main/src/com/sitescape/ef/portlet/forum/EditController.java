@@ -16,7 +16,7 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
-
+import com.sitescape.ef.util.PortletRequestUtils;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Workspace;
 
@@ -30,7 +30,7 @@ public class EditController extends SAbstractController implements DomTreeBuilde
 
 		PortletPreferences prefs = request.getPreferences();
 
-		String forumId = ActionUtil.getStringValue(request.getParameterMap(), WebKeys.FORUM_URL_FORUM_ID);
+		String forumId = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_FORUM_ID, "");
 
 		//Get the name of the forum to be displayed
 		prefs.setValue(WebKeys.FORUM_URL_FORUM_ID, forumId);

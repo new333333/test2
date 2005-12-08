@@ -13,7 +13,7 @@ import java.util.Map;
 
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.util.Validator;
-
+import com.sitescape.ef.util.PortletRequestUtils;
 
 /**
  * @author Peter Hurley
@@ -23,17 +23,17 @@ public class ConfigureController extends SAbstractForumController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
-		Long folderId = ActionUtil.getForumId(formData, request);
+		Long folderId = ActionUtil.getForumId(request);
 			
 		//See if the form was submitted
 		if (formData.containsKey("okBtn")) {
 	    	List definitions = new ArrayList();
-	    	String defId = ActionUtil.getStringValue(formData, "folderDefinition");
+	    	String defId = PortletRequestUtils.getStringParameter(request, "folderDefinition");
 			if (!Validator.isNull(defId)) {
 				definitions.add(defId);
 			}
 				
-			String[] defIds = (String[]) formData.get("entryDefinition");
+			String[] defIds = PortletRequestUtils.getStringParameters(request, "entryDefinition");
 			if (defIds != null) {
 				for (int i = 0; i < defIds.length; i++) {
 					defId = defIds[i];
@@ -54,7 +54,7 @@ public class ConfigureController extends SAbstractForumController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		Long folderId = ActionUtil.getForumId(formData, request);
+		Long folderId = ActionUtil.getForumId(request);
 	
 		Map model = getForumActionModule().getConfigureForum(formData, request, folderId);
 		return new ModelAndView(WebKeys.VIEW_CONFIGURE, model);

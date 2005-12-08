@@ -37,7 +37,7 @@ import com.sitescape.ef.domain.NoFolderByTheIdException;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
-
+import com.sitescape.ef.util.PortletRequestUtils;
 
 /**
  * <a href="ActionUtil.java.html"><b><i>View Source</i></b></a>
@@ -56,49 +56,27 @@ public class ActionUtil {
 	 * @return
 	 * @throws NoFolderByTheIdException
 	 */
-	public static Long getForumId(Map formData, PortletRequest req) throws NoFolderByTheIdException {
-		String forumId = "";
-		if (formData.containsKey(WebKeys.FORUM_URL_FORUM_ID)) {
-			Object obj = formData.get(WebKeys.FORUM_URL_FORUM_ID);
-			if (obj instanceof String[]) {
-				forumId = ((String[]) formData.get(WebKeys.FORUM_URL_FORUM_ID))[0];
-			} else {
-				forumId = (String) formData.get(WebKeys.FORUM_URL_FORUM_ID);
+	public static Long getForumId(PortletRequest req) throws NoFolderByTheIdException {
+		Long forumId;
+		try {
+			forumId = PortletRequestUtils.getLongParameter(req, WebKeys.FORUM_URL_FORUM_ID); 
+			
+		} catch (Exception ex) {
+			forumId = null;
+		}
+		if (forumId == null) {
+			try {
+				//Get the preferences settings to see if there is a forum defined
+				String id  =  req.getPreferences().getValue("forumId", "");
+				forumId = Long.valueOf(id);
+			} catch (NumberFormatException nf) {
+				throw new NoFolderByTheIdException(new Long(0), nf);
 			}
 		}
-		if (forumId.equals("")) {
-			//Get the preferences settings to see if there is a forum defined
-			PortletPreferences prefs = req.getPreferences();
-			forumId = prefs.getValue("forumId", "");
-		}
-		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
-		try {
-			return Long.valueOf(forumId);
-		} catch (NumberFormatException nf) {
-			throw new NoFolderByTheIdException(new Long(0), nf);
-		}
-	}
-	public static Long getForumId(Map formData, HttpServletRequest req) throws NoFolderByTheIdException {
-		Long forumId = getForumId(formData);
 		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId.toString());
 		return forumId;
 	}
-	public static Long getForumId(Map formData) throws NoFolderByTheIdException {
-		String forumId = "";
-		if (formData.containsKey(WebKeys.FORUM_URL_FORUM_ID)) {
-			Object obj = formData.get(WebKeys.FORUM_URL_FORUM_ID);
-			if (obj instanceof String[]) {
-				forumId = ((String[]) formData.get(WebKeys.FORUM_URL_FORUM_ID))[0];
-			} else {
-				forumId = (String) formData.get(WebKeys.FORUM_URL_FORUM_ID);
-			}
-		}
-		try {
-			return Long.valueOf(forumId);
-		} catch (NumberFormatException nf) {
-			throw new NoFolderByTheIdException(new Long(0), nf);
-		}
-	}
+
 	public static Map getEntryDefsAsMap(Folder folder) {
 		Map defaultEntryDefinitions = new HashMap();
 		Iterator itDefaultEntryDefinitions = folder.getEntryDefs().listIterator();
@@ -109,59 +87,4 @@ public class ActionUtil {
 		return defaultEntryDefinitions;
 	}
 
-	public static String getStringValue(Map formData, String key) {
-		String val;
-		Object obj = formData.get(key);
-		if (obj == null) return "";
-		if (obj instanceof String[]) {
-			val = ((String[]) formData.get(key))[0];
-		} else {
-			val = (String)obj;
-		}
-		return val;
-	}
-	public static String[] getStringArray(Map formData, String key) {
-		String[] val;
-		Object obj = formData.get(key);
-		if (obj == null) return new String[0];
-		if (obj instanceof String[]) {
-			val = (String[])obj;
-		} else {
-			val = new String[0];
-			val[0] = (String)obj;
-		}
-		return val;
-	}
-	public static Integer getIntegerValue(Map formData, String key) {
-		Integer val=null;
-		String sVal;
-		Object obj = formData.get(key);
-		if (obj == null) return null;
-		if (obj instanceof String[]) {
-			sVal = ((String[]) formData.get(key))[0];
-		} else {
-			sVal = (String) obj;
-		}
-		try {
-			val = Integer.valueOf(sVal);
-		} catch (NumberFormatException nf) {
-			return null;
-		}
-		return val;
-	}
-	public static Set getLongSet(Map formData, String key) {
-		Set result = new HashSet();
-		Object obj = formData.get(key);
-		if (obj == null) return result;
-		if (obj instanceof String[]) {
-			String vals[] = (String[])obj;
-			for (int i=0; i<vals.length; ++i) {
-				obj = vals[i];
-				if (!obj.equals("")) result.add(Long.valueOf((String)obj));
-			}
-		} else {
-			if (!obj.equals("")) result.add(Long.valueOf((String)obj));
-		}
-		return result;
-	}
 }
