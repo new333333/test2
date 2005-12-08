@@ -58,7 +58,7 @@ public class InvokeUtil {
     	}
     	
     	try {
-    		setter.set(target, value, (SessionFactoryImplementor)SpringHibernateSessionManagementAdaptor.getInstance().getSessionFactory());
+    		setter.set(target, value, (SessionFactoryImplementor)SpringContextUtil.getBean("sessionFactory"));
     	} catch (HibernateException e) {
     		throw new InvokeException(e);
     	}

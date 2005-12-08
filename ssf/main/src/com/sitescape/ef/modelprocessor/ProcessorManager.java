@@ -8,7 +8,7 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
 import com.sitescape.ef.util.ReflectHelper;
-import com.sitescape.ef.util.SpringHelper;
+import com.sitescape.ef.util.SpringContextUtil;
 
 /**
  *
@@ -29,17 +29,12 @@ public class ProcessorManager {
     private static final int SPRING_BEAN_TYPE_DEFAULT 	= SPRING_BEAN_TYPE_NONE;
     
     private Document document;
-    private SpringHelper springHelper;
     
     // TODO We might want to cache the processors (or their class names) 
     // so that we don't have to rebuild them over and over again...
     
     public void setConfig(MergeableXmlClassPathConfigFiles config) {
         this.document = config.getAsMergedDom4jDocument();
-    }
-    
-    public void setSpringHelper(SpringHelper springHelper) {
-        this.springHelper = springHelper;
     }
     
     public Object getProcessor(Object model, String processorKey) 
@@ -99,7 +94,7 @@ public class ProcessorManager {
         
         if(springBeanType == SPRING_BEAN_TYPE_INTERNAL) {
             String springBeanName = getSpringBeanName(processorClassName);
-            processor = springHelper.getBean(springBeanName);
+            processor = SpringContextUtil.getBean(springBeanName);
             if(processor == null)
                 throw new ProcessorNotFoundException("Spring bean of name '" + 
                         springBeanName + "' not found for processor class '" + 
@@ -133,7 +128,7 @@ public class ProcessorManager {
 	            // This is an externally instantiated bean whose dependencies 
 	            // are defined in the Spring bean context. Inject dependencies 
 	            // into the processor instance.
-	            springHelper.applyDependencies(processor, getSpringBeanName(processorClassName));
+	            SpringContextUtil.applyDependencies(processor, getSpringBeanName(processorClassName));
 	        }
         }
 
