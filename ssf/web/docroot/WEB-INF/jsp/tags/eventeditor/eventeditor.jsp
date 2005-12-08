@@ -351,10 +351,10 @@ ${prefix}_popupContents += "    }\n";
 ${prefix}_popupContents += "    if (fieldref.day4.checked) {\n";
 ${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day4', 'yes')\n";
 ${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.day5.chhecked) {\n";
+${prefix}_popupContents += "    if (fieldref.day5.checked) {\n";
 ${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day5', 'yes')\n";
 ${prefix}_popupContents += "    }\n";
-${prefix}_popupContents += "    if (fieldref.day6.chhecked) {\n";
+${prefix}_popupContents += "    if (fieldref.day6.checked) {\n";
 ${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day6', 'yes')\n";
 ${prefix}_popupContents += "    }\n";
 
