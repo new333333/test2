@@ -1,0 +1,40 @@
+Ant 1.6.2
+Ant Contrib 0.6
+Axis 1.2rc1 (removed log4j.properties)
+Commons Beanutils 1.6.1
+Commons Collections 3.1
+Commons Jelly 1.0 RC1
+Commons Jelly Tags Define 1.0
+Commons Jelly Tags Jsl 1.0
+Commons Jelly Tags Xml 1.0
+Commans Jexl 1.0
+Commons HttpClient 2.0.2
+Commons Lang 2.0
+Commons Logging 1.0.3
+Concurrent Library
+dom4j 1.5.2
+Stellent export.jar
+Generama 1.2
+Hibernate 3.0.5
+Jaxen 1.1-beta-5
+JAXRPC 1.1
+JDOM Beta 8
+JTA 1.0.1b
+JTDS 0.9.1
+Log4j 1.2.8
+Lucene 1.4.2
+md5crypt.jar
+Nanocontainer 1.0-beta-3
+Nancontainer ant 1.0-beta-3
+Picocontainer 1.0
+Liferay portal-ejb.jar (modified portal.properties)
+Portlet 1.0
+Qdox 1.6-snapshot
+Quartz 1.4.5
+Servlet 2.3.1/JSP 1.2.1
+Spring 1.2.1
+Spring Portlet spring-portlet.jar
+Trove 1.0.2
+Velocity 1.4
+XDoclet 2.0.3
+xdoclet-plugin-hibernate-1.0.1
