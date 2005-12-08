@@ -3,6 +3,7 @@ package com.sitescape.ef.search;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
 import org.dom4j.Element;
 import org.apache.commons.logging.Log;
@@ -17,7 +18,8 @@ import org.apache.lucene.queryParser.*;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
-
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.User;
 
 import java.net.URL;
 
@@ -37,6 +39,7 @@ public class QueryBuilder {
     private static final String NOT_ELEMENT = "NOT";
     private static final String SORTBY_ELEMENT = "SORTBY";
     private static final String RANGE_ELEMENT = "RANGE";
+    private static final String USERACL_ELEMENT = "USERACL";
     private SearchObject searchObject = new SearchObject();
 
 	private SearchObject buildQuery(Document domQuery) {
@@ -120,8 +123,8 @@ public class QueryBuilder {
 			else if (operator.equals(LIKE_ELEMENT)) {
 				List elements = element.elements();
 				if (elements.size() > 1) {
-					// error, only one term can be NOT'ed at a time
-					System.out.println("Problem in the NOT element");
+					// Only one at a time
+					System.out.println("Problem in the LIKE element");
 				}
 				Node node = (Node)elements.get(0);
 				qString += parseElement((Element)node, operator);
@@ -132,6 +135,17 @@ public class QueryBuilder {
 			}
 			else if (operator.equals(RANGE_ELEMENT)) {
 				qString += "(" + processRANGE(element) + ")";
+			}
+			else if (operator.equals(USERACL_ELEMENT)) {
+				//Always check for aclreaddef
+				User user = RequestContextHolder.getRequestContext().getUser();
+				Set principalIds = user.computePrincipalIds();
+				qString += "(";
+				qString += " aclreaddef:readdef ";
+				for(Iterator i = principalIds.iterator(); i.hasNext();) {
+					qString += " OR aclread:" + i.next();
+				}
+				qString += ")";
 			}
 			else if (operator.equals("FIELD")) {
 				qString += processFIELD(element);
