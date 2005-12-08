@@ -114,7 +114,7 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 	    		}
 		        
 		        try {
-	               while ((line = dis.readUTF()) != null) {
+	               while ((line = dis.readLine()) != null) {
 	                    System.out.println("User: " + line);
 	                    String parts[] = line.split(" ");
 	                    String addr[] = parts[0].split("@");
