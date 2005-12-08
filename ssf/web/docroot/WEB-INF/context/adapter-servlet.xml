@@ -62,6 +62,8 @@
 		<property name="portletNames">
 			<list>
 				<value>ss_employees</value>
+				<value>ss_widgettest</value>
+				<value>ss_forum</value>
 			</list>
 		</property>
 	</bean>
