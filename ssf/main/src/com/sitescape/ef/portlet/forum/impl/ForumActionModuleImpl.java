@@ -223,6 +223,7 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, new Date());	
 			currentDate = new Date();
 		} 
+		model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
 		// urls for common calendar links
 		PortletURL url;
 
