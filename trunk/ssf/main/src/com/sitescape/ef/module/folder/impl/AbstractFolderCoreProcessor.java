@@ -441,7 +441,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     	Principal p;
     	for (int i=0; i<users.size(); i++) {
     		p = (Principal)users.get(i);
-    		if (p.getStringId().equalsIgnoreCase(userId)) return p;
+    		if (p.getId().toString().equalsIgnoreCase(userId)) return p;
     	}
     	new Principal();
     	return null;
