@@ -112,7 +112,7 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 	}
 }
 
-//Routine to add html to a div
+//Routine to add the innerHMTL of one div to another div
 function ss_addToDiv(target, source) {
     var objTarget
     var objSource
@@ -126,6 +126,18 @@ function ss_addToDiv(target, source) {
     var targetHtml = ss_getDivHtml(target)
     var sourceHtml = ss_getDivHtml(source)
     ss_setDivHtml(target, targetHtml + sourceHtml)
+}
+
+//Routine to add html to a div
+function ss_addHtmlToDiv(target, text) {
+    var objTarget
+    if (isNSN || isNSN6 || isMoz5) {
+        objTarget = self.document.getElementById(target)
+    } else {
+        objTarget = self.document.all[target]
+    }
+    var targetHtml = ss_getDivHtml(target)
+    ss_setDivHtml(target, targetHtml + text)
 }
 
 //Routines to get and set the html of an area
