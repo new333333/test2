@@ -3,9 +3,12 @@ package com.sitescape.ef.portlet.forum.impl;
 
 import java.util.HashMap;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import javax.portlet.PortletURL;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderResponse;
+
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
@@ -186,19 +189,55 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 	 * getEvents ripples through all the entries in the current entry list, finds their
 	 * associated events, checks each event against the session's current calendar view mode
 	 * and current selected date, and populates the bean with a list of dates that fall in range.
+	 * Returns: side-effects the bean "model" and adds a key called CALENDAR_EVENTDATES which is a
+	 * hashMap whose keys are dates and whose values are lists of events that occur on the given day.
 	 */
 	public void getEvents(ArrayList entrylist, Map model, RenderRequest req) {
 		Iterator entryIterator = entrylist.listIterator();
 		PortletSession ps = WebHelper.getRequiredPortletSession(req);
-		if (ps.getAttribute(WebKeys.CALENDAR_VIEWMODE) == null) {
-			ps.setAttribute(WebKeys.CALENDAR_VIEWMODE, WebKeys.CALENDAR_VIEW_WEEK);			
+		// view mode is one of day, week, or month
+		String viewMode = (String) ps.getAttribute(WebKeys.CALENDAR_VIEWMODE);
+		if (viewMode == null) {
+			ps.setAttribute(WebKeys.CALENDAR_VIEWMODE, WebKeys.CALENDAR_VIEW_WEEK);		
+			viewMode = WebKeys.CALENDAR_VIEW_WEEK;
 		}
+		// currentDate is the date selected by the user; we make sure this date is in view 
+		// whatever viewMode is set to
 		Date currentDate = (Date) ps.getAttribute(WebKeys.CALENDAR_CURRENT_DATE);
 		if (currentDate == null) {
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, new Date());	
 			currentDate = new Date();
 		} 
-		ArrayList dateList = new ArrayList();
+		// calculate the start and end of the range as defined by current date and current view
+		GregorianCalendar startViewCal = new GregorianCalendar();
+		// this trick zeros the low order parts of the time
+		startViewCal.setTimeInMillis(0);
+		startViewCal.setTime(currentDate);
+		GregorianCalendar endViewCal = new GregorianCalendar();
+		endViewCal.setTimeInMillis(0);
+		endViewCal.setTime(currentDate);
+		if (viewMode.equals(WebKeys.CALENDAR_VIEW_DAY)) {
+			// don't need to do anything special for day view; the start/end times will be
+			// set the same for all cases, and the start end dates are already set correctly (and the same)
+		} else if (viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK)) {
+			startViewCal.set(Calendar.DAY_OF_WEEK, startViewCal.getFirstDayOfWeek());
+			endViewCal.setTime(startViewCal.getTime());
+			endViewCal.roll(Calendar.DATE, 7);
+		} else if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
+			startViewCal.set(Calendar.DAY_OF_MONTH, 1);
+			endViewCal.setTime(startViewCal.getTime());
+			endViewCal.roll(Calendar.MONTH, 1);
+		}
+		startViewCal.set(Calendar.HOUR_OF_DAY, 0);
+		startViewCal.set(Calendar.MINUTE, 0);
+		startViewCal.set(Calendar.SECOND, 0);
+		endViewCal.set(Calendar.HOUR_OF_DAY, 23);
+		endViewCal.set(Calendar.MINUTE, 59);
+		endViewCal.set(Calendar.SECOND, 59);
+		long startMillis = startViewCal.getTime().getTime();
+		long endMillis = endViewCal.getTime().getTime();
+		
+		HashMap results = new HashMap();
 		while (entryIterator.hasNext()) {
 			Entry e = (Entry) entryIterator.next();
 			Map customAttrs = e.getCustomAttributes();
@@ -208,11 +247,24 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 				CustomAttribute att = (CustomAttribute) customAttrs.get(attIt.next());
 				if (att.getValueType() == CustomAttribute.EVENT) {
 					Event ev = (Event) att.getValue();
-					dateList.add(ev.getDtStart().getTime());
+					// range check to see if this event is in range
+					long thisDateMillis = ev.getDtStart().getTime().getTime();
+					if (thisDateMillis < endMillis && startMillis < thisDateMillis) {
+						ArrayList entryList = new ArrayList();
+						ArrayList resList = new ArrayList();
+						entryList  = (ArrayList) results.get(ev.getDtStart().getTime());
+						if (entryList == null) {
+							resList.add(e);
+						} else {
+							resList.addAll(entryList);
+							resList.add(e);
+						}
+						results.put(ev.getDtStart().getTime(), resList);
+					}
 				}
 			}
 		}
-		model.put(WebKeys.CALENDAR_EVENTDATES, dateList);
+		model.put(WebKeys.CALENDAR_EVENTDATES, results);
 	}
 	
 	/**
