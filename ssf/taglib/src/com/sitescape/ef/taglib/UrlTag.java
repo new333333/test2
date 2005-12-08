@@ -14,6 +14,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
+import com.sitescape.ef.util.WebUrlUtil;
 import com.sitescape.ef.web.WebKeys;
 
 import javax.portlet.PortletURL;
@@ -88,7 +89,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			}
 
 			if (!this.webPath.equals("")) {
-				String webUrl = ctxPath + "/web/" + webPath + "?";
+				String webUrl = WebUrlUtil.getServletRootURL(req) + webPath + "?";
 				Iterator it = params.entrySet().iterator();
 				while (it.hasNext()) {
 					Map.Entry me = (Map.Entry) it.next();
