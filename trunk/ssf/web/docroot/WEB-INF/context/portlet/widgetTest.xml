@@ -6,6 +6,8 @@
 
 	<bean id="widgetTestController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.widget_test.WidgetTestController" />
 	<bean id="treeController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.widget_test.TreeController" />
+	<bean id="fragmentController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.widget_test.FragmentController" />
+	<bean id="definitionBuilderController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.definition_builder.DefinitionBuilderController" />
 
 	<!-- Handlers -->
 
@@ -15,6 +17,8 @@
 				<entry key="view">
 					<map>
 						<entry key="tree"><ref bean="treeController"/></entry>
+						<entry key="fragment"><ref bean="fragmentController"/></entry>
+						<entry key="definition_builder"><ref bean="definitionBuilderController"/></entry>
 						<entry key="date"><ref bean="widgetTestController"/></entry>
 						<entry key="time"><ref bean="widgetTestController"/></entry>
 						<entry key="event"><ref bean="widgetTestController"/></entry>

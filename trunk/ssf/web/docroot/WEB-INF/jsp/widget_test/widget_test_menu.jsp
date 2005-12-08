@@ -34,6 +34,15 @@
 				<a href="<portlet:renderURL windowState="maximized">
 						<portlet:param name="action" value="event" />
 					</portlet:renderURL>">Event tester</a><br>
+				<br>
+				<br><span><b>Forum operations</b></span><br>
+				<br>
+				<a href="<portlet:renderURL windowState="maximized">
+						<portlet:param name="action" value="fragment" />
+					</portlet:renderURL>">Fragment test</a><br>
+				<a href="<portlet:renderURL windowState="maximized">
+						<portlet:param name="action" value="definition_builder" />
+					</portlet:renderURL>">Definition builder</a><br>
 			</td>
 		</tr>
 		</table>
