@@ -298,31 +298,38 @@
 	
 	<bean id="workspaceModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.workspace.impl.WorkspaceModuleImpl">
-			</bean>
+			<ref local="workspaceModuleTarget"/> 
 		</property>
+	</bean>
+
+	<bean id="workspaceModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.workspace.impl.WorkspaceModuleImpl">
 	</bean>
 
 	<bean id="profileModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.profile.impl.ProfileModuleImpl">
-			</bean>
+			<ref local="profileModuleTarget"/> 
 		</property>
 	</bean>
 	
+	<bean id="profileModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.profile.impl.ProfileModuleImpl">
+	</bean>
+
 	<bean id="adminModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.admin.impl.AdminModuleImpl">
-			</bean>
+			<ref local="adminModuleTarget"/>
 		</property>
 	</bean>
+
+	<bean id="adminModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.admin.impl.AdminModuleImpl">
+	</bean>
+
 	<bean id="folderModule" parent="baseTransactionProxy">
-		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.FolderModuleImpl">
-				<property name="definitionModule"><ref local="definitionModule"/></property>
-			</bean>
-		</property>
+		<property name="target"><ref local="folderModuleTarget"/></property>
 	</bean>
+	<bean id="folderModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.FolderModuleImpl">
+		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
+	</bean>
+
 	<bean id="defaultFolderCoreProcessor" class="com.sitescape.ef.module.folder.impl.LibraryCoreProcessor">
 		<property name="coreDao"><ref local="coreDao"/></property>
 		<property name="folderDao"><ref local="folderDao"/></property>
@@ -333,28 +340,32 @@
 
 	<bean id="binderModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.binder.impl.BinderModuleImpl">
-			</bean>
+			<ref local="binderModuleTarget"/>
 		</property>
+	</bean>
+
+	<bean id="binderModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.binder.impl.BinderModuleImpl">
 	</bean>
 
 	<bean id="definitionModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.definition.impl.DefinitionModuleImpl">
-				<property name="definitionBuilderConfig">
-					<bean class="com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles">
-						<property name="configFiles">
-							<list>
-								<value>config/definition_builder_config.xml</value>
-							</list>		
-						</property>
-						<!-- TODO: We must use validation! -->
-						<property name="validating"><value>true</value></property>
-					</bean>
-				</property>		
-			</bean>
+			<ref local="definitionModuleTarget"/>
 		</property>
 	</bean>
+	<bean id="definitionModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.definition.impl.DefinitionModuleImpl">
+		<property name="definitionBuilderConfig">
+			<bean class="com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles">
+				<property name="configFiles">
+					<list>
+						<value>config/definition_builder_config.xml</value>
+					</list>		
+				</property>
+				<!-- TODO: We must use validation! -->
+				<property name="validating"><value>true</value></property>
+			</bean>
+		</property>		
+	</bean>
+
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap"/>
 
 	<bean id="mailSession" class="com.sitescape.ef.util.JndiObjectFactoryBean">
@@ -370,7 +381,7 @@
 			<ref bean="transactionManager"/>
 		</property>
 		<property name="target">
-			<ref bean="mailTarget"/>
+			<ref bean="mailModuleTarget"/>
 		</property>
 		<property name="transactionAttributes">
 			<props>
@@ -380,7 +391,7 @@
 		</property>
 	</bean>	
 		
-	<bean id="mailTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.mail.impl.MailModuleImpl">
+	<bean id="mailModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.mail.impl.MailModuleImpl">
 		<!-- Since "mailSender" is used exclusively by this bean (i.e., it is
 		     not a general purpose service), it is added here rather than 
 		     to the "moduleDependencyTemplate" itself -->
@@ -412,12 +423,12 @@
 			</props>
 		</property>
 		<property name="target">
-			<ref bean="ldapTarget"/>
+			<ref bean="ldapModuleTarget"/>
 		</property>
 	</bean>	
 		
-	<bean id="ldapTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.ldap.impl.LdapModuleImpl" init-method="init">
-		<property name="profileModule"><ref local="profileModule"/></property>
+	<bean id="ldapModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.ldap.impl.LdapModuleImpl" init-method="init">
+		<property name="profileModule"><ref local="profileModuleTarget"/></property>
 		<property name="configDocs">
 			<bean class="com.sitescape.ef.util.XmlClassPathConfigFiles">
 				<property name="configFiles">
@@ -431,27 +442,25 @@
 	</bean>	
 	<bean id="workflowModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean class="com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl">
-				<property name="coreDao"><ref local="coreDao"/></property>
-				<property name="folderDao"><ref local="folderDao"/></property>
-				<property name="accessControlManager"><ref local="accessControlManager"/></property>
-				<property name="aclManager"><ref local="aclManager"/></property>
-				<property name="workflowFactory"><ref local="workflowFactory"/></property>
-				<property name="definitionModule"><ref local="definitionModule"/></property>
-			</bean>
+			<ref local="workflowModuleTarget"/>
 		</property>
+	</bean>	
+
+	<bean id="workflowModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl">
+		<property name="workflowFactory"><ref local="workflowFactory"/></property>
+		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
 	</bean>
 	
 <!-- =========================Portlet support =========================================================== -->	
 	<bean id="forumActionModule" parent="baseTransactionProxy">
 		<property name="target">
 			<bean class="com.sitescape.ef.portlet.forum.impl.ForumActionModuleImpl">
-				<property name="workspaceModule"><ref local="workspaceModule"/></property>		
-				<property name="profileModule"><ref local="profileModule"/></property>		
-				<property name="adminModule"><ref local="adminModule"/></property>		
-				<property name="folderModule"><ref local="folderModule"/></property>		
-				<property name="definitionModule"><ref local="definitionModule"/></property>		
-				<property name="mailModule"><ref local="mailModule"/></property>
+				<property name="workspaceModule"><ref local="workspaceModuleTarget"/></property>		
+				<property name="profileModule"><ref local="profileModuleTarget"/></property>		
+				<property name="adminModule"><ref local="adminModuleTarget"/></property>		
+				<property name="folderModule"><ref local="folderModuleTarget"/></property>		
+				<property name="definitionModule"><ref local="definitionModuleTarget"/></property>		
+				<property name="mailModule"><ref local="mailModuleTarget"/></property>
 				<property name="coreDao"><ref local="coreDao"/></property>
 			</bean>
 		</property>
