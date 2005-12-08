@@ -1,12 +1,14 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="com.sitescape.ef.domain.Event" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<% // these beans need to be here because we need to
+   // access them via scriptlets; they need to be 
+   // passed into other tags (can't be done via JSTL) %>
 <jsp:useBean id="evid" type="String" scope="request" />
 <jsp:useBean id="formName" type="String" scope="request" />
 <jsp:useBean id="startDate" type="java.util.Date" scope="request" />
 <jsp:useBean id="endDate" type="java.util.Date" scope="request" />
-<jsp:useBean id="hasDuration" type="Boolean" scope="request" />
-<jsp:useBean id="hasRecurrence" type="Boolean" scope="request" />
+
 <jsp:useBean id="attMap" type="java.util.HashMap" scope="request" />
 
 <% 
@@ -93,7 +95,7 @@
 </c:otherwise>
 </c:choose>
 
-<c:if test="${hasRecurrence}">
+<c:if test="${attMap.hasRecur}">
 <tr><td colspan="2" align="center">
    <a name="<c:out value="${prefix}" />_anchor" id="<c:out value="${prefix}" />_anchor"></a>
    <a href="javascript: ;" onClick="<c:out value="${prefix}" />_popupRecurrenceWindow();" >
@@ -112,7 +114,7 @@
 </td></tr>
 </table>
 
-<c:if test="${hasRecurrence}">
+<c:if test="${attMap.hasRecur}">
 <input type="hidden" name="<c:out value="${prefix}" />_repeatUnit">
 <input type="hidden" name="<c:out value="${prefix}" />_everyN">
 <input type="hidden" name="<c:out value="${prefix}" />_day0">
