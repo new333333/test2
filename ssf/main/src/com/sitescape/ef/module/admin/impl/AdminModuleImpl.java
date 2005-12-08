@@ -9,6 +9,7 @@ package com.sitescape.ef.module.admin.impl;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Date;
@@ -24,7 +25,12 @@ import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.jobs.FolderEmailNotification;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.module.admin.AdminModule;
-
+import com.sitescape.ef.portlet.forum.ActionUtil;
+import com.sitescape.ef.security.AccessControlManager;
+import com.sitescape.ef.security.acl.AclManager;
+import com.sitescape.ef.security.function.Function;
+import com.sitescape.ef.security.function.FunctionManager;
+import com.sitescape.ef.security.function.FunctionExistsException;
 import org.quartz.Scheduler;
 
 import com.sitescape.util.Validator;
@@ -40,7 +46,10 @@ public class AdminModuleImpl implements AdminModule {
 	private Scheduler scheduler; 
 	private CoreDao coreDao;
 	private ProcessorManager processorManager;
-	
+	private FunctionManager functionManager;
+    protected AccessControlManager accessControlManager;
+    protected AclManager aclManager;
+
     /**
      * This method is used only by the IoC container. 
      * @param commonService
@@ -55,6 +64,17 @@ public class AdminModuleImpl implements AdminModule {
     public void setProcessorManager(ProcessorManager processorManager) {
         this.processorManager = processorManager;
     }
+	public void setFunctionManager(FunctionManager functionManager) {
+		this.functionManager = functionManager;
+	}
+    public void setAccessControlManager(
+            AccessControlManager accessControlManager) {
+        this.accessControlManager = accessControlManager;
+    }
+    public void setAclManager(AclManager aclManager) {
+        this.aclManager = aclManager;
+    }
+   
     /**
      * Disable email notification for this forum.
      * @param forumId
@@ -130,4 +150,38 @@ public class AdminModuleImpl implements AdminModule {
    		FolderEmailNotification process = (FolderEmailNotification)processorManager.getProcessor(forum, FolderEmailNotification.PROCESSOR_KEY);
    		process.checkSchedule(scheduler, forum);
     } 
+    public void addFunction(Function function) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		function.setZoneName(user.getZoneName());
+		//TODO: what acl check is needed
+		
+		List zoneFunctions = functionManager.findFunctions(user.getZoneName());
+		if (zoneFunctions.contains(function)) {
+			//Role already exists
+			throw new FunctionExistsException(function.getName());
+		}
+		functionManager.addFunction(function);
+	 
+    }
+    public void updateFunction(String name, Map updates) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		//TODO: what acl check is needed
+		
+		List zoneFunctions = functionManager.findFunctions(user.getZoneName());
+		for (int i=0; i<zoneFunctions.size(); ++i) {
+			Function function = (Function)zoneFunctions.get(i);
+			if (name.equals(function.getName())) {
+			   	ObjectBuilder.updateObject(function, updates);
+			    
+				functionManager.updateFunction(function);			
+			}
+		}
+    }
+    public List getFunctions() {
+		User user = RequestContextHolder.getRequestContext().getUser();	
+		//TODO: what acl check is needed
+		List zoneFunctions = functionManager.findFunctions(user.getZoneName());
+		return zoneFunctions;
+    }
+
 }
