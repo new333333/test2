@@ -274,7 +274,7 @@
 	<bean id="accessControlManager" class="com.sitescape.ef.security.impl.NullAccessControlManager">
 	</bean>
 	
-	<bean id="aclManager" class="com.sitescape.ef.security.acl.AclManagerImpl">
+	<bean id="aclManager" class="com.sitescape.ef.security.acl.impl.AclManagerImpl">
 	</bean>
 
 	<bean id="functionManager" class="com.sitescape.ef.security.function.FunctionManagerImpl">
