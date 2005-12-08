@@ -25,7 +25,7 @@
 				<a href="<portlet:renderURL windowState="maximized">
 						<portlet:param name="action" value="tree" />
 					</portlet:renderURL>">Tree test</a><br>
-				<a href="<portlet:renderURL windowState="maximized">
+				<a href="<portlet:actionURL windowState="maximized">
 						<portlet:param name="action" value="time" />
 					</portlet:actionURL>">Datepicker and timepicker test</a><br>
 				<a href="<portlet:renderURL windowState="maximized">
