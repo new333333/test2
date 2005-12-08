@@ -12,6 +12,11 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.MultipleWorkflowSupport;
+import com.sitescape.ef.domain.SingletonWorkflowSupport;
+import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.domain.WorkflowStateObject;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.workflow.WorkflowModule;
@@ -318,5 +323,70 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    System.out.println("");
 	    System.out.println("Workflow process definition created: " + pD.getName());
 	    System.out.println(writer.toString());
+	}
+	
+	public void startWorkflow(Entry entry, Definition workflowDef) {
+		//Find the initial state of the workflow
+		Document workflowDoc = workflowDef.getDefinition();
+		if (workflowDoc != null) {
+			Element workflowRoot = workflowDoc.getRootElement();
+			Element initialStateProperty = (Element) workflowRoot.selectSingleNode("./properties/property[@name='initialState']");
+			String initialState = "";
+			if (initialStateProperty != null) {
+				initialState = initialStateProperty.attributeValue("value", "");
+				//Validate that this is an existing state
+				if (!initialState.equals("")) {
+					Element state = (Element) workflowRoot.selectSingleNode("./item[@name='workflowProcess']/item[@name='state']/properties/property[@name='name' and @value='"+initialState+"']");
+					if (state == null) initialState = "";
+				}
+			}
+			//See if the workflow definition actually defined an initial state
+			if (initialState.equals("")) {
+				//There is no defined initial state, so use the first state in the list
+				initialStateProperty = (Element) workflowRoot.selectSingleNode("./item[@name='workflowProcess']/item[@name='state']/properties/property[@name='name']");
+				initialState = initialStateProperty.attributeValue("value", "");
+			}
+			if (!initialState.equals("")) {
+				//Now start the workflow at the desired initial state
+				JbpmSession session;
+				ProcessDefinition pD;
+				try {
+			       	session = workflowFactory.getSession();
+			        pD = session.getGraphSession().findLatestProcessDefinition(workflowDef.getId());
+
+			        Node node = pD.getNode(initialState);
+				    if (node != null) {
+						ProcessInstance pI = addWorkflowInstance(new Long(pD.getId()));
+						Token token = pI.getRootToken();
+						if (entry instanceof MultipleWorkflowSupport) {
+							MultipleWorkflowSupport mEntry = (MultipleWorkflowSupport) entry;
+							//doesn't exist, add a new one
+							WorkflowStateObject ws = new WorkflowStateObject();
+							ws.setTokenId(new Long(token.getId()));
+							ws.setState(initialState);
+							ws.setOwner(entry);
+							getCoreDao().save(ws);
+							mEntry.addWorkflowState(ws);
+						} else if (entry instanceof SingletonWorkflowSupport) {
+							SingletonWorkflowSupport sEntry = (SingletonWorkflowSupport) entry;
+							WorkflowState ws = sEntry.getWorkflowState();
+							if (ws == null) {
+								ws = new WorkflowState();
+								sEntry.setWorkflowState(ws);
+							}
+							ws.setState(initialState);
+							ws.setTokenId(new Long(token.getId()));
+						}
+			        	//Start the workflow process at the initial state
+						token.setNode(node);
+			            ExecutionContext executionContext = new ExecutionContext(token);
+			            node.enter(executionContext);
+			            session.getGraphSession().saveProcessInstance(pI);
+				    }
+			    } catch (Exception ex) {
+			        throw convertJbpmException(ex);
+			    }
+			}
+		}
 	}
 }

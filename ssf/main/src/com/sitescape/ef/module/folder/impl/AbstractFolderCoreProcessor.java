@@ -76,6 +76,7 @@ import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.WriteFilesException;
+import com.sitescape.ef.module.workflow.WorkflowModule;
 /**
  *
  * @author Jong Kim
@@ -91,6 +92,15 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
 	}
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
+	}
+
+	private WorkflowModule workflowModule;
+    
+	public void setWorkflowModule(WorkflowModule workflowModule) {
+		this.workflowModule = workflowModule;
+	}
+	protected WorkflowModule getWorkflowModule() {
+		return workflowModule;
 	}
 
 
@@ -123,6 +133,10 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         // This must be done in a separate step after persisting the entry,
         // because we need the entry's persistent ID for indexing. 
         addEntry_indexAdd(folder, entry, inputData);
+        
+        //After the entry is successfully added, start up any associated workflows
+        addEntry_startWorkflow(entry);
+        
 		getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).
 							setSeen(entry);
        
@@ -178,6 +192,22 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
+    }
+    
+    protected void addEntry_startWorkflow(FolderEntry entry) {
+    	Folder folder = entry.getParentFolder();
+    	Map workflowAssociations = (Map) folder.getProperty(ObjectKeys.FOLDER_WORKFLOW_ASSOCIATIONS);
+    	if (workflowAssociations != null) {
+    		//See if the entry definition type has an associated workflow
+    		Definition entryDef = entry.getEntryDef();
+    		if (entryDef != null) {
+	    		if (workflowAssociations.containsKey(entryDef.getId()) && 
+	    				!workflowAssociations.get(entryDef.getId()).equals("")) {
+	    			Definition wfDef = getDefinitionModule().getDefinition((String)workflowAssociations.get(entryDef.getId()));
+	    			getWorkflowModule().startWorkflow(entry, wfDef);
+	    		}
+    		}
+    	}
     }
  	
 
@@ -261,6 +291,9 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         addReply_postSave(parent, entry, inputData, entryData);
         
         addReply_indexAdd(parent, entry, inputData, entryData);
+        
+        addReply_startWorkflow(entry);
+        
         getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
        
         return entry.getId();
@@ -318,6 +351,12 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
     }
+    
+    protected void addReply_startWorkflow(FolderEntry entry) {
+    	//Starting a workflow on a reply works the same as for the entry
+    	addEntry_startWorkflow(entry);
+    }
+    
     //***********************************************************************************************************
     
     public void indexFolder(Folder folder) {
@@ -530,7 +569,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     	//Set the sort order
     	SortField[] fields = new SortField[1];
     	boolean descend = true;
-    	fields[0] = new SortField("_modificationDay",descend);
+    	fields[0] = new SortField(EntryIndexUtils.MODIFICATION_DATE_FIELD, descend);
     	so.setSortBy(fields);
     	
     	System.out.println("Query is: " + qTree.asXML());
