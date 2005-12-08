@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+
+<project name="workflow-viewer" basedir="." default="compile">
+	<import file="../../deploy-support.xml" />
+	<target name="init">
+		<echo message="##### APPLETS / WORKFLOW-VIEWER #####" />
+		<property environment="env" />
+  		<property name="project.dir" value="../.." />
+  		<property file="${project.dir}/app.server.${user.name}.properties" />
+  		<property file="${project.dir}/app.server.properties" />
+  		<property file="${project.dir}/build.${user.name}.properties" />
+  		<property file="${project.dir}/build.properties" />
+		<path id="project.classpath">
+			<pathelement path="${classpath}" />
+			<fileset dir="${project.dir}/lib" includes="*.jar" />
+		</path>
+		<property name="jar.file" value="workflow-viewer.jar" />
+		<property name="java2html.dir" value="${api.dir}/applets/workflow-viewer" />
+		<property name="javadoc.dir" value="${api.dir}/applets/workflow-viewer" />
+		<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+			<classpath>
+				<pathelement location="${project.dir}/lib/ant-contrib.jar" />
+			</classpath>
+		</taskdef>
+	</target>
+
+	<target name="clean" depends="init">
+		<delete file="${jar.file}" failonerror="false" />
+		<delete dir="${java2html.dir}" />
+		<delete dir="${javadoc.dir}" />
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${classes.dir}" excludes="${classes.dir.excludes}" />
+		</delete>
+	</target>
+
+	<target name="compile" depends="init">
+		<mkdir dir="${classes.dir}" />
+		<javac
+			classpathref="project.classpath"
+			compiler="${javac.compiler}"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${classes.dir}"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}"
+			srcdir="${source.dir}"
+		/>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar
+			basedir="${classes.dir}"
+			jarfile="${jar.file}"
+		/>
+	</target>
+
+	<target name="java2html" depends="init">
+		<java
+			classname="com.liferay.util.Java2Html"
+			classpathref="project.classpath"
+			fork="true">
+				<arg value="${java2html.bat}" />
+				<arg value="${source.dir}" />
+				<arg value="${java2html.dir}" />
+		</java>
+		<move file="${java2html.dir}/stylesheet.css" tofile="${java2html.dir}/java2html.css" />
+		<antcall target="javadoc" />
+		<replace dir="${java2html.dir}">
+			<include name="**/package-summary.html" />
+			<replacefilter
+				token="/\"
+				value="/"
+			/>
+		</replace>
+	</target>
+
+	<target name="javadoc" depends="init">
+		<mkdir dir="${javadoc.dir}" />
+		<javadoc
+			additionalparam="-J-Xmx128m"
+			classpathref="project.classpath"
+			destdir="${javadoc.dir}"
+			packagenames="*.*"
+			sourcepath="${source.dir}"
+			stylesheetfile="${project.dir}/tools/javadoc.css"
+		/>
+	</target>
+
+	<target name="deploy" depends="jar">
+		<antcall target="deploy-applet">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+			<param name="deploy-support.applet.deploy.dir" value="applets/workflow-viewer" />
+		</antcall>
+	</target>
+
+</project>

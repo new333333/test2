@@ -8,25 +8,31 @@
 
 	<target name="clean">
 		<ant dir="sample" target="clean" />
+		<ant dir="workflow-viewer" target="clean" />
 	</target>
 
 	<target name="compile">
 		<ant dir="sample" target="compile" />
+		<ant dir="workflow-viewer" target="compile" />
 	</target>
 
 	<target name="jar">
 		<ant dir="sample" target="jar" />
+		<ant dir="workflow-viewer" target="jar" />
 	</target>
 
 	<target name="java2html">
 		<ant dir="sample" target="java2html" />
+		<ant dir="workflow-viewer" target="java2html" />
 	</target>
 
 	<target name="javadoc">
 		<ant dir="sample" target="javadoc" />
+		<ant dir="workflow-viewer" target="javadoc" />
 	</target>
 
 	<target name="deploy">
-		<ant dir="sample" target="deploy" />
+		<ant dir="sample" target="javadoc" />
+		<ant dir="workflow-viewer" target="javadoc" />
 	</target>
 </project>
