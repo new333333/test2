@@ -19,17 +19,16 @@ function getFilteredEntries() {
 <a href="${set_week_view}">Week view</a>
 </td>
 </tr>
-
+ 
 <% // the bean is a month's bean; we need to loop through the list of
    // weeks in the month, even though for this template there's only one
 %>
 
 <tr>
-<td>&nbsp;</td>
+<td width="1%" class="ss_fineprintgray" align="center">week</td>
 <c:forEach var="dayabbrev" items="${ssCalendarViewBean.dayHeaders}">
-<td>
-${dayabbrev}
-</td>
+<td width="13%" class="ss_contentbold" align="center">
+${dayabbrev}</td>
 </c:forEach>
 </tr>
 
@@ -37,19 +36,22 @@ ${dayabbrev}
 
 <tr>
 
-<td>Week: ${week.weekNum}</td>
+<td valign="top" align="center" width="5%"><a class="ss_link_nodec" href="${week.weekURL}"><span class="ss_fineprintgray">${week.weekNum}</span></a></td>
 
 <c:forEach var="daymap" items="${week.dayList}">
 
 <c:choose>
 <c:when test="${daymap.isToday}">
-<td class="ss_todayHighlight">
+<td class="ss_highlightManila" valign="top"><span class="ss_fineprintright" style="text-weight:bold;"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />
+</c:when>
+<c:when test="${!daymap.inView}">
+<td class="ss_highlightGray" valign="top"><span class="ss_fineprintright" style="text-weight:bold;"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />
 </c:when>
 <c:otherwise>
-<td>
+<td valign="top"><span class="ss_fineprintright" style="text-weight:bold;"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />
 </c:otherwise>
 </c:choose>
- <span class="ss_contentbold">${daymap.cal_dom}<br>
+
 
 <c:if test="${daymap.inView}"> <% // is this day part of the month, or context at front/end? %>
 
@@ -65,15 +67,13 @@ ${dayabbrev}
 <script language="javascript">
 //getFilteredEntries()
 </script>
-<div id="folderLine_${evim.entry.id}">	
+<div class="ss_fineprint" id="folderLine_${evim.entry.id}">	
+${evim.cal_starttimestring}: 
 <%
-if (ssSeenMap.checkIfSeen(e)) {
-%><img src="<html:imagesPath/>pics/1pix.gif" width="7px" alt="" \><%
-	} else {
-%><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif" alt="unread entry" \><%
+if (!ssSeenMap.checkIfSeen(e)) {
+%><br /><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif" alt="unread entry" \><%
 	}
 %>
-    ${evim.cal_starttimestring}-${evim.cal_endtimestring}: 
     <a class="ss_link" href="<ssf:url 
     adapter="true" 
     portletName="ss_forum" 

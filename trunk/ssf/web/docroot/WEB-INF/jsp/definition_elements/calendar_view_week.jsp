@@ -36,8 +36,8 @@ function getFilteredEntries() {
 <tr>
 </c:otherwise>
 </c:choose>
-<td align="center" width="1%" valign="top"><span class="ss_content">${daymap.cal_dow}</span>
- <span class="ss_contentbold">${daymap.cal_dom}</td>
+<td align="center" width="1%" valign="top"><a class="ss_link_nodec" href="${daymap.dayURL}"><span class="ss_content">${daymap.cal_dow}</span>
+ <span class="ss_contentbold">${daymap.cal_dom}</a></td>
 
 <c:choose>
 <c:when test="${empty daymap.cal_eventdatamap}">
