@@ -160,7 +160,8 @@
 		
 	<item name="title" caption="__title" type="data" canBeDeleted="false" multipleAllowed="false" category="entryData">
 		<properties>
-			<property name="name" caption="__data_name" type="text" value="title" readonly="true">
+			<property name="name" caption="__data_name" type="text" value="title" 
+			  readonly="true" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
@@ -179,7 +180,8 @@
 	
 	<item name="text" caption="__text" type="data" category="entryData">
 		<properties>
-			<property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
@@ -199,7 +201,8 @@
 	
 	<item name="textarea" caption="__simple_text_area" type="data" category="entryData">
 		<properties>
-			<property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
@@ -220,7 +223,8 @@
 	
 	<item name="htmlEditorTextarea" caption="__html_editor_text_area" type="data" category="entryData">
 		<properties>
-			<property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
@@ -237,7 +241,8 @@
 	
 	<item name="event" caption="__event" type="data" category="entryData">
 		<properties>
-			<property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
@@ -254,7 +259,8 @@
 	
 	<item name="description" caption="__description" type="data" multipleAllowed="false" category="entryData">
 		<properties>
-			<property name="name" caption="__data_name" type="text" value="description" readonly="true">
+			<property name="name" caption="__data_name" type="text" 
+			  value="description" readonly="true" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
@@ -271,7 +277,8 @@
 	
 	<item name="selectbox" caption="__selectbox" type="data" category="entryData">
 		<properties>
-			<property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
@@ -309,7 +316,8 @@
 
 	<item name="radio" caption="__radio_buttons" type="data" category="entryData">
 		<properties>
-			<property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
@@ -345,7 +353,8 @@
 
 	<item name="checkbox" caption="__checkbox" type="data" category="entryData">
 		<properties>
-			<property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
@@ -382,7 +391,8 @@
 	
 	<item name="file" caption="__file_upload" type="data" category="entryData">
 		<properties>
-			<property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
@@ -407,7 +417,8 @@
 	
 	<item name="date" caption="__date" type="data" category="entryData">
 		<properties>
-			<property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__text" type="text"/>
@@ -426,7 +437,8 @@
 	
 	<item name="user_list" caption="__user_list" type="data" category="entryData">
 		<properties>
-			<property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__text" type="text"/>
@@ -647,7 +659,7 @@
 
 	<item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true">
 		<properties>
-			<property name="name" caption="__data_name" type="text">
+			<property name="name" caption="__data_name" type="text" unique="//item[@name='state']">
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text" />

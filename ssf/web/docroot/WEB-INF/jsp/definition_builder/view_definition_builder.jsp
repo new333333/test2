@@ -331,8 +331,15 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 
 </script>
 
-
 <div class="ss_portlet">
+
+<c:if test="${!empty ss_configErrorMessage}">
+<div class="ss_labelLeftError">
+<span><c:out value="${ss_configErrorMessage}"/></span>
+</div>
+<br/>
+<br/>
+</c:if>
 
 <span class="ss_titlebold">
 <a href="<portlet:actionURL windowState="maximized">

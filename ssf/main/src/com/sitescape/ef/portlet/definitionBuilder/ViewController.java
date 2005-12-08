@@ -19,6 +19,7 @@ import javax.portlet.RenderResponse;
 
 
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.DefinitionInvalidException;
 import com.sitescape.ef.domain.DefinitionInvalidOperation;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 
@@ -118,16 +119,18 @@ public class ViewController extends SAbstractController {
 				}
 			} catch (DefinitionInvalidOperation e) {
 				//An error occurred while processing the operation; pass the error message back to the jsp
-				//SessionErrors.add(req, e.getClass().getName(),e.getMessage());
+				response.setRenderParameter("ss_configErrorMessage", e.getMessage());
+			} catch (DefinitionInvalidException e) {
+				//An error occurred while processing the operation; pass the error message back to the jsp
+				response.setRenderParameter("ss_configErrorMessage", e.getMessage());
 			} catch(NoDefinitionByTheIdException e) {
 				//The selected id must be non-existant. Give an error message
-				//SessionErrors.add(req, e.getClass().getName(),e.getMessage());
+				response.setRenderParameter("ss_configErrorMessage", e.getMessage());
 				selectedItem = "";
 			}
 		}
 		
 		//Pass the selection id to be shown on to the rendering phase
-		response.setRenderParameters(request.getParameterMap());
 		response.setRenderParameter("selectedItem", selectedItem);
 	}
 		
@@ -255,6 +258,9 @@ public class ViewController extends SAbstractController {
 		data.put("selectedItem", selectedItem);
 		data.put("selectedItemTitle", selectedItemTitle);
 		data.put("definitionType", definitionType);
+		if (formData.containsKey("ss_configErrorMessage")) {
+			model.put("ss_configErrorMessage", ((String[]) formData.get("ss_configErrorMessage"))[0]);
+		}
 		model.put("data", data);
 		if (!option.equals("")) {
 			return new ModelAndView("definition_builder/view_definition_builder_option", model);
