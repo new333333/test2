@@ -1,5 +1,8 @@
 package com.sitescape.ef.module.workflow.impl;
 
+import java.util.Iterator;
+import java.util.List;
+
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.module.definition.DefinitionModule;
@@ -30,10 +33,57 @@ public class WorkflowModuleImpl extends AbstractModuleImpl implements WorkflowMo
 	}
  
 
+	public List getAllDefinitions() {
+	    try {
+	       	JbpmSession session = workflowFactory.getSession();
+	        return session.getGraphSession().findAllProcessDefinitions();
+	    } catch (Exception ex) {
+	        throw convertJbpmException(ex);
+	    }
+	};
+
+	public List getLatestDefinitions() {
+	    try {
+	       	JbpmSession session = workflowFactory.getSession();
+	        return session.getGraphSession().findLatestProcessDefinitions();
+	    } catch (Exception ex) {
+	        throw convertJbpmException(ex);
+	    }
+	};
+
+	public List getNodes(Long id) {
+	    try {
+	       	JbpmSession session = workflowFactory.getSession();
+	        ProcessDefinition pD = session.getGraphSession().loadProcessDefinition(id.longValue());
+	        return pD.getNodes();
+	    } catch (Exception ex) {
+	        throw convertJbpmException(ex);
+	    }
+	};
+
+	public List getProcessInstances(Long id) {
+	    try {
+	       	JbpmSession session = workflowFactory.getSession();
+	        return session.getGraphSession().findProcessInstances(id.longValue());
+	    } catch (Exception ex) {
+	        throw convertJbpmException(ex);
+	    }
+	};
+
 	public ProcessDefinition getWorkflow(Long id) {
 	    try {
 	       	JbpmSession session = workflowFactory.getSession();
 	        return session.getGraphSession().loadProcessDefinition(id.longValue());
+	    } catch (Exception ex) {
+	        throw convertJbpmException(ex);
+	    }
+	};
+
+	public ProcessInstance getProcessInstance(Long id) {
+	    try {
+	       	JbpmSession session = workflowFactory.getSession();
+        	ProcessInstance pI = session.getGraphSession().loadProcessInstance(id.longValue());
+	        return pI;
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
 	    }
