@@ -6,7 +6,7 @@ package com.sitescape.ef.domain;
  *
  */
 public class NoBinderByTheIdException extends NoObjectByTheIdException {
-    private static final String NoBinderByTheIdException_ErrorCode = "error.no.binder.by.the.id";
+    private static final String NoBinderByTheIdException_ErrorCode = "errorcode.no.binder.by.the.id";
     
     public NoBinderByTheIdException(Long folderId) {
         super(NoBinderByTheIdException_ErrorCode, folderId);

@@ -5,7 +5,7 @@ package com.sitescape.ef.domain;
  *
  */
 public class NoUserByTheNameException extends NoObjectByTheNameException {
-    private static final String NoUserByTheNameException_ErrorCode = "error.no.user.by.the.name";
+    private static final String NoUserByTheNameException_ErrorCode = "errorcode.no.user.by.the.name";
     
     public NoUserByTheNameException(String userName) {
         super(NoUserByTheNameException_ErrorCode, userName);

@@ -13,7 +13,7 @@ package com.sitescape.ef.domain;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class NoUserByTheIdException extends NoObjectByTheIdException {
-    private static final String NoUserByTheIdException_ErrorCode = "error.no.user.by.the.id";
+    private static final String NoUserByTheIdException_ErrorCode = "errorcode.no.user.by.the.id";
     
     public NoUserByTheIdException(Long userId) {
         super(NoUserByTheIdException_ErrorCode, userId);

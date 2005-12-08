@@ -6,7 +6,7 @@ package com.sitescape.ef.domain;
  *
  */
 public class NoDefinitionByTheIdException extends NoObjectByTheIdException {
-	   private static final String NoDefinitionByTheIdException_ErrorCode = "error.no.definition.by.the.id";
+	   private static final String NoDefinitionByTheIdException_ErrorCode = "errorcode.no.definition.by.the.id";
 	    
 	    public NoDefinitionByTheIdException(String defId) {
 	        super(NoDefinitionByTheIdException_ErrorCode, defId);

@@ -6,7 +6,7 @@ package com.sitescape.ef.domain;
  *
  */
 public class NoFolderByTheIdException extends NoObjectByTheIdException {
-    private static final String NoFolderByTheIdException_ErrorCode = "error.no.folder.by.the.id";
+    private static final String NoFolderByTheIdException_ErrorCode = "errorcode.no.folder.by.the.id";
     
     public NoFolderByTheIdException(Long folderId) {
         super(NoFolderByTheIdException_ErrorCode, folderId);

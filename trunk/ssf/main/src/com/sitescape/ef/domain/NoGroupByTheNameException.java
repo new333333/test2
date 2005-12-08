@@ -6,7 +6,7 @@ package com.sitescape.ef.domain;
  *
  */
 public class NoGroupByTheNameException extends NoObjectByTheNameException {
-	   private static final String NoGroupByTheNameException_ErrorCode = "error.no.group.by.the.name";
+	   private static final String NoGroupByTheNameException_ErrorCode = "errorcode.no.group.by.the.name";
 	    
 	    public NoGroupByTheNameException(String userName) {
 	        super(NoGroupByTheNameException_ErrorCode, userName);

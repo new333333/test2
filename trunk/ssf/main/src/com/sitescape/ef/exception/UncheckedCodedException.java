@@ -1,5 +1,7 @@
 package com.sitescape.ef.exception;
 
+import com.sitescape.ef.util.NLT;
+
 /**
  * @author Jong Kim
  *
@@ -29,6 +31,10 @@ public abstract class UncheckedCodedException extends UncheckedException impleme
         setErrorArgs(errorArgs);
     }
 
+    public String getLocalizedMessage() {
+    	return NLT.get(getErrorCode(), getErrorArgs());
+    }
+    
     public String getErrorCode() {
         return errorCode;
     }

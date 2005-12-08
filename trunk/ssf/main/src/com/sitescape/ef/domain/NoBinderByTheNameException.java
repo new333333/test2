@@ -5,7 +5,7 @@ package com.sitescape.ef.domain;
  *
  */
 public class NoBinderByTheNameException extends NoObjectByTheNameException {
-    private static final String NoBinderByTheNameException_ErrorCode = "error.no.binder.by.the.name";
+    private static final String NoBinderByTheNameException_ErrorCode = "errorcode.no.binder.by.the.name";
     
     public NoBinderByTheNameException(String userName) {
         super(NoBinderByTheNameException_ErrorCode, userName);

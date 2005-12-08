@@ -11,7 +11,7 @@ import com.sitescape.ef.exception.UncheckedCodedException;
  *
  */
 public class FolderHierarchyException extends UncheckedCodedException {
-    private static final String DocshareHierarchyException_ErrorCode = "docshare.error.hierarchy.invalid";
+    private static final String DocshareHierarchyException_ErrorCode = "errorcode.folder.hierarchy.invalid";
     
     public FolderHierarchyException(Long docshareId) {
         super(DocshareHierarchyException_ErrorCode, new Object[] {docshareId});
