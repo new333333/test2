@@ -1,5 +1,6 @@
-<<% // Calendar view %>
+<% // Calendar view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ page import="com.sitescape.ef.domain.FolderEntry" %>
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />
 <jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
 <jsp:useBean id="ssFolderDomTree" type="org.dom4j.Document" scope="request" />
@@ -15,6 +16,27 @@
 	}
 %>
 
+<script language="javascript">
+var ss_currentEntryId = "";
+function ss_loadEntry(obj,id) {
+	var folderLine = 'folderLine_'+id;
+	ss_currentEntryId = id;
+	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
+	highlightLineById(folderLine);
+	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
+	return false;
+}
+
+function ss_loadEntryUrl(url,id) {
+	var folderLine = 'folderLine_'+id;
+	ss_currentEntryId = id;
+	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
+	highlightLineById(folderLine);
+	ss_showForumEntry(url, <c:out value="${showEntryCallbackRoutine}"/>);
+	return false;
+}
+
+</script>
 <div class="ss_folder">
 <h1 class="ss_folderTitle">Folders</h1>
 <table width="100%" border="0" cellpadding="2" cellspacing="0">

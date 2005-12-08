@@ -14,7 +14,40 @@
 ${daymap.cal_dow}<br>${daymap.cal_dom}
 </td>
 
-<td>&nbsp; &nbsp; &nbsp; No items </td>
+<c:choose>
+<c:when test="${empty daymap.cal_eventdatamap}">
+<td>&nbsp; &nbsp; No items </td>
+</c:when>
+<c:otherwise>
+<td>
+<c:forEach var="ev" items="${daymap.cal_eventdatamap}">
+<jsp:useBean id="ev" type="java.util.Map.Entry" />
+
+<%
+    Map m = (Map) ev.getValue();
+    FolderEntry e = (FolderEntry) m.get("entry");
+%>
+
+&nbsp; &nbsp; ${ev.value.cal_starttimestring}-${ev.value.cal_endtimestring}: 
+
+    <a href="<ssf:url 
+    adapter="true" 
+    portletName="ss_forum" 
+    folderId="<%= folderId %>" 
+    action="view_entry" 
+    entryId="<%= e.getId().toString() %>" actionUrl="false" />
+    onClick="ss_loadEntry(this,'<c:out value="${ev.value.entry.id}"/>');return false;" >
+
+${ev.value.entry.title}
+
+    </a>
+
+</c:forEach>
+</td>
+
+
+</c:otherwise>
+</c:choose>
 
 </tr>
 
