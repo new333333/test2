@@ -34,8 +34,15 @@
 	</tag>
 	
 	<tag>
-		<name>defineObjects</name>
-		<tag-class>com.sitescape.ef.portletadapter.taglib.DefineObjectsTag</tag-class>
+		<name>defineObjects1</name>
+		<tag-class>com.sitescape.ef.portletadapter.taglib.DefineObjects1Tag</tag-class>
+		<tei-class>com.sitescape.ef.portletadapter.taglib.DefineObjectsTei</tei-class>
+		<body-content>empty</body-content>
+	</tag>
+	
+	<tag>
+		<name>defineObjects2</name>
+		<tag-class>com.sitescape.ef.portletadapter.taglib.DefineObjects2Tag</tag-class>
 		<tei-class>com.sitescape.ef.portletadapter.taglib.DefineObjectsTei</tei-class>
 		<body-content>empty</body-content>
 	</tag>
