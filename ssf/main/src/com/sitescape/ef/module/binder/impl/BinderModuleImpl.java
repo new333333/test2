@@ -7,6 +7,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.module.binder.BinderModule;
+import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
@@ -15,23 +16,7 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
  * @author Janet McCann
  *
  */
-public class BinderModuleImpl implements BinderModule {
-	private CoreDao coreDao;
-	private AccessControlManager accessControlManager;
-	   
-	protected CoreDao getCoreDao() {
-	    return coreDao;
-	}
-	public void setCoreDao(CoreDao coreDao) {
-	    this.coreDao = coreDao;
-	}   
-    protected AccessControlManager getAccessControlManager() {
-        return accessControlManager;
-    }
-    public void setAccessControlManager(
-            AccessControlManager accessControlManager) {
-        this.accessControlManager = accessControlManager;
-    }
+public class BinderModuleImpl extends AbstractModuleImpl implements BinderModule {
 	    
 	public Binder findBinder(String binderName) 
    			throws NoBinderByTheNameException, AccessControlException {

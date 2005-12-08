@@ -25,6 +25,7 @@ import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.jobs.FolderEmailNotification;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.module.admin.AdminModule;
+import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.portlet.forum.ActionUtil;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AclManager;
@@ -41,39 +42,7 @@ import com.sitescape.util.Validator;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class AdminModuleImpl implements AdminModule {
-		
-	private Scheduler scheduler; 
-	private CoreDao coreDao;
-	private ProcessorManager processorManager;
-	private FunctionManager functionManager;
-    protected AccessControlManager accessControlManager;
-    protected AclManager aclManager;
-
-    /**
-     * This method is used only by the IoC container. 
-     * @param commonService
-     */
-    public void setCoreDao(CoreDao coreDao) {
-        this.coreDao = coreDao;
-
-    }
-    public void setScheduler(Scheduler scheduler) {
-    	this.scheduler = scheduler;
-    }
-    public void setProcessorManager(ProcessorManager processorManager) {
-        this.processorManager = processorManager;
-    }
-	public void setFunctionManager(FunctionManager functionManager) {
-		this.functionManager = functionManager;
-	}
-    public void setAccessControlManager(
-            AccessControlManager accessControlManager) {
-        this.accessControlManager = accessControlManager;
-    }
-    public void setAclManager(AclManager aclManager) {
-        this.aclManager = aclManager;
-    }
+public class AdminModuleImpl extends AbstractModuleImpl implements AdminModule {
    
     /**
      * Disable email notification for this forum.

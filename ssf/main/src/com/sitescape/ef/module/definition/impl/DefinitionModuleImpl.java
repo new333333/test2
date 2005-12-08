@@ -1,6 +1,7 @@
 package com.sitescape.ef.module.definition.impl;
 
 import com.sitescape.ef.ConfigurationException;
+import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
 import com.sitescape.ef.repository.RepositoryServiceNames;
@@ -41,25 +42,10 @@ import com.sitescape.ef.domain.DefinitionInvalidException;
  * @author hurley
  *
  */
-public class DefinitionModuleImpl implements DefinitionModule {
-	private CoreDao coreDao;
+public class DefinitionModuleImpl extends AbstractModuleImpl implements DefinitionModule {
 	private Document definitionConfig;
 	private MergeableXmlClassPathConfigFiles definitionBuilderConfig;
-    private AccessControlManager accessControlManager;
 	    
-	public CoreDao getCoreDao() {
-	    return coreDao;
-	}
-	public void setCoreDao(CoreDao coreDao) {
-	    this.coreDao = coreDao;
-	}
-    protected AccessControlManager getAccessControlManager() {
-        return accessControlManager;
-    }
-    public void setAccessControlManager(
-            AccessControlManager accessControlManager) {
-        this.accessControlManager = accessControlManager;
-    }
 	public Definition getDefinition(String id) {
 		String companyId = RequestContextHolder.getRequestContext().getZoneName();
  		return coreDao.loadDefinition(id, companyId);
