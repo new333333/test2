@@ -78,29 +78,8 @@
         	<keywords>Forum</keywords>
         </portlet-info>
     </portlet>
+
     <portlet>
-        <description xml:lang="en">SiteScape Definition Builder Portlet</description>
-        <portlet-name>ss_definitionBuilder</portlet-name>
-        <display-name xml:lang="en">Definition Builder</display-name>
-        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-			<init-param>
-				<name>contextConfigLocation</name>
-				<value>/WEB-INF/context/portlet/definitionBuilder.xml</value>
-			</init-param>
-        <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>text/html</mime-type>
-            <portlet-mode>view</portlet-mode>
-        </supports>
-        <!--<supported-locale>en</supported-locale>-->
-        <!--<resource-bundle>...</resource-bundle>-->
-        <portlet-info>
-        	<title>Definition Builder</title>
-        	<short-title>Definition Builder</short-title>
-        	<keywords>Definition Builder</keywords>
-        </portlet-info>
-    </portlet>
-       <portlet>
         <description xml:lang="en">SiteScape Administration</description>
         <portlet-name>ss_administration</portlet-name>
         <display-name xml:lang="en">Administration</display-name>
