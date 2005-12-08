@@ -12,6 +12,9 @@ public class AnyOwner {
 	protected Principal principal;
    //keep as reference for user queries only 
     protected String owningFolderSortKey;
+    public final static String PRINCIPAL="principal";
+    public final static String FOLDERENTRY="doc";
+    
 
     public AnyOwner() {		
 	}
