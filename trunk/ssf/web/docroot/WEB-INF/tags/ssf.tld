@@ -7,69 +7,21 @@
 	<short-name>ssf</short-name>
 	
 	<tag>
-		<name>nlt</name>
-		<tag-class>com.sitescape.ef.taglib.Nlt</tag-class>
+		<name>box</name>
+		<tag-class>com.sitescape.ef.taglib.BoxTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
-			<name>tag</name>
+			<name>top</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
+		</attribute>
 		<attribute>
-			<name>text</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-	</tag>
-
-	<tag>
-		<name>velocity</name>
-		<tag-class>com.sitescape.ef.taglib.VelocityTag</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>name</name>
+			<name>bottom</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
+		</attribute>
 	</tag>
 	
-	<tag>
-		<name>tree</name>
-		<tag-class>com.sitescape.ef.taglib.TreeTag</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>treeName</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-		<attribute>
-			<name>treeDocument</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>org.dom4j.Document</type>
-		</attribute>		
-		<attribute>
-			<name>rootOpen</name>
-			<required>false</required>
-			<type>boolean</type>
-		</attribute>		
-		<attribute>
-			<name>allOpen</name>
-			<required>false</required>
-			<type>boolean</type>
-		</attribute>		
-		<attribute>
-			<name>nodeOpen</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-		<attribute>
-			<name>highlightNode</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-	</tag>
-
 	<tag>
 		<name>buildDefinitionDivs</name>
 		<tag-class>com.sitescape.ef.taglib.BuildDefinitionDivs</tag-class>
@@ -100,6 +52,33 @@
 	</tag>
 
 	<tag>
+		<name>datepicker</name>
+		<tag-class>com.sitescape.ef.taglib.Datepicker</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>id</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>formName</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>initDate</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.Date</type>
+		</attribute>
+		<attribute>
+			<name>componentOrder</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+		<tag>
 		<name>displayConfiguration</name>
 		<tag-class>com.sitescape.ef.taglib.DisplayConfiguration</tag-class>
 		<body-content>JSP</body-content>
@@ -134,80 +113,6 @@
 		</attribute>		
 	</tag>
 
-	<tag>
-		<name>forumDispatcher</name>
-		<tag-class>com.sitescape.ef.taglib.ForumDispatcher</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>forum</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.Forum</type>
-		</attribute>		
-		<attribute>
-			<name>operation</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-	</tag>
-
-	<tag>
-		<name>datepicker</name>
-		<tag-class>com.sitescape.ef.taglib.Datepicker</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>id</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>formName</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>initDate</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>java.util.Date</type>
-		</attribute>
-		<attribute>
-			<name>componentOrder</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-	</tag>
-	<tag>
-		<name>timepicker</name>
-		<tag-class>com.sitescape.ef.taglib.Timepicker</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>id</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>sequenceNumber</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>formName</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>initDate</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>java.util.Date</type>
-		</attribute>
-		<attribute>
-			<name>initTimeString</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-	</tag>
 	<tag>
 		<name>eventeditor</name>
 		<tag-class>com.sitescape.ef.taglib.Eventeditor</tag-class>
@@ -252,17 +157,24 @@
 			<type>com.sitescape.ef.domain.Event</type>
 		</attribute>
 	</tag>
+
 	<tag>
-		<name>eventtext</name>
-		<tag-class>com.sitescape.ef.taglib.Eventtext</tag-class>
+		<name>forumDispatcher</name>
+		<tag-class>com.sitescape.ef.taglib.ForumDispatcher</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
-			<name>event</name>
+			<name>forum</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.Event</type>
-		</attribute>
+			<type>com.sitescape.ef.domain.Forum</type>
+		</attribute>		
+		<attribute>
+			<name>operation</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
 	</tag>
+
 	<tag>
 		<name>htmleditor</name>
 		<tag-class>com.sitescape.ef.taglib.Htmleditor</tag-class>
@@ -293,6 +205,108 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+
+	<tag>
+		<name>nlt</name>
+		<tag-class>com.sitescape.ef.taglib.Nlt</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>tag</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>text</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+
+	<tag>
+		<name>param</name>
+		<tag-class>com.sitescape.ef.taglib.ParamTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>timepicker</name>
+		<tag-class>com.sitescape.ef.taglib.Timepicker</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>id</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>sequenceNumber</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>formName</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>initDate</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.Date</type>
+		</attribute>
+		<attribute>
+			<name>initTimeString</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>tree</name>
+		<tag-class>com.sitescape.ef.taglib.TreeTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>treeName</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>treeDocument</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>org.dom4j.Document</type>
+		</attribute>		
+		<attribute>
+			<name>rootOpen</name>
+			<required>false</required>
+			<type>boolean</type>
+		</attribute>		
+		<attribute>
+			<name>allOpen</name>
+			<required>false</required>
+			<type>boolean</type>
+		</attribute>		
+		<attribute>
+			<name>nodeOpen</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>highlightNode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+
 	<tag>
 		<name>url</name>
 		<tag-class>com.sitescape.ef.taglib.UrlTag</tag-class>
@@ -343,19 +357,14 @@
 	</tag>
 
 	<tag>
-		<name>param</name>
-		<tag-class>com.sitescape.ef.taglib.ParamTag</tag-class>
+		<name>velocity</name>
+		<tag-class>com.sitescape.ef.taglib.VelocityTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>name</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>value</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
+		</attribute>		
 	</tag>
-
+	
 </taglib>

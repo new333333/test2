@@ -276,14 +276,15 @@ if (self.parent && self.parent.highlightLineById) {
 		toolbarWidth = entryWindowWidth - 6;
 		renderRequest.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
 %>
-    <liferay:box top="/html/common/box_top.jsp" bottom="/html/common/box_bottom.jsp">
-      <liferay:param name="box_width" value="<%= new Integer(entryWindowWidth).toString() %>" />
+    <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
+      <ssf:param name="box_width" value="<%= new Integer(entryWindowWidth).toString() %>" />
+      <ssf:param name="box_show_close_icon" value="true" />
 	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
 	  configElement="<%= ssConfigElement %>" 
 	  configJspStyle="<%= ssConfigJspStyle %>"
 	  processThisItem="true" 
 	  folderEntry="<%= ssFolderEntry %>" />
-    </liferay:box>
+    </ssf:box>
 <%
 	
 	//Iframe view
