@@ -31,11 +31,10 @@
 // DayAndPosition -- represent a day-of-the-week and its position within
 // a larger unit (month or year)
 
-package edu.columbia.cpl;
+package com.sitescape.util.cal;
 
 import java.util.Calendar;
 
-import edu.columbia.cpl.Recurrence;
 
 /**
  * <code>DayAndPosition</code> is a utility class for representing byday

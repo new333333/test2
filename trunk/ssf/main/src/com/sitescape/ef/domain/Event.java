@@ -45,9 +45,9 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 import com.sitescape.ef.util.CollectionUtil;
+import com.sitescape.util.cal.DayAndPosition;
+import com.sitescape.util.cal.Duration;
 
-import edu.columbia.cpl.DayAndPosition;
-import edu.columbia.cpl.Duration;
 
 /**
  * <code>Recurrence</code> represents a recurring interval of time.  It
