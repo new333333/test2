@@ -163,17 +163,18 @@ public class AdminModuleImpl implements AdminModule {
 		functionManager.addFunction(function);
 	 
     }
-    public void updateFunction(String name, Map updates) {
+    public void updateFunction(Long id, Map updates) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//TODO: what acl check is needed
 		
 		List zoneFunctions = functionManager.findFunctions(user.getZoneName());
 		for (int i=0; i<zoneFunctions.size(); ++i) {
 			Function function = (Function)zoneFunctions.get(i);
-			if (name.equals(function.getName())) {
+			if (id.equals(function.getId())) {
 			   	ObjectBuilder.updateObject(function, updates);
 			    
 				functionManager.updateFunction(function);			
+				break;
 			}
 		}
     }

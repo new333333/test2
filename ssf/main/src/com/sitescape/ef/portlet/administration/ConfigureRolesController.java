@@ -1,8 +1,10 @@
 package com.sitescape.ef.portlet.administration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -37,15 +39,22 @@ public class ConfigureRolesController extends  SAbstractController {
 			}
 			getAdminModule().addFunction(function);
 		
-		} else if (formData.containsKey("modifyBtn")) {
-
+		} else if (formData.containsKey("modifyBtn") && formData.containsKey("roleId")) {
+			//Get the function id from the form
+			Long functionId = new Long(ActionUtil.getStringValue(formData, "roleId"));
+			
 			//Add the list of workAreaOperations that can be added to each function
-			Map operations = new HashMap();
+			Map updates = new HashMap();
+			Set operations = new HashSet();
 			Iterator itWorkAreaOperations = WorkAreaOperation.getWorkAreaOperations();
 			while (itWorkAreaOperations.hasNext()) {
-				String operationName = (String) ((WorkAreaOperation) itWorkAreaOperations.next()).toString();
-				operations.put(operationName, NLT.get(ObjectKeys.WORKAREA_OPERATION + "." + operationName));
+				WorkAreaOperation operation = (WorkAreaOperation) itWorkAreaOperations.next();
+				if (formData.containsKey(operation.toString())) {
+					operations.add(operation);
+				}
 			}
+			updates.put("operations", operations);
+			getAdminModule().updateFunction(functionId, updates);
 		
 		} else {
 			response.setRenderParameter(WebKeys.ACTION, "");
