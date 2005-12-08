@@ -48,17 +48,15 @@
 	<bean id="initRequestContextInterceptor" class="com.sitescape.ef.web.servlet.handler.InitRequestContextInterceptor"/>
 
 	<!-- Handler Exception Resolver -->
-	<!--
-	<bean id="handlerExceptionResolver" class="com.sitescape.ef.core.web.servlet.CodedExceptionResolver">
-		<property name="localeResolver"><ref bean="localeResolver"/></property>
+	<!--<bean id="handlerExceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="exceptionMappings">
 			<props>
-				<prop key="com.sitescape.ef.apps.login.LoginException">loginErrorView</prop>
-				<prop key="com.sitescape.ef.core.exc.ErrorCodeSupport">codedExceptionErrorView</prop>
+				<prop key="com.sitescape.ef.exception.CheckedCodedException">common/defCodedError</prop>
+				<prop key="com.sitescape.ef.exception.UncheckedCodedException">common/defCodedError</prop>
 			</props>
 		</property>
-		<property name="defaultErrorView"><value>exceptionErrorView</value></property>
-	</bean>	-->
+		<property name="defaultErrorView"><value>common/defError</value></property>
+	</bean>-->
 
 	<!-- Adapted portlets: In order for a portlet to plug into the adapter
 	     environment, it must to be listed here. -->
