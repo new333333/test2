@@ -40,7 +40,7 @@
 		</tr>
 		<tr>
 			<td colspan="4">
-				<a href="<html:webPath/>downloadFile?filespec=C:\liferay-portal-pro-3.5.0-tomcat\RUNNING.txt">Download File</a>
+				<a href="<html:webPath/>downloadFile?file=C:\liferay-portal-pro-3.5.0-tomcat\RUNNING.txt">Download File</a>
 			</td>
 		</tr>
 </table>
