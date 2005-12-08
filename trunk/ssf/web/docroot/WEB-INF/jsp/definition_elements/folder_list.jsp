@@ -12,26 +12,26 @@
 	}
 %>
 <script language="javascript">
-var ss_currentEntryId = "";
-function ss_loadEntry(obj,id) {
-	var folderLine = 'folderLine_'+id;
-	ss_currentEntryId = id;
-	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
-	highlightLineById(folderLine);
-	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
-	return false;
-}
+function highlightLineById(id) {
+    if (id == "") {return;}
+    var obj = null
+    if (isNSN || isNSN6 || isMoz5) {
+        obj = self.document.getElementById(id)
+    } else {
+        obj = self.document.all[id]
+    }
 
-function ss_loadEntryUrl(url,id) {
-	var folderLine = 'folderLine_'+id;
-	ss_currentEntryId = id;
-	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
-	highlightLineById(folderLine);
-	ss_showForumEntry(url, <c:out value="${showEntryCallbackRoutine}"/>);
-	return false;
+	if (highlightedLine != null) {
+		highlightedLine.className = savedHighlightClassName;
+	}
+	if (obj != null) {
+		highlightedLine = obj;
+		savedHighlightedLineClassName = highlightClassName;
+		highlightedLine.className = highlightClassName;
+	}
 }
-
 </script>
+
 <div class="ss_folder">
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
 
