@@ -750,7 +750,19 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
 
 
   /**
+   * Need internal routine for hibernate.  Don't want to make decisions based
+   * on properties that are not loaded yet as is don in getCount
    * @hibernate.property
+   * @hibernate.column name="count"
+   */
+  private int getHcount() {
+    return count;
+  }
+  private void setHcount(int count) {
+	  this.count = count;
+  }
+  
+  /**
    * Get the repeat count of the recurrence.
    * @return The repeat count.  0 if it is unset; -1 if it is
    *         unknown (because 'until' is set).
