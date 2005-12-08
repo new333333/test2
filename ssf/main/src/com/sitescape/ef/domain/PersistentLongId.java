@@ -14,6 +14,5 @@ package com.sitescape.ef.domain;
  */
 public interface PersistentLongId extends Persistent {
     public Long getId();
-    public String getStringId();
     public void setId(Long id);
 }

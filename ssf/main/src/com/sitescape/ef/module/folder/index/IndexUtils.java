@@ -110,19 +110,19 @@ public class IndexUtils {
         
     public static void addCreationPrincipleId(Document doc, Entry entry) {
     	//Add the id of the creator (no, not that one...)
-        Field creationIdField = Field.Keyword(CREATORID_FIELD, entry.getCreation().getPrincipal().getStringId());
+        Field creationIdField = Field.Keyword(CREATORID_FIELD, entry.getCreation().getPrincipal().getId().toString());
         doc.add(creationIdField);
     }   
 
     public static void addModificationPrincipleId(Document doc, Entry entry) {
     	//Add the id of the creator (no, not that one...)
-        Field modificationIdField = Field.Keyword(MODIFICATIONID_FIELD, entry.getModification().getPrincipal().getStringId());
+        Field modificationIdField = Field.Keyword(MODIFICATIONID_FIELD, entry.getModification().getPrincipal().getId().toString());
         doc.add(modificationIdField);
     }   
 
     public static void addDocId(Document doc, Entry entry) {
     	//Add the id of the creator (no, not that one...)
-        Field docIdField = Field.Keyword(DOCID_FIELD, entry.getStringId());
+        Field docIdField = Field.Keyword(DOCID_FIELD, entry.getId().toString());
         doc.add(docIdField);
     }
 

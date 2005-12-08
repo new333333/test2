@@ -1,6 +1,6 @@
 <% // File library %>
 <%
-	String folderId = ssFolder.getStringId();
+	String folderId = ssFolder.getId().toString();
 	String parentFolderId = "";
 	if (ssFolder instanceof Folder) {
 		Folder parentFolder = ((Folder) ssFolder).getParentFolder();
