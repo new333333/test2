@@ -1,7 +1,5 @@
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
 
-<ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
-	<ssf:param name="box_title" value="${ssFolder.title}" />
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
 
 <div id="showfolder" class="ss_portlet" style="display:block; margin:2;">
@@ -21,8 +19,6 @@
     frameBorder="no" >xxx</iframe>
   </ssf:box>
 </div>
-
-</ssf:box>
 
 <script language="javascript">
 var entryWindowWidth = <%= ss_entryWindowWidth %>;
