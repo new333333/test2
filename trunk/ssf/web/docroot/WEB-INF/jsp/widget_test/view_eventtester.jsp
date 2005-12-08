@@ -23,10 +23,6 @@
 <%@ page import="com.sitescape.ef.web.util.EventHelper" %>
 
 
-<liferay:box top="/html/common/box_top.jsp" bottom="/html/common/box_bottom.jsp">
-	<liferay:param name="box_title" value="<%= LanguageUtil.get(pageContext, \"view-eventtester\") %>" />
-
-
 <%
     Boolean hasdur = new Boolean("true");
     Boolean nodur = new Boolean("false");
@@ -137,5 +133,4 @@ This one has a duration
 	<hr>
 	<input type="submit" name="OK" value="OK">
 </form>
-</liferay:box>
 

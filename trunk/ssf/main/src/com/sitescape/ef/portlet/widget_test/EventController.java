@@ -47,7 +47,7 @@ public class EventController extends SAbstractController {
 //      model.put("ss_param_id", foo);
 //      ModelUtil.processModel(req,model);
 
-      String path = "widget_test/view_eventeditor";
+      String path = "widget_test/view_eventtester";
       return new ModelAndView(path);
 
       

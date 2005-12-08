@@ -55,7 +55,7 @@ public class Eventeditor extends TagSupport {
       ServletRequest req = null;
       req = new DynamicServletRequest((HttpServletRequest)pageContext.getRequest());
 
-      String jsp = contextPath + "/WEB-INF/tags/eventeditor/eventeditor.jsp";
+      String jsp = "/WEB-INF/tags/eventeditor/eventeditor.jsp";
       String icon = contextPath + "/images/pics/sym_s_repeat.gif";
       RequestDispatcher rd = req.getRequestDispatcher(jsp); 
       

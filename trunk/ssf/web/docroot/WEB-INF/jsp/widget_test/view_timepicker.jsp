@@ -121,7 +121,6 @@ This test page shows timepickers for the current date and an unspecified date.
 	<hr>
 	<input type="submit" name="OK" value="OK">
 </form>
-</liferay:box>
 
 
 
