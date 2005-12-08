@@ -39,7 +39,7 @@ public class QueryBuilder {
     private static final String RANGE_ELEMENT = "RANGE";
     private SearchObject searchObject = new SearchObject();
 
-	private void buildQuery(Document domQuery) {
+	private SearchObject buildQuery(Document domQuery) {
 		
 		Element root = domQuery.getRootElement();
 		if (!root.getText().equals("QUERY")) {
@@ -52,6 +52,9 @@ public class QueryBuilder {
 		parseRootElement(root);
 		//String qString = parseRootElement(root);
 		
+		return searchObject;
+/*
+ * 	For testing only	
 		QueryParser qp = new QueryParser("contents", new WhitespaceAnalyzer());
 		
 		try {
@@ -60,6 +63,7 @@ public class QueryBuilder {
 			Sort sort = new Sort(searchObject.getSortBy());
 			System.out.println("Sort is: " + sort.toString());
 		} catch (ParseException pe) { System.out.println("ParseException thrown, Query was: " + searchObject.getQuery() + " Error was: " + pe.toString());}
+*/
 		
 	}
 	
