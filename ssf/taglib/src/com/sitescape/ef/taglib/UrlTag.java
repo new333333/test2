@@ -30,7 +30,6 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
     private String folderId = "";
     private String entryId = "";
     private String operation = "";
-    private boolean popup = false;
     private String webPath = "";
     private boolean adapter = false;
     private String portletName = "";
@@ -60,10 +59,6 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			//There was no explicit url specified, so build the url
 			//Get the SiteScape url parameters
 			Map params = new HashMap();
-			
-			if (this.popup) {
-				params.put("popup", new String[] {"1"});
-			}
 			
 			if (!this.action.equals("")) {
 				params.put("action", new String[] {this.action});
@@ -176,10 +171,6 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 
 	public void setPortletName(String portletName) {
 	    this.portletName = portletName;
-	}
-
-	public void setPopup(boolean popup) {
-	    this.popup = popup;
 	}
 
 	public void setActionUrl(boolean actionUrl) {
