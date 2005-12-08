@@ -8,6 +8,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
@@ -167,6 +168,7 @@ public class LocalLuceneSession implements LuceneSession {
     }
 
     public com.sitescape.ef.lucene.Hits search(Query query, Sort sort, int offset, int size) {
+    	Hits hits = null;
         IndexSearcher indexSearcher = null;
         
         try {
@@ -177,7 +179,10 @@ public class LocalLuceneSession implements LuceneSession {
         }
 
         try {
-            org.apache.lucene.search.Hits hits = indexSearcher.search(query);
+        	if (sort == null) 
+        		hits = indexSearcher.search(query);
+        	else
+        		hits = indexSearcher.search(query,sort);
             if(size < 0)
                 size = hits.length();
             return com.sitescape.ef.lucene.Hits.transfer(hits, offset, size);
