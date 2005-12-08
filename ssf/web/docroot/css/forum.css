@@ -190,12 +190,31 @@ div.ss_formBreak {
 div.ss_buttonBarLeft {
   margin: 0px 5px 0px 5px;
   text-align: left;
+  display: inline;
   }
 
 /* right-aligned buttons (usually at the top of the form) */
 div.ss_buttonBarRight {
   margin: 0px 5px 0px 5px;
   text-align: right;
+  }
+
+div.ss_buttonBarLeft {
+  margin: 0px 5px 0px 5px;
+  text-align: left;
+  }
+
+/* toolbar positioning */
+span.ss_toolRight {
+  text-align: right;
+  float: right;
+  display:inline;
+  }
+  
+span.ss_toolLeft {
+  text-align: left;
+  float: left;
+  display: inline;
   }
 
 fieldset.ss_fieldset {
@@ -212,7 +231,9 @@ legend.ss_legend {
 
 /* styles for labels, including error indicators */
 .ss_labelAbove {
-  margin: 5px 5px 0px 0px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  padding: 0px;
   font-size: smaller;
   font-weight: bold;
   color: #000000;
@@ -427,6 +448,26 @@ span.ss_toolbar_item {
   padding-left: 2px;
   padding-bottom: 2px;
   padding-top: 2px;
+  }
+
+span.ss_toolLeft {
+  display: inline;
+  text-align: left;
+  float: left;
+  font-weight: bold;
+  font-size:smaller;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  }
+  
+span.ss_toolRight {
+  display: inline;
+  text-align: right;
+  float: right;
+  font-weight: bold;
+  font-size:smaller;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
   }
 
 a.ss_toolbar_item {
