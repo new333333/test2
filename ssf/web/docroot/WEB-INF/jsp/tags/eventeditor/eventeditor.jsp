@@ -32,7 +32,7 @@
  <c:choose>
  <c:when test="${attMap.hasDur}">
  <tr>
-   <td class="contentbold">Start:</td>
+   <td class="contentbold"><ssf:nlt tag="event.start" />:</td>
    <td>
    <ssf:datepicker 
        formName="<%= formName %>"
@@ -50,7 +50,7 @@
    </td>
 </tr>
  <tr>
-   <td class="contentbold">End:</td>
+   <td class="contentbold"><ssf:nlt tag="event.end" />:</td>
    <td>
    <ssf:datepicker 
        formName="<%= formName %>"
@@ -74,7 +74,7 @@
  <c:otherwise>
 
  <tr>
-   <td class="contentbold">When:</td>
+   <td class="contentbold"><ssf:nlt tag="event.when" />:</td>
    <td>
    <ssf:datepicker 
        formName="<%= formName %>"
@@ -103,7 +103,7 @@
    <tr><td>
    <img border="0" align="middle" src="<html:imagesPath />pics/sym_s_repeat.gif">
    </td>
-   <td> Recurrence </td>
+   <td> <ssf:nlt tag="event.recurrence" /> </td>
    </tr>
    </table>
    </a>
@@ -114,19 +114,86 @@
 </td></tr>
 </table>
 
+<% // recurrence stuff; emit and initialize various hidden fields from the initEvent %>
 <c:if test="${attMap.hasRecur}">
-<input type="hidden" name="${prefix}_repeatUnit">
-<input type="hidden" name="${prefix}_everyN">
-<input type="hidden" name="${prefix}_day0">
-<input type="hidden" name="${prefix}_day1">
-<input type="hidden" name="${prefix}_day2">
-<input type="hidden" name="${prefix}_day3">
-<input type="hidden" name="${prefix}_day4">
-<input type="hidden" name="${prefix}_day5">
-<input type="hidden" name="${prefix}_day6">
+
+<c:choose>
+<c:when test="${empty initEvent.frequencyString}">
+<c:set var="freqval" value="none" />
+</c:when>
+<c:when test="${initEvent.frequencyString == 'DAILY'}">
+<c:set var="freqval" value="day" />
+</c:when>
+<c:when test="${initEvent.frequencyString == 'WEEKLY'}">
+<c:set var="freqval" value="week" />
+</c:when>
+<c:when test="${initEvent.frequencyString == 'MONTHLY'}">
+<c:set var="freqval" value="month" />
+</c:when>
+<c:otherwise>
+<c:set var="freqval" value="" />
+</c:otherwise>
+</c:choose>
+<input type="hidden" name="${prefix}_repeatUnit" value="${freqval}" >
+
+<c:choose>
+<c:when test="${empty initEvent.interval}">
+<input type="hidden" name="${prefix}_everyN" value="1">
+</c:when>
+<c:otherwise>
+<input type="hidden" name="${prefix}_everyN" value="${initEvent.interval}">
+</c:otherwise>
+</c:choose>
+
+<c:set var="day0sel" value="" />
+<c:set var="day1sel" value="" />
+<c:set var="day2sel" value="" />
+<c:set var="day3sel" value="" />
+<c:set var="day4sel" value="" />
+<c:set var="day5sel" value="" />
+<c:set var="day6sel" value="" />
+
+<c:forEach var="daypos" items="${initEvent.byDay}">
+<c:choose>
+
+<c:when test="${daypos.dayOfWeek == 1}">
+<c:set var="day0sel" value="yes" />
+</c:when>
+<c:when test="${daypos.dayOfWeek == 2}">
+<c:set var="day1sel" value="yes" />
+</c:when>
+<c:when test="${daypos.dayOfWeek == 3}">
+<c:set var="day2sel" value="yes" />
+</c:when>
+<c:when test="${daypos.dayOfWeek == 4}">
+<c:set var="day3sel" value="yes" />
+</c:when>
+<c:when test="${daypos.dayOfWeek == 5}">
+<c:set var="day4sel" value="yes" />
+</c:when>
+<c:when test="${daypos.dayOfWeek == 6}">
+<c:set var="day5sel" value="yes" />
+</c:when>
+<c:when test="${daypos.dayOfWeek == 7}">
+<c:set var="day6sel" value="yes" />
+</c:when>
+
+</c:choose>
+</c:forEach>
+
+<input type="hidden" name="${prefix}_day0" value="${day0sel}">
+<input type="hidden" name="${prefix}_day1" value="${day1sel}">
+<input type="hidden" name="${prefix}_day2" value="${day2sel}">
+<input type="hidden" name="${prefix}_day3" value="${day3sel}">
+<input type="hidden" name="${prefix}_day4" value="${day4sel}">
+<input type="hidden" name="${prefix}_day5" value="${day5sel}">
+<input type="hidden" name="${prefix}_day6" value="${day6sel}">
 <input type="hidden" name="${prefix}_onDayCard">
 <input type="hidden" name="${prefix}_dow">
+
+<% // end of recurrence hidden fields %>
 </c:if>
+
 
 <script language="Javascript">
 
@@ -156,64 +223,71 @@ ${prefix}_popupContents += '<table border="0" cellpadding="4" cellspacing="0">\n
 ${prefix}_popupContents += ' <tr>\n';
 ${prefix}_popupContents += '  <td colspan="3" class="contentbold">\n';
 
-${prefix}_popupContents += '  &nbsp;Frequency\n';
+${prefix}_popupContents += '  &nbsp;<ssf:nlt tag="event.frequency" />\n';
 ${prefix}_popupContents += ' </td>\n';
 ${prefix}_popupContents += ' </tr>\n';
 ${prefix}_popupContents += ' <tr>\n';
 ${prefix}_popupContents += '  <td colspan="2" class="content"><input type="radio"  \n';
 ${prefix}_popupContents += '   name="repeatUnit" value="none" id="norepeat"\n';
-${prefix}_popupContents += '   checked="checked"><label for="norepeat">No repeat</label></td>\n';
+${prefix}_popupContents += '   checked="checked"><label for="norepeat"><ssf:nlt tag="event.no_repeat" /></label></td>\n';
 ${prefix}_popupContents += ' </tr>\n';
 ${prefix}_popupContents += ' <tr>\n';
 ${prefix}_popupContents += '  <td nowrap="nowrap" class="content">\n';
 
 ${prefix}_popupContents += '   <input type="radio" name="repeatUnit" id="repeatday"\n';
 ${prefix}_popupContents += '   value="day"  > \n';
-${prefix}_popupContents += '   Every <input type="text" name="everyNday" size="2" \n';
-${prefix}_popupContents += '   class="content" value="1"> day(s)</td>\n';
+${prefix}_popupContents += '   <ssf:nlt tag="event.every" /> <input type="text" name="everyNday" size="2" \n';
+${prefix}_popupContents += '   class="content" value="1"> <ssf:nlt tag="event.days" /></td>\n';
 ${prefix}_popupContents += ' </tr>\n';
 ${prefix}_popupContents += ' <tr>\n';
 ${prefix}_popupContents += '  <td class="content" valign="top" nowrap="nowrap">\n';
 ${prefix}_popupContents += '   <input type="radio" name="repeatUnit" id="repeatweek"\n';
 ${prefix}_popupContents += '   value="week" >\n';
-${prefix}_popupContents += '   Every <input type="text" name="everyNweek" size="2" \n';
-${prefix}_popupContents += '   class="content" value="1" > week(s) on \n';
+${prefix}_popupContents += '   <ssf:nlt tag="event.every" /> <input type="text" name="everyNweek" size="2" \n';
+${prefix}_popupContents += '   class="content" value="1" > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> \n';
 
 ${prefix}_popupContents += '<input type="checkbox" name="day0" id="day0" value="">\n';
+${prefix}_popupContents += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.su" /></font>\n';
 ${prefix}_popupContents += '<input type="checkbox" name="day1" id="day1" value="">\n';
+${prefix}_popupContents += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.mo" /></font>\n';
 ${prefix}_popupContents += '<input type="checkbox" name="day2" id="day2" value="">\n';
+${prefix}_popupContents += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.tu" /></font>\n';
 ${prefix}_popupContents += '<input type="checkbox" name="day3" id="day3" value="">\n';
+${prefix}_popupContents += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.we" /></font>\n';
 ${prefix}_popupContents += '<input type="checkbox" name="day4" id="day4" value="">\n';
+${prefix}_popupContents += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.th" /></font>\n';
 ${prefix}_popupContents += '<input type="checkbox" name="day5" id="day5" value="">\n';
+${prefix}_popupContents += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.fr" /></font>\n';
 ${prefix}_popupContents += '<input type="checkbox" name="day6" id="day6" value="">\n';
-${prefix}_popupContents += ' </tr>\n';
+${prefix}_popupContents += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.sa" /></font>\n';
+${prefix}_popupContents += '</tr>\n';
  
 ${prefix}_popupContents += ' <tr>\n';
 
 ${prefix}_popupContents += '  <td class="content" valign="top" nowrap="nowrap"><input \n';
 ${prefix}_popupContents += '   type="radio" name="repeatUnit" id="repeatmonth"\n';
 ${prefix}_popupContents += '   value="month" " >\n';
-${prefix}_popupContents += '   Every <input type="text" class="content" size="2"\n';
+${prefix}_popupContents += '   <ssf:nlt tag="event.every" /> <input type="text" class="content" size="2"\n';
 ${prefix}_popupContents += '   name="everyNmonth" value="1" > month(s) on the\n';
 ${prefix}_popupContents += '<select class="content" name="onDayCardSel" title="select which week in the month on which this calendar entry will occur" name="onDayCardSel" > \n';
-${prefix}_popupContents += '<option class="content" value="none">--select one--</option> \n';
-${prefix}_popupContents += '<option class="content" value="first" >first</option> \n';
-${prefix}_popupContents += '<option class="content" value="second" >second</option> \n';
-${prefix}_popupContents += '<option class="content" value="third" >third</option> \n';
-${prefix}_popupContents += '<option class="content" value="fourth" >fourth</option> \n';
-${prefix}_popupContents += '<option class="content" value="last" >last</option> \n';
+${prefix}_popupContents += '<option class="content" value="none"><ssf:nlt tag="general.please_select" /></option> \n';
+${prefix}_popupContents += '<option class="content" value="first" ><ssf:nlt tag="event.whichweek.first" /></option> \n';
+${prefix}_popupContents += '<option class="content" value="second" ><ssf:nlt tag="event.whichweek.second" /></option> \n';
+${prefix}_popupContents += '<option class="content" value="third" ><ssf:nlt tag="event.whichweek.third" /></option> \n';
+${prefix}_popupContents += '<option class="content" value="fourth" ><ssf:nlt tag="event.whichweek.fourth" /></option> \n';
+${prefix}_popupContents += '<option class="content" value="last" ><ssf:nlt tag="event.whichweek.last" /></option> \n';
 ${prefix}_popupContents += '</select> \n';
 ${prefix}_popupContents += '<select class="content" name="dow" title="select the day of the week on which the repeated entry will occur" > \n';
-${prefix}_popupContents += '<option class="content" value="none">--select one--</option> \n';
-${prefix}_popupContents += '<option class="content" value="Sunday" >Sunday</option> \n';
-${prefix}_popupContents += '<option class="content" value="Monday" >Monday</option> \n';
-${prefix}_popupContents += '<option class="content" value="Tuesday" >Tuesday</option> \n';
-${prefix}_popupContents += '<option class="content" value="Wednesday" >Wednesday</option> \n';
-${prefix}_popupContents += '<option class="content" value="Thursday" >Thursday</option> \n';
-${prefix}_popupContents += '<option class="content" value="Friday" >Friday</option> \n';
-${prefix}_popupContents += '<option class="content" value="Saturday" >Saturday</option> \n';
-${prefix}_popupContents += '<option class="content" value="weekday" >weekday</option> \n';
-${prefix}_popupContents += '<option class="content" value="weekend day" >weekend day</option> \n';
+${prefix}_popupContents += '<option class="content" value="none"><ssf:nlt tag="general.please_select" /></option> \n';
+${prefix}_popupContents += '<option class="content" value="Sunday" ><ssf:nlt tag="calendar.day.names.su" /></option> \n';
+${prefix}_popupContents += '<option class="content" value="Monday" ><ssf:nlt tag="calendar.day.names.mo" /></option> \n';
+${prefix}_popupContents += '<option class="content" value="Tuesday" ><ssf:nlt tag="calendar.day.names.tu" /></option> \n';
+${prefix}_popupContents += '<option class="content" value="Wednesday" ><ssf:nlt tag="calendar.day.names.we" /></option> \n';
+${prefix}_popupContents += '<option class="content" value="Thursday" ><ssf:nlt tag="calendar.day.names.th" /></option> \n';
+${prefix}_popupContents += '<option class="content" value="Friday" ><ssf:nlt tag="calendar.day.names.fr" /></option> \n';
+${prefix}_popupContents += '<option class="content" value="Saturday" ><ssf:nlt tag="calendar.day.names.sa" /></option> \n';
+${prefix}_popupContents += '<option class="content" value="weekday" ><ssf:nlt tag="calendar.day.names.weekday" /></option> \n';
+${prefix}_popupContents += '<option class="content" value="weekend day" ><ssf:nlt tag="calendar.day.names.weekendday" /></option> \n';
 ${prefix}_popupContents += '</select> </td>\n';
 
 ${prefix}_popupContents += ' </tr>\n';
@@ -224,7 +298,7 @@ ${prefix}_popupContents += '<center>\n';
 ${prefix}_popupContents += '<table border="0" style="border:1px solid;">\n';
 ${prefix}_popupContents += '<tr><td align="center">\n';
 ${prefix}_popupContents += '<a href="javascript: ;" onClick="setOpenerHiddenFields(); self.close(); ">\n';
-${prefix}_popupContents += 'OK</a></td></tr></table>\n';
+${prefix}_popupContents += '<ssf:nlt tag="button.ok" /></a></td></tr></table>\n';
 ${prefix}_popupContents += '</center>\n';
 
 ${prefix}_popupContents += "</form>\n";
