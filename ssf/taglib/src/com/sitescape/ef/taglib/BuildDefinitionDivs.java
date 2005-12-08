@@ -47,7 +47,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			
 			//Build the selection instructions div
 			sb.append("\n<div id='info_select' class='ss_definitionBuilder'>\n");
-			sb.append("<span class='titlebold'>" + this.title + "</span>\n");
+			sb.append("<span class='ss_titlebold'>" + this.title + "</span>\n");
 			sb.append("</div>\n");
 			sb.append("<script language='javascript'>\n");
 			sb.append("    self.setDeclaredDiv('info_select')\n");
@@ -118,7 +118,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				this.divNames.put("info_"+rootElementId, "1");
 				sb.append("\n<div id='info_" + rootElementId + "' ");
 				sb.append("class='ss_definitionBuilder'>\n");
-				sb.append("<span class='contentbold'>" + rootElement.attributeValue("caption"));
+				sb.append("<span class='ss_contentbold'>" + rootElement.attributeValue("caption"));
 				property = (Element) rootElement.selectSingleNode("./properties/property[@name='caption']");
 				String propertyCaptionValue = "";
 				if (property != null) {
@@ -144,26 +144,26 @@ public class BuildDefinitionDivs extends TagSupport {
 				this.divNames.put("infoDefinitionOptions", "1");
 				sb.append("\n<div id='infoDefinitionOptions' ");
 				sb.append("class='ss_definitionBuilder'>\n");
-				sb.append("<span class='titlebold' id='infoDefinitionOptionsDefinitionName'></span>\n");
+				sb.append("<span class='ss_titlebold' id='infoDefinitionOptionsDefinitionName'></span>\n");
 				
 				sb.append("<table>\n");
 				
 				sb.append("<tr><td>\n");
-				sb.append("<a class='content' href='javascript: ;' "); 
+				sb.append("<a class='ss_content' href='javascript: ;' "); 
 				sb.append("onClick=\"return viewDefinition();\">");
 				sb.append("View this definition");
 				sb.append("</a>\n");
 				sb.append("</td></tr>\n");
 				
 				sb.append("<tr><td>\n");
-				sb.append("<a class='content' href='javascript: ;' "); 
+				sb.append("<a class='ss_content' href='javascript: ;' "); 
 				sb.append("onClick=\"return modifyDefinition();\">");
 				sb.append("Modify the properties of this definition");
 				sb.append("</a>\n");
 				sb.append("</td></tr>\n");
 
 				sb.append("<tr><td>\n");
-				sb.append("<a class='content' href='javascript: ;' "); 
+				sb.append("<a class='ss_content' href='javascript: ;' "); 
 				sb.append("onClick=\"return deleteDefinition();\">");
 				sb.append("Delete this definition");
 				sb.append("</a>\n");
@@ -182,7 +182,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				this.divNames.put("modify_definition", "1");
 				sb.append("\n<div id='modify_definition' ");
 				sb.append("class='ss_definitionBuilder'>\n");
-				sb.append("<span class='titlebold'>Modify the properties of this definition</span><br><br>\n");
+				sb.append("<span class='ss_titlebold'>Modify the properties of this definition</span><br><br>\n");
 				sb.append("<span>Name</span><br>\n");
 				sb.append("<input type='text' name='modifyDefinitionName' size='40'><br>\n");
 				sb.append("<span>Caption</span><br>\n");
@@ -215,14 +215,14 @@ public class BuildDefinitionDivs extends TagSupport {
 				this.divNames.put("delete_definition", "1");
 				sb.append("\n<div id='delete_definition' ");
 				sb.append("class='ss_definitionBuilder'>\n");
-				sb.append("<span class='titlebold'>Select the definition to be deleted</span>\n");
+				sb.append("<span class='ss_titlebold'>Select the definition to be deleted</span>\n");
 				sb.append("</div>\n");
 				sb.append("<script language='javascript'>\n");
 				sb.append("    self.setDeclaredDiv('delete_definition')\n");
 				sb.append("</script>\n");
 				sb.append("\n<div id='delete_definition_confirm' ");
 				sb.append("class='ss_definitionBuilder'>\n");
-				sb.append("<span class='titlebold'>Delete: <span id='deleteDefinitionSelection'></span></span>\n");
+				sb.append("<span class='ss_titlebold'>Delete: <span id='deleteDefinitionSelection'></span></span>\n");
 				sb.append("<br><br>\n");
 				sb.append("<input type='submit' name='okBtn' value='  OK  '>\n");
 				sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
@@ -286,7 +286,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					String operationElementId = operationElement.attributeValue("id", operationElement.attributeValue("name"));
 					String operationElementName = operationElement.attributeValue("name");
 					
-					sb.append("<a class='content' href='javascript: ;' "); 
+					sb.append("<a class='ss_content' href='javascript: ;' "); 
 					if (operationElement.attributeValue("item", "").equals("")) {
 						sb.append("onClick=\""+operationElementId+"('" + operationElementId + "', '" + operationElementName + "', '')\">");
 					} else {
@@ -339,7 +339,7 @@ public class BuildDefinitionDivs extends TagSupport {
 										hb.append("<div id='help_div_");
 										hb.append(Integer.toString(++helpDivCount));
 										hb.append("' class='ss_helpPopUp'>\n");
-										hb.append("<span class='content'>");
+										hb.append("<span class='ss_content'>");
 										hb.append(help.getText());
 										hb.append("</span>\n</div>\n");
 										sb.append("&nbsp;<a name='help_div_");
@@ -382,7 +382,7 @@ public class BuildDefinitionDivs extends TagSupport {
 										hb.append("<div id='help_div_");
 										hb.append(Integer.toString(++helpDivCount));
 										hb.append("' class='ss_helpPopUp'>\n");
-										hb.append("<span class='content'>");
+										hb.append("<span class='ss_content'>");
 										hb.append(help.getText());
 										hb.append("</span>\n</div>\n");
 										sb.append("&nbsp;<a name='help_div_");
@@ -538,7 +538,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							hb.append("<div id='help_div_");
 							hb.append(Integer.toString(++helpDivCount));
 							hb.append("' class='ss_helpPopUp'>\n");
-							hb.append("<span class='content'>");
+							hb.append("<span class='ss_content'>");
 							hb.append(help.getText());
 							hb.append("</span>\n</div>\n");
 							sb.append("&nbsp;<a name='help_div_");
@@ -594,14 +594,14 @@ public class BuildDefinitionDivs extends TagSupport {
 			this.divNames.put("move_item", "1");
 			sb.append("\n<div id='move_item' ");
 			sb.append("class='ss_definitionBuilder'>\n");
-			sb.append("<span class='titlebold'>Select the new location of the item to be moved</span><br>\n");
+			sb.append("<span class='ss_titlebold'>Select the new location of the item to be moved</span><br>\n");
 			sb.append("</div>\n");
 			sb.append("<script language='javascript'>\n");
 			sb.append("    self.setDeclaredDiv('move_item')\n");
 			sb.append("</script>\n");
 			sb.append("\n<div id='move_item_confirm' ");
 			sb.append("class='ss_definitionBuilder'>\n");
-			sb.append("<span class='titlebold'>Move: <div id='moveItemSelection' style='display:inline;'></div></span>\n");
+			sb.append("<span class='ss_titlebold'>Move: <div id='moveItemSelection' style='display:inline;'></div></span>\n");
 			sb.append("<br>\n");
 			sb.append("<input type='radio' name='moveTo' value='above'>");
 			sb.append("<span>Move to above the selected item<br>");

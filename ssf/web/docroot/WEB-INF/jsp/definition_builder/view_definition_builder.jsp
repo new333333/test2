@@ -356,13 +356,25 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 	if (data.containsKey("selectedItem") && !data.get("selectedItem").equals("")) {
 		Element configElement = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='entryForm']");
 		if (config != null) {
+			String definitionName = (String) ((Document) data.get("sourceDefinition")).getRootElement().attributeValue("caption","");
 			request.setAttribute("definitionEntry", new FolderEntry());
 			request.setAttribute("configElement", configElement);
 			configJspStyle = "form";
 			request.setAttribute("configJspStyle", "form");
 %>
 
+<br>
+<hr class="ss_hr">
+<br>
+
 <div class="ss_portlet">
+<div align="center" width="100%">
+  <span class="ss_titlebold">
+    "<%= definitionName %>" Form Preview
+  </span>
+</div>
+<br>
+
 <table cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration 
   configDefinition="<%= configDefinition %>" 
