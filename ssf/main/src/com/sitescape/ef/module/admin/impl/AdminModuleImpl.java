@@ -20,6 +20,7 @@ import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.jobs.EmailNotification;
 import com.sitescape.ef.jobs.EmailPosting;
@@ -28,6 +29,7 @@ import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.FunctionExistsException;
+import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.jobs.Schedule;
@@ -161,7 +163,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     public void addFunction(Function function) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		function.setZoneName(user.getZoneName());
-		//TODO: what acl check is needed
+
+        //Check that this user is allowed to do this operation
+		Workspace workspace = getCoreDao().findTopWorkspace(user.getZoneName());
+        accessControlManager.checkOperation(workspace, WorkAreaOperation.SITE_ADMINISTRATION);        
 		
 		List zoneFunctions = functionManager.findFunctions(user.getZoneName());
 		if (zoneFunctions.contains(function)) {
@@ -173,7 +178,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     }
     public void modifyFunction(Long id, Map updates) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		//TODO: what acl check is needed
+
+        //Check that this user is allowed to do this operation
+		Workspace workspace = getCoreDao().findTopWorkspace(user.getZoneName());
+        accessControlManager.checkOperation(workspace, WorkAreaOperation.SITE_ADMINISTRATION);        
 		
 		List zoneFunctions = functionManager.findFunctions(user.getZoneName());
 		for (int i=0; i<zoneFunctions.size(); ++i) {
@@ -188,8 +196,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     }
     public List getFunctions() {
 		User user = RequestContextHolder.getRequestContext().getUser();	
-		//TODO: what acl check is needed
-		List zoneFunctions = functionManager.findFunctions(user.getZoneName());
+
+        //Check that this user is allowed to do this operation
+		Workspace workspace = getCoreDao().findTopWorkspace(user.getZoneName());
+        accessControlManager.checkOperation(workspace, WorkAreaOperation.SITE_ADMINISTRATION);        
+
+        List zoneFunctions = functionManager.findFunctions(user.getZoneName());
 		return zoneFunctions;
     }
 
