@@ -22,7 +22,13 @@
 		<property name="viewName"><value>sample/employeesHelp</value></property>
 	</bean>
 	
+	<bean id="showXmlController" class="org.springframework.web.portlet.mvc.ParameterizableViewController">
+		<property name="viewName"><value>sample/showXml</value></property>
+	</bean>
+	
 	<bean id="uploadFileController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.sample.UploadFileController"/>
+
+	<bean id="downloadFileController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.sample.DownloadFileController"/>
 
 	<!-- Handlers -->
 
@@ -36,6 +42,8 @@
 						<entry key="editEmployee"><ref bean="employeeEditController"/></entry>
 						<entry key="deleteEmployee"><ref bean="employeeDeleteController"/></entry>
 						<entry key="uploadFile"><ref bean="uploadFileController"/></entry>
+						<entry key="downloadFile"><ref bean="downloadFileController"/></entry>
+						<entry key="showXml"><ref bean="showXmlController"/></entry>
 					</map>
 				</entry>
 				<entry key="edit">
