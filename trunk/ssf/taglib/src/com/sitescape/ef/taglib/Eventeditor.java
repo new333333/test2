@@ -72,9 +72,11 @@ public class Eventeditor extends TagSupport {
       } else {
     	  initEvent = new Event();
     	  GregorianCalendar startCal = new GregorianCalendar();
+    	  startCal.setTime(startDate);
     	  initEvent.setDtStart(startCal);
     	  if (hasDuration.booleanValue()) {
     		  GregorianCalendar endCal = new GregorianCalendar();
+    		  endCal.setTime(endDate);
     		  initEvent.setDtEnd(endCal);
     	  }
       }
