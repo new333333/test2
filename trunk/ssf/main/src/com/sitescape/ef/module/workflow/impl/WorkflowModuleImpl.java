@@ -76,7 +76,8 @@ public class WorkflowModuleImpl extends AbstractModuleImpl implements WorkflowMo
 	       	JbpmSession session = workflowFactory.getSession();
         	ProcessInstance pI = session.getGraphSession().loadProcessInstance(processInstanceId.longValue());
         	Token token = pI.getRootToken();
-        	token.signal();
+        	Transition transition = token.getNode().getDefaultLeavingTransition();
+            token.signal(transition);
             session.getGraphSession().saveProcessInstance(pI);
             return pI;
 	    } catch (Exception ex) {
