@@ -63,7 +63,7 @@ function loadEntry(obj,id) {
   </td>
   <td valign="top" width="40%">
     <a href="<ssf:url folderId="<%= folderId %>" action="view_entry" 
-    entryId="<%= entry.getId().toString() %>" popup="true" />" 
+    entryId="<%= entry.getId().toString() %>" actionUrl="false" popup="true" />" 
     onClick="loadEntry(this,'folderLine_<c:out value="${entry.id}"/>');return false;" >
     <c:if test="${empty entry.title}">
     <span class="fineprint"><i>(no title)</i></span>
