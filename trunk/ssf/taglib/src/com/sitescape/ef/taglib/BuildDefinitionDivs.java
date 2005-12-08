@@ -512,12 +512,14 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append("<input type='checkbox' name='propertyId_" + propertyId + "' "+checked+" "+readonly+"> ");
 						sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 					
-					} else if (type.equals("selectbox")) {
+					} else if (type.equals("selectbox") || type.equals("radio")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 							sb.append("\n<br>\n");
 						}
-						sb.append("<select name='propertyId_" + propertyId + "'>\n");
+						if (type.equals("selectbox")) {
+							sb.append("<select name='propertyId_" + propertyId + "'>\n");
+						}
 						//See if there are any built-in options
 						Iterator  itSelections = propertyConfig.elementIterator("option");
 						while (itSelections.hasNext()) {
@@ -527,9 +529,17 @@ public class BuildDefinitionDivs extends TagSupport {
 									(!propertyValueDefault.equals("") && propertyValueDefault.equals(selection.attributeValue("name", "")))) {
 								checked = " selected";
 							}
-							sb.append("<option value='").append(selection.attributeValue("name", "")).append("'").append(checked).append(">");
-							sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
-							sb.append("</option>\n");
+							if (type.equals("selectbox")) {
+								sb.append("<option value='").append(selection.attributeValue("name", "")).append("'").append(checked).append(">");
+								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
+								sb.append("</option>\n");
+							} else if (type.equals("radio")) {
+								sb.append("<input type='radio' name='propertyId_" + propertyId + "' value='");
+								sb.append(selection.attributeValue("name", ""));
+								sb.append("'").append(checked).append(">");
+								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
+								sb.append("</input><br/>\n");
+							}
 						}
 						//See if there are any data items to be shown from the "sourceRoot" entry form
 						itSelections = propertyConfig.elementIterator("option_entry_data");
@@ -571,16 +581,26 @@ public class BuildDefinitionDivs extends TagSupport {
 													(propertyValue.equals("") && entryFormItemNamePropertyName.equals(propertyValueDefault))) {
 												checked = " selected";
 											}
-											sb.append("<option value='").append(entryFormItemNamePropertyName).append("'").append(checked).append(">");
-											sb.append(entryFormItemCaptionPropertyValue);
-											sb.append("</option>\n");
+											if (type.equals("selectbox")) {
+												sb.append("<option value='").append(entryFormItemNamePropertyName).append("'").append(checked).append(">");
+												sb.append(entryFormItemCaptionPropertyValue);
+												sb.append("</option>\n");
+											} else if (type.equals("radio")) {
+												sb.append("<input type='radio' name='propertyId_" + propertyId + "' value='");
+												sb.append(entryFormItemNamePropertyName);
+												sb.append("'").append(checked).append(">");
+												sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
+												sb.append("</input><br/>\n");
+											}
 										}
 									}
 								}
 							}
 						}
 						
-						sb.append("</select>\n");
+						if (type.equals("selectbox")) {
+							sb.append("</select>\n");
+						}
 					
 					} else if (type.equals("itemSelect")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
