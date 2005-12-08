@@ -27,6 +27,7 @@ import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.security.AccessControlException;
@@ -202,7 +203,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         Hits hits = processor.getRecentEntries(folders);
         Map unseenCounts = new HashMap();
         for (int i = 0; i < hits.length(); i++) {
-			String folderIdString = hits.doc(i).getField("_folderId").stringValue();
+			String folderIdString = hits.doc(i).getField(IndexUtils.FOLDERID_FIELD).stringValue();
 			Counter cnt = (Counter)unseenCounts.get(folderIdString);
 			if (cnt == null) {
 				cnt = new Counter();

@@ -464,12 +464,12 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
        	Hits hits = null;
        	// Build the query
     	org.dom4j.Document qTree = DocumentHelper.createDocument();
-    	Element rootElement = qTree.addElement("QUERY");
-    	Element boolElement = rootElement.addElement("AND");
-    	boolElement.addElement("USERACL");
-    	Element field = boolElement.addElement("FIELD");
-    	field.addAttribute("fieldname","_folderId");
-    	Element child = field.addElement("TERMS");
+    	Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+    	Element boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
+    	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
+    	Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,IndexUtils.FOLDERID_FIELD);
+    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
     	child.setText((folder.getId()).toString());
     	
     	//Create the Lucene query
@@ -495,16 +495,16 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     	Hits results = null;
        	// Build the query
     	org.dom4j.Document qTree = DocumentHelper.createDocument();
-    	Element rootElement = qTree.addElement("QUERY");
-    	//Element boolElement = rootElement.addElement("AND");
-    	//boolElement.addElement("USERACL");
-    	Element boolElement = rootElement.addElement("OR");
+    	Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+    	Element andElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
+    	andElement.addElement(QueryBuilder.USERACL_ELEMENT);
+    	Element orElement = andElement.addElement(QueryBuilder.OR_ELEMENT);
     	Iterator itFolders = folders.iterator();
     	while (itFolders.hasNext()) {
     		Folder folder = (Folder) itFolders.next();
-        	Element field = boolElement.addElement("FIELD");
-        	field.addAttribute("fieldname","_folderId");
-        	Element child = field.addElement("TERMS");
+        	Element field = orElement.addElement(QueryBuilder.FIELD_ELEMENT);
+        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,IndexUtils.FOLDERID_FIELD);
+        	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
     		child.setText(folder.getId().toString());
     	}
     	

@@ -39,6 +39,7 @@ public class IndexUtils {
     public static final String CREATORID_FIELD = "_creatorId";
     public static final String MODIFICATIONID_FIELD = "_modificationId";
     public static final String READ_ACL_FIELD = "_readAcl";
+    public static final String READ_DEF_ACL_FIELD = "_readDefAcl";
     public static final String DOCID_FIELD = "_docId";
     public static final String DOCNUMBER_FIELD = "_docNum";
     public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
@@ -46,7 +47,12 @@ public class IndexUtils {
     public static final String TITLE1_FIELD = "_title1";
     public static final String DESC_FIELD = "_desc";
     public static final String FOLDERID_FIELD = "_folderId";
-    public static final String CUSTOMATTRS_FIELD = "_customAttributes";
+    public static final String PARENT_FOLDERID_FIELD = "_parentFolderId";
+    public static final String TOP_FOLDERID_FIELD = "_topFolderId";
+    public static final String CUSTOM_ATTRS_FIELD = "_customAttributes";
+    public static final String EVENT_FIELD = "_event";
+    public static final String EVENT_FIELD_START_DATE = "StartDate";
+    public static final String EVENT_FIELD_END_DATE = "EndDate";
     public static final String EVENT_COUNT_FIELD = "_eventCount";
     
     // Defines field values
@@ -85,12 +91,12 @@ public class IndexUtils {
 			CustomAttribute att = (CustomAttribute) customAttrs.get(attIt.next());
 			if (att.getValueType() == CustomAttribute.EVENT) {
 				// set the event name to event + count
-				eventName = "_event" + count;
+				eventName = EVENT_FIELD + count;
 				Event ev = (Event) att.getValue();
 				// range check to see if this event is in range
-		    	evDtStartField = Field.Keyword(eventName+"StartDate", ev.getDtStart().getTime());
+		    	evDtStartField = Field.Keyword(eventName+EVENT_FIELD_START_DATE, ev.getDtStart().getTime());
 		    	doc.add(evDtStartField);
-		    	evDtEndField = Field.Keyword(eventName+"EndDate", ev.getDtEnd().getTime());
+		    	evDtEndField = Field.Keyword(eventName+EVENT_FIELD_END_DATE, ev.getDtEnd().getTime());
 		    	doc.add(evDtEndField);
 		    	//SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 				//String dateKey = sdf.format(ev.getDtStart().getTime());
@@ -136,7 +142,21 @@ public class IndexUtils {
     	//Add the folder id to the document in the index
         Field folderField = Field.Keyword(FOLDERID_FIELD, folder.getId().toString());
         doc.add(folderField);
-    }   
+        
+    	//Add the folder parentage to the document in the index
+        Folder parentFolder = folder.getParentFolder();
+        while (parentFolder != null) {
+        	Field parentFolderField = Field.Keyword(PARENT_FOLDERID_FIELD, parentFolder.getId().toString());
+            doc.add(parentFolderField);
+        	parentFolder = parentFolder.getParentFolder();
+        }
+
+    	//Add the top folder id to the document in the index
+        Folder topFolder = folder.getTopFolder();
+        if (topFolder == null) topFolder = folder;
+        Field topFolderField = Field.Keyword(TOP_FOLDERID_FIELD, topFolder.getId().toString());
+        doc.add(topFolderField);
+}   
     
     public static void addReadAcls(Document doc, Folder folder, Entry entry, AclManager aclManager) {
         // Add ACL field. We only need to index ACLs for read access. 
@@ -152,10 +172,10 @@ public class IndexUtils {
 	        if (pIds.length() != 0)
 	          racField = new Field(READ_ACL_FIELD, pIds.toString(), true, true, true);
 	        else
-	          racField = new Field(READ_ACL_FIELD, READ_ACL_ALL, true, true, true);
+	          racField = new Field(READ_DEF_ACL_FIELD, READ_ACL_ALL, true, true, true);
         }
         else {
-            racField = new Field(READ_ACL_FIELD, READ_ACL_ALL, true, true, true);
+            racField = new Field(READ_DEF_ACL_FIELD, READ_ACL_ALL, true, true, true);
         }
         
         doc.add(racField);

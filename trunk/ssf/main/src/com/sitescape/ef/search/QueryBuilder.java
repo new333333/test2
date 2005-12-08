@@ -20,33 +20,42 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.module.folder.index.IndexUtils;
 
 import java.net.URL;
 
 public class QueryBuilder {
 	
-	private static final String FIELD_NAME_ATTRIBUTE = "fieldname";
-	private static final String EXACT_PHRASE_ATTRIBUTE = "exactphrase";
-	private static final String NEAR_ATTRIBUTE = "near";
-	private static final String INCLUSIVE_ATTRIBUTE = "inclusive";
-	private static final String DISTANCE_ATTRIBUTE = "distance";
-	private static final String ASCENDING_ATTRIBUTE = "ascending";
+	public static final String FIELD_NAME_ATTRIBUTE = "fieldname";
+	public static final String EXACT_PHRASE_ATTRIBUTE = "exactphrase";
+	public static final String NEAR_ATTRIBUTE = "near";
+	public static final String INCLUSIVE_ATTRIBUTE = "inclusive";
+	public static final String DISTANCE_ATTRIBUTE = "distance";
+	public static final String ASCENDING_ATTRIBUTE = "ascending";
 
 	
-	private static final String AND_ELEMENT = "AND";
-    private static final String OR_ELEMENT = "OR";
-    private static final String LIKE_ELEMENT = "LIKE";
-    private static final String NOT_ELEMENT = "NOT";
-    private static final String SORTBY_ELEMENT = "SORTBY";
-    private static final String RANGE_ELEMENT = "RANGE";
-    private static final String USERACL_ELEMENT = "USERACL";
+	public static final String QUERY_ELEMENT = "QUERY";
+	public static final String AND_ELEMENT = "AND";
+	public static final String OR_ELEMENT = "OR";
+	public static final String LIKE_ELEMENT = "LIKE";
+	public static final String NOT_ELEMENT = "NOT";
+	public static final String SORTBY_ELEMENT = "SORTBY";
+	public static final String RANGE_ELEMENT = "RANGE";
+	public static final String RANGE_START = "START";
+	public static final String RANGE_FINISH = "FINISH";
+	public static final String USERACL_ELEMENT = "USERACL";
+	public static final String FIELD_ELEMENT = "FIELD";
+	public static final String FIELD_TERMS_ELEMENT = "TERMS";
+	public static final String ASCENDING_TRUE = "TRUE";
+	public static final String INCLUSIVE_TRUE = "TRUE";
+	public static final String EXACT_PHRASE_TRUE = "TRUE";
 
     
 	public SearchObject buildQuery(Document domQuery) {
 		SearchObject so = new SearchObject();
 		
 		Element root = domQuery.getRootElement();
-		if (!root.getText().equals("QUERY")) {
+		if (!root.getText().equals(QUERY_ELEMENT)) {
 			//return "Bad Query Dom Object";
 		}
 		for (Iterator i = root.attributeIterator(); i.hasNext();){
@@ -142,13 +151,13 @@ public class QueryBuilder {
 				User user = RequestContextHolder.getRequestContext().getUser();
 				Set principalIds = user.computePrincipalIds();
 				qString += "(";
-				qString += " _readAcl:all ";
+				qString += " " + IndexUtils.READ_DEF_ACL_FIELD + ":" + IndexUtils.READ_ACL_ALL + " ";
 				for(Iterator i = principalIds.iterator(); i.hasNext();) {
-					qString += " OR _readAcl:" + i.next();
+					qString += " OR " + IndexUtils.READ_ACL_FIELD + ":" + i.next();
 				}
 				qString += ")";
 			}
-			else if (operator.equals("FIELD")) {
+			else if (operator.equals(FIELD_ELEMENT)) {
 				qString += processFIELD(element);
 			}
 			else if (operator.equals(null)) {
@@ -167,14 +176,14 @@ public class QueryBuilder {
 		String exactPhrase = element.attributeValue(EXACT_PHRASE_ATTRIBUTE);
 		String nearText = element.attributeValue(NEAR_ATTRIBUTE);
 		
-		if ((exactPhrase != null) && (exactPhrase.equalsIgnoreCase("true")))
+		if ((exactPhrase != null) && (exactPhrase.equalsIgnoreCase(EXACT_PHRASE_TRUE)))
 			exact = true;
 		else
 			exact = false;
 		
 		List children = element.elements();
 		Node child = (Node)children.get(0);
-		if (child.getName().equalsIgnoreCase("terms")) {
+		if (child.getName().equalsIgnoreCase(FIELD_TERMS_ELEMENT)) {
 			if (exact) {
 				termText = fieldName + ":\"" + child.getText() + "\"";
 			    if (nearText != null) {
@@ -197,11 +206,11 @@ public class QueryBuilder {
 		SortField[] fields = new SortField[kidCount];
 		for (int i = 0; i < kidCount; i++) {
 			Element child = (Element)children.get(i);
-			if (child.getName().equalsIgnoreCase("fieldname")) {
+			if (child.getName().equalsIgnoreCase(FIELD_NAME_ATTRIBUTE)) {
 				ascend = false;
 				String ascending = child.attributeValue(ASCENDING_ATTRIBUTE);
 				
-				if ((ascending != null) && (ascending.equalsIgnoreCase("true")))
+				if ((ascending != null) && (ascending.equalsIgnoreCase(ASCENDING_TRUE)))
 					ascend = true;
 				else
 					ascend = false;
@@ -222,7 +231,7 @@ public class QueryBuilder {
 		String inclusiveText = element.attributeValue(INCLUSIVE_ATTRIBUTE);
 		String fieldName = element.attributeValue(FIELD_NAME_ATTRIBUTE);
 		
-		if ((inclusiveText != null) && (inclusiveText.equalsIgnoreCase("true")))
+		if ((inclusiveText != null) && (inclusiveText.equalsIgnoreCase(INCLUSIVE_TRUE)))
 			inclusive = true;
 		else
 			inclusive = false;
@@ -235,10 +244,10 @@ public class QueryBuilder {
 		}
 		for (int i=0; i < 2; i++) {
 			Node child = (Node)children.get(i);
-			if (child.getName().equalsIgnoreCase("start")) {
+			if (child.getName().equalsIgnoreCase(RANGE_START)) {
 				startText=child.getText();
 			}
-			else if (child.getName().equalsIgnoreCase("finish")){
+			else if (child.getName().equalsIgnoreCase(RANGE_FINISH)){
 				finishText=child.getText();
 			} else {
 				//throw error
