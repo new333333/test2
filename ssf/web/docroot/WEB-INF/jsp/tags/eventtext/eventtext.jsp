@@ -12,7 +12,8 @@
 <% 
     Calendar st = event.getDtStart();
     Calendar en = event.getDtEnd();
-    
+    Calendar un = event.getUntil();
+
     // array of text strings for days of the week
     String days[] = new String[10];
     days[Calendar.SUNDAY] = "SU";
@@ -37,6 +38,7 @@
     long interval = event.getDuration().getInterval();
     String freqString = event.getFrequencyString();
     String onString = "";
+    String untilString = "";
     String onStringSeparator = "";
     if (freqString == null) {
       freqString = "does not repeat";
@@ -74,6 +76,12 @@
 	onString += days[ii.intValue()];
       }
     }
+    untilString += "<br>Repeats: ";
+    if (event.getCount() == 0) {
+        untilString += "indefinitely";
+    } else {
+        untilString += "until " + sdf.format(un.getTime()) + " (" + event.getCount() + " occurrences)";
+    }
 
 	
 %>
@@ -81,14 +89,17 @@
 <%
     if (interval > 0) {
 %>
-    Start: <%= startString %> End: <%= endString %> Frequency: <%= freqString %> <%= onString %>
+    Start: <%= startString %> End: <%= endString %> <br>Frequency: <%= freqString %> <%= onString %> <%= untilString %>
 <%
-	       } else {
+    } else {
 %>
-    When: <%= startString %> Frequency: <%= freqString %> <%= onString %>
+    When: <%= startString %> <br>Frequency: <%= freqString %> <%= onString %> <%= untilString %>
 <%
-	      }
+    }
 %>
+
+
+
 
 
 
