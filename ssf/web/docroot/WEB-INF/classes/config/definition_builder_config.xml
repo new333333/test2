@@ -676,6 +676,8 @@
 		</properties>
 		<options>
 			<option name="transitions" initial="true" />
+			<option name="forks" />
+			<option name="joins" />
 			<option name="accessControls" initial="true" />
 			<option name="notifications" initial="true" />
 			<option name="onEntry" />
@@ -688,17 +690,93 @@
 			<operation name="addOption" caption="__add" />
 		</operations>
 		<options>
-			<option_select path="//item[@category='transitionLayout']" />
+			<option name="transitionManual" />
+			<option name="transitionConditional" />
 		</options>
 	</item>
 	
-	<item name="transition" caption="__transition" category="transitionLayout">
+	<item name="transitionManual" caption="__transitionManual" type="transition" >
 		<properties>
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
-			<option name="transitionDecision" />
+			<option name="variable" />
 		</options>
+	</item>
+	
+	<item name="transitionConditional" caption="__transitionConditional" type="transition" >
+		<properties>
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+		<options>
+			<option name="conditionOnModify" />
+			<option name="conditionOnReply" />
+			<option name="conditionOnResponse" />
+			<option name="conditionOnDate" />
+			<option name="conditionOnElapsedTime" />
+			<option name="conditionOnVariable" />
+			<option name="variable" />
+		</options>
+	</item>
+	
+	<item name="conditionOnModify" caption="__transition_condition_on_modify" />
+	<item name="conditionOnReply" caption="__transition_condition_on_reply" />
+	<item name="conditionOnResponse" caption="__transition_condition_on_response" >
+		<properties>
+			<property name="response" caption="__transition_condition_on_response_" type="text" />
+		</properties>
+	</item>
+	<item name="conditionOnDate" caption="__transition_condition_on_date" >
+		<properties>
+			<property name="response" caption="__transition_condition_on_response_" type="text" />
+		</properties>
+	</item>
+	<item name="conditionOnElapsedTime" caption="__transition_condition_on_elapsed_time" >
+		<properties>
+			<property name="response" caption="__transition_condition_on_response_" type="text" />
+		</properties>
+	</item>
+	<item name="conditionOnVariable" caption="__transition_condition_on_variable" >
+		<properties>
+			<property name="name" caption="__transition_condition_on_variable_name" type="text" />
+			<property name="value" caption="__transition_condition_on_variable_value" type="text" />
+		</properties>
+	</item>
+	
+	<item name="variable" caption="__workflow_variable" >
+		<properties>
+			<property name="name" caption="__workflow_variable_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" />
+			<property name="value" caption="__workflow_variable_value" type="text" />
+		</properties>
+	</item>
+	
+	<item name="forks" caption="__workflow_forks" multipleAllowed="false">
+		<options>
+			<option name="fork" />
+		</options>
+	</item>
+	
+	<item name="fork" caption="__workflow_fork">
+		<properties>
+			<property name="name" caption="__workflow_fork_name" type="text" />
+			<property name="startState" caption="__workflow_fork_start_state" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+	</item>
+	
+	<item name="joins" caption="__workflow_joins" multipleAllowed="false">
+		<options>
+			<option name="join" />
+		</options>
+	</item>
+	
+	<item name="join" caption="__workflow_join">
+		<properties>
+			<property name="name" caption="__workflow_fork_name" type="text" />
+			<property name="waitFor" caption="__workflow_join_wait" type="radio" default="all" >
+				<option name="all" caption="__workflow_join_wait_all" />
+				<option name="any" caption="__workflow_join_wait_any" />
+			</property>
+		</properties>
 	</item>
 	
 	<item name="accessControls" caption="__accessControls" canBeDeleted="false" multipleAllowed="false">
