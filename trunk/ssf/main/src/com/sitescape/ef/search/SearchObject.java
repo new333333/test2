@@ -3,7 +3,11 @@ package com.sitescape.ef.search;
 import java.io.Serializable;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.analysis.WhitespaceAnalyzer;
 
 
 public class SearchObject implements Serializable {
@@ -36,6 +40,8 @@ public class SearchObject implements Serializable {
 	 * @return Returns the sortBy.
 	 */
 	public Sort getSortBy() {
+		if (sortBy == null)
+			return null;
 		return new Sort(sortBy);
 	}
 	/**
@@ -49,7 +55,9 @@ public class SearchObject implements Serializable {
 	 * @return Returns the query.
 	 */
 	public Query getQuery() {
-		return query;
+		try {
+			return QueryParser.parse(queryString,"content",new WhitespaceAnalyzer());
+		} catch (ParseException pe){ return new BooleanQuery();}
 	}
 
 	/**
