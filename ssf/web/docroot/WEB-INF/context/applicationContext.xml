@@ -334,6 +334,7 @@
 	</bean>
 
 	<bean id="adminModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.admin.impl.AdminModuleImpl">
+		<property name="emailPostingJobClass"><value>com.sitescape.ef.jobs.DefaultEmailPosting></value></property>
 	</bean>
 
 	<bean id="folderModule" parent="baseTransactionProxy">
@@ -412,15 +413,12 @@
 		<!-- Since "mailSender" is used exclusively by this bean (i.e., it is
 		     not a general purpose service), it is added here rather than 
 		     to the "moduleDependencyTemplate" itself -->
-		<!-- The key value is used to identify the bean in mail.cfg.xml -->
 		<property name="configDocs"><ref local="mailConfig"/></property>
+		<!-- List of used to post email to folders  -->
 		<property name="mailPostingSessions">
-		    <map>
-      			<entry>
-        			<key><value>mailPostingSession</value></key>
+		    <list>
 		        	<ref bean="mailPostingSession"/>
-		      </entry>
-     		</map>
+     		</list>
 		</property>
 	</bean>	
 	

@@ -29,17 +29,18 @@
 		<!-- Sitescape Mappings -->
 		<mapping resource="com/sitescape/ef/security/function/Function.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/security/function/WorkAreaFunctionMembership.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Binder.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Principal.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/Attachment.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Membership.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/Binder.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/CustomAttribute.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Notification.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/FolderEntry.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/Definition.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/Event.hbm.xml"/> 
 	    <mapping resource="com/sitescape/ef/domain/FolderCounts.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/FolderEntry.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/HistoryMap.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/Membership.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/Notification.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/PostingDef.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/Principal.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/SeenMap.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/UserProperties.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/WorkflowStateObject.hbm.xml"/>

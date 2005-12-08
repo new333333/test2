@@ -19,9 +19,16 @@ import java.io.File;
 
 import javax.activation.DataSource;
 
+import javax.mail.Flags;
+import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Store;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.MimeMessage;
+import javax.mail.Session;
+import javax.mail.search.RecipientTerm;
+import javax.mail.internet.InternetAddress;
+import javax.mail.search.SearchTerm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,8 +40,9 @@ import org.quartz.SimpleTrigger;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 
-import com.sitescape.ef.jobs.FolderEmailNotification;
+import com.sitescape.ef.jobs.EmailNotification;
 import com.sitescape.ef.jobs.SSStatefulJob;
+import com.sitescape.ef.jobs.EmailPosting;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.domain.FileAttachment;
@@ -43,6 +51,7 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.UserNotification;
+import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.impl.AbstractModuleImpl;
@@ -52,7 +61,7 @@ import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.util.XmlClassPathConfigFiles;
 import com.sitescape.ef.module.mail.JavaMailSender;
-import com.sitescape.ef.jobs.FolderFailedEmail;
+import com.sitescape.ef.jobs.FailedEmail;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.mail.MailParseException;
@@ -68,9 +77,13 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 	protected Log logger = LogFactory.getLog(getClass());
 	protected XmlClassPathConfigFiles configDocs;
 	protected Map zoneProps = new HashMap();
-	protected Map mailPostingSessions;
+	protected List mailPostingSessions;
 
-	public void setMailPostingSessions(Map mailPostingSessions) {
+	/**
+	 * List of  mail sessions for posting eMail to folders.
+	 * @param mailPostingSessions
+	 */
+	public void setMailPostingSessions(List mailPostingSessions) {
 		this.mailPostingSessions = mailPostingSessions;
 	}
 	public void setConfigDocs(XmlClassPathConfigFiles configDocs) {
@@ -85,7 +98,7 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 		String value = null;
 		Element nElement;
 		DefaultXPath path=new DefaultXPath("/mail-configuration/zone[@name=" + zoneName + "]/" + node);
-		Object obj = path.selectObject(root);
+		Object obj = path.evaluate(root);
 		if (obj != null && (obj instanceof Element)) {
 			nElement = (Element)obj;
 			value = nElement.attributeValue(name);
@@ -93,7 +106,7 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 		
 		if (!Validator.isNull(value)) return value;
 		path=new DefaultXPath("/mail-configuration/zone[@name='']/" + node);
-		obj = path.selectObject(root);
+		obj = path.evaluate(root);
 		if (obj != null && (obj instanceof Element)) {
 			nElement = (Element)obj;
 			value = nElement.attributeValue(name);
@@ -107,7 +120,7 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 		Element nElement;
 		DefaultXPath path = new DefaultXPath("/mail-configuration/folder[@id=" + folder.getId().toString() +
 							"]/" + node);
-		Object obj = path.selectObject(root);
+		Object obj = path.evaluate(root);
 		if (obj != null && (obj instanceof Element)) {
 			nElement = (Element)obj;
 			value = nElement.attributeValue(name);
@@ -134,10 +147,67 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 		return sender;
 	}
 
+	/**
+	 * Read mail for this folder
+	 *
+	 */
 	public void receivePostings() {
+		String storeProtocol, prefix, auth;
+		for (int i=0; i<mailPostingSessions.size(); ++i) {
+			Session session = (Session)mailPostingSessions.get(i);
+			storeProtocol = session.getProperty("mail.store.protocol");
+			prefix = "mail." + storeProtocol + ".";
+			auth = session.getProperty(prefix + "auth");
+			if (Validator.isNull(auth)) 
+				auth = session.getProperty("mail.auth");
+				
+			try {
+				
+				Store store = session.getStore();
+				if ("true".equals(auth)) {
+					String password = session.getProperty(prefix + "password");
+					if (Validator.isNull(password)) 
+						password = session.getProperty("mail.password");
+					store.connect(null, null, password);
+				} else {
+					store.connect();
+				}
+
+				javax.mail.Folder mFolder = store.getFolder("inbox");
+				
+				mFolder.open(javax.mail.Folder.READ_WRITE);
+				//get list of folders acception postings
+				List pDefs = getCoreDao().loadPostings();
+				for (int j=0; j<pDefs.size(); ++j) {
+					PostingDef pDef = (PostingDef)pDefs.get(j); 
+					SearchTerm term = pDef.getSearchTerm();
+					if (term != null) {
+						Message msgs[] = mFolder.search(term);
+						if (pDef.isEnabled()) {
+							Folder folder = (Folder)pDef.getBinder();
+							FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
+							processor.postMessages(folder, msgs, session);
+						} else {
+							for (int m=0; m<msgs.length; ++m) {
+								Message msg = msgs[i];
+								msg.setFlag(Flags.Flag.DELETED, true);
+							}
+						}
+					}
+				}
+
+				//Close connection and expunge
+				mFolder.close(true);
+				store.close();
+			} catch (Exception ex) {
+				logger.error("Error posting mail from " + session.getProperty(prefix + "host") + session.getProperty("mail.host") + " " + ex.getLocalizedMessage());
+				
+			}						
+		}
 		
 	}
     public Date sendNotifications(Long folderId) {
+    	receivePostings();
         String zoneName = RequestContextHolder.getRequestContext().getZoneName();
  		Folder folder = (Folder)coreDao.loadBinder(folderId, zoneName); 
 		Date current = new Date();
@@ -185,7 +255,7 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 				mailSender.send(mHelper);
 			} catch (MailSendException sx) {
 	    		logger.error("Error sending mail:" + sx.getMessage());
-		  		FolderFailedEmail process = (FolderFailedEmail)processorManager.getProcessor(folder, FolderFailedEmail.PROCESSOR_KEY);
+		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
 		   		process.schedule(scheduler, folder, mailSender, mHelper.getMessage());
  	    	} catch (Exception ex) {
 	       		logger.error(ex.getMessage());

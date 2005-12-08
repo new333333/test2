@@ -7,7 +7,7 @@ import org.quartz.Scheduler;
  * @author Janet McCann
  *
  */
-public interface FolderEmailNotification  {
+public interface EmailNotification  {
     
     /**
      * This key is used to uniquely identify a type of processor (ie, a 

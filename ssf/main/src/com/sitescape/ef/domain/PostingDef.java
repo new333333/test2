@@ -1,32 +1,88 @@
 package com.sitescape.ef.domain;
 
-import java.util.List;
+import javax.mail.search.RecipientStringTerm;
+import javax.mail.search.SubjectTerm;
+import javax.mail.search.AndTerm;
+import javax.mail.Message;
+import javax.mail.search.SearchTerm;
+
+import com.sitescape.util.Validator;
+
 
 /**
+ * @hibernate.class table="SS_Postings" dynamic-update="true"
+ * @hibernate.mapping auto-import="false"
  * @author Jong Kim
  *
  */
 public class PostingDef extends PersistentObject {
     public static final int RETURN_TO_SENDER = 1; // default
     public static final int POST_AS_A_NEW_TOPIC = 2;
-    public static final int TRY_AGAIN_LATER = 3;
     
-    private List emailAliases;
     private int replyPostingOption = RETURN_TO_SENDER;
-    
-    public List getEmailAliases() {
-        return emailAliases;
+    private boolean enabled=false;
+    private String emailAddress;
+    private String subject;
+    private Binder binder;
+ 
+    /**
+     * @hibernate.property 
+     * @return
+     */
+    public boolean isEnabled() {
+    	return enabled;
+    	
     }
-    public void setEmailAliases(List emailAliases) {
-        this.emailAliases = emailAliases;
+    public void setEnabled(boolean enabled) {
+    	this.enabled = enabled;
     }
+    /**
+     * @hibernate.many-to-one
+     */
+    public Binder getBinder() {
+    	return binder;
+    }
+    public void setBinder(Binder binder) {
+    	this.binder = binder;
+    }
+    /**
+     * @hibernate.property length="256" 
+     * @return
+     */
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
+    /**
+     * @hibernate.property length="256" 
+     * @return
+     */
+    public String getSubject() {
+        return subject;
+    }
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+    public SearchTerm getSearchTerm() {
+    	if (Validator.isNull(emailAddress)) return null;
+    	if (Validator.isNull(subject)) {
+    		return new RecipientStringTerm(Message.RecipientType.TO,emailAddress);
+    	} else {
+    		return new AndTerm(new RecipientStringTerm(Message.RecipientType.TO,emailAddress), new SubjectTerm(subject));
+    	}
+    }
+    /**
+     * @hibernate.property
+     * @return
+     */
     public int getReplyPostingOption() {
         return replyPostingOption;
     }
     public void setReplyPostingOption(int replyPostingOption) {
     	if ((replyPostingOption != RETURN_TO_SENDER) &&
-    		(replyPostingOption != POST_AS_A_NEW_TOPIC) &&
-    		(replyPostingOption != TRY_AGAIN_LATER)) throw new IllegalArgumentException("replyPostingOption");
+    		(replyPostingOption != POST_AS_A_NEW_TOPIC)) throw new IllegalArgumentException("replyPostingOption");
         this.replyPostingOption = replyPostingOption;
     }
 }

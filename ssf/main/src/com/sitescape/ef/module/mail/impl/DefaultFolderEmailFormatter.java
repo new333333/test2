@@ -9,9 +9,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Properties;
 import java.util.ArrayList;
-import java.text.DateFormat;
 import java.io.File;
 import java.io.StringWriter;
 
@@ -23,6 +21,11 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.DocumentSource;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.mail.Session;
+import javax.mail.Flags;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -34,6 +37,7 @@ import javax.xml.transform.stream.StreamSource;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.module.mail.FolderEmailFormatter;
 import com.sitescape.ef.security.AccessControlManager;
@@ -324,5 +328,21 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 		if (Validator.isNull(from))
 			from = (String)getProperty(folder.getZoneName(), NOTIFY_FROM);
 		return from;
+	}
+	public void postMessages(Folder folder, Message[] msgs, Session session) {
+		PostingDef pDef = folder.getPostingDef();
+		String subject,from;
+		for (int i=0; i<msgs.length; ++i) {
+			try {
+				subject = msgs[i].getSubject();
+				from = msgs[i].getFrom().toString();
+				msgs[i].setFlag(Flags.Flag.DELETED, true); // set the DELETED flag
+
+				
+			} catch (MessagingException me) {
+				
+				
+			}
+		}
 	}
 }
