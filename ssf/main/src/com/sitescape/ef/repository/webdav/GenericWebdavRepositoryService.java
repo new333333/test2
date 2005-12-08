@@ -19,16 +19,10 @@ import com.sitescape.ef.util.Constants;
 import com.sitescape.ef.util.FileHelper;
 import com.sitescape.ef.webdav.client.WebdavUtil;
 
-public class WebdavRepositoryService extends AbstractWebdavResourceFactory implements RepositoryService {
+public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactory implements RepositoryService {
 
 	protected Log logger = LogFactory.getLog(getClass());
 	
-	private WebdavResourceFactory webdavResourceFactory;
-	
-	protected WebdavResourceFactory getWebdavResourceFactory() {
-		return webdavResourceFactory;
-	}
-
 	public WebdavResource openSession(String userName, String password) throws IOException {
 		HttpURL hrl = new HttpURL(httpUrl);
 		hrl.setUserinfo(userName, password);
@@ -37,10 +31,6 @@ public class WebdavRepositoryService extends AbstractWebdavResourceFactory imple
 		//WebdavUtil.dump(wdr);
 		
 		return wdr;
-	}
-	
-	public void setWebdavResourceFactory(WebdavResourceFactory webdavResourceFactory) {
-		this.webdavResourceFactory = webdavResourceFactory;
 	}
 
 	public void write(Folder folder, FolderEntry entry, String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
@@ -188,7 +178,7 @@ public class WebdavRepositoryService extends AbstractWebdavResourceFactory imple
 	
 	private WebdavResource openSession() throws IOException {
 		// How do we get WebDAV username/password for individual users??
-		return getWebdavResourceFactory().openSession("root", "root");
+		return openSession("root", "root");
 	}
 	
 	private void readInternal(String resourcePath, OutputStream out) throws IOException {
@@ -221,7 +211,7 @@ public class WebdavRepositoryService extends AbstractWebdavResourceFactory imple
 	private String getEntryDirPath(Folder folder, FolderEntry entry) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		
-		return new StringBuffer(getWebdavResourceFactory().getDocRootDir()).
+		return new StringBuffer(getDocRootDir()).
 			append(zoneName).
 			append(Constants.SLASH).
 			append(folder.getId()).
