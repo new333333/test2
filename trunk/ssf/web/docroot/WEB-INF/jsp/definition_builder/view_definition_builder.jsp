@@ -250,7 +250,7 @@ function setStateMachine(newState) {
 		}
 	} else if (state == "view_definition_options") {
 		setDivHtml("displaydiv", "")
-		var selectedIdNameText = "<span class='contentbold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
+		var selectedIdNameText = "<span class='ss_contentbold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
 		setDivHtml("infoDefinitionOptionsDefinitionName", selectedIdNameText)
 		addToDiv("displaydiv", "infoDefinitionOptions")
 	} else if (state == "modifyDefinition") {
@@ -268,7 +268,7 @@ function setStateMachine(newState) {
 		}
 	} else if (state == "deleteDefinitionConfirm") {
 		setDivHtml("displaydiv", "")
-		var selectedIdNameText = "<span class='contentbold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
+		var selectedIdNameText = "<span class='ss_contentbold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
 		setDivHtml("deleteDefinitionSelection", selectedIdNameText)
 		addToDiv("displaydiv", "delete_definition_confirm")
 	} else if (state == "viewItem") {
@@ -294,7 +294,7 @@ function setStateMachine(newState) {
 		setDivHtml("displaydiv", "")
 		addToDiv("displaydiv", "info_"+selectedId)
 		var infoName = ""
-		if (idMapCaption[lastSelectedId]) {infoName = "<span class='contentbold'>"+idMapCaption[lastSelectedId]+"</span>"}
+		if (idMapCaption[lastSelectedId]) {infoName = "<span class='ss_contentbold'>"+idMapCaption[lastSelectedId]+"</span>"}
 		setDivHtml("moveItemSelection", infoName);
 		addToDiv("displaydiv", "move_item_confirm")
 	} else if (state == "cloneItemConfirm") {
@@ -364,7 +364,7 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 %>
 
 <br>
-<hr class="ss_hr">
+<hr class="portlet-section-header">
 <br>
 
 <div class="ss_portlet">

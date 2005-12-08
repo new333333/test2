@@ -14,5 +14,5 @@
     action="view_entry"
     entryId="<%= ssDefinitionEntry.getId().toString() %>"
     />" onClick="return(ss_openUrlInPortlet(this.href));"><c:if test="${empty ssDefinitionEntry.title}">
-    <span class="contentbold"><i>(no title)</i></span>
+    <span class="ss_contentbold"><i>(no title)</i></span>
     </c:if><c:out value="${ssDefinitionEntry.title}"/></a></h1>

@@ -3,7 +3,7 @@
 
 <c:if test="${!empty ssFolderEntry.customAttributes[property_name]}">
 <div class="entryContent">
-<span class="contentbold"><c:out value="${property_caption}" /></span>
+<span class="ss_contentbold"><c:out value="${property_caption}" /></span>
 <c:set var="selection" value="${ssFolderEntry.customAttributes[property_name].value}" />
 <%
 	String url = "forum/view_file?forumId=";
