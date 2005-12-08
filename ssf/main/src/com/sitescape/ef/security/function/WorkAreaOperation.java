@@ -29,6 +29,8 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation PERFORM_ADMINISTRATION = new WorkAreaOperation("performAdministration");
     public final static WorkAreaOperation CHANGE_ACCESS_CONTROL = new WorkAreaOperation("changeAccessControl");
     public final static WorkAreaOperation CREATE_FOLDERS = new WorkAreaOperation("createFolders");
+    public final static WorkAreaOperation MANAGE_ENTRY_DEFINITIONS = new WorkAreaOperation("manageEntryDefinitions");
+    public final static WorkAreaOperation MANAGE_WORKFLOW_DEFINITIONS = new WorkAreaOperation("manageWorkflowDefinitions");
     
     private String name;
     
