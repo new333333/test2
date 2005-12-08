@@ -24,6 +24,7 @@ import com.sitescape.ef.util.CollectionUtil;
 * @hibernate.discriminator type="string" length="1" column="type"
 * @hibernate.query name="find-User-Company" query="from com.sitescape.ef.domain.User user where user.name=:userName and user.zoneName=:zoneName"
 * @hibernate.mapping auto-import="false"
+* @hibernate.cache usage="read-write"
 * need auto-import = false so names don't collide with jbpm
 * @author Jong Kim
 *
@@ -209,6 +210,7 @@ public class Principal extends Entry {
      * @hibernate.bag table="SS_PrincipalMembership" lazy="true" inverse="true" cascade="persist,merge,save-update" optimistic-lock="false"  node="."
 	 * @hibernate.key column="userId" 
 	 * @hibernate.many-to-many column="groupId" fetch="join" class="com.sitescape.ef.domain.Group" node="Group" embed-xml="false"
+	 * @hibernate.cache usage="read-write"
      */
     private List getHMemberOf() {return memberOf;}
     private void setHMemberOf(List memberOf) {this.memberOf = memberOf;}
