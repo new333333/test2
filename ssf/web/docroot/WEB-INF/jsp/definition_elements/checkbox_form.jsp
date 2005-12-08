@@ -20,6 +20,6 @@
 </c:if>
 <div class="formBreak">
 <div style="display:<%= inline %>;">
-<input type="checkbox" name="<%= elementName %>" <c:out value="${cb_checked}"/>>&nbsp;<%= caption %></checkbox>
+<input type="checkbox" name="<%= elementName %>" <c:out value="${cb_checked}"/>>&nbsp;<span class="ss_content"><%= caption %></span></checkbox>
 </div>
 </div>
