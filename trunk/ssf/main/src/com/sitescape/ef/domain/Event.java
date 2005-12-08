@@ -71,6 +71,9 @@ import com.sitescape.util.cal.Duration;
  */
 /**
  * @hibernate.class table="SS_Events" dynamic-update="true" lazy="false"
+ * @hibernate.mapping auto-import="false"
+ * need auto-import = false so names don't collide with jbpm
+ * 
  * This is based on the Recurrence class from edu.columbia.cpl.Recurrence
  * Changed to reduce cloning and persist with hibernate
  * @author Janet McCann

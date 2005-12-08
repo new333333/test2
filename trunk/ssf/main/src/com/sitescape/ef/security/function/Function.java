@@ -10,6 +10,8 @@ import com.sitescape.ef.domain.PersistentLongIdObject;
 
 /**
  * @hibernate.class table="SS_Functions" dynamic-update="true" lazy="false"
+ * @hibernate.mapping auto-import="false"
+ * need auto-import = false so names don't collide with jbpm
  * @hibernate.cache usage="nonstrict-read-write"
  * 
  * <code>Function</code> is a role defined at the zone level.

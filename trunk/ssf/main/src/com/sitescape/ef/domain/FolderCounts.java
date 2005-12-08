@@ -3,6 +3,8 @@ package com.sitescape.ef.domain;
 
 /**
  * @hibernate.class table="SS_FolderCounts"
+ * @hibernate.mapping auto-import="false"
+ * need auto-import = false so names don't collide with jbpm
  * @author Janet McCann
  * This class represents the next docNumber for sub-folder and entries off of a folder.
  * It is kept in a separate class so we can update it quickly, without cacheing it.  

@@ -11,6 +11,8 @@ package com.sitescape.ef.domain;
  * @author Janet McCann
  * @hibernate.class table="SS_Notifications" dynamic-update="true" lazy="false" discriminator-value="N"
  * @hibernate.discriminator type="string" length="1" column="type"
+ * @hibernate.mapping auto-import="false"
+ * need auto-import = false so names don't collide with jbpm
  * 
  */
 public class Notification extends PersistentObject {

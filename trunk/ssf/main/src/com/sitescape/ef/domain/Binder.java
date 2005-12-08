@@ -20,8 +20,10 @@ import com.sitescape.ef.util.CollectionUtil;
  * 
  * @hibernate.class table="SS_Forums" dynamic-update="true" lazy="false"
  * @hibernate.discriminator type="string" length="16" column="type"
- * @hibernate.query name="find-Binder-Company" query="from Binder binder where binder.name=:binderName and binder.zoneName=:zoneName"
+ * @hibernate.query name="find-Binder-Company" query="from com.sitescape.ef.domain.Binder binder where binder.name=:binderName and binder.zoneName=:zoneName"
  * @hibernate.cache usage="read-write"
+ * @hibernate.mapping auto-import="false"
+ * need auto-import = false so names don't collide with jbpm
  * @author Jong Kim
  *
  */

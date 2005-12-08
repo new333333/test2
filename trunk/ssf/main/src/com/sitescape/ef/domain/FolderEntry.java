@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 /**
  * @hibernate.class table="SS_FolderEntries" dynamic-update="true" lazy="true"
+ * @hibernate.mapping auto-import="false"
+ * need auto-import = false so names don't collide with jbpm
  * <code>FolderEntry</code> represents a entry or a reply.
  * 
  * Note: I believe that we've decided to blur the distinction between

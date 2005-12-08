@@ -22,7 +22,9 @@ import com.sitescape.ef.util.CollectionUtil;
 /**
 * @hibernate.class table="SS_Principals" dynamic-update="true" node="Principal"
 * @hibernate.discriminator type="string" length="1" column="type"
-* @hibernate.query name="find-User-Company" query="from User user where user.name=:userName and user.zoneName=:zoneName"
+* @hibernate.query name="find-User-Company" query="from com.sitescape.ef.domain.User user where user.name=:userName and user.zoneName=:zoneName"
+* @hibernate.mapping auto-import="false"
+* need auto-import = false so names don't collide with jbpm
 * @author Jong Kim
 *
 */

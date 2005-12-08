@@ -10,6 +10,8 @@ package com.sitescape.ef.domain;
 /**
  * @hibernate.class table="SS_Attachments" discriminator-value="N" dynamic-update="true" lazy="false"
  * @hibernate.discriminator column="type" type="char"  
+ * @hibernate.mapping auto-import="false"
+ * need auto-import = false so names don't collide with jbpm
  * @author janet
  */
 public abstract class Attachment extends PersistentTimestampObject 

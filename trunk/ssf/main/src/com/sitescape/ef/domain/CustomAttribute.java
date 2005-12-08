@@ -18,6 +18,8 @@ import org.dom4j.Document;
 /**
  * @hibernate.class table="SS_CustomAttributes" dynamic-update="true" lazy="false" discriminator-value="A"
  * @hibernate.discriminator type="char" column="type"
+ * @hibernate.mapping auto-import="false"
+ * need auto-import = false so names don't collide with jbpm
  * @author janet
  * 
  *  Object to represent user attributes in the database.  Since the definition must be
