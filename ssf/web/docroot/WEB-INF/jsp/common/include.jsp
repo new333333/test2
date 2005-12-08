@@ -12,11 +12,13 @@
 
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 
+<portletadapter:defineObjects1/>
+
 <ssf:ifadapter>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> 
 <html xmlns:svg="http://www.w3.org/2000/svg-20000303-stylable">
 <head>
-<portletadapter:defineObjects/>
+<portletadapter:defineObjects2/>
 </ssf:ifadapter>
 
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
