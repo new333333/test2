@@ -33,15 +33,7 @@ function ss_loadEntryUrl(url,id) {
 
 </script>
 <div class="ss_folder">
-<h1 class="ss_folderTitle">Folders</h1>
-<table width="100%" border="0" cellpadding="2" cellspacing="0">
- <tr>
-  <td>
-	  <ssf:tree treeName="folderTree" treeDocument="<%= ssFolderDomTree %>" 
-	    rootOpen="false" 
-	    nodeOpen="<%= parentFolderId %>" highlightNode="<%= folderId %>" /></td>
- </tr>
-</table>
+<%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
 
 <table width="100%" border="0" cellpadding="2" cellspacing="0">
  <tr>

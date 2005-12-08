@@ -203,7 +203,6 @@
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/textarea_form.jsp" />
-			<jsp name="accessibity_form" value="/WEB-INF/jsp/definition_elements/textarea_form_accessibility.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderText" />
 	</item>
@@ -221,7 +220,6 @@
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
-			<jsp name="accessibility_form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form_accessibility.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
 	</item>
@@ -256,7 +254,6 @@
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
-			<jsp name="accessibility_form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form_accessibility.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
 	</item>
@@ -613,7 +610,6 @@
 	<item name="folderList" caption="__folder_listing" category="forumView">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
-			<jsp name="accessibility_view" value="/WEB-INF/jsp/definition_elements/folder_list_accessibility.jsp" />
 		</jsps>
 	</item>
 		
