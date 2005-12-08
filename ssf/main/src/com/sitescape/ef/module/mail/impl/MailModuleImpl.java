@@ -192,15 +192,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 						Message msgs[] = mFolder.search(term);
 						if (pDef.isEnabled()) {
 							Folder folder = (Folder)pDef.getBinder();
-						    User user = getCoreDao().findUserByName("wf_admin", folder.getZoneName());
-				          	//Setup thread context expected by business logic
-				           	RequestContext rc = new RequestContext(user.getZoneName(), user.getName());
-				           	rc.setUser(user);
-				           	RequestContextHolder.setRequestContext(rc);
-
+//TODO: set request context to user who sent the message and clear after
 							FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
 							processor.postMessages(folder, pDef, msgs, session);
-							RequestContextHolder.clear();
 						} 
 						for (int m=0; m<msgs.length; ++m) {
 							Message msg = msgs[i];
