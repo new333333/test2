@@ -13,6 +13,7 @@ import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.util.Validator;
@@ -66,6 +67,7 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 			ses.setAttribute(WebKeys.USER_ID, user.getId(), PortletSession.APPLICATION_SCOPE);
 		} else {
 			user = getCoreDao().loadUser(userId, reqCxt.getZoneName());
+			if (user.isDisabled()) throw new NoUserByTheIdException(userId);
 		}
 		reqCxt.setUser(user);
 	}
