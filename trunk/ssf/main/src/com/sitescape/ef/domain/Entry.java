@@ -91,6 +91,7 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     	Set addM = CollectionUtil.differences(attachments, this.attachments);
         for (Iterator iter = remM.iterator(); iter.hasNext();) {
         	Attachment a = (Attachment)iter.next();
+        	cleanupAttributes(a);
         	a.setOwner((AnyOwner)null);
         	this.attachments.remove(a);
         }
@@ -122,6 +123,8 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     public void removeAttachment(Attachment att) {
        	if (att == null) return;
         getAttachments();
+        //remove any custom attributes that point here
+        cleanupAttributes(att);
         attachments.remove(att);
        	att.setOwner((AnyOwner)null);           	
     }
@@ -377,6 +380,35 @@ public abstract class Entry extends PersistentLongIdTimestampObject
             }
         }
     }   
+    /**
+     * After an attachment is removed, we must remove it from
+     * any custom attributes
+     * @param att
+     */
+    protected void cleanupAttributes(Attachment attachment) {
+    	Map attrs = getCustomAttributes();
+    	for (Iterator iter=attrs.entrySet().iterator(); iter.hasNext();) {
+    		CustomAttribute attr = (CustomAttribute)iter.next();
+    		int type = attr.getValueType();
+    		if (type == CustomAttribute.ATTACHMENT) {
+    			if (attachment.getId().equals(attr.getValue())) 
+    				removeCustomAttribute(attr);
+    		} else if (type == CustomAttribute.SET) {
+    			Set vals = (Set)attr.getValue();
+    			
+    			Iterator vIter=vals.iterator();
+    			if (vIter.hasNext()) {
+    				Object obj = iter.next();
+    				//see if set of attachments
+    				if (obj instanceof Attachment) {
+    					vals.remove(attachment);
+    					if (vals.isEmpty()) removeCustomAttribute(attr);
+    					else attr.setValue(vals);
+    				}
+    			}
+    		}
+    	}
+    }
     public String getIndexDocumentUid() {
         return BasicIndexUtils.makeUid(this.getClass().getName(), this.getId());
     }

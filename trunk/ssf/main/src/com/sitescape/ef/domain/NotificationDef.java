@@ -22,6 +22,7 @@ public class NotificationDef  {
     private SSClobString email;
     private boolean teamOn=false;
     private Date lastNotification;
+    private String from,subject;
     public NotificationDef() {
     }
  
@@ -127,5 +128,24 @@ public class NotificationDef  {
     		email = new SSClobString(StringUtil.merge(address));
     	}
     }
-    
+    /**
+     * @hibernate.property length="128" column="fromAddress"
+     * @return
+     */
+    public String getFromAddress() {
+    	return from;
+    }
+    public void setFromAddress(String from) {
+    	this.from = from;
+    }
+    /**
+     * @hibernate.property length="128" column="subject"
+     * @return
+     */
+    public String getSubject() {
+    	return subject;
+    }
+    public void setSubject(String subject) {
+    	this.subject = subject;
+    }    
 }
