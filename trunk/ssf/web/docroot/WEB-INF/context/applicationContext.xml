@@ -444,6 +444,7 @@
 				<property name="folderModule"><ref local="folderModule"/></property>		
 				<property name="definitionModule"><ref local="definitionModule"/></property>		
 				<property name="mailModule"><ref local="mailModule"/></property>
+				<property name="coreDao"><ref local="coreDao"/></property>
 			</bean>
 		</property>
 	</bean>

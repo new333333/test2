@@ -17,6 +17,7 @@ import java.util.Set;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryMap;
@@ -55,6 +56,7 @@ import org.dom4j.Element;
  */
 public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 
+	protected CoreDao coreDao;
 	protected WorkspaceModule workspaceModule;;
 	protected ProfileModule profileModule;
 	protected AdminModule adminModule;
@@ -62,6 +64,12 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 	protected DefinitionModule definitionModule;
 	protected MailModule mailModule;
 	    
+	public CoreDao getCoreDao() {
+	    return coreDao;
+	}
+	public void setCoreDao(CoreDao coreDao) {
+	    this.coreDao = coreDao;
+	}
 	/**
 	 * @param adminModule The adminModule to set.
 	 */
@@ -139,6 +147,12 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
 		this.workspaceModule = workspaceModule;
 	}
+	
+	private Definition getDefinition(String id) {
+		String companyId = RequestContextHolder.getRequestContext().getZoneName();
+ 		return getCoreDao().loadDefinition(id, companyId);
+	}
+	
 	protected void getDefinitions(Folder folder, Map model) {
 		List folderViewDefs = folder.getForumViewDefs();
 		if (!folderViewDefs.isEmpty()) {
