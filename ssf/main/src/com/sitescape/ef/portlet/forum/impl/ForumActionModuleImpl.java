@@ -912,7 +912,7 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId(), folder.getId()));
 		getDefinitions(folder, model);
 		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.FOLDER_ENTRIES);
-		getEvents(entries, model, req, response);
+		//getEvents(entries, model, req, response);
 		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
 		buildFolderToolbar(response, model, forumId);
 		return model;
