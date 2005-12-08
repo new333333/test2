@@ -4,6 +4,8 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
+import javax.activation.DataSource;
+import javax.activation.FileTypeMap;
 
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Folder;
@@ -89,6 +91,34 @@ public interface RepositoryService {
 			String relativeFilePath, String versionName, OutputStream out) 
 		throws RepositoryServiceException;
 	
+	/**
+	 * Return a datasource that will be used to read the file to a mime message
+	 * @param session
+	 * @param folder
+	 * @param entry
+	 * @param relativeFilePath A pathname of the file relative to the entry. This may
+	 * simply be the name of the file. 
+	 * @param fileTypeMap
+	 * @return
+	 * @throws RepositoryServiceException
+	 */
+	public DataSource getDataSource(Object session, Folder folder, FolderEntry entry, 
+				String relativeFilePath, FileTypeMap fileTypeMap) throws RepositoryServiceException;
+	/**
+	 * 
+	 * @param session
+	 * @param folder
+	 * @param entry
+	 * @param relativeFilePath A pathname of the file relative to the entry. This may
+	 * simply be the name of the file. 
+	 * @param versionName the name of the version
+	 * @param fileTypeMap 
+	 * @return
+	 * @throws RepositoryServiceException
+	 */
+	public DataSource getDataSourceVersion(Object session, Folder folder, FolderEntry entry, 
+			String relativeFilePath, String versionName, FileTypeMap fileTypeMap) throws RepositoryServiceException;
+
 	/**
 	 * Returns the names of the versions for the specified file resource. 
 	 * The specified file resource must exist. 
