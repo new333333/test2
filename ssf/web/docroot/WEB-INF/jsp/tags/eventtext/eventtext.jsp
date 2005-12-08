@@ -83,7 +83,7 @@
         } else if (event.getCount() == -1) {
             untilString += "until " + sdf.format(un.getTime());
         } else {
-            untilString += "until " + sdf.format(un.getTime()) + " (" + event.getCount() + " occurrences)";
+            untilString += event.getCount() + " times";
         }
     }
 	
