@@ -89,8 +89,7 @@ function ss_reloadOpener(fallBackUrl) {
 // Change an image (e.g. expand/collapse arrows)
 function swapImage(imgName, img) {
     if (document.images) {
-        eval('if (document.images[\''+imgName+'\']) {document.images[\''+imgName+'\'].src = imageArray[\''+img+'\'].src}');
-        eval('if (document.images[\''+imgName+'\']) {document.images[\''+imgName+'\'].alt = imageArray[\''+img+'\'].alt}');
+        eval('if (document.images[\''+imgName+'\']) {document.images[\''+imgName+'\'].src = img}');
     }
 }
 
