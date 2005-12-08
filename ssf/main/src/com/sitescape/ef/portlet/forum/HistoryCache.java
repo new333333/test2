@@ -12,7 +12,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import java.util.Date;
 
-import com.liferay.portal.util.SpringUtil;
+import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.UserPerFolderPK;
@@ -23,14 +23,12 @@ import com.sitescape.ef.module.profile.ProfileModule;
  */
 public class HistoryCache implements HttpSessionBindingListener  {
 	protected Date lastFlush;
-	protected ApplicationContext ctx;
 	protected ProfileModule profileModule;
 	protected SessionFactory sessionFactory;
 	private HistoryMap history;
 	public HistoryCache(HistoryMap history) {
-		ctx = SpringUtil.getContext();
-    	profileModule = (ProfileModule)ctx.getBean("profileModule");
-    	sessionFactory = (SessionFactory)ctx.getBean("sessionFactory");
+    	profileModule = (ProfileModule)SpringContextUtil.getBean("profileModule");
+    	sessionFactory = (SessionFactory)SpringContextUtil.getBean("sessionFactory");
     	lastFlush = new Date();
     	this.history = history;
 	}
