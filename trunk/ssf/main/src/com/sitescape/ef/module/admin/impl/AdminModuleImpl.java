@@ -6,7 +6,6 @@
  */
 package com.sitescape.ef.module.admin.impl;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.Set;
 import java.util.Date;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.NotificationDef;
@@ -23,18 +21,10 @@ import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.jobs.FolderEmailNotification;
-import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.impl.AbstractModuleImpl;
-import com.sitescape.ef.portlet.forum.ActionUtil;
-import com.sitescape.ef.security.AccessControlManager;
-import com.sitescape.ef.security.acl.AclManager;
 import com.sitescape.ef.security.function.Function;
-import com.sitescape.ef.security.function.FunctionManager;
 import com.sitescape.ef.security.function.FunctionExistsException;
-import org.quartz.Scheduler;
-
-import com.sitescape.util.Validator;
 
 /**
  * @author Janet McCann
