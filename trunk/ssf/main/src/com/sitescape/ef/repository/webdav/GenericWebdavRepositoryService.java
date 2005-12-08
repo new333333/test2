@@ -109,8 +109,16 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	}
 	
 
-	public List getVersionNames(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
-		return null;
+	public List getVersionNames(Object session, Folder folder, FolderEntry entry, String relativeFilePath) 
+		throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;
+		
+		try {
+			return WebdavUtil.getVersionNames(wdr, getResourcePath(folder, entry, relativeFilePath));
+		} catch (IOException e) {
+			logError(wdr);
+			throw new RepositoryServiceException(e);
+		}
 	}
 
 	// obsolete
@@ -224,7 +232,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		try {
 			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
 			
-			return exists(wdr, resourcePath);
+			return WebdavUtil.exists(wdr, resourcePath);
 		} catch (IOException e) {
 			logError(wdr);
 			throw new RepositoryServiceException(e);
@@ -364,7 +372,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		// Get the path for the file resource.
 		String resourcePath = getResourcePath(entryDirPath, relativeFilePath);
 
-		if(exists(wdr, resourcePath)) {
+		if(WebdavUtil.exists(wdr, resourcePath)) {
 			// The file resource already exists.
 			// Since we always put file resource under version control as
 			// soon as it is created, it's largely unnecessary to do it
@@ -388,11 +396,6 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			// Put the file under version control.
 			result = wdr.versionControlMethod(resourcePath);
 		}
-	}
-	
-	private boolean exists(SWebdavResource wdr, String resourcePath) 
-		throws HttpException, IOException {
-		return wdr.headMethod(resourcePath);
 	}
 	
 	private void readResource(SWebdavResource wdr, String resourcePath,
@@ -422,7 +425,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		 * "version-history"); value = WebdavUtil.getHrefValue(value);
 		 * WebdavUtil.dumpProp(wdr, "/slide/history/101", "version-set");
 		 */
-
+		
 		InputStream is = wdr.getMethodData(resourcePath);
 
 		FileHelper.copyContent(is, out);
