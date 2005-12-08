@@ -39,19 +39,18 @@
  </c:if>
  </c:forEach>
 
-<div class="portlet-section-header" style="margin-top: 8x; margin-bottom: 8px; 
-  width:<c:if test="${empty ss_toolbarWidth}"><c:out value="100%"/></c:if><c:if 
-  test="${!empty ss_toolbarWidth}"><c:out value="${ss_toolbarWidth}"/></c:if>;">
+<div class="portlet-section-header" style="margin-top: 8px; margin-bottom: 8px; 
+  width:100%; display:block;">
 <c:set var="delimiter" value=""/>
 <c:forEach var="toolbarMenu" items="${toolbar}">
 <span class="portlet-font"><c:out value="${delimiter}" /></span>
 <div class="ss_toolbar_item">
   <c:if test="${empty toolbarMenu.value.url}">
 	<a class="ss_toolbar_item" href="javascript: ;" 
-	onClick="activateMenuLayer('toolbar_<c:out value="${toolbarMenu.key}" />');">
+	onClick="activateMenuLayer('toolbar_${toolbarMenu.key}');">
   </c:if>
   <c:if test="${!empty toolbarMenu.value.url}">
-	<a class="ss_toolbar_item" href="<c:out value="${toolbarMenu.value.url}"/>"  
+	<a class="ss_toolbar_item" href="${toolbarMenu.value.url}"  
 	onClick="return(ss_openUrlInPortlet(this.href));">
   </c:if>
 <span class="portlet-font"><c:out value="${toolbarMenu.value.title}" /></span></a>

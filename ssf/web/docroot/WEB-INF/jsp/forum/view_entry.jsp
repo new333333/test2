@@ -48,7 +48,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 div.ss_toolbar {
   width: 100%; 
   background-color: <%= gammaColor %>;
-  margin-top: 8x;
+  margin-top: 8px;
   margin-bottom: 8px;
   }
   
@@ -56,7 +56,7 @@ div.ss_toolbar {
 div.ss_historybar {
   width: 100%; 
   background-color: <%= betaColor %>;
-  margin-top: 8x;
+  margin-top: 8px;
   margin-bottom: 8px;
   }
   
