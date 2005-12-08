@@ -47,6 +47,7 @@ import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.mail.FolderEmailFormatter;
 import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.repository.RepositoryService;
+import com.sitescape.ef.util.PortabilityUtil;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.module.mail.JavaMailSender;
 import com.sitescape.ef.jobs.FailedEmail;
@@ -120,7 +121,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	}
 	public JavaMailSender getMailSender(Folder folder) {
 		JavaMailSender sender=null;
-		String jndiName = getMailAttribute(folder, "notify", "session");
+		String jndiName = PortabilityUtil.getJndiName(getMailAttribute(folder, "notify", "session"));
 		if (!Validator.isNull(jndiName)) 
 	    sender = getSender(jndiName);
 		if (sender == null) throw new ConfigurationException("Missing JavaMailSender bean");
@@ -129,7 +130,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 
 	public JavaMailSender getMailSender(String zoneName) {
 		JavaMailSender sender=null;
-		String jndiName = getMailAttribute(zoneName, "notify", "session");
+		String jndiName = PortabilityUtil.getJndiName(getMailAttribute(zoneName, "notify", "session"));
 	    sender = getSender(jndiName);
 		if (sender == null) throw new ConfigurationException("Missing JavaMailSender bean");
 		return sender;
@@ -143,7 +144,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		result = new ArrayList();
 		for (int i=0; i<posters.size(); ++i) {
 			Element nElement = (Element)posters.get(i);
-			String jndiName = nElement.attributeValue("session");
+			String jndiName = PortabilityUtil.getJndiName(nElement.attributeValue("session"));
 			try {
 				result.add((javax.mail.Session)jndiAccessor.getJndiTemplate().lookup(jndiName));
 			} catch (Exception ex) {
