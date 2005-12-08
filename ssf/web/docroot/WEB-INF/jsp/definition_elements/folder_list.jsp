@@ -57,7 +57,7 @@ function ss_loadEntryUrl(url,id) {
   <td align="right" valign="top" width="5%" class="ss_content">
 	<c:out value="${entry.docNumber}"/>.&nbsp;&nbsp;&nbsp;</td>
   <td valign="top" width="40%" class="ss_content">
-    <a href="<ssf:url 
+    <a class="ss_link" href="<ssf:url     
     adapter="true" 
     portletName="ss_forum" 
     folderId="<%= folderId %>" 
