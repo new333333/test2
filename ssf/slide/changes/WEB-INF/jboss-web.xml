@@ -1,0 +1,11 @@
+<jboss-web> 
+<!-- Slide security -->
+<security-domain>java:/jaas/slide</security-domain>
+<!-- To run slide -->
+  <class-loading java2ClassLoadingCompliance="false"> 
+    <loader-repository>org.apache.slide:loader=slide.war</loader-repository> 
+  </class-loading> 
+  <!-- Resource Environment References --> 
+  <!-- Resource references --> 
+  <!-- EJB References --> 
+</jboss-web> 

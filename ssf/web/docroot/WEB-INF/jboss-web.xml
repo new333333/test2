@@ -6,4 +6,12 @@
 		<res-ref-name>jdbc/SiteScapePool</res-ref-name>
 		<jndi-name>java:/jdbc/SiteScapePool</jndi-name>
 	</resource-ref>
+	<resource-ref>
+		<res-ref-name>mail/SiteScape</res-ref-name>
+		<jndi-name>java:/mail/MailSession</jndi-name>
+	</resource-ref>
+	<resource-ref>
+		<res-ref-name>mail/SiteScapePosting</res-ref-name>
+		<jndi-name>java:/mail/MailSession</jndi-name>
+	</resource-ref>
 </jboss-web>
