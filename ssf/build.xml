@@ -80,6 +80,8 @@
 		<ant dir="main" target="compile-common" />
 		<ant dir="main" target="jar" />
 		<ant dir="taglib" target="jar" />
+		
+		<ant dir="liferay" target="jar" />
 		<!--<ant dir="taglib" target="deploy-local" />-->
 
 		<ant dir="web" target="war" />
@@ -143,6 +145,10 @@
 	</target>
 	
 	<target name="deploy-liferay" depends="deploy-liferay-init">
+		<delete>
+			<fileset dir="${deploy.liferay.lib.dir}" includes="ssf-*.jar" />
+		</delete>		
+		
 		<delete dir="liferay/temp" />
 		<!--<delete>
 			<fileset dir="liferay/temp" defaultexcludes="no">
@@ -182,6 +188,7 @@
 			</fileset>
 		</move>
 
+		<copy file="liferay/ssf-liferay.jar" todir="${deploy.liferay.lib.dir}"/>
 	</target>
 		
 		
