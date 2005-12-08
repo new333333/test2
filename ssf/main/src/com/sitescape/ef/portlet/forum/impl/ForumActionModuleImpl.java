@@ -458,17 +458,14 @@ public class ForumActionModuleImpl implements ForumActionModule {
 		ModelUtil.processModel(req,model);
 		return model;
 	}
-	public Map getDefinitionBuilder(Map formData, RenderRequest req, Long folderId, String currentId) {
+	public Map getDefinitionBuilder(Map formData, RenderRequest req, String currentId) {
 		Map model = new HashMap();
-		Folder folder = getFolderModule().getFolder(folderId);
 		
-		model.put("ss_forum_forum", folder);
 		model.put("ss_forum_configJspStyle", "view");
+		model.put("ss_forum_config_definition", getDefinitionModule().getDefinitionConfig());
 			
 		getDefinitions(model);
-		getDefinitions(folder, model);
 		if (!currentId.equals("")) {
-			model.put("ss_forum_config_definition", getDefinitionModule().getDefinitionConfig());
 			model.put("ss_forum_entry_definition", getDefinitionModule().getDefinition(currentId));
 		}
 		ModelUtil.processModel(req,model);

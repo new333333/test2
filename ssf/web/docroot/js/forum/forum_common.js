@@ -1087,3 +1087,4 @@ function fetch_url_debug(str) {
 
 	Array.prototype.pop = array_pop;
 //}
+
