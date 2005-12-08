@@ -32,7 +32,7 @@ Portlet 1.0
 Qdox 1.6-snapshot
 Quartz 1.4.5
 Servlet 2.3.1/JSP 1.2.1
-Spring 1.2.1
+Spring 1.2.2
 Spring Portlet spring-portlet.jar
 Trove 1.0.2
 Velocity 1.4
