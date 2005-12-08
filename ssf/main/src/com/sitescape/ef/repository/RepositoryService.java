@@ -1,7 +1,6 @@
 package com.sitescape.ef.repository;
 
 import java.io.OutputStream;
-import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 import javax.activation.DataSource;
@@ -143,8 +142,8 @@ public interface RepositoryService {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public List getVersionNames(Object session, Folder folder, FolderEntry entry,
-			String relativeFilePath) throws RepositoryServiceException;
+	//public List getVersionNames(Object session, Folder folder, FolderEntry entry,
+	//		String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
 	 * Checks out the specified file resource.
