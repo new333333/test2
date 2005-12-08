@@ -109,33 +109,21 @@ Nothing selected
 <span align="center">SiteScape Forum Event tester
 <br />
 </span>
-<center>
-<table border="0">
-<tr><td>
 <br />
 This one has a duration
-</td></tr>
-<tr><td>
 <ssf:eventeditor id="et" 
     formName="eventtestertest" 
     initEvent="<%= e1 %>"
     hasDuration="<%= hasdur %>"
     />
-</td></tr>
-<tr><td>
 <br />This one has just a date/time, no duration, no recurrence</p><p></p>
-</td></tr>
-<tr><td>
 <ssf:eventeditor id="et2"
     formName="eventtestertest"
     initEvent="<%= e2 %>"
     hasDuration="<% nodur %>"
     />
-</td></tr>
-</table>
 	<br>
 	<hr>
 	<input type="submit" name="OK" value="OK">
-</center>
 </form>
 
