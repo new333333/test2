@@ -7,7 +7,8 @@ public class WebKeys {
 	public static final String JAVAX_PORTLET_RESPONSE = "javax.portlet.response";
 
 	public static final String CALENDAR_EVENTDATES = "eventDates";
-	
+	public static final String CALENDAR_VIEWMODE = "calendarViewMode";
+
 
 	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
     public static final String LOCALE = "ss_locale";
