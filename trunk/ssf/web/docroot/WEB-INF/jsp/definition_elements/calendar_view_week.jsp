@@ -35,7 +35,8 @@ ${daymap.cal_dow}<br>${daymap.cal_dom}
     portletName="ss_forum" 
     folderId="<%= folderId %>" 
     action="view_entry" 
-    entryId="<%= e.getId().toString() %>" actionUrl="false" />
+
+    entryId="<%= ((FolderEntry) ((Map) ((Map.Entry)pageContext.getAttribute("ev")).getValue()).get("entry")).getId().toString() %>" actionUrl="false" />
     onClick="ss_loadEntry(this,'<c:out value="${ev.value.entry.id}"/>');return false;" >
 
 ${ev.value.entry.title}
