@@ -3,7 +3,7 @@
 <table border="1">
 <tr>
 <td colspan="2">
-<b>Week beginning ${ssCalStartDate} </b>
+<b>Week beginning <fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" /> </b>
 </td>
 </tr>
 
