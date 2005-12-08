@@ -40,7 +40,7 @@ public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSyn
 			this.workspace = workspace;
 		}
 		public  String getSchedule() {
-			return workspace.getLdapInfo().getSchedule().getQuartzSchedule();
+			return workspace.getLdapConfig().getSchedule().getQuartzSchedule();
 		}
     	public  String getDescription() {
     		return "Ldap synchronization " + workspace;
@@ -52,7 +52,7 @@ public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSyn
 			return data;
     	}
     	public  boolean isEnabled() {
-    		return workspace.getLdapInfo().isScheduleEnabled();
+    		return workspace.getLdapConfig().isScheduleEnabled();
     	}
     	public String getName() {
     		return workspace.getZoneName() + ":" + workspace.getName() + ":" + workspace.getId();

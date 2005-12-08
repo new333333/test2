@@ -23,7 +23,7 @@ public class Workspace extends Binder  {
     protected Set dataForums;
     protected boolean forumsParsed;
     protected List forums;
-    protected LdapConfig ldapInfo;
+    protected LdapConfig ldapConfig;
     /**
      * @hibernate.bag lazy="true"  cascade="all" inverse="true" optimistic-lock="false"
 	 * @hibernate.key column="owningWorkspace" 
@@ -100,9 +100,9 @@ public class Workspace extends Binder  {
     }
     //content is persisted in zone properties
     //keep here so we have a cached pointer to the object
-    public LdapConfig getLdapInfo() {
-    	if (ldapInfo == null) ldapInfo = new LdapConfig(this);
-    	return ldapInfo;
+    public LdapConfig getLdapConfig() {
+    	if (ldapConfig == null) ldapConfig = new LdapConfig(this);
+    	return ldapConfig;
     }
     
 }

@@ -174,7 +174,7 @@ public class LdapModuleImpl implements LdapModule {
 	public LdapConfig getLdapConfig() {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		Workspace ws = (Workspace)coreDao.findTopWorkspace(zoneName);
-		return ws.getLdapInfo();
+		return ws.getLdapConfig();
 	}
 	/**
 	 * Update ldap configuration.  Only properties specified in the props file will
@@ -185,7 +185,7 @@ public class LdapModuleImpl implements LdapModule {
 	public void updateLdapConfig(Map props) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		Workspace ws = (Workspace)coreDao.findTopWorkspace(zoneName);
-		ws.getLdapInfo().updateProperties(props);
+		ws.getLdapConfig().updateProperties(props);
    		LdapSynchronization process = (LdapSynchronization)processorManager.getProcessor(ws, LdapSynchronization.PROCESSOR_KEY);
    		process.checkSchedule(scheduler, ws);
 	}
@@ -203,7 +203,7 @@ public class LdapModuleImpl implements LdapModule {
 		Workspace ws = (Workspace)coreDao.findTopWorkspace(zoneName);
 
 		LdapContext ctx = null;
-		LdapConfig info = ws.getLdapInfo();
+		LdapConfig info = ws.getLdapConfig();
 		Map mods = new HashMap();
 		String dn;
 		//make sure user exists
@@ -237,7 +237,7 @@ public class LdapModuleImpl implements LdapModule {
 	public void syncUser(String zoneName, String loginName) 
 		throws NoUserByTheNameException, NamingException {
 		Workspace ws = (Workspace)coreDao.findTopWorkspace(zoneName);
-		LdapConfig info = ws.getLdapInfo();
+		LdapConfig info = ws.getLdapConfig();
 		Map mods = new HashMap();
 		String dn = getUpdates(info, loginName, mods);
 		syncUser(zoneName, loginName, mods);
@@ -249,7 +249,7 @@ public class LdapModuleImpl implements LdapModule {
 	 */
 	public void syncAll(String zoneName)throws NamingException {
 		Workspace ws = (Workspace)coreDao.findTopWorkspace(zoneName);
-		LdapConfig info = ws.getLdapInfo();
+		LdapConfig info = ws.getLdapConfig();
    		LdapNameMapper mapper = (LdapNameMapper)processorManager.getProcessor(ws, LdapNameMapper.PROCESSOR_KEY);
    		LdapContext ctx=null;
    		String dn;
@@ -610,7 +610,7 @@ public class LdapModuleImpl implements LdapModule {
 			}
 			env.put(Context.SECURITY_AUTHENTICATION, authType);
 			env.put(Context.PROVIDER_URL, connectUrl + "/" + domain);
-			if (socketFactory != null)
+			if (!Validator.isNull(socketFactory))
 				env.put("java.naming.ldap.factory.socket", socketFactory);
 		
 			return new InitialLdapContext(env, null);

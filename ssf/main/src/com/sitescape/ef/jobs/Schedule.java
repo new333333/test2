@@ -140,7 +140,10 @@ public class Schedule {
 		this.minutes = minutes;
 	}
 	public String getHoursMinutes() {
-		return (hours + ":" + minutes);
+		if (minutes < 10) 
+			return (hours + ":0" + minutes);
+		else
+			return (hours + ":" + minutes);
 	}
 	public void setHoursMinutes(String hoursMinutes) {
 		int pos = hoursMinutes.indexOf(':');
