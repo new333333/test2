@@ -131,7 +131,7 @@
 <script language="Javascript">
 
 function ${prefix}_onsub() {
-  <c:if test="${attMap[hasDur]}">
+  <c:if test="${attMap.hasDur}">
   var ms;
   ms1 = getTimeMilliseconds('<%= formName %>', '<%= dateId %>');
   ms2 = getTimeMilliseconds('<%= formName %>', '<%= dateId2 %>');
