@@ -323,7 +323,8 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 					Entry e = (Entry) thisMap.get("entry");
 					Event ev = (Event) thisMap.get("event");
 					SimpleDateFormat sdf2 = new SimpleDateFormat("hh:mm a");
-					dataMap.put(WebKeys.CALENDAR_ENTRYTITLE, e.getTitle());
+					dataMap.put("entry", e);
+					dataMap.put("entry_tostring", e.getId().toString());
 					dataMap.put(WebKeys.CALENDAR_STARTTIMESTRING, sdf2.format(ev.getDtStart().getTime()));
 					dataMap.put(WebKeys.CALENDAR_ENDTIMESTRING, sdf2.format(ev.getDtEnd().getTime()));
 					
