@@ -19,7 +19,11 @@ public class Nlt extends TagSupport {
 		try {
 			JspWriter jspOut = pageContext.getOut();
 			StringBuffer sb = new StringBuffer();
-			sb.append(NLT.get(this.tag, this.text));
+			if (this.text == null) {
+				sb.append(NLT.get(this.tag));
+			} else {
+				sb.append(NLT.get(this.tag, this.text));
+			}
 			jspOut.print(sb.toString());
 		}
 	    catch(Exception e) {
