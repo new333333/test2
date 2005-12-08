@@ -24,7 +24,8 @@ public interface FolderModule {
     public static int CURRENT_ENTRY=3;
  
     public Folder getFolder(Long folderId);
-    /**
+	public List getFolders(List folderIds);
+   /**
      * Create an entry object from the input data and add it to the specified
      * folder.  
      * 
