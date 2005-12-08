@@ -13,6 +13,7 @@
 		<propertycopy name="app.server.dir" from="app.server.${app.server.type}.dir" />
 		<propertycopy name="app.server.lib.dir" from="app.server.${app.server.type}.lib.dir" />
 		<propertycopy name="app.server.deploy.dir" from="app.server.${app.server.type}.deploy.dir" />
+		<propertycopy name="app.server.ssf.dir" from="app.server.${app.server.type}.ssf.dir" />
 	</target>
 
 	<target name="init-build">
@@ -219,6 +220,12 @@
 		<copy file="tomcat/resources/ssf.xml" todir="${app.server.dir}/conf/Catalina/localhost" />		
 		<copy file="liferay/resources/web.tomcat.xml" tofile="${deploy.liferay.webinf}/web.xml" />
 		<copy file="lib/portal-ejb.jar" todir="${deploy.liferay.lib.dir}" />
+		<!-- Copy jdom.jar file into our lib directory because jakarta Slide 
+		     requires jdom 1.0 while the version of the Liferay we deploy
+		     onto contains earlier version (beta 8?) of jdom. We should remove
+		     this line once we upgarde to a later version of Liferay that contains
+		     v1.0 of jdom. -->
+		<copy file="lib/jdom.jar" todir="${app.server.ssf.dir}/WEB-INF/lib" />
 	</target>
 		
 	<target name="deploy-liferay-jboss-tomcat" depends="init-liferay">	
