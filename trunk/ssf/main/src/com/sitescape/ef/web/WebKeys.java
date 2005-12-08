@@ -22,6 +22,7 @@ public class WebKeys {
 	public static final String FORUM_URL_OPERATION = "operation";
 	public static final String FORUM_URL_VALUE = "value";
      //actions
+    public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String FORUM_ACTION_ADD_ENTRY = "add_entry";
 	public static final String FORUM_ACTION_ADD_REPLY = "add_reply";
 	public static final String FORUM_ACTION_CONFIGURE_FORUM = "configure_forum";
