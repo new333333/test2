@@ -7,7 +7,6 @@
 package com.sitescape.ef.domain;
 
 import java.util.Date;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
@@ -31,7 +30,6 @@ public class User extends Principal {
     protected String middleName="";
     protected String lastName="";
     protected String emailAddress="";
-    protected Date lastLoginDate;
     protected String homepage="";
     protected String webPubDir="";
     protected String organization="";
@@ -41,19 +39,7 @@ public class User extends Principal {
     protected Locale locale;
 	protected TimeZone timeZone;
 	protected String timeZoneName;
-	protected Date passwordExpirationDate;
-	protected boolean passwordReset=false;
-	protected boolean passwordEncrypted=true;
-    protected String resolution="800x600";
-    protected String refreshRate="900";
-    protected String skinId;
-    private boolean dottedSkins=false;
-    private String greeting="";
-    private String lastLoginIP;
-    private String loginIP;
-    private Date loginDate;
-    private int failedLoginAttempts=0;
-    
+    protected Date loginDate;
 	public User() {
     }
 	public TimeZone getTimeZone() {
@@ -65,123 +51,7 @@ public class User extends Principal {
 		}
 		return timeZone;
 	}
-	public boolean isPasswordExpired() {
-		if (passwordExpirationDate != null &&
-			passwordExpirationDate.before(new Date())) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	/**
-	 * @hibernate.property
-	 * @return
-	 */
-	public int getFailedLoginAttempts() {
-		return failedLoginAttempts;
-	}
-	public void setFailedLoginAttempts(int failedLoginAttempts) {
-		this.failedLoginAttempts = failedLoginAttempts;
-	}
-	/**
-	 * @hibernate.property length="32"
-	 * @return
-	 */
-	public String getSkinId() {
-		return skinId;
-	}
-	public void setSkinId(String skinId) {
-		this.skinId = skinId;
-	}
-	/**
-	 * @hibernate.property
-	 * @return
-	 */
-	public boolean isDottedSkins() {
-		return dottedSkins;
-	}
-	public void setDottedSkins(boolean dottedSkins) {
-		this.dottedSkins = dottedSkins;
-	}
 
-	/**
-	 * @hibernate.property
-	 * @return
-	 */
-	public boolean isPasswordReset() {
-		return passwordReset;
-	}
-
-	public void setPasswordReset(boolean passwordReset) {
-		this.passwordReset = passwordReset;
-
-	}
-	/**
-	 * @hibernate.property
-	 * @return
-	 */
-	public boolean isPasswordEncrypted() {
-		return passwordEncrypted;
-	}
-
-	public void setPasswordEncrypted(boolean passwordEncrypted) {
-		this.passwordEncrypted = passwordEncrypted;
-
-	}
-	/**
-	 * @hibernate.property length="16"
-	 * @return
-	 */
-	public String getResolution() {
-		return resolution;
-	}
-
-	public void setResolution(String resolution) {
-		this.resolution = resolution;
-	}
-	/**
-	 * @hibernate.property length="16"
-	 * @return
-	 */
-	public String getRefreshRate() {
-		return refreshRate;
-	}
-
-	public void setRefreshRate(String refreshRate) {
-		this.refreshRate = refreshRate;
-	}	
-	/**
-	 * @hibernate.property
-	 * @return
-	 */
-	public Date getPasswordExpirationDate() {
-		return this.passwordExpirationDate;
-	}
-
-	public void setPasswordExpirationDate(Date passwordExpirationDate) {
-		this.passwordExpirationDate = passwordExpirationDate;
-	}
-	/**
-	 * @hibernate.property length="16"
-	 * @return
-	 */
-	public String getLoginIP() {
-		return loginIP;
-	}
-	public void setLoginIP(String loginIP) {
-		this.loginIP = loginIP;
-	}
-	/**
-	 * @hibernate.property length="16"
-	 * @return
-	 */
-	public String getLastLoginIP() {
-		return lastLoginIP;
-	}
-	public void setLastLoginIP(String lastLoginIP) {
-		this.lastLoginIP = lastLoginIP;
-	}
 	/**
 	 * @hibernate.property 
 	 * @return
@@ -192,16 +62,7 @@ public class User extends Principal {
 	public void setLoginDate(Date loginDate) {
 		this.loginDate = loginDate;
 	}
-	/**
-	 * @hibernate.property length="256"
-	 * @return
-	 */
-	public String getGreeting() {
-		return greeting;
-	}
-	public void setGreeting(String greeting) {
-		this.greeting = greeting;
-	}
+
 	/**
 	 * @hibernate.property length="10"
 	 * @param timeZoneName
@@ -265,17 +126,7 @@ public class User extends Principal {
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-	/**
-	 * @hibernate.property type="timestamp" 
-	 * @return
-	 */
-    public Date getLastLoginDate() {
-        return this.lastLoginDate;
-    }
 
-    public void setLastLoginDate(Date lastLoginDate) {
-        this.lastLoginDate = lastLoginDate;
-    }
     
     /**
      * @hibernate.property length="64"
