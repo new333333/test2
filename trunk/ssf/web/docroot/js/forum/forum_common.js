@@ -52,13 +52,38 @@ if (!ss_onLoadRoutineLoaded) {
 //  running inside an iframe. It it is, then the url is opened in the parent of the iframe.
 //This routine returns "true" without opening the url if the caller is not inside a frame.
 //If the caller is in a frame (or iframe), then the routine opens the url in the parent and returns false.
-function ss_openUrlInPortlet(url) {
+function ss_openUrlInPortlet(url, popup) {
+	//Is this a request to pop up?
+	if (popup) {
+		self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no");
+		return;
+	}
 	//Are we at the top window?
-	if (self.window == self.top) {return true;}
-	
-	//We are in a frame. Open the url in the next higher parent
-	self.parent.location.href = url;
-	return false;
+	if (self.window != self.top && parent.ss_openUrlInPortlet) {
+		parent.ss_openUrlInPortlet(url, popup)
+		return false
+	} else if (self.opener && self.opener.ss_openUrlInPortlet) {
+		self.opener.ss_openUrlInPortlet(url, popup)
+		setTimeout('self.window.close();', 200)
+		return false
+	} else {
+		return true
+	}
+}
+
+function ss_reloadOpener(fallBackUrl) {
+	//Are we at the top window?
+	if (self.window != self.top) {
+		parent.location.reload();
+		return false
+	} else if (self.opener) {
+		self.opener.location.reload(true)
+		setTimeout('self.window.close();', 200)
+		return false
+	} else {
+		self.location.href = fallBackUrl;
+		return false
+	}
 }
 
 //Routine to show or hide an object

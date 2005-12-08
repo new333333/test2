@@ -77,7 +77,7 @@ public class AddEntryController extends SAbstractForumController {
 			}
 			path = WebKeys.VIEW_FORUM;
 			model.put(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
-			request.setAttribute(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_ENTRY);			model.put(WebKeys.FORUM_URL_RETURN, "true");
+			request.setAttribute(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_ENTRY);
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
 			reloadUrl.setParameter(WebKeys.FORUM_URL_ENTRY_ID, entryId);
