@@ -24,12 +24,11 @@
 		caption += "<br>\n";
 	}
 %>
-<div class="formBreak">
-<div>
-<%= caption %><select name="<%= elementName %>" <%= multiple %> <%= size %>>
+<div class="ss_entryContent">
+<div class="ss_labelLeft"><%= caption %></div><select name="<%= elementName %>" <%= multiple %> <%= size %>>
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= item %>" 
   configJspStyle="<%= ssConfigJspStyle %>" />
 </select>
 </div>
-</div>
+<div class="ss_divider"></div>

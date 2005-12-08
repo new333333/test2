@@ -14,8 +14,8 @@
 	String caption = (String) request.getAttribute("property_caption");
 	if (caption == null) {caption = "";}
 %>
-<div class="formBreak">
-<div class="labelAbove"><%= caption %></div>
+<div class="ss_entryContent">
+<div class="ss_labelAbove"><%= caption %></div>
 <c:if test="${!empty ssFolderEntry.customAttributes[property_name].value}">
 <c:set var="initDate" value="${ssFolderEntry.customAttributes[property_name].value}"/>
 <jsp:useBean id="initDate" type="java.util.Date" />
@@ -29,3 +29,4 @@
   initDate="<%= new Date() %>" />
 </c:if>
 </div>
+<div class="ss_divider"></div>

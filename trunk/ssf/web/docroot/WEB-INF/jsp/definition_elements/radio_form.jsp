@@ -14,9 +14,8 @@
 	}
 	String checked = "";
 %>
-<div class="formBreak">
-<div>
-<%= caption %>
+<div class="ss_entryContent">
+<div class="ss_labelLeft><%= caption %></div>
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= item %>" 
   configJspStyle="<%= ssConfigJspStyle %>" />
@@ -24,4 +23,4 @@
 	request.setAttribute("radioGroupName", orgRadioGroupName);
 %>
 </div>
-</div>
+<div class="ss_divider"></div>

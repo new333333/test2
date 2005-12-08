@@ -4,7 +4,8 @@
 	String caption = (String) request.getAttribute("property_caption");
 	if (caption == null) {caption = "";}
 %>
-<div class="formBreak">
-<div class="labelAbove"><%= caption %></div>
+<div class="ss_entryContent">
+<div class="ss_labelAbove"><%= caption %></div>
 <input type="text" size="40" name="title" value="<c:out value="${ssFolderEntry.title}"/>">
 </div>
+<div class="ss_divider"></div>
