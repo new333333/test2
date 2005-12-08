@@ -1,5 +1,5 @@
 package com.sitescape.ef.util;
-
+import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -44,9 +44,12 @@ public class NLT implements ApplicationContextAware {
 	
 	public String getMessage(String tag) {
 		User user = RequestContextHolder.getRequestContext().getUser();
+		return getMessage(tag, user.getLocale());
+	}
+ 	public String getMessage(String tag, Locale locale) {
     	String translation = "";
     	try {
-    		translation = getApplicationContext().getMessage(tag, null, user.getLocale());
+    		translation = getApplicationContext().getMessage(tag, null, locale);
     	} catch (NoSuchMessageException e) {
     	    logger.warn(e);
     		translation = tag;
@@ -58,12 +61,19 @@ public class NLT implements ApplicationContextAware {
 		return getInstance().getMessage(tag);
 	}
 
+	public static String get(String tag, Locale locale) {
+		return getInstance().getMessage(tag, locale);
+	}
+
 	public String getMessage(String tag, String text) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-    	String translation = "";
+		return getMessage(tag, text, user.getLocale());
+	}
+	public String getMessage(String tag, String text, Locale locale) {
+   	String translation = "";
     	try {
     		String notfound = "___notfound___";
-    		translation = getApplicationContext().getMessage(tag, null, notfound, user.getLocale());
+    		translation = getApplicationContext().getMessage(tag, null, notfound, locale);
     		if (translation.equals(notfound)) {
     			logger.warn("Translation not found: " + tag + " = " + text);
     			translation = text;
@@ -77,5 +87,8 @@ public class NLT implements ApplicationContextAware {
 	
 	public static String get(String tag, String text) {
 		return getInstance().getMessage(tag, text);
+	}
+	public static String get(String tag, String text, Locale locale) {
+		return getInstance().getMessage(tag, text, locale);
 	}
 }
