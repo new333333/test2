@@ -3,6 +3,7 @@ package com.sitescape.ef.module.workflow.impl;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -249,7 +250,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		Element defRoot = defDoc.getRootElement();
 		
 		//Start by deleting all of the nodes
-		List nodes = pD.getNodes();
+		List nodes = new ArrayList(pD.getNodes());
 		if (nodes != null) {
 			List nodes1 = new ArrayList(nodes);
 			Iterator itNodes = nodes1.iterator();
@@ -259,7 +260,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			}
 		}
 		//Delete all of the actions and events
-		Map actions = pD.getActions();
+		Map actions = new HashMap(pD.getActions());
 		if (actions != null) {
 			Iterator itActions = actions.entrySet().iterator();
 			while (itActions.hasNext()) {
@@ -268,7 +269,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				if (action != null) pD.removeAction(action);
 			}
 		}
-		Map events = pD.getEvents();
+		Map events = new HashMap(pD.getEvents());
 		if (events != null) {
 			Iterator itEvents = events.entrySet().iterator();
 			while (itEvents.hasNext()) {
