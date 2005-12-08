@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../../dtd/spring-beans.dtd">
+<beans>
+
+	<!-- Controllers -->
+
+	<bean id="workspaceTreeController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController" />
+
+	<!-- Handlers -->
+
+
+	<bean id="portletModeHandlerMapping" parent="portletModeHandlerMappingTemplate">
+		<property name="portletModeMap">
+			<map>
+				<entry key="view"><ref bean="workspaceTreeController"/></entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="defaultExceptionHandler" parent="defaultExceptionHandlerTemplate"/>
+
+</beans>

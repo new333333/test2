@@ -75,6 +75,12 @@
 	<!-- Template for the common dependency injection for controllers -->
 	<bean id="controllerDependencyTemplate" lazy-init="true" abstract="true">
 		<property name="employeeModule"><ref bean="employeeModule"/></property>
+		<property name="workspaceModule"><ref bean="workspaceModule"/></property>
+		<property name="folderModule"><ref bean="folderModule"/></property>
+		<property name="adminModule"><ref bean="adminModule"/></property>
+		<property name="profileModule"><ref bean="profileModule"/></property>
+		<property name="definitionModule"><ref bean="definitionModule"/></property>
+		
 	</bean>
 
 	<!-- add support for lobhandler to support hibernate UserType to handle different db clob implementations -->

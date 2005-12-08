@@ -11,3 +11,4 @@
 
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 
+<portlet:defineObjects />
