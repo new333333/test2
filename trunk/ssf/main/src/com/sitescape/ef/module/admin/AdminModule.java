@@ -6,10 +6,12 @@
  */
 package com.sitescape.ef.module.admin;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.sitescape.ef.domain.NotificationDef;
+import com.sitescape.ef.security.function.Function;
 
 /**
  * @author Janet McCann
@@ -19,6 +21,9 @@ import com.sitescape.ef.domain.NotificationDef;
  */
 public interface AdminModule {
 
+	public void addFunction(Function function);
+    public List getFunctions();
+    public void updateFunction(String name, Map updates);
     public void updateNotification(Long forumId, Map updates, Set users); 
     public void disableNotification(Long forumId);
     public void enableNotification(Long forumId);
