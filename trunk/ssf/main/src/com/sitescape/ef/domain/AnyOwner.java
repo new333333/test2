@@ -29,9 +29,11 @@ public class AnyOwner {
 			if (entry instanceof FolderEntry) {
 				FolderEntry fEntry = (FolderEntry)entry;
 				Folder f = fEntry.getParentFolder();
-				//This value is used to help narrow the results of sql reporting queries
-				//You can use this to search a folder of sub-folder heirarchy
-				owningFolderSortKey = f.getFolderHKey().getSortKey();
+				if (f != null) {
+					//This value is used to help narrow the results of sql reporting queries
+					//You can use this to search a folder of sub-folder heirarchy
+					owningFolderSortKey = f.getFolderHKey().getSortKey();
+				}
 			}
   		}
 	}
