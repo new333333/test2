@@ -97,7 +97,7 @@ function ss_getLastEntryId() {
           actionUrl="false"
           />"
           onClick="ss_getLastEntryId();return false;" ><img alt="first entry" name="first"
-          border="0" src="<html:imagesPath/>pics/sym_s_left_end.gif"></a>&nbsp;<a  
+          border="0" src="<html:imagesPath/>pics/sym_s_left_end.gif"></a><a  
           href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
@@ -107,7 +107,7 @@ function ss_getLastEntryId() {
           actionUrl="false"
           />"
           onClick="ss_getNextEntryId();return false;" ><img alt="previous entry" name="prev"
-          border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a><span>&nbsp;Entries&nbsp;</span><a href="<ssf:url
+          border="0" src="<html:imagesPath/>pics/sym_s_left.gif"></a><span>Entries</span><a href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
           folderId="<%= ssFolder.getId().toString() %>"
@@ -116,7 +116,7 @@ function ss_getLastEntryId() {
           actionUrl="false"
           />"
           onClick="ss_getPreviousEntryId();return false;" ><img alt="next entry" name="next"
-          border="0" src="<html:imagesPath/>pics/sym_s_next.gif"></a>&nbsp;<a 
+          border="0" src="<html:imagesPath/>pics/sym_s_right.gif"></a><a 
           href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
