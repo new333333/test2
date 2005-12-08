@@ -39,12 +39,15 @@
 	<target name="clean">
 		<delete dir="${tmp.dir}" />
 		<delete dir="liferay/temp" />
+		
 		<ant dir="util" target="clean" />
 		<ant dir="indexer-lucene" target="clean" />
 
 		<ant dir="applets" target="clean" />
 
 		<ant dir="main" target="clean" />
+		<ant dir="portal-module" target="clean" />
+		<ant dir="liferay" target="clean" />
 		<ant dir="taglib" target="clean" />
 
 		<ant dir="web" target="clean" />
@@ -54,13 +57,16 @@
 
 	<target name="compile">
 		<ant dir="util" target="compile" />
-		<ant dir="indexer-lucene" target="compile" />
+		<ant dir="indexer-lucene" target="compile" />			
+
 		<ant dir="main" target="compile-common" />
 
 		<ant dir="applets" target="compile" />
 
 		<ant dir="main" target="compile" />
 
+		<ant dir="portal-module" target="compile" />
+		<ant dir="liferay" target="compile" />
 		<ant dir="taglib" target="compile" />
 	</target>
 
@@ -72,9 +78,9 @@
 
 		<ant dir="main" target="compile-common" />
 		<ant dir="main" target="jar" />
-		<ant dir="taglib" target="jar" />
-		
+		<ant dir="portal-module" target="jar" />
 		<ant dir="liferay" target="jar" />
+		<ant dir="taglib" target="jar" />
 
 		<ant dir="web" target="war" />
 
@@ -85,11 +91,14 @@
 		<delete dir="api" />
 
 		<ant dir="util" target="java2html" />
+		<ant dir="indexer-lucene" target="java2html" />
 
 		<ant dir="applets" target="java2html" />
 
 		<ant dir="main" target="java2html" />
 		<ant dir="indexer-lucene" target="java2html" />
+		<ant dir="portal-module" target="java2html" />
+		<ant dir="liferay" target="java2html" />
 		<ant dir="taglib" target="java2html" />
 	</target>
 
@@ -98,11 +107,13 @@
 
 		<ant dir="util" target="javadoc" />
 		<ant dir="indexer-lucene" target="javadoc" />
-
+		
 		<ant dir="applets" target="javadoc" />
 
 		<ant dir="main" target="javadoc" />
 		<ant dir="indexer-lucene" target="javadoc" />
+		<ant dir="portal-module" target="javadoc" />
+		<ant dir="liferay" target="javadoc" />
 		<ant dir="taglib" target="javadoc" />
 	</target>
 
@@ -171,6 +182,7 @@
 	</target>
 	
 	<target name="deploy-liferay-post">
+		<ant dir="portal-module" target="deploy" />
 		<ant dir="liferay" target="deploy" />
 	</target>
 		
@@ -205,6 +217,8 @@
 		<antcall target="deploy-liferay-post" />
 		
 		<copy file="tomcat/resources/ssf.xml" todir="${app.server.dir}/conf/Catalina/localhost" />		
+		<copy file="liferay/resources/web.tomcat.xml" tofile="${deploy.liferay.webinf}/web.xml" />
+		<copy file="lib/portal-ejb.jar" todir="${deploy.liferay.lib.dir}" />
 	</target>
 		
 	<target name="deploy-liferay-jboss-tomcat" depends="init-liferay">	
