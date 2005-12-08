@@ -9,11 +9,14 @@ import javax.portlet.WindowState;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
+import com.sitescape.ef.domain.User;
 /**
  * @author Peter Hurley
  *
@@ -24,6 +27,7 @@ public class ViewController  extends SAbstractForumController {
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		Long folderId=null;
 		try {
@@ -36,8 +40,9 @@ public class ViewController  extends SAbstractForumController {
 		}
 		String op = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_OPERATION);
 		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
-			String displayStyle = ActionUtil.getStringValue(formData,WebKeys.FORUM_URL_VALUE);
-			getProfileModule().setUserProperty(null,ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, displayStyle);
+			Map updates = new HashMap();
+			updates.put("displayStyle", ActionUtil.getStringValue(formData,WebKeys.FORUM_URL_VALUE));
+			getProfileModule().modifyUser(user.getId(), updates);
 		}
 
 		return returnToViewForum(request, response, formData, folderId);

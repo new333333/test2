@@ -20,12 +20,11 @@ public interface ObjectKeys {
     public static final long SEEN_HISTORY_MAP_TIMEOUT = (long)7*24*60*60*1000;
     public static final String USER = "user";
     
-    public static final String USER_PROPERTY_DISPLAY_STYLE = "display_style";
-    public static final String USER_PROPERTY_DISPLAY_STYLE_ACCESSIBLE = "display_style_accessible";
-    public static final String USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL = "display_style_horizontal";
-    public static final String USER_PROPERTY_DISPLAY_STYLE_IFRAME = "display_style_iframe";
-    public static final String USER_PROPERTY_DISPLAY_STYLE_POPUP = "display_style_popup";
-    public static final String USER_PROPERTY_DISPLAY_STYLE_VERTICAL = "display_style_vertical";
+    public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
+    public static final String USER_DISPLAY_STYLE_HORIZONTAL = "horizontal";
+    public static final String USER_DISPLAY_STYLE_IFRAME = "iframe";
+    public static final String USER_DISPLAY_STYLE_POPUP = "popup";
+    public static final String USER_DISPLAY_STYLE_VERTICAL = "vertical";
 
     public static final String WORKAREA_OPERATION = "workarea_operation";
 }

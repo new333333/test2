@@ -20,6 +20,10 @@ import java.util.Map;
 import java.util.HashMap;
 
 import java.util.ArrayList;
+
+import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.User;
 import com.sitescape.util.GetterUtil;
 
 
@@ -41,6 +45,7 @@ public class TreeTag extends TagSupport {
     private String className = "bg";
     private Map images;
     private Map imagesOpen;
+	private String displayStyle;
     
     private String root;
     private String spacer;
@@ -73,6 +78,8 @@ public class TreeTag extends TagSupport {
 		try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 
+			User user = RequestContextHolder.getRequestContext().getUser();
+			displayStyle = user.getDisplayStyle();
 			this.contextPath = req.getContextPath();
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 		    setCommonImg(contextPath + "/images");
@@ -189,7 +196,10 @@ public class TreeTag extends TagSupport {
 			sb.append(treeName);
 			sb.append(".create();\n");
 			sb.append("</script>\n\n\n");
-			jspOut.print(sb.toString());
+			
+			if (displayStyle == null || !displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+				jspOut.print(sb.toString());
+			}
 			
 			//Output the tree
 			outputTreeNodes(treeRoot, recursedNodes);
