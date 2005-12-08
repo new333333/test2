@@ -108,6 +108,11 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 	
+
+	public List getVersionNames(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+		return null;
+	}
+
 	// obsolete
 	public List fileVersionsURIs(Object session, Folder folder, FolderEntry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
@@ -224,6 +229,10 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			logError(wdr);
 			throw new RepositoryServiceException(e);
 		}
+	}
+
+	public boolean supportVersioning() {
+		return true;
 	}
 	
 	public boolean supportVersionDeletion() {

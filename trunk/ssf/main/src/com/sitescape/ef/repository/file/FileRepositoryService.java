@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -88,33 +89,36 @@ public class FileRepositoryService implements RepositoryService {
 	}
 
 	public void readVersion(Object session, Folder folder, FolderEntry entry, String relativeFilePath, String versionName, OutputStream out) throws RepositoryServiceException {
-		// Simply ignore version name. 
-		read(session, folder, entry, relativeFilePath, out);
+		throw new UnsupportedOperationException();
+	}
+
+	public List getVersionNames(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+		throw new UnsupportedOperationException();
 	}
 
 	public void checkout(Object session, Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
-		// Silently ignore this request so that application can continue to 
-		// work even with this crappy implementation. 
+		throw new UnsupportedOperationException();
 	}
 
 	public void uncheckout(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
-		// Simply ignore it. 
+		throw new UnsupportedOperationException();
 	}
 
 	public String checkin(Object session, Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
-		// Simply return an empty string for version name.  
-		return "";
+		throw new UnsupportedOperationException();
 	}
 
 	public boolean isCheckedOut(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
-		// Simply say no - this is a noxious implementation :)
-		return false; 
+		throw new UnsupportedOperationException();
 	}
 
-	public boolean supportVersionDeletion() {
+	public boolean supportVersioning() {
 		return false;
 	}
 	
+	public boolean supportVersionDeletion() {
+		throw new UnsupportedOperationException();
+	}
 
 	public boolean exists(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
 		String filePath = getFilePath(folder, entry, relativeFilePath);
