@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.sitescape.ef.search.AbstractLuceneSessionFactory;
+import com.sitescape.ef.search.LuceneException;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.util.FileHelper;
 
@@ -27,7 +28,11 @@ public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory {
 	public LuceneSession openSession(String indexName) {
 		String indexDirPath = rootDirPath + indexName + File.separator;
 		
-		FileHelper.mkdirsIfNecessary(indexDirPath);
+		try {
+			FileHelper.mkdirsIfNecessary(indexDirPath);
+		} catch (IOException e) {
+			throw new LuceneException(e);
+		}
 		
         return new LocalLuceneSession(indexDirPath);
     }
