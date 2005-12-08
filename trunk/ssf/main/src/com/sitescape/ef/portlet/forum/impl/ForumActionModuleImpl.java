@@ -189,9 +189,9 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 //			while (attIt.hasNext()) {
 //				CustomAttribute att = (CustomAttribute) attIt.next();
 //				if (att.getValueType() == CustomAttribute.EVENT) {
-				}
+//				}
 //			}
-//		}
+		}
 	}
 	
 	/**
@@ -363,7 +363,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
-		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL);
+		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_HORIZONTAL);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_horizontal"), url);
 		*/
 		//vertical
@@ -371,21 +371,21 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
-		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_VERTICAL);
+		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_vertical"), url);
 		//accessible
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
-		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_ACCESSIBLE);
+		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_accessible"), url);
 		//iframe
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
-		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME);
+		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_iframe"), url);
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
 		//popup
@@ -393,7 +393,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
-		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_POPUP);
+		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_popup"), url);
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
 		

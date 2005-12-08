@@ -2,11 +2,17 @@
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.ef.ObjectKeys" %>
 <%@ page import="com.sitescape.ef.web.WebKeys" %>
+<%@ page import="com.sitescape.ef.context.request.RequestContextHolder" %>
+<%@ page import="com.sitescape.ef.domain.User" %>
 <%
 //Set some default colors
 String alphaColor = "#775325";
 String betaColor = "#B89257";
 String gammaColor = "#CCCC99";
+
+//Set up the user object
+User user = RequestContextHolder.getRequestContext().getUser();
+request.setAttribute("ssUser", user);
 
 boolean isIE = BrowserSniffer.is_ie(request);
 %>

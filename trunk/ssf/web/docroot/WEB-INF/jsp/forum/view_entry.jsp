@@ -29,16 +29,14 @@
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssHistoryMap" type="com.sitescape.ef.domain.HistoryMap" scope="request" />
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />
-
-
+<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
 
 <%
-
 String op = WebKeys.FORUM_ACTION_VIEW_ENTRY;
 if (op == null) op = WebKeys.FORUM_ACTION_VIEW_FORUM;
-String displayStyle = ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL;
-if (ssUserProperties.containsKey(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
-	displayStyle = (String) ssUserProperties.get(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE);
+String displayStyle = ssUser.getDisplayStyle();
+if (displayStyle == null || displayStyle.equals("")) {
+	displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
 }
 
 boolean statePopUp = false;
@@ -48,7 +46,7 @@ if (op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY)) {
 	
 int entryWindowWidth = 0;
 String autoScroll = "true";
-if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL) && !statePopUp) {
+if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_HORIZONTAL) && !statePopUp) {
 	autoScroll = "false";
 }
 request.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth));
@@ -65,8 +63,8 @@ function ss_showMessageInDiv(str) {
     savedScrollPositionTop = self.document.body.scrollTop;
     
 <%
-	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME) || 
-		displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_POPUP)) {
+	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
+		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 %>
 	return false
 <%
@@ -81,8 +79,8 @@ var historyBackLine = new Array();
 var historyForwardLine = new Array();
 function ss_showForumEntry(url, callbackRoutine) {
 <%
-	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME) || 
-		displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_POPUP)) {
+	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
+		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 %>
 	return ss_showForumEntryInIframe(url);
 <%
@@ -256,7 +254,7 @@ if (self.parent && self.parent.highlightLineById) {
 </script>
 <%
 	//Horizontal view
-	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL)) {
+	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_HORIZONTAL)) {
 %>
     <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
       <ssf:param name="box_width" value="<%= new Integer(entryWindowWidth).toString() %>" />
@@ -270,7 +268,7 @@ if (self.parent && self.parent.highlightLineById) {
 <%
 	
 	//Iframe view
-	} else if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME)) {
+	} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 %>
 	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
 	  configElement="<%= ssConfigElement %>" 
@@ -280,7 +278,7 @@ if (self.parent && self.parent.highlightLineById) {
 <%
 	
 	//Popup view
-	} else if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_POPUP)) {
+	} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 %>
 	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
 	  configElement="<%= ssConfigElement %>" 

@@ -11,20 +11,20 @@
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssHistoryMap" type="com.sitescape.ef.domain.HistoryMap" scope="request" />
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />
+<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
 <%
 
 String op = (String) renderRequest.getAttribute(WebKeys.ACTION);
 if (op == null) op = WebKeys.FORUM_ACTION_VIEW_FORUM;
+String displayStyle = ssUser.getDisplayStyle();
+if (displayStyle == null || displayStyle.equals("")) {
+	displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+}
 
 String ssReloadUrl = (String) renderRequest.getAttribute("ssReloadUrl");
 if (ssReloadUrl == null) ssReloadUrl = "";
 boolean reloadCaller = false;
 if (!ssReloadUrl.equals("")) reloadCaller = true;
-
-String displayStyle = ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME;
-if (ssUserProperties.containsKey(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
-	displayStyle = (String) ssUserProperties.get(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE);
-}
 
 boolean isViewEntry = false;
 if (op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY)) {
@@ -33,7 +33,7 @@ if (op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY)) {
 	
 int entryWindowWidth = 0;
 String autoScroll = "true";
-if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL) && !isViewEntry) {
+if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_HORIZONTAL) && !isViewEntry) {
 	autoScroll = "false";
 }
 renderRequest.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth));
@@ -50,9 +50,9 @@ function ss_showMessageInDiv(str) {
     savedScrollPositionTop = self.document.body.scrollTop;
     
 <%
-	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME) || 
-		displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_POPUP) ||
-		displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_VERTICAL)) {
+	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
+		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ||
+		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 %>
 	return false
 <%
@@ -67,9 +67,9 @@ var historyBackLine = new Array();
 var historyForwardLine = new Array();
 function ss_showForumEntry(url, callbackRoutine) {
 <%
-	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME) || 
-		displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_POPUP) ||
-		displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_VERTICAL)) {
+	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
+		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ||
+		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 %>
 	return ss_showForumEntryInIframe(url);
 <%
@@ -224,15 +224,15 @@ function highlightLineById(id) {
 <img src="<html:imagesPath/>pics/1pix.gif">
 </div>
 <%
-	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL)) {
+	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_HORIZONTAL)) {
 %>
 <%@ include file="/WEB-INF/jsp/forum/view_forum_horizontal.jsp" %>
 <%
-	} else if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME)) {
+	} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 %>
 <%@ include file="/WEB-INF/jsp/forum/view_forum_iframe.jsp" %>
 <%
-	} else if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_POPUP)) {
+	} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 %>
 <%@ include file="/WEB-INF/jsp/forum/view_forum_popup.jsp" %>
 <%
@@ -259,7 +259,7 @@ if (self.parent && self.parent.highlightLineById) {
 </script>
 <%
 	//Horizontal view
-	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL)) {
+	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_HORIZONTAL)) {
 %>
     <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
       <ssf:param name="box_width" value="<%= new Integer(entryWindowWidth).toString() %>" />
@@ -273,7 +273,7 @@ if (self.parent && self.parent.highlightLineById) {
 <%
 	
 	//Iframe view
-	} else if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME)) {
+	} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 %>
 	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
 	  configElement="<%= ssConfigElement %>" 
@@ -283,7 +283,7 @@ if (self.parent && self.parent.highlightLineById) {
 <%
 	
 	//Popup view
-	} else if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME)) {
+	} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 %>
 	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
 	  configElement="<%= ssConfigElement %>" 
