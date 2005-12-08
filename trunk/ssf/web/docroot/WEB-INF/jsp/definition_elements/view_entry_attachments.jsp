@@ -3,10 +3,11 @@
 <jsp:useBean id="ssFolderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
 
 <c:if test="${!empty ssFolderEntry.fileAttachments}">
-<br><b><c:out value="${property_caption}"/></b><br>
+<span class="ss_labelLeft"><c:out value="${property_caption}"/></span>
 
+<span class="ss_content">
 <c:forEach var="selection" items="${ssFolderEntry.fileAttachments}" >
-<a class="bg" target="_blank" 
+<a target="_blank" 
   href="<ssf:url 
     webPath="viewFile"
     folderId="${ssFolderEntry.parentFolder.id}"
@@ -14,6 +15,5 @@
     <ssf:param name="fileId" value="${selection.id}"/>
     </ssf:url>"><c:out value="${selection.fileItem.name}"/></a><br>
  </c:forEach>
- 
-<br>
+ </span>
 </c:if>
