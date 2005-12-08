@@ -6,6 +6,8 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
+import javax.portlet.PortletMode;
 
 import org.springframework.web.servlet.ModelAndView;
 
@@ -63,8 +65,12 @@ public class ConfigureLdapController extends  SAbstractController {
 			input.put(LdapConfig.SCHEDULE, schedule);
 			getLdapModule().updateLdapConfig(input);
 			response.setRenderParameter(WebKeys.ACTION, "");
+			response.setWindowState(WindowState.NORMAL);
+			response.setPortletMode(PortletMode.VIEW);
 		} else if (formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, "");
+			response.setWindowState(WindowState.NORMAL);
+			response.setPortletMode(PortletMode.VIEW);
 		} else
 			response.setRenderParameters(formData);
 		

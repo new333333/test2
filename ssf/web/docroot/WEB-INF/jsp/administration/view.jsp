@@ -18,9 +18,6 @@
 <%@ page import="org.dom4j.Document" %>
 <jsp:useBean id="wsTree" type="org.dom4j.Document" scope="request" />
 
-
-<br />
-
 	<table border="0" cellpadding="0" cellspacing="0" width="95%">
 	<tr>
 		<td>
@@ -28,7 +25,7 @@
 			<tr>
 				<td>
 					<div>
-						<ssf:tree treeName="wsTree" treeDocument="<%= wsTree %>" />
+						<ssf:tree treeName="wsTree" treeDocument="<%= wsTree %>" rootOpen="false" />
 					</div>
 				</td>
 			</tr>
@@ -36,4 +33,4 @@
 		</td>
 	</tr>
 	</table>
-
+	<br/>

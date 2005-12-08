@@ -35,12 +35,10 @@ public class ViewController extends  SAbstractController {
 		rootElement.addAttribute("title", "Sitescape Administration");
 		rootElement.addAttribute("image", "root");
 		rootElement.addAttribute("displayOnly", "true");
-		rootElement.addAttribute("id", "");
 		//Definition builder
 		Element element = rootElement.addElement("child");
 		element.addAttribute("title", "Definition Builder");
 		element.addAttribute("image", "page");
-		element.addAttribute("id", "");
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
 		url.setWindowState(WindowState.MAXIMIZED);
@@ -50,7 +48,6 @@ public class ViewController extends  SAbstractController {
 		element = rootElement.addElement("child");
 		element.addAttribute("title", "LDAP");
 		element.addAttribute("image", "page");
-		element.addAttribute("id", "");
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.LDAP_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
