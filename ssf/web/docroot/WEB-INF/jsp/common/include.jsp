@@ -231,6 +231,7 @@ div.ss_historybar {
 <ssf:ifadapter>
 <c:if test="${empty ssf_support_files_loaded}">
 </head>
-<c:set var="ssf_support_files_loaded" value="1" scope="request"/>
 </c:if>
 </ssf:ifadapter>
+<c:set var="ssf_support_files_loaded" value="1" scope="request"/>
+
