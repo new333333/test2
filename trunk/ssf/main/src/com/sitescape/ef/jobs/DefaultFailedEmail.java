@@ -9,7 +9,7 @@ import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.mail.MailModule;
-import com.sitescape.ef.module.mail.MailMessage;
+import org.springframework.mail.SimpleMailMessage;
 /**
  * @author Janet McCann
  *
@@ -22,7 +22,7 @@ public class SendMail extends SSStatefulJob {
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
     	MailModule mail = (MailModule)ctx.getBean("mailModule");
 		try {
-			MailMessage msg = (MailMessage)jobDataMap.get("mailMessage");
+			SimpleMailMessage msg = (SimpleMailMessage)jobDataMap.get("mailMessage");
 			if (mail.sendMail(msg) == true) {
 				context.setResult(CleanupJobListener.DeleteJob);
 			}
