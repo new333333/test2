@@ -1,4 +1,4 @@
-package com.sitescape.ef.servlet.file;
+package com.sitescape.ef.servlet.sample;
 
 import java.io.File;
 import java.util.Iterator;
