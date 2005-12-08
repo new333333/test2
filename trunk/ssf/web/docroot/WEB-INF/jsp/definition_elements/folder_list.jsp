@@ -12,10 +12,22 @@
 	}
 %>
 <script language="javascript">
+var ss_currentEntryId = "";
 function ss_loadEntry(obj,id) {
+	var folderLine = 'folderLine_'+id;
+	ss_currentEntryId = id;
 	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
-	highlightLineById(id);
+	highlightLineById(folderLine);
 	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
+	return false;
+}
+
+function ss_loadEntryUrl(url,id) {
+	var folderLine = 'folderLine_'+id;
+	ss_currentEntryId = id;
+	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
+	highlightLineById(folderLine);
+	ss_showForumEntry(url, <c:out value="${showEntryCallbackRoutine}"/>);
 	return false;
 }
 
@@ -68,7 +80,7 @@ function ss_loadEntry(obj,id) {
     folderId="<%= folderId %>" 
     action="view_entry" 
     entryId="<%= entry.getId().toString() %>" actionUrl="false" popup="true" />" 
-    onClick="ss_loadEntry(this,'folderLine_<c:out value="${entry.id}"/>');return false;" >
+    onClick="ss_loadEntry(this,'<c:out value="${entry.id}"/>');return false;" >
     <c:if test="${empty entry.title}">
     <span class="fineprint"><i>(no title)</i></span>
     </c:if>
