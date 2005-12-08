@@ -276,7 +276,9 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 			params.put(WebKeys.FORUM_URL_FORUM_ID, folderId);
 			params.put(WebKeys.FORUM_URL_ENTRY_TYPE, replyStyle);
 			params.put(WebKeys.FORUM_URL_ENTRY_ID, entryId);
-			toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), params);
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), params, qualifiers);
 		}
 	    
 	    //The "Modify" menu

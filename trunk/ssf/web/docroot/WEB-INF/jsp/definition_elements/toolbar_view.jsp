@@ -10,14 +10,21 @@
 	    <ul class="ss_dropdownmenu">
 	      <c:forEach var="toolbarMenuCategoryItem" items="${toolbarMenuCategory.value}">
 	        <li class="ss_dropdownmenu">	        
-	          <jsp:useBean id="toolbarMenuCategoryItem" type="java.util.Map.Entry"/>
 	          <c:choose>
-	            <c:when test="<%= toolbarMenuCategoryItem.getValue() instanceof javax.portlet.PortletURL %>">
-	        	  <a href="<c:out value="${toolbarMenuCategoryItem.value}"/>"
+	            <c:when test="${!empty toolbarMenuCategoryItem.value.url}">
+	        	  <a 
+	        	  <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.popup}">
+	        	    target="_blank"
+	        	  </c:if>
+	        	  href="<c:out value="${toolbarMenuCategoryItem.value.url}"/>"
 	            </c:when>
-	            <c:otherwise>
-	            <a href="<ssf:url>
-	              <c:forEach var="p" items="${toolbarMenuCategoryItem.value}">
+	            <c:when test="${!empty toolbarMenuCategoryItem.value.urlParams}">
+	            <a 
+	        	  <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.popup}">
+	        	    target="_blank"
+	        	  </c:if>
+	              href="<ssf:url>
+	              <c:forEach var="p" items="${toolbarMenuCategoryItem.value.urlParams}">
 				    <c:set var="key" value="${p.key}"/>
 				    <c:set var="value" value="${p.value}"/>
 			        <jsp:useBean id="key" type="java.lang.String" />
@@ -25,6 +32,8 @@
 	                <ssf:param name="<%= key %>" value="<%= value %>" />
 	              </c:forEach>
 	 	        </ssf:url>"
+	 	        </c:when>
+	            <c:otherwise>
 	            </c:otherwise>
 	   		  </c:choose>
 	          onClick="return(ss_openUrlInPortlet(this.href));">
@@ -53,10 +62,19 @@
     <c:if test="${!empty toolbarMenu.value.url || !empty toolbarMenu.value.urlParams}">
 	  <c:choose>
 	    <c:when test="${!empty toolbarMenu.value.url}">
-	      <a class="ss_toolbar_item" href="${toolbarMenu.value.url}">
+	      <a 
+	        class="ss_toolbar_item" 
+    	    <c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
+    	      target="_blank"
+    	    </c:if>
+	        href="${toolbarMenu.value.url}">
 	    </c:when>
 	    <c:when test="${!empty toolbarMenu.value.urlParams}">
-	      <a href="<ssf:url>
+	      <a 
+    	    <c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
+    	      target="_blank"
+    	    </c:if>
+	        href="<ssf:url>
 	        <c:forEach var="p2" items="${toolbarMenu.value.urlParams}">
 			  <c:set var="key2" value="${p2.key}"/>
 		      <c:set var="value2" value="${p2.value}"/>
