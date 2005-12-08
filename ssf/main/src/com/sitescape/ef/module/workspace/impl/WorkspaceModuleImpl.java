@@ -16,6 +16,7 @@ import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.module.binder.BinderComparator;
+import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -25,25 +26,9 @@ import org.dom4j.Element;
  * @author Jong Kim
  *
  */
-public class WorkspaceModuleImpl implements WorkspaceModule {
-	protected CoreDao coreDao;
-    protected AccessControlManager accessControlManager;
-     
-    public void setCoreDao(CoreDao coreDao) {
-        this.coreDao = coreDao;
-    }
-    protected CoreDao getCoreDao() {
-        return this.coreDao;
-  
-    }
-    protected AccessControlManager getAccessControlManager() {
-        return accessControlManager;
-    }
-    public void setAccessControlManager(
-            AccessControlManager accessControlManager) {
-        this.accessControlManager = accessControlManager;
-    }
-    public Workspace getWorkspace() 
+public class WorkspaceModuleImpl extends AbstractModuleImpl implements WorkspaceModule {
+
+	public Workspace getWorkspace() 
    		throws NoWorkspaceByTheIdException, AccessControlException {
     	return getWorkspace(null);
     }

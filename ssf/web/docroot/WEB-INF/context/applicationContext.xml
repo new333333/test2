@@ -275,47 +275,48 @@
 	
 	<!-- =========================== Business Components =========================== -->
 	
-	<bean id="employeeModule" class="com.sitescape.ef.module.sample.impl.EmployeeModuleImpl">
+	<!-- Template for the common dependency injection for modules.
+	     This includes DAO components and a variety of other services and managers 
+	     that are commonly used by modules. 
+	     Important: Do NOT ever add module components to this template, since it 
+	     can cause circular dependencies! Instead, dependent modules must be
+	     specified under respective module bean declarations.  -->
+	<bean id="moduleDependencyTemplate" abstract="true">
 		<property name="coreDao"><ref local="coreDao"/></property>
+		<property name="folderDao"><ref local="folderDao"/></property>
+		<property name="functionManager"><ref bean="functionManager"/></property>	
+		<property name="accessControlManager"><ref local="accessControlManager"/></property>
+		<property name="aclManager"><ref local="aclManager"/></property>
+		<property name="scheduler"><ref local="scheduler"/></property>
+		<property name="processorManager"><ref local="modelProcessorManager"/></property>
 	</bean>
+	
+	<bean id="employeeModule" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.sample.impl.EmployeeModuleImpl">
+	</bean>
+	
 	<bean id="workspaceModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean class="com.sitescape.ef.module.workspace.impl.WorkspaceModuleImpl">
-				<property name="coreDao"><ref local="coreDao"/></property>
-				<property name="accessControlManager"><ref local="accessControlManager"/></property>
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.workspace.impl.WorkspaceModuleImpl">
 			</bean>
 		</property>
 	</bean>
 
 	<bean id="profileModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean class="com.sitescape.ef.module.profile.impl.ProfileModuleImpl">
-				<property name="coreDao"><ref local="coreDao"/></property>
-				<property name="folderDao"><ref local="folderDao"/></property>
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.profile.impl.ProfileModuleImpl">
 			</bean>
 		</property>
 	</bean>
 	
 	<bean id="adminModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean class="com.sitescape.ef.module.admin.impl.AdminModuleImpl">
-				<property name="coreDao"><ref local="coreDao"/></property>
-				<property name="scheduler"><ref local="scheduler"/></property>
-				<property name="processorManager"><ref local="modelProcessorManager"/></property>
-				<property name="functionManager"><ref local="functionManager"/></property>
-				<property name="accessControlManager"><ref local="accessControlManager"/></property>
-				<property name="aclManager"><ref local="aclManager"/></property>
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.admin.impl.AdminModuleImpl">
 			</bean>
 		</property>
 	</bean>
 	<bean id="folderModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean class="com.sitescape.ef.module.folder.impl.FolderModuleImpl">
-				<property name="coreDao"><ref local="coreDao"/></property>
-				<property name="folderDao"><ref local="folderDao"/></property>
-				<property name="accessControlManager"><ref local="accessControlManager"/></property>
-				<property name="aclManager"><ref local="aclManager"/></property>
-				<property name="processorManager"><ref local="modelProcessorManager"/></property>
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.FolderModuleImpl">
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 			</bean>
 		</property>
@@ -330,16 +331,14 @@
 
 	<bean id="binderModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean class="com.sitescape.ef.module.binder.impl.BinderModuleImpl">
-				<property name="coreDao"><ref local="coreDao"/></property>
-				<property name="accessControlManager"><ref local="accessControlManager"/></property>
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.binder.impl.BinderModuleImpl">
 			</bean>
 		</property>
 	</bean>
 
 	<bean id="definitionModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean class="com.sitescape.ef.module.definition.impl.DefinitionModuleImpl">
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.definition.impl.DefinitionModuleImpl">
 				<property name="definitionBuilderConfig">
 					<bean class="com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles">
 						<property name="configFiles">
@@ -350,9 +349,7 @@
 						<!-- TODO: We must use validation! -->
 						<property name="validating"><value>true</value></property>
 					</bean>
-				</property>
-				<property name="coreDao"><ref local="coreDao"/></property>
-				<property name="accessControlManager"><ref local="accessControlManager"/></property>				
+				</property>		
 			</bean>
 		</property>
 	</bean>
@@ -381,13 +378,13 @@
 		</property>
 	</bean>	
 		
-	<bean id="mailTarget" class="com.sitescape.ef.module.mail.impl.MailModuleImpl">
-		<property name="coreDao"><ref local="coreDao"/></property>
-		<property name="folderDao"><ref local="folderDao"/></property>
-		<property name="processorManager"><ref local="modelProcessorManager"/></property>
+	<bean id="mailTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.mail.impl.MailModuleImpl">
+		<!-- Since "mailSender" is used exclusively by this bean (i.e., it is
+		     not a general purpose service), it is added here rather than 
+		     to the "moduleDependencyTemplate" itself -->
 		<property name="mailSender"><ref local="mailSender"/></property>
-		<property name="scheduler"><ref local="scheduler"/></property>
 	</bean>	
+	
 	<bean id="defaultFolderEmailFormatter" class="com.sitescape.ef.module.mail.impl.DefaultFolderEmailFormatter"  init-method="init">
 		<property name="accessControlManager"><ref local="accessControlManager"/></property>
 		<property name="aclManager"><ref local="aclManager"/></property>
@@ -417,10 +414,7 @@
 		</property>
 	</bean>	
 		
-	<bean id="ldapTarget" class="com.sitescape.ef.module.ldap.impl.LdapModuleImpl" init-method="init">
-		<property name="coreDao"><ref local="coreDao"/></property>
-		<property name="processorManager"><ref local="modelProcessorManager"/></property>
-		<property name="scheduler"><ref local="scheduler"/></property>
+	<bean id="ldapTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.ldap.impl.LdapModuleImpl" init-method="init">
 		<property name="profileModule"><ref local="profileModule"/></property>
 		<property name="configDocs">
 			<bean class="com.sitescape.ef.util.XmlClassPathConfigFiles">

@@ -9,23 +9,14 @@ import java.util.TreeSet;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.module.sample.Employee;
 import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.util.NLT;
 
-public class EmployeeModuleImpl implements EmployeeModule {
+public class EmployeeModuleImpl extends AbstractModuleImpl implements EmployeeModule {
 	
 	private SortedMap employees = Collections.synchronizedSortedMap(new TreeMap());
-
-	private CoreDao coreDao;
-	
-	protected CoreDao getCoreDao() {
-		return coreDao;
-	}
-
-	public void setCoreDao(CoreDao coreDao) {
-		this.coreDao = coreDao;
-	}
 
 	public EmployeeModuleImpl() {
 		addEmployee("Dave", "Griffin", new Integer(10000));
