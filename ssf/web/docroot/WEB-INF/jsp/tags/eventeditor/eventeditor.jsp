@@ -257,24 +257,39 @@ function ${prefix}_generatePopupContents() {
   pc += ' </td>\n';
   pc += ' </tr>\n';
   pc += ' <tr>\n';
+  var repeatUnitVal = getHiddenField('${formName}', '${evid}', 'repeatUnit');
   pc += '  <td colspan="2" class="content"><input type="radio"  \n';
   pc += '   name="repeatUnit" value="none" id="norepeat"\n';
-  pc += '   checked="checked"><label for="norepeat"><ssf:nlt tag="event.no_repeat" /></label></td>\n';
+  if (repeatUnitVal == 'none') {
+    pc += '   checked="checked"';
+  }
+  pc += '><label for="norepeat"><ssf:nlt tag="event.no_repeat" /></label></td>\n';
   pc += ' </tr>\n';
   pc += ' <tr>\n';
   pc += '  <td nowrap="nowrap" class="content">\n';
 
   pc += '   <input type="radio" name="repeatUnit" id="repeatday"\n';
+  if (repeatUnitVal == 'day') {
+    pc += '   checked="checked"';
+  }
   pc += '   value="day"  > \n';
+  var everyNtext = getHiddenField('${formName}', '${evid}', 'everyN');
   pc += '   <ssf:nlt tag="event.every" /> <input type="text" name="everyNday" size="2" \n';
-  pc += '   class="content" value="1"> <ssf:nlt tag="event.days" /></td>\n';
+  pc += '   class="content" value="';
+  pc += everyNtext;
+  pc += '"> <ssf:nlt tag="event.days" /></td>\n';
   pc += ' </tr>\n';
   pc += ' <tr>\n';
   pc += '  <td class="content" valign="top" nowrap="nowrap">\n';
   pc += '   <input type="radio" name="repeatUnit" id="repeatweek"\n';
+  if (repeatUnitVal == 'week') {
+    pc += '   checked="checked"';
+  }
   pc += '   value="week" >\n';
   pc += '   <ssf:nlt tag="event.every" /> <input type="text" name="everyNweek" size="2" \n';
-  pc += '   class="content" value="1" > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> \n';
+  pc += '   class="content" value="';
+  pc += everyNtext;
+  pc += '" > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> \n';
 
   pc += '<input type="checkbox" name="day0" id="day0" value="">\n';
   pc += '<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.su" /></font>\n';
@@ -296,9 +311,14 @@ function ${prefix}_generatePopupContents() {
 
   pc += '  <td class="content" valign="top" nowrap="nowrap"><input \n';
   pc += '   type="radio" name="repeatUnit" id="repeatmonth"\n';
+  if (repeatUnitVal == 'month') {
+    pc += '   checked="checked"';
+  }
   pc += '   value="month" " >\n';
   pc += '   <ssf:nlt tag="event.every" /> <input type="text" class="content" size="2"\n';
-  pc += '   name="everyNmonth" value="1" > month(s) on the\n';
+  pc += '   name="everyNmonth" value="';
+  pc += everyNtext;
+  pc += '" > month(s) on the\n';
   pc += '<select class="content" name="onDayCardSel" title="select which week in the month on which this calendar entry will occur" name="onDayCardSel" > \n';
   pc += '<option class="content" value="none"><ssf:nlt tag="general.please_select" /></option> \n';
   pc += '<option class="content" value="first" ><ssf:nlt tag="event.whichweek.first" /></option> \n';
@@ -481,6 +501,12 @@ function ${prefix}_popupRecurrenceWindow() {;
 function setHiddenField(formName, id, fn, val) {
    eval('self.document.' + formName + '.' + formName + '_' + id + '_' + fn + '.value = val');
 }
+
+function getHiddenField(formName, id, fn) {
+  var val = eval('self.document.' + formName + '.' + formName + '_' + id + '_' + fn + '.value');
+  return val;
+}
+
 </script>
 
 
