@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,6 +15,10 @@ import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.MultipleWorkflowSupport;
+import com.sitescape.ef.domain.SingletonWorkflowSupport;
+import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.domain.WorkflowStateObject;
 import com.sitescape.ef.search.BasicIndexUtils;
 
 /**
@@ -43,6 +48,7 @@ public class EntryIndexUtils {
     public static final String EVENT_FIELD_START_DATE = "StartDate";
     public static final String EVENT_FIELD_END_DATE = "EndDate";
     public static final String EVENT_COUNT_FIELD = "_eventCount";
+    public static final String WORKFLOW_STATE_FIELD = "_workflowState";
     
     // Defines field values
     public static final String READ_ACL_ALL = "all";
@@ -102,6 +108,28 @@ public class EntryIndexUtils {
         	doc.add(modificationDateField);        
         	Field modificationDayField = Field.Keyword(MODIFICATION_DAY_FIELD, formatDayString(modDate));
             doc.add(modificationDayField);
+    	}
+    }
+
+    public static void addWorkflow(Document doc, Entry entry) {
+    	// Add the workflow fields
+    	if (entry instanceof MultipleWorkflowSupport) {
+			MultipleWorkflowSupport mEntry = (MultipleWorkflowSupport) entry;
+    		List workflowStates = mEntry.getWorkflowStates();
+    		if (workflowStates != null) {
+    			for (int i = 0; i < workflowStates.size(); i++) {
+    				Field workflowStateField = Field.Keyword(WORKFLOW_STATE_FIELD, 
+    						((WorkflowStateObject)workflowStates.get(i)).getState());
+    				doc.add(workflowStateField);
+    			}
+    		}
+    	} else if (entry instanceof SingletonWorkflowSupport) {
+			SingletonWorkflowSupport sEntry = (SingletonWorkflowSupport) entry;
+			WorkflowState ws = sEntry.getWorkflowState();
+			if (ws != null) {
+				Field workflowStateField = Field.Keyword(WORKFLOW_STATE_FIELD, (ws.getState()));
+				doc.add(workflowStateField);
+			}
     	}
     }
 
