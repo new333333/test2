@@ -5,7 +5,7 @@
     <portlet>
         <description xml:lang="en">SiteScape Sample Employees Portlet</description>
         <portlet-name>ss_employees</portlet-name>
-        <display-name xml:lang="en">Employees</display-name>
+        <display-name xml:lang="en">SiteScape Employees</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 			<init-param>
 				<name>contextConfigLocation</name>
@@ -20,9 +20,9 @@
         <!--<supported-locale>en</supported-locale>-->
         <!--<resource-bundle>...</resource-bundle>-->
         <portlet-info>
-        	<title>Employees</title>
-        	<short-title>Employees</short-title>
-        	<keywords>Employees</keywords>
+        	<title>SiteScape Employees</title>
+        	<short-title>SiteScape Employees</short-title>
+        	<keywords>SiteScape Employees</keywords>
         </portlet-info>
     </portlet>
 
