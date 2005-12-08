@@ -8,7 +8,7 @@
 <c:otherwise>
 <c:set var="ev" value="${ssFolderEntry.customAttributes[property_name].value}" />
 <jsp:useBean id="ev" type="com.sitescape.ef.domain.Event"  />
-<span class="ss_content"><ssf:eventtext event="<%= ev %>" /></span>
+<ssf:eventtext event="<%= ev %>" />
 </c:otherwise>
 </c:choose>
 </div>
