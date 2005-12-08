@@ -228,9 +228,20 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
-//		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
 		url.setParameter(WebKeys.FORUM_URL_VALUE, WebKeys.CALENDAR_VIEW_DAY);
 		model.put("set_day_view", url.toString());
+
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
+		url.setParameter(WebKeys.FORUM_URL_VALUE, WebKeys.CALENDAR_VIEW_WEEK);
+		model.put("set_week_view", url.toString());
+		
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
+		url.setParameter(WebKeys.FORUM_URL_VALUE, WebKeys.CALENDAR_VIEW_MONTH);
+		model.put("set_month_view", url.toString());
 		
 		// calculate the start and end of the range as defined by current date and current view
 		GregorianCalendar startViewCal = new GregorianCalendar();
@@ -300,6 +311,10 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		}
 		model.put(WebKeys.CALENDAR_EVENTDATES, results);
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK)) {
+			getWeekBean(startViewCal, endViewCal, results, model);
+		}
+		if (viewMode.equals(WebKeys.CALENDAR_VIEW_DAY)) {
+			
 			getWeekBean(startViewCal, endViewCal, results, model);
 		}
 	}
