@@ -47,11 +47,7 @@ array set ::j2ee_Forum_class_MAP {
    owner_principal     {owner_principal int32}   
    owningWorkspace {owningWorkspace int32}
    topFolder  {topFolder int32}
-   notify_enabled {notify_enabled boolean}
    notify_teamOn   {notify_teamOn boolean}
-   notify_lastNotification {notify_lastNotification timestamp}
-   notify_event    {notify_event int32}
-   notify_schedule {notify_schedule "varchar 256"}
    notify_email    {notify_email blob}
    defaultReplyDef {defaultReplyDef uuid}
    featureMask			{featureMask int32}
@@ -793,11 +789,11 @@ proc doZone {zoneName {cName {liferay.com}}} {
     if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {
 		wimsql_rw "update SS_Forums set notify_teamOn=B'0' where notify_teamOn is null;"
 		wimsql_rw "update SS_Principals set reserved=B'1' where name='wf_admin' or name='avf_admin';"
-		wimsql_rw "update SS_Forums set notify_enabled=B'0' where notify_enabled is null;"
+#		wimsql_rw "update SS_Forums set notify_enabled=B'0' where notify_enabled is null;"
  	} else {
 		wimsql_rw "update SS_Forums set notify_teamOn=0 where notify_teamOn is null;"
 		wimsql_rw "update SS_Principals set reserved=1 where name='wf_admin' or name='avf_admin';"
-		wimsql_rw "update SS_Forums set notify_enabled=0 where notify_enabled is null;"
+#		wimsql_rw "update SS_Forums set notify_enabled=0 where notify_enabled is null;"
  	}
     wimsql_rw commit
 }
@@ -1347,11 +1343,11 @@ proc doNotifications {zoneName forumName ats} {
 	upvar $ats attrs
 	set notifyEnabled [wim property get -aca $zoneName -name $forumName notifyEnabled]
 	if {$notifyEnabled == "title"} {
-		set attrs(notify_enabled) 1
+#		set attrs(notify_enabled) 1
 	} elseif {$notifyEnabled == "summary"} {
-		set attrs(notify_enabled) 1
+#		set attrs(notify_enabled) 1
 	} else {
-		set attrs(notify_enabled) 0
+#		set attrs(notify_enabled) 0
 	}
 
 	set	dayString ""
@@ -1380,7 +1376,7 @@ proc doNotifications {zoneName forumName ats} {
 	}
 	if {![isnull $timeString]} {
 		#seconds minutes hours dayOfMonth months days year"
-		set attrs(notify_schedule) "0 $minute [join $timeString ","] ? * $dayString" 
+#		set attrs(notify_schedule) "0 $minute [join $timeString ","] ? * $dayString" 
 	}
 #    set attrs(notify_summaryLines) [wim property get -aca $zoneName -name $forumName notifyWordCount]
     set notifySendToTeam [wim property get -aca $zoneName -name $forumName notifySendToTeam]
@@ -1390,7 +1386,7 @@ proc doNotifications {zoneName forumName ats} {
 		set attrs(notify_teamOn) 0
 	} 
 
-    set attrs(notify_lastNotification) [wim property get -aca $zoneName -name $forumName notifyDateOfLastMailing]
+#    set attrs(notify_lastNotification) [wim property get -aca $zoneName -name $forumName notifyDateOfLastMailing]
 	
 	set forumId $::forumIds($forumName)
 	foreach group [wim property get -aca $zoneName -name $forumName notifyDefaultGroups] {
