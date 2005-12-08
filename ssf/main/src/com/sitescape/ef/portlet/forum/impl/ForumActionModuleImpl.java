@@ -186,12 +186,12 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 			Map customAttrs = e.getCustomAttributes();
 			Set keyset = customAttrs.keySet();
 			Iterator attIt = keyset.iterator();
-			while (attIt.hasNext()) {
-				CustomAttribute att = (CustomAttribute) attIt.next();
-				if (att.getValueType() == CustomAttribute.EVENT) {
+//			while (attIt.hasNext()) {
+//				CustomAttribute att = (CustomAttribute) attIt.next();
+//				if (att.getValueType() == CustomAttribute.EVENT) {
 				}
-			}
-		}
+//			}
+//		}
 	}
 	
 	/**
