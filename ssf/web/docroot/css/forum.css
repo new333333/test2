@@ -2,54 +2,64 @@
 /* general styles, used most everywhere */
 
 /* lists */
+
 ul.ss_content li {
-  font-size: 11px; 
+  font-size: smaller; 
   color: #000000;  
   }
 
 ul.ss_nobullet {
-  margin-left: 0px;
-  padding-left: 0px;
-  margin-top: 2px;
-  margin-bottom: 2px;
+  margin-left: 0em;
+  padding-left: 0em;
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
 ul.ss_nobullet li {
   list-style-type: none;
-  margin-left: 0px;
-  margin-bottom: 1px;
-  padding-left: 0px;
-  font-size: 10px;
+  margin-left: 0em;
+  margin-bottom: .8em;
+  padding-left: 0em;
+  font-size: smaller;
   }
 
 ul.ss_nobullet li ul.ss_nobullet {
-  margin-left: 20px;
-  padding-left: 0px;
-  margin-top: 4px;
-  margin-bottom: 2px;
+  margin-left: 1em;
+  padding-left: 0em;
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
 .ss_content {
   font-family: arial, helvetica, sans-serif;
-  font-size: 12px; 
-  color: #000000;  
+  font-size: smaller; 
+  color: #000000; 
+  
   }
 
 .ss_contentbold {
   font-family: arial, helvetica, sans-serif;
-  font-size: 13px;
+  font-size: smaller;
   font-weight: bold;
   color: #000000;  
   }
 
 .ss_fineprint {
-  font-size: 11px; 
+  font-family: arial, helvetica, sans-serif;
+  font-size: x-small; 
   color: #000000;  
+  }
+
+.ss_fineprintbold {
+  font-family: arial, helvetica, sans-serif;
+  font-size: x-small; 
+  color: #000000;
+  font-weight: bold;
   }
 
 p.ss_content {
   font-family: arial, helvetica, sans-serif;
-  font-size: 12px;
+  font-size: smaller;
   font-weight: medium;
   color: #000000;
   margin-top: 3px;
@@ -59,7 +69,7 @@ p.ss_content {
   }
 
 a.ss_linkButton:link, a.ss_linkButton:visited {
-  font-size: 12px;
+  font-size: smaller;
   color: #6699cc;
   font-weight: bold;
   border-top: 1px solid #666666;
@@ -78,7 +88,7 @@ a.ss_linkButton:link, a.ss_linkButton:visited {
 }
 
 a.ss_linkButton:focus, a.ss_linkButton:hover, a.ss_linkButton:active {
-  font-size: 12px;
+  font-size: smaller;
   color: #ff0000;
   font-weight: bold;
   border-top: 1px solid #d5d5d5;
@@ -98,7 +108,7 @@ a.ss_linkButton:focus, a.ss_linkButton:hover, a.ss_linkButton:active {
 
 
 a.ss_smallLinkButton:link, a.ss_smallLinkButton:visited {
-  font-size: 10px;
+  font-size: smaller;
   color: #6699cc;
   font-weight: bold;
   border-top: 1px solid #666666;
@@ -117,7 +127,7 @@ a.ss_smallLinkButton:link, a.ss_smallLinkButton:visited {
 }
 
 a.ss_smallLinkButton:focus, a.ss_smallLinkButton:hover, a.ss_smallLinkButton:active {
-  font-size: 10px;
+  font-size: smaller;
   color: #ff0000;
   font-weight: bold;
   border-top: 1px solid #d5d5d5;
@@ -151,15 +161,15 @@ a.ss_smallLinkButton:focus, a.ss_smallLinkButton:hover, a.ss_smallLinkButton:act
 /* form styles */
 
 div.ss_form {
-  margin: 10px 15px 10px 15px;
+  margin: .5em 0em .5em 0em;
   }
 
 h1.ss_formTitle {
   font-weight: bold;
-  font-size: 14px;
-  color: #6699cc;
-  margin-bottom: 1px;
-  margin-top: 2px;
+  font-size: smaller;
+  color: #000000;
+  margin-bottom: 0;
+  margin-top: 0;
   }
 
 /* box for small widgets (to avoid using tables to format. */
@@ -195,7 +205,7 @@ fieldset.ss_fieldset {
   }
 
 legend.ss_legend {
-  font-size: 14px;
+  font-size: smaller;
   font-weight: bold;
   color: #666666;;
   }
@@ -203,20 +213,20 @@ legend.ss_legend {
 /* styles for labels, including error indicators */
 .ss_labelAbove {
   margin: 5px 5px 0px 0px;
-  font-size: 13px;
+  font-size: smaller;
   font-weight: bold;
   color: #000000;
   }
 
 .ss_labelLeft {
-  font-size: 12px;
+  font-size: smaller;
   font-weight: bold;
   color: #000000;
   display: inline;
   }
 
 .ss_labelRight {
-  font-size: 12px;
+  font-size: smaller;
   font-weight: bold;
   color: #000000;
   display: inline;
@@ -228,7 +238,7 @@ legend.ss_legend {
   border-style: solid; 
   border-width: 1px; 
   padding: 2px;
-  font-size: 12px;
+  font-size: smaller;
   font-weight: bold;
   color: #a01e00;
   background-color: #f7f7f7;
@@ -239,7 +249,7 @@ legend.ss_legend {
   border-style: solid; 
   border-width: 1px; 
   padding: 2px;
-  font-size: 12px;
+  font-size: smaller;
   font-weight: bold;
   color: #a01e00;
   display: inline;
@@ -252,7 +262,7 @@ legend.ss_legend {
   border-width: 1px;
   text-align: right; 
   padding: 2px;
-  font-size: 12px;
+  font-size: smaller;
   font-weight: bold;
   color: #a01e00;
   display: inline;
@@ -262,7 +272,7 @@ legend.ss_legend {
 /* red required-field indicator, usually an asterisk */
 .ss_required {
   background-color: transparent;
-  font-size: 18px;
+  font-size: larger;
   font-weight: bold;
   color: #a01e00;
   display:inline; 
@@ -272,9 +282,7 @@ legend.ss_legend {
 div.ss_requiredLegend {
   font-family: arial, helvetica, sans-serif;
   text-align: left;
-  font-size: 12px; 
-  font-weight: medium;
-  margin-top: 8x;
+  margin-top: 8px;
   margin-bottom: 8px;
   color: #cccccc;
   }
@@ -284,7 +292,7 @@ input.ss_submit {
   border-style: solid; 
   border-width: 1px; 
   font-family: arial, helvetica, sans-serif;  
-  font-size: 11px;
+  font-size: smaller;
   }
 
 input.ss_submit:hover { 
@@ -293,7 +301,7 @@ input.ss_submit:hover {
   border-right: solid 1px #6699cc; 
   border-top: solid 1px #ffffff; 
   font-family: arial, helvetica, sans-serif; 
-  font-size: 11px;
+  font-size: smaller;
   }
 
 .ss_formInstructions { 
@@ -301,35 +309,49 @@ input.ss_submit:hover {
   border-style: solid; 
   border-width: 1px; 
   font-family: arial, helvetica, sans-serif;
-  font-size: 12px;
+  font-size: smaller;
   padding: 2px;
   }
 
 /* ------------------------------------------------------------------------ */
-/* entry styles */
+/* folder styles */
 div.ss_folder {
-  margin: 10px 15px 10px 15px;
+  margin: 0em .8em 0em .8em;
   }
 
+h1.ss_folderTitle {
+  font-weight: bold;
+  font-size: smaller;
+  font-family: arial, helvetica, sans-serif;
+  color: #000000;
+  margin-bottom: .5em;
+  margin-top: .5em;
+  }
+
+/* ------------------------------------------------------------------------ */
+/* entry styles */
 div.ss_entry {
-  margin: 10px 15px 10px 15px;
+  margin: 0em .5em .5em .8em;
   }
 
 h1.ss_entryTitle {
   font-weight: bold;
-  font-size: 14px;
-  color: #6699cc;
-  margin-bottom: 1px;
-  margin-top: 2px;
+  font-size: smaller;
+  font-family: arial, helvetica, sans-serif;
+  color: #000000;
+  margin-bottom: .10em;
+  margin-top: .5em;
   }
 
 div.ss_entryContent { 
-  border-color: #cccccc; 
-  border-style: solid; 
-  border-width: 1px; 
   font-family: arial, helvetica, sans-serif;
-  font-size: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 2px;
+  padding: 2px;
+  }
+
+div.ss_dateContent { 
+  font-family: arial, helvetica, sans-serif;
+  margin-bottom: 2px;
   padding: 2px;
   }
 
@@ -343,16 +365,16 @@ div.ss_widgetContent {
   
 .ss_definitionBuilder
 {
-    PADDING-RIGHT: 2px;
-    PADDING-LEFT: 2px;
-    FONT-SIZE: 10pt;
+    padding-right: 2px;
+    padding-left: 2px;
+    font-size: smaller;
     visibility: hidden;
     display: none;
-    PADDING-BOTTOM: 2px;
-    MARGIN: 2px;
-    PADDING-TOP: 2px;
-    FONT-FAMILY: Arial;
-    POSITION: relative
+    padding-bottom: 2px;
+    margin: 2px;
+    padding-top: 2px;
+    font-family: Arial;
+    position: relative
 }
 
 .ss_helpPopUp
@@ -363,7 +385,7 @@ div.ss_widgetContent {
 	display: none;
 	background-color: #FFFFFF; 
 	color: #000000;
-	font-size: 11px;
+	font-size: smaller;
 	text-decoration: none;
 	font-family: arial, helvetica, sans-serif;
 	border: 1px #3366cc solid;
@@ -378,31 +400,74 @@ div.ss_widgetContent {
 
 div.ss_portlet {
   width: 100%;
-  margin: 2px;
   text-align: left;
   }
 
-/* div.ss_toolbar is dynamically defined in top_forum.jsp to specify the background color */
+/* div.ss_toolbar is dynamically defined in include.jsp to specify the background color */
 
 /* div.ss_toolbar_item is the div that contains each item on the Forum toolbar */
 div.ss_toolbar_item {
   display: inline;
   text-align: left;
-  MARGIN: 2px;
-  PADDING-RIGHT: 2px;
-  PADDING-LEFT: 2px;
-  PADDING-BOTTOM: 2px;
-  PADDING-TOP: 2px;
+  margin: 2px;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
   }
 
+span.ss_toolbar_item {
+  display: inline;
+  font-weight: bold;
+  font-size:smaller;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  margin: 2px;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  }
+
+a.ss_toolbar_item {
+  display: inline;
+  font-weight: bold;
+  font-size:smaller;
+  text-decoration: none;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  margin: 2px;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  }
+
+a.ss_toolbar_item:hover {
+  display: inline;
+  font-weight: bold;
+  font-size:smaller;
+  text-decoration:underline;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  margin: 2px;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  }
+  
 div.ss_toolbar_menu {
 	position: absolute;
 	z-index: 100;
 	visibility: hidden;
 	background-color: #FFFFFF; 
 	color: #000000;
-	border: 1px #3366cc solid;
-	padding: 10px;
+	border: 1px #cfcfcf solid;
+	padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
 	width: 300px;
 }
 
