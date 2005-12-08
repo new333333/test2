@@ -7,6 +7,7 @@
 	<bean id="definitionBuilderController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.definitionBuilder.ViewController" />
 	<bean id="adminViewController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ViewController" />
 	<bean id="adminConfigureLdapController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigureLdapController" />
+	<bean id="adminConfigureRolesController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigureRolesController" />
 	<!-- Handlers -->
 
 	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
@@ -16,6 +17,7 @@
 					<map>
 						<entry key="definition_builder"><ref bean="definitionBuilderController"/></entry>
 						<entry key="configure_ldap"><ref bean="adminConfigureLdapController"/></entry>
+						<entry key="configure_roles"><ref bean="adminConfigureRolesController"/></entry>
 					</map>
 				</entry>
 				<entry key="edit">
