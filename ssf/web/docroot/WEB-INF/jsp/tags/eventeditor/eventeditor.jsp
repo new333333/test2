@@ -3,12 +3,11 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <jsp:useBean id="evid" type="String" scope="request" />
 <jsp:useBean id="formName" type="String" scope="request" />
-<jsp:useBean id="recurIcon" type="String" scope="request" />
 <jsp:useBean id="startDate" type="java.util.Date" scope="request" />
 <jsp:useBean id="endDate" type="java.util.Date" scope="request" />
 <jsp:useBean id="hasDuration" type="Boolean" scope="request" />
 <jsp:useBean id="hasRecurrence" type="Boolean" scope="request" />
-
+<jsp:useBean id="attMap" type="java.util.HashMap" scope="request" />
 
 <% 
    String dateId;
@@ -24,13 +23,12 @@
 <script language="Javascript" src="<html:rootPath />js/common/AnchorPosition.js"></script>
 <c:set var="prefix" value="${formName}_${evid}" />
 
-
 <table border="1">
  <tr><td>
 
  <table border="0" cellpadding="4" cellspacing="0">
  <c:choose>
- <c:when test="${hasDuration}">
+ <c:when test="${attMap.hasDur}">
  <tr>
    <td class="contentbold">Start:</td>
    <td>
@@ -101,7 +99,7 @@
    <a href="javascript: ;" onClick="<c:out value="${prefix}" />_popupRecurrenceWindow();" >
    <table style="border: 1px solid;">
    <tr><td>
-   <img border="0" align="middle" src="<c:out value="${recurIcon}" />">
+   <img border="0" align="middle" src="<html:imagesPath />pics/sym_s_repeat.gif">
    </td>
    <td> Recurrence </td>
    </tr>
@@ -131,7 +129,7 @@
 <script language="Javascript">
 
 function <c:out value="${prefix}" />_onsub() {
-  <c:if test="${hasDuration}">
+  <c:if test="${attMap[hasDur]}">
   var ms;
   ms1 = getTimeMilliseconds('<%= formName %>', '<%= dateId %>');
   ms2 = getTimeMilliseconds('<%= formName %>', '<%= dateId2 %>');
