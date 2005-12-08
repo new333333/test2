@@ -36,6 +36,7 @@ public class WebKeys {
 	public static final String FORUM_ACTION_ADD_REPLY = "add_reply";
 	public static final String FORUM_ACTION_CONFIGURE_FORUM = "configure_forum";
 	public static final String FORUM_ACTION_DEFINITION_BUILDER = "definition_builder";
+	public static final String FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
 	public static final String FORUM_ACTION_DELETE_ENTRY = "delete_entry";
 	public static final String FORUM_ACTION_MODIFY_ENTRY = "modify_entry";
 	public static final String FORUM_ACTION_VIEW_FORUM = "view_forum";

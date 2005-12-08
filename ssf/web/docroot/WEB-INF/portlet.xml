@@ -88,13 +88,8 @@
             <mime-type>text/html</mime-type>
             <portlet-mode>view</portlet-mode>
         </supports>
-        <!--<supported-locale>en</supported-locale>-->
-        <!--<resource-bundle>...</resource-bundle>-->
-        <portlet-info>
-        	<title>Sitescape Administration</title>
-        	<short-title>Sitescape Administration</short-title>
-        	<keywords>Administration</keywords>
-        </portlet-info>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>content.administration</resource-bundle>
     </portlet>
  
     <user-attribute>

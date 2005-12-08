@@ -49,6 +49,16 @@
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.util.Map</type>
 		</attribute>		
+		<attribute>
+			<name>option</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>itemId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
 	</tag>
 
 	<tag>
