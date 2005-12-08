@@ -15,29 +15,26 @@ import com.sitescape.ef.util.CollectionUtil;
  * @author Jong Kim
  */
 public class NotificationDef  {
-    public static final int CONTEXT_LEVEL_SEND_TITLES_ONLY = 1; // default
-    public static final int CONTEXT_LEVEL_DISABLE_EMAIL_NOTIFICATION = 2;
-    public static final int CONTEXT_LEVEL_SEND_TITLES_AND_SUMMARIES = 3;
-    
-    private int contextLevel = CONTEXT_LEVEL_SEND_TITLES_ONLY;
+   
+    private boolean enabled=false;
     private String schedule;
     private List distribution;
     private SSClobString email;
-    private int summaryLines=5;
     private boolean teamOn=false;
     private Date lastNotification;
     public NotificationDef() {
     }
  
+    /**
+     * @hibernate.property  column="enabled"
+     * @return
+     */
     public boolean isEnabled() {
-    	return contextLevel!=CONTEXT_LEVEL_DISABLE_EMAIL_NOTIFICATION;
+    	return enabled;
     	
     }
     public void setEnabled(boolean enabled) {
-    	if (enabled == true) 
-    		contextLevel=CONTEXT_LEVEL_SEND_TITLES_ONLY;
-    	else 
-            contextLevel=CONTEXT_LEVEL_DISABLE_EMAIL_NOTIFICATION;
+    	this.enabled = enabled;
     }
     /**
      * @hibernate.property column="teamOn"
@@ -60,26 +57,7 @@ public class NotificationDef  {
     public void setLastNotification(Date lastNotification) {
         this.lastNotification = lastNotification;
     }
-    /**
-     * @hibernate.property column="summaryLines"
-     * @return
-     */
-    public int getSummaryLines() {
-        return this.summaryLines;
-    }
-    public void setSummaryLines(int lines) {
-        this.summaryLines = lines;
-    }
-    /**
-     * @hibernate.property column="contextLevel"
-     * @return
-     */
-    public int getContextLevel() {
-        return contextLevel;
-    }
-    public void setContextLevel(int contextLevel) {
-        this.contextLevel = contextLevel;
-    }
+
     /**
      * @hibernate.bag  lazy="true" cascade="all,delete-orphan" inverse="true"  optimistic-lock="false" node="."
      * @hibernate.key column="binder"

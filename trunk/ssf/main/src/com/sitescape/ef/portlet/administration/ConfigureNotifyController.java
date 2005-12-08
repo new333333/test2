@@ -123,17 +123,9 @@ public class ConfigureNotifyController extends  SAbstractController  {
 	}
 	private Map getFormData(PortletRequest request) {
 		Map input = new HashMap();
-		String val;
-		val = PortletRequestUtils.getStringParameter(request,  "contextLevel", "");
-		if (val.equals("title"))
-			input.put("contextLevel", new Integer(NotificationDef.CONTEXT_LEVEL_SEND_TITLES_ONLY));
-		else if (val.equals("summary"))
-			input.put("contextLevel", new Integer(NotificationDef.CONTEXT_LEVEL_SEND_TITLES_AND_SUMMARIES));
-		else
-			input.put("contextLevel", new Integer(NotificationDef.CONTEXT_LEVEL_DISABLE_EMAIL_NOTIFICATION));
-
-		input.put("summaryLines",new Integer(PortletRequestUtils.getIntParameter(request, "summaryLines", 5)));
-		val = PortletRequestUtils.getStringParameter(request, "emailAddress", "");
+		
+		input.put("enabled", new Boolean(PortletRequestUtils.getBooleanParameter(request,  "enabled", false)));
+		String val = PortletRequestUtils.getStringParameter(request, "emailAddress", "");
 		input.put("emailAddress", StringUtil.split(val, "\n"));
 		
 		input.put("schedule", ScheduleHelper.getSchedule(request));
