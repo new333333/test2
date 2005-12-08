@@ -334,7 +334,7 @@
 	</bean>
 
 	<bean id="adminModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.admin.impl.AdminModuleImpl">
-		<property name="emailPostingJobClass"><value>com.sitescape.ef.jobs.DefaultEmailPosting></value></property>
+		<property name="emailPostingJobClass"><value>com.sitescape.ef.jobs.DefaultEmailPosting</value></property>
 	</bean>
 
 	<bean id="folderModule" parent="baseTransactionProxy">

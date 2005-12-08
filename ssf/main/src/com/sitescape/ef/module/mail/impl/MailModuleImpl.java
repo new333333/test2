@@ -207,7 +207,6 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 		
 	}
     public Date sendNotifications(Long folderId) {
-    	receivePostings();
         String zoneName = RequestContextHolder.getRequestContext().getZoneName();
  		Folder folder = (Folder)coreDao.loadBinder(folderId, zoneName); 
 		Date current = new Date();
