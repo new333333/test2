@@ -173,6 +173,8 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 			model.put(WebKeys.CONFIG_ELEMENT, null);
 		
 		}
+		Map defaultFolderDefinitions = ActionUtil.getFolderDefsAsMap(folder);
+		model.put(WebKeys.FOLDER_DEFINTION_MAP, defaultFolderDefinitions);
 		Map defaultEntryDefinitions = ActionUtil.getEntryDefsAsMap(folder);
 		model.put(WebKeys.ENTRY_DEFINTION_MAP, defaultEntryDefinitions);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
@@ -195,6 +197,19 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		model.put(WebKeys.PUBLIC_ENTRY_DEFINITIONS, publicEntryDefinitions);
 		model.put(WebKeys.PUBLIC_FOLDER_DEFINITIONS, publicForumDefinitions);
 
+	}
+	
+	public void getDefinitions(int defType, String key, Map model) {
+		List defs = getDefinitionModule().getDefinitions();
+		Iterator itDefinitions = defs.listIterator();
+		Map definitions = new HashMap();
+		while (itDefinitions.hasNext()) {
+			Definition def = (Definition) itDefinitions.next();
+			if (def.getType() == defType) {
+				definitions.put(def.getId(), def);
+			}
+		}
+		model.put(key, definitions);
 	}
 	
 	/* 
@@ -944,11 +959,13 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		Folder folder = getFolderModule().getFolder(folderId);
 		
 		model.put(WebKeys.FOLDER, folder);
+		model.put(WebKeys.FOLDER_WORKFLOW_ASSOCIATIONS, folder.getProperty(ObjectKeys.FOLDER_WORKFLOW_ASSOCIATIONS));
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
 			
 		getDefinitions(model);
 		getDefinitions(folder, model);
+		getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 		return model;
 	}
 	public Map getAddEntry(Map formData, RenderRequest req, Long folderId) throws PortletRequestBindingException {

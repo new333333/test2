@@ -23,30 +23,58 @@
 <form method="post" action="<portlet:actionURL>
 					<portlet:param name="action" value="configure_forum"/>
 					<portlet:param name="forumId" value="${ssFolder.id}"/>
-					</portlet:actionURL>" style="display:inline;">
+					</portlet:actionURL>" >
 
-<div class="buttonBarRight">
-<input type="submit" name="okBtn" class="submit" value="  OK  "> <input type="submit" name="cancelBtn" class="submit" value="Cancel">
+<div class="ss_buttonBarRight">
+<input type="submit" name="closeBtn" class="ss_submit" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
 
-<fieldset class="fieldset" title="Fieldset one">
- <legend class="legend">Default forum view</legend>
+<fieldset class="fieldset">
+ <legend class="legend"><ssf:nlt tag="forum.configure.allowedViews" text="Allowed folder views"/></legend>
 
+<c:set var="folderViewCount" value=""/>
 <c:forEach var="item" items="${ssPublicFolderDefinitions}">
-	<c:choose>
-	<c:when test="${ssDefaultFolderDefinitionId == item.value.id}">
-	<input type="radio" name="folderDefinition" value="<c:out value="${item.value.id}"/>" checked><c:out value="${item.value.name}"/><br/>
+  <c:choose>
+	<c:when test="${empty ssFolderDefinitionMap[item.key]}">
+	  <input type="checkbox" name="folderDefinitions" value="<c:out value="${item.value.id}"/>"><c:out value="${item.value.name}"/><br/>
 	</c:when>
 	<c:otherwise>
-	<input type="radio" name="folderDefinition" value="<c:out value="${item.value.id}"/>"><c:out value="${item.value.name}"/><br/>
+	  <input type="checkbox" name="folderDefinitions" value="<c:out value="${item.value.id}"/>" checked><c:out value="${item.value.name}"/><br/>
+	  <c:set var="folderViewCount" value="1"/>
 	</c:otherwise>
-	</c:choose>
+  </c:choose>
 </c:forEach>
+<br>
+<input type="submit" name="okBtn" class="ss_submit" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 
 </fieldset>
+<br>
 
-<fieldset class="fieldset" title="Fieldset one">
- <legend class="legend">Default entry types</legend>
+<c:if test="${!empty folderViewCount}">
+<fieldset class="fieldset">
+ <legend class="legend"><ssf:nlt tag="forum.configure.defaultView" text="Default folder view"/></legend>
+
+<c:forEach var="item" items="${ssPublicFolderDefinitions}">
+  <c:if test="${!empty ssFolderDefinitionMap[item.key]}">
+    <c:choose>
+	  <c:when test="${ssDefaultFolderDefinitionId == item.value.id}">
+	    <input type="radio" name="folderDefinition" value="<c:out value="${item.value.id}"/>" checked><c:out value="${item.value.name}"/><br/>
+	  </c:when>
+	  <c:otherwise>
+	    <input type="radio" name="folderDefinition" value="<c:out value="${item.value.id}"/>"><c:out value="${item.value.name}"/><br/>
+	  </c:otherwise>
+    </c:choose>
+  </c:if>
+</c:forEach>
+<br>
+<input type="submit" name="okBtn" class="ss_submit" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
+
+</fieldset>
+<br>
+</c:if>
+
+<fieldset class="fieldset">
+ <legend class="legend"><ssf:nlt tag="forum.configure.defaultEntryTypes" text="Default entry types"/></legend>
 
 <c:forEach var="item" items="${ssPublicEntryDefinitions}">
 	<c:choose>
@@ -58,13 +86,46 @@
 	</c:otherwise>
 	</c:choose>
 </c:forEach>
+<br>
+<input type="submit" name="okBtn" class="ss_submit" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
+
+</fieldset>
+<br>
+
+<fieldset class="fieldset">
+ <legend class="legend"><ssf:nlt tag="forum.configure.workflowAssociations" text="Workflow associations"/></legend>
+
+<table>
+<c:forEach var="item" items="${ssPublicEntryDefinitions}">
+  <c:if test="${!empty ssEntryDefinitionMap[item.key]}">
+  <tr>
+    <td><c:out value="${item.value.name}"/></td>
+	<td>
+	  <select name="workflow_<c:out value="${item.value.id}"/>">
+	    <option value=""><ssf:nlt tag="common.select.none" text="--none--"/></option>
+          <c:forEach var="wfp" items="${ssPublicWorkflowDefinitions}">
+            <c:if test="${ssFolderWorkflowAssociations[item.value.id] eq wfp.value.id}">
+              <option value="<c:out value="${wfp.value.id}"/>" selected><c:out value="${wfp.value.name}"/></option>
+            </c:if>
+            <c:if test="${ssFolderWorkflowAssociations[item.value.id] != wfp.value.id}">
+              <option value="<c:out value="${wfp.value.id}"/>"><c:out value="${wfp.value.name}"/></option>
+            </c:if>
+          </c:forEach>
+	  </select>
+	</td>
+  </tr>
+  </c:if>
+</c:forEach>
+</table>
+<br>
+<input type="submit" name="okBtn" class="ss_submit" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 
 </fieldset>
 
-<div class="formBreak"/>
+<div class="ss_formBreak"/>
 
-<div class="buttonBarLeft">
-<input type="submit" name="okBtn" class="submit" value="  OK  "> <input type="submit" name="cancelBtn" class="submit" value="Cancel">
+<div class="ss_buttonBarLeft">
+<input type="submit" name="closeBtn" class="ss_submit" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
 
 </form>

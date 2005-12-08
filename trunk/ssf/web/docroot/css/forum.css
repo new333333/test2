@@ -104,6 +104,11 @@ div.ss_divider {
   background: url("/html/pics/1pix.gif") fixed no-repeat;
   }  
 
+div.ss_formBreak {
+  background: url("/html/pics/1pix.gif") fixed no-repeat;
+  margin-top: 8px;
+  }
+
 /* container for entry content: description, signature, attachments, data gathered from entry form */
 /* also form elements */
 div.ss_entryContent {

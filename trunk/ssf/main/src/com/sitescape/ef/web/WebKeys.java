@@ -100,6 +100,7 @@ public class WebKeys {
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_ID = "ssEntryId";
     public static final String FOLDER = "ssFolder";
+    public static final String FOLDER_DEFINTION_MAP="ssFolderDefinitionMap";
     public static final String FOLDER_LIST = "ssFolderList";
     public static final String FOLDER_ID_LIST = "ssFolderIdList";
     public static final String FOLDERS = "ssFolders";
@@ -110,6 +111,7 @@ public class WebKeys {
     public static final String FOLDER_ENTRY_ANCESTORS="ssFolderEntryAncestors";
     public static final String FOLDER_ENTRY_TOOLBAR="ssFolderEntryToolbar";
     public static final String FOLDER_TOOLBAR="ssFolderToolbar";
+    public static final String FOLDER_WORKFLOW_ASSOCIATIONS="ssFolderWorkflowAssociations";
     public static final String FORUM_ID_LIST = "ssForumIdList";
     public static final String FORUM_TOOLBAR="ssForumToolbar";
     public static final String GROUPS="ssGroups";
@@ -121,6 +123,7 @@ public class WebKeys {
     public static final String PUBLIC_DEFINITIONS="ssPublicDefinitions";
     public static final String PUBLIC_ENTRY_DEFINITIONS="ssPublicEntryDefinitions";
     public static final String PUBLIC_FOLDER_DEFINITIONS="ssPublicFolderDefinitions";
+    public static final String PUBLIC_WORKFLOW_DEFINITIONS="ssPublicWorkflowDefinitions";
     public static final String SCHEDULE="ssSchedule";
     public static final String SCHEDULE_INFO="ssScheduleInfo";
     public static final String SEEN_MAP="ssSeenMap";

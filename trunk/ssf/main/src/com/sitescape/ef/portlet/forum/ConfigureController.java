@@ -8,6 +8,7 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,24 +29,49 @@ public class ConfigureController extends SAbstractForumController {
 		//See if the form was submitted
 		if (formData.containsKey("okBtn")) {
 	    	List definitions = new ArrayList();
-	    	String defId = PortletRequestUtils.getStringParameter(request, "folderDefinition");
-			if (!Validator.isNull(defId)) {
-				definitions.add(defId);
+	    	//Get the default folder view
+	    	String defFolderId = PortletRequestUtils.getStringParameter(request, "folderDefinition");
+			String[] defFolderIds = PortletRequestUtils.getStringParameters(request, "folderDefinitions");
+			if (!Validator.isNull(defFolderId)) {
+				//The default folder view is always the first one in the list
+				if (defFolderIds != null) {
+					for (int i = 0; i < defFolderIds.length; i++) {
+						String defId = defFolderIds[i];
+						if (!Validator.isNull(defId) && defId == defFolderId) {
+							definitions.add(defFolderId);
+							break;
+						}
+					}
+				}
 			}
 				
-			String[] defIds = PortletRequestUtils.getStringParameters(request, "entryDefinition");
-			if (defIds != null) {
-				for (int i = 0; i < defIds.length; i++) {
-					defId = defIds[i];
-					if (!Validator.isNull(defId)) {
+			//Add the other allowed folder views
+			if (defFolderIds != null) {
+				for (int i = 0; i < defFolderIds.length; i++) {
+					String defId = defFolderIds[i];
+					if (!Validator.isNull(defId) && defId != defFolderId) {
 						definitions.add(defId);
 					}
 				}
 			}
-			getFolderModule().modifyFolderConfiguration(folderId, definitions);
-			response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-			response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
-		} else if (formData.containsKey("cancelBtn")) {
+
+			//Add the allowed entry types
+			// and the workflow associations
+			String[] defEntryIds = PortletRequestUtils.getStringParameters(request, "entryDefinition");
+			Map workflowAssociations = new HashMap();
+			if (defEntryIds != null) {
+				for (int i = 0; i < defEntryIds.length; i++) {
+					String defId = defEntryIds[i];
+					if (!Validator.isNull(defId)) {
+						definitions.add(defId);
+						String wfDefId = PortletRequestUtils.getStringParameter(request, "workflow_" + defId, "");
+						if (!wfDefId.equals("")) workflowAssociations.put(defId,wfDefId);
+					}
+				}
+			}
+			getFolderModule().modifyFolderConfiguration(folderId, definitions, workflowAssociations);
+			response.setRenderParameters(formData);
+		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 			response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
 		} else
