@@ -225,6 +225,13 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		} 
 		// urls for common calendar links
 		PortletURL url;
+
+		// calendar navigation via nav bar; must be an action so form data is transmitted
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE);
+		model.put("goto_form_url", url.toString());
+		
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
