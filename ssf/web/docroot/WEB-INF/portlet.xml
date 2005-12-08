@@ -100,6 +100,28 @@
         	<keywords>Definition Builder</keywords>
         </portlet-info>
     </portlet>
+       <portlet>
+        <description xml:lang="en">SiteScape Administration</description>
+        <portlet-name>ss_administration</portlet-name>
+        <display-name xml:lang="en">Administration</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+			<init-param>
+				<name>contextConfigLocation</name>
+				<value>/WEB-INF/context/portlet/administration.xml</value>
+			</init-param>
+        <expiration-cache>300</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+        <!--<supported-locale>en</supported-locale>-->
+        <!--<resource-bundle>...</resource-bundle>-->
+        <portlet-info>
+        	<title>Sitescape Administration</title>
+        	<short-title>Sitescape Administration</short-title>
+        	<keywords>Administration</keywords>
+        </portlet-info>
+    </portlet>
  
     <user-attribute>
         <description xml:lang="en">User Name</description>
