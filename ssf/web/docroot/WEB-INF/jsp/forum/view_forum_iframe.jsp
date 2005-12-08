@@ -1,6 +1,5 @@
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
-
-<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+<jsp:useBean id="ssHistoryMap" type="com.sitescape.ef.domain.HistoryMap" scope="request" />
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 %>

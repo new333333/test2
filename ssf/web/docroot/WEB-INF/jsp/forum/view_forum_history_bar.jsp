@@ -1,3 +1,4 @@
+
 <% // History and entry navigation bar %>
 <script language="javascript">
 var ss_entryList = new Array();
@@ -190,23 +191,4 @@ function ss_getLastEntryId() {
           border="0" src="<html:imagesPath/>pics/sym_s_right_end.gif"></a>&nbsp;
           </span>
 </div>
-<br />
-<% // Debugging code (turned off) %>
-<c:if test="">
-<div> 
-<b>Dump of history map</b>
-<br>
-<%
-	if (ssHistoryMap != null) {
-		Iterator it = ssHistoryMap.getHistoryMap().entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry me = (Map.Entry) it.next();
-%>
-key=<%= me.getKey() %>, value=<%= me.getValue() %><br>
-<%
-		}
-	}
-%>
-<br>
-</div>
-</c:if>
+

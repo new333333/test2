@@ -8,15 +8,15 @@ function getFilteredEntries() {
 //alert("cal view entryList "+ss_entryCount)
 }
 </script>
+<c:set var="delimiter" value=" | "/>
 <table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_ruledTable">
 <tr class="ss_bglightgray">
-<td colspan="2" class="ss_contentbold">Entries for 
-   <fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
-<a href="${set_week_view}">Week view</a>
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
-<a href="${set_month_view}">Month view</a>
-</td>
+<td colspan="2"><span class="ss_toolbar_item">
+<fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
+&nbsp;&nbsp;&nbsp;&nbsp;
+Views:&nbsp;<a href="${set_week_view}">Week</a><c:out value="${delimiter}" /><a href="${set_month_view}">Month</a>
+<c:out value="${delimiter}" />
+</span></td>
 </tr>
 
 <% // the bean is a month's bean; we need to loop through the list of
@@ -26,16 +26,16 @@ function getFilteredEntries() {
 <c:forEach var="week" items="${ssCalendarViewBean.weekList}" >
 
 <c:forEach var="daymap" items="${week.dayList}">
-
+<tr>
 <c:choose>
 <c:when test="${daymap.isToday}">
-<tr class="ss_todayHighlight">
+<td align="center" bgcolor="#ffffe8" width="1%" valign="top">
 </c:when>
 <c:otherwise>
-<tr>
+<td align="center" width="1%" valign="top">
 </c:otherwise>
 </c:choose>
-<td align="center" width="1%" valign="top"><span class="ss_content">${daymap.cal_dow}</span>
+<span class="ss_content">${daymap.cal_dow}</span>
  <span class="ss_contentbold">${daymap.cal_dom}</td>
 
 <c:choose>

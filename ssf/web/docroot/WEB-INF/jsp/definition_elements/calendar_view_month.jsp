@@ -9,14 +9,14 @@ function getFilteredEntries() {
 //alert("cal view entryList "+ss_entryCount)
 }
 </script>
+<c:set var="delimiter" value=" | "/>
 <table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_ruledTable">
 <tr class="ss_bglightgray">
-<td colspan="8" class="ss_contentbold">Viewing month: 
+<td colspan="8"><span class="ss_toolbar_item">
    <fmt:formatDate value="${ssCalStartDate}" pattern="MMMM, yyyy" />
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
-<a href="${set_day_view}">Day view</a>
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
-<a href="${set_week_view}">Week view</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Views:&nbsp;<a href="${set_day_view}">Day</a><c:out value="${delimiter}" /><a href="${set_week_view}">Week</a>
+<c:out value="${delimiter}" />
 </td>
 </tr>
  
@@ -42,13 +42,13 @@ ${dayabbrev}</td>
 
 <c:choose>
 <c:when test="${daymap.isToday}">
-<td class="ss_fineprint" bgcolor="#ffffe8" valign="top"><span class="ss_right" style="text-weight:bold;"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />
+<td class="ss_fineprint" bgcolor="#ffffe8" valign="top"><span class="ss_rightbold"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
 </c:when>
 <c:when test="${!daymap.inView}">
-<td class="ss_fineprint" bgcolor="#f7f7f7" valign="top"><span class="ss_right" style="text-weight:bold;"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />
+<td class="ss_fineprint" bgcolor="#f7f7f7" valign="top"><span class="ss_rightbold"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
 </c:when>
 <c:otherwise>
-<td valign="top" class="ss_fineprint"><span class="ss_right" style="text-weight:bold;"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />
+<td valign="top" class="ss_fineprint"><span class="ss_rightbold"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
 </c:otherwise>
 </c:choose>
 
