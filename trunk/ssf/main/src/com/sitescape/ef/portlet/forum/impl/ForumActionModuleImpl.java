@@ -314,7 +314,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		//The "Administration" menu
 		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
 		//Configuration
-		url = response.createRenderURL();
+		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_CONFIGURE_FORUM);
 		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);

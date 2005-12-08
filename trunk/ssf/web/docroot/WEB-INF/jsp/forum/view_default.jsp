@@ -16,7 +16,7 @@
 				  href="<portlet:actionURL windowState="maximized">
 				  	<portlet:param name="action" value="configure_forum" />
 				  	<portlet:param name="forumId" value="${ssFolder.id}" />
-		    		</portlet:renderURL>">Configure forum</a></font>
+		    		</portlet:actionURL>">Configure forum</a></font>
 			</li>
 			<li>
 				<font class="beta" size="2"><a class="gamma" 
