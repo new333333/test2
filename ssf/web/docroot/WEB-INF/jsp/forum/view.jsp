@@ -83,7 +83,7 @@ function ss_getUnseenCounts() {
     	</ssf:url>"
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("unseenCountForm")
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_preRequest);
 	//ajaxRequest.setPostRequest(ss_postRequest);
 	ajaxRequest.setUsePOST();
