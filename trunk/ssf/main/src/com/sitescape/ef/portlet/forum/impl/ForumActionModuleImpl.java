@@ -14,6 +14,7 @@ import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.UserPerFolderPK;
+import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.portlet.PortletKeys;
 import com.sitescape.ef.portlet.forum.HistoryCache;
@@ -21,6 +22,7 @@ import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.profile.ProfileModule;
+import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.util.Toolbar;
 //import com.sitescape.ef.util.NLT;
@@ -37,7 +39,7 @@ import org.dom4j.Element;
  * @author Janet McCann
  *
  */
-public class ForumActionModuleImpl implements ForumActionModule {
+public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 
 	protected WorkspaceModule workspaceModule;;
 	protected ProfileModule profileModule;
@@ -375,9 +377,9 @@ public class ForumActionModuleImpl implements ForumActionModule {
 		model.put(PortletKeys.HISTORY_MAP, history);
 		Folder topFolder = folder.getTopFolder();
 		if (topFolder == null) {
-			model.put(PortletKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(folderId));
+			model.put(PortletKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(folderId, this));
 		} else {
-			model.put(PortletKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(topFolder.getId()));			
+			model.put(PortletKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(topFolder.getId(), this));			
 		}
 		model.put(PortletKeys.FOLDER_ENTRIES, folderEntries.get(ObjectKeys.FOLDER_ENTRIES));
 		model.put(PortletKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
@@ -549,4 +551,17 @@ public static class NLT {
 	public static String get(String v) {return v;}
 	
 }
+	public Element setupDomElement(String type, Object source, Element element) {
+		if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
+			Folder f = (Folder)source;
+			element.addAttribute("type", "forum");
+			element.addAttribute("title", f.getTitle());
+			element.addAttribute("id", f.getId().toString());
+			element.addAttribute("image", "forum");
+        	Element url = element.addElement("url");
+	    	url.addAttribute(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_VIEW_FORUM);
+	     	url.addAttribute(PortletKeys.FORUM_URL_FORUM_ID, f.getId().toString());
+		} else return null;
+		return element;
+	}
 }

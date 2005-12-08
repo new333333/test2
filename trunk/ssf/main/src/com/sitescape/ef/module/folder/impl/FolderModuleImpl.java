@@ -22,6 +22,7 @@ import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AccessType;
@@ -157,13 +158,13 @@ public class FolderModuleImpl implements FolderModule {
     }
 
  
-    public Document getDomFolderTree(Long folderId) {
+    public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Folder folder = folderDao.loadFolder(folderId, user.getZoneName());
         FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
     	(folder, FolderCoreProcessor.PROCESSOR_KEY);
     
-        return processor.getDomFolderTree(folder);
+        return processor.getDomFolderTree(folder, domTreeHelper);
     }
     
     public Map getFolderEntries(Long folderId) {

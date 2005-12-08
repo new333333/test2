@@ -1,16 +1,11 @@
 package com.sitescape.ef.module.workspace.impl;
 
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Comparator;
 import java.util.TreeSet;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.NoWorkspaceByTheIdException;
 import com.sitescape.ef.domain.User;
@@ -21,7 +16,7 @@ import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.module.binder.BinderComparator;
-
+import com.sitescape.ef.module.shared.DomTreeBuilder;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -70,11 +65,11 @@ public class WorkspaceModuleImpl implements WorkspaceModule {
  
        return workspace;
     }
-    public org.dom4j.Document getDomWorkspaceTree() throws AccessControlException {
-    	return getDomWorkspaceTree(null);
+    public org.dom4j.Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper) throws AccessControlException {
+    	return getDomWorkspaceTree(null, domTreeHelper);
     }
     	 
-    public org.dom4j.Document getDomWorkspaceTree(Long id) throws AccessControlException {
+    public org.dom4j.Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper) throws AccessControlException {
     	Workspace top;
         User user = RequestContextHolder.getRequestContext().getUser();
         if (id == null) top =  getCoreDao().findTopWorkspace(user.getZoneName());
@@ -82,25 +77,19 @@ public class WorkspaceModuleImpl implements WorkspaceModule {
       	getAccessControlManager().checkOperation(top, WorkAreaOperation.VIEW);
         Comparator c = new BinderComparator(user.getLocale());
     	Document wsTree = DocumentHelper.createDocument();
-    	Element rootElement = wsTree.addElement("root");
-    	buildWorkspaceDomTree(rootElement, top, c);
+    	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
+    	buildWorkspaceDomTree(rootElement, top, c, domTreeHelper);
     	return wsTree;
     }
     
-    protected void buildWorkspaceDomTree(Element current, Workspace top, Comparator c) {
+    protected void buildWorkspaceDomTree(Element current, Workspace top, Comparator c, DomTreeBuilder domTreeHelper) {
     	Element next; 
     	Folder f;
     	Workspace w;
-    	Element url;
     	
-		current.addAttribute("type", "workspace");
-		current.addAttribute("title", top.getTitle());
-		current.addAttribute("id", top.getId().toString());
-    	current.addAttribute("image", "workspace");
-    	url = current.addElement("url");
-    	url.addAttribute("action", "view_forum");
-     	url.addAttribute(ObjectKeys.FORUM_ID, top.getId().toString());
- 
+    	//callback to setup tree
+    	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_WORKSPACE, top, current);
+  
        	TreeSet ws = new TreeSet(c);
     	ws.addAll(top.getFolders());
       	for (Iterator iter=ws.iterator(); iter.hasNext();) {
@@ -111,15 +100,9 @@ public class WorkspaceModuleImpl implements WorkspaceModule {
             } catch (AccessControlException ac) {
                	continue;
             }
-            next = current.addElement("child");
-    		next.addAttribute("type", "forum");
-    	   	next.addAttribute("title", f.getTitle());
-    	   	next.addAttribute("id", f.getId().toString());
-    		next.addAttribute("image", "forum");
-        	url = next.addElement("url");
-        	url.addAttribute("action", "view_forum");
-        	url.addAttribute(ObjectKeys.FORUM_ID, f.getId().toString());
-        }
+            next = current.addElement(DomTreeBuilder.NODE_CHILD);
+           	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, f, next);
+         }
     	ws.clear();
     	ws.addAll(top.getWorkspaces());
      	for (Iterator iter=ws.iterator(); iter.hasNext();) {
@@ -130,8 +113,8 @@ public class WorkspaceModuleImpl implements WorkspaceModule {
             } catch (AccessControlException ac) {
                 	continue;
             }
-     		next = current.addElement("child");
-     		buildWorkspaceDomTree(next, w, c);
+     		next = current.addElement(DomTreeBuilder.NODE_CHILD);
+     		buildWorkspaceDomTree(next, w, c, domTreeHelper);
      	}    	
     }
 

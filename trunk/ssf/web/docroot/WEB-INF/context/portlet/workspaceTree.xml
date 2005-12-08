@@ -5,9 +5,30 @@
 	<!-- Controllers -->
 
 	<bean id="workspaceTreeController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController" />
+	<bean id="forumViewController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewController" />
 
 	<!-- Handlers -->
 
+	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
+			<property name="portletModeParameterMap">
+			<map>
+				<entry key="view">
+					<map>
+						<entry key="view_forum"><ref bean="forumViewController"/></entry>
+						<entry key="view_entry*"><ref bean="forumViewController"/></entry>
+					</map>
+				</entry>
+				<entry key="edit">
+					<map>
+					</map>
+				</entry>
+				<entry key="help">
+					<map>
+					</map>
+				</entry>
+			</map>
+		</property>
+	</bean>
 
 	<bean id="portletModeHandlerMapping" parent="portletModeHandlerMappingTemplate">
 		<property name="portletModeMap">

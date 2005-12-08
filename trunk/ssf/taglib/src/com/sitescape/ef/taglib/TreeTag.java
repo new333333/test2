@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import java.util.ArrayList;
+import com.sitescape.util.GetterUtil;
 
 
 
@@ -230,14 +231,15 @@ public class TreeTag extends TagSupport {
 			//Image
 			String s_image = getImage(e.attributeValue("image"));
 			String s_imageOpen = getImageOpen(e.attributeValue("image"));
-	
-			//Url
+			boolean displayOnly = GetterUtil.getBoolean((String)e.attributeValue("displayOnly"));
+			
+			//Url = null value means 
 			String s_url = (String) e.attributeValue("url");
 			if (s_url == null) {
-				s_url = "";
-				PortletURL portletURL = renderResponse.createActionURL();
 				Element url = e.element("url");
+				s_url = "";
 				if (url != null && url.attributes().size() > 0) {
+					PortletURL portletURL = renderResponse.createActionURL();
 					Iterator attrs = url.attributeIterator();
 					while (attrs.hasNext()) {
 						Attribute attr = (Attribute) attrs.next();
@@ -246,7 +248,7 @@ public class TreeTag extends TagSupport {
 					portletURL.setWindowState(WindowState.MAXIMIZED);
 					portletURL.setPortletMode(PortletMode.VIEW);
 					s_url = portletURL.toString();
-				}
+				} 
 			}
 			
 			//Write out the divs for this branch
@@ -340,14 +342,18 @@ public class TreeTag extends TagSupport {
 			}
 	
 			jspOut.print("&nbsp;</td>\n<td>");			
-			jspOut.print("<a class=\"" + className + "\" href=\"" + s_url + "\" ");
-			if (s_id != null && !s_id.equals("")) {
-				jspOut.print("onClick=\"if (self."+this.treeName+"_showId) {return "+this.treeName+"_showId('"+s_id+"', this);}\" ");
+			if (!displayOnly) {
+				jspOut.print("<a class=\"" + className + "\" href=\"" + s_url + "\" ");
+				if (s_id != null && !s_id.equals("")) {
+					jspOut.print("onClick=\"if (self."+this.treeName+"_showId) {return "+this.treeName+"_showId('"+s_id+"', this);}\" ");
+				}
+				jspOut.print("style=\"text-decoration: none;\">");
 			}
-			jspOut.print("style=\"text-decoration: none;\">");
 			jspOut.print("<font class=\"" + titleClass + "\" size=\"1\">");
 			jspOut.print(s_text);
-			jspOut.print("</font></a>");
+			jspOut.print("</font>");
+			
+			if (!displayOnly) jspOut.print("</a>");
 			
 			jspOut.print("</td></tr>\n</table><br>");
 	

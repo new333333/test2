@@ -5,6 +5,7 @@ import java.util.Map;
 import org.dom4j.Document;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.domain.Definition;
 
@@ -58,7 +59,7 @@ public interface FolderModule {
      * @param folderId
      * @return
      */
-    public Document getDomFolderTree(Long folderId);
+    public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper);
  	public Map getFolderEntries(Long folderId) throws AccessControlException;
 	public Map getFolderEntries(Long folderId, int maxNumEntries) throws AccessControlException;
 

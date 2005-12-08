@@ -1,10 +1,7 @@
 package com.sitescape.ef;
 
 /**
- * Defines symbols for common model names that the core is aware of.
- * Model names are used to associate names (keys) with model objects 
- * (values). Model object are typically returned from business tier
- * to presentation tier as a map. 
+ * Defines symbols for that the core is aware of.
  * 
  * @author Jong Kim
  *
@@ -14,7 +11,6 @@ public interface ObjectKeys {
      * Note: Maintain the symbols in alphabetical order. 
      */
     
-    public static final String FORUM_ID="forumId";
     public static final String FOLDER_ENTRY_ANCESTORS="folderEntryAncestors";
     public static final String FOLDER_ENTRY_DESCENDANTS="folderEntryDescendants";
     public static final String FOLDER_ENTRY="folderEntry";
