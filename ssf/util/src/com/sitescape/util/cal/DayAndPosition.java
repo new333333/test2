@@ -269,8 +269,33 @@ public class DayAndPosition implements Cloneable {
   public int getDayPosition() {
     return position;
   }
-    
 
+  /**
+   * Get the day of the week of this entry as a string
+   * Note: this cannot take an argument because it is 
+   * to be used by JSTL
+   */
+
+  public String getDayOfWeekString() {
+	  switch (day) {
+	  case Calendar.SUNDAY:
+		  return "Sunday";
+	  case Calendar.MONDAY:
+		  return "Monday";
+	  case Calendar.TUESDAY:
+		  return "Tuesday";
+	  case Calendar.WEDNESDAY:
+		  return "Wednesday";
+	  case Calendar.THURSDAY:
+		  return "Thursday";
+	  case Calendar.FRIDAY:
+		  return "Friday";
+	  case Calendar.SATURDAY:
+		  return "Saturday";
+	  }
+	  return null;
+  }
+  
   /**
    * Set the day position stored in this object.  The value must be an
    * integer between -53 and 53, representing the <em>n</em>th occurence of
