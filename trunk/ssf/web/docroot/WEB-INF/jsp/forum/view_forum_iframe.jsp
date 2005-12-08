@@ -5,7 +5,7 @@
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 %>
 
-<div id="ss_showfolder" class="ss_portlet" style="display:block; margin:2;">
+<div id="ss_showfolder" class="ss_portlet">
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= ssConfigElement %>" 
   configJspStyle="<%= ssConfigJspStyle %>" />
