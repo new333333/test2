@@ -53,7 +53,7 @@ function ss_getPreviousEntryId() {
 }
 
 </script>
-
+<div>
  <span class="ss_buttonBarLeft">&nbsp;<a  
           href="<ssf:url
           adapter="true"
@@ -64,8 +64,7 @@ function ss_getPreviousEntryId() {
           actionUrl="false"
           />"
           onClick="ss_loadEntry(this,'');return false;" ><img 
-          border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a><span 
-           style="background-color:#cdcdcd">&nbsp;History&nbsp;</span><a href="<ssf:url
+          border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a><span>&nbsp;History&nbsp;</span><a href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
           folderId="<%= ssFolder.getId().toString() %>"
@@ -84,8 +83,7 @@ function ss_getPreviousEntryId() {
           actionUrl="false"
           />"
           onClick="ss_getNextEntryId();return false;" ><img 
-          border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a><span 
-           style="background-color:#cdcdcd">&nbsp;Entries&nbsp;</span><a href="<ssf:url
+          border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a><span>&nbsp;Entries&nbsp;</span><a href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
           folderId="<%= ssFolder.getId().toString() %>"
@@ -95,7 +93,7 @@ function ss_getPreviousEntryId() {
           />"
           onClick="ss_getPreviousEntryId(ss_currentEntryId);return false;" ><img 
           border="0" src="<html:imagesPath/>pics/sym_s_next.gif"></a>&nbsp;</span>
-<div class="ss_divider"></div>
+</div>
 <br />
 <% // Debugging code (turned off) %>
 <c:if test="">
