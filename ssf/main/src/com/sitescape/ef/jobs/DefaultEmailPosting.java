@@ -48,10 +48,10 @@ public class DefaultEmailPosting implements StatefulJob, EmailPosting {
 			if (jobDetail == null) return info;
 			
 			int state = scheduler.getTriggerState(EmailPosting.POSTING_NAME, EmailPosting.POSTING_NAME);
-			if (state == Trigger.STATE_PAUSED)
-				info.setEnabled(true);
-			else
+			if ((state == Trigger.STATE_PAUSED) || (state == Trigger.STATE_NONE))
 				info.setEnabled(false);
+			else
+				info.setEnabled(true);
 			info.setDetails(jobDetail.getJobDataMap());
 			return info;
 		} catch (SchedulerException se) {
@@ -64,6 +64,7 @@ public class DefaultEmailPosting implements StatefulJob, EmailPosting {
 		 	JobDetail jobDetail=scheduler.getJobDetail(EmailPosting.POSTING_NAME, EmailPosting.POSTING_NAME);
 		 	//never been scheduled -start now
 		 	if (jobDetail == null) {
+ 				//volitility(not stored in db),durablilty(remains after trigger removed),recover(after recover or fail-over)
 		 		jobDetail = new JobDetail(EmailPosting.POSTING_NAME, EmailPosting.POSTING_NAME,
 		 				this.getClass(),false, true, false);
 		 		jobDetail.setDescription(EmailPosting.POSTING_NAME);
@@ -81,7 +82,7 @@ public class DefaultEmailPosting implements StatefulJob, EmailPosting {
   			if (trigger == null) {
   				if (info.isEnabled()) {
   					trigger = buildCronTrigger(info.getSchedule());
-  					scheduler.scheduleJob(jobDetail, trigger);
+  					scheduler.scheduleJob(trigger);
   				} 
   			} else {
   				//make sure schedule is the same
@@ -98,6 +99,7 @@ public class DefaultEmailPosting implements StatefulJob, EmailPosting {
 				
   			}
 		} catch (SchedulerException se) {			
+			throw new ConfigurationException(se.getLocalizedMessage());
 		}
 		
 	}
@@ -113,7 +115,9 @@ public class DefaultEmailPosting implements StatefulJob, EmailPosting {
    			CronTrigger trigger = (CronTrigger)scheduler.getTrigger(EmailPosting.POSTING_NAME, EmailPosting.POSTING_NAME);
 		   	//haven't been scheduled yet -start with defaults
 		   	if (jobDetail == null) {
-		   		setScheduleInfo(new ScheduleInfo());
+		   		ScheduleInfo info = new ScheduleInfo();
+		   		info.setEnabled(true);
+		   		setScheduleInfo(info);
 
 		   	} else if (trigger != null) {
 			 	if (scheduler.getTriggerState(EmailPosting.POSTING_NAME, EmailPosting.POSTING_NAME) == Trigger.STATE_PAUSED) {
@@ -123,7 +127,7 @@ public class DefaultEmailPosting implements StatefulJob, EmailPosting {
 		   		JobDataMap data = jobDetail.getJobDataMap();
 		   		
 		   		trigger = buildCronTrigger(new Schedule((String)data.get("schedule")));
-		   		scheduler.scheduleJob(jobDetail, trigger);
+		   		scheduler.scheduleJob(trigger);
 		   	}    	
    		} catch (Exception e) {
 		 	throw new ConfigurationException("Cannot start (job:group) " + EmailPosting.POSTING_NAME
