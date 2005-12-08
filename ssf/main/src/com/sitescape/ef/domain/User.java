@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import com.sitescape.ef.domain.SSClobString;
+import com.sitescape.util.Validator;
 
 
 /**
@@ -22,8 +23,6 @@ import com.sitescape.ef.domain.SSClobString;
  *
  */
 public class User extends Principal {
-    protected String password;
-    protected SSClobString _ntAccountInfo;
     protected String languageId="en";
     protected String country="US";
     protected String firstName="";
@@ -52,7 +51,20 @@ public class User extends Principal {
 		}
 		return timeZone;
 	}
-
+    public String getTitle() {
+    	String title = super.getTitle();
+    	if (!Validator.isNull(title)) return title;
+    	StringBuffer tBuf = new StringBuffer();
+    	title = getFirstName();
+    	if (!Validator.isNull(title)) tBuf.append(title + " ");
+    	title = getMiddleName();
+    	if (!Validator.isNull(title)) tBuf.append(title + " ");
+    	title = getLastName();
+    	if (!Validator.isNull(title)) tBuf.append(title + " ");
+    	title = tBuf.toString().trim();
+    	if (!Validator.isNull(title)) return title;
+    	return getName();
+    }
 	/**
 	 * @hibernate.property length="32" 
 	 * @return
@@ -227,41 +239,6 @@ public class User extends Principal {
         this.calendar = calendar;
     }
 
-    
-    /**
-     * @hibernate.property type="com.sitescape.ef.dao.util.SSClobStringType"
-     * @hibernate.column name="ntAccountInfo"
-     * @return Returns the comment
-     */
-    private SSClobString getINtAccountInfo() {
-        return this._ntAccountInfo;
-    }
-    private void setINtAccountInfo(SSClobString ntAccountInfo) {
-        this._ntAccountInfo = ntAccountInfo;
-    }
-    public String getNtAccountInfo() {
-        if (_ntAccountInfo == null) return "";
-        return this._ntAccountInfo.getText();
-    }
-    public void setNtAccountInfo(String ntAccountInfo) {
-        this._ntAccountInfo = new SSClobString(ntAccountInfo);
-    }
-    /**
-     * @hibernate.property 
-     * @hibernate.column name="pwd" length="64"
-     * @return Returns the password.
-     */
-    public String getPassword() {
-        return password;
-    }
-    /**
-     * @param password The password to set.
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
-  
 
     public Locale getLocale() {
         if (locale != null) return locale;
