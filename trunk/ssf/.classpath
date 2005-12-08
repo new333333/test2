@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="liferay/src"/>
 	<classpathentry kind="src" path="taglib/src"/>
 	<classpathentry kind="src" path="indexer-lucene/src"/>
 	<classpathentry kind="src" path="util/src"/>
@@ -45,5 +46,9 @@
 	<classpathentry kind="lib" path="lib/spring-portlet.jar"/>
 	<classpathentry kind="lib" path="lib/xdoclet-2.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/xdoclet-plugin-hibernate-1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-jexl-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/portal-ejb.jar"/>
+	<classpathentry kind="lib" path="lib/cglib.jar"/>
+	<classpathentry kind="lib" path="lib/jtds.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
