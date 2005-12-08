@@ -115,22 +115,22 @@
 </table>
 
 <c:if test="${attMap.hasRecur}">
-<input type="hidden" name="<c:out value="${prefix}" />_repeatUnit">
-<input type="hidden" name="<c:out value="${prefix}" />_everyN">
-<input type="hidden" name="<c:out value="${prefix}" />_day0">
-<input type="hidden" name="<c:out value="${prefix}" />_day1">
-<input type="hidden" name="<c:out value="${prefix}" />_day2">
-<input type="hidden" name="<c:out value="${prefix}" />_day3">
-<input type="hidden" name="<c:out value="${prefix}" />_day4">
-<input type="hidden" name="<c:out value="${prefix}" />_day5">
-<input type="hidden" name="<c:out value="${prefix}" />_day6">
-<input type="hidden" name="<c:out value="${prefix}" />_onDayCard">
-<input type="hidden" name="<c:out value="${prefix}" />_dow">
+<input type="hidden" name="${prefix}_repeatUnit">
+<input type="hidden" name="${prefix}_everyN">
+<input type="hidden" name="${prefix}_day0">
+<input type="hidden" name="${prefix}_day1">
+<input type="hidden" name="${prefix}_day2">
+<input type="hidden" name="${prefix}_day3">
+<input type="hidden" name="${prefix}_day4">
+<input type="hidden" name="${prefix}_day5">
+<input type="hidden" name="${prefix}_day6">
+<input type="hidden" name="${prefix}_onDayCard">
+<input type="hidden" name="${prefix}_dow">
 </c:if>
 
 <script language="Javascript">
 
-function <c:out value="${prefix}" />_onsub() {
+function ${prefix}_onsub() {
   <c:if test="${attMap[hasDur]}">
   var ms;
   ms1 = getTimeMilliseconds('<%= formName %>', '<%= dateId %>');
@@ -146,214 +146,214 @@ function <c:out value="${prefix}" />_onsub() {
   return(true);
 }
 
-createOnSubmitObj('<c:out value="${prefix}" />onsub', 
-     '<c:out value="${formName}" />', <c:out value="${prefix}" />_onsub);
+createOnSubmitObj('${prefix}onsub', 
+     '${formName}', ${prefix}_onsub);
      
-var <c:out value="${prefix}" />_popupContents = "";
-<c:out value="${prefix}" />_popupContents += '<form method="post" submit="" name="recurPopupForm">\n';
+var ${prefix}_popupContents = "";
+${prefix}_popupContents += '<form method="post" submit="" name="recurPopupForm">\n';
 
-<c:out value="${prefix}" />_popupContents += '<table border="0" cellpadding="4" cellspacing="0">\n';
-<c:out value="${prefix}" />_popupContents += ' <tr>\n';
-<c:out value="${prefix}" />_popupContents += '  <td colspan="3" class="contentbold">\n';
+${prefix}_popupContents += '<table border="0" cellpadding="4" cellspacing="0">\n';
+${prefix}_popupContents += ' <tr>\n';
+${prefix}_popupContents += '  <td colspan="3" class="contentbold">\n';
 
-<c:out value="${prefix}" />_popupContents += '  &nbsp;Frequency\n';
-<c:out value="${prefix}" />_popupContents += ' </td>\n';
-<c:out value="${prefix}" />_popupContents += ' </tr>\n';
-<c:out value="${prefix}" />_popupContents += ' <tr>\n';
-<c:out value="${prefix}" />_popupContents += '  <td colspan="2" class="content"><input type="radio"  \n';
-<c:out value="${prefix}" />_popupContents += '   name="repeatUnit" value="none" id="norepeat"\n';
-<c:out value="${prefix}" />_popupContents += '   checked="checked"><label for="norepeat">No repeat</label></td>\n';
-<c:out value="${prefix}" />_popupContents += ' </tr>\n';
-<c:out value="${prefix}" />_popupContents += ' <tr>\n';
-<c:out value="${prefix}" />_popupContents += '  <td nowrap="nowrap" class="content">\n';
+${prefix}_popupContents += '  &nbsp;Frequency\n';
+${prefix}_popupContents += ' </td>\n';
+${prefix}_popupContents += ' </tr>\n';
+${prefix}_popupContents += ' <tr>\n';
+${prefix}_popupContents += '  <td colspan="2" class="content"><input type="radio"  \n';
+${prefix}_popupContents += '   name="repeatUnit" value="none" id="norepeat"\n';
+${prefix}_popupContents += '   checked="checked"><label for="norepeat">No repeat</label></td>\n';
+${prefix}_popupContents += ' </tr>\n';
+${prefix}_popupContents += ' <tr>\n';
+${prefix}_popupContents += '  <td nowrap="nowrap" class="content">\n';
 
-<c:out value="${prefix}" />_popupContents += '   <input type="radio" name="repeatUnit" id="repeatday"\n';
-<c:out value="${prefix}" />_popupContents += '   value="day"  > \n';
-<c:out value="${prefix}" />_popupContents += '   Every <input type="text" name="everyNday" size="2" \n';
-<c:out value="${prefix}" />_popupContents += '   class="content" value="1"> day(s)</td>\n';
-<c:out value="${prefix}" />_popupContents += ' </tr>\n';
-<c:out value="${prefix}" />_popupContents += ' <tr>\n';
-<c:out value="${prefix}" />_popupContents += '  <td class="content" valign="top" nowrap="nowrap">\n';
-<c:out value="${prefix}" />_popupContents += '   <input type="radio" name="repeatUnit" id="repeatweek"\n';
-<c:out value="${prefix}" />_popupContents += '   value="week" >\n';
-<c:out value="${prefix}" />_popupContents += '   Every <input type="text" name="everyNweek" size="2" \n';
-<c:out value="${prefix}" />_popupContents += '   class="content" value="1" > week(s) on \n';
+${prefix}_popupContents += '   <input type="radio" name="repeatUnit" id="repeatday"\n';
+${prefix}_popupContents += '   value="day"  > \n';
+${prefix}_popupContents += '   Every <input type="text" name="everyNday" size="2" \n';
+${prefix}_popupContents += '   class="content" value="1"> day(s)</td>\n';
+${prefix}_popupContents += ' </tr>\n';
+${prefix}_popupContents += ' <tr>\n';
+${prefix}_popupContents += '  <td class="content" valign="top" nowrap="nowrap">\n';
+${prefix}_popupContents += '   <input type="radio" name="repeatUnit" id="repeatweek"\n';
+${prefix}_popupContents += '   value="week" >\n';
+${prefix}_popupContents += '   Every <input type="text" name="everyNweek" size="2" \n';
+${prefix}_popupContents += '   class="content" value="1" > week(s) on \n';
 
-<c:out value="${prefix}" />_popupContents += '<input type="checkbox" name="day0" id="day0" value="">\n';
-<c:out value="${prefix}" />_popupContents += '<input type="checkbox" name="day1" id="day1" value="">\n';
-<c:out value="${prefix}" />_popupContents += '<input type="checkbox" name="day2" id="day2" value="">\n';
-<c:out value="${prefix}" />_popupContents += '<input type="checkbox" name="day3" id="day3" value="">\n';
-<c:out value="${prefix}" />_popupContents += '<input type="checkbox" name="day4" id="day4" value="">\n';
-<c:out value="${prefix}" />_popupContents += '<input type="checkbox" name="day5" id="day5" value="">\n';
-<c:out value="${prefix}" />_popupContents += '<input type="checkbox" name="day6" id="day6" value="">\n';
-<c:out value="${prefix}" />_popupContents += ' </tr>\n';
+${prefix}_popupContents += '<input type="checkbox" name="day0" id="day0" value="">\n';
+${prefix}_popupContents += '<input type="checkbox" name="day1" id="day1" value="">\n';
+${prefix}_popupContents += '<input type="checkbox" name="day2" id="day2" value="">\n';
+${prefix}_popupContents += '<input type="checkbox" name="day3" id="day3" value="">\n';
+${prefix}_popupContents += '<input type="checkbox" name="day4" id="day4" value="">\n';
+${prefix}_popupContents += '<input type="checkbox" name="day5" id="day5" value="">\n';
+${prefix}_popupContents += '<input type="checkbox" name="day6" id="day6" value="">\n';
+${prefix}_popupContents += ' </tr>\n';
  
-<c:out value="${prefix}" />_popupContents += ' <tr>\n';
+${prefix}_popupContents += ' <tr>\n';
 
-<c:out value="${prefix}" />_popupContents += '  <td class="content" valign="top" nowrap="nowrap"><input \n';
-<c:out value="${prefix}" />_popupContents += '   type="radio" name="repeatUnit" id="repeatmonth"\n';
-<c:out value="${prefix}" />_popupContents += '   value="month" " >\n';
-<c:out value="${prefix}" />_popupContents += '   Every <input type="text" class="content" size="2"\n';
-<c:out value="${prefix}" />_popupContents += '   name="everyNmonth" value="1" > month(s) on the\n';
-<c:out value="${prefix}" />_popupContents += '<select class="content" name="onDayCardSel" title="select which week in the month on which this calendar entry will occur" name="onDayCardSel" > \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="none">--select one--</option> \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="first" >first</option> \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="second" >second</option> \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="third" >third</option> \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="fourth" >fourth</option> \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="last" >last</option> \n';
-<c:out value="${prefix}" />_popupContents += '</select> \n';
-<c:out value="${prefix}" />_popupContents += '<select class="content" name="dow" title="select the day of the week on which the repeated entry will occur" > \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="none">--select one--</option> \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="Sunday" >Sunday</option> \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="Monday" >Monday</option> \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="Tuesday" >Tuesday</option> \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="Wednesday" >Wednesday</option> \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="Thursday" >Thursday</option> \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="Friday" >Friday</option> \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="Saturday" >Saturday</option> \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="weekday" >weekday</option> \n';
-<c:out value="${prefix}" />_popupContents += '<option class="content" value="weekend day" >weekend day</option> \n';
-<c:out value="${prefix}" />_popupContents += '</select> </td>\n';
+${prefix}_popupContents += '  <td class="content" valign="top" nowrap="nowrap"><input \n';
+${prefix}_popupContents += '   type="radio" name="repeatUnit" id="repeatmonth"\n';
+${prefix}_popupContents += '   value="month" " >\n';
+${prefix}_popupContents += '   Every <input type="text" class="content" size="2"\n';
+${prefix}_popupContents += '   name="everyNmonth" value="1" > month(s) on the\n';
+${prefix}_popupContents += '<select class="content" name="onDayCardSel" title="select which week in the month on which this calendar entry will occur" name="onDayCardSel" > \n';
+${prefix}_popupContents += '<option class="content" value="none">--select one--</option> \n';
+${prefix}_popupContents += '<option class="content" value="first" >first</option> \n';
+${prefix}_popupContents += '<option class="content" value="second" >second</option> \n';
+${prefix}_popupContents += '<option class="content" value="third" >third</option> \n';
+${prefix}_popupContents += '<option class="content" value="fourth" >fourth</option> \n';
+${prefix}_popupContents += '<option class="content" value="last" >last</option> \n';
+${prefix}_popupContents += '</select> \n';
+${prefix}_popupContents += '<select class="content" name="dow" title="select the day of the week on which the repeated entry will occur" > \n';
+${prefix}_popupContents += '<option class="content" value="none">--select one--</option> \n';
+${prefix}_popupContents += '<option class="content" value="Sunday" >Sunday</option> \n';
+${prefix}_popupContents += '<option class="content" value="Monday" >Monday</option> \n';
+${prefix}_popupContents += '<option class="content" value="Tuesday" >Tuesday</option> \n';
+${prefix}_popupContents += '<option class="content" value="Wednesday" >Wednesday</option> \n';
+${prefix}_popupContents += '<option class="content" value="Thursday" >Thursday</option> \n';
+${prefix}_popupContents += '<option class="content" value="Friday" >Friday</option> \n';
+${prefix}_popupContents += '<option class="content" value="Saturday" >Saturday</option> \n';
+${prefix}_popupContents += '<option class="content" value="weekday" >weekday</option> \n';
+${prefix}_popupContents += '<option class="content" value="weekend day" >weekend day</option> \n';
+${prefix}_popupContents += '</select> </td>\n';
 
-<c:out value="${prefix}" />_popupContents += ' </tr>\n';
-<c:out value="${prefix}" />_popupContents += '</table>	\n';
+${prefix}_popupContents += ' </tr>\n';
+${prefix}_popupContents += '</table>	\n';
 
-<c:out value="${prefix}" />_popupContents += '<br>\n';
-<c:out value="${prefix}" />_popupContents += '<center>\n';
-<c:out value="${prefix}" />_popupContents += '<table border="0" style="border:1px solid;">\n';
-<c:out value="${prefix}" />_popupContents += '<tr><td align="center">\n';
-<c:out value="${prefix}" />_popupContents += '<a href="javascript: ;" onClick="setOpenerHiddenFields(); self.close(); ">\n';
-<c:out value="${prefix}" />_popupContents += 'OK</a></td></tr></table>\n';
-<c:out value="${prefix}" />_popupContents += '</center>\n';
+${prefix}_popupContents += '<br>\n';
+${prefix}_popupContents += '<center>\n';
+${prefix}_popupContents += '<table border="0" style="border:1px solid;">\n';
+${prefix}_popupContents += '<tr><td align="center">\n';
+${prefix}_popupContents += '<a href="javascript: ;" onClick="setOpenerHiddenFields(); self.close(); ">\n';
+${prefix}_popupContents += 'OK</a></td></tr></table>\n';
+${prefix}_popupContents += '</center>\n';
 
-<c:out value="${prefix}" />_popupContents += "</form>\n";
+${prefix}_popupContents += "</form>\n";
 
 
-<c:out value="${prefix}" />_popupContents += "<scr"
-<c:out value="${prefix}" />_popupContents += "ipt language='Javascript'>\n";
+${prefix}_popupContents += "<scr"
+${prefix}_popupContents += "ipt language='Javascript'>\n";
 
-<c:out value="${prefix}" />_popupContents += "var fieldref = self.document.recurPopupForm;\n";
+${prefix}_popupContents += "var fieldref = self.document.recurPopupForm;\n";
 
-<c:out value="${prefix}" />_popupContents += "function getRadioButtonIdx(ptr, type, val) {\n";
-<c:out value="${prefix}" />_popupContents += "    for (i=0; i< ptr.length; i++) {\n";
-<c:out value="${prefix}" />_popupContents += "        if (ptr.elements[type][i].value ==  val) {\n";
-<c:out value="${prefix}" />_popupContents += "            return i;\n";
-<c:out value="${prefix}" />_popupContents += "        }\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "}\n";
+${prefix}_popupContents += "function getRadioButtonIdx(ptr, type, val) {\n";
+${prefix}_popupContents += "    for (i=0; i< ptr.length; i++) {\n";
+${prefix}_popupContents += "        if (ptr.elements[type][i].value ==  val) {\n";
+${prefix}_popupContents += "            return i;\n";
+${prefix}_popupContents += "        }\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "}\n";
 
-<c:out value="${prefix}" />_popupContents += "var norptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'none');\n";
-<c:out value="${prefix}" />_popupContents += "var dayrptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'day');\n";
-<c:out value="${prefix}" />_popupContents += "var weekrptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'week');\n";
-<c:out value="${prefix}" />_popupContents += "var monthrptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'month');\n";
+${prefix}_popupContents += "var norptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'none');\n";
+${prefix}_popupContents += "var dayrptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'day');\n";
+${prefix}_popupContents += "var weekrptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'week');\n";
+${prefix}_popupContents += "var monthrptidx = getRadioButtonIdx(fieldref, 'repeatUnit', 'month');\n";
 
 
 // write data back to the opener
-<c:out value="${prefix}" />_popupContents += "function setOpenerHiddenFields() {\n";
-<c:out value="${prefix}" />_popupContents += "  if (fieldref.repeatUnit[norptidx].checked) {\n";
-<c:out value="${prefix}" />_popupContents += "    self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'repeatUnit', 'none');\n";
-<c:out value="${prefix}" />_popupContents += "  }\n";
-<c:out value="${prefix}" />_popupContents += "  if (fieldref.repeatUnit[dayrptidx].checked) {\n";
-<c:out value="${prefix}" />_popupContents += "    self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'repeatUnit', 'day');\n";
-<c:out value="${prefix}" />_popupContents += "    self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'everyN', fieldref.everyNday.value);\n";
-<c:out value="${prefix}" />_popupContents += "  }\n";
-<c:out value="${prefix}" />_popupContents += "  if (fieldref.repeatUnit[weekrptidx].checked) {\n";
-<c:out value="${prefix}" />_popupContents += "    self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'repeatUnit', 'week');\n";
-<c:out value="${prefix}" />_popupContents += "    self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'everyN', fieldref.everyNweek.value);\n";
+${prefix}_popupContents += "function setOpenerHiddenFields() {\n";
+${prefix}_popupContents += "  if (fieldref.repeatUnit[norptidx].checked) {\n";
+${prefix}_popupContents += "    self.opener.setHiddenField('${formName}', '${evid}', 'repeatUnit', 'none');\n";
+${prefix}_popupContents += "  }\n";
+${prefix}_popupContents += "  if (fieldref.repeatUnit[dayrptidx].checked) {\n";
+${prefix}_popupContents += "    self.opener.setHiddenField('${formName}', '${evid}', 'repeatUnit', 'day');\n";
+${prefix}_popupContents += "    self.opener.setHiddenField('${formName}', '${evid}', 'everyN', fieldref.everyNday.value);\n";
+${prefix}_popupContents += "  }\n";
+${prefix}_popupContents += "  if (fieldref.repeatUnit[weekrptidx].checked) {\n";
+${prefix}_popupContents += "    self.opener.setHiddenField('${formName}', '${evid}', 'repeatUnit', 'week');\n";
+${prefix}_popupContents += "    self.opener.setHiddenField('${formName}', '${evid}', 'everyN', fieldref.everyNweek.value);\n";
 
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.day0.checked) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />','<c:out value="${evid}" />', 'day0', 'yes')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.day1.checked) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />','<c:out value="${evid}" />', 'day1', 'yes')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.day2.checked) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />','<c:out value="${evid}" />', 'day2', 'yes')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.day3.checked) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />','<c:out value="${evid}" />', 'day3', 'yes')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.day4.checked) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />','<c:out value="${evid}" />', 'day4', 'yes')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.day5.chhecked) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />','<c:out value="${evid}" />', 'day5', 'yes')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.day6.chhecked) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />','<c:out value="${evid}" />', 'day6', 'yes')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.day0.checked) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day0', 'yes')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.day1.checked) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day1', 'yes')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.day2.checked) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day2', 'yes')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.day3.checked) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day3', 'yes')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.day4.checked) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day4', 'yes')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.day5.chhecked) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day5', 'yes')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.day6.chhecked) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}','${evid}', 'day6', 'yes')\n";
+${prefix}_popupContents += "    }\n";
 
-<c:out value="${prefix}" />_popupContents += "  }\n";
-<c:out value="${prefix}" />_popupContents += "  if (fieldref.repeatUnit[monthrptidx].checked) {\n";
-<c:out value="${prefix}" />_popupContents += "    self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'repeatUnit', 'month');\n";
-<c:out value="${prefix}" />_popupContents += "    self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'everyN', fieldref.everyNmonth.value);\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.onDayCardSel.options[0].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'onDayCard', 'none')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.onDayCardSel.options[1].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'onDayCard', 'first')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.onDayCardSel.options[2].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'onDayCard', 'second')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.onDayCardSel.options[3].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'onDayCard', 'third')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "     if (fieldref.onDayCardSel.options[4].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "     self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'onDayCard', 'fourth')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.onDayCardSel.options[5].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'onDayCard', 'last')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
+${prefix}_popupContents += "  }\n";
+${prefix}_popupContents += "  if (fieldref.repeatUnit[monthrptidx].checked) {\n";
+${prefix}_popupContents += "    self.opener.setHiddenField('${formName}', '${evid}', 'repeatUnit', 'month');\n";
+${prefix}_popupContents += "    self.opener.setHiddenField('${formName}', '${evid}', 'everyN', fieldref.everyNmonth.value);\n";
+${prefix}_popupContents += "    if (fieldref.onDayCardSel.options[0].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'none')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.onDayCardSel.options[1].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'first')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.onDayCardSel.options[2].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'second')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.onDayCardSel.options[3].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'third')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "     if (fieldref.onDayCardSel.options[4].selected) {\n";
+${prefix}_popupContents += "     self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'fourth')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.onDayCardSel.options[5].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'onDayCard', 'last')\n";
+${prefix}_popupContents += "    }\n";
 
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.dow.options[0].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'dow', 'none')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.dow.options[1].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'dow', 'Sunday')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.dow.options[2].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'dow', 'Monday')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.dow.options[3].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'dow', 'Tuesday')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.dow.options[4].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'dow', 'Wednesday')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.dow.options[5].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'dow', 'Thursday')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.dow.options[6].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'dow', 'Friday')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.dow.options[7].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'dow', 'Saturday')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.dow.options[8].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'dow', 'weekday')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
-<c:out value="${prefix}" />_popupContents += "    if (fieldref.dow.options[9].selected) {\n";
-<c:out value="${prefix}" />_popupContents += "      self.opener.setHiddenField('<c:out value="${formName}" />', '<c:out value="${evid}" />', 'dow', 'weekendday')\n";
-<c:out value="${prefix}" />_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.dow.options[0].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'none')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.dow.options[1].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Sunday')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.dow.options[2].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Monday')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.dow.options[3].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Tuesday')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.dow.options[4].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Wednesday')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.dow.options[5].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Thursday')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.dow.options[6].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Friday')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.dow.options[7].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'Saturday')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.dow.options[8].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'weekday')\n";
+${prefix}_popupContents += "    }\n";
+${prefix}_popupContents += "    if (fieldref.dow.options[9].selected) {\n";
+${prefix}_popupContents += "      self.opener.setHiddenField('${formName}', '${evid}', 'dow', 'weekendday')\n";
+${prefix}_popupContents += "    }\n";
 
 
-<c:out value="${prefix}" />_popupContents += "  }\n";
-<c:out value="${prefix}" />_popupContents += "}   \n";
+${prefix}_popupContents += "  }\n";
+${prefix}_popupContents += "}   \n";
 
-<c:out value="${prefix}" />_popupContents += "</sc";
-<c:out value="${prefix}" />_popupContents += "ript>\n";
+${prefix}_popupContents += "</sc";
+${prefix}_popupContents += "ript>\n";
 
 // pop up the recurrence stuff
-function <c:out value="${prefix}" />_popupRecurrenceWindow() {;
+function ${prefix}_popupRecurrenceWindow() {;
    var win = new PopupWindow();
    win.setSize(500,220);
    win.autoHide();
    // should be conditional on IE
    win.offsetY = 25;
-   win.populate(<c:out value="${prefix}" />_popupContents);
-   win.showPopup('<c:out value="${prefix}" />_anchor');
+   win.populate(${prefix}_popupContents);
+   win.showPopup('${prefix}_anchor');
 }
 
 function setHiddenField(formName, id, fn, val) {
