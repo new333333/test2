@@ -38,7 +38,6 @@ public interface FolderCoreProcessor {
      */
     public Long addEntry(Folder forum, Definition def, Map inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
-    public Long addFileEntry(Folder forum, Definition def, Map inputData, Map fileItems) throws AccessControlException;
     public Long addReply(FolderEntry parent, Definition def, Map inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
     public void modifyEntry(Folder parentFolder, Long entryId, Map inputData, Map fileItems) 

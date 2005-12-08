@@ -67,7 +67,7 @@ public interface FolderModule {
  	public Map getFolderEntries(Long folderId) throws AccessControlException;
 	public Map getFolderEntries(Long folderId, int maxNumEntries) throws AccessControlException;
     public Map getUnseenCounts(List folderIds);
-    public void indexFolders(Long folderId);
+    public void indexFolderTree(Long folderId);
     public void indexFolder(Long folderId);
 
 	public Long addFolder(Long folderId, Folder folder) throws AccessControlException;

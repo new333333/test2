@@ -166,42 +166,28 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		folder.setDefinitions(definitions);
     }
     
-    public void indexFolders(Long folderId) {
-		String companyId = RequestContextHolder.getRequestContext().getZoneName();
-		Folder folder = getFolderDao().loadFolders(folderId, companyId);
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor(
-            	folder, FolderCoreProcessor.PROCESSOR_KEY);
-    	try {
-    		//Should this check even be done?
-    		getAccessControlManager().checkAcl(folder, AccessType.READ);
-    	}
-    	catch(AccessControlException e) {
-    		//Skip folders to which access is denied
-    	}
-    	processor.indexFolder(folder);
+    public void indexFolderTree(Long folderId) {
+		Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneName());
 
-    	//Now do the sub-folders
-    	Iterator itFolders = folder.getFolders().iterator();
-		while (itFolders.hasNext()) {
-	    	folder = (Folder) itFolders.next();
+    	//get sub-folders and index them all
+		List folders = getFolderDao().loadFolderTree(folder);
+		folders.add(folder);
+		for (int i=0; i<folders.size(); ++i) {
+	    	folder = (Folder) folders.get(i);
 	    	try {
-	    		//Should this check even be done?
-	    		getAccessControlManager().checkAcl(folder, AccessType.READ);
+	    		FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor(
+		            	folder, FolderCoreProcessor.PROCESSOR_KEY);
+		    	processor.indexFolder(folder);
 	    	}
 	    	catch(AccessControlException e) {
 	    		//Skip folders to which access is denied
 	    		continue;
 	    	}
-	        processor = (FolderCoreProcessor) getProcessorManager().getProcessor(
-	            	folder, FolderCoreProcessor.PROCESSOR_KEY);
-	    	processor.indexFolder(folder);
 		}
     }
     
     public void indexFolder(Long folderId) {
-		String companyId = RequestContextHolder.getRequestContext().getZoneName();
-		Folder folder = getFolderDao().loadFolder(folderId, companyId);
-    	getAccessControlManager().checkAcl(folder, AccessType.READ);
+		Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneName());
 
         FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor(
             	folder, FolderCoreProcessor.PROCESSOR_KEY);
@@ -247,7 +233,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	        Hits hits = getRecentEntries(folders);
 	        Map unseenCounts = new HashMap();
 	        for (int i = 0; i < hits.length(); i++) {
-				String folderIdString = hits.doc(i).getField(IndexUtils.FOLDERID_FIELD).stringValue();
+				String folderIdString = hits.doc(i).getField(IndexUtils.TOP_FOLDERID_FIELD).stringValue();
 				String entryIdString = hits.doc(i).getField(IndexUtils.DOCID_FIELD).stringValue();
 				Long entryId = null;
 				if (entryIdString != null && !entryIdString.equals("")) {

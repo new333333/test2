@@ -59,16 +59,10 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	    return coreDao;
 	}
 	 	
-    public Folder loadFolder(Long folderId, String zoneName) throws DataAccessException {
-        if (folderId == null) {throw new NoFolderByTheIdException(folderId);}
-       
-        Folder folder = (Folder)getHibernateTemplate().get(Folder.class, folderId);
-        if (folder == null) {throw new NoFolderByTheIdException(folderId);}
-        if ((zoneName != null ) && !folder.getZoneName().equals(zoneName)) {
-        	throw new NoFolderByTheIdException(folderId);
-        }
-        return folder;
-    }
+
+    /**
+     * Load 1 FolderEntry
+     */
     public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, String zoneName) throws DataAccessException {
         FolderEntry entry = (FolderEntry)getHibernateTemplate().get(FolderEntry.class, entryId);         
         if (entry == null) throw new NoFolderEntryByTheIdException(entryId);
@@ -80,7 +74,10 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
         }
         return entry;
     }
- 
+    /**
+     * Query for a collection of FolderEntries.  An iterator is returned.  The entries are 
+     * not pre-loaded.
+     */
     public Iterator queryEntries(final FilterControls filter) throws DataAccessException { 
         Query query = (Query)getHibernateTemplate().execute(
                 new HibernateCallback() {
@@ -101,13 +98,16 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
        return new SFQuery(query);
     }
     /**
-     * Load level 1 FolderEntries for a 1 folder.  Replies are not loaded
+     * Load level 1 FolderEntries for 1 folder.  Replies are not loaded
      */
     public Iterator queryChildEntries(Folder parentFolder) throws DataAccessException {
     	Object[] cfValues = new Object[]{parentFolder, new Integer(1)};
     	// use default query
      	return queryEntries(new FilterControls(cfAttrs, cfValues, cfOrder));
     }
+    /**
+     * Given a folder entry, pre-load its chain of FolderEntry ancestors 
+     */
     public List loadEntryAncestors(final FolderEntry entry) throws DataAccessException { 
         List result = (List)getHibernateTemplate().execute(
              new HibernateCallback() {
@@ -124,6 +124,9 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
          );  
          return result;
      }  
+    /**
+     * Given a FolderEntry, pre-load all descendents of the entry.
+     */
     public List loadEntryDescendants(final FolderEntry entry) throws DataAccessException { 
         List result = (List)getHibernateTemplate().execute(
              new HibernateCallback() {
@@ -146,9 +149,15 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
          );  
          return result;
      } 
+    /**
+     * Load all entries of a folder that have been updated with a specified range.
+     */
 	public List loadFolderUpdates(Folder folder, Date since, Date before) {
 		return loadFolderUpdates(folder, since, before, new OrderBy(Constants.ID));
 	}
+	/**
+	 * See <code>loadFolderUpdates</code>. Order results as specified.
+	 */
 	public List loadFolderUpdates(final Folder folder, final Date since, final Date before, final OrderBy order) {
         List entries = (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
@@ -172,10 +181,16 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
             );
 		return entries;
     }
+    /**
+     * Load all entries of a folder and it sub-folders that have been updated with a specified range.
+     */
 	public List loadFolderTreeUpdates(Folder folder, Date since, Date before) {
 		return loadFolderTreeUpdates(folder, since, before, new OrderBy(Constants.ID));
 	}
 
+	/**
+	 * See <code>loadFolderTreeUpdates</code>. Order results as specified.
+	 */
 	public List loadFolderTreeUpdates(final Folder folder, final Date since, final Date before, final OrderBy order) {
         List entries = (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
@@ -199,7 +214,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		return entries;
     }	
 	/*
-     * In one call load the ancestors and descendants of an entry
+     * Load the ancestors and descendants of an entry
      */
     public List loadEntryTree(final FolderEntry entry) throws DataAccessException { 
         List result;
@@ -238,6 +253,43 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
         return result;
      }     
 
+	/**
+	 * Load 1 folder
+	 */
+    public Folder loadFolder(Long folderId, String zoneName) throws DataAccessException {
+        if (folderId == null) {throw new NoFolderByTheIdException(folderId);}
+       
+        Folder folder = (Folder)getHibernateTemplate().get(Folder.class, folderId);
+        if (folder == null) {throw new NoFolderByTheIdException(folderId);}
+        if ((zoneName != null ) && !folder.getZoneName().equals(zoneName)) {
+        	throw new NoFolderByTheIdException(folderId);
+        }
+        return folder;
+    }
+    /**
+     * Load all the child folders of a folder.  Not restricted to 1 level.
+     */
+    public List loadFolderTree(final Folder folder) throws DataAccessException {
+        
+        //Load folder and sub-folders. 
+        return (List)getHibernateTemplate().execute(
+            new HibernateCallback() {
+                public Object doInHibernate(Session session) throws HibernateException {
+                	 return session.createCriteria(Folder.class)
+                     			.add(Expression.conjunction()  
+                                   	.add(Expression.like("folderHKey.sortKey", folder.getFolderHKey().getSortKey() + "%"))
+                                    .add(Expression.gt("folderHKey.level", new Integer(folder.getFolderHKey().getLevel())))
+                                   )
+                    	.list();
+					 
+               }
+            }
+        );
+    }
+    
+    /**
+     * Load a folder and all its sub-folders.  Contains entire tree.
+     */
     public List loadFolderAncestors(final Folder folder) throws DataAccessException { 
         final String[] keys = folder.getFolderHKey().getAncestorKeys();  
         if (keys == null) return new ArrayList();
@@ -262,31 +314,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
          );  
          return result;
      }  
-    /**
-     * Load a folder and its child folders
-     */
-    public Folder loadFolders(final Long folderId, final String zoneName) throws DataAccessException {
-        if (folderId == null) {throw new NoFolderByTheIdException(folderId);}
-        
-        //Load folder and sub-folders. 
-        return (Folder)getHibernateTemplate().execute(
-            new HibernateCallback() {
-                public Object doInHibernate(Session session) throws HibernateException {
-                	 List result  = session.createCriteria(Folder.class)
-                     	.add(Expression.eq(Constants.ID, folderId))
-                     	.setFetchMode("subFolders", FetchMode.JOIN)
-                     	.list();
-					 if (result.isEmpty()) {throw new NoFolderByTheIdException(folderId);}
-					 
-                     Folder folder = (Folder)result.get(0);
-                     if ((zoneName != null ) && !folder.getZoneName().equals(zoneName)) {
-                    	throw new NoFolderByTheIdException(folderId);
-                     }
-                     return folder;
-                }
-            }
-        );
-    }
+
 
     public int allocateEntryNumbers(Folder folder, int count) throws StaleObjectStateException {
     	return allocateNumbers(folder, count, 0);
@@ -294,7 +322,29 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     public int allocateFolderNumbers(Folder folder, int count) {
     	return allocateNumbers(folder, count, 1);
     }
-    /**
+    public UserProperties loadUserFolderProperties(Long userId, Long folderId) {
+    	UserPropertiesPK id = new UserPropertiesPK(userId, folderId);
+        UserProperties uProps = (UserProperties)getHibernateTemplate().get(UserProperties.class, id);
+        if (uProps == null) {
+        	uProps = new UserProperties(id);
+        	getCoreDao().saveNewSession(uProps);
+        	//quick write
+         	uProps=(UserProperties)getHibernateTemplate().get(UserProperties.class, id);
+    	}
+        return uProps;
+    }
+	public HistoryMap loadHistoryMap(Long userId, Long folderId) {
+   		UserPerFolderPK id = new UserPerFolderPK(userId, folderId);
+   		HistoryMap history =(HistoryMap)getHibernateTemplate().get(HistoryMap.class, id);
+   		if (history == null) {
+   			history = new HistoryMap(id);
+   			getCoreDao().saveNewSession(history);
+   			//quick write
+   			history =(HistoryMap)getHibernateTemplate().get(HistoryMap.class, id);   			
+   		}
+   		return history;
+	}	
+	/**
      * Allocate folder numbers using a new session. This allows us to reserve the number and commit
      * the operation quickly.
      * @param folder
@@ -364,26 +414,5 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     	session.save(fCounts);
     	return fCounts;
     }
-    public UserProperties loadUserFolderProperties(Long userId, Long folderId) {
-    	UserPropertiesPK id = new UserPropertiesPK(userId, folderId);
-        UserProperties uProps = (UserProperties)getHibernateTemplate().get(UserProperties.class, id);
-        if (uProps == null) {
-        	uProps = new UserProperties(id);
-        	getCoreDao().saveNewSession(uProps);
-        	//quick write
-         	uProps=(UserProperties)getHibernateTemplate().get(UserProperties.class, id);
-    	}
-        return uProps;
-    }
-	public HistoryMap loadHistoryMap(Long userId, Long folderId) {
-   		UserPerFolderPK id = new UserPerFolderPK(userId, folderId);
-   		HistoryMap history =(HistoryMap)getHibernateTemplate().get(HistoryMap.class, id);
-   		if (history == null) {
-   			history = new HistoryMap(id);
-   			getCoreDao().saveNewSession(history);
-   			//quick write
-   			history =(HistoryMap)getHibernateTemplate().get(HistoryMap.class, id);   			
-   		}
-   		return history;
-	}	
+
 }

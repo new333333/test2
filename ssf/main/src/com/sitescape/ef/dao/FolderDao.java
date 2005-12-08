@@ -20,7 +20,6 @@ import java.util.List;
  *
  */
 public interface FolderDao {
-	public Folder loadFolder(Long folderId, String zoneName) throws DataAccessException,NoFolderByTheIdException;
 	public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, String zoneName) throws DataAccessException;
     /**
      * Return iterator of child entries
@@ -54,12 +53,13 @@ public interface FolderDao {
 	public List loadFolderTreeUpdates(Folder folder, Date since, Date before);
 	public List loadFolderTreeUpdates(Folder folder, Date since, Date before, OrderBy order);
 	
+	public Folder loadFolder(Long folderId, String zoneName) throws DataAccessException,NoFolderByTheIdException;
     /**
      * Load a folder and subFolders 
-     * @param folderId
-     * @return Folder
+     * @param folder
+     * @return List
      */
-    public Folder loadFolders(Long folderId, String zoneName) throws DataAccessException; 
+    public List loadFolderTree(Folder folder) throws DataAccessException; 
     public List loadFolderAncestors(Folder folder) throws DataAccessException;
     public int allocateEntryNumbers(Folder folder, int count);
     public int allocateFolderNumbers(Folder folder, int count);
