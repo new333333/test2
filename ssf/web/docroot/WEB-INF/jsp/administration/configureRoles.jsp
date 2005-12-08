@@ -14,20 +14,21 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="com.sitescape.ef.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <script language="javascript" type="text/javascript">
 </script>
 
 <div class="ss_portlet">
-<h3><ssf:nlt tag="admin.roles.configure" text="Configure SiteScape Forum Roles"/></h3>
+<h3><ssf:nlt tag="administration.configure_roles.configure" text="Configure SiteScape Forum Roles"/></h3>
+<ssf:expandableArea title="<%= NLT.get("administration.configure_roles.add") %>">
 <form name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_roles"/>
 		</portlet:actionURL>">
 		
-	<span><b><ssf:nlt tag="admin.roles.add" text="Add a new role"/></b></span>
-	<span><b><ssf:nlt tag="admin.roles.name" text="Name"/></b></span>
-	<input type="text" size="100" name="roleName"><br>
+	<span><b><ssf:nlt tag="administration.configure_roles.name" text="Name"/></b></span>
+	<input type="text" size="70" name="roleName"><br>
 		
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
 		<input type="checkbox" name="<c:out value="${operation.key}"/>">
@@ -36,17 +37,20 @@
 
 	<input type="submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
+</ssf:expandableArea>
 
 <br>
 <hr>
 <br>
+<h3><ssf:nlt tag="administration.configure_roles.existing" text="Currently defined roles"/></h3>
 
 <c:forEach var="function" items="${ssFunctions}">
+<jsp:useBean id="function" type="com.sitescape.ef.security.function.Function" />
+<ssf:expandableArea title="<%= function.getName() %>">
 <form name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_roles"/>
 		</portlet:actionURL>">
 
-	<c:out value="${function.name}"/><br><br>
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
 		<c:set var="checked" value=""/>
 		<c:forEach var="roleOperation" items="${function.operations}">
@@ -61,12 +65,12 @@
 	<input type="submit" name="modifyBtn"
 	 value="<ssf:nlt tag="button.modify" text="Modify"/>">
 </form>
-
-<br>
-<hr>
-<br>
+<br/>
+</ssf:expandableArea>
 
 </c:forEach>
+
+<br/>
 
 <form name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_roles"/>
