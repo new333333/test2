@@ -19,5 +19,8 @@
       <property name="owningFolderSortKey" length="512"/>
     </component>
     <property name="state" length="64"/>
+  	<many-to-one name="definition" >
+  		<column name="definition" sql-type="char(32)"/>
+  	</many-to-one> 
   </class>
 </hibernate-mapping>
