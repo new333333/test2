@@ -1,4 +1,4 @@
-package com.sitescape.ef.webdav.client;
+package com.sitescape.ef.repository.webdav;
 
 import java.io.IOException;
 
@@ -15,6 +15,6 @@ public interface WebdavResourceFactory {
 
 	public void setDocRootDir(String docRootDir);
 
-	public WebdavResource openSession(String userName, String password) 
+	public SWebdavResource openSession(String userName, String password) 
 		throws IOException;
 }
