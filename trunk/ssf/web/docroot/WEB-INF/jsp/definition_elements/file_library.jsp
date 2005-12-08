@@ -25,7 +25,7 @@ function loadEntry(obj,id) {
   <td>
 	<div>
 	  <ssf:tree treeName="folderTree" treeDocument="<%= ssFolderDomTree %>" 
-	    commonImg="<%= COMMON_IMG %>" rootOpen="false" 
+	    rootOpen="false" 
 	    nodeOpen="<%= parentFolderId %>" highlightNode="<%= folderId %>" />
 	</div>
   </td>

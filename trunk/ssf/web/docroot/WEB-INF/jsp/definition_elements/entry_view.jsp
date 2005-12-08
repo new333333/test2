@@ -11,7 +11,7 @@
 %>
 <div class="ss_portlet">
 <c:set var="toolbar" value="${ssFolderEntryToolbar}" scope="request" />
-<%@ include file="/jsp/definition_elements/toolbar_view.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= item %>" 
   configJspStyle="<%= ssConfigJspStyle %>" 

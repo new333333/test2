@@ -1,4 +1,8 @@
 <% // Folder listing %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />
+<jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
+<jsp:useBean id="ssFolderDomTree" type="org.dom4j.Document" scope="request" />
 <%
 	String folderId = ssFolder.getId().toString();
 	String parentFolderId = "";
@@ -25,7 +29,7 @@ function loadEntry(obj,id) {
   <td>
 	<div>
 	  <ssf:tree treeName="folderTree" treeDocument="<%= ssFolderDomTree %>" 
-	    commonImg="<%= COMMON_IMG %>" rootOpen="false" 
+	    rootOpen="false" 
 	    nodeOpen="<%= parentFolderId %>" highlightNode="<%= folderId %>" />
 	</div>
   </td>

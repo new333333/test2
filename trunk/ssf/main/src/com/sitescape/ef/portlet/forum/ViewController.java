@@ -119,7 +119,7 @@ public class ViewController  extends SAbstractController {
 			}
 		} else {
 			model = new HashMap();
-			model.put(PortletKeys.FOLDER,	 getFolderModule().getFolder(folderId));
+			model.put(PortletKeys.FOLDER, getFolderModule().getFolder(folderId));
 			viewPath = op;					
 		}
 
