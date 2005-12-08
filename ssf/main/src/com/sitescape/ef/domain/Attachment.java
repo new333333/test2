@@ -20,6 +20,9 @@ public abstract class Attachment extends PersistentTimestampObject
     protected String name;
     public Attachment() {
     }
+    public Attachment(String name) {
+    	this.name = name;
+    }
     /**
      * @hibernate.component class="com.sitescape.ef.domain.AnyOwner"
      * @return

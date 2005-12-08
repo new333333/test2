@@ -39,7 +39,8 @@ public class CustomAttribute  {
     protected SSBlobXML xmlValue;
     protected Boolean booleanValue;
     protected Set values;
-    protected int valueType=0;
+    protected int valueType=NONE;
+    	private static final int NONE=0;
     	public static final int STRING= 1;
     	public static final int NUMBER= 2;
     	public static final int DATE= 3;
@@ -200,13 +201,17 @@ public class CustomAttribute  {
     }
 
     private void clearVals() {
-        description=null;
         stringValue=null;
         longValue=null;
         dateValue=null;
-        serializedValue=null;
         booleanValue=null;
-        xmlValue = null;
+        //allways setting mutable values to null, causes unnecessary updates
+        if ((description !=null) && !description.getText().equals(""))
+        	description=null;
+        if ((serializedValue != null) && (serializedValue.getValue() != null))
+         	serializedValue = null;
+        if ((xmlValue != null) && (xmlValue.getValue() != null))
+         	xmlValue = null;
         if (valueType == EVENT) owner.getEntry().removeNamedEvent(name);
         if (valueType == ATTACHMENT) owner.getEntry().removeNamedAttachment(name);
         //let hibernate delete the existing objects.
@@ -231,7 +236,6 @@ public class CustomAttribute  {
                 stringValue = null;
             }
         } else if (value instanceof Description) {
-            clearVals();
             valueType = DESCRIPTION;
             description = (Description)value;
     	} else if (value instanceof Boolean) {
@@ -252,6 +256,7 @@ public class CustomAttribute  {
             dateValue = (Date)value;
          } else if (allowed && (value instanceof Set)) {
             Set oldValues = values;
+            values = null;
             clearVals();
             values = oldValues;
             valueType = SET;
