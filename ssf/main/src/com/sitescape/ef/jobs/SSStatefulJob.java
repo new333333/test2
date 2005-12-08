@@ -65,7 +65,7 @@ public abstract class SSStatefulJob implements StatefulJob {
            	if (jobDataMap.containsKey("user")) {
            		user = coreDao.loadUser(new Long(jobDataMap.getLong("user")), zoneName);
            	} else {
-           		user = coreDao.findUserByNameOnlyIfEnabled("wf_admin", zoneName);
+           		user = coreDao.findUserByNameOnlyIfEnabled("liferay.com.1", zoneName);
            	}
     	
            	//Setup thread context expected by business logic
