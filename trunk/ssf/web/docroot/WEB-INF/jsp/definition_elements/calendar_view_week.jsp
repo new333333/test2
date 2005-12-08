@@ -1,5 +1,12 @@
 <% // Calendar week view %>
-
+<script language="javascript">
+var ss_entryList = new Array();
+var ss_entryCount = 0;
+function getFilteredEntries() {
+		ss_entryList[ss_entryCount++] = '<c:out value="${ev.value.entry.id}"/>';
+//alert("cal view entryList "+ss_entryCount)
+}
+</script>
 <table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_ruledTable">
 <tr class="ss_bglightgray">
 <td colspan="2" class="ss_contentbold">Week beginning 
@@ -24,6 +31,9 @@
     Map m = (Map) ev.getValue();
     FolderEntry e = (FolderEntry) m.get("entry");
 %>
+<script language="javascript">
+getFilteredEntries()
+</script>
 <div id="folderLine_<c:out value="${ev.value.entry.id}"/>">	
 <%
 if (ssSeenMap.checkIfSeen(e)) {
