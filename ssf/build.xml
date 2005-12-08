@@ -160,14 +160,22 @@
 		</if>
 	</target>
 	
-	<target name="deploy-liferay-tomcat" depends="init-liferay">
+	<target name="deploy-liferay-pre">
 		<delete>
 			<fileset dir="${app.server.lib.dir}" includes="ssf-*.jar" />
 		</delete>		
 		
 		<delete dir="liferay/temp" />
 
-		<copy file="war/ssf.war" todir="liferay/temp" />
+		<copy file="war/ssf.war" todir="liferay/temp" />		
+	</target>
+	
+	<target name="deploy-liferay-post">
+		<ant dir="liferay" target="deploy" />
+	</target>
+		
+	<target name="deploy-liferay-tomcat" depends="init-liferay">
+		<antcall target="deploy-liferay-pre" />
 		
 		<java
 			classname="com.liferay.portal.tools.PortletDeployer"
@@ -194,14 +202,11 @@
 				<!--<arg value="${app.server.deploy.dir}/ext.ear/lib/util-jsf.jar" />-->
 		</java>
 
-		<copy file="liferay/ssf-liferay.jar" todir="${deploy.liferay.lib.dir}"/>
+		<antcall target="deploy-liferay-post" />
 	</target>
 		
 	<target name="deploy-liferay-jboss-tomcat" depends="init-liferay">	
-		
-		<delete dir="liferay/temp" />
-
-		<copy file="war/ssf.war" todir="liferay/temp" />
+		<antcall target="deploy-liferay-pre" />
 		
 		<java
 			classname="com.liferay.portal.tools.PortletDeployer"
@@ -228,7 +233,7 @@
 				<!--<arg value="${app.server.deploy.dir}/ext.ear/lib/util-jsf.jar" />-->
 		</java>
 		
-		<copy file="liferay/ssf-liferay.jar" todir="${deploy.liferay.lib.dir}"/>
+		<antcall target="deploy-liferay-post" />
 	</target>
 		
 	<target name="zip">

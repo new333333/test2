@@ -22,6 +22,7 @@
 		<propertycopy name="app.server.dir" from="app.server.${app.server.type}.dir" />
 		<propertycopy name="app.server.lib.dir" from="app.server.${app.server.type}.lib.dir" />
 		<propertycopy name="app.server.deploy.dir" from="app.server.${app.server.type}.deploy.dir" />
+		<propertycopy name="app.server.ssf.dir" from="app.server.${app.server.type}.ssf.dir" />
 	</target>
 
 	<target name="clean" depends="init">
@@ -42,46 +43,9 @@
 	</target>
 
 	<target name="deploy" depends="init">
-		<if>
-			<or>
-				<equals arg1="${app.server.type}" arg2="jetty" />
-				<equals arg1="${app.server.type}" arg2="tomcat" />
-			</or>
-			<then>
-				<copy todir="${app.server.deploy.dir}/ssf">
-					<fileset dir="${web.dir}" />
-				</copy>
-			</then>
-			<else>
-				<if>
-					<or>
-						<equals arg1="${app.server.type}" arg2="jboss-jetty" />
-						<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
-						<equals arg1="${app.server.type}" arg2="jonas-jetty" />
-						<equals arg1="${app.server.type}" arg2="jonas-tomcat" />
-						<equals arg1="${app.server.type}" arg2="rexip" />
-						<equals arg1="${app.server.type}" arg2="weblogic" />
-					</or>
-					<then>
-						<property name="war.deploy.file" value="ssf-web-complete.war" />
-					</then>
-					<elseif>
-						<or>
-							<equals arg1="${app.server.type}" arg2="oc4j" />
-							<equals arg1="${app.server.type}" arg2="orion" />
-						</or>
-						<then>
-							<property name="war.deploy.file" value="ssf-web-complete" />
-						</then>
-					</elseif>
-				</if>
-
-				<copy todir="${app.server.deploy.dir}/ext.ear/${war.deploy.file}/html">
-					<fileset dir="${web.dir}/html" />
-				</copy>
-
-			</else>
-		</if>
+		<copy todir="${app.server.ssf.dir}">
+			<fileset dir="${web.dir}" />
+		</copy>
 	</target>
 	
 </project>
