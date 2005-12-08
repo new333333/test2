@@ -123,9 +123,8 @@
 					<fileset dir="${app.server.lib.dir}" />
 					<pathelement location="${app.server.dir}/common/lib/servlet-api.jar" />
 				</path>
-				<property name="deploy.liferay.portlet.tld" value="${app.server.dir}/liferay/WEB-INF/tld/liferay-portlet.tld" />
-				<property name="deploy.liferay.taglib.jar" value="${app.server.dir}/liferay/WEB-INF/lib/util-taglib.jar" />
-				<property name="deploy.liferay.util.jar" value="${app.server.dir}/common/lib/ext/util-java.jar" />
+				<property name="deploy.liferay.webinf" value="${app.server.dir}/liferay/WEB-INF" />
+				<property name="deploy.liferay.lib.dir" value="${app.server.lib.dir}" />
 			</then>
 			<elseif>
 				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
@@ -136,12 +135,14 @@
 						<fileset dir="${app.server.deploy.dir}/ext.ear/lib" />
 						<pathelement location="${app.server.deploy.dir}/../lib/javax.servlet.jar" />
 					</path>
-					<property name="deploy.liferay.portlet.tld" value="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/WEB-INF/tld/liferay-portlet.tld" />
-					<property name="deploy.liferay.taglib.jar" value="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/WEB-INF/lib/util-taglib.jar" />
-					<property name="deploy.liferay.util.jar" value="${app.server.deploy.dir}/ext.ear/lib/util-java.jar" />
+					<property name="deploy.liferay.webinf" value="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/WEB-INF" />
+					<property name="deploy.liferay.lib.dir" value="${app.server.deploy.dir}/ext.ear/lib" />
 				</then>
 			</elseif>
-		</if>
+		</if>	
+		<property name="deploy.liferay.portlet.tld" value="${deploy.liferay.webinf}/tld/liferay-portlet.tld" />
+		<property name="deploy.liferay.taglib.jar" value="${deploy.liferay.webinf}/lib/util-taglib.jar" />
+		<property name="deploy.liferay.util.jar" value="${deploy.liferay.lib.dir}/util-java.jar" />
 	</target>
 	
 	<target name="deploy-liferay" depends="init-app-server,init-build">
@@ -193,7 +194,7 @@
 				<!--<arg value="${app.server.deploy.dir}/ext.ear/lib/util-jsf.jar" />-->
 		</java>
 
-		<copy file="liferay/ssf-liferay.jar" todir="${app.server.lib.dir}"/>
+		<copy file="liferay/ssf-liferay.jar" todir="${deploy.liferay.lib.dir}"/>
 	</target>
 		
 	<target name="deploy-liferay-jboss-tomcat" depends="init-liferay">	
@@ -226,6 +227,8 @@
 				<arg value="${deploy.liferay.util.jar}" />
 				<!--<arg value="${app.server.deploy.dir}/ext.ear/lib/util-jsf.jar" />-->
 		</java>
+		
+		<copy file="liferay/ssf-liferay.jar" todir="${deploy.liferay.lib.dir}"/>
 	</target>
 		
 	<target name="zip">
