@@ -36,7 +36,7 @@ function loadEntry(obj,id) {
 <div class="folder">
 <table width="100%">
 <tr>
-  <th align="left"><img border="0" src="<%= contextPath %>/html/pics/sym_s_unseen_header.gif"></th>
+  <th align="left"><img border="0" src="<html:imagesPath/>sym_s_unseen_header.gif"></th>
   <th align="left">Title</th>
   <th align="left">Date</th>
   <th align="left">Author</th>
@@ -49,7 +49,7 @@ function loadEntry(obj,id) {
 	if (ssSeenMap.checkIfSeen(fileEntry)) {
 %>&nbsp;<%
 	} else {
-%><img border="0" src="<%= contextPath %>/html/pics/sym_s_unseen.gif"><%
+%><img border="0" src="<html:imagesPath/>sym_s_unseen.gif"><%
 	}
 %>
   </td>

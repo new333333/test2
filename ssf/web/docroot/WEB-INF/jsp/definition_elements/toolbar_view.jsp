@@ -18,7 +18,7 @@
 			    <jsp:useBean id="value" type="java.lang.String" />
 	            <ssf:param name="<%= key %>" value="<%= value %>" />
 	          </c:forEach>
-	        </sitescape:url>" 
+	        </ssf:url>" 
 	        onClick="return(ss_openUrlInPortlet(this.href));"><c:out 
 	        value="${toolbarMenuCategoryItem.key}" /></a></li>
 	    </c:forEach>
@@ -48,7 +48,7 @@
 	    <jsp:useBean id="value2" type="java.lang.String" />
         <ssf:param name="<%= key2 %>" value="<%= value2 %>"/>
       </c:forEach>
-    </sitescape:url>"  onClick="return(ss_openUrlInPortlet(this.href));">
+    </ssf:url>"  onClick="return(ss_openUrlInPortlet(this.href));">
   </c:if>
 <c:out value="${toolbarMenu.value.title}" /></a>
 </div>
