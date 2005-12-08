@@ -59,9 +59,9 @@ var sourceDefinitionId = '<%= data.get("selectedItem") %>';
 %>
 
 function initializeStateMachine() {
-	hideAllDeclaredDivs()
-	setDivHtml("displaydiv", "")
-	addToDiv("displaydiv", "info_select")
+	ss_hideAllDeclaredDivs()
+	ss_setDivHtml("displaydiv", "")
+	ss_addToDiv("displaydiv", "info_select")
 }
 
 function t_<portlet:namespace/>_definitionTree_showId(id, obj) {
@@ -234,28 +234,28 @@ function setStateMachine(newState) {
 	if (state == "definition_selected") {
 		//Hide: selection instructions
 		//Show: definition info, definition operations
-		setDivHtml("displaydiv", "")
-		addToDiv("displaydiv", "info_"+selectedIdMapped)
-		addToDiv("displaydiv", "operations_"+selectedIdMapped)
+		ss_setDivHtml("displaydiv", "")
+		ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
+		ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
 	} else if (state == "operation_selected") {
 		if (operationSelection == "addDefinition" && operationSelectedItem != "") {
-			setDivHtml("displaydiv", "")
-			addToDiv("displaydiv", "info_"+operationSelectedItem)
-			addToDiv("displaydiv", "properties_"+operationSelectedItem)
+			ss_setDivHtml("displaydiv", "")
+			ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
+			ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
 		} else if (operationSelection == "addOption") {
-			addToDiv("displaydiv", "options_"+selectedIdMapped)
+			ss_addToDiv("displaydiv", "options_"+selectedIdMapped)
 		} else {
-			setDivHtml("displaydiv", "")
-			addToDiv("displaydiv", "info_select")
+			ss_setDivHtml("displaydiv", "")
+			ss_addToDiv("displaydiv", "info_select")
 		}
 	} else if (state == "view_definition_options") {
-		setDivHtml("displaydiv", "")
+		ss_setDivHtml("displaydiv", "")
 		var selectedIdNameText = "<span class='ss_contentbold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
-		setDivHtml("infoDefinitionOptionsDefinitionName", selectedIdNameText)
-		addToDiv("displaydiv", "infoDefinitionOptions")
+		ss_setDivHtml("infoDefinitionOptionsDefinitionName", selectedIdNameText)
+		ss_addToDiv("displaydiv", "infoDefinitionOptions")
 	} else if (state == "modifyDefinition") {
-		setDivHtml("displaydiv", "")
-		addToDiv("displaydiv", "modify_definition")		
+		ss_setDivHtml("displaydiv", "")
+		ss_addToDiv("displaydiv", "modify_definition")		
 		self.document.forms['definitionbuilder'].modifyDefinitionName.value = selectedIdText;
 		self.document.forms['definitionbuilder'].modifyDefinitionCaption.value = selectedCaptionText;
 		if (self.document.forms['definitionbuilder'].modifyDefinitionReplyStyle) {
@@ -267,41 +267,41 @@ function setStateMachine(newState) {
 			}
 		}
 	} else if (state == "deleteDefinitionConfirm") {
-		setDivHtml("displaydiv", "")
+		ss_setDivHtml("displaydiv", "")
 		var selectedIdNameText = "<span class='ss_contentbold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
-		setDivHtml("deleteDefinitionSelection", selectedIdNameText)
-		addToDiv("displaydiv", "delete_definition_confirm")
+		ss_setDivHtml("deleteDefinitionSelection", selectedIdNameText)
+		ss_addToDiv("displaydiv", "delete_definition_confirm")
 	} else if (state == "viewItem") {
-		setDivHtml("displaydiv", "")
-		addToDiv("displaydiv", "info_"+operationSelectedItem)
+		ss_setDivHtml("displaydiv", "")
+		ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
 	} else if (state == "addItem") {
-		setDivHtml("displaydiv", "")
-		addToDiv("displaydiv", "info_"+operationSelectedItem)
-		addToDiv("displaydiv", "properties_"+operationSelectedItem)
+		ss_setDivHtml("displaydiv", "")
+		ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
+		ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
 	} else if (state == "modifyItem") {
-		setDivHtml("displaydiv", "")
-		addToDiv("displaydiv", "info_"+selectedIdMapped)
-		addToDiv("displaydiv", "properties_"+selectedIdMapped)
+		ss_setDivHtml("displaydiv", "")
+		ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
+		ss_addToDiv("displaydiv", "properties_"+selectedIdMapped)
 	} else if (state == "deleteItem") {
-		setDivHtml("displaydiv", "")
-		addToDiv("displaydiv", "info_"+selectedId)
-		addToDiv("displaydiv", "delete_item")
+		ss_setDivHtml("displaydiv", "")
+		ss_addToDiv("displaydiv", "info_"+selectedId)
+		ss_addToDiv("displaydiv", "delete_item")
 	} else if (state == "moveItem") {
-		setDivHtml("displaydiv", "")
-		addToDiv("displaydiv", "info_"+selectedId)
-		addToDiv("displaydiv", "move_item")
+		ss_setDivHtml("displaydiv", "")
+		ss_addToDiv("displaydiv", "info_"+selectedId)
+		ss_addToDiv("displaydiv", "move_item")
 	} else if (state == "moveItemConfirm") {
-		setDivHtml("displaydiv", "")
-		addToDiv("displaydiv", "info_"+selectedId)
+		ss_setDivHtml("displaydiv", "")
+		ss_addToDiv("displaydiv", "info_"+selectedId)
 		var infoName = ""
 		if (idMapCaption[lastSelectedId]) {infoName = "<span class='ss_contentbold'>"+idMapCaption[lastSelectedId]+"</span>"}
-		setDivHtml("moveItemSelection", infoName);
-		addToDiv("displaydiv", "move_item_confirm")
+		ss_setDivHtml("moveItemSelection", infoName);
+		ss_addToDiv("displaydiv", "move_item_confirm")
 	} else if (state == "cloneItemConfirm") {
-		addToDiv("displaydiv", "clone_item_confirm")
+		ss_addToDiv("displaydiv", "clone_item_confirm")
 	} else {
-		setDivHtml("displaydiv", "")
-		addToDiv("displaydiv", "info_select")
+		ss_setDivHtml("displaydiv", "")
+		ss_addToDiv("displaydiv", "info_select")
 	}
 }
 
@@ -428,15 +428,4 @@ idCaptions['<c:out value="${item.key}"/>'] = '<c:out value="${item.value}"/>';
 idReplyStyles['<c:out value="${item.key}"/>'] = '<c:out value="${item.value}"/>';
 </c:forEach>
 
-</script>
-
-<script language="javascript">
-function waitForOnLoad() {
-	if (self.onLoadInit) {
-		self.onLoadInit();
-	} else {
-		setTimeout('waitForOnLoad()', 100);
-	}
-}
-waitForOnLoad();
 </script>
