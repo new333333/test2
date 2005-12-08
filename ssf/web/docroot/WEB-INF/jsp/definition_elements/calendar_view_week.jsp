@@ -10,9 +10,11 @@ function getFilteredEntries() {
 <table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_ruledTable">
 <tr class="ss_bglightgray">
 <td colspan="2" class="ss_contentbold">Week beginning 
-   <fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" /></td>
+   <fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+<a href="${set_day_view}">Day view</a>
+</td>
 </tr>
-
 
 <c:forEach var="daymap" items="${ssCalendarViewBean}">
 
