@@ -13,6 +13,8 @@ public class WebKeys {
 	public static final String CALENDAR_VIEW_WEEK = "week";
 	public static final String CALENDAR_VIEW_MONTH = "month";
 	public static final String CALENDAR_CURRENT_DATE = "ssCurrentDate";
+	public static final String CALENDAR_CURRENT_VIEW_STARTDATE = "ssCalStartDate";
+	public static final String CALENDAR_CURRENT_VIEW_ENDDATE = "ssCalEndDate";
 
 	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
     public static final String LOCALE = "ss_locale";
