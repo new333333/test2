@@ -21,9 +21,6 @@
 <%@ page import="com.sitescape.ef.web.util.DateHelper" %>
 <jsp:useBean id="ss_formData" type="java.util.Map" scope="request" />
 
-<liferay:box top="/html/common/box_top.jsp" bottom="/html/common/box_bottom.jsp">
-	<liferay:param name="box_title" value="<%= LanguageUtil.get(pageContext, \"view-timepicker\") %>" />
-
 
 <%
 	Date initDate = (Date)request.getAttribute("initDate");

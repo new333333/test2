@@ -66,8 +66,8 @@ public class Timepicker extends TagSupport {
       ServletRequest req = null;
       req = new DynamicServletRequest((HttpServletRequest)pageContext.getRequest());
 
-      String jsp = contextPath + "/html/tags/timepicker/timepicker.jsp";
-      String icon = contextPath + "/html/pics/sym_s_clock.gif";
+      String jsp = contextPath + "/WEB-INF/tags/timepicker/timepicker.jsp";
+      String icon = contextPath + "/images/pics/sym_s_clock.gif";
       RequestDispatcher rd = req.getRequestDispatcher(jsp); 
 
       GregorianCalendar cal = new GregorianCalendar();
