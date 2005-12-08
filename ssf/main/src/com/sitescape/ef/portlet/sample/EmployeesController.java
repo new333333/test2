@@ -9,6 +9,7 @@ import javax.portlet.PortletSession;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.DebugHelper;
 
 public class EmployeesController extends SAbstractController {
 
@@ -20,22 +21,8 @@ public class EmployeesController extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
-		// To test cross context session sharing: 
-		if(1 == 2) {
-			String loginName = request.getRemoteUser();
-			PortletSession pses = request.getPortletSession();
-			pses.setAttribute("set-by-employees", "hello", PortletSession.APPLICATION_SCOPE);
-			
-			System.out.println("*** EmployeesController login name: " + loginName);
-			System.out.println("*** EmployeesController session id: " + 
-					request.getPortletSession().getId());
-			System.out.println("*** EmployeesController set-by-main-servlet: " + 
-					pses.getAttribute("set-by-main-servlet", PortletSession.APPLICATION_SCOPE));
-			System.out.println("*** EmployeesController set-by-portlet-adapter: " + pses.getAttribute("set-by-portlet-adapter", PortletSession.APPLICATION_SCOPE));
-			System.out.println("*** EmployeesController set-by-download-file: " + pses.getAttribute("set-by-download-file", PortletSession.APPLICATION_SCOPE));
-		}
-
-		// test ends:
+    	// Print debug information pertaining to cross context session sharing
+		DebugHelper.testRequestEnv("EmployeesController", request);
 		
 		// Get the list of all employees from the business tier 
 		// (via EmployeeModule) and create a ModelAndView datastructure
