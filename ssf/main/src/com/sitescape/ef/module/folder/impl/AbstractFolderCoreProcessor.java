@@ -652,7 +652,10 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
     	fAtt.setFileItem(fItem);
 
 		VersionAttachment vAtt = new VersionAttachment();
-		vAtt.setCreation(fAtt.getCreation()); // we don't need mod time for version
+		vAtt.setCreation(fAtt.getCreation());
+		vAtt.setModification(vAtt.getCreation());
+		vAtt.setFileItem(fItem);
+		
 		String versionName = RepositoryServiceUtil.create(folder, entry, fui);
 		vAtt.setVersionName(versionName);
 		fAtt.addFileVersion(vAtt);
