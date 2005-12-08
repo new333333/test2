@@ -48,6 +48,19 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		this.definitionModule = definitionModule;
 	}
 
+	public List getFolders(List folderIds) {
+		List result = new ArrayList();
+		for (int i=0; i<folderIds.size(); ++i) {
+			try {
+				Folder f = getFolder((Long)folderIds.get(i));
+				result.add(f);
+			} catch (NoFolderByTheIdException ex) {
+			} catch (AccessControlException ax) {
+			}
+			
+		}
+		return result;
+	}
 	public Folder getFolder(Long folderId)
 		throws NoFolderByTheIdException, AccessControlException {
 		Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneName());
