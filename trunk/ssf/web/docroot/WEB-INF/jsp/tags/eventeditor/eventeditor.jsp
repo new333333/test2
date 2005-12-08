@@ -231,7 +231,7 @@ function ${prefix}_toggleRecur(name) {
      <c:if test="${freqval == 'day'}"> checked="checked" </c:if>
      >
 
-      <ssf:nlt tag="event.every" /> <input type="text" name="everyNday" size="2" 
+      <ssf:nlt tag="event.every" /> <input type="text" name="${prefix}_everyNday" size="2" 
        value="${initEvent.interval}"
    > <ssf:nlt tag="event.days" /></td>
     </tr>
@@ -243,7 +243,7 @@ function ${prefix}_toggleRecur(name) {
       checked="checked"
       </c:if>
       value="week" >
-      <ssf:nlt tag="event.every" /> <input type="text" name="everyNweek" size="2" 
+      <ssf:nlt tag="event.every" /> <input type="text" name="${prefix}_everyNweek" size="2" 
        value="${initEvent.interval}" > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> 
 
    <input type="checkbox" name="${prefix}_day0" id="${prefix}_day0"
@@ -284,7 +284,7 @@ function ${prefix}_toggleRecur(name) {
       </c:if>
       value="month" >
       <ssf:nlt tag="event.every" /> <input type="text"  size="2"
-      name="everyNmonth" value="${initEvent.interval}"
+      name="${prefix}_everyNmonth" value="${initEvent.interval}"
     > month(s) on the
    <select  name="${prefix}_onDayCard" title="select which week in the month on which this calendar entry will occur" > 
    <option  value="none"
@@ -365,8 +365,18 @@ function ${prefix}_toggleRecur(name) {
 
 <script language="Javascript">
 
+function getRadioButtonIdx(ptr, type, val) {
+    for (i=0; i< ptr.length; i++) {
+        if (ptr.elements[type][i].value ==  val) {
+            return i
+	}
+    }
+}
+
 function ${prefix}_onsub() {
   <c:if test="${attMap.hasDur}">
+  // tests iff duration is on the page
+  // check for negative duration
   var ms;
   ms1 = getTimeMilliseconds('<%= formName %>', '<%= dateId %>');
   ms2 = getTimeMilliseconds('<%= formName %>', '<%= dateId2 %>');
@@ -374,9 +384,29 @@ function ${prefix}_onsub() {
   if (diff < 0) {
     alert("End time must be later than start time.");
     return(false);
-  } else {
-    return(true);
   }
+  </c:if>
+
+  <c:if test="${attMap.hasRecur}">
+
+  // tests iff recurrence on the page
+  // copy one of the three everyN fields to everyN hiddenfield
+  var fieldref = self.document.${formName};
+
+  var dayrptidx = getRadioButtonIdx(fieldref, '${prefix}_repeatUnit', 'day');
+  var weekrptidx = getRadioButtonIdx(fieldref, '${prefix}_repeatUnit', 'week');
+  var monthrptidx = getRadioButtonIdx(fieldref, '${prefix}_repeatUnit', 'month');
+
+  if (fieldref.${prefix}_repeatUnit[dayrptidx].checked) {
+      fieldref.${prefix}_everyN.value = fieldref.${prefix}_everyNday.value;
+  }
+  if (fieldref.${prefix}_repeatUnit[weekrptidx].checked) {
+      fieldref.${prefix}_everyN.value = fieldref.${prefix}_everyNweek.value;
+  }
+  if (fieldref.${prefix}_repeatUnit[monthrptidx].checked) {
+      fieldref.${prefix}_everyN.value = fieldref.${prefix}_everyNmonth.value;
+  }
+
   </c:if>
   return(true);
 }
