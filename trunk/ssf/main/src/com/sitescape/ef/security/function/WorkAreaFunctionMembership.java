@@ -5,7 +5,6 @@ import java.util.Set;
 /**
  * @hibernate.class table="SS_WorkAreaFunctionMemberships" lazy="false" dynamic-update="true"
  * @hibernate.cache usage="nonstrict-read-write"
- * @hibernate.query name="find-FunctionMemberships-ByCompanyAndWorkArea" query="from WorkAreaFunctionMembership functionMembership left join fetch functionMembership.memberIds where functionMembership.zoneName=:zoneName and functionMembership.workAreaId=:workAreaId and functionMembership.workAreaType=:workAreaType"
  * @hibernate.query name="check-WorkAreaFunctionMembership" query="select fm.id from com.sitescape.ef.security.function.Function function join function.operationNames operationName, com.sitescape.ef.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneName=:zoneName and fm.zoneName=:zoneName and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)"
  * 
  * <code>FunctionMembership</code> defines the members of a function for 
@@ -50,7 +49,7 @@ public class WorkAreaFunctionMembership {
      * @hibernate.set lazy="false" table="SS_WorkAreaFunctionMembers" cascade="all"
      * @hibernate.key column="workAreaFunctionMembershipId"
      * @hibernate.element type="long" column="memberId" not-null="true"
-     * 
+     * @hibernate.cache usage="nonstrict-read-write"
      */
     public Set getMemberIds() {
         return memberIds;

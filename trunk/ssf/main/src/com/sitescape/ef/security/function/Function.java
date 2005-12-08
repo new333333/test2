@@ -11,7 +11,6 @@ import com.sitescape.ef.domain.PersistentLongIdObject;
 /**
  * @hibernate.class table="SS_Functions" dynamic-update="true" lazy="false"
  * @hibernate.cache usage="nonstrict-read-write"
- * @hibernate.query name="find-Functions-ByCompany" query="from Function function left join fetch function.operationNames where function.zoneName=:zoneName"
  * 
  * <code>Function</code> is a role defined at the zone level.
  * 
@@ -100,6 +99,7 @@ public class Function {
      * @hibernate.set lazy="false" table="SS_FunctionOperations" cascade="all"
      * @hibernate.key column="functionId"
      * @hibernate.element type="string" column="operationName" length="128" not-null="true"
+     * @hibernate.cache usage="nonstrict-read-write"
      * 
      */
     private Set getOperationNames() {
