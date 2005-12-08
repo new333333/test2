@@ -13,7 +13,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.portlet.PortletKeys;
+import com.sitescape.ef.web.WebKeys;
 
 import javax.portlet.PortletURL;
 
@@ -65,21 +65,21 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				params.put("action", new String[] {this.action});
 			}
 			
-			if (this.folderId.equals("")) folderId = (String) req.getAttribute(PortletKeys.FORUM_URL_FORUM_ID);
+			if (this.folderId.equals("")) folderId = (String) req.getAttribute(WebKeys.FORUM_URL_FORUM_ID);
 			if (this.folderId != null && !this.folderId.equals("")) {
-				params.put(PortletKeys.FORUM_URL_FORUM_ID, new String[] {folderId});
+				params.put(WebKeys.FORUM_URL_FORUM_ID, new String[] {folderId});
 			} else {
 				this.folderId = "";
 			}
-			if (this.entryId.equals("")) entryId = (String) req.getAttribute(PortletKeys.FORUM_URL_ENTRY_ID);
+			if (this.entryId.equals("")) entryId = (String) req.getAttribute(WebKeys.FORUM_URL_ENTRY_ID);
 			if (this.entryId != null && !this.entryId.equals("")) {
-				params.put(PortletKeys.FORUM_URL_ENTRY_ID, new String[] {entryId});
+				params.put(WebKeys.FORUM_URL_ENTRY_ID, new String[] {entryId});
 			} else {
 				this.entryId = "";
 			}
-			if (this.operation.equals("")) operation = (String) req.getAttribute(PortletKeys.FORUM_URL_OPERATION);
+			if (this.operation.equals("")) operation = (String) req.getAttribute(WebKeys.FORUM_URL_OPERATION);
 			if (this.operation != null && !this.operation.equals("")) {
-				params.put(PortletKeys.FORUM_URL_OPERATION, new String[] {operation});
+				params.put(WebKeys.FORUM_URL_OPERATION, new String[] {operation});
 			} else {
 				this.operation = "";
 			}

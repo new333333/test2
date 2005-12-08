@@ -10,7 +10,8 @@ import javax.portlet.WindowState;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Map;
-import com.sitescape.ef.portlet.PortletKeys;
+
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 /**
@@ -28,14 +29,14 @@ public class ViewController  extends SAbstractForumController {
 		try {
 			folderId = ActionUtil.getForumId(formData, request);
 		} catch (NoFolderByTheIdException nf) {
-			return new ModelAndView(PortletKeys.VIEW);
+			return new ModelAndView(WebKeys.VIEW);
 		}
 		if (request.getWindowState().equals(WindowState.NORMAL)) {
-			return new ModelAndView(PortletKeys.VIEW, PortletKeys.FOLDER, getFolderModule().getFolder(folderId));
+			return new ModelAndView(WebKeys.VIEW, WebKeys.FOLDER, getFolderModule().getFolder(folderId));
 		}
-		String op = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_OPERATION);
-		if (op.equals(PortletKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
-			String displayStyle = ActionUtil.getStringValue(formData,PortletKeys.FORUM_URL_VALUE);
+		String op = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_OPERATION);
+		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
+			String displayStyle = ActionUtil.getStringValue(formData,WebKeys.FORUM_URL_VALUE);
 			getProfileModule().setUserProperty(null,ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, displayStyle);
 		}
 

@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sitescape.ef.portlet.PortletKeys;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
@@ -30,10 +30,10 @@ public class EditController extends SAbstractController implements DomTreeBuilde
 
 		PortletPreferences prefs = request.getPreferences();
 
-		String forumId = ActionUtil.getStringValue(request.getParameterMap(), PortletKeys.FORUM_URL_FORUM_ID);
+		String forumId = ActionUtil.getStringValue(request.getParameterMap(), WebKeys.FORUM_URL_FORUM_ID);
 
 		//Get the name of the forum to be displayed
-		prefs.setValue(PortletKeys.FORUM_URL_FORUM_ID, forumId);
+		prefs.setValue(WebKeys.FORUM_URL_FORUM_ID, forumId);
 
 		prefs.store();
 	}
@@ -45,20 +45,20 @@ public class EditController extends SAbstractController implements DomTreeBuilde
         //Make the prefs available to the jsp
         Map model = new HashMap();
 		
-		model.put(PortletKeys.WORKSPACE_DOM_TREE, getWorkspaceModule().getDomWorkspaceTree(this));
+		model.put(WebKeys.WORKSPACE_DOM_TREE, getWorkspaceModule().getDomWorkspaceTree(this));
 		
 		PortletPreferences prefsPP = request.getPreferences();
-		String forumPref = prefsPP.getValue(PortletKeys.FORUM_URL_FORUM_ID, "");
+		String forumPref = prefsPP.getValue(WebKeys.FORUM_URL_FORUM_ID, "");
     	if (!forumPref.equals("")) {		
 			//Build the jsp beans
 			try {
-				model.put(PortletKeys.FOLDER, getFolderModule().getFolder(new Long(forumPref)));    
+				model.put(WebKeys.FOLDER, getFolderModule().getFolder(new Long(forumPref)));    
 			} catch (NoFolderByTheIdException nf) {
 				//fall thru
 			}
     	}
 			
-		return new ModelAndView(PortletKeys.VIEW_EDIT, model);
+		return new ModelAndView(WebKeys.VIEW_EDIT, model);
 	}
 	public Element setupDomElement(String type, Object source, Element element) {
 		if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {

@@ -13,9 +13,9 @@ import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.EventHelper;
-import com.sitescape.ef.portlet.PortletKeys;
 
 //import org.apache.commons.fileupload.LiferayFileItem;
 import org.apache.lucene.document.Field;
@@ -617,7 +617,7 @@ public class DefinitionModuleImpl implements DefinitionModule {
 						//See if this is a form element (if so, remember its element name)
 						if (itemName.equals("entryFormForm") || itemName.equals("form")) {
 							currentFormName = nameProperty.attributeValue("value", "");
-							if (currentFormName.equals("")) currentFormName = PortletKeys.DEFINITION_DEFAULT_FORM_NAME;
+							if (currentFormName.equals("")) currentFormName = WebKeys.DEFINITION_DEFAULT_FORM_NAME;
 						}
 						//Find the item in the configuration definition to see if it is a data item
 						Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "']");

@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-import com.sitescape.ef.portlet.PortletKeys;
+
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
@@ -142,7 +143,7 @@ public class DisplayConfiguration extends TagSupport {
 									}
 									//Store the entry object
 									if (this.folderEntry != null) {
-										req.setAttribute(PortletKeys.DEFINITION_ENTRY, this.folderEntry);
+										req.setAttribute(WebKeys.DEFINITION_ENTRY, this.folderEntry);
 									}
 				
 									StringServletResponse res = new StringServletResponse(httpRes);

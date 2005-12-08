@@ -15,8 +15,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.portlet.PortletKeys;
 
 
 public class ViewController extends  SAbstractController {
@@ -42,7 +42,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("image", "page");
 		element.addAttribute("id", "");
 		url = response.createActionURL();
-		url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
@@ -52,7 +52,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("image", "page");
 		element.addAttribute("id", "");
 		url = response.createRenderURL();
-		url.setParameter(PortletKeys.ACTION, PortletKeys.LDAP_ACTION_CONFIGURE);
+		url.setParameter(WebKeys.ACTION, WebKeys.LDAP_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());

@@ -1,6 +1,6 @@
-package com.sitescape.ef.portlet;
+package com.sitescape.ef.web;
 
-public class PortletKeys {
+public class WebKeys {
     public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
     public static final String LOCALE = "ss_locale";
     public static final String SESSION_LAST_ENTRY_VIEWED = "last_entry_viewed";

@@ -27,7 +27,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.portlet.PortletKeys;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
@@ -56,12 +56,12 @@ public class ActionUtil {
 	 */
 	public static Long getForumId(Map formData, PortletRequest req) throws NoFolderByTheIdException {
 		String forumId = "";
-		if (formData.containsKey(PortletKeys.FORUM_URL_FORUM_ID)) {
-			Object obj = formData.get(PortletKeys.FORUM_URL_FORUM_ID);
+		if (formData.containsKey(WebKeys.FORUM_URL_FORUM_ID)) {
+			Object obj = formData.get(WebKeys.FORUM_URL_FORUM_ID);
 			if (obj instanceof String[]) {
-				forumId = ((String[]) formData.get(PortletKeys.FORUM_URL_FORUM_ID))[0];
+				forumId = ((String[]) formData.get(WebKeys.FORUM_URL_FORUM_ID))[0];
 			} else {
-				forumId = (String) formData.get(PortletKeys.FORUM_URL_FORUM_ID);
+				forumId = (String) formData.get(WebKeys.FORUM_URL_FORUM_ID);
 			}
 		}
 		if (forumId.equals("")) {
@@ -69,7 +69,7 @@ public class ActionUtil {
 			PortletPreferences prefs = req.getPreferences();
 			forumId = prefs.getValue("forumId", "");
 		}
-		req.setAttribute(PortletKeys.FORUM_URL_FORUM_ID,forumId);
+		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
 		try {
 			return Long.valueOf(forumId);
 		} catch (NumberFormatException nf) {
@@ -78,15 +78,15 @@ public class ActionUtil {
 	}
 	public static Long getForumId(Map formData, HttpServletRequest req) throws NoFolderByTheIdException {
 		String forumId = "";
-		if (formData.containsKey(PortletKeys.FORUM_URL_FORUM_ID)) {
-			Object obj = formData.get(PortletKeys.FORUM_URL_FORUM_ID);
+		if (formData.containsKey(WebKeys.FORUM_URL_FORUM_ID)) {
+			Object obj = formData.get(WebKeys.FORUM_URL_FORUM_ID);
 			if (obj instanceof String[]) {
-				forumId = ((String[]) formData.get(PortletKeys.FORUM_URL_FORUM_ID))[0];
+				forumId = ((String[]) formData.get(WebKeys.FORUM_URL_FORUM_ID))[0];
 			} else {
-				forumId = (String) formData.get(PortletKeys.FORUM_URL_FORUM_ID);
+				forumId = (String) formData.get(WebKeys.FORUM_URL_FORUM_ID);
 			}
 		}
-		req.setAttribute(PortletKeys.FORUM_URL_FORUM_ID,forumId);
+		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
 		try {
 			return Long.valueOf(forumId);
 		} catch (NumberFormatException nf) {

@@ -12,8 +12,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.portlet.PortletKeys;
 import com.sitescape.ef.portlet.forum.ActionUtil;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.servlet.SAbstractController;
 import com.sitescape.util.FileUtil;
 
@@ -24,8 +24,8 @@ public class ViewFileController extends SAbstractController {
 		
 		Map formData = request.getParameterMap();
 
-		String forumId = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_FORUM_ID);
-		String entryId = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_ENTRY_ID);
+		String forumId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_FORUM_ID);
+		String entryId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_ID);
 		if (forumId.equals("") || entryId.equals("")) {
 			//There is no forum or entry specified.
 		    return null;		
@@ -33,9 +33,9 @@ public class ViewFileController extends SAbstractController {
 		FolderEntry entry = getFolderModule().getEntry(Long.valueOf(forumId), Long.valueOf(entryId));
 		//Set up the beans needed by the jsps
 		FileAttachment fa = null;
-		String fileId = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_FILE);
+		String fileId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_FILE);
 		if (fileId.equals("")) {
-			String name = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_ATTRIBUTE); 
+			String name = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ATTRIBUTE); 
 			if (!name.equals("")) {
 				CustomAttribute attr = entry.getCustomAttribute(name);
 				fa = (FileAttachment)attr.getValue();
