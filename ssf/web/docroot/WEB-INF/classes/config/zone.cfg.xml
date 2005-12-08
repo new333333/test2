@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<zoneConfiguration>
+	<ldapConfiguration>	
+		<userMapping>
+			<objectClass>person</objectClass>
+			<objectClass>inetOrgPerson</objectClass>
+			<objectClass>organizationalPerson</objectClass>
+			<objectClass>residentialPerson</objectClass>
+			<userAttribute from="uid" to="loginName"/>
+		</userMapping>
+		<groupMapping>
+			<objectClass>group</objectClass>
+			<objectClass>groupOfUniqueNames</objectClass>
+			<objectClass>groupOfNames</objectClass>
+			<memberAttribute>member</memberAttribute>
+			<memberAttribute>uniqueMember</memberAttribute>	
+		</groupMapping>
+	</ldapConfiguration>
+
+	<zone name="liferay.com">
+		<mailConfiguration>	
+			<notify session="java:comp/env/mail/SiteScape"/>
+			<posting session="java:comp/env/mail/SiteScapePosting"/>
+		</mailConfiguration>	
+
+		<ldapConfiguration>	
+			<property name="java.naming.security.principal"/>
+			<property name="java.naming.security.credentials"/>
+			<property name="java.naming.provider.url">ldap://localhost:389</property>
+			<property name="userDomain">dc=sitescape,dc=com</property>
+			<property name="groupDomain">dc=sitescape,dc=com</property>
+			<userMapping>
+				<mapping from="cn" to="title"/>
+				<mapping from="commonName" to="title"/>
+				<mapping from="mail" to="emailAddress"/>
+				<mapping from="gn" to="firstName"/>
+				<mapping from="givenName" to="firstName"/>
+				<mapping from="sn" to="lastName"/>
+				<mapping from="surname" to="lastName"/>
+				<mapping from="telephoneNumber" to="phone"/>
+				<mapping from="description" to="description"/>
+			</userMapping>	
+	
+			<groupMapping>
+				<mapping from="cn" to="title"/>
+				<mapping from="commonName" to="title"/>
+				<mapping from="description" to="description"/>
+			</groupMapping>	
+		</ldapConfiguration>	
+	</zone>
+</zoneConfiguration>
