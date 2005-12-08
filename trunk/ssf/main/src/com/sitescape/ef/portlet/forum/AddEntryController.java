@@ -74,7 +74,7 @@ public class AddEntryController extends SAbstractForumController {
 			} catch (NoDefinitionByTheIdException nd) {
 				return returnToViewForum(request, response, formData, folderId);
 			}
-			path = WebKeys.VIEW_ENTRY;
+			path = WebKeys.VIEW_FORUM;
 			model.put(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
 		} else {
 			//See if this is an "add entry" or an "add reply" request

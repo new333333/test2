@@ -21,11 +21,8 @@ if (ssUserProperties.containsKey(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
 }
 
 boolean statePopUp = false;
-boolean popupValue = false;
-if (!op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY)) {
-	popupValue = true;
-} else {
-	if (statePopUp) popupValue = true;
+if (op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY)) {
+	statePopUp = true;
 }
 	
 int entryWindowWidth = 0;
