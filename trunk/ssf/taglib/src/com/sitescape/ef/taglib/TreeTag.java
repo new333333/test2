@@ -74,11 +74,11 @@ public class TreeTag extends TagSupport {
 
 			this.contextPath = req.getContextPath();
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
-		    setCommonImg(contextPath + "/../images");
+		    setCommonImg(contextPath + "/images");
 		    
 			JspWriter jspOut = pageContext.getOut();
 			StringBuffer sb = new StringBuffer();
-			sb.append("<script language=\"JavaScript\" src=\"").append(contextPath).append("/html/js/widgets/tree_widget.js\"></script>\n");
+			sb.append("<script language=\"JavaScript\" src=\"").append(contextPath).append("/js/tree/tree_widget.js\"></script>\n");
 			sb.append("<script language=\"JavaScript\">\n");
 			sb.append("var ");
 			sb.append(treeName);

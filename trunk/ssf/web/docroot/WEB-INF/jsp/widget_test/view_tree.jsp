@@ -29,12 +29,12 @@
 
 <script language="javascript">
 
-function t_ss_widget_test_wsTree_showId(id, obj) {
+function t_<portlet:namespace/>_wsTree_showId(id, obj) {
 	alert('You selected "'+obj.innerText+' (id: '+id+') from the first widget.')
 	return false
 }
 
-function t_ss_widget_test_ws2Tree_showId(id, obj) {
+function t_<portlet:namespace/>_ws2Tree_showId(id, obj) {
 	alert('You selected "'+obj.innerText+' (id: '+id+') from the second widget.')
 	return false
 }
