@@ -28,6 +28,7 @@ public class ViewEntryController extends SAbstractForumController {
 		Map model;		
 		PortletSession ses = request.getPortletSession();
 		request.setAttribute(PortletKeys.HISTORY_CACHE, ses.getAttribute(PortletKeys.HISTORY_CACHE));
+		request.setAttribute(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_ENTRY);
 		Map formData = request.getParameterMap();
 		Long folderId=null;
 		try {
