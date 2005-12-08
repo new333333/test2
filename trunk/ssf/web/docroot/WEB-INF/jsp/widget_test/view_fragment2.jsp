@@ -1,4 +1,4 @@
-<%@ include file="/WEB-INF/jsp/common/servlet.include.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <body>
 

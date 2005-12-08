@@ -263,12 +263,20 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		String replyStyle = (String) entryView.getRootElement().attributeValue("replyStyle", "");
 		PortletURL url;
 		if (!replyStyle.equals("")) {
+			/**
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
 	    	url.setParameter(WebKeys.FORUM_URL_FORUM_ID, folderId);
 	    	url.setParameter(WebKeys.FORUM_URL_ENTRY_TYPE, replyStyle);
 	    	url.setParameter(WebKeys.FORUM_URL_ENTRY_ID, entryId);
 			toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), url);
+			*/
+			Map params = new HashMap();
+			params.put(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
+			params.put(WebKeys.FORUM_URL_FORUM_ID, folderId);
+			params.put(WebKeys.FORUM_URL_ENTRY_TYPE, replyStyle);
+			params.put(WebKeys.FORUM_URL_ENTRY_ID, entryId);
+			toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), params);
 		}
 	    
 	    //The "Modify" menu
@@ -326,14 +334,16 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		
 		//	The "Display styles" menu
 		toolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.display_styles"));
-		//vertical
+		/**
+		//horizontal
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
 		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_horizontal"), url);
-		//horizontal
+		*/
+		//vertical
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
@@ -392,14 +402,9 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		HistoryMap history = getHistory(req, folderId);
 		Map model = getShowEntry(formData, history, folderId);
 		String entryId = (String) model.get(WebKeys.ENTRY_ID);
-		buildEntryToolbar(response, model, folderId.toString(), entryId);
-		return model;
-	}
-	public Map getShowEntry(Map formData, HttpServletRequest req, HttpServletResponse response, Long folderId)  {
-		HistoryMap history = getHistory(req, folderId);
-		Map model = getShowEntry(formData, history, folderId);
-		String entryId = (String) model.get(WebKeys.ENTRY_ID);
-		//buildEntryToolbar(response, model, folderId.toString(), entryId.toString());
+		if (!entryId.equals("")) {
+			buildEntryToolbar(response, model, folderId.toString(), entryId);
+		}
 		return model;
 	}
 	public Map getShowEntry(Map formData, HistoryMap history, Long folderId)  {

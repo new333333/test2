@@ -16,7 +16,6 @@ import com.sitescape.ef.domain.HistoryMap;
 public interface ForumActionModule {
 
 	public Map getShowEntry(Map formData, RenderRequest request, RenderResponse response, Long folderId);
-	public Map getShowEntry(Map formData, HttpServletRequest request, HttpServletResponse response, Long folderId);
 	public Map getShowEntry(Map formData, HistoryMap history, Long folderId);
 	public Map getShowFolder(Map formData, RenderRequest request, RenderResponse response, Long folderId);
 	public Map getConfigureForum(Map formData, RenderRequest request, Long folderId);
