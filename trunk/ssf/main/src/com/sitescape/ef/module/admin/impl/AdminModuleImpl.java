@@ -36,6 +36,8 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.domain.PostingDef;
+import com.sitescape.ef.jobs.Schedule;
+import com.sitescape.ef.module.mail.MailModule;
 /**
  * @author Janet McCann
  *
@@ -43,42 +45,32 @@ import com.sitescape.ef.domain.PostingDef;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class AdminModuleImpl extends CommonDependencyInjection implements AdminModule {
-	protected String emailPostingClass;
-	public void setEmailPostingJobClass(String className) {
-		this.emailPostingClass = className;
-	}
 
+	protected MailModule mailModule;
+    public void setMailModule(MailModule mailModule) {
+    	this.mailModule = mailModule;
+    }
 	/**
-     * Disable email notification.
-     * @param id
-     */
-    public void disableNotification(Long id) {
-    	setEnableNotification(id, false);
-    }
-    /**
-     * Enable email notification.
-     * @param id
-     */
-    public void enableNotification(Long id) {
-       	setEnableNotification(id, true);
-    }
-    /**
      * Do actual work to either enable or disable email notification.
      * @param id
      * @param value
      */
-    protected void setEnableNotification(Long id, boolean value) {
+    public void setEnableNotification(Long id, boolean value) {
 		String companyId = RequestContextHolder.getRequestContext().getZoneName();
         Binder binder = coreDao.loadBinder(id, companyId); 
-    	NotificationDef current = binder.getNotificationDef();
-    	if (current == null) {
-    		current = new NotificationDef();
-    		current.setLastNotification(new Date());
-    		binder.setNotificationDef(current);
-    	}
-    	current.setEnabled(value);
-     	//Remove or add from scheduler
-   		checkNotificationSchedule(binder);
+   		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
+   		process.enable(value, binder);
+    }
+    public ScheduleInfo getNotificationConfig(Long id) {
+        Binder binder = coreDao.loadBinder(id, RequestContextHolder.getRequestContext().getZoneName()); 
+ 		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
+  		return process.getScheduleInfo(binder);
+    }
+    
+    public void setNotificationConfig(Long id, ScheduleInfo config) {
+        Binder binder = coreDao.loadBinder(id, RequestContextHolder.getRequestContext().getZoneName()); 
+ 		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
+  		process.setScheduleInfo(config, binder);
     }
     /**
      * Set the notification schedule.  
@@ -100,7 +92,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	if (current == null) {
     		current = new NotificationDef();
     		binder.setNotificationDef(current);
-    		current.setLastNotification(new Date());    		
     	}
     	ObjectBuilder.updateObject(current, updates);
   		//	Pre-load for performance
@@ -112,24 +103,23 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
    		}
 
    		current.setDistribution(notifyUsers);
-		checkNotificationSchedule(binder);
+  		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
+  		ScheduleInfo info = process.getScheduleInfo(binder);
+  		if (updates.containsKey("schedule")) {
+  			info.setSchedule((Schedule)updates.get("schedule"));
+  		}
+ 		if (updates.containsKey("enabled")) {
+  			info.setEnabled((Boolean)updates.get("enabled"));
+  		}
+  		process.setScheduleInfo(info, binder);
     }
-    /**
-     * Make sure the scheduler is in sync with notification definition.
-     * @param binder
-     */
-
-    public void checkNotificationSchedule(Binder binder)  {
-   		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
-   		process.checkSchedule(scheduler, binder);
-    } 
  
     /**
      * Enable/disable email posting.
      * @param id
      */
     public void setEnablePostings(boolean enable) {
-       	getPostingObject().enable(enable);
+       	getPostingObject().enable(enable, RequestContextHolder.getRequestContext().getZoneName());
     }
  
     /**
@@ -137,7 +127,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
      * we accept a List of longs.  This code will update existing forum mappings.
      */
     public void setPostingConfig(PostingConfig postingConfig) throws ParseException {
-    	PostingConfig old = new PostingConfig(getPostingObject().getScheduleInfo());
+    	PostingConfig old = new PostingConfig(getPostingObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneName()));
     	Collection oldA = old.getAliases().values();
     	Collection newA = postingConfig.getAliases().values();
     	List postings = getCoreDao().loadPostings();
@@ -201,12 +191,13 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	
     }
     public PostingConfig getPostingConfig() {
-       	return new PostingConfig(getPostingObject().getScheduleInfo());
+       	return new PostingConfig(getPostingObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneName()));
     }
     public List getPostingDefs() {
     	return getCoreDao().loadPostings();
     }
     private EmailPosting getPostingObject() {
+    	String emailPostingClass = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.POSTING_JOB);
         try {
             Class processorClass = ReflectHelper.classForName(emailPostingClass);
             EmailPosting job = (EmailPosting)processorClass.newInstance();

@@ -1,5 +1,6 @@
 
 package com.sitescape.ef.jobs;
+import java.util.Date;
 import java.util.TimeZone;
 
 import org.quartz.JobDataMap;
@@ -7,8 +8,12 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Workspace;
 import javax.naming.NamingException;
+
+import com.sitescape.ef.jobs.DefaultEmailNotification.MailJobDescription;
+import com.sitescape.ef.jobs.SSStatefulJob.JobDescription;
 import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.util.SpringContextUtil;
@@ -30,42 +35,47 @@ public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSyn
 			logger.error("Error synchronizing with ldap " + ne.getMessage());
 		}
 	}
-	public void checkSchedule(Scheduler scheduler, Workspace workspace) {
-		JobDescription job = new LdapJobDescription(workspace);
-		verifySchedule(scheduler, job);
+	public ScheduleInfo getScheduleInfo(String zoneName) {
+		return getScheduleInfo(new LdapJobDescription(zoneName));
 	}
+	public void setScheduleInfo(ScheduleInfo info) {
+		setScheduleInfo(new LdapJobDescription(info.getZoneName()), info);
+	}
+
+	public void enable(boolean enable, String zoneName) {
+		enable(enable, new LdapJobDescription(zoneName));
+ 	}
 	public class LdapJobDescription implements JobDescription {
-		private Workspace workspace;
-		public LdapJobDescription(Workspace workspace) {
-			this.workspace = workspace;
+		String zoneName;
+		public LdapJobDescription(String zoneName) {
+			this.zoneName = zoneName;
 		}
-		public  String getSchedule() {
-			return workspace.getLdapConfig().getSchedule().getQuartzSchedule();
-		}
-    	public  String getDescription() {
-       		return SSStatefulJob.trimDescription(workspace.toString());
-       	       	}
-    	public  JobDataMap getData() {
-			JobDataMap data = new JobDataMap();
-			data.put("workspace",workspace.getId());
-			data.put("zoneName",workspace.getZoneName());
-			return data;
+	    public  String getDescription() {
+	    	return SSStatefulJob.trimDescription(zoneName);
+	    }
+	    public String getZoneName() {
+	    	return zoneName;
+	    }
+	    public String getName() {
+	    	return zoneName;
+	    }
+	    public String getGroup() {
+	    	return LdapSynchronization.LDAP_GROUP;
+	    }		
+       	public TimeZone getTimeZone() {
+    		return getDefaultTimeZone();
     	}
-    	public  boolean isEnabled() {
-    		return workspace.getLdapConfig().isScheduleEnabled();
+       	public String getCleanupListener() {
+    		return getDefaultCleanupListener();
     	}
-    	public String getName() {
-    		return workspace.getId().toString();
+    	public ScheduleInfo getDefaultScheduleInfo() {
+    		ScheduleInfo info = new ScheduleInfo(zoneName);
+    		//seconds minutes hours dayOfMonth months days year"
+    		info.setSchedule(new Schedule("0 15 2 ? * mon-fri *"));
+    		return info;
     	}
-    	public String getGroup() {
-    		return LdapSynchronization.LDAP_GROUP;
-    	}		
-    	public TimeZone getTimeZone() {
-    		try {
-    			return RequestContextHolder.getRequestContext().getUser().getTimeZone();
-    		} catch (Exception e) {
-    			return TimeZone.getDefault();
-    		}
-    	}
+       	
 	}
+
+
 }

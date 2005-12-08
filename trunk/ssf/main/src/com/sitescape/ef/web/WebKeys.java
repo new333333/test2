@@ -120,6 +120,7 @@ public class WebKeys {
     public static final String PUBLIC_ENTRY_DEFINITIONS="ssPublicEntryDefinitions";
     public static final String PUBLIC_FOLDER_DEFINITIONS="ssPublicFolderDefinitions";
     public static final String SCHEDULE="ssSchedule";
+    public static final String SCHEDULE_INFO="ssScheduleInfo";
     public static final String SEEN_MAP="ssSeenMap";
     public static final String SELECTED_GROUPS="ssSelectedGroups";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";

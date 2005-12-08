@@ -114,12 +114,10 @@ function t_<portlet:namespace/>_folderTree_showId(id, obj) {
  	<portlet:namespace/>_addAlias(<portlet:namespace/>_folderList[id],'','');
 	return true;
 }
+var <portlet:namespace/>_selectKeys = new Array();
+var <portlet:namespace/>_selectValues = new Array();
 
 <c:forEach var="alias" varStatus="aStatus" items="${ssPostingConfig.aliases}">
-<c:if test="${aStatus.first}">
-var <portlet:namespace/>_selectKeys = new Array(<%= ssPostingConfig.getAliases().size() %>);
-var <portlet:namespace/>_selectValues = new Array(<%= ssPostingConfig.getAliases().size() %>);
-</c:if>
 
 <portlet:namespace/>_selectValues[<c:out value="${aStatus.index}"/>] = '<c:out value="${alias.value}"/>';
 <portlet:namespace/>_selectKeys[<c:out value="${aStatus.index}"/>] = '<c:out value="${alias.key}"/>';

@@ -22,14 +22,14 @@
 		</portlet:actionURL>">
 <script language="javascript" type="text/javascript">
 function <portlet:namespace/>setEnable() {
-	if (document.<portlet:namespace/>fm.scheduleDisabled.checked) {
-		document.<portlet:namespace/>fm.scheduleEnabled.value = "false";
+	if (document.<portlet:namespace/>fm.disabled.checked) {
+		document.<portlet:namespace/>fm.enabled.value = "false";
 	} else {
-		document.<portlet:namespace/>fm.scheduleEnabled.value = "true";
+		document.<portlet:namespace/>fm.enabled.value = "true";
 	}
 }
 </script>
-<input type="hidden" id="scheduleEnabled" name="scheduleEnabled" value="${ssLdapConfig.scheduleEnabled}"/>
+<input type="hidden" id="enabled" name="enabled" value="${ssLdapConfig.enabled}"/>
 
 <table border ="1" cellspacing="0" cellpadding="3">
   <tr>
@@ -71,7 +71,7 @@ function <portlet:namespace/>setEnable() {
   </td><td class="content"  valign="top">
   	 <table border="0" cellpadding="0" cellspacing="2">
 	   <tr>
-	   <td class="content">	<input type="checkbox" class="content" id="scheduleDisabled" name="scheduleDisabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssLdapConfig.scheduleEnabled}">checked</c:if>>
+	   <td class="content">	<input type="checkbox" class="content" id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssLdapConfig.enabled}">checked</c:if>>
 	   <span class="content">Disable schedule</span></input><br/>
    <c:set var="schedule" value="${ssLdapConfig.schedule}"/>
    

@@ -24,6 +24,7 @@ public class PostingDef extends PersistentObject {
     private String subject;
     private Binder binder;
     private Long emailId;
+    private Definition definition;
  
     /**
      * @hibernate.property 
@@ -45,6 +46,16 @@ public class PostingDef extends PersistentObject {
     public void setBinder(Binder binder) {
     	this.binder = binder;
     }
+    /**
+     * The definition to use to create entries
+     * @hibernate.many-to-one
+     */
+    public Definition getDefinition() {
+    	return definition;
+    }
+    public void setDefinition(Definition definition) {
+    	this.definition = definition;
+    }   
     /**
      * The mapping from id to address is kept in the scheduler.
      * @hibernate.property

@@ -51,8 +51,9 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail{
 			logger.error("Mail file missing (" + file.getName() + ") - job cancelled");
 		}
     }
-    public void schedule(Scheduler scheduler, Folder folder, JavaMailSender mailSender, MimeMessage mail) {
-    	//each job is new = don't use verify schedule, cause this a unique
+    public void schedule(Folder folder, JavaMailSender mailSender, MimeMessage mail) {
+		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		//each job is new = don't use verify schedule, cause this a unique
 		GregorianCalendar start = new GregorianCalendar();
 		//	start.add(Calendar.HOUR_OF_DAY, 1);
 			
@@ -79,9 +80,9 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail{
 				return;
 			}
 			data.put("mailMessage", file.getPath());
-			data.put("mailSender", mailSender.getBeanName());
+			data.put("mailSender", mailSender.getName());
 			jobDetail.setJobDataMap(data);
-			jobDetail.addJobListener(getCleanupListener());
+			jobDetail.addJobListener(getDefaultCleanupListener());
 	  		SimpleTrigger trigger = new SimpleTrigger(jobName, RETRY_NOTIFICATION_GROUP, jobName, RETRY_NOTIFICATION_GROUP, start.getTime(), null, 24, 1000*60);
   			trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
   			trigger.setDescription(description);

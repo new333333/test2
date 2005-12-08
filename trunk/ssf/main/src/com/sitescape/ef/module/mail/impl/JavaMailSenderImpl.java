@@ -11,14 +11,7 @@ import com.sitescape.util.Validator;
 public class JavaMailSenderImpl extends
 		org.springframework.mail.javamail.JavaMailSenderImpl
 		implements com.sitescape.ef.module.mail.JavaMailSender {
-	private String beanName;
-	public void setBeanName(String beanName) {
-		this.beanName = beanName;
-	}
-	public String getBeanName() {
-		return beanName;
-	}
-	
+	private String name;
 	public String getDefaultFrom() {
 		Session session = getSession();
 		String protocol = getProtocol();
@@ -27,5 +20,10 @@ public class JavaMailSenderImpl extends
 			from = session.getProperty("mail.user");
 		return from;
 	}
-
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getName() {
+		return name;
+	}
 }

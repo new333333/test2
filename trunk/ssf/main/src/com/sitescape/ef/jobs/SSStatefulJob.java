@@ -7,10 +7,12 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.CronTrigger;
 import org.quartz.Scheduler;
 import org.quartz.JobDetail;
+import org.quartz.SchedulerException;
 import org.quartz.StatefulJob;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.Trigger;
 
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.util.SessionUtil;
@@ -100,63 +102,128 @@ public abstract class SSStatefulJob implements StatefulJob {
 	}
 
 	protected abstract void doExecute(JobExecutionContext context) throws JobExecutionException;
-
-	public void verifySchedule(Scheduler scheduler, JobDescription job) {
-   		try {
-   			if (!job.isEnabled()) {
-   				scheduler.unscheduleJob(job.getName(), job.getGroup());
-   				return;
-   			}
-   			JobDetail jobDetail=scheduler.getJobDetail(job.getName(), job.getGroup());
-   			CronTrigger trigger = (CronTrigger)scheduler.getTrigger(job.getName(), job.getGroup());
-   			
-   			//haven't been scheduled yet
-   			if (jobDetail == null) {
-   				trigger = buildCronTrigger(job);
-  				//volitility(not stored in db),durablilty(remains after trigger removed),recover(after recover or fail-over)
-   				jobDetail = new JobDetail(job.getName(), job.getGroup(),
-						this.getClass(),false, false, false);
-				jobDetail.setDescription(job.getDescription());
-				jobDetail.setJobDataMap(job.getData());
-				jobDetail.addJobListener(getCleanupListener());
-				scheduler.scheduleJob(jobDetail, trigger);				
-   			} else if (trigger != null) {
-				//replace with new trigger if necessary
-				String cSched = trigger.getCronExpression();
-	   			String nSched = job.getSchedule();
-				if (!nSched.equals(cSched)) {
-	   				trigger = buildCronTrigger(job);
-					//replace existing trigger with new one
-					scheduler.rescheduleJob(job.getName(), job.getGroup(), trigger);
-				}
-   			} else {
-   				trigger = buildCronTrigger(job);
-   				scheduler.rescheduleJob(job.getName(), job.getGroup(), trigger); 
-   			}    	
-   		} catch (Exception e) {
-   			throw new ConfigurationException("Cannot start (job:group) " + job.getName() 
-   					+ ":" + job.getGroup(), e);
-   		}		
+	/**
+	 * Get scheduler information for a job
+	 * @param job
+	 * @return
+	 */
+	public ScheduleInfo getScheduleInfo(JobDescription job) {
+		try {
+			Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");		
+			JobDetail jobDetail=scheduler.getJobDetail(job.getName(), job.getGroup());
+			if (jobDetail == null) {
+				return job.getDefaultScheduleInfo();
+			}
+			
+			ScheduleInfo info = new ScheduleInfo(job.getZoneName());
+			int state = scheduler.getTriggerState(job.getName(), job.getGroup());
+			if ((state == Trigger.STATE_PAUSED) || (state == Trigger.STATE_NONE))
+				info.setEnabled(false);
+			else
+				info.setEnabled(true);
+			info.setDetails(jobDetail.getJobDataMap());
+			return info;
+		} catch (SchedulerException se) {
+			return job.getDefaultScheduleInfo();
+		}
 	}
-	public String getCleanupListener() {
+	/**
+	 * Sync quartz with new scheduler information..  Always register job, even if disabled.
+	 * @param info
+	 * @throws ParseException
+	 */
+	public void setScheduleInfo(JobDescription job, ScheduleInfo info) {
+		try {
+			Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		 	JobDetail jobDetail=scheduler.getJobDetail(job.getName(), job.getGroup());
+		 	//never been scheduled -start now
+		 	if (jobDetail == null) {
+ 				//volitility(not stored in db),durablilty(remains after trigger removed),recover(after recover or fail-over)
+		 		jobDetail = new JobDetail(job.getName(), job.getGroup(),
+		 				this.getClass(),false, true, false);
+				jobDetail.setDescription(job.getDescription());
+				jobDetail.setJobDataMap((JobDataMap)info.getDetails());
+				jobDetail.addJobListener(job.getCleanupListener());
+				scheduler.addJob(jobDetail, true);
+		 	} else {
+		 		//update data if necessary
+		 		if (!jobDetail.equals(info.getDetails())) {
+			 		jobDetail.setJobDataMap((JobDataMap)info.getDetails());	 			
+		 			scheduler.addJob(jobDetail, true);
+		 		}
+		 	}
+  			CronTrigger trigger = (CronTrigger)scheduler.getTrigger(job.getName(), job.getGroup());
+  			//see if stopped
+  			if (trigger == null) {
+  				if (info.isEnabled()) {
+  					trigger = buildCronTrigger(job, info.getSchedule());
+  					scheduler.scheduleJob(trigger);
+  				} 
+  			} else {
+  				//make sure schedule is the same
+  				if (info.isEnabled()) {
+  					String cSched = trigger.getCronExpression();
+  					String nSched = info.getSchedule().getQuartzSchedule();
+  					if (!nSched.equals(cSched)) {
+  						trigger = buildCronTrigger(job, info.getSchedule());
+  				 		scheduler.rescheduleJob(job.getName(), job.getGroup(), trigger);
+ 	 				} else {
+ 	 					int state = scheduler.getTriggerState(job.getName(), job.getGroup());
+ 	 					if ((state == Trigger.STATE_PAUSED) || (state == Trigger.STATE_NONE)) {
+ 	 						scheduler.resumeJob(job.getName(), job.getGroup());
+ 	 					}
+ 	 				}
+  				} else {
+			 		scheduler.unscheduleJob(job.getName(), job.getGroup());  					
+  				}
+				
+  			}
+		} catch (SchedulerException se) {			
+			throw new ConfigurationException(se.getLocalizedMessage());
+		} catch (ParseException pe) {
+			throw new ConfigurationException("Error parsing schedule", pe);
+		}
+		
+	}
+	/**
+	 * Enable or disable a job
+	 * @param job
+	 */
+	public void enable(boolean enable, JobDescription job) {
+		ScheduleInfo info = getScheduleInfo(job); 
+		if (enable && info.isEnabled()) return;
+		if (!enable && !info.isEnabled()) return;
+		info.setEnabled(enable);
+		setScheduleInfo(job,info);
+ 	}
+
+	public String getDefaultCleanupListener() {
 		return com.sitescape.ef.jobs.CleanupJobListener.name;
 	}
-    public CronTrigger buildCronTrigger(JobDescription job) throws ParseException{
+  	public TimeZone getDefaultTimeZone() {
+   		try {
+			return RequestContextHolder.getRequestContext().getUser().getTimeZone();
+		} catch (Exception e) {
+			return TimeZone.getDefault();
+		}
+	}
+
+	public CronTrigger buildCronTrigger(JobDescription job, Schedule schedule) throws ParseException{
     	
    		CronTrigger trigger = new CronTrigger(job.getName(), job.getGroup(), job.getName(), 
-   					job.getGroup(), job.getSchedule(), job.getTimeZone());
+   					job.getGroup(), schedule.getQuartzSchedule(), job.getTimeZone());
    		trigger.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW);
    		trigger.setVolatility(false);
  
 		return trigger;    	
     }
     protected interface JobDescription {
-    	public  String getSchedule();
     	public  String getDescription();
-    	public  JobDataMap getData();
-    	public  boolean isEnabled();
+    	public String getZoneName();
     	public String getName();
     	public String getGroup();
     	public TimeZone getTimeZone();
+    	public String getCleanupListener();
+    	public ScheduleInfo getDefaultScheduleInfo();
     }
 }

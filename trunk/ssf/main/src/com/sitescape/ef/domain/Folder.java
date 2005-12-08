@@ -24,9 +24,7 @@ public class Folder extends Binder {
     protected Folder parentFolder;
     protected HKey folderHKey;
     protected HKey entryRootHKey;
-    protected PostingDef postingDef;
     protected Folder topFolder;
-    protected Definition defaultReplyDef;
 
     public Folder() {
         
@@ -66,6 +64,16 @@ public class Folder extends Binder {
     public void setDisplayStyle(int displayStyle) {
         this.displayStyle = displayStyle;
     }
+    /**
+     * Overload so we can return parents definition if not set for this folder
+     */
+    public Definition getDefaultPostingDef() {
+    	Definition def = super.getDefaultPostingDef();
+    	if (def != null) return def;
+    	if (parentFolder != null) return parentFolder.getDefaultPostingDef();
+    	return getOwningWorkspace().getDefaultPostingDef();
+    }
+    
     /**
      * @hibernate.component class="com.sitescape.ef.domain.HKey" prefix="folder_"
      */
@@ -174,18 +182,7 @@ public class Folder extends Binder {
       getEntries().remove(entry);
 
     }    
-    /**
-     * @hibernate.many-to-one class="com.sitescape.ef.domain.Definition"
-     * @hibernate.column name="defaultReplyDef" sql-type="char(32)"
-     * @return
-     */
-    public Definition getDefaultReplyDef() {
-        return this.defaultReplyDef;
-    }
-    public void setDefaultReplyDef(Definition defaultReplyDef) {
-        this.defaultReplyDef = defaultReplyDef;
-    }
-    
+
  
     public List getChildAclControlled() {
         return getEntries();
@@ -204,12 +201,6 @@ public class Folder extends Binder {
         return ac;
     } 
 	    
-    public PostingDef getPostingDef() {
-        return postingDef;
-    }
-    public void setPostingDef(PostingDef postingDef) {
-        this.postingDef = postingDef;
-    }
 
     /*
      * Each folder has a unique root sort key that it uses to

@@ -1,17 +1,14 @@
 package com.sitescape.ef.jobs;
-import java.util.TimeZone;
 
-import org.quartz.JobDataMap;
+import java.util.TimeZone;
+import java.util.Date;
+
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.Scheduler;
-
 import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
-import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.util.SpringContextUtil;
 /**
@@ -23,57 +20,57 @@ public class DefaultEmailNotification extends SSStatefulJob implements EmailNoti
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
     	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 		try {
-			mail.sendNotifications(new Long(jobDataMap.getLong("folder")));
+			Date end = mail.sendNotifications(new Long(jobDataMap.getLong("binder")), (Date)jobDataMap.get("lastNotification") );
+			jobDataMap.put("lastNotification", end);
 		} catch (NoFolderByTheIdException nf) {
 			removeJobOnError(context,nf);
 		} catch (ConfigurationException cf) {
 			throw new JobExecutionException(cf);
 		}
     }
-	protected void removeJobOnError(JobExecutionContext context, Exception e) throws JobExecutionException {
-		if (e instanceof NoUserByTheIdException) {
-			AdminModule admin = (AdminModule)SpringContextUtil.getBean("adminModule");
-			admin.disableNotification(new Long(jobDataMap.getLong("folder")));
-		}
-		super.removeJobOnError(context,e);	
+
+
+	public ScheduleInfo getScheduleInfo(Binder binder) {
+		return getScheduleInfo(new MailJobDescription(binder));
 	}
-	public void checkSchedule(Scheduler scheduler, Binder folder) {
-		JobDescription job = new MailJobDescription(folder);
-		verifySchedule(scheduler, job);
+	public void setScheduleInfo(ScheduleInfo info, Binder binder) {
+		info.getDetails().put("binder", binder.getId());
+		setScheduleInfo(new MailJobDescription(binder), info);
 	}
+
+	public void enable(boolean enable, Binder binder) {
+		enable(enable, new MailJobDescription(binder));
+ 	}
 	public class MailJobDescription implements JobDescription {
-		private Binder folder;
-		public MailJobDescription(Binder folder) {
-			this.folder = folder;
-		}
-		public  String getSchedule() {
-			return folder.getNotificationDef().getSchedule().getQuartzSchedule();
+		private Binder binder;
+		public MailJobDescription(Binder binder) {
+			this.binder = binder;
 		}
     	public  String getDescription() {
-    		return SSStatefulJob.trimDescription(folder.toString());
+    		return SSStatefulJob.trimDescription(binder.toString());
     	}
-    	public  JobDataMap getData() {
-			JobDataMap data = new JobDataMap();
-			data.put("folder",folder.getId());
-			data.put("zoneName",folder.getZoneName());
-			return data;
-    	}
-    	public  boolean isEnabled() {
-    		return folder.getNotificationDef().isEnabled();
+    	public String getZoneName() {
+    		return binder.getZoneName();
     	}
     	public String getName() {
-    		return folder.getId().toString();
+    		return binder.getId().toString();
     	}
     	public String getGroup() {
     		return EmailNotification.NOTIFICATION_GROUP;
     	}		
        	public TimeZone getTimeZone() {
-    		try {
-    			return RequestContextHolder.getRequestContext().getUser().getTimeZone();
-    		} catch (Exception e) {
-    			return TimeZone.getDefault();
-    		}
+    		return getDefaultTimeZone();
+     	}
+       	public String getCleanupListener() {
+    		return getDefaultCleanupListener();
     	}
+    	public ScheduleInfo getDefaultScheduleInfo() {
+    		ScheduleInfo info = new ScheduleInfo(zoneName);
+    		info.getDetails().put("binder", binder.getId());
+    		info.getDetails().put("lastNotification", new Date());
+    		return info;
+    	}
+       	
 	}
 
 }

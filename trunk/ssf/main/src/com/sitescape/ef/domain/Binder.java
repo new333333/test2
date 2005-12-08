@@ -43,6 +43,7 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     private long featureMask=0;
     private String type;
     private List definitions;
+    private Definition defaultPostingDef;
 
     private boolean functionMembershipInherited = true;
     private AclSet aclSet;
@@ -94,7 +95,18 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     public List getForumViewDefs() {
     	return getDefs(Definition.FORUM_VIEW);
     }
-
+    /**
+     * @hibernate.many-to-one access="field" class="com.sitescape.ef.domain.Definition"
+     * @hibernate.column name="defaultPostingDef" sql-type="char(32)"
+     * @return
+     */
+    public Definition getDefaultPostingDef() {
+  		return defaultPostingDef;
+    }
+    public void setDefaultPostingDef(Definition defaultPostingDef) {
+        this.defaultPostingDef = defaultPostingDef;
+    }
+    
     protected List getDefs(int type) {
        	Definition def;
     	List result = new ArrayList(); 
