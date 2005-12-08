@@ -1,7 +1,7 @@
 <% //Date widget form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="configDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="configElement" type="org.dom4j.Element" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <%@ page import="java.util.Date" %>
 <%
 	//Get the formName of date being displayed
@@ -18,14 +18,14 @@
 %>
 <div class="formBreak">
 <div class="labelAbove"><%= caption %></div>
-<c:if test="${!empty folderEntry.customAttributes[property_name].value}">
-<c:set var="initDate" value="${folderEntry.customAttributes[property_name].value}"/>
+<c:if test="${!empty ssFolderEntry.customAttributes[property_name].value}">
+<c:set var="initDate" value="${ssFolderEntry.customAttributes[property_name].value}"/>
 <jsp:useBean id="initDate" type="java.util.Date" />
 <ssf:datepicker id="<%= elementName %>" 
   formName="<%= formName %>" 
   initDate="<%= initDate %>" />
 </c:if>
-<c:if test="${empty folderEntry.customAttributes[property_name].value}">
+<c:if test="${empty ssFolderEntry.customAttributes[property_name].value}">
 <ssf:datepicker id="<%= elementName %>" 
   formName="<%= formName %>" 
   initDate="<%= new Date() %>" />

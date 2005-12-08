@@ -14,19 +14,19 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<jsp:useBean id="wsDomTree" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <table width="100%"><tr><td>
-<c:if test="${!empty folder}">
-<span>Currently showing forum: <c:out value="${folder.title}" /></span>
+<c:if test="${!empty ssFolder}">
+<span>Currently showing forum: <c:out value="${ssFolder.title}" /></span>
 <br>
 </c:if>
 
 <form action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
 
-<input type="hidden" name="forumId" value="<c:out value="${folder.id}"/>" />
+<input type="hidden" name="forumId" value="<c:out value="${ssFolder.id}"/>" />
 <br>
 <br>
 Select the forum to be shown:
@@ -39,7 +39,7 @@ function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
 	return false
 }
 </script>
-<ssf:tree treeName="wsTree" treeDocument="<%= wsDomTree %>"  rootOpen="true" />
+<ssf:tree treeName="wsTree" treeDocument="<%= ssWsDomTree %>"  rootOpen="true" />
 </form>
 <br>
 

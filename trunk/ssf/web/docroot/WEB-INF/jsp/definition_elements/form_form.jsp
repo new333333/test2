@@ -1,8 +1,7 @@
 <% // Form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="configDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="configElement" type="org.dom4j.Element" scope="request" />
-<jsp:useBean id="configJspStyle" type="String" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <%
 	//Get the form item being displayed
 	Element item = (Element) request.getAttribute("item");
@@ -13,7 +12,7 @@
 	}
 	String formName = (String) request.getAttribute("property_name");
 	if (formName == null || formName.equals("")) {
-		formName = ObjectKeys.DEFINITION_DEFAULT_FORM_NAME;
+		formName = PortletKeys.DEFINITION_DEFAULT_FORM_NAME;
 	}
 	request.setAttribute("formName", formName);
 	String methodName = (String) request.getAttribute("property_method");
@@ -23,7 +22,7 @@
 %>
 <form method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
   id="<%= formName %>" action="" onSubmit="return ssf_onSubmit(this);">
-<ssf:displayConfiguration configDefinition="<%= configDefinition %>" 
+<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= item %>" 
-  configJspStyle="<%= configJspStyle %>" />
+  configJspStyle="<%= ssConfigJspStyle %>" />
 </form>

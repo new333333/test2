@@ -367,7 +367,7 @@ public class ForumActionModuleImpl implements ForumActionModule {
 		Map model = new HashMap();
 		String forumId = folderId.toString();
 		folderEntries = getFolderModule().getFolderEntries(folderId);
-		Folder folder = (Folder)folderEntries.get(PortletKeys.FOLDER);
+		Folder folder = (Folder)folderEntries.get(ObjectKeys.FOLDER);
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 		//Build the beans depending on the operation being done
 		model.put(PortletKeys.FOLDER, folder);
@@ -379,7 +379,7 @@ public class ForumActionModuleImpl implements ForumActionModule {
 		} else {
 			model.put(PortletKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(topFolder.getId()));			
 		}
-		model.put(PortletKeys.FOLDER_ENTRIES, folderEntries.get(PortletKeys.FOLDER_ENTRIES));
+		model.put(PortletKeys.FOLDER_ENTRIES, folderEntries.get(ObjectKeys.FOLDER_ENTRIES));
 		model.put(PortletKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
 		model.put(PortletKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId(), folder.getId()));
 		getDefinitions(folder, model);

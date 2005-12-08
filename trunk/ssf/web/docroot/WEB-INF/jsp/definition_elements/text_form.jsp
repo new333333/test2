@@ -1,7 +1,5 @@
 <% //Text form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="configDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="configElement" type="org.dom4j.Element" scope="request" />
 <%
 	String elementName = (String) request.getAttribute("property_name");
 	String caption = (String) request.getAttribute("property_caption");
@@ -26,5 +24,5 @@
 %>
 <div style="display:<%= inline %>;"><%= caption %>
 <input type="text" name="<%= elementName %>" <%= width %> 
- value="<c:out value="${folderEntry.customAttributes[property_name].value}"/>">
+ value="<c:out value="${ssFolderEntry.customAttributes[property_name].value}"/>">
 </div>

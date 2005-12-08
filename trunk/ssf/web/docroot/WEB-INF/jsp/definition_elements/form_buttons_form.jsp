@@ -1,9 +1,7 @@
 <% // 2 column table %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="org.dom4j.Element" %>
-<jsp:useBean id="configDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="configElement" type="org.dom4j.Element" scope="request" />
-<jsp:useBean id="configJspStyle" type="String" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <%
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
@@ -23,8 +21,8 @@
 				//Output the button
 				Element btnItem = (Element) itItems.next();
 %>
-<ssf:displayConfiguration configDefinition="<%= configDefinition %>" 
-  configElement="<%= btnItem %>" configJspStyle="<%= configJspStyle %>" 
+<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
+  configElement="<%= btnItem %>" configJspStyle="<%= ssConfigJspStyle %>" 
   processThisItem="true" />
 <%
 			}

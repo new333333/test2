@@ -1,10 +1,9 @@
 package com.sitescape.ef.module.workspace;
 
-import java.util.Map;
-
+import com.sitescape.ef.domain.NoWorkspaceByTheIdException;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.security.AccessControlException;
-
+import org.dom4j.Document;
 /**
  * @author Jong Kim
  *
@@ -17,8 +16,8 @@ public interface WorkspaceModule {
      * @return
      * @throws NoWorkspaceByTheNameException
      */
-	public Map showWorkspace();
-	public Map showWorkspace(Long workspaceId);
-    public org.dom4j.Document getDomWorkspaceTree() throws AccessControlException;
-    public org.dom4j.Document getDomWorkspaceTree(Long id) throws AccessControlException;
+	public Workspace getWorkspace() throws NoWorkspaceByTheIdException, AccessControlException;
+	public Workspace getWorkspace(Long workspaceId)	throws NoWorkspaceByTheIdException, AccessControlException;
+    public Document getDomWorkspaceTree() throws AccessControlException;
+    public Document getDomWorkspaceTree(Long id) throws AccessControlException;
 }

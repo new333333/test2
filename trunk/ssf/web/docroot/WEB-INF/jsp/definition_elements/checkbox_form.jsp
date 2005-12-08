@@ -15,7 +15,7 @@
 	}
 %>
 <c:set var="cb_checked" value=""/>
-<c:if test="${folderEntry.customAttributes[property_name].value}" >
+<c:if test="${ssFolderEntry.customAttributes[property_name].value}" >
 <c:set var="cb_checked" value="checked"/>
 </c:if>
 <div class="formBreak">
