@@ -20,7 +20,7 @@
     </table>
   </div>
   <iframe id="showentryframe" name="showentryframe" 
-    src="<html:rootPath/>js/null.html" height="95%" width="100%" 
+    src="<html:rootPath/>js/forum/null.html" height="95%" width="100%" 
     frameBorder="no" >xxx</iframe>
 </div>
 
