@@ -94,7 +94,7 @@ public class BuildDefinitionDivs extends TagSupport {
 		HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 		String contextPath = req.getContextPath();
 		if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
-		helpImgUrl = contextPath + "/html/pics/sym_s_help.gif";
+		helpImgUrl = contextPath + "/images/pics/sym_s_help.gif";
 
 		if (filter.equals("")) {
 			itRootElements = root.elementIterator();
