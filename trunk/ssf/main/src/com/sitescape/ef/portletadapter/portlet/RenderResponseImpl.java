@@ -81,28 +81,31 @@ public class RenderResponseImpl extends PortletResponseImpl implements RenderRes
 	}
 
 	public void setContentType(String contentType) {
-		Enumeration enu = req.getResponseContentTypes();
+		// Due to the bug described in # 59 in Aspen issue tracking database,
+		// we are removing any content type checking. 
+		//  
+		//Enumeration enu = req.getResponseContentTypes();
 
-		boolean valid = false;
+		//boolean valid = false;
 
-		while (enu.hasMoreElements()) {
-			String resContentType = (String)enu.nextElement();
+		//while (enu.hasMoreElements()) {
+			//String resContentType = (String)enu.nextElement();
 
-			if(resContentType.equals("*") ||
-					resContentType.equals("*/*")) {
-				valid = true;
-			}
-			else if (resContentType.endsWith("/*") && contentType.startsWith(resContentType.substring(0, resContentType.indexOf("/")))) {
-				valid = true;
-			}
-			else if (contentType.startsWith(resContentType)) {
-				valid = true;
-			}
-		}
+			//if(resContentType.equals("*") ||
+				//	resContentType.equals("*/*")) {
+				//valid = true;
+			//}
+			//else if (resContentType.endsWith("/*") && contentType.startsWith(resContentType.substring(0, resContentType.indexOf("/")))) {
+				//valid = true;
+			//}
+			//else if (contentType.startsWith(resContentType)) {
+				//valid = true;
+			//}
+		//}
 
-		if (!valid) {
-			throw new IllegalArgumentException();
-		}
+		//if (!valid) {
+			//throw new IllegalArgumentException();
+		//}
 
 		getHttpServletResponse().setContentType(contentType);
 		

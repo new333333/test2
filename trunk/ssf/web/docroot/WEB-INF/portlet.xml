@@ -13,7 +13,7 @@
 		</init-param>
         <expiration-cache>0</expiration-cache>
         <supports>
-            <mime-type>*/*</mime-type>
+            <mime-type>text/html</mime-type>
             <portlet-mode>view</portlet-mode>
             <portlet-mode>help</portlet-mode>
         </supports>
