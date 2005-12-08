@@ -25,6 +25,7 @@ public interface ObjectKeys {
     public static final String FOLDER="ss_folder";
     public static final String FOLDER_ANCESTORS="ss_folderAncestors";
     public static final String FOLDER_DESCENDANTS="ss_folderDescendants";
+    public static final String FOLDER_DOM_TREE="ss_folderDomTree";
     public static final String FOLDER_ENTRIES="ss_folderEntries";
     public static final String FOLDER_SEENMAP="folder_seenmap";
     public static final String FORUM_DATA_DEFINITION="definition";
@@ -72,7 +73,7 @@ public interface ObjectKeys {
 	public static final String FORUM_URL_STRUTS_ACTION = "struts_action";
 	public static final String FORUM_URL_VALUE = "value";
 	public static final String FORUM_URL_ZONE = "zone";
-	public static final String FORUM_URL_ZONE_ID = "zoneId";
+	public static final String FORUM_URL_ZONE_ID = "zoneName";
     public static final String INTERNAL_AUTHENTICATION = "ss_internalAuthentication";
     public static final String LOCALE = "ss_locale";
     public static final String PRINCIPAL_SIGNATURE = "ss_principalSignature";
@@ -81,6 +82,7 @@ public interface ObjectKeys {
     public static final long SEEN_HISTORY_MAP_TIMEOUT = (long)7*24*60*60*1000;
     public static final String SESSION_LAST_ENTRY_VIEWED = "last_entry_viewed";
     public static final String SESSION_LAST_HISTORY_ENTRY_VIEWED = "last_history_entry_viewed";
+    public static final String SSESSION = "ssession";
     public static final String USER = "ss_user";
     public static final String USER_NAME = "ss_userName";
     public static final String USER_PROPERTIES = "ss_userProperties";
@@ -93,6 +95,5 @@ public interface ObjectKeys {
     public static final String WORKSPACE_DOM_TREE="ss_wsDomTree";
     public static final String WORKSPACE_TREE="ss_wsTree";
     public static final String WORKSPACE="ss_workspace";
-    public static final String FOLDER_DOM_TREE="ss_folderDomTree";
 
 }

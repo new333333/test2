@@ -47,24 +47,24 @@ public interface CoreDao {
 	public List loadObjects(ObjectControls objs, FilterControls filter);
               
 
-	public Workspace findTopWorkspace(String zoneId);
+	public Workspace findTopWorkspace(String zoneName);
 	/**
      * 
      * @param binderId
-     * @param zoneId
+     * @param zoneName
      * @return
      * @throws DataAccessException
      * @throws NoFolderByTheIdException
      */
-    public Binder loadBinder(Long binderId, String zoneId);
-    public Binder findBinderByName(String binderName, String zoneId);
+    public Binder loadBinder(Long binderId, String zoneName);
+    public Binder findBinderByName(String binderName, String zoneName);
       
     /**
      * 
      * @param id
      * @return
      */
-    public Principal loadPrincipal(Long prinId, String zoneId);
+    public Principal loadPrincipal(Long prinId, String zoneName);
     /**
      * 
      * @param ids
@@ -74,41 +74,41 @@ public interface CoreDao {
     /**
      * Check that user is in zone
      * @param userId
-     * @param zoneId
+     * @param zoneName
      * @return
      * @throws DataAccessException
      * @throws NoUserByTheIdException
      */
-    public User loadUser(Long userId, String zoneId);
+    public User loadUser(Long userId, String zoneName);
     /**
      * Same as <code>loadUser</code> except that this throws
      * NoUserByTheIdException if the user object is disabled.
      * @param userId
-     * @param zoneId
+     * @param zoneName
      * @return
      */
-    public User loadUserOnlyIfEnabled(Long userId, String zoneId);
+    public User loadUserOnlyIfEnabled(Long userId, String zoneName);
     /**
      * @param userName
-     * @param zoneId
+     * @param zoneName
      * @return User
      * @throws DataAccessException
      * @throws NoUserByTheNameException
      * @throws NoZoneByTheIdException
      */
-    public User findUserByName(String principalName, String zoneId);
+    public User findUserByName(String principalName, String zoneName);
     
     /**
      * Same as <code>findUserByName</code> except that this throws 
      * NoUserByTheNameException if the user object is disabled. 
      * @param userName
-     * @param zoneId
+     * @param zoneName
      * @return
      * @throws DataAccessException
      * @throws NoUserByTheNameException
      * @throws NoZoneByTheIdException
      */
-    public User findUserByNameOnlyIfEnabled(final String userName, final String zoneId);
+    public User findUserByNameOnlyIfEnabled(final String userName, final String zoneName);
 
     public List loadUsers(Collection usersIds);
     public List loadEnabledUsers (Collection usersIds);
@@ -117,7 +117,7 @@ public interface CoreDao {
    	public List filterUsers(Principal principal, FilterControls filter);
     public UserProperties loadUserProperties(Long userId);
     
-    public Group loadGroup(Long groupId, String zoneId);
+    public Group loadGroup(Long groupId, String zoneName);
     public List loadGroups(Collection groupsIds);
     public int countGroups(FilterControls filter);
     public List filterGroups(FilterControls filter);
@@ -133,7 +133,7 @@ public interface CoreDao {
    
 	public List loadChangedEntries(Folder folder, Date since, Date before);
 	public List loadChangedEntries(Folder folder, Date since, Date before, OrderBy order);
-	public Definition loadDefinition(String defId, String zoneId);   
+	public Definition loadDefinition(String defId, String zoneName);   
     public List loadDefinitions(Folder folder, ObjectControls objectDesc, FilterControls filter);       
-    public List loadDefinitions(String ZoneId);
+    public List loadDefinitions(String ZoneName);
  }

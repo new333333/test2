@@ -5,8 +5,8 @@ import java.util.Set;
 /**
  * @hibernate.class table="SS_WorkAreaFunctionMemberships" lazy="false" dynamic-update="true"
  * @hibernate.cache usage="nonstrict-read-write"
- * @hibernate.query name="find-FunctionMemberships-ByCompanyAndWorkArea" query="from WorkAreaFunctionMembership functionMembership left join fetch functionMembership.memberIds where functionMembership.zoneId=:zoneId and functionMembership.workAreaId=:workAreaId and functionMembership.workAreaType=:workAreaType"
- * @hibernate.query name="check-WorkAreaFunctionMembership" query="select fm.id from com.sitescape.ef.security.function.Function function join function.operationNames operationName, com.sitescape.ef.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneId=:zoneId and fm.zoneId=:zoneId and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)"
+ * @hibernate.query name="find-FunctionMemberships-ByCompanyAndWorkArea" query="from WorkAreaFunctionMembership functionMembership left join fetch functionMembership.memberIds where functionMembership.zoneName=:zoneName and functionMembership.workAreaId=:workAreaId and functionMembership.workAreaType=:workAreaType"
+ * @hibernate.query name="check-WorkAreaFunctionMembership" query="select fm.id from com.sitescape.ef.security.function.Function function join function.operationNames operationName, com.sitescape.ef.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneName=:zoneName and fm.zoneName=:zoneName and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)"
  * 
  * <code>FunctionMembership</code> defines the members of a function for 
  * a work area.
@@ -18,7 +18,7 @@ public class WorkAreaFunctionMembership {
     private static final String SPLIT_CHAR = ",";
     
     private Long id;
-    private String zoneId;
+    private String zoneName;
     private Long workAreaId;
     private String workAreaType;
     private Long functionId;
@@ -84,11 +84,11 @@ public class WorkAreaFunctionMembership {
 	/**
 	 * @hibernate.property length="100" not-null="true"
 	 */    
-    public String getZoneId() {
-        return zoneId;
+    public String getZoneName() {
+        return zoneName;
     }
-    public void setZoneId(String zoneId) {
-        this.zoneId = zoneId;
+    public void setZoneName(String zoneName) {
+        this.zoneName = zoneName;
     }
     
     /**

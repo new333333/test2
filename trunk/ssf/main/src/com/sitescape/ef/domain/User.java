@@ -40,7 +40,7 @@ public class User extends Principal {
     protected Workspace preferredWorkspace;
     protected Locale locale;
 	protected TimeZone timeZone;
-	protected String timeZoneId;
+	protected String timeZoneName;
 	protected Date passwordExpirationDate;
 	protected boolean passwordReset=false;
 	protected boolean passwordEncrypted=true;
@@ -58,10 +58,10 @@ public class User extends Principal {
     }
 	public TimeZone getTimeZone() {
 		if (timeZone != null) return timeZone;
-		if ((timeZoneId == null) || timeZoneId.length() ==0) {
+		if ((timeZoneName == null) || timeZoneName.length() ==0) {
 			timeZone = TimeZone.getDefault();
 		} else {
-			timeZone = TimeZone.getTimeZone(timeZoneId);
+			timeZone = TimeZone.getTimeZone(timeZoneName);
 		}
 		return timeZone;
 	}
@@ -204,14 +204,14 @@ public class User extends Principal {
 	}
 	/**
 	 * @hibernate.property length="10"
-	 * @param timeZoneId
+	 * @param timeZoneName
 	 */
-	public String getTimeZoneId() {
-		return timeZoneId;
+	public String getTimeZoneName() {
+		return timeZoneName;
 	} 
 
-	public void setTimeZoneId(String timeZoneId) {
-		this.timeZoneId = timeZoneId;
+	public void setTimeZoneName(String timeZoneName) {
+		this.timeZoneName = timeZoneName;
 		timeZone = null;
 	}
 

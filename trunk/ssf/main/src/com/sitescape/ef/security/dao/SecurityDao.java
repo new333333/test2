@@ -15,19 +15,19 @@ public interface SecurityDao {
     
     public void delete(Object obj);
     
-    public List findFunctions(String zoneId);
+    public List findFunctions(String zoneName);
     
-    public List findWorkAreaFunctionMemberships(String zoneId, Long workAreaId, String workAreaType);
+    public List findWorkAreaFunctionMemberships(String zoneName, Long workAreaId, String workAreaType);
     
     /**
      * 
-     * @param zoneId
+     * @param zoneName
      * @param workAreaId
      * @param workAreaType
      * @param workAreaOperationName
      * @param membersToLookup	a set of Long
      * @return
      */
-    public boolean checkWorkAreaFunctionMembership(String zoneId, Long workAreaId, 
+    public boolean checkWorkAreaFunctionMembership(String zoneName, Long workAreaId, 
             String workAreaType, String workAreaOperationName, Set membersToLookup);
 }

@@ -9,7 +9,7 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 public abstract class AbstractLuceneSessionFactory implements LuceneSessionFactory {
 
     public LuceneSession openSession() throws LuceneException {
-        String indexName = RequestContextHolder.getRequestContext().getZoneId();
+        String indexName = RequestContextHolder.getRequestContext().getZoneName();
         return openSession(indexName);
     }
 }

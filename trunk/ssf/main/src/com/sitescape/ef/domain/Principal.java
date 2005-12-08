@@ -22,7 +22,7 @@ import com.sitescape.ef.util.CollectionUtil;
 /**
 * @hibernate.class table="SS_Principals" dynamic-update="true" node="Principal"
 * @hibernate.discriminator type="string" length="1" column="type"
-* @hibernate.query name="find-User-Company" query="from User user where user.name=:userName and user.zoneId=:zoneId"
+* @hibernate.query name="find-User-Company" query="from User user where user.name=:userName and user.zoneName=:zoneName"
 * @author Jong Kim
 *
 */
@@ -34,7 +34,7 @@ public class Principal extends Entry {
     protected List memberOf;
     protected String signature="";    
     protected String stringId;
-    protected String zoneId;
+    protected String zoneName;
     protected String layoutIds;
     protected List roles;
     protected Long preferredWorkspaceId;
@@ -108,11 +108,11 @@ public class Principal extends Entry {
     /**
      * @hibernate.property length="100" not-null="true"
      */
-    public String getZoneId() {
-    	return this.zoneId;
+    public String getZoneName() {
+    	return this.zoneName;
     }
-    public void setZoneId(String id) {
-    	this.zoneId = id;
+    public void setZoneName(String id) {
+    	this.zoneName = id;
     }
  	/**
 	 * @hibernate.property length="100"
@@ -331,7 +331,7 @@ public class Principal extends Entry {
         return result;
     }
     public String toString() {
-    	return zoneId + ":" + name;
+    	return zoneName + ":" + name;
     }
  }
 

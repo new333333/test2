@@ -23,7 +23,7 @@ public class Definition extends PersistentTimestampObject implements AclControll
     private byte[] xmlencoding;
     private boolean dirty=true;
     private Document doc;
-    private String zoneId;
+    private String zoneName;
     private AclSet aclSet;
     private boolean inheritAclFromParent = false;
     private String title="";
@@ -101,11 +101,11 @@ public class Definition extends PersistentTimestampObject implements AclControll
     /**
      * @hibernate.property length="100" not-null="true"
      */
-    public String getZoneId() {
-    	return this.zoneId;
+    public String getZoneName() {
+    	return this.zoneName;
     }
-    public void setZoneId(String id) {
-    	this.zoneId = id;
+    public void setZoneName(String id) {
+    	this.zoneName = id;
     }
     /**
      * @hibernate.property type="org.springframework.orm.hibernate3.support.BlobByteArrayType"
@@ -153,7 +153,7 @@ public class Definition extends PersistentTimestampObject implements AclControll
 
  
     public String toString() {
-    	return zoneId + ":" + name;
+    	return zoneName + ":" + name;
     }
 
     /**

@@ -33,16 +33,16 @@ public class FunctionManagerImpl implements FunctionManager {
         getSecurityDao().update(function);
     }
 
-    public List findFunctions(String zoneId) {
-        return getSecurityDao().findFunctions(zoneId);
+    public List findFunctions(String zoneName) {
+        return getSecurityDao().findFunctions(zoneName);
     }
     
-    public List findFunctions(String zoneId, WorkAreaOperation workAreaOperation) {
+    public List findFunctions(String zoneName, WorkAreaOperation workAreaOperation) {
         // This is implemented on top of getFunctions(Long) based on the
         // assumption that the underlying ORM effectively caches the
         // result of the query. 
         
-        List functions = this.findFunctions(zoneId);
+        List functions = this.findFunctions(zoneName);
         
         List results = new ArrayList();
         

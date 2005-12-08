@@ -8,41 +8,27 @@ import com.sitescape.ef.domain.User;
  */
 public class RequestContext {
     private User user;
-    private String zoneId;
+    private String zoneName;
+    private String userName;
 
-    public RequestContext(User user) {
-        if(user == null)
-            throw new IllegalArgumentException("User must be specified");
-        this.user = user;
-        if (user.isDefaultIdentity()) {
-        	String name = user.getName();
-        	// TODO The name of default account must be configurable (by
-        	// externalizing its mapping from whatever name the portal uses)
-        	// For example, 'default' -> 'anonymous'
-        	this.zoneId = name.substring(0, name.indexOf("default") - 1);
-        } else {
-        	this.zoneId = user.getZoneId();
-        }
+    public RequestContext(String zoneName, String userName) {
+    	this.zoneName = zoneName;
+    	this.userName = userName;
     }
-    public RequestContext(String zoneId) {
-        if (zoneId == null)
-            throw new IllegalArgumentException("Zone ID must be specified");
-        this.user = null;
-        this.zoneId = zoneId;
+    
+    public String getZoneName() {
+    	return zoneName;
     }
+    
     public String getUserName() {
-    	if (user == null) return null;
-    	return user.getName();
+    	return userName;
     }
-    public Long getUserId() {
-    	if (user == null) return null;
-        return user.getId();
+    
+    public void setUser(User user) {
+    	this.user = user;
     }
+    
     public User getUser() {
-        return user;
+    	return user;
     }
-    public String getZoneId() {
-    	return zoneId;
-    }
-
 }

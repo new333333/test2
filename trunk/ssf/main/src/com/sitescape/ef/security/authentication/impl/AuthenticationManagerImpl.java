@@ -19,10 +19,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		this.coreDao = coreDao;
 	}
 
-	public void authenticate(String zoneId, String username, String password) throws PasswordDoesNotMatchException, UserDoesNotExistException {
+	public void authenticate(String zoneName, String username, String password) throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user = null;
 		try {
-			user = getCoreDao().findUserByName(username, zoneId);
+			user = getCoreDao().findUserByName(username, zoneName);
 		}
     	catch(NoUserByTheNameException e) {
     		throw new UserDoesNotExistException(e);

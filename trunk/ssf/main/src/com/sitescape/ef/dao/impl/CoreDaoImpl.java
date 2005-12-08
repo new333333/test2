@@ -196,18 +196,18 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        if (result==null) return 0;
 	   return result.intValue();	
 	}
-	public Workspace findTopWorkspace(final String zoneId) {
+	public Workspace findTopWorkspace(final String zoneName) {
        return (Workspace)getHibernateTemplate().execute(
                new HibernateCallback() {
                    public Object doInHibernate(Session session) throws HibernateException {
                        Workspace workspace = (Workspace)session.createQuery("from com.sitescape.ef.domain.Workspace w" +
-                       		" where w.zoneId=? and w.name=? and w.owningWorkspace is null")
-                            .setParameter(0, zoneId)
-                            .setParameter(1, zoneId)
+                       		" where w.zoneName=? and w.name=? and w.owningWorkspace is null")
+                            .setParameter(0, zoneName)
+                            .setParameter(1, zoneName)
                             .setCacheable(true)
                             .uniqueResult();
                        if (workspace == null) {
-                           throw new NoWorkspaceByTheNameException(zoneId); 
+                           throw new NoWorkspaceByTheNameException(zoneName); 
                        }
                        return workspace;
                    }
@@ -218,25 +218,25 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	/**
 	 * Load binder and validate it belongs to the zone
 	 * @param binderId
-	 * @param zoneId
+	 * @param zoneName
 	 * @return
 	 */
-    public Binder loadBinder(Long binderId, String zoneId) {  
+    public Binder loadBinder(Long binderId, String zoneName) {  
 		Binder binder = (Binder)load(Binder.class, binderId);
         if (binder == null) {throw new NoFolderByTheIdException(binderId);};
-        if ((zoneId != null ) && !binder.getZoneId().equals(zoneId)) {
+        if ((zoneName != null ) && !binder.getZoneName().equals(zoneName)) {
         	throw new NoBinderByTheIdException(binderId);
         }
         return binder;
     }
 
-    public Binder findBinderByName(final String binderName, final String zoneId) {
+    public Binder findBinderByName(final String binderName, final String zoneName) {
         return (Binder)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                         Binder binder = (Binder)session.getNamedQuery("find-Binder-Company")
                              		.setString(ParameterNames.BINDER_NAME, binderName)
-                             		.setString(ParameterNames.COMPANY_ID, zoneId)
+                             		.setString(ParameterNames.COMPANY_ID, zoneName)
                              		.uniqueResult();
                         if (binder == null) {
                             throw new NoBinderByTheNameException(binderName); 
@@ -250,7 +250,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
      *  (non-Javadoc)
      * @see com.sitescape.ef.dao.CoreDao#loadPrincipal(java.lang.Long, java.lang.Long)
      */
-    public Principal loadPrincipal(final Long prinId, String zoneId) {
+    public Principal loadPrincipal(final Long prinId, String zoneName) {
         Principal principal = (Principal)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
@@ -265,7 +265,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 }
         );
         //make sure from correct zone
-        if ((zoneId != null ) && !principal.getZoneId().equals(zoneId)) {throw new NoPrincipalByTheIdException(prinId);}
+        if ((zoneName != null ) && !principal.getZoneName().equals(zoneName)) {throw new NoPrincipalByTheIdException(prinId);}
        
         return principal;
               
@@ -284,16 +284,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
      *  (non-Javadoc)
      * @see com.sitescape.ef.dao.CoreDao#loadUser(java.lang.Long, java.lang.Long)
      */
-    public User loadUser(Long userId, String zoneId) {
+    public User loadUser(Long userId, String zoneName) {
     	User user = (User)load(User.class, userId);
         if (user == null) {throw new NoUserByTheIdException(userId);}
         //make sure from correct zone
-        if ((zoneId != null ) && !user.isDefaultIdentity() &&
-        		!user.getZoneId().equals(zoneId)) {throw new NoUserByTheIdException(userId);}
+        if ((zoneName != null ) && !user.isDefaultIdentity() &&
+        		!user.getZoneName().equals(zoneName)) {throw new NoUserByTheIdException(userId);}
         return user;
     }
-	public User loadUserOnlyIfEnabled(Long userId, String zoneId) {
-        User user = loadUser(userId, zoneId);
+	public User loadUserOnlyIfEnabled(Long userId, String zoneName) {
+        User user = loadUser(userId, zoneName);
                       		
         if (user.isDisabled()) {
             throw new NoUserByTheIdException(userId);               
@@ -316,13 +316,13 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         return result;        
     }
 
-    public User findUserByName(final String userName, final String zoneId) {
+    public User findUserByName(final String userName, final String zoneName) {
         return (User)getHibernateTemplate().execute(
            new HibernateCallback() {
                public Object doInHibernate(Session session) throws HibernateException {
                    User user = (User)session.getNamedQuery("find-User-Company")
                         		.setString(ParameterNames.USER_NAME, userName)
-                        		.setString(ParameterNames.COMPANY_ID, zoneId)
+                        		.setString(ParameterNames.COMPANY_ID, zoneName)
                         		.setCacheable(true)
                         		.uniqueResult();
                    if (user == null) {
@@ -334,8 +334,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         );
     }
     
-    public User findUserByNameOnlyIfEnabled(final String userName, final String zoneId) {
-        User user = findUserByName(userName, zoneId);
+    public User findUserByNameOnlyIfEnabled(final String userName, final String zoneName) {
+        User user = findUserByName(userName, zoneName);
         
         if (user.isDisabled()) {
             throw new NoUserByTheNameException(userName);               
@@ -367,11 +367,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     }
  
  
-	public Group loadGroup(final Long groupId, String zoneId)  {
+	public Group loadGroup(final Long groupId, String zoneName)  {
 		Group group = (Group)load(Group.class, groupId);
 		if (group == null) {throw new NoGroupByTheIdException(groupId);}
         //make sure from correct zone
-        if ((zoneId != null ) && !group.getZoneId().equals(zoneId)) {throw new NoGroupByTheIdException(groupId);}
+        if ((zoneName != null ) && !group.getZoneName().equals(zoneName)) {throw new NoGroupByTheIdException(groupId);}
 		return group;
 	}
 	public List loadGroups(Collection ids) {
@@ -562,11 +562,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
             }
         );
 	}
-	public Definition loadDefinition(String defId, String zoneId) {
+	public Definition loadDefinition(String defId, String zoneName) {
   		Definition def = (Definition)load(Definition.class, defId);
         if (def == null) {throw new NoDefinitionByTheIdException(defId);}
         //make sure from correct zone
-        if (!def.getZoneId().equals(zoneId)) {throw new NoDefinitionByTheIdException(defId);}
+        if (!def.getZoneName().equals(zoneName)) {throw new NoDefinitionByTheIdException(defId);}
   		return def;
 	}
 	/**
@@ -590,8 +590,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
             }
         );                
 	}
-	public List loadDefinitions(String zoneId) {
-    	return loadObjects(new ObjectControls(Definition.class), new FilterControls("zoneId", zoneId));
+	public List loadDefinitions(String zoneName) {
+    	return loadObjects(new ObjectControls(Definition.class), new FilterControls("zoneName", zoneName));
 	}
 
 	/**
