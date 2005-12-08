@@ -28,7 +28,7 @@ public class LoginFilter  implements Filter {
 		else {
 			// User is not logged in. Redirect the user to the portal login page. 
 			// Note: The JSP file below is a wrong one. Replace it!!!
-			RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/jsp/sample/servlet.uploadFile.jsp");
+			RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/jsp/forum/portal_login.jsp");
 			dispatcher.forward(request, response);
 		}
 	}

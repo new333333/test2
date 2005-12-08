@@ -14,6 +14,7 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page session="false" %>
 <%@ page contentType="text/html" isELIgnored="false" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -32,8 +33,17 @@
 
 <%@ include file="/WEB-INF/jsp/forum/view_css.jsp" %>
 
+<script language="javascript" type="text/javascript">
+
+var ss_transferUrl = self.location.href;
+
+</script>
+
 </head>
 <body>
-Portal login jsp
+ <iframe id="iframe_window" name="iframe_window" 
+    style="width:100%; height:95%; display:block;"
+    src="/c" frameBorder="no" >xxx</iframe>
+
 </body>
 </html>

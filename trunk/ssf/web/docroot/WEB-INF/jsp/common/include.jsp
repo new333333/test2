@@ -1,3 +1,4 @@
+<%@ page session="false" %>
 <%@ page contentType="text/html" isELIgnored="false" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -25,6 +26,15 @@
 
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
 <%@ include file="/WEB-INF/jsp/forum/view_css.jsp" %>
+<c:if test="${empty ssf_support_files_loaded}">
+<script language="javascript">
+//See if this page is in the process of logging in while viewing a mail notification page
+if (self.parent && self.parent.ss_transferUrl) {
+	//The parent frame has specified a url to transfer to. Go do it.
+	self.parent.location.href = self.parent.ss_transferUrl;
+}
+</script>
+</c:if>
 <ssf:ifadapter>
 <c:if test="${empty ssf_support_files_loaded}">
 </head>
