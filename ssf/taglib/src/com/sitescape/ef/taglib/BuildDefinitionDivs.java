@@ -582,6 +582,36 @@ public class BuildDefinitionDivs extends TagSupport {
 						
 						sb.append("</select>\n");
 					
+					} else if (type.equals("itemSelect")) {
+						if (!propertyConfig.attributeValue("caption", "").equals("")) {
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+							sb.append("\n<br>\n");
+						}
+						sb.append("<select name='propertyId_" + propertyId + "'>\n");
+						sb.append("<option value=''>").append(NLT.get("definition.select_item_select")).append("</option>\n");
+						
+						//Get the list of items in this definition
+						String itemSelectPath = propertyConfig.attributeValue("path", "");
+						if (!itemSelectPath.equals("")) {
+							Iterator itItems = this.sourceDocument.getRootElement().selectNodes(itemSelectPath).iterator();
+							while (itItems.hasNext()) {
+								//Build a list of the items
+								Element selectedItem = (Element) itItems.next();
+								Element selectedItemNameEle = (Element)selectedItem.selectSingleNode("properties/property[@name='name']");
+								if (selectedItemNameEle == null) {continue;}
+								Element selectedItemCaptionEle = (Element)selectedItem.selectSingleNode("properties/property[@name='caption']");
+								if (selectedItemCaptionEle == null) {continue;}
+								String selectedItemName = selectedItemNameEle.attributeValue("value", "");
+								String selectedItemCaption = selectedItemCaptionEle.attributeValue("value", "");
+								sb.append("<option value='").append(selectedItemName).append("'");
+								if (selectedItemName.equals(propertyValue)) {
+									sb.append(" selected");
+								}
+								sb.append(">").append(selectedItemCaption).append(" (").append(selectedItemName).append(")</option>\n");
+							}
+						}
+						sb.append("</select>\n<br><br>\n");
+					
 					} else if (type.equals("replyStyle")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
