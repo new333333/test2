@@ -8,11 +8,11 @@ public class WebKeys {
 
 	// Calendar view stuff
 	public static final String CALENDAR_EVENTDATES = "eventDates";
-	public static final String CALENDAR_VIEWMODE = "calendarViewMode";
+	public static final String CALENDAR_VIEWMODE = "ssCalendarViewMode";
 	public static final String CALENDAR_VIEW_DAY = "day";
 	public static final String CALENDAR_VIEW_WEEK = "week";
 	public static final String CALENDAR_VIEW_MONTH = "month";
-	public static final String CALENDAR_CURRENT_DATE = "currentDate";
+	public static final String CALENDAR_CURRENT_DATE = "ssCurrentDate";
 
 	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
     public static final String LOCALE = "ss_locale";
