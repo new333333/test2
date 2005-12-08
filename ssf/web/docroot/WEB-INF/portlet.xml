@@ -49,7 +49,7 @@
         </portlet-info>
     </portlet>
     <portlet>
-        <description xml:lang="en">SiteScape Widget Tester Portlet</description>
+        <description xml:lang="en">SiteScape Workspace Tree Portlet</description>
         <portlet-name>ss_workspacetree</portlet-name>
         <display-name xml:lang="en">Workspace Tree</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
@@ -57,7 +57,7 @@
 				<name>contextConfigLocation</name>
 				<value>/WEB-INF/context/portlet/workspaceTree.xml</value>
 			</init-param>
-        <expiration-cache>0</expiration-cache>
+        <expiration-cache>300</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>view</portlet-mode>
