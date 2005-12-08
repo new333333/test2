@@ -298,31 +298,6 @@ function highlightLineById(id) {
 </script>
 </c:if>
 
-<c:if test="<%= !op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY) %>">
-
-<div id="ss_showentryhighwatermark" style="position:absolute; visibility:visible;">
-<img src="<html:imagesPath/>pics/1pix.gif">
-</div>
-<%
-	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL)) {
-%>
-<%@ include file="/WEB-INF/jsp/forum/view_forum_horizontal.jsp" %>
-<%
-	} else if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME)) {
-%>
-<%@ include file="/WEB-INF/jsp/forum/view_forum_iframe.jsp" %>
-<%
-	} else if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_POPUP)) {
-%>
-<%@ include file="/WEB-INF/jsp/forum/view_forum_popup.jsp" %>
-<%
-	} else {
-%>
-<%@ include file="/WEB-INF/jsp/forum/view_forum_vertical.jsp" %>
-<%
-	}
-%>
-</c:if>
 <c:if test="<%= op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY) %>">
 <jsp:useBean id="ssFolderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
   <c:if test="<%= !statePopUp %>">
@@ -332,16 +307,11 @@ function ss_loadEntry(obj,id) {
 	return false;
 }
 </script>
-    <liferay:box top="/html/common/box_top.jsp" bottom="/html/common/box_bottom.jsp">
-<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
-    </liferay:box>
-    <liferay:box top="/html/common/box_top.jsp" bottom="/html/common/box_bottom.jsp">
 	  <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
 	    configElement="<%= ssConfigElement %>" 
 	    configJspStyle="<%= ssConfigJspStyle %>"
 	    processThisItem="true" 
 	    folderEntry="<%= ssFolderEntry %>" />
-    </liferay:box>
   </c:if>
   
   <c:if test="<%= statePopUp %>">

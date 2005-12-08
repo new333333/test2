@@ -35,6 +35,7 @@ public class WebKeys {
 	//oerations
  	public static final String FORUM_OPERATION_ADMINISTRATION = "administration";
 	public static final String FORUM_OPERATION_SET_DISPLAY_STYLE = "set_display_style";
+	public static final String FORUM_OPERATION_VIEW_ENTRY = "view_entry";
 	public static final String FORUM_OPERATION_VIEW_ENTRY_HISTORY_NEXT = "history_next";
 	public static final String FORUM_OPERATION_VIEW_ENTRY_HISTORY_PREVIOUS = "history_previous";
 	public static final String FORUM_OPERATION_VIEW_ENTRY_NEXT = "entry_next";
@@ -75,6 +76,7 @@ public class WebKeys {
     public static final String VIEW_CONFIGURE = "forum/configure";
     public static final String VIEW_NO_DEFINITION="forum/view_default";
     public static final String VIEW_FORUM="forum/view_forum";
+    public static final String VIEW_ENTRY="forum/view_entry";
     public static final String VIEW="forum/view";
     public static final String VIEW_NO_ENTRY="forum/view_no_entry";
     public static final String VIEW_MODIFY_ENTRY="forum/modify_entry";

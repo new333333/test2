@@ -412,6 +412,12 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		Map folderEntries = null;
 		if (op.equals("")) {
 			if (!entryId.equals("")) folderEntries  = getFolderModule().getEntryTree(folderId, Long.valueOf(entryId));
+		
+		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY)) {
+			if (!entryId.equals("")) {
+				folderEntries  = getFolderModule().getEntryTree(folderId, Long.valueOf(entryId));
+			}
+	
 		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_NEXT)) {
 			folder = getFolderModule().getFolder(folderId);
 			Long currentEntryId = null;

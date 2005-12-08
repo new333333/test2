@@ -70,13 +70,8 @@
             <portlet-mode>view</portlet-mode>
             <portlet-mode>edit</portlet-mode>
         </supports>
-        <!--<supported-locale>en</supported-locale>-->
-        <!--<resource-bundle>...</resource-bundle>-->
-        <portlet-info>
-        	<title>Forum</title>
-        	<short-title>Forum</short-title>
-        	<keywords>Forum</keywords>
-        </portlet-info>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>content.forum</resource-bundle>
     </portlet>
 
     <portlet>
