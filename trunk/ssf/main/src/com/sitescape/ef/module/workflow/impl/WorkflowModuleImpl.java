@@ -148,6 +148,10 @@ public class WorkflowModuleImpl extends AbstractModuleImpl implements WorkflowMo
 	        throw convertJbpmException(ex);
 	    }	
 	}
+	public void deleteProcessDefinition(Long id) {
+       	JbpmSession session = workflowFactory.getSession();
+        session.getGraphSession().deleteProcessDefinition(id.longValue());
+	}
 	private RuntimeException convertJbpmException(Exception ex) {
 		// try to decode and translate HibernateExceptions
 	    if (ex instanceof HibernateException) {
