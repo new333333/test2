@@ -52,7 +52,7 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail{
 			logger.error("Mail file missing (" + file.getName() + ") - job cancelled");
 		}
     }
-    public void schedule(Folder folder, JavaMailSender mailSender, MimeMessage mail) {
+    public void schedule(Folder folder, JavaMailSender mailSender, MimeMessage mail, File fileDir) {
 		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
 		//each job is new = don't use verify schedule, cause this a unique
 		GregorianCalendar start = new GregorianCalendar();
@@ -71,7 +71,9 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail{
 			data.put("folder",folder.getId());
 			data.put("zoneName",folder.getZoneName());
 			
-			File file = new File(SPropsUtil.getString("default.temp.mail.dir") + "/mail-" + folder.getId() + "-" + start.getTime().getTime() + ".mail");
+			if(!fileDir.exists())
+				fileDir.mkdirs();
+			File file = new File(fileDir.getPath() + start.getTime().getTime() + ".mail");
 			try {
 				file.createNewFile();
 				FileOutputStream fo = new FileOutputStream(file);

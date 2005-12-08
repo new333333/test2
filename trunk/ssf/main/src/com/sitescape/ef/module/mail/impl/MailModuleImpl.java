@@ -1,6 +1,8 @@
 
 package com.sitescape.ef.module.mail.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Collection;
@@ -47,7 +49,9 @@ import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.mail.FolderEmailFormatter;
 import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.repository.RepositoryService;
+import com.sitescape.ef.util.ConfigPropertyNotFoundException;
 import com.sitescape.ef.util.PortabilityUtil;
+import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.module.mail.JavaMailSender;
 import com.sitescape.ef.jobs.FailedEmail;
@@ -71,11 +75,23 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	protected JavaMailSender mailSender;
 	protected JndiAccessor jndiAccessor;
 	protected Map defaultProps = new HashMap();
+	private String dataRootDir;
+	private String subDirName;
+
 	public MailModuleImpl() {
 		defaultProps.put(MailModule.POSTING_JOB, "com.sitescape.ef.jobs.DefaultEmailPosting");
 		defaultProps.put(MailModule.NOTIFY_TEMPLATE_TEXT, "mailText.xslt");
 		defaultProps.put(MailModule.NOTIFY_TEMPLATE_HTML, "mailHtml.xslt");
 		defaultProps.put(MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED, "false");
+	}
+
+	public void setDataRootDirProperty(String dataRootDirProperty)
+			throws ConfigPropertyNotFoundException, IOException {
+		this.dataRootDir = SPropsUtil.getDirPath(dataRootDirProperty);
+	}
+
+	public void setSubDirName(String subDirName) {
+		this.subDirName = subDirName;
 	}
 	public void setJndiAccessor(JndiAccessor jndiAccessor) {
 		this.jndiAccessor = jndiAccessor;
@@ -83,7 +99,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	public void setMailSender(JavaMailSender mailSender) {
 		this.mailSender = mailSender;
 	}
-
+	public File getMailDirPath(Folder folder) {
+		return new File(new StringBuffer(dataRootDir).append(folder.getZoneName()).append(File.separator).append(subDirName).append(File.separator).append(folder.getId().toString()).append(File.separator).toString());
+	}
 	public String getMailProperty(String zoneName, String name) {
 		String val = SZoneConfig.getString(zoneName, "mailConfiguration/property[@name='" + name + "']");
 		if (Validator.isNull(val)) {
@@ -263,7 +281,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			} catch (MailSendException sx) {
 	    		logger.error("Error sending mail:" + sx.getMessage());
 		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
-		   		process.schedule(folder, mailSender, mHelper.getMessage());
+		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
  	    	} catch (Exception ex) {
 	       		logger.error(ex.getMessage());
 	    	} 

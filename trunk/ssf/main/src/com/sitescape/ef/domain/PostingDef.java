@@ -58,8 +58,9 @@ public class PostingDef extends PersistentObject {
     }
     /**
      * The definition to use to create entries
-     * @hibernate.many-to-one
-     */
+     * @hibernate.many-to-one class="com.sitescape.ef.domain.Definition"
+     * hibernate.column name="definition" sql-type="char(32)"
+    */
     public Definition getDefinition() {
     	return definition;
     }
@@ -67,7 +68,8 @@ public class PostingDef extends PersistentObject {
     	this.definition = definition;
     }   
     /**
-     * @hibernate.many-to-one
+     * @hibernate.many-to-one class="com.sitescape.ef.domain.EmailAlias"
+     * hibernate.column name="emailAlias" sql-type="char(32)"
      * @return
      */
     public EmailAlias getEmailAlias() {
