@@ -165,11 +165,9 @@ public class ViewController extends SAbstractController {
 		Map idData = new HashMap();
 		Map idDataNames = new HashMap();
 		Map idDataCaptions = new HashMap();
-		Map idDataReplyStyles = new HashMap();
 		data.put("idData", idData);
 		idData.put("names",idDataNames);
 		idData.put("captions",idDataCaptions);
-		idData.put("replyStyles",idDataReplyStyles);
 		
 		Document definitionTree;
 		if (!Validator.isNull(selectedItem) ) {
@@ -189,16 +187,13 @@ public class ViewController extends SAbstractController {
 			Element dtRoot = definitionTree.addElement("root");
 			String title = NLT.getDef(def.getName());
 			String caption = "";
-			String replyStyle = "";
 			if (sourceRoot != null) {
 				caption = NLT.getDef(sourceRoot.attributeValue("caption", ""));
-				replyStyle = sourceRoot.attributeValue("replyStyle", "");
 			}
 			if (!caption.equals("")) {title = caption + " (" + title + ")";}
 			dtRoot.addAttribute("title", title);
 			dtRoot.addAttribute("id", def.getId());
 			idDataCaptions.put(def.getId(), caption.replaceAll("'", "\'"));
-			idDataReplyStyles.put(def.getId(), replyStyle);
 			
 			if (sourceRoot != null) {
 				buildDefinitionTree(sourceRoot, dtRoot);
@@ -237,7 +232,6 @@ public class ViewController extends SAbstractController {
 							curDefEle.addAttribute("type", defEle.attributeValue("name"));
 							String title = NLT.getDef(curDef.getName());
 							//TODO get the caption from the definition meta data
-							//String caption = curDef.getCaption();
 							String caption = curDef.getDefinition().getRootElement().attributeValue("caption", "");
 							if (!caption.equals("")) {
 								title = caption + " (" + title + ")";
@@ -246,7 +240,6 @@ public class ViewController extends SAbstractController {
 							curDefEle.addAttribute("id", curDef.getId());
 							idDataNames.put(curDef.getId(), NLT.getDef(curDef.getName()));
 							idDataCaptions.put(curDef.getId(), curDefDocRoot.attributeValue("caption", "").replaceAll("'", "\'"));
-							idDataReplyStyles.put(curDef.getId(), curDefDocRoot.attributeValue("replyStyle", ""));
 						}
 					}
 				}

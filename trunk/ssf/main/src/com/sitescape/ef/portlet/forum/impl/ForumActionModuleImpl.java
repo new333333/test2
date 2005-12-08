@@ -21,6 +21,7 @@ import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryMap;
+import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Entry;
@@ -391,13 +392,17 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 				toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"));
 				for (int i = 0; i < replyStyles.size(); i++) {
 					String replyStyleId = ((Element)replyStyles.get(i)).attributeValue("value", "");
-			        Definition replyDef = getCoreDao().loadDefinition(replyStyleId, user.getZoneName());
-					url = response.createActionURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
-					url.setParameter(WebKeys.FORUM_URL_FORUM_ID, folderId);
-					url.setParameter(WebKeys.FORUM_URL_ENTRY_TYPE, replyStyleId);
-					url.setParameter(WebKeys.FORUM_URL_ENTRY_ID, entryId);
-					toolbar.addToolbarMenuItem("1_reply", "replies", replyDef.getTitle(), url);
+			        try {
+			        	Definition replyDef = getCoreDao().loadDefinition(replyStyleId, user.getZoneName());
+						url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
+						url.setParameter(WebKeys.FORUM_URL_FORUM_ID, folderId);
+						url.setParameter(WebKeys.FORUM_URL_ENTRY_TYPE, replyStyleId);
+						url.setParameter(WebKeys.FORUM_URL_ENTRY_ID, entryId);
+						toolbar.addToolbarMenuItem("1_reply", "replies", replyDef.getTitle(), url);
+			        } catch (NoDefinitionByTheIdException e) {
+			        	continue;
+			        }
 				}
 			}
 		}
@@ -724,10 +729,10 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		if (entryDefinition != null) {
 			entryView = entryDefinition.getDefinition();
 		}
-		String replyStyle = "";
+		Iterator replyStyles = null;
 		if (entryView != null) {
 			//See if there is a reply style for this entry definition
-			replyStyle = (String) entryView.getRootElement().attributeValue("replyStyle", "");
+			replyStyles = entryView.getRootElement().selectNodes("properties/property[@name='replyStyle']").iterator();
 		}
    	
     	//Adding an entry; get the specific definition
@@ -735,8 +740,17 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
     	String entryType = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_TYPE);
     	model.put(WebKeys.ENTRY_DEFINTION_MAP, folderEntryDefs);
     	model.put(WebKeys.CONFIG_JSP_STYLE, "form");
-        //Make sure the requested definition is legal
-		if (replyStyle.equals(entryType)) {
+    	
+        //Make sure the requested reply definition is legal
+    	boolean replyStyleIsGood = false;
+    	while (replyStyles.hasNext()) {
+    		if (((String)((Element)replyStyles.next()).attributeValue("value", "")).equals(entryType)) {
+    			replyStyleIsGood = true;
+    			break;
+    		}
+    	}
+    	
+		if (replyStyleIsGood) {
 			getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@name='entryForm']");
 		} else {
 			getDefinition(null, model, "//item[@name='entryForm']");
