@@ -32,6 +32,8 @@ import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.Toolbar;
 import com.sitescape.ef.domain.DefinitionInvalidException;
 import javax.portlet.RenderRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -225,9 +227,16 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		model.put(PortletKeys.CONFIG_ELEMENT, entryView);
 	}
 	private HistoryMap getHistory(RenderRequest req, Long folderId) {
+		HistoryCache cache = (HistoryCache)req.getAttribute(PortletKeys.HISTORY_CACHE);
+		return getHistory(cache, folderId);
+	}
+	private HistoryMap getHistory(HttpServletRequest req, Long folderId) {
+		HistoryCache cache = (HistoryCache)req.getAttribute(PortletKeys.HISTORY_CACHE);
+		return getHistory(cache, folderId);
+	}
+	private HistoryMap getHistory(HistoryCache cache, Long folderId) {
 		HistoryMap history;
 		//check if cached first
-		HistoryCache cache = (HistoryCache)req.getAttribute(PortletKeys.HISTORY_CACHE);
 		if (cache == null) {
 			history = getProfileModule().getUserHistory(null, folderId);
 		} else {
@@ -371,15 +380,27 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 	}
 
 	public Map getShowEntry(Map formData, RenderRequest req, RenderResponse response, Long folderId)  {
+		HistoryMap history = getHistory(req, folderId);
+		Map model = getShowEntry(formData, history, folderId);
+		String entryId = (String) model.get(PortletKeys.ENTRY_ID);
+		buildEntryToolbar(response, model, folderId.toString(), entryId);
+		return model;
+	}
+	public Map getShowEntry(Map formData, HttpServletRequest req, HttpServletResponse response, Long folderId)  {
+		HistoryMap history = getHistory(req, folderId);
+		Map model = getShowEntry(formData, history, folderId);
+		String entryId = (String) model.get(PortletKeys.ENTRY_ID);
+		//buildEntryToolbar(response, model, folderId.toString(), entryId.toString());
+		return model;
+	}
+	public Map getShowEntry(Map formData, HistoryMap history, Long folderId)  {
 		Map model = new HashMap();
+		model.put(PortletKeys.HISTORY_MAP, history);
 		String entryId = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_ENTRY_ID);
 		String op = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_OPERATION);
 		Folder folder = null;
 		FolderEntry entry = null;
 		Map folderEntries = null;
-		//load if not already cached
-		HistoryMap history = getHistory(req, folderId);
-		model.put(PortletKeys.HISTORY_MAP, history);
 		if (op.equals("")) {
 			if (!entryId.equals("")) folderEntries  = getFolderModule().getEntryTree(folderId, Long.valueOf(entryId));
 		} else if (op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_NEXT)) {
@@ -474,7 +495,6 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		if (getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
 			getDefaultEntryView(model);
 		}
-		buildEntryToolbar(response, model, folderId.toString(), entryId.toString());
 		return model;
 	}
 	public Map getShowFolder(Map formData, RenderRequest req, RenderResponse response,Long folderId)  {
