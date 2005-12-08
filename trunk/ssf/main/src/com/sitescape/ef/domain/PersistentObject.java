@@ -2,6 +2,8 @@ package com.sitescape.ef.domain;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import com.sitescape.ef.util.Constants;
+
 /**
  * @author Jong Kim
  *
@@ -31,7 +33,7 @@ public class PersistentObject implements PersistentStringId {
     }
     public String toString() {
         return new ToStringBuilder(this)
-            .append("id", getId())
+            .append(Constants.ID, getId())
             .toString();
     }
     public int hashCode() {

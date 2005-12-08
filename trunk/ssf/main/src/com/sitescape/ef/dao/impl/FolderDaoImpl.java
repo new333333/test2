@@ -38,6 +38,7 @@ import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.UserPerFolderPK;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.UserPropertiesPK;
+import com.sitescape.ef.util.Constants;
 /**
  * @author Jong Kim
  *
@@ -211,7 +212,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
             new HibernateCallback() {
                 public Object doInHibernate(Session session) throws HibernateException {
                 	 List result  = session.createCriteria(Folder.class)
-                     	.add(Expression.eq("id", folderId))
+                     	.add(Expression.eq(Constants.ID, folderId))
                      	.setFetchMode("subFolders", FetchMode.JOIN)
                      	.list();
 					 if (result.isEmpty()) {throw new NoFolderByTheIdException(folderId);}
