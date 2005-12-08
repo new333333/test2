@@ -85,7 +85,7 @@ function highlightLineById(id) {
     </c:if>
     <c:out value="${entry._title}"/></a></td>
   <td valign="top" width="30%" class="ss_content">
-    <c:out value="${entry._principal.name}"/></td>
+    <c:out value="${entry._principal.title}"/></td>
   <td valign="top" width="24%" class="ss_content">
     <c:out value="${entry._modificationDate}"/></td>
  </tr>
