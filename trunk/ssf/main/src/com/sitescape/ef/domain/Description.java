@@ -33,12 +33,12 @@ public class Description {
     /**
      * @hibernate.property type="com.sitescape.ef.dao.util.SSClobStringType" column="text"
      */
-    protected SSClobString getHdescription() {
+    protected SSClobString getHDescription() {
         if (description == null) description = new SSClobString("");
         return description;
     }
  
-    protected void setHdescription(SSClobString description) {
+    protected void setHDescription(SSClobString description) {
         this.description = description;
     }
 
@@ -55,10 +55,10 @@ public class Description {
     /**
      * @hibernate.property column="format"
      */
-    protected Integer getHformat() {
+    protected Integer getHFormat() {
         return this.format;
     }
-    protected void setHformat(Integer format) {
+    protected void setHFormat(Integer format) {
         this.format = format;
     }
     public int getFormat() {
