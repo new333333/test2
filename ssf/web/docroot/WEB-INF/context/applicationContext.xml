@@ -492,7 +492,10 @@
 	</bean>
 
 	<bean id="internalWebdavRepositoryService" class="com.sitescape.ef.repository.webdav.GenericWebdavRepositoryService">		
-		<property name="httpUrl"><value>http://localhost:8080/slide/</value></property>
+		<!-- Include scheme, hostname, and (optional) port number -->
+		<property name="hostUrl"><value>http://localhost:8079</value></property>
+		<!-- Context path MUST end with '/'. Otherwise it will not work. -->
+		<property name="contextPath"><value>/slide/</value></property>
 		<property name="docRootDir"><value>/slide/files/sitescape/document/</value></property>
 		<property name="username"><value>root</value></property>
 		<property name="password"><value>root</value></property>

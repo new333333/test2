@@ -3,12 +3,11 @@ package com.sitescape.ef.repository.webdav;
 import java.io.IOException;
 
 import org.apache.commons.httpclient.HttpURL;
-import org.apache.commons.httpclient.URIException;
-
 
 public abstract class AbstractWebdavResourceFactory implements WebdavResourceFactory {
 
-	protected String httpUrl;
+	protected String hostUrl;
+	protected String contextPath;
 	protected String username;
 	protected String password;
 	
@@ -20,12 +19,16 @@ public abstract class AbstractWebdavResourceFactory implements WebdavResourceFac
 		this.username = username;
 	}
 	
-	public String getHttpUrl() {
-		return httpUrl;
+	public void setContextPath(String contextPath) {
+		this.contextPath = contextPath;
 	}
 
-	public void setHttpUrl(String httpUrl) throws URIException {
-		this.httpUrl = httpUrl;
+	public void setHostUrl(String hostUrl) {
+		this.hostUrl = hostUrl;
+	}
+
+	private String getHttpUrl() {
+		return hostUrl + contextPath;
 	}
 
 	public SWebdavResource openResource() throws IOException {
@@ -47,7 +50,7 @@ public abstract class AbstractWebdavResourceFactory implements WebdavResourceFac
 	 */
 	protected SWebdavResource openResource(String userName, String password) 
 		throws IOException {
-		HttpURL hrl = new HttpURL(httpUrl);
+		HttpURL hrl = new HttpURL(getHttpUrl());
 		hrl.setUserinfo(userName, password);
 		SWebdavResource wdr = new SWebdavResource(hrl);
 		

@@ -3,9 +3,14 @@ package com.sitescape.ef.repository.webdav;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpURL;
+import org.apache.commons.httpclient.URIException;
 import org.apache.webdav.lib.ResponseEntity;
 import org.apache.webdav.lib.WebdavResource;
 import org.apache.webdav.lib.Property;
@@ -110,6 +115,31 @@ public class WebdavUtil {
 		}
 		
 		return list;
+	}
+	
+	public static List getVersionNames(WebdavResource wdr, String httpUrl)
+		throws HttpException, URIException, IOException {
+		Vector properties = new Vector();
+		properties.add("version-name");
+		Enumeration e = wdr.reportMethod(new HttpURL(httpUrl),properties);
+		Map map = new HashMap();
+		while(e.hasMoreElements()) {
+			ResponseEntity re = (ResponseEntity) e.nextElement();
+			String href = re.getHref();
+			for(Enumeration e2 = re.getProperties(); e2.hasMoreElements();) {
+				Property p = (Property) e2.nextElement();
+				if(p.getLocalName().equals("version-name")) {
+					map.put(href, p.getPropertyAsString());
+					break;
+				}
+			}
+		}
+		return new ArrayList(map.values());
+	}
+	
+	public static boolean exists(WebdavResource wdr, String resourcePath) 
+		throws HttpException, IOException {
+		return wdr.headMethod(resourcePath);
 	}
 	
 	private static String getHrefValue(String href) {
