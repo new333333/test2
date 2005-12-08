@@ -1,4 +1,6 @@
 <% // Calendar week view %>
+
+
 <script language="javascript">
 var ss_entryList = new Array();
 var ss_entryCount = 0;
@@ -37,17 +39,16 @@ function getFilteredEntries() {
 
 <td class="ss_content" valign="top">
 <c:forEach var="ev" items="${daymap.cal_eventdatamap}">
-<jsp:useBean id="ev" type="java.util.Map.Entry" />
 
-<c:forEach var="evi" items="${ev.value}"> 
-<jsp:useBean id="evi" type="java.util.Map" />
+<c:forEach var="eviw" items="${ev.value}"> 
+<jsp:useBean id="eviw" type="java.util.Map" />
 <%
-    FolderEntry e = (FolderEntry) evi.get("entry");
+    FolderEntry e = (FolderEntry) eviw.get("entry");
 %>
 <script language="javascript">
 //getFilteredEntries()
 </script>
-<div id="folderLine_<c:out value="${evi.entry.id}"/>">	
+<div id="folderLine_<c:out value="${eviw.entry.id}"/>">	
 <%
 if (ssSeenMap.checkIfSeen(e)) {
 %><img src="<html:imagesPath/>pics/1pix.gif" width="7px" alt="" \><%
@@ -55,14 +56,14 @@ if (ssSeenMap.checkIfSeen(e)) {
 %><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif" alt="unread entry" \><%
 	}
 %>
-    ${evi.cal_starttimestring}-${evi.cal_endtimestring}: 
+    ${eviw.cal_starttimestring}-${eviw.cal_endtimestring}: 
     <a class="ss_link" href="<ssf:url 
     adapter="true" 
     portletName="ss_forum" 
     folderId="<%= folderId %>" 
     action="view_entry" 
     entryId="<%= e.getId().toString() %>" actionUrl="false" />"
-    onClick="ss_loadEntry(this,'<c:out value="${evi.entry.id}"/>');return false;" >${evi.entry.title}</a></div>
+    onClick="ss_loadEntry(this,'<c:out value="${eviw.entry.id}"/>');return false;" >${eviw.entry.title}</a></div>
 
 </c:forEach>
 </c:forEach></td>
