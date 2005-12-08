@@ -110,6 +110,11 @@
 		<load-on-startup>3</load-on-startup>
 	</servlet>
 
+	<servlet>
+		<servlet-name>ccDispatchServer</servlet-name>
+		<servlet-class>com.sitescape.ef.web.crosscontext.DispatchServer</servlet-class>
+	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>viewRendererServlet</servlet-name>
 		<url-pattern>/WEB-INF/servlet/view</url-pattern>
