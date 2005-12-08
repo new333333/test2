@@ -1,4 +1,4 @@
-<% // Calendar view %>
+<<% // Calendar view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />
 <jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
@@ -29,16 +29,12 @@
 </div>
 
 <hr>
-Calendar view<br>
-Viewing: ${ssCalendarViewMode} 
-<br>Starting: ${ssCalStartDate} 
-<br>Ending: ${ssCalEndDate}
-<hr>
-<c:forEach var="pair" items="${ssEventDates}" >
-${pair.key}<br>
-${pair.value}<br>
-</c:forEach>
-
-
-
-
+<b>Calendar view</b><p>
+<c:choose>
+<c:when test="${ssCalendarViewMode == 'week'}">
+<%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_week.jsp" %>
+</c:when>
+<c:otherwise>
+Unknown view mode: ${ssCalendarViewMode}
+</c:otherwise>
+</c:choose>
