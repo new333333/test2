@@ -7,6 +7,7 @@
 		<propertycopy name="app.server.dir" from="app.server.${app.server.type}.dir" />
 		<propertycopy name="app.server.lib.dir" from="app.server.${app.server.type}.lib.dir" />
 		<propertycopy name="app.server.deploy.dir" from="app.server.${app.server.type}.deploy.dir" />
+		<propertycopy name="app.server.ssf.dir" from="app.server.${app.server.type}.ssf.dir" />
 	</target>
 	
 	<!--
@@ -35,19 +36,12 @@
 	-->
 	
 	<target name="deploy-jar" depends="deploy-init">
-		<if>
-			<or>
-				<equals arg1="${app.server.type}" arg2="jetty" />
-				<equals arg1="${app.server.type}" arg2="rexip" />
-				<equals arg1="${app.server.type}" arg2="tomcat" />
-			</or>
-			<then>
-				<property name="deploy.lib.dir" value="${app.server.lib.dir}" />
-			</then>
-			<else>
-				<property name="deploy.lib.dir" value="${app.server.deploy.dir}/ext.ear/lib" />
-			</else>
-		</if>
+		<property name="deploy.lib.dir" value="${app.server.ssf.dir}/WEB-INF/lib" />
+		<copy file="${deploy-support.jar.file}" todir="${deploy.lib.dir}" />
+	</target>
+	
+	<target name="deploy-jar-into-portal" depends="deploy-init">
+		<property name="deploy.lib.dir" value="${app.server.lib.dir}" />
 		<copy file="${deploy-support.jar.file}" todir="${deploy.lib.dir}" />
 	</target>
 	

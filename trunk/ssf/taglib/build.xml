@@ -90,42 +90,9 @@
 	</target>
 
 	<target name="deploy" depends="jar">
-		<if>
-			<or>
-				<equals arg1="${app.server.type}" arg2="jetty" />
-				<equals arg1="${app.server.type}" arg2="tomcat" />
-			</or>
-			<then>
-				<copy file="${jar.file}" todir="${app.server.deploy.dir}/ssf/WEB-INF/lib" />
-			</then>
-			<else>
-				<if>
-					<or>
-						<equals arg1="${app.server.type}" arg2="jboss-jetty" />
-						<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
-						<equals arg1="${app.server.type}" arg2="jonas-jetty" />
-						<equals arg1="${app.server.type}" arg2="jonas-tomcat" />
-						<equals arg1="${app.server.type}" arg2="rexip" />
-						<equals arg1="${app.server.type}" arg2="weblogic" />
-					</or>
-					<then>
-						<property name="war.file" value="ssf-web-complete.war" />
-					</then>
-					<elseif>
-						<or>
-							<equals arg1="${app.server.type}" arg2="oc4j" />
-							<equals arg1="${app.server.type}" arg2="orion" />
-						</or>
-						<then>
-							<property name="war.file" value="ssf-web-complete" />
-						</then>
-					</elseif>
-				</if>
-				
-				<copy file="${jar.file}" todir="${app.server.deploy.dir}/ext.ear/${war.file}/WEB-INF/lib" />
-
-			</else>
-		</if>
+		<antcall target="deploy-jar">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
 	</target>
 
 </project>

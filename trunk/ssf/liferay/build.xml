@@ -87,7 +87,7 @@
 	</target>
 	
 	<target name="deploy" depends="jar">
-		<antcall target="deploy-jar">
+		<antcall target="deploy-jar-into-portal">
 			<param name="deploy-support.jar.file" value="${jar.file}" />
 		</antcall>
 	</target>
