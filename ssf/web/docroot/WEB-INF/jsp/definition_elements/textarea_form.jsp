@@ -17,10 +17,10 @@
 		caption = "<b>"+caption+"</b><br>";
 	}
 %>
-<div class="formBreak">
-<div style="display:inline;"><%= caption %>
+<div class="ss_entryContent">
+<div class="ss_labelAbove"><%= caption %></div>
 <textarea name="<%= elementName %>" wrap="virtual"
   rows="<%= rows %>" <%= width %> 
 ><c:out value="${ssFolderEntry.customAttributes[property_name].value}"/></textarea>
 </div>
-</div>
+<div class="ss_divider"></div>

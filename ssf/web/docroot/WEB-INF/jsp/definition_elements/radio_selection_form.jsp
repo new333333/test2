@@ -12,7 +12,7 @@
 </c:if>
 <input type="radio" name="<c:out value="${radioGroupName}"/>" 
   value="<c:out value="${property_name}"/>" <c:out value="${checked}"/>
->&nbsp;<c:out value="${property_caption}"/><ssf:displayConfiguration 
+>&nbsp;<span class="ss_contentbold"><c:out value="${property_caption}"/></span><ssf:displayConfiguration 
   configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= item %>" 
   configJspStyle="<%= ssConfigJspStyle %>" /></input>

@@ -26,10 +26,11 @@ String background = gammaColor;
   </c:if>
 </c:if>
 <jsp:useBean id="textValue" type="java.lang.String" />
-<div class="formBreak">
-  <div class="labelLeft"><%= caption %>
+<div class="ss_entryContent">
+  <div class="ss_labelLeft"><%= caption %>
     <ssf:htmleditor id="<%= elementName %>" 
       formName="<%= formName %>" height="<%= height %>" color="<%= background %>"
       initText="<%= textValue %>" />
   </div>
 </div>
+<div class="ss_divider"></div>
