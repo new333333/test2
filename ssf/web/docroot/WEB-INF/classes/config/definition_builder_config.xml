@@ -303,7 +303,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/selectbox_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderSelect" />
-		<notify summary="false" full="false" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderSelect" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderSelect" />
 	</item>
 
 	<item name="selectboxSelection" caption="__selection">
@@ -394,7 +394,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/attach_files_form.jsp" />
 		</jsps>
-		<notify summary="false" full="false" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderAttachments" />
+		<notify summary="true" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderAttachments" />
 	</item>
 	
 	<item name="file" caption="__file_upload" type="data" category="entryData">
@@ -420,7 +420,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/file_form.jsp" />
 		</jsps>
-		<notify summary="false" full="false" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderFile" />
+		<notify summary="true" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderFile" />
 	</item>
 	
 	<item name="date" caption="__date" type="data" category="entryData">
