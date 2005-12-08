@@ -3,23 +3,37 @@ package com.sitescape.ef.security.authentication.impl;
 import org.easymock.MockControl;
 
 import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.security.authentication.UserDoesNotExistException;
 
 import junit.framework.TestCase;
 
 public class AuthenticationManagerImplTests extends TestCase {
 
-	public void testAuthenticateOk() {
+	MockControl coreDaoControl;
+	CoreDao coreDao;
+	User user;
+	AuthenticationManagerImpl authMgr;
+	
+	// This method is called once per test method execution. That is, the
+	// purpose of this method is solely to avoid code duplication. 
+	// If you want a setup that gets called only once for a set of tests,
+	// you should use TestSetup in conjunction with TestSuite. 
+	protected void setUp() {
 		// Set up mock object and control
-		MockControl coreDaoControl = MockControl.createControl(CoreDao.class);
-		CoreDao coreDao = (CoreDao) coreDaoControl.getMock();
-		User user = new User();
+		coreDaoControl = MockControl.createControl(CoreDao.class);
+		coreDao = (CoreDao) coreDaoControl.getMock();
+		user = new User();
 		
 		// Set up the actual object that we are testing.
-		AuthenticationManagerImpl authMgr = new AuthenticationManagerImpl();
+		authMgr = new AuthenticationManagerImpl();
 		authMgr.setCoreDao(coreDao);
-		
+	}
+	
+	public void testAuthenticateOk() {
 		// Define expected behavior of the mock object.
+		coreDaoControl.reset();
 		coreDao.findUserByName("testUser", "testZone");
 		coreDaoControl.setReturnValue(user);
 		coreDaoControl.replay();
@@ -27,6 +41,26 @@ public class AuthenticationManagerImplTests extends TestCase {
 		// Execute the method being tested.
 		User authenticatedUser = authMgr.authenticate("testZone", "testUser");
 		assertEquals(user, authenticatedUser);
+		
+		// Verifies that all expectations have been met.
+		coreDaoControl.verify();
+	}
+	
+	public void testAuthenticateUserDoesNotExistException() {
+		// Define expected behavior of the mock object. 
+		coreDaoControl.reset();
+		coreDao.findUserByName("testUser", "testZone");
+		coreDaoControl.setThrowable(new NoUserByTheNameException(""));
+		coreDaoControl.replay();
+		
+		// Execute the method being tested.
+		try {
+			authMgr.authenticate("testZone", "testUser");
+			fail("Should throw UserDoesNotExistException");
+		}
+		catch(UserDoesNotExistException e) {
+			assertTrue(true); // All is well
+		}
 		
 		// Verifies that all expectations have been met.
 		coreDaoControl.verify();
