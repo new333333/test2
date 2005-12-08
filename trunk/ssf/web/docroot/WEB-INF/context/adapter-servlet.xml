@@ -47,17 +47,6 @@
 
 	<bean id="initRequestContextInterceptor" class="com.sitescape.ef.web.servlet.handler.InitRequestContextInterceptor"/>
 
-	<!-- Handler Exception Resolver -->
-	<!--<bean id="handlerExceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
-		<property name="exceptionMappings">
-			<props>
-				<prop key="com.sitescape.ef.exception.CheckedCodedException">common/defCodedError</prop>
-				<prop key="com.sitescape.ef.exception.UncheckedCodedException">common/defCodedError</prop>
-			</props>
-		</property>
-		<property name="defaultErrorView"><value>common/defError</value></property>
-	</bean>-->
-
 	<!-- Adapted portlets: In order for a portlet to plug into the adapter
 	     environment, it must to be listed here. -->
 	<bean id="adaptedPortlets" class="com.sitescape.ef.portletadapter.support.AdaptedPortlets">

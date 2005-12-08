@@ -10,6 +10,11 @@ public abstract class CheckedCodedException extends CheckedException implements 
     private String errorCode;
     private Object[] errorArgs;
     
+    public CheckedCodedException(String errorCode) {
+    	super();
+    	setErrorCode(errorCode);
+    }
+    
     public CheckedCodedException(String errorCode, Object[] errorArgs) {
         super();
         setErrorCode(errorCode);
@@ -42,11 +47,12 @@ public abstract class CheckedCodedException extends CheckedException implements 
     public Object[] getErrorArgs() {
         return errorArgs;
     }
+    
+    public void setErrorArgs(Object[] errorArgs) {
+        this.errorArgs = errorArgs;
+    }
 
     private void setErrorCode(String errorCode) {
         this.errorCode = errorCode;
-    }
-    private void setErrorArgs(Object[] errorArgs) {
-        this.errorArgs = errorArgs;
     }
 }

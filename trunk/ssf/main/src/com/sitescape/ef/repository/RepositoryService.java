@@ -32,8 +32,8 @@ public interface RepositoryService {
 	 * The first version of the resource is created and its version name is
 	 * returned. 
 	 * <p>
-	 * If the underlying repository system does not support versioning, this
-	 * method returns <code>null</code>.
+	 * If the underlying repository system does not support versioning, it
+	 * returns <code>null</code>.
 	 * 
 	 * @param session
 	 * @param folder
@@ -54,10 +54,6 @@ public interface RepositoryService {
 	 * The resource is expected to have been checked out prior to invoking this 
 	 * method. The changes made to the repository through this method are made 
 	 * permanent when {@link #checkin} is executed.
-	 * <p>
-	 * If the underlying repository system does not support versioning, this
-	 * method immediately overwrites the existing content and the changes can
-	 * not be rolled back. 
 	 * 
 	 * @param session
 	 * @param folder
@@ -93,9 +89,6 @@ public interface RepositoryService {
 	/**
 	 * Reads from the repository system the content of the specified version 
 	 * of the file resource. 
-	 * <p>
-	 * If the underlying repository system does not support versioning, this
-	 * throws <code>UnsupportedOperationException</code>.
 	 * 
 	 * @param session
 	 * @param folder
@@ -142,9 +135,6 @@ public interface RepositoryService {
 	/**
 	 * Returns the names of the versions for the specified file resource. 
 	 * The specified file resource must exist. 
-	 * <p>
-	 * If the underlying repository system does not support versioning, this
-	 * throws <code>UnsupportedOperationException</code>.
 	 * 
 	 * @param session
 	 * @param folder
@@ -169,9 +159,6 @@ public interface RepositoryService {
 	 * specific user. Locking is used to allow a user to temporarily lock 
 	 * resources in order to prevent other users from changing them. The lock
 	 * functionality is neither exposed nor required by this API. 
-	 * <p>
-	 * If the underlying repository system does not support versioning, this
-	 * throws <code>UnsupportedOperationException</code>.
 	 * 
 	 * @param session
 	 * @param folder
@@ -187,9 +174,6 @@ public interface RepositoryService {
 	 * Cancels the checkout for the specified file resource. 
 	 * <p>
 	 * If the resource is not checked out, this method has no effect. 
-	 * <p>
-	 * If the underlying repository system does not support versioning, this
-	 * throws <code>UnsupportedOperationException</code>.
 	 * 
 	 * @param session
 	 * @param folder
@@ -208,8 +192,8 @@ public interface RepositoryService {
 	 * If the resource is already checked in, this method has no effect but
 	 * returns the name of the current checked-in version of the resource.  
 	 * <p>
-	 * If the underlying repository system does not support versioning, this
-	 * throws <code>UnsupportedOperationException</code>.
+	 * If the underlying repository system does not support versioning, it
+	 * returns <code>null</code>.
 	 * 
 	 * @param session
 	 * @param folder
@@ -225,9 +209,6 @@ public interface RepositoryService {
 	/**
 	 * Returns whether the specified file resource is currently checked out
 	 * or not.
-	 * <p>
-	 * If the underlying repository system does not support versioning, this
-	 * throws <code>UnsupportedOperationException</code>.
 	 * 
 	 * @param
 	 * @param folder
@@ -252,23 +233,39 @@ public interface RepositoryService {
 			String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
-	 * Returns whether or not the underlying repository system supports 
-	 * versioning.
-	 * 
+	 * Returns the length (in byte) of the content of the specific file resource. 
+	 *  
+	 * @param session
+	 * @param folder
+	 * @param entry
+	 * @param relativeFilePath
 	 * @return
+	 * @throws RepositoryServiceException
 	 */
-	public boolean supportVersioning();
+	public long getContentLength(Object session, Folder folder, FolderEntry entry,
+			String relativeFilePath) throws RepositoryServiceException;
+	
+	/**
+	 * Returns the length (in byte) of the content of the specific version
+	 * of the file resource. 
+	 *  
+	 * @param session
+	 * @param folder
+	 * @param entry
+	 * @param relativeFilePath
+	 * @param versionName
+	 * @return
+	 * @throws RepositoryServiceException
+	 */
+	public long getContentLength(Object session, Folder folder, FolderEntry entry,
+			String relativeFilePath, String versionName) throws RepositoryServiceException;
 	
 	/**
 	 * Returns whether the repository service allows users to delete individual
 	 * versions of a resource without deleting the entire resource. In other
 	 * words, for repository system that does not support this, the only way
 	 * to remove a particular resource is to delete it in its entirety which
-	 * deletes all of its versions as well. Repository system that does not
-	 * support versioning must return <code>false</code> from this method.   
-	 * <p>
-	 * If the underlying repository system does not support versioning, this
-	 * throws <code>UnsupportedOperationException</code>.
+	 * deletes all of its versions as well. 
 	 * 
 	 * @return
 	 */

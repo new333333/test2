@@ -35,13 +35,18 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.exception.UncheckedCodedContainerException;
+import com.sitescape.ef.file.CheckedOutByOtherException;
+import com.sitescape.ef.file.FileManager;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.index.IndexUtils;
+import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
@@ -56,30 +61,11 @@ import com.sitescape.ef.module.shared.EntryBuilder;
  *
  * @author Jong Kim
  */
-public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor {
+public abstract class AbstractFolderCoreProcessor extends AbstractModuleImpl 
+	implements FolderCoreProcessor {
     
-	protected Log logger = LogFactory.getLog(getClass());
-
 	private static final int DEFAULT_MAX_CHILD_ENTRIES = 20;
-    protected CoreDao coreDao;
-    private FolderDao folderDao;
     protected DefinitionModule definitionModule;
-    protected AccessControlManager accessControlManager;
-    protected AclManager aclManager;
-
-    public void setCoreDao(CoreDao coreDao) {
-        this.coreDao = coreDao;
-    }
-    protected CoreDao getCoreDao() {
-        return this.coreDao;
-    }
-    
-    public void setFolderDao(FolderDao folderDao) {
-        this.folderDao = folderDao;
-    }
-    public FolderDao getFolderDao() {
-        return this.folderDao;
-    }    
      
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
@@ -87,21 +73,10 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
 	}
-    protected AccessControlManager getAccessControlManager() {
-        return accessControlManager;
-    }
-    public void setAccessControlManager(
-            AccessControlManager accessControlManager) {
-        this.accessControlManager = accessControlManager;
-    }
-    protected AclManager getAclManager() {
-        return aclManager;
-    }
-    public void setAclManager(AclManager aclManager) {
-        this.aclManager = aclManager;
-    }
+	
     //***********************************************************************************************************	
-    public Long addEntry(Folder folder, Definition def, Map inputData, Map fileItems) throws AccessControlException {
+    public Long addEntry(Folder folder, Definition def, Map inputData, Map fileItems) 
+    	throws AccessControlException {
         // This default implementation is coded after template pattern. 
         
         addEntry_accessControl(folder);
@@ -136,7 +111,7 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
     }
     
     protected void addEntry_processFiles(Folder folder, FolderEntry entry, List fileData) {
-    	processFiles(folder, entry, fileData);
+    	writeFiles(folder, entry, fileData);
     }
     
     protected Map addEntry_toEntryData(Folder folder, Definition def, Map inputData, Map fileItems) {
@@ -215,7 +190,7 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         getAccessControlManager().checkAcl(folder, entry, AccessType.WRITE);
     }
     protected void modifyEntry_processFiles(Folder folder, FolderEntry entry, List fileData) {
-    	processFiles(folder, entry, fileData);
+    	writeFiles(folder, entry, fileData);
     }
     protected Map modifyEntry_toEntryData(FolderEntry entry, Map inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
@@ -286,7 +261,7 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
     }
     
     protected void addReply_processFiles(FolderEntry parent, FolderEntry entry, List fileData) {
-    	processFiles(parent.getParentFolder(), entry, fileData);
+    	writeFiles(parent.getParentFolder(), entry, fileData);
     }
     
     protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData) {  
@@ -585,82 +560,23 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         return indexDoc;
     }
         
-    protected void processFiles(Folder folder, FolderEntry entry, List fileData) {
+    protected void writeFiles(Folder folder, FolderEntry entry, List fileData) 
+    	throws WriteFilesException {
+    	WriteFilesException wfe = new WriteFilesException();
+    	
     	for(int i = 0; i < fileData.size(); i++) {
     		FileUploadItem fui = (FileUploadItem) fileData.get(i);
-    		processFile(folder, entry, fui);
+    		try {
+				getFileManager().writeFile(folder, entry, fui);
+			} catch (Exception e) {
+				wfe.addException(e);
+			}
+    	}
+    	
+    	if(wfe.size() > 0) {
+    		// At least one file failed to be written successfully.
+    		wfe.setErrorArgs(entry, fileData.size(), wfe.size());
+    		throw wfe;
     	}
     }
-    
-    protected void processFile(Folder folder, FolderEntry entry, FileUploadItem fui) {
-    	int type = fui.getType();
-    	String name = fui.getName();
-    	String fileName = fui.getMultipartFile().getOriginalFilename();
-    	
-    	if(type == FileUploadItem.TYPE_FILE) {
-    		// Find custom attribute by the attribute name. 
-	    	CustomAttribute ca = entry.getCustomAttribute(name);
-	    	
-	    	if(ca == null) { // New file
-	    		FileAttachment fAtt = createFile(folder, entry, fui);
-	    		getCoreDao().save(fAtt);
-	    		entry.addCustomAttribute(fui.getName(), fAtt);
-	    	}
-	    	else { // Existing file
-	    		// No metadata update is necessary until checkin time.
-	    		RepositoryServiceUtil.update(folder, entry, fui);
-	    	}					    			
-    	}
-    	else if(type == FileUploadItem.TYPE_ATTACHMENT) {
-    		// Find file attachment by the name of the file itself not by the
-    		// attachment name (actually, file attachment doesn't have a name
-    		// because it is an unnamed attachment). 
-	    	FileAttachment fAtt = entry.getFileAttachment(fileName);
-	    	
-	    	if(fAtt == null) { // New file
-	    		fAtt = createFile(folder, entry, fui);
-	    		entry.addAttachment(fAtt);
-	    	}
-	    	else { // Existing file
-	    		// No metadata update is necessary until checkin time.
-	    		RepositoryServiceUtil.update(folder, entry, fui);
-	    	}    		
-    	}
-    	else {
-    		logger.error("Unrecognized file processing type " + type + " for [" +
-    				fui.getName() + "," + fui.getMultipartFile().getOriginalFilename() + "]");
-    	}
-    }
-
-	private FileAttachment createFile(Folder folder, FolderEntry entry, 
-			FileUploadItem fui) {
-    	// TODO Take care of file path info?
-    	
-        User user = RequestContextHolder.getRequestContext().getUser();
-
-        String fileName = fui.getMultipartFile().getOriginalFilename();
-	
-		FileAttachment fAtt = new FileAttachment(fui.getName());
-		fAtt.setOwner(entry);
-		fAtt.setCreation(new HistoryStamp(user));
-		fAtt.setModification(fAtt.getCreation());
-		fAtt.setLastVersion(new Integer(1));
-    	fAtt.setRepositoryServiceName(fui.getRepositoryServiceName());
-
-    	FileItem fItem = new FileItem();
-    	fItem.setName(fileName);
-    	fItem.setLength(fui.getMultipartFile().getSize());
-    	fAtt.setFileItem(fItem);
-
-		VersionAttachment vAtt = new VersionAttachment();
-		vAtt.setCreation(fAtt.getCreation());
-		vAtt.setModification(vAtt.getCreation());
-		vAtt.setFileItem(fItem);
-		
-		String versionName = RepositoryServiceUtil.create(folder, entry, fui);
-		vAtt.setVersionName(versionName);
-		fAtt.addFileVersion(vAtt);
-
-    	return fAtt;
-	}
 }

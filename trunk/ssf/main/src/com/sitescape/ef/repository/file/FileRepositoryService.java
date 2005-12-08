@@ -53,17 +53,13 @@ public class FileRepositoryService implements RepositoryService {
 	}
 	
 	public String create(Object session, Folder folder, FolderEntry entry, String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
-		
-		// This implementation doesn't really follow the API spec in that
-		// it completely ignores relativeFilePath. 
-		
 		File dir = getDir(folder, entry);
 		
 		if(!dir.exists())
 			dir.mkdirs();
     	
         try {
-        	mf.transferTo(new File(dir, mf.getOriginalFilename()));
+        	mf.transferTo(new File(dir, relativeFilePath));
 		} catch (Exception e) {
 			throw new RepositoryServiceException(e);
 		}
@@ -72,14 +68,10 @@ public class FileRepositoryService implements RepositoryService {
 	}
 
 	public void update(Object session, Folder folder, FolderEntry entry, String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
-		
-		// This implementation doesn't really follow the API spec in that
-		// it completely ignores relativeFilePath. 
-		
 		File dir = getDir(folder, entry);
 		
         try {
-        	mf.transferTo(new File(dir, mf.getOriginalFilename()));
+        	mf.transferTo(new File(dir, relativeFilePath));
 		} catch (Exception e) {
 			throw new RepositoryServiceException(e);
 		}
@@ -109,11 +101,11 @@ public class FileRepositoryService implements RepositoryService {
 	}
 
 	public void readVersion(Object session, Folder folder, FolderEntry entry, String relativeFilePath, String versionName, OutputStream out) throws RepositoryServiceException {
-		throw new UnsupportedOperationException();
+		read(session, folder, entry, relativeFilePath, out);
 	}
 
 	public List getVersionNames(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
-		throw new UnsupportedOperationException();
+		return null;
 	}
 
 	public DataSource getDataSource(Object session, Folder folder, FolderEntry entry, 
@@ -133,27 +125,21 @@ public class FileRepositoryService implements RepositoryService {
 		return fSource;
 	}	
 	public void checkout(Object session, Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
-		throw new UnsupportedOperationException();
 	}
 
 	public void uncheckout(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
-		throw new UnsupportedOperationException();
 	}
 
 	public String checkin(Object session, Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
-		throw new UnsupportedOperationException();
+		return null;
 	}
 
-	public boolean isCheckedOut(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
-		throw new UnsupportedOperationException();
-	}
-
-	public boolean supportVersioning() {
+	public boolean isCheckedOut(Object session, Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
 		return false;
 	}
 	
 	public boolean supportVersionDeletion() {
-		throw new UnsupportedOperationException();
+		return false;
 	}
 
 	public boolean exists(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
@@ -161,6 +147,16 @@ public class FileRepositoryService implements RepositoryService {
 		return new File(filePath).exists();
 	}
 
+	public long getContentLength(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+		String filePath = getFilePath(folder, entry, relativeFilePath);
+		
+		return new File(filePath).length();
+	}
+	
+	public long getContentLength(Object session, Folder folder, FolderEntry entry, String relativeFilePath, String versionName) throws RepositoryServiceException {
+		return getContentLength(session, folder, entry, relativeFilePath);
+	}
+	
 	private String getDirPath(Folder folder, FolderEntry entry) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		
