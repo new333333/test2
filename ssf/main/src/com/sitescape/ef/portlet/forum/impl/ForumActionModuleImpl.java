@@ -252,15 +252,15 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		endViewCal.setTimeInMillis(0);
 		endViewCal.setTime(currentDate);
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_DAY)) {
-			endViewCal.roll(Calendar.DATE, 1);
+			endViewCal.add(Calendar.DATE, 1);
 		} else if (viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK)) {
 			startViewCal.set(Calendar.DAY_OF_WEEK, startViewCal.getFirstDayOfWeek());
 			endViewCal.setTime(startViewCal.getTime());
-			endViewCal.roll(Calendar.DATE, 7);
+			endViewCal.add(Calendar.DATE, 7);
 		} else if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
 			startViewCal.set(Calendar.DAY_OF_MONTH, 1);
 			endViewCal.setTime(startViewCal.getTime());
-			endViewCal.roll(Calendar.MONTH, 1);
+			endViewCal.add(Calendar.MONTH, 1);
 		}
 		startViewCal.set(Calendar.HOUR_OF_DAY, 0);
 		startViewCal.set(Calendar.MINUTE, 0);
@@ -311,18 +311,25 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		}
 		model.put(WebKeys.CALENDAR_EVENTDATES, results);
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK)) {
-			getCalendarViewBean(startViewCal, endViewCal, results, model);
+			getCalendarViewBean(startViewCal, endViewCal, results, viewMode, model);
 		}
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_DAY)) {
 			
-			getCalendarViewBean(startViewCal, endViewCal, results, model);
+			getCalendarViewBean(startViewCal, endViewCal, results, viewMode, model);
+		}
+		if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
+			
+			getCalendarViewBean(startViewCal, endViewCal, results, viewMode, model);
 		}
 	}
 	
 	/**
-	 * populate the bean for weekly calendar view.
+	 * populate the bean for weekly and monthly calendar view.
 	 * used by getEvents
-	 * returns a list of length 7, one for each day of the week. Each entry in the list is a daymap, 
+	 * returns a bean for the entire month, regardless of which view you are in
+	 * this bean contains month headers, and a list of weeks. Each week is a map which
+	 * contains the week number and a list of days.
+	 * Each entry in the dayss list is a daymap, 
 	 * a map with info about the day, such as the day of the week, day of the month, and a boolean 
 	 * indicating whether the day is today. The daymap also contains a sorted map of event info,
 	 * called eventdatamap, whose keys are the event times in millis; this is so that the interator
@@ -346,13 +353,13 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 	 *          dayEvents -- sorted map of event occurrences for the day, keyed by start time
 	 *            timeEvents -- list of event occurrences for a specific time
 	 *              dataMap -- for each occurrence, a map of stuff about the instance
-	 *                 e -- entry
-	 *                 ev -- event
+	 *                 entry
+	 *                 event
 	 *                 starttime -- string
 	 *                 endtime -- string
 	 *              
 	 */
-	private void getCalendarViewBean (Calendar startCal, Calendar endCal, Map eventDates, Map model) {
+	private void getCalendarViewBean (Calendar startCal, Calendar endCal, Map eventDates, String viewMode, Map model) {
 		HashMap monthBean = new HashMap();
 		ArrayList dayheaders = new ArrayList();
 		GregorianCalendar loopCal = new GregorianCalendar();
@@ -372,6 +379,7 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		ArrayList dayList = null;
 		// this trick enables the main loop code to start a new week and reset/wrap dayCtr at same time
 		int dayCtr = 6;
+		// main loop, loops through days in the range, periodically recycling the week stuff
 		while (loopCal.getTime().getTime() < endCal.getTime().getTime()) {
 			if (++dayCtr > 6) {
 				dayCtr = 0;
@@ -385,7 +393,25 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 				SimpleDateFormat sdfweeknum = new SimpleDateFormat("w");
 				String wn = sdfweeknum.format(loopCal.getTime());
 				weekMap.put("weekNum", wn);
-				dayList = new ArrayList();
+				// before starting a new dayList, check if this is the first week of a month view
+				if (dayList == null && viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
+					dayList = new ArrayList();
+					GregorianCalendar gcal = new GregorianCalendar();
+					gcal.setTime(startCal.getTime());
+					// when does the week that includes the first day of the month begin?
+					gcal.set(Calendar.DAY_OF_WEEK, gcal.getFirstDayOfWeek());
+					while (gcal.getTime().getTime() < startCal.getTime().getTime()) {
+						// fill in the dayList with blank days
+						HashMap emptyDayMap = new HashMap();
+						emptyDayMap.put(WebKeys.CALENDAR_DOM, Integer.toString(gcal.get(Calendar.DAY_OF_MONTH)));
+						emptyDayMap.put("inView", new Boolean(false));
+						dayCtr++;
+						dayList.add(emptyDayMap);
+						gcal.add(Calendar.DATE, 1);
+					}
+				} else {
+					dayList = new ArrayList();
+				}
 			}
 			HashMap daymap = new HashMap();
 			daymap.put(WebKeys.CALENDAR_DOW, DateHelper.getDayAbbrevString(loopCal.get(Calendar.DAY_OF_WEEK)));
@@ -399,6 +425,7 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 			} else {
 				daymap.put("isToday", new Boolean(false));
 			}
+			daymap.put("inView", new Boolean(true));
 			if (eventDates.containsKey(dateKey)) {
 				List evList = (List) eventDates.get(dateKey);
 				Iterator evIt = evList.iterator();
@@ -434,7 +461,7 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 				daymap.put(WebKeys.CALENDAR_EVENTDATAMAP, dayEvents);
 			}
 			
-			loopCal.roll(Calendar.DATE, true);
+			loopCal.add(Calendar.DATE, 1);
 			dayList.add(daymap);
 		}
 		weekMap.put("dayList", dayList);

@@ -50,6 +50,10 @@ function highlightLineById(id) {
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_week.jsp" %>
 </c:when>
 
+<c:when test="${ssCalendarViewMode == 'month'}">
+<%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_month.jsp" %>
+</c:when>
+
 <c:otherwise>
 Unknown view mode: ${ssCalendarViewMode}
 </c:otherwise>
