@@ -328,7 +328,9 @@ public class WorkflowViewer extends JApplet implements ActionListener {
             if (stateName != null) {
             	String name = stateName.attributeValue("value", "");
             	//Get the list of transitions out of this state
-            	Iterator itTransitions = state.selectNodes("item[@name='transitions']/item[@type='transition']/properties/property[@name='toState']").iterator();
+            	String transitionsPath = "item[@name='transitions']/item[@type='transition']/properties/property[@name='toState']" + 
+            		" | item[@name='startParallelExecution']/properties/property[@name='startState']";
+            	Iterator itTransitions = state.selectNodes(transitionsPath).iterator();
             	while (itTransitions.hasNext()) {
             		Element transition = (Element) itTransitions.next();
             		String toState = transition.attributeValue("value", "");
@@ -527,7 +529,7 @@ public class WorkflowViewer extends JApplet implements ActionListener {
 			xmlPostUrl = getParameter("xmlPostUrl");
 			nltSaveLayout = getParameter("nltSaveLayout");
 		} catch(Exception e) {
-			xmlGetUrl = "file:///ss/t2";
+			xmlGetUrl = "file:///ss/wfp1";
 			xmlPostUrl = "";
 			nltSaveLayout = "Save layout";			
 		}
