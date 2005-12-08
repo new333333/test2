@@ -1,5 +1,6 @@
 <% // History and entry navigation bar %>
-<div class="ss_historybar" style="width:<c:if 
+<div class="portlet-section-header" 
+  style="margin-top: 8x; margin-bottom: 8px; width:<c:if 
   test="${empty ss_toolbarWidth}"><c:out value="100%"/></c:if><c:if 
   test="${!empty ss_toolbarWidth}"><c:out value="${ss_toolbarWidth}"/></c:if>;">
   <table cellpadding="0" cellspacing="0" style="display:inline;">
@@ -11,7 +12,7 @@
           popup="<%= popupValue %>" />"
           onClick="loadEntry(this,'');return false;" ><img 
           border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a>
-        <span class="titlebold">History</span>
+        <span class="portlet-font">History</span>
         <a href="<ssf:url
           folderId="<%= ssFolder.getId().toString() %>"
           action="view_entry_history_previous" 
@@ -27,7 +28,7 @@
           popup="<%= popupValue %>" />"
           onClick="loadEntry(this,'');return false;" ><img 
           border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a>
-        <span class="titlebold">Entries</span>
+        <span class="portlet-font">Entries</span>
         <a href="<ssf:url
           folderId="<%= ssFolder.getId().toString() %>"
           action="view_entry_next"

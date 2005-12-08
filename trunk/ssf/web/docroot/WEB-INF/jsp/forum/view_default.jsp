@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <div class="ss_portlet">
-<span class="content"><i>[This forum has not been configured yet.]</i></span>
+<span class="ss_content"><i>[This forum has not been configured yet.]</i></span>
 <br/>
 <br/>
 <table border="0" cellpadding="4" cellspacing="0" width="100%">

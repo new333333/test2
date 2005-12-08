@@ -20,7 +20,7 @@
 	<liferay:param name="box_width" value="<%= new Integer(entryWindowWidth).toString() %>" />
 
 <div class="ss_portlet">
-<span class="content"><i>[There are no more entries.]</i></span>
+<span class="ss_content"><i>[There are no more entries.]</i></span>
 <br/>
 </div>
 
