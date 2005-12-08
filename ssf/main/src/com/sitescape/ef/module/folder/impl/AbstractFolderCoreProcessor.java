@@ -509,9 +509,17 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     	Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
     	Element boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
     	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
+    	
+    	//Look only for entryType=entry
     	Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,IndexUtils.FOLDERID_FIELD);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.ENTRY_TYPE_FIELD);
     	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	child.setText(EntryIndexUtils.ENTRY_TYPE_ENTRY);
+    	
+    	//Limit results to entries in the current folder
+    	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,IndexUtils.FOLDERID_FIELD);
+    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
     	child.setText((folder.getId()).toString());
     	
     	//Create the Lucene query
@@ -735,6 +743,9 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         // Add doc type
         BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ENTRY);
                
+        // Add the entry type (entry or reply)
+        EntryIndexUtils.addEntryType(indexDoc, entry);
+        
         // Add creation-date
         EntryIndexUtils.addCreationDate(indexDoc, entry);
         
