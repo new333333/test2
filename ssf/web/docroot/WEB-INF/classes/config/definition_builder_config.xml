@@ -483,8 +483,8 @@
 			<option_select path="//item[@category='generalLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/html/portlet/forum/elements/fieldset.jsp" />
-			<jsp name="view" value="/html/portlet/forum/elements/fieldset.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
 		</jsps>
 	</item>
 		
