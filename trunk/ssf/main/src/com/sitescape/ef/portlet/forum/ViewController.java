@@ -6,7 +6,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
-
+import javax.portlet.PortletSession;
 
 import org.springframework.web.servlet.ModelAndView;
 
@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
@@ -44,6 +45,11 @@ public class ViewController  extends SAbstractForumController {
 			Map updates = new HashMap();
 			updates.put("displayStyle", PortletRequestUtils.getStringParameter(request,WebKeys.FORUM_URL_VALUE,""));
 			getProfileModule().modifyUser(user.getId(), updates);
+		}
+		if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE)) {
+			PortletSession ps = WebHelper.getRequiredPortletSession(request);
+			ps.setAttribute(WebKeys.CALENDAR_VIEWMODE, 
+					PortletRequestUtils.getStringParameter(request,WebKeys.FORUM_URL_VALUE,""));
 		}
 
 		return returnToViewForum(request, response, formData, folderId);
