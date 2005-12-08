@@ -13,6 +13,7 @@ public class JndiObjectFactoryBean extends org.springframework.jndi.JndiObjectFa
 
 		if(ServerDetector.isJBoss()) {
 			jndiName = jndiName.replaceFirst("comp/env/", "");
+			jndiName = jndiName.replaceFirst("java:comp/env/", "");
 		}
 		
 		super.setJndiName(jndiName);

@@ -42,7 +42,26 @@
 	
 	<target name="deploy-war" depends="deploy-init">
 		<property name="deploy.war.dir" value="${app.server.deploy.dir}" />
-		<copy file="${deploy-support.war.file}" todir="${deploy.war.dir}" />
+		
+		<if>
+			<or>
+				<equals arg1="${app.server.type}" arg2="jetty" />
+				<equals arg1="${app.server.type}" arg2="tomcat" />
+
+			</or>
+			<then>
+				<copy file="${deploy-support.war.file}" todir="${deploy.war.dir}" />
+			</then>
+			<elseif>
+				<or>
+					<equals arg1="${app.server.type}" arg2="jboss-jetty" />
+					<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
+				</or>
+				<then>
+					<unwar src="${deploy-support.war.file}" dest="${deploy.war.dir}/${deploy-support.war.file}"/>
+				</then>
+			</elseif>
+		</if>
 	</target>
 	
 	<target name="deploy-jar-into-portal" depends="deploy-init">
