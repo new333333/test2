@@ -11,6 +11,11 @@ import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.domain.User;
 
+/**
+ * Integration unit tests for data access layer. 
+ * 
+ * @author Jong Kim
+ */
 public class CoreDaoImplTests extends AbstractTransactionalDataSourceSpringContextTests {
 
 	protected CoreDaoImpl cdi;
