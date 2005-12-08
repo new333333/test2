@@ -7,12 +7,12 @@ import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.sitescape.ef.util.ConfigPropsUtil;
+import com.sitescape.ef.util.SPropsUtil;
 
 public class DebugHelper {
 	
 	public static void testRequestEnv(String caller, HttpServletRequest request) {
-		if(ConfigPropsUtil.getBoolean("request.env.print")) {
+		if(SPropsUtil.getBoolean(SPropsUtil.DEBUG_WEB_REQUEST_ENV_PRINT, false)) {
 			System.out.println("\tlogin name: [" + request.getRemoteUser() + "]");
 			System.out.println("\tprincipal: [" + request.getUserPrincipal() + "]");
 
@@ -47,7 +47,7 @@ public class DebugHelper {
 	
 	
 	public static void testRequestEnv(String caller, PortletRequest request) {
-		if(ConfigPropsUtil.getBoolean("request.env.print")) {
+		if(SPropsUtil.getBoolean(SPropsUtil.DEBUG_WEB_REQUEST_ENV_PRINT, false)) {
 			System.out.println("\tlogin name: [" + request.getRemoteUser() + "]");
 			System.out.println("\tprincipal: [" + request.getUserPrincipal() + "]");
 
