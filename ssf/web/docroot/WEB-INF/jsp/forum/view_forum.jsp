@@ -1,7 +1,6 @@
 <% // The main forum view - for viewing folder listings and for viewing entries
 %>
 <%@ include file="/html/portlet/forum/init.jsp" %>
-<jsp:useBean id="ss_forum_forum" type="com.sitescape.ef.domain.Binder" scope="request" />
 <jsp:useBean id="ss_forum_config_definition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ss_forum_configJspStyle" type="String" scope="request" />
 <jsp:useBean id="ss_forum_config" type="org.dom4j.Element" scope="request" />
@@ -247,7 +246,7 @@ function loadEntry(obj,id) {
 <%@ include file="/html/portlet/forum/view_forum_history_bar.jsp" %>
     </liferay:box>
     <liferay:box top="/html/common/box_top.jsp" bottom="/html/common/box_bottom.jsp">
-	  <sitescape:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
+	  <ssf:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
 	    configElement="<%= ss_forum_config %>" 
 	    configJspStyle="<%= ss_forum_configJspStyle %>"
 	    processThisItem="true" 
@@ -269,7 +268,7 @@ if (self.parent && self.parent.highlightLineById) {
 %>
     <liferay:box top="/html/common/box_top.jsp" bottom="/html/common/box_bottom.jsp">
       <liferay:param name="box_width" value="<%= new Integer(entryWindowWidth).toString() %>" />
-	<sitescape:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
+	<ssf:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
 	  configElement="<%= ss_forum_config %>" 
 	  configJspStyle="<%= ss_forum_configJspStyle %>"
 	  processThisItem="true" 
@@ -282,7 +281,7 @@ if (self.parent && self.parent.highlightLineById) {
 		toolbarWidth = entryWindowWidth - 20;
 		request.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
 %>
-	<sitescape:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
+	<ssf:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
 	  configElement="<%= ss_forum_config %>" 
 	  configJspStyle="<%= ss_forum_configJspStyle %>"
 	  processThisItem="true" 
@@ -292,7 +291,7 @@ if (self.parent && self.parent.highlightLineById) {
 	//Vertical view
 	} else {
 %>
-	<sitescape:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
+	<ssf:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
 	  configElement="<%= ss_forum_config %>" 
 	  configJspStyle="<%= ss_forum_configJspStyle %>"
 	  processThisItem="true" 

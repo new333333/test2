@@ -14,7 +14,7 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/html/common/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.text.SimpleDateFormat" %>
@@ -95,7 +95,7 @@ This test page shows datepickers for the current date and an unspecified date.
 				<td>
 					First datepicker:
 					<div>
-					<sitescape:datepicker id="date1" 
+					<ssf:datepicker id="date1" 
 						formName="datepickertest"
 						initDate="<%=initDate%>" />
 					</div>
@@ -103,7 +103,7 @@ This test page shows datepickers for the current date and an unspecified date.
 				<td>
 					Second datepicker:
 					<div>
-					<sitescape:datepicker id="date2" 
+					<ssf:datepicker id="date2" 
 						formName="datepickertest"
 						 />
 					</div>

@@ -1,6 +1,5 @@
 <% // View entry data dispatcher %>
-<%@ include file="/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ss_forum_forum" type="com.sitescape.ef.domain.Binder" scope="request" />
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ss_forum_config_definition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ss_forum_config" type="org.dom4j.Element" scope="request" />
 <jsp:useBean id="property_name" type="String" scope="request" />

@@ -14,7 +14,7 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/html/common/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.text.SimpleDateFormat" %>
@@ -74,7 +74,7 @@ Nothing selected
 <%
     } else {
 %>
-<sitescape:eventtext event="<%=e1%>" />
+<ssf:eventtext event="<%=e1%>" />
 <% 
     }
 %>
@@ -93,7 +93,7 @@ Nothing selected
 <%
     } else {
 %>
-<sitescape:eventtext event="<%=e2%>" />
+<ssf:eventtext event="<%=e2%>" />
 <% 
     }
 %>
@@ -115,7 +115,7 @@ Nothing selected
 This one has a duration
 </td></tr>
 <tr><td>
-<sitescape:eventeditor id="et" 
+<ssf:eventeditor id="et" 
     formName="eventtestertest" 
     initEvent="<%= e1 %>"
     hasDuration="<%= hasdur %>"
@@ -125,7 +125,7 @@ This one has a duration
 <br />This one has just a date/time, no duration, no recurrence</p><p></p>
 </td></tr>
 <tr><td>
-<sitescape:eventeditor id="et2"
+<ssf:eventeditor id="et2"
     formName="eventtestertest"
     initEvent="<%= e2 %>"
     hasDuration="<% nodur %>"

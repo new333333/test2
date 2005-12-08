@@ -1,5 +1,5 @@
 <% // View entry attachments %>
-<%@ include file="/jsp/definition_elements/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="property_caption" type="String" scope="request" />
 <jsp:useBean id="ss_forum_entry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
 
@@ -16,7 +16,7 @@
 	url += "&op=view_file&file=";
 	url += selectionId;
 %>
-<a class="bg" target="_blank" href="<sitescape:url url="<%= url %>" />"><c:out value="${selection.fileItem.name}"/></a><br>
+<a class="bg" target="_blank" href="<ssf:url url="<%= url %>" />"><c:out value="${selection.fileItem.name}"/></a><br>
  </c:forEach>
  
 <br>
