@@ -35,6 +35,17 @@
 
 <script language="javascript" type="text/javascript">
 
+var ss_targetUrlLoadCount = 0;
+function ss_loadTargetUrl() {
+	ss_targetUrlLoadCount++;
+	if (ss_targetUrlLoadCount > 1) {
+		ss_showHideObj('iframe_window', 'hidden', 'block');
+	}
+	if (ss_targetUrlLoadCount > 2) {
+		self.location.reload(true);
+	}
+}
+
 var ss_transferUrl = self.location.href;
 
 </script>
@@ -43,7 +54,7 @@ var ss_transferUrl = self.location.href;
 <body>
  <iframe id="iframe_window" name="iframe_window" 
     style="width:100%; height:95%; display:block;"
-    src="/c" frameBorder="no" >xxx</iframe>
+    src="/c" frameBorder="no" onLoad="ss_loadTargetUrl();">xxx</iframe>
 
 </body>
 </html>
