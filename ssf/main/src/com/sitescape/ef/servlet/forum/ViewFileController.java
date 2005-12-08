@@ -17,6 +17,7 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.servlet.SAbstractController;
 import com.sitescape.util.FileUtil;
 import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.ef.repository.RepositoryServiceNames;
 import com.sitescape.ef.repository.RepositoryServiceUtil;
 
 public class ViewFileController extends SAbstractController {
@@ -57,7 +58,7 @@ public class ViewFileController extends SAbstractController {
 						"Content-Disposition",
 						"attachment; filename=\"" + shortFileName + "\"");
 			RepositoryServiceUtil.read(entry.getParentFolder(), entry, 
-						"fileRepositoryService", fa.getFileItem().getName(), response.getOutputStream()); 
+					RepositoryServiceNames.FILE_REPOSITORY_SERVICE, fa.getFileItem().getName(), response.getOutputStream()); 
 
 			response.getOutputStream().flush();
 		}
