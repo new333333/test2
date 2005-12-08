@@ -10,7 +10,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.util.WebUrlUtil;
+import com.sitescape.ef.web.util.WebUrlUtil;
 
 public class ServletRootUrlTag extends TagSupport {
 

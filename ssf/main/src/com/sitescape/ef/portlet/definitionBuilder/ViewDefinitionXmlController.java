@@ -28,10 +28,10 @@ import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceUtil;
-import com.sitescape.ef.util.PortletRequestUtils;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
 
 /**

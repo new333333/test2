@@ -1,7 +1,6 @@
 package com.sitescape.ef.web.util;
 
 import com.sitescape.ef.jobs.Schedule;
-import com.sitescape.ef.util.PortletRequestUtils;
 import javax.portlet.PortletRequest;
 
 public class ScheduleHelper {

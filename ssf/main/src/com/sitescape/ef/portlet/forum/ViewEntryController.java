@@ -19,9 +19,9 @@ import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.util.Validator;
-import com.sitescape.ef.util.PortletRequestUtils;
 
 public class ViewEntryController extends SAbstractForumController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {

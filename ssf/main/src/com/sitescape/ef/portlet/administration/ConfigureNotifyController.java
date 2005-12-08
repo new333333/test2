@@ -24,7 +24,7 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.util.StringUtil;
-import com.sitescape.ef.util.PortletRequestUtils;
+import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.ScheduleHelper;
 
 import com.sitescape.ef.domain.Folder;

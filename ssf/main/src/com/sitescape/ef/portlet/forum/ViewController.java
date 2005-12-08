@@ -1,7 +1,6 @@
 package com.sitescape.ef.portlet.forum;
 
 import javax.portlet.ActionRequest;
-import com.sitescape.ef.util.PortletRequestUtils;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -16,6 +15,7 @@ import java.util.Map;
 import java.util.Date;
 
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.ObjectKeys;

@@ -14,9 +14,9 @@ import java.util.Map;
 
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
-import com.sitescape.ef.util.PortletRequestUtils;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Workspace;
 

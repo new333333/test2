@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
-import com.sitescape.ef.util.PortletRequestUtils;
 
 /**
  * @author Peter Hurley

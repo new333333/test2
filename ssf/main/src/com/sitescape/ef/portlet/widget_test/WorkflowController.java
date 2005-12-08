@@ -24,8 +24,8 @@ import org.jbpm.context.exe.ContextInstance;
 
 import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.util.PortletRequestUtils;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.domain.AnyOwner;
 import com.sitescape.util.Validator;
