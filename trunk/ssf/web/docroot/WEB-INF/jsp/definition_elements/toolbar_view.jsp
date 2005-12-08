@@ -43,7 +43,12 @@ function ss_toolbarPopupUrl(url) {
 	            <c:otherwise>
 	            </c:otherwise>
 	   		  </c:choose>
-	          onClick="return(ss_openUrlInPortlet(this.href, ${popup}));">
+	          <c:if test="${empty toolbarMenuCategoryItem.value.qualifiers.onClick}">
+	          	onClick="return(ss_openUrlInPortlet(this.href, ${popup}));">
+	          </c:if>
+	          <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.onClick}">
+	          	onClick="${toolbarMenuCategoryItem.value.qualifiers.onClick}"">
+	          </c:if>
 	          <span class="ss_content">
 	          <c:out value="${toolbarMenuCategoryItem.key}" /></span></a>
 	        </li>
@@ -73,8 +78,13 @@ function ss_toolbarPopupUrl(url) {
 	      <a 
 	        class="ss_toolbar_item" 
 	        href="${toolbarMenu.value.url}"
-    	    <c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
-    	      onClick="ss_toolbarPopupUrl(this.href);return false;"
+    	    <c:if test="${empty toolbarMenu.value.qualifiers.onClick}">
+    	    	<c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
+    	      		onClick="ss_toolbarPopupUrl(this.href);return false;"
+    	    	</c:if>
+    	    </c:if>
+    	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
+    	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
 	      >
 	    </c:when>
@@ -91,8 +101,13 @@ function ss_toolbarPopupUrl(url) {
 	          <ssf:param name="<%= key2 %>" value="<%= value2 %>" />
 	        </c:forEach>
 	 	    </ssf:url>"
-    	    <c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
-    	      onClick="ss_toolbarPopupUrl(this.href);return false;"
+    	    <c:if test="${empty toolbarMenu.value.qualifiers.onClick}">
+    	    	<c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
+    	      		onClick="ss_toolbarPopupUrl(this.href);return false;"
+    	    	</c:if>
+    	    </c:if>
+    	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
+    	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
 	 	  >
 	    </c:when>

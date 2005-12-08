@@ -65,7 +65,7 @@
 <script language="JavaScript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
 <script language="javascript">
 var count = 0
-function getUnseenCounts() {
+function ss_getUnseenCounts() {
 	<c:forEach var="folder" items="<%= ssFolderList %>">
 		document.getElementById("count_<c:out value="${folder.id}"/>").style.color = "silver";
 	</c:forEach>
@@ -76,9 +76,8 @@ function getUnseenCounts() {
 	ajaxRequest.sendRequest();  //Send the request
 }
 </script>
-<form id="unseenCountForm" onSubmit="getUnseenCounts();return false;">
+<form id="unseenCountForm" >
 <input type="hidden" name="forumList" value="<%= folderIdList %>">
-<input type="submit" name="showCounts" value="Show unseen counts">
 </form>
 <div id="unseenCounts">
 </div>

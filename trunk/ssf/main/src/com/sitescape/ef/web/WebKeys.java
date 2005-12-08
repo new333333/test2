@@ -109,6 +109,7 @@ public class WebKeys {
     public static final String FOLDER_ENTRY_TOOLBAR="ssFolderEntryToolbar";
     public static final String FOLDER_TOOLBAR="ssFolderToolbar";
     public static final String FORUM_ID_LIST = "ssForumIdList";
+    public static final String FORUM_TOOLBAR="ssForumToolbar";
     public static final String GROUPS="ssGroups";
     public static final String HISTORY_CACHE="ssHistoryCache";
     public static final String HISTORY_MAP="ssHistoryMap";

@@ -23,6 +23,9 @@ import javax.portlet.PortletURL;
  * 
  * A third option when building the toolbar is a set of qualifiers:
  *   popup = true		pop up the url into a new window
+ *   
+ *   onClick = text     Add an onClick phrase
+ *                      (popup commands are not processed if an "onClick" phrase is specified)
  */
 public class Toolbar {
 	private SortedMap toolbar = new TreeMap();
@@ -56,6 +59,16 @@ public class Toolbar {
 			toolbar.put(name, toolbarData);
 		}
 		toolbarData.put("title", title);
+	}
+	public void addToolbarMenu(String name, String title, String url) {
+		Map qualifiers = new HashMap();
+		addToolbarMenu(name, title, url, qualifiers);
+	}
+	public void addToolbarMenu(String name, String title, String url, Map qualifiers) {
+		addToolbarMenu(name, title);
+		Map toolbarData = (Map) this.toolbar.get(name);
+		toolbarData.put("url", url);
+		toolbarData.put("qualifiers", qualifiers);
 	}
 	private Map getCategory(String name, String category) {
 		if (this.toolbar.containsKey(name)) {
@@ -102,6 +115,23 @@ public class Toolbar {
 		addToolbarMenuItem(name, category, title, url, qualifiers);
 	}
 	public void addToolbarMenuItem(String name, String category, String title, PortletURL url, Map qualifiers) {
+		Map toolbarCategory = getCategory(name, category);
+		if (toolbarCategory == null) return;
+		Map toolbarCategoryMap;
+		if (toolbarCategory.containsKey(title)) {
+			toolbarCategoryMap = (Map) toolbarCategory.get(title);
+		} else {
+			toolbarCategoryMap = new HashMap();
+		}
+		toolbarCategoryMap.put("url", url);
+		toolbarCategoryMap.put("qualifiers", qualifiers);
+		toolbarCategory.put(title, toolbarCategoryMap);
+	}
+	public void addToolbarMenuItem(String name, String category, String title, String url) {
+		Map qualifiers = new HashMap();
+		addToolbarMenuItem(name, category, title, url, qualifiers);
+	}
+	public void addToolbarMenuItem(String name, String category, String title, String url, Map qualifiers) {
 		Map toolbarCategory = getCategory(name, category);
 		if (toolbarCategory == null) return;
 		Map toolbarCategoryMap;
