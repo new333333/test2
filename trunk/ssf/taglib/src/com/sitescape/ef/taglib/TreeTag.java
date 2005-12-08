@@ -313,9 +313,9 @@ public class TreeTag extends TagSupport {
 			}
 			else {
 				if (ls) {
-					jspOut.print("<img align='absmiddle' border='0' height='20' hspace='0' src='" + getImage("join") + "' vspace='0' width='19'>");
-				} else {
 					jspOut.print("<img align='absmiddle' border='0' height='20' hspace='0' src='" + getImage("join_bottom") + "' vspace='0' width='19'>");
+				} else {
+					jspOut.print("<img align='absmiddle' border='0' height='20' hspace='0' src='" + getImage("join") + "' vspace='0' width='19'>");
 				}
 			}
 	
