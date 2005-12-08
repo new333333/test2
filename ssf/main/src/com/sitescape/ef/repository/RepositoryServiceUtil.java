@@ -23,24 +23,31 @@ public class RepositoryServiceUtil {
 		Object session = service.openRepositorySession();
 		try {
 			String filepath = fui.getMultipartFile().getOriginalFilename();
-			
-			boolean existingResource = service.exists(session, folder, entry, filepath);
-			
-			if(existingResource) {
-				// It is an existing resource. We should make sure that the
-				// resource is checked out. 
-				// TODO Once we have a UI that allows users to manage checkout/
-				// checkin procedures explicitly, then we should remove this
-				// piece of code. 
-				service.checkout(session, folder, entry, filepath);
+
+			if(service.supportVersioning()) {				
+				boolean existingResource = service.exists(session, folder, entry, filepath);
+				
+				if(existingResource) {
+					// It is an existing resource. We should make sure that the
+					// resource is checked out. 
+					// TODO Once we have a UI that allows users to manage checkout/
+					// checkin procedures explicitly, then we should remove this
+					// piece of code. 
+					service.checkout(session, folder, entry, filepath);
+				}
+				
+				service.write(session, folder, entry, filepath, fui.getMultipartFile());
+				
+				// TODO Until we have a UI that users can use to checkout and 
+				// checkin file element explicitly, we have no choice but automate
+				// the checkout/checkin process behind the scene. 
+				if(existingResource) {
+					service.checkin(session, folder, entry, filepath);
+				}
 			}
-			
-			service.write(session, folder, entry, filepath, fui.getMultipartFile());
-			
-			// TODO Until we have a UI that users can use to checkout and 
-			// checkin file element explicitly, we have no choice but automate
-			// the checkout/checkin process behind the scene. 
-			service.checkin(session, folder, entry, filepath);
+			else {
+				service.write(session, folder, entry, filepath, fui.getMultipartFile());				
+			}
 		}
 		finally {
 			service.closeRepositorySession(session);
