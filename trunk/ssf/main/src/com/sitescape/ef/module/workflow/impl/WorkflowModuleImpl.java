@@ -16,6 +16,7 @@ import org.jbpm.db.JbpmSession;
 import org.jbpm.graph.def.Node;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.def.Transition;
+import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
@@ -157,6 +158,8 @@ public class WorkflowModuleImpl extends AbstractModuleImpl implements WorkflowMo
             ProcessDefinition pD = pI.getProcessDefinition();
             Node node = pD.findNode(nodeId);
         	token.setNode(node);
+            ExecutionContext executionContext = new ExecutionContext(token);
+            node.enter(executionContext);
             session.getGraphSession().saveProcessInstance(pI);
             return pI;
 	    } catch (Exception ex) {

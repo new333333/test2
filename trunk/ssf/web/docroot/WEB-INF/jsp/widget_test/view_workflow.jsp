@@ -105,6 +105,19 @@ Id: <c:out value="${instance.id}"/>,
  Version: <c:out value="${instance.processDefinition.version}"/>)<br>
 </c:forEach>
 </c:if>
+
+<c:if test="${!empty definitionXml}">
+<br>
+<hr>
+<br>
+<b>Definition xml:</b>
+<br>
+<pre>
+<c:out value="${definitionXml}"/>
+</pre>
+</c:if>
+
+
 </td>
 </tr>
 </table>
