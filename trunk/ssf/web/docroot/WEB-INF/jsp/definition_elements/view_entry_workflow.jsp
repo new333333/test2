@@ -3,10 +3,10 @@
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 
-<h1 class="ss_entryTitle"><c:out value="${property_caption}"/></h1>
-
-<c:forEach var="workflow" items="ssDefinitionEntry.workflowStates">
-Workflow state: <c:out value="${workflow.state}"/>
-<br>
-<br>
+<c:if test="${!empty ssDefinitionEntry.workflowStates}">
+<table>
+<c:forEach var="workflow" items="${ssDefinitionEntry.workflowStates}">
+<tr><td>Workflow state: <c:out value="${workflow.state}"/></td></tr>
 </c:forEach>
+</table>
+</c:if>
