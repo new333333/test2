@@ -21,7 +21,7 @@
 		caption = "<b>"+caption+"</b><br>";
 	}
 %>
-<div class="entryContent" ><%= caption %>
+<div class="ss_entryContent" ><%= caption %>
 <%
 	for (int i = 1; i <= count; i++) {
 %>
