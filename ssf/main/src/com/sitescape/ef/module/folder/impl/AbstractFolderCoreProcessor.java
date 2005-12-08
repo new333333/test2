@@ -2,6 +2,8 @@ package com.sitescape.ef.module.folder.impl;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -9,12 +11,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.lang.Long;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.document.DateField;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+//import org.dom4j.Document;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
@@ -30,6 +37,7 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FolderCounts;
 import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Description;
@@ -39,11 +47,16 @@ import com.sitescape.ef.exception.UncheckedCodedContainerException;
 import com.sitescape.ef.file.CheckedOutByOtherException;
 import com.sitescape.ef.file.FileManager;
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.search.LuceneSession;
+import com.sitescape.ef.search.LuceneSessionFactory;
+import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.WriteFilesException;
 import com.sitescape.ef.module.folder.index.IndexUtils;
@@ -151,7 +164,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     protected void addEntry_indexAdd(Folder folder, FolderEntry entry, Map inputData) {
         
         // Create an index document from the entry object.
-        Document indexDoc = buildIndexDocumentFromEntry(folder, entry);
+        org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(folder, entry);
         
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
@@ -212,7 +225,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     protected void modifyEntry_indexAdd(Folder folder, FolderEntry entry, Map inputData) {
         
         // Create an index document from the entry object.
-        Document indexDoc = buildIndexDocumentFromEntry(folder, entry);
+        org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(folder, entry);
         
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
@@ -294,7 +307,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData) {
         // Create an index document from the entry object.
-        Document indexDoc = buildIndexDocumentFromEntry(entry.getParentFolder(), entry);
+        org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(entry.getParentFolder(), entry);
         
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
@@ -333,7 +346,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
        	}
     }
     //***********************************************************************************************************
-    public Map getFolderEntries(Folder folder, int maxChildEntries) {
+    public Map getFolderEntriesOrig(Folder folder, int maxChildEntries) {
         int count=0;
         
         //check access to folder
@@ -372,6 +385,63 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         loadEntryHistory(childEntries);
         return model;
    }
+    //***********************************************************************************************************
+    public Map getFolderEntries(Folder folder, int maxChildEntries) {
+        int count=0;
+        Enumeration fields;
+        Field fld;
+        
+        //check access to folder - might be able to get rid of this
+        getFolderEntries_accessControl(folder);
+        //validate entry count
+        maxChildEntries = getFolderEntries_maxEntries(maxChildEntries); 
+        //do actual search index query
+        Hits hits = getFolderEntries_doSearch(folder,maxChildEntries);
+        //iterate through results
+        ArrayList childEntries = new ArrayList(hits.length());
+        try {
+ 	        while (count < hits.length()) {
+	            HashMap ent = new HashMap();
+	            Document doc = hits.doc(count);
+	            //enumerate thru all the returned fields, and add to the map object
+	            Enumeration flds = doc.fields();
+	            while (flds.hasMoreElements()) {
+	            	fld = (Field)flds.nextElement();
+	            	if (fld.name().toLowerCase().indexOf("date") > 0) 
+	            		ent.put(fld.name(),DateField.stringToDate(fld.stringValue()));
+	            	else
+	            		ent.put(fld.name(),fld.stringValue());
+	            }
+	            childEntries.add(ent);
+	            ++count;
+	            
+	        }
+        } finally {
+        }
+        List users = loadEntryHistoryLuc(childEntries);
+        // walk the entries, and stuff in the user object.
+        for (int i = 0; i < childEntries.size(); i++) {
+        	Principal p;
+        	HashMap child = (HashMap)childEntries.get(i);
+        	if (child.get("_creatorId") != null) {
+        		child.put("_principal", getPrincipal(users,(String)child.get("_creatorId")));
+        	}        	
+        }
+       	Map model = new HashMap();
+        model.put(ObjectKeys.FOLDER, folder);      
+        model.put(ObjectKeys.FOLDER_ENTRIES, childEntries);
+        return model;
+   }
+ 
+    private Principal getPrincipal(List users, String userId) {
+    	Principal p;
+    	for (int i=0; i<users.size(); i++) {
+    		p = (Principal)users.get(i);
+    		if (p.getStringId().equalsIgnoreCase(userId)) return p;
+    	}
+    	new Principal();
+    	return null;
+    }
     protected void getFolderEntries_accessControl(Folder folder) {
         getAccessControlManager().checkAcl(folder, AccessType.READ);    	
     }
@@ -384,6 +454,37 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     }
     protected boolean getFolderEntries_accessControl(Folder folder, AclControlled obj) {
     	return getAccessControlManager().testAcl(folder, (AclControlled) obj, AccessType.READ);
+    }
+    
+    protected Hits getFolderEntries_doSearch(Folder folder, int maxResults) {
+       	Hits hits = null;
+       	// Build the query
+    	org.dom4j.Document qTree = DocumentHelper.createDocument();
+    	Element rootElement = qTree.addElement("QUERY");
+    	Element boolElement = rootElement.addElement("AND");
+    	boolElement.addElement("USERACL");
+    	Element field = boolElement.addElement("FIELD");
+    	field.addAttribute("fieldname","_folderId");
+    	Element child = field.addElement("TERMS");
+    	child.setText((folder.getId()).toString());
+    	
+    	//Create the Lucene query
+    	QueryBuilder qb = new QueryBuilder();
+    	SearchObject so = qb.buildQuery(qTree);
+    	
+    	//System.out.println("Query is: " + foo.toString());
+    	
+    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+        
+        try {
+	        hits = luceneSession.search(so.getQuery(),so.getSortBy(),0,maxResults);
+        }
+        finally {
+            luceneSession.close();
+        }
+    	
+        return hits;
+     
     }
     //***********************************************************************************************************
     public Long addFolder(Folder parentFolder, Folder folder) {
@@ -514,33 +615,55 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
      * This is a performance optimization for display.
      */
     protected void loadEntryHistory(FolderEntry entry) {
-       Set ids = new HashSet();
-       if (entry.getCreation() != null)
-           ids.add(entry.getCreation().getPrincipal().getId());
-       if (entry.getModification() != null)
-           ids.add(entry.getModification().getPrincipal().getId());
-       if (entry.getReservedDoc() != null) 
-           ids.add(entry.getReservedDoc().getPrincipal().getId());
-       getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
-    } 
-   
+        Set ids = new HashSet();
+        if (entry.getCreation() != null)
+            ids.add(entry.getCreation().getPrincipal().getId());
+        if (entry.getModification() != null)
+            ids.add(entry.getModification().getPrincipal().getId());
+        if (entry.getReservedDoc() != null) 
+            ids.add(entry.getReservedDoc().getPrincipal().getId());
+        getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+     } 
+
+    protected void loadEntryHistory(HashMap entry) {
+        Set ids = new HashSet();
+        if (entry.get("_creatorId") != null)
+    	    ids.add(entry.get("_creatorId"));
+        if (entry.get("_modificationId") != null) 
+    		ids.add(entry.get("_modificationId"));
+        getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+     } 
+    protected List loadEntryHistoryLuc(List pList) {
+        Set ids = new HashSet();
+        Iterator iter=pList.iterator();
+        HashMap entry;
+        while (iter.hasNext()) {
+            entry = (HashMap)iter.next();
+            if (entry.get("_creatorId") != null)
+        	    ids.add(entry.get("_creatorId"));
+            if (entry.get("_modificationId") != null) 
+        		ids.add(entry.get("_modificationId"));
+        }
+        return getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+     }   
+
     protected void loadEntryHistory(List pList) {
-       Set ids = new HashSet();
-       Iterator iter=pList.iterator();
-       FolderEntry entry;
-       while (iter.hasNext()) {
-           entry = (FolderEntry)iter.next();
-           if (entry.getCreation() != null)
-               ids.add(entry.getCreation().getPrincipal().getId());
-           if (entry.getModification() != null)
-               ids.add(entry.getModification().getPrincipal().getId());
-           if (entry.getReservedDoc() != null) 
-               ids.add(entry.getReservedDoc().getPrincipal().getId());
-       }
-       getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
-    }     
-    public Document buildIndexDocumentFromEntry(Folder folder, FolderEntry entry) {
-        Document indexDoc = new Document();
+        Set ids = new HashSet();
+        Iterator iter=pList.iterator();
+        FolderEntry entry;
+        while (iter.hasNext()) {
+            entry = (FolderEntry)iter.next();
+            if (entry.getCreation() != null)
+                ids.add(entry.getCreation().getPrincipal().getId());
+            if (entry.getModification() != null)
+                ids.add(entry.getModification().getPrincipal().getId());
+            if (entry.getReservedDoc() != null) 
+                ids.add(entry.getReservedDoc().getPrincipal().getId());
+        }
+        getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+     }     
+    public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Folder folder, FolderEntry entry) {
+    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
         
         // Add uid
         BasicIndexUtils.addUid(indexDoc, entry.getIndexDocumentUid());
@@ -550,6 +673,18 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
                
         // Add creation-date
         IndexUtils.addCreationDate(indexDoc, entry);
+        
+        // Add modification-date
+        IndexUtils.addModificationDate(indexDoc,entry);
+        
+        // Add creator id
+        IndexUtils.addCreationPrincipleId(indexDoc,entry);
+        
+        // Add Modification Principle Id
+        IndexUtils.addModificationPrincipleId(indexDoc,entry);
+        
+        // Add Doc Id
+        IndexUtils.addDocId(indexDoc, entry);
         
         // Add command definition
         IndexUtils.addCommandDefinition(indexDoc, entry); 
