@@ -129,4 +129,6 @@ public interface CoreDao {
 	public Definition loadDefinition(String defId, String zoneName);   
     public List loadDefinitions(Folder folder, ObjectControls objectDesc, FilterControls filter);       
     public List loadDefinitions(String ZoneName);
+    
+	public List loadPostings();
  }
