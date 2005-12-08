@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema targetNamespace="http://www.outsideinsdk.com/xmlns/pageml" xmlns:st="http://outsideinsdk.com/xmlns/schematool" xmlns:s="http://www.outsideinsdk.com/xmlns/pageml" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" xml:lang="en">
+	<annotation>
+		<documentation>
+			PageML Schema
+			
+			Copyright (C) 2000-2005 Stellent Inc.
+			All rights reserved.
+
+			This work is protected by United States and international copyright
+			laws and contains certain trade secret information. All use of this
+			work is governed by the terms of agreements between Stellent
+			and its licensees or potential licensees. Disclosure of the contents
+			is prohibited.
+		</documentation>
+		<appinfo>
+			<st:productGroup name="PageML1.0">
+				<st:product name="PageML" startVersion="1.0"/>
+			</st:productGroup>
+		</appinfo>
+	</annotation>
+	<element name="pageml" st:productGroup="PageML1.0">
+		<complexType st:productGroup="PageML1.0">
+			<annotation>
+				<documentation>
+					The root element of a PageML document (the {@term XML Document Element}). 
+				</documentation>
+			</annotation>
+			<sequence>
+				<element name="page" type="s:pagetype" minOccurs="0" maxOccurs="unbounded" st:productGroup="PageML1.0"/>
+			</sequence>                           
+			<attribute name="xmlns" type="string" fixed="http://www.outsideinsdk.com/xmlns/pageml"/>			
+		</complexType>
+	</element>
+	<complexType name="pagetype" st:productGroup="PageML1.0">
+		<annotation>
+			<documentation>
+				Page text range information
+			</documentation>
+		</annotation>
+		<sequence>
+			<element name="body" type="s:rangetype" minOccurs="0" st:productGroup="PageML1.0"/>
+			<element name="header" type="s:rangetype" minOccurs="0" st:productGroup="PageML1.0"/>
+			<element name="footer" type="s:rangetype" minOccurs="0" st:productGroup="PageML1.0"/>
+			<element name="footnote" type="s:rangetype" minOccurs="0" st:productGroup="PageML1.0"/>
+			<element name="endnote" type="s:rangetype" minOccurs="0" st:productGroup="PageML1.0"/>
+		</sequence>
+		<attribute name="ordinal" type="positiveInteger" use="required" st:productGroup="PageML1.0">
+			<annotation>
+				<documentation>
+					Specifies the ordinal (numeric) value of the page number. The first
+					page will have an ordinal value of 1.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="name" type="string" use="optional" st:productGroup="PageML1.0">
+			<annotation>
+				<documentation>
+					Specifies the page number, expressed as a string.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<complexType name="rangetype" st:productGroup="PageML1.0">
+		<annotation>
+			<documentation>
+				Specifies a range of text on the current page. May contain any number of textrange elements.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element name="textrange" maxOccurs="unbounded" st:productGroup="PageML1.0">
+				<complexType st:productGroup="PageML1.0">
+					<simpleContent>
+						<extension base="string">
+							<attribute name="startoffset" type="nonNegativeInteger" st:productGroup="PageML1.0">
+								<annotation>
+									<documentation>
+										The zero-based offset of the first character in the text range.
+									</documentation>
+								</annotation>
+							</attribute>
+							<attribute name="endoffset" type="nonNegativeInteger" st:productGroup="PageML1.0">
+								<annotation>
+									<documentation>
+										The zero-based offset of the last character in the text range.
+									</documentation>
+								</annotation>
+							</attribute>
+							<attribute name="number" type="string" use="optional" st:productGroup="PageML1.0">
+								<annotation>
+									<documentation>
+										Specifies the note number, expressed as a string.
+									</documentation>
+								</annotation>
+							</attribute>
+
+						</extension>
+					</simpleContent>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+</schema>

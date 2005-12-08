@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../dtd/spring-beans.dtd">
+
+<beans>
+
+	<!-- ============================= Infrastructural Beans =========================== -->
+
+	<!-- Configurer that replaces ${...} placeholders with values from a properties file -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	</bean>
+
+	<!-- Message source for this context, loaded from localized "messages_xx" files -->
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>content.messages</value>
+			</list>
+		</property>										
+	</bean>
+
+	<!-- Default View Resolver -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="cache"><value>false</value></property>
+		<property name="viewClass"><value>org.springframework.web.servlet.view.JstlView</value></property>
+		<property name="prefix"><value>/WEB-INF/jsp/</value></property>
+		<property name="suffix"><value>.jsp</value></property>
+	</bean>
+
+	<!-- Portlet Parameter-based Mapping Interceptor -->
+	<bean id="parameterMappingInterceptor" class="org.springframework.web.portlet.handler.ParameterMappingInterceptor"/>
+
+	<!-- Template for the Portlet Mode - Parameter Handler Mapping Beans -->
+	<bean id="portletModeParameterHandlerMappingTemplate" class="org.springframework.web.portlet.handler.PortletModeParameterHandlerMapping" lazy-init="true" abstract="true">
+        <property name="order"><value>10</value></property>
+		<property name="interceptors">
+			<list>
+				<ref bean="parameterMappingInterceptor"/>
+				<ref bean="openSessionInViewInterceptor"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Template for the Portlet Mode Handler Mapping Beans -->
+	<bean id="portletModeHandlerMappingTemplate" class="org.springframework.web.portlet.handler.PortletModeHandlerMapping" lazy-init="true" abstract="true">
+        <property name="order"><value>20</value></property>
+		<property name="interceptors">
+			<list>
+				<ref bean="openSessionInViewInterceptor"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Default Exception Handler Bean -->
+    <bean id="defaultExceptionHandlerTemplate" class="org.springframework.web.portlet.handler.SimpleMappingExceptionResolver" lazy-init="true" abstract="true">
+		<property name="defaultErrorView"><value>common/defError</value></property>
+		<property name="exceptionMappings">
+			<props>
+				<prop key="javax.portlet.PortletSecurityException">common/notAuthorized</prop>
+				<prop key="javax.portlet.UnavailableException">common/notAvailable</prop>
+			</props>
+		</property>  
+	</bean>
+
+	<!-- Template for the common dependency injection for controllers -->
+	<bean id="controllerDependencyTemplate" lazy-init="true" abstract="true">
+		<property name="employeeModule"><ref bean="employeeModule"/></property>
+	</bean>
+
+	<!-- add support for lobhandler to support hibernate UserType to handle different db clob implementations -->
+<!--frontbase
+	<bean id="lobHandler" class="com.sitescape.ef.core.jdbc.FrontbaseLobHandler">
+	  </bean>
+
+-->	
+	<!-- Default lob handler -->
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler">
+	  </bean>
+
+	<!-- Hibernate session factory -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="lobHandler"><ref local="lobHandler"/></property>
+		<property name="configLocation"><value>classpath:config/hibernate.cfg.xml</value></property>
+		
+		<!--
+		<property name="mappingResources" >
+			<list>
+			    <value>com/sitescape/ef/security/function/Function.hbm.xml</value>
+			    <value>com/sitescape/ef/security/function/WorkAreaFunctionMembership.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/Binder.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/Principal.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/Attachment.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/Membership.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/CustomAttribute.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/Notification.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/WorkflowDef.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/WorkflowStateDef.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/FolderEntry.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/Role.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/Definition.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/Event.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/FolderCounts.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/HistoryMap.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/SeenMap.hbm.xml</value>
+			    <value>com/sitescape/ef/domain/UserProperties.hbm.xml</value>
+			</list>
+		</property>-->
+		<!-- Hibernate properties are loaded from a separate file - hibernate.properties -->
+	</bean>
+	
+	<!-- Used for open-session-in-view pattern -->
+	<bean id="openSessionInViewInterceptor" class="org.springframework.web.portlet.support.hibernate3.OpenSessionInViewInterceptor">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<!--<property name="singleSession"><value>false</value></property>-->
+	</bean>
+	
+	<!-- ============================= Business =========================== -->
+	
+	<bean id="employeeModule" class="com.sitescape.ef.module.sample.impl.EmployeeModuleImpl">
+		<property name="coreDao"><ref local="coreDao"/></property>
+	</bean>
+
+	<!-- ============================= Data Access (DAO) =========================== -->
+	
+	<bean id="coreDao" class="com.sitescape.ef.dao.impl.CoreDaoImpl">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+
+</beans>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<project name="applets" basedir="." default="compile">
+	<target name="init">
+		<echo message="##### APPLETS #####" />
+		<property environment="env" />
+	</target>
+
+	<target name="clean">
+	</target>
+
+	<target name="compile">
+	</target>
+
+	<target name="jar">
+	</target>
+
+	<target name="java2html">
+	</target>
+
+	<target name="javadoc">
+	</target>
+
+	<target name="deploy-local">
+	</target>
+
+	<target name="deploy">
+	</target>
+</project>

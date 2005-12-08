@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../../dtd/spring-beans.dtd">
+<beans>
+
+	<!-- Controllers -->
+
+	<bean id="employeesController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.sample.EmployeesController" />
+
+	<bean id="employeeSalaryIncrementController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.sample.EmployeeSalaryIncrementController" />
+
+    <bean id="employeeEditController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.sample.EmployeeEditController">
+		<property name="sessionForm"><value>false</value></property>
+		<property name="commandName"><value>employee</value></property>
+		<property name="commandClass"><value>com.sitescape.ef.module.sample.Employee</value></property>
+		<property name="formView"><value>sample/employeeEdit</value></property>
+		<!--property name="validator"><ref bean="employeeValidator"/></property--> 
+    </bean>
+
+	<bean id="employeeDeleteController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.sample.EmployeeDeleteController" />
+
+	<bean id="employeesHelpController" class="org.springframework.web.portlet.mvc.ParameterizableViewController">
+		<property name="viewName"><value>sample/employeesHelp</value></property>
+	</bean>
+
+	<!-- Handlers -->
+
+	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
+			<property name="portletModeParameterMap">
+			<map>
+				<entry key="view">
+					<map>
+						<entry key="employees"><ref bean="employeesController"/></entry>
+						<entry key="incrementSalary"><ref bean="employeeSalaryIncrementController"/></entry>
+						<entry key="editEmployee"><ref bean="employeeEditController"/></entry>
+						<entry key="deleteEmployee"><ref bean="employeeDeleteController"/></entry>
+					</map>
+				</entry>
+				<entry key="edit">
+					<map>
+					</map>
+				</entry>
+				<entry key="help">
+					<map>
+					</map>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="portletModeHandlerMapping" parent="portletModeHandlerMappingTemplate">
+		<property name="portletModeMap">
+			<map>
+				<entry key="view"><ref bean="employeesController"/></entry>
+				<entry key="help"><ref bean="employeesHelpController"/></entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="defaultExceptionHandler" parent="defaultExceptionHandlerTemplate"/>
+
+</beans>

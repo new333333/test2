@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+
+<project name="indexer-lucene" basedir="." default="deploy">
+    <import file="../deploy-support.xml" />
+    <target name="init">
+        <echo message="##### INDEXER-LUCENE #####" />
+        <property environment="env" />
+        <property name="project.dir" value=".." />
+        <property file="${project.dir}/app.server.${user.name}.properties" />
+        <property file="${project.dir}/app.server.properties" />
+        <property file="${project.dir}/build.${user.name}.properties" />
+        <property file="${project.dir}/build.properties" />
+        <path id="project.classpath">
+            <pathelement path="${classpath}" />
+            <fileset dir="${project.dir}/lib" includes="*.jar" />
+        </path>
+        <property name="jar.file" value="ssf-luceneserver.jar" />
+    	<property name="client.jar.file" value="ssf-luceneapi.jar" />
+        <property name="java2html.dir" value="${api.dir}/luceneserver" />
+        <property name="javadoc.dir" value="${api.dir}/luceneserver" />
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+            <classpath>
+                <pathelement location="${project.dir}/lib/ant-contrib.jar" />
+            </classpath>
+        </taskdef>
+    </target>
+
+    <target name="clean" depends="init">
+        <delete file="${jar.file}" failonerror="false" />
+    	<delete file="${client.jar.file}" failonerror="false" />
+        <delete dir="${java2html.dir}" />
+        <delete dir="${javadoc.dir}" />
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}" excludes="${classes.dir.excludes}" />
+        </delete>
+    </target>
+	
+	<target name="compile" depends="javabuild,rmibuild">
+	</target>
+	
+	<target name="javabuild" depends="init">
+        <mkdir dir="${classes.dir}" />
+        <javac
+            classpathref="project.classpath"
+            compiler="${javac.compiler}"
+            debug="${javac.debug}"
+            deprecation="${javac.deprecation}"
+            destdir="${classes.dir}"
+            fork="${javac.fork}"
+            memoryMaximumSize="${javac.memoryMaximumSize}"
+            nowarn="${javac.nowarn}"
+            srcdir="${source.dir}"
+        />
+		<copy 
+			file="${source.dir}/com/sitescape/ef/lucene/server/policy.all" 
+			todir="${classes.dir}"
+		/>
+		<copy 
+			file="${source.dir}/com/sitescape/ef/lucene/server/lucene-server.properties" 
+			todir="${classes.dir}"
+		/>
+    </target>
+	
+	<target name="rmibuild" depends="javabuild">
+		<rmic
+			classpathref="project.classpath"
+			classname="com.sitescape.ef.lucene.server.SsfIndexer"
+			base="${classes.dir}"
+		/>
+    </target>
+
+	<target name="jar" depends="jar1,jar2" />
+
+	<target name="jar1" depends="compile">
+        <jar
+            basedir="${classes.dir}"
+            jarfile="${jar.file}"
+        />
+    </target>
+	<target name="jar2" depends="compile">
+		<jar
+			basedir="${classes.dir}"
+			includes="**/lucene/*.class, **/server/SsfIndexer_S*"
+			jarfile="${client.jar.file}"
+		>
+			<manifest/>
+		</jar>
+	</target>
+	
+    <target name="java2html" depends="init">
+        <java
+            classname="com.liferay.util.Java2Html"
+            classpathref="project.classpath"
+            fork="true">
+                <arg value="${java2html.bat}" />
+                <arg value="${source.dir}" />
+                <arg value="${java2html.dir}" />
+        </java>
+        <move file="${java2html.dir}/stylesheet.css" tofile="${java2html.dir}/java2html.css" />
+        <antcall target="javadoc" />
+        <replace dir="${java2html.dir}">
+            <include name="**/package-summary.html" />
+            <replacefilter
+                token="/\"
+                value="/"
+            />
+        </replace>
+    </target>
+
+    <target name="javadoc" depends="init">
+        <mkdir dir="${javadoc.dir}" />
+        <javadoc
+            classpathref="project.classpath"
+            destdir="${javadoc.dir}"
+            packagenames="*.*"
+            sourcepath="${source.dir}"
+            stylesheetfile="${project.dir}/tools/javadoc.css"
+        />
+    </target>
+    
+    <target name="deploy" depends="clean,jar,jar2">
+        <antcall target="deploy-jar">
+        	<param name="deploy-support.jar.file" value="${client.jar.file}" />
+        </antcall>
+    </target>
+	
+	<target name="init-release">
+        <property environment="env" />
+    	<property name="root.dir" value="sitescape/indexserver" />
+    	<property name="zip.name" value="sitescape-indexserver" />
+  		<property file="../release.${user.name}.properties" />
+  		<property file="../release.properties" />
+	</target>
+
+	<target name="zip" depends="jar,init-release">
+		<delete file="../${zip.name}-${indexserver.version}.zip" failonerror="false" />
+        <delete failonerror="false">
+            <fileset dir="${root.dir}/lib" includes="**/*.jar" />
+        </delete>
+		<copy file="${jar.file}" todir="${root.dir}/lib" />
+		<zip destfile="../${zip.name}-${indexserver.version}.zip"
+			basedir="."
+			includes="sitescape/**/*"
+		/>
+	</target>
+
+</project>

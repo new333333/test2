@@ -1,0 +1,73 @@
+<!-- 
+
+		Copyright (C) 2000-2005 Stellent, Inc.
+		All rights reserved.
+
+		This work is protected by United States and international copyright
+		laws and contains certain trade secret information. All use of this
+		work is governed by the terms of agreements between Stellent
+		and its licensees or potential licensees. Disclosure of the contents
+		is prohibited.
+	
+ -->
+<!--
+					The root element of a PageML document (the {@term XML Document Element}). 
+				-->       
+<!ENTITY % string "CDATA">
+				
+<!ELEMENT pageml (page*)>
+<!ATTLIST pageml
+	xmlns CDATA #FIXED "http://www.outsideinsdk.com/xmlns/pageml"
+	xmlns %string; #FIXED "http://www.outsideinsdk.com/xmlns/pageml"
+>
+
+<!--
+				Page text range information
+			-->
+<!ELEMENT page (body?, header?, footer?, footnote?, endnote?)>
+<!--ordinal: 
+					Specifies the ordinal (numeric) value of the page number. The first
+					page will have an ordinal value of 1.
+				-->
+<!--name: 
+					Specifies the page number, expressed as a string.
+				-->
+<!ATTLIST page
+	ordinal CDATA #REQUIRED
+	name CDATA #IMPLIED
+>
+<!--
+				Specifies a range of text on the current page. May contain any number of textrange elements.
+			-->
+<!ELEMENT body (textrange+)>
+<!--
+				Specifies a range of text on the current page. May contain any number of textrange elements.
+			-->
+<!ELEMENT header (textrange+)>
+<!--
+				Specifies a range of text on the current page. May contain any number of textrange elements.
+			-->
+<!ELEMENT footer (textrange+)>
+<!--
+				Specifies a range of text on the current page. May contain any number of textrange elements.
+			-->
+<!ELEMENT footnote (textrange+)>
+<!--
+				Specifies a range of text on the current page. May contain any number of textrange elements.
+			-->
+<!ELEMENT endnote (textrange+)>
+<!ELEMENT textrange (#PCDATA)>
+<!--startoffset: 
+										The zero-based offset of the first character in the text range.
+									-->
+<!--endoffset: 
+										The zero-based offset of the last character in the text range.
+									-->
+<!--number: 
+										Specifies the note number, expressed as a string.
+									-->
+<!ATTLIST textrange
+	startoffset CDATA #IMPLIED
+	endoffset CDATA #IMPLIED
+	number CDATA #IMPLIED
+>

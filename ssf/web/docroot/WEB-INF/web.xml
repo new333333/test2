@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+                         "http://java.sun.com/dtd/web-app_2_3.dtd">
+                         
+<web-app>
+
+	<display-name>SiteScape Forum</display-name>
+
+	<context-param>
+		<param-name>zoneName</param-name>
+		<param-value>javademo</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>webAppRootKey</param-name>
+		<param-value>javademo.root</param-value>
+	</context-param>
+
+    <context-param>
+        <param-name>log4jConfigLocation</param-name>
+        <param-value>/WEB-INF/log4j.properties</param-value>
+    </context-param>
+	
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<!-- If using JTA, comment out this element -->
+		<param-value>
+			/WEB-INF/context/applicationContext.xml
+			/WEB-INF/context/spring-transaction-local.xml
+		</param-value>
+		<!-- If using local transaction, comment out this element -->
+		<!--<param-value>
+			/WEB-INF/context/applicationContext.xml
+			/WEB-INF/context/spring-transaction-jta.xml
+		</param-value>-->
+	</context-param>
+
+	<!-- TODO This will NOT work...
+	<filter>
+		<filter-name>Open Session In View Filter</filter-name>
+		<filter-class>com.sitescape.ef.web.servlet.filter.OpenSessionInViewFilter</filter-class>
+	</filter>-->
+
+	<listener>
+		<listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
+	</listener>
+
+    <listener>
+        <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+    </listener>
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<servlet>
+		<servlet-name>ViewRendererServlet</servlet-name>
+		<servlet-class>org.springframework.web.portlet.ViewRendererServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>ViewRendererServlet</servlet-name>
+		<url-pattern>/WEB-INF/servlet/view</url-pattern>
+	</servlet-mapping>
+
+    <taglib>
+        <taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
+        <taglib-location>/WEB-INF/tags/c.tld</taglib-location>
+    </taglib>
+
+    <taglib>
+        <taglib-uri>http://java.sun.com/jsp/jstl/fmt</taglib-uri>
+        <taglib-location>/WEB-INF/tags/fmt.tld</taglib-location>
+    </taglib>
+
+    <taglib>
+        <taglib-uri>http://java.sun.com/jsp/jstl/functions</taglib-uri>
+        <taglib-location>/WEB-INF/tags/fn.tld</taglib-location>
+    </taglib>
+
+    <taglib>
+        <taglib-uri>http://www.springframework.org/tags</taglib-uri>
+        <taglib-location>/WEB-INF/tags/spring.tld</taglib-location>
+    </taglib>
+
+    <!--<taglib>
+        <taglib-uri>http://java.sun.com/portlet</taglib-uri>
+        <taglib-location>/WEB-INF/tags/portlet.tld</taglib-location>
+    </taglib>-->
+
+    <taglib>
+        <taglib-uri>http://www.sitescape.com/tags-ssf</taglib-uri>
+        <taglib-location>/WEB-INF/tags/ssf.tld</taglib-location>
+    </taglib>
+
+</web-app>

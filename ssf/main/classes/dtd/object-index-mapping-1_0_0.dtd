@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The document root. -->
+<!ELEMENT object-index-mapping (
+	class*
+)>
+
+<!-- Defines a class. -->
+<!ELEMENT class (
+	idProperty,
+	url?,
+	property*,
+	subclass*
+)>
+
+<!-- Full Java class name -->
+<!ATTLIST class name CDATA #REQUIRED>
+
+<!-- Full Java class name -->
+<!ATTLIST class doctype (entry|attachment) #REQUIRED>
+
+<!-- The property of the class used as unique id for generated document -->
+<!ELEMENT idProperty (
+	to-string-converter?
+)>
+
+<!-- The type of id property could be any -->
+<!ATTLIST idProperty name CDATA #IMPLIED>     <!-- default: "id" -->
+
+<!-- The optional property of the (sub)class used as URL for generated document -->
+<!ELEMENT url EMPTY>
+
+<!-- The type of url property must be string -->
+<!ATTLIST url name CDATA #IMPLIED>     <!-- default: "url" -->
+<!ATTLIST url field CDATA #IMPLIED>    <!-- default: url property name -->
+
+<!-- Defines a property of a class -->
+<!ELEMENT property (
+	(text|unstored|unindexed|keyword|field),
+	(to-string-converter|to-date-converter)?
+)>
+
+<!-- The property name attribute is the name of the JavaBean property. -->
+<!ATTLIST property name CDATA #REQUIRED>
+
+<!-- Text field -->
+<!ELEMENT text EMPTY>
+<!-- Attributes for text element -->
+<!ATTLIST text name CDATA #REQUIRED>
+<!ATTLIST text store-term-vector (true|false) "false">
+
+<!-- Unstored field -->
+<!ELEMENT unstored EMPTY>
+<!-- Attributes for unstored element -->
+<!ATTLIST unstored name CDATA #REQUIRED>
+<!ATTLIST unstored store-term-vector (true|false) "false">
+
+<!-- Unindexed field -->
+<!ELEMENT unindexed EMPTY>
+<!-- Attributes for unindexed element -->
+<!ATTLIST unindexed name CDATA #REQUIRED>
+
+<!-- Keyword field -->
+<!ELEMENT keyword EMPTY>
+<!-- Attributes for keyword element -->
+<!ATTLIST keyword name CDATA #REQUIRED>
+<!ATTLIST keyword type (java.lang.String|java.util.Date) "java.lang.String">
+
+<!-- Generic field: Text, Unstored, Unindexed, and Keyword fields are all
+	 just fields that can be represented using generic field definition  
+-->
+<!ELEMENT field EMPTY>
+<!-- Attributes for field element -->
+<!ATTLIST field name CDATA #REQUIRED>
+<!ATTLIST field store (true|false) "true">
+<!ATTLIST field index (true|false) "true">
+<!ATTLIST field token (true|false) "true">
+<!ATTLIST field store-term-vector (true|false) "false">
+<!ATTLIST field boost CDATA #IMPLIED>   <!-- default: 1.0 (the data type is float) -->
+
+<!-- Converter from object to java.lang.String -->
+<!ELEMENT to-string-converter EMPTY>
+
+<!ATTLIST to-string-converter class CDATA #REQUIRED>
+
+<!-- Converter from object to java.util.Date -->
+<!ELEMENT to-date-converter EMPTY>
+
+<!ATTLIST to-date-converter class CDATA #REQUIRED>
+
+	<!-- Defines a subclass. -->
+<!ELEMENT subclass (
+	url?,
+	property*,
+	subclass*
+)>
+
+<!-- Full Java class name -->
+<!ATTLIST subclass name CDATA #REQUIRED>

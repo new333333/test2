@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?><schema targetNamespace="http://www.outsideinsdk.com/xmlns/searchml2" xml:lang="en" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:s="http://www.outsideinsdk.com/xmlns/searchml2">
+	<annotation>
+		<documentation>
+			SearchML Schema
+			
+			Copyright (C) 2000-2005 Stellent, Inc.
+			All rights reserved.
+
+			This work is protected by United States and international copyright
+			laws and contains certain trade secret information. All use of this
+			work is governed by the terms of agreements between Stellent
+			and its licensees or potential licensees. Disclosure of the contents
+			is prohibited.
+		</documentation>
+		<appinfo>
+		</appinfo>
+	</annotation>
+	<element name="searchml">
+		<complexType>
+			<annotation>
+				<documentation>
+					The root element of a SearchML document (the {@term XML Document Element}).
+				</documentation>
+			</annotation>
+			<sequence>
+				<element name="document" type="s:document" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+			<attribute name="xmlns" type="string" fixed="http://www.outsideinsdk.com/xmlns/searchml2"/>
+		</complexType>
+	</element>
+	<complexType name="document">
+		<annotation>
+			<documentation>
+				Document elements represent &quot;whole&quot; documents, acting as a container for both {@link doc_content} and
+				{@link doc_properties} elements.  They may be encountered at the root level, representing the entire document,
+				or as children of other elements.  As a child of {@link doc_content}, documents are fully contained sub-documents,
+				such as archived files in a zip document.  As a child of {@link p} (paragraph), documents are embedded
+				sub-documents, such as a WordPerfect Graphic embedded in a WordPerfect file.
+			</documentation>
+		</annotation>
+		<choice minOccurs="0" maxOccurs="unbounded">
+			<element name="doc_properties" type="s:doc_properties"/>
+			<element name="doc_content" type="s:doc_content"/>
+		</choice>
+		<attribute name="type" type="string" use="optional">
+			<annotation>
+				<documentation>
+					The name of the original encoding format for this document.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<complexType name="doc_properties">
+		<annotation>
+			<documentation>
+				Doc_properties act as a container for {@link doc_property} elements.  They, along with {@link doc_content} elements
+				are used to separate the content and properties portions of a {@link document}.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element name="doc_property" type="s:doc_property" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+	<complexType name="doc_property" mixed="true">
+		<annotation>
+			<documentation>
+				Doc_property elements contain the text of document meta data (such as document title, see below).
+			</documentation>
+		</annotation>
+		<attribute name="type" type="string" use="optional">
+			<annotation>
+				<documentation>
+	Common values for the doc_property types:&lt;br>&lt;br>
+
+	comment, keyword, last_saved_by,&lt;br>
+	primary_author, subject, title, abstract,&lt;br>
+	account, address, attachments,&lt;br>
+	authorization, backup_date,&lt;br>
+	bill_to, blind_copy, carbon_copy,&lt;br>
+	category, checked_by, client,&lt;br>
+	completed_date, character_count,&lt;br>
+	page_count, word_count, creation_date,&lt;br>
+	department, destination, disposition,&lt;br>
+	division, edit_minutes, editor, forward_to,&lt;br>
+	group, language, last_print_date,&lt;br>
+	mail_stop, matter, office, operator,&lt;br>
+	owner, project, publisher, purpose,&lt;br>
+	received_from, recorded_by,&lt;br>
+	recorded_date, reference, revision_date,&lt;br>
+	revision_notes, revision_number,&lt;br>
+	secondary_author, section, security,&lt;br>
+	source, status, doc_type, typist,&lt;br>
+	version_date, version_notes, version_number,&lt;br>
+	base_file_location, manager, company
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<complexType name="doc_content">
+		<annotation>
+			<documentation>
+				Doc_content acts as a container for a documents {@link p paragraphs}, or for other {@link document documents}.
+				They, along with {@link doc_properties} elements are used to separate the content and properties portions of
+				a {@link document}.
+			</documentation>
+		</annotation>
+		<choice minOccurs="0" maxOccurs="unbounded">
+			<element name="p" type="s:p"/>
+			<element name="document" type="s:document"/>
+			<element name="doc_content" type="s:doc_content"/>
+		</choice>
+		<attribute name="type" type="s:EDocContentType" use="required">
+			<annotation>
+				<documentation>
+					Describes what kind, or the intent of, the container that this doc_content is.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<complexType name="generated" mixed="true">
+		<choice minOccurs="0" maxOccurs="unbounded">
+			<element name="r" type="s:r">
+				<annotation>
+					<documentation>
+						Generated Text.  Generated text comes from such items as date,
+						time, or number formatting.  It was not actually text in the input
+						document, and does not count towards offset.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="record" type="s:record"/>
+		</choice>
+	</complextype>
+	<complexType name="record">
+		<annotation>
+			<documentation>
+			Archive record.  record represents an entry in an archive and contains an archived sub-document.
+			</documentation>
+		</annotation>
+		<choice minOccurs="0" maxOccurs="unbounded">
+			<element name="p" type="s:p"/>
+		</choice>
+	</complexType>
+	<complexType name="p" mixed="true">
+		<annotation>
+			<documentation>
+				p, or paragraph elements contain the actual text content of a document.  They may also contain elements for
+				tagging sections of that content, (see {@link begin_tag} and {@link end_tag}), or for delineating sub content
+				or sub documents.  p elements also contain attributes describing the style of the paragraph.
+			</documentation>
+		</annotation>
+		<choice minOccurs="0" maxOccurs="unbounded">
+			<element name="begin_tag" type="s:begin_tag"/>
+			<element name="end_tag" type="s:end_tag"/>
+			<element name="document" type="s:document"/>
+			<element name="doc_content" type="s:doc_content"/>
+			<element name="doc_property" type="s:doc_property"/>
+			<element name="r" type="s:r"/>
+			<element name="offset" type="s:offset"/>
+			<element name="generated" type="s:generated"/>
+			<element name="generated" type="s:record">
+				<annotation>
+					<documentation>
+						Text offset.  The offset specified flows until the end of the
+						enclosing p or the next specified offset.
+					</documentation>
+				</annotation>
+			</element>
+		</choice>
+		<attribute name="s" type="string" use="optional"/>
+		<attribute name="spacing" type="string" use="optional">
+			<annotation>
+				<documentation>
+				Line spacing.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="h" type="string" use="optional">
+			<annotation>
+				<documentation>
+					Height
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="ri" type="integer" use="optional">
+			<annotation>
+				<documentation>
+					Right indent.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="li" type="integer" use="optional">
+			<annotation>
+				<documentation>
+					Left indent.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="fli" type="integer" use="optional">
+			<annotation>
+				<documentation>
+					First line indent.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="offset" type="nonNegativeInteger" use="optional">
+			<annotation>
+				<documentation>
+					Text offset.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="oce" type="hexBinary" use="optional">
+			<annotation>
+				<documentation>
+				Original Character Encoding.  If oce is requested it will appear early
+				in the document, and will only appear on either a paragraph or run when
+				it changes.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<complexType name="r" mixed="true">
+		<choice minOccurs="0" maxOccurs="unbounded">
+			<element name="offset" type="s:offset">
+				<annotation>
+					<documentation>
+						Text offset.  The offset specified flows out from the parent run
+						influencing all following content and runs until the end of the
+						enclosing p or the next specified offset.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="begin_tag" type="s:begin_tag"/>
+			<element name="end_tag" type="s:end_tag"/>
+		</choice>
+		<attribute name="b" type="s:EOnOff" use="optional">
+			<annotation>
+				<documentation>
+					Bold.  While this attribute can be set to on or off, there is no
+					compelling reason to set it to off since off is the default value
+					of the parent
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="i" type="s:EOnOff" use="optional">
+			<annotation>
+				<documentation>
+					Italic.  While this attribute can be set to on or off, there is no
+					compelling reason to set it to off since off is the default value
+					of the parent
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="u" type="s:EOnOff" use="optional">
+			<annotation>
+				<documentation>
+					Underline.  While this attribute can be set to on or off, there is no
+					compelling reason to set it to off since off is the default value
+					of the parent
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="du" type="s:EOnOff" use="optional">
+			<annotation>
+				<documentation>
+					Double Underline.  While this attribute can be set to on or off,
+					there is no compelling reason to set it to off since off is the
+					default value of the parent
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="outline" type="s:EOnOff" use="optional">
+			<annotation>
+				<documentation>
+					Outline.  While this attribute can be set to on or off, there is no
+					compelling reason to set it to off since off is the default value
+					of the parent
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="hidden" type="s:EOnOff" use="optional">
+			<annotation>
+				<documentation>
+					Hidden text.  While this attribute can be set to on or off, there is no
+					compelling reason to set it to off since off is the default value
+					of the parent
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="so" type="s:EOnOff" use="optional">
+			<annotation>
+				<documentation>
+					Strike Out.  While this attribute can be set to on or off, there is no
+					compelling reason to set it to off since off is the default value
+					of the parent
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="smallcaps" type="s:EOnOff" use="optional">
+			<annotation>
+				<documentation>
+					Small Caps.  While this attribute can be set to on or off, there is no
+					compelling reason to set it to off since off is the default value
+					of the parent
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="allcaps" type="s:EOnOff" use="optional">
+			<annotation>
+				<documentation>
+					All Caps.  While this attribute can be set to on or off, there is no
+					compelling reason to set it to off since off is the default value
+					of the parent
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="oce" type="hexBinary" use="optional">
+			<annotation>
+				<documentation>
+				Original Character Encoding.  If oce is requested it will appear early
+				in the document, and will only appear on either a paragraph or run when
+				it changes.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="unknown_mapping" type="s:EOnOff" use="optional"/>
+	</complexType>
+	<complexType name="offset">
+		<annotation>
+			<documentation>
+				Text offset.  The offset specified flows out from the parent run
+				influencing all following content and runs until the end of the
+				enclosing p or the next specified offset.
+			</documentation>
+		</annotation>
+		<attribute name="value" type="nonNegativeInteger" use="required"/>
+	</complexType>
+	<complexType name="begin_tag">
+		<annotation>
+			<documentation>
+				Begins a &quot;tagged&quot; area of textual content, the interpretation of which depends on the value of this elements
+				&quot;type&quot; attribute.
+			</documentation>
+		</annotation>
+		<attribute name="type" type="string" use="required">
+			<annotation>
+				<documentation>
+					Defines the intent, or purpose of this &quot;tagged&quot; area of textual content.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<complexType name="end_tag">
+		<annotation>
+			<documentation>
+				Ends a &quot;tagged&quot; area of textual content, matching the most recent {@link begin_tag} with an identical
+				&quot;type&quot; attribute.
+			</documentation>
+		</annotation>
+		<attribute name="type" type="string" use="required">
+			<annotation>
+				<documentation>
+					Defines the intent, or purpose of this &quot;tagged&quot; area of textual content.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<simpleType name="EOnOff">
+		<annotation>
+			<documentation>
+				Defines possible values of &quot;on&quot; or &quot;off&quot;.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="on"/>
+			<enumeration value="off"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EDocContentType">
+		<annotation>
+			<documentation>
+				Defines the possible values for the &quot;type&quot; of content a {@link doc_content} container element may contain.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="body">
+				<annotation>
+					<documentation>
+						Normal document content.
+					</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="sub_doc"/>
+			<enumeration value="frame"/>
+			<enumeration value="text_box"/>
+		</restriction>
+	</simpleType>
+</schema>
