@@ -3,20 +3,31 @@ import java.util.Map;
 
 import com.sitescape.ef.jobs.Schedule;
 import com.sitescape.ef.portlet.forum.ActionUtil;
+
+import com.sitescape.util.Validator;
+
 public class ScheduleHelper {
 	public static Schedule getSchedule(Map formData) {
 		String val;
 		Schedule schedule = new Schedule();
 		val = ActionUtil.getStringValue(formData, "minuteType");
 		if (val.equals("repeat")) {
-			schedule.setMinutes("0/" + ActionUtil.getStringValue(formData, "minutesRepeat"));			
+			val = ActionUtil.getStringValue(formData, "minutesRepeat");
+			if (!Validator.isNull(val))
+				schedule.setMinutes("0/" + ActionUtil.getStringValue(formData, "minutesRepeat"));
+			else 
+				schedule.setMinutes("0");				
 		} else {
 			schedule.setMinutes(ActionUtil.getStringValue(formData, "schedMinutes"));			
 		}		
 		
 		val = ActionUtil.getStringValue(formData, "hourType");
 		if (val.equals("repeat")) {
-			schedule.setHours("0/" + ActionUtil.getStringValue(formData, "hoursRepeat"));			
+			val = ActionUtil.getStringValue(formData, "hoursRepeat");
+			if (!Validator.isNull(val))
+				schedule.setHours("0/" + ActionUtil.getStringValue(formData, "hoursRepeat"));
+			else
+				schedule.setHours("*");	
 		} else {
 			schedule.setHours(ActionUtil.getStringValue(formData, "schedHours"));			
 		}		
