@@ -23,7 +23,7 @@
 		</parameter>
 	</ResourceParams>
 	<Resource name="mail/SiteScapeMailOut" auth="Container" type="javax.mail.Session" />
-	<ResourceParams name="mail/MailSession">
+	<ResourceParams name="mail/SiteScapeMailOut">
 		<parameter>
 			<name>mail.smtp.host</name>
 			<value>host54a.simplicato.com</value>
