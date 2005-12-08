@@ -13,7 +13,7 @@ public interface FolderEmailNotification  {
      * This key is used to uniquely identify a type of processor (ie, a 
      * concrete class implementing this interface).
      */
-    public static final String PROCESSOR_KEY = "processorKey_folderEmailNotification";
+    public static final String PROCESSOR_KEY = "processorKey_emailNotificationJob";
 	public static final String NOTIFICATION_GROUP="email-notifications";
 
     public void checkSchedule(Scheduler scheduler, Binder forum);
