@@ -339,7 +339,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
 	            // Create an index document from the entry object.
 	            org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(folder, entry);
 	            
-	            logger.debug("Indexing (" + folder.getId().toString() + ") " + entry.getDocNumber() + ": " + indexDoc.toString());
+	            logger.info("Indexing (" + folder.getId().toString() + ") " + entry.getDocNumber() + ": " + indexDoc.toString());
 	            
 	            // Delete the document that's currently in the index.
 	            luceneSession.deleteDocument(entry.getIndexDocumentUid());
