@@ -92,3 +92,5 @@ if (!ssSeenMap.checkIfSeen(e)) {
 </c:forEach> <% // end of week loop %>
 
 </table>
+
+<%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %>
