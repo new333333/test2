@@ -320,6 +320,13 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 			daymap.put(WebKeys.CALENDAR_DOM, Integer.toString(loopCal.get(Calendar.DAY_OF_MONTH)));
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 			String dateKey = sdf.format(loopCal.getTime());
+			// is this loop date today? We need to beanify that fact so that the calendar view can shade it
+			GregorianCalendar today = new GregorianCalendar();
+			if (sdf.format(today.getTime()).equals(dateKey)) {
+				daymap.put("isToday", new Boolean(true));
+			} else {
+				daymap.put("isToday", new Boolean(false));
+			}
 			if (eventDates.containsKey(dateKey)) {
 				List evList = (List) eventDates.get(dateKey);
 				Iterator evIt = evList.iterator();
