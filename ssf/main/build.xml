@@ -230,12 +230,17 @@
 		</javac>
 	</target>
 	
+	<!-- Note: You can run an individual test by setting test.includes property
+	     at the command line. For example, 
+	     ant test -Dtest.includes=**/CoreDaoImplTests.class
+	     will run only CoreDaoImplTests and nothing else. -->
 	<target name="test" depends="compile-test">
 		<mkdir dir="${test.report.dir}"/>
 		<property name="tests" value="Test*"/>
 
 		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
 			<classpath location="${test.classes.dir}"/>
+			<classpath location="${test.source.dir}"/>
 			<classpath refid="project.classpath"/>
 
 			<formatter type="plain" usefile="false"/>
