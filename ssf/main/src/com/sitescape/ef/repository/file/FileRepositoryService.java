@@ -33,7 +33,7 @@ public class FileRepositoryService implements RepositoryService {
 
 	private static final String VERSION_NAME_PREFIX = "_ssfversionfile_";
 	private static final String VERSION_NAME_SUFFIX = "_";
-	private static final String TEMP_SUFFIX = "_ssftempfile";
+	private static final String TEMP_STRING = "_ssftempfile_";
 	
 	private String rootDirPath;
 	
@@ -241,7 +241,7 @@ public class FileRepositoryService implements RepositoryService {
 		}
 		else {
 			versionFileNamePrefix = fileName.substring(0, index) + VERSION_NAME_PREFIX;
-			versionFileNameSuffix = fileName.substring(index + 1);
+			versionFileNameSuffix = fileName.substring(index);
 		}
 		
 		String[] versionFileNames = fileDir.list(new FilenameFilter() {
@@ -309,8 +309,8 @@ public class FileRepositoryService implements RepositoryService {
 		return new StringBuffer(rootDirPath).append(zoneName).append(File.separator).append(folder.getId()).append(File.separator).append(entry.getId()).append(File.separator).toString();
 	}
 	
-	private File getFile(Folder folder, FolderEntry entry, String relativeFileName) {
-		return new File(getEntryDirPath(folder, entry), relativeFileName);
+	private File getFile(Folder folder, FolderEntry entry, String relativeFilePath) {
+		return new File(getEntryDirPath(folder, entry), relativeFilePath);
 	}
 	
 	private String newVersionName() {
@@ -318,13 +318,9 @@ public class FileRepositoryService implements RepositoryService {
 	}
 	
 	private File getVersionFile(Folder folder, FolderEntry entry, 
-			String relativeFileName, String versionName) {
-		File file = getFile(folder, entry, relativeFileName);
+			String relativeFilePath, String versionName) {
+		File file = getFile(folder, entry, relativeFilePath);
 		
-		return getVersionFile(file, versionName);
-	}
-	
-	private File getVersionFile(File file, String versionName) {
 		String fileName = file.getName();
 		String versionFileName;
 		int index = fileName.lastIndexOf(".");
@@ -341,7 +337,20 @@ public class FileRepositoryService implements RepositoryService {
 	}
 	
 	private File getTempFile(Folder folder, FolderEntry entry, String relativeFilePath) {
-		return getFile(folder, entry, relativeFilePath + TEMP_SUFFIX);
+		File file = getFile(folder, entry, relativeFilePath);
+		
+		String fileName = file.getName();
+		String tempFileName;
+		int index = fileName.lastIndexOf(".");
+		if(index == -1) {
+			// The file name doesn't contain extension 
+			tempFileName = fileName + TEMP_STRING;
+		}
+		else {
+			tempFileName = fileName.substring(0, index) + TEMP_STRING + 
+				"." + fileName.substring(index+1);
+		}
+		return new File(file.getParent(), tempFileName);		
 	}
 
 	private void readFile(File file, OutputStream out) throws RepositoryServiceException {
