@@ -19,6 +19,10 @@
 <c:set var="folderIdList" value=""/>
 <jsp:useBean id="folderIdList" type="java.lang.String" />
 
+<% // Toolbar %>
+<c:set var="toolbar" value="${ssForumToolbar}" scope="request" />
+<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
 	<td>
@@ -62,8 +66,10 @@
 <script language="javascript">
 var count = 0
 function getUnseenCounts() {
+	<c:forEach var="folder" items="<%= ssFolderList %>">
+		document.getElementById("count_<c:out value="${folder.id}"/>").style.color = "silver";
+	</c:forEach>
 	var url = "<ssf:servletrooturl/>listUnseen?operation=unseen_counts"
-	document.forms.unseenCountForm.count.value = count++
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("unseenCountForm")
 	ajaxRequest.setEchoDebugInfo();
@@ -71,7 +77,6 @@ function getUnseenCounts() {
 }
 </script>
 <form id="unseenCountForm" onSubmit="getUnseenCounts();return false;">
-<input type="hidden" name="count" >
 <input type="hidden" name="forumList" value="<%= folderIdList %>">
 <input type="submit" name="showCounts" value="Show unseen counts">
 </form>

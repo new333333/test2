@@ -10,6 +10,11 @@
 <jsp:useBean id="forums" type="java.util.List" scope="request" />
 <jsp:useBean id="unseenCounts" type="java.util.Map" scope="request" />
 <taconite-root xml:space="preserve">
+<c:forEach var="f" items="${forums}" >
+<c:set var="fid" value="${f.id}" />
+<jsp:useBean id="fid" type="java.lang.String" />
+	<span>This is bogus: <%= fid %></span>
+</c:forEach >
 <%
 	for (int i = 0; i < forums.size(); i++) {
 		Folder forum = (Folder)forums.get(i);
