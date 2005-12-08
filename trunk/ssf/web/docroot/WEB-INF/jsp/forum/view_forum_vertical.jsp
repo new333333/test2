@@ -122,7 +122,7 @@ function ss_positionEntryDiv() {
     setObjectLeft(wObj1, left);
     setObjectWidth(wObj1, ss_entryWindowWidth);
     setObjectWidth(wObj2, ss_entryWindowWidth);
-    setObjectWidth(wObj3, ss_entryWindowWidth);
+    //setObjectWidth(wObj3, ss_entryWindowWidth);
     wObj1.style.background = "#ffffff"
     wObj1.style.visibility = "visible";
 }
