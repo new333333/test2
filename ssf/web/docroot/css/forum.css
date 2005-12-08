@@ -52,13 +52,13 @@ ul.ss_nobullet li ul.ss_nobullet {
 
 .ss_fineprint {
   font-family: arial, helvetica, sans-serif;
-  font-size: x-small; 
+  font-size: 70%; 
   color: #000000;  
   }
 
 .ss_fineprintbold {
   font-family: arial, helvetica, sans-serif;
-  font-size: x-small; 
+  font-size: 70%; 
   color: #000000;
   font-weight: bold;
   }
@@ -69,8 +69,24 @@ ul.ss_nobullet li ul.ss_nobullet {
   color: #999999; 
   }
 
-
-
+span.ss_contentright {
+  display: inline;
+  text-align: right;
+  float: right;
+  font-size: smaller;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  }
+  
+span.ss_fineprintright {
+  display: inline;
+  text-align: right;
+  float: right;
+  font-size: 70%;
+  font-weight: bold;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  }
 /* ------------------------------------------------------------------------ */
 /* entry styles: common to entry views and entry forms */
 
@@ -422,6 +438,17 @@ table.ss_ruledTable td table td {
   margin: 0px;
 }
 
+table.content td {
+  font-family: arial, helvetica, sans-serif;
+  font-size: smaller; 
+  color: #000000;  
+}
+
+table.fineprint td {
+  font-family: arial, helvetica, sans-serif;
+  font-size: x-small; 
+  color: #000000;  
+}
 /* ------------------------------------------------------------------------ */
 /* color styles */
 .ss_bgblue, td.bgblue, table.bgblue, tr.bgblue { background-color: #ceddf2; }
@@ -441,9 +468,27 @@ table.ss_ruledTable td table td {
 }
 
 /* highlight an entire table row/cell (such as today's date in calendar views */
-table tr.ss_highlight td.ss_highlight {
-  background-color: #ceddf2;
+table.ss_highlightManila {
+  background-color: #ffffe8;
+}
+table tr.ss_highlightManila td.ss_highlightManila {
+  background-color: #ffffe8;
 } 
+
+td.ss_highlightManila {
+  background-color: #ffffe8;
+}
+
+table.ss_highlightGray {
+  background-color: #f7f7f7;
+}
+table tr.ss_highlightGray td.ss_highlightGray {
+  background-color: #f7f7f7;
+} 
+
+td.ss_highlightGray {
+  background-color: #f7f7f7;
+}
 
 .ss_labelAboveError {  
   margin: 5px 5px 5px 5px;
