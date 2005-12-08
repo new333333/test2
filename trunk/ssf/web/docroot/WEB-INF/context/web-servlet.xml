@@ -53,8 +53,9 @@
 
 	<bean id="initRequestContextInterceptor" class="com.sitescape.ef.web.servlet.handler.InitRequestContextInterceptor"/>
 
-	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
+	<bean id="openSessionInViewInterceptor" class="com.sitescape.ef.web.servlet.handler.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="workflowFactory"><ref bean="workflowFactory"/></property>
 		<!--<property name="singleSession"><value>false</value></property>-->
 	</bean>
 	
