@@ -56,12 +56,12 @@ return false;
 		</tr>
 		<tr>
 			<td colspan="4">
-				<a href="<html:webPath/>downloadFile?file=C:\liferay-portal-pro-3.5.0-tomcat\RUNNING.txt">Download File (using pure servlet)</a>
+				<a href="<ssf:servletrooturl/>downloadFile?file=C:\liferay-portal-pro-3.5.0-tomcat\RUNNING.txt">Download File (using pure servlet)</a>
 			</td>
 		</tr>
 		<tr>
 			<td colspan="4">
-				<a href="<html:webPath/>uploadFile" onClick="return popup(this, 'notes')">Upload File (using pure servlet)</a>
+				<a href="<ssf:servletrooturl/>uploadFile" onClick="return popup(this, 'notes')">Upload File (using pure servlet)</a>
 			</td>
 		</tr>
 		<tr>

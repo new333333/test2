@@ -61,7 +61,7 @@
 	</servlet>
 	
 	<servlet>
-		<servlet-name>web</servlet-name>
+		<servlet-name>dispatcher</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>namespace</param-name>
@@ -86,13 +86,13 @@
 	</servlet-mapping>
 
 	<servlet-mapping>
-		<servlet-name>web</servlet-name>
-		<url-pattern>/web/*</url-pattern>		
+		<servlet-name>dispatcher</servlet-name>
+		<url-pattern>/s/*</url-pattern>		
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>portletAdapter</servlet-name>
-		<url-pattern>/adapter/*</url-pattern>		
+		<url-pattern>/a/*</url-pattern>		
 	</servlet-mapping>
 
     <taglib>

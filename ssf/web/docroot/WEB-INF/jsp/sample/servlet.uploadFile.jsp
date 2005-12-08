@@ -4,7 +4,7 @@
 
 <h1><%= request.getAttribute("header") %></h1>
 
-<form method="post" enctype="multipart/form-data" action="<html:webPath/>uploadFile">
+<form method="post" enctype="multipart/form-data" action="<ssf:servletrooturl/>uploadFile">
 
 	<table border="0" cellpadding="4">
 		<tr>
