@@ -84,13 +84,11 @@
 	<classpathentry kind="lib" path="lib/poi-contrib.jar"/>
 	<classpathentry kind="lib" path="lib/poi-scratchpad.jar"/>
 	<classpathentry kind="lib" path="lib/pop3.jar"/>
-	<classpathentry sourcepath="/source-code/portlet1_0-src" kind="lib" path="lib/portlet.jar"/>
 	<classpathentry kind="lib" path="lib/postgresql.jar"/>
 	<classpathentry kind="lib" path="lib/projectb.jar"/>
 	<classpathentry kind="lib" path="lib/quartz.jar"/>
 	<classpathentry kind="lib" path="lib/saaj.jar"/>
 	<classpathentry kind="lib" path="lib/sap.jar"/>
-	<classpathentry sourcepath="/source-code/jakarta-tomcat-5.0.28-src/jakarta-servletapi-5/jsr154/src" kind="lib" path="lib/servlet.jar"/>
 	<classpathentry kind="lib" path="lib/smtp.jar"/>
 	<classpathentry kind="lib" path="lib/soap.jar"/>
 	<classpathentry kind="lib" path="lib/spring.jar"/>
@@ -106,7 +104,6 @@
 	<classpathentry kind="lib" path="lib/xml-apis.jar"/>
 	<classpathentry kind="lib" path="lib/ym.jar"/>
 	<classpathentry kind="lib" path="lib/md5crypt.jar"/>
-	<classpathentry sourcepath="/source-code/spring-portlet-src" kind="lib" path="lib/spring-portlet.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate3.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
