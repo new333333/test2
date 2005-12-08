@@ -373,6 +373,7 @@
 		</property>
 	</bean>
 	<bean id="definitionModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.definition.impl.DefinitionModuleImpl">
+		<property name="workflowModule"><ref local="workflowModule"/></property>
 		<property name="definitionBuilderConfig">
 			<bean class="com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles">
 				<property name="configFiles">

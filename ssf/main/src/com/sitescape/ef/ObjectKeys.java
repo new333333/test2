@@ -27,4 +27,7 @@ public interface ObjectKeys {
     public static final String USER_DISPLAY_STYLE_VERTICAL = "vertical";
 
     public static final String WORKAREA_OPERATION = "workarea_operation";
+    
+    public static final String WORKFLOW_START_STATE = "__start_state";
+    public static final String WORKFLOW_END_STATE = "__end_state";
 }
