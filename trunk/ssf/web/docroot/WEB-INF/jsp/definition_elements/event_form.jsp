@@ -13,12 +13,10 @@
 	}
 	String formName = (String) request.getAttribute("formName");
 	String caption = (String) request.getAttribute("property_caption");
-	String hD = (String) request.getAttribute("property_hasDur");
-	String hR = (String) request.getAttribute("property_hasRecur");
+	String hD = (String) request.getAttribute("property_hasDuration");
+	String hR = (String) request.getAttribute("property_hasRecurrence");
 	Boolean hasDur = new Boolean(hD);
 	Boolean hasRecur = new Boolean(hR);
-	// hack because the definition impl does not return checkboxes for recur, duration correctly
-	Boolean tt = new Boolean("true");
 	if (caption == null) {caption = "";}
 %>
 <div class="formBreak">
@@ -32,6 +30,6 @@
 <ssf:eventeditor id="<%= elementName %>" 
          formName="<%= formName %>" 
          initEvent="<%= ev %>"
-         hasDuration="<%= tt %>"
-         hasRecurrence="<%= tt %>" />
+         hasDuration="<%= hasDur %>"
+         hasRecurrence="<%= hasRecur %>" />
 </div>
