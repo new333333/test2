@@ -17,13 +17,8 @@
             <portlet-mode>view</portlet-mode>
             <portlet-mode>help</portlet-mode>
         </supports>
-        <!--<supported-locale>en</supported-locale>-->
-        <!--<resource-bundle>...</resource-bundle>-->
-        <portlet-info>
-        	<title>SiteScape Employees</title>
-        	<short-title>SiteScape Employees</short-title>
-        	<keywords>SiteScape Employees</keywords>
-        </portlet-info>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>content.employees</resource-bundle>
     </portlet>
 
     <portlet>
@@ -40,13 +35,8 @@
             <mime-type>text/html</mime-type>
             <portlet-mode>view</portlet-mode>
         </supports>
-        <!--<supported-locale>en</supported-locale>-->
-        <!--<resource-bundle>...</resource-bundle>-->
-        <portlet-info>
-        	<title>Widget test</title>
-        	<short-title>Widget test</short-title>
-        	<keywords>Widget test</keywords>
-        </portlet-info>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>content.widgettest</resource-bundle>
     </portlet>
     <portlet>
         <description xml:lang="en">SiteScape Workspace Tree Portlet</description>
@@ -62,13 +52,8 @@
             <mime-type>text/html</mime-type>
             <portlet-mode>view</portlet-mode>
         </supports>
-        <!--<supported-locale>en</supported-locale>-->
-        <!--<resource-bundle>...</resource-bundle>-->
-        <portlet-info>
-        	<title>Workspace Tree</title>
-        	<short-title>Workspace Tree</short-title>
-        	<keywords>Workspace Tree</keywords>
-        </portlet-info>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>content.workspacetree</resource-bundle>
     </portlet>
 
     <user-attribute>
