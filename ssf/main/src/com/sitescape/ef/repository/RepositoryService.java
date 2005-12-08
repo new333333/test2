@@ -67,6 +67,18 @@ public interface RepositoryService {
 		throws RepositoryServiceException;
 	
 	/**
+	 * Deletes the file resource and all its versions. 
+	 * 
+	 * @param session
+	 * @param binder
+	 * @param entry
+	 * @param relativeFilePath
+	 * @throws RepositoryServiceException
+	 */
+	public void delete(Object session, Binder binder, Entry entry,
+			String relativeFilePath) throws RepositoryServiceException;
+	
+	/**
 	 * Reads the content of the specified file resource from the repository 
 	 * system. 
 	 * <p>

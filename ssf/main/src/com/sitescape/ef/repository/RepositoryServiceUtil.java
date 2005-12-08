@@ -54,6 +54,17 @@ public class RepositoryServiceUtil {
 			service.closeRepositorySession(session);
 		}
 	}
+	
+	public static void delete(String repositoryServiceName, Binder binder,
+			Entry entry, String fileName) throws RepositoryServiceException {
+		RepositoryService service = lookupRepositoryService(repositoryServiceName);
+		Object session = service.openRepositorySession();
+		try {
+			service.delete(session, binder, entry, fileName);
+		} finally {
+			service.closeRepositorySession(session);
+		}		
+	}
 
 	public static void read(String repositoryServiceName, Binder binder, 
 			Entry entry, String fileName, OutputStream out)
