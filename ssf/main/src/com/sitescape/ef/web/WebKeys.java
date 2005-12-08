@@ -33,7 +33,6 @@ public class WebKeys {
     public static final String EVENT = "event";
     public static final String ENTRY = "entry";
     
-    
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
     public static final String FORUM_URL_ATTRIBUTE = "attr";
@@ -46,7 +45,11 @@ public class WebKeys {
 	public static final String FORUM_URL_FORUM_ID = "forumId";
 	public static final String FORUM_URL_OPERATION = "operation";
 	public static final String FORUM_URL_VALUE = "value";
-     //actions
+	
+	//Preferences
+	public static final String FORUM_PREF_FORUM_ID_LIST = "forumIdList";
+	
+    //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String FORUM_ACTION_ADD_ENTRY = "add_entry";
 	public static final String FORUM_ACTION_ADD_REPLY = "add_reply";
@@ -61,6 +64,7 @@ public class WebKeys {
 	public static final String NOTIFY_ACTION_CONFIGURE="configure_notify";
 	public static final String POSTING_ACTION_CONFIGURE="configure_posting";
 	public static final String POSTINGJOB_ACTION_CONFIGURE="configure_posting_job";
+	
 	//oerations
  	public static final String FORUM_OPERATION_ADMINISTRATION = "administration";
 	public static final String FORUM_OPERATION_SET_DISPLAY_STYLE = "set_display_style";
@@ -76,7 +80,8 @@ public class WebKeys {
 	public static final String OPERATION_POSTING_ALIASES="alias";
 	public static final String OPERATION_ADD_POSTING_ALIASES="addAlias";
 	public static final String OPERATION_MODIFY_POSTING_ALIASES="modifyAlias";
-	    // MODEL TAGS & Attributes
+	
+	// MODEL TAGS & Attributes
 	public static final String ACTION = "action";
 	public static final String ADMIN_TREE="ssAdminDomTree";
     public static final String CONFIG_ELEMENT="ssConfigElement";
@@ -90,6 +95,8 @@ public class WebKeys {
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_ID = "ssEntryId";
     public static final String FOLDER = "ssFolder";
+    public static final String FOLDER_LIST = "ssFolderList";
+    public static final String FOLDER_ID_LIST = "ssFolderIdList";
     public static final String FOLDERS = "ssFolders";
     public static final String FOLDER_DOM_TREE="ssFolderDomTree";
     public static final String FOLDER_ENTRY="ssFolderEntry";
@@ -98,6 +105,7 @@ public class WebKeys {
     public static final String FOLDER_ENTRY_ANCESTORS="ssFolderEntryAncestors";
     public static final String FOLDER_ENTRY_TOOLBAR="ssFolderEntryToolbar";
     public static final String FOLDER_TOOLBAR="ssFolderToolbar";
+    public static final String FORUM_ID_LIST = "ssForumIdList";
     public static final String GROUPS="ssGroups";
     public static final String HISTORY_CACHE="ssHistoryCache";
     public static final String HISTORY_MAP="ssHistoryMap";
@@ -139,6 +147,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_CONFIGURE_NOTIFICATION="administration/configureNotify";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING="administration/configurePosting";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING_JOB="administration/configurePostingJob";
+    
     //servlet paths
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";
