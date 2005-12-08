@@ -29,24 +29,22 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
-			String op = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_OPERATION, "");
-			if (op.equals(WebKeys.OPERATION_POSTING_ALIASES)) {
-			} else {
-				PostingConfig config = new PostingConfig();
-				Map newAliases = new HashMap();
-				config.setSchedule(ScheduleHelper.getSchedule(request));
-				config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
-				int pos =0;
-				while (true) {
-					if (!formData.containsKey("alias" + pos))
-						break;
-					String alias = PortletRequestUtils.getStringParameter(request, "alias" + pos).trim().toLowerCase();
-					Long aliasId=null;
-					try {
-						aliasId = PortletRequestUtils.getLongParameter(request, "aliasId" + pos);
-					} catch (Exception ex) {};
-					
-					if (!formData.containsKey("delete" + pos)) {
+			PostingConfig config = new PostingConfig();
+			Map newAliases = new HashMap();
+			config.setSchedule(ScheduleHelper.getSchedule(request));
+			config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
+			int pos =0;
+			while (true) {
+				if (!formData.containsKey("alias" + pos))
+					break;
+				String alias = PortletRequestUtils.getStringParameter(request, "alias" + pos, "").trim().toLowerCase();
+				Long aliasId=null;
+				try {
+					aliasId = PortletRequestUtils.getLongParameter(request, "aliasId" + pos);
+				} catch (Exception ex) {};
+				
+				if (!formData.containsKey("delete" + pos)) {
+					if (!Validator.isNull(alias)) {
 						if (newAliases.containsKey(alias)) {
 							//duplicate name - convert value to list
 							Object val = newAliases.get(alias);
@@ -63,18 +61,18 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 							newAliases.put(alias, aliasId);
 						}
 					}
-					++pos;
 				}
-				config.setAliases(newAliases);
-				getAdminModule().setPostingConfig(config);
+				++pos;
 			}
-			response.setRenderParameters(formData);
-		} else if (formData.containsKey("cancelBtn")) {
-			response.setRenderParameter(WebKeys.ACTION, "");
-			response.setWindowState(WindowState.NORMAL);
-			response.setPortletMode(PortletMode.VIEW);
-		} else
-			response.setRenderParameters(formData);
+		config.setAliases(newAliases);
+		getAdminModule().setPostingConfig(config);
+		response.setRenderParameters(formData);
+	} else if (formData.containsKey("cancelBtn")) {
+		response.setRenderParameter(WebKeys.ACTION, "");
+		response.setWindowState(WindowState.NORMAL);
+		response.setPortletMode(PortletMode.VIEW);
+	} else
+		response.setRenderParameters(formData);
 		
 	}
 
