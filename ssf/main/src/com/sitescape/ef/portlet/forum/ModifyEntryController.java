@@ -16,7 +16,7 @@ import java.util.Map;
 
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
-import com.sitescape.ef.portlet.PortletKeys;
+import com.sitescape.ef.web.WebKeys;
 
 /**
  * @author Peter Hurley
@@ -33,16 +33,16 @@ public class ModifyEntryController extends SAbstractForumController {
 			//The form was submitted. Go process it
 			// Returns a map where key is form field name (String) and value is LiferayFileItem.
 //				Map fileItems = FileUploadUtil.getFileItems(req);
-			String entryId = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_ENTRY_ID);				
+			String entryId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_ID);				
 			getFolderModule().modifyEntry(folderId, Long.valueOf(entryId), formData, null);
 			//Get the jsp objects again, but this time get the "view_forum" values
-			response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
-			response.setRenderParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId.toString());
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+			response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			//Get the jsp objects again, but this time get the "view_forum" values
-			response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
-			response.setRenderParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId.toString());
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+			response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
 		} else
 			response.setRenderParameters(formData);
 	}
@@ -58,7 +58,7 @@ public class ModifyEntryController extends SAbstractForumController {
 			return returnToViewForum(request, response, formData, folderId);
 		}
 			
-		return new ModelAndView(PortletKeys.VIEW_MODIFY_ENTRY, model);
+		return new ModelAndView(WebKeys.VIEW_MODIFY_ENTRY, model);
 	}
 }
 

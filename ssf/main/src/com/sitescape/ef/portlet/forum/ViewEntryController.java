@@ -16,7 +16,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.SeenMap;
-import com.sitescape.ef.portlet.PortletKeys;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.util.Validator;
 
 public class ViewEntryController extends SAbstractForumController {
@@ -27,14 +27,14 @@ public class ViewEntryController extends SAbstractForumController {
 			RenderResponse response) throws Exception {
 		Map model;		
 		PortletSession ses = request.getPortletSession();
-		request.setAttribute(PortletKeys.HISTORY_CACHE, ses.getAttribute(PortletKeys.HISTORY_CACHE));
-		request.setAttribute(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_ENTRY);
+		request.setAttribute(WebKeys.HISTORY_CACHE, ses.getAttribute(WebKeys.HISTORY_CACHE));
+		request.setAttribute(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_ENTRY);
 		Map formData = request.getParameterMap();
 		Long folderId=null;
 		try {
 			folderId = ActionUtil.getForumId(formData, request);
 		} catch (NoFolderByTheIdException nf) {
-			return new ModelAndView(PortletKeys.VIEW);
+			return new ModelAndView(WebKeys.VIEW);
 		}
 
 			
@@ -48,44 +48,44 @@ public class ViewEntryController extends SAbstractForumController {
          * This controller routine will forward to the desired jsp
          */
 			        
-		String op = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_OPERATION);
+		String op = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_OPERATION);
 	
-		formData.put(PortletKeys.SESSION_LAST_ENTRY_VIEWED, ses.getAttribute(PortletKeys.SESSION_LAST_ENTRY_VIEWED));
-		formData.put(PortletKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, ses.getAttribute(PortletKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED));
-		String viewPath=PortletKeys.VIEW_FORUM;
+		formData.put(WebKeys.SESSION_LAST_ENTRY_VIEWED, ses.getAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED));
+		formData.put(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, ses.getAttribute(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED));
+		String viewPath=WebKeys.VIEW_FORUM;
 		model = getForumActionModule().getShowEntry(formData, request, response, folderId);
-		String entryId = (String)model.get(PortletKeys.ENTRY_ID);
-		model.put(PortletKeys.FORUM_URL_ENTRY_ID, entryId);
+		String entryId = (String)model.get(WebKeys.ENTRY_ID);
+		model.put(WebKeys.FORUM_URL_ENTRY_ID, entryId);
 		if (op.equals("")) {
-			Object obj = model.get(PortletKeys.CONFIG_ELEMENT);
+			Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 			if ((obj == null) || (obj.equals(""))) 
-				return new ModelAndView(PortletKeys.VIEW_NO_DEFINITION, model);
-			obj = model.get(PortletKeys.CONFIG_DEFINITION);
+				return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
+			obj = model.get(WebKeys.CONFIG_DEFINITION);
 			if ((obj == null) || (obj.equals(""))) 
-				return new ModelAndView(PortletKeys.VIEW_NO_DEFINITION, model);
-			ses.setAttribute(PortletKeys.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
+				return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
+			ses.setAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
 			setHistorySeen(model, ses, folderId, false); 
-			ses.setAttribute(PortletKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, null);
-		} else if (op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_NEXT) ||
-			op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_PREVIOUS)) {
+			ses.setAttribute(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, null);
+		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_NEXT) ||
+			op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_PREVIOUS)) {
 			if (!Validator.isNull(entryId)) {
-				ses.setAttribute(PortletKeys.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
+				ses.setAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
 				setHistorySeen(model, ses, folderId, true);
-				ses.setAttribute(PortletKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, Long.valueOf(entryId));
+				ses.setAttribute(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, Long.valueOf(entryId));
 			} else {
-				ses.setAttribute(PortletKeys.SESSION_LAST_ENTRY_VIEWED, null);
-				viewPath = PortletKeys.VIEW_NO_ENTRY;
+				ses.setAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED, null);
+				viewPath = WebKeys.VIEW_NO_ENTRY;
 			}
 			
-		} else if (op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY_NEXT) ||
-			op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY_PREVIOUS)) {
+		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_NEXT) ||
+			op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_PREVIOUS)) {
 			if (!Validator.isNull(entryId)) {
-				ses.setAttribute(PortletKeys.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
+				ses.setAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
 				setHistorySeen(model, ses, folderId, false); 
-				ses.setAttribute(PortletKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, null);
+				ses.setAttribute(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, null);
 			} else {
-				ses.setAttribute(PortletKeys.SESSION_LAST_ENTRY_VIEWED, null);
-				viewPath = PortletKeys.VIEW_NO_ENTRY;
+				ses.setAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED, null);
+				viewPath = WebKeys.VIEW_NO_ENTRY;
 			}
 		} 
 
@@ -94,20 +94,20 @@ public class ViewEntryController extends SAbstractForumController {
 	} 
 	protected void setHistorySeen(Map model, PortletSession ses, Long folderId, boolean inPlace) {
 		Entry entry = setSeen(model, folderId);
-		HistoryMap history = (HistoryMap)model.get(PortletKeys.HISTORY_MAP);
+		HistoryMap history = (HistoryMap)model.get(WebKeys.HISTORY_MAP);
 		if (history == null) return;
 		//cache history - will update itself every 5 minutes
-		HistoryCache cache = (HistoryCache)ses.getAttribute(PortletKeys.HISTORY_CACHE);
+		HistoryCache cache = (HistoryCache)ses.getAttribute(WebKeys.HISTORY_CACHE);
 		if (cache == null) {
 			cache = new HistoryCache(history);
-			ses.setAttribute(PortletKeys.HISTORY_CACHE, cache);
+			ses.setAttribute(WebKeys.HISTORY_CACHE, cache);
 		} else if (!cache.getId().equals(history.getId())) {
-			ses.removeAttribute(PortletKeys.HISTORY_CACHE);
+			ses.removeAttribute(WebKeys.HISTORY_CACHE);
 			cache = new HistoryCache(history);
-			ses.setAttribute(PortletKeys.HISTORY_CACHE, cache);
+			ses.setAttribute(WebKeys.HISTORY_CACHE, cache);
 		}
 		//set the cache so it can check whether to flush the history
-		Long lastHistoryEntryViewed = (Long) ses.getAttribute(PortletKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED);
+		Long lastHistoryEntryViewed = (Long) ses.getAttribute(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED);
 		if (lastHistoryEntryViewed == null) {
 			if (inPlace) {
 				cache.setHistorySeenInPlace(entry);
@@ -126,10 +126,10 @@ public class ViewEntryController extends SAbstractForumController {
 		}
 	}
 	protected Entry setSeen(Map model, Long folderId) {
-		SeenMap seen = (SeenMap)model.get(PortletKeys.SEEN_MAP);
-		Entry entry = (Entry)model.get(PortletKeys.FOLDER_ENTRY);
+		SeenMap seen = (SeenMap)model.get(WebKeys.SEEN_MAP);
+		Entry entry = (Entry)model.get(WebKeys.FOLDER_ENTRY);
 		//only start transaction if necessary
-		List replies = new ArrayList((List)model.get(PortletKeys.FOLDER_ENTRY_DESCENDANTS));
+		List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
 		if (replies != null)  {
 			replies.add(entry);
 			for (int i=0; i<replies.size(); i++) {

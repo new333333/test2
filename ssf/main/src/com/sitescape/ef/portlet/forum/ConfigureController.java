@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.sitescape.ef.portlet.PortletKeys;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.util.Validator;
 
 
@@ -41,11 +41,11 @@ public class ConfigureController extends SAbstractForumController {
 				}
 			}				
 			getFolderModule().modifyFolderConfiguration(folderId, definitions);
-			response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
-			response.setRenderParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId.toString());
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+			response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
 		} else if (formData.containsKey("cancelBtn")) {
-			response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
-			response.setRenderParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId.toString());
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+			response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
 		} else
 			response.setRenderParameters(formData);
 	}
@@ -55,6 +55,6 @@ public class ConfigureController extends SAbstractForumController {
 		Long folderId = ActionUtil.getForumId(formData, request);
 	
 		Map model = getForumActionModule().getConfigureForum(formData, request, folderId);
-		return new ModelAndView(PortletKeys.VIEW_CONFIGURE, model);
+		return new ModelAndView(WebKeys.VIEW_CONFIGURE, model);
 	}
 }

@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sitescape.ef.portlet.PortletKeys;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 
 
@@ -24,24 +24,24 @@ public class AddEntryController extends SAbstractForumController {
 	throws Exception {
 		Map formData = request.getParameterMap();
 		Long folderId = ActionUtil.getForumId(formData, request);
-		String action = ActionUtil.getStringValue(formData, PortletKeys.ACTION);
+		String action = ActionUtil.getStringValue(formData, WebKeys.ACTION);
 		//See if the add entry form was submitted
 		if (formData.containsKey("okBtn")) {
 			//The form was submitted. Go process it
 			// Returns a map where key is form field name (String) and value is LiferayFileItem.
 			Map fileItems=new HashMap(); // = FileUploadUtil.getFileItems(request);
-			String entryType = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_ENTRY_TYPE);
-			if (action.equals(PortletKeys.FORUM_ACTION_ADD_ENTRY)) {
+			String entryType = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_TYPE);
+			if (action.equals(WebKeys.FORUM_ACTION_ADD_ENTRY)) {
 				getFolderModule().addEntry(folderId, entryType, formData, fileItems);
-			} else if (action.equals(PortletKeys.FORUM_ACTION_ADD_REPLY)) {
-				String entryId = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_ENTRY_ID);				
+			} else if (action.equals(WebKeys.FORUM_ACTION_ADD_REPLY)) {
+				String entryId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_ID);				
 				getFolderModule().addReply(folderId, Long.valueOf(entryId), entryType, formData, fileItems);
 			}
-			response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
-			response.setRenderParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId.toString());
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+			response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
 		} else if (formData.containsKey("cancelBtn")) {
-			response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
-			response.setRenderParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId.toString());
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+			response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
 		} else
 			response.setRenderParameters(formData);
 			
@@ -53,11 +53,11 @@ public class AddEntryController extends SAbstractForumController {
 		Map formData = request.getParameterMap();
 		Long folderId = ActionUtil.getForumId(formData, request);
 			
-		String action = ActionUtil.getStringValue(formData, PortletKeys.ACTION);
+		String action = ActionUtil.getStringValue(formData, WebKeys.ACTION);
 		//See if the add entry form was submitted
 		Map model;
 		try {
-			if (action.equals(PortletKeys.FORUM_ACTION_ADD_ENTRY)) {
+			if (action.equals(WebKeys.FORUM_ACTION_ADD_ENTRY)) {
 				model = getForumActionModule().getAddEntry(formData, request, folderId);
 			} else {
 				model = getForumActionModule().getAddReply(formData, request, folderId);
@@ -67,7 +67,7 @@ public class AddEntryController extends SAbstractForumController {
 			return returnToViewForum(request, response, formData, folderId);
 		}
 							
-		return new ModelAndView(PortletKeys.VIEW_ADD_ENTRY, model);
+		return new ModelAndView(WebKeys.VIEW_ADD_ENTRY, model);
 	}
 }
 

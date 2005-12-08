@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.portlet.PortletKeys;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.servlet.SAbstractController;
 
 public class DownloadFileController extends SAbstractController {
@@ -19,7 +19,7 @@ public class DownloadFileController extends SAbstractController {
             HttpServletResponse response) throws Exception {
 		
 		// I expect filespec parameter to be present, so validate that it is.
-		String filespec = RequestUtils.getRequiredStringParameter(request, PortletKeys.FORUM_URL_FILE);
+		String filespec = RequestUtils.getRequiredStringParameter(request, WebKeys.FORUM_URL_FILE);
 		
 		File file = new File(filespec);
 		

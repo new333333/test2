@@ -19,7 +19,7 @@
 
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.ef.ObjectKeys" %>
-<%@ page import="com.sitescape.ef.portlet.PortletKeys" %>
+<%@ page import="com.sitescape.ef.web.WebKeys" %>
 
 <%
 

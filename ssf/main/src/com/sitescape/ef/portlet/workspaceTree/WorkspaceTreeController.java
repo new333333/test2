@@ -19,7 +19,7 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
-import com.sitescape.ef.portlet.PortletKeys;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 
 /**
@@ -37,13 +37,13 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 		
 
 		Map model = new HashMap();
-		Document wsTree = (Document)ses.getAttribute(PortletKeys.WORKSPACE_DOM_TREE);
+		Document wsTree = (Document)ses.getAttribute(WebKeys.WORKSPACE_DOM_TREE);
 		if (wsTree == null) {
 			wsTree = getWorkspaceModule().getDomWorkspaceTree(this);
 			//Save the tree for the session as a performance improvement
-			ses.setAttribute(PortletKeys.WORKSPACE_DOM_TREE, wsTree);
+			ses.setAttribute(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 		}
-		model.put(PortletKeys.WORKSPACE_DOM_TREE, wsTree);
+		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			
 	    return new ModelAndView("workspacetree/view", model);
 	}
@@ -65,8 +65,8 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 			element.addAttribute("id", f.getId().toString());
 			element.addAttribute("image", "forum");
         	url = element.addElement("url");
-	    	url.addAttribute(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
-	     	url.addAttribute(PortletKeys.FORUM_URL_FORUM_ID, f.getId().toString());
+	    	url.addAttribute(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+	     	url.addAttribute(WebKeys.FORUM_URL_FORUM_ID, f.getId().toString());
 		} else return null;
 		return element;
 	}
