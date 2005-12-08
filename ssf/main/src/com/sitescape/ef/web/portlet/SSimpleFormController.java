@@ -8,6 +8,8 @@ import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
+import com.sitescape.ef.portlet.forum.ForumActionModule;
+import com.sitescape.ef.portlet.forum.ForumActionModule;
 
 public abstract class SSimpleFormController extends SimpleFormController {
 
@@ -17,6 +19,7 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	private AdminModule adminModule;
 	private ProfileModule profileModule;
 	private DefinitionModule definitionModule;
+	private ForumActionModule forumActionModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -64,5 +67,11 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
+	public void setForumActionModule(ForumActionModule forumActionModule) {
+		this.forumActionModule = forumActionModule;
+	}
 	
+	protected ForumActionModule getForumActionModule() {
+		return forumActionModule;
+	}		
 }
