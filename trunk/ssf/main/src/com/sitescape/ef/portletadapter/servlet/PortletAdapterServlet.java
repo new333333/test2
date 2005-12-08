@@ -6,7 +6,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -32,9 +31,6 @@ public class PortletAdapterServlet extends DispatcherServlet {
     	req.setAttribute(KeyNames.CTX, ctx);
     	
     	try {
-	    	HttpSession ses = req.getSession();
-	
-	    	
 	    	// Print debug information pertaining to cross context session sharing
 			DebugHelper.testRequestEnv("PortletAdapterServlet", req);
 	    	

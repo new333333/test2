@@ -11,12 +11,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.WebHelper;
 
 public class InitRequestContextInterceptor implements HandlerInterceptor {
 
 	public boolean preHandle(PortletRequest request, PortletResponse response, Object handler) throws Exception {
 	    
-    	PortletSession ses = request.getPortletSession();
+    	PortletSession ses = WebHelper.getRequiredPortletSession(request);
     	
 		RequestContextUtil.setThreadContext((String) ses.getAttribute(WebKeys.ZONE_NAME, PortletSession.APPLICATION_SCOPE),
 				(String) ses.getAttribute(WebKeys.USER_NAME, PortletSession.APPLICATION_SCOPE));

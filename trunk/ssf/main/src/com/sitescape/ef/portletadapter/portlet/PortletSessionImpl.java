@@ -216,7 +216,7 @@ public class PortletSessionImpl implements PortletSession {
 	}
 	
 	boolean isValid() {
-		return false;
+		return !invalid;
 	}
 	
 	private String getPortletScopeName(String name) {

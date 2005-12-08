@@ -34,4 +34,22 @@ public class WebHelper {
 		
 		return false;
 	}
+	
+	public static PortletSession getRequiredPortletSession(PortletRequest request) 
+	throws IllegalStateException {
+		PortletSession ses = request.getPortletSession(false);
+		if(ses == null)
+			throw new IllegalStateException("No session object is in place - Illegal request sequence.");
+		else
+			return ses;
+	}
+	
+	public static HttpSession getRequiredSession(HttpServletRequest request) 
+	throws IllegalStateException {
+		HttpSession ses = request.getSession(false);
+		if(ses == null)
+			throw new IllegalStateException("No session object is in place - Illegal request sequence.");
+		else
+			return ses;
+	}
 }

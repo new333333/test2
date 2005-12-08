@@ -28,29 +28,34 @@ public class PrincipalInjectionFilter implements Filter {
 		
 		Principal principal = req.getUserPrincipal();
 		
-		HttpSession ses = req.getSession();
-		
 		if(principal == null) {
 			// The request object has no information about authenticated user.
 			// Note: It means that this is not a request made by the portal
 			// through cross-context dispatch targeted to a SSF portlet. 
-			principal = (Principal) ses.getAttribute(WebKeys.USER_PRINCIPAL);
-			
-			if (principal != null) {
-				// Cached principal object is found in the session. 
-				// Wrap the request object with the information about the
-				// principal in it.
-				PrincipalServletRequest reqWithPrincipal = new PrincipalServletRequest(req, principal);
+			HttpSession ses = req.getSession(false);
+
+			if(ses != null) {
+				principal = (Principal) ses.getAttribute(WebKeys.USER_PRINCIPAL);
 				
-				chain.doFilter(reqWithPrincipal, response);
+				if (principal != null) {
+					// Cached principal object is found in the session. 
+					// Wrap the request object with the information about the
+					// principal in it.
+					PrincipalServletRequest reqWithPrincipal = new PrincipalServletRequest(req, principal);
+					
+					chain.doFilter(reqWithPrincipal, response);
+				}
+				else {
+					// No principal object is cached in the session.
+					// Note: This occurs when a SSF web component (either a servlet
+					// or an adapted portlet) is accessed BEFORE at least one SSF
+					// portlet is invoked  by the portal through regular cross-context
+					// dispatch. 
+					throw new ServletException("No user information available - Illegal request sequence.");
+				}
 			}
 			else {
-				// No principal object is cached in the session.
-				// Note: This occurs when a SSF web component (either a servlet
-				// or an adapted portlet) is accessed BEFORE at least one SSF
-				// portlet is invoked  by the portal through regular cross-context
-				// dispatch. 
-				throw new ServletException("No user information available - Illegal request sequence.");
+				throw new ServletException("No session in place - Illegal request sequence.");
 			}
 		}
 		else {
