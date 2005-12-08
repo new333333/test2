@@ -105,7 +105,7 @@ public class FileAttachment extends Attachment {
     	}
     }   
    public boolean equals(Object obj) {
- 
+	   if (obj == null) return false;
         FileAttachment o = (FileAttachment) obj;
         //Don't use id - may not be saved yet
         if (fileItem.equals(o.getFileItem()))  return true;
