@@ -198,7 +198,7 @@ public class QueryBuilder {
 	
 	private void processSORTBY(Element element, SearchObject so) {
 
-		boolean ascend = false;
+		boolean descending = true;
 		//SortField[] fields = null;
 				
 		List children = element.elements();
@@ -207,14 +207,14 @@ public class QueryBuilder {
 		for (int i = 0; i < kidCount; i++) {
 			Element child = (Element)children.get(i);
 			if (child.getName().equalsIgnoreCase(FIELD_NAME_ATTRIBUTE)) {
-				ascend = false;
+				descending = false;
 				String ascending = child.attributeValue(ASCENDING_ATTRIBUTE);
 				
 				if ((ascending != null) && (ascending.equalsIgnoreCase(ASCENDING_TRUE)))
-					ascend = true;
+					descending = false;
 				else
-					ascend = false;
-				fields[i] = new SortField(child.getText(),ascend);
+					descending = true;
+				fields[i] = new SortField(child.getText(),descending);
 			}
 		}
 		so.setSortBy(fields);
