@@ -201,6 +201,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 			ps.setAttribute(WebKeys.CALENDAR_VIEWMODE, WebKeys.CALENDAR_VIEW_WEEK);		
 			viewMode = WebKeys.CALENDAR_VIEW_WEEK;
 		}
+		model.put(WebKeys.CALENDAR_VIEWMODE, viewMode);
 		// currentDate is the date selected by the user; we make sure this date is in view 
 		// whatever viewMode is set to
 		Date currentDate = (Date) ps.getAttribute(WebKeys.CALENDAR_CURRENT_DATE);
@@ -638,6 +639,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		getEvents(entries, model, req);
 		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
 		buildFolderToolbar(response, model, forumId);
+		model.put("test", "foo");
 		return model;
 	}
 	public Map getDefinitionBuilder(Map formData, RenderRequest req, String currentId) {
