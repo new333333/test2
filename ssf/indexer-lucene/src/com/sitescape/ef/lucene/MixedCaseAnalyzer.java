@@ -1,4 +1,4 @@
-package com.sitescape.ef.lucene.server;
+package com.sitescape.ef.lucene;
 
 /**
  * Title:
