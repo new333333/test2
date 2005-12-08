@@ -53,7 +53,7 @@ public class ModifyEntryController extends SAbstractForumController {
 			try {
 				Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_ENTRY_ID));				
 				model.put(WebKeys.FORUM_URL_ENTRY_ID, entryId.toString());
-				model = getForumActionModule().getShowEntry(model, request, response, folderId);
+				model = getForumActionModule().getShowEntry(entryId.toString(), model, request, response, folderId);
 			} catch (NoDefinitionByTheIdException nd) {
 				return returnToViewForum(request, response, formData, folderId);
 			}

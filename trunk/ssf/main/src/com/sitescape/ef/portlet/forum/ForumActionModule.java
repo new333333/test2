@@ -11,7 +11,7 @@ import org.springframework.web.portlet.bind.PortletRequestBindingException;
  */
 public interface ForumActionModule {
 
-	public Map getShowEntry(Map formData, RenderRequest request, RenderResponse response, Long folderId) throws PortletRequestBindingException;
+	public Map getShowEntry(String entryId, Map formData, RenderRequest request, RenderResponse response, Long folderId) throws PortletRequestBindingException;
 	public Map getShowFolder(Map formData, RenderRequest request, RenderResponse response, Long folderId) throws PortletRequestBindingException;
 	public Map getConfigureForum(Map formData, RenderRequest request, Long folderId) throws PortletRequestBindingException;
 	public Map getAddEntry(Map formData, RenderRequest request, Long folderId) throws PortletRequestBindingException;

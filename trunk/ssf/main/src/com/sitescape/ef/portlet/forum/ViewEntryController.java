@@ -60,8 +60,9 @@ public class ViewEntryController extends SAbstractForumController {
 		formData.put(WebKeys.SESSION_LAST_ENTRY_VIEWED, ses.getAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED));
 		formData.put(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, ses.getAttribute(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED));
 		String viewPath=WebKeys.VIEW_FORUM;
-		model = getForumActionModule().getShowEntry(formData, request, response, folderId);
-		String entryId = (String)model.get(WebKeys.ENTRY_ID);
+		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_ENTRY_ID, "");
+		model = getForumActionModule().getShowEntry(entryId, formData, request, response, folderId);
+		entryId = (String)model.get(WebKeys.ENTRY_ID);
 		model.put(WebKeys.FORUM_URL_ENTRY_ID, entryId);
 		if (op.equals("")) {
 			Object obj = model.get(WebKeys.CONFIG_ELEMENT);
