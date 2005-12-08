@@ -36,7 +36,6 @@ public class Principal extends Entry {
     protected String foreignName="";
     protected List memberOf;
     protected String signature="";    
-    protected String stringId;
     protected String zoneName;
     protected Long preferredWorkspaceId;
     protected boolean reserved;
