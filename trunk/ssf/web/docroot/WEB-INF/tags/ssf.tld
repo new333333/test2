@@ -251,6 +251,17 @@
 	</tag>
 
 	<tag>
+		<name>servletrooturl</name>
+		<tag-class>com.sitescape.ef.taglib.ServletRootUrlTag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>secure</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>timepicker</name>
 		<tag-class>com.sitescape.ef.taglib.Timepicker</tag-class>
 		<body-content>JSP</body-content>
