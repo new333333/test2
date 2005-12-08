@@ -13,6 +13,8 @@ import com.sitescape.ef.security.acl.AclSet;
 /**
  * @hibernate.class table="SS_Definitions" dynamic-update="true"
  * @hibernate.cache usage="nonstrict-read-write"
+ * @hibernate.mapping auto-import="false"
+ * need auto-import = false so names don't collide with jbpm
  * @author Janet McCann
  *
  */

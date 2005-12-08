@@ -11,6 +11,8 @@ import com.sitescape.ef.domain.UserPerFolderPK;
 
 /**
  * @hibernate.class table="SS_SeenMap" dynamic-update="true"
+ * @hibernate.mapping auto-import="false"
+ * need auto-import = false so names don't collide with jbpm
  * 
  * @author Janet McCann
  * Manage the seen map for a folder.  

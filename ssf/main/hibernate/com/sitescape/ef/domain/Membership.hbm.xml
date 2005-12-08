@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
-<hibernate-mapping
+<hibernate-mapping auto-import="false"
 >
 
     <class
@@ -21,7 +21,7 @@
 
 	</class>
      <query name="find-Membership"><![CDATA[
-            from Membership m where m.userId=:userId
+            from com.sitescape.ef.domain.Membership m where m.userId=:userId
         ]]></query>
 	
 	</hibernate-mapping>

@@ -14,6 +14,8 @@ import com.sitescape.ef.ObjectKeys;
 
 /**
  * @hibernate.class table="SS_HistoryMap" dynamic-update="true"
+ * @hibernate.mapping auto-import="false"
+ * need auto-import = false so names don't collide with jbpm
  * 
  * @author Janet McCann
  * Manage the historyMap for a folder.  As an optimization,

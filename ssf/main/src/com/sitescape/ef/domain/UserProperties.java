@@ -11,6 +11,8 @@ import com.sitescape.ef.domain.UserPropertiesPK;
 
 /**
  * @hibernate.class table="SS_UserProperties"
+ * @hibernate.mapping auto-import="false"
+ * need auto-import = false so names don't collide with jbpm
  * @author Janet McCann
  * Properties are stored on a per/user per/folder basis.
  * A null folder is used to indicate general properties
