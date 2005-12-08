@@ -79,7 +79,12 @@ Current State:<c:out value="${workflowState}"/><br/>
 <b>Definitions:</b>
 <br>
 <c:forEach var="definition" items="${definitions}">
-	<c:out value="${definition.name}"/> 
+	<a href="<portlet:actionURL windowState="maximized">
+						<portlet:param name="action" value="workflow" />
+						<portlet:param name="operation" value="null" />
+						<portlet:param name="processId" value="" />
+						<portlet:param name="workflowId" value="${definition.id}" />
+					</portlet:actionURL>"><font color="blue"><c:out value="${definition.name}"/></font></a> 
 	 (Id: <c:out value="${definition.id}"/>, 
 	 Version: <c:out value="${definition.version}"/>)<br>
 	 Nodes:<br>
