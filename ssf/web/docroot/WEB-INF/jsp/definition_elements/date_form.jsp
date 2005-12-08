@@ -1,7 +1,5 @@
 <% //Date widget form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <%@ page import="java.util.Date" %>
 <%
 	//Get the formName of date being displayed
