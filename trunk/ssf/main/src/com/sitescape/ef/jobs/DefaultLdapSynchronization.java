@@ -11,6 +11,7 @@ import com.sitescape.ef.domain.Workspace;
 import javax.naming.NamingException;
 import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.util.SpringContextUtil;
 /**
  * @author Janet McCann
  *
@@ -22,7 +23,7 @@ public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSyn
 	 */
 	protected void doExecute(JobExecutionContext context)
 			throws JobExecutionException {
-    	LdapModule ldap = (LdapModule)ctx.getBean("ldapModule");
+    	LdapModule ldap = (LdapModule)SpringContextUtil.getBean("ldapModule");
 		try {
 			ldap.syncAll(zoneName);
 		} catch (NamingException ne) {

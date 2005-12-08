@@ -11,7 +11,6 @@ import org.quartz.StatefulJob;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.context.ApplicationContext;
 
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
@@ -39,7 +38,6 @@ import com.sitescape.ef.domain.NoUserByTheIdException;
  */
 public abstract class SSStatefulJob implements StatefulJob {
 	protected Log logger = LogFactory.getLog(getClass());
-	protected ApplicationContext ctx;
 	protected JobDataMap jobDataMap;
 	protected CoreDao coreDao;
 	protected User user;
@@ -48,7 +46,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
     	coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
     	jobDataMap = context.getJobDetail().getJobDataMap();
-    	SessionFactory sessionFactory = (SessionFactory)ctx.getBean("sessionFactory");
+    	SessionFactory sessionFactory = (SessionFactory)SpringContextUtil.getBean("sessionFactory");
 		//open shared session
 		Session session = SessionFactoryUtils.getSession(sessionFactory, true);
 		TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
