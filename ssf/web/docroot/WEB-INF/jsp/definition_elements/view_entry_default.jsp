@@ -3,7 +3,7 @@
 
 <div class="ss_portlet" width="100%">
 
-<%@ include file="/jsp/definition_elements/title_view.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/title_view.jsp" %>
 
 <div class="formBreak">
 <div class="ss_entryContent">

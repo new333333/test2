@@ -11,11 +11,11 @@
 
 	if (style.equals("folderList")) {
 %>
-<%@ include file="/jsp/definition_elements/folder_list.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/folder_list.jsp" %>
 <%
 	} else if (style.equals("fileLibrary")) {
 %>
-<%@ include file="/jsp/definition_elements/file_library.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/file_library.jsp" %>
 <%
 	}
 %>
