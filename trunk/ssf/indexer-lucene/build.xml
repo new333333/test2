@@ -89,7 +89,7 @@
 	
     <target name="java2html" depends="init">
         <java
-            classname="com.liferay.util.Java2Html"
+            classname="com.sitescape.util.Java2Html"
             classpathref="project.classpath"
             fork="true">
                 <arg value="${java2html.bat}" />
@@ -118,7 +118,7 @@
         />
     </target>
     
-    <target name="deploy" depends="clean,jar,jar2">
+    <target name="deploy" depends="jar,jar2">
         <antcall target="deploy-jar">
         	<param name="deploy-support.jar.file" value="${client.jar.file}" />
         </antcall>

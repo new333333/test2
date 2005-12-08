@@ -57,14 +57,14 @@
 
 	<target name="java2html" depends="init">
 		<java
-			classname="com.liferay.util.Java2Html"
+			classname="com.sitescape.util.Java2Html"
 			classpathref="project.classpath"
 			fork="true">
 				<arg value="${java2html.bat}" />
 				<arg value="${source.dir}" />
 				<arg value="${java2html.dir}" />
 		</java>
-		<move file="${java2html.dir}/stylesheet.css" tofile="${java2html.dir}/java2html.css" />
+		<move file="${java2html.dir}/stylesheet.css" tofile="${java2html.dir}/java2html.css"/>
 		<antcall target="javadoc" />
 		<replace dir="${java2html.dir}">
 			<include name="**/package-summary.html" />
