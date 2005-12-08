@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.httpclient.HttpURL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.webdav.lib.WebdavResource;
@@ -16,10 +17,9 @@ import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.util.Constants;
 import com.sitescape.ef.util.FileHelper;
-import com.sitescape.ef.webdav.client.WebdavResourceFactory;
 import com.sitescape.ef.webdav.client.WebdavUtil;
 
-public class WebdavRepositoryService implements RepositoryService {
+public class WebdavRepositoryService extends AbstractWebdavResourceFactory implements RepositoryService {
 
 	protected Log logger = LogFactory.getLog(getClass());
 	
@@ -29,29 +29,102 @@ public class WebdavRepositoryService implements RepositoryService {
 		return webdavResourceFactory;
 	}
 
+	public WebdavResource openSession(String userName, String password) throws IOException {
+		HttpURL hrl = new HttpURL(httpUrl);
+		hrl.setUserinfo(userName, password);
+		WebdavResource wdr = new WebdavResource(hrl);
+		
+		//WebdavUtil.dump(wdr);
+		
+		return wdr;
+	}
+	
 	public void setWebdavResourceFactory(WebdavResourceFactory webdavResourceFactory) {
 		this.webdavResourceFactory = webdavResourceFactory;
 	}
 
-	public void write(Folder folder, FolderEntry entry, MultipartFile mf) throws RepositoryServiceException {
+	public void write(Folder folder, FolderEntry entry, String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
 		try {
-			writeInternal(folder, entry, mf);
+			writeInternal(folder, entry, relativeFilePath, mf);
 		} catch (IOException e) {
 			throw new RepositoryServiceException(e);
 		}
 	}
 
-	public void read(Folder folder, FolderEntry entry, String fileName, OutputStream out) throws RepositoryServiceException {
+	public void read(Folder folder, FolderEntry entry, String relativeFilePath, OutputStream out) throws RepositoryServiceException {
 		try {
-			readInternal(folder, entry, fileName, out);
+			readInternal(folder, entry, relativeFilePath, out);
 		} catch (IOException e) {
 			throw new RepositoryServiceException(e);
 		}
 	}
 
-	private void writeInternal(Folder folder, FolderEntry entry, MultipartFile mf) throws IOException {
-		// How do we get WebDAV username/password for individual users??
-		WebdavResource wdr = getWebdavResourceFactory().openSession("root", "root");
+	public void readVersion(String fileVersionURI, OutputStream out) throws RepositoryServiceException {
+		try {
+			readInternal(fileVersionURI, out);
+		} catch (IOException e) {
+			throw new RepositoryServiceException(e);
+		}
+	}
+
+	public String[] fileVersionsURIs(Folder folder, FolderEntry entry, String fileName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void checkout(Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+		try {
+			WebdavResource wdr = openSession();
+			
+			try {
+				boolean result = wdr.checkoutMethod(getResourcePath(folder, entry, relativeFilePath));
+				if(!result)
+					throw new RepositoryServiceException("Failed to checkout");
+			}
+			catch(IOException e) {
+				logError(wdr);
+				throw e;
+			}
+			finally {
+				wdr.close();
+			}
+		} catch (IOException e) {
+			throw new RepositoryServiceException(e);
+		}
+	}
+
+	public void checkin(Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+		try {
+			WebdavResource wdr = openSession();
+			
+			try {
+				boolean result = wdr.checkinMethod(getResourcePath(folder, entry, relativeFilePath));
+				if(!result)
+					throw new RepositoryServiceException("Failed to checkin");
+			}
+			catch(IOException e) {
+				logError(wdr);
+				throw e;
+			}
+			finally {
+				wdr.close();
+			}
+		} catch (IOException e) {
+			throw new RepositoryServiceException(e);
+		}
+	}
+
+	public boolean supportVersioning() {
+		return true;
+	}
+
+	public boolean supportCheckout() {
+		return true;
+	}
+	
+	private void writeInternal(Folder folder, FolderEntry entry, String relativeFilePath, 
+			MultipartFile mf) throws IOException {
+		WebdavResource wdr = openSession();
 		
 		boolean result;
 		
@@ -73,9 +146,9 @@ public class WebdavRepositoryService implements RepositoryService {
 			WebdavUtil.createCollectionIfNecessary(wdr, entryDirPath);
 			
 			// Get the path for the file resource. 
-			String filePath = entryDirPath + mf.getOriginalFilename();
+			String resourcePath = getResourcePath(entryDirPath, relativeFilePath);
 			
-			if(wdr.headMethod(filePath)) {
+			if(wdr.headMethod(resourcePath)) {
 				// The file resource already exists.
 				// Since we always put file resource under version control as 
 				// soon as it is created, it's largely unnecessary to do it
@@ -88,51 +161,61 @@ public class WebdavRepositoryService implements RepositoryService {
 				// interface), although it's very unlikely. 
 				// The following command will be noop if the resource was already
 				// version controlled. 
-				result = wdr.versionControlMethod(filePath);
+				result = wdr.versionControlMethod(resourcePath);
 				// Write the file creating a new version. 
-				result = wdr.putMethod(filePath, mf.getInputStream());
+				result = wdr.putMethod(resourcePath, mf.getInputStream());
 			}
 			else {
 				// The file resource does not exist. 
 				// We must write the file first. 
-				result = wdr.putMethod(filePath, mf.getInputStream());
+				result = wdr.putMethod(resourcePath, mf.getInputStream());
 				// Put the file under version control. 
-				result = wdr.versionControlMethod(filePath);
+				result = wdr.versionControlMethod(resourcePath);
 			}
 		}
 		catch(IOException e) {
-			// Log the HTTP status code and error message.
-			logger.error("status code=" + wdr.getStatusCode() + ", status message=[" + wdr.getStatusMessage() + "]");
-			// The actual exception object will be logged higher up.
+			logError(wdr);
+			throw e;
 		}
 		finally {
 			wdr.close();
 		}
 	}
 	
-	public void readInternal(Folder folder, FolderEntry entry, String fileName, OutputStream out) throws IOException {
+	private void readInternal(Folder folder, FolderEntry entry, String relativeFilePath, OutputStream out) throws IOException {
+		readInternal(getResourcePath(folder, entry, relativeFilePath), out);
+	}
+	
+	private WebdavResource openSession() throws IOException {
 		// How do we get WebDAV username/password for individual users??
-		WebdavResource wdr = getWebdavResourceFactory().openSession("root", "root");
+		return getWebdavResourceFactory().openSession("root", "root");
+	}
+	
+	private void readInternal(String resourcePath, OutputStream out) throws IOException {
+		WebdavResource wdr = openSession();
 		
 		try {
-			String filePath = getFilePath(folder, entry, fileName);
-			
-			InputStream is = wdr.getMethodData(filePath);
+			InputStream is = wdr.getMethodData(resourcePath);
 			
 			FileHelper.copyContent(is, out);
 
-			WebdavUtil.dumpAllProps(wdr, filePath); // for debugging	
+			WebdavUtil.dumpAllProps(wdr, resourcePath); // for debugging	
 			
 			WebdavUtil.dumpAllProps(wdr, "/slide/history/101"); // for debugging
 		}
 		catch(IOException e) {
-			// Log the HTTP status code and error message.
-			logger.error("status code=" + wdr.getStatusCode() + ", status message=[" + wdr.getStatusMessage() + "]");
-			// The actual exception object will be logged higher up.
+			logError(wdr);
+			throw e;
 		}
 		finally {
 			wdr.close();
 		}
+	}
+	
+	private void logError(WebdavResource wdr) {
+		// Log the HTTP status code and error message.
+		logger.error("status code=" + wdr.getStatusCode() + ", status message=[" + wdr.getStatusMessage() + "]");
+		// The exception object associated with the error will be logged higher up.		
 	}
 
 	private String getEntryDirPath(Folder folder, FolderEntry entry) {
@@ -148,7 +231,12 @@ public class WebdavRepositoryService implements RepositoryService {
 			toString();
 	}
 	
-	private String getFilePath(Folder folder, FolderEntry entry, String fileName) {
-		return getEntryDirPath(folder, entry) + fileName;
+	private String getResourcePath(String entryDirPath, String relativeFilePath) {
+		return entryDirPath + relativeFilePath;
 	}
+	
+	private String getResourcePath(Folder folder, FolderEntry entry, String relativeFilePath) {
+		return getResourcePath(getEntryDirPath(folder, entry), relativeFilePath);
+	}
+
 }
