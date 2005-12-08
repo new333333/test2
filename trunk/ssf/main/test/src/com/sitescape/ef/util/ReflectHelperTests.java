@@ -13,7 +13,7 @@ public class ReflectHelperTests extends TestCase {
 	
 	public void testClassForNameOk() {
 		try {
-			Class c = ReflectHelper.classForName("TestClass");
+			Class c = ReflectHelper.classForName("com.sitescape.ef.util.ReflectHelperTests$TestClass");
 			assertEquals(c, TestClass.class);
 		} catch (ClassNotFoundException e) {
 			fail("ClassNotFoundException should not be raised");
