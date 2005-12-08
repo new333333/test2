@@ -21,9 +21,7 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     private String title="";
     private Description description;
     protected boolean attachmentsParsed = false;
-    protected List allAttachments;
-    protected List unnamedAttachments;
-    protected Map namedAttachments;
+    protected List attachments;
     protected Map customAttributes;
     protected Definition entryDef;
     protected boolean eventsParsed = false;
@@ -75,43 +73,41 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     }
  
     /**
-     * This will only return unnamed attachments.  Named attachments 
-     * need to be handed as customAttributes
+     * Return all attachments 
      * 
 	 */
     public List getAttachments() {
        	//need to implement here to setup the doclet tags
-    	setupAttachments();
-    	return unnamedAttachments;
+    	if (attachments == null) attachments = new ArrayList();
+    	return attachments;
+    	
     }
     /**
      * Set list of unnamed attachments
      */
     public void setAttachments(Collection attachments) {   	
-    	setupAttachments();
-    	Set remM = CollectionUtil.differences(unnamedAttachments, attachments);
-    	Set addM = CollectionUtil.differences(attachments, unnamedAttachments);
+    	getAttachments();
+    	Set remM = CollectionUtil.differences(this.attachments, attachments);
+    	Set addM = CollectionUtil.differences(attachments, this.attachments);
         for (Iterator iter = remM.iterator(); iter.hasNext();) {
         	Attachment a = (Attachment)iter.next();
         	a.setOwner((AnyOwner)null);
-        	unnamedAttachments.remove(a);
-        	allAttachments.remove(a);
+        	this.attachments.remove(a);
         }
         for (Iterator iter = addM.iterator(); iter.hasNext();) {
         	Attachment a = (Attachment)iter.next();
         	a.setOwner(this);
-        	a.setName(null);
-        	unnamedAttachments.add(a);
-        	allAttachments.add(a);
+        	this.attachments.add(a);
         }
     }
     /**
-     * Get an unnamed attachment by database id
+     * Get an attachment by database id
      */
     public Attachment getAttachment(String id) {
-    	setupAttachments();
-    	for (int i=0; i<unnamedAttachments.size(); ++i) {
-    		Attachment a = (Attachment)unnamedAttachments.get(i);
+    	//make sure loaded
+    	getAttachments();
+    	for (int i=0; i<attachments.size(); ++i) {
+    		Attachment a = (Attachment)attachments.get(i);
     		if (a.getId().equals(id)) {
     			return a;
     		}
@@ -119,64 +115,29 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     	return null;
     }
     /**
-     * Remove an unnamed attachment.  Attachment object will be deleted from
+     * Remove an attachment.  Attachment object will be deleted from
      * database unless it is added somewhere else.
      * @param attachemnt
      */
     public void removeAttachment(Attachment att) {
        	if (att == null) return;
-        setupAttachments();
-        unnamedAttachments.remove(att);
-    	allAttachments.remove(att);
+        getAttachments();
+        attachments.remove(att);
        	att.setOwner((AnyOwner)null);           	
     }
     /**
-     * Add an unnamged attachment
+     * Add an attachment
      * @param att
      */
     public void addAttachment(Attachment att) {
     	if (att == null) return;
-        setupAttachments();
-        unnamedAttachments.add(att);
- 	   	allAttachments.add(att);
+        getAttachments();
+        attachments.add(att);
  	   	att.setOwner(this);
-      	att.setName(null);
     }
+
     /**
-     * Used by customAttribute to getValue when the valueType is attachment
-     * @param name
-     * @return
-     */
-    protected Attachment getNamedAttachment(String name) {
-    	if (name == null) throw new IllegalArgumentException("name is null");
-    	setupAttachments();
-     	return (Attachment)namedAttachments.get(name);
-    }
-    /**
-     * Used by customAttribute to alter a value.
-     * @param name
-     */
-    protected void removeNamedAttachment(String name) {
-        Attachment att = getNamedAttachment(name);
-    	if (att != null) {
-    		allAttachments.remove(att);
-    		namedAttachments.remove(name);
-    		att.setOwner((AnyOwner)null);
-    	}
-    }
-    /**
-     * Used by customAttribue to add a attribute that is an attachment
-     * @param att
-     */
-    protected void addNamedAttachment(Attachment att) {
-        Attachment oldA = getNamedAttachment(att.getName());
-        if (oldA != null) throw new IllegalArgumentException("name exists");
-        allAttachments.add(att);
-    	namedAttachments.put(att.getName(), att);   	
-   		att.setOwner(this);
-    }
-    /**
-     * Return list of unnamed FileAttachments
+     * Return list of FileAttachments
      * @return
      */
     public List getFileAttachments() {
@@ -194,7 +155,7 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     }
     
     /**
-     * Return unnamed FileAttachment corresponding to the specified file name.
+     * Return FileAttachment corresponding to the specified file name.
      * @param fileName
      * @return
      */
@@ -231,32 +192,7 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     	return result;
     }
          
-    /*
-     * Internal routine to break attachments into a list of unnamed attachments and
-     * a map of named attachments.   Named attachments are accesseed by customAttributes
-     * Attachments are accessed by hibernate with 1 query to load them all as efficiently
-     * as possible
-     */
-    protected void setupAttachments() {
-    	if (attachmentsParsed) return;
-    	attachmentsParsed=true;
-        namedAttachments = new HashMap();
-        unnamedAttachments = new ArrayList();
-    	if (allAttachments == null)
-    		allAttachments = new ArrayList();
-            
-        Attachment att;
-        String aName;
-        for (int i=0; i<allAttachments.size(); ++i) {
-            att = (Attachment)allAttachments.get(i);
-            aName = att.getName();
-            if (aName != null) {
-            	namedAttachments.put(aName, att);
-            } else {
-            	unnamedAttachments.add(att);
-            }
-        }
-    }    
+
     /**
      * Return list of custom attributes. 
      */

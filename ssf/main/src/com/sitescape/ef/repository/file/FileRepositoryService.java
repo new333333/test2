@@ -68,7 +68,7 @@ public class FileRepositoryService implements RepositoryService {
 			throw new RepositoryServiceException(e);
 		}
 		
-		return null;
+		return mf.getOriginalFilename();
 	}
 
 	public void update(Object session, Folder folder, FolderEntry entry, String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {

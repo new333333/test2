@@ -58,8 +58,8 @@ public class Principal extends Entry {
  	 * @hibernate.key column="principal"
  	 * @hibernate.one-to-many class="com.sitescape.ef.domain.Attachment"
    	 */
-    private List getHAttachments() {return allAttachments;}
-    private void setHAttachments(List attachments) {this.allAttachments = attachments;}   	
+    private List getHAttachments() {return attachments;}
+    private void setHAttachments(List attachments) {this.attachments = attachments;}   	
      /**
  	 * @hibernate.bag  lazy="true" inverse="true" cascade="all,delete-orphan" embed-xml="false"
  	 * @hibernate.key column="principal"
