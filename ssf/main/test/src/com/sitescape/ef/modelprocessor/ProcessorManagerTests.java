@@ -11,7 +11,7 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 public class ProcessorManagerTests extends AbstractDependencyInjectionSpringContextTests {
 
 	protected String[] getConfigLocations() {
-		return new String[] {"/com/sitescape/ef/modelprocessor/context-processor.xml"};
+		return new String[] {"/com/sitescape/ef/modelprocessor/applicationContext-processor.xml"};
 	}
 
 	public void testGetProcessorForClass() {
