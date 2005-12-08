@@ -40,6 +40,11 @@
 		<copy file="${deploy-support.jar.file}" todir="${deploy.lib.dir}" />
 	</target>
 	
+	<target name="deploy-war" depends="deploy-init">
+		<property name="deploy.war.dir" value="${app.server.deploy.dir}" />
+		<copy file="${deploy-support.war.file}" todir="${deploy.war.dir}" />
+	</target>
+	
 	<target name="deploy-jar-into-portal" depends="deploy-init">
 		<property name="deploy.lib.dir" value="${app.server.lib.dir}" />
 		<copy file="${deploy-support.jar.file}" todir="${deploy.lib.dir}" />

@@ -6,7 +6,7 @@ import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
 import com.sitescape.ef.module.definition.notify.NotifyBuilderUtil;
 import com.sitescape.ef.module.definition.notify.Notify;
-import com.sitescape.ef.repository.RepositoryService;
+import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
@@ -765,9 +765,10 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 								    if(fileItems != null && fileItems.containsKey(nameValue)) {
 								    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
 								    	if (myFile.getOriginalFilename().equals("")) continue;
-								    	FileUploadItem fui = new FileUploadItem(myFile);
 								    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
-								    	String repositoryServiceName = storageElem.attributeValue("value", RepositoryService.DEFAULT_REPOSITORY_SERVICE);
+								    	String repositoryServiceName = storageElem.attributeValue("value",
+								    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
+								    	FileUploadItem fui = new FileUploadItem(myFile, repositoryServiceName);
 								    	fui.setRepositoryServiceName(repositoryServiceName);
 								    	// TODO Take care of path info?
 								    	FileAttachment fAtt = new FileAttachment(nameValue);
@@ -794,9 +795,10 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 											if (fileItems.containsKey(fileEleName)) {												
 										    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
 										    	if (myFile.getOriginalFilename().equals("")) continue;
-										    	FileUploadItem fui = new FileUploadItem(myFile);
 										    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
-										    	String repositoryServiceName = storageElem.attributeValue("value", RepositoryService.DEFAULT_REPOSITORY_SERVICE);
+										    	String repositoryServiceName = storageElem.attributeValue("value",
+										    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
+										    	FileUploadItem fui = new FileUploadItem(myFile, repositoryServiceName);
 										    	fui.setRepositoryServiceName(repositoryServiceName);
 										    	// TODO Take care of path info?
 										    	FileAttachment fAtt = new FileAttachment(fileEleName);

@@ -42,14 +42,20 @@ public class NLT implements ApplicationContextAware {
 		return nlt;
 	}
 	
-	private String getMessageWithTagAsDefault(String tag) {
+	private Locale getLocale() {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		return getMessageWithTagAsDefault(tag, null, user.getLocale());
+		if(user != null)
+			return user.getLocale();
+		else
+			return Locale.getDefault();
+	}
+	
+	private String getMessageWithTagAsDefault(String tag) {
+		return getMessageWithTagAsDefault(tag, null, getLocale());
 	}
 	
 	private String getMessageWithTagAsDefault(String tag, Object[] args) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		return getMessageWithTagAsDefault(tag, args, user.getLocale());		
+		return getMessageWithTagAsDefault(tag, args, getLocale());		
 	}
 	
 	private String getMessageWithTagAsDefault(String tag, Locale locale) {
@@ -61,13 +67,11 @@ public class NLT implements ApplicationContextAware {
 	}
 	
 	private String getMessageWithTextAsDefault(String tag, String text) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		return getMessageWithTextAsDefault(tag, null, text, user.getLocale());
+		return getMessageWithTextAsDefault(tag, null, text, getLocale());
 	}
 	
 	private String getMessageWithTextAsDefault(String tag, Object[] args, String text) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		return getMessageWithTextAsDefault(tag, args, text, user.getLocale());
+		return getMessageWithTextAsDefault(tag, args, text, getLocale());
 	}
 	
 	private String getMessageWithTextAsDefault(String tag, String text, Locale locale) {

@@ -50,7 +50,7 @@ public class ViewFileController extends SAbstractController {
 						"attachment; filename=\"" + shortFileName + "\"");
 			String repositoryServiceName = fa.getRepositoryServiceName();
 			if(repositoryServiceName == null)
-				repositoryServiceName = RepositoryService.DEFAULT_REPOSITORY_SERVICE;
+				repositoryServiceName = RepositoryServiceUtil.getDefaultRepositoryServiceName(); 
 			RepositoryServiceUtil.read(entry.getParentFolder(), entry, 
 					repositoryServiceName, fa.getFileItem().getName(), response.getOutputStream()); 
 

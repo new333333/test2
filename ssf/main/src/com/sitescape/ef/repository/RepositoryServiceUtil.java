@@ -2,6 +2,7 @@ package com.sitescape.ef.repository;
 
 import java.io.OutputStream;
 
+import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Folder;
@@ -59,5 +60,9 @@ public class RepositoryServiceUtil {
 		finally {
 			service.closeRepositorySession(session);
 		}		
+	}
+	
+	public static String getDefaultRepositoryServiceName() {
+		return SPropsUtil.getString("default.repository.service", "internalWebdavRepositoryService");
 	}
 }
