@@ -147,7 +147,7 @@ function <portlet:namespace/>_select(alias) {
 	}	
 }
 </script>
-<c:if test="${!enabled}"><ssf:nlt tag="incoming.disabled"/></c:if><br/>
+<c:if test="${!ssPostingConfig.enabled}"><ssf:nlt tag="incoming.disabled"/></c:if><br/>
 <div class="ss_divider"></div>
 <br/>
 <%
