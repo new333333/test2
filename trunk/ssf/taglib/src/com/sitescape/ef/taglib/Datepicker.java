@@ -11,6 +11,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
 import com.sitescape.ef.web.util.DatepickerException;
+import com.sitescape.ef.util.NLT;
 
 import java.util.Date;
 import java.util.Calendar;
@@ -62,8 +63,18 @@ public class Datepicker extends TagSupport {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 			contextPath = req.getContextPath();
 			String[] monthnames = { 
-			        "January", "February", "March", "April", "May", "June",
-			        "July", "August", "September", "October", "November", "December"
+					NLT.get("calendar.january"),
+					NLT.get("calendar.february"),
+					NLT.get("calendar.march"),
+					NLT.get("calendar.april"),
+					NLT.get("calendar.may"),
+					NLT.get("calendar.june"),
+					NLT.get("calendar.july"),
+					NLT.get("calendar.august"),
+					NLT.get("calendar.september"),
+					NLT.get("calendar.october"),
+					NLT.get("calendar.november"),
+					NLT.get("calendar.december")
 			};
 			
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
