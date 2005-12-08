@@ -111,6 +111,12 @@ function showForumEntryInIframe(url) {
 }
 
 
+function showForumEntryInWindow(url) {
+    self.window.open(url,"_blank",'width=400,height=250,resizable,scrollbars')
+    return false;
+}
+
+
 var entryWindowWidth = 400;
 function positionEntryDiv() {
 return
@@ -158,7 +164,13 @@ createOnLoadObj('positionEntryDiv', positionEntryDiv)
 	<ssf:param name="operation" value="viewFragment" />
     </ssf:url>"
 	onClick="showForumEntryInIframe(this.href);return false;" 
- 	>Show the fragment</a>
+ 	>Show the fragment in an iframe</a><br>
+<a href="<ssf:url 
+    webPath="viewFragment" >
+	<ssf:param name="operation" value="viewFragment" />
+    </ssf:url>"
+	onClick="showForumEntryInWindow(this.href);return false;" 
+ 	>Show the fragment in a new window</a>
 </div>
 </td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<td>
 </td><td>
