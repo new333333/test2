@@ -8,13 +8,13 @@ import java.util.TreeSet;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.module.impl.AbstractModuleImpl;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.sample.Employee;
 import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.sample.SalaryMaxedOutException;
 import com.sitescape.ef.util.NLT;
 
-public class EmployeeModuleImpl extends AbstractModuleImpl implements EmployeeModule {
+public class EmployeeModuleImpl extends CommonDependencyInjection implements EmployeeModule {
 	
 	private SortedMap employees = Collections.synchronizedSortedMap(new TreeMap());
 	

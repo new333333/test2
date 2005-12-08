@@ -1,7 +1,7 @@
 package com.sitescape.ef.module.definition.impl;
 
 import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.module.impl.AbstractModuleImpl;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
 import com.sitescape.ef.module.definition.notify.NotifyBuilderUtil;
@@ -49,7 +49,7 @@ import com.sitescape.ef.domain.DefinitionInvalidException;
  * @author hurley
  *
  */
-public class DefinitionModuleImpl extends AbstractModuleImpl implements DefinitionModule {
+public class DefinitionModuleImpl extends CommonDependencyInjection implements DefinitionModule {
 	private Document definitionConfig;
 	private MergeableXmlClassPathConfigFiles definitionBuilderConfig;
 	    

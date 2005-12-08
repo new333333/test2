@@ -23,7 +23,7 @@ import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.module.impl.AbstractModuleImpl;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.util.ReflectHelper;
@@ -33,7 +33,7 @@ import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.security.AccessControlException;
 
-public class ProfileModuleImpl extends AbstractModuleImpl implements ProfileModule {
+public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
     
    public Map showProfile(Long userId, boolean securityInfo, boolean signature) {
    		Map model = new HashMap();

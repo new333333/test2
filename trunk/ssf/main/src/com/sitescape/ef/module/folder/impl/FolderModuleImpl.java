@@ -22,7 +22,7 @@ import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.FolderModule;
-import com.sitescape.ef.module.impl.AbstractModuleImpl;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
@@ -37,7 +37,7 @@ import com.sitescape.ef.domain.NoDefinitionByTheIdException;
  *
  * @author Jong Kim
  */
-public class FolderModuleImpl extends AbstractModuleImpl implements FolderModule {
+public class FolderModuleImpl extends CommonDependencyInjection implements FolderModule {
     
     protected DefinitionModule definitionModule;
      

@@ -27,7 +27,7 @@ import org.quartz.Scheduler;
 
 import com.sitescape.ef.jobs.LdapSynchronization;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
-import com.sitescape.ef.module.impl.AbstractModuleImpl;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.ldap.LdapConfig;
 import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -52,7 +52,7 @@ import org.dom4j.Element;
  * @author Janet McCann
  *
  */
-public class LdapModuleImpl extends AbstractModuleImpl implements LdapModule {
+public class LdapModuleImpl extends CommonDependencyInjection implements LdapModule {
 	protected Log logger = LogFactory.getLog(getClass());
 	//pointer to self, so we can wrap scheduled sync operations in write transactions
 	protected ProfileModule profileModule;
