@@ -278,9 +278,11 @@
 	<!-- Template for the common dependency injection for modules.
 	     This includes DAO components and a variety of other services and managers 
 	     that are commonly used by modules. 
-	     Important: Do NOT ever add module components to this template, since it 
-	     can cause circular dependencies! Instead, dependent modules must be
-	     specified under respective module bean declarations.  -->
+	     
+	     IMPORTANT: Do NOT ever add module components to this template, since it 
+	     can cause circular dependencies among modules! Instead, dependent modules 
+	     must be specified under respective module bean declarations.  -->
+	     
 	<bean id="moduleDependencyTemplate" abstract="true">
 		<property name="coreDao"><ref local="coreDao"/></property>
 		<property name="folderDao"><ref local="folderDao"/></property>
