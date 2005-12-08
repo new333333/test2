@@ -17,6 +17,6 @@ public interface FolderEmailFormatter {
 	public OrderBy getLookupOrder(Folder folder);
 	public Map buildNotificationMessage(Folder folder, Collection entries, Notify notify);
 	public String getSubject(Folder folder, Notify notify);
-	public String getFrom(Folder folder);
+	public String getFrom(Folder folder, Notify notify);
 	public Object[] validateIdList(Collection entries, Collection userIds);
 }

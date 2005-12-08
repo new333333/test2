@@ -36,7 +36,18 @@ public abstract class SSStatefulJob implements StatefulJob {
 	protected CoreDao coreDao;
 	protected User user;
 	protected String zoneName;
-	
+	public static int JOBNAME_MAX = 120; 
+	public static int DESCRIPTION_MAX = 120; 
+	public static String trimJobName(String jobName) {
+		if (jobName.length() > JOBNAME_MAX)
+			return jobName.substring(0, Math.max(jobName.length(), JOBNAME_MAX));
+		return jobName;
+	}
+	public static String trimDescription(String description) {
+		if (description.length() > DESCRIPTION_MAX)
+			return description.substring(0, Math.max(description.length(), DESCRIPTION_MAX));
+		return description;
+	}
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
 		SessionUtil.sessionStartup();
     	coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
@@ -101,32 +112,36 @@ public abstract class SSStatefulJob implements StatefulJob {
    			
    			//haven't been scheduled yet
    			if (jobDetail == null) {
-   				trigger = buildTrigger(job);
+   				trigger = buildCronTrigger(job);
   				//volitility(not stored in db),durablilty(remains after trigger removed),recover(after recover or fail-over)
    				jobDetail = new JobDetail(job.getName(), job.getGroup(),
 						this.getClass(),false, false, false);
 				jobDetail.setDescription(job.getDescription());
 				jobDetail.setJobDataMap(job.getData());
-				jobDetail.addJobListener(com.sitescape.ef.jobs.CleanupJobListener.name);
+				jobDetail.addJobListener(getCleanupListener());
 				scheduler.scheduleJob(jobDetail, trigger);				
    			} else if (trigger != null) {
 				//replace with new trigger if necessary
 				String cSched = trigger.getCronExpression();
 	   			String nSched = job.getSchedule();
 				if (!nSched.equals(cSched)) {
-	   				trigger = buildTrigger(job);
+	   				trigger = buildCronTrigger(job);
 					//replace existing trigger with new one
 					scheduler.rescheduleJob(job.getName(), job.getGroup(), trigger);
 				}
    			} else {
-   				trigger = buildTrigger(job);
+   				trigger = buildCronTrigger(job);
    				scheduler.rescheduleJob(job.getName(), job.getGroup(), trigger); 
    			}    	
    		} catch (Exception e) {
-   			throw new ConfigurationException("Cannot start scheduler", e);
+   			throw new ConfigurationException("Cannot start (job:group) " + job.getName() 
+   					+ ":" + job.getGroup(), e);
    		}		
 	}
-    public CronTrigger buildTrigger(JobDescription job) throws ParseException{
+	public String getCleanupListener() {
+		return com.sitescape.ef.jobs.CleanupJobListener.name;
+	}
+    public CronTrigger buildCronTrigger(JobDescription job) throws ParseException{
     	
    		CronTrigger trigger = new CronTrigger(job.getName(), job.getGroup(), job.getName(), 
    					job.getGroup(), job.getSchedule(), job.getTimeZone());

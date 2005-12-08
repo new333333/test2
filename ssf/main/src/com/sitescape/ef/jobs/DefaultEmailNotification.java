@@ -50,7 +50,7 @@ public class DefaultFolderEmailNotification extends SSStatefulJob implements Fol
 			return folder.getNotificationDef().getSchedule().getQuartzSchedule();
 		}
     	public  String getDescription() {
-    		return "Email notification for " + folder;
+    		return SSStatefulJob.trimDescription(folder.toString());
     	}
     	public  JobDataMap getData() {
 			JobDataMap data = new JobDataMap();
@@ -62,7 +62,7 @@ public class DefaultFolderEmailNotification extends SSStatefulJob implements Fol
     		return folder.getNotificationDef().isEnabled();
     	}
     	public String getName() {
-    		return folder.getZoneName() + ":" + folder.getName() + ":" + folder.getId();
+    		return folder.getId().toString();
     	}
     	public String getGroup() {
     		return FolderEmailNotification.NOTIFICATION_GROUP;

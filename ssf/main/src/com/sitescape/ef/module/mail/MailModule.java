@@ -14,5 +14,6 @@ public interface MailModule {
 	
 	public Date sendNotifications(Long forumId);
 	public boolean sendMail(MimeMessage msg);
+	public boolean sendMail(String mailSenderName, java.io.InputStream input);
 
 }
