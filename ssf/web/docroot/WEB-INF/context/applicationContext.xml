@@ -359,7 +359,7 @@
 		<property name="processorManager"><ref local="modelProcessorManager"/></property>
 		<property name="mailSender"><ref bean="mailSender"/></property>
 		<property name="sampleMessage"><ref bean="mailMessage"/></property>
-!--		<property name="scheduler"><ref local="scheduler"/></property> -->
+<!--		<property name="scheduler"><ref local="scheduler"/></property> -->
 	</bean>	
 	
 	<bean id="ldapModule" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
@@ -386,10 +386,10 @@
 		<property name="profileModule"><ref local="profileModule"/></property>
 	</bean>	
 	
-<-- =========================Portlet support =========================================================== -->	
+<!-- =========================Portlet support =========================================================== -->	
 	<bean id="forumActionModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean class="com.sitescape.ef.portlet.forum.action.impl.ForumActionModuleImpl">
+			<bean class="com.sitescape.ef.portlet.forum.impl.ForumActionModuleImpl">
 				<property name="workspaceModule"><ref local="workspaceModule"/></property>		
 				<property name="profileModule"><ref local="profileModule"/></property>		
 				<property name="adminModule"><ref local="adminModule"/></property>		
