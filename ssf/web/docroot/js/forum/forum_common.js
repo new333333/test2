@@ -86,6 +86,15 @@ function ss_reloadOpener(fallBackUrl) {
 	}
 }
 
+// Change an image (e.g. expand/collapse arrows)
+function swapImage(imgName, img) {
+    if (document.images) {
+        eval('if (document.images[\''+imgName+'\']) {document.images[\''+imgName+'\'].src = imageArray[\''+img+'\'].src}');
+        eval('if (document.images[\''+imgName+'\']) {document.images[\''+imgName+'\'].alt = imageArray[\''+img+'\'].alt}');
+    }
+}
+
+
 //Routine to show or hide an object
 function ss_showHideObj(objName, visibility, displayStyle) {
     var obj
