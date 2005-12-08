@@ -18,7 +18,7 @@
     webPath="viewFile"
     folderId="${ssFolderEntry.parentFolder.id}"
     entryId="${ssFolderEntry.id}" >
-    <ssf:param name="attr" value="${ssFolderEntry.id}"/>
+    <ssf:param name="attrId" value="${ssFolderEntry.customAttributes[property_name].id}"/>
     </ssf:url>"><c:out value="${selection.fileItem.name}"/></a><br>
 </div>
 </c:if>

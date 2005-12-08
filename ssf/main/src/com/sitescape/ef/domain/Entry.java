@@ -103,8 +103,8 @@ public abstract class Entry extends PersistentLongIdTimestampObject
      */
     public Attachment getAttachment(String id) {
     	setupAttachments();
-    	for (int i=0; i<allAttachments.size(); ++i) {
-    		Attachment a = (Attachment)allAttachments.get(i);
+    	for (int i=0; i<unnamedAttachments.size(); ++i) {
+    		Attachment a = (Attachment)unnamedAttachments.get(i);
     		if (a.getId().equals(id)) {
     			return a;
     		}
@@ -277,6 +277,19 @@ public abstract class Entry extends PersistentLongIdTimestampObject
      */
     public CustomAttribute getCustomAttribute(String name) {
     	return (CustomAttribute)getCustomAttributes().get(name);
+   }
+    /**
+     * Retrieve customAttibute
+     * @param name
+     * @return
+     */
+    public CustomAttribute getCustomAttributeById(String id) {
+    	Map attrs = getCustomAttributes();
+    	for (Iterator iter=attrs.values().iterator(); iter.hasNext(); ) {
+    		CustomAttribute a = (CustomAttribute)iter.next();
+    		if (id.equals(a.getId())) return a;
+    	}
+    	return null;
    }
     /**
      * Return list of unnamed events.
