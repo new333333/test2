@@ -1,15 +1,15 @@
 <% //File view %>
-<jsp:useBean id="ss_forum_entry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
+<jsp:useBean id="folderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
 
-<c:if test="${!empty ss_forum_entry.customAttributes[property_name]}">
+<c:if test="${!empty folderEntry.customAttributes[property_name]}">
 <div class="entryContent">
 <span class="contentbold"><c:out value="${property_caption}" /></span>
-<c:set var="selection" value="${ss_forum_entry.customAttributes[property_name].value}" />
+<c:set var="selection" value="${folderEntry.customAttributes[property_name].value}" />
 <%
 	String url = "forum/view_file?forumId=";
-	url += ss_forum_entry.getParentFolder().getId();
+	url += folderEntry.getParentFolder().getId();
 	url += "&entryId=";
-	url += ss_forum_entry.getId();
+	url += folderEntry.getId();
 	url += "&op=view_file&attr=";
 	url += property_name;
 %>

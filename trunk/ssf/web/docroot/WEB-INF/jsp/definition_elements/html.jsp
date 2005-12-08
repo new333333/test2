@@ -1,7 +1,7 @@
 <% // html %>
-<jsp:useBean id="ss_forum_config_definition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ss_forum_config" type="org.dom4j.Element" scope="request" />
-<jsp:useBean id="ss_forum_configJspStyle" type="String" scope="request" />
+<jsp:useBean id="configDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="configElement" type="org.dom4j.Element" scope="request" />
+<jsp:useBean id="configJspStyle" type="String" scope="request" />
 <%@ page import="org.dom4j.Element" %>
 <%
 	//Get the html item being displayed
@@ -10,7 +10,7 @@
 	String htmlBottom = (String) request.getAttribute("property_htmlBottom");
 %>
 <%= htmlTop %>
-<ssf:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
+<ssf:displayConfiguration configDefinition="<%= configDefinition %>" 
   configElement="<%= item %>" 
-  configJspStyle="<%= ss_forum_configJspStyle %>" />
+  configJspStyle="<%= configJspStyle %>" />
 <%= htmlBottom %>

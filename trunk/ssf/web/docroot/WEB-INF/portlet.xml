@@ -55,7 +55,52 @@
         <supported-locale>en</supported-locale>
         <resource-bundle>content.workspacetree</resource-bundle>
     </portlet>
-
+    <portlet>
+        <description xml:lang="en">SiteScape Forum Portlet</description>
+        <portlet-name>ss_forum</portlet-name>
+        <display-name xml:lang="en">Forum</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+			<init-param>
+				<name>contextConfigLocation</name>
+				<value>/WEB-INF/context/portlet/forum.xml</value>
+			</init-param>
+        <expiration-cache>300</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <!--<supported-locale>en</supported-locale>-->
+        <!--<resource-bundle>...</resource-bundle>-->
+        <portlet-info>
+        	<title>Forum</title>
+        	<short-title>Forum</short-title>
+        	<keywords>Forum</keywords>
+        </portlet-info>
+    </portlet>
+    <portlet>
+        <description xml:lang="en">SiteScape Definition Builder Portlet</description>
+        <portlet-name>ss_definitionBuilder</portlet-name>
+        <display-name xml:lang="en">Definition Builder</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+			<init-param>
+				<name>contextConfigLocation</name>
+				<value>/WEB-INF/context/portlet/definitionBuilder.xml</value>
+			</init-param>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+        <!--<supported-locale>en</supported-locale>-->
+        <!--<resource-bundle>...</resource-bundle>-->
+        <portlet-info>
+        	<title>Definition Builder</title>
+        	<short-title>Definition Builder</short-title>
+        	<keywords>Definition Builder</keywords>
+        </portlet-info>
+    </portlet>
+ 
     <user-attribute>
         <description xml:lang="en">User Name</description>
         <name>user.name</name>

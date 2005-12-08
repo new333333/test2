@@ -1,7 +1,7 @@
 <% //Event widget form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ss_forum_config_definition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ss_forum_config" type="org.dom4j.Element" scope="request" />
+<jsp:useBean id="configDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="configElement" type="org.dom4j.Element" scope="request" />
 <%@ page import="java.util.Date" %>
 <%
 	Event initEvent = new Event();
@@ -24,8 +24,8 @@
 <div class="formBreak">
 <div class="labelAbove"><%= caption %></div>
 
-<c:if test="${!empty ss_forum_entry.customAttributes[property_name]}" >
-<c:set var="ev" value="${ss_forum_entry.customAttributes[property_name].value}" />
+<c:if test="${!empty folderEntry.customAttributes[property_name]}" >
+<c:set var="ev" value="${folderEntry.customAttributes[property_name].value}" />
 </c:if>
 <jsp:useBean id="ev" type="com.sitescape.ef.domain.Event" class="com.sitescape.ef.domain.Event" />
 

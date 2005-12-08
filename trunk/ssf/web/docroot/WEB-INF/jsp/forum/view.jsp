@@ -23,10 +23,16 @@
 		<tr>
 			<td valign="top">
 				<font class="gamma" size="2">
+				<c:if test="${empty folder}">
+				  The portlet preferences are not set.  Choose the edit button to configure the
+				  portlet
+				 </c:if>
+				<c:if test="${!empty folder}">
 				<a href="<portlet:renderURL windowState="maximized">
 						<portlet:param name="action" value="view_forum"/>
 						<portlet:param name="forumId" value="${folder.id}"/>
 					</portlet:renderURL>"><c:out value="${folder.title}"/></a>
+				 </c:if>
 				<br>
 				</font>
 			</td>

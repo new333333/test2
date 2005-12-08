@@ -1,8 +1,8 @@
 <% // Form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ss_forum_config_definition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ss_forum_config" type="org.dom4j.Element" scope="request" />
-<jsp:useBean id="ss_forum_configJspStyle" type="String" scope="request" />
+<jsp:useBean id="configDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="configElement" type="org.dom4j.Element" scope="request" />
+<jsp:useBean id="configJspStyle" type="String" scope="request" />
 <%
 	//Get the form item being displayed
 	Element item = (Element) request.getAttribute("item");
@@ -23,7 +23,7 @@
 %>
 <form method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
   id="<%= formName %>" action="" onSubmit="return ssf_onSubmit(this);">
-<ssf:displayConfiguration configDefinition="<%= ss_forum_config_definition %>" 
+<ssf:displayConfiguration configDefinition="<%= configDefinition %>" 
   configElement="<%= item %>" 
-  configJspStyle="<%= ss_forum_configJspStyle %>" />
+  configJspStyle="<%= configJspStyle %>" />
 </form>

@@ -332,9 +332,8 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
     	current.addAttribute("id", top.getId().toString());
        	current.addAttribute("image", "forum");
        	url = current.addElement("url");
-       	url.addAttribute("struts_action", "/forum/view_forum");
-       	url.addAttribute(ObjectKeys.FORUM_URL_FORUM_ID, top.getId().toString());
-       	url.addAttribute(ObjectKeys.FORUM_URL_OPERATION, ObjectKeys.FORUM_OPERATION_VIEW_FORUM);
+       	url.addAttribute("action", "view_forum");
+       	url.addAttribute(ObjectKeys.FORUM_ID, top.getId().toString());
 
     	TreeSet folders = new TreeSet(c);
     	folders.addAll(top.getFolders());

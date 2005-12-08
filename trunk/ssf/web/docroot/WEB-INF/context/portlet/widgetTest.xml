@@ -7,7 +7,7 @@
 	<bean id="widgetTestController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.widget_test.WidgetTestController" />
 	<bean id="treeController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.widget_test.TreeController" />
 	<bean id="fragmentController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.widget_test.FragmentController" />
-	<bean id="definitionBuilderController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.definition_builder.DefinitionBuilderController" />
+	<bean id="definitionBuilderController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.definitionBuilder.ViewController" />
 
 	<!-- Handlers -->
 

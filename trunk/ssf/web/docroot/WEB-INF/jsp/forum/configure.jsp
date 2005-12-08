@@ -20,7 +20,10 @@
 <div class="ss_portlet">
 
 <div class="forms">
-<form method="post" action="" style="display:inline;">
+<form method="post" action="<portlet:actionURL>
+					<portlet:param name="action" value="configure"/>
+					<portlet:param name="forumId" value="${folder.id}"/>
+					</portlet:actionURL>" style="display:inline;">
 
 <div class="buttonBarRight">
 <input type="submit" name="okBtn" class="submit" value="  OK  "> <input type="submit" name="cancelBtn" class="submit" value="Cancel">
@@ -29,13 +32,13 @@
 <fieldset class="fieldset" title="Fieldset one">
  <legend class="legend">Default forum view</legend>
 
-<c:forEach var="item" items="${public_folder_definitions}">
+<c:forEach var="item" items="${publicFolderDefinitions}">
 	<c:choose>
-	<c:when test="${default_folder_definition_id == item.value.id}">
-	<input type="radio" name="defaultFolderDefinition" value="<c:out value="${item.value.id}"/>" checked><c:out value="${item.value.name}"/><br/>
+	<c:when test="${defaultFolderDefinitionId == item.value.id}">
+	<input type="radio" name="folderDefinition" value="<c:out value="${item.value.id}"/>" checked><c:out value="${item.value.name}"/><br/>
 	</c:when>
 	<c:otherwise>
-	<input type="radio" name="defaultFolderDefinition" value="<c:out value="${item.value.id}"/>"><c:out value="${item.value.name}"/><br/>
+	<input type="radio" name="folderDefinition" value="<c:out value="${item.value.id}"/>"><c:out value="${item.value.name}"/><br/>
 	</c:otherwise>
 	</c:choose>
 </c:forEach>
@@ -45,13 +48,13 @@
 <fieldset class="fieldset" title="Fieldset one">
  <legend class="legend">Default entry types</legend>
 
-<c:forEach var="item" items="${public_entry_definitions}">
+<c:forEach var="item" items="${publicEntryDefinitions}">
 	<c:choose>
-	<c:when test="${empty entry_definition_map[item.key]}">
-	<input type="checkbox" name="defaultEntryDefinition" value="<c:out value="${item.value.id}"/>"><c:out value="${item.value.name}"/><br/>
+	<c:when test="${empty entryDefinitionMap[item.key]}">
+	<input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>"><c:out value="${item.value.name}"/><br/>
 	</c:when>
 	<c:otherwise>
-	<input type="checkbox" name="defaultEntryDefinition" value="<c:out value="${item.value.id}"/>" checked><c:out value="${item.value.name}"/><br/>
+	<input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" checked><c:out value="${item.value.name}"/><br/>
 	</c:otherwise>
 	</c:choose>
 </c:forEach>

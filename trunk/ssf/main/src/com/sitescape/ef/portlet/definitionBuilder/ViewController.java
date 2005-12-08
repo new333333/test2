@@ -24,7 +24,7 @@ import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 
 import com.sitescape.ef.portlet.forum.ActionUtil;
 import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.portlet.Constants;
+import com.sitescape.ef.portlet.PortletKeys;
 import com.sitescape.util.Validator;
 
 /**
@@ -152,7 +152,7 @@ public class ViewController extends SAbstractController {
 
 		Map data = new HashMap();
 			
-		Document definitionConfig = (Document)model.get(Constants.CONFIG_DEFINITION);
+		Document definitionConfig = (Document)model.get(PortletKeys.CONFIG_DEFINITION);
 			
 		//Open the item that was selected
 		String nodeOpen = "";
@@ -173,7 +173,7 @@ public class ViewController extends SAbstractController {
 		Document definitionTree;
 		if (!Validator.isNull(selectedItem) ) {
 			//A definition was selected, go view it
-			Definition def = (Definition)model.get(Constants.DEFINITION);
+			Definition def = (Definition)model.get(PortletKeys.DEFINITION);
 			idDataNames.put(def.getId(), def.getName());
 			Document sourceDefinition = def.getDefinition();
 			data.put("sourceDefinition", sourceDefinition);
@@ -204,7 +204,7 @@ public class ViewController extends SAbstractController {
 			
 		} else {
 			//No definition is selected. Show the initial tree
-			List currentDefinitions = (List)model.get(Constants.PUBLIC_DEFINITIONS);
+			List currentDefinitions = (List)model.get(PortletKeys.PUBLIC_DEFINITIONS);
 			
 			//Build the definition tree
 			definitionTree = DocumentHelper.createDocument();
@@ -250,7 +250,7 @@ public class ViewController extends SAbstractController {
 		model.put("definitionTree", definitionTree);
 		data.put("selectedItem", selectedItem);
 		model.put("data", data);
-		return new ModelAndView(Constants.VIEW_DEFINITION, model);
+		return new ModelAndView(PortletKeys.VIEW_DEFINITION, model);
 		
 	}
 

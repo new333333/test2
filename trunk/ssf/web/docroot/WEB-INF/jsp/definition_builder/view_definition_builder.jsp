@@ -21,12 +21,11 @@
 <%@ page import="org.dom4j.Element" %>
 <%@ page import="com.sitescape.ef.domain.DefinitionInvalidOperation" %>
 
-<jsp:useBean id="definitionConfig" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="definitionTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="data" type="java.util.Map" scope="request" />
-<jsp:useBean id="ss_forum_public_entry_definitions" type="java.util.Map" scope="request" />
-<jsp:useBean id="ss_forum_config_definition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ss_forum_configJspStyle" type="String" scope="request" />
+<jsp:useBean id="publicEntryDefinitions" type="java.util.Map" scope="request" />
+<jsp:useBean id="configDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="configJspStyle" type="String" scope="request" />
 <%@ page import="com.sitescape.ef.domain.FolderEntry" %>
 <%
 	String nodeOpen = " ";
@@ -355,21 +354,20 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 <%
 	//Show the preview area
 	if (data.containsKey("selectedItem") && !data.get("selectedItem").equals("")) {
-		Element ss_forum_config = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='entryForm']");
-		if (ss_forum_config != null) {
-			request.setAttribute("ss_definition_folder_entry", new FolderEntry());
-			request.setAttribute("ss_forum_config_definition", definitionConfig);
-			request.setAttribute("ss_forum_config", ss_forum_config);
-			ss_forum_configJspStyle = "form";
-			request.setAttribute("ss_forum_configJspStyle", "form");
+		Element configElement = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='entryForm']");
+		if (config != null) {
+			request.setAttribute("definitionEntry", new FolderEntry());
+			request.setAttribute("configElement", configElement);
+			configJspStyle = "form";
+			request.setAttribute("configJspStyle", "form");
 %>
 
 <div class="ss_portlet">
 <table cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration 
-  configDefinition="<%= ss_forum_config_definition %>" 
-  configElement="<%= ss_forum_config %>" 
-  configJspStyle="<%= ss_forum_configJspStyle %>" 
+  configDefinition="<%= configDefinition %>" 
+  configElement="<%= configElement %>" 
+  configJspStyle="<%= configJspStyle %>" 
   processThisItem="true" />
 </td></tr></table>
 </div>
@@ -385,8 +383,8 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 	if (!data.containsKey("selectedItem") || data.get("selectedItem").equals("")) {
 %>
 <ssf:buildDefinitionDivs title="Select the type of definition you want to work on..." 
-  sourceDocument="<%= definitionConfig %>" configDocument="<%= definitionConfig %>"
-  entryDefinitions="<%= ss_forum_public_entry_definitions %>"/>
+  sourceDocument="<%= configDefinition %>" configDocument="<%= configDefinition %>"
+  entryDefinitions="<%= publicEntryDefinitions %>"/>
 <%
 	
 	} else {
@@ -394,8 +392,8 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 %>
 <ssf:buildDefinitionDivs title="Select the item that you want to work on..." 
   sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
-  configDocument="<%= definitionConfig %>"
-  entryDefinitions="<%= ss_forum_public_entry_definitions %>"/>
+  configDocument="<%= configDefinition %>"
+  entryDefinitions="<%= publicEntryDefinitions %>"/>
 <%
 	}
 %>

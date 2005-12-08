@@ -16,7 +16,7 @@ import java.util.Map;
 
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
-import com.sitescape.ef.portlet.Constants;
+import com.sitescape.ef.portlet.PortletKeys;
 
 /**
  * @author Peter Hurley
@@ -33,16 +33,16 @@ public class ModifyEntryController extends SAbstractForumController {
 			//The form was submitted. Go process it
 			// Returns a map where key is form field name (String) and value is LiferayFileItem.
 //				Map fileItems = FileUploadUtil.getFileItems(req);
-			String entryId = ActionUtil.getStringValue(formData, Constants.FORUM_URL_ENTRY_ID);				
+			String entryId = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_ENTRY_ID);				
 			getFolderModule().modifyEntry(folderId, Long.valueOf(entryId), formData, null);
 			//Get the jsp objects again, but this time get the "view_forum" values
-			response.setRenderParameter(Constants.ACTION, Constants.FORUM_OPERATION_VIEW_FORUM);
-			response.setRenderParameter(Constants.FORUM_URL_FORUM_ID, folderId.toString());
+			response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_VIEW_FORUM);
+			response.setRenderParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId.toString());
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			//Get the jsp objects again, but this time get the "view_forum" values
-			response.setRenderParameter(Constants.ACTION, Constants.FORUM_OPERATION_VIEW_FORUM);
-			response.setRenderParameter(Constants.FORUM_URL_FORUM_ID, folderId.toString());
+			response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_VIEW_FORUM);
+			response.setRenderParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId.toString());
 		} else
 			response.setRenderParameters(formData);
 	}
@@ -52,7 +52,7 @@ public class ModifyEntryController extends SAbstractForumController {
 
 		Long folderId = ActionUtil.getForumId(formData, request);
 			
-		String op = ActionUtil.getStringValue(formData, Constants.ACTION);
+		String op = ActionUtil.getStringValue(formData, PortletKeys.ACTION);
 		//See if the add entry form was submitted
 		try {
 			getForumActionModule().getModifyEntry(formData, request, folderId);
@@ -71,7 +71,7 @@ public class ModifyEntryController extends SAbstractForumController {
 		Element configEle = (Element) configRoot.selectSingleNode("//item[@name='entryForm']");
 		
 		request.setAttribute("ss_forum_config", configEle);							
-		return new ModelAndView(Constants.VIEW_MODIFY_ENTRY);
+		return new ModelAndView(PortletKeys.VIEW_MODIFY_ENTRY);
 	}
 }
 
