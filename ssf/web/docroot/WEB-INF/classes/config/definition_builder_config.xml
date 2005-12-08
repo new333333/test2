@@ -115,7 +115,7 @@
 	<item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData">
 		<properties>
 			<property name="name" caption="__data_item_name" type="selectbox">
-			    <option_entry_data select_type="data" optionCaption="__data_items_from_the_entry_form" />
+			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" optionCaption="__data_items_from_the_entry_form" />
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
@@ -676,12 +676,14 @@
 		</properties>
 		<options>
 			<option name="transitions" initial="true" />
-			<option name="forks" />
-			<option name="joins" />
 			<option name="accessControls" initial="true" />
 			<option name="notifications" initial="true" />
 			<option name="onEntry" />
 			<option name="onExit" />
+			<option name="variable" />
+			<option name="startParallelExecution" />
+			<option name="waitForParallelExecution" />
+			<option name="endParallelExecution" />
 		</options>
 	</item>
 	
@@ -750,35 +752,6 @@
 		</properties>
 	</item>
 	
-	<item name="forks" caption="__workflow_forks" multipleAllowed="false">
-		<options>
-			<option name="fork" />
-		</options>
-	</item>
-	
-	<item name="fork" caption="__workflow_fork">
-		<properties>
-			<property name="name" caption="__workflow_fork_name" type="text" />
-			<property name="startState" caption="__workflow_fork_start_state" type="itemSelect" path="//item[@name='state']" />
-		</properties>
-	</item>
-	
-	<item name="joins" caption="__workflow_joins" multipleAllowed="false">
-		<options>
-			<option name="join" />
-		</options>
-	</item>
-	
-	<item name="join" caption="__workflow_join">
-		<properties>
-			<property name="name" caption="__workflow_fork_name" type="text" />
-			<property name="waitFor" caption="__workflow_join_wait" type="radio" default="all" >
-				<option name="all" caption="__workflow_join_wait_all" />
-				<option name="any" caption="__workflow_join_wait_any" />
-			</property>
-		</properties>
-	</item>
-	
 	<item name="accessControls" caption="__accessControls" canBeDeleted="false" multipleAllowed="false">
 		<operations>
 			<operation name="addOption" caption="__add" />
@@ -839,14 +812,39 @@
 	
 	<item name="onEntry" caption="__onEntry" canBeDeleted="true" multipleAllowed="false">
 		<options>
+			<option name="variable" />
 			<option_select path="//item[@category='onEntryExitLayout']" />
 		</options>
 	</item>
 	
 	<item name="onExit" caption="__onExit" canBeDeleted="true" multipleAllowed="false">
 		<options>
+			<option name="variable" />
 			<option_select path="//item[@category='onEntryExitLayout']" />
 		</options>
+	</item>
+	
+	<item name="startParallelExecution" type="parallelExecution" caption="__startParallelExecution" >
+		<properties>
+			<property name="name" caption="__parallelStateName" type="text" path="//item[@name='state']" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" />
+			<property name="startState" caption="__startState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+	</item>
+	
+	<item name="waitForParallelExecution" caption="__waitForParallelExecution" >
+		<properties>
+			<property name="name" caption="__parallelStateName" type="selectbox">
+			    <option_entry_data select_type="parallelExecution" path="//item[@name='startParallelExecution']" optionCaption="__parallelStateName" />
+			</property>
+		</properties>
+	</item>
+	
+	<item name="endParallelExecution" caption="__endParallelExecution" >
+		<properties>
+			<property name="name" caption="__parallelStateName" type="selectbox">
+			    <option_entry_data select_type="parallelExecution" path="//item[@name='startParallelExecution']" optionCaption="__parallelStateName" />
+			</property>
+		</properties>
 	</item>
 	
 		

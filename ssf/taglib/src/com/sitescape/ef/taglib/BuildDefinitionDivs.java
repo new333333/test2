@@ -541,57 +541,55 @@ public class BuildDefinitionDivs extends TagSupport {
 								sb.append("</input><br/>\n");
 							}
 						}
-						//See if there are any data items to be shown from the "sourceRoot" entry form
+						//See if there are any items to be shown from the "sourceRoot"
 						itSelections = propertyConfig.elementIterator("option_entry_data");
 						while (itSelections.hasNext()) {
 							Element selection = (Element) itSelections.next();
 							String selectionSelectType = selection.attributeValue("select_type", "");
+							String selectionPath = selection.attributeValue("path", "");
 							//Select the data items from the actual definition, not from the base configuration definition
-							Element entryFormElement = (Element) sourceRoot.selectSingleNode("item[@name='entryForm']");
-							if (entryFormElement != null) {
-								Iterator itEntryFormElements = entryFormElement.selectNodes(".//item").iterator();
-								while (itEntryFormElements.hasNext()) {
-									Element entryFormItem = (Element) itEntryFormElements.next();
-									Element entryFormItemNameProperty = (Element) entryFormItem.selectSingleNode("./properties/property[@name='name']");
-									String entryFormItemNamePropertyValue = "";
-									if (entryFormItemNameProperty != null) {
-										entryFormItemNamePropertyValue = entryFormItemNameProperty.attributeValue("value", "");
-									}
-									String entryFormItemNamePropertyName = "";
-									if (entryFormItemNameProperty != null) {
-										entryFormItemNamePropertyName = entryFormItemNamePropertyValue;
-									}
-									if (entryFormItemNamePropertyName.equals("")) {
-										entryFormItemNamePropertyName = entryFormItem.attributeValue("name", "");
-									}
-									Element entryFormItemCaptionProperty = (Element) entryFormItem.selectSingleNode("./properties/property[@name='caption']");
-									String entryFormItemCaptionPropertyValue = "";
-									if (entryFormItemCaptionProperty != null) {
-										entryFormItemCaptionPropertyValue = entryFormItemCaptionProperty.attributeValue("value", "");
-									}
-									if (entryFormItemCaptionPropertyValue.equals("")) {
-										entryFormItemCaptionPropertyValue = entryFormItemNamePropertyName;
-									}
-									//See if this is a data type by looking in the base configuration
-									Element itemDefinition = (Element) this.configDocument.getRootElement().selectSingleNode("//item[@name='"+entryFormItem.attributeValue("name", "")+"']");
-									if (itemDefinition != null) {
-										if (itemDefinition.attributeValue("type", "").equalsIgnoreCase(selectionSelectType)) {
-											String checked = "";
-											if (entryFormItemNamePropertyName.equals(propertyValue) || 
-													(propertyValue.equals("") && entryFormItemNamePropertyName.equals(propertyValueDefault))) {
-												checked = " selected";
-											}
-											if (type.equals("selectbox")) {
-												sb.append("<option value='").append(entryFormItemNamePropertyName).append("'").append(checked).append(">");
-												sb.append(entryFormItemCaptionPropertyValue);
-												sb.append("</option>\n");
-											} else if (type.equals("radio")) {
-												sb.append("<input type='radio' name='propertyId_" + propertyId + "' value='");
-												sb.append(entryFormItemNamePropertyName);
-												sb.append("'").append(checked).append(">");
-												sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
-												sb.append("</input><br/>\n");
-											}
+							Iterator itEntryFormElements = sourceRoot.selectNodes(selectionPath).iterator();
+							while (itEntryFormElements.hasNext()) {
+								Element entryFormItem = (Element) itEntryFormElements.next();
+								Element entryFormItemNameProperty = (Element) entryFormItem.selectSingleNode("./properties/property[@name='name']");
+								String entryFormItemNamePropertyValue = "";
+								if (entryFormItemNameProperty != null) {
+									entryFormItemNamePropertyValue = entryFormItemNameProperty.attributeValue("value", "");
+								}
+								String entryFormItemNamePropertyName = "";
+								if (entryFormItemNameProperty != null) {
+									entryFormItemNamePropertyName = entryFormItemNamePropertyValue;
+								}
+								if (entryFormItemNamePropertyName.equals("")) {
+									entryFormItemNamePropertyName = entryFormItem.attributeValue("name", "");
+								}
+								Element entryFormItemCaptionProperty = (Element) entryFormItem.selectSingleNode("./properties/property[@name='caption']");
+								String entryFormItemCaptionPropertyValue = "";
+								if (entryFormItemCaptionProperty != null) {
+									entryFormItemCaptionPropertyValue = entryFormItemCaptionProperty.attributeValue("value", "");
+								}
+								if (entryFormItemCaptionPropertyValue.equals("")) {
+									entryFormItemCaptionPropertyValue = entryFormItemNamePropertyName;
+								}
+								//See if this is a data type by looking in the base configuration
+								Element itemDefinition = (Element) this.configDocument.getRootElement().selectSingleNode("//item[@name='"+entryFormItem.attributeValue("name", "")+"']");
+								if (itemDefinition != null) {
+									if (itemDefinition.attributeValue("type", "").equalsIgnoreCase(selectionSelectType)) {
+										String checked = "";
+										if (entryFormItemNamePropertyName.equals(propertyValue) || 
+												(propertyValue.equals("") && entryFormItemNamePropertyName.equals(propertyValueDefault))) {
+											checked = " selected";
+										}
+										if (type.equals("selectbox")) {
+											sb.append("<option value='").append(entryFormItemNamePropertyName).append("'").append(checked).append(">");
+											sb.append(entryFormItemCaptionPropertyValue);
+											sb.append("</option>\n");
+										} else if (type.equals("radio")) {
+											sb.append("<input type='radio' name='propertyId_" + propertyId + "' value='");
+											sb.append(entryFormItemNamePropertyName);
+											sb.append("'").append(checked).append(">");
+											sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
+											sb.append("</input><br/>\n");
 										}
 									}
 								}
