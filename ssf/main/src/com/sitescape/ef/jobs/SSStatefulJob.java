@@ -16,6 +16,7 @@ import org.quartz.Trigger;
 
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.util.SessionUtil;
+import com.sitescape.ef.util.SZoneConfig;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.dao.CoreDao;
@@ -23,6 +24,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.NoUserByTheIdException;
+import com.sitescape.ef.domain.NoUserByTheNameException;
 
 /**
  * @author Janet McCann
@@ -60,12 +62,14 @@ public abstract class SSStatefulJob implements StatefulJob {
            		throw new SchedulerException(context.getJobDetail().getFullName() + " : zoneName missing from jobData");
            	}
            	zoneName = jobDataMap.getString("zoneName");
-           	//	default user to wf_admin if not supplied
            	//Validate user and zone are compatible
            	if (jobDataMap.containsKey("user")) {
-           		user = coreDao.loadUser(new Long(jobDataMap.getLong("user")), zoneName);
+           		Long id = new Long(jobDataMap.getLong("user"));
+           		user = coreDao.loadUser(id, zoneName);
+           		if (user.isDisabled()) throw new NoUserByTheIdException(id);
            	} else {
-           		user = coreDao.findUserByNameOnlyIfEnabled("liferay.com.1", zoneName);
+        		String name = SZoneConfig.getString(zoneName, "property[@name='adminUser']");
+           		user = coreDao.findUserByNameOnlyIfEnabled(name, zoneName);
            	}
     	
            	//Setup thread context expected by business logic
@@ -75,7 +79,9 @@ public abstract class SSStatefulJob implements StatefulJob {
            	doExecute(context);
 
 		} catch (NoUserByTheIdException nu) {
-			removeJobOnError(context, nu);
+			unscheduleJobOnError(context, nu);
+		} catch (NoUserByTheNameException nn) {
+			unscheduleJobOnError(context, nn);
 		} catch (JobExecutionException je) {
 			//re-throw
 			throw je;
@@ -84,6 +90,7 @@ public abstract class SSStatefulJob implements StatefulJob {
     		throw new JobExecutionException(e,false);
     	} finally {
     		SessionUtil.sessionStop();
+    		RequestContextHolder.clear();
     	}
 
 	}   
@@ -100,7 +107,20 @@ public abstract class SSStatefulJob implements StatefulJob {
 		context.setResult(CleanupJobListener.DeleteJobOnError);
 		throw new JobExecutionException(e, false);
 	}
-
+	/**
+	 * Job failed due to missing domain objects.  Return exception that will unschedule the
+	 * job triggers.  JobDetails will remain. 
+	 * @param context
+	 * @param e
+	 * @throws JobExecutionException
+	 */
+	protected void unscheduleJobOnError(JobExecutionContext context, Exception e) throws JobExecutionException {
+		logger.error(e.getMessage());
+		logger.error("Removing triggers for " + context.getJobDetail().getFullName());
+		context.setResult(CleanupJobListener.DeleteJobOnError);
+		throw new JobExecutionException(e, false);
+	}
+	
 	protected abstract void doExecute(JobExecutionContext context) throws JobExecutionException;
 	/**
 	 * Get scheduler information for a job
