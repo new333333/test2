@@ -1,6 +1,5 @@
 package com.sitescape.ef.applets.workflowviewer;
 
-import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -35,12 +34,11 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import edu.uci.ics.jung.graph.ArchetypeVertex;
-import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.Vertex;
 import edu.uci.ics.jung.graph.decorators.EdgeStringer;
 import edu.uci.ics.jung.graph.decorators.VertexStringer;
 import edu.uci.ics.jung.graph.impl.DirectedSparseEdge;
-import edu.uci.ics.jung.graph.impl.DirectedSparseGraph;
+import edu.uci.ics.jung.graph.impl.SparseGraph;
 import edu.uci.ics.jung.graph.impl.SparseVertex;
 import edu.uci.ics.jung.visualization.FRLayout;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
@@ -56,7 +54,7 @@ public class WorkflowViewer extends JApplet implements ActionListener {
     /**
      * the graph
      */
-    private Graph g;
+    private SparseGraph g;
     
     private Map vertexName = new HashMap();
     private Map vertexCaption = new HashMap();
@@ -71,8 +69,6 @@ public class WorkflowViewer extends JApplet implements ActionListener {
     protected VertexStringer vs_none;
     protected EdgeStringer es;
     protected EdgeStringer es_none;
-    protected final static Object VOLTAGE_KEY = "voltages";
-    protected final static Object TRANSPARENCY = "transparency";
     
     protected VisualizationViewer vv;
     protected PopupGraphMouse gm;
@@ -105,7 +101,7 @@ public class WorkflowViewer extends JApplet implements ActionListener {
     	//Set up the data map
     	setupAppletData();
     	
-        g = new DirectedSparseGraph();
+        g = new SparseGraph();
         
         //Read in the data to be displayed
         readWorkflowData();
@@ -332,7 +328,7 @@ public class WorkflowViewer extends JApplet implements ActionListener {
             if (stateName != null) {
             	String name = stateName.attributeValue("value", "");
             	//Get the list of transitions out of this state
-            	Iterator itTransitions = state.selectNodes("item[@name='transitions']/item[@name='transition']/properties/property[@name='toState']").iterator();
+            	Iterator itTransitions = state.selectNodes("item[@name='transitions']/item[@type='transition']/properties/property[@name='toState']").iterator();
             	while (itTransitions.hasNext()) {
             		Element transition = (Element) itTransitions.next();
             		String toState = transition.attributeValue("value", "");
@@ -472,10 +468,8 @@ public class WorkflowViewer extends JApplet implements ActionListener {
 
 	private void readWorkflowData() {
 	    URL url;
-	    //String workflowDefinitionXML = "";
 	    try {
 	    	url = new URL((String)appletData.get("xmlGetUrl"));
-	    	//workflowDefinitionXML = downloadFromUrl(url);
 	    } catch(MalformedURLException e) {
 	        System.out.println("Invalid url for workflow XML file: " + e.toString());
 	        return;
@@ -488,22 +482,20 @@ public class WorkflowViewer extends JApplet implements ActionListener {
 		try {
 			workflowDoc = xIn.read(url);   
 		} catch(DocumentException e) {
-			//There isn't a valid workflow file, so create an empty one
-			workflowDoc = DocumentHelper.createDocument();
-			Element ntRoot = workflowDoc.addElement("definition");
-			ntRoot.addAttribute("name", name);
-			ntRoot.addAttribute("caption", caption);
-			ntRoot.addAttribute("type", type);
+			String workflowDefinitionXML = downloadFromUrl(url);
+			try {
+				workflowDoc = DocumentHelper.parseText(workflowDefinitionXML);
+			} catch(Exception e2) {
+				//There isn't a valid workflow file, so create an empty one
+				workflowDoc = DocumentHelper.createDocument();
+				Element ntRoot = workflowDoc.addElement("definition");
+				ntRoot.addAttribute("name", name);
+				ntRoot.addAttribute("caption", caption);
+				ntRoot.addAttribute("type", type);
+			}
 		}
-	
 	}
 	
-	private void setupAppletData() {
-		appletData.put("xmlGetUrl", getParameter("xmlGetUrl"));
-		appletData.put("xmlPostUrl", getParameter("xmlPostUrl"));
-		appletData.put("nltSaveLayout", getParameter("nltSaveLayout"));
-	}
-
 	public class VertexNodeNameStringer implements VertexStringer
 	{
 	    public VertexNodeNameStringer(Vertex[] vertices)
@@ -526,4 +518,23 @@ public class WorkflowViewer extends JApplet implements ActionListener {
 	    }
 	}
 	
+	private void setupAppletData() {
+		String xmlGetUrl;
+		String xmlPostUrl;
+		String nltSaveLayout;
+		try {
+			xmlGetUrl = getParameter("xmlGetUrl");
+			xmlPostUrl = getParameter("xmlPostUrl");
+			nltSaveLayout = getParameter("nltSaveLayout");
+		} catch(Exception e) {
+			xmlGetUrl = "file:///ss/t2";
+			xmlPostUrl = "";
+			nltSaveLayout = "Save layout";			
+		}
+		
+		appletData.put("xmlGetUrl", xmlGetUrl);
+		appletData.put("xmlPostUrl", xmlPostUrl);
+		appletData.put("nltSaveLayout", nltSaveLayout);
+	}
+
 }
