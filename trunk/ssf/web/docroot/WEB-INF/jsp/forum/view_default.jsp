@@ -20,10 +20,10 @@
 			</li>
 			<li>
 				<font class="beta" size="2"><a class="gamma" 
-				  href="<portlet:renderURL windowState="maximized">
+				  href="<portlet:actionURL windowState="maximized">
 				  <portlet:param name="action" value="definition_builder" />
 				  	<portlet:param name="forumId" value="${ssFolder.id}"/>
-		    		</portlet:renderURL>">Definition builder</a></font>
+		    		</portlet:actionURL>">Definition builder</a></font>
 			</li>
 		</ul>
 	</td>
