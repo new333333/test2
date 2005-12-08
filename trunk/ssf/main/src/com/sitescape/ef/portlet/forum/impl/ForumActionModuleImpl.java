@@ -2,7 +2,9 @@
 package com.sitescape.ef.portlet.forum.impl;
 
 import java.util.HashMap;
+import java.util.Date;
 import javax.portlet.PortletURL;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderResponse;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +37,7 @@ import com.sitescape.ef.portlet.forum.ForumActionModule;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.Toolbar;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.domain.DefinitionInvalidException;
 import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -179,19 +182,37 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 
 	}
 	
-	public void getEvents(ArrayList entrylist, Map model) {
+	/* 
+	 * getEvents ripples through all the entries in the current entry list, finds their
+	 * associated events, checks each event against the session's current calendar view mode
+	 * and current selected date, and populates the bean with a list of dates that fall in range.
+	 */
+	public void getEvents(ArrayList entrylist, Map model, RenderRequest req) {
 		Iterator entryIterator = entrylist.listIterator();
+		PortletSession ps = WebHelper.getRequiredPortletSession(req);
+		if (ps.getAttribute(WebKeys.CALENDAR_VIEWMODE) == null) {
+			ps.setAttribute(WebKeys.CALENDAR_VIEWMODE, WebKeys.CALENDAR_VIEW_WEEK);			
+		}
+		Date currentDate = (Date) ps.getAttribute(WebKeys.CALENDAR_CURRENT_DATE);
+		if (currentDate == null) {
+			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, new Date());	
+			currentDate = new Date();
+		} 
+		ArrayList dateList = new ArrayList();
 		while (entryIterator.hasNext()) {
 			Entry e = (Entry) entryIterator.next();
 			Map customAttrs = e.getCustomAttributes();
 			Set keyset = customAttrs.keySet();
 			Iterator attIt = keyset.iterator();
-//			while (attIt.hasNext()) {
-//				CustomAttribute att = (CustomAttribute) attIt.next();
-//				if (att.getValueType() == CustomAttribute.EVENT) {
-//				}
-//			}
+			while (attIt.hasNext()) {
+				CustomAttribute att = (CustomAttribute) customAttrs.get(attIt.next());
+				if (att.getValueType() == CustomAttribute.EVENT) {
+					Event ev = (Event) att.getValue();
+					dateList.add(ev.getDtStart().getTime());
+				}
+			}
 		}
+		model.put(WebKeys.CALENDAR_EVENTDATES, dateList);
 	}
 	
 	/**
@@ -562,7 +583,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId(), folder.getId()));
 		getDefinitions(folder, model);
 		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.FOLDER_ENTRIES);
-		getEvents(entries, model);
+		getEvents(entries, model, req);
 		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
 		buildFolderToolbar(response, model, forumId);
 		return model;
