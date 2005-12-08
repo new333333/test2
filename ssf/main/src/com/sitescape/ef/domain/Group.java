@@ -13,14 +13,19 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.sitescape.ef.util.CollectionUtil;
-
+import com.sitescape.util.Validator;
 /**
  * @hibernate.subclass discriminator-value="G" dynamic-update="true" 
  *
  */
 public class Group extends Principal {
     private List members;    
-
+    
+    public String getTitle() {
+    	String title = super.getTitle();
+    	if (Validator.isNull(title)) return getName();
+    	return title;
+    }
     /**
      * @hibernate.bag table="SS_PrincipalMembership" lazy="true" inverse="false" cascade="persist,merge,save-update" 
 	 * @hibernate.key column="groupId" 
