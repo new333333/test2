@@ -7,7 +7,7 @@
 	Element item = (Element) request.getAttribute("item");
 %>
 <div class="formBreak">
-<fieldset class="fieldset">
+<fieldset class="ss_fieldset">
 <c:if test="${!empty property_legend}">
 <legend class="legend"><c:out value="${property_legend}"/></legend>
 </c:if>
