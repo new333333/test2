@@ -150,11 +150,15 @@
 	
 	<bean id="nlt" class="com.sitescape.ef.util.NLT"/>
 		
-	<bean id="configPropsUtil" class="com.sitescape.ef.util.ConfigPropsUtil">
-		<property name="propertiesMap">
-			<map>
-				<entry key="request.env.print"><value>false</value></entry>
-			</map>
+	<bean id="sPropsUtil" class="com.sitescape.ef.util.SPropsUtil">
+		<property name="config">
+			<bean class="com.sitescape.ef.util.PropertiesClassPathConfigFiles">
+				<property name="configFiles">
+					<list>
+						<value>config/ssf.properties</value>
+					</list>		
+				</property>
+			</bean>
 		</property>
 	</bean>
 		

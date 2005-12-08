@@ -2,7 +2,10 @@ package com.sitescape.ef.util;
 
 import java.util.Properties;
 
-public class PropertiesClassPathConfigFiles extends ClassPathConfigFiles {
+import org.springframework.beans.factory.InitializingBean;
+
+public class PropertiesClassPathConfigFiles extends ClassPathConfigFiles
+	implements InitializingBean {
 	
 	private Properties props;
 	
