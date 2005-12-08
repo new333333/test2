@@ -879,7 +879,7 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
 		}
 		model.put(WebKeys.ENTRY_ID, entryId);
-		model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(null, folder.getId()));
+		model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(null));
 		model.put(WebKeys.FOLDER_ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.FOLDER, folder);
@@ -916,7 +916,7 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		}
 		model.put(WebKeys.FOLDER_ENTRIES, folderEntries.get(ObjectKeys.FOLDER_ENTRIES));
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
-		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId(), folder.getId()));
+		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 		getDefinitions(folder, model);
 		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.FOLDER_ENTRIES);
 		//getEvents(entries, model, req, response);

@@ -37,9 +37,9 @@ public interface ProfileModule {
     public UserProperties setUserProperty(Long userId, String property, Object value);
     public UserProperties getUserProperties(Long userId);
     public List getUsers();
-    public SeenMap getUserSeenMap(Long userId, Long folderId);
-    public void updateUserSeenEntry(Long userId, Long folderId, Entry entry);
-    public void updateUserSeenEntry(Long userId, Long folderId, List entries);
+    public SeenMap getUserSeenMap(Long userId);
+    public void updateUserSeenEntry(Long userId, Entry entry);
+    public void updateUserSeenEntry(Long userId, List entries);
     public HistoryMap getUserHistory(Long userId, Long folderId);
     public void updateUserHistory(Long userId, Long folderId, Entry entry);
     public void updateUserHistory(HistoryMap history);

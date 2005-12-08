@@ -13,6 +13,7 @@ import javax.portlet.PortletRequest;
 
 import org.apache.lucene.document.DateField;
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
@@ -32,6 +33,9 @@ import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.search.LuceneSession;
+import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AccessType;
@@ -231,22 +235,16 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     public Map getUnseenCounts(List folderIds) {
     	//search engine will do acl checks
         User user = RequestContextHolder.getRequestContext().getUser();
-        List seenMaps = folderDao.loadSeenMaps(user.getId(), folderIds);
+        SeenMap seenMap = coreDao.loadSeenMap(user.getId());
         Map results = new HashMap();
-        Map fToSm = new HashMap();
         List folders = new ArrayList();
-        for (int i=0; i<seenMaps.size(); ++i) {
-        	SeenMap sm = (SeenMap)seenMaps.get(i);
-        	fToSm.put(sm.getId().getFolderId().toString(), sm);
+        for (int i=0; i<folderIds.size(); ++i) {
         	try {
-        		folders.add(folderDao.loadFolder(sm.getId().getFolderId(), user.getZoneName()));
+        		folders.add(folderDao.loadFolder((Long)folderIds.get(i), user.getZoneName()));
         	} catch (NoFolderByTheIdException nf) {} 
         }
         if (folders.size() > 0) {
-	        //this doesn't make sense when we have a bunch of folders
-	        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-	    	  (folders.get(0), FolderCoreProcessor.PROCESSOR_KEY);
-	        Hits hits = processor.getRecentEntries(folders);
+	        Hits hits = getRecentEntries(folders);
 	        Map unseenCounts = new HashMap();
 	        for (int i = 0; i < hits.length(); i++) {
 				String folderIdString = hits.doc(i).getField(IndexUtils.FOLDERID_FIELD).stringValue();
@@ -261,7 +259,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 					cnt = new Counter();
 					unseenCounts.put(folderIdString, cnt);
 				}
-				if (entryId != null && (!fToSm.containsKey(folderIdString) || !((SeenMap)fToSm.get(folderIdString)).checkAndSetSeen(entryId, modifyDate, false))) {
+				if (entryId != null && (!seenMap.checkAndSetSeen(entryId, modifyDate, false))) {
 					cnt.increment();
 				}
 			}
@@ -274,6 +272,43 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         }
         return results;
     }
+ 
+    protected Hits getRecentEntries(List folders) {
+    	Hits results = null;
+       	// Build the query
+    	org.dom4j.Document qTree = DocumentHelper.createDocument();
+    	Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+    	Element andElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
+    	andElement.addElement(QueryBuilder.USERACL_ELEMENT);
+    	Element orElement = andElement.addElement(QueryBuilder.OR_ELEMENT);
+    	Iterator itFolders = folders.iterator();
+    	while (itFolders.hasNext()) {
+    		Folder folder = (Folder) itFolders.next();
+        	Element field = orElement.addElement(QueryBuilder.FIELD_ELEMENT);
+        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,IndexUtils.FOLDERID_FIELD);
+        	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    		child.setText(folder.getId().toString());
+    	}
+    	
+    	//Create the Lucene query
+    	QueryBuilder qb = new QueryBuilder();
+    	SearchObject so = qb.buildQuery(qTree);
+    	
+    	System.out.println("Query is: " + so.getQueryString());
+    	
+    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+        
+        try {
+	        results = luceneSession.search(so.getQuery(),so.getSortBy(),0,0);
+        }
+        finally {
+            luceneSession.close();
+        }
+
+    	
+        return results;
+     
+    }    
     public Long addFolder(Long folderId, Folder folder) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Folder parentFolder = folderDao.loadFolder(folderId, user.getZoneName());

@@ -29,6 +29,7 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Group;
+import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.UserPropertiesPK;
 import com.sitescape.ef.domain.Definition;
@@ -584,6 +585,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	public List loadPostings(String zoneName) {
     	return loadObjects(new ObjectControls(PostingDef.class), new FilterControls("zoneName", zoneName));
+	}
+	public SeenMap loadSeenMap(Long userId) {
+   		SeenMap seen =(SeenMap)getHibernateTemplate().get(SeenMap.class, userId);
+   		if (seen == null) {
+   			seen = new SeenMap(userId);
+   			saveNewSession(seen);
+   			//quick write
+   			seen =(SeenMap)getHibernateTemplate().get(SeenMap.class, userId);   			
+   		}
+   		return seen;
 	}
 
 }
