@@ -199,6 +199,8 @@
 		</property>
 	</bean>
 	
+	<bean id="nlt" class="com.sitescape.ef.util.NLT"/>
+	
 	<!-- ============================ Indexing/Search Service =========================== -->
 	
 	<bean id="luceneSessionFactory" class = "com.sitescape.ef.search.local.LocalLuceneSessionFactory">
