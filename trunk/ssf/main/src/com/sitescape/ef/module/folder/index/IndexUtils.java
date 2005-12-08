@@ -27,6 +27,7 @@ public class IndexUtils {
     public static final String TITLE_FIELD = "_title";
     public static final String TITLE1_FIELD = "_title1";
     public static final String DESC_FIELD = "_desc";
+    public static final String FOLDERID_FIELD = "_folderId";
     
     // Defines field values
     public static final String READ_ACL_ALL = "all";
@@ -49,6 +50,12 @@ public class IndexUtils {
         Field cdefField = Field.Keyword(COMMAND_DEFINITION_FIELD, entry.getEntryDef().getId());
         doc.add(cdefField);
     }
+ 
+    public static void addFolderId(Document doc, Folder folder) {
+    	//Add the folder id to the document in the index
+        Field folderField = Field.Keyword(FOLDERID_FIELD, folder.getId().toString());
+        doc.add(folderField);
+    }   
     
     public static void addReadAcls(Document doc, Folder folder, Entry entry, AclManager aclManager) {
         // Add ACL field. We only need to index ACLs for read access. 

@@ -564,6 +564,9 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         // Add command definition
         IndexUtils.addCommandDefinition(indexDoc, entry); 
         
+        // Add the folder Id
+        IndexUtils.addFolderId(indexDoc, folder);
+        
         // Add data fields driven by the entry's definition object. 
         getDefinitionModule().addIndexFieldsForEntry(indexDoc, folder, entry);
         
