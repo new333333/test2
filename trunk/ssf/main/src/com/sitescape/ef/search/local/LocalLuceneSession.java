@@ -43,10 +43,10 @@ public class LocalLuceneSession implements LuceneSession {
     
     private static final Log logger = LogFactory.getLog(LocalLuceneSession.class);
 
-    private String zoneName;
+    private String indexPath;
 
-    public LocalLuceneSession(String zoneName) {
-        this.zoneName = zoneName;
+    public LocalLuceneSession(String indexPath) {
+        this.indexPath = indexPath;
     }
     
     public void addDocument(Document doc) {
@@ -56,17 +56,17 @@ public class LocalLuceneSession implements LuceneSession {
 	    IndexWriter indexWriter = null;
         
         try {
-            indexWriter = LuceneUtil.getWriter(zoneName);
+            indexWriter = LuceneUtil.getWriter(indexPath);
         } 
         catch (IOException e) {
-            throw new LuceneException("Could not open index writer for company [" + this.zoneName + "]", e);
+            throw new LuceneException("Could not open writer on the index [" + this.indexPath + "]", e);
         }
         
         try {
             indexWriter.addDocument(doc);
         } 
         catch (IOException e) {
-            throw new LuceneException("Could not add document to the index for company '" + zoneName + "'", e);
+            throw new LuceneException("Could not add document to the index [" + indexPath + "]", e);
         }
         finally {
             try {
@@ -85,17 +85,17 @@ public class LocalLuceneSession implements LuceneSession {
         IndexReader indexReader = null;
         
         try {
-            indexReader = LuceneUtil.getReader(zoneName);
+            indexReader = LuceneUtil.getReader(indexPath);
         } 
         catch (IOException e) {
-            throw new LuceneException("Could not open index reader for company [" + this.zoneName + "]", e);
+            throw new LuceneException("Could not open reader on the index [" + this.indexPath + "]", e);
         }
         
         try {
             indexReader.delete(term);
         } 
         catch (IOException e) {
-            throw new LuceneException("Could not delete documents from the index for company '" + zoneName + "'", e);
+            throw new LuceneException("Could not delete documents from the index [" + indexPath + "]", e);
         }
         finally {
             try {
@@ -110,17 +110,17 @@ public class LocalLuceneSession implements LuceneSession {
         IndexSearcher indexSearcher = null;
         
         try {
-            indexSearcher = LuceneUtil.getSearcher(zoneName);
+            indexSearcher = LuceneUtil.getSearcher(indexPath);
         } 
         catch (IOException e) {
-            throw new LuceneException("Could not open index searcher for company '" + this.zoneName + "'", e);
+            throw new LuceneException("Could not open searcher on the index [" + this.indexPath + "]", e);
         }
 
         try {
             deleteDocs(indexSearcher.search(query));
         } 
         catch (IOException e) {
-            throw new LuceneException("Error searching index for company '" + zoneName + "'", e);
+            throw new LuceneException("Error searching index [" + indexPath + "]", e);
         }
         finally {
             try {
@@ -138,10 +138,10 @@ public class LocalLuceneSession implements LuceneSession {
         IndexSearcher indexSearcher = null;
         
         try {
-            indexSearcher = LuceneUtil.getSearcher(zoneName);
+            indexSearcher = LuceneUtil.getSearcher(indexPath);
         } 
         catch (IOException e) {
-            throw new LuceneException("Could not open index searcher for company '" + this.zoneName + "'", e);
+            throw new LuceneException("Could not open searcher on the index [" + this.indexPath + "]", e);
         }
 
         try {
@@ -151,7 +151,7 @@ public class LocalLuceneSession implements LuceneSession {
             return com.sitescape.ef.lucene.Hits.transfer(hits, offset, size);
         } 
         catch (IOException e) {
-            throw new LuceneException("Error searching index for company '" + zoneName + "'", e);
+            throw new LuceneException("Error searching index [" + indexPath + "]", e);
         }
         finally {
             try {
@@ -177,10 +177,10 @@ public class LocalLuceneSession implements LuceneSession {
         if(length > 0) {
             IndexReader indexReader = null;
             try {
-                indexReader =  LuceneUtil.getReader(zoneName);
+                indexReader =  LuceneUtil.getReader(indexPath);
             } 
             catch (IOException e) {
-                throw new LuceneException("Could not open index reader for company [" + this.zoneName + "]", e);
+                throw new LuceneException("Could not open reader on the index [" + this.indexPath + "]", e);
             }
 	        
 	        try {
@@ -190,7 +190,7 @@ public class LocalLuceneSession implements LuceneSession {
 		        }
 	        }
 	        catch(IOException e) {
-	            throw new LuceneException("Could not delete documents from the index for the company '" + zoneName + "'", e);
+	            throw new LuceneException("Could not delete documents from the index [" + indexPath + "]", e);
 	        }
 	        finally {
 	            try {

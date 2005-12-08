@@ -45,30 +45,24 @@ public class LuceneUtil {
 		booleanQuery.add(termQuery, true, false);
 	}
 
-	public static String getLuceneDir(String zoneName) {
-		return PropsUtil.get(PropsUtil.LUCENE_DIR) + zoneName +
-			StringPool.SLASH;
+	public static IndexReader getReader(String indexPath) throws IOException {
+		return IndexReader.open(indexPath);
 	}
 
-	public static IndexReader getReader(String zoneName) throws IOException {
-		return IndexReader.open(getLuceneDir(zoneName));
-	}
-
-	public static IndexSearcher getSearcher(String zoneName)
+	public static IndexSearcher getSearcher(String indexPath)
 		throws IOException {
 
-		return new IndexSearcher(getLuceneDir(zoneName));
+		return new IndexSearcher(indexPath);
 	}
 
-	public static IndexWriter getWriter(String zoneName) throws IOException {
-		return getWriter(zoneName, false);
+	public static IndexWriter getWriter(String indexPath) throws IOException {
+		return getWriter(indexPath, false);
 	}
 
-	public static IndexWriter getWriter(String zoneName, boolean create)
+	public static IndexWriter getWriter(String indexPath, boolean create)
 		throws IOException {
 
-		return new IndexWriter(
-			getLuceneDir(zoneName), new SimpleAnalyzer(), create);
+		return new IndexWriter(indexPath, new SimpleAnalyzer(), create);
 	}
 
 }
