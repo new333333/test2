@@ -353,10 +353,10 @@
 		</property>
 	</bean>
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-		<property name="host"><value>mail.mycompany.com</value></property>
+		<property name="host"><value>host54a.simplicato.com</value></property>
 	</bean>
 	<bean id="mailMessage" class="org.springframework.mail.SimpleMailMessage">
-		<property name="from"><value>forum@sitescape.com</value></property>
+		<property name="from"><value>janet@sitescape.com</value></property>
 	</bean>
 	<bean id="mailModule" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager">

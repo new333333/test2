@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -98,12 +99,14 @@ public class MailModuleImpl implements MailModule {
 		}
 		
 		List notifications = nDef.getDistribution(); 
+		String [] us = nDef.getEmailAddress();
+		if ((us.length ==0) && (notifications.size() == 0)) return current;
 		//All users
 		Set userIds = new TreeSet();
 		// Users wanting individual, message style email
 		Set indivUserIds = new TreeSet(); 
 		buildToLists(forum, userIds, indivUserIds);
-
+		
 		//TODO: check read access - remove users who don't have acess
 		//TODO: need to check access for each user against each entry
 		Object[] results = helper.validateIdList(entries, userIds);
@@ -114,12 +117,10 @@ public class MailModuleImpl implements MailModule {
 			//Eventually need to remove individual users from user list and make
 			//2 calls - one for digest, one for full
 			String message = helper.buildNotificationMessage(forum, (Collection)row[0]);
-			String [] mailTo = buildMailToList((Collection)row[1], zoneName);
-			//schedule new job to send mail.  This allows us to ensure the mail
-			//is queued and update the lastNotificationDate in a relatively short transaction
-			//without waiting to talk to the mail server
+			String [] mailTo = buildMailToList((Collection)row[1], zoneName, us);
 			SimpleMailMessage mailMsg = new SimpleMailMessage(sampleMessage);
 			mailMsg.setTo(mailTo);
+			mailMsg.setSubject(subject);
 			mailMsg.setText(message);
 			if (!sendMail(mailMsg)) {
 				scheduleMailRetry(forum, mailMsg);
@@ -130,7 +131,6 @@ public class MailModuleImpl implements MailModule {
 	}
     public boolean sendMail(SimpleMailMessage mailMsg) {
     	try {
-    		mailMsg.setTo("janet.mccann@sitescape.com");
 			mailSender.send(mailMsg);
 		} catch (MailParseException px) {
        		logger.error(px.getMessage());
@@ -187,8 +187,8 @@ public class MailModuleImpl implements MailModule {
 		indivUserIds.retainAll(userIds);
 	}
 		
-	private String [] buildMailToList(Collection userIds, String zoneName) {
-		ArrayList addresses = new ArrayList(userIds.size());
+	private String [] buildMailToList(Collection userIds, String zoneName, String[] addrsOnly) {
+		Set addresses = new HashSet(userIds.size());
 		for (Iterator iter=userIds.iterator();iter.hasNext();) {
 			User user = coreDao.loadUser((Long)iter.next(), zoneName);
 			String email = user.getEmailAddress();
@@ -200,6 +200,18 @@ public class MailModuleImpl implements MailModule {
 				}
 			} catch (AddressException ae) {
 				logger.error("Skipping email notifications for " + user.getTitle() + " Bad email address");
+			}
+		}
+		for (int i=0; i<addrsOnly.length; ++i) {
+			String email = addrsOnly[i];
+			try {
+				if (!Validator.isNull(email)) {
+					//validate address
+					new InternetAddress(email);
+					addresses.add(email);
+				}
+			} catch (AddressException ae) {
+				logger.error("Skipping email notifications for " + email + " Bad email address");
 			}
 		}
 		return (String[])addresses.toArray(new String[0]);
