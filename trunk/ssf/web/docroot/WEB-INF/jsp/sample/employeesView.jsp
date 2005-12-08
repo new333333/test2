@@ -56,7 +56,22 @@ return false;
 	</tr>
 	<tr>
 		<td colspan="4">
-			<a href="<ssf:servletrooturl/>downloadFile?file=C:\liferay-portal-pro-3.5.0-tomcat\RUNNING.txt">Download File (using pure servlet)</a>
+			<a href="<ssf:servletrooturl/>downloadFile?file=C:\liferay-portal-pro-3.6.1-tomcat\RUNNING.txt">Download TEXT File (using pure servlet)</a>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="4">
+			<a href="<portletadapter:renderURL>
+			         <portletadapter:param name="action" value="downloadFile"/>
+			         <portletadapter:param name="file" value="C:\liferay-portal-pro-3.6.1-tomcat\conf\web.xml"/>
+			         </portletadapter:renderURL>" onClick="return popup(this, 'notes')">Download XML (using portlet adapter - impossible!)</a>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="4">
+			<a href="<portletadapter:renderURL>
+			         <portletadapter:param name="action" value="showXml"/>
+			         </portletadapter:renderURL>" onClick="return popup(this, 'notes')">Show XML (using portlet adapter)</a>
 		</td>
 	</tr>
 	<tr>
