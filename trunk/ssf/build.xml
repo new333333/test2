@@ -122,6 +122,7 @@
 				<property name="deploy.liferay.portlet.tld" value="${app.server.dir}/liferay/WEB-INF/tld/liferay-portlet.tld" />
 				<property name="deploy.liferay.taglib.jar" value="${app.server.dir}/liferay/WEB-INF/lib/util-taglib.jar" />
 				<property name="deploy.liferay.util.jar" value="${app.server.dir}/common/lib/ext/util-java.jar" />
+				<property name="deploy.liferay.lib.dir" value="${app.server.dir}/common/lib/ext" />
 			</then>
 			<elseif>
 				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
@@ -135,6 +136,7 @@
 					<property name="deploy.liferay.portlet.tld" value="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/WEB-INF/tld/liferay-portlet.tld" />
 					<property name="deploy.liferay.taglib.jar" value="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/WEB-INF/lib/util-taglib.jar" />
 					<property name="deploy.liferay.util.jar" value="${app.server.deploy.dir}/ext.ear/lib/util-java.jar" />
+					<!-- TODO <property name="deploy.liferay.lib.dir" value="${app.server.dir}/common/lib/ext" />-->
 				</then>
 			</elseif>
 		</if>
@@ -173,6 +175,13 @@
 				<arg value="${deploy.liferay.util.jar}" />
 				<!--<arg value="${app.server.deploy.dir}/ext.ear/lib/util-jsf.jar" />-->
 		</java>
+		
+		<move todir="${deploy.liferay.lib.dir}">
+			<fileset dir="${app.server.lib.dir}">
+				<exclude name="*-taglib.jar"/>
+			</fileset>
+		</move>
+
 	</target>
 		
 		
