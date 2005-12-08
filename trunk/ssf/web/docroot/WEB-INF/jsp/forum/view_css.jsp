@@ -237,5 +237,6 @@ div.ss_historybar {
 
 </style>
 <script language="JavaScript" src="<html:rootPath/>js/forum/forum_common.js"></script>
+<script language="JavaScript" src="<html:rootPath/>js/forum/forum_dragsort.js"></script>
 </c:if>
 
