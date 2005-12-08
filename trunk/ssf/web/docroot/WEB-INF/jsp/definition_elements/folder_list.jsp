@@ -49,16 +49,16 @@ function highlightLineById(id) {
 
 <c:set var="rowClass" value="ss_highlightGray"/>
 <c:forEach var="entry" items="${ssFolderEntries}" >
-<jsp:useBean id="entry" type="com.sitescape.ef.domain.FolderEntry" />
+<jsp:useBean id="entry" type="java.util.HashMap" />
 
 <c:choose>
 <c:when test="${rowClass == 'ss_highlightGray'}">
   <c:set var="rowClass" value=""/>
-  <tr id="folderLine_<c:out value="${entry.id}"/>">
+  <tr id="folderLine_<c:out value="${entry._docId}"/>">
 </c:when>
 <c:otherwise>
   <c:set var="rowClass" value="ss_highlightGray"/>
-  <tr id="folderLine_<c:out value="${entry.id}"/>"  class="<c:out value="${rowClass}"/>">
+  <tr id="folderLine_<c:out value="${entry._docId}"/>"  class="<c:out value="${rowClass}"/>">
 </c:otherwise>
 </c:choose>
 
@@ -71,23 +71,23 @@ function highlightLineById(id) {
 	}
 %></td>
   <td align="right" valign="top" width="5%" class="ss_content">
-	<c:out value="${entry.docNumber}"/>.&nbsp;&nbsp;&nbsp;</td>
+	<c:out value="${entry._docId}"/>.&nbsp;&nbsp;&nbsp;</td>
   <td valign="top" width="40%" class="ss_content">
     <a class="ss_link" href="<ssf:url     
     adapter="true" 
     portletName="ss_forum" 
     folderId="<%= folderId %>" 
     action="view_entry" 
-    entryId="<%= entry.getId().toString() %>" actionUrl="false" />" 
-    onClick="ss_loadEntry(this,'<c:out value="${entry.id}"/>');return false;" >
-    <c:if test="${empty entry.title}">
+    entryId="<%= entry.get("_docId").toString() %>" actionUrl="false" />" 
+    onClick="ss_loadEntry(this,'<c:out value="${entry._docId}"/>');return false;" >
+    <c:if test="${empty entry._title}">
     <span class="fineprint">--no title--</span>
     </c:if>
-    <c:out value="${entry.title}"/></a></td>
+    <c:out value="${entry._title}"/></a></td>
   <td valign="top" width="30%" class="ss_content">
-    <c:out value="${entry.creation.principal.title}"/></td>
+    <c:out value="${entry._principal.name}"/></td>
   <td valign="top" width="24%" class="ss_content">
-    <c:out value="${entry.modification.date}"/></td>
+    <c:out value="${entry._modificationDate}"/></td>
  </tr>
 </c:forEach>
 </table>
