@@ -20,6 +20,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.document.DateField;
+import org.apache.lucene.index.Term;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 //import org.dom4j.Document;
@@ -364,6 +365,10 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     	
     	indexFolder_accessControl(folder);
     	
+    	// this is just here until we get our indexes in sync with
+    	// the db.  (Early in development, they're not...
+    	deleteFolderIndexEntries(folder);
+    	
         //do actual db query 
     	FilterControls filter = new FilterControls("parentFolder", folder);
         SFQuery query = (SFQuery)getFolderDao().queryEntries(filter);
@@ -393,6 +398,26 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
 	    }
  
     }
+    public void deleteFolderIndexEntries(Folder folder) {
+    	FolderEntry entry;
+    	
+    	indexFolder_accessControl(folder);
+    	
+        //iterate through results
+        	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+        try {	            
+	        logger.info("Indexing (" + folder.getId().toString() + ") ");
+	        
+	        // Delete the document that's currently in the index.
+	        Term delTerm = new Term(IndexUtils.FOLDERID_FIELD, folder.getId().toString());
+	        luceneSession.deleteDocuments(delTerm);
+	            
+        } finally {
+	        luceneSession.close();
+	    }
+ 
+    }
+    
     protected void indexFolder_accessControl(Folder folder) {
     	getAccessControlManager().checkAcl(folder, AccessType.READ);
     }
