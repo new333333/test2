@@ -385,7 +385,7 @@
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="width" caption="__width" type="text"/>
 			<property name="number" caption="__number_of_file_select_boxes_to_be_shown" type="integer"/>
-			<property name="storage" caption="__storage_media" type="selectbox" default="internalWebdavRepositoryService">
+			<property name="storage" caption="__storage_media" type="selectbox" default="fileRepositoryService">
 				<option name="fileRepositoryService" caption="__file_system" />
 				<option name="internalWebdavRepositoryService" caption="__internal_webdav" />
 				<help>__help_storage_media</help>
@@ -405,7 +405,7 @@
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="width" caption="__width" type="text"/>
-			<property name="storage" caption="__storage_media" type="selectbox" default="internalWebdavRepositoryService">
+			<property name="storage" caption="__storage_media" type="selectbox" default="fileRepositoryService">
 				<option name="fileRepositoryService" caption="__file_system" />
 				<option name="internalWebdavRepositoryService" caption="__internal_webdav" />
 				<help>__help_storage_media</help>
