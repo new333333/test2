@@ -72,5 +72,3 @@
 
 </div>
 
-</liferay:box>
-

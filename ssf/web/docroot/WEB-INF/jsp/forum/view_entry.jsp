@@ -113,32 +113,21 @@ if (!op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY)) {
 	if (statePopUp) popupValue = true;
 }
 	
-//int boxWidth = (int)ParamUtil.get(request, "box_width", (double)RES_TOTAL);
-int boxWidth = 600;
-int entryWindowWidth = boxWidth;
+int entryWindowWidth = 0;
 String autoScroll = "true";
 if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL) && !statePopUp) {
 	autoScroll = "false";
 }
-if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL) ||
-		displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME)) {
-	entryWindowWidth = (entryWindowWidth / 3) * 2;
-}
-
-entryWindowWidth = entryWindowWidth - 4;
-int toolbarWidth = boxWidth - 10;
 request.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth));
-request.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
 %>
 <jsp:useBean id="ss_entryWindowWidth" type="java.lang.Integer" scope="request" />
-<jsp:useBean id="ss_toolbarWidth" type="java.lang.Integer" scope="request" />
 <c:if test="<%= !op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY) %>">
 <c:set var="showEntryCallbackRoutine" value="showEntryInDiv" scope="request"/>
-<c:set var="showEntryMessageRoutine" value="showMessageInDiv" scope="request"/>
+<c:set var="showEntryMessageRoutine" value="ss_showMessageInDiv" scope="request"/>
 <script language="javascript">
 var autoScroll = "<%= autoScroll %>";
 
-function showMessageInDiv(str) {
+function ss_showMessageInDiv(str) {
     //Remember the scroll position so we can come back to this exact point
     savedScrollPositionTop = self.document.body.scrollTop;
     
@@ -157,12 +146,12 @@ var historyBack = new Array();
 var historyForward = new Array();
 var historyBackLine = new Array();
 var historyForwardLine = new Array();
-function showForumEntry(url, callbackRoutine) {
+function ss_showForumEntry(url, callbackRoutine) {
 <%
 	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME) || 
 		displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_POPUP)) {
 %>
-	return showForumEntryInIframe(url);
+	return ss_showForumEntryInIframe(url);
 <%
 	}
 %>
@@ -173,7 +162,7 @@ function showForumEntry(url, callbackRoutine) {
 	fetch_url(url, callbackRoutine);
 }
 
-function showForumEntryBack(callbackRoutine) {
+function ss_showForumEntryBack(callbackRoutine) {
 	var currentUrl = historyBack.pop();
 	var currentLine = historyBackLine.pop();
 	if (currentUrl != "") {
@@ -193,7 +182,7 @@ function showForumEntryBack(callbackRoutine) {
 	}
 }
 
-function showForumEntryForward(callbackRoutine) {
+function ss_showForumEntryForward(callbackRoutine) {
 	var nextUrl = historyForward.pop();
 	var nextLine = historyForwardLine.pop();
 	if (nextUrl != "") {
@@ -206,16 +195,16 @@ function showForumEntryForward(callbackRoutine) {
 
 function showEntryInDiv(str) {
     //Keep a high water mark for the page so the scrolling doesn't bounce around
-    setWindowHighWaterMark('showentryhighwatermark');
+    setWindowHighWaterMark('ss_showentryhighwatermark');
     
     var wObj1 = null
     var wObj2 = null
     if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('showentrydiv')
-        wObj2 = self.document.getElementById('showentry')
+        wObj1 = self.document.getElementById('ss_showentrydiv')
+        wObj2 = self.document.getElementById('ss_showentry')
     } else {
-        wObj1 = self.document.all['showentrydiv']
-        wObj2 = self.document.all['showentry']
+        wObj1 = self.document.all['ss_showentrydiv']
+        wObj2 = self.document.all['ss_showentry']
     }
     
     //If the entry div needs dynamic positioning, do it now
@@ -227,12 +216,12 @@ function showEntryInDiv(str) {
     wObj1.style.visibility = "visible";
     
     //Keep a high water mark for the page so the scrolling doesn't bounce around
-    setWindowHighWaterMark('showentryhighwatermark');
+    setWindowHighWaterMark('ss_showentryhighwatermark');
     
     //Get the position of the div displaying the entry
     if (autoScroll == "true") {
-	    var entryY = getDivTop('showentrydiv')
-	    var entryH = getDivHeight('showentrydiv')
+	    var entryY = getDivTop('ss_showentrydiv')
+	    var entryH = getDivHeight('ss_showentrydiv')
 	    var bodyY = self.document.body.scrollTop
 	    var windowH = getWindowHeight()
 	    if (entryY >= bodyY) {
@@ -311,7 +300,7 @@ function highlightLineById(id) {
 
 <c:if test="<%= !op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY) %>">
 
-<div id="showentryhighwatermark" style="position:absolute; visibility:visible;">
+<div id="ss_showentryhighwatermark" style="position:absolute; visibility:visible;">
 <img src="<html:imagesPath/>pics/1pix.gif">
 </div>
 <%
@@ -338,7 +327,7 @@ function highlightLineById(id) {
 <jsp:useBean id="ssFolderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
   <c:if test="<%= !statePopUp %>">
 <script language="javascript">
-function loadEntry(obj,id) {
+function ss_loadEntry(obj,id) {
 	self.location.href = obj.href;
 	return false;
 }
@@ -364,8 +353,6 @@ if (self.parent && self.parent.highlightLineById) {
 <%
 	//Horizontal view
 	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL)) {
-		toolbarWidth = entryWindowWidth - 6;
-		request.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
 %>
     <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
       <ssf:param name="box_width" value="<%= new Integer(entryWindowWidth).toString() %>" />
@@ -380,8 +367,6 @@ if (self.parent && self.parent.highlightLineById) {
 	
 	//Iframe view
 	} else if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME)) {
-		toolbarWidth = entryWindowWidth - 20;
-		request.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
 %>
 	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
 	  configElement="<%= ssConfigElement %>" 

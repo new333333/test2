@@ -26,29 +26,29 @@ function ss_showUrlInPortlet(params) {
 }
 
 
-function loadEntry(obj) {
-	showEntryMessageInDiv("Loading...");
-	showForumEntry(obj.href, showEntryInDiv);
+function ss_loadEntry(obj) {
+	ss_showMessageInDiv("Loading...");
+	ss_showForumEntry(obj.href, ss_showEntryInDiv);
 	return false;
 }
 
-function showMessageInDiv(str) {
-	showEntryInDiv(str)
+function ss_showMessageInDiv(str) {
+	ss_showEntryInDiv(str)
 }
 
-function showForumEntry(url, callbackRoutine) {
+function ss_showForumEntry(url, callbackRoutine) {
 	fetch_url(url, callbackRoutine);
 }
 
-function showEntryInDiv(str) {
+function ss_showEntryInDiv(str) {
     var wObj1 = null
     var wObj2 = null
     if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('showentrydiv')
-        wObj2 = self.document.getElementById('showentry')
+        wObj1 = self.document.getElementById('ss_showentrydiv')
+        wObj2 = self.document.getElementById('ss_showentry')
     } else {
-        wObj1 = self.document.all['showentrydiv']
-        wObj2 = self.document.all['showentry']
+        wObj1 = self.document.all['ss_showentrydiv']
+        wObj2 = self.document.all['ss_showentry']
     }
     
     //If the entry div needs dynamic positioning, do it now
@@ -60,8 +60,8 @@ function showEntryInDiv(str) {
     
     //Get the position of the div displaying the entry
     if (autoScroll == "true") {
-	    var entryY = getDivTop('showentrydiv')
-	    var entryH = getDivHeight('showentrydiv')
+	    var entryY = getDivTop('ss_showentrydiv')
+	    var entryH = getDivHeight('ss_showentrydiv')
 	    var bodyY = self.document.body.scrollTop
 	    var windowH = getWindowHeight()
 	    if (entryY >= bodyY) {
@@ -84,20 +84,20 @@ function showEntryInDiv(str) {
 	}
 }
 
-function showForumEntryInIframe(url) {
+function ss_showForumEntryInIframe(url) {
 	ss_positionEntryDiv();
     var wObj
     if (isNSN || isNSN6 || isMoz5) {
-        wObj = self.document.getElementById('showentryframe')
+        wObj = self.document.getElementById('ss_showentryframe')
     } else {
-        wObj = self.document.all['showentryframe']
+        wObj = self.document.all['ss_showentryframe']
     }
     
     var wObj1 = null
     if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('showentrydiv')
+        wObj1 = self.document.getElementById('ss_showentrydiv')
     } else {
-        wObj1 = self.document.all['showentrydiv']
+        wObj1 = self.document.all['ss_showentrydiv']
     }
     wObj1.style.display = "block";
     wObj1.style.visibility = "visible";
@@ -111,7 +111,7 @@ function showForumEntryInIframe(url) {
 }
 
 
-function showForumEntryInWindow(url) {
+function ss_showForumEntryInWindow(url) {
     self.window.open(url,"_blank",'width=400,height=250,resizable,scrollbars')
     return false;
 }
@@ -122,9 +122,9 @@ function ss_positionEntryDiv() {
 return
     var wObj1 = null
     if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('showentrydiv')
+        wObj1 = self.document.getElementById('ss_showentrydiv')
     } else {
-        wObj1 = self.document.all['showentrydiv']
+        wObj1 = self.document.all['ss_showentrydiv']
     }
     var top = parseInt(getDivTop('showbutton'));
     if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + 4);} 
@@ -142,9 +142,9 @@ return
 function hideEntryDiv() {
     var wObj1 = null
     if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('showentrydiv')
+        wObj1 = self.document.getElementById('ss_showentrydiv')
     } else {
-        wObj1 = self.document.all['showentrydiv']
+        wObj1 = self.document.all['ss_showentrydiv']
     }
     wObj1.style.visibility = "hidden";
 }
@@ -163,23 +163,23 @@ createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
     webPath="viewFragment" >
 	<ssf:param name="operation" value="viewFragment" />
     </ssf:url>"
-	onClick="showForumEntryInIframe(this.href);return false;" 
+	onClick="ss_showForumEntryInIframe(this.href);return false;" 
  	>Show the fragment in an iframe</a><br>
 <a href="<ssf:url 
     webPath="viewFragment" >
 	<ssf:param name="operation" value="viewFragment" />
     </ssf:url>"
-	onClick="showForumEntryInWindow(this.href);return false;" 
+	onClick="ss_showForumEntryInWindow(this.href);return false;" 
  	>Show the fragment in a new window</a>
 </div>
 </td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<td>
 </td><td>
-<div id="showentrydiv" style="display:block; margin:2; wwidth:400; height:80%;">
+<div id="ss_showentrydiv" style="display:block; margin:2; wwidth:400; height:80%;">
   <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
     <ssf:param name="box_width" value="400" />
     <ssf:param name="box_show_close_icon" value="true" />
     <ssf:param name="box_show_close_routine" value="hideEntryDiv()" />
-  <iframe id="showentryframe" name="showentryframe" 
+  <iframe id="ss_showentryframe" name="ss_showentryframe" 
     src="<html:rootPath/>js/forum/null.html" height="250" width="100%" 
     frameBorder="no" >xxx</iframe>
   </ssf:box>

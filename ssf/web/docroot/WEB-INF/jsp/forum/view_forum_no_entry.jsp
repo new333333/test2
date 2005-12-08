@@ -8,5 +8,3 @@
 <br/>
 </div>
 
-</liferay:box>
-
