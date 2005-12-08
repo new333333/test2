@@ -1,5 +1,6 @@
 package com.sitescape.ef.module.folder.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.TreeMap;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
+import org.apache.lucene.document.DateField;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
@@ -204,12 +206,20 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         Map unseenCounts = new HashMap();
         for (int i = 0; i < hits.length(); i++) {
 			String folderIdString = hits.doc(i).getField(IndexUtils.FOLDERID_FIELD).stringValue();
+			String entryIdString = hits.doc(i).getField(IndexUtils.DOCID_FIELD).stringValue();
+			Long entryId = null;
+			if (entryIdString != null && !entryIdString.equals("")) {
+				entryId = new Long(entryIdString);
+			}
+			Date modifyDate = DateField.stringToDate(hits.doc(i).getField(IndexUtils.MODIFICATION_DATE_FIELD).stringValue());
 			Counter cnt = (Counter)unseenCounts.get(folderIdString);
 			if (cnt == null) {
 				cnt = new Counter();
 				unseenCounts.put(folderIdString, cnt);
 			}
-			cnt.increment();
+			if (entryId != null && fToSm.containsKey(folderIdString) && ((SeenMap)fToSm.get(folderIdString)).checkAndSetSeen(entryId, modifyDate, false)) {
+				cnt.increment();
+			}
 		}
         Map results = new HashMap();
         for (int i=0; i<folders.size(); ++i) {
