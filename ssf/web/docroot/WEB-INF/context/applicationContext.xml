@@ -426,6 +426,8 @@
 	<bean id="mailModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.mail.impl.MailModuleImpl">
 		<property name="mailSender"><ref local="mailSender"/></property>
 		<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>
+		<property name="dataRootDirProperty"><value>data.root.dir</value></property>	
+		<property name="subDirName"><value>mail</value></property>
 	</bean>	
 	
 	<bean id="defaultFolderEmailFormatter" class="com.sitescape.ef.module.mail.impl.DefaultFolderEmailFormatter">
