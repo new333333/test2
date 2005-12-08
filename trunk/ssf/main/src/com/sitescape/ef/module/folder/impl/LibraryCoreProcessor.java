@@ -1,7 +1,6 @@
 
 package com.sitescape.ef.module.folder.impl;
 
-import java.util.List;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -18,7 +17,7 @@ import com.sitescape.ef.domain.LibraryEntryExistsException;
 public class LibraryCoreProcessor extends DefaultFolderCoreProcessor {
 	private String[] cfAttrs = new String[]{"parentFolder", "HKey.level", "lower(title)"};
 
-	   protected void addEntry_fillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData, List fileData) {  
+	   protected void addEntry_fillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData) {  
     	//title must be unique
 	   	String title = (String)entryData.get("title");
 	   	if ((title == null) || title.equals("")) throw new IllegalArgumentException("title is required");
@@ -27,7 +26,7 @@ public class LibraryCoreProcessor extends DefaultFolderCoreProcessor {
      	Iterator result = getFolderDao().queryEntries(new FilterControls(cfAttrs, cfValues));
    		if (result.hasNext()) 
      		throw new LibraryEntryExistsException(title, "Title already exists");
-      	super.addEntry_fillIn(folder, entry, inputData, entryData, fileData);
+      	super.addEntry_fillIn(folder, entry, inputData, entryData);
     }
 
 }

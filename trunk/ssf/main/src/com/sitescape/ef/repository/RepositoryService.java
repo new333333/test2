@@ -27,13 +27,33 @@ public interface RepositoryService {
 	public void closeRepositorySession(Object session) throws RepositoryServiceException;
 	
 	/**
-	 * Writes the file resource to the repository system. 
+	 * Creates a new file resource in the repository system. 
 	 * <p>
-	 * If it is an existing resource, it is expected to have been checked out
-	 * prior to invoking this method. The changes made to the repository
-	 * through this method are made permanent when {@link #checkin} is executed.
-	 * If the resource is new, the first version is created immediately upon 
-	 * completion of this call and no <code>checkin</code> is necessary.   
+	 * The first version of the resource is created and its version name is
+	 * returned. 
+	 * <p>
+	 * If the underlying repository system does not support versioning, this
+	 * method returns <code>null</code>.
+	 * 
+	 * @param session
+	 * @param folder
+	 * @param entry
+	 * @param relativeFilePath A pathname of the file relative to the entry. This may
+	 * simply be the name of the file. 
+	 * @param mf
+	 * @return
+	 * @throws RepositoryServiceException
+	 */
+	public String create(Object session, Folder folder, FolderEntry entry, 
+			String relativeFilePath, MultipartFile mf) 
+		throws RepositoryServiceException;
+	
+	/**
+	 * Updates the existing file resource.  
+	 * <p>
+	 * The resource is expected to have been checked out prior to invoking this 
+	 * method. The changes made to the repository through this method are made 
+	 * permanent when {@link #checkin} is executed.
 	 * <p>
 	 * If the underlying repository system does not support versioning, this
 	 * method immediately overwrites the existing content and the changes can
@@ -47,7 +67,7 @@ public interface RepositoryService {
 	 * @param mf
 	 * @throws RepositoryServiceException
 	 */
-	public void write(Object session, Folder folder, FolderEntry entry, 
+	public void update(Object session, Folder folder, FolderEntry entry, 
 			String relativeFilePath, MultipartFile mf) 
 		throws RepositoryServiceException;
 	

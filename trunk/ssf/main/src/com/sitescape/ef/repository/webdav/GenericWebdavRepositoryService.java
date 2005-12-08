@@ -51,25 +51,30 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public void write(Object session, Folder folder, FolderEntry entry, String relativeFilePath, 
-			MultipartFile mf) throws RepositoryServiceException {
-		/*
-		boolean checkedOut = isCheckedOut(folder, entry, relativeFilePath);
-		if(!checkedOut)
-			checkout(folder, entry, relativeFilePath);
-		checkedOut = isCheckedOut(folder, entry, relativeFilePath);
-		*/
-		
+	public String create(Object session, Folder folder, FolderEntry entry, 
+			String relativeFilePath, MultipartFile mf) 
+		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			writeResource(wdr, folder, entry, relativeFilePath, mf);
+			return createResource(wdr, folder, entry, relativeFilePath, mf);
 		} catch (IOException e) {
 			logError(wdr);
 			throw new RepositoryServiceException(e);
 		}
+	}
+
+	public void update(Object session, Folder folder, FolderEntry entry, 
+			String relativeFilePath, MultipartFile mf) 
+		throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;
 		
-		//checkin(folder, entry, relativeFilePath);
+		try {
+			updateResource(wdr, folder, entry, relativeFilePath, mf);
+		} catch (IOException e) {
+			logError(wdr);
+			throw new RepositoryServiceException(e);
+		}
 	}
 
 	public void read(Object session, Folder folder, FolderEntry entry, String relativeFilePath, 
@@ -172,8 +177,18 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		
 		try {
 			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+
+			// Since we always put file resource under version control as
+			// soon as it is created, it's largely unnecessary to do it
+			// again here. But for the unlikely scenario where the file was
+			// created successfully but not put under version control 
+			// properly, we will re-execute the version-control command
+			// here. If the resource is already version controlled, this
+			// operation is noop. 
+			boolean result = wdr.versionControlMethod(resourcePath);
+
 			if(!isCheckedOut(wdr, resourcePath)) {
-				boolean result = wdr.checkoutMethod(resourcePath);
+				result = wdr.checkoutMethod(resourcePath);
 				if(!result)
 					throw new RepositoryServiceException("Failed to checkout [" + resourcePath + "]");
 			}
@@ -353,6 +368,11 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		throws HttpException, IOException {
 		return WebdavUtil.getSingleStringValue(wdr, versionResourcePath, "version-name");
 	}
+	
+	private String getCheckedInVersionName(SWebdavResource wdr, String resourcePath) 
+		throws HttpException, IOException {
+		return getVersionName(wdr, getCheckedInVersionResourcePath(wdr, resourcePath));
+	}
 
 	/**
 	 * Returns the path of the version history resource associated with the
@@ -371,7 +391,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 				versionControlledResourcePath, "version-history");
 	}
 
-	private void writeResource(SWebdavResource wdr, Folder folder,
+	private String createResource(SWebdavResource wdr, Folder folder,
 			FolderEntry entry, String relativeFilePath, MultipartFile mf)
 			throws IOException {
 		boolean result = false;
@@ -395,30 +415,34 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		// Get the path for the file resource.
 		String resourcePath = getResourcePath(entryDirPath, relativeFilePath);
 
-		if(WebdavUtil.exists(wdr, resourcePath)) {
-			// The file resource already exists.
-			// Since we always put file resource under version control as
-			// soon as it is created, it's largely unnecessary to do it
-			// again here. But we can think of a couple of scenarios where
-			// the file may not have been put into version control propertly.
-			// For example, the file was created successfully but the
-			// subsequent command for turning it into a version controlled
-			// resource failed. Another example would be that the file was
-			// created through some other means (i.e., other than this
-			// interface), although it's very unlikely.
-			// The following command will be noop if the resource was already
-			// version controlled.
-			result = wdr.versionControlMethod(resourcePath);
-			// Write the file creating a new version.
-			result = wdr.putMethod(resourcePath, mf.getInputStream());
-			
-		} else {
-			// The file resource does not exist.
-			// We must write the file first.
-			result = wdr.putMethod(resourcePath, mf.getInputStream());
-			// Put the file under version control.
-			result = wdr.versionControlMethod(resourcePath);
-		}
+		// Write the file.
+		result = wdr.putMethod(resourcePath, mf.getInputStream());
+		
+		// Put the file under version control.
+		result = wdr.versionControlMethod(resourcePath);
+		
+		return getCheckedInVersionName(wdr, resourcePath);
+	}
+	
+	private void updateResource(SWebdavResource wdr, Folder folder,
+			FolderEntry entry, String relativeFilePath, MultipartFile mf)
+			throws IOException {
+		boolean result = false;
+
+		/*
+		 * boolean b = wdr.headMethod("/slide/files");
+		 * System.out.println("Status Code: " + wdr.getStatusCode());
+		 * System.out.println("Status Message: " + wdr.getStatusMessage()); b =
+		 * wdr.headMethod("/slide/files/sitescape"); System.out.println("Status
+		 * Code: " + wdr.getStatusCode()); System.out.println("Status Message: " +
+		 * wdr.getStatusMessage());
+		 */
+
+		// Get the path for the file resource.
+		String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+
+		// Write the file.
+		result = wdr.putMethod(resourcePath, mf.getInputStream());
 	}
 	
 	private void readResource(SWebdavResource wdr, String resourcePath,
