@@ -38,4 +38,9 @@
 					</portlet:renderURL>"><img title="Add New Employee" src="<html:imagesPath/>sample/new.png" border=0 /> Add New Employee</a>
 			</td>
 		</tr>
+		<tr>
+			<td colspan="4">
+				<a href="<html:webPath/>downloadFile?filespec=C:\liferay-portal-pro-3.5.0-tomcat\RUNNING.txt">Download File</a>
+			</td>
+		</tr>
 </table>

@@ -26,52 +26,6 @@
 		<property name="suffix"><value>.jsp</value></property>
 	</bean>
 
-	<!-- Portlet Parameter-based Mapping Interceptor -->
-	<bean id="parameterMappingInterceptor" class="org.springframework.web.portlet.handler.ParameterMappingInterceptor"/>
-
-	<!-- Template for the Portlet Mode - Parameter Handler Mapping Beans -->
-	<bean id="portletModeParameterHandlerMappingTemplate" class="org.springframework.web.portlet.handler.PortletModeParameterHandlerMapping" lazy-init="true" abstract="true">
-        <property name="order"><value>10</value></property>
-		<property name="interceptors">
-			<list>
-			    <!-- I'm not so sure why we need this interceptor -->
-				<ref bean="parameterMappingInterceptor"/>
-				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
-				     This must come before userPreloadInterceptor since it
-				     might need to perform DB lookup -->
-				<ref bean="openSessionInViewInterceptor"/>
-				<!-- Preload user object for the duration of request -->
-				<ref bean="userPreloadInterceptor"/>
-			</list>
-		</property>
-	</bean>
-
-	<!-- Template for the Portlet Mode Handler Mapping Beans -->
-	<bean id="portletModeHandlerMappingTemplate" class="org.springframework.web.portlet.handler.PortletModeHandlerMapping" lazy-init="true" abstract="true">
-        <property name="order"><value>20</value></property>
-		<property name="interceptors">
-			<list>
-				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
-				     This must come before userPreloadInterceptor since it
-				     might need to perform DB lookup -->
-				<ref bean="openSessionInViewInterceptor"/>
-				<!-- Preload user object for the duration of each request -->
-				<ref bean="userPreloadInterceptor"/>
-			</list>
-		</property>
-	</bean>
-
-	<!-- Default Exception Handler Bean -->
-    <bean id="defaultExceptionHandlerTemplate" class="org.springframework.web.portlet.handler.SimpleMappingExceptionResolver" lazy-init="true" abstract="true">
-		<property name="defaultErrorView"><value>common/defError</value></property>
-		<property name="exceptionMappings">
-			<props>
-				<prop key="javax.portlet.PortletSecurityException">common/notAuthorized</prop>
-				<prop key="javax.portlet.UnavailableException">common/notAvailable</prop>
-			</props>
-		</property>  
-	</bean>
-
 	<!-- Template for the common dependency injection for controllers -->
 	<bean id="controllerDependencyTemplate" lazy-init="true" abstract="true">
 		<property name="employeeModule"><ref bean="employeeModule"/></property>
@@ -125,18 +79,8 @@
 		<!-- Hibernate properties are loaded from a separate file - hibernate.properties -->
 	</bean>
 	
-	<!-- Used for open-session-in-view pattern -->
-	<bean id="openSessionInViewInterceptor" class="org.springframework.web.portlet.support.hibernate3.OpenSessionInViewInterceptor">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
-		<!--<property name="singleSession"><value>false</value></property>-->
-	</bean>
-	
 	<bean id="springContextUtil" class="com.sitescape.ef.util.SpringContextUtil"/>
 	
-	<bean id="userPreloadInterceptor" class="com.sitescape.ef.web.portlet.handler.UserPreloadInterceptor">
-		<property name="coreDao"><ref local="coreDao"/></property>
-	</bean>	
-
 	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
 		<property name="jndiName"><value>java:comp/env/jdbc/SiteScapePool</value></property>
 	</bean>
@@ -207,7 +151,64 @@
 	</bean>
 	
 	<bean id="nlt" class="com.sitescape.ef.util.NLT"/>
+		
+	<!-- ========================= Portlet Common Infrastructural Beans ======================== -->
 	
+	<!-- Portlet Parameter-based Mapping Interceptor -->
+	<bean id="portletParameterMappingInterceptor" class="org.springframework.web.portlet.handler.ParameterMappingInterceptor"/>
+
+	<!-- Template for the Portlet Mode - Parameter Handler Mapping Beans -->
+	<bean id="portletModeParameterHandlerMappingTemplate" class="org.springframework.web.portlet.handler.PortletModeParameterHandlerMapping" lazy-init="true" abstract="true">
+        <property name="order"><value>10</value></property>
+		<property name="interceptors">
+			<list>
+				<ref bean="portletParameterMappingInterceptor"/>
+				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
+				     This must come before userPreloadInterceptor since it
+				     might need to perform DB lookup -->
+				<ref bean="portletOpenSessionInViewInterceptor"/>
+				<!-- Preload user object for the duration of request -->
+				<ref bean="portletUserPreloadInterceptor"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Template for the Portlet Mode Handler Mapping Beans -->
+	<bean id="portletModeHandlerMappingTemplate" class="org.springframework.web.portlet.handler.PortletModeHandlerMapping" lazy-init="true" abstract="true">
+        <property name="order"><value>20</value></property>
+		<property name="interceptors">
+			<list>
+				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
+				     This must come before userPreloadInterceptor since it
+				     might need to perform DB lookup -->
+				<ref bean="portletOpenSessionInViewInterceptor"/>
+				<!-- Preload user object for the duration of each request -->
+				<ref bean="portletUserPreloadInterceptor"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Default Exception Handler Bean -->
+    <bean id="portletDefaultExceptionHandlerTemplate" class="org.springframework.web.portlet.handler.SimpleMappingExceptionResolver" lazy-init="true" abstract="true">
+		<property name="defaultErrorView"><value>common/defError</value></property>
+		<property name="exceptionMappings">
+			<props>
+				<prop key="javax.portlet.PortletSecurityException">common/notAuthorized</prop>
+				<prop key="javax.portlet.UnavailableException">common/notAvailable</prop>
+			</props>
+		</property>  
+	</bean>
+
+	<!-- Used for open-session-in-view pattern -->
+	<bean id="portletOpenSessionInViewInterceptor" class="org.springframework.web.portlet.support.hibernate3.OpenSessionInViewInterceptor">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<!--<property name="singleSession"><value>false</value></property>-->
+	</bean>
+	
+	<bean id="portletUserPreloadInterceptor" class="com.sitescape.ef.web.portlet.handler.UserPreloadInterceptor">
+		<property name="coreDao"><ref local="coreDao"/></property>
+	</bean>	
+
 	<!-- ============================ Indexing/Search Service =========================== -->
 	
 	<bean id="luceneSessionFactory" class = "com.sitescape.ef.search.local.LocalLuceneSessionFactory">

@@ -45,6 +45,6 @@
 		</property>
 	</bean>
 
-	<bean id="defaultExceptionHandler" parent="defaultExceptionHandlerTemplate"/>
+	<bean id="defaultExceptionHandler" parent="portletDefaultExceptionHandlerTemplate"/>
 
 </beans>
