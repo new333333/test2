@@ -58,7 +58,7 @@ public class Eventtext extends TagSupport {
       ServletRequest req = null;
       req = new DynamicServletRequest((HttpServletRequest)pageContext.getRequest());
 
-      String jsp = "/WEB-INF/tags/eventtext/eventtext.jsp";
+      String jsp = "/WEB-INF/jsp/tags/eventtext/eventtext.jsp";
       RequestDispatcher rd = ctx.getRequestDispatcher(jsp); 
 
       // any attributes we might want to pass into the jsp go here
