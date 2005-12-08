@@ -27,4 +27,5 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_DISPLAY_STYLE_POPUP = "display_style_popup";
     public static final String USER_PROPERTY_DISPLAY_STYLE_VERTICAL = "display_style_vertical";
 
+    public static final String WORKAREA_OPERATION = "workarea_operation";
 }
