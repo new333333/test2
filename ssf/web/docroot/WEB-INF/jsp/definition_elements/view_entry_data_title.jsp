@@ -9,8 +9,8 @@
 		%><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
 	}
 %>
-<c:out value="${ssDefinitionEntry.docNumber}"/>. 
- <a href="<ssf:url 
+<c:out value="${ssDefinitionEntry.docNumber}"/>.
+ <a class="ss_link_nodec" href="<ssf:url 
     folderId="<%= ssDefinitionEntry.getParentFolder().getId().toString() %>" 
     action="view_entry"
     entryId="<%= ssDefinitionEntry.getId().toString() %>"
