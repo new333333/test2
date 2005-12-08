@@ -38,6 +38,7 @@ import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.UserNotification;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
+import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.mail.FolderEmailFormatter;
 import com.sitescape.ef.util.XmlClassPathConfigFiles;
@@ -57,34 +58,13 @@ import com.sitescape.util.Validator;
  * @author Janet McCann
  *
  */
-public class MailModuleImpl implements MailModule {
+public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 	private Log logger = LogFactory.getLog(getClass());
-	private CoreDao coreDao;
-	private FolderDao folderDao;
-	private ProcessorManager processorManager;
 	private static String RETRY_NOTIFICATION_GROUP="retry-send-email-notification";
-	private Scheduler scheduler; 
 	private JavaMailSender mailSender;
 	public void setMailSender(JavaMailSender mailSender) {
 		this.mailSender = mailSender;
 	}
-   /**
-     * This method is used only by the IoC container. 
-     * @param commonService
-     */
-    public void setCoreDao(CoreDao coreDao) {
-        this.coreDao = coreDao;
-    }
-
-    public void setFolderDao(FolderDao folderDao) {
-        this.folderDao = folderDao;
-    }
-    public void setProcessorManager(ProcessorManager processorManager) {
-        this.processorManager = processorManager;
-    }
-    public void setScheduler(Scheduler scheduler) {
-    	this.scheduler = scheduler;
-    }
 
     public Date sendNotifications(Long folderId) {
         String zoneName = RequestContextHolder.getRequestContext().getZoneName();

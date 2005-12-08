@@ -32,6 +32,7 @@ import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.portlet.forum.HistoryCache;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
@@ -55,9 +56,8 @@ import org.dom4j.Element;
  * @author Janet McCann
  *
  */
-public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
+public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumActionModule,DomTreeBuilder {
 
-	protected CoreDao coreDao;
 	protected WorkspaceModule workspaceModule;;
 	protected ProfileModule profileModule;
 	protected AdminModule adminModule;
@@ -65,12 +65,6 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 	protected DefinitionModule definitionModule;
 	protected MailModule mailModule;
 	    
-	public CoreDao getCoreDao() {
-	    return coreDao;
-	}
-	public void setCoreDao(CoreDao coreDao) {
-	    this.coreDao = coreDao;
-	}
 	/**
 	 * @param adminModule The adminModule to set.
 	 */

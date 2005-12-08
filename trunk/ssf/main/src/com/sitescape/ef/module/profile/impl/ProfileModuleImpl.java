@@ -23,6 +23,7 @@ import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.util.ReflectHelper;
@@ -32,28 +33,7 @@ import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.security.AccessControlException;
 
-public class ProfileModuleImpl implements ProfileModule {
-
-   
-    private CoreDao coreDao;
-    private FolderDao folderDao;
-   /**
-     * This method is used only by the IoC container. 
-     * @param commonService
-     */
-    public void setCoreDao(CoreDao coreDao) {
-       this.coreDao = coreDao;
-   }
-   private CoreDao getCoreDao() {
-       return coreDao;
-   }
-       
-   public void setFolderDao(FolderDao folderDao) {
-   		this.folderDao = folderDao;
-   }
-   private FolderDao getFolderDao() {
-   		return folderDao;
-   }
+public class ProfileModuleImpl extends AbstractModuleImpl implements ProfileModule {
     
    public Map showProfile(Long userId, boolean securityInfo, boolean signature) {
    		Map model = new HashMap();
