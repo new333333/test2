@@ -2,29 +2,21 @@ package com.sitescape.ef.portlet.forum;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
-import javax.portlet.PortletSession;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
-import java.util.TreeMap;
 
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.web.util.WebHelper;
-import com.sitescape.ef.web.util.DateHelper;
-import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.NoFolderByTheIdException;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.lucene.Hits;
 /**
@@ -38,14 +30,12 @@ public class ListUnseenController  extends SAbstractForumController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
-		Map formData = request.getParameterMap();
-		Long folderId = null;
 		Map model = new HashMap();
 		Map seenMaps = new HashMap();
 
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_OPERATION, "");
 		if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_COUNTS)) {
-			List folderIds = null;
+			List folderIds = new ArrayList();
 			String[] forumList = new String[0];
 			if (PortletRequestUtils.getStringParameter(request, "forumList") != null) {
 				forumList = PortletRequestUtils.getStringParameter(request, "forumList").split(" ");
@@ -53,11 +43,30 @@ public class ListUnseenController  extends SAbstractForumController {
 			for (int i = 0; i < forumList.length; i++) {
 				folderIds.add(new Long(forumList[i]));
 			}
+			Map unseenCounts = new HashMap();
 			List folders = getFolderModule().getFolders(folderIds);
-			getProfileModule().getUserSeenMap(user.getId(), folderId);
+			Iterator itFolders = folders.iterator();
+			while (itFolders.hasNext()) {
+				Folder folder = (Folder) itFolders.next();
+				seenMaps.put(folder.getId(), getProfileModule().getUserSeenMap(user.getId(), folder.getId()));
+				unseenCounts.put(folder.getId().toString(), new Integer(0));
+			}
 			Hits hits = getFolderModule().getRecentEntries(folders, seenMaps);
+			for (int i = 0; i < hits.length(); i++) {
+				String folderIdString = hits.doc(i).getField("_folderId").stringValue();
+				if (!unseenCounts.containsKey(folderIdString)) {
+					unseenCounts.put(folderIdString, new Integer(0));
+				}
+				Integer count = (Integer) unseenCounts.get(folderIdString);
+				count = new Integer(count.intValue()+1);
+				unseenCounts.put(folderIdString, count);
+			}
+
 			response.setContentType("text/xml");
-			return new ModelAndView("forum/unseen_counts");
+			
+			model.put("forums", folders);
+			model.put("unseenCounts", unseenCounts);
+			return new ModelAndView("forum/unseen_counts", model);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_LIST)) {
 			
