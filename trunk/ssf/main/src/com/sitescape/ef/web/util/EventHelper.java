@@ -66,6 +66,8 @@ public class EventHelper {
         if (hasRecurrence.booleanValue()) {
             String repeatUnit = ((String[])formData.get(prefix+"repeatUnit"))[0];
             String intervalStr = ((String[])formData.get(prefix+"everyN"))[0];
+            // rangeSel is the count/ until/ forever radio button
+            String rangeSel = ((String[])formData.get(prefix+"rangeSel"))[0];
             // this array maps the form checkboxes to the day-and-position constants
             int daysints[] = { 
                     Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, 
@@ -85,23 +87,51 @@ public class EventHelper {
                 // make the array of the correct size (setByDay will try to 
                 // clone the array, so any nulls inside will throw an exception)
                 String days[] = new String[7];
-                days[0] = ((String[])formData.get(prefix+"day0"))[0];
-                days[1] = ((String[])formData.get(prefix+"day1"))[0];
-                days[2] = ((String[])formData.get(prefix+"day2"))[0];
-                days[3] = ((String[])formData.get(prefix+"day3"))[0];
-                days[4] = ((String[])formData.get(prefix+"day4"))[0];
-                days[5] = ((String[])formData.get(prefix+"day5"))[0];
-                days[6] = ((String[])formData.get(prefix+"day6"))[0];
+                if (formData.containsKey(prefix+"day0")) {
+                	days[0] = ((String[])formData.get(prefix+"day0"))[0];
+                } else {
+                	days[0] = "";
+                }
+                if (formData.containsKey(prefix+"day1")) {
+                	days[1] = ((String[])formData.get(prefix+"day1"))[0];
+                } else {
+                	days[1] = "";
+                }
+                if (formData.containsKey(prefix+"day2")) {
+                	days[2] = ((String[])formData.get(prefix+"day2"))[0];
+                } else {
+                	days[2] = "";
+                }
+                if (formData.containsKey(prefix+"day3")) {
+                	days[3] = ((String[])formData.get(prefix+"day3"))[0];
+                } else {
+                	days[3] = "";
+                }
+                if (formData.containsKey(prefix+"day4")) {
+                	days[4] = ((String[])formData.get(prefix+"day4"))[0];
+                } else {
+                	days[4] = "";
+                }
+                if (formData.containsKey(prefix+"day5")) {
+                	days[5] = ((String[])formData.get(prefix+"day5"))[0];
+                } else {
+                	days[5] = "";
+                }
+                if (formData.containsKey(prefix+"day6")) {
+                	days[6] = ((String[])formData.get(prefix+"day6"))[0];
+                } else {
+                	days[6] = "";
+                }
                 int arraysz = 0;
                 for (int ct = 0; ct < 7; ct++) {
-                    if (days[ct].equals("yes")) {
+                    if (days[ct].equals("on")) {
                         arraysz++;
                     }
                 }
                 if (arraysz > 0) {
                     DayAndPosition dpa[] = new DayAndPosition[arraysz];
                     for (int i = 0, j=0; i < 7; i++) {
-                        if (days[i].equals("yes")) {
+                        if (days[i].equals("on")) {
                             dpa[j] = new DayAndPosition();
                             dpa[j++].setDayOfWeek(daysints[i]);
                         }
@@ -150,6 +180,18 @@ public class EventHelper {
                     dpa[0].setDayPosition(dayNum);
                     e.setByDay(dpa);
                 }
+            }
+            if (rangeSel.equals("count")) {
+                String repeatCount = ((String[])formData.get(prefix+"repeatCount"))[0];
+                e.setCount(repeatCount);
+            } else if (rangeSel.equals("until")) {
+                String untilId = "endRange_" + id;
+                Date until = DateHelper.getDateFromMap(formData, formName, untilId);
+                GregorianCalendar untilCal = new GregorianCalendar();
+                untilCal.setTime(until);
+                e.setUntil(untilCal);
+            } else if (rangeSel.equals("forever")) {
+            	e.setCount(0);
             }
 
         } else {

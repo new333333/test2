@@ -340,6 +340,37 @@ function ${prefix}_toggleRecur(name) {
    </select> </td>
 
     </tr>
+
+    <tr>
+    <td>
+    <br>&nbsp;<ssf:nlt tag="event.repeatrange" />
+    </td>
+    </tr>
+    <tr>
+    <td>
+    <input type="radio" name="${prefix}_rangeSel" value="count"> 
+    <ssf:nlt tag="event.repeat" />
+    <input type="text" size="2" value="10" name="${prefix}_repeatCount">
+    <ssf:nlt tag="event.times" />
+    </td>
+    </tr>
+
+    <tr>
+    <td>
+    <input type="radio" name="${prefix}_rangeSel" value="until"> 
+    <ssf:nlt tag="event.repeat_until" /> 
+    <ssf:datepicker formName="<%= formName %>" id="<%= endrangeId %>" />
+    
+    </td>
+    </tr>
+    <tr>
+    <td>
+    <input type="radio" name="${prefix}_rangeSel" value="forever" checked="checked"> 
+    <ssf:nlt tag="event.repeat_forever" /> 
+    
+    </td>
+    </tr>
+
     </table>
 
    </div>
