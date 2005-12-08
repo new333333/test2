@@ -84,7 +84,16 @@ function ss_getUnseenCounts() {
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("unseenCountForm")
 	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setPreRequest(ss_preRequest);
+	//ajaxRequest.setPostRequest(ss_postRequest);
+	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
+}
+function ss_preRequest(obj) {
+	alert('preRequest: ' + obj.getQueryString());
+}
+function ss_postRequest(obj) {
+	alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
 }
 </script>
 <form id="unseenCountForm" >
