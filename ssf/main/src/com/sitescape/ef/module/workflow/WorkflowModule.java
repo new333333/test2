@@ -10,6 +10,7 @@ public interface WorkflowModule {
 	public ProcessInstance addWorkflowInstance(Long id);
 	public ProcessInstance setNextTransition(Long processInstanceId);
 	public ProcessInstance setTransition(Long processInstanceId, String transitionId);
+	public ProcessInstance setNode(Long processInstanceId, String nodeId);
 
 
 }

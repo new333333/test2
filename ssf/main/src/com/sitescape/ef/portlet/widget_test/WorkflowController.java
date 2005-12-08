@@ -49,6 +49,12 @@ public class WorkflowController extends SAbstractController {
 		    	      " </action></event>" +
 		    	      "    <transition to='end' />" +
 		    	      "  </state>" +
+		    	      "  <state name='orphan'>" +
+		    	      "    <transition to='orphan2' />" +
+		    	      "  </state>" +
+		    	      "  <state name='orphan2'>" +
+		    	      "    <transition to='orphan' />" +
+		    	      "  </state>" +
 		    	      "  <end-state name='end' />" +
 		    	      "</process-definition>"
 		    	    );
@@ -72,26 +78,43 @@ public class WorkflowController extends SAbstractController {
 			    	txManager.rollback(status);
 			    } 
 
-	 } else if (operation.equals("proceed")) {
-		    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
-		    try {
-		    	// Now we can query the database for the process definition that we 
-		    	// deployed above. 
-		    	String id=PortletRequestUtils.getRequiredStringParameter(request,"processId");
-		    	ProcessInstance processInstance = getWorkflowModule().setNextTransition(Long.valueOf(id));
-		    	TaskInstance taskInstance = processInstance.getTaskMgmtInstance().createStartTaskInstance();
-	    
-		    	Token token = processInstance.getRootToken(); 
-			    txManager.commit(status);
-			    response.setRenderParameter("processId", String.valueOf(processInstance.getId()));
-			    response.setRenderParameter("workflowState", token.getNode().getName());
-			    response.setRenderParameter("workflowId", String.valueOf(processInstance.getProcessDefinition().getId()));
-		    } catch (Exception e) {
-		    	txManager.rollback(status);
-		    } 
+		 } else if (operation.equals("proceed")) {
+			    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+			    try {
+			    	// Now we can query the database for the process definition that we 
+			    	// deployed above. 
+			    	String id=PortletRequestUtils.getRequiredStringParameter(request,"processId");
+			    	ProcessInstance processInstance = getWorkflowModule().setNextTransition(Long.valueOf(id));
+			    	TaskInstance taskInstance = processInstance.getTaskMgmtInstance().createStartTaskInstance();
+		    
+			    	Token token = processInstance.getRootToken(); 
+				    txManager.commit(status);
+				    response.setRenderParameter("processId", String.valueOf(processInstance.getId()));
+				    response.setRenderParameter("workflowState", token.getNode().getName());
+				    response.setRenderParameter("workflowId", String.valueOf(processInstance.getProcessDefinition().getId()));
+			    } catch (Exception e) {
+			    	txManager.rollback(status);
+			    } 
 
-	 }
+		 } else if (operation.equals("orphan")) {
+			    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+			    try {
+			    	// Now we can query the database for the process definition that we 
+			    	// deployed above. 
+			    	String id=PortletRequestUtils.getRequiredStringParameter(request,"processId");
+			    	ProcessInstance processInstance = getWorkflowModule().setNode(Long.valueOf(id), "orphan");
+			    	//TaskInstance taskInstance = processInstance.getTaskMgmtInstance().createStartTaskInstance();
+		    
+			    	Token token = processInstance.getRootToken(); 
+				    txManager.commit(status);
+				    response.setRenderParameter("processId", String.valueOf(processInstance.getId()));
+				    response.setRenderParameter("workflowState", token.getNode().getName());
+				    response.setRenderParameter("workflowId", String.valueOf(processInstance.getProcessDefinition().getId()));
+			    } catch (Exception e) {
+			    	txManager.rollback(status);
+			    } 
 
+		 }
 			
 	 }
 
