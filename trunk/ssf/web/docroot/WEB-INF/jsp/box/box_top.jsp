@@ -28,16 +28,18 @@
 
 // General variables
 
+String divId = ParamUtil.get(request, "box_id", "");
 String titleClassName = ParamUtil.get(request, "box_title_class", "beta");
 String bodyClassName = ParamUtil.get(request, "box_body_class", "bg");
 
 String title = ParamUtil.get(request, "box_title", "");
 
-int width = (int)ParamUtil.get(request, "box_width", 600);
+int iWidth = (int)ParamUtil.get(request, "box_width", 600);
+String width = Integer.toString(iWidth);
 
 String wildWidth = "*";
 try {
-	wildWidth = Integer.toString(width - 2);
+	wildWidth = Integer.toString(iWidth - 2);
 }
 catch (Exception e) {
 }
@@ -53,11 +55,10 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	decorateBox = true;
 }
 %>
-
+<div id="<%= divId %>" width="<%= width %>">
 <%@ include file="/WEB-INF/jsp/box/box_top-ext.jsp" %>
-
 <c:if test="<%= decorateBox %>">
-	<table border="0" cellpadding="0" cellspacing="0" width="<%= width %>">
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
 		<td colspan="3"><img border="0" height="10" hspace="0" src="<html:imagesPath/>pics/spacer.gif" vspace="0" width="1"></td>
 		<td class="<%= titleClassName %><%= BrowserSniffer.is_ie(request) ? "-gradient" : StringPool.BLANK %>" rowspan="4">
@@ -72,7 +73,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 		<td></td>
 		<td rowspan="4">
 			<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
+			  <tr>
 				<c:if test="<%= showCloseIcon %>">
 					<script language="JavaScript">
 						loadImage("p_<portlet:namespace/>_close", "<html:imagesPath/>box/close_on.gif", "<html:imagesPath/>box/close_off.gif");
@@ -101,16 +102,16 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 				</c:if>
 
 				<td><img border="0" height="10" hspace="0" src="<html:imagesPath/>pics/spacer.gif" vspace="0" width="1"></td>
-			</tr>
-			<tr>
+			  </tr>
+			  <tr>
 				<td class="alpha" width="1"><img border="0" height="1" hspace="0" src="<html:imagesPath/>pics/spacer.gif" vspace="0" width="1"></td>
-			</tr>
-			<tr>
+			  </tr>
+			  <tr>
 				<td class="<%= bodyClassName %>"><img border="0" height="14" hspace="0" src="<html:imagesPath/>pics/spacer.gif" vspace="0" width="1"></td>
-			</tr>
+			  </tr>
 			</table>
 		</td>
-		<td colspan="3"><img border="0" height="10" hspace="0" src="<html:imagesPath/>pics/spacer.gif" vspace="0" width="1"></td>
+		<td colspan="2"><img border="0" height="10" hspace="0" src="<html:imagesPath/>pics/spacer.gif" vspace="0" width="1"></td>
 	</tr>
 	<tr>
 		<td colspan="2" rowspan="2"><img border="0" height="5" hspace="0" src="<html:imagesPath/>box/<%= bodyClassName %>_edge_ul.gif" vspace="0" width="5"></td>
@@ -125,6 +126,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 		<td class="<%= bodyClassName %>"><img border="0" height="4" hspace="0" src="<html:imagesPath/>pics/spacer.gif" vspace="0" width="1"></td>
 		<td class="<%= bodyClassName %>" rowspan="2"><img border="0" height="1" hspace="0" src="<html:imagesPath/>pics/spacer.gif" vspace="0" width="1"></td>
 		<td class="<%= bodyClassName %>"><img border="0" height="4" hspace="0" src="<html:imagesPath/>pics/spacer.gif" vspace="0" width="1"></td>
+		<td></td>
 	</tr>
 	<tr>
 		<td class="alpha" width="1"><img border="0" height="10" hspace="0" src="<html:imagesPath/>pics/spacer.gif" vspace="0" width="1"></td>
@@ -138,7 +140,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 </c:if>
 
 <c:if test="<%= !decorateBox %>">
-	<table border="0" cellpadding="0" cellspacing="0" width="<%= width %>">
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 
 	<tr>
 		<td rowspan="2" width="5"><img border="0" height="5" hspace="0" src="<html:imagesPath/>box/<%= bodyClassName %>_edge_ul.gif" width="5" vspace="0"></td>
@@ -146,13 +148,13 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 		<td rowspan="2" width="5"><img border="0" height="5" hspace="0" src="<html:imagesPath/>box/<%= bodyClassName %>_edge_ur.gif" width="5" vspace="0"></td>
 	</tr>
 	<tr>
-		<td class="<%= bodyClassName %>"><img border="0" height="4" hspace="0" src="<html:imagesPath/>pics/spacer.gif" vspace="0" width="*"></td>
+		<td colspan="3" class="<%= bodyClassName %>"><img border="0" height="4" hspace="0" src="<html:imagesPath/>pics/spacer.gif" vspace="0" width="*"></td>
 	</tr>
 
 	</table>
 </c:if>
 
-<table border="0" cellpadding="0" cellspacing="0" <%= false ? "style=\"table-layout: fixed;\"" : "" %> width="<%= width %>">
+<table border="0" cellpadding="0" cellspacing="0" <%= false ? "style=\"table-layout: fixed;\"" : "" %> width="100%">
 <tr id="p_p_body_<portlet:namespace/>" >
 	<td class="alpha" width="1"><img border="0" height="1" hspace="0" src="<html:imagesPath/>pics/spacer.gif" vspace="0" width="1"></td>
 	<td width="<%= wildWidth %>">
