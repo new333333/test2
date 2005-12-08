@@ -18,45 +18,26 @@ import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.portlet.forum.ActionUtil;
 import com.sitescape.ef.security.function.Function;
-import com.sitescape.ef.security.function.FunctionManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.module.ldap.LdapConfig;
-import com.sitescape.util.GetterUtil;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.jobs.Schedule;
 import com.sitescape.ef.util.NLT;
-
 public class ConfigureRolesController extends  SAbstractController {
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("addBtn") && formData.containsKey("roleName")) {
-	        User user = RequestContextHolder.getRequestContext().getUser();
-			FunctionManager functionManager = getFunctionManager();
-			
-			List zoneFunctions = functionManager.findFunctions(user.getZoneName());
-			if (zoneFunctions.contains(ActionUtil.getStringValue(formData, "roleName"))) {
-				//Role already exists
-
-			} else {
-				//Get the list of workAreaOperations to be added to this new role/function
-				Function function = new Function();
-				function.setZoneName(user.getZoneName());
-				function.setName(ActionUtil.getStringValue(formData, "roleName"));
-				Iterator itWorkAreaOperations = WorkAreaOperation.getWorkAreaOperations();
-				while (itWorkAreaOperations.hasNext()) {
-					WorkAreaOperation operation = (WorkAreaOperation) itWorkAreaOperations.next();
-					if (formData.containsKey(operation.toString())) {
-						function.addOperation(operation);
-					}
+			//Get the list of workAreaOperations to be added to this new role/function
+			Function function = new Function();
+			function.setName(ActionUtil.getStringValue(formData, "roleName"));
+			Iterator itWorkAreaOperations = WorkAreaOperation.getWorkAreaOperations();
+			while (itWorkAreaOperations.hasNext()) {
+				WorkAreaOperation operation = (WorkAreaOperation) itWorkAreaOperations.next();
+				if (formData.containsKey(operation.toString())) {
+					function.addOperation(operation);
 				}
-				functionManager.addFunction(function);
 			}
+			getAdminModule().addFunction(function);
 		
 		} else if (formData.containsKey("modifyBtn")) {
-	        User user = RequestContextHolder.getRequestContext().getUser();
-			FunctionManager functionManager = getFunctionManager();
 
 			//Add the list of workAreaOperations that can be added to each function
 			Map operations = new HashMap();
@@ -75,12 +56,10 @@ public class ConfigureRolesController extends  SAbstractController {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-        User user = RequestContextHolder.getRequestContext().getUser();
-		FunctionManager functionManager = getFunctionManager();
 		Map model = new HashMap();
 		
 		//Add the list of existing functions for this zone
-		model.put("ssFunctions", functionManager.findFunctions(user.getZoneName()));
+		model.put("ssFunctions", getAdminModule().getFunctions());
 		
 		//Add the list of workAreaOperations that can be added to each function
 		Map operations = new HashMap();
