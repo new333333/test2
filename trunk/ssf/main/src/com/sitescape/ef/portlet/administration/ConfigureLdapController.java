@@ -45,9 +45,7 @@ public class ConfigureLdapController extends  SAbstractController {
 			input.put("scheduleEnabled", Boolean.valueOf(GetterUtil.getBoolean(val, false)));
 			input.put("schedule", ScheduleHelper.getSchedule(formData));
 			getLdapModule().updateLdapConfig(input);
-			response.setRenderParameter(WebKeys.ACTION, "");
-			response.setWindowState(WindowState.NORMAL);
-			response.setPortletMode(PortletMode.VIEW);
+			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, "");
 			response.setWindowState(WindowState.NORMAL);
@@ -60,7 +58,7 @@ public class ConfigureLdapController extends  SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		LdapConfig config = getLdapModule().getLdapConfig();
-		return new ModelAndView("administration/configureLdap", WebKeys.LDAP_CONFIG, config);
+		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, WebKeys.LDAP_CONFIG, config);
 		
 	}
 }
