@@ -10,14 +10,17 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  */
 public class ProcessorManagerTests extends AbstractDependencyInjectionSpringContextTests {
 
+	protected ProcessorManager procMgr;
+	
 	protected String[] getConfigLocations() {
 		return new String[] {"/com/sitescape/ef/modelprocessor/applicationContext-processor.xml"};
 	}
+	
+	public void setProcessorManager(ProcessorManager procMgr) {
+		this.procMgr = procMgr;
+	}
 
 	public void testGetProcessorForClass() {
-		ProcessorManager procMgr = (ProcessorManager) applicationContext.getBean("processorManager");
-		assertNotNull(procMgr);
-		
 		TestModel testModel = new TestModel();
 		
 		TestProcessor1 processor1 = (TestProcessor1) procMgr.getProcessor(testModel, TestProcessor1.PROCESSOR_KEY);
