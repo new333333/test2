@@ -1,6 +1,6 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="com.sitescape.ef.domain.Event" %>
-<%@ include file="/html/common/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <jsp:useBean id="evid" type="String" scope="request" />
 <jsp:useBean id="formName" type="String" scope="request" />
 <jsp:useBean id="recurIcon" type="String" scope="request" />
@@ -19,8 +19,8 @@
    dateId3 = "dp3_" + evid;
    endrangeId = "endRange_" + evid;
 %>
-<script language="Javascript" src="<%= contextPath %>/html/js/common/PopupWindow.js"></script>
-<script language="Javascript" src="<%= contextPath %>/html/js/common/AnchorPosition.js"></script>
+<script language="Javascript" src="<html:rootPath />js/common/PopupWindow.js"></script>
+<script language="Javascript" src="<html:rootPath />js/common/AnchorPosition.js"></script>
 <c:set var="prefix" value="${formName}_${evid}" />
 
 
@@ -33,7 +33,7 @@
  <tr>
    <td class="contentbold">Start:</td>
    <td>
-   <sitescape:datepicker 
+   <ssf:datepicker 
        formName="<%= formName %>"
        initDate="<%= startDate %>"
        id="<%= dateId %>" />
@@ -42,7 +42,7 @@
  <tr>
    <td class="contentbold">&nbsp;</td>
    <td>
-   <sitescape:timepicker 
+   <ssf:timepicker 
        formName="<%= formName %>"
        initDate="<%= startDate %>"
        id="<%= dateId %>" />
@@ -51,7 +51,7 @@
  <tr>
    <td class="contentbold">End:</td>
    <td>
-   <sitescape:datepicker 
+   <ssf:datepicker 
        formName="<%= formName %>"
        initDate="<%= endDate %>"
        id="<%= dateId2 %>" />
@@ -60,7 +60,7 @@
  <tr>
    <td class="contentbold">&nbsp;</td>
    <td>
-   <sitescape:timepicker 
+   <ssf:timepicker 
        formName="<%= formName %>"
        initDate="<%= endDate %>"
        id="<%= dateId2 %>" />
@@ -75,7 +75,7 @@
  <tr>
    <td class="contentbold">When:</td>
    <td>
-   <sitescape:datepicker 
+   <ssf:datepicker 
        formName="<%= formName %>"
        initDate="<%= startDate %>"
        id="<%= dateId3 %>" />
@@ -84,7 +84,7 @@
  <tr>
    <td class="contentbold">&nbsp;</td>
    <td>
-   <sitescape:timepicker 
+   <ssf:timepicker 
        formName="<%= formName %>"
        initDate="<%= startDate %>"
        id="<%= dateId3 %>" />

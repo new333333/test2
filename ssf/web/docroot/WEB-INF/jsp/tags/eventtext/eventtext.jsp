@@ -3,7 +3,7 @@
 <%@ page import="java.util.Calendar" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ include file="/html/common/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <jsp:useBean id="event" type="com.sitescape.ef.domain.Event" scope="request" />
 <jsp:useBean id="bydays" type="java.util.ArrayList" scope="request" />
 <jsp:useBean id="bynum" type="java.lang.Integer" scope="request" />
