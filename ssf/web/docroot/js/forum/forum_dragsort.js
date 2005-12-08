@@ -142,9 +142,9 @@ ss_ToolMan._dragFactory = {
 		}
 
 		// TODO: only if ss_ToolMan.isDebugging()
-		group.register('draginit', this._showDragEventStatus)
-		group.register('dragmove', this._showDragEventStatus)
-		group.register('dragend', this._showDragEventStatus)
+		//group.register('draginit', this._showDragEventStatus)
+		//group.register('dragmove', this._showDragEventStatus)
+		//group.register('dragend', this._showDragEventStatus)
 
 		return group
 	},
@@ -262,7 +262,7 @@ _ss_ToolManDragGroup.prototype = {
 		event = ss_ToolMan.events().fix(event)
 		var coordinates = ss_ToolMan.coordinates()
 		var group = this.ss_ToolManDragGroup
-		if (!group) return
+		if (!group || !group.factory) return
 		var dragEvent = group.factory._createEvent('dragmove', event, group)
 
 		var newTopLeftOffset = dragEvent.mouseOffset.minus(group._grabOffset)
@@ -298,9 +298,12 @@ _ss_ToolManDragGroup.prototype = {
 	_dragEnd : function(event) {
 		event = ss_ToolMan.events().fix(event)
 		var group = this.ss_ToolManDragGroup
+		if (!group || !group.factory) return
 		var dragEvent = group.factory._createEvent('dragend', event, group)
 
-		group._notifyListeners(dragEvent)
+		if (group._isThresholdExceeded) {
+			group._notifyListeners(dragEvent)
+		}
 
 		this.ss_ToolManDragGroup = null
 		ss_ToolMan.events().unregister(document, 'mousemove', group._drag)
@@ -330,7 +333,8 @@ _ss_ToolManDragEvent.prototype = {
 	toString : function() {
 		return "mouse: " + this.mousePosition + this.mouseOffset + "    " +
 				"xmouse: " + this.transformedMouseOffset + "    " +
-				"left,top: " + this.topLeftPosition + this.topLeftOffset
+				"left,top: " + this.topLeftPosition + this.topLeftOffset + 
+				", id: " + this.group.element.id
 	}
 }
 

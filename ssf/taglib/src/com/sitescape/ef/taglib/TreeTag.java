@@ -41,35 +41,14 @@ public class TreeTag extends TagSupport {
     private boolean allOpen = false;
     private String nodeOpen = "";
     private String highlightNode = "";
+    private boolean sortable = false;
     private String commonImg;
     private String className = "bg";
     private Map images;
     private Map imagesOpen;
 	private String displayStyle;
+	private int liCount;
     
-    private String root;
-    private String spacer;
-	private String line;
-	private String join;
-	private String join_bottom;
-	private String minus;
-	private String minus_bottom;
-	private String plus;
-	private String plus_bottom;
-	private String folder_closed;
-	private String folder_open;
-	private String page;
-	
-	// More icons	
-	private String doc;
-	private String pdf;
-	private String ppt;
-	private String rtf;
-	private String sxc;
-	private String sxi;
-	private String sxw;
-	private String txt;
-	private String xls;
     
 	public int doStartTag() throws JspException {
 	    if(treeName == null)
@@ -96,6 +75,7 @@ public class TreeTag extends TagSupport {
 			sb.append(commonImg);
 			sb.append("')\n");
 			
+			this.liCount = 0;
 			int nodeId = 0;
 			int parentId = 0;
 			List recursedNodes = new ArrayList();
@@ -195,10 +175,17 @@ public class TreeTag extends TagSupport {
 			sb.append("\n");
 			sb.append(treeName);
 			sb.append(".create();\n");
+			if (this.sortable) {
+				//This tree is sortable. Add the calls to enable this.
+				sb.append("function ss_setSortable_" + treeName + "() {ss_setSortable('" + treeName + "ul');}\n");
+				sb.append("createOnLoadObj('ss_setSortable_" + treeName + "', ss_setSortable_" + treeName + ");\n");
+			}
 			sb.append("</script>\n\n\n");
-			
+			//sb.append("\n<ul class=\"ss_treeWidget_ul\" id=\"" + this.treeName + "ul\">\n");
+
 			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 				//This user is in accessibility mode, output a flat version of the tree
+				//jspOut.print("\n<ul class=\"ss_treeWidget_ul\" id=\"" + this.treeName + "ul\">\n");
 				outputTreeNodesFlat(treeRoot, recursedNodes);
 				
 			} else {
@@ -207,6 +194,7 @@ public class TreeTag extends TagSupport {
 				//Output the tree
 				outputTreeNodes(treeRoot, recursedNodes);
 			}
+			//jspOut.print("\n</ul>\n");
 			
 		}
 	    catch(Exception e) {
@@ -270,6 +258,8 @@ public class TreeTag extends TagSupport {
 			boolean hcn = (e.attributeValue("treeHasChildren") == "1") ? true : false;
 			boolean ino = (e.attributeValue("treeOpen") == "1") ? true : false;
 	
+			//jspOut.print("<li class='ss_treeWidget_li' id='" + this.treeName + "_li" + String.valueOf(this.liCount) + "'>");
+			this.liCount++;
 			jspOut.print("<table cellspacing='0' cellpadding='0' style='display:inline;'>\n<tr>\n<td valign='top' nowrap>");
 			for (int j = recursedNodes.size() - 1; j >= 0; j--) {
 				if ((String) recursedNodes.get(j) != "1") {
@@ -370,24 +360,34 @@ public class TreeTag extends TagSupport {
 			if (!displayOnly) jspOut.print("</a>");
 			
 			jspOut.print("</td></tr>\n</table><br>");
+			//jspOut.print("</li>");
 	
 			// Recurse if node has children
 	
 			if (hcn) {
-				jspOut.print("\n<div class=\"treeWidget\" id=\"" + this.treeName + "div" + s_nodeId + "\"");
+				jspOut.print("\n<div class=\"ss_treeWidget\" id=\"" + this.treeName + "div" + s_nodeId + "\"");
 	
 				if (!ino) {
 					jspOut.print(" style=\"display: none;\"");
 				}
 	
 				jspOut.print(">\n");
+				//jspOut.print("\n<ul class=\"ss_treeWidget_ul\" id=\"" + this.treeName + "ul" + s_nodeId + "\">\n");
 	
 				ListIterator it2 = e.elements("child").listIterator();
 				while (it2.hasNext()) {
 					outputTreeNodes((Element) it2.next(), recursedNodes);
 				}
 	
+				//jspOut.print("</ul>\n");
 				jspOut.print("</div>\n");
+				if (this.sortable) {
+					//This tree is sortable. Add the calls to enable this.
+					jspOut.print("<script language=\"JavaScript\">\n");
+					jspOut.print("function ss_setSortable_" + treeName + "ul" + s_nodeId + "() {ss_setSortable('" + treeName + "ul" + s_nodeId + "');}\n");
+					jspOut.print("createOnLoadObj('ss_setSortable_" + treeName + "ul" + s_nodeId + "', ss_setSortable_" + treeName + "ul" + s_nodeId + ");\n");
+					jspOut.print("</script>\n");
+				}
 			}
 	
 			// Pop last line or empty icon
@@ -506,13 +506,22 @@ public class TreeTag extends TagSupport {
 			// Recurse if node has children
 	
 			if (hcn) {
-				jspOut.print("\n<div class=\"treeWidget\" id=\"" + this.treeName + "div" + s_nodeId + "\">\n");
+				jspOut.print("\n<div class=\"ss_treeWidget\" id=\"" + this.treeName + "div" + s_nodeId + "\">\n");
+				//jspOut.print("\n<ul class=\"ss_treeWidget_ul\" id=\"" + this.treeName + "ul" + s_nodeId + "\">\n");
 	
 				ListIterator it2 = e.elements("child").listIterator();
 				while (it2.hasNext()) {
 					outputTreeNodesFlat((Element) it2.next(), recursedNodes);
 				}
+				//jspOut.print("</ul>\n");
 				jspOut.print("</div>\n");
+				if (this.sortable) {
+					//This tree is sortable. Add the calls to enable this.
+					jspOut.print("<script language=\"JavaScript\">\n");
+					jspOut.print("function ss_setSortable_" + treeName + "ul" + s_nodeId + "() {ss_setSortable('" + treeName + "ul" + s_nodeId + "');}\n");
+					jspOut.print("createOnLoadObj('ss_setSortable_" + treeName + "ul" + s_nodeId + "', ss_setSortable_" + treeName + "ul" + s_nodeId + ");\n");
+					jspOut.print("</script>\n");
+				}
 			}
 	
 			// Pop last line or empty icon
@@ -555,6 +564,10 @@ public class TreeTag extends TagSupport {
 	
 	public void setHighlightNode(String highlightNode) {
 	    this.highlightNode = highlightNode;
+	}
+	
+	public void setSortable(boolean sortable) {
+	    this.sortable = sortable;
 	}
 	
 	public void setCommonImg(String commonImg) {

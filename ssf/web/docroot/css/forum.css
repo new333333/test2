@@ -13,7 +13,7 @@ ul.ss_nobullet {
   padding-left: 0em;
   margin-top: 0px;
   margin-bottom: 2px;
-}
+  }
 
 ul.ss_nobullet li {
   list-style-type: none;
@@ -29,7 +29,7 @@ ul.ss_nobullet li ul.ss_nobullet {
   padding-left: 0em;
   margin-top: 0px;
   margin-bottom: 0px;
-}
+  }
 
 .ss_content {
   font-family: arial, helvetica, sans-serif;
@@ -225,15 +225,15 @@ span.ss_toolbar_item {
   }
   
 div.ss_toolbar_menu {
-	position: absolute;
-	z-index: 100;
-	visibility: hidden;
-	background-color: #FFFFFF; 
-	color: #000000;
-	border: 1px #cfcfcf solid;
-	padding: 0px;
-	width: 300px;
-}
+  position: absolute;
+  z-index: 100;
+  visibility: hidden;
+  background-color: #FFFFFF; 
+  color: #000000;
+  border: 1px #cfcfcf solid;
+  padding: 0px;
+  width: 300px;
+  }
 
 /* These are for the Next/Prev History and Next/Prev Entries buttons. */
 /* Useful if the goal is to put a button on the far left and a button on the far right. */
@@ -360,40 +360,46 @@ div.ss_widgetContent {
   padding: 2px;
   }
   
-.ss_definitionBuilder
-{
-    padding-right: 2px;
-    padding-left: 2px;
-    font-size: small;
-    visibility: hidden;
-    display: none;
-    padding-bottom: 2px;
-    margin: 2px;
-    padding-top: 2px;
-    font-family: Arial;
-    position: relative
-}
+.ss_definitionBuilder {
+  padding-right: 2px;
+  padding-left: 2px;
+  font-size: small;
+  visibility: hidden;
+  display: none;
+  padding-bottom: 2px;
+  margin: 2px;
+  padding-top: 2px;
+  font-family: Arial;
+  position: relative
+  }
 
-.ss_helpPopUp
-{
-	position: absolute;
-	z-index: 10;
-	visibility: hidden;
-	display: none;
-	background-color: #FFFFFF; 
-	color: #000000;
-	font-size: small;
-	text-decoration: none;
-	font-family: arial, helvetica, sans-serif;
-	border: 1px #3366cc solid;
-	padding: 10px;
-	width: 300px;
-}
+.ss_helpPopUp {
+  position: absolute;
+  z-index: 10;
+  visibility: hidden;
+  display: none;
+  background-color: #FFFFFF; 
+  color: #000000;
+  font-size: small;
+  text-decoration: none;
+  font-family: arial, helvetica, sans-serif;
+  border: 1px #3366cc solid;
+  padding: 10px;
+  width: 300px;
+  }
 
-.ss_treeWidget
-{
-	background: url("/html/pics/1pix.gif") fixed no-repeat;
-}
+.ss_treeWidget {
+  background: url("/html/pics/1pix.gif") fixed no-repeat;
+  }
+.ss_treeWidget_ul {
+  display: inline;
+  padding: 0px 0px 0px 0px;
+  margin: 0px 0px 0px 0px;
+  list-style-type: none;
+  }
+.ss_treeWidget_li {
+  display: inline;
+  }
 
 div.ss_portlet {
   width: 100%;
@@ -493,38 +499,38 @@ table.fineprint td {
 /* highlight for selected entry in iframe view*/
 .highlightEntry {
   background-color: #f7f7f7;
-}
+  }
 
 /* highlight an entire table row/cell (such as today's date in calendar views */
 table.ss_highlightManila {
   background-color: #ffffe8;
-}
+  }
 table tr.ss_highlightManila td.ss_highlightManila {
   background-color: #ffffe8;
-} 
+  } 
 
 td.ss_highlightManila {
   background-color: #ffffe8;
-}
+  }
 
 tr.ss_highlightManila {
   background-color: #ffffe8;
-}
+  }
 
 table.ss_highlightGray {
   background-color: #f7f7f7;
 }
 table tr.ss_highlightGray td.ss_highlightGray {
   background-color: #f7f7f7;
-} 
+  } 
 
 td.ss_highlightGray {
   background-color: #f7f7f7;
-}
+  }
 
 tr.ss_highlightGray {
   background-color: #f7f7f7;
-}
+  }
 
 .ss_labelAboveError {  
   margin: 5px 5px 5px 5px;
@@ -616,7 +622,7 @@ a.ss_link_nodec:hover, a.ss_link_nodec:active {
   font-family: arial, helvetica, sans-serif;
   }
 
-  /* Text styled as buttons */
+/* Text styled as buttons */
 a.ss_linkButton:link, a.ss_linkButton:visited {
   font-size: smaller;
   color: #6699cc;
@@ -634,7 +640,7 @@ a.ss_linkButton:link, a.ss_linkButton:visited {
   line-height: 200%;
   text-decoration: none;
   display: inline;
-}
+  }
 
 a.ss_linkButton:focus, a.ss_linkButton:hover, a.ss_linkButton:active {
   font-size: smaller;
@@ -653,7 +659,7 @@ a.ss_linkButton:focus, a.ss_linkButton:hover, a.ss_linkButton:active {
   line-height: 200%;
   text-decoration: none;
   display: inline;
-}
+  }
 
 a.ss_smallLinkButton:link, a.ss_smallLinkButton:visited {
   font-size: smaller;
@@ -672,7 +678,7 @@ a.ss_smallLinkButton:link, a.ss_smallLinkButton:visited {
   line-height: 200%;
   text-decoration: none;
   display: inline;
-}
+  }
 
 a.ss_smallLinkButton:focus, a.ss_smallLinkButton:hover, a.ss_smallLinkButton:active {
   font-size: smaller;
@@ -691,5 +697,4 @@ a.ss_smallLinkButton:focus, a.ss_smallLinkButton:hover, a.ss_smallLinkButton:act
   line-height: 200%;
   text-decoration: none;
   display: inline;
-}
-  
+  }
