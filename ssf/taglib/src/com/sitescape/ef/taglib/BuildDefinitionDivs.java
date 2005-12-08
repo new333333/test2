@@ -50,7 +50,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("<span class='ss_titlebold'>" + this.title + "</span>\n");
 			sb.append("</div>\n");
 			sb.append("<script language='javascript'>\n");
-			sb.append("    self.setDeclaredDiv('info_select')\n");
+			sb.append("    self.ss_setDeclaredDiv('info_select')\n");
 			sb.append("    var idMap;\n");
 			sb.append("    if (!idMap) {idMap = new Array();}\n");
 			sb.append("    var idMapCaption;\n");
@@ -133,7 +133,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				sb.append("</span>\n<br><br>\n");
 				sb.append("</div>\n");
 				sb.append("<script language='javascript'>\n");
-				sb.append("    self.setDeclaredDiv('info_" + rootElementId + "')\n");
+				sb.append("    self.ss_setDeclaredDiv('info_" + rootElementId + "')\n");
 				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
 				sb.append("    idMapCaption['"+rootElementId+"'] = '"+propertyCaptionValue.replaceAll("'", "\'")+"';\n");
 				sb.append("</script>\n");
@@ -173,7 +173,7 @@ public class BuildDefinitionDivs extends TagSupport {
 
 				sb.append("</div>\n");
 				sb.append("<script language='javascript'>\n");
-				sb.append("    self.setDeclaredDiv('infoDefinitionOptions')\n");
+				sb.append("    self.ss_setDeclaredDiv('infoDefinitionOptions')\n");
 				sb.append("</script>\n");
 			}
 
@@ -206,7 +206,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
 				sb.append("</div>\n");
 				sb.append("<script language='javascript'>\n");
-				sb.append("    self.setDeclaredDiv('modify_definition')\n");
+				sb.append("    self.ss_setDeclaredDiv('modify_definition')\n");
 				sb.append("</script>\n");
 			}
 
@@ -218,7 +218,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				sb.append("<span class='ss_titlebold'>Select the definition to be deleted</span>\n");
 				sb.append("</div>\n");
 				sb.append("<script language='javascript'>\n");
-				sb.append("    self.setDeclaredDiv('delete_definition')\n");
+				sb.append("    self.ss_setDeclaredDiv('delete_definition')\n");
 				sb.append("</script>\n");
 				sb.append("\n<div id='delete_definition_confirm' ");
 				sb.append("class='ss_definitionBuilder'>\n");
@@ -229,7 +229,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
 				sb.append("</div>\n");
 				sb.append("<script language='javascript'>\n");
-				sb.append("    self.setDeclaredDiv('delete_definition_confirm')\n");
+				sb.append("    self.ss_setDeclaredDiv('delete_definition_confirm')\n");
 				sb.append("</script>\n");
 			}
 
@@ -300,7 +300,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				sb.append("</table>\n");
 				sb.append("</div>\n");
 				sb.append("<script language='javascript'>\n");
-				sb.append("    self.setDeclaredDiv('operations_" + rootElementId + "')\n");
+				sb.append("    self.ss_setDeclaredDiv('operations_" + rootElementId + "')\n");
 				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
 				sb.append("</script>\n");
 			}
@@ -402,7 +402,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				sb.append("<br>\n");
 				sb.append("</div>\n");
 				sb.append("<script language='javascript'>\n");
-				sb.append("    self.setDeclaredDiv('options_" + rootElementId + "')\n");
+				sb.append("    self.ss_setDeclaredDiv('options_" + rootElementId + "')\n");
 				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
 				sb.append("</script>\n");
 			}
@@ -560,7 +560,7 @@ public class BuildDefinitionDivs extends TagSupport {
 
 				sb.append("</div>\n");
 				sb.append("<script language='javascript'>\n");
-				sb.append("    self.setDeclaredDiv('properties_" + rootElementId + "')\n");
+				sb.append("    self.ss_setDeclaredDiv('properties_" + rootElementId + "')\n");
 				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
 				sb.append("</script>\n");
 			}
@@ -585,7 +585,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
 			sb.append("</div>\n");
 			sb.append("<script language='javascript'>\n");
-			sb.append("    self.setDeclaredDiv('delete_item')\n");
+			sb.append("    self.ss_setDeclaredDiv('delete_item')\n");
 			sb.append("</script>\n");
 		}
 		
@@ -597,7 +597,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("<span class='ss_titlebold'>Select the new location of the item to be moved</span><br>\n");
 			sb.append("</div>\n");
 			sb.append("<script language='javascript'>\n");
-			sb.append("    self.setDeclaredDiv('move_item')\n");
+			sb.append("    self.ss_setDeclaredDiv('move_item')\n");
 			sb.append("</script>\n");
 			sb.append("\n<div id='move_item_confirm' ");
 			sb.append("class='ss_definitionBuilder'>\n");
@@ -614,7 +614,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
 			sb.append("</div>\n");
 			sb.append("<script language='javascript'>\n");
-			sb.append("    self.setDeclaredDiv('move_item_confirm')\n");
+			sb.append("    self.ss_setDeclaredDiv('move_item_confirm')\n");
 			sb.append("</script>\n");
 		}
 
