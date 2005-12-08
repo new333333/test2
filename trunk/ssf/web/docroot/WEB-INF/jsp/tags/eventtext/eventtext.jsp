@@ -15,14 +15,15 @@
     Calendar un = event.getUntil();
 
     // array of text strings for days of the week
+    // these should be removed from this file (mhu)
     String days[] = new String[10];
-    days[Calendar.SUNDAY] = "SU";
-    days[Calendar.MONDAY] = "MO";
-    days[Calendar.TUESDAY] = "TU";
-    days[Calendar.WEDNESDAY] = "WE";
-    days[Calendar.THURSDAY] = "TH";
-    days[Calendar.FRIDAY] = "FR";
-    days[Calendar.SATURDAY] = "SA";
+    days[Calendar.SUNDAY] = "Sun";
+    days[Calendar.MONDAY] = "Mon";
+    days[Calendar.TUESDAY] = "Tue";
+    days[Calendar.WEDNESDAY] = "Wed";
+    days[Calendar.THURSDAY] = "Thu";
+    days[Calendar.FRIDAY] = "Fri";
+    days[Calendar.SATURDAY] = "Sat";
 
     String nums[] = new String[6];
     nums[1] = "first";
@@ -92,11 +93,18 @@
 <%
     if (interval > 0) {
 %>
-    Start: <%= startString %> <br>End: <%= endString %> <br>Frequency: <%= freqString %> <%= onString %> <%= untilString %>
+<span class="ss_content">
+    Start: <%= startString %><br />
+    End: <%= endString %><br />
+    Frequency: <%= freqString %> <%= onString %> <%= untilString %>
+</span>
 <%
     } else {
-%> 
-    When: <%= startString %> <br>Frequency: <%= freqString %> <%= onString %> <%= untilString %>
+%>
+<span class="ss_content">
+    When: <%= startString %> <br />
+    Frequency: <%= freqString %> <%= onString %> <%= untilString %>
+</span>
 <%
     }
 %>
