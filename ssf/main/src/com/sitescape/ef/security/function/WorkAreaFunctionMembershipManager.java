@@ -17,20 +17,20 @@ public interface WorkAreaFunctionMembershipManager {
     
     /**
      * Returns a list of <code>WorkAreaFunctionMembership</code>
-     * @param zoneId
+     * @param zoneName
      * @param workArea
      * @return
      */
-    public List findWorkAreaFunctionMemberships(String zoneId, WorkArea workArea);
+    public List findWorkAreaFunctionMemberships(String zoneName, WorkArea workArea);
     
     /**
      * 
-     * @param zoneId
+     * @param zoneName
      * @param workArea
      * @param workAreaOperation
      * @param membersToLookup a set of <code>Long</code>
      * @return
      */
-    public boolean checkWorkAreaFunctionMembership(String zoneId, WorkArea workArea, 
+    public boolean checkWorkAreaFunctionMembership(String zoneName, WorkArea workArea, 
             WorkAreaOperation workAreaOperation, Set membersToLookup);   
 }

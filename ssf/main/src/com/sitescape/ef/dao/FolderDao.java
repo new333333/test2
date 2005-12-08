@@ -18,8 +18,8 @@ import java.util.List;
  *
  */
 public interface FolderDao {
-	public Folder loadFolder(Long folderId, String zoneId) throws DataAccessException,NoFolderByTheIdException;
-	public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, String zoneId) throws DataAccessException;
+	public Folder loadFolder(Long folderId, String zoneName) throws DataAccessException,NoFolderByTheIdException;
+	public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, String zoneName) throws DataAccessException;
     /**
      * Return iterator of child entries
      * @param filter
@@ -45,7 +45,7 @@ public interface FolderDao {
      * @param folderId
      * @return Folder
      */
-    public Folder loadFolders(Long folderId, String zoneId) throws DataAccessException; 
+    public Folder loadFolders(Long folderId, String zoneName) throws DataAccessException; 
     public List loadFolderAncestors(Folder folder) throws DataAccessException;
     public int allocateEntryNumbers(Folder folder, int count);
     public int allocateFolderNumbers(Folder folder, int count);

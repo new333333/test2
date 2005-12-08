@@ -32,13 +32,13 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         getSecurityDao().update(functionMembership);
     }
 
-    public List findWorkAreaFunctionMemberships(String zoneId, WorkArea workArea) {
+    public List findWorkAreaFunctionMemberships(String zoneName, WorkArea workArea) {
         return getSecurityDao().findWorkAreaFunctionMemberships
-        	(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType());
+        	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType());
     }
 
     /*
-    public boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
+    public boolean checkWorkAreaFunctionMembership(Long zoneName, WorkArea workArea, 
             Set membersToLookup, List functions) {
         // There are a number of different approaches we can take in implementing 
         // this method. This specific implementation relies on the query cache
@@ -52,7 +52,7 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         
         List waFunctionMemberships = 
             getSecurityDao().findWorkAreaFunctionMembership
-            (zoneId, workArea.getId(), functions);
+            (zoneName, workArea.getId(), functions);
         int size = waFunctionMemberships.size();
         for(int i = 0; i < size; i++) {
             Set memberIds = ((WorkAreaFunctionMembership) waFunctionMemberships.get(i)).getMemberIds();
@@ -64,10 +64,10 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         return false;
     }*/
     
-    public boolean checkWorkAreaFunctionMembership(String zoneId, WorkArea workArea, 
+    public boolean checkWorkAreaFunctionMembership(String zoneName, WorkArea workArea, 
             WorkAreaOperation workAreaOperation, Set membersToLookup) {
         return getSecurityDao().checkWorkAreaFunctionMembership
-        	(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType(), 
+        	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType(), 
         	        workAreaOperation.getName(), membersToLookup);
     }
 }

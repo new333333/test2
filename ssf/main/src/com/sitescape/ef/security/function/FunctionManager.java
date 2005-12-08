@@ -14,7 +14,7 @@ public interface FunctionManager {
     
     public void updateFunction(Function function);
     
-    public List findFunctions(String zoneId);
+    public List findFunctions(String zoneName);
     
-    public List findFunctions(String zoneId, WorkAreaOperation workAreaOperation);
+    public List findFunctions(String zoneName, WorkAreaOperation workAreaOperation);
 }

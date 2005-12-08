@@ -20,7 +20,7 @@ import com.sitescape.ef.util.CollectionUtil;
  * 
  * @hibernate.class table="SS_Forums" dynamic-update="true" lazy="false"
  * @hibernate.discriminator type="string" length="16" column="type"
- * @hibernate.query name="find-Binder-Company" query="from Binder binder where binder.name=:binderName and binder.zoneId=:zoneId"
+ * @hibernate.query name="find-Binder-Company" query="from Binder binder where binder.name=:binderName and binder.zoneName=:zoneName"
  * @hibernate.cache usage="read-write"
  * @author Jong Kim
  *
@@ -36,7 +36,7 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     private NotificationDef notificationDef;
     private List filters;
     private Integer upgradeVersion;   
-    private String zoneId; 
+    private String zoneName; 
     private long featureMask=0;
     private String type;
     private List definitions;
@@ -46,13 +46,13 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     private boolean inheritAclFromParent = true;
     
     /**
-     * @hibernate.property length="100" not-null="true" node="zoneId"
+     * @hibernate.property length="100" not-null="true" node="zoneName"
      */
-    public String getZoneId() {
-    	return this.zoneId;
+    public String getZoneName() {
+    	return this.zoneName;
     }
-    public void setZoneId(String id) {
-    	this.zoneId = id;
+    public void setZoneName(String id) {
+    	this.zoneName = id;
     }
     /**
      * @hibernate.bag table="SS_DefinitionMap" lazy="true" inverse="false" cascade="persist,merge,save-update"
@@ -229,7 +229,7 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     }
 
     public String toString() {
-    	return getZoneId() + ":" + name; 
+    	return getZoneName() + ":" + name; 
     }
 
     public Long getWorkAreaId() {

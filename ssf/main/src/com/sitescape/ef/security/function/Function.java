@@ -9,7 +9,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * @hibernate.class table="SS_Functions" dynamic-update="true" lazy="false"
  * @hibernate.cache usage="nonstrict-read-write"
- * @hibernate.query name="find-Functions-ByCompany" query="from Function function left join fetch function.operationNames where function.zoneId=:zoneId"
+ * @hibernate.query name="find-Functions-ByCompany" query="from Function function left join fetch function.operationNames where function.zoneName=:zoneName"
  * 
  * <code>Function</code> is a role defined at the zone level.
  * 
@@ -18,7 +18,7 @@ import org.apache.commons.lang.StringUtils;
 public class Function {
     
     private Long id;
-    private String zoneId;
+    private String zoneName;
     private String name;
     private Set operations; // A set of WorkSpaceOperation - this is not persistent
     private Set operationNames; // Used for persistence only
@@ -38,11 +38,11 @@ public class Function {
 	/**
 	 * @hibernate.property length="100" not-null="true"
 	 */    
-    public String getZoneId() {
-        return zoneId;
+    public String getZoneName() {
+        return zoneName;
     }
-    public void setZoneId(String zoneId) {
-        this.zoneId = zoneId;
+    public void setZoneName(String zoneName) {
+        this.zoneName = zoneName;
     }
 
     /**

@@ -57,20 +57,20 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	    return coreDao;
 	}
 	 	
-    public Folder loadFolder(Long folderId, String zoneId) throws DataAccessException {
+    public Folder loadFolder(Long folderId, String zoneName) throws DataAccessException {
         if (folderId == null) {throw new NoFolderByTheIdException(folderId);}
        
         Folder folder = (Folder)getHibernateTemplate().get(Folder.class, folderId);
         if (folder == null) {throw new NoFolderByTheIdException(folderId);}
-        if ((zoneId != null ) && !folder.getZoneId().equals(zoneId)) {
+        if ((zoneName != null ) && !folder.getZoneName().equals(zoneName)) {
         	throw new NoFolderByTheIdException(folderId);
         }
         return folder;
     }
-    public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, String zoneId) throws DataAccessException {
+    public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, String zoneName) throws DataAccessException {
         FolderEntry entry = (FolderEntry)getHibernateTemplate().get(FolderEntry.class, entryId);         
         if (entry == null) throw new NoFolderEntryByTheIdException(entryId);
-        if ((zoneId != null ) && !entry.getParentFolder().getZoneId().equals(zoneId)) {
+        if ((zoneName != null ) && !entry.getParentFolder().getZoneName().equals(zoneName)) {
            	throw new NoFolderEntryByTheIdException(entryId);
         }
         if (!parentFolderId.equals(entry.getParentFolder().getId())) {
@@ -204,7 +204,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
          return result;
      }  
  
-    public Folder loadFolders(final Long folderId, final String zoneId) throws DataAccessException {
+    public Folder loadFolders(final Long folderId, final String zoneName) throws DataAccessException {
         if (folderId == null) {throw new NoFolderByTheIdException(folderId);}
         
         //Load folder and sub-folders. 
@@ -218,7 +218,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 					 if (result.isEmpty()) {throw new NoFolderByTheIdException(folderId);}
 					 
                      Folder folder = (Folder)result.get(0);
-                     if ((zoneId != null ) && !folder.getZoneId().equals(zoneId)) {
+                     if ((zoneName != null ) && !folder.getZoneName().equals(zoneName)) {
                     	throw new NoFolderByTheIdException(folderId);
                      }
                      return folder;

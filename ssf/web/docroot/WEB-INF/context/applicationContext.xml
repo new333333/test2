@@ -34,8 +34,14 @@
         <property name="order"><value>10</value></property>
 		<property name="interceptors">
 			<list>
+			    <!-- I'm not so sure why we need this interceptor -->
 				<ref bean="parameterMappingInterceptor"/>
+				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
+				     This must come before userPreloadInterceptor since it
+				     might need to perform DB lookup -->
 				<ref bean="openSessionInViewInterceptor"/>
+				<!-- Preload user object for the duration of request -->
+				<ref bean="userPreloadInterceptor"/>
 			</list>
 		</property>
 	</bean>
@@ -45,7 +51,12 @@
         <property name="order"><value>20</value></property>
 		<property name="interceptors">
 			<list>
+				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
+				     This must come before userPreloadInterceptor since it
+				     might need to perform DB lookup -->
 				<ref bean="openSessionInViewInterceptor"/>
+				<!-- Preload user object for the duration of each request -->
+				<ref bean="userPreloadInterceptor"/>
 			</list>
 		</property>
 	</bean>
@@ -114,6 +125,10 @@
 	</bean>
 	
 	<bean id="springContextUtil" class="com.sitescape.ef.util.SpringContextUtil"/>
+	
+	<bean id="userPreloadInterceptor" class="com.sitescape.ef.web.portlet.handler.UserPreloadInterceptor">
+		<property name="coreDao"><ref local="coreDao"/></property>
+	</bean>	
 	
 	<!-- ============================= Business =========================== -->
 	

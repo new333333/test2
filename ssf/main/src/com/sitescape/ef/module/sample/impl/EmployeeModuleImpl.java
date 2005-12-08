@@ -6,6 +6,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.sample.Employee;
@@ -40,6 +41,9 @@ public class EmployeeModuleImpl implements EmployeeModule {
     }
     
     public SortedSet getAllEmployees () {
+		// Just to see whether RequestContext works or not. 
+		User user = RequestContextHolder.getRequestContext().getUser();
+
     	return (SortedSet) new TreeSet(this.employees.values());
     }
     
@@ -65,8 +69,8 @@ public class EmployeeModuleImpl implements EmployeeModule {
     	employee.incrementSalary(increment);
     	
     	
-    	// Not too soon! Let's test our DAO layer here.
-    	User user = getCoreDao().findUserByName("wf_admin", "liferay.com");
+		// Just to see whether RequestContext works or not. 
+		User user = RequestContextHolder.getRequestContext().getUser();
     	
     }
 
