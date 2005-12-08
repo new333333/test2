@@ -143,18 +143,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 			</xsl:if>
 		<br/>
 		</xsl:when>
-		<xsl:when test="@type = 'file'">
-			<xsl:choose>
-			<xsl:when test="@href != ''">
-				<a href="{@href}">
-				<xsl:value-of select="."/><br/>
-				</a></xsl:when>
-			<xsl:otherwise>
-				<xsl:value-of select="."/><br/>
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:when>
-		<xsl:when test="@type = 'attachFiles'">
+		<xsl:when test="@type = 'attachFiles' or @type = 'file'">
 			<br/>
 			<xsl:for-each select="file">
 			<xsl:choose>

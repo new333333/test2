@@ -22,11 +22,26 @@
 			<value>20</value> 
 		</parameter>
 	</ResourceParams>
-	<Resource name="mail/SiteScapeMailOut" auth="Container" type="javax.mail.Session" />
-	<ResourceParams name="mail/SiteScapeMailOut">
+	<Resource name="mail/SiteScape" auth="Container" type="javax.mail.Session" />
+	<ResourceParams name="mail/SiteScape">
 		<parameter>
 			<name>mail.smtp.host</name>
 			<value>host54a.simplicato.com</value>
+		</parameter>
+		<parameter>
+			<name>mail.user</name>
+			<value>mccann@sitescape.com</value>
+		</parameter>
+	</ResourceParams>
+	<Resource name="mail/SiteScapePosting" auth="Container" type="javax.mail.Session" />
+	<ResourceParams name="mail/SiteScapePosting">
+		<parameter>
+			<name>mail.smtp.host</name>
+			<value>host54a.simplicato.com</value>
+		</parameter>
+		<parameter>
+			<name>mail.user</name>
+			<value>mccann@sitescape.com</value>
 		</parameter>
 	</ResourceParams>
 </Context>
