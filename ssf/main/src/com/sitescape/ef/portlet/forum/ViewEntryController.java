@@ -72,7 +72,7 @@ public class ViewEntryController extends SAbstractForumController {
 			setHistorySeen(model, ses, folderId, false); 
 			ses.setAttribute(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, null);
 		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY) && !entryId.equals("")) {
-			viewPath=WebKeys.VIEW_ENTRY;
+			viewPath=WebKeys.VIEW_FORUM;
 		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_NEXT) ||
 			op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_PREVIOUS) || entryId.equals("")) {
 			if (!Validator.isNull(entryId) && !entryId.equals("")) {
