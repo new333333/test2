@@ -4,7 +4,7 @@ import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
 import com.sitescape.ef.security.AccessControlManager;
-//import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
@@ -13,16 +13,18 @@ import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.FileAttachment;
+import com.sitescape.ef.domain.FileItem;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.EventHelper;
 
-//import org.apache.commons.fileupload.LiferayFileItem;
 import org.apache.lucene.document.Field;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -674,14 +676,19 @@ public class DefinitionModuleImpl implements DefinitionModule {
 									}
 								} else if (itemName.equals("file")) {
 								    if(fileItems != null && fileItems.containsKey(nameValue)) {
-/*								    	FileUploadItem fui = new FileUploadItem((LiferayFileItem) fileItems.get(nameValue));
+								    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
+								    	FileUploadItem fui = new FileUploadItem(myFile);
 								    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
 								    	fui.setRepositoryServiceName(storageElem.attributeValue("value", "fileRepositoryService"));
 								    	// TODO Take care of path info?
-								    	fui.setFileAttachment(new FileAttachment(nameValue));
+								    	FileAttachment fAtt = new FileAttachment(nameValue);
+								    	FileItem fItem = new FileItem();
+								    	fItem.setName(myFile.getOriginalFilename());
+								    	fItem.setLength(myFile.getSize());
+								    	fAtt.setFileItem(fItem);
 								    	fileData.add(fui);
-								    	entryData.put(nameValue, fui.getFileAttachment());
-*/									}
+								    	entryData.put(nameValue, fAtt);
+									}
 								} else if (itemName.equals("attachFiles")) {
 								    if(fileItems != null) {
 										int number = 1;
@@ -695,14 +702,19 @@ public class DefinitionModuleImpl implements DefinitionModule {
 										for (int i=1;i <= number;i++) {
 											String fileEleName = nameValue + Integer.toString(i);
 											if (fileItems.containsKey(fileEleName)) {												
-/*										    	FileUploadItem fui = new FileUploadItem((LiferayFileItem) fileItems.get(fileEleName));
+										    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
+										    	FileUploadItem fui = new FileUploadItem(myFile);
 										    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
 										    	fui.setRepositoryServiceName(storageElem.attributeValue("value", "fileRepositoryService"));
 										    	// TODO Take care of path info?
-												fileData.add(fui);
-										    	fui.setFileAttachment(new FileAttachment());
-										    	fAtts.add(fui.getFileAttachment());
-*/											}
+										    	FileAttachment fAtt = new FileAttachment(fileEleName);
+										    	FileItem fItem = new FileItem();
+										    	fItem.setName(myFile.getOriginalFilename());
+										    	fItem.setLength(myFile.getSize());
+										    	fAtt.setFileItem(fItem);
+										    	fileData.add(fui);
+										    	fAtts.add(fAtt);
+											}
 										}
 										if (!fAtts.isEmpty()) {
 											entryData.put("attachments", fAtts);
