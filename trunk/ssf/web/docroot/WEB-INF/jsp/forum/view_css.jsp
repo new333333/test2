@@ -137,7 +137,6 @@ div.ss_historybar {
 	height: 1em;
 	padding-right: 10px;
 	position:relative;
-    setObjectWidth(wObj1, ss_entryWindowWidth);
 	text-align: right;
 	top: 8px;
 }
