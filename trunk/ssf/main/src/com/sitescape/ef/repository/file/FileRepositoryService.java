@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.activation.FileTypeMap;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -96,6 +100,22 @@ public class FileRepositoryService implements RepositoryService {
 		throw new UnsupportedOperationException();
 	}
 
+	public DataSource getDataSource(Object session, Folder folder, FolderEntry entry, 
+			String relativeFilePath, FileTypeMap fileTypeMap)		
+		throws RepositoryServiceException {
+		String filePath = getFilePath(folder, entry, relativeFilePath);
+		FileDataSource fSource = new FileDataSource(filePath);
+		fSource.setFileTypeMap(fileTypeMap);
+		return fSource;
+	}
+	public DataSource getDataSourceVersion(Object session, Folder folder, FolderEntry entry, 
+			String relativeFilePath, String versionName, FileTypeMap fileTypeMap)		
+		throws RepositoryServiceException {
+		String filePath = getFilePath(folder, entry, relativeFilePath);
+		FileDataSource fSource = new FileDataSource(filePath);
+		fSource.setFileTypeMap(fileTypeMap);
+		return fSource;
+	}	
 	public void checkout(Object session, Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
 		throw new UnsupportedOperationException();
 	}
