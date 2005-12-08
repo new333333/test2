@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<!-- MultipartResolver implementation (uses Jakarta Commons FileUpload) -->
+	<bean id="multipartResolver" 
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	
+		<!-- Maximum file size in bytes = Integer.MAX_VALUE = 0x7fffffff -->
+		<property name="maxUploadSize">
+			<value>2147483647</value>
+		</property>
+		<!-- Maximum allowed in-memory size in bytes before uploads are written
+			 directly to disk. Keep it small so that we can handle large number
+			 of large files concurrently using small memory footprint. -->
+		<property name="maxInMemorySize">
+			<value>4096</value>
+		</property>
+		<!-- Temporary directory where uploaded files get stored. Temporary
+			 files are automatically cleared upon completion of request so
+			 they'd better be moved or copied to somewhere else before they
+			 are gone. -->
+		<property name="uploadTempDir">
+			<value>WEB-INF/tmp</value>
+		</property>	
+	</bean>
+
+	<!-- Handler mapping implementation that maps from URLs to request handler beans -->
+	<bean id="defaultHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<!-- Do not repeat any interceptor provided by the portlet framework. 
+		     We want to be able to reuse exactly the same portlet framework 
+		     already set up to work with the regular/real portlet container 
+		     (specifically the same Spring PortletMVC framework). -->
+		<property name="interceptors">
+			<list>
+			</list>
+		</property>
+		<property name="urlMap">
+			<map>
+				<entry key="/do"><ref local="portletAdapter"/></entry>				
+			</map>
+		</property>
+	</bean>
+
+	<!-- Handler Exception Resolver -->
+	<!--
+	<bean id="handlerExceptionResolver" class="com.sitescape.ef.core.web.servlet.CodedExceptionResolver">
+		<property name="localeResolver"><ref bean="localeResolver"/></property>
+		<property name="exceptionMappings">
+			<props>
+				<prop key="com.sitescape.ef.apps.login.LoginException">loginErrorView</prop>
+				<prop key="com.sitescape.ef.core.exc.ErrorCodeSupport">codedExceptionErrorView</prop>
+			</props>
+		</property>
+		<property name="defaultErrorView"><value>exceptionErrorView</value></property>
+	</bean>	-->
+
+	<!-- Adapted portlets: In order for a portlet to plug into the adapter
+	     environment, it must to be listed here. -->
+	<bean id="adaptedPortlets" class="com.sitescape.ef.portletadapter.support.AdaptedPortlets">
+		<property name="portletNames">
+			<list>
+				<value>ss_employees</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Controllers -->
+
+	<bean id="portletAdapter" parent="controllerDependencyTemplate" class="com.sitescape.ef.portletadapter.servlet.PortletAdapterController"/>
+
+</beans>

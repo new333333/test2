@@ -21,6 +21,8 @@
 	<bean id="employeesHelpController" class="org.springframework.web.portlet.mvc.ParameterizableViewController">
 		<property name="viewName"><value>sample/employeesHelp</value></property>
 	</bean>
+	
+	<bean id="uploadFileController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.sample.UploadFileController"/>
 
 	<!-- Handlers -->
 
@@ -33,6 +35,7 @@
 						<entry key="incrementSalary"><ref bean="employeeSalaryIncrementController"/></entry>
 						<entry key="editEmployee"><ref bean="employeeEditController"/></entry>
 						<entry key="deleteEmployee"><ref bean="employeeDeleteController"/></entry>
+						<entry key="uploadFile"><ref bean="uploadFileController"/></entry>
 					</map>
 				</entry>
 				<entry key="edit">
