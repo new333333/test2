@@ -228,8 +228,7 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		endViewCal.setTimeInMillis(0);
 		endViewCal.setTime(currentDate);
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_DAY)) {
-			// don't need to do anything special for day view; the start/end times will be
-			// set the same for all cases, and the start end dates are already set correctly (and the same)
+			endViewCal.roll(Calendar.DATE, 1);
 		} else if (viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK)) {
 			startViewCal.set(Calendar.DAY_OF_WEEK, startViewCal.getFirstDayOfWeek());
 			endViewCal.setTime(startViewCal.getTime());
@@ -242,15 +241,15 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		startViewCal.set(Calendar.HOUR_OF_DAY, 0);
 		startViewCal.set(Calendar.MINUTE, 0);
 		startViewCal.set(Calendar.SECOND, 0);
-		endViewCal.set(Calendar.HOUR_OF_DAY, 23);
-		endViewCal.set(Calendar.MINUTE, 59);
-		endViewCal.set(Calendar.SECOND, 59);
+		endViewCal.set(Calendar.HOUR_OF_DAY, 0);
+		endViewCal.set(Calendar.MINUTE, 0);
+		endViewCal.set(Calendar.SECOND, 0);
 		model.put(WebKeys.CALENDAR_CURRENT_VIEW_STARTDATE, startViewCal.getTime());
 		model.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE, endViewCal.getTime());
 		long startMillis = startViewCal.getTime().getTime();
 		long endMillis = endViewCal.getTime().getTime();
 		
-		HashMap results = new HashMap();
+		HashMap results = new HashMap();  
 		while (entryIterator.hasNext()) {
 			Entry e = (Entry) entryIterator.next();
 			Map customAttrs = e.getCustomAttributes();
