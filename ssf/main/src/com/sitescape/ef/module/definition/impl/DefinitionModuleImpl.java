@@ -641,12 +641,12 @@ public class DefinitionModuleImpl implements DefinitionModule {
 									if (date != null) {entryData.put(nameValue, date);}
 								} else if (itemName.equals("event")) {
 								    //Ditto for event helper routine
-								    Element hasDurElem = (Element) nextItem.selectSingleNode("./properties/property[@name='hasDur']");
+								    Element hasDurElem = (Element) nextItem.selectSingleNode("./properties/property[@name='hasDuration']");
 								    Boolean hasDur = new Boolean(true);
 								    if (hasDurElem != null && hasDurElem.attributeValue("value", "").equals("false")) {
 								        hasDur = Boolean.FALSE;
 								    }
-								    Element hasRecurElem = (Element) nextItem.selectSingleNode("./properties/property[@name='hasRecur']");
+								    Element hasRecurElem = (Element) nextItem.selectSingleNode("./properties/property[@name='hasRecurrence']");
 								    Boolean hasRecur = new Boolean(true);
 								    if (hasRecurElem != null && hasRecurElem.attributeValue("value", "").equals("false")) {
 								        hasRecur = Boolean.FALSE;
