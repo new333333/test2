@@ -27,7 +27,7 @@ public abstract class AbstractWebdavResourceFactory implements WebdavResourceFac
 		this.hostUrl = hostUrl;
 	}
 
-	private String getHttpUrl() {
+	protected String getHttpUrl() {
 		return hostUrl + contextPath;
 	}
 
