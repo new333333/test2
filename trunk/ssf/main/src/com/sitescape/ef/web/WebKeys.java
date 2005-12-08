@@ -7,7 +7,7 @@ public class WebKeys {
 	public static final String JAVAX_PORTLET_RESPONSE = "javax.portlet.response";
 
 	// Calendar view stuff
-	public static final String CALENDAR_EVENTDATES = "eventDates";
+	public static final String CALENDAR_EVENTDATES = "ssEventDates";
 	public static final String CALENDAR_VIEWMODE = "ssCalendarViewMode";
 	public static final String CALENDAR_VIEW_DAY = "day";
 	public static final String CALENDAR_VIEW_WEEK = "week";
