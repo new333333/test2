@@ -15,14 +15,12 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.util.Constants;
-import com.sitescape.ef.util.FileHelper;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Binder;
+
 public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactory implements RepositoryService {
 
 	protected Log logger = LogFactory.getLog(getClass());
@@ -79,6 +77,18 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
+	public void delete(Object session, Binder binder, Entry entry, 
+			String relativeFilePath) throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;
+		
+		try {
+			deleteResource(wdr, binder, entry, relativeFilePath);
+		} catch (IOException e) {
+			logError(wdr);
+			throw new RepositoryServiceException(e);
+		}		
+	}
+	
 	public void read(Object session, Binder binder, Entry entry, String relativeFilePath, 
 			OutputStream out) throws RepositoryServiceException {	
 		SWebdavResource wdr = (SWebdavResource) session;
@@ -476,6 +486,16 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 
 		// Write the file.
 		result = wdr.putMethod(resourcePath, mf.getInputStream());
+	}
+
+	private void deleteResource(SWebdavResource wdr, Binder binder,
+			Entry entry, String relativeFilePath)
+			throws IOException {
+		// Get the path for the file resource.
+		String resourcePath = getResourcePath(binder, entry, relativeFilePath);
+
+		// Delete the file.
+		boolean result = wdr.deleteMethod(resourcePath);
 	}
 	
 	private void readResource(SWebdavResource wdr, String resourcePath,
