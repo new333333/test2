@@ -26,13 +26,26 @@ var isMacIE = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent
 var isIE = ((navigator.userAgent.indexOf("IE ") > -1));
 
 //Routine called by the body's onLoad event
-function onLoadInit() {
+var ss_savedOnLoadRoutine = null;
+var ss_onLoadRoutineLoaded;
+function ss_onLoadInit() {
     //Call any routines that want to be called at onLoad time
     for (var name in onLoadList) {
         if (onLoadList[name].initRoutine) {
         	onLoadList[name].initRoutine();
         }
     }
+    if (ss_savedOnLoadRoutine != null) {
+    	window.onload = ss_savedOnLoadRoutine;
+    	if (window.onload != null) window.onload();
+    }
+}
+
+//Add the onLoadInit routine to the onload event
+if (!ss_onLoadRoutineLoaded) {
+	ss_onLoadRoutineLoaded = 1;
+	ss_savedOnLoadRoutine = window.onload;
+	window.onload = ss_onLoadInit;
 }
 
 //Routine to open a url in the portlet. This routine determines if the current code is
@@ -49,7 +62,7 @@ function ss_openUrlInPortlet(url) {
 }
 
 //Routine to show or hide an object
-function showHideObj(objName, visibility, displayStyle) {
+function ss_showHideObj(objName, visibility, displayStyle) {
     var obj
     if (isNSN || isNSN6 || isMoz5) {
         obj = self.document.getElementById(objName)
@@ -62,12 +75,12 @@ function showHideObj(objName, visibility, displayStyle) {
 		    obj.style.display = displayStyle;
 		}
 	} else {
-		if (jsDebug) {alert('Div "'+objName+'" does not exist. (showHideObj)')}
+		if (jsDebug) {alert('Div "'+objName+'" does not exist. (ss_showHideObj)')}
 	}
 }
 
 //Routine to add html to a div
-function addToDiv(target, source) {
+function ss_addToDiv(target, source) {
     var objTarget
     var objSource
     if (isNSN || isNSN6 || isMoz5) {
@@ -77,13 +90,13 @@ function addToDiv(target, source) {
         objTarget = self.document.all[target]
         objSource = self.document.all[source]
     }
-    var targetHtml = getDivHtml(target)
-    var sourceHtml = getDivHtml(source)
-    setDivHtml(target, targetHtml + sourceHtml)
+    var targetHtml = ss_getDivHtml(target)
+    var sourceHtml = ss_getDivHtml(source)
+    ss_setDivHtml(target, targetHtml + sourceHtml)
 }
 
 //Routines to get and set the html of an area
-function getDivHtml(divId) {
+function ss_getDivHtml(divId) {
     var obj
     if (isNSN || isNSN6 || isMoz5) {
         obj = self.document.getElementById(divId)
@@ -97,7 +110,7 @@ function getDivHtml(divId) {
     return value;
 }
 
-function setDivHtml(divId, value) {
+function ss_setDivHtml(divId, value) {
     var obj
     if (isNSN || isNSN6 || isMoz5) {
         obj = self.document.getElementById(divId)
@@ -110,14 +123,14 @@ function setDivHtml(divId, value) {
 }
 
 //Routines for the definition builder
-var declaredDivs = new Array();
-function setDeclaredDiv(id) {
-	declaredDivs[id] = id;
+var ss_declaredDivs = new Array();
+function ss_setDeclaredDiv(id) {
+	ss_declaredDivs[id] = id;
 }
 
-function hideAllDeclaredDivs() {
-	for (var i in declaredDivs) {
-		showHideObj(declaredDivs[i], 'hidden', 'none')
+function ss_hideAllDeclaredDivs() {
+	for (var i in ss_declaredDivs) {
+		ss_showHideObj(ss_declaredDivs[i], 'hidden', 'none')
 	}
 }
 
