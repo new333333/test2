@@ -70,7 +70,7 @@ function ss_loadEntryUrl(url,id) {
     portletName="ss_forum" 
     folderId="<%= folderId %>" 
     action="view_entry" 
-    entryId="<%= entry.getId().toString() %>" actionUrl="false" popup="true" />" 
+    entryId="<%= entry.getId().toString() %>" actionUrl="false" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry.id}"/>');return false;" >
     <c:if test="${empty entry.title}">
     <span class="fineprint">--no title--</span>
