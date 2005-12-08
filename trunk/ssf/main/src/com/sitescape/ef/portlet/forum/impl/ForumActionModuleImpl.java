@@ -332,13 +332,19 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 	 * suitable for displaying on the view calendar page.
 	 * 
 	 * So the picture looks like this:
-	 *   weekBean -- list for the whole week
-	 *     dayMap -- map for each day of the week
-	 *        day-of-wee  - string
-	 *        day-of-month - string
-	 *        isToday - Boolean
-	 *        dayEvents -- sorted map of event occurrences for the day, keyed by start time
-	 *           timeEvents -- list of event occurrences for a specific time
+	 *  monthBean -- map 
+	 *   dayHeaders -- list of day header strings for the month grid
+	 *   weekList -- list of week beans
+	 *     weekMap -- map
+	 *       weekNum -- string
+	 *       weekURL -- link to that week
+	 *       dayList -- list of days
+	 *         dayMap -- map for each day of the week
+	 *          day-of-wee  - string
+	 *          day-of-month - string
+	 *          isToday - Boolean
+	 *          dayEvents -- sorted map of event occurrences for the day, keyed by start time
+	 *            timeEvents -- list of event occurrences for a specific time
 	 *              dataMap -- for each occurrence, a map of stuff about the instance
 	 *                 e -- entry
 	 *                 ev -- event
@@ -347,11 +353,40 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 	 *              
 	 */
 	private void getCalendarViewBean (Calendar startCal, Calendar endCal, Map eventDates, Map model) {
-		List weekBean = new ArrayList();
+		HashMap monthBean = new HashMap();
+		ArrayList dayheaders = new ArrayList();
 		GregorianCalendar loopCal = new GregorianCalendar();
+		int j = loopCal.getFirstDayOfWeek();
+		for (int i=0; i< 7; i++) {
+			dayheaders.add(DateHelper.getDayAbbrevString(j));
+			// we don't know for sure that the d-o-w won't wrap, so prepare to wrap it
+			if (j++ == 7) {
+				j = 0;
+			}
+		}
+		monthBean.put("dayHeaders",dayheaders);
 		loopCal.setTime(startCal.getTime());
-		int i;
+		List weekList = new ArrayList();
+		
+		HashMap weekMap = null;
+		ArrayList dayList = null;
+		// this trick enables the main loop code to start a new week and reset/wrap dayCtr at same time
+		int dayCtr = 6;
 		while (loopCal.getTime().getTime() < endCal.getTime().getTime()) {
+			if (++dayCtr > 6) {
+				dayCtr = 0;
+				// before starting a new week, write out the old one (except first time through)
+				if (weekMap != null) {
+					weekMap.put("dayList", dayList);
+					weekList.add(weekMap);
+				}
+				weekMap = new HashMap();
+				// "w" is format pattern for week number in the year
+				SimpleDateFormat sdfweeknum = new SimpleDateFormat("w");
+				String wn = sdfweeknum.format(loopCal.getTime());
+				weekMap.put("weekNum", wn);
+				dayList = new ArrayList();
+			}
 			HashMap daymap = new HashMap();
 			daymap.put(WebKeys.CALENDAR_DOW, DateHelper.getDayAbbrevString(loopCal.get(Calendar.DAY_OF_WEEK)));
 			daymap.put(WebKeys.CALENDAR_DOM, Integer.toString(loopCal.get(Calendar.DAY_OF_MONTH)));
@@ -400,9 +435,12 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 			}
 			
 			loopCal.roll(Calendar.DATE, true);
-			weekBean.add(daymap);
+			dayList.add(daymap);
 		}
-		model.put(WebKeys.CALENDAR_VIEWBEAN, weekBean);
+		weekMap.put("dayList", dayList);
+		weekList.add(weekMap);
+		monthBean.put("weekList", weekList);
+		model.put(WebKeys.CALENDAR_VIEWBEAN, monthBean);
 	}
 	
 	
