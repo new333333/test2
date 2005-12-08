@@ -162,6 +162,14 @@
 	
 	<bean id="nlt" class="com.sitescape.ef.util.NLT"/>
 		
+	<bean id="configPropsUtil" class="com.sitescape.ef.util.ConfigPropsUtil">
+		<property name="propertiesMap">
+			<map>
+				<entry key="request.env.print"><value>false</value></entry>
+			</map>
+		</property>
+	</bean>
+		
 	<!-- ========================= Portlet Common Infrastructural Beans ======================== -->
 	
 	<!-- Portlet Parameter-based Mapping Interceptor -->
