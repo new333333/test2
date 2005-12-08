@@ -19,7 +19,7 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="com.sitescape.ef.web.util.DateHelper" %>
-<jsp:useBean id="ss_formData" type="java.util.Map" scope="request" />
+<jsp:useBean id="formData" type="java.util.Map" scope="request" />
 
 
 <%
@@ -27,7 +27,6 @@
 	Date initDate2 = (Date)request.getAttribute("initDate2");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ss");
         SimpleDateFormat sdf2 = new SimpleDateFormat("EEEE, MMMM dd, yyyy kk:mm");
-        Map formData = request.getParameterMap();
 
         if (formData.containsKey("OK")) {
 
