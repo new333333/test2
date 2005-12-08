@@ -6,7 +6,9 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderResponse;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -15,6 +17,9 @@ import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Event;
+import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.UserPerFolderPK;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.portlet.forum.HistoryCache;
@@ -173,6 +178,22 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		model.put(WebKeys.PUBLIC_FOLDER_DEFINITIONS, publicForumDefinitions);
 
 	}
+	
+	public void getEvents(ArrayList entrylist, Map model) {
+		Iterator entryIterator = entrylist.listIterator();
+		while (entryIterator.hasNext()) {
+			Entry e = (Entry) entryIterator.next();
+			Map customAttrs = e.getCustomAttributes();
+			Set keyset = customAttrs.keySet();
+			Iterator attIt = keyset.iterator();
+			while (attIt.hasNext()) {
+				CustomAttribute att = (CustomAttribute) attIt.next();
+				if (att.getValueType() == CustomAttribute.EVENT) {
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Fill in the model values for a definition.  Return false if definition isn't
 	 * complete, true otherwise
@@ -540,6 +561,8 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId(), folder.getId()));
 		getDefinitions(folder, model);
+		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.FOLDER_ENTRIES);
+		getEvents(entries, model);
 		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
 		buildFolderToolbar(response, model, forumId);
 		return model;
