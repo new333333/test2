@@ -104,6 +104,7 @@
 
 		<options>
 			<option name="entryDataItem" caption="__entry_data_item" />
+			<option name="entryWorkflow" caption="__entry_Workflow" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option name="entryReplies" caption="__entry_replies" />
 			<option_select path="//item[@category='entryLayout']" optionCaption="__entry_layout_options" />
@@ -129,7 +130,7 @@
 		
 	<item name="entryAttachments" type="dataView" caption="__entry_attachments" category="entryViewData">
 		<properties>
-			<property name="caption" caption="__caption" type="text"/>
+			<property name="caption" caption="__caption" type="text" value="__entry_attachments"/>
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
@@ -138,10 +139,19 @@
 		
 	<item name="entryReplies" type="dataView" caption="__entry_replies" category="entryViewData">
 		<properties>
-			<property name="caption" caption="__caption" type="text"/>
+			<property name="caption" caption="__caption" type="text" value="__entry_replies"/>
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_replies.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryWorkflow" type="dataView" caption="__entry_workflow" category="entryViewData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_workflow"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_workflow.jsp" />
 		</jsps>
 	</item>
 		
@@ -270,7 +280,7 @@
 			  value="description" readonly="true" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
+			<property name="caption" caption="__caption" type="text" value="__description"/>
 			<property name="height" caption="__height_px" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>__help_required</help>
