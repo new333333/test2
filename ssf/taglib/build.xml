@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
 <project name="taglib" basedir="." default="compile">
+	<import file="../deploy-support.xml" />
 	<target name="init">
 		<echo message="##### TAGLIB #####" />
 		<property environment="env" />
