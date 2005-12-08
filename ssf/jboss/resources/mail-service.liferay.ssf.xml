@@ -1,31 +1,19 @@
 <?xml version="1.0"?>
 
 <server>
-	<mbean code="org.jboss.mail.MailService" name="jboss:service=MailSession">
-		<attribute name="JNDIName">mail/MailSession</attribute>
-		<attribute name="User">nobody</attribute>
-		<attribute name="Password">password</attribute>
-		<attribute name="Configuration">
-			<configuration>
-				<property name="mail.store.protocol" value="imap" />
-				<property name="mail.transport.protocol" value="smtp" />
-				<property name="mail.imap.host" value="localhost" />
-				<property name="mail.pop3.host" value="localhost" />
-				<property name="mail.smtp.host" value="localhost" />
-			</configuration>
-		</attribute>
-	</mbean>
 	<mbean code="org.jboss.mail.MailService" name="jboss:service=SiteScape">
 		<attribute name="JNDIName">mail/SiteScape</attribute>
-		<attribute name="User">mccann@sitescape.com</attribute>
-		<attribute name="Password">dontknow</attribute>
+		<attribute name="User">do-not-respond@sitescape.com</attribute>
 		<attribute name="Configuration">
 			<configuration>
-				<property name="mail.store.protocol" value="imap" />
+				<property name="mail.store.protocol" value="pop3" />
 				<property name="mail.transport.protocol" value="smtp" />
-				<property name="mail.imap.host" value="host54a.simplicato.com" />
+				<property name="mail.user" value="do-not-respond@sitescape.com" />
 				<property name="mail.pop3.host" value="host54a.simplicato.com" />
 				<property name="mail.smtp.host" value="host54a.simplicato.com" />
+				<property name="mail.imap.host" value="host54a.simplicato.com" />
+				<property name="mail.from" value="do-not-respond@sitescape.com" />
+				<property name="mail.debug" value="false" />
 			</configuration>
 		</attribute>
 	</mbean>
