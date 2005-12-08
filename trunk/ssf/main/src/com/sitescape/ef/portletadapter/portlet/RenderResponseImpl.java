@@ -99,6 +99,8 @@ public class RenderResponseImpl extends PortletResponseImpl implements RenderRes
 			throw new IllegalArgumentException();
 		}
 
+		getHttpServletResponse().setContentType(contentType);
+		
 		this.contentType = contentType;
 	}
 
