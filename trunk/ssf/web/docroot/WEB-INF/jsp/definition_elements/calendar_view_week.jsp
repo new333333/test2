@@ -85,4 +85,3 @@ if (ssSeenMap.checkIfSeen(e)) {
 
 </table>
 
-<%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %>
