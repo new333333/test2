@@ -65,7 +65,7 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 			element.addAttribute("id", f.getId().toString());
 			element.addAttribute("image", "forum");
         	url = element.addElement("url");
-	    	url.addAttribute(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_VIEW_FORUM);
+	    	url.addAttribute(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
 	     	url.addAttribute(PortletKeys.FORUM_URL_FORUM_ID, f.getId().toString());
 		} else return null;
 		return element;

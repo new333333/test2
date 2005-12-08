@@ -2,6 +2,8 @@
 package com.sitescape.ef.portlet.forum.impl;
 
 import java.util.HashMap;
+import javax.portlet.PortletURL;
+import javax.portlet.RenderResponse;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,8 @@ import com.sitescape.ef.module.workspace.WorkspaceModule;
 
 import com.sitescape.ef.portlet.forum.ActionUtil;
 import com.sitescape.ef.portlet.forum.ForumActionModule;
+import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.util.Toolbar;
 import com.sitescape.ef.domain.DefinitionInvalidException;
 import javax.portlet.RenderRequest;
 
@@ -200,6 +204,26 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		return true;
 		
 	}
+	//Routine to build a definition file on the fly for viewing entries with no definition
+	private void getDefaultEntryView(Map model) {
+		//Create an empty entry definition
+		Document def = getDefinitionModule().getDefaultDefinition("ss_default_entry_view","__definition_default_entry_view", Definition.COMMAND);
+		
+		//Add the "default viewer" item
+		Element entryView = (Element) def.getRootElement().selectSingleNode("//item[@name='entryView']");
+		if (entryView != null) {
+			String itemId = entryView.attributeValue("id", "");
+			Map formData = new HashMap();
+			try {
+				Element newItem = getDefinitionModule().addItemToDefinitionDocument("default", def, itemId, "defaultEntryView", formData);
+			}
+			catch (DefinitionInvalidException e) {
+				//An error occurred while processing the operation; pass the error message back to the jsp
+				//SessionErrors.add(req, e.getClass().getName(),e.getMessage());
+			}
+		}
+		model.put(PortletKeys.CONFIG_ELEMENT, entryView);
+	}
 	private HistoryMap getHistory(RenderRequest req, Long folderId) {
 		HistoryMap history;
 		//check if cached first
@@ -216,7 +240,113 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		}
 		return history; 
 	}
-	
+	protected void buildEntryToolbar(RenderResponse response, Map model, String folderId, String entryId) {
+		
+		Element entryViewElement = (Element)model.get(PortletKeys.CONFIG_ELEMENT);
+		Document entryView = entryViewElement.getDocument();
+		Definition def = (Definition)model.get(PortletKeys.ENTRY_DEFINITION);
+		String entryDefId="";
+		if (def != null)
+			entryDefId= def.getId().toString();
+	    //Build the toolbar array
+		Toolbar toolbar = new Toolbar();
+	    //The "Reply" menu
+		String replyStyle = (String) entryView.getRootElement().attributeValue("replyStyle", "");
+		PortletURL url;
+		if (!replyStyle.equals("")) {
+			url = response.createRenderURL();
+			url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_ADD_REPLY);
+	    	url.setParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId);
+	    	url.setParameter(PortletKeys.FORUM_URL_ENTRY_TYPE, replyStyle);
+	    	url.setParameter(PortletKeys.FORUM_URL_ENTRY_ID, entryId);
+			toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), url);
+		}
+	    
+	    //The "Modify" menu
+		url = response.createRenderURL();
+		url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_MODIFY_ENTRY);
+		url.setParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId);
+		url.setParameter(PortletKeys.FORUM_URL_ENTRY_TYPE, entryDefId);
+		url.setParameter(PortletKeys.FORUM_URL_ENTRY_ID, entryId);
+		toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
+		
+	    
+	    //The "Delete" menu
+		url = response.createRenderURL();
+		url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_DELETE_ENTRY);
+		url.setParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId);
+		url.setParameter(PortletKeys.FORUM_URL_ENTRY_TYPE, entryDefId);
+		url.setParameter(PortletKeys.FORUM_URL_ENTRY_ID, entryId); 
+		toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url);
+	    
+		model.put(PortletKeys.FOLDER_ENTRY_TOOLBAR, toolbar.getToolbar());
+		
+	}
+	protected void buildFolderToolbar(RenderResponse response, Map model, String folderId) {
+		//Build the toolbar array
+		Toolbar toolbar = new Toolbar();
+		String forumId = folderId.toString();
+		//	The "Add" menu
+		Folder folder = (Folder)model.get(PortletKeys.FOLDER);
+		List defaultEntryDefinitions = folder.getEntryDefs();
+		PortletURL url;
+		if (!defaultEntryDefinitions.isEmpty()) {
+			toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+			for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
+				Definition def = (Definition) defaultEntryDefinitions.get(i);
+				url = response.createRenderURL();
+				url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_ADD_ENTRY);
+				url.setParameter(PortletKeys.FORUM_URL_FORUM_ID, forumId);
+				url.setParameter(PortletKeys.FORUM_URL_ENTRY_TYPE, def.getId());
+				toolbar.addToolbarMenuItem("1_add", "entries", def.getTitle(), url);
+			}
+		}
+    
+		//The "Administration" menu
+		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
+		//Configuration
+		url = response.createRenderURL();
+		url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_CONFIGURE_FORUM);
+		url.setParameter(PortletKeys.FORUM_URL_FORUM_ID, forumId);
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);
+		//Definition builder
+		url = response.createActionURL();
+		url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_DEFINITION_BUILDER);
+		url.setParameter(PortletKeys.FORUM_URL_FORUM_ID, forumId);
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
+		//	The "Display styles" menu
+		toolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.display_styles"));
+		//vertical
+		url = response.createRenderURL();
+		url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
+		url.setParameter(PortletKeys.FORUM_URL_OPERATION, PortletKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(PortletKeys.FORUM_URL_FORUM_ID, forumId);
+		url.setParameter(PortletKeys.FORUM_URL_VALUE, ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL);
+		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_horizontal"), url);
+		//horizontal
+		url = response.createRenderURL();
+		url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
+		url.setParameter(PortletKeys.FORUM_URL_OPERATION, PortletKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(PortletKeys.FORUM_URL_FORUM_ID, forumId);
+		url.setParameter(PortletKeys.FORUM_URL_VALUE, ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_VERTICAL);
+		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_vertical"), url);
+		//accessible
+		url = response.createRenderURL();
+		url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
+		url.setParameter(PortletKeys.FORUM_URL_OPERATION, PortletKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(PortletKeys.FORUM_URL_FORUM_ID, forumId);
+		url.setParameter(PortletKeys.FORUM_URL_VALUE, ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_ACCESSIBLE);
+		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_accessible"), url);
+		//iframe
+		url = response.createRenderURL();
+		url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
+		url.setParameter(PortletKeys.FORUM_URL_OPERATION, PortletKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(PortletKeys.FORUM_URL_FORUM_ID, forumId);
+		url.setParameter(PortletKeys.FORUM_URL_VALUE, ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME);
+		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_iframe"), url);
+		model.put(PortletKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
+		
+	}
 	public Map getDeleteEntry(Map formData, RenderRequest req, Long folderId)  {
 		Map model = new HashMap();
 		String entryId = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_ENTRY_ID);
@@ -240,17 +370,17 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		
 	}
 
-	public Map getShowEntry(Map formData, RenderRequest req, Long folderId)  {
+	public Map getShowEntry(Map formData, RenderRequest req, RenderResponse response, Long folderId)  {
 		Map model = new HashMap();
 		String entryId = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_ENTRY_ID);
-		String op = ActionUtil.getStringValue(formData, PortletKeys.ACTION);
+		String op = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_OPERATION);
 		Folder folder = null;
 		FolderEntry entry = null;
 		Map folderEntries = null;
 		//load if not already cached
 		HistoryMap history = getHistory(req, folderId);
 		model.put(PortletKeys.HISTORY_MAP, history);
-		if (op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY)) {
+		if (op.equals("")) {
 			if (!entryId.equals("")) folderEntries  = getFolderModule().getEntryTree(folderId, Long.valueOf(entryId));
 		} else if (op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_NEXT)) {
 			folder = getFolderModule().getFolder(folderId);
@@ -330,6 +460,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 			model.put(PortletKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
 			model.put(PortletKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
 		}
+		model.put(PortletKeys.ENTRY_ID, entryId);
 		model.put(PortletKeys.SEEN_MAP, getProfileModule().getUserSeenMap(null, folder.getId()));
 		model.put(PortletKeys.FOLDER_ENTRY, entry);
 		model.put(PortletKeys.DEFINITION_ENTRY, entry);
@@ -340,10 +471,13 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 			getDefinition(null, model, "//item[@name='entryView']");
 			return model;
 		}
-		getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']");
+		if (getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
+			getDefaultEntryView(model);
+		}
+		buildEntryToolbar(response, model, folderId.toString(), entryId.toString());
 		return model;
 	}
-	public Map getShowFolder(Map formData, RenderRequest req, Long folderId)  {
+	public Map getShowFolder(Map formData, RenderRequest req, RenderResponse response,Long folderId)  {
 		Map folderEntries;
 		Map model = new HashMap();
 		String forumId = folderId.toString();
@@ -365,6 +499,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		model.put(PortletKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId(), folder.getId()));
 		getDefinitions(folder, model);
 		req.setAttribute(PortletKeys.FORUM_URL_FORUM_ID,forumId);
+		buildFolderToolbar(response, model, forumId);
 		return model;
 	}
 	public Map getDefinitionBuilder(Map formData, RenderRequest req, String currentId) {
@@ -444,26 +579,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
     	return model;
     }
     
-	//Routine to build a definition file on the fly for viewing entries with no definition
-	private Document getDefaultEntryView(FolderEntry entry, RenderRequest req) {
-		//Create an empty entry definition
-		Document def = getDefinitionModule().getDefaultDefinition("ss_default_entry_view","__definition_default_entry_view", Definition.COMMAND);
-		
-		//Add the "default viewer" item
-		Element entryView = (Element) def.getRootElement().selectSingleNode("//item[@name='entryView']");
-		if (entryView != null) {
-			String itemId = entryView.attributeValue("id", "");
-			Map formData = new HashMap();
-			try {
-				Element newItem = getDefinitionModule().addItemToDefinitionDocument("default", def, itemId, "defaultEntryView", formData);
-			}
-			catch (DefinitionInvalidException e) {
-				//An error occurred while processing the operation; pass the error message back to the jsp
-				//SessionErrors.add(req, e.getClass().getName(),e.getMessage());
-			}
-		}
-		return def;
-	}
+
 
 	public Element setupDomElement(String type, Object source, Element element) {
 		if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
@@ -473,7 +589,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 			element.addAttribute("id", f.getId().toString());
 			element.addAttribute("image", "forum");
         	Element url = element.addElement("url");
-	    	url.addAttribute(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_VIEW_FORUM);
+	    	url.addAttribute(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
 	     	url.addAttribute(PortletKeys.FORUM_URL_FORUM_ID, f.getId().toString());
 		} else return null;
 		return element;
