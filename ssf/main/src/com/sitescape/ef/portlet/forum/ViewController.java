@@ -10,8 +10,10 @@ import javax.portlet.PortletSession;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Date;
 
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebHelper;
@@ -50,6 +52,15 @@ public class ViewController  extends SAbstractForumController {
 			PortletSession ps = WebHelper.getRequiredPortletSession(request);
 			ps.setAttribute(WebKeys.CALENDAR_VIEWMODE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.FORUM_URL_VALUE,""));
+		}
+		if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE)) {
+			PortletSession ps = WebHelper.getRequiredPortletSession(request);
+			String urldate = PortletRequestUtils.getStringParameter(request,WebKeys.CALENDAR_URL_NEWVIEWDATE, "");
+			String urlviewmode = PortletRequestUtils.getStringParameter(request,WebKeys.CALENDAR_URL_VIEWMODE, "");
+			ps.setAttribute(WebKeys.CALENDAR_VIEWMODE, urlviewmode);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd");
+			Date newdate = sdf.parse(urldate);
+			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, newdate);
 		}
 
 		return returnToViewForum(request, response, formData, folderId);
