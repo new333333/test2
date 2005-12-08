@@ -13,6 +13,7 @@ import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.ConfigurationException;
+import com.sitescape.ef.util.SpringContextUtil;
 /**
  *
  * @author Jong Kim
@@ -20,7 +21,7 @@ import com.sitescape.ef.ConfigurationException;
 public class DefaultFolderEmailNotification extends SSStatefulJob implements FolderEmailNotification {
 	 
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-    	MailModule mail = (MailModule)ctx.getBean("mailModule");
+    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 		try {
 			mail.sendNotifications(new Long(jobDataMap.getLong("forum")));
 		} catch (NoFolderByTheIdException nf) {
@@ -31,7 +32,7 @@ public class DefaultFolderEmailNotification extends SSStatefulJob implements Fol
     }
 	protected void removeJobOnError(JobExecutionContext context, Exception e) throws JobExecutionException {
 		if (e instanceof NoUserByTheIdException) {
-			AdminModule admin = (AdminModule)ctx.getBean("adminModule");
+			AdminModule admin = (AdminModule)SpringContextUtil.getBean("adminModule");
 			admin.disableNotification(new Long(jobDataMap.getLong("forum")));
 		}
 		super.removeJobOnError(context,e);	
