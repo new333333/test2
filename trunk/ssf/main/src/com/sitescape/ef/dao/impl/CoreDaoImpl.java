@@ -44,7 +44,10 @@ import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
+import com.sitescape.ef.domain.NoEmailAliasByTheIdException;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.domain.EmailAlias;
+import com.sitescape.ef.domain.PostingDef;
 
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.FilterControls;
@@ -98,7 +101,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 }
             );
     }	
-
+ 
     public Object load(Class clazz, String id) {
         return getHibernateTemplate().get(clazz, id);
     }
@@ -552,7 +555,18 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	public List loadDefinitions(String zoneName) {
     	return loadObjects(new ObjectControls(Definition.class), new FilterControls("zoneName", zoneName));
 	}
-
+	public List loadEmailAliases(String zoneName) {
+    	return loadObjects(new ObjectControls(EmailAlias.class), new FilterControls("zoneName", zoneName));
+	}
+	public EmailAlias loadEmailAlias(String aliasId, String zoneName) {
+ 		EmailAlias alias = (EmailAlias)load(EmailAlias.class, aliasId);
+        if (alias == null) {throw new NoEmailAliasByTheIdException(aliasId);}
+        //make sure from correct zone
+        if (!alias.getZoneName().equals(zoneName)) {throw new NoEmailAliasByTheIdException(aliasId);}
+  		return alias;
+		
+	}
+	
 	/**
 	 * Perform a write of a new object now using a new Session so we can commit it fast
 	 * @param obj
@@ -568,8 +582,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	}
 		
 	}
-	public List loadPostings() {
-		return getHibernateTemplate().find("from com.sitescape.ef.domain.PostingDef");
+	public List loadPostings(String zoneName) {
+    	return loadObjects(new ObjectControls(PostingDef.class), new FilterControls("zoneName", zoneName));
 	}
 
 }

@@ -267,7 +267,7 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 			from = mailModule.getMailProperty(folder.getZoneName(), MailModule.NOTIFY_FROM);
 		return from;
 	}
-	public void postMessages(Folder folder, PostingDef pDef, String alias, Message[] msgs, Session session) {
+	public void postMessages(Folder folder, PostingDef pDef, Message[] msgs, Session session) {
 		String type;
 		Object content;
 		Map fileItems = new HashMap();

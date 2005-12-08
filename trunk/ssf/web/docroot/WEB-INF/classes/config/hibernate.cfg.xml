@@ -33,6 +33,7 @@
 	    <mapping resource="com/sitescape/ef/domain/Binder.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/CustomAttribute.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/Definition.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/EmailAlias.hbm.xml"/> 
 	    <mapping resource="com/sitescape/ef/domain/Event.hbm.xml"/> 
 	    <mapping resource="com/sitescape/ef/domain/FolderCounts.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/FolderEntry.hbm.xml"/>

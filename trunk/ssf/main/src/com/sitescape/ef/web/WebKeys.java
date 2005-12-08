@@ -95,6 +95,7 @@ public class WebKeys {
     public static final String DEFAULT_FOLDER_DEFINITION_ID="ssDefaultFolderDefinitionId";
     public static final String DEFINITION="ssDefinition";
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
+    public static final String EMAIL_ALIASES="ssEmailAliases";
     public static final String ENTRY_DEFINITION="ssEntryDefinition";
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_ID = "ssEntryId";
@@ -117,7 +118,6 @@ public class WebKeys {
     public static final String LDAP_CONFIG="ssLdapConfig";
     public static final String NOTIFICATION="ssNotification";
     public static final String POSTINGS="ssPostings";
-    public static final String POSTING_CONFIG="ssPostingConfig";
     public static final String PUBLIC_DEFINITIONS="ssPublicDefinitions";
     public static final String PUBLIC_ENTRY_DEFINITIONS="ssPublicEntryDefinitions";
     public static final String PUBLIC_FOLDER_DEFINITIONS="ssPublicFolderDefinitions";
@@ -144,6 +144,7 @@ public class WebKeys {
     public static final String VIEW="forum/view";
     public static final String VIEW_NO_ENTRY="forum/view_forum_no_entry";
     public static final String VIEW_MODIFY_ENTRY="forum/modify_entry";
+    public static final String VIEW_DELETE_ENTRY="forum/delete_entry";
     public static final String VIEW_EDIT="forum/edit";
     public static final String VIEW_ADD_ENTRY = "forum/add_entry";
     public static final String VIEW_DEFINITION="definition_builder/view_definition_builder";

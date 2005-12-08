@@ -25,6 +25,7 @@
 						<entry key="configure_forum"><ref bean="forumConfigureController"/></entry>
 						<entry key="definition_builder"><ref bean="forumDefinitionController"/></entry>
 						<entry key="modify_entry"><ref bean="forumModifyEntryController"/></entry>
+						<entry key="delete_entry"><ref bean="forumModifyEntryController"/></entry>
 						<entry key="view_entry"><ref bean="forumViewEntryController"/></entry>
 						<entry key="view_forum"><ref bean="forumViewController"/></entry>
 						<entry key="view_unseen"><ref bean="forumListUnseenController"/></entry>

@@ -22,50 +22,43 @@ import com.sitescape.ef.web.util.ScheduleHelper;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.util.Validator;
 
-import com.sitescape.ef.module.mail.PostingConfig;
+import com.sitescape.ef.jobs.ScheduleInfo;
 
 public class ConfigurePostingJobController extends  SAbstractController  {
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
-			PostingConfig config = new PostingConfig();
-			Map newAliases = new HashMap();
+			ScheduleInfo config = getAdminModule().getPostingSchedule();
 			config.setSchedule(ScheduleHelper.getSchedule(request));
-			config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
+			config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));
+			getAdminModule().setPostingSchedule(config);
+			
 			int pos =0;
+			Map updates = new HashMap();
 			while (true) {
 				if (!formData.containsKey("alias" + pos))
 					break;
 				String alias = PortletRequestUtils.getStringParameter(request, "alias" + pos, "").trim().toLowerCase();
-				Long aliasId=null;
+				String aliasId=null;
 				try {
-					aliasId = PortletRequestUtils.getLongParameter(request, "aliasId" + pos);
+					aliasId = PortletRequestUtils.getStringParameter(request, "aliasId" + pos);
 				} catch (Exception ex) {};
 				
 				if (!formData.containsKey("delete" + pos)) {
 					if (!Validator.isNull(alias)) {
-						if (newAliases.containsKey(alias)) {
-							//duplicate name - convert value to list
-							Object val = newAliases.get(alias);
-							List valList;
-							if (val instanceof Long) {
-								valList = new ArrayList();
-								valList.add(val);
-							} else {
-								valList = (List)val;
-							}
-							valList.add(aliasId);
-							newAliases.put(alias, valList);
+						updates.put("aliasName", alias);
+						if (!Validator.isNull(aliasId)) {
+							getAdminModule().modifyEmailAlias(aliasId, updates);
 						} else {
-							newAliases.put(alias, aliasId);
+							getAdminModule().addEmailAlias(updates);
 						}
+						
 					}
-				}
+				} else if (!Validator.isNull(aliasId)) getAdminModule().deleteEmailAlias(aliasId);
 				++pos;
+				updates.clear();
 			}
-		config.setAliases(newAliases);
-		getAdminModule().setPostingConfig(config);
 		response.setRenderParameters(formData);
 	} else if (formData.containsKey("cancelBtn")) {
 		response.setRenderParameter(WebKeys.ACTION, "");
@@ -79,10 +72,9 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		HashMap model = new HashMap();
-		PostingConfig config = getAdminModule().getPostingConfig();
-		model.put(WebKeys.POSTING_CONFIG, config);	
-		List posts = getAdminModule().getPostingDefs();
-		model.put(WebKeys.POSTINGS, posts);
+		ScheduleInfo config = getAdminModule().getPostingSchedule();
+		model.put(WebKeys.SCHEDULE_INFO, config);	
+		model.put(WebKeys.EMAIL_ALIASES, getAdminModule().getEmailAliases());
 		Toolbar toolbar = new Toolbar();
 		PortletURL url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.POSTING_ACTION_CONFIGURE);

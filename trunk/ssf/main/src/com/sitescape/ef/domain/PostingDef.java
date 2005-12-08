@@ -23,8 +23,9 @@ public class PostingDef extends PersistentObject {
     private boolean enabled=true;
     private String subject;
     private Binder binder;
-    private Long emailId;
+    private EmailAlias emailAlias;
     private Definition definition;
+    private String zoneName;
  
     /**
      * @hibernate.property 
@@ -36,6 +37,15 @@ public class PostingDef extends PersistentObject {
     }
     public void setEnabled(boolean enabled) {
     	this.enabled = enabled;
+    }
+    /**
+     * @hibernate.property length="100" not-null="true"
+     */
+    public String getZoneName() {
+    	return zoneName;
+    }
+    public void setZoneName(String zoneName) {
+    	this.zoneName = zoneName;
     }
     /**
      * @hibernate.many-to-one
@@ -57,15 +67,14 @@ public class PostingDef extends PersistentObject {
     	this.definition = definition;
     }   
     /**
-     * The mapping from id to address is kept in the scheduler.
-     * @hibernate.property
+     * @hibernate.many-to-one
      * @return
      */
-    public Long getEmailId() {
-    	return emailId;
+    public EmailAlias getEmailAlias() {
+    	return emailAlias;
     }
-    public void setEmailId(Long emailId) {
-    	this.emailId = emailId;
+    public void setEmailAlias(EmailAlias emailAlias) {
+    	this.emailAlias = emailAlias;
     }
     /**
      * @hibernate.property length="256" 
@@ -77,14 +86,14 @@ public class PostingDef extends PersistentObject {
     public void setSubject(String subject) {
         this.subject = subject;
     }
-    public SearchTerm getSearchTerm(String emailAddress) {
-    	if (emailId == null) return null;
+    public SearchTerm getSearchTerm() {
+    	if (emailAlias == null) return null;
     	
-    	if (Validator.isNull(emailAddress)) return null;
+    	if (Validator.isNull(emailAlias.getAliasName())) return null;
     	if (Validator.isNull(subject)) {
-    		return new RecipientStringTerm(Message.RecipientType.TO,emailAddress);
+    		return new RecipientStringTerm(Message.RecipientType.TO,emailAlias.getAliasName());
     	} else {
-    		return new AndTerm(new RecipientStringTerm(Message.RecipientType.TO,emailAddress), new SubjectTerm(subject));
+    		return new AndTerm(new RecipientStringTerm(Message.RecipientType.TO,emailAlias.getAliasName()), new SubjectTerm(subject));
     	}
     }
     /**

@@ -20,11 +20,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.module.mail.PostingConfig;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.domain.EmailAlias;
 import com.sitescape.util.Validator;
 
 
@@ -34,6 +34,7 @@ public class ConfigurePostingController extends  SAbstractController  {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
 			Map updates = new HashMap();		
+			List aliases = getAdminModule().getEmailAliases();
 			for (int i=0; i != -1; ++i) {
 				Long id = null;
 				try {
@@ -50,12 +51,10 @@ public class ConfigurePostingController extends  SAbstractController  {
 							updates.put("subject", PortletRequestUtils.getStringParameter(request, "subject" + i, ""));
 						}
 						if (formData.containsKey("select" + i)) {
-							try {
-								updates.put("emailId", PortletRequestUtils.getLongParameter(request, "select" + i));
-							} catch (Exception ex) {}
+							EmailAlias alias = findAlias(aliases, PortletRequestUtils.getStringParameter(request, "select" + i,  ""));
+							updates.put("emailAlias", alias);
 						}
 						getAdminModule().modifyPosting(id, postingId, updates);
-						//skip folder, cannot change
 					} 
 				} else {
 					//new entry
@@ -63,9 +62,8 @@ public class ConfigurePostingController extends  SAbstractController  {
 						updates.put("subject", PortletRequestUtils.getStringParameter(request, "subject" + i, ""));
 					}
 					if (formData.containsKey("select" + i)) {
-						try {
-							updates.put("emailId", PortletRequestUtils.getLongParameter(request, "select" + i));
-						} catch (Exception ex) {}
+						EmailAlias alias = findAlias(aliases, PortletRequestUtils.getStringParameter(request, "select" + i,  ""));
+						updates.put("emailAlias", alias);
 					}
 					getAdminModule().addPosting(id, updates);
 				}
@@ -97,8 +95,8 @@ public class ConfigurePostingController extends  SAbstractController  {
 			}
 			model.put(WebKeys.FOLDER_DOM_TREE, tree);
 			model.put(WebKeys.FOLDER, folder);
-			PostingConfig config = getAdminModule().getPostingConfig();
-			model.put(WebKeys.POSTING_CONFIG, config);	
+			model.put(WebKeys.SCHEDULE_INFO, getAdminModule().getPostingSchedule());
+			model.put(WebKeys.EMAIL_ALIASES, getAdminModule().getEmailAliases());	
 			model.put(WebKeys.FOLDERS, helper.getFolders());
 			return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_POSTING, model); 
 		} catch (Exception e) {
@@ -106,6 +104,14 @@ public class ConfigurePostingController extends  SAbstractController  {
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(new WSTreeHelper(response));
 			return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_POSTING, WebKeys.WORKSPACE_DOM_TREE, wsTree);		
 		}
+	}
+	private EmailAlias findAlias(List aliases, String aliasId) {
+		if (Validator.isNull(aliasId)) return null;
+		for (int i=0; i<aliases.size(); ++i) {
+			EmailAlias alias = (EmailAlias)aliases.get(i);
+			if (alias.getId().equals(aliasId)) return alias;
+		}
+		return null;
 	}
 	private class FolderTreeHelper implements DomTreeBuilder {
 		private List folderList=new ArrayList();

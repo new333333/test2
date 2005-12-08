@@ -10,9 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sitescape.ef.jobs.Schedule;
 import com.sitescape.ef.jobs.ScheduleInfo;
-import com.sitescape.ef.module.mail.PostingConfig;
 import com.sitescape.ef.security.function.Function;
 
 /**
@@ -31,11 +29,15 @@ public interface AdminModule {
     public ScheduleInfo getNotificationConfig(Long binderId);
     public void setNotificationConfig(Long binderId, ScheduleInfo config);
     public void setEnablePostings(boolean enable);
-    public PostingConfig getPostingConfig();
-    public void setPostingConfig(PostingConfig postingConfig) throws ParseException;
+    public ScheduleInfo getPostingSchedule();
+    public void setPostingSchedule(ScheduleInfo config) throws ParseException;
     public List getPostingDefs();
     public void modifyPosting(Long binderId, String postingId, Map updates);
     public void addPosting(Long binderId, Map updates);
     public void deletePosting(Long binderId, String postingId);
+    public List getEmailAliases();
+    public void modifyEmailAlias(String aliasId, Map updates);
+    public void addEmailAlias(Map updates);
+    public void deleteEmailAlias(String aliasId);
 
 }
