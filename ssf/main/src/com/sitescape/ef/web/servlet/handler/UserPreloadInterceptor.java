@@ -24,21 +24,18 @@ public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		RequestContext requestContext = RequestContextHolder.getRequestContext();
 		
-		// TODO testing for now...
-		try {
-		User user = getCoreDao().findUserByNameOnlyIfEnabled
-			(requestContext.getUserName(), requestContext.getZoneName());
-		
-		requestContext.setUser(user);
-		}
-		catch(Exception e) {
-			// TODO This should be removed. 
-			User user = getCoreDao().findUserByNameOnlyIfEnabled("wf_admin", "liferay.com");
-			requestContext.setUser(user);
+		if(requestContext.getUser() == null) {
+			loadUser(requestContext);
 		}
 
 		return true;
 	}
 	    
+	private void loadUser(RequestContext reqCxt) {
+		User user = getCoreDao().findUserByNameOnlyIfEnabled(
+				reqCxt.getUserName(), reqCxt.getZoneName());
+
+		reqCxt.setUser(user);
+	}
 
 }

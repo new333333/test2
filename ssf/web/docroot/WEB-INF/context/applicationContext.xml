@@ -173,6 +173,8 @@
 		<property name="interceptors">
 			<list>
 				<ref bean="portletParameterMappingInterceptor"/>
+				<!-- Make sure that a session is set up -->
+				<ref bean="portletSessionSetupInterceptor"/>
 				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
 				     This must come before userPreloadInterceptor since it
 				     might need to perform DB lookup -->
@@ -188,6 +190,8 @@
         <property name="order"><value>20</value></property>
 		<property name="interceptors">
 			<list>
+				<!-- Make sure that a session is set up -->
+				<ref bean="portletSessionSetupInterceptor"/>
 				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
 				     This must come before userPreloadInterceptor since it
 				     might need to perform DB lookup -->
@@ -214,6 +218,8 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<!--<property name="singleSession"><value>false</value></property>-->
 	</bean>
+	
+	<bean id="portletSessionSetupInterceptor" class="com.sitescape.ef.web.portlet.handler.SessionSetupInterceptor"/>
 	
 	<bean id="portletUserPreloadInterceptor" class="com.sitescape.ef.web.portlet.handler.UserPreloadInterceptor">
 		<property name="coreDao"><ref local="coreDao"/></property>

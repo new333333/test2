@@ -28,12 +28,16 @@
 
 	<!-- Handler mapping implementation that maps from URLs to request handler beans -->
 	<bean id="defaultHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-		<!-- Do not repeat any interceptor provided by the portlet framework. 
-		     We want to be able to reuse exactly the same portlet framework 
-		     already set up to work with the regular/real portlet container 
-		     (specifically the same Spring PortletMVC framework). -->
 		<property name="interceptors">
 			<list>
+				<!-- Check session to ensure that the request sequence is valid -->
+				<ref bean="sessionValidationInterceptor"/>
+				<!-- Set up RequestContext -->
+				<ref bean="initRequestContextInterceptor"/>
+				<!-- Do not add OpenSessionInViewInterceptor or UserPreloadInterceptor
+				     here since the same functionality is provided by the Spring's
+				     PortletMVC framework and we designed adapter framework to work
+				     with it transparently (rather than reinventing the wheel). -->
 			</list>
 		</property>
 		<property name="urlMap">
@@ -42,6 +46,10 @@
 			</map>
 		</property>
 	</bean>
+
+	<bean id="sessionValidationInterceptor" class="com.sitescape.ef.web.servlet.handler.SessionValidationInterceptor"/>
+
+	<bean id="initRequestContextInterceptor" class="com.sitescape.ef.web.servlet.handler.InitRequestContextInterceptor"/>
 
 	<!-- Handler Exception Resolver -->
 	<!--
