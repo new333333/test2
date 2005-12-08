@@ -11,16 +11,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 	
 	private CoreDao coreDao;
 	
-	private static AuthenticationManager authMgr; // Singleton
-
-	public static AuthenticationManager getInstance() {
-		return authMgr;
-	}
-
-	public AuthenticationManagerImpl() {
-		authMgr = this;
-	}
-	
 	protected CoreDao getCoreDao() {
 		return coreDao;
 	}
