@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.portlet.forum.ActionUtil;
+import com.sitescape.ef.security.function.FunctionManager;
 import com.sitescape.ef.module.ldap.LdapConfig;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.ef.jobs.Schedule;
@@ -42,8 +43,9 @@ public class ConfigureRolesController extends  SAbstractController {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		LdapConfig config = getLdapModule().getLdapConfig();
-		return new ModelAndView("administration/configureRoles", "ssLdapConfig", config);
+		FunctionManager functionManager = getFunctionManager();
+		
+		return new ModelAndView("administration/configureRoles");
 		
 	}
 }
