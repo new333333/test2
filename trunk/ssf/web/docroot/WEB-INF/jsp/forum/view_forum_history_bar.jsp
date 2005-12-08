@@ -95,7 +95,7 @@ function ss_getPreviousEntryId() {
           />"
           onClick="ss_getPreviousEntryId(ss_currentEntryId);return false;" ><img 
           border="0" src="<html:imagesPath/>pics/sym_s_next.gif"></a>&nbsp;</span>
-
+<div class="ss_divider"></div>
 <br />
 <% // Debugging code (turned off) %>
 <c:if test="">
