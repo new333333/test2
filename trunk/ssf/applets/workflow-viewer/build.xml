@@ -12,8 +12,7 @@
   		<property file="${project.dir}/build.properties" />
 		<path id="project.classpath">
 			<pathelement path="${classpath}" />
-			<fileset dir=".." includes="*.jar" />
-			<fileset dir="${project.dir}/lib" includes="*.jar" />
+			<fileset dir="../lib" includes="*.jar" />
 		</path>
 		<property name="jar.file" value="workflow-viewer.jar" />
 		<property name="java2html.dir" value="${api.dir}/applets/workflow-viewer" />
