@@ -26,7 +26,7 @@
 						<entry key="modify_entry"><ref bean="forumModifyEntryController"/></entry>
 						<entry key="view_entry"><ref bean="forumViewEntryController"/></entry>
 						<entry key="view_forum"><ref bean="forumViewController"/></entry>
-<					</map>
+					</map>
 				</entry>
 				<entry key="edit">
 					<map>
