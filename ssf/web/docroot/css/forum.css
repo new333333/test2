@@ -69,19 +69,19 @@ ul.ss_nobullet li ul.ss_nobullet {
   color: #cccccc; 
   }
 
-a {
+a.ss_link {
   text-decoration: underline;
   color: #3366cc;
   font-family: arial, helvetica, sans-serif;
   }
 
-a:visited, a:inactive {
+a.ss_link:visited, a.ss_link:inactive {
   text-decoration: underline;
   color: #666666;
   font-family: arial, helvetica, sans-serif;
   }
 
-a:hover, a:active {
+a.ss_link:hover, a.ss_link:active {
   text-decoration: underline;
   color: 666666;
   font-family: arial, helvetica, sans-serif;
@@ -286,7 +286,7 @@ a.ss_toolbar_item:hover {
   display: inline;
   font-weight: bold;
   font-size:smaller;
-  text-decoration:underline;
+  text-decoration: none;
   color: #000000;
   font-family: arial, helvetica, sans-serif;
   margin: 2px;
