@@ -30,16 +30,16 @@ function showUrl(params) {
 </script>
 
 <div class="ss_portlet" align="left">
-<a href="<portlet:renderURL/>" onClick="return showUrl('action=fragment&operation=showFragment&')">
+<a href="" onClick="return showUrl('action=fragment&operation=showFragment&')">
 show url in portlet
 </a>
 
 <br>
 
-<a href="<portlet:renderURL>
-         <portlet:param name="action" value="fragment"/>
-         <portlet:param name="operation" value="showFragment"/>
-         </portlet:renderURL>" onClick="alert(this.href)">
+<a href="<ssf:url 
+    webPath="viewFragment" >
+	<ssf:param name="operation" value="viewFragment" />
+    </ssf:url>" onClick="alert(this.href)">
 show url in iframe
 </a>
 
