@@ -1,6 +1,7 @@
 package com.sitescape.ef.module.folder.index;
 
 import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -35,7 +36,9 @@ public class IndexUtils {
     
     public static final String ALL_TEXT_FIELD = "_allText";
     public static final String CREATION_DATE_FIELD = "_creationDate";
+    public static final String CREATION_DAY_FIELD = "_creationDay";
     public static final String MODIFICATION_DATE_FIELD = "_modificationDate";
+    public static final String MODIFICATION_DAY_FIELD = "_modificationDay";
     public static final String CREATORID_FIELD = "_creatorId";
     public static final String MODIFICATIONID_FIELD = "_modificationId";
     public static final String READ_ACL_FIELD = "_readAcl";
@@ -68,14 +71,21 @@ public class IndexUtils {
     
     public static void addCreationDate(Document doc, Entry entry) {
         // Add creation-date field
-        Field creationDateField = Field.Keyword(CREATION_DATE_FIELD, entry.getCreation().getDate());
+    	Date creationDate = entry.getCreation().getDate();
+        Field creationDateField = Field.Keyword(CREATION_DATE_FIELD, creationDate);
         doc.add(creationDateField);
+        Field creationDayField = Field.Keyword(CREATION_DAY_FIELD, formatDayString(creationDate));
+        doc.add(creationDayField);
+        
     }
     
     public static void addModificationDate(Document doc, Entry entry) {
     	// Add modification-date field
-    	Field modificationDateField = Field.Keyword(MODIFICATION_DATE_FIELD, entry.getModification().getDate());
-    	doc.add(modificationDateField);
+    	Date modDate = entry.getModification().getDate();
+    	Field modificationDateField = Field.Keyword(MODIFICATION_DATE_FIELD, modDate);
+    	doc.add(modificationDateField);        
+    	Field modificationDayField = Field.Keyword(MODIFICATION_DAY_FIELD, formatDayString(modDate));
+        doc.add(modificationDayField);
     }
 
     public static void addEvents(Document doc, Entry entry) {
@@ -179,5 +189,12 @@ public class IndexUtils {
         }
         
         doc.add(racField);
+    }
+    
+    private static String formatDayString(Date date) {
+    	DateFormat df = DateFormat.getInstance();
+    	SimpleDateFormat sf = (SimpleDateFormat)df;
+    	sf.applyPattern("yyyyMMdd");
+    	return(df.format(date));
     }
 }
