@@ -1,6 +1,7 @@
 Ant 1.6.2
 Ant Contrib 0.6
 Axis 1.2rc1 (removed log4j.properties)
+bsh 2.0b2
 Commons Beanutils 1.6.1
 Commons Collections 3.1
 Commons Jelly 1.0 RC1
@@ -18,6 +19,8 @@ Generama 1.2
 Hibernate 3.0.5
 Jaxen 1.1-beta-5
 JAXRPC 1.1
+JBPM 3.0
+JBPM-Identity 3.0
 JDOM Beta 8
 JTA 1.0.1b
 JTDS 0.9.1
