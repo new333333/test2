@@ -40,9 +40,10 @@ public class QueryBuilder {
     private static final String SORTBY_ELEMENT = "SORTBY";
     private static final String RANGE_ELEMENT = "RANGE";
     private static final String USERACL_ELEMENT = "USERACL";
-    private SearchObject searchObject = new SearchObject();
 
-	private SearchObject buildQuery(Document domQuery) {
+    
+	public SearchObject buildQuery(Document domQuery) {
+		SearchObject so = new SearchObject();
 		
 		Element root = domQuery.getRootElement();
 		if (!root.getText().equals("QUERY")) {
@@ -52,10 +53,10 @@ public class QueryBuilder {
 			//String attribute = (String)i.next();
 		}
 		
-		parseRootElement(root);
+		parseRootElement(root,so);
 		//String qString = parseRootElement(root);
 		
-		return searchObject;
+		return so;
 /*
  * 	For testing only	
 		QueryParser qp = new QueryParser("contents", new WhitespaceAnalyzer());
@@ -70,20 +71,20 @@ public class QueryBuilder {
 		
 	}
 	
-	private void parseRootElement(Element element) {
+	private void parseRootElement(Element element, SearchObject so) {
 		String qString = "";
 		
 		for (Iterator i = element.elementIterator();i.hasNext();) {
 			Element elem = (Element)i.next();
 			
 			String operator = elem.getName();
-			qString += parseElement(elem,operator);
+			qString += parseElement(elem,operator,so);
 			
 		}
-		searchObject.setQueryString(qString);
+		so.setQueryString(qString);
 	}
 	
-	private String parseElement(Element element, String op) {
+	private String parseElement(Element element, String op, SearchObject so) {
 		
 		String qString = "";				
 
@@ -98,7 +99,7 @@ public class QueryBuilder {
 					for ( int j = 0; j < elemCount; j++ ) {
 						Node node = (Node)elements.get(j);
 						if ( node instanceof Element ) {
-							qString += parseElement((Element)node, operator);
+							qString += parseElement((Element)node, operator, so);
 							if (j < (elemCount - 1)) { 
 								qString += " " + operator + " ";
 							}
@@ -117,7 +118,7 @@ public class QueryBuilder {
 				}
 				Node node = (Node)elements.get(0);
 				qString += "( NOT (";
-				qString += parseElement((Element)node, operator);
+				qString += parseElement((Element)node, operator, so);
 				qString += "))";
 			}
 			else if (operator.equals(LIKE_ELEMENT)) {
@@ -127,11 +128,11 @@ public class QueryBuilder {
 					System.out.println("Problem in the LIKE element");
 				}
 				Node node = (Node)elements.get(0);
-				qString += parseElement((Element)node, operator);
+				qString += parseElement((Element)node, operator,so);
 				qString += "~";
 			}			
 			else if (operator.equals(SORTBY_ELEMENT)) {
-				processSORTBY(element);
+				processSORTBY(element,so);
 			}
 			else if (operator.equals(RANGE_ELEMENT)) {
 				qString += "(" + processRANGE(element) + ")";
@@ -141,9 +142,9 @@ public class QueryBuilder {
 				User user = RequestContextHolder.getRequestContext().getUser();
 				Set principalIds = user.computePrincipalIds();
 				qString += "(";
-				qString += " aclreaddef:readdef ";
+				qString += " _readAcl:all ";
 				for(Iterator i = principalIds.iterator(); i.hasNext();) {
-					qString += " OR aclread:" + i.next();
+					qString += " OR _readAcl:" + i.next();
 				}
 				qString += ")";
 			}
@@ -186,7 +187,7 @@ public class QueryBuilder {
 		return termText;
 	}
 	
-	private void processSORTBY(Element element) {
+	private void processSORTBY(Element element, SearchObject so) {
 
 		boolean ascend = false;
 		//SortField[] fields = null;
@@ -207,7 +208,7 @@ public class QueryBuilder {
 				fields[i] = new SortField(child.getText(),ascend);
 			}
 		}
-		searchObject.setSortBy(fields);
+		so.setSortBy(fields);
 		//return fields;
 	}
 
@@ -254,6 +255,7 @@ public class QueryBuilder {
 	
 	public void test() {
 		Document document = null;
+		SearchObject so = new SearchObject();
 		SAXReader reader = new SAXReader();
 		try {
 			URL url = new URL("file:///c|/v8/query.txt");
