@@ -17,7 +17,7 @@ import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.util.Constants;
 import com.sitescape.ef.util.FileHelper;
-import com.sitescape.ef.webdav.client.WebdavUtil;
+import com.sitescape.ef.util.WebdavUtil;
 
 public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactory implements RepositoryService {
 
