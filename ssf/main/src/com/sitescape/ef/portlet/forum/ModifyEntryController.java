@@ -59,6 +59,7 @@ public class ModifyEntryController extends SAbstractForumController {
 		if (formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
 			path = WebKeys.VIEW_FORUM;
 			model.put(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
+			request.setAttribute(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_ENTRY);
 			try {
 				String entryId = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ENTRY_ID);				
 				model.put(WebKeys.FORUM_URL_ENTRY_ID, entryId);
