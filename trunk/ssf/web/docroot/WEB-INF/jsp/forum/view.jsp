@@ -15,6 +15,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<jsp:useBean id="ssFolderList" type="java.util.List" scope="request" />
 
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
@@ -22,19 +23,23 @@
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td valign="top">
-				<font class="gamma" size="2">
-				<c:if test="${empty ssFolder}">
-				  The portlet preferences are not set.  Choose the edit button to configure the
-				  portlet
+				<c:if test="${empty ssFolderList}">
+				  <ssf:nlt tag="forum.notConfigured" 
+				   text="The portlet preferences are not set.  Choose the edit button to configure the portlet."/>
 				 </c:if>
-				<c:if test="${!empty ssFolder}">
-				<a href="<portlet:renderURL windowState="maximized">
-						<portlet:param name="action" value="view_forum"/>
-						<portlet:param name="forumId" value="${ssFolder.id}"/>
-					</portlet:renderURL>"><c:out value="${ssFolder.title}"/></a>
+				<c:if test="${!empty ssFolderList}">
+					<table cellspacing="0" cellpadding="0">
+					<c:forEach var="folder" items="<%= ssFolderList %>">
+					  <tr><td>
+						<a href="<portlet:renderURL windowState="maximized">
+								<portlet:param name="action" value="view_forum"/>
+								<portlet:param name="forumId" value="${folder.id}"/>
+							</portlet:renderURL>"><c:out value="${folder.title}"/></a>
+					  </td></tr>
+					</c:forEach>
+					</table>
 				 </c:if>
 				<br>
-				</font>
 			</td>
 		</tr>
 		</table>

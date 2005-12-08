@@ -2,6 +2,7 @@ package com.sitescape.ef.portlet.forum;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
@@ -10,9 +11,12 @@ import javax.portlet.PortletSession;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Date;
+import java.util.TreeMap;
 
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.PortletRequestUtils;
@@ -34,14 +38,33 @@ public class ViewController  extends SAbstractForumController {
 			RenderResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
-		Long folderId=null;
+		Long folderId = null;
+
+		if (request.getWindowState().equals(WindowState.NORMAL)) {
+			//This is the portlet view; get the configured list of folders to show
+			String[] preferredFolderIds = request.getPreferences().getValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
+
+			//Build the jsp bean (sorted by folder title)
+			List folderIds = new ArrayList();
+			for (int i = 0; i < preferredFolderIds.length; i++) {
+				folderIds.add(new Long(preferredFolderIds[i]));
+			}
+			if (folderIds.size() > 0) {
+				return new ModelAndView(WebKeys.VIEW, WebKeys.FOLDER_LIST, getFolderModule().getSortedFolderList(folderIds));
+			}
+			try {
+				folderId = ActionUtil.getForumId(request);
+			} catch (NoFolderByTheIdException nf) {
+				return new ModelAndView(WebKeys.VIEW);
+			}
+			folderIds.add(folderId);
+			return new ModelAndView(WebKeys.VIEW, WebKeys.FOLDER_LIST, getFolderModule().getSortedFolderList(folderIds));
+		}
+
 		try {
 			folderId = ActionUtil.getForumId(request);
 		} catch (NoFolderByTheIdException nf) {
 			return new ModelAndView(WebKeys.VIEW);
-		}
-		if (request.getWindowState().equals(WindowState.NORMAL)) {
-			return new ModelAndView(WebKeys.VIEW, WebKeys.FOLDER, getFolderModule().getFolder(folderId));
 		}
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_OPERATION, "");
 		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {

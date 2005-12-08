@@ -6,11 +6,16 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
@@ -29,11 +34,20 @@ public class EditController extends SAbstractController implements DomTreeBuilde
 	throws Exception {
 
 		PortletPreferences prefs = request.getPreferences();
-
-		String forumId = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_FORUM_ID, "");
-
-		//Get the name of the forum to be displayed
-		prefs.setValue(WebKeys.FORUM_URL_FORUM_ID, forumId);
+		Map formData = request.getParameterMap();
+		List forumPrefIdList = new ArrayList();
+		
+		//Get the forums to be displayed
+		Iterator itFormData = formData.entrySet().iterator();
+		while (itFormData.hasNext()) {
+			Map.Entry me = (Map.Entry) itFormData.next();
+			if (((String)me.getKey()).startsWith("id_")) {
+				String forumId = ((String)me.getKey()).substring(3);
+				forumPrefIdList.add(forumId);
+			}
+		}
+		
+		prefs.setValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, (String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
 
 		prefs.store();
 	}
@@ -45,18 +59,24 @@ public class EditController extends SAbstractController implements DomTreeBuilde
         //Make the prefs available to the jsp
         Map model = new HashMap();
 		
-		model.put(WebKeys.WORKSPACE_DOM_TREE, getWorkspaceModule().getDomWorkspaceTree(this));
+		Document wsTree = getWorkspaceModule().getDomWorkspaceTree(this);
+		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 		
 		PortletPreferences prefsPP = request.getPreferences();
-		String forumPref = prefsPP.getValue(WebKeys.FORUM_URL_FORUM_ID, "");
-    	if (!forumPref.equals("")) {		
-			//Build the jsp beans
-			try {
-				model.put(WebKeys.FOLDER, getFolderModule().getFolder(new Long(forumPref)));    
-			} catch (NoFolderByTheIdException nf) {
-				//fall thru
-			}
-    	}
+		String[] forumPrefIdList = prefsPP.getValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
+		
+		//Build the jsp bean (sorted by folder title)
+		List forumIdList = new ArrayList();
+		List folderIds = new ArrayList();
+		for (int i = 0; i < forumPrefIdList.length; i++) {
+			forumIdList.add(forumPrefIdList[i]);
+			folderIds.add(new Long(forumPrefIdList[i]));
+		}
+		List folders = getFolderModule().getSortedFolderList(folderIds);
+		
+		model.put(WebKeys.FOLDER_LIST, folders);
+		model.put(WebKeys.FOLDER_ID_LIST, folderIds);
+		model.put(WebKeys.FORUM_ID_LIST, forumIdList);
 			
 		return new ModelAndView(WebKeys.VIEW_EDIT, model);
 	}
@@ -65,7 +85,7 @@ public class EditController extends SAbstractController implements DomTreeBuilde
 			Workspace ws = (Workspace)source;
 			element.addAttribute("type", "workspace");
 			element.addAttribute("title", ws.getTitle());
-			element.addAttribute("id", ws.getId().toString());
+			element.addAttribute("id", "");
 			element.addAttribute("image", "workspace");
 			element.addAttribute("displayOnly", "true");
 			element.addAttribute("url", "");

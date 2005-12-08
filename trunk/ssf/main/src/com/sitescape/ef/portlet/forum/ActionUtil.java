@@ -50,7 +50,9 @@ public class ActionUtil {
 
 	/**
 	 * Return forumId from request.  If not in request, retrieve portlet preference.
-	 * If forumId is not found, throw NoFolderByTheIdException
+	 * If forumId found, cache it in the session
+	 * If forumId is not found, see if it is cached in the session
+	 * If forumId is still not found, throw NoFolderByTheIdException
 	 * @param formData
 	 * @param req
 	 * @return
@@ -65,15 +67,19 @@ public class ActionUtil {
 			forumId = null;
 		}
 		if (forumId == null) {
-			try {
-				//Get the preferences settings to see if there is a forum defined
-				String id  =  req.getPreferences().getValue("forumId", "");
-				forumId = Long.valueOf(id);
-			} catch (NumberFormatException nf) {
-				throw new NoFolderByTheIdException(new Long(0), nf);
+			forumId = (Long) req.getPortletSession().getAttribute(WebKeys.FORUM_URL_FORUM_ID);
+			if (forumId == null) {
+				try {
+					//Get the preferences settings to see if there is a forum defined
+					String id  =  req.getPreferences().getValue("forumId", "");
+					forumId = Long.valueOf(id);
+				} catch (NumberFormatException nf) {
+					throw new NoFolderByTheIdException(new Long(0), nf);
+				}
 			}
 		}
 		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId.toString());
+		req.getPortletSession().setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
 		return forumId;
 	}
 

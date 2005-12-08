@@ -41,6 +41,8 @@ public class TreeTag extends TagSupport {
     private boolean allOpen = false;
     private String nodeOpen = "";
     private String highlightNode = "";
+    private List multiSelect;
+    private String multiSelectPrefix;
     private boolean sortable = false;
     private String commonImg;
     private String className = "bg";
@@ -260,7 +262,18 @@ public class TreeTag extends TagSupport {
 	
 			//jspOut.print("<li class='ss_treeWidget_li' id='" + this.treeName + "_li" + String.valueOf(this.liCount) + "'>");
 			this.liCount++;
-			jspOut.print("<table cellspacing='0' cellpadding='0' style='display:inline;'>\n<tr>\n<td valign='top' nowrap>");
+			jspOut.print("<table cellspacing='0' cellpadding='0' style='display:inline;'>\n");
+			jspOut.print("<tr>\n");
+			if (this.multiSelect != null) {
+				if (s_id.equals("")) {
+					jspOut.print("<td><img src='" + this.commonImg + "/pics/1pix.gif' width='10px'></td>\n");
+				} else {
+					String checked = "";
+					if (this.multiSelect.contains(s_id)) checked = "checked";
+					jspOut.print("<td><input type='checkbox' name='" + this.multiSelectPrefix + s_id + "' " + checked + " style='width:10px;'></td>\n");
+				}
+			}
+			jspOut.print("<td valign='top' nowrap>");
 			for (int j = recursedNodes.size() - 1; j >= 0; j--) {
 				if ((String) recursedNodes.get(j) != "1") {
 					jspOut.print("<img align='absmiddle' border='0' height='20' hspace='0' src='" + getImage("spacer") + "' vspace='0' width='19'>");
@@ -564,6 +577,14 @@ public class TreeTag extends TagSupport {
 	
 	public void setHighlightNode(String highlightNode) {
 	    this.highlightNode = highlightNode;
+	}
+	
+	public void setMultiSelect(List multiSelect) {
+	    this.multiSelect = multiSelect;
+	}
+	
+	public void setMultiSelectPrefix(String multiSelectPrefix) {
+	    this.multiSelectPrefix = multiSelectPrefix;
 	}
 	
 	public void setSortable(boolean sortable) {

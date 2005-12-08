@@ -354,6 +354,17 @@
 			<required>false</required>
 			<type>boolean</type>
 		</attribute>		
+		<attribute>
+			<name>multiSelect</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.List</type>
+		</attribute>		
+		<attribute>
+			<name>multiSelectPrefix</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
 	</tag>
 
 	<tag>

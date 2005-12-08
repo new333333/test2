@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.TreeMap;
+
+import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -29,6 +33,7 @@ import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.ef.web.WebKeys;
 
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -67,6 +72,28 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		accessControlManager.checkOperation(folder, WorkAreaOperation.VIEW);
 		return folder;        
 	}    
+	public List getSortedFolderList(List folderIds) {
+		Map forumIdMap = new TreeMap();
+		List foldersUnsorted = getFolders(folderIds);
+		for (int i = 0; i < foldersUnsorted.size(); i++) {
+			if (!forumIdMap.containsKey(((Folder)foldersUnsorted.get(i)).getTitle())) {
+				forumIdMap.put(((Folder)foldersUnsorted.get(i)).getTitle(), new ArrayList());
+			}
+			List vl = (List) forumIdMap.get(((Folder)foldersUnsorted.get(i)).getTitle());
+			vl.add(((Folder)foldersUnsorted.get(i)));
+		}
+		List forumIdList = new ArrayList();
+		Iterator itForums = forumIdMap.entrySet().iterator();
+		while (itForums.hasNext()) {
+			Map.Entry me = (Map.Entry) itForums.next();
+			List meValue = (List)me.getValue();
+			for (int i = 0; i < meValue.size(); i++) {
+				forumIdList.add(meValue.get(i));
+			}
+		}
+		return forumIdList;
+	}
+
     public Long addEntry(Long folderId, String definitionId, Map inputData, Map fileItems) throws AccessControlException {
         User user = RequestContextHolder.getRequestContext().getUser();
         Folder folder = folderDao.loadFolder(folderId, user.getZoneName());

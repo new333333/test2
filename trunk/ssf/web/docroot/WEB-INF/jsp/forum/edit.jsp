@@ -15,31 +15,47 @@
  */
 %>
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssFolderList" type="java.util.List" scope="request" />
+<jsp:useBean id="ssForumIdList" type="java.util.List" scope="request" />
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <table width="100%"><tr><td>
-<c:if test="${!empty ssFolder}">
-<span>Currently showing forum: <c:out value="${ssFolder.title}" /></span>
+<c:if test="${!empty ssFolderList}">
+<table class="ss_content" cellspacing="0" cellpadding="0">
+<tr><th align="left"><ssf:nlt tag="forum.selectedForums" text="Currently selected forums:"/></th></tr>
+<tr><td>&nbsp;</td></tr>
+<c:forEach var="folder" items="<%= ssFolderList %>">
+<tr><td><c:out value="${folder.title}" /></td></tr>
+</c:forEach>
+</table>
 <br>
 </c:if>
 
 <form action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
 
-<input type="hidden" name="forumId" value="<c:out value="${ssFolder.id}"/>" />
 <br>
 <br>
-Select the forum to be shown:
+<span class="ss_contentbold"><ssf:nlt tag="forum.selectForums" text="Select the forums to be shown:"/></span>
 <br>
 <br>
 <script language="javascript">
 function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
-	self.document.<portlet:namespace />fm.forumId.value=forum
-	self.document.<portlet:namespace />fm.submit()
+	if (self.document.<portlet:namespace />fm["id_"+forum] && self.document.<portlet:namespace />fm["id_"+forum].checked) {
+		self.document.<portlet:namespace />fm["id_"+forum].checked=false
+	} else {
+		self.document.<portlet:namespace />fm["id_"+forum].checked=true
+	}
 	return false
 }
 </script>
-<ssf:tree treeName="wsTree" treeDocument="<%= ssWsDomTree %>"  rootOpen="true" />
+<ssf:tree treeName="wsTree" treeDocument="<%= ssWsDomTree %>"  
+  rootOpen="true" multiSelect="<%= ssForumIdList %>" multiSelectPrefix="id_" />
+
+<br>
+<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 </form>
 <br>
 
