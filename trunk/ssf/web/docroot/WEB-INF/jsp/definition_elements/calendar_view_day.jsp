@@ -17,7 +17,13 @@ function getFilteredEntries() {
 </td>
 </tr>
 
-<c:forEach var="daymap" items="${ssCalendarViewBean}">
+<% // the bean is a month's bean; we need to loop through the list of
+   // weeks in the month, even though for this template there's only one
+%>
+
+<c:forEach var="week" items="${ssCalendarViewBean.weekList}" >
+
+<c:forEach var="daymap" items="${week.dayList}">
 
 <c:choose>
 <c:when test="${daymap.isToday}">
@@ -71,6 +77,7 @@ if (ssSeenMap.checkIfSeen(e)) {
 </c:choose>
 </tr>
 
+</c:forEach>
 </c:forEach>
 
 </table>
