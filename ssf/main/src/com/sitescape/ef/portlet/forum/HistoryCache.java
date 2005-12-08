@@ -17,6 +17,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.UserPerFolderPK;
 import com.sitescape.ef.module.profile.ProfileModule;
+import com.sitescape.ef.util.SessionUtil;
 /**
  * @author Janet McCann
  *
@@ -39,18 +40,16 @@ public class HistoryCache implements HttpSessionBindingListener  {
 		//need to flush history into database
 		//open shared session
 		try {
-			Session session = SessionFactoryUtils.getSession(sessionFactory, true);
-			if (SessionFactoryUtils.isSessionTransactional(session, sessionFactory)) {
+			if (SessionUtil.sessionActive()) {
 				try {
 					profileModule.updateUserHistory(history);
 				} finally {}
 			} else {
 				try {
-					TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
+					SessionUtil.sessionStartup();
 					profileModule.updateUserHistory(history);
 				} finally {
-					TransactionSynchronizationManager.unbindResource(sessionFactory);
-					SessionFactoryUtils.releaseSession(session, sessionFactory);    		
+					SessionUtil.sessionStop();
 				}
 			} 
 		} catch (Exception e) {}

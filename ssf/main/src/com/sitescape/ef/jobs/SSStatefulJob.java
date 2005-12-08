@@ -12,14 +12,8 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
-import org.springframework.orm.hibernate3.SessionHolder;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-
 import com.sitescape.ef.util.SpringContextUtil;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import com.sitescape.ef.util.SessionUtil;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.dao.CoreDao;
@@ -44,12 +38,9 @@ public abstract class SSStatefulJob implements StatefulJob {
 	protected String zoneName;
 	
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
+		SessionUtil.sessionStartup();
     	coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
     	jobDataMap = context.getJobDetail().getJobDataMap();
-    	SessionFactory sessionFactory = (SessionFactory)SpringContextUtil.getBean("sessionFactory");
-		//open shared session
-		Session session = SessionFactoryUtils.getSession(sessionFactory, true);
-		TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
 		try {  
 	           	//zone required
            	if (!jobDataMap.containsKey("zoneName")) {			
@@ -79,8 +70,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 			logger.error(e.getMessage());
     		throw new JobExecutionException(e,false);
     	} finally {
-			TransactionSynchronizationManager.unbindResource(sessionFactory);
-			SessionFactoryUtils.releaseSession(session, sessionFactory);    		
+    		SessionUtil.sessionStop();
     	}
 
 	}   
