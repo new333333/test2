@@ -387,7 +387,7 @@ public abstract class Entry extends PersistentLongIdTimestampObject
      */
     protected void cleanupAttributes(Attachment attachment) {
     	Map attrs = getCustomAttributes();
-    	for (Iterator iter=attrs.entrySet().iterator(); iter.hasNext();) {
+    	for (Iterator iter=attrs.values().iterator(); iter.hasNext();) {
     		CustomAttribute attr = (CustomAttribute)iter.next();
     		int type = attr.getValueType();
     		if (type == CustomAttribute.ATTACHMENT) {
