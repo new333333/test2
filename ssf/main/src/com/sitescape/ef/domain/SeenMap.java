@@ -117,14 +117,17 @@ public class SeenMap {
 		return ret;
 	}
     public boolean checkIfSeen(HashMap entry) {
-    	return checkAndSetSeen(entry, false);
-    }
-	protected boolean checkAndSetSeen(HashMap entry, boolean setIt) {
-      	Date seen,modDate,now;
-      	boolean ret = false;
       	Long id = new Long((String)entry.get("_docId"));
+		Date modDate = (Date)entry.get("_modificationDate");
+		
+    	return checkAndSetSeen(id, modDate, false);
+    }
+    
+    
+	protected boolean checkAndSetSeen(Long id, Date modDate, boolean setIt) {
+      	Date seen,now;
+      	boolean ret = false;
       	seen = (Date)seenMap.get(id);
-		modDate = (Date)entry.get("_modificationDate");
    		now = new Date();
         if (seen == null) {
     		if ((now.getTime() - modDate.getTime()) > ObjectKeys.SEEN_MAP_TIMEOUT) {
