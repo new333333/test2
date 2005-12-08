@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.lucene.document.Field;
 
-import com.sitescape.ef.module.folder.index.IndexUtils;
+import com.sitescape.ef.search.BasicIndexUtils;
 
 /**
  *
@@ -40,7 +40,7 @@ public class FieldBuilderText extends AbstractFieldBuilder {
             return new Field[0];
         }
         else {
-            Field field = IndexUtils.allTextField(val);
+            Field field = BasicIndexUtils.allTextField(val);
         
             return new Field[] {field};
         }

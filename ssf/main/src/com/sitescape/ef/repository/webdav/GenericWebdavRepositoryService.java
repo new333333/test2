@@ -21,7 +21,8 @@ import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.util.Constants;
 import com.sitescape.ef.util.FileHelper;
-
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Binder;
 public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactory implements RepositoryService {
 
 	protected Log logger = LogFactory.getLog(getClass());
@@ -52,38 +53,38 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public String create(Object session, Folder folder, FolderEntry entry, 
+	public String create(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, MultipartFile mf) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			return createResource(wdr, folder, entry, relativeFilePath, mf);
+			return createResource(wdr, binder, entry, relativeFilePath, mf);
 		} catch (IOException e) {
 			logError(wdr);
 			throw new RepositoryServiceException(e);
 		}
 	}
 
-	public void update(Object session, Folder folder, FolderEntry entry, 
+	public void update(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, MultipartFile mf) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			updateResource(wdr, folder, entry, relativeFilePath, mf);
+			updateResource(wdr, binder, entry, relativeFilePath, mf);
 		} catch (IOException e) {
 			logError(wdr);
 			throw new RepositoryServiceException(e);
 		}
 	}
 
-	public void read(Object session, Folder folder, FolderEntry entry, String relativeFilePath, 
+	public void read(Object session, Binder binder, Entry entry, String relativeFilePath, 
 			OutputStream out) throws RepositoryServiceException {	
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			readResource(wdr, getResourcePath(folder, entry, relativeFilePath), out);
+			readResource(wdr, getResourcePath(binder, entry, relativeFilePath), out);
 		} catch (IOException e) {
 			logError(wdr);
 			throw new RepositoryServiceException(e);
@@ -102,12 +103,12 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public void readVersion(Object session, Folder folder, FolderEntry entry, String relativeFilePath, 
+	public void readVersion(Object session, Binder binder, Entry entry, String relativeFilePath, 
 			String versionName, OutputStream out) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			String versionResourcePath = getVersionResourcePath(wdr, folder, entry, 
+			String versionResourcePath = getVersionResourcePath(wdr, binder, entry, 
 					relativeFilePath, versionName);			
 			
 			readResource(wdr, versionResourcePath, out);
@@ -117,31 +118,31 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public List getVersionNames(Object session, Folder folder, FolderEntry entry, String relativeFilePath) 
+	public List getVersionNames(Object session, Binder binder, Entry entry, String relativeFilePath) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			return WebdavUtil.getVersionNames(wdr, getResourcePath(folder, entry, relativeFilePath));
+			return WebdavUtil.getVersionNames(wdr, getResourcePath(binder, entry, relativeFilePath));
 		} catch (IOException e) {
 			logError(wdr);
 			throw new RepositoryServiceException(e);
 		}
 	}
 
-	public DataSource getDataSource(Object session, Folder folder, FolderEntry entry, 
+	public DataSource getDataSource(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, FileTypeMap fileTypeMap)		
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;		
-		return new WebDavDataSource(wdr, getResourcePath(folder, entry, relativeFilePath), relativeFilePath, fileTypeMap);
+		return new WebDavDataSource(wdr, getResourcePath(binder, entry, relativeFilePath), relativeFilePath, fileTypeMap);
 	}
-	public DataSource getDataSourceVersion(Object session, Folder folder, FolderEntry entry, 
+	public DataSource getDataSourceVersion(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, String versionName, FileTypeMap fileTypeMap)		
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			String versionResourcePath = getVersionResourcePath(wdr, folder, entry, 
+			String versionResourcePath = getVersionResourcePath(wdr, binder, entry, 
 					relativeFilePath, versionName);			
 			return new WebDavDataSource(wdr, versionResourcePath, relativeFilePath, fileTypeMap);
 			
@@ -151,12 +152,12 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}	
 	// obsolete
-	public List fileVersionsURIs(Object session, Folder folder, FolderEntry entry, 
+	public List fileVersionsURIs(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 			
 			String value = WebdavUtil.getSingleHrefValue(wdr, 
 					resourcePath, "version-history");
@@ -172,12 +173,12 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public void checkout(Object session, Folder folder, FolderEntry entry, String relativeFilePath) 
+	public void checkout(Object session, Binder binder, Entry entry, String relativeFilePath) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 
 			// Since we always put file resource under version control as
 			// soon as it is created, it's largely unnecessary to do it
@@ -199,11 +200,11 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public void uncheckout(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+	public void uncheckout(Object session, Binder binder, Entry entry, String relativeFilePath) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 			if(isCheckedOut(wdr, resourcePath)) {
 				boolean result = wdr.uncheckoutMethod(resourcePath);
 				if(!result)
@@ -215,12 +216,12 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public String checkin(Object session, Folder folder, FolderEntry entry, String relativeFilePath) 
+	public String checkin(Object session, Binder binder, Entry entry, String relativeFilePath) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 			String checkedInVersionResourcePath = getCheckedInVersionResourcePath(wdr, resourcePath);
 			String versionResourcePath = null;
 			String versionName = null;
@@ -251,12 +252,12 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 	
-	public boolean isCheckedOut(Object session, Folder folder, FolderEntry entry, String relativeFilePath) 
+	public boolean isCheckedOut(Object session, Binder binder, Entry entry, String relativeFilePath) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 			
 			return isCheckedOut(wdr, resourcePath);
 		} catch (IOException e) {
@@ -265,11 +266,11 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 	
-	public boolean exists(Object session, Folder folder, FolderEntry entry, String relativeFilePath) throws RepositoryServiceException {
+	public boolean exists(Object session, Binder binder, Entry entry, String relativeFilePath) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 			
 			return WebdavUtil.exists(wdr, resourcePath);
 		} catch (IOException e) {
@@ -278,13 +279,13 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public long getContentLength(Object session, Folder folder, 
-			FolderEntry entry, String relativeFilePath) 
+	public long getContentLength(Object session, Binder binder, 
+			Entry entry, String relativeFilePath) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 		
 			wdr.setPath(resourcePath);
 			
@@ -295,13 +296,13 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 	
-	public long getContentLength(Object session, Folder folder, 
-			FolderEntry entry, String relativeFilePath, String versionName) 
+	public long getContentLength(Object session, Binder binder, 
+			Entry entry, String relativeFilePath, String versionName) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
-			String versionResourcePath = getVersionResourcePath(wdr, folder, entry, 
+			String versionResourcePath = getVersionResourcePath(wdr, binder, entry, 
 					relativeFilePath, versionName);			
 			
 			wdr.setPath(versionResourcePath);
@@ -356,10 +357,10 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		return fileVersionURI; // this is default implementation
 	}
 	
-	protected String getVersionResourcePath(SWebdavResource wdr, Folder folder, 
-			FolderEntry entry, String relativeFilePath, String versionName) 
+	protected String getVersionResourcePath(SWebdavResource wdr, Binder binder, 
+			Entry entry, String relativeFilePath, String versionName) 
 		throws RepositoryServiceException, HttpException, IOException {
-		return getVersionResourcePath(wdr, getResourcePath(folder, entry, relativeFilePath),
+		return getVersionResourcePath(wdr, getResourcePath(binder, entry, relativeFilePath),
 				versionName);
 	}
 	
@@ -423,13 +424,13 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 				versionControlledResourcePath, "version-history");
 	}
 
-	private String createResource(SWebdavResource wdr, Folder folder,
-			FolderEntry entry, String relativeFilePath, MultipartFile mf)
+	private String createResource(SWebdavResource wdr, Binder binder,
+			Entry entry, String relativeFilePath, MultipartFile mf)
 			throws IOException {
 		boolean result = false;
 
 		// Get the path for the entry containing the file.
-		String entryDirPath = getEntryDirPath(folder, entry);
+		String entryDirPath = getEntryDirPath(binder, entry);
 
 		/*
 		 * boolean b = wdr.headMethod("/slide/files");
@@ -456,8 +457,8 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		return getCheckedInVersionName(wdr, resourcePath);
 	}
 	
-	private void updateResource(SWebdavResource wdr, Folder folder,
-			FolderEntry entry, String relativeFilePath, MultipartFile mf)
+	private void updateResource(SWebdavResource wdr, Binder binder,
+			Entry entry, String relativeFilePath, MultipartFile mf)
 			throws IOException {
 		boolean result = false;
 
@@ -471,7 +472,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		 */
 
 		// Get the path for the file resource.
-		String resourcePath = getResourcePath(folder, entry, relativeFilePath);
+		String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 
 		// Write the file.
 		result = wdr.putMethod(resourcePath, mf.getInputStream());
@@ -521,13 +522,13 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		// The exception object associated with the error will be logged higher up.		
 	}
 
-	private String getEntryDirPath(Folder folder, FolderEntry entry) {
+	private String getEntryDirPath(Binder binder, Entry entry) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		
 		return new StringBuffer(getDocRootDir()).
 			append(zoneName).
 			append(Constants.SLASH).
-			append(folder.getId()).
+			append(binder.getId()).
 			append(Constants.SLASH).
 			append(entry.getId()).
 			append(Constants.SLASH).
@@ -538,9 +539,9 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		return entryDirPath + relativeFilePath;
 	}
 	
-	private String getResourcePath(Folder folder, FolderEntry entry, 
+	private String getResourcePath(Binder binder, Entry entry, 
 			String relativeFilePath) {
-		return getResourcePath(getEntryDirPath(folder, entry), relativeFilePath);
+		return getResourcePath(getEntryDirPath(binder, entry), relativeFilePath);
 	}
 	public class WebDavDataSource implements DataSource {
 		protected SWebdavResource wdr;

@@ -17,10 +17,14 @@ public class BasicIndexUtils {
     public static final String UID_FIELD = "_uid";
     public static final String DOC_TYPE_FIELD = "_docType";
     public static final String THIS_CLASS_FIELD = "_class";
+    public static final String ALL_TEXT_FIELD = "_allText";
+
     
     // The following fields represent valid values for DOC_TYPE_FIELD.
     
     public final static String DOC_TYPE_ENTRY 		= "entry";
+    public final static String DOC_TYPE_USER 		= "user";
+    public final static String DOC_TYPE_GROUP 		= "group";
     public final static String DOC_TYPE_ATTACHMENT	= "attachment"; 
     
     private static final String UID_DELIM = "_";
@@ -99,5 +103,11 @@ public class BasicIndexUtils {
 	        throw new LuceneException("Document must contain a field with name " + BasicIndexUtils.THIS_CLASS_FIELD);	  
 	    return classField.stringValue();
     }
+    public static  void addAllText(Document doc, String text) {
+        doc.add(allTextField(text));
+    }
     
+    public static  Field allTextField(String text) {
+        return new Field(ALL_TEXT_FIELD, text, false, true, true);
+    }   
 }

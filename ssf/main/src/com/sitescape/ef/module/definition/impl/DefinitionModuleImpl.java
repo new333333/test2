@@ -12,18 +12,11 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.FileItem;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.VersionAttachment;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Workspace;
 
 import com.sitescape.ef.web.WebKeys;
@@ -820,7 +813,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 										    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
 										    	String repositoryServiceName = storageElem.attributeValue("value",
 										    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
-										    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, fileEleName, myFile, repositoryServiceName);
+										    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryServiceName);
 										    	fileData.add(fui);
 											}
 										}
@@ -846,7 +839,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     }
     
 	public void addIndexFieldsForEntry(
-            org.apache.lucene.document.Document indexDoc, Folder folder,
+            org.apache.lucene.document.Document indexDoc, Binder binder,
             Entry entry) {
 
         Element configRoot = getDefinitionConfig().getRootElement();

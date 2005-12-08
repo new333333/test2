@@ -5,8 +5,8 @@ import java.io.OutputStream;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.util.FileUploadItem;
 
 /**
@@ -22,7 +22,7 @@ import com.sitescape.ef.util.FileUploadItem;
  */
 public class RepositoryServiceUtil {
 
-	public static String create(Folder folder, FolderEntry entry,
+	public static String create(Binder binder, Entry entry,
 			FileUploadItem fui) throws RepositoryServiceException {
 		String repositoryServiceName = fui.getRepositoryServiceName();
 
@@ -32,7 +32,7 @@ public class RepositoryServiceUtil {
 		try {
 			// TODO For now we ignore file path relative to the owning entry.
 			// We simply treat that the file path is identical to the file name.
-			return service.create(session, folder, entry, fui
+			return service.create(session, binder, entry, fui
 					.getMultipartFile().getOriginalFilename(), fui
 					.getMultipartFile());
 		} finally {
@@ -40,7 +40,7 @@ public class RepositoryServiceUtil {
 		}
 	}
 
-	public static void update(Folder folder, FolderEntry entry,
+	public static void update(Binder binder, Entry entry,
 			FileUploadItem fui) throws RepositoryServiceException {
 		String repositoryServiceName = fui.getRepositoryServiceName();
 
@@ -48,44 +48,44 @@ public class RepositoryServiceUtil {
 
 		Object session = service.openRepositorySession();
 		try {
-			service.update(session, folder, entry, fui.getMultipartFile()
+			service.update(session, binder, entry, fui.getMultipartFile()
 					.getOriginalFilename(), fui.getMultipartFile());
 		} finally {
 			service.closeRepositorySession(session);
 		}
 	}
 
-	public static void read(String repositoryServiceName, Folder folder, 
-			FolderEntry entry, String fileName, OutputStream out)
+	public static void read(String repositoryServiceName, Binder binder, 
+			Entry entry, String fileName, OutputStream out)
 			throws RepositoryServiceException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 		Object session = service.openRepositorySession();
 		try {
-			service.read(session, folder, entry, fileName, out);
+			service.read(session, binder, entry, fileName, out);
 		} finally {
 			service.closeRepositorySession(session);
 		}
 	}
 
-	public static void checkout(String repositoryServiceName, Folder folder, 
-			FolderEntry entry, String fileName)
+	public static void checkout(String repositoryServiceName, Binder binder, 
+			Entry entry, String fileName)
 			throws RepositoryServiceException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 		Object session = service.openRepositorySession();
 		try {
-			service.checkout(session, folder, entry, fileName);
+			service.checkout(session, binder, entry, fileName);
 		} finally {
 			service.closeRepositorySession(session);
 		}
 	}
 
-	public static void uncheckout(String repositoryServiceName, Folder folder, 
-			FolderEntry entry,String fileName)
+	public static void uncheckout(String repositoryServiceName, Binder binder, 
+			Entry entry,String fileName)
 			throws RepositoryServiceException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 		Object session = service.openRepositorySession();
 		try {
-			service.uncheckout(session, folder, entry, fileName);
+			service.uncheckout(session, binder, entry, fileName);
 		} finally {
 			service.closeRepositorySession(session);
 		}

@@ -16,11 +16,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryMap;
@@ -29,17 +27,16 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.UserPerFolderPK;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.portlet.forum.HistoryCache;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderModule;
-import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.portlet.forum.ActionUtil;
 import com.sitescape.ef.portlet.forum.ForumActionModule;
@@ -52,7 +49,6 @@ import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.domain.DefinitionInvalidException;
 import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
@@ -289,13 +285,13 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 			int count = 0;
 			HashMap e = (HashMap) entryIterator.next();
 			//Entry e = (Entry) entryIterator.next();
-			String ec = (String)e.get(IndexUtils.EVENT_COUNT_FIELD);
+			String ec = (String)e.get(EntryIndexUtils.EVENT_COUNT_FIELD);
 			if (ec != null)
 				count = new Integer(ec).intValue();
 			// look through the custom attrs of this entry for any of type EVENT
 			for (int j = 0; j < count; j++) {
-				Date evStartDate = (Date)e.get(IndexUtils.EVENT_FIELD + count + IndexUtils.EVENT_FIELD_START_DATE);
-				Date evEndDate = (Date)e.get(IndexUtils.EVENT_FIELD + count + IndexUtils.EVENT_FIELD_END_DATE);
+				Date evStartDate = (Date)e.get(EntryIndexUtils.EVENT_FIELD + count + EntryIndexUtils.EVENT_FIELD_START_DATE);
+				Date evEndDate = (Date)e.get(EntryIndexUtils.EVENT_FIELD + count + EntryIndexUtils.EVENT_FIELD_END_DATE);
 				Event ev = new Event();
 				GregorianCalendar gcal = new GregorianCalendar();
 				gcal.setTime(evStartDate);

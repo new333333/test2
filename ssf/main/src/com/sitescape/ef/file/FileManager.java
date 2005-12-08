@@ -12,8 +12,8 @@ import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FileItem;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.VersionAttachment;
@@ -58,12 +58,12 @@ public class FileManager {
 	 * If the file is currently checked out by someone else, it throws 
 	 * <code>CheckedOutByOtherException</code>. 
 	 * 
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param fui
 	 * @throws RepositoryServiceException
 	 */
-    public void writeFile(Folder folder, FolderEntry entry, FileUploadItem fui) 
+    public void writeFile(Binder binder, Entry entry, FileUploadItem fui) 
     	throws CheckedOutByOtherException, RepositoryServiceException {
 		int type = fui.getType();
 		if(type != FileUploadItem.TYPE_FILE && type != FileUploadItem.TYPE_ATTACHMENT) {
@@ -87,7 +87,7 @@ public class FileManager {
     	boolean isNew = false;
     	
     	if(fAtt == null) { // New file for the entry
-    		fAtt = createFile(folder, entry, fui);
+    		fAtt = createFile(binder, entry, fui);
     		// Since file attachment is stored into custom attribute using
     		// its id value rather than association, this new object must
     		// be persisted here just in case it is to be put into custom
@@ -96,7 +96,7 @@ public class FileManager {
     		isNew = true;
     	}
     	else { // Existing file for the entry
-			writeExistingFile(folder, entry, fui, fAtt);    		
+			writeExistingFile(binder, entry, fui, fAtt);    		
     	}
     	
 		if (type == FileUploadItem.TYPE_FILE) {
@@ -131,13 +131,13 @@ public class FileManager {
 	 * containing when/by whom the file was checked out. If the file is not
 	 * checked out, it returns <code>null</code>.
 	 * 
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param fileName
 	 * @return
 	 */
 	public HistoryStamp getCheckoutInfo(String repositoryServiceName, 
-			Folder folder, FolderEntry entry, String fileName) {
+			Binder binder, Entry entry, String fileName) {
 		FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
 		return fAtt.getCheckout();
 	}
@@ -149,18 +149,18 @@ public class FileManager {
 	 * operation is noop. If it is currently checked out by someone else, it
 	 * throws <code>CheckedOutByOtherException</code>.
 	 * 
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param fileName
 	 */
 	/**
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param fileName
 	 * @throws CheckedOutByOtherException
 	 */
-	public void checkout(String repositoryServiceName, Folder folder, 
-			FolderEntry entry, String fileName) throws CheckedOutByOtherException, 
+	public void checkout(String repositoryServiceName, Binder binder, 
+			Entry entry, String fileName) throws CheckedOutByOtherException, 
 			NoSuchFileException, RepositoryServiceException {
     	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
     	
@@ -180,7 +180,7 @@ public class FileManager {
     		// the resource, but actual versioning of the content does not
     		// take place. 
     		RepositoryServiceUtil.checkout(fAtt.getRepositoryServiceName(),
-    				folder, entry, fileName);
+    				binder, entry, fileName);
     		// Mark our metadata that the file is checked out by the user.
     		fAtt.setCheckout(new HistoryStamp(user));
     	}
@@ -207,14 +207,14 @@ public class FileManager {
 	 * If the file is checked out by someone else, it throws 
 	 * <code>CheckedOutByOtherException</code>.
 	 * 
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param fileName
 	 * @throws CheckedOutByOtherException
 	 * @throws RepositoryServiceException
 	 */
-	public void uncheckout(String repositoryServiceName, Folder folder, 
-			FolderEntry entry, String fileName) throws CheckedOutByOtherException, 
+	public void uncheckout(String repositoryServiceName, Binder binder, 
+			Entry entry, String fileName) throws CheckedOutByOtherException, 
 			NoSuchFileException, RepositoryServiceException {
     	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
     	
@@ -232,7 +232,7 @@ public class FileManager {
     		if(user.equals(co.getPrincipal())) {
     			// The file is checked out by the same person calling this. 
         		RepositoryServiceUtil.uncheckout(fAtt.getRepositoryServiceName(),
-        				folder, entry, fileName);
+        				binder, entry, fileName);
         		// Mark our metadata that the file is not checked out.
         		fAtt.setCheckout(null);
     		}
@@ -255,13 +255,13 @@ public class FileManager {
 	 * If the file is checked out by someone else, it throws
 	 * <code>CheckedOutByOtherException</code>.
 	 * 
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param fileName
 	 * @throws RepositoryServiceException
 	 */
-	public void checkin(String repositoryServiceName, Folder folder, 
-			FolderEntry entry, String fileName) throws CheckedOutByOtherException, 
+	public void checkin(String repositoryServiceName, Binder binder, 
+			Entry entry, String fileName) throws CheckedOutByOtherException, 
 			NoSuchFileException, RepositoryServiceException {
     	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
     	
@@ -285,11 +285,11 @@ public class FileManager {
     			String versionName = null;
     			long contentLength = 0;
     			try {
-    				versionName = service.checkin(session, folder, entry, fileName);
+    				versionName = service.checkin(session, binder, entry, fileName);
     				if(versionName != null)
-    					contentLength = service.getContentLength(session, folder, entry, fileName, versionName);
+    					contentLength = service.getContentLength(session, binder, entry, fileName, versionName);
     				else
-    					contentLength = service.getContentLength(session, folder, entry, fileName);
+    					contentLength = service.getContentLength(session, binder, entry, fileName);
     			} finally {
     				service.closeRepositorySession(session);
     			}
@@ -307,7 +307,7 @@ public class FileManager {
 		
 	}
 
-    private void writeExistingFile(Folder folder, FolderEntry entry, 
+    private void writeExistingFile(Binder binder, Entry entry, 
     		FileUploadItem fui, FileAttachment fAtt) 
 		throws CheckedOutByOtherException, RepositoryServiceException {
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -315,7 +315,7 @@ public class FileManager {
         String fileName = fui.getMultipartFile().getOriginalFilename();
         
 		HistoryStamp co = getCheckoutInfo(fui.getRepositoryServiceName(), 
-				folder, entry, fileName); 
+				binder, entry, fileName); 
 		
         if(co == null) {
 			// This file is not checked out by anyone. 
@@ -326,13 +326,13 @@ public class FileManager {
 			String versionName = null;
 			long contentLength = 0;
 			try {
-				service.checkout(session, folder, entry, fileName);
-				service.update(session, folder, entry, fileName, fui.getMultipartFile());
-				versionName = service.checkin(session, folder, entry, fileName);
+				service.checkout(session, binder, entry, fileName);
+				service.update(session, binder, entry, fileName, fui.getMultipartFile());
+				versionName = service.checkin(session, binder, entry, fileName);
 				if(versionName != null)
-					contentLength = service.getContentLength(session, folder, entry, fileName, versionName);
+					contentLength = service.getContentLength(session, binder, entry, fileName, versionName);
 				else
-					contentLength = service.getContentLength(session, folder, entry, fileName);
+					contentLength = service.getContentLength(session, binder, entry, fileName);
 			} finally {
 				service.closeRepositorySession(session);
 			}
@@ -343,7 +343,7 @@ public class FileManager {
 	   		if(user.equals(co.getPrincipal())) {
     			// The file is checked out by the same person calling this.
 	   			// Update the file to the repository.
-	   			RepositoryServiceUtil.update(folder, entry, fui);  			
+	   			RepositoryServiceUtil.update(binder, entry, fui);  			
     		}
     		else {
     			// The file is checked out by some other person. 
@@ -383,13 +383,13 @@ public class FileManager {
 	 * In other words, persisting the new metadata in our database is not
 	 * a responsibility of this method.  
 	 * 
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param fui
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	private FileAttachment createFile(Folder folder, FolderEntry entry, 
+	private FileAttachment createFile(Binder binder, Entry entry, 
 			FileUploadItem fui) throws RepositoryServiceException {
     	// TODO Take care of file path info?
     	
@@ -402,13 +402,14 @@ public class FileManager {
 		fAtt.setCreation(new HistoryStamp(user));
 		fAtt.setModification(fAtt.getCreation());
     	fAtt.setRepositoryServiceName(fui.getRepositoryServiceName());
-
+    	//set attribute name - null if not not named
+    	fAtt.setName(fui.getName());
     	FileItem fItem = new FileItem();
     	fItem.setName(fileName);
     	fItem.setLength(fui.getMultipartFile().getSize());
     	fAtt.setFileItem(fItem);
 
-		String versionName = RepositoryServiceUtil.create(folder, entry, fui);
+		String versionName = RepositoryServiceUtil.create(binder, entry, fui);
 
 		if(versionName != null) {
 			// The repository system supports versioning. 
