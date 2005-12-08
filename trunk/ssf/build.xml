@@ -144,7 +144,22 @@
 		</if>
 	</target>
 	
-	<target name="deploy-liferay" depends="init-liferay">
+	<target name="deploy-liferay" depends="init-app-server,init-build">
+		<if>
+			<equals arg1="${app.server.type}" arg2="tomcat" />
+			<then>
+				<antcall target="deploy-liferay-tomcat" />
+			</then>
+			<elseif>
+				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
+				<then>
+					<antcall target="deploy-liferay-jboss-tomcat" />
+				</then>
+			</elseif>
+		</if>
+	</target>
+	
+	<target name="deploy-liferay-tomcat" depends="init-liferay">
 		<delete>
 			<fileset dir="${app.server.lib.dir}" includes="ssf-*.jar" />
 		</delete>		
@@ -185,6 +200,38 @@
 		</move>
 
 		<copy file="liferay/ssf-liferay.jar" todir="${app.server.lib.dir}"/>
+	</target>
+		
+	<target name="deploy-liferay-jboss-tomcat" depends="init-liferay">	
+		
+		<delete dir="liferay/temp" />
+
+		<copy file="war/ssf.war" todir="liferay/temp" />
+		
+		<java
+			classname="com.liferay.portal.tools.PortletDeployer"
+			classpathref="deploy.liferay.classpath"
+			fork="true"
+			newenvironment="true">
+
+				<!-- Required Arguments -->
+
+				<jvmarg value="-Ddeployer.base.dir=liferay/temp/" />
+				<jvmarg value="-Ddeployer.dest.dir=${app.server.deploy.dir}" />
+				<jvmarg value="-Ddeployer.app.server.type=${app.server.type}" />
+				<jvmarg value="-Ddeployer.portlet.taglib.dtd=${deploy.liferay.portlet.tld}" />
+
+				<!-- Optional Arguments -->
+
+				<jvmarg value="-Ddeployer.jboss.prefix=1" />
+				<!--<jvmarg value="-Ddeployer.tomcat.lib.dir=${app.server.dir}/common/lib/ext" />-->
+
+				<!-- Dependent Libraries -->
+
+				<arg value="${deploy.liferay.taglib.jar}" />
+				<arg value="${deploy.liferay.util.jar}" />
+				<!--<arg value="${app.server.deploy.dir}/ext.ear/lib/util-jsf.jar" />-->
+		</java>
 	</target>
 		
 	<target name="zip">
