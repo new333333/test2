@@ -78,7 +78,7 @@ public class WebKeys {
     public static final String VIEW_FORUM="forum/view_forum";
     public static final String VIEW_ENTRY="forum/view_entry";
     public static final String VIEW="forum/view";
-    public static final String VIEW_NO_ENTRY="forum/view_no_entry";
+    public static final String VIEW_NO_ENTRY="forum/view_forum_no_entry";
     public static final String VIEW_MODIFY_ENTRY="forum/modify_entry";
     public static final String VIEW_EDIT="forum/edit";
     public static final String VIEW_ADD_ENTRY = "forum/add_entry";
