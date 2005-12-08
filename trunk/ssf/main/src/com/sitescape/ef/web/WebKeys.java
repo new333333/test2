@@ -15,6 +15,13 @@ public class WebKeys {
 	public static final String CALENDAR_CURRENT_DATE = "ssCurrentDate";
 	public static final String CALENDAR_CURRENT_VIEW_STARTDATE = "ssCalStartDate";
 	public static final String CALENDAR_CURRENT_VIEW_ENDDATE = "ssCalEndDate";
+	public static final String CALENDAR_DOW = "cal_dow";
+	public static final String CALENDAR_DOM = "cal_dom";
+	public static final String CALENDAR_ENTRYTITLE = "cal_entrytitle";
+	public static final String CALENDAR_STARTTIMESTRING = "cal_starttimestring";
+	public static final String CALENDAR_ENDTIMESTRING = "cal_endtimestring";
+	
+	
 
 	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
     public static final String LOCALE = "ss_locale";
