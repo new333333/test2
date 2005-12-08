@@ -178,15 +178,6 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         IndexSynchronizationManager.addDocument(indexDoc);        
     }
  	
-    public Long addFileEntry(Folder forum, Definition def, Map inputData, Map fileItems) throws AccessControlException {
-        // We are adding a file to a "file library". Look for a duplicate of the title. 
-        
-        addEntry_accessControl(forum);
-        
-        //???If the title already exists, turn this into a modifyEntry
-        
-        return addEntry(forum, def, inputData, fileItems);
-    }
 
    //***********************************************************************************************************
     public void modifyEntry(Folder folder, Long entryId, Map inputData, Map fileItems) 
@@ -325,35 +316,29 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
     }
+    //***********************************************************************************************************
     
     public void indexFolder(Folder folder) {
-        //do actual db query
+    	FolderEntry entry;
+    	
+    	indexFolder_accessControl(folder);
+    	
+        //do actual db query 
     	FilterControls filter = new FilterControls("parentFolder", folder);
         SFQuery query = (SFQuery)getFolderDao().queryEntries(filter);
         
         //iterate through results
-        ArrayList childEntries = new ArrayList();
+        	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         try {
  	        while (query.hasNext()) {
 	            Object obj = query.next();
 	            if (obj instanceof Object[])
 	                obj = ((Object [])obj)[0];
-	            childEntries.add(obj);
-	        }
-        } finally {
-	        query.close();
-        }
-        Iterator itEntries = childEntries.iterator();
-    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-        
-        try {
-	        while (itEntries.hasNext()) {
-	        	FolderEntry entry = (FolderEntry) itEntries.next();
-	        	
+	            entry = (FolderEntry)obj;
 	            // Create an index document from the entry object.
 	            org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(folder, entry);
 	            
-	            System.out.println("Indexing (" + folder.getId().toString() + ") " + entry.getDocNumber() + ": " + indexDoc.toString());
+	            logger.debug("Indexing (" + folder.getId().toString() + ") " + entry.getDocNumber() + ": " + indexDoc.toString());
 	            
 	            // Delete the document that's currently in the index.
 	            luceneSession.deleteDocument(entry.getIndexDocumentUid());
@@ -362,10 +347,15 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
 	            luceneSession.addDocument(indexDoc);        
 	        }
         } finally {
-            luceneSession.close();
-        }
+	        query.close();
+	        luceneSession.close();
+	    }
+ 
     }
-    
+    protected void indexFolder_accessControl(Folder folder) {
+    	getAccessControlManager().checkAcl(folder, AccessType.READ);
+    }
+
     //***********************************************************************************************************
     public org.dom4j.Document getDomFolderTree(Folder top, DomTreeBuilder domTreeHelper) {
        	getAccessControlManager().checkOperation(top, WorkAreaOperation.VIEW);

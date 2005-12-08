@@ -52,7 +52,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 			Iterator itForums = forumIdList.iterator();
 			while (itForums.hasNext()) {
 				Long folderId = new Long((String)itForums.next());
-				getFolderModule().indexFolders(folderId);
+				getFolderModule().indexFolderTree(folderId);
 			}
 			
 			response.setRenderParameter(WebKeys.ACTION, "");
