@@ -131,29 +131,29 @@ function ${prefix}_toggleRecur(name) {
     </td>
     </tr>
     <tr>
-     <td colspan="2" class="content"><input type="radio"  
+     <td colspan="2" ><input type="radio"  
       name="repeatUnit" value="none" id="norepeat"
       checked="checked"
    ><label for="norepeat"><ssf:nlt tag="event.no_repeat" /></label></td>
     </tr>
     <tr>
-     <td nowrap="nowrap" class="content">
+     <td nowrap="nowrap" >
 
       <input type="radio" name="repeatUnit" id="repeatday"
       checked="checked"
       value="day"  > 
       <ssf:nlt tag="event.every" /> <input type="text" name="everyNday" size="2" 
-      class="content" value=""
+       value=""
    "> <ssf:nlt tag="event.days" /></td>
     </tr>
 
     <tr>
-     <td class="content" valign="top" nowrap="nowrap">
+     <td  valign="top" nowrap="nowrap">
       <input type="radio" name="repeatUnit" id="repeatweek"
       checked="checked"
       value="week" >
       <ssf:nlt tag="event.every" /> <input type="text" name="everyNweek" size="2" 
-      class="content" value=" " > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> 
+       value=" " > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> 
 
    <input type="checkbox" name="day0" id="day0
    checked="checked"
@@ -188,63 +188,63 @@ function ${prefix}_toggleRecur(name) {
    </tr>
 
     <tr>
-     <td class="content" valign="top" nowrap="nowrap"><input 
+     <td  valign="top" nowrap="nowrap"><input 
       type="radio" name="repeatUnit" id="repeatmonth"
       checked="checked"
       value="month" " >
-      <ssf:nlt tag="event.every" /> <input type="text" class="content" size="2"
+      <ssf:nlt tag="event.every" /> <input type="text"  size="2"
       name="everyNmonth" value=""
    " > month(s) on the
-   <select class="content" name="onDayCardSel" title="select which week in the month on which this calendar entry will occur" name="onDayCardSel" > 
-   <option class="content" value="none"
+   <select  name="onDayCardSel" title="select which week in the month on which this calendar entry will occur" name="onDayCardSel" > 
+   <option  value="none"
    selected="selected"
    ><ssf:nlt tag="general.please_select" /></option> 
-   <option class="content" value="first"
-   selected="selecte"
+   <option  value="first"
+   selected="selected"
    ><ssf:nlt tag="event.whichweek.first" /></option> 
-   <option class="content" value="second"
+   <option  value="second"
    selected="selected"
 
    ><ssf:nlt tag="event.whichweek.second" /></option> 
-   <option class="content" value="third"
+   <option  value="third"
    selected="selected"
    ><ssf:nlt tag="event.whichweek.third" /></option> 
-   <option class="content" value="fourth"
+   <option  value="fourth"
    selected="selected"
    ><ssf:nlt tag="event.whichweek.fourth" /></option> 
-   <option class="content" value="last"
+   <option  value="last"
    selected="selected"
    ><ssf:nlt tag="event.whichweek.last" /></option> 
    </select> 
-   <select class="content" name="dow" title="select the day of the week on which the repeated entry will occur" > 
-   <option class="content" value="none"
+   <select  name="dow" title="select the day of the week on which the repeated entry will occur" > 
+   <option  value="none"
    selected="selecte"
    ><ssf:nlt tag="general.please_select" /></option> 
-   <option class="content" value="Sunday"
+   <option  value="Sunday"
    selected="selected"
    ><ssf:nlt tag="calendar.day.names.su" /></option> 
-   <option class="content" value="Monday"
+   <option  value="Monday"
    selected="selected"
    ><ssf:nlt tag="calendar.day.names.mo" /></option> 
-   <option class="content" value="Tuesday"
+   <option  value="Tuesday"
    selected="selected"
    ><ssf:nlt tag="calendar.day.names.tu" /></option> 
-   <option class="content" value="Wednesday"
+   <option  value="Wednesday"
    selected="selected"
    ><ssf:nlt tag="calendar.day.names.we" /></option> 
-   <option class="content" value="Thursday"
+   <option  value="Thursday"
    selected="selected"
    ><ssf:nlt tag="calendar.day.names.th" /></option> 
-   <option class="content" value="Friday"
+   <option  value="Friday"
    selected="selected"
    ><ssf:nlt tag="calendar.day.names.fr" /></option> 
-   <option class="content" value="Saturday"
+   <option  value="Saturday"
    selected="selected"
    ><ssf:nlt tag="calendar.day.names.sa" /></option> 
-   <option class="content" value="weekday"
+   <option  value="weekday"
    selected="selected"
    ><ssf:nlt tag="calendar.day.names.weekday" /></option> 
-   <option class="content" value="weekendday"
+   <option  value="weekendday"
    selected="selected"
    ><ssf:nlt tag="calendar.day.names.weekendday" /></option> 
    </select> </td>
@@ -401,7 +401,7 @@ function ${prefix}_generatePopupContents() {
   pc += ' </tr>\n';
   pc += ' <tr>\n';
   var repeatUnitVal = getHiddenField('${formName}', '${evid}', 'repeatUnit');
-  pc += '  <td colspan="2" class="content"><input type="radio"  \n';
+  pc += '  <td colspan="2" ><input type="radio"  \n';
   pc += '   name="repeatUnit" value="none" id="norepeat"\n';
   if (repeatUnitVal == 'none') {
     pc += '   checked="checked"';
@@ -409,7 +409,7 @@ function ${prefix}_generatePopupContents() {
   pc += '><label for="norepeat"><ssf:nlt tag="event.no_repeat" /></label></td>\n';
   pc += ' </tr>\n';
   pc += ' <tr>\n';
-  pc += '  <td nowrap="nowrap" class="content">\n';
+  pc += '  <td nowrap="nowrap" >\n';
 
   pc += '   <input type="radio" name="repeatUnit" id="repeatday"\n';
   if (repeatUnitVal == 'day') {
@@ -418,19 +418,19 @@ function ${prefix}_generatePopupContents() {
   pc += '   value="day"  > \n';
   var everyNtext = getHiddenField('${formName}', '${evid}', 'everyN');
   pc += '   <ssf:nlt tag="event.every" /> <input type="text" name="everyNday" size="2" \n';
-  pc += '   class="content" value="';
+  pc += '    value="';
   pc += everyNtext;
   pc += '"> <ssf:nlt tag="event.days" /></td>\n';
   pc += ' </tr>\n';
   pc += ' <tr>\n';
-  pc += '  <td class="content" valign="top" nowrap="nowrap">\n';
+  pc += '  <td  valign="top" nowrap="nowrap">\n';
   pc += '   <input type="radio" name="repeatUnit" id="repeatweek"\n';
   if (repeatUnitVal == 'week') {
     pc += '   checked="checked"';
   }
   pc += '   value="week" >\n';
   pc += '   <ssf:nlt tag="event.every" /> <input type="text" name="everyNweek" size="2" \n';
-  pc += '   class="content" value="';
+  pc += '    value="';
   pc += everyNtext;
   pc += '" > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> \n';
 
@@ -487,98 +487,98 @@ function ${prefix}_generatePopupContents() {
  
   pc += ' <tr>\n';
 
-  pc += '  <td class="content" valign="top" nowrap="nowrap"><input \n';
+  pc += '  <td  valign="top" nowrap="nowrap"><input \n';
   pc += '   type="radio" name="repeatUnit" id="repeatmonth"\n';
   if (repeatUnitVal == 'month') {
     pc += '   checked="checked"';
   }
   pc += '   value="month" " >\n';
-  pc += '   <ssf:nlt tag="event.every" /> <input type="text" class="content" size="2"\n';
+  pc += '   <ssf:nlt tag="event.every" /> <input type="text"  size="2"\n';
   pc += '   name="everyNmonth" value="';
   pc += everyNtext;
   pc += '" > month(s) on the\n';
-  pc += '<select class="content" name="onDayCardSel" title="select which week in the month on which this calendar entry will occur" name="onDayCardSel" > \n';
+  pc += '<select  name="onDayCardSel" title="select which week in the month on which this calendar entry will occur" name="onDayCardSel" > \n';
   var onDayCard = getHiddenField('${formName}', '${evid}', 'onDayCard'); 
-  pc += '<option class="content" value="none" ';
+  pc += '<option  value="none" ';
   if (onDayCard == 'none') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="general.please_select" /></option> \n';
   var onDayCard = getHiddenField('${formName}', '${evid}', 'onDayCard'); 
-  pc += '<option class="content" value="first" ';
+  pc += '<option  value="first" ';
   if (onDayCard == 'first') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="event.whichweek.first" /></option> \n';
-  pc += '<option class="content" value="second" ';
+  pc += '<option  value="second" ';
   if (onDayCard == 'second') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="event.whichweek.second" /></option> \n';
-  pc += '<option class="content" value="third" ';
+  pc += '<option  value="third" ';
   if (onDayCard == 'third') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="event.whichweek.third" /></option> \n';
-  pc += '<option class="content" value="fourth" ';
+  pc += '<option  value="fourth" ';
   if (onDayCard == 'fourth') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="event.whichweek.fourth" /></option> \n';
-  pc += '<option class="content" value="last" ';
+  pc += '<option  value="last" ';
   if (onDayCard == 'last') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="event.whichweek.last" /></option> \n';
   pc += '</select> \n';
-  pc += '<select class="content" name="dow" title="select the day of the week on which the repeated entry will occur" > \n';
+  pc += '<select  name="dow" title="select the day of the week on which the repeated entry will occur" > \n';
   var dow = getHiddenField('${formName}', '${evid}', 'dow');
-  pc += '<option class="content" value="none"';
+  pc += '<option  value="none"';
   if (dow == 'none') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="general.please_select" /></option> \n';
-  pc += '<option class="content" value="Sunday"';
+  pc += '<option  value="Sunday"';
   if (dow == 'Sunday') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="calendar.day.names.su" /></option> \n';
-  pc += '<option class="content" value="Monday"';
+  pc += '<option  value="Monday"';
   if (dow == 'Monday') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="calendar.day.names.mo" /></option> \n';
-  pc += '<option class="content" value="Tuesday"';
+  pc += '<option  value="Tuesday"';
   if (dow == 'Tuesday') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="calendar.day.names.tu" /></option> \n';
-  pc += '<option class="content" value="Wednesday"';
+  pc += '<option  value="Wednesday"';
   if (dow == 'Wednesday') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="calendar.day.names.we" /></option> \n';
-  pc += '<option class="content" value="Thursday"';
+  pc += '<option  value="Thursday"';
   if (dow == 'Thursday') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="calendar.day.names.th" /></option> \n';
-  pc += '<option class="content" value="Friday"';
+  pc += '<option  value="Friday"';
   if (dow == 'Friday') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="calendar.day.names.fr" /></option> \n';
-  pc += '<option class="content" value="Saturday"';
+  pc += '<option  value="Saturday"';
   if (dow == 'Saturday') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="calendar.day.names.sa" /></option> \n';
-  pc += '<option class="content" value="weekday"';
+  pc += '<option  value="weekday"';
   if (dow == 'weekday') {
     pc += 'selected="selected"';
   }
   pc += '><ssf:nlt tag="calendar.day.names.weekday" /></option> \n';
-  pc += '<option class="content" value="weekendday"';
+  pc += '<option value="weekendday"';
   if (dow == 'weekendday') {
     pc += 'selected="selected"';
   }
