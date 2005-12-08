@@ -42,13 +42,13 @@ ${dayabbrev}</td>
 
 <c:choose>
 <c:when test="${daymap.isToday}">
-<td class="ss_highlightManila" valign="top"><span class="ss_fineprintright" style="text-weight:bold;"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />
+<td class="ss_fineprint" bgcolor="#ffffe8" valign="top"><span class="ss_right" style="text-weight:bold;"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />
 </c:when>
 <c:when test="${!daymap.inView}">
-<td class="ss_highlightGray" valign="top"><span class="ss_fineprintright" style="text-weight:bold;"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />
+<td class="ss_fineprint" bgcolor="#f7f7f7" valign="top"><span class="ss_right" style="text-weight:bold;"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />
 </c:when>
 <c:otherwise>
-<td valign="top"><span class="ss_fineprintright" style="text-weight:bold;"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />
+<td valign="top" class="ss_fineprint"><span class="ss_right" style="text-weight:bold;"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />
 </c:otherwise>
 </c:choose>
 
@@ -64,10 +64,7 @@ ${dayabbrev}</td>
 <%
     FolderEntry e = (FolderEntry) evim.get("entry");
 %>
-<script language="javascript">
-//getFilteredEntries()
-</script>
-<div class="ss_fineprint" id="folderLine_${evim.entry.id}">	
+<div id="folderLine_${evim.entry.id}">	
 ${evim.cal_starttimestring}: 
 <%
 if (!ssSeenMap.checkIfSeen(e)) {

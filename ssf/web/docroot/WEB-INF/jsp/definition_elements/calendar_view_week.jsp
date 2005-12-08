@@ -30,7 +30,7 @@ function getFilteredEntries() {
 
 <c:choose>
 <c:when test="${daymap.isToday}">
-<tr class="ss_todayHighlight">
+<tr class="ss_highlightManila">
 </c:when>
 <c:otherwise>
 <tr>
