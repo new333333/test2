@@ -12,7 +12,9 @@
 	String formName = (String) request.getAttribute("formName");
 	String name = (String) request.getAttribute("property_name");
 	String caption = (String) request.getAttribute("property_caption");
-	if (caption == null) {caption = "";}
+	if (caption != null && !caption.equals("")) {
+		caption = caption;
+	}
 	String required = (String) request.getAttribute("property_required");
 	if (required == null) {required = "";}
 	if (required.equals("true")) {
@@ -22,7 +24,7 @@
 	}
 %>
 <div class="ss_entryContent">
-<div class="ss_labelAbove"><%= caption %><% required %></div>
+<span class="ss_labelAbove"><%= caption %><%= required %></span>
 <c:if test="${!empty ssFolderEntry.customAttributes[property_name].value}">
 <c:set var="initDate" value="${ssFolderEntry.customAttributes[property_name].value}"/>
 <jsp:useBean id="initDate" type="java.util.Date" />
