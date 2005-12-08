@@ -15,8 +15,8 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.util.FileHelper;
@@ -59,16 +59,16 @@ public class FileRepositoryService implements RepositoryService {
 	public void closeRepositorySession(Object session) throws RepositoryServiceException {
 	}
 	
-	public String create(Object session, Folder folder, FolderEntry entry, 
+	public String create(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
-		File fileDir = getFileDir(folder, entry, relativeFilePath);
+		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
 		if(!fileDir.exists())
 			fileDir.mkdirs();
 
 		String versionName = newVersionName();
 		
-		File versionFile = getVersionFile(folder, entry, relativeFilePath, versionName);
+		File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
 		
         try {
         	mf.transferTo(versionFile);
@@ -82,10 +82,10 @@ public class FileRepositoryService implements RepositoryService {
 		return versionName;
 	}
 
-	public void update(Object session, Folder folder, FolderEntry entry, 
+	public void update(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
 		
-		File tempFile = getTempFile(folder, entry, relativeFilePath);
+		File tempFile = getTempFile(binder, entry, relativeFilePath);
 		
 		if(!tempFile.exists())
 			throw new RepositoryServiceException("Cannot update [" + entry.getId() 
@@ -101,54 +101,54 @@ public class FileRepositoryService implements RepositoryService {
 		}
 	}
 
-	public void read(Object session, Folder folder, FolderEntry entry, 
+	public void read(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, OutputStream out) throws RepositoryServiceException {
-		File latestFile = getLatestFile(folder, entry, relativeFilePath);
+		File latestFile = getLatestFile(binder, entry, relativeFilePath);
 		
 		readFile(latestFile, out);
 	}
 
-	public void readVersion(Object session, Folder folder, FolderEntry entry, 
+	public void readVersion(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, String versionName, OutputStream out) throws RepositoryServiceException {
-		File versionFile = getVersionFile(folder, entry, relativeFilePath, versionName);
+		File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
 		
 		readFile(versionFile, out);
 	}
 
-	public DataSource getDataSource(Object session, Folder folder, FolderEntry entry, 
+	public DataSource getDataSource(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, FileTypeMap fileTypeMap)		
 		throws RepositoryServiceException {
-		File latestFile = getLatestFile(folder, entry, relativeFilePath);
+		File latestFile = getLatestFile(binder, entry, relativeFilePath);
 		FileDataSource fSource = new FileDataSource(latestFile);
 		fSource.setFileTypeMap(fileTypeMap);
 		return fSource;
 	}
-	public DataSource getDataSourceVersion(Object session, Folder folder, FolderEntry entry, 
+	public DataSource getDataSourceVersion(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, String versionName, FileTypeMap fileTypeMap)		
 		throws RepositoryServiceException {
-		File versionFile = getVersionFile(folder, entry, relativeFilePath, versionName);
+		File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
 		FileDataSource fSource = new FileDataSource(versionFile);
 		fSource.setFileTypeMap(fileTypeMap);
 		return fSource;
 	}	
 	
-	public void checkout(Object session, Folder folder, FolderEntry entry, 
+	public void checkout(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
-		File tempFile = getTempFile(folder, entry, relativeFilePath);
+		File tempFile = getTempFile(binder, entry, relativeFilePath);
 		
 		if(!tempFile.exists()) { // It is not checked out
 			// Check it out by coping the content of the latest version of the file
 			try {
-				FileCopyUtils.copy(getLatestVersionFile(folder, entry, relativeFilePath), tempFile);
+				FileCopyUtils.copy(getLatestVersionFile(binder, entry, relativeFilePath), tempFile);
 			} catch (IOException e) {
 				throw new RepositoryServiceException(e);
 			}
 		}
 	}
 
-	public void uncheckout(Object session, Folder folder, FolderEntry entry, 
+	public void uncheckout(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
-		File tempFile = getTempFile(folder, entry, relativeFilePath);
+		File tempFile = getTempFile(binder, entry, relativeFilePath);
 		
 		if(tempFile.exists()) { // It is checked out
 			// Delete the temp file
@@ -160,14 +160,14 @@ public class FileRepositoryService implements RepositoryService {
 		}
 	}
 
-	public String checkin(Object session, Folder folder, FolderEntry entry, 
+	public String checkin(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
-		File tempFile = getTempFile(folder, entry, relativeFilePath);
+		File tempFile = getTempFile(binder, entry, relativeFilePath);
 		
 		if(tempFile.exists()) { // It is checked out
 			String versionName = newVersionName();
 			
-			File versionFile = getVersionFile(folder, entry, relativeFilePath, versionName);
+			File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
 			
 		    try {
 				FileHelper.move(tempFile, versionFile);
@@ -178,13 +178,13 @@ public class FileRepositoryService implements RepositoryService {
 			return versionName;
 		}	
 		else { // It is already checked in
-			return getLatestVersionName(folder, entry, relativeFilePath);
+			return getLatestVersionName(binder, entry, relativeFilePath);
 		}
 	}
 
-	public boolean isCheckedOut(Object session, Folder folder, FolderEntry entry, 
+	public boolean isCheckedOut(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
-		File tempFile = getTempFile(folder, entry, relativeFilePath);
+		File tempFile = getTempFile(binder, entry, relativeFilePath);
 		
 		return tempFile.exists();
 	}
@@ -193,42 +193,42 @@ public class FileRepositoryService implements RepositoryService {
 		return false;
 	}
 
-	public boolean exists(Object session, Folder folder, FolderEntry entry, 
+	public boolean exists(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
-		String[] versionFileNames = getVersionFileNames(folder, entry, relativeFilePath);
+		String[] versionFileNames = getVersionFileNames(binder, entry, relativeFilePath);
 		if(versionFileNames == null || versionFileNames.length == 0)
 			return false;
 		else
 			return true;
 	}
 
-	public long getContentLength(Object session, Folder folder, FolderEntry entry, 
+	public long getContentLength(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
-		File latestFile = getLatestFile(folder, entry, relativeFilePath);
+		File latestFile = getLatestFile(binder, entry, relativeFilePath);
 		
 		return latestFile.length();
 	}
 	
-	public long getContentLength(Object session, Folder folder, FolderEntry entry, 
+	public long getContentLength(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, String versionName) throws RepositoryServiceException {
-		File versionFile = getVersionFile(folder, entry, relativeFilePath, versionName);
+		File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
 		
 		return versionFile.length();
 	}
 	
-	private File getLatestFile(Folder folder, FolderEntry entry, String relativeFilePath) {
-		File tempFile = getTempFile(folder, entry, relativeFilePath);
+	private File getLatestFile(Binder binder, Entry entry, String relativeFilePath) {
+		File tempFile = getTempFile(binder, entry, relativeFilePath);
 		
 		if(tempFile.exists()) {
 			return tempFile;
 		}
 		else {
-			return getLatestVersionFile(folder, entry, relativeFilePath);
+			return getLatestVersionFile(binder, entry, relativeFilePath);
 		}
 	}
 	
-	private String[] getVersionFileNames(Folder folder, FolderEntry entry, String relativeFilePath) {
-		File file = getFile(folder, entry, relativeFilePath);
+	private String[] getVersionFileNames(Binder binder, Entry entry, String relativeFilePath) {
+		File file = getFile(binder, entry, relativeFilePath);
 		File fileDir = file.getParentFile();
 		String fileName = file.getName();
 		final String versionFileNamePrefix;
@@ -258,8 +258,8 @@ public class FileRepositoryService implements RepositoryService {
 		return versionFileNames;
 	}
 	
-	private String getLatestVersionName(Folder folder, FolderEntry entry, String relativeFilePath) {
-		String[] versionFileNames = getVersionFileNames(folder, entry, relativeFilePath);
+	private String getLatestVersionName(Binder binder, Entry entry, String relativeFilePath) {
+		String[] versionFileNames = getVersionFileNames(binder, entry, relativeFilePath);
 		String latestVersionName = null;
 		for(int i = 0; i < versionFileNames.length; i++) {
 			String versionName = getVersionName(versionFileNames[i]);
@@ -293,34 +293,34 @@ public class FileRepositoryService implements RepositoryService {
 		return versionFileName.substring(versionNameBeginIndex, versionNameEndIndex);
 	}
 	
-	private File getLatestVersionFile(Folder folder, FolderEntry entry, String relativeFilePath) {
-		String latestVersionName = getLatestVersionName(folder, entry, relativeFilePath);
-		return getVersionFile(folder, entry, relativeFilePath, latestVersionName);
+	private File getLatestVersionFile(Binder binder, Entry entry, String relativeFilePath) {
+		String latestVersionName = getLatestVersionName(binder, entry, relativeFilePath);
+		return getVersionFile(binder, entry, relativeFilePath, latestVersionName);
 	}
 
-	private File getFileDir(Folder folder, FolderEntry entry, String relativeFilePath) {
-		File file = getFile(folder, entry, relativeFilePath);
+	private File getFileDir(Binder binder, Entry entry, String relativeFilePath) {
+		File file = getFile(binder, entry, relativeFilePath);
 		
 		return file.getParentFile();
 	}
 	
-	private String getEntryDirPath(Folder folder, FolderEntry entry) {
+	private String getEntryDirPath(Binder binder, Entry entry) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		
-		return new StringBuffer(rootDirPath).append(zoneName).append(File.separator).append(folder.getId()).append(File.separator).append(entry.getId()).append(File.separator).toString();
+		return new StringBuffer(rootDirPath).append(zoneName).append(File.separator).append(binder.getId()).append(File.separator).append(entry.getId()).append(File.separator).toString();
 	}
 	
-	private File getFile(Folder folder, FolderEntry entry, String relativeFilePath) {
-		return new File(getEntryDirPath(folder, entry), relativeFilePath);
+	private File getFile(Binder binder, Entry entry, String relativeFilePath) {
+		return new File(getEntryDirPath(binder, entry), relativeFilePath);
 	}
 	
 	private String newVersionName() {
 		return String.valueOf(new Date().getTime());
 	}
 	
-	private File getVersionFile(Folder folder, FolderEntry entry, 
+	private File getVersionFile(Binder binder, Entry entry, 
 			String relativeFilePath, String versionName) {
-		File file = getFile(folder, entry, relativeFilePath);
+		File file = getFile(binder, entry, relativeFilePath);
 		
 		String fileName = file.getName();
 		String versionFileName;
@@ -337,8 +337,8 @@ public class FileRepositoryService implements RepositoryService {
 		return new File(file.getParent(), versionFileName);		
 	}
 	
-	private File getTempFile(Folder folder, FolderEntry entry, String relativeFilePath) {
-		File file = getFile(folder, entry, relativeFilePath);
+	private File getTempFile(Binder binder, Entry entry, String relativeFilePath) {
+		File file = getFile(binder, entry, relativeFilePath);
 		
 		String fileName = file.getName();
 		String tempFileName;

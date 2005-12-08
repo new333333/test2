@@ -9,8 +9,11 @@ import java.util.ArrayList;
 
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Binder;
 
 import com.sitescape.ef.domain.UpdateAttributeSupport;
+import com.sitescape.ef.file.FileManager;
+import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.InvokeUtil;
 import com.sitescape.ef.util.ObjectPropertyNotFoundException;
 import com.sitescape.ef.ConfigurationException;
@@ -112,6 +115,25 @@ public class EntryBuilder {
 		}
 
 	}	
+    public static void writeFiles(FileManager fileManager, Binder binder, Entry entry, List fileData)
+    			throws WriteFilesException {
+    	WriteFilesException wfe = new WriteFilesException();
+	
+    	for(int i = 0; i < fileData.size(); i++) {
+    		FileUploadItem fui = (FileUploadItem) fileData.get(i);
+    		try {
+    			fileManager.writeFile(binder, entry, fui);
+    		} catch (Exception e) {
+    			wfe.addException(e);
+    		}
+    	}
+	
+    	if(wfe.size() > 0) {
+    		//At least one file failed to be written successfully.
+    		wfe.setErrorArgs(entry, fileData.size(), wfe.size());
+    		throw wfe;
+    	}
+    }	
 }
 
 

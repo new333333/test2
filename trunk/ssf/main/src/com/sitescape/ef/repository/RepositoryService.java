@@ -6,8 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.activation.DataSource;
 import javax.activation.FileTypeMap;
 
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Binder;
 
 public interface RepositoryService {
 
@@ -35,7 +35,7 @@ public interface RepositoryService {
 	 * returns <code>null</code>.
 	 * 
 	 * @param session
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param relativeFilePath A pathname of the file relative to the entry. This may
 	 * simply be the name of the file. 
@@ -43,7 +43,7 @@ public interface RepositoryService {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public String create(Object session, Folder folder, FolderEntry entry, 
+	public String create(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, MultipartFile mf) 
 		throws RepositoryServiceException;
 	
@@ -55,14 +55,14 @@ public interface RepositoryService {
 	 * permanent when {@link #checkin} is executed.
 	 * 
 	 * @param session
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param relativeFilePath A pathname of the file relative to the entry. This may
 	 * simply be the name of the file. 
 	 * @param mf
 	 * @throws RepositoryServiceException
 	 */
-	public void update(Object session, Folder folder, FolderEntry entry, 
+	public void update(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, MultipartFile mf) 
 		throws RepositoryServiceException;
 	
@@ -74,14 +74,14 @@ public interface RepositoryService {
 	 * of the resource.
 	 * 
 	 * @param session
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param relativeFilePath A pathname of the file relative to the entry. This may
 	 * simply be the name of the file. 
 	 * @param out
 	 * @throws RepositoryServiceException
 	 */
-	public void read(Object session, Folder folder, FolderEntry entry, 
+	public void read(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, OutputStream out) 
 		throws RepositoryServiceException;
 	
@@ -90,7 +90,7 @@ public interface RepositoryService {
 	 * of the file resource. 
 	 * 
 	 * @param session
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param relativeFilePath A pathname of the file relative to the entry. This may
 	 * simply be the name of the file. 
@@ -99,14 +99,14 @@ public interface RepositoryService {
 	 * @throws RepositoryServiceException thrown if the specified version does
 	 * not exist, or if some other error occurs
 	 */
-	public void readVersion(Object session, Folder folder, FolderEntry entry, 
+	public void readVersion(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, String versionName, OutputStream out) 
 		throws RepositoryServiceException;
 	
 	/**
 	 * Return a datasource that will be used to read the file to a mime message
 	 * @param session
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param relativeFilePath A pathname of the file relative to the entry. This may
 	 * simply be the name of the file. 
@@ -114,12 +114,12 @@ public interface RepositoryService {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public DataSource getDataSource(Object session, Folder folder, FolderEntry entry, 
+	public DataSource getDataSource(Object session, Binder binder, Entry entry, 
 				String relativeFilePath, FileTypeMap fileTypeMap) throws RepositoryServiceException;
 	/**
 	 * 
 	 * @param session
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param relativeFilePath A pathname of the file relative to the entry. This may
 	 * simply be the name of the file. 
@@ -128,7 +128,7 @@ public interface RepositoryService {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public DataSource getDataSourceVersion(Object session, Folder folder, FolderEntry entry, 
+	public DataSource getDataSourceVersion(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, String versionName, FileTypeMap fileTypeMap) throws RepositoryServiceException;
 
 	/**
@@ -136,13 +136,13 @@ public interface RepositoryService {
 	 * The specified file resource must exist. 
 	 * 
 	 * @param session
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param relativeFilePath
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	//public List getVersionNames(Object session, Folder folder, FolderEntry entry,
+	//public List getVersionNames(Object session, Binder binder, Entry entry,
 	//		String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
@@ -160,13 +160,13 @@ public interface RepositoryService {
 	 * functionality is neither exposed nor required by this API. 
 	 * 
 	 * @param session
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param relativeFilePath A pathname of the file relative to the entry. This may
 	 * simply be the name of the file. 
 	 * @throws RepositoryServiceException
 	 */
-	public void checkout(Object session, Folder folder, FolderEntry entry, 
+	public void checkout(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
@@ -175,13 +175,13 @@ public interface RepositoryService {
 	 * If the resource is not checked out, this method has no effect. 
 	 * 
 	 * @param session
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param relativeFilePath A pathname of the file relative to the entry. This may
 	 * simply be the name of the file. 
 	 * @throws RepositoryServiceException
 	 */
-	public void uncheckout(Object session, Folder folder, FolderEntry entry, 
+	public void uncheckout(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
@@ -195,14 +195,14 @@ public interface RepositoryService {
 	 * returns <code>null</code>.
 	 * 
 	 * @param session
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param relativeFilePath A pathname of the file relative to the entry. 
 	 * This may simply be the name of the file. 
 	 * @return the name of the new version
 	 * @throws RepositoryServiceException
 	 */
-	public String checkin(Object session, Folder folder, FolderEntry entry, 
+	public String checkin(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
@@ -210,38 +210,38 @@ public interface RepositoryService {
 	 * or not.
 	 * 
 	 * @param
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param relativeFilePath
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public boolean isCheckedOut(Object session, Folder folder, FolderEntry entry, 
+	public boolean isCheckedOut(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
 	 * Returns whether the specified file resource exists or not. 
 	 * 
 	 * @param session
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param relativeFilePath
 	 * @return
 	 */
-	public boolean exists(Object session, Folder folder, FolderEntry entry, 
+	public boolean exists(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
 	 * Returns the length (in byte) of the content of the specific file resource. 
 	 *  
 	 * @param session
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param relativeFilePath
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public long getContentLength(Object session, Folder folder, FolderEntry entry,
+	public long getContentLength(Object session, Binder binder, Entry entry,
 			String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
@@ -249,14 +249,14 @@ public interface RepositoryService {
 	 * of the file resource. 
 	 *  
 	 * @param session
-	 * @param folder
+	 * @param binder
 	 * @param entry
 	 * @param relativeFilePath
 	 * @param versionName
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public long getContentLength(Object session, Folder folder, FolderEntry entry,
+	public long getContentLength(Object session, Binder binder, Entry entry,
 			String relativeFilePath, String versionName) throws RepositoryServiceException;
 	
 	/**

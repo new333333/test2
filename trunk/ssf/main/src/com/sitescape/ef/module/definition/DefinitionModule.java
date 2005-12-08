@@ -10,8 +10,7 @@ import org.dom4j.Element;
 import com.sitescape.ef.domain.DefinitionInvalidException;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.module.definition.notify.Notify;
 
 /**
@@ -59,6 +58,6 @@ public interface DefinitionModule {
 	public Map getEntryData(Definition def, Map inputData, Map fileItems);
 	public List getDefinitions();
 	
-	public void addIndexFieldsForEntry(org.apache.lucene.document.Document indexDoc, Folder folder, Entry entry);
+	public void addIndexFieldsForEntry(org.apache.lucene.document.Document indexDoc, Binder binder, Entry entry);
 	public void addNotifyElementForEntry(Element element, Notify notifyDef, Entry entry);
 }

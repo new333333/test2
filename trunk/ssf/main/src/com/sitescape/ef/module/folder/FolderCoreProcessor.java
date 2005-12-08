@@ -10,6 +10,7 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.module.shared.WriteFilesException;
 import com.sitescape.ef.security.AccessControlException;
 
 /**

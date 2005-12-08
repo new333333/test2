@@ -60,7 +60,6 @@ import com.sitescape.ef.search.LuceneSessionFactory;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
-import com.sitescape.ef.module.folder.WriteFilesException;
 import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.search.IndexSynchronizationManager;
@@ -74,6 +73,8 @@ import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryBuilder;
+import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.WriteFilesException;
 /**
  *
  * @author Jong Kim
@@ -83,7 +84,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     
 	private static final int DEFAULT_MAX_CHILD_ENTRIES = ObjectKeys.FOLDER_MAX_PAGE_SIZE;
     protected DefinitionModule definitionModule;
-     
+ 
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
@@ -134,7 +135,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     
     protected void addEntry_processFiles(Folder folder, FolderEntry entry, List fileData) 
     	throws WriteFilesException {
-    	writeFiles(folder, entry, fileData);
+    	EntryBuilder.writeFiles(getFileManager(), folder, entry, fileData);
     }
     
     protected Map addEntry_toEntryData(Folder folder, Definition def, Map inputData, Map fileItems) {
@@ -206,7 +207,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     }
     protected void modifyEntry_processFiles(Folder folder, FolderEntry entry, List fileData) 
     throws WriteFilesException {
-    	writeFiles(folder, entry, fileData);
+    	EntryBuilder.writeFiles(getFileManager(), folder, entry, fileData);
     }
     protected Map modifyEntry_toEntryData(FolderEntry entry, Map inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
@@ -284,7 +285,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     
     protected void addReply_processFiles(FolderEntry parent, FolderEntry entry, List fileData) 
     	throws WriteFilesException {
-    	writeFiles(parent.getParentFolder(), entry, fileData);
+    	EntryBuilder.writeFiles(getFileManager(), parent.getParentFolder(), entry, fileData);
     }
     
     protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData) {  
@@ -735,29 +736,29 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ENTRY);
                
         // Add creation-date
-        IndexUtils.addCreationDate(indexDoc, entry);
+        EntryIndexUtils.addCreationDate(indexDoc, entry);
         
         // Add modification-date
-        IndexUtils.addModificationDate(indexDoc,entry);
+        EntryIndexUtils.addModificationDate(indexDoc,entry);
         
         // Add creator id
-        IndexUtils.addCreationPrincipleId(indexDoc,entry);
+        EntryIndexUtils.addCreationPrincipleId(indexDoc,entry);
         
         // Add Modification Principle Id
-        IndexUtils.addModificationPrincipleId(indexDoc,entry);
+        EntryIndexUtils.addModificationPrincipleId(indexDoc,entry);
         
         // Add Doc Id
-        IndexUtils.addDocId(indexDoc, entry);
-
-        // Add Doc number
-        IndexUtils.addDocNumber(indexDoc, entry);
+        EntryIndexUtils.addDocId(indexDoc, entry);
         
         // Add Doc title
-        IndexUtils.addTitle(indexDoc, entry);
+        EntryIndexUtils.addTitle(indexDoc, entry);
         
         // Add command definition
-        IndexUtils.addCommandDefinition(indexDoc, entry); 
+        EntryIndexUtils.addCommandDefinition(indexDoc, entry); 
         
+        // Add Doc number
+        IndexUtils.addDocNumber(indexDoc, entry);
+
         // Add the folder Id
         IndexUtils.addFolderId(indexDoc, folder);
         
@@ -768,29 +769,9 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         IndexUtils.addReadAcls(indexDoc, folder, entry, getAclManager());
         
         // add the events
-        IndexUtils.addEvents(indexDoc, entry);
+        EntryIndexUtils.addEvents(indexDoc, entry);
         
         return indexDoc;
     }
-        
-    protected void writeFiles(Folder folder, FolderEntry entry, List fileData) 
-    	throws WriteFilesException {
-    	WriteFilesException wfe = new WriteFilesException();
-    	
-    	FileManager fileManager = getFileManager();
-    	for(int i = 0; i < fileData.size(); i++) {
-    		FileUploadItem fui = (FileUploadItem) fileData.get(i);
-    		try {
-				fileManager.writeFile(folder, entry, fui);
-			} catch (Exception e) {
-				wfe.addException(e);
-			}
-    	}
-    	
-    	if(wfe.size() > 0) {
-    		// At least one file failed to be written successfully.
-    		wfe.setErrorArgs(entry, fileData.size(), wfe.size());
-    		throw wfe;
-    	}
-    }
+       
 }

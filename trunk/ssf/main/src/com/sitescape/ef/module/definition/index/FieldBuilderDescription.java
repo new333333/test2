@@ -6,7 +6,8 @@ import java.util.Set;
 import org.apache.lucene.document.Field;
 
 import com.sitescape.ef.domain.Description;
-import com.sitescape.ef.module.folder.index.IndexUtils;
+import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.module.shared.EntryIndexUtils;
 
 /**
  *
@@ -27,9 +28,9 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
         if(text == null || text.length() == 0)
             return new Field[0];
             
-        Field allTextField = IndexUtils.allTextField(text);
+        Field allTextField = BasicIndexUtils.allTextField(text);
         
-        Field descField = new Field(IndexUtils.DESC_FIELD, text, true, true, true); 
+        Field descField = new Field(EntryIndexUtils.DESC_FIELD, text, true, true, true); 
 
         
         return new Field[] {allTextField, descField};
