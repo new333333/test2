@@ -36,12 +36,12 @@ public class ModifyEntryController extends SAbstractForumController {
 			String entryId = ActionUtil.getStringValue(formData, PortletKeys.FORUM_URL_ENTRY_ID);				
 			getFolderModule().modifyEntry(folderId, Long.valueOf(entryId), formData, null);
 			//Get the jsp objects again, but this time get the "view_forum" values
-			response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_VIEW_FORUM);
+			response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
 			response.setRenderParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId.toString());
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			//Get the jsp objects again, but this time get the "view_forum" values
-			response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_VIEW_FORUM);
+			response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_VIEW_FORUM);
 			response.setRenderParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId.toString());
 		} else
 			response.setRenderParameters(formData);
@@ -55,7 +55,7 @@ public class ModifyEntryController extends SAbstractForumController {
 		try {
 			model = getForumActionModule().getModifyEntry(formData, request, folderId);
 		} catch (NoDefinitionByTheIdException nd) {
-			return returnToViewForum(request, formData, folderId);
+			return returnToViewForum(request, response, formData, folderId);
 		}
 			
 		return new ModelAndView(PortletKeys.VIEW_MODIFY_ENTRY, model);

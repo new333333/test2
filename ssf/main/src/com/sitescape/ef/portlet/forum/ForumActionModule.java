@@ -3,6 +3,7 @@ package com.sitescape.ef.portlet.forum;
 import java.util.Map;
 
 import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
 /**
  * @author Janet McCann
@@ -10,12 +11,12 @@ import javax.portlet.RenderRequest;
  */
 public interface ForumActionModule {
 
-	public Map getShowEntry(Map formData, RenderRequest req, Long folderId);
-	public Map getShowFolder(Map formData, RenderRequest req, Long folderId);
-	public Map getConfigureForum(Map formData, RenderRequest req, Long folderId);
-	public Map getAddEntry(Map formData, RenderRequest req, Long folderId);
-	public Map getDeleteEntry(Map formData, RenderRequest req, Long folderId);
-	public Map getModifyEntry(Map formData, RenderRequest req, Long folderId);
-	public Map getAddReply(Map formData, RenderRequest req, Long folderId);
-	public Map getDefinitionBuilder(Map formData, RenderRequest req, String defId);
+	public Map getShowEntry(Map formData, RenderRequest request, RenderResponse response, Long folderId);
+	public Map getShowFolder(Map formData, RenderRequest request, RenderResponse response, Long folderId);
+	public Map getConfigureForum(Map formData, RenderRequest request, Long folderId);
+	public Map getAddEntry(Map formData, RenderRequest request, Long folderId);
+	public Map getDeleteEntry(Map formData, RenderRequest request, Long folderId);
+	public Map getModifyEntry(Map formData, RenderRequest request, Long folderId);
+	public Map getAddReply(Map formData, RenderRequest request, Long folderId);
+	public Map getDefinitionBuilder(Map formData, RenderRequest request, String defId);
 }

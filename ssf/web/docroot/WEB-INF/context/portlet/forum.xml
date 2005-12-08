@@ -7,6 +7,10 @@
 	<bean id="forumViewController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewController" />
 	<bean id="forumEditController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.EditController" />
 	<bean id="forumConfigureController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ConfigureController" />
+	<bean id="forumAddEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AddEntryController" />
+	<bean id="forumModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ModifyEntryController" />
+	<bean id="forumViewEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewEntryController" />
+	<bean id="forumDefinitionController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.definitionBuilder.ViewController" />
 
  	<!-- Handlers -->
 
@@ -15,10 +19,14 @@
 			<map>
 				<entry key="view">
 					<map>
+						<entry key="add_entry"><ref bean="forumAddEntryController"/></entry>
+						<entry key="add_reply"><ref bean="forumAddEntryController"/></entry>
+						<entry key="configure_forum"><ref bean="forumConfigureController"/></entry>
+						<entry key="definition_builder"><ref bean="forumDefinitionController"/></entry>
+						<entry key="modify_entry"><ref bean="forumModifyEntryController"/></entry>
+						<entry key="view_entry"><ref bean="forumViewEntryController"/></entry>
 						<entry key="view_forum"><ref bean="forumViewController"/></entry>
-						<entry key="view_entry*"><ref bean="forumViewController"/></entry>
-						<entry key="configure"><ref bean="forumConfigureController"/></entry>
-					</map>
+<					</map>
 				</entry>
 				<entry key="edit">
 					<map>
