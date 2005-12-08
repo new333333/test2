@@ -11,6 +11,7 @@ import javax.activation.FileTypeMap;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -506,7 +507,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		
 		InputStream is = wdr.getMethodData(resourcePath);
 
-		FileHelper.copyContent(is, out);
+		FileCopyUtils.copy(is, out);
 
 		//WebdavUtil.dumpAllProps(wdr, resourcePath); 
 		//WebdavUtil.dumpAllProps(wdr, "/slide/history/201"); 

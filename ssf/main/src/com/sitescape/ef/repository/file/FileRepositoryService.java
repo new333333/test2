@@ -11,6 +11,7 @@ import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.activation.FileTypeMap;
 
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -138,7 +139,7 @@ public class FileRepositoryService implements RepositoryService {
 		if(!tempFile.exists()) { // It is not checked out
 			// Check it out by coping the content of the latest version of the file
 			try {
-				FileHelper.copyContent(getLatestVersionFile(folder, entry, relativeFilePath), tempFile);
+				FileCopyUtils.copy(getLatestVersionFile(folder, entry, relativeFilePath), tempFile);
 			} catch (IOException e) {
 				throw new RepositoryServiceException(e);
 			}
@@ -359,7 +360,7 @@ public class FileRepositoryService implements RepositoryService {
 		try {
 			in = new FileInputStream(file);
 		
-			FileHelper.copyContent(in, out);
+			FileCopyUtils.copy(in, out);
 		}
 		catch(IOException e) {
 			throw new RepositoryServiceException(e);
