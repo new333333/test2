@@ -1,6 +1,11 @@
 package com.sitescape.ef.web;
 
 public class WebKeys {
+	// Attribute names reserved by portlet specification
+	public static final String JAVAX_PORTLET_CONFIG = "javax.portlet.config";
+	public static final String JAVAX_PORTLET_REQUEST = "javax.portlet.request";
+	public static final String JAVAX_PORTLET_RESPONSE = "javax.portlet.response";
+
     public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
     public static final String LOCALE = "ss_locale";
     public static final String SESSION_LAST_ENTRY_VIEWED = "last_entry_viewed";
