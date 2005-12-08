@@ -5,6 +5,6 @@ package com.sitescape.ef.domain;
  *
  */
 public interface SingletonWorkflowSupport {
-    public WorkflowStatus getWorkflow();
-    public void setWorkflow(WorkflowStatus workflowStatus);
+    public String getWorkflow();
+    public void setWorkflow(String workflowStatus);
 }
