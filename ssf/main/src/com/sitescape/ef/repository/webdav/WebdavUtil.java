@@ -1,4 +1,4 @@
-package com.sitescape.ef.util;
+package com.sitescape.ef.repository.webdav;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,12 +16,29 @@ import com.sitescape.ef.util.Constants;
 
 public class WebdavUtil {
 
+	/**
+	 * Dump to the console the directory hierarchy at the specified resource.
+	 * Used for debugging only.
+	 *  
+	 * @param wdr
+	 * @throws HttpException
+	 * @throws IOException
+	 */
 	public static void dumpHierarchy(WebdavResource wdr) throws HttpException, IOException {
 		String savedPath = wdr.getPath(); 	// Save path
 		dumpHierarchyInternal(wdr, Constants.TAB, 0);
 		wdr.setPath(savedPath);				// Restore path
 	}
 	
+	/**
+	 * Dump to the console all properties of the resource at the specified path. 
+	 * Used for debugging only. 
+	 * 
+	 * @param wdr
+	 * @param path
+	 * @throws HttpException
+	 * @throws IOException
+	 */
 	public static void dumpAllProps(WebdavResource wdr, String path) throws HttpException, IOException{
 		System.out.println("*** Webdav Properties for " + path);
 		Enumeration e = wdr.propfindMethod(path, DepthSupport.DEPTH_0);
@@ -37,6 +54,16 @@ public class WebdavUtil {
 		}
 	}
 	
+	/**
+	 * Dump to the console the value of the specified property of the resource 
+	 * at the path. Used for debugging only.
+	 * 
+	 * @param wdr
+	 * @param path
+	 * @param propertyName
+	 * @throws HttpException
+	 * @throws IOException
+	 */
 	public static void dumpProp(WebdavResource wdr, String path, String propertyName) throws HttpException, IOException {
 		System.out.println("*** Webdav Property [" + propertyName + "] for path [" + path + "]");
 		Enumeration e = wdr.propfindMethod(path, propertyName);
