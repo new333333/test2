@@ -13,6 +13,12 @@
 	url += "&op=view_file&attr=";
 	url += property_name;
 %>
-<a class="bg" target="_blank" href="<ssf:url url="<%= url %>" />"><c:out value="${selection.fileItem.name}"/></a><br>
+<a class="bg" target="_blank" 
+  href="<ssf:url 
+    webPath="viewFile"
+    folderId="${ssFolderEntry.parentFolder.id}"
+    entryId="${ssFolderEntry.id}" >
+    <ssf:param name="attr" value="${ssFolderEntry.id}"/>
+    </ssf:url>"><c:out value="${selection.fileItem.name}"/></a><br>
 </div>
 </c:if>
