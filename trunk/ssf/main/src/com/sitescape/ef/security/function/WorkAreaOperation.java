@@ -26,7 +26,7 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation DELETE_ENTRIES = new WorkAreaOperation("deleteEntries");    
     public final static WorkAreaOperation ADD_REPLIES = new WorkAreaOperation("addReplies");
     public final static WorkAreaOperation GENERATE_REPORTS = new WorkAreaOperation("generateReports");
-    public final static WorkAreaOperation PERFORM_ADMINISTRATION = new WorkAreaOperation("performAdministration");
+    public final static WorkAreaOperation SITE_ADMINISTRATION = new WorkAreaOperation("siteAdministration");
     public final static WorkAreaOperation CHANGE_ACCESS_CONTROL = new WorkAreaOperation("changeAccessControl");
     public final static WorkAreaOperation CREATE_FOLDERS = new WorkAreaOperation("createFolders");
     public final static WorkAreaOperation MANAGE_ENTRY_DEFINITIONS = new WorkAreaOperation("manageEntryDefinitions");
