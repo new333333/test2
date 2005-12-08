@@ -1,5 +1,5 @@
 package com.sitescape.ef.jobs;
-
+import com.sitescape.util.Validator;
 
 public class Schedule {
 	private boolean daily=false,minutesRepeat=false,hoursRepeat=false;
@@ -10,6 +10,7 @@ public class Schedule {
 	public Schedule() {
 	}
 	public Schedule(String schedule) {
+		if (Validator.isNull(schedule)) return;
 		String[] vals = schedule.split(" +");
 		String val;
 		int pos = 1;

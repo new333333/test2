@@ -1,5 +1,6 @@
 package com.sitescape.ef.dao;
 import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.SeenMap;
@@ -10,6 +11,7 @@ import org.springframework.dao.DataAccessException;
 
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,8 +40,20 @@ public interface FolderDao {
     public List loadEntryDescendants(FolderEntry entry) throws DataAccessException;
     public List loadEntryAncestors(FolderEntry entry) throws DataAccessException;
     public List loadEntryTree(FolderEntry entry) throws DataAccessException;
-           
     
+    /**
+     * Load changed entries in a folder
+     * @param folder
+     * @param since
+     * @param before
+     * @return
+     */
+	public List loadFolderUpdates(Folder folder, Date since, Date before);
+	public List loadFolderUpdates(Folder folder, Date since, Date before, OrderBy order);
+    
+	public List loadFolderTreeUpdates(Folder folder, Date since, Date before);
+	public List loadFolderTreeUpdates(Folder folder, Date since, Date before, OrderBy order);
+	
     /**
      * Load a folder and subFolders 
      * @param folderId

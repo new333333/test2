@@ -1,12 +1,11 @@
 
 package com.sitescape.ef.dao.util;
-import com.sitescape.util.dao.hibernate.OrderByComparator;
-import com.sitescape.util.Validator;
+
 /**
  * @author Janet McCann
  * Keep controls for a simple equality query.
  */
-public class FilterControls {
+public class FilterControls implements Cloneable {
 
 	private String [] filterNames;
 	private Object [] filterValues;
@@ -43,22 +42,11 @@ public class FilterControls {
 		this.filterNames = filterNames;
 	}
 	public void appendFilter(String alias, StringBuffer filter) {
-		String name;
-      	if ((filterNames != null) && (filterNames.length > 0)) {
+     	if ((filterNames != null) && (filterNames.length > 0)) {
   	 		int count = filterNames.length;
    	 		filter.append(" where ");
-   	 		for (int i=0; i<count; ++i) {
-   	 			if (i > 0) filter.append(" and ");
-   	 			name = filterNames[i];
-   	 			int pos = name.lastIndexOf('(');
-   	 			if (pos == -1)
-   	 				filter.append(alias + "." + name + "=? ");
-   	 			else {
-   	 				++pos;
-  	 				filter.append(name.substring(0, pos) + alias + "." + name.substring(pos, name.length()) + "=? ");
-   	 			}
-   	 		}
-       	}
+   	 		filter.append(getWhereString(alias));
+      	}
 		if (orderBy != null) filter.append( " order by " + orderBy.getOrderByClause(alias));
 		
 	}
@@ -72,6 +60,27 @@ public class FilterControls {
 		StringBuffer filter = new StringBuffer();
 		appendFilter(alias, filter);
 		return filter.toString();
+	}
+	//return where string, but not "where" keyword
+	public String getWhereString(String alias) {
+		StringBuffer where = new StringBuffer();
+    	if ((filterNames != null) && (filterNames.length > 0)) {
+    		 String name;
+    		 int count=filterNames.length;
+    		 for (int i=0; i<count; ++i) {
+   	 			if (i > 0) where.append(" and ");
+   	 			name = filterNames[i];
+   	 			int pos = name.lastIndexOf('(');
+   	 			if (pos == -1)
+   	 				where.append(alias + "." + name + "=? ");
+   	 			else {
+   	 				++pos;
+   	 			where.append(name.substring(0, pos) + alias + "." + name.substring(pos, name.length()) + "=? ");
+   	 			}
+   	 		}
+    	}
+    	return where.toString();
+  
 	}
 	public Object[] getFilterValues() {
 		return this.filterValues;
@@ -97,8 +106,5 @@ public class FilterControls {
 	public void setOrderBy(OrderBy orderBy) {
 		this.orderBy = orderBy;
 	}
-	public void setOrderBy(OrderByComparator obc) {
-		//TODO: - conversion necessary here
-		
-	}
+
 }

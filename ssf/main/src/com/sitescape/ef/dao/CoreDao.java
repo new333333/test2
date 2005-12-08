@@ -126,8 +126,6 @@ public interface CoreDao {
 	public List getMembership(Long groupId);
 	public Set getAllGroupMembership(Long principalId);
 
-	public List loadChangedEntries(Folder folder, Date since, Date before);
-	public List loadChangedEntries(Folder folder, Date since, Date before, OrderBy order);
 	public Definition loadDefinition(String defId, String zoneName);   
     public List loadDefinitions(Folder folder, ObjectControls objectDesc, FilterControls filter);       
     public List loadDefinitions(String ZoneName);

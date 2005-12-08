@@ -56,7 +56,6 @@ import com.sitescape.ef.util.Constants;
  */
 public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	protected Log logger = LogFactory.getLog(getClass());
-	private OrderBy userOrder,groupOrder;
 	private ObjectControls userControls = new ObjectControls(User.class);
 	private ObjectControls groupControls = new ObjectControls(Group.class);
 	public void save(Object obj) {
@@ -422,32 +421,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
    	}
 
 
- 	public List loadChangedEntries(Folder folder, Date since, Date before) {
-		return loadChangedEntries(folder, since, before, new OrderBy(Constants.ID));
-	}
-	public List loadChangedEntries(final Folder folder, final Date since, final Date before, final OrderBy order) {
-        List entries = (List)getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                    	List results = session.createFilter(folder.getEntries(), 
-                    			"where (this.creation.date > :cDate and this.creation.date <= :c2Date) or " +
-									    "(this.modification.date > :mDate and this.modification.date <= :m2Date) or " +
-									    "(this.wfp1.modification.date > :wDate and this.wfp1.modification.date <= :w2Date)" +
-								" order by " + order.getOrderByClause("this"))
-								.setTimestamp("cDate", since)
-								.setTimestamp("c2Date", before)
-								.setTimestamp("mDate", since)
-								.setTimestamp("m2Date", before)
-								.setTimestamp("wDate", since)
-								.setTimestamp("w2Date", before)
-								.list();
-													
-                    	return results;
-                    }
-                }
-            );
-		return entries;
-    }
 	/**
 	 * Given a set of principal ids, return all userIds that represent userIds in 
 	 * the original list, or members of groups and their nested groups.
