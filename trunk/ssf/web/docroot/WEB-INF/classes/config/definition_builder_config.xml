@@ -36,6 +36,9 @@
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="initialState" caption="__initialState" type="selectbox">
+				<option_entry_data path="//item[@name='workflowProcess']/.//item[@name='state']" optionCaption="__initialStateSelect" />
+			</property>
 		</properties>
 		
 		<options>

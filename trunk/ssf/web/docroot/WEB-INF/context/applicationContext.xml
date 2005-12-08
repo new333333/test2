@@ -369,6 +369,7 @@
 
 	<bean id="defaultFolderCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.DefaultFolderCoreProcessor">
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
+		<property name="workflowModule"><ref local="workflowModuleTarget"/></property>
 	</bean>
 
 	<bean id="binderModule" parent="baseTransactionProxy">

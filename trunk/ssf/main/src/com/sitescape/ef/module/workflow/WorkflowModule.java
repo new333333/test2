@@ -7,6 +7,7 @@ import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
 
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Entry;
 
 public interface WorkflowModule {
 	public List getAllDefinitions();
@@ -26,5 +27,6 @@ public interface WorkflowModule {
 	public ProcessInstance setNode(Long processInstanceId, String nodeId);
 	public void buildProcessDefinition(String definitionName, Definition def);
 	public void updateProcessDefinition(ProcessDefinition pD, Definition def);
+	public void startWorkflow(Entry entry, Definition workflowDef);
 
 }
