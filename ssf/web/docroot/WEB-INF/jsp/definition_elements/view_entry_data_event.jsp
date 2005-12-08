@@ -3,7 +3,7 @@
 <div class="ss_labelAbove"><c:out value="${property_caption}" /></div>
 <c:choose>
 <c:when test="${empty ssFolderEntry.customAttributes[property_name]}" >
---No event--
+<span class="contentgray">--no event--</span>
 </c:when>
 <c:otherwise>
 <c:set var="ev" value="${ssFolderEntry.customAttributes[property_name].value}" />
