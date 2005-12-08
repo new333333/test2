@@ -73,11 +73,11 @@ public class Duration implements Cloneable {
   private final static int MILLIS_PER_SECOND = 1000;
   private final static int MILLIS_PER_MINUTE =
     SECONDS_PER_MINUTE * MILLIS_PER_SECOND;
-  private final static int MILLIS_PER_HOUR   =
+  private final static long MILLIS_PER_HOUR   =
     MINUTES_PER_HOUR * MILLIS_PER_MINUTE;
-  private final static int MILLIS_PER_DAY    =
+  private final static long MILLIS_PER_DAY    =
     HOURS_PER_DAY * MILLIS_PER_HOUR;
-  private final static int MILLIS_PER_WEEK   =
+  private final static long MILLIS_PER_WEEK   =
     DAYS_PER_WEEK * MILLIS_PER_DAY;
 
   /**
