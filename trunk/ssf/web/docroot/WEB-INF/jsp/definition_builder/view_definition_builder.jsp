@@ -20,6 +20,7 @@
 <%@ page import="org.dom4j.DocumentHelper" %>
 <%@ page import="org.dom4j.Element" %>
 <%@ page import="com.sitescape.ef.domain.DefinitionInvalidOperation" %>
+<%@ page import="com.sitescape.ef.util.NLT" %>
 
 <jsp:useBean id="definitionTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="data" type="java.util.Map" scope="request" />
@@ -62,6 +63,7 @@ function initializeStateMachine() {
 	ss_hideAllDeclaredDivs()
 	ss_setDivHtml("displaydiv", "")
 	ss_addToDiv("displaydiv", "info_select")
+	ss_showHideObj('definitionbuilder_tree', 'visible', 'block')
 }
 
 function t_<portlet:namespace/>_definitionTree_showId(id, obj) {
@@ -323,11 +325,29 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 
 <div class="ss_portlet">
 
+<span class="ss_titlebold">
+<a href="<portlet:actionURL windowState="maximized">
+	<portlet:param name="action" value="definition_builder" />
+	</portlet:actionURL>">
+<ssf:nlt tag="definition.builder" text="Definition builder" />
+</a>
+<%
+	//See if there is a selected item
+	if (data.containsKey("selectedItemTitle") && !data.get("selectedItemTitle").equals("")) {
+%>
+>> <c:out value="${data.selectedItemTitle}" />
+<%
+	}
+%>
+</span>
+<br>
+<br>
+
 <form action="" method="post" name="definitionbuilder" onSubmit="setSubmitData(this)" >
 <table width="100%">
 	<tr>
 		<td width="50%" valign="top">
-			<div>
+			<div id="definitionbuilder_tree" style="visibility:hidden;">
 				<ssf:tree treeName="definitionTree" 
 				 treeDocument="<%= definitionTree %>" 
 				 rootOpen="true" 
@@ -391,10 +411,11 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 
 <div>
 <%
+	String ssSelectItemText = NLT.get("definition.select_item");
 	//Build the divs
 	if (!data.containsKey("selectedItem") || data.get("selectedItem").equals("")) {
 %>
-<ssf:buildDefinitionDivs title="Select the type of definition you want to work on..." 
+<ssf:buildDefinitionDivs title="<%= ssSelectItemText %>" 
   sourceDocument="<%= ssConfigDefinition %>" configDocument="<%= ssConfigDefinition %>"
   entryDefinitions="<%= ssPublicEntryDefinitions %>"/>
 <%
@@ -402,7 +423,7 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 	} else {
 		//A definition type was selected. Build the page to edit that definition type
 %>
-<ssf:buildDefinitionDivs title="Select the item that you want to work on..." 
+<ssf:buildDefinitionDivs title="<%= ssSelectItemText %>"
   sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
   configDocument="<%= ssConfigDefinition %>"
   entryDefinitions="<%= ssPublicEntryDefinitions %>"/>

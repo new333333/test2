@@ -148,6 +148,7 @@ public class ViewController extends SAbstractController {
 		Map formData = request.getParameterMap();
 
 		String selectedItem = ActionUtil.getStringValue(formData, "selectedItem");
+		String selectedItemTitle = "";
 
         model = getForumActionModule().getDefinitionBuilder(formData, request, selectedItem);
 
@@ -202,6 +203,8 @@ public class ViewController extends SAbstractController {
 			if (sourceRoot != null) {
 				buildDefinitionTree(sourceRoot, dtRoot);
 			}
+			selectedItemTitle = title;
+
 			
 		} else {
 			//No definition is selected. Show the initial tree
@@ -250,6 +253,7 @@ public class ViewController extends SAbstractController {
         //There is a forum specified, so get the forum object
 		model.put("definitionTree", definitionTree);
 		data.put("selectedItem", selectedItem);
+		data.put("selectedItemTitle", selectedItemTitle);
 		model.put("data", data);
 		return new ModelAndView(WebKeys.VIEW_DEFINITION, model);
 		
@@ -260,11 +264,11 @@ public class ViewController extends SAbstractController {
 		while (items.hasNext()) {
 			Element sourceEle = (Element) items.next();
 			Element properties = sourceEle.element("properties");
-			String caption = sourceEle.attributeValue("caption");
+			String caption = NLT.getDef(sourceEle.attributeValue("caption"));
 			if (properties != null) {
 				Element captionProp = (Element) properties.selectSingleNode("property[@name='caption']");
 				if (captionProp != null && !captionProp.attributeValue("value", "").equals("")) {
-					caption += " - " + captionProp.attributeValue("value", "");
+					caption += " - " + NLT.getDef(captionProp.attributeValue("value", ""));
 				}
 			}
 			
