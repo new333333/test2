@@ -354,10 +354,10 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
    * @hibernate.property 
    * @hibernate.column name="dtStart" not-null="true"
    */
-  protected Date getHdtStart() {
+  protected Date getHDtStart() {
   	return dtStart.getTime();
   }
-  protected void setHdtStart(Date start) {
+  protected void setHDtStart(Date start) {
   	Calendar newD = new GregorianCalendar();
   	newD.setTime(start);
   	setDtStart(newD);
@@ -441,10 +441,10 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
    * @hibernate.property
    * @hibernate.column name="dtEnd"
    */
-  protected Date getHdtEnd() {
+  protected Date getHDtEnd() {
   	return getDtEnd().getTime();
   }
-  protected void setHdtEnd(Date end) {
+  protected void setHDtEnd(Date end) {
   	//don't really use it.  It is calculated and perisisted only for lookups
   }
   /**
@@ -669,11 +669,11 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
    * @hibernate.property
    * @hibernate.column name="until"
    */
-  protected Date getHuntil() {
+  protected Date getHUntil() {
   	if (getCount() == -1) return getUntil().getTime();
    	return null;
   }
-  protected void setHuntil(Date until) {
+  protected void setHUntil(Date until) {
   	if (until == null) this.until = null;
   	else {
   		this.until = new GregorianCalendar();
@@ -758,10 +758,10 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
    * @hibernate.property
    * @hibernate.column name="count"
    */
-  private int getHcount() {
+  private int getHCount() {
     return count;
   }
-  private void setHcount(int count) {
+  private void setHCount(int count) {
 	  this.count = count;
   }
   
@@ -2927,11 +2927,11 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
 	 * Get the duration of the recurrence, represented as a string.
 	 * @return A string representing the duration.
 	 */
-	private String getHduration() {
+	private String getHDuration() {
 		return getDuration().getString();
 	}
 
-	private void setHduration(String durationString) {
+	private void setHDuration(String durationString) {
 		setDuration(new Duration(durationString));
 	}	
 	public void update(Object obj) {
