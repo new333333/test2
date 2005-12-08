@@ -8,6 +8,7 @@ import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.file.FileManager;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
+import com.sitescape.ef.search.LuceneSessionFactory;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AclManager;
 import com.sitescape.ef.security.function.FunctionManager;
@@ -35,6 +36,7 @@ public class CommonDependencyInjection {
 	protected ProcessorManager processorManager;
 	protected Scheduler scheduler;
 	protected FileManager fileManager;
+	protected LuceneSessionFactory luceneSessionFactory;
 	
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
@@ -60,7 +62,13 @@ public class CommonDependencyInjection {
 	public void setFileManager(FileManager fileManager) {
 		this.fileManager = fileManager;
 	}
+	public void setLuceneSessionFactory(LuceneSessionFactory luceneSessionFactory) {
+		this.luceneSessionFactory = luceneSessionFactory;
+	}
 	
+	protected LuceneSessionFactory getLuceneSessionFactory() {
+		return luceneSessionFactory;
+	}
 	protected AccessControlManager getAccessControlManager() {
 		return accessControlManager;
 	}
