@@ -68,24 +68,22 @@ ul.ss_nobullet li ul.ss_nobullet {
   font-size: x-small; 
   color: #999999; 
   }
-
-span.ss_contentright {
+  
+span.ss_rightbold {
   display: inline;
   text-align: right;
   float: right;
-  font-size: smaller;
-  color: #000000;
   font-family: arial, helvetica, sans-serif;
+  font-weight: bold;
+  color: #999999; 
   }
   
-span.ss_fineprintright {
+span.ss_right {
   display: inline;
   text-align: right;
   float: right;
-  font-size: 70%;
-  font-weight: bold;
-  color: #000000;
   font-family: arial, helvetica, sans-serif;
+  color: #999999; 
   }
 /* ------------------------------------------------------------------------ */
 /* entry styles: common to entry views and entry forms */
@@ -479,6 +477,10 @@ td.ss_highlightManila {
   background-color: #ffffe8;
 }
 
+tr.ss_highlightManila {
+  background-color: #ffffe8;
+}
+
 table.ss_highlightGray {
   background-color: #f7f7f7;
 }
@@ -487,6 +489,10 @@ table tr.ss_highlightGray td.ss_highlightGray {
 } 
 
 td.ss_highlightGray {
+  background-color: #f7f7f7;
+}
+
+tr.ss_highlightGray {
   background-color: #f7f7f7;
 }
 
