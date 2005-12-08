@@ -186,7 +186,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 						} else {
 							for (int m=0; m<msgs.length; ++m) {
 								Message msg = msgs[i];
-								msg.setFlag(Flags.Flag.DELETED, true);
+								//msg.setFlag(Flags.Flag.DELETED, true);
 							}
 						}
 					}
