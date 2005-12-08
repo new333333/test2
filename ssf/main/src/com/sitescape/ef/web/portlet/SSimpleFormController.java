@@ -23,7 +23,6 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	private DefinitionModule definitionModule;
 	private ForumActionModule forumActionModule;
 	private LdapModule ldapModule;
-	private FunctionManager functionManager;
 	private WorkflowModule workflowModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
@@ -86,13 +85,6 @@ public abstract class SSimpleFormController extends SimpleFormController {
 		return ldapModule;
 	}
 
-	protected FunctionManager getFunctionManager() {
-		return functionManager;
-	}
-
-	public void setFunctionManager(FunctionManager functionManager) {
-		this.functionManager = functionManager;
-	}	
 	protected WorkflowModule getWorkflowModule() {
 		return workflowModule;
 	}

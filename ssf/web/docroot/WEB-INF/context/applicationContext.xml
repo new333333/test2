@@ -39,7 +39,6 @@
 		<property name="employeeModule"><ref bean="employeeModule"/></property>
 		<property name="folderModule"><ref bean="folderModule"/></property>
 		<property name="forumActionModule"><ref bean="forumActionModule"/></property>
-		<property name="functionManager"><ref bean="functionManager"/></property>
 		<property name="ldapModule"><ref bean="ldapModule"/></property>
 		<property name="profileModule"><ref bean="profileModule"/></property>
 		<property name="workflowModule"><ref bean="workflowModule"/></property>
