@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.sitescape.ef.search.AbstractLuceneSessionFactory;
 import com.sitescape.ef.search.LuceneException;
 import com.sitescape.ef.search.LuceneSession;
+import com.sitescape.ef.util.ConfigPropertyNotFoundException;
 import com.sitescape.ef.util.FileHelper;
 import com.sitescape.ef.util.SPropsUtil;
 
@@ -15,19 +16,20 @@ import com.sitescape.ef.util.SPropsUtil;
  */
 public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory {
     
-	private String rootDirPath;
+	private String dataRootDir;
+	private String subDirName;
 	
-	public void setRootDirProperty(String rootDirProperty) throws IOException {
-		this.rootDirPath = new File(SPropsUtil.getString(rootDirProperty)).getCanonicalPath();
-		
-		if(!rootDirPath.endsWith(File.separator))
-			rootDirPath += File.separator;
-		
-		FileHelper.mkdirsIfNecessary(rootDirPath);		
+	public void setDataRootDirProperty(String dataRootDirProperty) 
+		throws ConfigPropertyNotFoundException, IOException {
+		this.dataRootDir = SPropsUtil.getDirPath(dataRootDirProperty);
+	}
+	
+	public void setSubDirName(String subDirName) {
+		this.subDirName = subDirName;
 	}
 
 	public LuceneSession openSession(String indexName) {
-		String indexDirPath = rootDirPath + indexName + File.separator;
+		String indexDirPath = getIndexDirPath(indexName);
 		
 		try {
 			FileHelper.mkdirsIfNecessary(indexDirPath);
@@ -37,4 +39,8 @@ public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory {
 		
         return new LocalLuceneSession(indexDirPath);
     }
+	
+	private String getIndexDirPath(String indexName) {
+		return dataRootDir + indexName + File.separator + subDirName;
+	}
 }

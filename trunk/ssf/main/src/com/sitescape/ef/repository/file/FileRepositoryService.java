@@ -19,6 +19,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
+import com.sitescape.ef.util.ConfigPropertyNotFoundException;
 import com.sitescape.ef.util.FileHelper;
 import com.sitescape.ef.util.SPropsUtil;
 
@@ -37,15 +38,16 @@ public class FileRepositoryService implements RepositoryService {
 	private static final String VERSION_NAME_SUFFIX = "_";
 	private static final String TEMP_STRING = "_ssftempfile_";
 	
-	private String rootDirPath;
+	private String dataRootDir;
+	private String subDirName;
 
-	public void setRootDirProperty(String rootDirProperty) throws IOException {
-		this.rootDirPath = new File(SPropsUtil.getString(rootDirProperty)).getCanonicalPath();
-		
-		if(!rootDirPath.endsWith(File.separator))
-			rootDirPath += File.separator;
-		
-		FileHelper.mkdirsIfNecessary(rootDirPath);
+	public void setDataRootDirProperty(String dataRootDirProperty)
+			throws ConfigPropertyNotFoundException, IOException {
+		this.dataRootDir = SPropsUtil.getDirPath(dataRootDirProperty);
+	}
+
+	public void setSubDirName(String subDirName) {
+		this.subDirName = subDirName;
 	}
 
 	public Object openRepositorySession() throws RepositoryServiceException {
@@ -304,7 +306,7 @@ public class FileRepositoryService implements RepositoryService {
 	private String getEntryDirPath(Binder binder, Entry entry) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		
-		return new StringBuffer(rootDirPath).append(zoneName).append(File.separator).append(binder.getId()).append(File.separator).append(entry.getId()).append(File.separator).toString();
+		return new StringBuffer(dataRootDir).append(zoneName).append(File.separator).append(subDirName).append(File.separator).append(binder.getId()).append(File.separator).append(entry.getId()).append(File.separator).toString();
 	}
 	
 	private File getFile(Binder binder, Entry entry, String relativeFilePath) {
