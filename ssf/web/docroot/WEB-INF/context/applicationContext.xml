@@ -234,9 +234,7 @@
 	<bean id="portletSessionSetupInterceptor" class="com.sitescape.ef.web.portlet.handler.SessionSetupInterceptor"/>
 	
 	<bean id="portletInitRequestContextInterceptor" class="com.sitescape.ef.web.portlet.handler.InitRequestContextInterceptor"/>
-	
-	<bean id="portletInitRequestContextInterceptor" class="com.sitescape.ef.web.portlet.handler.InitRequestContextInterceptor"/>
-	
+		
 	<bean id="portletUserPreloadInterceptor" class="com.sitescape.ef.web.portlet.handler.UserPreloadInterceptor">
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>	

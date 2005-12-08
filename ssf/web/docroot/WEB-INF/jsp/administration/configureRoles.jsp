@@ -45,7 +45,7 @@
 		</portlet:actionURL>">
 
 		<c:forEach var="function" items="${ssFunctions}">
-		<c:out value="${function.value.id}"/><br>
+		<c:out value="${function.name}"/><br>
 		</c:forEach>
 	<input type="submit" name="modifyBtn"
 	 value="<ssf:nlt tag="common.modify" text="Modify"/>">
