@@ -1,6 +1,9 @@
 <% // The main forum view - for viewing folder listings and for viewing entries %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
+<ssf:ifadapter>
+<body>
+</ssf:ifadapter>
 
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
@@ -307,3 +310,9 @@ if (self.parent && self.parent.highlightLineById) {
 %>
   </c:if>
 </c:if>
+
+<ssf:ifadapter>
+</body>
+</html>
+</ssf:ifadapter>
+

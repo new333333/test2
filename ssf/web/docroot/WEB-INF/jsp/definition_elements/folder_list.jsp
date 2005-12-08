@@ -62,7 +62,11 @@ function ss_loadEntry(obj,id) {
 	<c:out value="${entry.docNumber}"/>.&nbsp;&nbsp;&nbsp;
   </td>
   <td valign="top" width="40%">
-    <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="<%= folderId %>" action="view_entry" operation="view_entry" 
+    <a href="<ssf:url 
+    adapter="true" 
+    portletName="ss_forum" 
+    folderId="<%= folderId %>" 
+    action="view_entry" 
     entryId="<%= entry.getId().toString() %>" actionUrl="false" popup="true" />" 
     onClick="ss_loadEntry(this,'folderLine_<c:out value="${entry.id}"/>');return false;" >
     <c:if test="${empty entry.title}">
