@@ -26,7 +26,7 @@
 <script language="Javascript" src="<html:rootPath />js/common/AnchorPosition.js"></script>
 <c:set var="prefix" value="${formName}_${evid}" />
 
-<table border="0" cellpadding="20"><tr><td>
+<table border="0" cellpadding="4"><tr><td>
  <table border="0" cellpadding="4" cellspacing="0">
  <c:choose>
  <c:when test="${attMap.hasDur}">
