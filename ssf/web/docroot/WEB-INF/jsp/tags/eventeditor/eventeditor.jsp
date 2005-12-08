@@ -8,6 +8,7 @@
 <jsp:useBean id="formName" type="String" scope="request" />
 <jsp:useBean id="startDate" type="java.util.Date" scope="request" />
 <jsp:useBean id="endDate" type="java.util.Date" scope="request" />
+<jsp:useBean id="initEvent" type="com.sitescape.ef.domain.Event" scope="request" />
 
 <jsp:useBean id="attMap" type="java.util.HashMap" scope="request" />
 
@@ -24,7 +25,6 @@
 <script language="Javascript" src="<html:rootPath />js/common/PopupWindow.js"></script>
 <script language="Javascript" src="<html:rootPath />js/common/AnchorPosition.js"></script>
 <c:set var="prefix" value="${formName}_${evid}" />
-
 
 <table border="0" cellpadding="20"><tr><td>
  <table border="0" cellpadding="4" cellspacing="0">
@@ -347,11 +347,11 @@ function ${prefix}_toggleRecur(name) {
        */
    %>
    <c:choose>
-   <c:when test="${empty event.count}"> 
+   <c:when test="${empty initEvent.count}"> 
    <c:set var="count" value="0" />
    </c:when>
    <c:otherwise>
-   <c:set var="count" value="${event.count}" />
+   <c:set var="count" value="${initEvent.count}" />
    </c:otherwise>
    </c:choose>   
 
@@ -382,7 +382,16 @@ function ${prefix}_toggleRecur(name) {
    <c:if test="${count == -1}"> checked="checked" </c:if>
    > 
    <ssf:nlt tag="event.repeat_until" /> 
+
+   <c:choose>
+   <c:when test="${empty initEvent.until}">
    <ssf:datepicker formName="<%= formName %>" id="<%= endrangeId %>" />
+   </c:when>
+   <c:otherwise>
+   <ssf:datepicker formName="<%= formName %>" id="<%= endrangeId %>" 
+         initDate= "<%= initEvent.getUntil().getTime() %>" />
+   </c:otherwise>
+   </c:choose>
     
    </td>
    </tr>
