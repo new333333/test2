@@ -54,26 +54,7 @@ function ss_getPreviousEntryId() {
 
 </script>
 <div>
- <span class="ss_buttonBarLeft">&nbsp;<a  
-          href="<ssf:url
-          adapter="true"
-          portletName="ss_forum" 
-          folderId="<%= ssFolder.getId().toString() %>"
-          action="view_entry"
-          operation="history_previous"
-          actionUrl="false"
-          />"
-          onClick="ss_loadEntry(this,'');return false;" ><img 
-          border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a><span>&nbsp;History&nbsp;</span><a href="<ssf:url
-          adapter="true"
-          portletName="ss_forum" 
-          folderId="<%= ssFolder.getId().toString() %>"
-          action="view_entry" 
-          operation="history_next"
-          actionUrl="false"
- 		  />"
-          onClick="ss_loadEntry(this,'');return false;" ><img 
-          border="0" src="<html:imagesPath/>pics/sym_s_next.gif"></a></span><span class="ss_buttonBarRight"><a  
+      <span class="ss_buttonBarRight"><a  
           href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
