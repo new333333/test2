@@ -63,9 +63,9 @@ public class ForumUtils {
 		    return parser.build(ois);
 	    } catch (JDOMException ex) {
 	        
-	    } /* The following catch clause does not compile.
+	    }
 	     catch (IOException ioe) {
-	    }*/
+	    }
 	    finally {   
 	        try {ois.close();} catch (IOException ios) {} finally {}
 	    }
