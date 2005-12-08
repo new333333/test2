@@ -484,6 +484,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
        	Map model = new HashMap();
         model.put(ObjectKeys.FOLDER, folder);      
         model.put(ObjectKeys.FOLDER_ENTRIES, childEntries);
+        model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.length()));
         return model;
    }
  
