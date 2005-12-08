@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import com.sitescape.ef.portletadapter.support.PortletInfo;
+import com.sitescape.ef.web.WebKeys;
 
 public class RenderRequestImpl extends PortletRequestImpl implements RenderRequest {
 
@@ -63,5 +66,11 @@ public class RenderRequestImpl extends PortletRequestImpl implements RenderReque
 	// Non-standard
 	public void setRenderParameters(Map params) {
 		this.params = params;
+	}
+	
+	public void defineObjects(PortletConfig portletConfig, RenderResponse res) {
+		setAttribute(WebKeys.JAVAX_PORTLET_CONFIG, portletConfig);
+		setAttribute(WebKeys.JAVAX_PORTLET_REQUEST, this);
+		setAttribute(WebKeys.JAVAX_PORTLET_RESPONSE, res);
 	}
 }

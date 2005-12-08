@@ -207,6 +207,18 @@
 	</tag>
 
 	<tag>
+		<name>ifadapter</name>
+		<tag-class>com.sitescape.ef.taglib.IfAdapterTag</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+	
+	<tag>
+		<name>ifnotadapter</name>
+		<tag-class>com.sitescape.ef.taglib.IfNotAdapterTag</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+	
+	<tag>
 		<name>nlt</name>
 		<tag-class>com.sitescape.ef.taglib.Nlt</tag-class>
 		<body-content>JSP</body-content>

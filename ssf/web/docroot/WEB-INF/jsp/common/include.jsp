@@ -8,10 +8,18 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%@ taglib prefix="ssf" uri="http://www.sitescape.com/tags-ssf" %>
+<%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
 
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 
-<portlet:defineObjects />
+<ssf:ifadapter>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> 
+<html xmlns:svg="http://www.w3.org/2000/svg-20000303-stylable">
+<head>
+<portletadapter:defineObjects/>
+</ssf:ifadapter>
+
+<ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
 
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.ef.ObjectKeys" %>
@@ -216,3 +224,5 @@ div.ss_historybar {
 </style>
 <script language="JavaScript" src="<html:rootPath/>js/forum/forum_common.js"></script>
 </c:if>
+
+<ssf:ifadapter></head></ssf:ifadapter>

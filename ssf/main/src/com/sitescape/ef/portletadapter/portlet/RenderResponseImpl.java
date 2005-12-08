@@ -10,6 +10,8 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sitescape.ef.portletadapter.PortletAdapterUtil;
+
 public class RenderResponseImpl extends PortletResponseImpl implements RenderResponse {
 
 	private RenderRequestImpl req;
@@ -71,7 +73,7 @@ public class RenderResponseImpl extends PortletResponseImpl implements RenderRes
 	}
 
 	public String getNamespace() {
-		return "_" + portletName + "_";
+		return PortletAdapterUtil.getPortletNamespace(portletName);
 	}
 
 	public void setTitle(String title) {
