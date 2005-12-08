@@ -57,7 +57,8 @@ public class ViewController extends SAbstractController {
 					String operationItem = PortletRequestUtils.getStringParameter(request, "operationItem", "");
 					Integer type = PortletRequestUtils.getIntParameter(request, "definitionType_"+operationItem);
 					if (!name.equals("") && type != null) {
-						selectedItem = getDefinitionModule().addDefinition(name, caption, type.intValue(), formData).getId();							
+						Definition def = getDefinitionModule().addDefinition(name, caption, type.intValue(), formData);							
+						selectedItem = def.getId();
 					}
 					
 				} else if (operation.equals("modifyDefinition")) {

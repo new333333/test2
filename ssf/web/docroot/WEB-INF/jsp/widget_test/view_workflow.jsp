@@ -1,5 +1,14 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <div class="ss_portlet">
+
+<c:if test="${!empty ss_errorMessage}">
+<div class="ss_labelLeftError">
+<span>An error occurred: <c:out value="${ss_errorMessage}"/></span>
+</div>
+<br/>
+<br/>
+</c:if>
+
 	<table border="0" cellpadding="0" cellspacing="0" width="95%">
 	<tr>
 		<td>
@@ -8,7 +17,7 @@ Current State:<c:out value="${workflowState}"/><br/>
 						<portlet:param name="action" value="workflow" />
 						<portlet:param name="operation" value="create" />
 						<portlet:param name="workflowId" value="${workflowId}" />
-					</portlet:actionURL>">Create new definition</a><br>
+					</portlet:actionURL>">Create a new "hello world" definition</a><br>
 
 				<a href="<portlet:actionURL windowState="maximized">
 						<portlet:param name="action" value="workflow" />
@@ -63,7 +72,7 @@ Current State:<c:out value="${workflowState}"/><br/>
 						<portlet:param name="operation" value="listDef" />
 						<portlet:param name="workflowId" value="${workflowId}" />
 						<portlet:param name="processId" value="${processId}" />
-					</portlet:actionURL>">List definitions</a><br>
+					</portlet:actionURL>">List all definitions</a><br>
 
 				<a href="<portlet:actionURL windowState="maximized">
 						<portlet:param name="action" value="workflow" />
@@ -77,7 +86,7 @@ Current State:<c:out value="${workflowState}"/><br/>
 						<portlet:param name="operation" value="deleteAll" />
 						<portlet:param name="processId" value="${processId}" />
 						<portlet:param name="workflowId" value="${workflowId}" />
-					</portlet:actionURL>">Delete all</a><br>
+					</portlet:actionURL>">Delete all "hello world" definitions</a><br>
 					
 <c:if test="${!empty definitions}">
 <br>
@@ -95,12 +104,16 @@ Current State:<c:out value="${workflowState}"/><br/>
 	 (Id: <c:out value="${definition.id}"/>, 
 	 Version: <c:out value="${definition.version}"/>)<br>
 	 Nodes:<br>
-	 <c:forEach var="nodeList" items="${definition.nodes}">
-		 <c:out value="${nodeList.name}"/><br>
-		 <c:forEach var="transition" items="${nodeList.leavingTransitions}">
+	 <c:if test="${!empty definition.nodes}">
+	   <c:forEach var="nodeList" items="${definition.nodes}">
+		 <c:if test="${!empty nodeList}">
+		   <c:out value="${nodeList.name}"/><br>
+		   <c:forEach var="transition" items="${nodeList.leavingTransitions}">
 			 &nbsp;&nbsp;&nbsp;to: <c:out value="${transition.to.name}"/><br>
-		 </c:forEach>
-	 </c:forEach>
+		   </c:forEach>
+		 </c:if>
+	   </c:forEach>
+	 </c:if>
 	 <br><br>
 </c:forEach>
 </c:if>

@@ -21,6 +21,7 @@ import org.jbpm.graph.exe.Token;
 import org.jbpm.jpdl.xml.JpdlXmlWriter;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.jbpm.context.exe.ContextInstance;
+import org.jbpm.db.JbpmSession;
 
 import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.web.portlet.SAbstractController;
@@ -47,242 +48,244 @@ public class WorkflowController extends SAbstractController {
 		String pId=PortletRequestUtils.getStringParameter(request,"processId", "");
 		String wId=PortletRequestUtils.getStringParameter(request,"workflowId", "");
 		String state = "";
-		PlatformTransactionManager txManager = (PlatformTransactionManager)SpringContextUtil.getBean("transactionManager");
-		String operation=PortletRequestUtils.getStringParameter(request,WebKeys.FORUM_URL_OPERATION);
-		WorkflowFactory wf = (WorkflowFactory)SpringContextUtil.getBean("workflowFactory");
-		if (operation.equals("create")) {
-		    ProcessDefinition processDefinition = getWorkflowModule().addWorkflow(
-		    	      "<process-definition name='hello world'>" +
-		    	      " <event type='node-enter'>" +
-		    	      "   <action name='recordState' class='com.sitescape.ef.module.workflow.RecordState' config-type='bean'/>" +
-		    	      " </event>" +
-		    	      "  <start-state name='start'>" +
-		    	      "    <transition to='notify' />" +
-		    	      "  </start-state>" +
-		    	      "  <state name='notify'>" +
-		    	      "    <action name='recordState' class='com.sitescape.ef.module.workflow.RecordState' config-type='bean'/>" +
-		    	      " <event type='node-enter'>" +
-		    	      " <action ref-name='recordState'> " +
-		    	      " <wfState>test notify</wfState></action>" +
-		    	      " <action class='com.sitescape.ef.module.workflow.Notify' config-type='bean'>" +
-		    	      " <principals>10,25,100</principals>" +
-		    	      " <subject>State change</subject>" +
-		    	      " <body>Blah, blah, blah...</body>" +
-		    	      " </action></event>" +
-		    	      "    <transition to='end' />" +
-		    	      "  </state>" +
-		    	      "  <state name='orphan'>" +
-		    	      "    <transition to='orphan2' />" +
-		    	      "  </state>" +
-		    	      "  <state name='orphan2'>" +
-		    	      "    <transition to='orphan' />" +
-		    	      "  </state>" +
-		    	      "  <state name='parallel_1'>" +
-		    	      "    <transition to='parallel_2' />" +
-		    	      "  </state>" +
-		    	      "  <state name='parallel_2'>" +
-		    	      "  </state>" +
-		    	      "  <end-state name='end' />" +
-		    	      "</process-definition>"
-		    	    );
-		    wId = String.valueOf(processDefinition.getId());
-		 } else if (operation.equals("new")) {
-		    	//pick the first
-		    	if (Validator.isNull(wId)) {
-		    		List defs = getWorkflowModule().getLatestDefinitions();
-		    		wId = String.valueOf(((ProcessDefinition)defs.get(0)).getId());
-		    	}
-		    	ProcessInstance processInstance = getWorkflowModule().addWorkflowInstance(Long.valueOf(wId));
-		    	pId = String.valueOf(processInstance.getId());
-		    	Token token = processInstance.getRootToken(); 
+
+		try {
+			PlatformTransactionManager txManager = (PlatformTransactionManager)SpringContextUtil.getBean("transactionManager");
+			String operation=PortletRequestUtils.getStringParameter(request,WebKeys.FORUM_URL_OPERATION);
+			WorkflowFactory wf = (WorkflowFactory)SpringContextUtil.getBean("workflowFactory");
+			if (operation.equals("create")) {
+			    ProcessDefinition processDefinition = getWorkflowModule().addWorkflow(
+			    	      "<process-definition name='hello world'>" +
+			    	      " <event type='node-enter'>" +
+			    	      "   <action name='recordState' class='com.sitescape.ef.module.workflow.RecordState' config-type='bean'/>" +
+			    	      " </event>" +
+			    	      "  <start-state name='start'>" +
+			    	      "    <transition to='notify' />" +
+			    	      "  </start-state>" +
+			    	      "  <state name='notify'>" +
+			    	      "    <action name='recordState' class='com.sitescape.ef.module.workflow.RecordState' config-type='bean'/>" +
+			    	      " <event type='node-enter'>" +
+			    	      " <action ref-name='recordState'> " +
+			    	      " <wfState>test notify</wfState></action>" +
+			    	      " <action class='com.sitescape.ef.module.workflow.Notify' config-type='bean'>" +
+			    	      " <principals>10,25,100</principals>" +
+			    	      " <subject>State change</subject>" +
+			    	      " <body>Blah, blah, blah...</body>" +
+			    	      " </action></event>" +
+			    	      "    <transition to='end' />" +
+			    	      "  </state>" +
+			    	      "  <state name='orphan'>" +
+			    	      "    <transition to='orphan2' />" +
+			    	      "  </state>" +
+			    	      "  <state name='orphan2'>" +
+			    	      "    <transition to='orphan' />" +
+			    	      "  </state>" +
+			    	      "  <state name='parallel_1'>" +
+			    	      "    <transition to='parallel_2' />" +
+			    	      "  </state>" +
+			    	      "  <state name='parallel_2'>" +
+			    	      "  </state>" +
+			    	      "  <end-state name='end' />" +
+			    	      "</process-definition>"
+			    	    );
+			    wId = String.valueOf(processDefinition.getId());
+			 } else if (operation.equals("new")) {
+			    	//pick the first
+			    	if (Validator.isNull(wId)) {
+			    		List defs = getWorkflowModule().getLatestDefinitions();
+			    		wId = String.valueOf(((ProcessDefinition)defs.get(0)).getId());
+			    	}
+			    	ProcessInstance processInstance = getWorkflowModule().addWorkflowInstance(Long.valueOf(wId));
+			    	pId = String.valueOf(processInstance.getId());
+			    	Token token = processInstance.getRootToken(); 
+				    	
+				    state= token.getNode().getName();
+	
+			 } else if (operation.equals("proceed")) {
+			    	// Now we can query the database for the process definition that we 
+			    	// deployed above. 
+			    	pId=PortletRequestUtils.getRequiredStringParameter(request,"processId");
+			    	ProcessInstance processInstance = getWorkflowModule().setNextTransition(Long.valueOf(pId));
+			    
+			    	Token token = processInstance.getRootToken(); 
+				    state= token.getNode().getName();
+				    wId = String.valueOf(processInstance.getProcessDefinition().getId());
+	
+			 } else if (operation.equals("orphan")) {
+			    	// Now we can query the database for the process definition that we 
+			    	// deployed above. 
+				 	pId=PortletRequestUtils.getStringParameter(request,"processId", "");
+				 	ProcessInstance processInstance = null;
+				 	if (!pId.equals("")) {
+				    	wId=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
+					    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+					    try {
+					    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
+					    	if (pD.hasNode("orphan")) {
+						    	processInstance = getWorkflowModule().setNode(Long.valueOf(pId), "orphan");
+						    } else if (pD.hasNode("orphan3")) {
+						    	processInstance = getWorkflowModule().setNode(Long.valueOf(pId), "orphan3");
+						    }
+					    	txManager.commit(status);
+					    } catch (Exception e) {
+					    	txManager.rollback(status);
+					    } 
+				 	}
+			    	if (processInstance == null) {
+			    		state = "not found";
+			    	} else {
+			    		Token token = processInstance.getRootToken(); 
+			    		Node currentNode = token.getNode();
+			    		if (currentNode != null) {
+				    		state= currentNode.getName();
+				    		wId = String.valueOf(processInstance.getProcessDefinition().getId());
+			    		} else {
+				    		state = "not found";
+			    		}
+			    	}
+			 } else if (operation.equals("listDef")) {
+			    	// Now we can query the database for the list of process definitions 
+			    	List definitions = getWorkflowModule().getAllDefinitions();
+			    	results.put("definitions", definitions);
+	
+			    	// Now we can query the database for the process definition that we 
+			    	// deployed above. 
+			    	if (!Validator.isNull(wId)) {
+			    		ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
+			    		
+					    Writer writer = new StringWriter();
+					    JpdlXmlWriter jpdl = new JpdlXmlWriter(writer);
+					    jpdl.write(pD);
+					    results.put("definitionXml", writer.toString());
+			    	} 
+	
+			 } else if (operation.equals("listInst")) {
+			    	// Now we can query the database for the process definition that we 
+			    	// deployed above. 
+			    	wId=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
+			    	List processInstances = getWorkflowModule().getProcessInstances(Long.valueOf(wId));
+			    	results.put("instances", processInstances);
 			    	
-			    state= token.getNode().getName();
-
-		 } else if (operation.equals("proceed")) {
-		    	// Now we can query the database for the process definition that we 
-		    	// deployed above. 
-		    	pId=PortletRequestUtils.getRequiredStringParameter(request,"processId");
-		    	ProcessInstance processInstance = getWorkflowModule().setNextTransition(Long.valueOf(pId));
-		    
-		    	Token token = processInstance.getRootToken(); 
-			    state= token.getNode().getName();
-			    wId = String.valueOf(processInstance.getProcessDefinition().getId());
-
-		 } else if (operation.equals("orphan")) {
-		    	// Now we can query the database for the process definition that we 
-		    	// deployed above. 
-			 	pId=PortletRequestUtils.getStringParameter(request,"processId", "");
-			 	ProcessInstance processInstance = null;
-			 	if (!pId.equals("")) {
+			    	if (!Validator.isNull(pId)) {
+			    		ProcessInstance processInstance = getWorkflowModule().getProcessInstance(Long.valueOf(pId));
+			    
+			    		Token token = processInstance.getRootToken(); 
+					    state= token.getNode().getName();
+					    wId = String.valueOf(processInstance.getProcessDefinition().getId());
+			    	} 
+			 } else if (operation.equals("modifyNodeName")) {
 			    	wId=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
 				    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
 				    try {
 				    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
-				    	if (pD.hasNode("orphan")) {
-					    	processInstance = getWorkflowModule().setNode(Long.valueOf(pId), "orphan");
-					    } else if (pD.hasNode("orphan3")) {
-					    	processInstance = getWorkflowModule().setNode(Long.valueOf(pId), "orphan3");
-					    }
+				    	if (pD.hasNode("orphan")) pD.getNode("orphan").setName("orphan3");
+				    	else if (pD.hasNode("orphan3")) pD.getNode("orphan3").setName("orphan");
 				    	txManager.commit(status);
 				    } catch (Exception e) {
 				    	txManager.rollback(status);
 				    } 
-			 	}
-		    	if (processInstance == null) {
-		    		state = "not found";
-		    	} else {
-		    		Token token = processInstance.getRootToken(); 
-		    		Node currentNode = token.getNode();
-		    		if (currentNode != null) {
-			    		state= currentNode.getName();
-			    		wId = String.valueOf(processInstance.getProcessDefinition().getId());
-		    		} else {
-			    		state = "not found";
-		    		}
-		    	}
-		 } else if (operation.equals("listDef")) {
-		    	// Now we can query the database for the list of process definitions 
-		    	List definitions = getWorkflowModule().getAllDefinitions();
-		    	results.put("definitions", definitions);
-
-		    	// Now we can query the database for the process definition that we 
-		    	// deployed above. 
-		    	if (!Validator.isNull(pId)) {
-		    		ProcessInstance processInstance = getWorkflowModule().getProcessInstance(Long.valueOf(pId));
-		    		
-		    		Token token = processInstance.getRootToken(); 
-				    state= token.getNode().getName();
-				    wId = String.valueOf(processInstance.getProcessDefinition().getId());
-				    ProcessDefinition pD = processInstance.getProcessDefinition();
-				    Writer writer = new StringWriter();
-				    JpdlXmlWriter jpdl = new JpdlXmlWriter(writer);
-				    jpdl.write(pD);
-				    results.put("definitionXml", writer.toString());
-		    	} 
-
-		 } else if (operation.equals("listInst")) {
-		    	// Now we can query the database for the process definition that we 
-		    	// deployed above. 
-		    	wId=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
-		    	List processInstances = getWorkflowModule().getProcessInstances(Long.valueOf(wId));
-		    	results.put("instances", processInstances);
-		    	
-		    	if (!Validator.isNull(pId)) {
-		    		ProcessInstance processInstance = getWorkflowModule().getProcessInstance(Long.valueOf(pId));
-		    
-		    		Token token = processInstance.getRootToken(); 
-				    state= token.getNode().getName();
-				    wId = String.valueOf(processInstance.getProcessDefinition().getId());
-		    	} 
-		 } else if (operation.equals("modifyNodeName")) {
-		    	wId=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
-			    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
-			    try {
-			    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
-			    	if (pD.hasNode("orphan")) pD.getNode("orphan").setName("orphan3");
-			    	else if (pD.hasNode("orphan3")) pD.getNode("orphan3").setName("orphan");
-			    	txManager.commit(status);
-			    } catch (Exception e) {
-			    	txManager.rollback(status);
-			    } 
-			    pId=PortletRequestUtils.getStringParameter(request,"processId", "");
-			    if (!Validator.isNull(pId)) {
-			    	ProcessInstance processInstance = getWorkflowModule().getProcessInstance(Long.valueOf(pId));
-			    	Token token = processInstance.getRootToken(); 
-				    state= token.getNode().getName();
-				    wId = String.valueOf(processInstance.getProcessDefinition().getId());
-			    } 
-			    		
-		 } else if (operation.equals("addNode")) {
-		    	wId=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
-			    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
-			    try {
-			    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
-			    	if (!pD.hasNode("orphan") && !pD.hasNode("orphan3")) {
-			    		Node node = new Node("orphan");
-			    		
-			    		Transition transition = new Transition();
-			    		transition.setProcessDefinition(pD);
-			    		transition.setTo(pD.getNode("orphan2"));
-			    		node.addLeavingTransition(transition);
-			    		pD.addNode(node);
-			    		
-			    		Transition transition2 = new Transition();
-			    		transition2.setProcessDefinition(pD);
-			    		transition2.setTo(pD.getNode("orphan"));
-			    		//copy list so iterator works as remove members
-			    		List leave = new ArrayList(pD.getNode("orphan2").getLeavingTransitions());
-			    		Iterator itTransitions = leave.iterator();
-			    		while (itTransitions.hasNext()) {
-			    			Transition trans = (Transition)itTransitions.next();
-			    			pD.getNode("orphan2").removeLeavingTransition(trans);
-				    		wf.getSession().getSession().delete(trans);
-			    			
-			    		}
-			    		pD.getNode("orphan2").addLeavingTransition(transition2);
-			    	}
-			    	txManager.commit(status);
-			    } catch (Exception e) {
-			    	txManager.rollback(status);
-			    	throw e;
-			    } 
-		 } else if (operation.equals("deleteNode")) {
-		    	wId=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
-			    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
-			    try {
-			    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
-			    	if (pD.hasNode("orphan")) 
-			    		wf.getSession().getSession().delete(pD.removeNode(pD.getNode("orphan")));
-			    	else if (pD.hasNode("orphan3")) 
-			    		wf.getSession().getSession().delete(pD.removeNode(pD.getNode("orphan3")));
-			    	txManager.commit(status);
-			    } catch (Exception e) {
-			    	txManager.rollback(status);
-			    } 
-			    pId=PortletRequestUtils.getStringParameter(request,"processId", "");
-			    if (!Validator.isNull(pId)) {
-			    	ProcessInstance processInstance = getWorkflowModule().getProcessInstance(Long.valueOf(pId));
-			    	Token token = processInstance.getRootToken(); 
-				    state= token.getNode().getName();
-				    wId = String.valueOf(processInstance.getProcessDefinition().getId());
-			    } 
-			    		
-		 } else if (operation.equals("deleteAll")) {
-			 	//clear out the junk
-		    	List definitions = getWorkflowModule().getAllDefinitions();
-		    	for (int i=0; i<definitions.size(); ++i) {
-		    		ProcessDefinition pD = (ProcessDefinition)definitions.get(i);
-			    	Iterator processInstances = getWorkflowModule().getProcessInstances(new Long(pD.getId())).listIterator();
-			    	while (processInstances.hasNext()) {
-			    		ProcessInstance pI = (ProcessInstance) processInstances.next();
-			    		getWorkflowModule().deleteProcessInstance(new Long(pI.getId()));
-			    		
-			    	}
-		    		getWorkflowModule().deleteProcessDefinition(new Long(pD.getId()));
-		    	}
-
-		 } else if (operation.equals("startParallel")) {
-		    	//pick the first
-		    	if (Validator.isNull(wId)) {
-		    		List defs = getWorkflowModule().getLatestDefinitions();
-		    		wId = String.valueOf(((ProcessDefinition)defs.get(0)).getId());
-		    	}
-		    	ProcessInstance processInstance = getWorkflowModule().addWorkflowInstance(Long.valueOf(wId));
-		    	pId = String.valueOf(processInstance.getId());
-		    	Token token = processInstance.getRootToken(); 
-
+				    pId=PortletRequestUtils.getStringParameter(request,"processId", "");
+				    if (!Validator.isNull(pId)) {
+				    	ProcessInstance processInstance = getWorkflowModule().getProcessInstance(Long.valueOf(pId));
+				    	Token token = processInstance.getRootToken(); 
+					    state= token.getNode().getName();
+					    wId = String.valueOf(processInstance.getProcessDefinition().getId());
+				    } 
+				    		
+			 } else if (operation.equals("addNode")) {
+			    	wId=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
 				    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
 				    try {
 				    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
-					    processInstance = getWorkflowModule().setNode(Long.valueOf(pId), "parallel_1");
+				    	if (!pD.hasNode("orphan") && !pD.hasNode("orphan3") && pD.hasNode("orphan2")) {
+				    		Node node = new Node("orphan");
+				    		
+				    		Transition transition = new Transition();
+				    		transition.setProcessDefinition(pD);
+				    		transition.setTo(pD.getNode("orphan2"));
+				    		node.addLeavingTransition(transition);
+				    		pD.addNode(node);
+				    		
+				    		Transition transition2 = new Transition();
+				    		transition2.setProcessDefinition(pD);
+				    		transition2.setTo(pD.getNode("orphan"));
+				    		//copy list so iterator works as remove members
+				    		List leave = new ArrayList(pD.getNode("orphan2").getLeavingTransitions());
+				    		Iterator itTransitions = leave.iterator();
+				    		while (itTransitions.hasNext()) {
+				    			Transition trans = (Transition)itTransitions.next();
+				    			pD.getNode("orphan2").removeLeavingTransition(trans);
+					    		wf.getSession().getSession().delete(trans);
+				    			
+				    		}
+				    		pD.getNode("orphan2").addLeavingTransition(transition2);
+				    	}
+				    	txManager.commit(status);
+				    } catch (Exception e) {
+				    	txManager.rollback(status);
+				    	throw e;
+				    } 
+			 } else if (operation.equals("deleteNode")) {
+			    	wId=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
+				    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+				    try {
+				    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
+				    	if (pD.hasNode("orphan")) 
+				    		wf.getSession().getSession().delete(pD.removeNode(pD.getNode("orphan")));
+				    	else if (pD.hasNode("orphan3")) 
+				    		wf.getSession().getSession().delete(pD.removeNode(pD.getNode("orphan3")));
 				    	txManager.commit(status);
 				    } catch (Exception e) {
 				    	txManager.rollback(status);
 				    } 
-
-			    state= token.getNode().getName();
-
-}
+				    pId=PortletRequestUtils.getStringParameter(request,"processId", "");
+				    if (!Validator.isNull(pId)) {
+				    	ProcessInstance processInstance = getWorkflowModule().getProcessInstance(Long.valueOf(pId));
+				    	Token token = processInstance.getRootToken(); 
+					    state= token.getNode().getName();
+					    wId = String.valueOf(processInstance.getProcessDefinition().getId());
+				    } 
+				    		
+			 } else if (operation.equals("deleteAll")) {
+				 	//clear out the junk
+			    	List definitions = getWorkflowModule().getAllDefinitions("hello world");
+			    	for (int i=0; i<definitions.size(); ++i) {
+			    		ProcessDefinition pD = (ProcessDefinition)definitions.get(i);
+				    	Iterator processInstances = getWorkflowModule().getProcessInstances(new Long(pD.getId())).listIterator();
+				    	while (processInstances.hasNext()) {
+				    		ProcessInstance pI = (ProcessInstance) processInstances.next();
+				    		getWorkflowModule().deleteProcessInstance(new Long(pI.getId()));
+				    		
+				    	}
+			    		getWorkflowModule().deleteProcessDefinition(new Long(pD.getId()));
+			    	}
+			    	wId = "";
+	
+			 } else if (operation.equals("startParallel")) {
+			    	//pick the first
+			    	if (Validator.isNull(wId)) {
+			    		List defs = getWorkflowModule().getLatestDefinitions();
+			    		wId = String.valueOf(((ProcessDefinition)defs.get(0)).getId());
+			    	}
+			       	JbpmSession session = wf.getSession();
+		        	ProcessInstance pI = session.getGraphSession().loadProcessInstance(Long.valueOf(pId).longValue());
+		        	Token subToken = new Token(pI.getRootToken(), "parallel_1");
+		            ProcessDefinition pD = pI.getProcessDefinition();
+		            Node node = pD.findNode("parallel_1");
+		            if (node != null) {
+		            	subToken.setNode(node);
+					    session.getGraphSession().saveProcessInstance(pI);
+		            }
+			    	
+				    state= subToken.getNode().getName();
+	
+			}
+		} catch(Exception e) {
+			String errMsg = e.getMessage();
+			if (errMsg == null || errMsg.equals("")) errMsg = "An unknown error occurred.";
+			results.put("ss_errorMessage", errMsg);
+		}
+		
     	// Now we can query the database for the process definition that we 
     	// deployed above. 
     	if (!Validator.isNull(pId)) {
@@ -293,18 +296,23 @@ public class WorkflowController extends SAbstractController {
     			//The process instance may no longer exist, so skip showing the definition
     			pId = "";
     		}
-		    if (processInstance != null) {
-		    	ProcessDefinition pD = processInstance.getProcessDefinition();
+    	} 
+
+    	if (!Validator.isNull(wId)) {
+    		try {
+		    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
 	   		    Writer writer = new StringWriter();
     		    JpdlXmlWriter jpdl = new JpdlXmlWriter(writer);
     		    jpdl.write(pD);
     		    results.put("definitionXml", writer.toString());
-		    }
-    	} 
 
-    	if (!Validator.isNull(wId)) {
-    		List processInstances = getWorkflowModule().getProcessInstances(Long.valueOf(wId));
-        	results.put("instances", processInstances);
+    		    List processInstances = getWorkflowModule().getProcessInstances(Long.valueOf(wId));
+            	results.put("instances", processInstances);
+     		} catch(Exception e) {
+    			//The workflow definition may no longer exist, so skip showing the instances
+    			pId = "";
+    			wId = "";
+    		}
     	}
     	
 	    results.put("processId", pId);
