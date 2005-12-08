@@ -1,4 +1,4 @@
-package com.sitescape.ef.file;
+package com.sitescape.ef.module.shared;
 
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.exception.UncheckedCodedContainerException;
