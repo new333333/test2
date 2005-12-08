@@ -24,9 +24,9 @@ public class ServletRootUrlTag extends TagSupport {
 		String url = null;
 		
 		if(secure == null)
-			WebUrlUtil.getServletRootURL(req);
+			url = WebUrlUtil.getServletRootURL(req);
 		else
-			WebUrlUtil.getServletRootURL(req, secure.booleanValue());
+			url = WebUrlUtil.getServletRootURL(req, secure.booleanValue());
 		
 		try {
 			pageContext.getOut().print(url);
