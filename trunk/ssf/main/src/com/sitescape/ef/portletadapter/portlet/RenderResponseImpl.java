@@ -89,8 +89,13 @@ public class RenderResponseImpl extends PortletResponseImpl implements RenderRes
 			String resContentType = (String)enu.nextElement();
 
 			if(resContentType.equals("*") ||
-					resContentType.equals("*/*") ||
-					contentType.startsWith(resContentType)) {
+					resContentType.equals("*/*")) {
+				valid = true;
+			}
+			else if (resContentType.endsWith("/*") && contentType.startsWith(resContentType.substring(0, resContentType.indexOf("/")))) {
+				valid = true;
+			}
+			else if (contentType.startsWith(resContentType)) {
 				valid = true;
 			}
 		}
