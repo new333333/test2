@@ -14,7 +14,15 @@
 		caption = "<b>"+caption+"</b><br>";
 	}
 
-String background = gammaColor;
+	String required = (String) request.getAttribute("property_required");
+	if (required == null) {required = "";}
+	if (required.equals("true")) {
+		required = "<span class=\"ss_required\">*</span>";
+	} else {
+		required = "";
+	}
+	
+	String background = gammaColor;
 %>
 <c:set var="textValue" value=""/>
 <c:if test="${!empty ssFolderEntry}">
@@ -27,10 +35,9 @@ String background = gammaColor;
 </c:if>
 <jsp:useBean id="textValue" type="java.lang.String" />
 <div class="ss_entryContent">
-  <div class="ss_labelLeft"><%= caption %>
+  <span class="ss_labelLeft"><%= caption %><%= required %></span>
     <ssf:htmleditor id="<%= elementName %>" 
       formName="<%= formName %>" height="<%= height %>" color="<%= background %>"
       initText="<%= textValue %>" />
-  </div>
 </div>
 <div class="ss_divider"></div>
