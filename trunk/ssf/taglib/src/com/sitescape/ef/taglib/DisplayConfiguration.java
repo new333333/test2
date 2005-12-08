@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.util.servlet.DynamicServletRequest;
@@ -84,11 +85,11 @@ public class DisplayConfiguration extends TagSupport {
 									while (itItemDefinitionProperties.hasNext()) {
 										Element property = (Element) itItemDefinitionProperties.next();
 										String propertyName = property.attributeValue("name", "");
-										String propertyDefaultValue = property.attributeValue("default", "");
+										String propertyDefaultValue = NLT.getDef(property.attributeValue("default", ""));
 										//Get the value from the actual definition
 										Element itemProperty = (Element) nextItem.selectSingleNode("properties/property[@name='"+propertyName+"']");
 										if (itemProperty != null) {
-											propertyDefaultValue = itemProperty.attributeValue("value", propertyDefaultValue);
+											propertyDefaultValue = NLT.getDef(itemProperty.attributeValue("value", propertyDefaultValue));
 										}
 										if (!propertyName.equals("")) {
 											req.setAttribute("property_"+propertyName, propertyDefaultValue);
@@ -114,9 +115,9 @@ public class DisplayConfiguration extends TagSupport {
 											if (propertyConfigType.equals("textarea")) {
 												propertyValue = property.getText();
 											} else if (propertyConfigType.equals("boolean") || propertyConfigType.equals("checkbox")) {
-												propertyValue = property.attributeValue("value", "");
+												propertyValue = NLT.getDef(property.attributeValue("value", ""));
 											} else {
-												propertyValue = property.attributeValue("value", "");
+												propertyValue = NLT.getDef(property.attributeValue("value", ""));
 											}
 											req.setAttribute("property_"+propertyName, propertyValue);
 										}
@@ -135,7 +136,7 @@ public class DisplayConfiguration extends TagSupport {
 											Element configProperty = 
 												(Element)nextItem.selectSingleNode("properties/property[@name='"+propertyName+"']");
 											if (configProperty != null) {
-												String value = configProperty.attributeValue("value", "");
+												String value = NLT.getDef(configProperty.attributeValue("value", ""));
 												savedReqAttributes.put(reqAttrName, req.getAttribute(reqAttrName));
 												req.setAttribute(reqAttrName, value);
 											}

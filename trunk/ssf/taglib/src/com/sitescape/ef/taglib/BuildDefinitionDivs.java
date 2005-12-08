@@ -10,6 +10,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.util.NLT;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -106,7 +107,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			Element rootElement = (Element) itRootElements.next();
 			String rootElementId = rootElement.attributeValue("id", rootElement.attributeValue("name"));
 			String rootElementName = rootElement.attributeValue("name");
-			String rootElementCaption = rootElement.attributeValue("caption", rootElementName);
+			String rootElementCaption = NLT.getDef(rootElement.attributeValue("caption", rootElementName));
 			
 			//Get the config version of this item
 			Element rootConfigElement = (Element) this.configDocument.getRootElement().selectSingleNode("item[@name='"+rootElementName+"']");
@@ -118,7 +119,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				this.divNames.put("info_"+rootElementId, "1");
 				sb.append("\n<div id='info_" + rootElementId + "' ");
 				sb.append("class='ss_definitionBuilder'>\n");
-				sb.append("<span class='ss_contentbold'>" + rootElement.attributeValue("caption"));
+				sb.append("<span class='ss_contentbold'>" + NLT.getDef(rootElement.attributeValue("caption")));
 				property = (Element) rootElement.selectSingleNode("./properties/property[@name='caption']");
 				String propertyCaptionValue = "";
 				if (property != null) {
@@ -128,7 +129,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					}
 				}
 				if (propertyCaptionValue.equals("")) {
-					propertyCaptionValue = rootElement.attributeValue("caption");
+					propertyCaptionValue = NLT.getDef(rootElement.attributeValue("caption"));
 				}
 				sb.append("</span>\n<br><br>\n");
 				sb.append("</div>\n");
@@ -249,33 +250,28 @@ public class BuildDefinitionDivs extends TagSupport {
 					if (rootElement.element("options") != null) {
 						operationElement = operations.addElement("operation");
 						operationElement.addAttribute("name", "addOption");
-						//TODO Translate this
-						operationElement.addAttribute("caption", "Add");
+						operationElement.addAttribute("caption", "__add");
 					}
 					if (rootElement.element("properties") != null) {
 						operationElement = operations.addElement("operation");
 						operationElement.addAttribute("name", "modifyItem");
-						//TODO Translate this
-						operationElement.addAttribute("caption", "Modify");
+						operationElement.addAttribute("caption", "__modify");
 					}
 					if (rootElement.attributeValue("canBeDeleted", "true").equalsIgnoreCase("true")) {
 						operationElement = operations.addElement("operation");
 						operationElement.addAttribute("name", "deleteItem");
-						//TODO Translate this
-						operationElement.addAttribute("caption", "Delete");
+						operationElement.addAttribute("caption", "__delete");
 					}
 					
 					operationElement = operations.addElement("operation");
 					operationElement.addAttribute("name", "moveItem");
-					//TODO Translate this
-					operationElement.addAttribute("caption", "Move");
+					operationElement.addAttribute("caption", "__move");
 					
 					if (rootElement.attributeValue("multipleAllowed", "").equalsIgnoreCase("true") || 
 							sourceRoot.selectSingleNode("//item[@name='"+rootElementName+"']") == null) {
 						operationElement = operations.addElement("operation");
 						operationElement.addAttribute("name", "cloneItem");
-						//TODO Translate this
-						operationElement.addAttribute("caption", "Clone");
+						operationElement.addAttribute("caption", "__clone");
 					}
 					
 				}
@@ -292,7 +288,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					} else {
 						sb.append("onClick=\""+operationElementId+"('" + operationElementId + "', '" + operationElementName + "', '"+operationElement.attributeValue("item")+"')\">");
 					}
-					sb.append(operationElement.attributeValue("caption"));
+					sb.append(NLT.getDef(operationElement.attributeValue("caption")));
 					sb.append("</a>\n");
 					sb.append("</td></tr>\n");
 				}
@@ -331,7 +327,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								if (!optionsSeen.containsKey(optionName)) {
 									sb.append("<li>");
 									sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+optionId+"', '"+optionName+"')\">");
-									sb.append(optionItem.attributeValue("caption", optionName));
+									sb.append(NLT.getDef(optionItem.attributeValue("caption", optionName)));
 									sb.append("</a>");
 									//See if this item has any help
 									Element help = (Element) optionItem.selectSingleNode("./help");
@@ -340,7 +336,7 @@ public class BuildDefinitionDivs extends TagSupport {
 										hb.append(Integer.toString(++helpDivCount));
 										hb.append("' class='ss_helpPopUp'>\n");
 										hb.append("<span class='ss_content'>");
-										hb.append(help.getText());
+										hb.append(NLT.getDef(help.getText()));
 										hb.append("</span>\n</div>\n");
 										sb.append("&nbsp;<a name='help_div_");
 										sb.append(Integer.toString(helpDivCount));
@@ -358,7 +354,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					itOptions = options.elementIterator("option_select");
 					while (itOptions.hasNext()) {
 						option = (Element) itOptions.next();
-						String optionCaption = option.attributeValue("optionCaption", "");
+						String optionCaption = NLT.getDef(option.attributeValue("optionCaption", ""));
 						if (!optionCaption.equals("")) {
 							sb.append("</ul>\n<br>\n<b>").append(optionCaption).append("</b>\n<ul>\n");
 						}
@@ -374,7 +370,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								if (!optionsSeen.containsKey(optionSelectName)) {
 									sb.append("<li>");
 									sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+optionSelectId+"', '"+optionSelectName+"')\">");
-									sb.append(optionSelect.attributeValue("caption", optionSelectName));
+									sb.append(NLT.getDef(optionSelect.attributeValue("caption", optionSelectName)));
 									sb.append("</a>");
 									//See if this item has any help
 									Element help = (Element) optionSelect.selectSingleNode("./help");
@@ -383,7 +379,7 @@ public class BuildDefinitionDivs extends TagSupport {
 										hb.append(Integer.toString(++helpDivCount));
 										hb.append("' class='ss_helpPopUp'>\n");
 										hb.append("<span class='ss_content'>");
-										hb.append(help.getText());
+										hb.append(NLT.getDef(help.getText()));
 										hb.append("</span>\n</div>\n");
 										sb.append("&nbsp;<a name='help_div_");
 										sb.append(Integer.toString(helpDivCount));
@@ -438,7 +434,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						String type = propertyConfig.attributeValue("type", "text");
 						if (type.equals("textarea")) {
 							if (!propertyConfig.attributeValue("caption", "").equals("")) {
-								sb.append(propertyConfig.attributeValue("caption"));
+								sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 								sb.append("\n<br>\n");
 							}
 							sb.append("<textarea name='propertyId_" + propertyId + "' rows='6' cols='60' "+readonly+">"+propertyValue+"</textarea>\n");
@@ -453,11 +449,11 @@ public class BuildDefinitionDivs extends TagSupport {
 								checked = "checked";
 							}
 							sb.append("<input type='checkbox' name='propertyId_" + propertyId + "' "+checked+" "+readonly+"> ");
-							sb.append(propertyConfig.attributeValue("caption"));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 						
 						} else if (type.equals("selectbox")) {
 							if (!propertyConfig.attributeValue("caption", "").equals("")) {
-								sb.append(propertyConfig.attributeValue("caption"));
+								sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 								sb.append("\n<br>\n");
 							}
 							sb.append("<select name='propertyId_" + propertyId + "'>\n");
@@ -471,7 +467,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									checked = " selected";
 								}
 								sb.append("<option value='").append(selection.attributeValue("name", "")).append("'").append(checked).append(">");
-								sb.append(selection.attributeValue("caption", selection.attributeValue("name", "")));
+								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
 								sb.append("</option>\n");
 							}
 							//See if there are any data items to be shown from the "sourceRoot" entry form
@@ -527,7 +523,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						
 						} else {
 							if (!propertyConfig.attributeValue("caption", "").equals("")) {
-								sb.append(propertyConfig.attributeValue("caption"));
+								sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 								sb.append("\n<br>\n");
 							}
 							sb.append("<input type='text' name='propertyId_" + propertyId + "' size='40' value=\""+propertyValue+"\" "+readonly+">\n");
@@ -539,7 +535,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							hb.append(Integer.toString(++helpDivCount));
 							hb.append("' class='ss_helpPopUp'>\n");
 							hb.append("<span class='ss_content'>");
-							hb.append(help.getText());
+							hb.append(NLT.getDef(help.getText()));
 							hb.append("</span>\n</div>\n");
 							sb.append("&nbsp;<a name='help_div_");
 							sb.append(Integer.toString(helpDivCount));

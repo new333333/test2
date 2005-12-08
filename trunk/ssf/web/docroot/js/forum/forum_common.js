@@ -616,6 +616,7 @@ var lastActive_menulayer = '';
 var active_menulayer_form = 0;
 
 function activateMenuLayer(divId, delayHide) {
+	if (!delayHide || delayHide == null || delayHide == 'undefined') {delayHide=""}
     // don't do anything if the divs aren't loaded yet
     if (isNSN6 || isMoz5) {
         if (self.document.getElementById(divId) == null) {return}
@@ -762,7 +763,7 @@ function hideElement(divName) {
 
 function showDiv(divName, noHideSpannedAreas) {
     //Hide any area that has elements that might bleed through
-    if (noHideSpannedAreas == null) {
+    if (noHideSpannedAreas == null || noHideSpannedAreas == "") {
         hideSpannedAreas()
     }
     showElement(divName);
@@ -771,25 +772,41 @@ function showDiv(divName, noHideSpannedAreas) {
 function showElement(divName) {
     if (isNSN6 || isMoz5) {
         document.getElementById(divName).style.visibility = "visible";
+        if (!document.getElementById(divName).style.display || document.getElementById(divName).style.display != 'inline') {
+        	document.getElementById(divName).style.display = "block";
+        }
     } else if (isNSN) {
         var nn4obj = getNN4DivObject(divName)
         nn4obj.visibility = "visible";
     } else {
         self.document.all[divName].style.visibility = "visible";
+        if (!self.document.all[divName].style.display || self.document.all[divName].style.display != 'inline') {
+        	self.document.all[divName].style.display = "block";
+        }
     }
 }
 
 function positionDiv(divName, x, y) {
     if (isNSN6 || isMoz5) {
-        self.document.getElementById(divName).style.left= (x - parseInt(self.document.getElementById(divName).offsetParent.offsetLeft)) + "px"
-        self.document.getElementById(divName).style.top= (y - parseInt(self.document.getElementById(divName).offsetParent.offsetTop)) + "px"
+    	if (self.document.getElementById(divName) && self.document.getElementById(divName).offsetParent) {
+	        self.document.getElementById(divName).style.left= (x - parseInt(self.document.getElementById(divName).offsetParent.offsetLeft)) + "px"
+	        self.document.getElementById(divName).style.top= (y - parseInt(self.document.getElementById(divName).offsetParent.offsetTop)) + "px"
+	    } else {
+	        self.document.getElementById(divName).style.left= x + "px"
+	        self.document.getElementById(divName).style.top= y + "px"
+	    }
     } else if (isNSN) {
         var nn4obj = getNN4DivObject(divName)
         nn4obj.left=x
         nn4obj.top=y
     } else {
-        self.document.all[divName].style.left=x - self.document.all[divName].offsetParent.offsetLeft
-        self.document.all[divName].style.top=y - self.document.all[divName].offsetParent.offsetTop
+        if (self.document.all[divName] && self.document.all[divName].offsetParent) {
+	        self.document.all[divName].style.left=x - self.document.all[divName].offsetParent.offsetLeft
+	        self.document.all[divName].style.top=y - self.document.all[divName].offsetParent.offsetTop
+    	} else {
+	        self.document.all[divName].style.left=x
+	        self.document.all[divName].style.top=y
+    	}
     }
 }
 
