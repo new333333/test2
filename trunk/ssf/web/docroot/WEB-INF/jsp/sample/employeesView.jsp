@@ -47,28 +47,35 @@ return false;
 			</td>
 		</tr>
 	</c:forEach>
-		<tr>
-			<td colspan="4">
-				<a href="<portlet:renderURL>
-						<portlet:param name="action" value="editEmployee"/>
-					</portlet:renderURL>"><img title="Add New Employee" src="<html:imagesPath/>sample/new.png" border=0 /> Add New Employee</a>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="4">
-				<a href="<ssf:servletrooturl/>downloadFile?file=C:\liferay-portal-pro-3.5.0-tomcat\RUNNING.txt">Download File (using pure servlet)</a>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="4">
-				<a href="<ssf:servletrooturl/>uploadFile" onClick="return popup(this, 'notes')">Upload File (using pure servlet)</a>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="4">
-				<a href="<portletadapter:renderURL>
-				         <portletadapter:param name="action" value="uploadFile"/>
-				         </portletadapter:renderURL>" onClick="return popup(this, 'notes')">Upload File (using portlet adapter)</a>
-			</td>
-		</tr>
+	<tr>
+		<td colspan="4">
+			<a href="<portlet:renderURL>
+					<portlet:param name="action" value="editEmployee"/>
+				</portlet:renderURL>"><img title="Add New Employee" src="<html:imagesPath/>sample/new.png" border=0 /> Add New Employee</a>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="4">
+			<a href="<ssf:servletrooturl/>downloadFile?file=C:\liferay-portal-pro-3.5.0-tomcat\RUNNING.txt">Download File (using pure servlet)</a>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="4">
+			<a href="<ssf:servletrooturl/>uploadFile" onClick="return popup(this, 'notes')">Upload File (using pure servlet)</a>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="4">
+			<a href="<portletadapter:renderURL>
+			         <portletadapter:param name="action" value="uploadFile"/>
+			         </portletadapter:renderURL>" onClick="return popup(this, 'notes')">Upload File (using portlet adapter)</a>
+		</td>
+	</tr>
+	<tr>
+	<td align="center">
+		<applet archive="sample/sample.jar" code="com.sitescape.ef.applets.sample.HelloWorld" codebase="<html:rootPath/>/applets" height="30" width="130">
+		</applet>
+	</td>
+</tr>
+		
 </table>
