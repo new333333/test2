@@ -276,7 +276,7 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
     public void addReply(FolderEntry child) {
         getReplies().add(child);
         child.setParentEntry(this);
-        child.setTopEntry(getTopEntry());
+        if (topEntry == null) child.setTopEntry(this); else child.setTopEntry(topEntry);
         child.setHKey(new HKey(docHKey, nextDescendant++));
         child.setParentFolder(parentFolder);
         child.setOwningFolderSortKey(owningFolderSortKey);
