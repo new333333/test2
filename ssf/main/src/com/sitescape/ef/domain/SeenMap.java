@@ -16,10 +16,10 @@ import com.sitescape.ef.module.folder.index.IndexUtils;
  * need auto-import = false so names don't collide with jbpm
  * 
  * @author Janet McCann
- * Manage the seen map for a folder.  
+ * Manage the seen map for a user. 
  */
 public class SeenMap {
-	protected UserPerFolderPK id;
+	protected Long principalId;
 	protected Map seenMap;
 	protected Date lastPrune;
 	
@@ -27,23 +27,21 @@ public class SeenMap {
 	protected SeenMap() {		
 		//only called by hibernate.  Prevent null maps.
 	}
-	public SeenMap(UserPerFolderPK key) {
-		setId(key);
+
+	public SeenMap(Long principalId) {
 		setSeenMap(new HashMap());
-	}
-	public SeenMap(Long principalId, Long folderId) {
-		setId(new UserPerFolderPK(principalId, folderId));
-		setSeenMap(new HashMap());
+		setPrincipalId(principalId);
 	}
 	/**
- 	 * @hibernate.composite-id
-	 **/
-	public UserPerFolderPK getId() {
-		return id;
+ 	 * @hibernate.id generator-class="assigned"
+ 	 */
+	public Long getPrincipalId() {
+		return principalId;
 	}
-	public void setId(UserPerFolderPK id) {
-		this.id = id;
-	}
+	public void setPrincipalId(Long principalId) {
+		this.principalId = principalId;
+	}	
+
 	
 	/**
 	 * @hibernate.property type="org.springframework.orm.hibernate3.support.BlobSerializableType" not-null="true"
@@ -66,7 +64,6 @@ public class SeenMap {
 	protected void setLastPrune(Date lastSeenPrune) {
 		this.lastPrune = lastSeenPrune;
 	}
-
 
     protected void pruneMap(Date now) {
     	Iterator it;
@@ -96,34 +93,13 @@ public class SeenMap {
     	return checkAndSetSeen(entry, false);
     }
 	protected boolean checkAndSetSeen(Entry entry, boolean setIt) {
-      	Date seen,modDate,now;
-      	boolean ret = false;
-      	Long id = entry.getId();
-      	seen = (Date)seenMap.get(id);
-		modDate = entry.getModification().getDate();
-   		now = new Date();
-        if (seen == null) {
-    		if ((now.getTime() - modDate.getTime()) > ObjectKeys.SEEN_MAP_TIMEOUT) {
-     		    ret = true;
-    		}
-    	} else {
-    		if (seen.compareTo(modDate) > 0) {
-    			ret = true; 
-    		}
-    	}
-		if (setIt) {
-			if (!ret) seenMap.put(id, now);
-			pruneMap(now);
-		}
-		return ret;
+		return checkAndSetSeen(entry.getId(), entry.getModification().getDate(), setIt);
 	}
     public boolean checkIfSeen(HashMap entry) {
       	Long id = new Long((String)entry.get(IndexUtils.DOCID_FIELD));
-		Date modDate = (Date)entry.get(IndexUtils.MODIFICATION_DATE_FIELD);
-		
+		Date modDate = (Date)entry.get(IndexUtils.MODIFICATION_DATE_FIELD);		
     	return checkAndSetSeen(id, modDate, false);
-    }
-    
+    }   
     
 	public boolean checkAndSetSeen(Long id, Date modDate, boolean setIt) {
       	Date seen,now;

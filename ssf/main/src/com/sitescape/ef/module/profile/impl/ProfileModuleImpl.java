@@ -130,30 +130,30 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   		}
   		return uProps;
    }
-   public SeenMap getUserSeenMap(Long userId, Long folderId) {
+   public SeenMap getUserSeenMap(Long userId) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		SeenMap seen = null;
 		if (userId == null) userId = user.getId();
   		if (user.getId().equals(userId)) {
- 			 seen = getFolderDao().loadSeenMap(user.getId(), folderId);
+ 			 seen = getCoreDao().loadSeenMap(user.getId());
  		}
    		return seen;
    }
-   public void updateUserSeenEntry(Long userId, Long folderId, Entry entry) {
+   public void updateUserSeenEntry(Long userId, Entry entry) {
    		User user = RequestContextHolder.getRequestContext().getUser();
    		SeenMap seen;
    		if (userId == null) userId = user.getId();
   		if (user.getId().equals(userId)) {
-			 seen = getFolderDao().loadSeenMap(user.getId(), folderId);
+			 seen = getCoreDao().loadSeenMap(user.getId());
 			 seen.setSeen(entry);
 		}
    }
-   public void updateUserSeenEntry(Long userId, Long folderId, List entries) {
+   public void updateUserSeenEntry(Long userId, List entries) {
    		User user = RequestContextHolder.getRequestContext().getUser();
    		SeenMap seen;
    		if (userId == null) userId = user.getId();
   		if (user.getId().equals(userId)) {
-  			seen = getFolderDao().loadSeenMap(user.getId(), folderId);
+			seen = getCoreDao().loadSeenMap(user.getId());
    			for (int i=0; i<entries.size(); i++) {
    				Entry reply = (Entry)entries.get(i);
    				seen.setSeen(reply);

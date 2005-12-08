@@ -79,6 +79,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	ws.addAll(top.getFolders());
       	for (Iterator iter=ws.iterator(); iter.hasNext();) {
     		f = (Folder)iter.next();
+    		if (f.getTopFolder() != null) continue;
       	    // Check if the user has the privilege to view the folder 
             try {
               	getAccessControlManager().checkOperation(f, WorkAreaOperation.VIEW);

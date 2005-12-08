@@ -121,7 +121,9 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         // This must be done in a separate step after persisting the entry,
         // because we need the entry's persistent ID for indexing. 
         addEntry_indexAdd(folder, entry, inputData);
-        
+		getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).
+							setSeen(entry);
+       
         return entry.getId();
     }
 
@@ -266,7 +268,8 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         addReply_postSave(parent, entry, inputData, entryData);
         
         addReply_indexAdd(parent, entry, inputData, entryData);
-        
+        getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
+       
         return entry.getId();
     }
     
@@ -532,53 +535,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
      
     }
 
-    public Hits getRecentEntries(List folders) {
-    	Hits results = null;
-       	// Build the query
-    	org.dom4j.Document qTree = DocumentHelper.createDocument();
-    	Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-    	Element andElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
-    	andElement.addElement(QueryBuilder.USERACL_ELEMENT);
-    	Element rangeElement = andElement.addElement(QueryBuilder.RANGE_ELEMENT);
-    	rangeElement.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, IndexUtils.MODIFICATION_DAY_FIELD);
-    	rangeElement.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, QueryBuilder.INCLUSIVE_TRUE);
-    	Element startRange = rangeElement.addElement(QueryBuilder.RANGE_START);
-    	Date now = new Date();
-    	Date startDate = new Date(now.getTime() - ObjectKeys.SEEN_MAP_TIMEOUT);
-    	startRange.addText(IndexUtils.formatDayString(startDate));
-    	Element finishRange = rangeElement.addElement(QueryBuilder.RANGE_FINISH);
-    	finishRange.addText(IndexUtils.formatDayString(now));
-    	Element orElement = andElement.addElement(QueryBuilder.OR_ELEMENT);
-    	Iterator itFolders = folders.iterator();
-    	while (itFolders.hasNext()) {
-    		Folder folder = (Folder) itFolders.next();
-        	Element field = orElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,IndexUtils.TOP_FOLDERID_FIELD);
-        	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-        	Folder topFolder = folder.getTopFolder();
-        	if (topFolder == null) topFolder = folder;
-    		child.setText(topFolder.getId().toString());
-    	}
-    	
-    	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder();
-    	SearchObject so = qb.buildQuery(qTree);
-    	
-    	System.out.println("Query is: " + so.getQueryString());
-    	
-    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-        
-        try {
-	        results = luceneSession.search(so.getQuery(),so.getSortBy(),0,0);
-        }
-        finally {
-            luceneSession.close();
-        }
 
-    	
-        return results;
-     
-    }
 //***********************************************************************************************************
     public Long addFolder(Folder parentFolder, Folder folder) {
         addFolder_accessControl(parentFolder);

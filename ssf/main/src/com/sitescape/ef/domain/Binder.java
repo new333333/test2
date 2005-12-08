@@ -203,10 +203,10 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     public void setOwningWorkspace(Workspace owningWorkspace) {
     	//Since Hibernate sets this property directly, we can assume this is a change
     	if (this.owningWorkspace != null)
-    		this.owningWorkspace.removeForum(this);
+    		this.owningWorkspace.removeChild(this);
     	this.owningWorkspace = owningWorkspace;
        	if (this.owningWorkspace != null)
-    		this.owningWorkspace.addForum(this);  	
+    		this.owningWorkspace.addChild(this);  	
     }   
     
     /**

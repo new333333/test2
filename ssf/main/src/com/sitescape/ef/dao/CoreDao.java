@@ -134,4 +134,6 @@ public interface CoreDao {
 	public List loadPostings(String zoneName);
 	public List loadEmailAliases(String zoneName);
 	public EmailAlias loadEmailAlias(String aliasId, String zoneName);
+    public SeenMap loadSeenMap(Long userId);
+	
  }

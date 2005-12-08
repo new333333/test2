@@ -80,9 +80,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
         }
         return entry;
     }
-    /*
-     * Find first level child docshare entries of the folder.
-     */
+ 
     public Iterator queryEntries(final FilterControls filter) throws DataAccessException { 
         Query query = (Query)getHibernateTemplate().execute(
                 new HibernateCallback() {
@@ -102,7 +100,9 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
             );  
        return new SFQuery(query);
     }
- 
+    /**
+     * Load level 1 FolderEntries for a 1 folder.  Replies are not loaded
+     */
     public Iterator queryChildEntries(Folder parentFolder) throws DataAccessException {
     	Object[] cfValues = new Object[]{parentFolder, new Integer(1)};
     	// use default query
@@ -262,7 +262,9 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
          );  
          return result;
      }  
- 
+    /**
+     * Load a folder and its child folders
+     */
     public Folder loadFolders(final Long folderId, final String zoneName) throws DataAccessException {
         if (folderId == null) {throw new NoFolderByTheIdException(folderId);}
         
@@ -373,32 +375,6 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     	}
         return uProps;
     }
-	public SeenMap loadSeenMap(Long userId, Long folderId) {
-   		UserPerFolderPK id = new UserPerFolderPK(userId, folderId);
-   		SeenMap seen =(SeenMap)getHibernateTemplate().get(SeenMap.class, id);
-   		if (seen == null) {
-   			seen = new SeenMap(id);
-   			getCoreDao().saveNewSession(seen);
-   			//quick write
-   			seen =(SeenMap)getHibernateTemplate().get(SeenMap.class, id);   			
-   		}
-   		return seen;
-	}
-	public List loadSeenMaps(final Long userId, final List folderIds) {
-		List results = (List)getHibernateTemplate().execute(
-				new HibernateCallback() {
-	               public Object doInHibernate(Session session) throws HibernateException {
-	            	 return  session.createCriteria(SeenMap.class)
-	            	 		.add(Expression.and(
-	            	 				Expression.eq("id.principalId", userId),
-	            	 				Expression.in("id.folderId", folderIds)))
-	                         .list();
-	               }
-	           }
-	    );
-
-		return results;
-	}
 	public HistoryMap loadHistoryMap(Long userId, Long folderId) {
    		UserPerFolderPK id = new UserPerFolderPK(userId, folderId);
    		HistoryMap history =(HistoryMap)getHibernateTemplate().get(HistoryMap.class, id);

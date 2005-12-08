@@ -49,7 +49,7 @@ public class Workspace extends Binder  {
     	}
       	return workspaces;
     }
-    public void addForum(Binder child) {
+    public void addChild(Binder child) {
      	if (!forumsParsed) parseForums();
 		if (child instanceof Workspace) {
     		workspaces.add(child);
@@ -58,7 +58,7 @@ public class Workspace extends Binder  {
     	}
 		child.setOwningWorkspace(this);
 	}
-    public void removeForum(Binder child) {
+    public void removeChild(Binder child) {
      	if (!forumsParsed) parseForums();
  		if (child instanceof Workspace) {
     		workspaces.remove(child);

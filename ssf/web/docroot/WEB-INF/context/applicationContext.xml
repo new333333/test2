@@ -362,10 +362,11 @@
 	</bean>
 	<bean id="folderModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.FolderModuleImpl">
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
+		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 	</bean>
 
 	<bean id="defaultFolderCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.DefaultFolderCoreProcessor">
-		<property name="definitionModule"><ref local="definitionModule"/></property>
+		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
 		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 	</bean>
 
