@@ -5,8 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
-import com.sitescape.ef.PropertyNames;
-
 import org.hibernate.Hibernate;
 import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
@@ -156,7 +154,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                         while (iter.hasNext()) {
                             id = iter.next();
                             if (id != null) {
-                                dis.add(Expression.eq(PropertyNames.ID, id));
+                                dis.add(Expression.eq("id", id));
                             }
                         }
                         crit.add(dis);
@@ -415,7 +413,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                         Criteria crit = session.createCriteria(Role.class);
                         Disjunction dis = Expression.disjunction();
                         for (int i=0; i<ids.length; ++i) {
-                            dis.add(Expression.eq(PropertyNames.ID, ids[i]));
+                            dis.add(Expression.eq("id", ids[i]));
                         }
                         crit.add(dis);
                         return crit.list();

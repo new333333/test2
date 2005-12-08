@@ -1,8 +1,8 @@
 package com.sitescape.ef.security.authentication;
 
-import com.sitescape.ef.exception.CheckedException;
+import com.sitescape.ef.exception.UncheckedException;
 
-public class AuthenticationException extends CheckedException {
+public class AuthenticationException extends UncheckedException {
     public AuthenticationException() {
         super();
     }

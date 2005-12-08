@@ -8,8 +8,6 @@ package com.sitescape.ef.domain;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import com.sitescape.ef.PropertyNames;
-
 /**
  * @author janet
  *
@@ -67,7 +65,7 @@ public class PersistentLongIdObject implements PersistentLongId {
     }    
     public String toString() {
         return new ToStringBuilder(this)
-            .append(PropertyNames.ID, getId())
+            .append("id", getId())
             .toString();
     }
  
