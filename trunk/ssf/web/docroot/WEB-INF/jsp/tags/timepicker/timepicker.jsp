@@ -10,15 +10,15 @@
 
 <c:set var="prefix" value="${formName}_${tpid}_${sequenceNumber}" />
 
-<script language="Javascript" src="<%= contextPath %>/html/js/common/PopupWindow.js"></script>
-<script language="Javascript" src="<%= contextPath %>/html/js/common/AnchorPosition.js"></script>
+<script language="Javascript" src="/js/common/PopupWindow.js"></script>
+<script language="Javascript" src="/js/common/AnchorPosition.js"></script>
 <script language="Javascript">
 
 var <c:out value="${prefix}" />_popupContents  = "";
 
 <c:out value="${prefix}" />_popupContents += "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
 <c:out value="${prefix}" />_popupContents += "<ht"+"ml><head>";
-<c:out value="${prefix}" />_popupContents += "<link rel=\"stylesheet\" href=\"/html/css/forum.css\" type=\"text/css\"> \n";
+<c:out value="${prefix}" />_popupContents += "<link rel=\"stylesheet\" href=\"/ssf/css/forum.css\" type=\"text/css\"> \n";
 <c:out value="${prefix}" />_popupContents += "<title>Select a time</title>  \n";
 <c:out value="${prefix}" />_popupContents += "</head><body>";
 
