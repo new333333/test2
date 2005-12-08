@@ -9,6 +9,7 @@ import javax.portlet.PortletURL;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderResponse;
 import java.text.SimpleDateFormat;
+import java.lang.Integer;
 
 import java.util.Calendar;
 import java.util.Iterator;
@@ -284,36 +285,41 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		
 		HashMap results = new HashMap();  
 		while (entryIterator.hasNext()) {
-			Entry e = (Entry) entryIterator.next();
-			Map customAttrs = e.getCustomAttributes();
-			Set keyset = customAttrs.keySet();
-			Iterator attIt = keyset.iterator();
+			int count = 0;
+			HashMap e = (HashMap) entryIterator.next();
+			//Entry e = (Entry) entryIterator.next();
+			String ec = (String)e.get("_eventCount");
+			if (ec != null)
+				count = new Integer(ec).intValue();
 			// look through the custom attrs of this entry for any of type EVENT
-			while (attIt.hasNext()) {
-				CustomAttribute att = (CustomAttribute) customAttrs.get(attIt.next());
-				if (att.getValueType() == CustomAttribute.EVENT) {
-					Event ev = (Event) att.getValue();
-					// range check to see if this event is in range
-					long thisDateMillis = ev.getDtStart().getTime().getTime();
-					if (thisDateMillis < endMillis && startMillis < thisDateMillis) {
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-						String dateKey = sdf.format(ev.getDtStart().getTime());
-						ArrayList entryList = new ArrayList();
-						// reslist is going to be a list of maps; each map will carry the entry and 
-						// also the event that caused this entry to be in range
-						ArrayList resList = new ArrayList();
-						Map res = new HashMap();
-						res.put("event", ev);
-						res.put("entry", e);
-						entryList  = (ArrayList) results.get(dateKey);
-						if (entryList == null) {
-							resList.add(res);
-						} else {
-							resList.addAll(entryList);
-							resList.add(res);
-						}
-						results.put(dateKey, resList);
+			for (int j = 0; j < count; j++) {
+				Date evStartDate = (Date)e.get("_event" + count + "StartDate");
+				Date evEndDate = (Date)e.get("_event" + count + "EndDate");
+				Event ev = new Event();
+				GregorianCalendar gcal = new GregorianCalendar();
+				gcal.setTime(evStartDate);
+				ev.setDtStart(gcal);
+				gcal.setTime(evEndDate);
+				ev.setDtEnd(gcal);				
+				long thisDateMillis = evStartDate.getTime();
+				if (thisDateMillis < endMillis && startMillis < thisDateMillis) {
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+					String dateKey = sdf.format(evStartDate);
+					ArrayList entryList = new ArrayList();
+					// reslist is going to be a list of maps; each map will carry the entry and 
+					// also the event that caused this entry to be in range
+					ArrayList resList = new ArrayList();
+					Map res = new HashMap();
+					res.put("event", ev);
+					res.put("entry", e);
+					entryList  = (ArrayList) results.get(dateKey);
+					if (entryList == null) {
+						resList.add(res);
+					} else {
+						resList.addAll(entryList);
+						resList.add(res);
 					}
+					results.put(dateKey, resList);
 				}
 			}
 		}

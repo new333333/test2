@@ -71,7 +71,7 @@ function highlightLineById(id) {
 	}
 %></td>
   <td align="right" valign="top" width="5%" class="ss_content">
-	<c:out value="${entry._docId}"/>.&nbsp;&nbsp;&nbsp;</td>
+	<c:out value="${entry._docNum}"/>.&nbsp;&nbsp;&nbsp;</td>
   <td valign="top" width="40%" class="ss_content">
     <a class="ss_link" href="<ssf:url     
     adapter="true" 
