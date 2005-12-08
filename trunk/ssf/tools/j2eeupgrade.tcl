@@ -140,18 +140,20 @@ array set ::j2ee_Attachments_class_MAP {
    modification_date {modification_date timestamp}
    modification_principal      {modification_principal int32}
    type         {type "fixchar 1"}
-   ownerType   {ownerType "varchar 16"}
-   owner     {owner int32}
-   name			{name "varchar 64"}
+   folderEntry {folderEntry int32}
+	principal 	{principal int32}
+    ownerType 	{ownerType "varchar 16"}
+    owner 		{owner int32}
+    owningFolderSortKey {owningFolderSortKey "varchar 512"}
+  name			{name "varchar 64"}
    fileName         {fileName "varchar 256"}
    fileLength         {fileLength int32}
    lastVersion  {lastVersion int32}
    versionNumber {versionNumber int32}
    versionName  {versionName "varchar 256"}
    active     {active boolean}
-   forum     {forum int32}
    title         {title "varchar 256"}
-   usage        {usage "varchar 16"}
+   bookmarkEntry {bookmarkEntry int32}
    parentAttachment {parentAttachment uuid}
 }
 array set ::j2ee_CustomAttributes_class_MAP {
@@ -512,16 +514,17 @@ proc doUsers {userList} {
             if {![strequal $photos "default none"]} {
                 set attrs1(id) [newuuid]
                 set attrs1(lockVersion) 1
-                set attrs1(usage) "photograph"
+                set attrs1(name) "photograph"
                 set attrs1(type) "F"
                 set attrs1(creation_date) $attrs(creation_date)
                 set attrs1(creation_principal) $attrs(creation_principal)
                 set attrs1(modification_principal) $attrs(creation_principal)
                 set attrs1(modification_date) $attrs(creation_date)
-                set attrs1(name) $photos
-                set attrs1(length) 0
+                set attrs1(fileNname) $photos
+                set attrs1(fileLength) 0
                 set attrs1(ownerType) "principal"
                 set attrs1(owner) $::userIds($user)
+                set attrs1(principal) $::userIds($user)
                 set results [setupColVals $map1 attrs1 insert]
                 set cmdList [lindex $results 1]
                 set cmd [lindex $cmdList 0] 
@@ -533,18 +536,19 @@ proc doUsers {userList} {
                 set files [glob -nocomplain [avf_filejoin hidden_aca _user resumes $user/*]]
                 set attrs1(id) [newuuid]
                 set attrs1(lockVersion) 1
-                set attrs1(usage) "resume"
+                set attrs1(name) "resume"
                 set attrs1(type) "F"
-                set attrs1(name) [lindex $files 0]
+                set attrs1(fileName) [lindex $files 0]
                 set attrs1(creation_date) $attrs(creation_date)
                 set attrs1(creation_principal) $attrs(creation_principal)
                 set attrs1(modification_principal) $attrs(creation_principal)
                 set attrs1(modification_date) $attrs(creation_date)
                 try {
-                	set attrs1(length) [file size $attrs1(name)]
+                	set attrs1(fileLength) [file size $attrs1(fileName)]
                 } else {continue}
                 set attrs1(ownerType) "principal"
                 set attrs1(owner) $::userIds($user)           
+                set attrs1(principal) $::userIds($user)
                 set results [setupColVals $map1 attrs1 insert]
                 set cmdList [lindex $results 1]
                 set cmd [lindex $cmdList 0] 
@@ -1043,6 +1047,8 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set attaches(lockVersion) 1
                 set attaches(owner) $entryId
                 set attaches(ownerType) "doc"
+                set attaches(folderEntry) $entryId
+				set attaches(owningFolderSortKey) $folderSortKey
                 set attaches(creation_date) [lindex $upLoad 3]
                 set attaches(creation_principal) [mapName [lindex $upLoad 2]]
                 set attaches(modification_date) [lindex $upLoad 3]
@@ -1050,8 +1056,8 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set attaches(fileName) [lindex $upLoad 0]
                 set savedName [lindex $upLoad 0]
                 set attaches(fileLength) [lindex $upLoad 1]
-                set attaches(type) "M"
-                set attaches(usage) "primary"
+                set attaches(type) "F"
+                set attaches(name) "primary"
                 set attaches(lastVersion) [aval -name $forum lastUsedVersion $entry]
                 set results [setupColVals j2ee_Attachments_class_MAP attaches insert]
                 set cmdList [lindex $results 1]
@@ -1063,6 +1069,8 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set attaches(lockVersion) 1
                 set attaches(owner) $entryId
                 set attaches(ownerType) "doc"
+                set attaches(folderEntry) $entryId
+				set attaches(owningFolderSortKey) $folderSortKey
                 set attaches(creation_date) $attrs(creation_date)
                 set attaches(creation_principal) $attrs(creation_principal)
                 set attaches(modification_date) $attrs(creation_date)
@@ -1071,7 +1079,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set savedName [lindex $content 1]
                 set attaches(fileLength) 0
                 set attaches(type) "U"
-                set attaches(usage) "primary"
+                set attaches(name) "primary"
                 set attaches(lastVersion) 0
                 set results [setupColVals j2ee_Attachments_class_MAP attaches insert]
                 set cmdList [lindex $results 1]
@@ -1083,7 +1091,9 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set attaches(lockVersion) 1
                 set attaches(owner) $entryId
                 set attaches(ownerType) "doc"
-                set attaches(usage) "primary"
+                set attaches(folderEntry) $entryId
+				set attaches(owningFolderSortKey) $folderSortKey
+                set attaches(name) "primary"
                 set attaches(creation_date) $attrs(creation_date)
                 set attaches(creation_principal) $attrs(creation_principal)
                 set attaches(modification_date) $attrs(creation_date)
@@ -1103,6 +1113,8 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set attaches(lockVersion) 1
                 set attaches(owner) $entryId
                 set attaches(ownerType) "doc"
+                set attaches(folderEntry) $entryId
+				set attaches(owningFolderSortKey) $folderSortKey
                 set attaches(parentAttachment) $topAttachment
                 set attaches(type) "V"
                 set attaches(lastVersion) 0
@@ -1200,6 +1212,8 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
 		            set attaches(lockVersion) 1
 			        set attaches(ownerType) "doc"
 				    set attaches(owner) $entryId
+	                set attaches(folderEntry) $entryId
+					set attaches(owningFolderSortKey) $folderSortKey
 					set attaches(lastVersion) [expr [llength $af] -1]
                     set attaches(id) [newuuid]
                     set attaches(creation_date) $attrs(creation_date)
@@ -1207,7 +1221,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                     set attaches(modification_date) $attrs(creation_date)
                     set attaches(modification_principal) $attrs(creation_principal)
                     set attaches(fileName) [lindex $af 0]
-	                set attaches(type) "M"
+	                set attaches(type) "F"
 					try {
 						set attaches(fileLength) [file size [file join $base $entry/[lindex $af 0]]]
 					} else {
@@ -1245,6 +1259,8 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set attaches(lockVersion) 1
                 set attaches(ownerType) "doc"
                 set attaches(owner) $entryId
+                set attaches(folderEntry) $entryId
+    			set attaches(owningFolderSortKey) $folderSortKey
                 set attaches(type) "U"
                 foreach af $aFiles {
                     if {[strequal $af $savedName]} {continue}
