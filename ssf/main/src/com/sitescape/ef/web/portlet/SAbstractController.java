@@ -13,6 +13,7 @@ import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.portlet.forum.ForumActionModule;
 import com.sitescape.ef.security.function.FunctionManager;
+import com.sitescape.ef.module.workflow.WorkflowModule;
 
 public abstract class SAbstractController extends AbstractController {
 
@@ -27,6 +28,7 @@ public abstract class SAbstractController extends AbstractController {
 	private ForumActionModule forumActionModule;
 	private LdapModule ldapModule;
 	private FunctionManager functionManager;
+	private WorkflowModule workflowModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -94,6 +96,14 @@ public abstract class SAbstractController extends AbstractController {
 
 	public void setFunctionManager(FunctionManager functionManager) {
 		this.functionManager = functionManager;
+	}
+	
+	protected WorkflowModule getWorkflowModule() {
+		return workflowModule;
+	}
+
+	public void setWorkflowModule(WorkflowModule workflowModule) {
+		this.workflowModule = workflowModule;
 	}
 	
 }

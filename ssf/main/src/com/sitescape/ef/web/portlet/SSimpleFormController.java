@@ -10,8 +10,8 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.portlet.forum.ForumActionModule;
-import com.sitescape.ef.portlet.forum.ForumActionModule;
 import com.sitescape.ef.security.function.FunctionManager;
+import com.sitescape.ef.module.workflow.WorkflowModule;
 
 public abstract class SSimpleFormController extends SimpleFormController {
 
@@ -24,6 +24,7 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	private ForumActionModule forumActionModule;
 	private LdapModule ldapModule;
 	private FunctionManager functionManager;
+	private WorkflowModule workflowModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -92,5 +93,11 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	public void setFunctionManager(FunctionManager functionManager) {
 		this.functionManager = functionManager;
 	}	
-	
+	protected WorkflowModule getWorkflowModule() {
+		return workflowModule;
+	}
+
+	public void setWorkflowModule(WorkflowModule workflowModule) {
+		this.workflowModule = workflowModule;
+	}	
 }
