@@ -22,7 +22,6 @@
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td valign="top">
-				<font class="portlet-section-body" style="font-size:100%">
 				<a href="<portlet:renderURL windowState="maximized">
 						<portlet:param name="action" value="tree" />
 					</portlet:renderURL>">Tree test</a><br>
@@ -35,7 +34,6 @@
 				<a href="<portlet:renderURL windowState="maximized">
 						<portlet:param name="action" value="event" />
 					</portlet:renderURL>">Event tester</a><br>
-				</font>
 			</td>
 		</tr>
 		</table>
