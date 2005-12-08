@@ -507,4 +507,9 @@
 		<property name="password"><value>root</value></property>
 	</bean>
 	
+	<!-- ================================ Presence Service =============================== -->
+	<bean id="presenceService" class="com.sitescape.ef.presence.impl.PresenceServiceImpl">
+		<property name="jabberServer"><value>http://localhost:5555</value></property>
+	</bean>
+	
 </beans>
