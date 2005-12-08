@@ -17,5 +17,5 @@ public interface ForumActionModule {
 	public Map getDeleteEntry(Map formData, RenderRequest req, Long folderId);
 	public Map getModifyEntry(Map formData, RenderRequest req, Long folderId);
 	public Map getAddReply(Map formData, RenderRequest req, Long folderId);
-	public Map getDefinitionBuilder(Map formData, RenderRequest req, Long folderId, String defId);
+	public Map getDefinitionBuilder(Map formData, RenderRequest req, String defId);
 }

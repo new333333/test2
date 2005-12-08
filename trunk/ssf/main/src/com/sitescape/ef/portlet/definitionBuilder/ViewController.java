@@ -10,12 +10,14 @@ import java.util.Iterator;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
 import com.sitescape.ef.ObjectKeys;
@@ -38,39 +40,19 @@ public class DefinitionBuilderController extends SAbstractController {
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
-		
 		try {
 			Map model = new HashMap();
 			User user = RequestContextHolder.getRequestContext().getUser();
 			Map formData = request.getParameterMap();
-			Long folderId;
-			try {
-				folderId = ActionUtil.getForumId(formData, (PortletRequest)request);
-			} catch (NoFolderByTheIdException nf) {
-				model = new HashMap();
-				model.put(ObjectKeys.WORKSPACE_DOM_TREE, getWorkspaceModule().getDomWorkspaceTree());
-				
-				//Make the tree available to the jsp
-				ModelUtil.processModel(request,model);
-				if (request.getWindowState().equals(WindowState.NORMAL)) {
-				    request.setAttribute("action", "view_workspacetree");
-				    return;
-				} else {
-					//Show the workspace tree maximized
-					request.setAttribute("action", "view_workspacetree_maximized");
-					return;
-				}
 
-			}
-			
 			String selectedItem = "";
+			if (formData.containsKey("sourceDefinitionId")) {
+				selectedItem = ActionUtil.getStringValue(formData, "sourceDefinitionId");
+			}
 			
 			//See if there is an operation to perform
 			if (formData.containsKey("cancelBtn")) {
 				//The operation was canceled. Go back to the top screen
-				if (formData.containsKey("sourceDefinitionId")) {
-					selectedItem = ActionUtil.getStringValue(formData, "sourceDefinitionId");
-				}
 				
 			} else if (formData.containsKey("operation")) {
 				String operation = ActionUtil.getStringValue(formData,"operation");
@@ -159,8 +141,33 @@ public class DefinitionBuilderController extends SAbstractController {
 					selectedItem = "";
 				}
 			}
-	        //TODO: do you need all this??
-	        //model = getForumActionModule().getDefinitionBuilder(formData, request, folderId, selectedItem);
+			
+			//Pass the selection id to be shown on to the rendering phase
+			request.setAttribute("selectedItem", selectedItem);
+			
+		}
+		catch (Exception e) {
+			//request.setAttribute(PageContext.EXCEPTION, e);
+
+			//return mapping.findForward(Constants.COMMON_ERROR);
+		}
+	}
+		
+	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+			RenderResponse response) throws Exception {
+			
+		try {
+			Map model = new HashMap();
+			User user = RequestContextHolder.getRequestContext().getUser();
+			Map formData = request.getParameterMap();
+
+			String selectedItem = (String) request.getAttribute("selectedItem");
+			if (selectedItem == null) {
+				selectedItem = "";
+			}
+
+			//TODO: do you need all this??
+	        model = getForumActionModule().getDefinitionBuilder(formData, request, selectedItem);
 
 			Map data = new HashMap();
 			
@@ -266,14 +273,15 @@ public class DefinitionBuilderController extends SAbstractController {
 			model.put("data", data);
 			ModelUtil.processModel(request, model);
 
-			request.setAttribute("action", "definition_builder");
-			return;
 		}
 		catch (Exception e) {
 			//request.setAttribute(PageContext.EXCEPTION, e);
 
 			//return mapping.findForward(Constants.COMMON_ERROR);
 		}
+		
+		String path = "definition_builder/view_definition_builder";
+		return new ModelAndView(path);
 	}
 
     private void buildDefinitionTree(Element sourceElement, Element targetElement) {

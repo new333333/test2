@@ -40,9 +40,9 @@
 				<a href="<portlet:renderURL windowState="maximized">
 						<portlet:param name="action" value="fragment" />
 					</portlet:renderURL>">Fragment test</a><br>
-				<a href="<portlet:renderURL windowState="maximized">
+				<a href="<portlet:actionURL windowState="maximized">
 						<portlet:param name="action" value="definition_builder" />
-					</portlet:renderURL>">Definition builder</a><br>
+					</portlet:actionURL>">Definition builder</a><br>
 			</td>
 		</tr>
 		</table>
