@@ -1,14 +1,15 @@
 package com.sitescape.ef.util;
-
+import java.io.File;
+import java.io.IOException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.io.Resource;
 
 import com.sitescape.ef.SingletonViolationException;
-
 /**
  * It is strongly suggested to use Spring's regular dependency injection
  * capability for obtaining references to other beans. 
@@ -23,7 +24,7 @@ public class SpringContextUtil implements ApplicationContextAware {
 	// This is a singleton class.
 	
 	private static SpringContextUtil sc; // singleton instance
-	
+	protected String webRootName;
 	protected ApplicationContext ac;
 	
 	public SpringContextUtil() {
@@ -36,7 +37,14 @@ public class SpringContextUtil implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext ac) throws BeansException {
         this.ac = ac;
     } 
-
+    public void setWebRoot(Resource webRoot) throws IOException {
+    	//resolve serlet context now
+    	File file = webRoot.getFile(); 
+    	getInstance().webRootName = file.getAbsolutePath();
+    }
+    public static String getWebRootName() {
+    	return getInstance().webRootName;
+    }
 	protected static SpringContextUtil getInstance() {
 		return sc;
 	}	

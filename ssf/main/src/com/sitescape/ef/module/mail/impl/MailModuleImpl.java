@@ -258,6 +258,7 @@ public class MailModuleImpl extends AbstractModuleImpl implements MailModule {
 				
 			} else {
 				locale = Locale.getDefault();
+				helper.setSubject(processor.getSubject(folder, locale));				
 			}
 			if (addrs != null) { 
 				for (int i=0; i<addrs.length; ++i) {
