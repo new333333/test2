@@ -64,6 +64,7 @@ public interface ObjectKeys {
 	public static final String FORUM_OPERATION_VIEW_ENTRY_PREVIOUS = "view_entry_previous";
 	public static final String FORUM_OPERATION_VIEW_FILE = "view_file";
 	public static final String FORUM_PORTLET_NAME = "ss_forum";
+	public static final String FORUM_URL_ATTRIBUTE = "attr";
 	public static final String FORUM_URL_ENTRY_ID = "entryId";
     public static final String FORUM_URL_ENTRY_TYPE="entryType";
 	public static final String FORUM_URL_FILE = "file";
@@ -87,9 +88,10 @@ public interface ObjectKeys {
     public static final String USER_NAME = "ss_userName";
     public static final String USER_PROPERTIES = "ss_userProperties";
     public static final String USER_PROPERTY_DISPLAY_STYLE = "display_style";
-    public static final String USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL = "display_style_horizontal";
-    public static final String USER_PROPERTY_DISPLAY_STYLE_VERTICAL = "display_style_vertical";
     public static final String USER_PROPERTY_DISPLAY_STYLE_ACCESSIBLE = "display_style_accessible";
+    public static final String USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL = "display_style_horizontal";
+    public static final String USER_PROPERTY_DISPLAY_STYLE_IFRAME = "display_style_iframe";
+    public static final String USER_PROPERTY_DISPLAY_STYLE_VERTICAL = "display_style_vertical";
     public static final String USER_SECURITY_INFO = "ss_userSecurityInfo";    
     public static final String VELOCITY_TEMPLATES = "ss_velocityTemplates";
     public static final String WORKSPACE_DOM_TREE="ss_wsDomTree";
