@@ -1,9 +1,8 @@
 <% // History and entry navigation bar %>
 <div class="portlet-section-header" 
-  style="margin-top: 8x; margin-bottom: 8px; width:<c:if 
-  test="${empty ss_toolbarWidth}"><c:out value="100%"/></c:if><c:if 
-  test="${!empty ss_toolbarWidth}"><c:out value="${ss_toolbarWidth}"/></c:if>;">
-  <table cellpadding="0" cellspacing="0" style="display:inline;">
+  style="margin-top: 8px; margin-bottom: 8px; margin-right:2px; margin-left:2px; 
+    width:100%; display:block;">
+  <table cellpadding="0" cellspacing="0" width="100%" style="display:block;">
     <tr>
       <td nowrap align="left" width="10%">
         <a href="<ssf:url
