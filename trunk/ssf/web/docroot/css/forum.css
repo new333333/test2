@@ -90,6 +90,7 @@ div.ss_divider {
   }  
 
 /* container for entry content: description, signature, attachments, data gathered from entry form */
+/* also form elements */
 div.ss_entryContent {
   margin: 0px 0px 0px 0px;
   padding: 2px;
@@ -100,6 +101,7 @@ div.ss_entryContent {
   margin-top: 2px;
   margin-bottom: 2px;
   padding: 0px;
+  display: block;
   font-family: arial, helvetica, sans-serif;
   font-size: smaller;
   font-weight: bold;
@@ -111,6 +113,7 @@ div.ss_entryContent {
   font-weight: bold;
   color: #000000;
   display: inline;
+  padding-right: 2px;
   font-family: arial, helvetica, sans-serif;
   }
 
@@ -119,6 +122,7 @@ div.ss_entryContent {
   font-weight: bold;
   color: #000000;
   display: inline;
+  padding-left: 2px;
   font-family: arial, helvetica, sans-serif;
   }
   
@@ -212,10 +216,7 @@ div.ss_toolbar_menu {
 	background-color: #FFFFFF; 
 	color: #000000;
 	border: 1px #cfcfcf solid;
-	padding-right: 0px;
-    padding-left: 0px;
-    padding-bottom: 0px;
-    padding-top: 0px;
+	padding: 0px;
 	width: 300px;
 }
 
@@ -434,9 +435,15 @@ table.ss_ruledTable td table td {
 .ss_bgmanila { background-color: #ffffe8; }
 .ss_bgworkflow { background-color: #e4e4e4; }
 
+/* highlight for selected entry in iframe view*/
 .highlightEntry {
   background-color: #f7f7f7;
 }
+
+/* highlight an entire table row/cell (such as today's date in calendar views */
+table tr.ss_highlight td.ss_highlight {
+  background-color: #ceddf2;
+} 
 
 .ss_labelAboveError {  
   margin: 5px 5px 5px 5px;
@@ -479,12 +486,13 @@ table.ss_ruledTable td table td {
   }
 
 /* red required-field indicator, usually an asterisk */
-.ss_required {
+span.ss_required {
   background-color: transparent;
+  color: #a01e00;
+  display:inline;
+  padding: 2px;
   font-size: larger;
   font-weight: bold;
-  color: #a01e00;
-  display:inline; 
   font-family: arial, helvetica, sans-serif;
   }
   
