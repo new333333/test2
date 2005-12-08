@@ -44,6 +44,8 @@
 			<map>
 				<entry key="/downloadFile"><ref local="downloadFile"/></entry>				
 				<entry key="/uploadFile"><ref local="uploadFile"/></entry>				
+				<entry key="/viewEntry"><ref local="viewEntry"/></entry>				
+				<entry key="/viewFile"><ref local="viewFile"/></entry>				
 			</map>
 		</property>
 	</bean>
@@ -75,7 +77,8 @@
 	<!-- Controllers -->
 
 	<bean id="downloadFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.file.DownloadFileController"/>
-
 	<bean id="uploadFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.file.UploadFileController"/>
+	<bean id="viewEntry" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ViewEntryController"/>
+	<bean id="viewFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ViewFileController"/>
 
 </beans>
