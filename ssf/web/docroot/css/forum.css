@@ -348,6 +348,7 @@ input.ss_submit:hover {
 /* folder styles */
 /* folders use ss_entryTitle */
 div.ss_folder {
+  width: 100%;
   margin: 0em .8em 0em .8em;
   }
 
