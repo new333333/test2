@@ -415,6 +415,7 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 						emptyDayMap.put(WebKeys.CALENDAR_DOM, Integer.toString(gcal.get(Calendar.DAY_OF_MONTH)));
 						emptyDayMap.put("inView", new Boolean(false));
 						// because this loop is adding extra days, we need to build their URLs into the daymap here
+						// and we don't want to clobber urldatestring because it's used later for the week URL
 						urldatestring2 = urldatesdf.format(gcal.getTime());
 						url = response.createRenderURL();
 						url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
@@ -496,6 +497,29 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 			loopCal.add(Calendar.DATE, 1);
 			dayList.add(daymap);
 		}
+		if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
+			// note that the week url must include this date instead of the startCal date
+			urldatestring = urldatesdf.format(loopCal.getTime());
+			while (dayCtr++ < 6) {
+				// fill in the dayList with blank days
+				HashMap emptyDayMap = new HashMap();
+				emptyDayMap.put(WebKeys.CALENDAR_DOM, Integer.toString(loopCal.get(Calendar.DAY_OF_MONTH)));
+				emptyDayMap.put("inView", new Boolean(false));
+				// because this loop is adding extra days, we need to build their URLs into the daymap here
+				// and we don't want to clobber urldatestring because it's used later for the week URL
+				urldatestring2 = urldatesdf.format(loopCal.getTime());
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+				url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
+				url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
+				url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring2);
+				emptyDayMap.put("dayURL", url.toString());
+				dayList.add(emptyDayMap);
+				loopCal.add(Calendar.DATE, 1);
+			}
+		}
+
+		
 		weekMap.put("dayList", dayList);
 		weekList.add(weekMap);
 		monthBean.put("weekList", weekList);
