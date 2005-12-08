@@ -47,8 +47,6 @@ import com.sitescape.ef.domain.NoRoleByTheIdException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.Workspace;
 
-import com.sitescape.ef.domain.Role;
-
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
@@ -59,10 +57,9 @@ import com.sitescape.ef.util.Constants;
  */
 public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	protected Log logger = LogFactory.getLog(getClass());
-	private OrderBy userOrder,groupOrder,roleOrder;
+	private OrderBy userOrder,groupOrder;
 	private ObjectControls userControls = new ObjectControls(User.class);
 	private ObjectControls groupControls = new ObjectControls(Group.class);
-	private ObjectControls roleControls = new ObjectControls(Role.class);
 	public void save(Object obj) {
         getHibernateTemplate().save(obj);
     }
@@ -395,46 +392,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
    		return new ArrayList();
    	}
 
-   	public Role loadRole(String roleId) {
-        Role role = (Role)load(Role.class, roleId);
-        if (role == null) throw new NoRoleByTheIdException(roleId);
-        return role;
-
-   	}
-    public List loadRoles(final String[] ids) {
-        if ((ids == null) || (ids.length==0)) return new ArrayList();
-        List result = (List)getHibernateTemplate().execute(
-            new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        //Hibernate doesn't like the ? in the in clause
-                        //List list = session.createCriteria(Principal.class)
-                        //     		.add(Expression.in(Constants.ID, ids))
-                        //    		.list();
-                        //return list;
-                        Criteria crit = session.createCriteria(Role.class);
-                        Disjunction dis = Expression.disjunction();
-                        for (int i=0; i<ids.length; ++i) {
-                            dis.add(Expression.eq(Constants.ID, ids[i]));
-                        }
-                        crit.add(dis);
-                        return crit.list();
-                        
-                    }
-            }
-        );
-        return result;
-        
-    }   	
- 
-    public List filterRoles(final FilterControls filter) {
-        return loadObjects(roleControls, filter);
-    }
-    /**
-     * Return count of users matching filter
-     */
-    public int countRoles(FilterControls filter) {
-        return countObjects(Role.class, filter);
-    }      
 
  	public List loadChangedEntries(Folder folder, Date since, Date before) {
 		return loadChangedEntries(folder, since, before, new OrderBy(Constants.ID));

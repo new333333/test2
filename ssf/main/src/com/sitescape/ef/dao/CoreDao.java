@@ -14,7 +14,6 @@ import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Group;
-import com.sitescape.ef.domain.Role;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.dao.util.OrderBy;
@@ -126,11 +125,6 @@ public interface CoreDao {
 	public List getMembership(Long groupId);
 	public Set getAllGroupMembership(Long principalId);
 
-   	public Role loadRole(String roleId);
-    public List loadRoles(String[] ids);
-    public int countRoles(FilterControls filter);
-    public List filterRoles(FilterControls filter);
-   
 	public List loadChangedEntries(Folder folder, Date since, Date before);
 	public List loadChangedEntries(Folder folder, Date since, Date before, OrderBy order);
 	public Definition loadDefinition(String defId, String zoneName);   

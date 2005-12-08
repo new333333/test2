@@ -36,7 +36,6 @@
 	    <mapping resource="com/sitescape/ef/domain/WorkflowDef.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/WorkflowStateDef.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/FolderEntry.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Role.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/Definition.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/Event.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/FolderCounts.hbm.xml"/>
