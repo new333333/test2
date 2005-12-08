@@ -474,6 +474,21 @@
 		</jsps>
 	</item>
 		
+	<item name="fieldset" caption="Fieldset" category="generalLayout">
+		<properties>
+			<property name="legend" caption="Legend" type="text"/>
+		</properties>
+		<options>
+			<option_select path="//item[@category='entryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/html/portlet/forum/elements/fieldset.jsp" />
+			<jsp name="view" value="/html/portlet/forum/elements/fieldset.jsp" />
+		</jsps>
+	</item>
+		
 	<item name="divider" caption="Divider" category="generalLayout">
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
