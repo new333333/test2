@@ -23,7 +23,7 @@ public interface AdminModule {
 
 	public void addFunction(Function function);
     public List getFunctions();
-    public void updateFunction(String name, Map updates);
+    public void updateFunction(Long functionId, Map updates);
     public void updateNotification(Long forumId, Map updates, Set users); 
     public void disableNotification(Long forumId);
     public void enableNotification(Long forumId);
