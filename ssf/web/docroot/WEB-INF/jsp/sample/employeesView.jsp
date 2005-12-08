@@ -64,14 +64,14 @@ return false;
 			<a href="<portletadapter:renderURL>
 			         <portletadapter:param name="action" value="downloadFile"/>
 			         <portletadapter:param name="file" value="C:\liferay-portal-pro-3.6.1-tomcat\conf\web.xml"/>
-			         </portletadapter:renderURL>" onClick="return popup(this, 'notes')">Download XML (using portlet adapter - impossible!)</a>
+			         </portletadapter:renderURL>" onClick="return popup(this, 'notes')">Download XML File (using portlet adapter)</a>
 		</td>
 	</tr>
 	<tr>
 		<td colspan="4">
 			<a href="<portletadapter:renderURL>
 			         <portletadapter:param name="action" value="showXml"/>
-			         </portletadapter:renderURL>" onClick="return popup(this, 'notes')">Show XML (using portlet adapter)</a>
+			         </portletadapter:renderURL>" onClick="return popup(this, 'notes')">XML rendered by JSP (using portlet adapter - doesn't work)</a>
 		</td>
 	</tr>
 	<tr>
