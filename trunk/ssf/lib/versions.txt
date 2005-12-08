@@ -14,7 +14,7 @@ Commons Lang 2.0
 Commons Logging 1.0.3
 Concurrent Library
 dom4j 1.5.2
-Stellent export.jar
+EasyMock 1.2 (Java 1.3)
 Generama 1.2
 Hibernate 3.0.5
 Jaxen 1.1-beta-5
@@ -25,13 +25,13 @@ JDOM 1.0
 JTA 1.0.1b
 JTDS 0.9.1
 JUnit 3.8.1
+Liferay portal-ejb.jar 3.6.1 (modified portal.properties)
 Log4j 1.2.8
 Lucene 1.4.2
 md5crypt.jar
 Nanocontainer 1.0-beta-3
 Nancontainer ant 1.0-beta-3
 Picocontainer 1.0
-Liferay portal-ejb.jar (modified portal.properties)
 Portlet 1.0
 Qdox 1.6-snapshot
 Quartz 1.4.5
@@ -39,6 +39,7 @@ Servlet 2.3.1/JSP 1.2.1
 Slide WebDAV client library 2.1
 Spring 1.2.2
 Spring Portlet spring-portlet.jar
+Stellent export.jar
 Trove 1.0.2
 Velocity 1.4
 XDoclet 2.0.3
