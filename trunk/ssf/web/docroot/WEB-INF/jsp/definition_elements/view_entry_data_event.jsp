@@ -12,4 +12,5 @@
 </c:otherwise>
 </c:choose>
 </div>
+<div class="ss_divider"></div>
 

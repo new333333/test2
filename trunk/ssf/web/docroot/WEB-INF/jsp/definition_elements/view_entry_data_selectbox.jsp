@@ -5,3 +5,4 @@
 <c:out value="${selection}" escapeXml="false"/><br />
 </c:forEach>
 </div>
+<div class="ss_divider"></div>

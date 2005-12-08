@@ -5,4 +5,5 @@
 <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
 </span>
 </div>
+<div class="ss_divider"></div>
 </c:if>
