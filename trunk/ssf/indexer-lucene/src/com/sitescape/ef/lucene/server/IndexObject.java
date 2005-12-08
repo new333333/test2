@@ -13,6 +13,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
@@ -308,7 +309,18 @@ public class IndexObject  {
     	logger.info("search:QUERY = " + query.toString());
     	return this.search(query,0,-1);
     }
-
+    
+    /**
+     * Search for documents in the index that match the query
+     *
+     * @param squery
+     *
+     * @throws RemoteException
+     */
+    public com.sitescape.ef.lucene.Hits search(Query query, Sort sort) throws RemoteException{
+    	logger.info("search:QUERY = " + query.toString());
+    	return this.search(query,sort,0,-1);
+    }
 
     /**
      * Search for documents in the index that match the query. Return size hits
@@ -333,6 +345,36 @@ public class IndexObject  {
         openIndexSearcher();
         try {
             org.apache.lucene.search.Hits hits = indexSearcher.search(query);
+            System.out.println("SEARCH: There were " + hits.length() + " matching hits on query: " + query.toString());
+            return com.sitescape.ef.lucene.Hits.transfer(hits,offset,size);
+        } catch (IOException e) {
+            throw new RemoteException("Error searching index '" + indexName + "'", e);
+        }
+    }
+    
+    /**
+     * Search for documents in the index that match the query. Return size hits
+     * starting at offset.
+     *
+     * @param query
+     * @param offset
+     * @param size
+     *
+     * @throws RemoteException
+     */
+    public com.sitescape.ef.lucene.Hits search(Query query, Sort sort, int offset, int size) throws RemoteException{
+    	logger.info("search:QUERY = " + query.toString() + "offset = " + offset + "size = " + size);
+    	/* Comment out for now.  This wipes out all optimizations, however, if
+         * we decided that all searches MUST reflect all previous changes, then
+         * we'll want this in here.
+         * // first, process all the transactions in the batch queues
+         * watchDog.resetTimer();
+         * commit();
+         */
+        //open a new searcher if necessary
+        openIndexSearcher();
+        try {
+            org.apache.lucene.search.Hits hits = indexSearcher.search(query, sort);
             System.out.println("SEARCH: There were " + hits.length() + " matching hits on query: " + query.toString());
             return com.sitescape.ef.lucene.Hits.transfer(hits,offset,size);
         } catch (IOException e) {

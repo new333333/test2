@@ -4,6 +4,7 @@ import java.rmi.*;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.search.Sort;
 
 /**
  * Title: SsfIndexInterface
@@ -23,4 +24,6 @@ public interface SsfIndexInterface extends java.rmi.Remote {
     public void stop(String indexname) throws RemoteException;
     public com.sitescape.ef.lucene.Hits search (String indexname, Query query) throws RemoteException;
     public com.sitescape.ef.lucene.Hits search (String indexname, Query query, int offset, int size) throws RemoteException;
+    public com.sitescape.ef.lucene.Hits search (String indexname, Query query, Sort sort) throws RemoteException;
+    public com.sitescape.ef.lucene.Hits search (String indexname, Query query, Sort sort, int offset, int size) throws RemoteException;
 }

@@ -3,6 +3,7 @@ package com.sitescape.ef.lucene.server;
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.document.Document;
 
@@ -105,6 +106,18 @@ public class SsfIndexer
         com.sitescape.ef.lucene.Hits tempHits = (com.sitescape.ef.lucene.Hits)io.search(query);
         return tempHits;
     }
+    
+    /**
+     * Search for documents in the index that match the query
+     *
+     * @param squery
+     * @throws RemoteException
+     */
+    public com.sitescape.ef.lucene.Hits search (String indexname, Query query, Sort sort) throws RemoteException {
+        IndexObject io = ioc.getIndexObject(indexname);
+        com.sitescape.ef.lucene.Hits tempHits = (com.sitescape.ef.lucene.Hits)io.search(query, sort);
+        return tempHits;
+    }
 
     /**
      * Search for documents in the index that match the query. Return size hits
@@ -117,6 +130,20 @@ public class SsfIndexer
     public com.sitescape.ef.lucene.Hits search (String indexname, Query query, int offset, int size) throws RemoteException {
         IndexObject io = ioc.getIndexObject(indexname);
         com.sitescape.ef.lucene.Hits tempHits = io.search(query, offset, size);
+        return tempHits;
+    }
+    
+    /**
+     * Search for documents in the index that match the query. Return size hits
+     * starting at offset.
+     *
+     * @param offset
+     * @param size
+     * @throws RemoteException
+     */
+    public com.sitescape.ef.lucene.Hits search (String indexname, Query query, Sort sort, int offset, int size) throws RemoteException {
+        IndexObject io = ioc.getIndexObject(indexname);
+        com.sitescape.ef.lucene.Hits tempHits = io.search(query, sort, offset, size);
         return tempHits;
     }
 
