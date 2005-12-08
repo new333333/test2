@@ -29,6 +29,7 @@ String gammaColor = "#CCCC99";
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <c:if test="${empty ssf_support_files_loaded}">
+<c:set var="ssf_support_files_loaded" value="1" scope="request"/>
 <link rel="stylesheet" type="text/css" href="<html:rootPath/>css/forum.css">
 <c:if test="<%= isIE %>">
 <link rel="stylesheet" type="text/css" href="<html:rootPath/>css/forum_ie.css">
