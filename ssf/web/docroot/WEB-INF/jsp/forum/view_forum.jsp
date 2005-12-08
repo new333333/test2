@@ -10,7 +10,7 @@
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />
 <%
 
-String op = (String) renderRequest.getAttribute(PortletKeys.FORUM_URL_OPERATION);
+String op = (String) renderRequest.getAttribute(PortletKeys.ACTION);
 if (op == null) op = PortletKeys.FORUM_OPERATION_VIEW_FORUM;
 String displayStyle = ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL;
 if (ssUserProperties.containsKey(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
@@ -19,8 +19,7 @@ if (ssUserProperties.containsKey(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
 
 boolean statePopUp = false;
 boolean popupValue = false;
-String forumOperation = (String) renderRequest.getAttribute(PortletKeys.FORUM_URL_OPERATION);
-if (forumOperation != null && !forumOperation.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY)) {
+if (!op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY)) {
 	popupValue = true;
 } else {
 	if (statePopUp) popupValue = true;

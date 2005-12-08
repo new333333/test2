@@ -11,7 +11,7 @@
 <c:out value="${ssDefinitionEntry.docNumber}"/>. 
 <a href="<ssf:url 
     folderId="<%= ssDefinitionEntry.getParentFolder().getId().toString() %>" 
-    operation="view_entry"
+    action="view_entry"
     entryId="<%= ssDefinitionEntry.getId().toString() %>"
     />" onClick="return(ss_openUrlInPortlet(this.href));"><c:if test="${empty ssDefinitionEntry.title}">
     <span class="contentbold"><i>(no title)</i></span>

@@ -41,9 +41,13 @@ public class ConfigureController extends SAbstractForumController {
 				}
 			}				
 			getFolderModule().modifyFolderConfiguration(folderId, definitions);
-		}
-		response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_VIEW_FORUM);
-		response.setRenderParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId.toString());
+			response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_VIEW_FORUM);
+			response.setRenderParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId.toString());
+		} else if (formData.containsKey("cancelBtn")) {
+			response.setRenderParameter(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_VIEW_FORUM);
+			response.setRenderParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId.toString());
+		} else
+			response.setRenderParameters(formData);
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
