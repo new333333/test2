@@ -69,112 +69,7 @@ ul.ss_nobullet li ul.ss_nobullet {
   color: #cccccc; 
   }
 
-a.ss_link {
-  text-decoration: underline;
-  color: #3366cc;
-  font-family: arial, helvetica, sans-serif;
-  }
 
-a.ss_link:visited, a.ss_link:inactive {
-  text-decoration: underline;
-  color: #666666;
-  font-family: arial, helvetica, sans-serif;
-  }
-
-a.ss_link:hover, a.ss_link:active {
-  text-decoration: underline;
-  color: 666666;
-  font-family: arial, helvetica, sans-serif;
-  }
-
-
-/* Text styled as buttons */
-a.ss_linkButton:link, a.ss_linkButton:visited {
-  font-size: smaller;
-  color: #6699cc;
-  font-weight: bold;
-  border-top: 1px solid #666666;
-  border-left: 1px solid #666666;
-  border-right: 1px solid #d5d5d5;
-  border-bottom: 1px solid #d5d5d5;
-  background-color: #ffffe8;
-  padding-left: 3px;
-  padding-right: 3px;
-  margin-left: 0px;
-  margin-right: 6px;
-  margin-bottom, margin-top: 2px;
-  line-height: 200%;
-  text-decoration: none;
-  display: inline;
-}
-
-a.ss_linkButton:focus, a.ss_linkButton:hover, a.ss_linkButton:active {
-  font-size: smaller;
-  color: #ff0000;
-  font-weight: bold;
-  border-top: 1px solid #d5d5d5;
-  border-left: 1px solid #d5d5d5;
-  border-right: 1px solid #666666;
-  border-bottom: 1px solid #666666;
-  background-color: #ffffe8;
-  padding-left: 3px;
-  padding-right: 3px;
-  margin-left: 0px;
-  margin-right: 6px;
-  margin-bottom, margin-top: 2px;
-  line-height: 200%;
-  text-decoration: none;
-  display: inline;
-}
-
-a.ss_smallLinkButton:link, a.ss_smallLinkButton:visited {
-  font-size: smaller;
-  color: #6699cc;
-  font-weight: bold;
-  border-top: 1px solid #666666;
-  border-left: 1px solid #666666;
-  border-right: 1px solid #d5d5d5;
-  border-bottom: 1px solid #d5d5d5;
-  background-color: #ffffe8;
-  padding-left: 3px;
-  padding-right: 3px;
-  margin-left: 0px;
-  margin-right: 6px;
-  margin-bottom, margin-top: 2px;
-  line-height: 200%;
-  text-decoration: none;
-  display: inline;
-}
-
-a.ss_smallLinkButton:focus, a.ss_smallLinkButton:hover, a.ss_smallLinkButton:active {
-  font-size: smaller;
-  color: #ff0000;
-  font-weight: bold;
-  border-top: 1px solid #d5d5d5;
-  border-left: 1px solid #d5d5d5;
-  border-right: 1px solid #666666;
-  border-bottom: 1px solid #666666;
-  background-color: #ffffe8;
-  padding-left: 3px;
-  padding-right: 3px;
-  margin-left: 0px;
-  margin-right: 6px;
-  margin-bottom, margin-top: 2px;
-  line-height: 200%;
-  text-decoration: none;
-  display: inline;
-}
-
-.bgblue, td.bgblue, table.bgblue, tr.bgblue { background-color: #ceddf2; }
-.bgdarkblue { background-color: #3366cc; }
-.bgwhite { background-color: #ffffff; }
-.bglightgray { background-color: #f7f7f7; }
-.bgmedgray { background-color: #cccccc; }
-.bgdarkgray { background-color: #666666; }
-.bgdarkergray { background-color: #333333; }
-.bgblack { background-color: #000000; }
-.bgmanila { background-color: #ffffe8; }
-.bgworkflow { background-color: #e4e4e4; }
 
 /* ------------------------------------------------------------------------ */
 /* entry styles: common to entry views and entry forms */
@@ -190,8 +85,7 @@ h1.ss_entryTitle {
  
 /* spacer between form/view elements */
 div.ss_divider {
-  margin-bottom: .5em;
-  margin-top: .5em;
+  border-bottom: thin solid #cccccc;
   background: url("/html/pics/1pix.gif") fixed no-repeat;
   }  
 
@@ -199,9 +93,6 @@ div.ss_divider {
 div.ss_entryContent {
   margin: 0px 0px 0px 0px;
   padding: 2px;
-  border-style: solid;
-  border-width: thin;
-  border-color: #efefef;
 }
 
 /* styles for labels: required for forms; optional for views */
@@ -285,8 +176,9 @@ a.ss_toolbar_item {
 a.ss_toolbar_item:hover {
   display: inline;
   font-weight: bold;
+  text-align: left;
   font-size:smaller;
-  text-decoration: none;
+  text-decoration: underline;
   color: #000000;
   font-family: arial, helvetica, sans-serif;
   margin: 2px;
@@ -301,6 +193,7 @@ a.ss_toolbar_item:hover {
 /* for tool menu popup (icon is hot, not text) and toolbar delimiters (not hot) */
 span.ss_toolbar_item {
   display: inline;
+  text-align: left;
   font-weight: bold;
   font-size: smaller;
   color: #000000;
@@ -381,56 +274,6 @@ legend.ss_legend {
   color: #666666;;
   }
 
-.ss_labelAboveError {  
-  margin: 5px 5px 5px 5px;
-  border-color: #a01e00; 
-  border-style: solid; 
-  border-width: 1px; 
-  padding: 2px;
-  font-size: small;
-  font-weight: bold;
-  color: #a01e00;
-  background-color: #f7f7f7;
-  font-family: arial, helvetica, sans-serif;
-  }
-
-.ss_labelLeftError {
-  border-color: #a01e00; 
-  border-style: solid; 
-  border-width: 1px; 
-  padding: 2px;
-  font-size: small;
-  font-weight: bold;
-  color: #a01e00;
-  display: inline;
-  background-color: #f7f7f7;
-  font-family: arial, helvetica, sans-serif;
-  }
-
-.ss_labelRightError {
-  border-color: #a01e00; 
-  border-style: solid; 
-  border-width: 1px;
-  text-align: right; 
-  padding: 2px;
-  font-size: small;
-  font-weight: bold;
-  color: #a01e00;
-  display: inline;
-  background-color: #f7f7f7;
-  font-family: arial, helvetica, sans-serif;
-  }
-
-/* red required-field indicator, usually an asterisk */
-.ss_required {
-  background-color: transparent;
-  font-size: larger;
-  font-weight: bold;
-  color: #a01e00;
-  display:inline; 
-  font-family: arial, helvetica, sans-serif;
-  }
-
 /* legend explaining the required-field indicator */
 div.ss_requiredLegend {
   font-family: arial, helvetica, sans-serif;
@@ -452,6 +295,8 @@ div.ss_requiredLegend {
 /* ------------------------------------------------------------------------ */
 /* navigation */
 
+
+
 /* box for small widgets (to avoid using tables to format. */
 /* use for date, time, event pickers, etc. */
 div.ss_widgetContent { 
@@ -460,23 +305,29 @@ div.ss_widgetContent {
   padding: 2px;
   }
 
-
-
+/* submit button styles */
 input.ss_submit { 
-  border-color: #6699cc; 
-  border-style: solid; 
-  border-width: 1px; 
-  font-family: arial, helvetica, sans-serif;  
-  font-size: small;
+  background-color: #e5e5e5;
+  font-size: x-small; 
+  color: #3366cc;
+  font-weight: bold;
+  padding-left, padding-right: 0px;
+  border-top: 2px solid #e6e6e6;
+  border-left: 2px solid #e6e6e6;
+  border-right: 2px solid #8f8f8f;
+  border-bottom: 2px solid #8f8f8f;
   }
 
 input.ss_submit:hover { 
-  border-bottom: solid 1px #6699cc; 
-  border-left: solid 1px #ffffff; 
-  border-right: solid 1px #6699cc; 
-  border-top: solid 1px #ffffff; 
-  font-family: arial, helvetica, sans-serif; 
-  font-size: smaller;
+  background-color: #e5e5e5;
+  font-size: x-small; 
+  color: #3366cc;
+  font-weight: bold;
+  padding-left, padding-right: 0px;
+  border-top: 2px solid #8f8f8f;
+  border-left: 2px solid #8f8f8f;
+  border-right: 2px solid #e6e6e6;
+  border-bottom: 2px solid #e6e6e6;
   }
 
 /* ------------------------------------------------------------------------ */
@@ -485,10 +336,6 @@ input.ss_submit:hover {
 div.ss_folder {
   margin: 0em .8em 0em .8em;
   }
-
-.highlightEntry {
-  background-color: #cccccc;
-}
 
 /* Widgets */
 /* box for small widgets (to avoid using tables to format. */
@@ -539,3 +386,186 @@ div.ss_portlet {
   text-align: left;
   }
 
+/* ------------------------------------------------------------------------ */
+/* color styles */
+.ss_bgblue, td.bgblue, table.bgblue, tr.bgblue { background-color: #ceddf2; }
+.ss_bgdarkblue { background-color: #3366cc; }
+.ss_bgwhite { background-color: #ffffff; }
+.ss_bglightgray { background-color: #f7f7f7; }
+.ss_bgmedgray { background-color: #cccccc; }
+.ss_bgdarkgray { background-color: #666666; }
+.ss_bgdarkergray { background-color: #333333; }
+.ss_bgblack { background-color: #000000; }
+.ss_bgmanila { background-color: #ffffe8; }
+.ss_bgworkflow { background-color: #e4e4e4; }
+
+.highlightEntry {
+  background-color: #f7f7f7;
+}
+
+.ss_labelAboveError {  
+  margin: 5px 5px 5px 5px;
+  border-color: #a01e00; 
+  border-style: solid; 
+  border-width: 1px; 
+  padding: 2px;
+  font-size: small;
+  font-weight: bold;
+  color: #a01e00;
+  background-color: #f7f7f7;
+  font-family: arial, helvetica, sans-serif;
+  }
+  
+.ss_labelLeftError {
+  border-color: #a01e00; 
+  border-style: solid; 
+  border-width: 1px; 
+  padding: 2px;
+  font-size: small;
+  font-weight: bold;
+  color: #a01e00;
+  display: inline;
+  background-color: #f7f7f7;
+  font-family: arial, helvetica, sans-serif;
+  }
+
+.ss_labelRightError {
+  border-color: #a01e00; 
+  border-style: solid; 
+  border-width: 1px;
+  text-align: right; 
+  padding: 2px;
+  font-size: small;
+  font-weight: bold;
+  color: #a01e00;
+  display: inline;
+  background-color: #f7f7f7;
+  font-family: arial, helvetica, sans-serif;
+  }
+
+/* red required-field indicator, usually an asterisk */
+.ss_required {
+  background-color: transparent;
+  font-size: larger;
+  font-weight: bold;
+  color: #a01e00;
+  display:inline; 
+  font-family: arial, helvetica, sans-serif;
+  }
+  
+/* ------------------------------------------------------------------------ */
+/* link styles */
+
+a.ss_link {
+  text-decoration: underline;
+  color: #3366cc;
+  font-family: arial, helvetica, sans-serif;
+  }
+
+a.ss_link:visited, a.ss_link:inactive {
+  text-decoration: underline;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  }
+
+a.ss_link:hover, a.ss_link:active {
+  text-decoration: underline;
+  color: #ff0000;
+  font-family: arial, helvetica, sans-serif;
+  }
+
+a.ss_link_nodec {
+  text-decoration: none;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  }
+
+a.ss_link_nodec:visited, a.ss_link_nodec:inactive {
+  text-decoration: none;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  }
+
+a.ss_link_nodec:hover, a.ss_link_nodec:active {
+  text-decoration: underline;
+  color: ff0000;
+  font-family: arial, helvetica, sans-serif;
+  }
+
+  /* Text styled as buttons */
+a.ss_linkButton:link, a.ss_linkButton:visited {
+  font-size: smaller;
+  color: #6699cc;
+  font-weight: bold;
+  border-top: 1px solid #666666;
+  border-left: 1px solid #666666;
+  border-right: 1px solid #d5d5d5;
+  border-bottom: 1px solid #d5d5d5;
+  background-color: #ffffe8;
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-left: 0px;
+  margin-right: 6px;
+  margin-bottom, margin-top: 2px;
+  line-height: 200%;
+  text-decoration: none;
+  display: inline;
+}
+
+a.ss_linkButton:focus, a.ss_linkButton:hover, a.ss_linkButton:active {
+  font-size: smaller;
+  color: #ff0000;
+  font-weight: bold;
+  border-top: 1px solid #d5d5d5;
+  border-left: 1px solid #d5d5d5;
+  border-right: 1px solid #666666;
+  border-bottom: 1px solid #666666;
+  background-color: #ffffe8;
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-left: 0px;
+  margin-right: 6px;
+  margin-bottom, margin-top: 2px;
+  line-height: 200%;
+  text-decoration: none;
+  display: inline;
+}
+
+a.ss_smallLinkButton:link, a.ss_smallLinkButton:visited {
+  font-size: smaller;
+  color: #6699cc;
+  font-weight: bold;
+  border-top: 1px solid #666666;
+  border-left: 1px solid #666666;
+  border-right: 1px solid #d5d5d5;
+  border-bottom: 1px solid #d5d5d5;
+  background-color: #ffffe8;
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-left: 0px;
+  margin-right: 6px;
+  margin-bottom, margin-top: 2px;
+  line-height: 200%;
+  text-decoration: none;
+  display: inline;
+}
+
+a.ss_smallLinkButton:focus, a.ss_smallLinkButton:hover, a.ss_smallLinkButton:active {
+  font-size: smaller;
+  color: #ff0000;
+  font-weight: bold;
+  border-top: 1px solid #d5d5d5;
+  border-left: 1px solid #d5d5d5;
+  border-right: 1px solid #666666;
+  border-bottom: 1px solid #666666;
+  background-color: #ffffe8;
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-left: 0px;
+  margin-right: 6px;
+  margin-bottom, margin-top: 2px;
+  line-height: 200%;
+  text-decoration: none;
+  display: inline;
+}
+  
