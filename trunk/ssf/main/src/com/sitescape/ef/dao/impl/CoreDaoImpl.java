@@ -270,6 +270,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
      * Optimization to load principals in bulk
      */
     public List loadPrincipals(final Collection ids, final String zoneName) {
+        if ((ids == null) || ids.isEmpty()) return new ArrayList();
         List result = (List)getHibernateTemplate().execute(
            	new HibernateCallback() {
             		public Object doInHibernate(Session session) throws HibernateException {
