@@ -95,7 +95,7 @@ public class Htmleditor extends TagSupport {
 
       sb.append("_editor_url = \"")
 	.append(contextPath)
-	.append("/html/js/htmleditor/\";\n");
+	.append("/js/htmleditor/\";\n");
       sb.append("_editor_lang = \"en\";\n");
       sb.append("var editorCallerForm = '")
 	.append(formName)
@@ -126,7 +126,7 @@ public class Htmleditor extends TagSupport {
 
       sb.append("<script type=\"text/javascript\" src=\"")
 	.append(contextPath)
-	.append("/html/js/htmleditor/htmlarea.js\">;\n");
+	.append("/js/htmleditor/htmlarea.js\">;\n");
       sb.append("</script>\n");
 
       String suffix = "_" + formName + "_" + id;
