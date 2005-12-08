@@ -7,7 +7,7 @@
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
 	
-	int boxWidth = (int)ParamUtil.get(request, "box_width", (double)RES_TOTAL) - 6;
+	int boxWidth = 600;
 %>
 <div class="ss_portlet">
 <c:set var="toolbar" value="${ssFolderEntryToolbar}" scope="request" />
