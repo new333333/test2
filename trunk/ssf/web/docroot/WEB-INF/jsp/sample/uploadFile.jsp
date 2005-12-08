@@ -1,13 +1,13 @@
-<%@ include file="/WEB-INF/jsp/common/servlet.include.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <body>
 
 <h1><%= request.getAttribute("header") %></h1>
 
-<!-- Important Note!!!: The action URL must be constructed transparently by using
-     appropriate tag library to hide the details of the structure. This will be
-     replaced shortly, so do NOT copy this pattern! -->
-<form method="post" enctype="multipart/form-data" action="<html:adapterPath/>do?p_a_name=ss_employees&p_a_action=1&action=uploadFile"">
+<form method="post" enctype="multipart/form-data" 
+	action="<portletadapter:actionURL>
+			<portletadapter:param name="action" value="uploadFile"/>
+			</portletadapter:actionURL>">
 
 	<table border="0" cellpadding="4">
 		<tr>

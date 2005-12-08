@@ -49,21 +49,30 @@ public class PortletAdapterController extends SAbstractController {
 			if (actionInt == 1) {
 				ActionRequestImpl actionReq = new ActionRequestImpl(req,
 						portletInfo, AdaptedPortlets.getPortletContext());
+				
 				ActionResponseImpl actionRes = new ActionResponseImpl(
 						actionReq, res, portletName);
+				
+				actionReq.defineObjects(portletInfo.getPortletConfig(), actionRes);
 
 				portlet.processAction(actionReq, actionRes);
 				
 				params = actionRes.getRenderParameters();
+				
 				params.put(KeyNames.PORTLET_URL_PORTLET_NAME, portletName);	
 			} 
 			
 			RenderRequestImpl renderReq = new RenderRequestImpl(req,
 					portletInfo, AdaptedPortlets.getPortletContext());
+			
 			if(params != null)
 				renderReq.setRenderParameters(params);
+			
 			RenderResponseImpl renderRes = new RenderResponseImpl(renderReq,
 					res, portletName);
+			
+			renderReq.defineObjects(portletInfo.getPortletConfig(), renderRes);
+			
 			portlet.render(renderReq, renderRes);
 			
 		} catch (PortletException e) {

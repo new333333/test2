@@ -66,12 +66,9 @@ return false;
 		</tr>
 		<tr>
 			<td colspan="4">
-				<!-- Important Note!!: This URL construction is rather ugly in that it uses 
-					 Java scriptlets rather than an appropriate tag library. This will be replaced 
-					 soon, so do NOT copy this pattern! -->
-				<a href="<% com.sitescape.ef.portletadapter.AdaptedPortletURL pu = new com.sitescape.ef.portletadapter.AdaptedPortletURL(request, "ss_employees", false);
-				            pu.setParameter("action", "uploadFile");
-				            out.write(pu.toString()); %>" onClick="return popup(this, 'notes')">Upload File (using portlet adapter)</a>
+				<a href="<portletadapter:renderURL>
+				         <portletadapter:param name="action" value="uploadFile"/>
+				         </portletadapter:renderURL>" onClick="return popup(this, 'notes')">Upload File (using portlet adapter)</a>
 			</td>
 		</tr>
 </table>

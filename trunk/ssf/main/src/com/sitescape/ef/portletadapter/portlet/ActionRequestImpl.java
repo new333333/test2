@@ -6,10 +6,13 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import com.sitescape.ef.portletadapter.support.PortletInfo;
+import com.sitescape.ef.web.WebKeys;
 
 public class ActionRequestImpl extends PortletRequestImpl implements ActionRequest {
 
@@ -47,5 +50,11 @@ public class ActionRequestImpl extends PortletRequestImpl implements ActionReque
 
 	public int getContentLength() {
 		return getHttpServletRequest().getContentLength();
+	}
+	
+	public void defineObjects(PortletConfig portletConfig, ActionResponse res) {
+		setAttribute(WebKeys.JAVAX_PORTLET_CONFIG, portletConfig);
+		setAttribute(WebKeys.JAVAX_PORTLET_REQUEST, this);
+		setAttribute(WebKeys.JAVAX_PORTLET_RESPONSE, res);
 	}
 }
