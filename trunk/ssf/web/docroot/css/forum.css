@@ -2,8 +2,8 @@
 /* general styles, used most everywhere */
 
 /* lists */
-
 ul.ss_content li {
+  font-family: arial, helvetica, sans-serif;
   font-size: smaller; 
   color: #000000;  
   }
@@ -21,6 +21,7 @@ ul.ss_nobullet li {
   margin-bottom: .8em;
   padding-left: 0em;
   font-size: smaller;
+  font-family: arial, helvetica, sans-serif;
   }
 
 ul.ss_nobullet li ul.ss_nobullet {
@@ -34,14 +35,19 @@ ul.ss_nobullet li ul.ss_nobullet {
   font-family: arial, helvetica, sans-serif;
   font-size: smaller; 
   color: #000000; 
-  
   }
-
+  
 .ss_contentbold {
   font-family: arial, helvetica, sans-serif;
   font-size: smaller;
   font-weight: bold;
   color: #000000;  
+  }
+  
+.ss_contentgray {
+  font-family: arial, helvetica, sans-serif;
+  font-size: smaller; 
+  color: #cccccc;   
   }
 
 .ss_fineprint {
@@ -57,17 +63,13 @@ ul.ss_nobullet li ul.ss_nobullet {
   font-weight: bold;
   }
 
-p.ss_content {
+.ss_fineprintgray {
   font-family: arial, helvetica, sans-serif;
-  font-size: smaller;
-  font-weight: medium;
-  color: #000000;
-  margin-top: 3px;
-  margin-bottom: 6px;
-  margin-left: 3px;
-  margin-right: 3px;
+  font-size: x-small; 
+  color: #cccccc; 
   }
 
+/* Text styled as buttons */
 a.ss_linkButton:link, a.ss_linkButton:visited {
   font-size: smaller;
   color: #6699cc;
@@ -105,7 +107,6 @@ a.ss_linkButton:focus, a.ss_linkButton:hover, a.ss_linkButton:active {
   text-decoration: none;
   display: inline;
 }
-
 
 a.ss_smallLinkButton:link, a.ss_smallLinkButton:visited {
   font-size: smaller;
@@ -156,36 +157,162 @@ a.ss_smallLinkButton:focus, a.ss_smallLinkButton:hover, a.ss_smallLinkButton:act
 .bgmanila { background-color: #ffffe8; }
 .bgworkflow { background-color: #e4e4e4; }
 
-
 /* ------------------------------------------------------------------------ */
-/* form styles */
+/* entry styles: common to entry views and entry forms */
 
-div.ss_form {
-  margin: .5em 0em .5em 0em;
-  }
-
-h1.ss_formTitle {
+h1.ss_entryTitle {
   font-weight: bold;
   font-size: smaller;
+  font-family: arial, helvetica, sans-serif;
   color: #000000;
-  margin-bottom: 0;
-  margin-top: 0;
+  margin-bottom: .5em;
+  margin-top: .5em;
   }
-
-/* box for small widgets (to avoid using tables to format. */
-/* use for date, time, event pickers, etc. */
-div.ss_widgetContent { 
-  margin-top: 4px;
-  margin-bottom: 4px;
-  padding: 2px;
-  }
-
-/* spacer between form elements */
-div.ss_formBreak {
+  
+/* spacer between form/view elements */
+div.ss_divider {
   margin-top: 10px;
   margin-bottom: 10px;
+  }  
+
+/* styles for labels: required for forms; optional for views */
+.ss_labelAbove {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  padding: 0px;
+  font-family: arial, helvetica, sans-serif;
+  font-size: smaller;
+  font-weight: bold;
+  color: #000000;
   }
 
+.ss_labelLeft {
+  font-size: smaller;
+  font-weight: bold;
+  color: #000000;
+  display: inline;
+  font-family: arial, helvetica, sans-serif;
+  }
+
+.ss_labelRight {
+  font-size: smaller;
+  font-weight: bold;
+  color: #000000;
+  display: inline;
+  font-family: arial, helvetica, sans-serif;
+  }
+  
+* toolbar */
+/* toolbar positioning */
+span.ss_toolRight {
+  text-align: right;
+  float: right;
+  display:inline;
+  }
+  
+span.ss_toolLeft {
+  text-align: left;
+  float: left;
+  display: inline;
+  }
+  
+/* div.ss_toolbar is dynamically defined in view_css.jsp to specify the background color */
+/* div.ss_toolbar_item is the div that contains each item on the Forum toolbar */
+div.ss_toolbar_item {
+  display: inline;
+  text-align: left;
+  margin: 2px;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  }
+
+/* span.ss_toolbar_item specifies the font and positioning of tools on the Forum toolbar */
+
+/* Link text on the toolbar */
+a.ss_toolbar_item {
+  display: inline;
+  font-weight: bold;
+  font-size:smaller;
+  text-decoration: none;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  margin: 2px;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  }
+
+a.ss_toolbar_item:hover {
+  display: inline;
+  font-weight: bold;
+  font-size:smaller;
+  text-decoration:underline;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  margin: 2px;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  }
+
+/* drop-down menu */
+/* Font and positioning for tool menu popup (icon is hot) and toolbar delimiters (not hot) */
+span.ss_toolbar_item {
+  display: inline;
+  font-weight: bold;
+  font-size:smaller;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  margin: 2px;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  }
+  
+div.ss_toolbar_menu {
+	position: absolute;
+	z-index: 100;
+	visibility: hidden;
+	background-color: #FFFFFF; 
+	color: #000000;
+	border: 1px #cfcfcf solid;
+	padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+	width: 300px;
+}
+
+/* These are for the Next/Prev History and Next/Prev Entries buttons. */
+/* Useful if the goal is to put a button on the far left and a button on the far right. */
+span.ss_toolLeft {
+  display: inline;
+  text-align: left;
+  float: left;
+  font-weight: bold;
+  font-size:smaller;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  }
+  
+span.ss_toolRight {
+  display: inline;
+  text-align: right;
+  float: right;
+  font-weight: bold;
+  font-size:smaller;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  }
+
+  
+/* action buttons */
+/* mostly forms but elsewhere too */
 /* left-aligned buttons (usually at the bottom of the form) */
 div.ss_buttonBarLeft {
   margin: 0px 5px 0px 5px;
@@ -199,23 +326,8 @@ div.ss_buttonBarRight {
   text-align: right;
   }
 
-div.ss_buttonBarLeft {
-  margin: 0px 5px 0px 5px;
-  text-align: left;
-  }
-
-/* toolbar positioning */
-span.ss_toolRight {
-  text-align: right;
-  float: right;
-  display:inline;
-  }
-  
-span.ss_toolLeft {
-  text-align: left;
-  float: left;
-  display: inline;
-  }
+/* ------------------------------------------------------------------------ */
+/* form-only styles: any form but only forms */
 
 fieldset.ss_fieldset {
   border: 1px #666666 solid;
@@ -229,30 +341,6 @@ legend.ss_legend {
   color: #666666;;
   }
 
-/* styles for labels, including error indicators */
-.ss_labelAbove {
-  margin-top: 2px;
-  margin-bottom: 2px;
-  padding: 0px;
-  font-size: smaller;
-  font-weight: bold;
-  color: #000000;
-  }
-
-.ss_labelLeft {
-  font-size: smaller;
-  font-weight: bold;
-  color: #000000;
-  display: inline;
-  }
-
-.ss_labelRight {
-  font-size: smaller;
-  font-weight: bold;
-  color: #000000;
-  display: inline;
-  }
-
 .ss_labelAboveError {  
   margin: 5px 5px 5px 5px;
   border-color: #a01e00; 
@@ -263,6 +351,7 @@ legend.ss_legend {
   font-weight: bold;
   color: #a01e00;
   background-color: #f7f7f7;
+  font-family: arial, helvetica, sans-serif;
   }
 
 .ss_labelLeftError {
@@ -275,6 +364,7 @@ legend.ss_legend {
   color: #a01e00;
   display: inline;
   background-color: #f7f7f7;
+  font-family: arial, helvetica, sans-serif;
   }
 
 .ss_labelRightError {
@@ -288,6 +378,7 @@ legend.ss_legend {
   color: #a01e00;
   display: inline;
   background-color: #f7f7f7;
+  font-family: arial, helvetica, sans-serif;
   }
 
 /* red required-field indicator, usually an asterisk */
@@ -297,6 +388,7 @@ legend.ss_legend {
   font-weight: bold;
   color: #a01e00;
   display:inline; 
+  font-family: arial, helvetica, sans-serif;
   }
 
 /* legend explaining the required-field indicator */
@@ -307,6 +399,28 @@ div.ss_requiredLegend {
   margin-bottom: 8px;
   color: #cccccc;
   }
+
+.ss_formInstructions { 
+  border-color: #cccccc; 
+  border-style: solid; 
+  border-width: 1px; 
+  font-family: arial, helvetica, sans-serif;
+  font-size: smaller;
+  padding: 2px;
+  }
+
+/* ------------------------------------------------------------------------ */
+/* navigation */
+
+/* box for small widgets (to avoid using tables to format. */
+/* use for date, time, event pickers, etc. */
+div.ss_widgetContent { 
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding: 2px;
+  }
+
+
 
 input.ss_submit { 
   border-color: #6699cc; 
@@ -325,15 +439,6 @@ input.ss_submit:hover {
   font-size: smaller;
   }
 
-.ss_formInstructions { 
-  border-color: #cccccc; 
-  border-style: solid; 
-  border-width: 1px; 
-  font-family: arial, helvetica, sans-serif;
-  font-size: smaller;
-  padding: 2px;
-  }
-
 /* ------------------------------------------------------------------------ */
 /* folder styles */
 div.ss_folder {
@@ -348,34 +453,8 @@ h1.ss_folderTitle {
   margin-bottom: .5em;
   margin-top: .5em;
   }
-
-/* ------------------------------------------------------------------------ */
-/* entry styles */
-div.ss_entry {
-  margin: 0em .5em .5em .8em;
-  }
-
-h1.ss_entryTitle {
-  font-weight: bold;
-  font-size: smaller;
-  font-family: arial, helvetica, sans-serif;
-  color: #000000;
-  margin-bottom: .10em;
-  margin-top: .5em;
-  }
-
-div.ss_entryContent { 
-  font-family: arial, helvetica, sans-serif;
-  margin-bottom: 2px;
-  padding: 2px;
-  }
-
-div.ss_dateContent { 
-  font-family: arial, helvetica, sans-serif;
-  margin-bottom: 2px;
-  padding: 2px;
-  }
-
+  
+/* Widgets */
 /* box for small widgets (to avoid using tables to format. */
 /* use for date, time, event pickers, etc. */
 div.ss_widgetContent { 
@@ -423,92 +502,4 @@ div.ss_portlet {
   width: 100%;
   text-align: left;
   }
-
-/* div.ss_toolbar is dynamically defined in include.jsp to specify the background color */
-
-/* div.ss_toolbar_item is the div that contains each item on the Forum toolbar */
-div.ss_toolbar_item {
-  display: inline;
-  text-align: left;
-  margin: 2px;
-  padding-right: 2px;
-  padding-left: 2px;
-  padding-bottom: 2px;
-  padding-top: 2px;
-  }
-
-span.ss_toolbar_item {
-  display: inline;
-  font-weight: bold;
-  font-size:smaller;
-  color: #000000;
-  font-family: arial, helvetica, sans-serif;
-  margin: 2px;
-  padding-right: 2px;
-  padding-left: 2px;
-  padding-bottom: 2px;
-  padding-top: 2px;
-  }
-
-span.ss_toolLeft {
-  display: inline;
-  text-align: left;
-  float: left;
-  font-weight: bold;
-  font-size:smaller;
-  color: #000000;
-  font-family: arial, helvetica, sans-serif;
-  }
-  
-span.ss_toolRight {
-  display: inline;
-  text-align: right;
-  float: right;
-  font-weight: bold;
-  font-size:smaller;
-  color: #000000;
-  font-family: arial, helvetica, sans-serif;
-  }
-
-a.ss_toolbar_item {
-  display: inline;
-  font-weight: bold;
-  font-size:smaller;
-  text-decoration: none;
-  color: #000000;
-  font-family: arial, helvetica, sans-serif;
-  margin: 2px;
-  padding-right: 2px;
-  padding-left: 2px;
-  padding-bottom: 2px;
-  padding-top: 2px;
-  }
-
-a.ss_toolbar_item:hover {
-  display: inline;
-  font-weight: bold;
-  font-size:smaller;
-  text-decoration:underline;
-  color: #000000;
-  font-family: arial, helvetica, sans-serif;
-  margin: 2px;
-  padding-right: 2px;
-  padding-left: 2px;
-  padding-bottom: 2px;
-  padding-top: 2px;
-  }
-  
-div.ss_toolbar_menu {
-	position: absolute;
-	z-index: 100;
-	visibility: hidden;
-	background-color: #FFFFFF; 
-	color: #000000;
-	border: 1px #cfcfcf solid;
-	padding-right: 0px;
-    padding-left: 0px;
-    padding-bottom: 0px;
-    padding-top: 0px;
-	width: 300px;
-}
 
