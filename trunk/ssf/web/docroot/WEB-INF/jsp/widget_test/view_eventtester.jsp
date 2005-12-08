@@ -25,6 +25,7 @@
 
 <%
     Boolean hasdur = new Boolean("true");
+    Boolean hasrecur = new Boolean("true");
     Boolean nodur = new Boolean("false");
     Boolean norecur = new Boolean("false");
     Map formData = request.getParameterMap();
@@ -37,7 +38,7 @@
 
     if (formData.containsKey("OK")) {
       e1 = EventHelper.getEventFromMap(formData, "eventtestertest", "et");
-      e2 = EventHelper.getEventFromMap(formData, "eventtestertest", "et2", nodur, norecur);
+      e2 = EventHelper.getEventFromMap(formData, "eventtestertest", "et2", nodur, hasrecur);
  
       if (e1 == null) {
 	event1start = "Nothing selected";
