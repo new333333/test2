@@ -37,20 +37,23 @@
 			<portlet:param name="action" value="configure_notify"/>
 			<portlet:param name="forumId" value="${ssFolder.id}"/>
 		</portlet:actionURL>">
+<script language="javascript" type="text/javascript">
+function <portlet:namespace/>setEnable() {
+	if (document.<portlet:namespace/>fm.disabled.checked) {
+		document.<portlet:namespace/>fm.enabled.value = "false";
+	} else {
+		document.<portlet:namespace/>fm.enabled.value = "true";
+	}
+}
+</script>
+<input type="hidden" id="enabled" name="enabled" value="${ssNotification.enabled}"/>
+
 <div align="left">
 Folder: ${ssFolder.title}
 <br>
+<input type="checkbox" class="content" id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssNotification.enabled}">checked</c:if>>
+<span class="content">Disable e-mail notification</span></input><br/>
 
-<span class=contentbold>Set notification message content level</span>
-<br>
-<input type="radio" class="content" name="contextLevel" id="contextLevel" value="none" <c:if test="${ssNotification.contextLevel == 2}">checked</c:if>> <span class="content"><label for="verbosity">Disable e-mail notification</label></span> 
-<br>
-<input type="radio" class="content" name="contextLevel" id="contextLevel" value="title" <c:if test="${ssNotification.contextLevel == 1}">checked</c:if>> <span class="content"><label for="verbosity">Send titles only</label></span> 
-<br>
-<input type="radio" class="content" name="contextLevel" id="contextLevel" value="summary" <c:if test="${ssNotification.contextLevel == 3}">checked</c:if>> <span class="content"><label for="verbosity">Send titles and summaries</label></span> 
-<br />Limit the summary to 
-<input type="text" class="content" name="summaryLines" id="summaryLines" size="4" value="${ssNotification.summaryLines}"> lines
-<br>
 </div>
 
 <div align="left">
