@@ -131,6 +131,7 @@ public class WebKeys {
     public static final String USERS="ssUsers";
 	public static final String USER_NAME = "com.sitescape.username";
 	public static final String USER_PRINCIPAL = "com.sitescape.principal";
+	public static final String USER_ID = "com.sitescape.userId";
     public static final String USER_PROPERTIES="ssUserProperties";
     public static final String WORKSPACE="ssWorkspace";
     public static final String WORKSPACE_DOM_TREE="ssWsDomTree";
