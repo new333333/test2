@@ -1,6 +1,9 @@
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
 
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+<%
+String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
+%>
 
 <div id="showfolder" class="ss_portlet" style="display:block; margin:2;">
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
@@ -9,19 +12,21 @@
 </div>
 
 <div id="showentrydiv" style="position:absolute; visibility:hidden; x:0; y:0;
-  width:<%= ss_entryWindowWidth %>; height:80%; display:none; z-index:100;">
+  width:600; height:80%; display:none; z-index:100;">
   <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
-    <ssf:param name="box_width" value="<%= new Integer(entryWindowWidth).toString() %>" />
+    <ssf:param name="box_id" value="<%= iframeBoxId %>" />
+    <ssf:param name="box_title" value="xxx" />
+    <ssf:param name="box_width" value="400" />
     <ssf:param name="box_show_close_icon" value="true" />
     <ssf:param name="box_show_close_routine" value="hideEntryDiv()" />
-  <iframe id="showentryframe" name="showentryframe" 
+  <iframe id="showentryframe" name="showentryframe" style="width:100%; display:block;"
     src="<html:rootPath/>js/forum/null.html" height="95%" width="100%" 
     frameBorder="no" >xxx</iframe>
   </ssf:box>
 </div>
 
 <script language="javascript">
-var entryWindowWidth = <%= ss_entryWindowWidth %>;
+var entryWindowWidth = 600;
 
 function showForumEntryInIframe(url) {
 	positionEntryDiv();
@@ -35,7 +40,7 @@ function showForumEntryInIframe(url) {
     var wObj1 = null
     if (isNSN || isNSN6 || isMoz5) {
         wObj1 = self.document.getElementById('showentrydiv')
-    } else {
+     } else {
         wObj1 = self.document.all['showentrydiv']
     }
     wObj1.style.display = "block";
@@ -50,20 +55,36 @@ function showForumEntryInIframe(url) {
 }
 
 function positionEntryDiv() {
+    var wObj = null
+    if (isNSN || isNSN6 || isMoz5) {
+        wObj = self.document.getElementById('showfolder')
+    } else {
+        wObj = self.document.all['showfolder']
+    }
+    var width = getObjectWidth(wObj);
+    entryWindowWidth = parseInt((width * 3) / 4);
+
     var wObj1 = null
+    var wObj2 = null
+    var wObj3 = null
     if (isNSN || isNSN6 || isMoz5) {
         wObj1 = self.document.getElementById('showentrydiv')
+        wObj2 = self.document.getElementById('<portlet:namespace/>_iframe_box_div')
+        wObj3 = self.document.getElementById('showentryframe')
     } else {
         wObj1 = self.document.all['showentrydiv']
+        wObj2 = self.document.all['<portlet:namespace/>_iframe_box_div']
+        wObj3 = self.document.all['showentryframe']
     }
     var top = parseInt(getDivTop('showfolder'));
     if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + 4);} 
     var left = parseInt(getDivWidth('showfolder') - entryWindowWidth - 14);
-    var width = parseInt(entryWindowWidth);
     var height = parseInt(getWindowHeight() + self.document.body.scrollTop - top );
     setObjectTop(wObj1, top)
     setObjectLeft(wObj1, left);
-    setObjectWidth(wObj1, width);
+    setObjectWidth(wObj1, entryWindowWidth);
+    setObjectWidth(wObj2, entryWindowWidth);
+    setObjectWidth(wObj3, entryWindowWidth);
     setObjectHeight(wObj1, height);
     wObj1.style.background = "#ffffff"
     wObj1.style.visibility = "visible";
