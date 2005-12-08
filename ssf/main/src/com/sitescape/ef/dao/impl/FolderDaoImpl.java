@@ -13,6 +13,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Conjunction;
+
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.Order;
 
@@ -381,6 +383,21 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
    			seen =(SeenMap)getHibernateTemplate().get(SeenMap.class, id);   			
    		}
    		return seen;
+	}
+	public List loadSeenMaps(final Long userId, final List folderIds) {
+		List results = (List)getHibernateTemplate().execute(
+				new HibernateCallback() {
+	               public Object doInHibernate(Session session) throws HibernateException {
+	            	 return  session.createCriteria(SeenMap.class)
+	            	 		.add(Expression.and(
+	            	 				Expression.eq("id.principalId", userId),
+	            	 				Expression.in("id.folderId", folderIds)))
+	                         .list();
+	               }
+	           }
+	    );
+
+		return results;
 	}
 	public HistoryMap loadHistoryMap(Long userId, Long folderId) {
    		UserPerFolderPK id = new UserPerFolderPK(userId, folderId);

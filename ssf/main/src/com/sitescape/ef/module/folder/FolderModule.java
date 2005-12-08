@@ -65,8 +65,8 @@ public interface FolderModule {
     public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper);
  	public Map getFolderEntries(Long folderId) throws AccessControlException;
 	public Map getFolderEntries(Long folderId, int maxNumEntries) throws AccessControlException;
-	public Hits getRecentEntries(List folders, Map seenMaps);
-	
+    public Map getUnseenCounts(List folderIds);
+
 	public Long addFolder(Long folderId, Folder folder) throws AccessControlException;
     	  
     public FolderEntry getEntry(Long parentFolderId, Long entryId) throws AccessControlException;
