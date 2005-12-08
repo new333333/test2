@@ -1,6 +1,8 @@
 package com.sitescape.ef.portlet.widget_test;
 
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import javax.portlet.ActionRequest;
@@ -114,8 +116,54 @@ public class WorkflowController extends SAbstractController {
 			    	txManager.rollback(status);
 			    } 
 
-		 }
-			
+		 } else if (operation.equals("listDef")) {
+			    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+			    try {
+			    	// Now we can query the database for the list of process definitions 
+			    	Map nodeMap = new HashMap();
+			    	List definitions = getWorkflowModule().getAllDefinitions();
+			    	request.setAttribute("definitions", definitions);
+			    	Iterator itDefinitions = definitions.listIterator();
+			    	while (itDefinitions.hasNext()) {
+			    		ProcessDefinition pD = (ProcessDefinition) itDefinitions.next();
+			    		nodeMap.put(String.valueOf(pD.getId()), getWorkflowModule().getNodes(Long.valueOf(String.valueOf(pD.getId()))));
+			    	}
+			    	request.setAttribute("nodeMap", nodeMap);
+
+			    	// Now we can query the database for the process definition that we 
+			    	// deployed above. 
+			    	String id=PortletRequestUtils.getRequiredStringParameter(request,"processId");
+			    	ProcessInstance processInstance = getWorkflowModule().getProcessInstance(Long.valueOf(id));
+		    
+			    	Token token = processInstance.getRootToken(); 
+				    txManager.commit(status);
+				    response.setRenderParameter("processId", id);
+				    response.setRenderParameter("workflowState", token.getNode().getName());
+				    response.setRenderParameter("workflowId", String.valueOf(processInstance.getProcessDefinition().getId()));
+			    } catch (Exception e) {
+			    	txManager.rollback(status);
+			    } 
+
+		 } else if (operation.equals("listInst")) {
+			    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+			    try {
+			    	// Now we can query the database for the process definition that we 
+			    	// deployed above. 
+			    	String id=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
+			    	List processInstances = getWorkflowModule().getProcessInstances(Long.valueOf(id));
+			    	request.setAttribute("instances", processInstances);
+		    
+			    	ProcessInstance processInstance = getWorkflowModule().getProcessInstance(Long.valueOf(id));
+			    	Token token = processInstance.getRootToken(); 
+				    txManager.commit(status);
+				    response.setRenderParameter("processId", id);
+				    response.setRenderParameter("workflowState", token.getNode().getName());
+				    response.setRenderParameter("workflowId", String.valueOf(processInstance.getProcessDefinition().getId()));
+			    
+			    } catch (Exception e) {
+			    	txManager.rollback(status);
+			    } 
+		 }			
 	 }
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -124,7 +172,10 @@ public class WorkflowController extends SAbstractController {
 		
 		results.put("workflowId", PortletRequestUtils.getStringParameter(request,"workflowId", ""));
 		results.put("processId", PortletRequestUtils.getStringParameter(request,"processId", ""));
-		results.put("workflowState",PortletRequestUtils.getStringParameter(request,"workflowState"));
+		results.put("workflowState", PortletRequestUtils.getStringParameter(request,"workflowState"));
+		results.put("definitions", request.getAttribute("definitions"));
+		results.put("instancess", request.getAttribute("instances"));
+		results.put("nodeMap", request.getAttribute("nodeMap"));
 		String path = "widget_test/view_workflow";
 		return new ModelAndView(path, results);
 
