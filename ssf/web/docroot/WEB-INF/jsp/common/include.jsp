@@ -37,15 +37,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <link rel="stylesheet" type="text/css" href="<html:rootPath/>css/forum_nn.css">
 </c:if>
 <style>
-/* colored bar (formerly "blueBar") that divides pages (usually forms) */
-div.ss_hr { 
-  line-height: 2px;
-  width: 100%; 
-  background-color: <%= gammaColor %>;
-  margin-top: 8x;
-  margin-bottom: 8px;
-  }
-
 /* Forum toolbar */
 div.ss_toolbar {
   width: 100%; 

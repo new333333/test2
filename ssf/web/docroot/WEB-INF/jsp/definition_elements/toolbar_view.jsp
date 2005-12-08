@@ -5,11 +5,11 @@
 	<div class="ss_toolbar_menu" width="100%" id="toolbar_<c:out value="${toolbarMenu.key}" />">
 	  <c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}">
 	    <c:if test="${empty toolbarMenuCategory.key}">
-	      <span class="contentbold"><c:out value="${toolbarMenuCategory.key}" /></span>
+	      <span class="ss_contentbold"><c:out value="${toolbarMenuCategory.key}" /></span>
 	    </c:if>
-	    <ul class="dropdownmenu">
+	    <ul class="ss_dropdownmenu">
 	    <c:forEach var="toolbarMenuCategoryItem" items="${toolbarMenuCategory.value}">
-	      <li class="dropdownmenu">
+	      <li class="ss_dropdownmenu">
 	        <a href="<ssf:url>
 	          <c:forEach var="p" items="${toolbarMenuCategoryItem.value}">
 				<c:set var="key" value="${p.key}"/>
@@ -28,8 +28,8 @@
   </c:if>
 </c:forEach>
 
-<div class="ss_toolbar" style="width:<c:if 
-  test="${empty ss_toolbarWidth}"><c:out value="100%"/></c:if><c:if 
+<div class="portlet-section-header" style="margin-top: 8x; margin-bottom: 8px; 
+  width:<c:if test="${empty ss_toolbarWidth}"><c:out value="100%"/></c:if><c:if 
   test="${!empty ss_toolbarWidth}"><c:out value="${ss_toolbarWidth}"/></c:if>;">
 <c:set var="delimiter" value=""/>
 <c:forEach var="toolbarMenu" items="${toolbar}">
