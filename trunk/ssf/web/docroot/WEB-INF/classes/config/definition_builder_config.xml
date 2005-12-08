@@ -662,6 +662,9 @@
 	</item>
 	
 	<item name="transitions" caption="__transitions" canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
 		<options>
 			<option_select path="//item[@category='transitionLayout']" />
 		</options>
@@ -669,7 +672,7 @@
 	
 	<item name="transition" caption="__transition" category="transitionLayout">
 		<properties>
-			<property name="toState" caption="__toState" type="itemSelect" path="//item[@category='transitionLayout']" />
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
 			<option name="transitionDecision" />
@@ -677,12 +680,58 @@
 	</item>
 	
 	<item name="accessControls" caption="__accessControls" canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
 		<options>
-			<option_select path="//item[@category='accessControlsLayout']" />
+			<option_select path="//item[@category='accessControlsLayout']" initial="true" />
 		</options>
 	</item>
 	
+	<item name="readAccess" caption="__readAccess" category="accessControlsLayout">
+		<properties>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="userGroupAccess" caption="__userGroupAccess" type="userGroupSelect" />
+		</properties>
+	</item>
+	
+	<item name="modifyAccess" caption="__modifyAccess" category="accessControlsLayout">
+		<properties>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="userGroupAccess" caption="__userGroupAccess" type="userGroupSelect" />
+		</properties>
+	</item>
+	
+	<item name="deleteAccess" caption="__deleteAccess" category="accessControlsLayout">
+		<properties>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="userGroupAccess" caption="__userGroupAccess" type="userGroupSelect" />
+		</properties>
+	</item>
+	
+	<item name="transitionOutAccess" caption="__transitionOutAccess" category="accessControlsLayout">
+		<properties>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="userGroupAccess" caption="__userGroupAccess" type="userGroupSelect" />
+		</properties>
+	</item>
+	
+	<item name="transitionInAccess" caption="__transitionInAccess" category="accessControlsLayout">
+		<properties>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="userGroupAccess" caption="__userGroupAccess" type="userGroupSelect" />
+		</properties>
+	</item>
+	
 	<item name="notifications" caption="__notifications" canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
 		<options>
 			<option_select path="//item[@category='notificationsLayout']" />
 		</options>

@@ -293,7 +293,7 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 								throw new DefinitionInvalidException(defId, "Error: not an integer - "+configProperty.attributeValue("caption"));
 							}
 							newPropertyEle.addAttribute("value", value);
-						} else if (type.equals("selectbox")) {
+						} else if (type.equals("selectbox") || type.equals("itemSelect") || type.equals("replyStyle")) {
 							newPropertyEle.addAttribute("value", value);
 						} else if (type.equals("boolean") || type.equals("checkbox")) {
 							if (value == null) {value = "false";}
@@ -302,8 +302,6 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 							} else {
 								value = "false";
 							}
-							newPropertyEle.addAttribute("value", value);
-						} else if (type.equals("replyStyle")) {
 							newPropertyEle.addAttribute("value", value);
 						}
 					}
@@ -336,73 +334,8 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 				Element itemTypeEle = (Element) configRoot.selectSingleNode("item[@name='"+itemType+"']");
 				if (itemTypeEle != null) {
 					//Set the values of each property from the form data
-					Element configProperties = itemTypeEle.element("properties");
-					Element itemProperties = item.element("properties");
-					if (itemProperties == null) {
-						//There is no properties element for this definition, so add one
-						itemProperties = item.addElement("properties");
-					}
-					if (configProperties != null) {
-						Iterator itConfigProperties = configProperties.elementIterator("property");
-						if (itConfigProperties != null) {
-							while (itConfigProperties.hasNext()) {
-								Element property = (Element) itConfigProperties.next();
-								String attrName = property.attributeValue("name");
-								String type = property.attributeValue("type", "");
-								String characterMask = property.attributeValue("characterMask", "");
-								Element newProperty = property.createCopy();
-								if (formData.containsKey("propertyId_"+attrName)) {
-									String value = ((String[]) formData.get("propertyId_"+attrName))[0];
-									if (!characterMask.equals("")) {
-										//See if the user entered a valid name
-										if (!value.matches(characterMask)) {
-											//The value is not well formed, go complain to the user
-											throw new DefinitionInvalidException(defId, "Error: invalid character entered - "+value);
-										}
-									}
-									if (type.equals("text")) {
-										newProperty.addAttribute("value", value);
-									} else if (type.equals("textarea")) {
-										newProperty.setText(value);
-									} else if (type.equals("integer")) {
-										if (!value.matches("^[0-9]*$")) {
-											//The item to be moved is no longer defined as a valid item
-											throw new DefinitionInvalidException(defId, "error: not an integer - "+property.attributeValue("caption"));
-										}
-										newProperty.addAttribute("value", value);
-									} else if (type.equals("selectbox")) {
-										newProperty.addAttribute("value", value);
-									} else if (type.equals("boolean") || type.equals("checkbox")) {
-										if (value == null) {value = "false";}
-										if (value.equalsIgnoreCase("on")) {
-											value = "true";
-										} else {
-											value = "false";
-										}
-										newProperty.addAttribute("value", value);
-									} else {
-										newProperty.addAttribute("value", "");
-									}
-
-								} else {
-									if (type.equals("boolean") || type.equals("checkbox")) {
-										newProperty.addAttribute("value", "false");
-									} else {
-										newProperty.addAttribute("value", "");
-									}
-								}
-								//Replace the old version of this property in the item being modified
-								Element oldProperty = (Element) itemProperties.selectSingleNode("property[@name='"+attrName+"']");
-								if (oldProperty != null) {
-									//There is an old version of this property, delete it
-									oldProperty.detach();
-								}
-								//Add the new version of the property
-								itemProperties.add(newProperty);
-							}
-						}
-					}
-					
+					processProperties(defId, itemTypeEle, item, formData);
+										
 					//See if this is a "dataView" type
 					if (item.attributeValue("type", "").equals("dataView")) {
 						//This item is shadowing one of the form data items. Capture its form item name
@@ -574,7 +507,7 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 		//See if the source has any options that are required
 		try {
 			Element options = source.element("options");
-			Iterator iOptions = options.selectNodes("option|option_select").iterator();
+			Iterator iOptions = options.selectNodes("option").iterator();
 			while (iOptions.hasNext()) {
 				Element nextOption = (Element)iOptions.next();
 				if (nextOption.attributeValue("initial", "").equals("true")) {
@@ -599,6 +532,38 @@ public class DefinitionModuleImpl extends AbstractModuleImpl implements Definiti
 					
 					//Now see if this item has some required options of its own
 					id = populateNewDefinitionTree(itemElement, item, configRoot, id);
+				}
+			}
+			Iterator iOptionSelects = options.selectNodes("option_select").iterator();
+			while (iOptionSelects.hasNext()) {
+				Element nextOptionSelect = (Element)iOptionSelects.next();
+				if (nextOptionSelect.attributeValue("initial", "").equals("true")) {
+					//This option_select is required. Process it and copy its items to the target
+					String optionPath = nextOptionSelect.attributeValue("path", "");
+					Iterator itOptionSelectItems = configRoot.selectNodes(optionPath).iterator();
+					while (itOptionSelectItems.hasNext()) {
+						nextOptionSelect = (Element)itOptionSelectItems.next();
+						Element item = target.addElement("item");
+						item.addAttribute("name", (String)nextOptionSelect.attributeValue("name"));
+						Element itemElement = (Element) configRoot.selectSingleNode("item[@name='"+nextOptionSelect.attributeValue("name")+"']");
+						if (itemElement == null) {continue;}
+						String caption = itemElement.attributeValue("caption", nextOptionSelect.attributeValue("name"));
+						item.addAttribute("caption", caption);
+						item.addAttribute("id", Integer.toString(id));
+						
+						//Get the properties to be copied
+						List itemElementList = itemElement.elements("properties");
+						if (!itemElementList.isEmpty()) {
+							Element itemProperties = (Element) itemElementList.get(0);
+							item.add(itemProperties.createCopy());
+						}
+						
+						//Bump up the unique id
+						id++;
+						
+						//Now see if this item has some required options of its own
+						id = populateNewDefinitionTree(itemElement, item, configRoot, id);
+					}
 				}
 			}
 		}

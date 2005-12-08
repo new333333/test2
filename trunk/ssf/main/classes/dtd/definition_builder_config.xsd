@@ -114,12 +114,14 @@
      <xsd:sequence/>
     <xsd:attribute name="path" type="xsd:string"/>
     <xsd:attribute name="optionCaption" type="xsd:string"/>
+    <xsd:attribute name="initial" type="xsd:boolean"/>
   </xsd:complexType>
 
   <xsd:complexType name="option_select_dataType">
      <xsd:sequence/>
     <xsd:attribute name="select_type" type="xsd:string"/>
     <xsd:attribute name="optionCaption" type="xsd:string"/>
+    <xsd:attribute name="initial" type="xsd:boolean"/>
   </xsd:complexType>
 
   <xsd:complexType name="jspsType">
