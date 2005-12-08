@@ -11,6 +11,7 @@ import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Description;
@@ -1062,7 +1063,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                                     		captionValue = nextItem
                                     			.attributeValue("caption");
                                     	} 
-                                    	notifyArgs.put("_caption", captionValue);
+                                    	notifyArgs.put("_caption", NLT.getDef(captionValue));
                                     	notifyArgs.put("_itemName", itemName);
                                     }
                                     NotifyBuilderUtil.buildElement(element, notifyDef, entry,
