@@ -77,8 +77,8 @@
 
 	<!-- Controllers -->
 
-	<bean id="downloadFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.file.DownloadFileController"/>
-	<bean id="uploadFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.file.UploadFileController"/>
+	<bean id="downloadFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.sample.DownloadFileController"/>
+	<bean id="uploadFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.sample.UploadFileController"/>
 	<bean id="viewEntry" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ViewEntryController"/>
 	<bean id="viewFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ViewFileController"/>
 	<bean id="viewFragment" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.widget_test.FragmentController"/>
