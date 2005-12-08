@@ -63,9 +63,6 @@ public class ViewController extends SAbstractController {
 					//Modify the name of the selected item
 					selectedItem = PortletRequestUtils.getStringParameter(request, "selectedId", "");
 					if (!selectedItem.equals("") ) {
-						String definitionName = PortletRequestUtils.getStringParameter(request, "propertyId_name", "");
-						String definitionCaption = PortletRequestUtils.getStringParameter(request, "propertyId_caption", "");
-						getDefinitionModule().modifyDefinitionName(selectedItem, definitionName, definitionCaption);
 						getDefinitionModule().modifyDefinitionProperties(selectedItem, formData);
 					}
 					
