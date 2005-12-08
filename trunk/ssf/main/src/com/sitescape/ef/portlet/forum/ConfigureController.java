@@ -34,12 +34,14 @@ public class ConfigureController extends SAbstractForumController {
 			}
 				
 			String[] defIds = (String[]) formData.get("entryDefinition");
-			for (int i = 0; i < defIds.length; i++) {
-				defId = defIds[i];
-				if (!Validator.isNull(defId)) {
-					definitions.add(defId);
+			if (defIds != null) {
+				for (int i = 0; i < defIds.length; i++) {
+					defId = defIds[i];
+					if (!Validator.isNull(defId)) {
+						definitions.add(defId);
+					}
 				}
-			}				
+			}
 			getFolderModule().modifyFolderConfiguration(folderId, definitions);
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
 			response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
