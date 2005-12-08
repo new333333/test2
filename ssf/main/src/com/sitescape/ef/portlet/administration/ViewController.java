@@ -14,8 +14,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 
@@ -29,15 +29,14 @@ public class ViewController extends  SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		PortletURL url;
-		Map model = new HashMap();
 		//Build the tree
-		Document wsTree = DocumentHelper.createDocument();
-		Element rootElement = wsTree.addElement("root");
+		Document adminTree = DocumentHelper.createDocument();
+		Element rootElement = adminTree.addElement("root");
 		rootElement.addAttribute("title", NLT.get("administration.title"));
 		rootElement.addAttribute("image", "root");
 		rootElement.addAttribute("displayOnly", "true");
 		//Definition builder
-		Element element = rootElement.addElement("child");
+		Element element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder"));
 		element.addAttribute("image", "page");
 		url = response.createActionURL();
@@ -47,7 +46,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("url", url.toString());
 		
 		//Ldap configuration
-		element = rootElement.addElement("child");
+		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_ldap"));
 		element.addAttribute("image", "page");
 		url = response.createRenderURL();
@@ -66,8 +65,16 @@ public class ViewController extends  SAbstractController {
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 
-		model.put("wsTree", wsTree);
-		return new ModelAndView("administration/view", model);
+		//Ldap configuration
+		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", NLT.get("administration.configure_notify"));
+		element.addAttribute("image", "page");
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.NOTIFY_ACTION_CONFIGURE);
+		url.setWindowState(WindowState.MAXIMIZED);
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
 		
+		return new ModelAndView("administration/view", WebKeys.ADMIN_TREE, adminTree);
 	}
 }
