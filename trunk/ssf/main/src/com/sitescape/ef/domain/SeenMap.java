@@ -116,4 +116,29 @@ public class SeenMap {
 		}
 		return ret;
 	}
+    public boolean checkIfSeen(HashMap entry) {
+    	return checkAndSetSeen(entry, false);
+    }
+	protected boolean checkAndSetSeen(HashMap entry, boolean setIt) {
+      	Date seen,modDate,now;
+      	boolean ret = false;
+      	Long id = new Long((String)entry.get("_docId"));
+      	seen = (Date)seenMap.get(id);
+		modDate = (Date)entry.get("_modificationDate");
+   		now = new Date();
+        if (seen == null) {
+    		if ((now.getTime() - modDate.getTime()) > ObjectKeys.SEEN_MAP_TIMEOUT) {
+     		    ret = true;
+    		}
+    	} else {
+    		if (seen.compareTo(modDate) > 0) {
+    			ret = true; 
+    		}
+    	}
+		if (setIt) {
+			if (!ret) seenMap.put(id, now);
+			pruneMap(now);
+		}
+		return ret;
+	}	
 }
