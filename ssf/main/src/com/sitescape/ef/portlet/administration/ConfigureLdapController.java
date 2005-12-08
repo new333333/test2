@@ -44,7 +44,7 @@ public class ConfigureLdapController extends  SAbstractController {
 			val = ActionUtil.getStringValue(formData, "scheduleEnabled");
 			input.put("scheduleEnabled", Boolean.valueOf(GetterUtil.getBoolean(val, false)));
 			input.put("schedule", ScheduleHelper.getSchedule(formData));
-			getLdapModule().updateLdapConfig(input);
+			getLdapModule().modifyLdapConfig(input);
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, "");

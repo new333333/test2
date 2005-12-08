@@ -13,5 +13,5 @@ public interface LdapModule {
 	public boolean authenticate(String companyId, String LoginName,String password) throws NamingException;
 	public void syncUser(String companyId, String loginName) throws NoUserByTheNameException,NamingException;
 	public LdapConfig getLdapConfig();
-	public void updateLdapConfig(Map props);
+	public void modifyLdapConfig(Map props);
 }

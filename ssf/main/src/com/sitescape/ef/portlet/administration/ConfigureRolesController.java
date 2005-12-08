@@ -54,7 +54,7 @@ public class ConfigureRolesController extends  SAbstractController {
 				}
 			}
 			updates.put("operations", operations);
-			getAdminModule().updateFunction(functionId, updates);
+			getAdminModule().modifyFunction(functionId, updates);
 		
 		} else {
 			response.setRenderParameter(WebKeys.ACTION, "");
