@@ -66,7 +66,7 @@ public class Timepicker extends TagSupport {
       ServletRequest req = null;
       req = new DynamicServletRequest((HttpServletRequest)pageContext.getRequest());
 
-      String jsp = "/WEB-INF/tags/timepicker/timepicker.jsp";
+      String jsp = "/WEB-INF/jsp/tags/timepicker/timepicker.jsp";
       String icon = contextPath + "/images/pics/sym_s_clock.gif";
       RequestDispatcher rd = req.getRequestDispatcher(jsp); 
 
