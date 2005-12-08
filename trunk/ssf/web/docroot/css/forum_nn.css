@@ -1,0 +1,14 @@
+/* ------------------------------------------------------------------------ */
+/* styles specific to nn */
+
+ul.dropdownmenu {
+  margin-left: -20px;
+  list-style-type: square;
+}
+
+ul.dropdownmenu li {
+  margin: 0px;
+  padding: 0px;
+  list-style-type: square;
+  }
+
