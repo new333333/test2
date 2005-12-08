@@ -612,6 +612,12 @@
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
 		</jsps>
 	</item>
+
+	<item name="calendarView" caption="__calendar_view" category="forumView">
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/calendar_view.jsp" />
+		</jsps>
+	</item>
 		
 	<item name="viewEntry" caption="__view_entry_selectbox" category="forumView">
 		<jsps>
