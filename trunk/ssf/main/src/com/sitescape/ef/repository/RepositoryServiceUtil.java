@@ -15,7 +15,11 @@ public class RepositoryServiceUtil {
 		RepositoryService service = (RepositoryService) SpringContextUtil.getBean(repositoryServiceName);
 		if(service == null)
 			throw new RepositoryServiceException("Repository service '" + repositoryServiceName + "' not found");
-		service.write(folder, entry, fui.getMultipartFile());
+		// Currently we use the original file name (which comes from the client/browser)
+		// as the pathname of the file. In other words, we do not distinguish them. 
+		// However, the underlying repository API is designed to handle the file
+		// pathname fully. 
+		service.write(folder, entry, fui.getMultipartFile().getOriginalFilename(), fui.getMultipartFile());
 	}
 
 	public static void read(Folder folder, FolderEntry entry, 

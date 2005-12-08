@@ -14,6 +14,14 @@ import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.util.FileHelper;
 
+/**
+ * An implementation of file-based repository. This class should never be 
+ * used for production system. Also this implementation will NOT work
+ * if the pathname for file represents anything other than a flat file name.  
+ * 
+ * @author jong
+ *
+ */
 public class FileRepositoryService implements RepositoryService {
 
 	private String rootDirPath;
@@ -31,7 +39,10 @@ public class FileRepositoryService implements RepositoryService {
 		FileHelper.mkdirsIfNecessary(rootDirPath);
 	}
 
-	public void write(Folder folder, FolderEntry entry, MultipartFile mf) throws RepositoryServiceException {
+	public void write(Folder folder, FolderEntry entry, String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
+		
+		// This implementation doesn't really follow the API spec in that
+		// it completely ignores relativeFilePath. 
 		
 		File dir = getDir(folder, entry);
 		
@@ -45,13 +56,19 @@ public class FileRepositoryService implements RepositoryService {
 		}
 	}
 
-	public void read(Folder folder, FolderEntry entry, String fileName, OutputStream out) throws RepositoryServiceException {
-		String filePath = getFilePath(folder, entry, fileName);
+	public void read(Folder folder, FolderEntry entry, String relativeFilePath, OutputStream out) throws RepositoryServiceException {
+		String filePath = getFilePath(folder, entry, relativeFilePath);
 		
+		readVersion(filePath, out);
+	}
+
+	public void readVersion(String fileVersionURI, OutputStream out) throws RepositoryServiceException {
+		// In this implementation, file version URI that the caller hands in is 
+		// simply identical to the actual pathname of the file. 
 		FileInputStream in = null;
 		
 		try {
-			in = new FileInputStream(filePath);
+			in = new FileInputStream(fileVersionURI);
 		
 			FileHelper.copyContent(in, out);
 		}
@@ -65,7 +82,27 @@ public class FileRepositoryService implements RepositoryService {
 				} 
 				catch (IOException e) {}
 			}
-		}
+		}	
+	}
+
+	public String[] fileVersionsURIs(Folder folder, FolderEntry entry, String fileName) {
+		return new String[] {getFilePath(folder, entry, fileName)};
+	}
+
+	public void checkout(Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
+		// Noop 
+	}
+
+	public void checkin(Folder folder, FolderEntry entry, String filePath) throws RepositoryServiceException {
+		// Noop
+	}
+
+	public boolean supportVersioning() {
+		return false;
+	}
+
+	public boolean supportCheckout() {
+		return false;
 	}
 
 	private String getDirPath(Folder folder, FolderEntry entry) {
@@ -79,6 +116,6 @@ public class FileRepositoryService implements RepositoryService {
 	}
 	
 	private String getFilePath(Folder folder, FolderEntry entry, String fileName) {
-		return new StringBuffer(getDirPath(folder, entry)).append(fileName).toString();
+		return getDirPath(folder, entry) + fileName;
 	}
 }
