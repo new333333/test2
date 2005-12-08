@@ -2,6 +2,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssFolderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
 
+<c:if test="${!empty ssFolderEntry.fileAttachments}">
 <br><b><c:out value="${property_caption}"/></b><br>
 
 <c:forEach var="selection" items="${ssFolderEntry.fileAttachments}" >
@@ -15,3 +16,4 @@
  </c:forEach>
  
 <br>
+</c:if>

@@ -1,7 +1,7 @@
 <% //Title view %>
 <jsp:useBean id="ssDefinitionEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
 <jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
-<h1 class="entryTitle">
+<span class="portlet-section-header">
 <%
 	if (!ssSeenMap.checkIfSeen(ssDefinitionEntry)) {
 		ssSeenMap.setSeen(ssDefinitionEntry);
@@ -13,6 +13,6 @@
     folderId="<%= ssDefinitionEntry.getParentFolder().getId().toString() %>" 
     action="view_entry"
     entryId="<%= ssDefinitionEntry.getId().toString() %>"
-    />" onClick="return(ss_openUrlInPortlet(this.href));"><c:if test="${empty ssDefinitionEntry.title}">
+    />" onClick="return(ss_openUrlInPortlet(this.href, false));"><c:if test="${empty ssDefinitionEntry.title}">
     <span class="ss_contentbold"><i>(no title)</i></span>
-    </c:if><c:out value="${ssDefinitionEntry.title}"/></a></h1>
+    </c:if><c:out value="${ssDefinitionEntry.title}"/></a></span>
