@@ -375,12 +375,15 @@
 			</bean>
 		</property>
 	</bean>
+	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap"/>
+
 	<bean id="mailSession" class="com.sitescape.ef.util.JndiObjectFactoryBean">
 		<property name="jndiName"><value>java:comp/env/mail/SiteScapeMailOut</value></property>
 	</bean>
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="session"><ref local="mailSession"/></property>
 		<property name="defaultEncoding"><value>utf-8</value></property>
+		<property name="defaultFileTypeMap"><ref local="mimeTypes"/></property>
 	</bean>
 	<bean id="mailModule" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager">
@@ -476,6 +479,11 @@
 
 	<bean id="authenticationManager" class="com.sitescape.ef.security.authentication.impl.AuthenticationManagerImpl">
 		<property name="coreDao"><ref local="coreDao"/></property>
+	</bean>
+		<!-- ======================== Repository Services =============== -->
+	
+	<bean id="fileRepositoryService" class="com.sitescape.ef.repository.file.FileRepositoryService">
+		<property name="rootDirPath"><value>C:\home\sitescape\forum\</value></property>
 	</bean>
 	
 </beans>

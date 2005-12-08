@@ -20,6 +20,7 @@ public class WebKeys {
 	public static final String FORUM_URL_ENTRY_ID = "entryId";
     public static final String FORUM_URL_ENTRY_TYPE="entryType";
 	public static final String FORUM_URL_FILE = "file";
+	public static final String FORUM_URL_FILE_ID = "fileId";
 	public static final String FORUM_URL_FORUM = "forum";
 	public static final String FORUM_URL_FORUM_ID = "forumId";
 	public static final String FORUM_URL_OPERATION = "operation";

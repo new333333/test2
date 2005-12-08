@@ -33,7 +33,7 @@ import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.definition.DefinitionModule;
-//import com.sitescape.ef.repository.RepositoryServiceUtil;
+import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.index.IndexUtils;
@@ -44,7 +44,7 @@ import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AclManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-//import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryBuilder;
 /**
@@ -158,8 +158,8 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
     protected void addEntry_postSave(Folder folder, FolderEntry entry, Map inputData, Map entryData, List fileData) {
         // Save file attachments here. 
         for (int i=0; i<fileData.size(); ++i) {
-//            FileUploadItem fui = (FileUploadItem) fileData.get(i);
-//            RepositoryServiceUtil.write(folder, entry, fui);
+            FileUploadItem fui = (FileUploadItem) fileData.get(i);
+            RepositoryServiceUtil.write(folder, entry, fui);
         }
     }
     protected void addEntry_indexAdd(Folder folder, FolderEntry entry, Map inputData) {
@@ -218,8 +218,8 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
     protected void modifyEntry_postFillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData, List fileData) {
         // Save file attachments here. 
         for (int i=0; i<fileData.size(); ++i) {
-//            FileUploadItem fui = (FileUploadItem) fileData.get(i);
-//            RepositoryServiceUtil.write(folder, entry, fui);
+            FileUploadItem fui = (FileUploadItem) fileData.get(i);
+            RepositoryServiceUtil.write(folder, entry, fui);
         }
      }
     protected void modifyEntry_indexAdd(Folder folder, FolderEntry entry, Map inputData) {
@@ -297,8 +297,8 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
     protected void addReply_postSave(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData, List fileData) {
         // Save file attachments here. 
         for (int i=0; i<fileData.size(); ++i) {
- //           FileUploadItem fui = (FileUploadItem) fileData.get(i);
- //           RepositoryServiceUtil.write(entry.getParentFolder(), entry, fui);
+            FileUploadItem fui = (FileUploadItem) fileData.get(i);
+            RepositoryServiceUtil.write(entry.getParentFolder(), entry, fui);
         }
      }
     
