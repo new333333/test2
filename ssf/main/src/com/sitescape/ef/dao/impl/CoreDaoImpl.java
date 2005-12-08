@@ -569,7 +569,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		
 	}
 	public List loadPostings() {
-		return getHibernateTemplate().find("from com.sitescape.ef.domain.PostingDef");
+		return getHibernateTemplate().find("from com.sitescape.ef.domain.PostingDef p order by p.emailAddress");
 	}
 
 }

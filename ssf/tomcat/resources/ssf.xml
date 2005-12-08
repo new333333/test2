@@ -36,12 +36,24 @@
 	<Resource name="mail/SiteScapePosting" auth="Container" type="javax.mail.Session" />
 	<ResourceParams name="mail/SiteScapePosting">
 		<parameter>
-			<name>mail.smtp.host</name>
+			<name>mail.pop3.host</name>
 			<value>host54a.simplicato.com</value>
 		</parameter>
 		<parameter>
-			<name>mail.user</name>
+			<name>mail.store.protocol</name>
+			<value>pop3</value>
+		</parameter>
+		<parameter>
+			<name>mail.pop3.auth</name>
+			<value>true</value>
+		</parameter>
+		<parameter>
+			<name>mail.pop3.user</name>
 			<value>mccann@sitescape.com</value>
+		</parameter>
+		<parameter>
+			<name>mail.pop3.password</name>
+			<value>kellyjenny</value>
 		</parameter>
 	</ResourceParams>
 </Context>

@@ -90,7 +90,7 @@ public class ViewController extends  SAbstractController {
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 
-		//Ldap configuration
+		//Notification configuration
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_notify"));
 		element.addAttribute("image", "page");
@@ -100,6 +100,26 @@ public class ViewController extends  SAbstractController {
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 		
+		//Posting schedule
+		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", NLT.get("administration.configure_posting"));
+		element.addAttribute("image", "page");
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.POSTING_ACTION_CONFIGURE);
+		url.setWindowState(WindowState.MAXIMIZED);
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
+		
+		//Posting schedule
+		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", NLT.get("administration.configure_posting_job"));
+		element.addAttribute("image", "page");
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.POSTINGJOB_ACTION_CONFIGURE);
+		url.setWindowState(WindowState.MAXIMIZED);
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
+
 		return new ModelAndView("administration/view", WebKeys.ADMIN_TREE, adminTree);
 	}
 }
