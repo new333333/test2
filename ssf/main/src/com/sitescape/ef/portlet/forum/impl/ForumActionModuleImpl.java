@@ -311,15 +311,15 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 		}
 		model.put(WebKeys.CALENDAR_EVENTDATES, results);
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK)) {
-			getCalendarViewBean(startViewCal, endViewCal, results, viewMode, model);
+			getCalendarViewBean(startViewCal, endViewCal, response, results, viewMode, model);
 		}
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_DAY)) {
 			
-			getCalendarViewBean(startViewCal, endViewCal, results, viewMode, model);
+			getCalendarViewBean(startViewCal, endViewCal, response, results, viewMode, model);
 		}
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
 			
-			getCalendarViewBean(startViewCal, endViewCal, results, viewMode, model);
+			getCalendarViewBean(startViewCal, endViewCal, response, results, viewMode, model);
 		}
 	}
 	
@@ -359,7 +359,7 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 	 *                 endtime -- string
 	 *              
 	 */
-	private void getCalendarViewBean (Calendar startCal, Calendar endCal, Map eventDates, String viewMode, Map model) {
+	private void getCalendarViewBean (Calendar startCal, Calendar endCal, RenderResponse response, Map eventDates, String viewMode, Map model) {
 		HashMap monthBean = new HashMap();
 		ArrayList dayheaders = new ArrayList();
 		GregorianCalendar loopCal = new GregorianCalendar();
@@ -393,6 +393,12 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 				SimpleDateFormat sdfweeknum = new SimpleDateFormat("w");
 				String wn = sdfweeknum.format(loopCal.getTime());
 				weekMap.put("weekNum", wn);
+				// also put out URL to jump to this week -- 
+				// build string for date to stick in url -- note that it cannot contain "/"s so we use "_"
+				SimpleDateFormat sdfurlweek = new SimpleDateFormat("yyyy_MM_dd");
+				String weekurlstring;
+				weekurlstring = sdfurlweek.format(loopCal.getTime());
+
 				// before starting a new dayList, check if this is the first week of a month view
 				if (dayList == null && viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
 					dayList = new ArrayList();
@@ -400,6 +406,8 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 					gcal.setTime(startCal.getTime());
 					// when does the week that includes the first day of the month begin?
 					gcal.set(Calendar.DAY_OF_WEEK, gcal.getFirstDayOfWeek());
+					// note that the week url must include this date instead of the startCal date
+					weekurlstring = sdfurlweek.format(gcal.getTime());
 					while (gcal.getTime().getTime() < startCal.getTime().getTime()) {
 						// fill in the dayList with blank days
 						HashMap emptyDayMap = new HashMap();
@@ -412,6 +420,13 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 				} else {
 					dayList = new ArrayList();
 				}
+				PortletURL url;
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+				url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
+				url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "week");
+				url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, weekurlstring);
+				weekMap.put("weekURL", url.toString());
 			}
 			HashMap daymap = new HashMap();
 			daymap.put(WebKeys.CALENDAR_DOW, DateHelper.getDayAbbrevString(loopCal.get(Calendar.DAY_OF_WEEK)));
