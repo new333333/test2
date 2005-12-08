@@ -15,13 +15,14 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<jsp:useBean id="ssFolderList" type="java.util.List" scope="request" />
 <c:set var="folderIdList" value=""/>
 <jsp:useBean id="folderIdList" type="java.lang.String" />
 
 <% // Toolbar %>
+<c:if test="${!empty ssForumToolbar}">
 <c:set var="toolbar" value="${ssForumToolbar}" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+</c:if>
 
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
@@ -35,7 +36,7 @@
 				 </c:if>
 				<c:if test="${!empty ssFolderList}">
 					<table cellspacing="0" cellpadding="0">
-					<c:forEach var="folder" items="<%= ssFolderList %>">
+					<c:forEach var="folder" items="${ssFolderList}">
 					<jsp:useBean id="folder" type="com.sitescape.ef.domain.Folder" />
 					  <tr><td>
 						<a href="<portlet:renderURL windowState="maximized">
@@ -66,7 +67,7 @@
 <script language="javascript">
 var count = 0
 function ss_getUnseenCounts() {
-	<c:forEach var="folder" items="<%= ssFolderList %>">
+	<c:forEach var="folder" items="${ssFolderList}">
 		document.getElementById("count_<c:out value="${folder.id}"/>").style.color = "silver";
 	</c:forEach>
 	var url = "<ssf:url 
