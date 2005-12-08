@@ -1,7 +1,6 @@
 <% // html %>
-<jsp:useBean id="configDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="configElement" type="org.dom4j.Element" scope="request" />
-<jsp:useBean id="configJspStyle" type="String" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <%@ page import="org.dom4j.Element" %>
 <%
 	//Get the html item being displayed
@@ -10,7 +9,7 @@
 	String htmlBottom = (String) request.getAttribute("property_htmlBottom");
 %>
 <%= htmlTop %>
-<ssf:displayConfiguration configDefinition="<%= configDefinition %>" 
+<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= item %>" 
-  configJspStyle="<%= configJspStyle %>" />
+  configJspStyle="<%= ssConfigJspStyle %>" />
 <%= htmlBottom %>

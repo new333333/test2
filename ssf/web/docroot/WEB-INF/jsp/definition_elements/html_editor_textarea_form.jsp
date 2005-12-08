@@ -1,7 +1,5 @@
 <% // The html editor widget %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="configDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="configElement" type="org.dom4j.Element" scope="request" />
 <%
 	String formName = (String) request.getAttribute("formName");
 	String elementName = (String) request.getAttribute("property_name");
@@ -19,12 +17,12 @@
 String background = gammaColor;
 %>
 <c:set var="textValue" value=""/>
-<c:if test="${!empty folderEntry}">
+<c:if test="${!empty ssFolderEntry}">
   <c:if test="${property_name == 'description'}" >
-    <c:set var="textValue" value="${folderEntry.description.text}"/>
+    <c:set var="textValue" value="${ssFolderEntry.description.text}"/>
   </c:if>
   <c:if test="${property_name != 'description'}" >
-    <c:set var="textValue" value="${folderEntry.customAttributes[property_name].value.text}"/>
+    <c:set var="textValue" value="${ssFolderEntry.customAttributes[property_name].value.text}"/>
   </c:if>
 </c:if>
 <jsp:useBean id="textValue" type="java.lang.String" />

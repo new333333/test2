@@ -28,12 +28,12 @@ public class ConfigureController extends SAbstractForumController {
 		//See if the form was submitted
 		if (formData.containsKey("okBtn")) {
 	    	List definitions = new ArrayList();
-	    	String defId = ActionUtil.getStringValue(formData, PortletKeys.FOLDER_DEFINITION);
+	    	String defId = ActionUtil.getStringValue(formData, "folderDefinition");
 			if (!Validator.isNull(defId)) {
 				definitions.add(defId);
 			}
 				
-			String[] defIds = (String[]) formData.get(PortletKeys.ENTRY_DEFINITION);
+			String[] defIds = (String[]) formData.get("entryDefinition");
 			for (int i = 0; i < defIds.length; i++) {
 				defId = defIds[i];
 				if (!Validator.isNull(defId)) {

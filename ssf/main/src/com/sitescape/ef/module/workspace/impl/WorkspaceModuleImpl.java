@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.domain.NoWorkspaceByTheIdException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.Folder;
@@ -47,11 +48,12 @@ public class WorkspaceModuleImpl implements WorkspaceModule {
             AccessControlManager accessControlManager) {
         this.accessControlManager = accessControlManager;
     }
-    public Map showWorkspace() {
-    	return showWorkspace(null);
+    public Workspace getWorkspace() 
+   		throws NoWorkspaceByTheIdException, AccessControlException {
+    	return getWorkspace(null);
     }
-    public Map showWorkspace(Long workspaceId) {
-        Map model = new HashMap();
+    public Workspace getWorkspace(Long workspaceId) 
+    	throws NoWorkspaceByTheIdException, AccessControlException {
         Workspace workspace=null;        
          
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -64,9 +66,9 @@ public class WorkspaceModuleImpl implements WorkspaceModule {
         } else {
         	workspace = (Workspace)getCoreDao().loadBinder(workspaceId, user.getZoneName());  
         }
-        model.put(ObjectKeys.WORKSPACE,workspace);
+    	accessControlManager.checkOperation(workspace, WorkAreaOperation.VIEW);
  
-        return model;
+       return workspace;
     }
     public org.dom4j.Document getDomWorkspaceTree() throws AccessControlException {
     	return getDomWorkspaceTree(null);

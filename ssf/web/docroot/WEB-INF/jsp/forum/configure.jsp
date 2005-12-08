@@ -22,7 +22,7 @@
 <div class="forms">
 <form method="post" action="<portlet:actionURL>
 					<portlet:param name="action" value="configure"/>
-					<portlet:param name="forumId" value="${folder.id}"/>
+					<portlet:param name="forumId" value="${ssFolder.id}"/>
 					</portlet:actionURL>" style="display:inline;">
 
 <div class="buttonBarRight">
@@ -32,9 +32,9 @@
 <fieldset class="fieldset" title="Fieldset one">
  <legend class="legend">Default forum view</legend>
 
-<c:forEach var="item" items="${publicFolderDefinitions}">
+<c:forEach var="item" items="${ssPublicFolderDefinitions}">
 	<c:choose>
-	<c:when test="${defaultFolderDefinitionId == item.value.id}">
+	<c:when test="${ssDefaultFolderDefinitionId == item.value.id}">
 	<input type="radio" name="folderDefinition" value="<c:out value="${item.value.id}"/>" checked><c:out value="${item.value.name}"/><br/>
 	</c:when>
 	<c:otherwise>
@@ -48,9 +48,9 @@
 <fieldset class="fieldset" title="Fieldset one">
  <legend class="legend">Default entry types</legend>
 
-<c:forEach var="item" items="${publicEntryDefinitions}">
+<c:forEach var="item" items="${ssPublicEntryDefinitions}">
 	<c:choose>
-	<c:when test="${empty entryDefinitionMap[item.key]}">
+	<c:when test="${empty ssEntryDefinitionMap[item.key]}">
 	<input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>"><c:out value="${item.value.name}"/><br/>
 	</c:when>
 	<c:otherwise>

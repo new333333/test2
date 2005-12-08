@@ -1,18 +1,19 @@
 <% // The main forum view - for viewing folder listings and for viewing entries
 %>
-<%@ include file="/html/portlet/forum/init.jsp" %>
-<jsp:useBean id="configDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="configJspStyle" type="String" scope="request" />
-<jsp:useBean id="configElement" type="org.dom4j.Element" scope="request" />
-<jsp:useBean id="userProperties" type="java.util.Map" scope="request" />
-<jsp:useBean id="historyMap" type="com.sitescape.ef.domain.HistoryMap" scope="request" />
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
+<jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
+<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssHistoryMap" type="com.sitescape.ef.domain.HistoryMap" scope="request" />
 
 <%
 
 String op = (String) request.getAttribute(ObjectKeys.FORUM_URL_OPERATION);
 String displayStyle = ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL;
-if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
-	displayStyle = (String) userProperties.get(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE);
+if (ssUserProperties(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
+	displayStyle = (String) ssUserProperties(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE);
 }
 
 boolean statePopUp = renderRequest.getWindowState().equals(LiferayWindowState.POP_UP) ? true : false;
@@ -234,7 +235,7 @@ function highlightLineById(id) {
 %>
 </c_rt:if>
 <c_rt:if test="<%= op.equals(ObjectKeys.FORUM_OPERATION_VIEW_ENTRY) %>">
-<jsp:useBean id="folderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
+<jsp:useBean id="ssFolderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
   <c_rt:if test="<%= !statePopUp %>">
 <script language="javascript">
 function loadEntry(obj,id) {
@@ -246,18 +247,18 @@ function loadEntry(obj,id) {
 <%@ include file="/html/portlet/forum/view_forum_history_bar.jsp" %>
     </liferay:box>
     <liferay:box top="/html/common/box_top.jsp" bottom="/html/common/box_bottom.jsp">
-	  <ssf:displayConfiguration configDefinition="<%= configDefinition %>" 
-	    configElement="<%= configElement %>" 
-	    configJspStyle="<%= configJspStyle %>"
+	  <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
+	    configElement="<%= ssConfigElement %>" 
+	    configJspStyle="<%= ssConfigJspStyle %>"
 	    processThisItem="true" 
-	    folderEntry="<%= folderEntry %>" />
+	    folderEntry="<%= ssFolderEntry %>" />
     </liferay:box>
   </c_rt:if>
   
   <c_rt:if test="<%= statePopUp %>">
 <script language="javascript">
 if (self.parent && self.parent.highlightLineById) {
-	self.parent.highlightLineById("folderLine_<c:out value="${folderEntry.id}"/>");
+	self.parent.highlightLineById("folderLine_<c:out value="${ssFolderEntry.id}"/>");
 }
 </script>
 <%
@@ -268,11 +269,11 @@ if (self.parent && self.parent.highlightLineById) {
 %>
     <liferay:box top="/html/common/box_top.jsp" bottom="/html/common/box_bottom.jsp">
       <liferay:param name="box_width" value="<%= new Integer(entryWindowWidth).toString() %>" />
-	<ssf:displayConfiguration configDefinition="<%= configDefinition %>" 
-	  configElement="<%= configElement %>" 
-	  configJspStyle="<%= configJspStyle %>"
+	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
+	  configElement="<%= ssConfigElement %>" 
+	  configJspStyle="<%= ssConfigJspStyle %>"
 	  processThisItem="true" 
-	  folderEntry="<%= folderEntry %>" />
+	  folderEntry="<%= ssFolderEntry %>" />
     </liferay:box>
 <%
 	
@@ -281,21 +282,21 @@ if (self.parent && self.parent.highlightLineById) {
 		toolbarWidth = entryWindowWidth - 20;
 		request.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
 %>
-	<ssf:displayConfiguration configDefinition="<%= configDefinition %>" 
-	  configElement="<%= configElement %>" 
-	  configJspStyle="<%= configJspStyle %>"
+	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
+	  configElement="<%= ssConfigElement %>" 
+	  configJspStyle="<%= ssConfigJspStyle %>"
 	  processThisItem="true" 
-	  folderEntry="<%= folderEntry %>" />
+	  folderEntry="<%= ssFolderEntry %>" />
 <%
 	
 	//Vertical view
 	} else {
 %>
-	<ssf:displayConfiguration configDefinition="<%= configDefinition %>" 
-	  configElement="<%= configElement %>" 
-	  configJspStyle="<%= configJspStyle %>"
+	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
+	  configElement="<%= ssConfigElement %>" 
+	  configJspStyle="<%= ssConfigJspStyle %>"
 	  processThisItem="true" 
-	  folderEntry="<%=  folderEntry %>" />
+	  folderEntry="<%=  ssFolderEntry %>" />
 <%
 	}
 %>

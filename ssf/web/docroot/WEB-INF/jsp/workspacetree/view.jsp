@@ -17,7 +17,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 
-<jsp:useBean id="wsDomTree" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 
 <table width="100%">
 	<tr>
@@ -29,10 +29,10 @@
 			<div>
 			<c:choose>
 			<c:when test="${renderRequest.windowState == 'normal'}">
-				<ssf:tree treeName="wsTree" treeDocument="<%= wsDomTree %>"  rootOpen="false" />
+				<ssf:tree treeName="wsTree" treeDocument="<%= ssWsDomTree %>"  rootOpen="false" />
 			</c:when>
 			<c:when test="${renderRequest.windowState == 'maximized'}">
-				<ssf:tree treeName="wsTree" treeDocument="<%= wsDomTree %>"  rootOpen="true" />
+				<ssf:tree treeName="wsTree" treeDocument="<%= ssWsDomTree %>"  rootOpen="true" />
 			</c:when>
 			</c:choose>			
 
