@@ -85,11 +85,9 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                         //sqlqueries, filters and criteria don't help with frontbase problem
                         //
                         Query query = session.createQuery("from com.sitescape.ef.domain.FolderEntry d " + filter.getFilterString("d"));
-                		Object [] filterValues = filter.getFilterValues();
-                		if (filterValues != null) {
-                			for (int i=0; i<filterValues.length; ++i) {
-                				query.setParameter(i, filterValues[i]);
-                			}
+                		List filterValues = filter.getFilterValues();
+               			for (int i=0; i<filterValues.size(); ++i) {
+               				query.setParameter(i, filterValues.get(i));
                 		}
                        return query;
                     }

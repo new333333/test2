@@ -20,6 +20,7 @@ import com.sitescape.ef.module.definition.notify.Notify;
 public interface DefinitionModule {
 	public Definition getDefinition(String id);
 	public Definition addDefinition(String name, String title, int type, Map formData);
+	public String addDefinition(Document doc);
 	public void deleteDefinition(String id);
 	public Document getDefaultDefinition(String name, String title, int type, Map formData);
 	public Document getDefinitionConfig();

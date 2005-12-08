@@ -347,7 +347,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			}
 		}		
 		//remove disabled users
-		List users = coreDao.loadEnabledUsers(userIds);
+		List users = coreDao.loadEnabledUsers(userIds, folder.getZoneName());
 		userIds.clear();
 		for (int i=0;i<users.size(); ++i) {
 			userIds.add(((User)users.get(i)).getId());
