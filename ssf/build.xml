@@ -192,12 +192,6 @@
 				<arg value="${deploy.liferay.util.jar}" />
 				<!--<arg value="${app.server.deploy.dir}/ext.ear/lib/util-jsf.jar" />-->
 		</java>
-		
-		<move todir="${app.server.lib.dir}">
-			<fileset dir="${app.server.deploy.dir}/ssf/WEB-INF/lib">
-				<exclude name="*-taglib.jar"/>
-			</fileset>
-		</move>
 
 		<copy file="liferay/ssf-liferay.jar" todir="${app.server.lib.dir}"/>
 	</target>
