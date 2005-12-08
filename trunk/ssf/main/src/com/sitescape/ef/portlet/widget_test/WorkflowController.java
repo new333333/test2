@@ -12,24 +12,41 @@ import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
 import org.jbpm.taskmgmt.exe.TaskInstance;
+import org.jbpm.context.exe.ContextInstance;
+
 import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.util.PortletRequestUtils;
+import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.ef.domain.AnyOwner;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 public class WorkflowController extends SAbstractController {
 
 	  public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
      throws Exception {
 	    Map formData = request.getParameterMap();
+	    PlatformTransactionManager txManager = (PlatformTransactionManager)SpringContextUtil.getBean("transactionManager");
 		response.setRenderParameters(formData);
 		String operation=PortletRequestUtils.getStringParameter(request,WebKeys.FORUM_URL_OPERATION);
 		if (operation.equals("create")) {
 		    ProcessDefinition processDefinition = getWorkflowModule().addWorkflow(
 		    	      "<process-definition name='hello world'>" +
+		    	      " <action name='recordState' class='com.sitescape.ef.module.workflow.RecordState' config-type='bean'/>" +
 		    	      "  <start-state name='start'>" +
-		    	      "    <transition to='s' />" +
+		    	      "    <transition to='notify' />" +
 		    	      "  </start-state>" +
-		    	      "  <state name='s'>" +
+		    	      "  <state name='notify'>" +
+		    	      " <event type='node-enter'>" +
+		    	      " <action ref-name='recordState'> " +
+		    	      " <wfState>test notify</wfState></action>" +
+		    	      " <action class='com.sitescape.ef.module.workflow.Notify' config-type='bean'>" +
+		    	      " <principals>10,25,100</principals>" +
+		    	      " <subject>State change</subject>" +
+		    	      " <body>Blah, blah, blah...</body>" +
+		    	      " </action></event>" +
 		    	      "    <transition to='end' />" +
 		    	      "  </state>" +
 		    	      "  <end-state name='end' />" +
@@ -37,24 +54,41 @@ public class WorkflowController extends SAbstractController {
 		    	    );
 		    response.setRenderParameter("workflowId", String.valueOf(processDefinition.getId()));
 		 } else if (operation.equals("new")) {
-				String id=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
-				ProcessInstance processInstance = getWorkflowModule().addWorkflowInstance(Long.valueOf(id));
+			    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+			    try {
+			    	String id=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
+			    	ProcessInstance processInstance = getWorkflowModule().addWorkflowInstance(Long.valueOf(id));
 		    
-			    Token token = processInstance.getRootToken(); 
-			    response.setRenderParameter("processId", String.valueOf(processInstance.getId()));
-			    response.setRenderParameter("workflowState", token.getNode().getName());
+			    	Token token = processInstance.getRootToken(); 
+			    	ContextInstance ctx = processInstance.getContextInstance();
+			    	ctx.createVariable("entryType", AnyOwner.FOLDERENTRY);
+			    	ctx.createVariable("entryId", new Long(1));
+			    	
+				    txManager.commit(status);
+			    	response.setRenderParameter("processId", String.valueOf(processInstance.getId()));
+			    	response.setRenderParameter("workflowState", token.getNode().getName());
+				    response.setRenderParameter("workflowId", id);
+			    } catch (Exception e) {
+			    	txManager.rollback(status);
+			    } 
 
 	 } else if (operation.equals("proceed")) {
-		    
-		    // Now we can query the database for the process definition that we 
-		    // deployed above. 
-			String id=PortletRequestUtils.getRequiredStringParameter(request,"processId");
-			ProcessInstance processInstance = getWorkflowModule().setNextTransition(Long.valueOf(id));
-		    TaskInstance taskInstance = processInstance.getTaskMgmtInstance().createStartTaskInstance();
+		    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+		    try {
+		    	// Now we can query the database for the process definition that we 
+		    	// deployed above. 
+		    	String id=PortletRequestUtils.getRequiredStringParameter(request,"processId");
+		    	ProcessInstance processInstance = getWorkflowModule().setNextTransition(Long.valueOf(id));
+		    	TaskInstance taskInstance = processInstance.getTaskMgmtInstance().createStartTaskInstance();
 	    
-		    Token token = processInstance.getRootToken(); 
-	        response.setRenderParameter("processId", String.valueOf(processInstance.getId()));
-		    response.setRenderParameter("workflowState", token.getNode().getName());
+		    	Token token = processInstance.getRootToken(); 
+			    txManager.commit(status);
+			    response.setRenderParameter("processId", String.valueOf(processInstance.getId()));
+			    response.setRenderParameter("workflowState", token.getNode().getName());
+			    response.setRenderParameter("workflowId", String.valueOf(processInstance.getProcessDefinition().getId()));
+		    } catch (Exception e) {
+		    	txManager.rollback(status);
+		    } 
 
 	 }
 
