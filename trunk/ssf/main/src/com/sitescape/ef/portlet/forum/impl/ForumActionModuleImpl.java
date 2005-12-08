@@ -254,7 +254,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		String replyStyle = (String) entryView.getRootElement().attributeValue("replyStyle", "");
 		PortletURL url;
 		if (!replyStyle.equals("")) {
-			url = response.createRenderURL();
+			url = response.createActionURL();
 			url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_ADD_REPLY);
 	    	url.setParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId);
 	    	url.setParameter(PortletKeys.FORUM_URL_ENTRY_TYPE, replyStyle);
@@ -263,7 +263,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		}
 	    
 	    //The "Modify" menu
-		url = response.createRenderURL();
+		url = response.createActionURL();
 		url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_MODIFY_ENTRY);
 		url.setParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId);
 		url.setParameter(PortletKeys.FORUM_URL_ENTRY_TYPE, entryDefId);
@@ -272,7 +272,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		
 	    
 	    //The "Delete" menu
-		url = response.createRenderURL();
+		url = response.createActionURL();
 		url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_DELETE_ENTRY);
 		url.setParameter(PortletKeys.FORUM_URL_FORUM_ID, folderId);
 		url.setParameter(PortletKeys.FORUM_URL_ENTRY_TYPE, entryDefId);
@@ -294,7 +294,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 			toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 			for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
 				Definition def = (Definition) defaultEntryDefinitions.get(i);
-				url = response.createRenderURL();
+				url = response.createActionURL();
 				url.setParameter(PortletKeys.ACTION, PortletKeys.FORUM_ACTION_ADD_ENTRY);
 				url.setParameter(PortletKeys.FORUM_URL_FORUM_ID, forumId);
 				url.setParameter(PortletKeys.FORUM_URL_ENTRY_TYPE, def.getId());
