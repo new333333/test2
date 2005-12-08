@@ -229,7 +229,7 @@
 	<!-- ============================ Indexing/Search Service =========================== -->
 	
 	<bean id="luceneSessionFactory" class = "com.sitescape.ef.search.local.LocalLuceneSessionFactory">
-		<property name="rootDirPath"><value>/home/liferay/lucene/</value></property>			
+		<property name="rootDirPath"><value>/home/sitescape/lucene/</value></property>			
 	</bean>
 	
 	<bean id="objectIndexMapping" class = "com.sitescape.ef.search.docbuilder.mapped.ObjectIndexMapping">
@@ -470,7 +470,7 @@
 		<!-- ======================== Repository Services =============== -->
 	
 	<bean id="fileRepositoryService" class="com.sitescape.ef.repository.file.FileRepositoryService">
-		<property name="rootDirPath"><value>C:\home\sitescape\forum\</value></property>
+		<property name="rootDirPath"><value>/home/sitescape/document/</value></property>
 	</bean>
-	
+
 </beans>
