@@ -826,8 +826,11 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         // Add ACL field. We only need to index ACLs for read access.
         IndexUtils.addReadAcls(indexDoc, folder, entry, getAclManager());
         
-        // add the events
+        // Add the events
         EntryIndexUtils.addEvents(indexDoc, entry);
+        
+        // Add the workflows
+        EntryIndexUtils.addWorkflow(indexDoc, entry);
         
         return indexDoc;
     }
