@@ -5,7 +5,7 @@
 <%@ page import="com.sitescape.ef.context.request.RequestContextHolder" %>
 <%@ page import="com.sitescape.ef.domain.User" %>
 <%
-//Set some default colors
+//Set some default colors (alpha: med brownish, beta: light brownish, gamma:sand (?)
 String alphaColor = "#775325";
 String betaColor = "#B89257";
 String gammaColor = "#CCCC99";
@@ -51,7 +51,9 @@ if (document.createStyleSheet) {
 /* Forum toolbar */
 div.ss_toolbar {
   width: 100%; 
-  background-color: <%= gammaColor %>;
+  border-top: 1px solid #3366cc;
+  border-bottom: 1px solid #3366cc;
+  background-color: #f7f7f7;
   margin-top: 0px;
   margin-bottom: 8px;
   }
@@ -100,12 +102,12 @@ div.ss_historybar {
 
 .ssf-box {
 	background-color: #FFFFFF;
-	border: 1px solid <%= gammaColor %>;
+	border: 1px solid #3366cc;
 	height: auto;
 <c:if test="<%= !isIE %>">
 	height: 100%;
 </c:if>
-	padding: 15px 0 0 0;
+	padding: 10px 0 0 0;
 }
 
 .ssf-box-minimum-height {

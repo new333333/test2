@@ -69,6 +69,25 @@ ul.ss_nobullet li ul.ss_nobullet {
   color: #cccccc; 
   }
 
+a {
+  text-decoration: underline;
+  color: #3366cc;
+  font-family: arial, helvetica, sans-serif;
+  }
+
+a:visited, a:inactive {
+  text-decoration: underline;
+  color: #666666;
+  font-family: arial, helvetica, sans-serif;
+  }
+
+a:hover, a:active {
+  text-decoration: underline;
+  color: 666666;
+  font-family: arial, helvetica, sans-serif;
+  }
+
+
 /* Text styled as buttons */
 a.ss_linkButton:link, a.ss_linkButton:visited {
   font-size: smaller;
@@ -205,15 +224,35 @@ div.ss_divider {
 * toolbar */
 /* toolbar positioning */
 span.ss_toolRight {
+  font-weight: bold;
+  font-size:smaller;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
+  font-decoration: none;
   text-align: right;
   float: right;
   display:inline;
+  margin: 2px;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
   }
   
 span.ss_toolLeft {
+  font-weight: bold;
+  font-size:smaller;
+  color: #000000;
+  font-family: arial, helvetica, sans-serif;
   text-align: left;
   float: left;
   display: inline;
+  margin: 2px;
+  font-decoration: none;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
   }
   
 /* div.ss_toolbar is dynamically defined in view_css.jsp to specify the background color */
@@ -264,7 +303,7 @@ a.ss_toolbar_item:hover {
 span.ss_toolbar_item {
   display: inline;
   font-weight: bold;
-  font-size:smaller;
+  font-size: smaller;
   color: #000000;
   font-family: arial, helvetica, sans-serif;
   margin: 2px;
@@ -295,7 +334,7 @@ span.ss_toolLeft {
   text-align: left;
   float: left;
   font-weight: bold;
-  font-size:smaller;
+  font-size: smaller;
   color: #000000;
   font-family: arial, helvetica, sans-serif;
   }
@@ -305,9 +344,10 @@ span.ss_toolRight {
   text-align: right;
   float: right;
   font-weight: bold;
-  font-size:smaller;
+  font-size: smaller;
   color: #000000;
   font-family: arial, helvetica, sans-serif;
+  padding: 5px;
   }
 
   
@@ -336,7 +376,7 @@ fieldset.ss_fieldset {
   }
 
 legend.ss_legend {
-  font-size: smaller;
+  font-size: small;
   font-weight: bold;
   color: #666666;;
   }
@@ -347,7 +387,7 @@ legend.ss_legend {
   border-style: solid; 
   border-width: 1px; 
   padding: 2px;
-  font-size: smaller;
+  font-size: small;
   font-weight: bold;
   color: #a01e00;
   background-color: #f7f7f7;
@@ -359,7 +399,7 @@ legend.ss_legend {
   border-style: solid; 
   border-width: 1px; 
   padding: 2px;
-  font-size: smaller;
+  font-size: small;
   font-weight: bold;
   color: #a01e00;
   display: inline;
@@ -373,7 +413,7 @@ legend.ss_legend {
   border-width: 1px;
   text-align: right; 
   padding: 2px;
-  font-size: smaller;
+  font-size: small;
   font-weight: bold;
   color: #a01e00;
   display: inline;
@@ -405,7 +445,7 @@ div.ss_requiredLegend {
   border-style: solid; 
   border-width: 1px; 
   font-family: arial, helvetica, sans-serif;
-  font-size: smaller;
+  font-size: small;
   padding: 2px;
   }
 
@@ -427,7 +467,7 @@ input.ss_submit {
   border-style: solid; 
   border-width: 1px; 
   font-family: arial, helvetica, sans-serif;  
-  font-size: smaller;
+  font-size: small;
   }
 
 input.ss_submit:hover { 
@@ -447,7 +487,7 @@ div.ss_folder {
 
 h1.ss_folderTitle {
   font-weight: bold;
-  font-size: smaller;
+  font-size: small;
   font-family: arial, helvetica, sans-serif;
   color: #000000;
   margin-bottom: .5em;
@@ -467,7 +507,7 @@ div.ss_widgetContent {
 {
     padding-right: 2px;
     padding-left: 2px;
-    font-size: smaller;
+    font-size: small;
     visibility: hidden;
     display: none;
     padding-bottom: 2px;
@@ -485,7 +525,7 @@ div.ss_widgetContent {
 	display: none;
 	background-color: #FFFFFF; 
 	color: #000000;
-	font-size: smaller;
+	font-size: small;
 	text-decoration: none;
 	font-family: arial, helvetica, sans-serif;
 	border: 1px #3366cc solid;
