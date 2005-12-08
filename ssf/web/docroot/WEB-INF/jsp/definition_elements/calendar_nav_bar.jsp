@@ -3,14 +3,17 @@
    // (uses the datepicker tag)
 %>
 
+<%
+	Boolean tt = new Boolean(true);
+%>
+
 <form name="ssCalNavBar" action="${goto_form_url}" method="POST">
 <table border="0">
 <tr>
 <td align="left">
 <span class="ss_content">Go to: <ssf:datepicker formName="ssCalNavBar" id="goto" 
-                                     initDate="${ssCurrentDate}" />
+                                     initDate="${ssCurrentDate}" immediateMode="<%= tt %>" />
 </span>
-<input type="submit" name="GO" value="GO">
 </td>
 </tr>
 </table>

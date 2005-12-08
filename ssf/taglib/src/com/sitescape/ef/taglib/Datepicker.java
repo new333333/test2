@@ -30,6 +30,7 @@ public class Datepicker extends TagSupport {
     private String formName;
     private Date initDate = null;
     private String componentOrder = "mdy";
+    private Boolean immediateMode = new Boolean(false);
     private boolean initDateProvided;
     private DateFormat idf;
     private String contextPath;
@@ -126,47 +127,72 @@ public class Datepicker extends TagSupport {
 			sb.append("document.").append(formName).append(".")
 			  .append(varname)
 			  .append("_year.value=y;\n");
-			sb.append("document.").append(formName).append(".")
-			  .append(varname)
-			  .append("_month.selectedIndex=m;\n");
-			sb.append("document.").append(formName).append(".")
-			  .append(varname)
-			  .append("_date.selectedIndex=d;\n");
-
+			if (immediateMode.booleanValue()) {
+			  sb.append("document.").append(formName).append(".")
+			    .append(varname)
+			    .append("_month.value=m;\n");
+			  sb.append("document.").append(formName).append(".")
+			    .append(varname)
+			    .append("_date.value=d;\n");
+			  sb.append("self.document.").append(formName).append(".submit()");
+			} else {
+			  sb.append("document.").append(formName).append(".")
+			    .append(varname)
+			    .append("_month.selectedIndex=m;\n");
+			  sb.append("document.").append(formName).append(".")
+			    .append(varname)
+			    .append("_date.selectedIndex=d;\n");
+			}
 			sb.append("}\n");
 
 			sb.append("function getCurrentDateString_")
 			  .append(prefix)
 			  .append("(format) {\n")
 			  .append("var m;\nvar d;\nvar y;\n")
-			  .append("var mblank =0; var dblank = 0; var yblank = 0;\n")
-			  .append("m = document.")
-			  .append(formName)
-			  .append(".")
-			  .append(prefix)
-			  .append("_month.selectedIndex ;\n")
-			  .append("today = new Date();\n")
+			  .append("var mblank =0; var dblank = 0; var yblank = 0;\n");
+			if (immediateMode.booleanValue()) {
+			  sb.append("m = document.")
+			    .append(formName)
+			    .append(".")
+			    .append(prefix)
+			    .append("_month.value ;\n");
+			} else {
+			  sb.append("m = document.")
+			    .append(formName)
+			    .append(".")
+			    .append(prefix)
+			    .append("_month.selectedIndex ;\n");
+			}
+			sb.append("today = new Date();\n")
 			  .append("if (m == 0) {m = today.getMonth()+1; mblank=1; } \n")
 			  .append("if (m < 10) { \n")
 			  .append("mm = '0' + m;\n")
 			  .append("} else {\n")
-			  .append("mm = m;\n}\n")
-			  .append("d = document.")
-			  .append(formName)
-			  .append(".")
-			  .append(prefix)
-			  .append("_date.selectedIndex ;\n")
-			  .append("if (d == 0) { d = today.getDate(); dblank = 1; } \n")
+			  .append("mm = m;\n}\n");
+			if (immediateMode.booleanValue()) {
+			  sb.append("d = document.")
+			    .append(formName)
+			    .append(".")
+			    .append(prefix)
+			    .append("_date.value ;\n");
+			} else {
+			  sb.append("d = document.")
+			    .append(formName)
+			    .append(".")
+			    .append(prefix)
+			    .append("_date.selectedIndex ;\n");
+			}
+			sb.append("if (d == 0) { d = today.getDate(); dblank = 1; } \n")
 			  .append("if (d < 10) { \n")
 			  .append("dd = '0' + d;\n")
 			  .append("} else {\n")
-			  .append("dd = d;\n}\n")
-			  .append("y = document.")
+			  .append("dd = d;\n}\n");
+			sb.append("y = document.")
 			  .append(formName)
 			  .append(".")
 			  .append(prefix)
-			  .append("_year.value;\n")
-			  .append("if (y == '') { y = 1900 + today.getYear(); yblank =1; } \n")
+			  .append("_year.value;\n");
+			sb.append("if (y == '') { y = 1900 + today.getYear(); yblank =1; } \n")
 			  .append("if (format == \"mdy\") {\n")
 			  .append("return m + \"/\" + d + \"/\" + y;\n")
 			  .append("} else {\n")
@@ -177,64 +203,82 @@ public class Datepicker extends TagSupport {
 			String selected = new String("");
 
 			for (int cp=0; cp<3; cp++) {
+			    int i;
 			    switch (componentOrder.charAt(cp)) {
 			    	case 'm': 
-				  sb.append("<select name=\"").append(prefix).append("_month\">\n");
-				  int i;
-				  if (!initDateProvided) {
-				    selected = "selected";
-				  }
-				  sb.append("<option value=\"0\"")
-				    .append(selected)
-				    .append(" >")
-				    .append("---")
-				    .append("</option>\n");
-				  for (i=1; i<13; i++) {
-				    if (cal.get(Calendar.MONTH) == i-1 && initDateProvided) {
+				  if (immediateMode.booleanValue()) {
+				    sb.append("<input type=\"hidden\"")
+				      .append(" name=\"").append(prefix).append("_month\"")
+				      .append(" value=\"").append(cal.get(Calendar.MONTH)+1).append("\">\n");
+				  } else {
+				    sb.append("<select name=\"").append(prefix).append("_month\">\n");
+				    if (!initDateProvided) {
 				      selected = "selected";
-				    } else {
-				      selected = "";
 				    }
-				    sb.append("<option value=\"").append(i)
-				      .append("\" ").append(selected).append(">")
-				      .append(monthnames[i-1])
+				    sb.append("<option value=\"0\"")
+				      .append(selected)
+				      .append(" >")
+				      .append("---")
 				      .append("</option>\n");
+				    for (i=1; i<13; i++) {
+				      if (cal.get(Calendar.MONTH) == i-1 && initDateProvided) {
+					selected = "selected";
+				      } else {
+					selected = "";
+				      }
+				      sb.append("<option value=\"").append(i)
+					.append("\" ").append(selected).append(">")
+					.append(monthnames[i-1])
+					.append("</option>\n");
+				    }
+				    sb.append("</select>\n");
+				    sb.append("\n");
 				  }
-				  sb.append("</select>\n");
-				  sb.append("\n");
 				  break;
 			    	case 'd': 
-				  sb.append("<select name=\"").append(prefix).append("_date\">\n");
-				  if (!initDateProvided) {
-				    selected = "selected";
-				  }
-				  sb.append("<option value=\"0\"")
-				    .append(selected)
-				    .append(" >")
-				    .append("---")
-				    .append("</option>\n");
-				  selected = "";
-				  for (i=1; i<32; i++) {
-				    if (cal.get(Calendar.DATE) == i && initDateProvided) {
+				  if (immediateMode.booleanValue()) {
+				    sb.append("<input type=\"hidden\"")
+				      .append(" name=\"").append(prefix).append("_date\"")
+				      .append(" value=\"").append(cal.get(Calendar.DATE)).append("\">\n");
+				  } else {
+				    sb.append("<select name=\"").append(prefix).append("_date\">\n");
+				    if (!initDateProvided) {
 				      selected = "selected";
-				    } else {
-				      selected = "";
 				    }
-				    sb.append("<option value=\"").append(i)
-				      .append("\" ").append(selected).append(">").append(i)
+				    sb.append("<option value=\"0\"")
+				      .append(selected)
+				      .append(" >")
+				      .append("---")
 				      .append("</option>\n");
+				    selected = "";
+				    for (i=1; i<32; i++) {
+				      if (cal.get(Calendar.DATE) == i && initDateProvided) {
+					selected = "selected";
+				      } else {
+					selected = "";
+				      }
+				      sb.append("<option value=\"").append(i)
+					.append("\" ").append(selected).append(">").append(i)
+					.append("</option>\n");
+				    }
+				    sb.append("</select>\n");
 				  }
-				  sb.append("</select>\n");
 				  break;
 			    	case 'y': 
-				  sb.append("<INPUT TYPE=\"text\" NAME=\"").append(prefix)
-				    .append("_year\" VALUE=\"");
-				  if (initDateProvided) {
-				    sb.append(cal.get(Calendar.YEAR));
+				  if (immediateMode.booleanValue()) {
+				    sb.append("<input type=\"hidden\"")
+				      .append(" name=\"").append(prefix).append("_year\"")
+				      .append(" value=\"").append(cal.get(Calendar.YEAR)).append("\">\n");
 				  } else {
-				    sb.append("\"\"");
+				    sb.append("<INPUT TYPE=\"text\" NAME=\"").append(prefix)
+				      .append("_year\" VALUE=\"");
+				    if (initDateProvided) {
+				      sb.append(cal.get(Calendar.YEAR));
+				    } else {
+				      sb.append("\"\"");
+				    }
+				    sb.append("\" SIZE=4>\n");
 				  }
-				  sb.append("\" SIZE=4>\n");
 				  break;
 			    }
 			}
@@ -309,6 +353,10 @@ public class Datepicker extends TagSupport {
 	}
 	public void setFormName(String formName) {
 	    this.formName = formName;
+	}
+	
+	public void setImmediateMode(Boolean immediateMode) {
+		this.immediateMode = immediateMode;
 	}
 
 }
