@@ -54,6 +54,8 @@
 		<ant dir="web" target="clean" />
 
 		<ant dir="war" target="clean" />
+		
+		<ant dir="slide" target="clean" />
 	</target>
 
 	<target name="compile">
@@ -86,6 +88,8 @@
 		<ant dir="web" target="war" />
 
 		<ant dir="war" target="war" />
+		
+		<ant dir="slide" target="war" />
 	</target>
 
 	<target name="java2html">
@@ -185,6 +189,7 @@
 	<target name="deploy-liferay-post">
 		<ant dir="portal-module" target="deploy" />
 		<ant dir="liferay" target="deploy" />
+		<ant dir="slide" target="deploy" />
 	</target>
 		
 	<target name="deploy-liferay-tomcat" depends="init-liferay">
@@ -218,7 +223,9 @@
 		<antcall target="deploy-liferay-post" />
 		
 		<copy file="tomcat/resources/ssf.xml" todir="${app.server.dir}/conf/Catalina/localhost" />		
+		<copy file="tomcat/resources/server.xml" todir="${app.server.dir}/conf" />		
 		<copy file="liferay/resources/web.tomcat.xml" tofile="${deploy.liferay.webinf}/web.xml" />
+		<copy file="liferay/resources/jaas.tomcat.config" tofile="${app.server.dir}/conf/jaas.config" />
 		<copy file="lib/portal-ejb.jar" todir="${deploy.liferay.lib.dir}" />
 		<!-- Copy jdom.jar file into our lib directory because jakarta Slide 
 		     requires jdom 1.0 while the version of the Liferay we deploy
@@ -288,6 +295,11 @@
 		<zip zipfile="sitescape-forum-${ssf.version}-war.zip"
 			basedir="war"
 			includes="ssf.war"
+		/>
+		<zip zipfile="sitescape-forum-${ssf.version}-war.zip"
+			basedir="slide"
+			includes="slide.war"
+			update="true"
 		/>
 	</target>
 

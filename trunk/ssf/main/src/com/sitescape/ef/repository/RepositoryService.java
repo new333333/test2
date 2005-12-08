@@ -10,10 +10,6 @@ import com.sitescape.ef.domain.Folder;
 
 public interface RepositoryService {
 
-	//public static final String DEFAULT_REPOSITORY_SERVICE = "defaultWebdavRepositoryService";
-	public static final String DEFAULT_REPOSITORY_SERVICE = "fileRepositoryService";
-		
-	
 	/**
 	 * Opens a session with the repository system. 
 	 * 
