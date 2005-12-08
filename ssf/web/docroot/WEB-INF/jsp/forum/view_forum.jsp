@@ -10,7 +10,8 @@
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />
 <%
 
-String op = (String) request.getAttribute(PortletKeys.FORUM_URL_OPERATION);
+String op = (String) renderRequest.getAttribute(PortletKeys.FORUM_URL_OPERATION);
+if (op == null) op = PortletKeys.FORUM_OPERATION_VIEW_FORUM;
 String displayStyle = ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL;
 if (ssUserProperties.containsKey(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
 	displayStyle = (String) ssUserProperties.get(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE);
@@ -18,13 +19,14 @@ if (ssUserProperties.containsKey(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
 
 boolean statePopUp = false;
 boolean popupValue = false;
-if (!((String) request.getAttribute(PortletKeys.FORUM_URL_OPERATION)).equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY)) {
+String forumOperation = (String) renderRequest.getAttribute(PortletKeys.FORUM_URL_OPERATION);
+if (forumOperation != null && !forumOperation.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY)) {
 	popupValue = true;
 } else {
 	if (statePopUp) popupValue = true;
 }
 	
-//int boxWidth = (int)ParamUtil.get(request, "box_width", (double)RES_TOTAL);
+//int boxWidth = (int)ParamUtil.get(renderRequest, "box_width", (double)RES_TOTAL);
 int boxWidth = 600;
 int entryWindowWidth = boxWidth;
 String autoScroll = "true";
@@ -38,8 +40,8 @@ if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL) ||
 
 entryWindowWidth = entryWindowWidth - 4;
 int toolbarWidth = boxWidth - 10;
-request.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth));
-request.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
+renderRequest.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth));
+renderRequest.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
 %>
 <jsp:useBean id="ss_entryWindowWidth" type="java.lang.Integer" scope="request" />
 <jsp:useBean id="ss_toolbarWidth" type="java.lang.Integer" scope="request" />
@@ -273,7 +275,7 @@ if (self.parent && self.parent.highlightLineById) {
 	//Horizontal view
 	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL)) {
 		toolbarWidth = entryWindowWidth - 6;
-		request.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
+		renderRequest.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
 %>
     <liferay:box top="/html/common/box_top.jsp" bottom="/html/common/box_bottom.jsp">
       <liferay:param name="box_width" value="<%= new Integer(entryWindowWidth).toString() %>" />
@@ -288,7 +290,7 @@ if (self.parent && self.parent.highlightLineById) {
 	//Iframe view
 	} else if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME)) {
 		toolbarWidth = entryWindowWidth - 20;
-		request.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
+		renderRequest.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
 %>
 	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
 	  configElement="<%= ssConfigElement %>" 
