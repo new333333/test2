@@ -6,4 +6,4 @@
 	String buttonText = (String) request.getAttribute("property_caption");
 	String buttonOnClick = (String) request.getAttribute("property_onClick");
 %>
-<input type="submit" name="okBtn" value="<%= buttonText %>" onClick="<%= buttonOnClick %>">
+<input class="ss_submit" type="submit" name="okBtn" value="<%= buttonText %>" onClick="<%= buttonOnClick %>">
