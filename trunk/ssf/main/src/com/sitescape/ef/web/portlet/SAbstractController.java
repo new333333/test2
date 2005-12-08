@@ -8,6 +8,7 @@ import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.portlet.forum.ForumActionModule;
 
 public abstract class SAbstractController extends AbstractController {
 
@@ -17,6 +18,7 @@ public abstract class SAbstractController extends AbstractController {
 	private AdminModule adminModule;
 	private ProfileModule profileModule;
 	private DefinitionModule definitionModule;
+	private ForumActionModule forumActionModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -64,5 +66,11 @@ public abstract class SAbstractController extends AbstractController {
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
+	public void setForumActionModule(ForumActionModule forumActionModule) {
+		this.forumActionModule = forumActionModule;
+	}
 	
+	protected ForumActionModule getForumActionModule() {
+		return forumActionModule;
+	}	
 }

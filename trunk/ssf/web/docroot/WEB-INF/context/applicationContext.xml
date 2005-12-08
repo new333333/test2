@@ -80,6 +80,7 @@
 		<property name="adminModule"><ref bean="adminModule"/></property>
 		<property name="profileModule"><ref bean="profileModule"/></property>
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
+		<property name="forumActionModule"><ref bean="forumActionModule"/></property>
 		
 	</bean>
 
