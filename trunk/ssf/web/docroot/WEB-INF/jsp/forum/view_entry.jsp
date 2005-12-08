@@ -1,7 +1,8 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
+<ssf:ifadapter>
 <body>
-
+</ssf:ifadapter>
 <%@ page contentType="text/html" isELIgnored="false" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -41,11 +42,8 @@ if (ssUserProperties.containsKey(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
 }
 
 boolean statePopUp = false;
-boolean popupValue = false;
-if (!op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY)) {
-	popupValue = true;
-} else {
-	if (statePopUp) popupValue = true;
+if (op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY)) {
+	statePopUp = true;
 }
 	
 int entryWindowWidth = 0;
@@ -305,6 +303,7 @@ if (self.parent && self.parent.highlightLineById) {
 </c:if>
 
 
-
+<ssf:ifadapter>
 </body>
 </html>
+</ssf:ifadapter>
