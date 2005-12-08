@@ -343,27 +343,27 @@ function Tree_defineBasicIcons(tree) {
 	tree.defineIcons(treeIcons, treeIconsClosed, treeIconsOpen)
 }
 
-var dragsort = ss_ToolMan.dragsort()
+//var dragsort = ss_ToolMan.dragsort()
 function ss_setSortable(treeName) {
 	//Sorting turned off because it doesn't work in IE - pmh
 	//dragsort.makeListSortable(document.getElementById(treeName), ss_verticalOnly, ss_saveTreeOrder)
 }
 
 function ss_verticalOnly(item) {
-	item.ss_ToolManDragGroup.verticalOnly()
+	//item.ss_ToolManDragGroup.verticalOnly()
 }
 
 function ss_saveTreeOrder(item) {
-	var group = item.ss_ToolManDragGroup
-	group.register('dragend', ss_save)
-	group.setThreshold(4)
-	var list = group.element.parentNode
-	var id = list.getAttribute("id")
-	if (id == null) return
+	//var group = item.ss_ToolManDragGroup
+	//group.register('dragend', ss_save)
+	//group.setThreshold(4)
+	//var list = group.element.parentNode
+	//var id = list.getAttribute("id")
+	//if (id == null) return
 }
 
 function ss_save(item) {
-	alert(item.group.element.id)
+	//alert(item.group.element.id)
 }
 
 

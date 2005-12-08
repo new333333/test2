@@ -217,7 +217,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 				cnt = new Counter();
 				unseenCounts.put(folderIdString, cnt);
 			}
-			if (entryId != null && fToSm.containsKey(folderIdString) && ((SeenMap)fToSm.get(folderIdString)).checkAndSetSeen(entryId, modifyDate, false)) {
+			if (entryId != null && (!fToSm.containsKey(folderIdString) || !((SeenMap)fToSm.get(folderIdString)).checkAndSetSeen(entryId, modifyDate, false))) {
 				cnt.increment();
 			}
 		}
