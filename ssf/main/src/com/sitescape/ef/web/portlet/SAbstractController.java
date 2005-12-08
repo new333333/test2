@@ -1,5 +1,7 @@
 package com.sitescape.ef.web.portlet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.portlet.mvc.AbstractController;
 
 import com.sitescape.ef.module.sample.EmployeeModule;
@@ -12,6 +14,8 @@ import com.sitescape.ef.portlet.forum.ForumActionModule;
 
 public abstract class SAbstractController extends AbstractController {
 
+	protected Log logger = LogFactory.getLog(getClass());
+	
 	private EmployeeModule employeeModule;
 	private WorkspaceModule workspaceModule;
 	private FolderModule folderModule;
