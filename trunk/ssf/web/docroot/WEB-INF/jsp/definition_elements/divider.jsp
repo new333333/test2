@@ -1,2 +1,2 @@
 <% //divider %>
-<div class="hr">&nbsp;</div>
+<div class="ss_divider"></div>
