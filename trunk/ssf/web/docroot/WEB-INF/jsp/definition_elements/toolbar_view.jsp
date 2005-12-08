@@ -9,7 +9,13 @@
 	    </c:if>
 	    <ul class="ss_dropdownmenu">
 	    <c:forEach var="toolbarMenuCategoryItem" items="${toolbarMenuCategory.value}">
-	      <li class="ss_dropdownmenu">
+	      <li class="ss_dropdownmenu">	        
+	        <jsp:useBean id="toolbarMenuCategoryItem" type="java.util.Map.Entry"/>
+	        <c:choose>
+	        <c:when test="<%= toolbarMenuCategoryItem.getValue() instanceof javax.portlet.PortletURL %>">
+	        	<a href="<c:out value="${toolbarMenuCategoryItem.value}"/>"
+	        </c:when>
+	        <c:otherwise>
 	        <a href="<ssf:url>
 	          <c:forEach var="p" items="${toolbarMenuCategoryItem.value}">
 				<c:set var="key" value="${p.key}"/>
@@ -18,13 +24,14 @@
 			    <jsp:useBean id="value" type="java.lang.String" />
 	            <ssf:param name="<%= key %>" value="<%= value %>" />
 	          </c:forEach>
-	        </ssf:url>" 
+	 	   </ssf:url>"
+	        </c:otherwise>
+	   		</c:choose>
 	        onClick="return(ss_openUrlInPortlet(this.href));"
 	        ><span 
 	        class="portlet-font" 
 	        style="font-size: smaller; text-decoration: none;"
 	        ><c:out value="${toolbarMenuCategoryItem.key}" /></span></a></li>
-	    </c:forEach>
 	    </ul>
 	  </c:forEach>
 	</div>
