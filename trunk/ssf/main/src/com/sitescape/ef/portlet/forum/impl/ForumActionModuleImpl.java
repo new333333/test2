@@ -235,6 +235,8 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		endViewCal.set(Calendar.HOUR_OF_DAY, 23);
 		endViewCal.set(Calendar.MINUTE, 59);
 		endViewCal.set(Calendar.SECOND, 59);
+		model.put(WebKeys.CALENDAR_CURRENT_VIEW_STARTDATE, startViewCal.getTime());
+		model.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE, endViewCal.getTime());
 		long startMillis = startViewCal.getTime().getTime();
 		long endMillis = endViewCal.getTime().getTime();
 		
@@ -639,7 +641,6 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		getEvents(entries, model, req);
 		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
 		buildFolderToolbar(response, model, forumId);
-		model.put("test", "foo");
 		return model;
 	}
 	public Map getDefinitionBuilder(Map formData, RenderRequest req, String currentId) {
