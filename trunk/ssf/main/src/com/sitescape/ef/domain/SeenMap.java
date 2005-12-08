@@ -107,7 +107,7 @@ public class SeenMap {
       	seen = (Date)seenMap.get(id);
    		now = new Date();
         if (seen == null) {
-    		if ((now.getTime() - modDate.getTime()) > ObjectKeys.SEEN_MAP_TIMEOUT) {
+    		if ((modDate != null) && (now.getTime() - modDate.getTime()) > ObjectKeys.SEEN_MAP_TIMEOUT) {
      		    ret = true;
     		}
     	} else {
