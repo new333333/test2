@@ -11,6 +11,7 @@ import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.sample.Employee;
 import com.sitescape.ef.module.sample.EmployeeModule;
+import com.sitescape.ef.util.NLT;
 
 public class EmployeeModuleImpl implements EmployeeModule {
 	
@@ -72,6 +73,11 @@ public class EmployeeModuleImpl implements EmployeeModule {
 		// Just to see whether RequestContext works or not. 
 		User user = RequestContextHolder.getRequestContext().getUser();
     	
+		// Test NLT
+		System.out.println(NLT.get("exception.contactAdmin"));
+		System.out.println(NLT.get("a.b.c.d"));
+		System.out.println(NLT.get("exception.notAuthorized.message", "Hi!"));
+		System.out.println(NLT.get("x.y.z", "Hi!"));	
     }
 
     public void updateEmployee (Employee employee) {
