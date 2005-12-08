@@ -29,16 +29,10 @@ public class ProcessorManagerTests extends AbstractDependencyInjectionSpringCont
 		
 		assertEquals(processor1, internalBean);
 		
-		// Unfortunately, the following test will not work because 
-		// ClassPathXmlApplicationContext (created by the superclass)
-		// is not ConfigurableListableBeanFactory that the code being
-		// tested is expecting. 
-		/*
 		TestProcessor2 processor2 = (TestProcessor2) procMgr.getProcessor(testModel, TestProcessor2.PROCESSOR_KEY);
 		assertNotNull(processor2);
 		assertEquals(processor2.getClass(), MyTestProcessor2.class);
 		assertEquals(processor2.getGreeting(), "Hello");
-		*/
 		
 		TestProcessor3 processor3 = (TestProcessor3) procMgr.getProcessor(testModel, TestProcessor3.PROCESSOR_KEY);
 		assertNotNull(processor3);
