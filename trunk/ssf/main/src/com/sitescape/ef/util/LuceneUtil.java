@@ -56,7 +56,7 @@ public class LuceneUtil {
 	}
 
 	public static IndexWriter getWriter(String indexPath) throws IOException {
-		return getWriter(indexPath, false);
+		return getWriter(indexPath, true);
 	}
 
 	public static IndexWriter getWriter(String indexPath, boolean create)
