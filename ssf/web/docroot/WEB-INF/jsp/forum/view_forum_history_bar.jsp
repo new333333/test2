@@ -6,6 +6,7 @@ var ss_entryCount = 0;
 ss_entryList[ss_entryCount++] = '<c:out value="${entry.id}"/>';
 </c:forEach>
 
+var nextEntry = "";
 var ss_baseHistoryUrl = '<ssf:url
           adapter="true"
           portletName="ss_forum" 
@@ -14,8 +15,8 @@ var ss_baseHistoryUrl = '<ssf:url
           operation="view_entry"
           actionUrl="false"
           />';
+          
 function ss_getNextEntryId() {
-	var nextEntry = "";
 	if (!ss_currentEntryId || ss_currentEntryId == "") {
 		if (ss_entryCount > 0) {nextEntry = ss_entryList[0];}
 	} else {
@@ -36,8 +37,8 @@ function ss_getNextEntryId() {
 	return false;
 }
 
+var prevEntry = "";
 function ss_getPreviousEntryId() {
-	var nextEntry = "";
     if (!ss_currentEntryId || ss_currentEntryId == "") {
 		if (ss_entryCount > 0) {nextEntry = ss_entryList[0];}
 	} else {
@@ -58,8 +59,8 @@ function ss_getPreviousEntryId() {
 	return false;
 }
 
+var firstEntry = "";
 function ss_getFirstEntryId() {
-	var firstEntry = "";
     if (ss_entryCount > 0) {firstEntry = ss_entryList[0];}
     if (ss_currentEntryId == firstEntry) {
     	alert("You are already viewing the last entry.")
@@ -67,12 +68,11 @@ function ss_getFirstEntryId() {
         var url = ss_baseHistoryUrl + '&entryId=' + firstEntry;
 		ss_loadEntryUrl(url, firstEntry);
     }
-    
 	return false;
 }
 
+var lastEntry = "";
 function ss_getLastEntryId() {
-	var lastEntry = "";
     if (ss_entryCount > 0) {lastEntry = ss_entryList[ss_entryCount - 1];}
     if (ss_currentEntryId == lastEntry) {
     	alert("You are already viewing the first entry.")
@@ -80,10 +80,10 @@ function ss_getLastEntryId() {
         var url = ss_baseHistoryUrl + '&entryId=' + lastEntry;
 		ss_loadEntryUrl(url, lastEntry);
     }
-    
 	return false;
 }
 </script>
+
 <div>
       <span class="ss_buttonBarRight">
 
@@ -96,7 +96,7 @@ function ss_getLastEntryId() {
           operation="entry_previous"
           actionUrl="false"
           />"
-          onClick="ss_getLastEntryId();return false;" ><img 
+          onClick="ss_getLastEntryId();return false;" ><img alt="first entry" name="first"
           border="0" src="<html:imagesPath/>pics/sym_s_left_end.gif"></a>&nbsp;<a  
           href="<ssf:url
           adapter="true"
@@ -106,7 +106,7 @@ function ss_getLastEntryId() {
           operation="entry_previous"
           actionUrl="false"
           />"
-          onClick="ss_getNextEntryId();return false;" ><img 
+          onClick="ss_getNextEntryId();return false;" ><img alt="previous entry" name="prev"
           border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a><span>&nbsp;Entries&nbsp;</span><a href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
@@ -115,7 +115,7 @@ function ss_getLastEntryId() {
           operation="entry_next"
           actionUrl="false"
           />"
-          onClick="ss_getPreviousEntryId();return false;" ><img 
+          onClick="ss_getPreviousEntryId();return false;" ><img alt="next entry" name="next"
           border="0" src="<html:imagesPath/>pics/sym_s_next.gif"></a>&nbsp;<a 
           href="<ssf:url
           adapter="true"
@@ -125,7 +125,7 @@ function ss_getLastEntryId() {
           operation="entry_next"
           actionUrl="false"
           />"
-          onClick="ss_getFirstEntryId();return false;" ><img 
+          onClick="ss_getFirstEntryId();return false;" ><img alt="last entry" name="last"
           border="0" src="<html:imagesPath/>pics/sym_s_right_end.gif"></a>&nbsp;
           </span>
 </div>
