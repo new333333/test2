@@ -82,7 +82,7 @@ public class CustomAttribute  {
     * @hibernate.component class="com.sitescape.ef.domain.AnyOwner"
     * @return
     */
-    protected AnyOwner getOwner() {
+    public AnyOwner getOwner() {
    		return owner;
    	}
    	protected void setOwner(AnyOwner owner) {
