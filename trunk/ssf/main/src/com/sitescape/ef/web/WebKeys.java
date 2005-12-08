@@ -127,4 +127,9 @@ public class WebKeys {
     public static final String VIEW_DEFINITION_XML="definition_builder/view_definition_xml";
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
     public static final String VIEW_ADMIN_CONFIGURE_NOTIFICATION="administration/configureNotify";
+    
+    //servlet paths
+    public static final String SERVLET_VIEW_FILE="viewFile";
+    public static final String SERVLET_VIEW_CSS="viewCss";
+    
 }
