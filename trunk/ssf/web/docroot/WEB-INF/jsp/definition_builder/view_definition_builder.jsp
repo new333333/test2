@@ -23,9 +23,9 @@
 
 <jsp:useBean id="definitionTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="data" type="java.util.Map" scope="request" />
-<jsp:useBean id="publicEntryDefinitions" type="java.util.Map" scope="request" />
-<jsp:useBean id="configDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="configJspStyle" type="String" scope="request" />
+<jsp:useBean id="ssPublicEntryDefinitions" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <%@ page import="com.sitescape.ef.domain.FolderEntry" %>
 <%
 	String nodeOpen = " ";
@@ -355,12 +355,12 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 	//Show the preview area
 	if (data.containsKey("selectedItem") && !data.get("selectedItem").equals("")) {
 		Element configElement = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='entryForm']");
-		if (config != null) {
+		if (configElement != null) {
 			String definitionName = (String) ((Document) data.get("sourceDefinition")).getRootElement().attributeValue("caption","");
 			request.setAttribute("definitionEntry", new FolderEntry());
 			request.setAttribute("configElement", configElement);
-			configJspStyle = "form";
-			request.setAttribute("configJspStyle", "form");
+			ssConfigJspStyle = "form";
+			request.setAttribute("ssConfigJspStyle", "form");
 %>
 
 <br>
@@ -377,9 +377,9 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 
 <table cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration 
-  configDefinition="<%= configDefinition %>" 
+  configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= configElement %>" 
-  configJspStyle="<%= configJspStyle %>" 
+  configJspStyle="<%= ssConfigJspStyle %>" 
   processThisItem="true" />
 </td></tr></table>
 </div>
@@ -395,8 +395,8 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 	if (!data.containsKey("selectedItem") || data.get("selectedItem").equals("")) {
 %>
 <ssf:buildDefinitionDivs title="Select the type of definition you want to work on..." 
-  sourceDocument="<%= configDefinition %>" configDocument="<%= configDefinition %>"
-  entryDefinitions="<%= publicEntryDefinitions %>"/>
+  sourceDocument="<%= ssConfigDefinition %>" configDocument="<%= ssConfigDefinition %>"
+  entryDefinitions="<%= ssPublicEntryDefinitions %>"/>
 <%
 	
 	} else {
@@ -404,8 +404,8 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 %>
 <ssf:buildDefinitionDivs title="Select the item that you want to work on..." 
   sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
-  configDocument="<%= configDefinition %>"
-  entryDefinitions="<%= publicEntryDefinitions %>"/>
+  configDocument="<%= ssConfigDefinition %>"
+  entryDefinitions="<%= ssPublicEntryDefinitions %>"/>
 <%
 	}
 %>
