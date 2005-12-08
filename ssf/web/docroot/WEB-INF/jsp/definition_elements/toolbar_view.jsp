@@ -27,16 +27,17 @@
 	 	   </ssf:url>"
 	        </c:otherwise>
 	   		</c:choose>
-	        onClick="return(ss_openUrlInPortlet(this.href));"
-	        ><span 
-	        class="portlet-font" 
-	        style="font-size: smaller; text-decoration: none;"
-	        ><c:out value="${toolbarMenuCategoryItem.key}" /></span></a></li>
-	    </ul>
+	        onClick="return(ss_openUrlInPortlet(this.href));">
+	        <span class="portlet-font" 
+	        style="font-size: smaller; text-decoration: none;">
+	        <c:out value="${toolbarMenuCategoryItem.key}" /></span></a>
+	    </li>
 	  </c:forEach>
+	</ul>
 	</div>
-  </c:if>
-</c:forEach>
+ </c:forEach>
+ </c:if>
+ </c:forEach>
 
 <div class="portlet-section-header" style="margin-top: 8x; margin-bottom: 8px; 
   width:<c:if test="${empty ss_toolbarWidth}"><c:out value="100%"/></c:if><c:if 
