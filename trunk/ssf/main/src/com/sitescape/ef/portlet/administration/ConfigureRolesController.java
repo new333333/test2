@@ -17,8 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.util.PortletRequestUtils;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.NLT;

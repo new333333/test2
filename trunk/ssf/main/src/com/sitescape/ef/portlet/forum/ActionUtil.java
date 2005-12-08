@@ -30,6 +30,7 @@ import java.util.HashSet;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
@@ -37,7 +38,6 @@ import com.sitescape.ef.domain.NoFolderByTheIdException;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
-import com.sitescape.ef.util.PortletRequestUtils;
 
 /**
  * <a href="ActionUtil.java.html"><b><i>View Source</i></b></a>

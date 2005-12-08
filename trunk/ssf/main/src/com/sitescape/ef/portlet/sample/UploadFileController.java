@@ -15,8 +15,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.portletadapter.portlet.ActionRequestImpl;
-import com.sitescape.ef.util.PortletRequestUtils;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.PortletRequestUtils;
 
 public class UploadFileController extends SAbstractController {
 	

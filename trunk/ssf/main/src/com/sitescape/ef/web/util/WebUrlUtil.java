@@ -1,4 +1,4 @@
-package com.sitescape.ef.util;
+package com.sitescape.ef.web.util;
 
 import javax.servlet.http.HttpServletRequest;
 

@@ -13,8 +13,8 @@ import java.util.Map;
 
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
-import com.sitescape.ef.util.PortletRequestUtils;
 
 /**
  * @author Peter Hurley

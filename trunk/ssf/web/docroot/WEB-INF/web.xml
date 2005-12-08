@@ -77,7 +77,7 @@
 	</listener>
 
     <listener>
-        <listener-class>com.sitescape.ef.util.Log4jConfigListener</listener-class>
+        <listener-class>com.sitescape.ef.web.util.Log4jConfigListener</listener-class>
     </listener>
 
 	<listener>

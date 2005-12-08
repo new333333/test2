@@ -8,8 +8,8 @@ import org.dom4j.Element;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.util.WebUrlUtil;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.WebUrlUtil;
 
 /**
 * Handle attachments in mail notification.  This implememtation will
