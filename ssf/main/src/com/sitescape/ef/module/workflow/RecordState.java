@@ -19,6 +19,7 @@ public class RecordState extends AbstractActionHandler {
 	  }
 	  public void execute( ExecutionContext executionContext ) throws Exception {
 		  Token token = executionContext.getToken();
+		  state = token.getNode().getName();
 		  ContextInstance ctx = executionContext.getContextInstance();
 		  Long id = new Long(token.getId());
 		  Long entryId = (Long)ctx.getVariable("entryId");

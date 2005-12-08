@@ -1,6 +1,8 @@
 package com.sitescape.ef.portlet.widget_test;
 
 
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,7 @@ import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.def.Transition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
+import org.jbpm.jpdl.xml.JpdlXmlWriter;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.jbpm.context.exe.ContextInstance;
 
@@ -49,11 +52,14 @@ public class WorkflowController extends SAbstractController {
 		if (operation.equals("create")) {
 		    ProcessDefinition processDefinition = getWorkflowModule().addWorkflow(
 		    	      "<process-definition name='hello world'>" +
-		    	      " <action name='recordState' class='com.sitescape.ef.module.workflow.RecordState' config-type='bean'/>" +
+		    	      " <event type='node-enter'>" +
+		    	      "   <action name='recordState' class='com.sitescape.ef.module.workflow.RecordState' config-type='bean'/>" +
+		    	      " </event>" +
 		    	      "  <start-state name='start'>" +
 		    	      "    <transition to='notify' />" +
 		    	      "  </start-state>" +
 		    	      "  <state name='notify'>" +
+		    	      "    <action name='recordState' class='com.sitescape.ef.module.workflow.RecordState' config-type='bean'/>" +
 		    	      " <event type='node-enter'>" +
 		    	      " <action ref-name='recordState'> " +
 		    	      " <wfState>test notify</wfState></action>" +
@@ -102,8 +108,20 @@ public class WorkflowController extends SAbstractController {
 			 	pId=PortletRequestUtils.getStringParameter(request,"processId", "");
 			 	ProcessInstance processInstance = null;
 			 	if (!pId.equals("")) {
-		    		processInstance = getWorkflowModule().setNode(Long.valueOf(pId), "orphan");
-		    	}
+			    	wId=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
+				    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+				    try {
+				    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
+				    	if (pD.hasNode("orphan")) {
+					    	processInstance = getWorkflowModule().setNode(Long.valueOf(pId), "orphan");
+					    } else if (pD.hasNode("orphan3")) {
+					    	processInstance = getWorkflowModule().setNode(Long.valueOf(pId), "orphan3");
+					    }
+				    	txManager.commit(status);
+				    } catch (Exception e) {
+				    	txManager.rollback(status);
+				    } 
+			 	}
 		    	if (processInstance == null) {
 		    		state = "not found";
 		    	} else {
@@ -129,6 +147,11 @@ public class WorkflowController extends SAbstractController {
 		    		Token token = processInstance.getRootToken(); 
 				    state= token.getNode().getName();
 				    wId = String.valueOf(processInstance.getProcessDefinition().getId());
+				    ProcessDefinition pD = processInstance.getProcessDefinition();
+				    Writer writer = new StringWriter();
+				    JpdlXmlWriter jpdl = new JpdlXmlWriter(writer);
+				    jpdl.write(pD);
+				    results.put("definitionXml", writer.toString());
 		    	} 
 
 		 } else if (operation.equals("listInst")) {
@@ -238,6 +261,17 @@ public class WorkflowController extends SAbstractController {
 		    		getWorkflowModule().deleteProcessDefinition(new Long(pD.getId()));
 		    	}
 		 }
+    	// Now we can query the database for the process definition that we 
+    	// deployed above. 
+    	if (!Validator.isNull(pId)) {
+    		ProcessInstance processInstance = getWorkflowModule().getProcessInstance(Long.valueOf(pId));
+		    ProcessDefinition pD = processInstance.getProcessDefinition();
+		    Writer writer = new StringWriter();
+		    JpdlXmlWriter jpdl = new JpdlXmlWriter(writer);
+		    jpdl.write(pD);
+		    results.put("definitionXml", writer.toString());
+    	} 
+
 	    results.put("processId", pId);
 	    results.put("workflowState", state);
 	    results.put("workflowId", wId);
