@@ -603,6 +603,7 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
 	    	
 	    	if(ca == null) { // New file
 	    		FileAttachment fAtt = createFile(folder, entry, fui);
+	    		getCoreDao().save(fAtt);
 	    		entry.addCustomAttribute(fui.getName(), fAtt);
 	    	}
 	    	else { // Existing file
