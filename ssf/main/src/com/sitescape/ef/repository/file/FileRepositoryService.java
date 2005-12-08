@@ -11,6 +11,8 @@ import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.activation.FileTypeMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +35,8 @@ import com.sitescape.ef.util.SPropsUtil;
  *
  */
 public class FileRepositoryService implements RepositoryService {
+
+	protected Log logger = LogFactory.getLog(getClass());
 
 	private static final String VERSION_NAME_PREFIX = "_ssfversionfile_";
 	private static final String VERSION_NAME_SUFFIX = "_";
@@ -98,6 +102,41 @@ public class FileRepositoryService implements RepositoryService {
 		} catch (IOException e) {
 			throw new RepositoryServiceException(e);
 		}
+	}
+
+	public void delete(Object session, Binder binder, Entry entry, 
+			String relativeFilePath) throws RepositoryServiceException {
+		// Delete temp file if exists
+		File tempFile = getTempFile(binder, entry, relativeFilePath);
+		
+		if(tempFile.exists()) {
+			try {
+				FileHelper.delete(tempFile);
+			}
+			catch(IOException e) {
+				logger.error("Error deleting file [" + tempFile.getAbsolutePath() + "]\n"
+						+ e.toString());
+			}
+		}
+		
+		// Delete all existing version files
+		String[] versionFileNames = getVersionFileNames(binder, entry, relativeFilePath);
+		
+		File versionFile;
+		for(int i = 0; i < versionFileNames.length; i++) {
+			versionFile = getVersionFileFromVersionFileName(binder, entry, 
+				relativeFilePath, versionFileNames[i]);
+			try {
+				FileHelper.delete(versionFile);
+			}
+			catch(IOException e) {
+				logger.error("Error deleting file [" + versionFile.getAbsolutePath() + "]\n"
+						+ e.toString());				
+			}
+		}
+		
+		// TODO We should aggregate the IOException errors occured during this
+		// call and throws something that represents it. 
 	}
 
 	public void read(Object session, Binder binder, Entry entry, 
@@ -316,6 +355,13 @@ public class FileRepositoryService implements RepositoryService {
 	private String newVersionName() {
 		return String.valueOf(new Date().getTime());
 	}
+	
+	private File getVersionFileFromVersionFileName(Binder binder, Entry entry, String relativeFilePath, String versionFileName) {
+		File file = getFile(binder, entry, relativeFilePath);
+		
+		return new File(file.getParent(), versionFileName);
+	}
+	
 	
 	private File getVersionFile(Binder binder, Entry entry, 
 			String relativeFilePath, String versionName) {

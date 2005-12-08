@@ -1,6 +1,7 @@
 package com.sitescape.ef.file;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -43,20 +44,64 @@ public class FileManager {
 	}
 
 	/**
-	 * Writes the specified file to the system. 
+	 * Delete all files attached to the entry.
+	 * <p>
+	 * If any of the files is currently checked out, this forcefully unchecks 
+	 * it before deleting it.
+	 * 
+	 * @param binder
+	 * @param entry
+	 * metadata on the <code>entry</code>. 
+	 */
+	public void deleteFiles(Binder binder, Entry entry) {
+		List fAtts = entry.getFileAttachments();
+		for(int i = 0; i < fAtts.size(); i++) {
+			FileAttachment fAtt = (FileAttachment) fAtts.get(i);
+
+			deleteFile(binder, entry, fAtt);
+		}
+	}
+	
+	/**
+	 * Deletes the specified file. 
+	 * <p>
+	 * If the file is currently checked out by anyone, this forcefully unchecks 
+	 * it before deleting it. 
+	 * 
+	 * @param repositoryServiceName
+	 * @param binder
+	 * @param entry
+	 * @param fileName
+	 * @throws NoSuchFileException
+	 * @throws RepositoryServiceException
+	 */
+	public void deleteFile(String repositoryServiceName, Binder binder, 
+			Entry entry, String fileName) throws NoSuchFileException, 
+			RepositoryServiceException {
+	    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
+	    	
+	    	if(fAtt == null)
+	    		throw new NoSuchFileException(entry, fileName);
+	    	
+	    	deleteFile(binder, entry, fAtt);
+	}
+	
+	/**
+	 * Writes the specified file to the system.
 	 * <p>
 	 * If the file doesn't already exist, it creates it.
-	 * <p> 
+	 * <p>
 	 * If the file already exists and it is not currently checked out by anyone,
 	 * it attempts to check out, update the file, and check it back in, which
-	 * will create a new version of the file if the underlying repository 
-	 * system supports versioning.<br>
+	 * will create a new version of the file if the underlying repository system
+	 * supports versioning.<br>
 	 * If the file is already checked out by the user, the content of the file
-	 * is updated, but new version is not created until an explicit <code>checkin</code> 
-	 * is performed by the user. In this case, the update can be subsequently 
-	 * rolled back by the user by calling <code>uncheckout</code>.<br> 
-	 * If the file is currently checked out by someone else, it throws 
-	 * <code>CheckedOutByOtherException</code>. 
+	 * is updated, but new version is not created until an explicit
+	 * <code>checkin</code> is performed by the user. In this case, the update
+	 * can be subsequently rolled back by the user by calling
+	 * <code>uncheckout</code>.<br>
+	 * If the file is currently checked out by someone else, it throws
+	 * <code>CheckedOutByOtherException</code>.
 	 * 
 	 * @param binder
 	 * @param entry
@@ -243,6 +288,21 @@ public class FileManager {
     	}
 	}
 	
+	
+	private void forceUncheckoutIfNecessary(Binder binder, Entry entry, 
+			FileAttachment fAtt) 
+		throws RepositoryServiceException {
+		HistoryStamp co = fAtt.getCheckout();
+		
+		if(co != null) { // The file is checked out (by someone).
+			// Uncheck it out from the underlying repository.
+    		RepositoryServiceUtil.uncheckout(fAtt.getRepositoryServiceName(),
+    				binder, entry, fAtt.getFileItem().getName());
+    		// Mark our metadata that the file is not checked out.
+    		fAtt.setCheckout(null);			
+		}
+	}
+
 	/**
 	 * Checkes in the specified file. 
 	 * <p>
@@ -426,5 +486,15 @@ public class FileManager {
 		}
 
     	return fAtt;
+	}
+	
+	private void deleteFile(Binder binder, Entry entry, FileAttachment fAtt) 
+		throws RepositoryServiceException {
+		forceUncheckoutIfNecessary(binder, entry, fAtt);
+		
+		RepositoryServiceUtil.delete(fAtt.getRepositoryServiceName(), binder,
+				entry, fAtt.getFileItem().getName());
+
+		entry.removeAttachment(fAtt);
 	}
 }
