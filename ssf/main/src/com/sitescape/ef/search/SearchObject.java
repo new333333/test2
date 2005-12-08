@@ -3,6 +3,7 @@ package com.sitescape.ef.search;
 import java.io.Serializable;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
 
 
 public class SearchObject implements Serializable {
@@ -34,8 +35,8 @@ public class SearchObject implements Serializable {
 	/**
 	 * @return Returns the sortBy.
 	 */
-	public SortField[] getSortBy() {
-		return sortBy;
+	public Sort getSortBy() {
+		return new Sort(sortBy);
 	}
 	/**
 	 * @param sortBy The sortBy to set.
