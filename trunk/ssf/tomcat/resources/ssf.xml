@@ -1,0 +1,25 @@
+<Context path="/ssf" docBase="../webapps/ssf" debug="0" reloadable="true" crossContext="true">
+	<Resource name="jdbc/SiteScapePool" auth="Container" type="javax.sql.DataSource" />
+	<ResourceParams name="jdbc/SiteScapePool">
+		<parameter>
+			<name>driverClassName</name>
+			<value>net.sourceforge.jtds.jdbc.Driver</value>
+		</parameter>
+		<parameter>
+			<name>url</name>
+			<value>jdbc:jtds:sqlserver://localhost/sitescape</value>
+		</parameter>
+		<parameter>
+			<name>username</name>
+			<value>sitescape</value>
+		</parameter>
+		<parameter>
+			<name>password</name>
+			<value>sitescape</value>
+		</parameter>
+		<parameter> 
+			<name>maxActive</name> 
+			<value>20</value> 
+		</parameter>
+	</ResourceParams>
+</Context>

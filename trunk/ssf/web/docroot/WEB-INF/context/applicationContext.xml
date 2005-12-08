@@ -125,4 +125,8 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 
+	<bean id="authenticationManager" class="com.sitescape.ef.security.authentication.impl.AuthenticationManagerImpl">
+		<property name="coreDao"><ref local="coreDao"/></property>
+	</bean>
+	
 </beans>
