@@ -45,6 +45,7 @@ public class WorkflowController extends SAbstractController {
 		String state = "";
 		PlatformTransactionManager txManager = (PlatformTransactionManager)SpringContextUtil.getBean("transactionManager");
 		String operation=PortletRequestUtils.getStringParameter(request,WebKeys.FORUM_URL_OPERATION);
+		WorkflowFactory wf = (WorkflowFactory)SpringContextUtil.getBean("workflowFactory");
 		if (operation.equals("create")) {
 		    ProcessDefinition processDefinition = getWorkflowModule().addWorkflow(
 		    	      "<process-definition name='hello world'>" +
@@ -171,7 +172,6 @@ public class WorkflowController extends SAbstractController {
 			    	if (!pD.hasNode("orphan") && !pD.hasNode("orphan3")) {
 			    		Node node = new Node("orphan");
 			    		node.setProcessDefinition(pD);
-			    		WorkflowFactory wf = (WorkflowFactory)SpringContextUtil.getBean("workflowFactory");
 			    		wf.getSession().getSession().save(node);
 			    		
 			    		Transition transition = new Transition();
@@ -208,8 +208,10 @@ public class WorkflowController extends SAbstractController {
 			    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
 			    try {
 			    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
-			    	if (pD.hasNode("orphan")) pD.removeNode(pD.getNode("orphan"));
-			    	else if (pD.hasNode("orphan3")) pD.removeNode(pD.getNode("orphan3"));
+			    	if (pD.hasNode("orphan")) 
+			    		wf.getSession().getSession().delete(pD.removeNode(pD.getNode("orphan")));
+			    	else if (pD.hasNode("orphan3")) 
+			    		wf.getSession().getSession().delete(pD.removeNode(pD.getNode("orphan3")));
 			    	txManager.commit(status);
 			    } catch (Exception e) {
 			    	txManager.rollback(status);
