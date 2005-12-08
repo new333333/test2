@@ -28,7 +28,7 @@ import com.sitescape.ef.util.SPropsUtil;
  * @author Janet McCann
  *
  */
-public class DefaultFolderFailedEmaill extends SSStatefulJob implements FolderFailedEmail{
+public class DefaultFolderFailedEmail extends SSStatefulJob implements FolderFailedEmail{
 	protected Log logger = LogFactory.getLog(getClass());
 
 	/* (non-Javadoc)
