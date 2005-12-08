@@ -52,6 +52,7 @@ import com.sitescape.ef.domain.Role;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
+import com.sitescape.ef.util.Constants;
 /**
  * @author Jong Kim
  *
@@ -144,7 +145,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                     public Object doInHibernate(Session session) throws HibernateException {
                         //Hibernate doesn't like the ? in the in clause
                         //List list = session.createCriteria(Principal.class)
-                        //     		.add(Expression.in("id", ids))
+                        //     		.add(Expression.in(Constants.ID, ids))
                         //    		.list();
                         //return list;
                         Criteria crit = session.createCriteria(className);
@@ -154,7 +155,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                         while (iter.hasNext()) {
                             id = iter.next();
                             if (id != null) {
-                                dis.add(Expression.eq("id", id));
+                                dis.add(Expression.eq(Constants.ID, id));
                             }
                         }
                         crit.add(dis);
@@ -407,13 +408,13 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                     public Object doInHibernate(Session session) throws HibernateException {
                         //Hibernate doesn't like the ? in the in clause
                         //List list = session.createCriteria(Principal.class)
-                        //     		.add(Expression.in("id", ids))
+                        //     		.add(Expression.in(Constants.ID, ids))
                         //    		.list();
                         //return list;
                         Criteria crit = session.createCriteria(Role.class);
                         Disjunction dis = Expression.disjunction();
                         for (int i=0; i<ids.length; ++i) {
-                            dis.add(Expression.eq("id", ids[i]));
+                            dis.add(Expression.eq(Constants.ID, ids[i]));
                         }
                         crit.add(dis);
                         return crit.list();
@@ -436,7 +437,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     }      
 
  	public List loadChangedEntries(Folder folder, Date since, Date before) {
-		return loadChangedEntries(folder, since, before, new OrderBy("id"));
+		return loadChangedEntries(folder, since, before, new OrderBy(Constants.ID));
 	}
 	public List loadChangedEntries(final Folder folder, final Date since, final Date before, final OrderBy order) {
         List entries = (List)getHibernateTemplate().execute(
