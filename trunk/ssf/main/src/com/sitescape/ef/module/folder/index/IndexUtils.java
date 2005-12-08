@@ -218,7 +218,7 @@ public class IndexUtils {
         doc.add(racField);
     }
     
-    private static String formatDayString(Date date) {
+    public static String formatDayString(Date date) {
     	DateFormat df = DateFormat.getInstance();
     	SimpleDateFormat sf = (SimpleDateFormat)df;
     	sf.applyPattern("yyyyMMdd");
