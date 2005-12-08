@@ -27,7 +27,9 @@ public class FileAttachment extends Attachment {
     public FileAttachment() {
         
     }
-
+    public FileAttachment(String name) {
+    	super(name);
+    }
     /**
      * @hibernate.component
      * @return
@@ -70,7 +72,7 @@ public class FileAttachment extends Attachment {
      	}
     }
     public void addFileVersion(VersionAttachment v) {
-    	if (v == null) throw new IllegalArgumentException("null not allowed");
+    	if (v == null) return;
     	v.setParentAttachment(this);
     	v.setOwner(getOwner());
     	getFileVersions().add(v);
@@ -80,7 +82,7 @@ public class FileAttachment extends Attachment {
      * @param v
      */
     public void removeFileVersion(VersionAttachment v) {
-       	if (v == null) throw new IllegalArgumentException("null not allowed");
+       	if (v == null) return;
     	v.setParentAttachment(null);
     	v.setOwner((AnyOwner)null);
     	getFileVersions().remove(v);   	
@@ -100,7 +102,8 @@ public class FileAttachment extends Attachment {
     			break;
     		}
     	}
-    }    public boolean equals(Object obj) {
+    }   
+   public boolean equals(Object obj) {
  
         FileAttachment o = (FileAttachment) obj;
         //Don't use id - may not be saved yet
@@ -109,7 +112,7 @@ public class FileAttachment extends Attachment {
         return false;
     }
     public int hashCode() {
-    	return  31*super.hashCode() + fileItem.hashCode();
+    	return  fileItem.hashCode();
     }
     public void update(Object newVal) {
     	super.update(newVal);

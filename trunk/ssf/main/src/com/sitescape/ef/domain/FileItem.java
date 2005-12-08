@@ -42,4 +42,16 @@ public class FileItem  {
     public long getLengthKB() {
         return (this.length + 999)/1000;
     }
+    public boolean equals(Object obj) {
+   	 
+    	if (obj == null) return false;
+    	if (obj instanceof FileItem) {
+    		FileItem o = (FileItem) obj;
+    		if (name.equals(o.getName()))  return true;
+    	}
+    	return false;
+    }
+    public int hashCode() {
+       	return  name.hashCode();
+    }
 }
