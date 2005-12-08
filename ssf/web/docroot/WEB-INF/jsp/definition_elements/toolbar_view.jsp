@@ -14,7 +14,7 @@ function ss_toolbarPopupUrl(url) {
 	<div class="ss_toolbar_menu" width="100%" id="toolbar_<c:out value="${toolbarMenu.key}" />">
 	  <c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}">
 	    <c:if test="${empty toolbarMenuCategory.key}">
-	      <span class="portlet-font; font-size:smaller;font-weight:bold;"><c:out value="${toolbarMenuCategory.key}" /></span>
+	      <span class="ss_contentbold"><c:out value="${toolbarMenuCategory.key}" /></span>
 	    </c:if>
 	    <ul class="ss_dropdownmenu">
 	      <c:forEach var="toolbarMenuCategoryItem" items="${toolbarMenuCategory.value}">
@@ -44,7 +44,7 @@ function ss_toolbarPopupUrl(url) {
 	            </c:otherwise>
 	   		  </c:choose>
 	          onClick="return(ss_openUrlInPortlet(this.href, ${popup}));">
-	          <span class="portlet-font" style="font-size: smaller;">
+	          <span class="ss_content">
 	          <c:out value="${toolbarMenuCategoryItem.key}" /></span></a>
 	        </li>
 	      </c:forEach>
