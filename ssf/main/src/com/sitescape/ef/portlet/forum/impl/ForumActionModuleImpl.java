@@ -522,11 +522,10 @@ public class ForumActionModuleImpl extends AbstractModuleImpl implements ForumAc
 	}
 
 
-	public Map getShowEntry(Map formData, RenderRequest req, RenderResponse response, Long folderId)  {
+	public Map getShowEntry(String entryId, Map formData, RenderRequest req, RenderResponse response, Long folderId)  {
 		Map model = new HashMap();
 		HistoryMap history = getHistory(req, folderId);
 		model.put(WebKeys.HISTORY_MAP, history);
-		String entryId = PortletRequestUtils.getStringParameter(req, WebKeys.FORUM_URL_ENTRY_ID, "");
 		String op = PortletRequestUtils.getStringParameter(req, WebKeys.FORUM_URL_OPERATION, "");
 		Folder folder = null;
 		FolderEntry entry = null;

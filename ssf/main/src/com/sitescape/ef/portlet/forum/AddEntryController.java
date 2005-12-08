@@ -76,7 +76,7 @@ public class AddEntryController extends SAbstractForumController {
 				if (entryId.equals("")) {
 					return returnToViewForum(request, response, formData, folderId);
 				} else {
-					model = getForumActionModule().getShowEntry(formData, request, response, folderId);
+					model = getForumActionModule().getShowEntry(entryId, formData, request, response, folderId);
 				}
 			} catch (NoDefinitionByTheIdException nd) {
 				return returnToViewForum(request, response, formData, folderId);
