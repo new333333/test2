@@ -83,6 +83,16 @@ public class ActionUtil {
 		return forumId;
 	}
 
+	public static Map getFolderDefsAsMap(Folder folder) {
+		Map defaultFolderDefinitions = new HashMap();
+		Iterator itDefaultFolderDefinitions = folder.getForumViewDefs().listIterator();
+		while (itDefaultFolderDefinitions.hasNext()) {
+			Definition entryDef = (Definition) itDefaultFolderDefinitions.next();
+			defaultFolderDefinitions.put(entryDef.getId(), entryDef);
+		}
+		return defaultFolderDefinitions;
+	}
+
 	public static Map getEntryDefsAsMap(Folder folder) {
 		Map defaultEntryDefinitions = new HashMap();
 		Iterator itDefaultEntryDefinitions = folder.getEntryDefs().listIterator();

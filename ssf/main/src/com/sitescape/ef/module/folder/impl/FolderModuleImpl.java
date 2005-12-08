@@ -148,6 +148,14 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         return null;
     }
     
+    public void modifyFolderConfiguration(Long folderId, List definitionIds, Map workflowAssociations) 
+    		throws AccessControlException {
+    	modifyFolderConfiguration(folderId, definitionIds);
+		String companyId = RequestContextHolder.getRequestContext().getZoneName();
+ 		Folder folder = getFolderDao().loadFolder(folderId, companyId);
+        getAccessControlManager().checkAcl(folder, AccessType.WRITE);    	
+        folder.setProperty(ObjectKeys.FOLDER_WORKFLOW_ASSOCIATIONS, workflowAssociations);
+    }
     public void modifyFolderConfiguration(Long folderId, List definitionIds) throws AccessControlException {
 		String companyId = RequestContextHolder.getRequestContext().getZoneName();
     	List definitions = new ArrayList(); 
