@@ -13,6 +13,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.web.WebKeys;
 
 import javax.portlet.PortletURL;
@@ -103,28 +104,20 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				pageContext.getOut().print(webUrl);
 			
 			} else if (this.adapter) {
-				String adapterUrl = ctxPath + "/adapter/do?";
-				if (!this.portletName.equals("")) {
-					adapterUrl += "p_a_name=" + this.portletName + "&";
-				}
-				if (this.actionUrl) {
-					adapterUrl += "p_a_action=1&";
-				} else {
-					adapterUrl += "p_a_action=0&";
-				}
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, this.portletName, this.actionUrl);
 				Iterator it = params.entrySet().iterator();
 				while (it.hasNext()) {
 					Map.Entry me = (Map.Entry) it.next();
-					adapterUrl += me.getKey() + "=" + ((String[])me.getValue())[0] + "&";
+					adapterUrl.setParameter((String) me.getKey(), ((String[])me.getValue())[0]);
 				}
 				if (_params != null ) {
 					Iterator _it = _params.entrySet().iterator();
 					while (_it.hasNext()) {
 						Map.Entry me = (Map.Entry) _it.next();
-						adapterUrl += me.getKey() + "=" + ((String[])me.getValue())[0] + "&";
+						adapterUrl.setParameter((String) me.getKey(), ((String[])me.getValue())[0]);
 					}
 				}
-				pageContext.getOut().print(adapterUrl);
+				pageContext.getOut().print(adapterUrl.toString());
 				
 			} else {
 				PortletURL portletURL = null;
