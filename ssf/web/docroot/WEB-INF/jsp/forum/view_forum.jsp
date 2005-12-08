@@ -177,21 +177,23 @@ function scrollToSavedLocation() {
 var highlightBgColor = "#efefef"
 var highlightedLine = null;
 var savedHighlightedLineBgColor = null;
+var highlightClassName = "highlightEntry";
+var savedHighlightClassName = null;
 function highlightLine(obj) {
 	if (highlightedLine != null) {
 		if (highlightedLine.offsetParent.parentElement) {
-			highlightedLine.offsetParent.parentElement.bgColor = savedHighlightedLineBgCollor;
+			highlightedLine.offsetParent.parentElement.className = savedHighlightClassName;
 		} else {
-			highlightedLine.offsetParent.bgColor = savedHighlightedLineBgColor;
+			highlightedLine.offsetParent.className = savedHighlightClassName;
 		}
 	}
 	highlightedLine = obj;
 	if (obj.offsetParent.parentElement) {
-		savedHighlightedLineBgColor = highlightedLine.offsetParent.parentElement.bgColor;
-		highlightedLine.offsetParent.parentElement.bgColor = highlightBgColor;
+		savedHighlightClassName = highlightedLine.offsetParent.parentElement.className;
+		highlightedLine.offsetParent.parentElement.className = highlightClassName;
 	} else {
-		savedHighlightedLineBgColor = highlightedLine.offsetParent.bgColor;
-		highlightedLine.offsetParent.bgColor = highlightBgColor;
+		savedHighlightClassName = highlightedLine.offsetParent.className;
+		highlightedLine.offsetParent.className = highlightClassName;
 	}
 }
 
@@ -205,12 +207,12 @@ function highlightLineById(id) {
     }
     
 	if (highlightedLine != null) {
-		highlightedLine.bgColor = savedHighlightedLineBgColor;
+		highlightedLine.className = savedHighlightClassName;
 	}
 	if (obj != null) {
 		highlightedLine = obj;
-		savedHighlightedLineBgColor = highlightedLine.bgColor;
-		highlightedLine.bgColor = highlightBgColor;
+		savedHighlightedLineClassName = highlightClassName;
+		highlightedLine.className = highlightClassName;
 	}
 }
 
