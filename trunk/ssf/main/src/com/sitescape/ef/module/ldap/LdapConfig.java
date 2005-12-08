@@ -15,7 +15,7 @@ import com.sitescape.ef.jobs.Schedule;
  *
  * Manage the ldap properties for a workspace. 
  */
-public class LdapInfo {
+public class LdapConfig {
 	public static final int USERS=1;
 	public static final int GROUPS=2;
 	public static final int MEMBERSHIP=3;
@@ -55,7 +55,7 @@ public class LdapInfo {
 	private Workspace workspace;
 	
 
-	public LdapInfo (Workspace workspace) {
+	public LdapConfig (Workspace workspace) {
 		//initialize with workspace properties
 		this.workspace = workspace;
 	}

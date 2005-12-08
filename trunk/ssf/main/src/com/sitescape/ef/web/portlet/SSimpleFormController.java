@@ -5,6 +5,7 @@ import org.springframework.web.portlet.mvc.SimpleFormController;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
@@ -20,6 +21,7 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	private ProfileModule profileModule;
 	private DefinitionModule definitionModule;
 	private ForumActionModule forumActionModule;
+	private LdapModule ldapModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -73,5 +75,11 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	
 	protected ForumActionModule getForumActionModule() {
 		return forumActionModule;
-	}		
+	}	
+	public void setLdapModule(LdapModule ldapModule) {
+		this.ldapModule = ldapModule;
+	}
+	protected LdapModule getLdapModule() {
+		return ldapModule;
+	}	
 }

@@ -10,6 +10,7 @@ import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.portlet.forum.ForumActionModule;
 
 public abstract class SAbstractController extends AbstractController {
@@ -23,6 +24,7 @@ public abstract class SAbstractController extends AbstractController {
 	private ProfileModule profileModule;
 	private DefinitionModule definitionModule;
 	private ForumActionModule forumActionModule;
+	private LdapModule ldapModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -77,4 +79,10 @@ public abstract class SAbstractController extends AbstractController {
 	protected ForumActionModule getForumActionModule() {
 		return forumActionModule;
 	}	
+	public void setLdapModule(LdapModule ldapModule) {
+		this.ldapModule = ldapModule;
+	}
+	protected LdapModule getLdapModule() {
+		return ldapModule;
+	}
 }
