@@ -67,6 +67,14 @@ public class Eventeditor extends TagSupport {
       if (initEvent != null) {
           Calendar startCal = initEvent.getDtStart();
           Calendar endCal = initEvent.getDtEnd();
+          // if the start or end dates were never initialized, set to today
+          if (startCal.getTime().getTime() == 0) {
+        	  startCal.setTime(startDate);
+          }
+          if (endCal.getTime().getTime() == 0) {
+        	  endCal.setTime(endDate);
+          }
+          
           startDate = startCal.getTime();
           endDate = endCal.getTime();
       } else {
