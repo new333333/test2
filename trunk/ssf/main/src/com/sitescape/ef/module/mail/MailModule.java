@@ -12,7 +12,8 @@ public interface MailModule {
 
 	public static final String _TEXT_PLAIN = "text/plain;charset=\"UTF-8\"";
 	
-	public Date sendNotifications(Long forumId);
+	public Date sendNotifications(Long folderId);
+	public void receivePostings();
 	public boolean sendMail(MimeMessage msg);
 	public boolean sendMail(String mailSenderName, java.io.InputStream input);
 

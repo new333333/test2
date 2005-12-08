@@ -20,12 +20,15 @@ import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.shared.ObjectBuilder;
-import com.sitescape.ef.jobs.FolderEmailNotification;
+import com.sitescape.ef.jobs.EmailNotification;
+import com.sitescape.ef.jobs.EmailPosting;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.impl.AbstractModuleImpl;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.FunctionExistsException;
-
+import com.sitescape.ef.util.ReflectHelper;
+import com.sitescape.ef.ConfigurationException;
+import com.sitescape.ef.jobs.Schedule;
 /**
  * @author Janet McCann
  *
@@ -33,59 +36,63 @@ import com.sitescape.ef.security.function.FunctionExistsException;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class AdminModuleImpl extends AbstractModuleImpl implements AdminModule {
-   
-    /**
-     * Disable email notification for this forum.
-     * @param forumId
+	protected String emailPostingClass;
+	public void setEmailPostingJobClass(String className) {
+		this.emailPostingClass = className;
+	}
+
+	/**
+     * Disable email notification.
+     * @param id
      */
-    public void disableNotification(Long forumId) {
-    	setEnableNotification(forumId, false);
+    public void disableNotification(Long id) {
+    	setEnableNotification(id, false);
     }
     /**
-     * Enable email notification for this forum.
-     * @param forumId
+     * Enable email notification.
+     * @param id
      */
-    public void enableNotification(Long forumId) {
-       	setEnableNotification(forumId, true);
+    public void enableNotification(Long id) {
+       	setEnableNotification(id, true);
     }
     /**
-     * Do actual work to either enable or disable email notification for this forum
-     * @param forumId
+     * Do actual work to either enable or disable email notification.
+     * @param id
      * @param value
      */
-    protected void setEnableNotification(Long forumId, boolean value) {
+    protected void setEnableNotification(Long id, boolean value) {
 		String companyId = RequestContextHolder.getRequestContext().getZoneName();
-        Binder forum = coreDao.loadBinder(forumId, companyId); 
-    	NotificationDef current = forum.getNotificationDef();
+        Binder binder = coreDao.loadBinder(id, companyId); 
+    	NotificationDef current = binder.getNotificationDef();
     	if (current == null) {
     		current = new NotificationDef();
     		current.setLastNotification(new Date());
-    		forum.setNotificationDef(current);
+    		binder.setNotificationDef(current);
     	}
     	current.setEnabled(value);
      	//Remove or add from scheduler
-   		checkNotificationSchedule(forum);
+   		checkNotificationSchedule(binder);
     }
     /**
-     * Set the notification schedule for a forum.  
-     * @param forumId
+     * Set the notification schedule.  
+     * @param id
      * @param definition - Use map to set teamOn,summaryLines,contextLevel,
      * emailAddress and schedule.  Distribution list is built 
      * by this method based on the Set of userIds passed in.
      * @param users - Set of Long userIds; Used to build the distribution list
      * @throws NoPrincipalByTheIdException
      */
-    public void modifyNotification(Long forumId, Map updates, Set principals) 
+    public void modifyNotification(Long id, Map updates, Set principals) 
     {
         Principal p;
 		Set notifyUsers = new HashSet();
 		
 		String companyId = RequestContextHolder.getRequestContext().getZoneName();
-        Binder forum = coreDao.loadBinder(forumId, companyId); 
-     	NotificationDef current = forum.getNotificationDef();
+        Binder binder = coreDao.loadBinder(id, companyId); 
+     	NotificationDef current = binder.getNotificationDef();
     	if (current == null) {
     		current = new NotificationDef();
-    		forum.setNotificationDef(current);
+    		binder.setNotificationDef(current);
     		current.setLastNotification(new Date());    		
     	}
     	ObjectBuilder.updateObject(current, updates);
@@ -94,21 +101,55 @@ public class AdminModuleImpl extends AbstractModuleImpl implements AdminModule {
    		for (Iterator iter=principals.iterator(); iter.hasNext();) {
    			//	make sure user exists and is in this zone
    			p = coreDao.loadPrincipal((Long)iter.next(),companyId);
-   			notifyUsers.add(new Notification(forum, p));   			
+   			notifyUsers.add(new Notification(binder, p));   			
    		}
 
    		current.setDistribution(notifyUsers);
-		checkNotificationSchedule(forum);
+		checkNotificationSchedule(binder);
     }
     /**
-     * Make sure the scheduler is in sync with forum notification definition.
-     * @param forum
+     * Make sure the scheduler is in sync with notification definition.
+     * @param binder
      */
 
-    public void checkNotificationSchedule(Binder forum)  {
-   		FolderEmailNotification process = (FolderEmailNotification)processorManager.getProcessor(forum, FolderEmailNotification.PROCESSOR_KEY);
-   		process.checkSchedule(scheduler, forum);
+    public void checkNotificationSchedule(Binder binder)  {
+   		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
+   		process.checkSchedule(scheduler, binder);
     } 
+    /**
+     * Disable email posting.
+     * @param id
+     */
+    public void disablePosting() {
+    	getPostingObject().disable(scheduler);
+    }
+    /**
+     * Enable email posting.
+     * @param id
+     */
+    public void enablePosting(Schedule schedule) {
+       	getPostingObject().enable(scheduler, schedule);
+    }
+    private EmailPosting getPostingObject() {
+        try {
+            Class processorClass = ReflectHelper.classForName(emailPostingClass);
+            EmailPosting job = (EmailPosting)processorClass.newInstance();
+            return job;
+        } catch (ClassNotFoundException e) {
+            throw new ConfigurationException(
+                    "Invalid EmailPosting class name '" + emailPostingClass + "'",
+                    e);
+        } catch (InstantiationException e) {
+            throw new ConfigurationException(
+                    "Cannot instantiate EmailPosting of type '"
+                            + emailPostingClass + "'");
+        } catch (IllegalAccessException e) {
+            throw new ConfigurationException(
+                    "Cannot instantiate EmailPosting of type '"
+                            + emailPostingClass + "'");
+        }
+    }
+ 
     public void addFunction(Function function) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		function.setZoneName(user.getZoneName());

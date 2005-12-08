@@ -18,7 +18,7 @@ import com.sitescape.ef.util.SpringContextUtil;
  *
  * @author Jong Kim
  */
-public class DefaultFolderEmailNotification extends SSStatefulJob implements FolderEmailNotification {
+public class DefaultEmailNotification extends SSStatefulJob implements EmailNotification {
 	 
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
     	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
@@ -65,7 +65,7 @@ public class DefaultFolderEmailNotification extends SSStatefulJob implements Fol
     		return folder.getId().toString();
     	}
     	public String getGroup() {
-    		return FolderEmailNotification.NOTIFICATION_GROUP;
+    		return EmailNotification.NOTIFICATION_GROUP;
     	}		
        	public TimeZone getTimeZone() {
     		try {

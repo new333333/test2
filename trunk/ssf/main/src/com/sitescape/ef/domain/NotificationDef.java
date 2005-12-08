@@ -19,7 +19,7 @@ public class NotificationDef  {
     private boolean enabled=false;
     private String schedule;
     private List distribution;
-    private SSClobString email;
+    private String email;
     private boolean teamOn=false;
     private Date lastNotification;
     private String from,subject;
@@ -87,7 +87,7 @@ public class NotificationDef  {
     	return dList;
     }
     /**
-     * @hibernate.property length="256" column="schedule"
+     * @hibernate.property length="64" column="schedule"
      * This string represents the quartz schedule.
      * @return
      */
@@ -104,13 +104,13 @@ public class NotificationDef  {
 		this.schedule = schedule.getQuartzSchedule();
 	}
     /**
-     * @hibernate.property type="com.sitescape.ef.dao.util.SSClobStringType" column="email"
+     * @hibernate.property type="org.springframework.orm.hibernate3.support.ClobStringType" column="email"
      * @return
      */
-    private SSClobString getHEmailAddress() {
+    private String getHEmailAddress() {
         return email;
     }
-    private void setHEmailAddress(SSClobString email) {
+    private void setHEmailAddress(String email) {
         this.email = email;
     }
     /**
@@ -119,13 +119,13 @@ public class NotificationDef  {
      */
     public String[] getEmailAddress() {
     	if (email == null) return new String[0];
-    	return StringUtil.split(email.getText());
+    	return StringUtil.split(email);
     }
     public void setEmailAddress(String []address) {
     	if ((address == null) || (address.length == 0)) {
     		email = null;
     	} else {
-    		email = new SSClobString(StringUtil.merge(address));
+    		email = StringUtil.merge(address);
     	}
     }
     /**

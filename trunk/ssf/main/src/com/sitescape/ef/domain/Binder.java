@@ -36,6 +36,7 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     // contained in multiple workspaces. 
     private Workspace owningWorkspace;
     private NotificationDef notificationDef;
+    private List postings;
     private List filters;
     private Integer upgradeVersion;   
     private String zoneName; 
@@ -134,7 +135,7 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
        this.name = name;
     }
     /**
-     * @hibernate.component prefix="notify_" node="notify"
+     * @hibernate.component prefix="notify_"
      * @return
      */
     public NotificationDef getNotificationDef() {
@@ -142,6 +143,18 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     }
     public void setNotificationDef(NotificationDef notificationDef) {
         this.notificationDef = notificationDef;
+    }
+    /**
+     * @hibernate.bag  lazy="true" cascade="all" inverse="true" optimistic-lock="false" 
+     * @hibernate.key column="binder" 
+     * @hibernate.one-to-many class="com.sitescape.ef.domain.PostingDef" 
+     * @return
+     */
+    public List getPostings() {
+        return postings;
+    }
+    public void setPostings(List postings) {
+        this.postings = postings;
     }
     /**
      * @hibernate.component prefix="owner_" node="owner"

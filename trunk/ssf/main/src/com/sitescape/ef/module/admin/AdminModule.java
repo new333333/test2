@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sitescape.ef.domain.NotificationDef;
+import com.sitescape.ef.jobs.Schedule;
 import com.sitescape.ef.security.function.Function;
 
 /**
@@ -24,8 +24,10 @@ public interface AdminModule {
 	public void addFunction(Function function);
     public List getFunctions();
     public void modifyFunction(Long functionId, Map updates);
-    public void modifyNotification(Long forumId, Map updates, Set users); 
-    public void disableNotification(Long forumId);
-    public void enableNotification(Long forumId);
+    public void modifyNotification(Long binderId, Map updates, Set users); 
+    public void disableNotification(Long binderId);
+    public void enableNotification(Long binderId);
+    public void disablePosting();
+    public void enablePosting(Schedule schedule);
 
 }
