@@ -4,11 +4,9 @@ package com.sitescape.ef.module.ldap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.ApplicationContext;
 import com.liferay.portal.auth.AuthException;
 import com.liferay.portal.auth.Authenticator;
-import com.liferay.portal.util.SpringUtil;
-import com.sitescape.ef.ConfigurationException;
+import com.sitescape.ef.util.SpringContextUtil;
 
 /**
  * @author Janet McCann
@@ -29,8 +27,7 @@ public class LdapPostAuth implements Authenticator {
 	 */
 	public int authenticateByUserId(String companyId, String loginName,
 			String password) throws AuthException {
-		ApplicationContext ctx = SpringUtil.getContext();
-    	LdapModule ldap = (LdapModule)ctx.getBean("ldapModule");
+    	LdapModule ldap = (LdapModule)SpringContextUtil.getBean("ldapModule");
 		try {
 			ldap.syncUser(companyId, loginName);
 		} catch (Exception e) {
