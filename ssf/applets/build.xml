@@ -7,23 +7,26 @@
 	</target>
 
 	<target name="clean">
+		<ant dir="sample" target="clean" />
 	</target>
 
 	<target name="compile">
+		<ant dir="sample" target="compile" />
 	</target>
 
 	<target name="jar">
+		<ant dir="sample" target="jar" />
 	</target>
 
 	<target name="java2html">
+		<ant dir="sample" target="java2html" />
 	</target>
 
 	<target name="javadoc">
-	</target>
-
-	<target name="deploy-local">
+		<ant dir="sample" target="javadoc" />
 	</target>
 
 	<target name="deploy">
+		<ant dir="sample" target="deploy" />
 	</target>
 </project>

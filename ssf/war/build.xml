@@ -27,7 +27,7 @@
 			<fileset dir="pro-war" />
 		</delete>
 	</target>
-
+		
 	<target name="war" depends="init">
 		
 		<copy todir="pro-war/WEB-INF/lib">
@@ -39,7 +39,12 @@
 			<fileset dir="${project.dir}/lib" includes="jms.jar,jta.jar,mail.jar" />
 		</copy>
 
+		<copy todir="pro-war/applets">
+			<fileset dir="${project.dir}/applets" includes="**/*.jar" />
+		</copy>		
+
 		<copy file="${project.dir}/web/ssf-web.war" tofile="${war.file}" overwrite="yes" />
+		
 		<war
 			basedir="pro-war"
 			destfile="${war.file}"
