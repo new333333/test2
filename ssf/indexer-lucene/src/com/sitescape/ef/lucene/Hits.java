@@ -16,6 +16,7 @@ public class Hits implements Serializable {
     private int size;
     private Document[] documents;
     private float[] scores;
+    private int totalHits = 0;
 
     private Hits(int length) {
         this.size = length;
@@ -57,4 +58,18 @@ public class Hits implements Serializable {
     private void setScore(float score, int n) {
         scores[n] = score;
     }
+
+	/**
+	 * @return Returns the totalHits.
+	 */
+	public int getTotalHits() {
+		return totalHits;
+	}
+
+	/**
+	 * @param totalHits The totalHits to set.
+	 */
+	public void setTotalHits(int totalHits) {
+		this.totalHits = totalHits;
+	}
 }
