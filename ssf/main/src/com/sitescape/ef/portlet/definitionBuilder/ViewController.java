@@ -23,6 +23,7 @@ import com.sitescape.ef.domain.DefinitionInvalidOperation;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 
 import com.sitescape.ef.portlet.forum.ActionUtil;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.util.Validator;
@@ -174,7 +175,7 @@ public class ViewController extends SAbstractController {
 		if (!Validator.isNull(selectedItem) ) {
 			//A definition was selected, go view it
 			Definition def = (Definition)model.get(WebKeys.DEFINITION);
-			idDataNames.put(def.getId(), def.getName());
+			idDataNames.put(def.getId(), NLT.getDef(def.getName()));
 			Document sourceDefinition = def.getDefinition();
 			data.put("sourceDefinition", sourceDefinition);
 			Element sourceRoot = null;
@@ -185,11 +186,11 @@ public class ViewController extends SAbstractController {
 			//Build the definition tree
 			definitionTree = DocumentHelper.createDocument();
 			Element dtRoot = definitionTree.addElement("root");
-			String title = def.getName();
+			String title = NLT.getDef(def.getName());
 			String caption = "";
 			String replyStyle = "";
 			if (sourceRoot != null) {
-				caption = sourceRoot.attributeValue("caption", "");
+				caption = NLT.getDef(sourceRoot.attributeValue("caption", ""));
 				replyStyle = sourceRoot.attributeValue("replyStyle", "");
 			}
 			if (!caption.equals("")) {title = caption + " (" + title + ")";}
@@ -209,7 +210,7 @@ public class ViewController extends SAbstractController {
 			//Build the definition tree
 			definitionTree = DocumentHelper.createDocument();
 			Element dtRoot = definitionTree.addElement("root");
-			dtRoot.addAttribute("title", "Definitions");
+			dtRoot.addAttribute("title", NLT.getDef("__definitions"));
 			dtRoot.addAttribute("id", "");
 			Element root = definitionConfig.getRootElement();
 			
@@ -218,7 +219,7 @@ public class ViewController extends SAbstractController {
 				Element defEle = (Element) definitions.next();
 				Element treeEle = dtRoot.addElement("child");
 				treeEle.addAttribute("type", "definition");
-				treeEle.addAttribute("title", defEle.attributeValue("caption"));
+				treeEle.addAttribute("title", NLT.getDef(defEle.attributeValue("caption")));
 				treeEle.addAttribute("id", defEle.attributeValue("name"));	
 				//Add the current definitions (if any)
 				ListIterator li = currentDefinitions.listIterator();
@@ -229,7 +230,7 @@ public class ViewController extends SAbstractController {
 					if (curDef.getType() == Integer.valueOf(defEle.attributeValue("definitionType", "0")).intValue()) {
 						Element curDefEle = treeEle.addElement("child");
 						curDefEle.addAttribute("type", defEle.attributeValue("name"));
-						String title = curDef.getName();
+						String title = NLT.getDef(curDef.getName());
 						//TODO get the caption from the definition meta data
 						//String caption = curDef.getCaption();
 						String caption = curDef.getDefinition().getRootElement().attributeValue("caption", "");
@@ -238,7 +239,7 @@ public class ViewController extends SAbstractController {
 						}
 						curDefEle.addAttribute("title", title);
 						curDefEle.addAttribute("id", curDef.getId());
-						idDataNames.put(curDef.getId(), curDef.getName());
+						idDataNames.put(curDef.getId(), NLT.getDef(curDef.getName()));
 						idDataCaptions.put(curDef.getId(), curDefDocRoot.attributeValue("caption", "").replaceAll("'", "\'"));
 						idDataReplyStyles.put(curDef.getId(), curDefDocRoot.attributeValue("replyStyle", ""));
 					}
