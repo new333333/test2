@@ -15,6 +15,7 @@ public interface WorkflowModule {
 	public ProcessDefinition getWorkflow(Long id);
 	public ProcessDefinition addWorkflow(String xmlString);
 	public ProcessInstance addWorkflowInstance(Long id);
+	public void deleteProcessInstance(Long processInstanceId);
 	public void deleteProcessDefinition(Long id);
 	public ProcessInstance setNextTransition(Long processInstanceId);
 	public ProcessInstance setTransition(Long processInstanceId, String transitionId);

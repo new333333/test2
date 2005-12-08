@@ -70,6 +70,16 @@ public class WorkflowModuleImpl extends AbstractModuleImpl implements WorkflowMo
 	    }
 	};
 
+	public void deleteProcessInstance(Long processInstanceId) {
+	    try {
+	       	JbpmSession session = workflowFactory.getSession();
+	       	ProcessInstance pI = session.getGraphSession().loadProcessInstance(processInstanceId.longValue());
+	       	if (pI != null) session.getGraphSession().deleteProcessInstance(pI);
+	    } catch (Exception ex) {
+	        throw convertJbpmException(ex);
+	    }
+	};
+	
 	public ProcessDefinition getWorkflow(Long id) {
 	    try {
 	       	JbpmSession session = workflowFactory.getSession();
@@ -127,6 +137,11 @@ public class WorkflowModuleImpl extends AbstractModuleImpl implements WorkflowMo
         	ProcessInstance pI = session.getGraphSession().loadProcessInstance(processInstanceId.longValue());
         	Token token = pI.getRootToken();
         	Transition transition = token.getNode().getDefaultLeavingTransition();
+        	if (transition == null) {
+        		List transitions = token.getNode().getLeavingTransitions();
+        		if (transitions.size() <= 0) return pI;
+        		transition = (Transition) transitions.get((int) 0);
+        	}
             token.signal(transition);
             session.getGraphSession().saveProcessInstance(pI);
             return pI;

@@ -36,7 +36,7 @@
 					</portlet:actionURL>">Event tester</a><br>
 				<a href="<portlet:actionURL windowState="maximized">
 						<portlet:param name="action" value="workflow" />
-						<portlet:param name="operation" value="create" />
+						<portlet:param name="operation" value="null" />
 					</portlet:actionURL>">Workflow tester</a><br>
 				<br>
 				<br><span><b>Forum operations</b></span><br>
