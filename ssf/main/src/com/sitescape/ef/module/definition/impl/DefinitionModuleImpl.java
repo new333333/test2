@@ -677,6 +677,7 @@ public class DefinitionModuleImpl implements DefinitionModule {
 								} else if (itemName.equals("file")) {
 								    if(fileItems != null && fileItems.containsKey(nameValue)) {
 								    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
+								    	if (myFile.getOriginalFilename().equals("")) continue;
 								    	FileUploadItem fui = new FileUploadItem(myFile);
 								    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
 								    	fui.setRepositoryServiceName(storageElem.attributeValue("value", "fileRepositoryService"));
@@ -703,6 +704,7 @@ public class DefinitionModuleImpl implements DefinitionModule {
 											String fileEleName = nameValue + Integer.toString(i);
 											if (fileItems.containsKey(fileEleName)) {												
 										    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
+										    	if (myFile.getOriginalFilename().equals("")) continue;
 										    	FileUploadItem fui = new FileUploadItem(myFile);
 										    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
 										    	fui.setRepositoryServiceName(storageElem.attributeValue("value", "fileRepositoryService"));
