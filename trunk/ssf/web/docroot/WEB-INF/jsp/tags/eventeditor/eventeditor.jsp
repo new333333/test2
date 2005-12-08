@@ -115,12 +115,33 @@ function ${prefix}_toggleRecur(name) {
 </script>
 
 <c:if test="${attMap.hasRecur}">
+
+  <c:choose>
+  <c:when test="${empty initEvent.frequencyString}">
+  <c:set var="freqval" value="none" />
+  </c:when>
+  <c:when test="${initEvent.frequencyString == 'DAILY'}">
+  <c:set var="freqval" value="day" />
+  </c:when>
+  <c:when test="${initEvent.frequencyString == 'WEEKLY'}">
+  <c:set var="freqval" value="week" />
+  </c:when>
+  <c:when test="${initEvent.frequencyString == 'MONTHLY'}">
+  <c:set var="freqval" value="month" />
+  </c:when>
+  <c:otherwise>
+  <c:set var="freqval" value="" />
+  </c:otherwise>
+  </c:choose>
+
   <div style="text-align:left; ">
      <a href="javascript: ;" onClick="${prefix}_toggleRecur('${prefix}_recur_div')" >
-     <img border="0" src="<html:imagesPath />pics/sym_s_expand.gif" name="${prefix}_expandgif" />
+     <img border="0" src="<html:imagesPath />pics/sym_s_expand.gif" name="${prefix}_expandgif" /></a>
      <img border="0" src="<html:imagesPath />pics/sym_s_repeat.gif" /> 
-     <b><ssf:nlt tag="event.recurrence" /></b></a><br>
+     <a href="javascript: ;" onClick="${prefix}_toggleRecur('${prefix}_recur_div')" >
+     <b><ssf:nlt tag="event.recurrence" /></b></a><br></a>
   </div>
+
    <div name="${prefix}_recur_div" id="${prefix}_recur_div" style="visibility:hidden; display:none;">
      <table border="0" cellpadding="4" cellspacing="0">
 
@@ -131,29 +152,35 @@ function ${prefix}_toggleRecur(name) {
     </td>
     </tr>
     <tr>
-     <td colspan="2" ><input type="radio"  
-      name="repeatUnit" value="none" id="norepeat"
-      checked="checked"
-   ><label for="norepeat"><ssf:nlt tag="event.no_repeat" /></label></td>
+     <td colspan="2" >
+     <input type="radio"  
+      name="${prefix}_repeatUnit" id="norepeat" 
+      value="none" 
+    <c:if test="${freqval == 'none'}"> checked="checked" </c:if>
+   >
+    <label for="norepeat"> <ssf:nlt tag="event.no_repeat" /></label></td>
     </tr>
     <tr>
      <td nowrap="nowrap" >
+      <input type="radio" name="${prefix}_repeatUnit" id="repeatday"
+      value="day" 
+     <c:if test="${freqval == 'day'}"> checked="checked" </c:if>
+     >
 
-      <input type="radio" name="repeatUnit" id="repeatday"
-      checked="checked"
-      value="day"  > 
       <ssf:nlt tag="event.every" /> <input type="text" name="everyNday" size="2" 
-       value=""
-   "> <ssf:nlt tag="event.days" /></td>
+       value="${initEvent.interval}"
+   > <ssf:nlt tag="event.days" /></td>
     </tr>
 
     <tr>
      <td  valign="top" nowrap="nowrap">
-      <input type="radio" name="repeatUnit" id="repeatweek"
+      <input type="radio" name="${prefix}_repeatUnit" id="repeatweek"
+      <c:if test="${freqval == 'week'}">
       checked="checked"
+      </c:if>
       value="week" >
       <ssf:nlt tag="event.every" /> <input type="text" name="everyNweek" size="2" 
-       value=" " > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> 
+       value="${initEvent.interval}" > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> 
 
    <input type="checkbox" name="day0" id="day0
    checked="checked"
@@ -189,12 +216,14 @@ function ${prefix}_toggleRecur(name) {
 
     <tr>
      <td  valign="top" nowrap="nowrap"><input 
-      type="radio" name="repeatUnit" id="repeatmonth"
+      type="radio" name="${prefix}_repeatUnit" id="repeatmonth"
+      <c:if test="${freqval == 'month'}">
       checked="checked"
-      value="month" " >
+      </c:if>
+      value="month" >
       <ssf:nlt tag="event.every" /> <input type="text"  size="2"
-      name="everyNmonth" value=""
-   " > month(s) on the
+      name="everyNmonth" value="${initEvent.interval}"
+    > month(s) on the
    <select  name="onDayCardSel" title="select which week in the month on which this calendar entry will occur" name="onDayCardSel" > 
    <option  value="none"
    selected="selected"
@@ -260,24 +289,6 @@ function ${prefix}_toggleRecur(name) {
 <% // recurrence stuff; emit and initialize various hidden fields from the initEvent %>
 <c:if test="${attMap.hasRecur}">
 
-<c:choose>
-<c:when test="${empty initEvent.frequencyString}">
-<c:set var="freqval" value="none" />
-</c:when>
-<c:when test="${initEvent.frequencyString == 'DAILY'}">
-<c:set var="freqval" value="day" />
-</c:when>
-<c:when test="${initEvent.frequencyString == 'WEEKLY'}">
-<c:set var="freqval" value="week" />
-</c:when>
-<c:when test="${initEvent.frequencyString == 'MONTHLY'}">
-<c:set var="freqval" value="month" />
-</c:when>
-<c:otherwise>
-<c:set var="freqval" value="" />
-</c:otherwise>
-</c:choose>
-<input type="hidden" name="${prefix}_repeatUnit" value="${freqval}" >
 
 <c:choose>
 <c:when test="${empty initEvent.interval}">
