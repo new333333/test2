@@ -13,6 +13,7 @@ import org.apache.lucene.document.Field;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.search.BasicIndexUtils;
 
 /**
@@ -23,6 +24,9 @@ public class EntryIndexUtils {
     
     // Defines field names
     
+    public final static String ENTRY_TYPE_FIELD = "_entryType";
+    public final static String ENTRY_TYPE_ENTRY = "entry";
+    public final static String ENTRY_TYPE_REPLY = "reply";
     public static final String CREATION_DATE_FIELD = "_creationDate";
     public static final String CREATION_DAY_FIELD = "_creationDay";
     public static final String MODIFICATION_DATE_FIELD = "_modificationDate";
@@ -59,6 +63,22 @@ public class EntryIndexUtils {
                 doc.add(title1Field);
                 doc.add(allTextField);
             }
+    	}
+    }
+    
+    public static void addEntryType(Document doc, Entry entry) {
+        // Add the entry type (entry or reply)
+    	if (entry instanceof FolderEntry) {
+	        if (((FolderEntry)entry).getTopEntry() == null || ((FolderEntry)entry).getTopEntry() == entry) {
+	        	Field entryTypeField = Field.Keyword(EntryIndexUtils.ENTRY_TYPE_FIELD, EntryIndexUtils.ENTRY_TYPE_ENTRY);
+	        	doc.add(entryTypeField);
+	        } else {
+	        	Field entryTypeField = Field.Keyword(EntryIndexUtils.ENTRY_TYPE_FIELD, EntryIndexUtils.ENTRY_TYPE_REPLY);
+	        	doc.add(entryTypeField);
+	        }
+    	} else {
+        	Field entryTypeField = Field.Keyword(EntryIndexUtils.ENTRY_TYPE_FIELD, EntryIndexUtils.ENTRY_TYPE_ENTRY);
+        	doc.add(entryTypeField);
     	}
     }
     
