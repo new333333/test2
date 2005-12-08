@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import javax.portlet.ActionRequest;
@@ -194,38 +195,32 @@ public class WorkflowController extends SAbstractController {
 			    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
 			    	if (!pD.hasNode("orphan") && !pD.hasNode("orphan3")) {
 			    		Node node = new Node("orphan");
-			    		node.setProcessDefinition(pD);
-			    		wf.getSession().getSession().save(node);
 			    		
 			    		Transition transition = new Transition();
-			    		wf.getSession().getSession().save(transition);
 			    		transition.setProcessDefinition(pD);
 			    		transition.setTo(pD.getNode("orphan2"));
 			    		node.addLeavingTransition(transition);
 			    		pD.addNode(node);
 			    		
 			    		Transition transition2 = new Transition();
-			    		wf.getSession().getSession().save(transition2);
 			    		transition2.setProcessDefinition(pD);
 			    		transition2.setTo(pD.getNode("orphan"));
-			    		Iterator itTransitions = pD.getNode("orphan2").getLeavingTransitions().iterator();
+			    		//copy list so iterator works as remove members
+			    		List leave = new ArrayList(pD.getNode("orphan2").getLeavingTransitions());
+			    		Iterator itTransitions = leave.iterator();
 			    		while (itTransitions.hasNext()) {
-			    			pD.getNode("orphan2").removeLeavingTransition((Transition)itTransitions.next());
+			    			Transition trans = (Transition)itTransitions.next();
+			    			pD.getNode("orphan2").removeLeavingTransition(trans);
+				    		wf.getSession().getSession().delete(trans);
+			    			
 			    		}
 			    		pD.getNode("orphan2").addLeavingTransition(transition2);
 			    	}
 			    	txManager.commit(status);
 			    } catch (Exception e) {
 			    	txManager.rollback(status);
+			    	throw e;
 			    } 
-			    pId=PortletRequestUtils.getStringParameter(request,"processId", "");
-			    if (!Validator.isNull(pId)) {
-			    	ProcessInstance processInstance = getWorkflowModule().getProcessInstance(Long.valueOf(pId));
-			    	Token token = processInstance.getRootToken(); 
-				    state= token.getNode().getName();
-				    wId = String.valueOf(processInstance.getProcessDefinition().getId());
-			    } 
-			    		
 		 } else if (operation.equals("deleteNode")) {
 		    	wId=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
 			    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
