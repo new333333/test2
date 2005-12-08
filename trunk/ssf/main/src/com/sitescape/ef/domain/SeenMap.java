@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.UserPerFolderPK;
+import com.sitescape.ef.module.folder.index.IndexUtils;
 
 /**
  * @hibernate.class table="SS_SeenMap" dynamic-update="true"
@@ -117,14 +118,14 @@ public class SeenMap {
 		return ret;
 	}
     public boolean checkIfSeen(HashMap entry) {
-      	Long id = new Long((String)entry.get("_docId"));
-		Date modDate = (Date)entry.get("_modificationDate");
+      	Long id = new Long((String)entry.get(IndexUtils.DOCID_FIELD));
+		Date modDate = (Date)entry.get(IndexUtils.MODIFICATION_DATE_FIELD);
 		
     	return checkAndSetSeen(id, modDate, false);
     }
     
     
-	protected boolean checkAndSetSeen(Long id, Date modDate, boolean setIt) {
+	public boolean checkAndSetSeen(Long id, Date modDate, boolean setIt) {
       	Date seen,now;
       	boolean ret = false;
       	seen = (Date)seenMap.get(id);
