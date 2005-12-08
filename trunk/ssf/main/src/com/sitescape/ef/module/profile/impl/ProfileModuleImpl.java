@@ -17,6 +17,7 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.domain.Group;
+import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.HistoryMap;
@@ -29,6 +30,7 @@ import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
+import com.sitescape.ef.security.AccessControlException;
 
 public class ProfileModuleImpl implements ProfileModule {
 
@@ -82,6 +84,29 @@ public class ProfileModuleImpl implements ProfileModule {
 
         return model;
     }
+   public User modifyUser(Long id, Map updates) {
+       User user = RequestContextHolder.getRequestContext().getUser();
+       User modUser = coreDao.loadUser(id, user.getZoneName());
+       if (user.equals(modUser)) {
+           modUser.setModification(new HistoryStamp(user));
+           EntryBuilder.updateEntry(modUser, updates);
+       } else {
+    	   throw new AccessControlException();
+       }
+       return modUser;
+       
+	   
+   }
+   public Group modifyGroup(Long id, Map updates) {
+       User user = RequestContextHolder.getRequestContext().getUser();
+       Group group = coreDao.loadGroup(id, user.getZoneName());
+       //TODO: access check
+       group.setModification(new HistoryStamp(user));
+       EntryBuilder.updateEntry(group, updates);
+       return group;
+	   
+   }
+   
    public UserProperties setUserFolderProperty(Long userId, Long folderId, String property, Object value) {
    		UserProperties uProps=null;
    		User user = RequestContextHolder.getRequestContext().getUser();
