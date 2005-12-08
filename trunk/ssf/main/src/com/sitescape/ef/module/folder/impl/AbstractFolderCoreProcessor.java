@@ -344,19 +344,25 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
 	        query.close();
         }
         Iterator itEntries = childEntries.iterator();
-        while (itEntries.hasNext()) {
-        	FolderEntry entry = (FolderEntry) itEntries.next();
-        	
-            // Create an index document from the entry object.
-            org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(folder, entry);
-            
-            System.out.println("Indexing (" + folder.getId().toString() + ") " + entry.getDocNumber() + ": " + indexDoc.toString());
-            
-            // Delete the document that's currently in the index.
-            IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
-            
-            // Register the index document for indexing.
-            IndexSynchronizationManager.addDocument(indexDoc);        
+    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+        
+        try {
+	        while (itEntries.hasNext()) {
+	        	FolderEntry entry = (FolderEntry) itEntries.next();
+	        	
+	            // Create an index document from the entry object.
+	            org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(folder, entry);
+	            
+	            System.out.println("Indexing (" + folder.getId().toString() + ") " + entry.getDocNumber() + ": " + indexDoc.toString());
+	            
+	            // Delete the document that's currently in the index.
+	            luceneSession.deleteDocument(entry.getIndexDocumentUid());
+	            
+	            // Register the index document for indexing.
+	            luceneSession.addDocument(indexDoc);        
+	        }
+        } finally {
+            luceneSession.close();
         }
     }
     
