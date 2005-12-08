@@ -1,6 +1,5 @@
 <% // 2 column table %>
-<%@ page import="org.dom4j.Element" %>
-<%@ page import="java.util.Iterator" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <%
