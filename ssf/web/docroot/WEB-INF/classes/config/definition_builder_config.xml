@@ -62,7 +62,7 @@
 	
 	<item name="entryForm" caption="Entry form definition" canBeDeleted="false" multipleAllowed="false">
 		<operations>
-			<operation name="addOption" caption="Add an item" />
+			<operation name="addOption" caption="Add" />
 		</operations>
 
 		<options>
@@ -77,7 +77,7 @@
 
 	<item name="entryView" caption="Entry view definition" canBeDeleted="false" multipleAllowed="false">
 		<operations>
-			<operation name="addOption" caption="Add an item" />
+			<operation name="addOption" caption="Add" />
 		</operations>
 
 		<options>
@@ -408,7 +408,6 @@
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/file_form.jsp" />
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/view_entry_data_file.jsp" />
 		</jsps>
 	</item>
 	
