@@ -11,6 +11,7 @@ import javax.portlet.RenderResponse;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
+import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
@@ -49,7 +50,8 @@ public class WorkflowController extends SAbstractController {
 		    // deployed above. 
 			String id=PortletRequestUtils.getRequiredStringParameter(request,"processId");
 			ProcessInstance processInstance = getWorkflowModule().setNextTransition(Long.valueOf(id));
-		    
+		    TaskInstance taskInstance = processInstance.getTaskMgmtInstance().createStartTaskInstance();
+	    
 		    Token token = processInstance.getRootToken(); 
 	        response.setRenderParameter("processId", String.valueOf(processInstance.getId()));
 		    response.setRenderParameter("workflowState", token.getNode().getName());
