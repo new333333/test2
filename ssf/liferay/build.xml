@@ -57,7 +57,7 @@
 
 	<target name="java2html" depends="init">
 		<java
-			classname="com.liferay.util.Java2Html"
+			classname="com.sitescape.util.Java2Html"
 			classpathref="project.classpath"
 			fork="true">
 				<arg value="${java2html.bat}" />

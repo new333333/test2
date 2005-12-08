@@ -29,10 +29,6 @@
 	</target>
 
 	<target name="war" depends="init">
-
-		<copy todir="pro-war/WEB-INF/classes">
-			<fileset dir="${project.dir}/main/classes" includes="**/*.hbm.xml" />
-		</copy>
 		
 		<copy todir="pro-war/WEB-INF/lib">
 			<fileset dir="${project.dir}/main" includes="ssf-main.jar" />
