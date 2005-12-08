@@ -1,5 +1,21 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
+<SCRIPT TYPE="text/javascript">
+<!--
+function popup(mylink, windowname)
+{
+if (! window.focus)return true;
+var href;
+if (typeof(mylink) == 'string')
+   href=mylink;
+else
+   href=mylink.href;
+window.open(href, windowname, 'width=400,height=350,scrollbars=yes');
+return false;
+}
+//-->
+</SCRIPT>
+
 <h1>SiteScape Employees</h1>
 
 <table border="0" cellpadding="4">
@@ -41,6 +57,11 @@
 		<tr>
 			<td colspan="4">
 				<a href="<html:webPath/>downloadFile?file=C:\liferay-portal-pro-3.5.0-tomcat\RUNNING.txt">Download File</a>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4">
+				<a href="<html:webPath/>uploadFile" onClick="return popup(this, 'notes')">Upload File</a>
 			</td>
 		</tr>
 </table>
