@@ -1,23 +1,14 @@
 package com.sitescape.ef.security;
 
-import com.sitescape.ef.exception.UncheckedException;
+import com.sitescape.ef.exception.UncheckedCodedException;
 
 /**
- *
+ * Thrown to indicate that access is denied.
+ * 
  * @author Jong Kim
  */
-public class AccessControlException extends UncheckedException {
-    
-    public AccessControlException() {
-        super();
-    }
-    public AccessControlException(String message) {
-        super(message);
-    }
-    public AccessControlException(String message, Throwable cause) {
-        super(message, cause);
-    }
-    public AccessControlException(Throwable cause) {
-        super(cause);
+public abstract class AccessControlException extends UncheckedCodedException {
+    public AccessControlException(String errorCode, Object[] errorArgs) {
+    	super(errorCode, errorArgs);
     }
 }

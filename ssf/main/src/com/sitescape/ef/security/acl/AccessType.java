@@ -20,7 +20,7 @@ public class AccessType {
     public final static AccessType READ = new AccessType("read");
     public final static AccessType WRITE = new AccessType("write");
     public final static AccessType DELETE = new AccessType("delete");
-    public final static AccessType CHANGE_ACL = new AccessType("changeAcl");
+    public final static AccessType CHANGE_ACL = new AccessType("change-acl");
     
     private String name;
     
