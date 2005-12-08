@@ -6,8 +6,6 @@ array set ::j2ee_Principals_class_MAP {
    disabled     {disabled boolean}
    lcName       {lcName "varchar 82"}
    name         {name "varchar 82"}
-   ntAccountInfo {ntAccountInfo clob}
-   pwd          {pwd "varchar 64"}
    title        {title "varchar 1024"}
    emailAddress {emailAddress "varchar 256"}
    firstName    {firstName "varchar 64"}
@@ -236,7 +234,18 @@ namespace eval ::mydom {
 	dom createNodeCmd -returnNodeCmd elementNode object
 }
 
-
+proc checkDates {create modify} {
+upvar $create c
+upvar $modify m
+	if {[isnull $c] && ![isnull $m]} {
+		set c $m
+	} elseif {![isnull $c] && [isnull $m]} {
+		set m $c
+	} elseif {[isnull $c] && [isnull $m]} {
+		set c [date_time current]
+		set m $c
+	}
+}
 
 proc newuuid {} {
     incr ::idCount
@@ -432,10 +441,12 @@ proc doUsers {userList} {
             set attrs(phone) [::profile::aval phone $user]       
 ##is this needed
             set attrs(webPubDir) [::profile::aval webPubDir $user]    
-            set attrs(creation_date) [::profile::aval createdOn $user]) 
+            set attrs(creation_date) [::profile::aval createdOn $user]
             set attrs(creation_principal) [mapName [::profile::aval createdBy $user]]
             set attrs(modification_principal) [mapName [::profile::aval modifiedBy $user]]
             set attrs(modification_date) [::profile::aval modifiedOn $user]
+			checkDates attrs(creation_date) attrs(modification_date)
+
  #           foreach a [array names attrs] {
  #               if {[isnull $attrs($a)]} {  
  #                   unset attrs($a)
@@ -533,11 +544,11 @@ proc doGroups {groupList} {
             set attrs(lcName) [::profile::aval -type group lcName $group]
             set attrs(name) $group
             set attrs(title) [::profile::aval -type group title $group]
-            set attrs(creation_date) [::profile::aval -type group createdOn $group]) 
+            set attrs(creation_date) [::profile::aval -type group createdOn $group] 
             set attrs(creation_principal) [mapName [::profile::aval -type group createdBy $group] ]
             set attrs(modification_date) [::profile::aval -type group modifiedOn $group]
             set attrs(modification_principal) [mapName [::profile::aval -type group modifiedBy $group]]
-
+			checkDates attrs(creation_date) attrs(modification_date)
             set attrs(description_text) [doClob ""]
             if {[isnull $attrs(description_text)]} {
 				unset attrs(description_text)
@@ -616,7 +627,7 @@ proc doZone {zoneName {cName {liferay.com}}} {
 	#need id of preferred workspace to finish users
     foreach f $forumList {
         set forum [file tail $f]
-		if { ![file exists [file join $f .webletlock]]} {
+ 		if { ![file exists [file join $f .webletlock]]} {
             continue
         }
 		set class [wim property get -aca $zoneName -name $forum -meta class]
@@ -628,8 +639,9 @@ proc doZone {zoneName {cName {liferay.com}}} {
         } else {
             set type "BINDER"
         }
-        wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, owningWorkspace, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::forumIds($forum),1, $::forumIds(_admin), '$forum', '$type',0,0,0,'[sql_quote_value $::zoneName]');"
-    }
+        wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',0,0,0,'[sql_quote_value $::zoneName]');"
+     }
+    wimsql_rw "Update SS_Forums set owningWorkspace=$::forumIds(_admin) where not name='_admin';"
     wimsql_rw "Update SS_Forums set owningWorkspace=null,name='[sql_quote_value $::zoneName]' where name='_admin';"
     wimsql_rw commit
     if {$::dialect == "mssql"} {
@@ -710,6 +722,15 @@ proc doZone {zoneName {cName {liferay.com}}} {
 		    set eRoot [B1036 $::forumIds($forum) 15]
 		    set fRoot $eRoot
 		    append fRoot "00001"
+            set top [wim property get -aca $zoneName -name $forum topFolderId]
+ 			if {![isnull $top]} {
+	 	  	    set attrs(creation_date) [aval -name $forum createdOn $top]
+			    set attrs(modification_date) [aval -name $forum modifiedOn $top]
+				checkDates attrs(creation_date) attrs(modification_date)   
+			} else {
+	 	  	    set attrs(creation_date) [date_time current]
+			    set attrs(modification_date) $attrs(creation_date) 
+			}
             switch -- $class {
                 docshare - 
                 docattr - 
@@ -727,7 +748,6 @@ proc doZone {zoneName {cName {liferay.com}}} {
                     set RESOURCE_TYPE 3         
 
                     set PRINCIPAL_TYPE 3
-                    set top [wim property get -aca $zoneName -name $forum topFolderId]
                     doFolders $forum $top 1 $fRoot {}
 			
 					aval_unload -name $forum                          
@@ -805,7 +825,6 @@ proc doFolders {forum folder level hKey parentID} {
     set map ::j2ee_Forum_class_MAP
     if {$level == 1} {
 	    set attrs(entryRoot_sortKey) [B1036 $::forumIds($forum) 15]
-    
 	    set results [setupColVals $map attrs update]
         set cmdList [lindex $results 1]
         set cmd [lindex $cmdList 0] 
@@ -820,6 +839,7 @@ proc doFolders {forum folder level hKey parentID} {
 	    set attrs(creation_date) [aval -name $forum createdOn $folder]
 	    set attrs(modification_principal) [mapName [aval -name $forum modifiedBy $folder]] 
 	    set attrs(modification_date) [aval -name $forum modifiedOn $folder]
+		checkDates attrs(creation_date) attrs(modification_date)
 	    set attrs(title) [aval -name $forum title $folder]
         set attrs(parentFolder) $parentID
 	    set attrs(topFolder) $::forumIds($forum)
@@ -884,6 +904,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
             set attrs(creation_date) [aval -name $forum createdOn $entry]
             set attrs(modification_principal) [mapName [aval -name $forum modifiedBy $entry]] 
             set attrs(modification_date) [aval -name $forum modifiedOn $entry]
+ 			checkDates attrs(creation_date) attrs(modification_date)
             set attrs(title) [aval -name $forum title $entry]
             set attrs(replyCount) [aval -name $forum docLeafCount $entry]
             set attrs(nextDescendant) [expr 1+[aval -name $forum topLeafNumber $entry]]
@@ -951,6 +972,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set attaches(creation_principal) [mapName [lindex $upLoad 2]]
                 set attaches(modification_date) [lindex $upLoad 3]
                 set attaches(modification_principal) $attaches(creation_principal)
+ 				checkDates attaches(creation_date) attaches(modification_date)
                 set attaches(fileName) [lindex $upLoad 0]
                 set savedName [lindex $upLoad 0]
                 set attaches(fileLength) [lindex $upLoad 1]
@@ -1042,6 +1064,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                         set attaches(creation_principal) [mapName [lindex $vf $fcbi] ]
                         set attaches(modification_date) [lindex $vf $fcoi]
                         set attaches(modification_principal) $attaches(creation_principal)
+ 						checkDates attaches(creation_date) attaches(modification_date)
                         set attaches(fileName) [join [lrange $vf 2 $fni] ","]
                         set attaches(fileLength) [lindex $vf $fbi]
                         set attaches(versionName) [lindex $vf 0]
@@ -1058,6 +1081,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                         set attaches(creation_principal) [mapName [lindex $vf 4] ]
                         set attaches(modification_date) [lindex $vf 5]
                         set attaches(modification_principal) $attaches(creation_principal)
+ 						checkDates attaches(creation_date) attaches(modification_date)
                         set attaches(fileName) [lindex $vf 2]
                         set attaches(fileLength) [lindex $vf 3]
                         set attaches(versionName) [lindex $vf 0]
