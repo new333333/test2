@@ -4,8 +4,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 
+import com.sitescape.util.GetterUtil;
 import com.sitescape.util.StringUtil;
 import java.util.Collection;
+
+import com.sitescape.ef.jobs.Schedule;
 import com.sitescape.ef.util.CollectionUtil;
 
 /**
@@ -20,22 +23,21 @@ public class NotificationDef  {
     private String schedule;
     private List distribution;
     private SSClobString email;
-    private List emailAddresses;
     private int summaryLines=5;
     private boolean teamOn=false;
     private Date lastNotification;
-    private boolean disabled=true;
     public NotificationDef() {
     }
-    /**
-     * @hibernate.property column="disabled"
-     * @return
-     */
-    public boolean isDisabled() {
-    	return disabled;
+ 
+    public boolean isEnabled() {
+    	return contextLevel!=CONTEXT_LEVEL_DISABLE_EMAIL_NOTIFICATION;
+    	
     }
-    public void setDisabled(boolean disabled) {
-    	this.disabled = disabled;
+    public void setEnabled(boolean enabled) {
+    	if (enabled == true) 
+    		contextLevel=CONTEXT_LEVEL_SEND_TITLES_ONLY;
+    	else 
+            contextLevel=CONTEXT_LEVEL_DISABLE_EMAIL_NOTIFICATION;
     }
     /**
      * @hibernate.property column="teamOn"
@@ -79,8 +81,8 @@ public class NotificationDef  {
         this.contextLevel = contextLevel;
     }
     /**
-     * @hibernate.bag  lazy="true" cascade="all,delete-orphan" inverse="false"  optimistic-lock="false" node="."
-     * @hibernate.key column="forum"
+     * @hibernate.bag  lazy="true" cascade="all,delete-orphan" inverse="true"  optimistic-lock="false" node="."
+     * @hibernate.key column="binder"
      * @hibernate.one-to-many class="com.sitescape.ef.domain.Notification" embed-xml="false" node="distribution/@id"
      * 
      * This represents the entire set of entries including managed lists and individual user requests.
@@ -96,26 +98,40 @@ public class NotificationDef  {
     public void setDistribution(Collection newDistribution) {
     	distribution = CollectionUtil.mergeAsSet(getDistribution(), newDistribution);
      }
+    public List getDefaultDistribution() {
+    	List dList = new ArrayList();
+    	List cList = getDistribution();
+    	for (int i=0; i<cList.size(); ++i) {
+    		Notification n = (Notification)cList.get(i);
+    		if (n.getType().equals("N")) dList.add(n);
+    	}
+    	return dList;
+    }
     /**
      * @hibernate.property length="256" column="schedule"
      * This string represents the quartz schedule.
      * @return
      */
-    public String getSchedule() {
+    private String getHSchedule() {
         return schedule;
     }
-    public void setSchedule(String schedule) {
+    private void setHSchedule(String schedule) {
         this.schedule = schedule;
     }
-
+	public Schedule getSchedule() {
+		return new Schedule(schedule);
+	}
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule.getQuartzSchedule();
+	}
     /**
      * @hibernate.property type="com.sitescape.ef.dao.util.SSClobStringType" column="email"
      * @return
      */
-    private SSClobString getEmail() {
+    private SSClobString getHEmailAddress() {
         return email;
     }
-    private void setEmail(SSClobString email) {
+    private void setHEmailAddress(SSClobString email) {
         this.email = email;
     }
     /**

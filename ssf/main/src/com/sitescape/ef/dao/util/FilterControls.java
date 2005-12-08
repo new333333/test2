@@ -59,12 +59,12 @@ public class FilterControls {
    	 			}
    	 		}
        	}
-		if (orderBy != null) filter.append( "order by " + orderBy.getOrderByClause(alias));
+		if (orderBy != null) filter.append( " order by " + orderBy.getOrderByClause(alias));
 		
 	}
 
 	public String getOrderBy(String alias) {
-		if (orderBy != null) return  "order by " + orderBy.getOrderByClause(alias);
+		if (orderBy != null) return  " order by " + orderBy.getOrderByClause(alias);
 		return null;
 		
 	}

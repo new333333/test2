@@ -27,11 +27,12 @@ import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.dao.util.OrderBy;
 
 public class ProfileModuleImpl implements ProfileModule {
 
-    private static String modelTag = ObjectKeys.USER;
-    
+   
     private CoreDao coreDao;
     private FolderDao folderDao;
    /**
@@ -240,4 +241,18 @@ public class ProfileModuleImpl implements ProfileModule {
     public void bulkDisableGroups(Collection ids) {
     	coreDao.disablePrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
    }
+    public List getGroups() {
+    	FilterControls filter = new FilterControls();
+    	filter.setOrderBy(new OrderBy("title"));
+    	List result = coreDao.filterGroups(filter);
+    	//TODO: check access
+    	return result;
+    }
+    public List getUsers() {
+    	FilterControls filter = new FilterControls();
+    	filter.setOrderBy(new OrderBy("title"));
+    	List result = coreDao.filterUsers(filter);
+    	//TODO: check access
+    	return result;
+    }
 }

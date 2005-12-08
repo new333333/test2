@@ -20,7 +20,7 @@ import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
-
+import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.jobs.FolderEmailNotification;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.module.admin.AdminModule;
@@ -60,21 +60,21 @@ public class AdminModuleImpl implements AdminModule {
      * @param forumId
      */
     public void disableNotification(Long forumId) {
-    	setDisabledNotification(forumId, true);
+    	setEnableNotification(forumId, false);
     }
     /**
      * Enable email notification for this forum.
      * @param forumId
      */
     public void enableNotification(Long forumId) {
-       	setDisabledNotification(forumId, false);
+       	setEnableNotification(forumId, true);
     }
     /**
      * Do actual work to either enable or disable email notification for this forum
      * @param forumId
      * @param value
      */
-    protected void setDisabledNotification(Long forumId, boolean value) {
+    protected void setEnableNotification(Long forumId, boolean value) {
 		String companyId = RequestContextHolder.getRequestContext().getZoneName();
         Binder forum = coreDao.loadBinder(forumId, companyId); 
     	NotificationDef current = forum.getNotificationDef();
@@ -83,24 +83,23 @@ public class AdminModuleImpl implements AdminModule {
     		current.setLastNotification(new Date());
     		forum.setNotificationDef(current);
     	}
-    	current.setDisabled(value);
+    	current.setEnabled(value);
      	//Remove or add from scheduler
    		checkNotificationSchedule(forum);
     }
     /**
      * Set the notification schedule for a forum.  
      * @param forumId
-     * @param definition - Use NotifcationDef to set teamOn,summaryLines,contextLevel,
+     * @param definition - Use map to set teamOn,summaryLines,contextLevel,
      * emailAddress and schedule.  Distribution list is built 
      * by this method based on the Set of userIds passed in.
      * @param users - Set of Long userIds; Used to build the distribution list
      * @throws NoPrincipalByTheIdException
      */
-    public void setNotification(Long forumId, NotificationDef definition, Set users) 
+    public void updateNotification(Long forumId, Map definition, Set principals) 
     {
         Principal p;
 		Set notifyUsers = new HashSet();
-		Notification n;
 		
 		String companyId = RequestContextHolder.getRequestContext().getZoneName();
         Binder forum = coreDao.loadBinder(forumId, companyId); 
@@ -108,29 +107,18 @@ public class AdminModuleImpl implements AdminModule {
     	if (current == null) {
     		current = new NotificationDef();
     		forum.setNotificationDef(current);
-    		current.setDisabled(definition.isDisabled());
     		current.setLastNotification(new Date());    		
     	}
-    	
-   		current.setTeamOn(definition.isTeamOn());
-   		current.setSummaryLines(definition.getSummaryLines());
-   		current.setContextLevel(definition.getContextLevel());
-   		current.setEmailAddress(definition.getEmailAddress());
- 		//	Pre-load for performance
-   		coreDao.loadPrincipals(users,companyId);
-   		for (Iterator iter=users.iterator(); iter.hasNext();) {
+    	ObjectBuilder.updateObject(current, definition);
+  		//	Pre-load for performance
+   		coreDao.loadPrincipals(principals,companyId);
+   		for (Iterator iter=principals.iterator(); iter.hasNext();) {
    			//	make sure user exists and is in this zone
    			p = coreDao.loadPrincipal((Long)iter.next(),companyId);
    			notifyUsers.add(new Notification(forum, p));   			
    		}
 
    		current.setDistribution(notifyUsers);
-
-   		String nSched = definition.getSchedule();
-   		if (!Validator.isNull(nSched)) {
-   	   		current.setSchedule(nSched);
-   		}
-
 		checkNotificationSchedule(forum);
     }
     /**

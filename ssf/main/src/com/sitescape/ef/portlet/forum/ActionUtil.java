@@ -25,6 +25,8 @@ package com.sitescape.ef.portlet.forum;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.web.WebKeys;
@@ -77,6 +79,11 @@ public class ActionUtil {
 		}
 	}
 	public static Long getForumId(Map formData, HttpServletRequest req) throws NoFolderByTheIdException {
+		Long forumId = getForumId(formData);
+		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId.toString());
+		return forumId;
+	}
+	public static Long getForumId(Map formData) throws NoFolderByTheIdException {
 		String forumId = "";
 		if (formData.containsKey(WebKeys.FORUM_URL_FORUM_ID)) {
 			Object obj = formData.get(WebKeys.FORUM_URL_FORUM_ID);
@@ -86,7 +93,6 @@ public class ActionUtil {
 				forumId = (String) formData.get(WebKeys.FORUM_URL_FORUM_ID);
 			}
 		}
-		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
 		try {
 			return Long.valueOf(forumId);
 		} catch (NumberFormatException nf) {
@@ -110,7 +116,19 @@ public class ActionUtil {
 		if (obj instanceof String[]) {
 			val = ((String[]) formData.get(key))[0];
 		} else {
-			val = (String) formData.get(key);
+			val = (String)obj;
+		}
+		return val;
+	}
+	public static String[] getStringArray(Map formData, String key) {
+		String[] val;
+		Object obj = formData.get(key);
+		if (obj == null) return new String[0];
+		if (obj instanceof String[]) {
+			val = (String[])obj;
+		} else {
+			val = new String[0];
+			val[0] = (String)obj;
 		}
 		return val;
 	}
@@ -122,7 +140,7 @@ public class ActionUtil {
 		if (obj instanceof String[]) {
 			sVal = ((String[]) formData.get(key))[0];
 		} else {
-			sVal = (String) formData.get(key);
+			sVal = (String) obj;
 		}
 		try {
 			val = Integer.valueOf(sVal);
@@ -130,5 +148,20 @@ public class ActionUtil {
 			return null;
 		}
 		return val;
+	}
+	public static Set getLongSet(Map formData, String key) {
+		Set result = new HashSet();
+		Object obj = formData.get(key);
+		if (obj == null) return result;
+		if (obj instanceof String[]) {
+			String vals[] = (String[])obj;
+			for (int i=0; i<vals.length; ++i) {
+				obj = vals[i];
+				if (!obj.equals("")) result.add(Long.valueOf((String)obj));
+			}
+		} else {
+			if (!obj.equals("")) result.add(Long.valueOf((String)obj));
+		}
+		return result;
 	}
 }

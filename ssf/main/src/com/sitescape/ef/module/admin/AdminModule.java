@@ -19,7 +19,7 @@ import com.sitescape.ef.domain.NotificationDef;
  */
 public interface AdminModule {
 
-    public void setNotification(Long forumId, NotificationDef definition, Set users); 
+    public void updateNotification(Long forumId, Map updates, Set users); 
     public void disableNotification(Long forumId);
     public void enableNotification(Long forumId);
 

@@ -2,9 +2,9 @@ package com.sitescape.ef.jobs;
 
 
 public class Schedule {
-	private boolean daily=false;
-	private int hours=12;
-	private int minutes=15;
+	private boolean daily=false,minutesRepeat=false,hoursRepeat=false;
+	private String hours="12";
+	private String minutes="15";
 	private boolean onMonday,onTuesday,onWednesday,onThursday,onFriday,onSaturday,onSunday;
 
 	public Schedule() {
@@ -15,11 +15,9 @@ public class Schedule {
 		int pos = 1;
 		int len = vals.length;
 		if (pos > len) return;
-		val = vals[pos++];
-		minutes = Integer.parseInt(val);
+		setMinutes(vals[pos++]);
 		if (pos > len) return;
-		val = vals[pos++];
-		hours = Integer.parseInt(val);
+		setHours(vals[pos++]);
 		//skip dayOfMonth and months
 		pos += 2;
 		if (pos > len) return;
@@ -127,35 +125,41 @@ public class Schedule {
 	public void setOnSunday(boolean onSunday) {
 		this.onSunday = onSunday;
 	}
-	public int getHours() {
+	public boolean isRepeatHours() {
+		return hoursRepeat;
+	}
+	public String getHoursRepeat() {
+		int index = hours.indexOf('/');
+		if (index == -1) return "";
+		return hours.substring(++index);
+	}
+	public String getHours() {
 		return hours;
 	}
-	public void setHours(int hours) {
+	public void setHours(String hours) {
 		this.hours = hours;
+		if (hours.indexOf('/') != -1) {
+			hoursRepeat=true;
+		}
 	}
-	public int getMinutes() {
+	public boolean isRepeatMinutes() {
+		return minutesRepeat;
+	}	
+	public String getMinutes() {
 		return minutes;
 	}
-	public void setMinutes(int minutes) {
+	public void setMinutes(String minutes) {
 		this.minutes = minutes;
-	}
-	public String getHoursMinutes() {
-		if (minutes < 10) 
-			return (hours + ":0" + minutes);
-		else
-			return (hours + ":" + minutes);
-	}
-	public void setHoursMinutes(String hoursMinutes) {
-		int pos = hoursMinutes.indexOf(':');
-		if (pos == -1) {
-			minutes = 0;
-			hours = Integer.parseInt(hoursMinutes);
-		} else {
-			minutes = Integer.parseInt(hoursMinutes.substring(pos+1, hoursMinutes.length()));
-			hours = Integer.parseInt(hoursMinutes.substring(0, pos));
+		if (minutes.indexOf('/') != -1) {
+			minutesRepeat=true;
 		}
-
 	}
+	public String getMinutesRepeat() {
+		int index = minutes.indexOf('/');
+		if (index == -1) return "";
+		return minutes.substring(++index);
+	}
+	
 	/**
 	 * Return quartz schedule string.  We don't support seconds, dayOfMonth, months, year
 	 * seconds minutes hours dayOfMonth months days year"

@@ -16,7 +16,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="org.dom4j.Document" %>
-<jsp:useBean id="wsTree" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssAdminDomTree" type="org.dom4j.Document" scope="request" />
 
 	<table border="0" cellpadding="0" cellspacing="0" width="95%">
 	<tr>
@@ -25,7 +25,7 @@
 			<tr>
 				<td>
 					<div>
-						<ssf:tree treeName="wsTree" treeDocument="<%= wsTree %>" rootOpen="false" />
+						<ssf:tree treeName="ssAdminDomTree" treeDocument="<%= ssAdminDomTree %>" rootOpen="false" />
 					</div>
 				</td>
 			</tr>
