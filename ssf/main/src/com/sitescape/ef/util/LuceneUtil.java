@@ -17,6 +17,8 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
+import com.sitescape.ef.lucene.MixedCaseAnalyzer;
+
 public class LuceneUtil {
 
 	public static void addTerm(
@@ -62,7 +64,7 @@ public class LuceneUtil {
 	public static IndexWriter getWriter(String indexPath, boolean create)
 		throws IOException {
 
-		return new IndexWriter(indexPath, new SimpleAnalyzer(), create);
+		return new IndexWriter(indexPath, new MixedCaseAnalyzer(), create);
 	}
 
 }
