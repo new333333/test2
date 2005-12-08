@@ -45,6 +45,7 @@ import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
+import com.sitescape.ef.module.folder.WriteFilesException;
 import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.search.IndexSynchronizationManager;
@@ -76,7 +77,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
 	
     //***********************************************************************************************************	
     public Long addEntry(Folder folder, Definition def, Map inputData, Map fileItems) 
-    	throws AccessControlException {
+    	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
         
         addEntry_accessControl(folder);
@@ -110,7 +111,8 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         accessControlManager.checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);        
     }
     
-    protected void addEntry_processFiles(Folder folder, FolderEntry entry, List fileData) {
+    protected void addEntry_processFiles(Folder folder, FolderEntry entry, List fileData) 
+    	throws WriteFilesException {
     	writeFiles(folder, entry, fileData);
     }
     
@@ -166,7 +168,8 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     }
 
    //***********************************************************************************************************
-    public void modifyEntry(Folder folder, Long entryId, Map inputData, Map fileItems) throws AccessControlException {
+    public void modifyEntry(Folder folder, Long entryId, Map inputData, Map fileItems) 
+    	throws AccessControlException, WriteFilesException {
         FolderEntry entry = folderEntry_load(folder, entryId);
         modifyEntry_accessControl(folder, entry);
  
@@ -189,7 +192,8 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         // Check if the user has "write" access to the particular entry.
         getAccessControlManager().checkAcl(folder, entry, AccessType.WRITE);
     }
-    protected void modifyEntry_processFiles(Folder folder, FolderEntry entry, List fileData) {
+    protected void modifyEntry_processFiles(Folder folder, FolderEntry entry, List fileData) 
+    throws WriteFilesException {
     	writeFiles(folder, entry, fileData);
     }
     protected Map modifyEntry_toEntryData(FolderEntry entry, Map inputData, Map fileItems) {
@@ -215,7 +219,8 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     }
  
    //***********************************************************************************************************
-   public Long addReply(FolderEntry parent, Definition def, Map inputData, Map fileItems) throws AccessControlException {
+   public Long addReply(FolderEntry parent, Definition def, Map inputData, Map fileItems) 
+   	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
         
         addReply_accessControl(parent);
@@ -260,7 +265,8 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         return new FolderEntry();
     }
     
-    protected void addReply_processFiles(FolderEntry parent, FolderEntry entry, List fileData) {
+    protected void addReply_processFiles(FolderEntry parent, FolderEntry entry, List fileData) 
+    	throws WriteFilesException {
     	writeFiles(parent.getParentFolder(), entry, fileData);
     }
     
