@@ -9,7 +9,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import com.sitescape.ef.web.WebKeys;
 
-public class DefineObjectsTag extends TagSupport {
+public class DefineObjectsTag2 extends TagSupport {
 
 	public int doStartTag() {
 		ServletRequest req = pageContext.getRequest();
