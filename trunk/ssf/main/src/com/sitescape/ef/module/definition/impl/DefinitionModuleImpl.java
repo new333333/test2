@@ -72,7 +72,7 @@ public class DefinitionModuleImpl implements DefinitionModule {
         this.definitionBuilderConfig = definitionBuilderConfig;
     }
     
-	public Definition addDefinition(String name, String title, int type) {
+	public Definition addDefinition(String name, String title, int type, Map formData) {
 		String companyId = RequestContextHolder.getRequestContext().getZoneName();
 
 		Definition newDefinition = new Definition();
@@ -80,7 +80,7 @@ public class DefinitionModuleImpl implements DefinitionModule {
 		newDefinition.setTitle(title);
 		newDefinition.setType(type);
 		newDefinition.setZoneName(companyId);
-		newDefinition.setDefintion(getDefaultDefinition(name, title, type));
+		newDefinition.setDefintion(getDefaultDefinition(name, title, type, formData));
 		coreDao.save(newDefinition);
 		return newDefinition;
 	}
@@ -107,12 +107,29 @@ public class DefinitionModuleImpl implements DefinitionModule {
 		def.setDefintion(defDoc);
 	}
 	
+	public void modifyDefinitionProperties(String id, Map formData) {
+		Definition def = getDefinition(id);
+		if (def != null) {			
+			//Store the properties in the definition document
+			Document defDoc = def.getDefinition();
+			this.getDefinitionConfig();
+			Element configRoot = definitionConfig.getRootElement();
+			String type = String.valueOf(def.getType());
+			Element definition = (Element) configRoot.selectSingleNode("item[@definitionType='"+type+"']");
+			if (definition != null) {
+				//Add the properties
+				processProperties(def.getId(), definition, defDoc.getRootElement(), formData);
+			}
+			def.setDefintion(defDoc);
+		}
+	}
+	
 	public void deleteDefinition(String id) {
 		Definition def = getDefinition(id);
 		coreDao.delete(def);
 	}
 
-	public Document getDefaultDefinition(String name, String title, int type) {
+	public Document getDefaultDefinition(String name, String title, int type, Map formData) {
 		this.getDefinitionConfig();
 		Element configRoot = definitionConfig.getRootElement();
 		Element definition = (Element) configRoot.selectSingleNode("item[@definitionType='"+type+"']");
@@ -127,6 +144,9 @@ public class DefinitionModuleImpl implements DefinitionModule {
 		int id = 1;
 		id = populateNewDefinitionTree(definition, ntRoot, configRoot, id);
 		ntRoot.addAttribute("nextId", Integer.toString(id));
+		
+		//Add the properties
+		processProperties("0", definition, ntRoot, formData);
 
 		return newTree;
 	}
@@ -185,61 +205,8 @@ public class DefinitionModuleImpl implements DefinitionModule {
 					newItem.addAttribute("id", (String) Integer.toString(nextId));
 					root.addAttribute("nextId", (String) Integer.toString(++nextId));
 					
-					//Copy the properties from the definition
-					Element configProperties = itemEleToAdd.element("properties");
-					if (configProperties != null) {
-						newItem.add(configProperties.createCopy());
-					}
-					
-					//Set the values of each property from the form data
-					Element properties = newItem.element("properties");
-					if (properties != null) {
-						Iterator itProperties = properties.elementIterator("property");
-						if (itProperties != null) {
-							while (itProperties.hasNext()) {
-								Element property = (Element) itProperties.next();
-								String attrName = property.attributeValue("name");
-								String type = property.attributeValue("type", "");
-								String characterMask = property.attributeValue("characterMask", "");
-								if (formData.containsKey("propertyId_"+attrName)) {
-									String value = ((String[]) formData.get("propertyId_"+attrName))[0];
-									if (!characterMask.equals("")) {
-										//See if the user entered a valid name
-										if (!value.matches(characterMask)) {
-											//The value is not well formed, go complain to the user
-											throw new DefinitionInvalidException(defId, "Error: invalid character entered - "+value);
-										}
-									}
-									if (type.equals("text")) {
-										property.addAttribute("value", value);
-									} else if (type.equals("textarea")) {
-										property.setText(value);
-									} else if (type.equals("integer")) {
-										if (value.matches("[^0-9]")) {
-											//The value is not a valid integer
-											throw new DefinitionInvalidException(defId, "Error: not an integer - "+property.attributeValue("caption"));
-										}
-										property.addAttribute("value", value);
-									} else if (type.equals("selectbox")) {
-										property.addAttribute("value", value);
-									} else if (type.equals("boolean") || type.equals("checkbox")) {
-										if (value == null) {value = "false";}
-										if (value.equalsIgnoreCase("on")) {
-											value = "true";
-										} else {
-											value = "false";
-										}
-										property.addAttribute("value", value);
-									}
-								} else {
-									if (type.equals("boolean") || type.equals("checkbox")) {
-										String value = "false";
-										property.addAttribute("value", value);
-									}
-								}
-							}
-						}
-					}
+					//Process the properties (if any)
+					processProperties(defId, itemEleToAdd, newItem, formData);
 					
 					//See if this is a "dataView" type
 					if (newItem.attributeValue("type", "").equals("dataView")) {
@@ -277,6 +244,74 @@ public class DefinitionModuleImpl implements DefinitionModule {
 			}
 		}
 		return newItem;
+	}
+	
+	private void processProperties(String defId, Element configEle, Element newItem, Map formData) {
+		//Copy the properties from the definition
+		Element configProperties = configEle.element("properties");
+		if (configProperties != null) {
+			//Remove the previous list of properties
+			Iterator itProperties = newItem.selectNodes("properties").iterator();
+			while (itProperties.hasNext()) {
+				newItem.remove((Element) itProperties.next());
+			}
+			//Add a fresh "properties" element
+			Element newPropertiesEle = newItem.addElement("properties");
+		
+			//Set the values of each property from the form data
+			Iterator itConfigProperties = configProperties.elementIterator("property");
+			while (itConfigProperties.hasNext()) {
+				Element configProperty = (Element) itConfigProperties.next();
+				String attrName = configProperty.attributeValue("name");
+				String type = configProperty.attributeValue("type", "");
+				String characterMask = configProperty.attributeValue("characterMask", "");
+				if (formData.containsKey("propertyId_"+attrName)) {
+					String[] values = (String[]) formData.get("propertyId_"+attrName);
+					for (int i = 0; i < values.length; i++) { 
+						String value = values[i];
+						if (!characterMask.equals("")) {
+							//See if the user entered a valid name
+							if (!value.equals("") && !value.matches(characterMask)) {
+								//The value is not well formed, go complain to the user
+								throw new DefinitionInvalidException(defId, "Error: invalid character entered - "+value);
+							}
+						}
+						Element newPropertyEle = configProperty.createCopy();
+						newPropertiesEle.add(newPropertyEle);
+						if (type.equals("text")) {
+							newPropertyEle.addAttribute("value", value);
+						} else if (type.equals("textarea")) {
+							newPropertyEle.setText(value);
+						} else if (type.equals("integer")) {
+							if (value.matches("[^0-9]")) {
+								//The value is not a valid integer
+								throw new DefinitionInvalidException(defId, "Error: not an integer - "+configProperty.attributeValue("caption"));
+							}
+							newPropertyEle.addAttribute("value", value);
+						} else if (type.equals("selectbox")) {
+							newPropertyEle.addAttribute("value", value);
+						} else if (type.equals("boolean") || type.equals("checkbox")) {
+							if (value == null) {value = "false";}
+							if (value.equalsIgnoreCase("on")) {
+								value = "true";
+							} else {
+								value = "false";
+							}
+							newPropertyEle.addAttribute("value", value);
+						} else if (type.equals("replyStyle")) {
+							newPropertyEle.addAttribute("value", value);
+						}
+					}
+				} else {
+					if (type.equals("boolean") || type.equals("checkbox")) {
+						String value = "false";
+						Element newPropertyEle = configProperty.createCopy();
+						newPropertiesEle.add(newPropertyEle);
+						newPropertyEle.addAttribute("value", value);
+					}
+				}
+			}
+		}		
 	}
 	
 	public void modifyItem(String defId, String itemId, Map formData) throws DefinitionInvalidException {

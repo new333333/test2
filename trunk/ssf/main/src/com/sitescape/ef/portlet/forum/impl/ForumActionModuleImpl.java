@@ -320,13 +320,13 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 	//Routine to build a definition file on the fly for viewing entries with no definition
 	private void getDefaultEntryView(Map model) {
 		//Create an empty entry definition
-		Document def = getDefinitionModule().getDefaultDefinition("ss_default_entry_view","__definition_default_entry_view", Definition.COMMAND);
+		Map formData = new HashMap();
+		Document def = getDefinitionModule().getDefaultDefinition("ss_default_entry_view","__definition_default_entry_view", Definition.COMMAND, formData);
 		
 		//Add the "default viewer" item
 		Element entryView = (Element) def.getRootElement().selectSingleNode("//item[@name='entryView']");
 		if (entryView != null) {
 			String itemId = entryView.attributeValue("id", "");
-			Map formData = new HashMap();
 			try {
 				Element newItem = getDefinitionModule().addItemToDefinitionDocument("default", def, itemId, "defaultEntryView", formData);
 			}
@@ -361,7 +361,7 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 		return history; 
 	}
 	protected void buildEntryToolbar(RenderResponse response, Map model, String folderId, String entryId) {
-		
+	   	User user = RequestContextHolder.getRequestContext().getUser();
 		Element entryViewElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
 		Document entryView = entryViewElement.getDocument();
 		Definition def = (Definition)model.get(WebKeys.ENTRY_DEFINITION);
@@ -371,25 +371,35 @@ public class ForumActionModuleImpl implements ForumActionModule,DomTreeBuilder {
 	    //Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 	    //The "Reply" menu
-		String replyStyle = (String) entryView.getRootElement().attributeValue("replyStyle", "");
+		List replyStyles = entryView.getRootElement().selectNodes("properties/property[@name='replyStyle']");
 		PortletURL url;
-		if (!replyStyle.equals("")) {
-			/**
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
-	    	url.setParameter(WebKeys.FORUM_URL_FORUM_ID, folderId);
-	    	url.setParameter(WebKeys.FORUM_URL_ENTRY_TYPE, replyStyle);
-	    	url.setParameter(WebKeys.FORUM_URL_ENTRY_ID, entryId);
-			toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), url);
-			*/
-			Map params = new HashMap();
-			params.put(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
-			params.put(WebKeys.FORUM_URL_FORUM_ID, folderId);
-			params.put(WebKeys.FORUM_URL_ENTRY_TYPE, replyStyle);
-			params.put(WebKeys.FORUM_URL_ENTRY_ID, entryId);
-			Map qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), params, qualifiers);
+		if (!replyStyles.isEmpty()) {
+			if (replyStyles.size() == 1) {
+				//There is only one reply style, so show it not as a drop down menu
+				String replyStyleId = ((Element)replyStyles.get(0)).attributeValue("value", "");
+				if (!replyStyleId.equals("")) {
+					Map params = new HashMap();
+					params.put(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
+					params.put(WebKeys.FORUM_URL_FORUM_ID, folderId);
+					params.put(WebKeys.FORUM_URL_ENTRY_TYPE, replyStyleId);
+					params.put(WebKeys.FORUM_URL_ENTRY_ID, entryId);
+					Map qualifiers = new HashMap();
+					qualifiers.put("popup", new Boolean(true));
+					toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), params, qualifiers);
+				}
+			} else {
+				toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"));
+				for (int i = 0; i < replyStyles.size(); i++) {
+					String replyStyleId = ((Element)replyStyles.get(i)).attributeValue("value", "");
+			        Definition replyDef = getCoreDao().loadDefinition(replyStyleId, user.getZoneName());
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
+					url.setParameter(WebKeys.FORUM_URL_FORUM_ID, folderId);
+					url.setParameter(WebKeys.FORUM_URL_ENTRY_TYPE, replyStyleId);
+					url.setParameter(WebKeys.FORUM_URL_ENTRY_ID, entryId);
+					toolbar.addToolbarMenuItem("1_reply", "replies", replyDef.getTitle(), url);
+				}
+			}
 		}
 	    
 	    //The "Modify" menu

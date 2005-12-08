@@ -15,6 +15,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
@@ -35,12 +36,36 @@ public class ViewController extends  SAbstractController {
 		rootElement.addAttribute("title", NLT.get("administration.title"));
 		rootElement.addAttribute("image", "root");
 		rootElement.addAttribute("displayOnly", "true");
-		//Definition builder
+		
+		//Definition builder - Entry form designer
 		Element element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
-		element.addAttribute("title", NLT.get("administration.definition_builder"));
+		element.addAttribute("title", NLT.get("administration.definition_builder_entry_form_designer"));
 		element.addAttribute("image", "page");
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.COMMAND));
+		url.setWindowState(WindowState.MAXIMIZED);
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
+		
+		//Definition builder - Folder view designer
+		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", NLT.get("administration.definition_builder_folder_view_designer"));
+		element.addAttribute("image", "page");
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FORUM_VIEW));
+		url.setWindowState(WindowState.MAXIMIZED);
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
+		
+		//Definition builder - Workflow designer
+		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", NLT.get("administration.definition_builder_workflow_designer"));
+		element.addAttribute("image", "page");
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKFLOW));
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());

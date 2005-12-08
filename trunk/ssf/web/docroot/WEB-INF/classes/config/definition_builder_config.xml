@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../resources/definition_builder_config.xsd">
-	<definition name="entryTypeDefinition" definitionType="1" caption="__entry_definitions" canBeDeleted="false" replyStyle="">		
+	<definition name="entryTypeDefinition" definitionType="1" caption="__entry_definitions" canBeDeleted="false">		
 		<operations>
 			<operation name="addDefinition" item="entryType" caption="__add_a_new_entry_definition" />
 		</operations>
@@ -23,6 +23,7 @@
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="replyStyle" caption="__reply_style" type="replyStyle" />
 		</properties>
 		
 		<options>
@@ -633,5 +634,61 @@
 		</jsps>
 	</item>
 		
+
+	<item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true">
+		<properties>
+			<property name="name" caption="__data_name" type="text">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" />
+		</properties>
+		<options>
+			<option name="transitions" initial="true" />
+			<option name="accessControls" initial="true" />
+			<option name="notifications" initial="true" />
+			<option name="onEntry" />
+			<option name="onExit" />
+		</options>
+	</item>
+	
+	<item name="transitions" caption="__transitions" canBeDeleted="false" multipleAllowed="false">
+		<options>
+			<option_select path="//item[@category='transitionLayout']" />
+		</options>
+	</item>
+	
+	<item name="transition" caption="__transition" category="transitionLayout">
+		<properties>
+			<property name="toState" caption="__toState" type="text" />
+		</properties>
+		<options>
+			<option name="transitionDecision" />
+		</options>
+	</item>
+	
+	<item name="accessControls" caption="__accessControls" canBeDeleted="false" multipleAllowed="false">
+		<options>
+			<option_select path="//item[@category='accessControlsLayout']" />
+		</options>
+	</item>
+	
+	<item name="notifications" caption="__notifications" canBeDeleted="false" multipleAllowed="false">
+		<options>
+			<option_select path="//item[@category='notificationsLayout']" />
+		</options>
+	</item>
+	
+	<item name="onEntry" caption="__onEntry" canBeDeleted="true" multipleAllowed="false">
+		<options>
+			<option_select path="//item[@category='onEntryExitLayout']" />
+		</options>
+	</item>
+	
+	<item name="onExit" caption="__onExit" canBeDeleted="true" multipleAllowed="false">
+		<options>
+			<option_select path="//item[@category='onEntryExitLayout']" />
+		</options>
+	</item>
+	
 		
 </definitions>

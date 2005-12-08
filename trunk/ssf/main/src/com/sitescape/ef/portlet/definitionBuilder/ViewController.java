@@ -59,21 +59,17 @@ public class ViewController extends SAbstractController {
 					String operationItem = ActionUtil.getStringValue(formData, "operationItem");
 					Integer type = ActionUtil.getIntegerValue(formData, "definitionType_"+operationItem);
 					if (!name.equals("") && type != null) {
-						selectedItem = getDefinitionModule().addDefinition(name, caption, type.intValue()).getId();							
+						selectedItem = getDefinitionModule().addDefinition(name, caption, type.intValue(), formData).getId();							
 					}
 					
 				} else if (operation.equals("modifyDefinition")) {
 					//Modify the name of the selected item
 					selectedItem = ActionUtil.getStringValue(formData, "selectedId");
 					if (!selectedItem.equals("") ) {
-						String definitionName = ActionUtil.getStringValue(formData, "modifyDefinitionName");
-						String definitionCaption = ActionUtil.getStringValue(formData,"modifyDefinitionCaption");
+						String definitionName = ActionUtil.getStringValue(formData, "propertyId_name");
+						String definitionCaption = ActionUtil.getStringValue(formData,"propertyId_caption");
 						getDefinitionModule().modifyDefinitionName(selectedItem, definitionName, definitionCaption);
-						if (formData.containsKey("modifyDefinitionReplyStyle")) {
-							String definitionReplyStyle = ((String[])formData.get("modifyDefinitionReplyStyle"))[0];
-							getDefinitionModule().modifyDefinitionAttribute(selectedItem, "replyStyle", definitionReplyStyle);
-						}
-						selectedItem = "";
+						getDefinitionModule().modifyDefinitionProperties(selectedItem, formData);
 					}
 					
 				} else if (operation.equals("deleteDefinition")) {
@@ -137,8 +133,8 @@ public class ViewController extends SAbstractController {
 		}
 		
 		//Pass the selection id to be shown on to the rendering phase
+		response.setRenderParameters(request.getParameterMap());
 		response.setRenderParameter("selectedItem", selectedItem);
-			
 	}
 		
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -149,6 +145,9 @@ public class ViewController extends SAbstractController {
 
 		String selectedItem = ActionUtil.getStringValue(formData, "selectedItem");
 		String selectedItemTitle = "";
+
+		//See if there is a definition type requested
+		String definitionType = ActionUtil.getStringValue(formData, WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE);
 
         model = getForumActionModule().getDefinitionBuilder(formData, request, selectedItem);
 
@@ -177,6 +176,7 @@ public class ViewController extends SAbstractController {
 			//A definition was selected, go view it
 			Definition def = (Definition)model.get(WebKeys.DEFINITION);
 			idDataNames.put(def.getId(), NLT.getDef(def.getName()));
+			definitionType = String.valueOf(def.getType());
 			Document sourceDefinition = def.getDefinition();
 			data.put("sourceDefinition", sourceDefinition);
 			Element sourceRoot = null;
@@ -220,41 +220,66 @@ public class ViewController extends SAbstractController {
 			Iterator definitions = root.elementIterator("definition");
 			while (definitions.hasNext()) {
 				Element defEle = (Element) definitions.next();
-				Element treeEle = dtRoot.addElement("child");
-				treeEle.addAttribute("type", "definition");
-				treeEle.addAttribute("title", NLT.getDef(defEle.attributeValue("caption")));
-				treeEle.addAttribute("id", defEle.attributeValue("name"));	
-				//Add the current definitions (if any)
-				ListIterator li = currentDefinitions.listIterator();
-				while (li.hasNext()) {
-					Definition curDef = (Definition)li.next();
-					Document curDefDoc = curDef.getDefinition();
-					Element curDefDocRoot = curDefDoc.getRootElement();
-					if (curDef.getType() == Integer.valueOf(defEle.attributeValue("definitionType", "0")).intValue()) {
-						Element curDefEle = treeEle.addElement("child");
-						curDefEle.addAttribute("type", defEle.attributeValue("name"));
-						String title = NLT.getDef(curDef.getName());
-						//TODO get the caption from the definition meta data
-						//String caption = curDef.getCaption();
-						String caption = curDef.getDefinition().getRootElement().attributeValue("caption", "");
-						if (!caption.equals("")) {
-							title = caption + " (" + title + ")";
+				//See if this is one of the desired definition types
+				if (definitionType.equals("") || definitionType.equals(defEle.attributeValue("definitionType", ""))) {
+					Element treeEle = dtRoot.addElement("child");
+					treeEle.addAttribute("type", "definition");
+					treeEle.addAttribute("title", NLT.getDef(defEle.attributeValue("caption")));
+					treeEle.addAttribute("id", defEle.attributeValue("name"));	
+					//Add the current definitions (if any)
+					ListIterator li = currentDefinitions.listIterator();
+					while (li.hasNext()) {
+						Definition curDef = (Definition)li.next();
+						Document curDefDoc = curDef.getDefinition();
+						Element curDefDocRoot = curDefDoc.getRootElement();
+						if (curDef.getType() == Integer.valueOf(defEle.attributeValue("definitionType", "0")).intValue()) {
+							Element curDefEle = treeEle.addElement("child");
+							curDefEle.addAttribute("type", defEle.attributeValue("name"));
+							String title = NLT.getDef(curDef.getName());
+							//TODO get the caption from the definition meta data
+							//String caption = curDef.getCaption();
+							String caption = curDef.getDefinition().getRootElement().attributeValue("caption", "");
+							if (!caption.equals("")) {
+								title = caption + " (" + title + ")";
+							}
+							curDefEle.addAttribute("title", title);
+							curDefEle.addAttribute("id", curDef.getId());
+							idDataNames.put(curDef.getId(), NLT.getDef(curDef.getName()));
+							idDataCaptions.put(curDef.getId(), curDefDocRoot.attributeValue("caption", "").replaceAll("'", "\'"));
+							idDataReplyStyles.put(curDef.getId(), curDefDocRoot.attributeValue("replyStyle", ""));
 						}
-						curDefEle.addAttribute("title", title);
-						curDefEle.addAttribute("id", curDef.getId());
-						idDataNames.put(curDef.getId(), NLT.getDef(curDef.getName()));
-						idDataCaptions.put(curDef.getId(), curDefDocRoot.attributeValue("caption", "").replaceAll("'", "\'"));
-						idDataReplyStyles.put(curDef.getId(), curDefDocRoot.attributeValue("replyStyle", ""));
 					}
 				}
 			}
 		}
-			
+		//Set up the other data items
+		String option = "";
+		if (formData.containsKey("option")) {
+			option = ActionUtil.getStringValue(formData, "option");
+		}
+		data.put("option", option);
+		
+		String itemId = "";
+		if (formData.containsKey("itemId")) {
+			itemId = ActionUtil.getStringValue(formData, "itemId");
+		}
+		data.put("itemId", itemId);
+		
+		String itemName = "";
+		if (formData.containsKey("itemName")) {
+			itemName = ActionUtil.getStringValue(formData, "itemName");
+		}
+		data.put("itemName", itemName);
+		
         //There is a forum specified, so get the forum object
 		model.put("definitionTree", definitionTree);
 		data.put("selectedItem", selectedItem);
 		data.put("selectedItemTitle", selectedItemTitle);
+		data.put("definitionType", definitionType);
 		model.put("data", data);
+		if (!option.equals("")) {
+			return new ModelAndView("definition_builder/view_definition_builder_option", model);
+		}
 		return new ModelAndView(WebKeys.VIEW_DEFINITION, model);
 		
 	}

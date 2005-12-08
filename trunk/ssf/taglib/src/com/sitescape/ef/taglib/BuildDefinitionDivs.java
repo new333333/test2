@@ -27,7 +27,17 @@ public class BuildDefinitionDivs extends TagSupport {
     private Document sourceDocument;
     private Map divNames;
     private Map entryDefinitions;
-	private int helpDivCount = 0;
+    private String option = "";
+    private String itemId = "";
+    private String itemName = "";
+	private int helpDivCount;
+	
+	private String helpImgUrl = "";
+	private Element rootElement;
+	private String rootElementId;
+	private String rootElementName;
+	private Element rootConfigElement;
+
     
 	public int doStartTag() throws JspException {
 	    if(this.title == null)
@@ -46,25 +56,31 @@ public class BuildDefinitionDivs extends TagSupport {
 			Element configRoot = this.configDocument.getRootElement();
 			Element root = this.sourceDocument.getRootElement();
 			
-			//Build the selection instructions div
-			sb.append("\n<div id='info_select' class='ss_definitionBuilder'>\n");
-			sb.append("<span class='ss_titlebold'>" + this.title + "</span>\n");
-			sb.append("</div>\n");
-			sb.append("<script language='javascript'>\n");
-			sb.append("    self.ss_setDeclaredDiv('info_select')\n");
-			sb.append("    var idMap;\n");
-			sb.append("    if (!idMap) {idMap = new Array();}\n");
-			sb.append("    var idMapCaption;\n");
-			sb.append("    if (!idMapCaption) {idMapCaption = new Array();}\n");
-			sb.append("</script>\n");
+			//See if we are just building a single option, or the whole page
+			if (this.option.equals("")) {
+				//Build the selection instructions div (only do this if building the whole page)
+				sb.append("\n<div id='info_select' class='ss_definitionBuilder'>\n");
+				sb.append("<span class='ss_titlebold'>" + this.title + "</span>\n");
+				sb.append("</div>\n");
+				sb.append("<script language='javascript'>\n");
+				sb.append("    self.ss_setDeclaredDiv('info_select')\n");
+				sb.append("    var idMap;\n");
+				sb.append("    if (!idMap) {idMap = new Array();}\n");
+				sb.append("    var idMapCaption;\n");
+				sb.append("    if (!idMapCaption) {idMapCaption = new Array();}\n");
+				sb.append("</script>\n");
+			}
 			
 			//Build the divs for each element
-			buildDivs(configRoot, root, sb, hb, "");
-			buildDivs(root, root, sb, hb, "");
+			if (this.option.equals("")) {
+				buildDivs(configRoot, root, sb, hb, "");
+			}
+			buildDivs(root, root, sb, hb, "item");
 			
-			buildDefaultDivs(sb, hb);
-
-			jspOut.print(hb.toString());
+			if (this.option.equals("")) {
+				buildDefaultDivs(sb, hb);
+				jspOut.print(hb.toString());
+			}
 			jspOut.print(sb.toString());
 		}
 	    catch(Exception e) {
@@ -76,22 +92,6 @@ public class BuildDefinitionDivs extends TagSupport {
 	
 	private void buildDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		Iterator itRootElements;
-		Iterator itRootElements2;
-		Iterator itOperations;
-		Iterator itProperties;
-		Iterator itOptions;
-		Element operations;
-		Element operationElement;
-		Element properties;
-		Element property;
-		Element propertiesConfig;
-		Element propertyConfig;
-		Element propertyElement;
-		Element options;
-		Element option;
-		Element optionElement;
-		String helpImgUrl = "";
-
 		HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 		String contextPath = req.getContextPath();
 		if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
@@ -102,469 +102,551 @@ public class BuildDefinitionDivs extends TagSupport {
 		} else {
 			itRootElements = root.elementIterator(filter);
 		}
+		//See if this is a request for just one item
+		if (!this.option.equals("") && !this.itemId.equals("")) {
+			//We are looking for a single item, so only do that item
+			itRootElements = root.selectNodes("//item[@id='"+this.itemId+"']").iterator();
+		} else if (!this.option.equals("") && !this.itemName.equals("")) {
+			//We are looking for an item in the definition config
+			itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='"+this.itemName+"']").iterator();
+		} else if (!this.option.equals("") && this.itemId.equals("") && this.itemName.equals("")) {
+			//We are looking for the definition itself
+			String definitionType = root.attributeValue("type", "");
+			if (!definitionType.equals("")) {
+				itRootElements = root.selectNodes(".").iterator();
+			}
+		}
 
 		while (itRootElements.hasNext()) {
-			Element rootElement = (Element) itRootElements.next();
-			String rootElementId = rootElement.attributeValue("id", rootElement.attributeValue("name"));
-			String rootElementName = rootElement.attributeValue("name");
-			String rootElementCaption = NLT.getDef(rootElement.attributeValue("caption", rootElementName));
+			rootElement = (Element) itRootElements.next();
+			rootElementId = rootElement.attributeValue("id", rootElement.attributeValue("name"));
+			rootElementName = rootElement.attributeValue("name");
+			helpDivCount = 0;
 			
 			//Get the config version of this item
-			Element rootConfigElement = (Element) this.configDocument.getRootElement().selectSingleNode("item[@name='"+rootElementName+"']");
-			//Element rootConfigElement = findElement(this.configDocument.getRootElement(), "item", "name", rootElementName);
+			rootConfigElement = null;
+			if (rootElement.getDocument().getRootElement() == rootElement) {
+				//This is the root node
+				String definitionType = rootElement.attributeValue("type", "");
+				if (!definitionType.equals("")) {
+					rootConfigElement = (Element) this.configDocument.getRootElement().selectSingleNode("//item[@definitionType='"+definitionType+"']");
+				}
+			} else {
+				rootConfigElement = (Element) this.configDocument.getRootElement().selectSingleNode("item[@name='"+rootElementName+"']");
+			}
 			if (rootConfigElement == null) {rootConfigElement = rootElement;}
 			
-			//Build the information div
-			if (!this.divNames.containsKey("info_"+rootElementId)) {
-				this.divNames.put("info_"+rootElementId, "1");
-				sb.append("\n<div id='info_" + rootElementId + "' ");
-				sb.append("class='ss_definitionBuilder'>\n");
-				sb.append("<span class='ss_contentbold'>" + NLT.getDef(rootElement.attributeValue("caption")));
-				property = (Element) rootElement.selectSingleNode("./properties/property[@name='caption']");
-				String propertyCaptionValue = "";
-				if (property != null) {
-					propertyCaptionValue = property.attributeValue("value", "");
-					if (!propertyCaptionValue.equals("")) {
-						sb.append(" - " + propertyCaptionValue);
-					}
-				}
-				if (propertyCaptionValue.equals("")) {
-					propertyCaptionValue = NLT.getDef(rootElement.attributeValue("caption"));
-				}
-				sb.append("</span>\n<br><br>\n");
-				sb.append("</div>\n");
-				sb.append("<script language='javascript'>\n");
-				sb.append("    self.ss_setDeclaredDiv('info_" + rootElementId + "')\n");
-				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-				sb.append("    idMapCaption['"+rootElementId+"'] = '"+propertyCaptionValue.replaceAll("'", "\'")+"';\n");
-				sb.append("</script>\n");
-			}
+			//Build the information divs
+			buildInfoDivs(root, sourceRoot, sb, hb, filter);
 
 			//Build the infoDefinitionOptions div
-			if (!this.divNames.containsKey("infoDefinitionOptions")) {
-				this.divNames.put("infoDefinitionOptions", "1");
-				sb.append("\n<div id='infoDefinitionOptions' ");
-				sb.append("class='ss_definitionBuilder'>\n");
-				sb.append("<span class='ss_titlebold' id='infoDefinitionOptionsDefinitionName'></span>\n");
-				
-				sb.append("<table>\n");
-				
-				sb.append("<tr><td>\n");
-				sb.append("<a class='ss_content' href='javascript: ;' "); 
-				sb.append("onClick=\"return viewDefinition();\">");
-				sb.append("View this definition");
-				sb.append("</a>\n");
-				sb.append("</td></tr>\n");
-				
-				sb.append("<tr><td>\n");
-				sb.append("<a class='ss_content' href='javascript: ;' "); 
-				sb.append("onClick=\"return modifyDefinition();\">");
-				sb.append("Modify the properties of this definition");
-				sb.append("</a>\n");
-				sb.append("</td></tr>\n");
-
-				sb.append("<tr><td>\n");
-				sb.append("<a class='ss_content' href='javascript: ;' "); 
-				sb.append("onClick=\"return deleteDefinition();\">");
-				sb.append("Delete this definition");
-				sb.append("</a>\n");
-				sb.append("</td></tr>\n");
-
-				sb.append("</table>\n");
-
-				sb.append("</div>\n");
-				sb.append("<script language='javascript'>\n");
-				sb.append("    self.ss_setDeclaredDiv('infoDefinitionOptions')\n");
-				sb.append("</script>\n");
-			}
+			buildInfoOptionsDivs(root, sourceRoot, sb, hb, filter);
 
 			//Build the modify_definition div
-			if (!this.divNames.containsKey("modify_definition")) {
-				this.divNames.put("modify_definition", "1");
-				sb.append("\n<div id='modify_definition' ");
-				sb.append("class='ss_definitionBuilder'>\n");
-				sb.append("<span class='ss_titlebold'>Modify the properties of this definition</span><br><br>\n");
-				sb.append("<span>Name</span><br>\n");
-				sb.append("<input type='text' name='modifyDefinitionName' size='40'><br>\n");
-				sb.append("<span>Caption</span><br>\n");
-				sb.append("<input type='text' name='modifyDefinitionCaption' size='40'><br>\n");
-				if (!rootElement.attributeValue("replyStyle", "___").equals("___")) {
-					//There is a "replyStyle" attribute, so build this option to be modified
-					sb.append("<span>Reply type</span><br>\n");
-					sb.append("<select name='modifyDefinitionReplyStyle'>\n");
-					sb.append("<option value=''>").append("--select a reply type--").append("</option>\n");
-					Iterator itEntryDefinitions = this.entryDefinitions.keySet().iterator();
-					while (itEntryDefinitions.hasNext()) {
-						//Build a list of the entry definitions
-						Definition entryDef = (Definition) this.entryDefinitions.get((String) itEntryDefinitions.next());
-						sb.append("<option value='").append(entryDef.getId()).append("'");
-						sb.append(">").append(entryDef.getTitle()).append(" (").append(entryDef.getName()).append(")</option>\n");
-					}
-					sb.append("</select>\n<br><br>\n");
-				}
-				sb.append("<input type='submit' name='okBtn' value='  OK  '>\n");
-				sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-				sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
-				sb.append("</div>\n");
-				sb.append("<script language='javascript'>\n");
-				sb.append("    self.ss_setDeclaredDiv('modify_definition')\n");
-				sb.append("</script>\n");
-			}
+			buildModifyDefinitionDiv(root, sourceRoot, sb, hb, filter);
 
 			//Build the delete_definition divs
-			if (!this.divNames.containsKey("delete_definition")) {
-				this.divNames.put("delete_definition", "1");
-				sb.append("\n<div id='delete_definition' ");
-				sb.append("class='ss_definitionBuilder'>\n");
-				sb.append("<span class='ss_titlebold'>Select the definition to be deleted</span>\n");
-				sb.append("</div>\n");
-				sb.append("<script language='javascript'>\n");
-				sb.append("    self.ss_setDeclaredDiv('delete_definition')\n");
-				sb.append("</script>\n");
-				sb.append("\n<div id='delete_definition_confirm' ");
-				sb.append("class='ss_definitionBuilder'>\n");
-				sb.append("<span class='ss_titlebold'>Delete: <span id='deleteDefinitionSelection'></span></span>\n");
-				sb.append("<br><br>\n");
-				sb.append("<input type='submit' name='okBtn' value='  OK  '>\n");
-				sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-				sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
-				sb.append("</div>\n");
-				sb.append("<script language='javascript'>\n");
-				sb.append("    self.ss_setDeclaredDiv('delete_definition_confirm')\n");
-				sb.append("</script>\n");
-			}
+			buildDeleteDefinitionDiv(root, sourceRoot, sb, hb, filter);
 
-			//Build the operations div
-			if (!this.divNames.containsKey("operations_"+rootElementId)) {
-				this.divNames.put("operations_"+rootElementId, "1");
-				sb.append("\n<div id='operations_" + rootElementId + "' "); 
-				sb.append("class='ss_definitionBuilder'>\n");
-				sb.append("<table cellpadding='0' cellspacing='0'>\n");
+			//Build the operations divs
+			buildOperationsDivs(root, sourceRoot, sb, hb, filter);
+
+			//Build the options divs
+			buildOptionsDivs(root, sourceRoot, sb, hb, filter);
+			
+			//Build the properties divs
+			buildPropertiesDivs(root, sourceRoot, sb, hb, filter);
+			
+			//See if this element has any sub elements to do
+			if (this.option.equals("")) {
+				buildDivs(rootElement, sourceRoot, sb, hb, "item");
+			}
+		}
+	}
+
+	private void buildInfoDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
+		if (this.option.equals("") && !this.divNames.containsKey("info_"+rootElementId)) {
+			this.divNames.put("info_"+rootElementId, "1");
+			sb.append("\n<div id='info_" + rootElementId + "' ");
+			sb.append("class='ss_definitionBuilder'>\n");
+			sb.append("<span class='ss_contentbold'>" + NLT.getDef(rootElement.attributeValue("caption")));
+			Element property = (Element) rootElement.selectSingleNode("./properties/property[@name='caption']");
+			String propertyCaptionValue = "";
+			if (property != null) {
+				propertyCaptionValue = property.attributeValue("value", "");
+				if (!propertyCaptionValue.equals("")) {
+					sb.append(" - " + propertyCaptionValue);
+				}
+			}
+			if (propertyCaptionValue.equals("")) {
+				propertyCaptionValue = NLT.getDef(rootElement.attributeValue("caption"));
+			}
+			sb.append("</span>\n<br><br>\n");
+			sb.append("</div>\n");
+			sb.append("<script language='javascript'>\n");
+			sb.append("    self.ss_setDeclaredDiv('info_" + rootElementId + "')\n");
+			sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
+			sb.append("    idMapCaption['"+rootElementId+"'] = '"+propertyCaptionValue.replaceAll("'", "\'")+"';\n");
+			sb.append("</script>\n");
+		}
+
+	}
 	
-				//Add the list of operations
-				operations = rootConfigElement.element("operations");
-				if (operations == null) {
-					//There are no operations listed in the definition file, so add in the standard operations
-					//See if there are any options. If so, add the "add" command.
-					operations = rootElement.addElement("operations");
-					if (rootElement.element("options") != null) {
-						operationElement = operations.addElement("operation");
-						operationElement.addAttribute("name", "addOption");
-						operationElement.addAttribute("caption", "__add");
-					}
-					if (rootElement.element("properties") != null) {
-						operationElement = operations.addElement("operation");
-						operationElement.addAttribute("name", "modifyItem");
-						operationElement.addAttribute("caption", "__modify");
-					}
-					if (rootElement.attributeValue("canBeDeleted", "true").equalsIgnoreCase("true")) {
-						operationElement = operations.addElement("operation");
-						operationElement.addAttribute("name", "deleteItem");
-						operationElement.addAttribute("caption", "__delete");
-					}
-					
+	private void buildInfoOptionsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
+		if (this.option.equals("") && !this.divNames.containsKey("infoDefinitionOptions")) {
+			this.divNames.put("infoDefinitionOptions", "1");
+			sb.append("\n<div id='infoDefinitionOptions' ");
+			sb.append("class='ss_definitionBuilder'>\n");
+			sb.append("<span class='ss_titlebold' id='infoDefinitionOptionsDefinitionName'></span>\n");
+			
+			sb.append("<table>\n");
+			
+			sb.append("<tr><td>\n");
+			sb.append("<a class='ss_content' href='javascript: ;' "); 
+			sb.append("onClick=\"return viewDefinition();\">");
+			sb.append("View this definition");
+			sb.append("</a>\n");
+			sb.append("</td></tr>\n");
+			
+			sb.append("<tr><td>\n");
+			sb.append("<a class='ss_content' href='javascript: ;' "); 
+			sb.append("onClick=\"return modifyDefinition();\">");
+			sb.append("Modify the properties of this definition");
+			sb.append("</a>\n");
+			sb.append("</td></tr>\n");
+
+			sb.append("<tr><td>\n");
+			sb.append("<a class='ss_content' href='javascript: ;' "); 
+			sb.append("onClick=\"return deleteDefinition();\">");
+			sb.append("Delete this definition");
+			sb.append("</a>\n");
+			sb.append("</td></tr>\n");
+
+			sb.append("</table>\n");
+
+			sb.append("</div>\n");
+			sb.append("<script language='javascript'>\n");
+			sb.append("    self.ss_setDeclaredDiv('infoDefinitionOptions')\n");
+			sb.append("</script>\n");
+		}
+	}
+
+	private void buildModifyDefinitionDiv(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
+		//This div is only built and used dynamically
+		if (!this.divNames.containsKey("modify_definition") && this.option.equals("modifyDefinition")) {
+			this.divNames.put("modify_definition", "1");
+			
+			//String definitionType = 
+			sb.append("<span class='ss_titlebold'>Modify the properties of this definition</span><br><br>\n");
+			sb.append("<span>Name</span><br>\n");
+			sb.append("<input type='text' size='40' value=\"");
+			sb.append(sourceRoot.attributeValue("name", ""));
+			sb.append("\" disabled='true'>\n");
+			sb.append("<input type='hidden' name='modifyDefinitionName' value=\"");
+			sb.append(sourceRoot.attributeValue("name", "").replaceAll("\"", "&quot;"));
+			sb.append("\" >\n<br>\n");
+			sb.append("<span>Caption</span><br>\n");
+			sb.append("<input type='text' name='modifyDefinitionCaption' size='40' value=\"");
+			sb.append(sourceRoot.attributeValue("caption", "").replaceAll("\"", "&quot;"));
+			sb.append("\"><br>\n");
+
+			//Append the properties form elements
+			this.option = "properties";
+			buildPropertiesDivs(root, sourceRoot, sb, hb, filter);
+		}
+	}
+	
+	private void buildDeleteDefinitionDiv(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
+		if (this.option.equals("") && !this.divNames.containsKey("delete_definition")) {
+			this.divNames.put("delete_definition", "1");
+			sb.append("\n<div id='delete_definition' ");
+			sb.append("class='ss_definitionBuilder'>\n");
+			sb.append("<span class='ss_titlebold'>Select the definition to be deleted</span>\n");
+			sb.append("</div>\n");
+			sb.append("<script language='javascript'>\n");
+			sb.append("    self.ss_setDeclaredDiv('delete_definition')\n");
+			sb.append("</script>\n");
+			sb.append("\n<div id='delete_definition_confirm' ");
+			sb.append("class='ss_definitionBuilder'>\n");
+			sb.append("<span class='ss_titlebold'>Delete: <span id='deleteDefinitionSelection'></span></span>\n");
+			sb.append("<br><br>\n");
+			sb.append("<input type='submit' name='okBtn' value='  OK  '>\n");
+			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+			sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
+			sb.append("</div>\n");
+			sb.append("<script language='javascript'>\n");
+			sb.append("    self.ss_setDeclaredDiv('delete_definition_confirm')\n");
+			sb.append("</script>\n");
+		}
+	}
+
+	private void buildOperationsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
+		if (this.option.equals("") && !this.divNames.containsKey("operations_"+rootElementId)) {
+			this.divNames.put("operations_"+rootElementId, "1");
+			sb.append("\n<div id='operations_" + rootElementId + "' "); 
+			sb.append("class='ss_definitionBuilder'>\n");
+			sb.append("<table cellpadding='0' cellspacing='0'>\n");
+
+			//Add the list of operations
+			Element operations = rootConfigElement.element("operations");
+			Element operationElement;
+			if (operations == null) {
+				//There are no operations listed in the definition file, so add in the standard operations
+				//See if there are any options. If so, add the "add" command.
+				operations = rootElement.addElement("operations");
+				if (rootElement.element("options") != null) {
 					operationElement = operations.addElement("operation");
-					operationElement.addAttribute("name", "moveItem");
-					operationElement.addAttribute("caption", "__move");
-					
-					if (rootElement.attributeValue("multipleAllowed", "").equalsIgnoreCase("true") || 
-							sourceRoot.selectSingleNode("//item[@name='"+rootElementName+"']") == null) {
-						operationElement = operations.addElement("operation");
-						operationElement.addAttribute("name", "cloneItem");
-						operationElement.addAttribute("caption", "__clone");
-					}
-					
+					operationElement.addAttribute("name", "addOption");
+					operationElement.addAttribute("caption", "__add");
 				}
-				itOperations = operations.elementIterator("operation");
-				while (itOperations.hasNext()) {
-					sb.append("<tr><td>\n");
-					operationElement = (Element) itOperations.next();
-					String operationElementId = operationElement.attributeValue("id", operationElement.attributeValue("name"));
-					String operationElementName = operationElement.attributeValue("name");
-					
-					sb.append("<a class='ss_content' href='javascript: ;' "); 
-					if (operationElement.attributeValue("item", "").equals("")) {
-						sb.append("onClick=\""+operationElementId+"('" + operationElementId + "', '" + operationElementName + "', '')\">");
-					} else {
-						sb.append("onClick=\""+operationElementId+"('" + operationElementId + "', '" + operationElementName + "', '"+operationElement.attributeValue("item")+"')\">");
-					}
-					sb.append(NLT.getDef(operationElement.attributeValue("caption")));
-					sb.append("</a>\n");
-					sb.append("</td></tr>\n");
+				if (rootElement.element("properties") != null) {
+					operationElement = operations.addElement("operation");
+					operationElement.addAttribute("name", "modifyItem");
+					operationElement.addAttribute("caption", "__modify");
 				}
-	
-				sb.append("</table>\n");
-				sb.append("</div>\n");
-				sb.append("<script language='javascript'>\n");
-				sb.append("    self.ss_setDeclaredDiv('operations_" + rootElementId + "')\n");
-				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-				sb.append("</script>\n");
-			}
-
-			//Build the options div
-			if (!this.divNames.containsKey("options_"+rootElementId)) {
-				this.divNames.put("options_"+rootElementId, "1");
-				sb.append("\n<div id='options_" + rootElementId + "' "); 
-				sb.append("class='ss_definitionBuilder'>\n");
-	
-				//Add the list of options
-				options = rootConfigElement.element("options");
-				Map optionsSeen = new HashMap();
+				if (rootElement.attributeValue("canBeDeleted", "true").equalsIgnoreCase("true")) {
+					operationElement = operations.addElement("operation");
+					operationElement.addAttribute("name", "deleteItem");
+					operationElement.addAttribute("caption", "__delete");
+				}
 				
-				sb.append("<ul>\n");
-				if (options != null) {
-					itOptions = options.elementIterator("option");
-					while (itOptions.hasNext()) {
-						option = (Element) itOptions.next();
-						String optionId = option.attributeValue("id", option.attributeValue("name"));
-						String optionName = option.attributeValue("name");
-						//Find this item in the definition config
-						Element optionItem = (Element) this.configDocument.getRootElement().selectSingleNode("item[@name='"+optionName+"']");
-						if (optionItem != null) {
-							//See if multiple are allowed
-							if (!optionItem.attributeValue("multipleAllowed", "").equalsIgnoreCase("false") || 
-									sourceRoot.selectSingleNode("//item[@name='"+optionName+"']") == null) {
-								if (!optionsSeen.containsKey(optionName)) {
-									sb.append("<li>");
-									sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+optionId+"', '"+optionName+"')\">");
-									sb.append(NLT.getDef(optionItem.attributeValue("caption", optionName)));
-									sb.append("</a>");
-									//See if this item has any help
-									Element help = (Element) optionItem.selectSingleNode("./help");
-									if (help != null) {
-										hb.append("<div id='help_div_");
-										hb.append(Integer.toString(++helpDivCount));
-										hb.append("' class='ss_helpPopUp'>\n");
-										hb.append("<span class='ss_content'>");
-										hb.append(NLT.getDef(help.getText()));
-										hb.append("</span>\n</div>\n");
-										sb.append("&nbsp;<a name='help_div_");
-										sb.append(Integer.toString(helpDivCount));
-										sb.append("_a' onClick=\"activateMenuLayer('help_div_");
-										sb.append(Integer.toString(helpDivCount));
-										sb.append("');return false;\"><img src='"+helpImgUrl+"'></a>\n");
-									}
-									sb.append("</li>\n");
-									optionsSeen.put(optionName, optionName);
+				operationElement = operations.addElement("operation");
+				operationElement.addAttribute("name", "moveItem");
+				operationElement.addAttribute("caption", "__move");
+				
+				if (rootElement.attributeValue("multipleAllowed", "").equalsIgnoreCase("true") || 
+						sourceRoot.selectSingleNode("//item[@name='"+rootElementName+"']") == null) {
+					operationElement = operations.addElement("operation");
+					operationElement.addAttribute("name", "cloneItem");
+					operationElement.addAttribute("caption", "__clone");
+				}
+				
+			}
+			Iterator itOperations = operations.elementIterator("operation");
+			while (itOperations.hasNext()) {
+				sb.append("<tr><td>\n");
+				operationElement = (Element) itOperations.next();
+				String operationElementId = operationElement.attributeValue("id", operationElement.attributeValue("name"));
+				String operationElementName = operationElement.attributeValue("name");
+				
+				sb.append("<a class='ss_content' href='javascript: ;' "); 
+				if (operationElement.attributeValue("item", "").equals("")) {
+					sb.append("onClick=\""+operationElementId+"('" + operationElementId + "', '" + operationElementName + "', '')\">");
+				} else {
+					sb.append("onClick=\""+operationElementId+"('" + operationElementId + "', '" + operationElementName + "', '"+operationElement.attributeValue("item")+"')\">");
+				}
+				sb.append(NLT.getDef(operationElement.attributeValue("caption")));
+				sb.append("</a>\n");
+				sb.append("</td></tr>\n");
+			}
+
+			sb.append("</table>\n");
+			sb.append("</div>\n");
+			sb.append("<script language='javascript'>\n");
+			sb.append("    self.ss_setDeclaredDiv('operations_" + rootElementId + "')\n");
+			sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
+			sb.append("</script>\n");
+		}
+	}
+	
+	private void buildOptionsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
+		if (this.option.equals("") && !this.divNames.containsKey("options_"+rootElementId)) {
+			this.divNames.put("options_"+rootElementId, "1");
+			sb.append("\n<div id='options_" + rootElementId + "' "); 
+			sb.append("class='ss_definitionBuilder'>\n");
+
+			//Add the list of options
+			Element e_options = rootConfigElement.element("options");
+			Element e_option;
+			Map optionsSeen = new HashMap();
+			
+			sb.append("<ul>\n");
+			if (e_options != null) {
+				Iterator itOptions = e_options.elementIterator("option");
+				while (itOptions.hasNext()) {
+					e_option = (Element) itOptions.next();
+					String optionId = e_option.attributeValue("id", e_option.attributeValue("name"));
+					String optionName = e_option.attributeValue("name");
+					//Find this item in the definition config
+					Element optionItem = (Element) this.configDocument.getRootElement().selectSingleNode("item[@name='"+optionName+"']");
+					if (optionItem != null) {
+						//See if multiple are allowed
+						if (!optionItem.attributeValue("multipleAllowed", "").equalsIgnoreCase("false") || 
+								sourceRoot.selectSingleNode("//item[@name='"+optionName+"']") == null) {
+							if (!optionsSeen.containsKey(optionName)) {
+								sb.append("<li>");
+								sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+optionId+"', '"+optionName+"')\">");
+								sb.append(NLT.getDef(optionItem.attributeValue("caption", optionName)));
+								sb.append("</a>");
+								//See if this item has any help
+								Element help = (Element) optionItem.selectSingleNode("./help");
+								if (help != null) {
+									helpDivCount++;
+									hb.append("<div id='help_div_" + rootElementId);
+									hb.append(Integer.toString(helpDivCount));
+									hb.append("' class='ss_helpPopUp'>\n");
+									hb.append("<span class='ss_content'>");
+									hb.append(NLT.getDef(help.getText()));
+									hb.append("</span>\n</div>\n");
+									sb.append("&nbsp;<a name='help_div_" + rootElementId);
+									sb.append(Integer.toString(helpDivCount));
+									sb.append("_a' onClick=\"activateMenuLayer('help_div_ + rootElementId");
+									sb.append(Integer.toString(helpDivCount));
+									sb.append("');return false;\"><img src='"+helpImgUrl+"'></a>\n");
 								}
-							}
-						}
-					}
-					
-					itOptions = options.elementIterator("option_select");
-					while (itOptions.hasNext()) {
-						option = (Element) itOptions.next();
-						String optionCaption = NLT.getDef(option.attributeValue("optionCaption", ""));
-						if (!optionCaption.equals("")) {
-							sb.append("</ul>\n<br>\n<b>").append(optionCaption).append("</b>\n<ul>\n");
-						}
-						String optionPath = option.attributeValue("path", "");
-						Iterator itOptionsSelect = rootConfigElement.selectNodes(optionPath).iterator();
-						while (itOptionsSelect.hasNext()) {
-							Element optionSelect = (Element) itOptionsSelect.next();
-							String optionSelectId = optionSelect.attributeValue("id", optionSelect.attributeValue("name"));
-							String optionSelectName = optionSelect.attributeValue("name");
-							//See if multiple are allowed
-							if (!optionSelect.attributeValue("multipleAllowed", "").equalsIgnoreCase("false") ||
-									sourceRoot.selectSingleNode("//item[@name='"+optionSelectName+"']") == null) {
-								if (!optionsSeen.containsKey(optionSelectName)) {
-									sb.append("<li>");
-									sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+optionSelectId+"', '"+optionSelectName+"')\">");
-									sb.append(NLT.getDef(optionSelect.attributeValue("caption", optionSelectName)));
-									sb.append("</a>");
-									//See if this item has any help
-									Element help = (Element) optionSelect.selectSingleNode("./help");
-									if (help != null) {
-										hb.append("<div id='help_div_");
-										hb.append(Integer.toString(++helpDivCount));
-										hb.append("' class='ss_helpPopUp'>\n");
-										hb.append("<span class='ss_content'>");
-										hb.append(NLT.getDef(help.getText()));
-										hb.append("</span>\n</div>\n");
-										sb.append("&nbsp;<a name='help_div_");
-										sb.append(Integer.toString(helpDivCount));
-										sb.append("_a' onClick=\"activateMenuLayer('help_div_");
-										sb.append(Integer.toString(helpDivCount));
-										sb.append("');return false;\"><img src='"+helpImgUrl+"'></a>\n");
-									}
-									sb.append("</li>\n");
-									optionsSeen.put(optionSelectName, optionSelectName);
-								}
+								sb.append("</li>\n");
+								optionsSeen.put(optionName, optionName);
 							}
 						}
 					}
 				}
-				sb.append("</ul>\n");
-				sb.append("<br>\n");
-				sb.append("</div>\n");
-				sb.append("<script language='javascript'>\n");
-				sb.append("    self.ss_setDeclaredDiv('options_" + rootElementId + "')\n");
-				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-				sb.append("</script>\n");
+				
+				itOptions = e_options.elementIterator("option_select");
+				while (itOptions.hasNext()) {
+					e_option = (Element) itOptions.next();
+					String optionCaption = NLT.getDef(e_option.attributeValue("optionCaption", ""));
+					if (!optionCaption.equals("")) {
+						sb.append("</ul>\n<br>\n<b>").append(optionCaption).append("</b>\n<ul>\n");
+					}
+					String optionPath = e_option.attributeValue("path", "");
+					Iterator itOptionsSelect = rootConfigElement.selectNodes(optionPath).iterator();
+					while (itOptionsSelect.hasNext()) {
+						Element optionSelect = (Element) itOptionsSelect.next();
+						String optionSelectId = optionSelect.attributeValue("id", optionSelect.attributeValue("name"));
+						String optionSelectName = optionSelect.attributeValue("name");
+						//See if multiple are allowed
+						if (!optionSelect.attributeValue("multipleAllowed", "").equalsIgnoreCase("false") ||
+								sourceRoot.selectSingleNode("//item[@name='"+optionSelectName+"']") == null) {
+							if (!optionsSeen.containsKey(optionSelectName)) {
+								sb.append("<li>");
+								sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+optionSelectId+"', '"+optionSelectName+"')\">");
+								sb.append(NLT.getDef(optionSelect.attributeValue("caption", optionSelectName)));
+								sb.append("</a>");
+								//See if this item has any help
+								Element help = (Element) optionSelect.selectSingleNode("./help");
+								if (help != null) {
+									helpDivCount++;
+									hb.append("<div id='help_div_" + rootElementId);
+									hb.append(Integer.toString(helpDivCount));
+									hb.append("' class='ss_helpPopUp'>\n");
+									hb.append("<span class='ss_content'>");
+									hb.append(NLT.getDef(help.getText()));
+									hb.append("</span>\n</div>\n");
+									sb.append("&nbsp;<a name='help_div_" + rootElementId);
+									sb.append(Integer.toString(helpDivCount));
+									sb.append("_a' onClick=\"activateMenuLayer('help_div_" + rootElementId);
+									sb.append(Integer.toString(helpDivCount));
+									sb.append("');return false;\"><img src='"+helpImgUrl+"'></a>\n");
+								}
+								sb.append("</li>\n");
+								optionsSeen.put(optionSelectName, optionSelectName);
+							}
+						}
+					}
+				}
 			}
-
-			//Build the properties div
-			if (!this.divNames.containsKey("properties_"+rootElementId)) {
-				this.divNames.put("properties_"+rootElementId, "1");
+			sb.append("</ul>\n");
+			sb.append("<br>\n");
+			sb.append("</div>\n");
+			sb.append("<script language='javascript'>\n");
+			sb.append("    self.ss_setDeclaredDiv('options_" + rootElementId + "')\n");
+			sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
+			sb.append("</script>\n");
+		}
+	}
+	private void buildPropertiesDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
+		//Build the properties div
+		if ((this.option.equals("") || this.option.equals("properties")) && 
+				!this.divNames.containsKey("properties_"+rootElementId)) {
+			this.divNames.put("properties_"+rootElementId, "1");
+			if (this.option.equals("")) {
 				sb.append("\n<div id='properties_" + rootElementId + "' "); 
 				sb.append("class='ss_definitionBuilder'>\n");
-	
-				//Add the list of properties
-				propertiesConfig = rootConfigElement.element("properties");
-				properties = rootElement.element("properties");
-				if (propertiesConfig != null) {
-					itProperties = propertiesConfig.elementIterator("property");
-					while (itProperties.hasNext()) {
-						propertyConfig = (Element) itProperties.next();
-						String propertyId = propertyConfig.attributeValue("id", propertyConfig.attributeValue("name", ""));
-						String propertyName = propertyConfig.attributeValue("name", "");
-						String readonly = "";
-						if (propertyConfig.attributeValue("readonly", "false").equalsIgnoreCase("true")) {
-							readonly = "readonly='readonly'";
+			}
+
+			//Add the list of properties
+			Element property;
+			Element propertiesConfig = rootConfigElement.element("properties");
+			Element properties = rootElement.element("properties");
+			if (propertiesConfig != null) {
+				Iterator itProperties = propertiesConfig.elementIterator("property");
+				while (itProperties.hasNext()) {
+					//Get the next property from the base config file
+					Element propertyConfig = (Element) itProperties.next();
+					//Get the name and id (if any) from the config file
+					String propertyId = propertyConfig.attributeValue("id", propertyConfig.attributeValue("name", ""));
+					String propertyName = propertyConfig.attributeValue("name", "");
+					String readonly = "";
+					if (propertyConfig.attributeValue("readonly", "false").equalsIgnoreCase("true")) {
+						readonly = "readonly='readonly'";
+					}
+					String propertyValue = "";
+					String propertyValueDefault = "";
+					if (properties != null) {
+						//See if there is already a value for this property in the actual definition file
+						property = (Element) properties.selectSingleNode("property[@name='"+propertyId+"']");
+						if (property != null) {
+							propertyValue = property.attributeValue("value", "");
+							propertyValueDefault = property.attributeValue("default", "");
 						}
-						String propertyValue = "";
-						String propertyValueDefault = "";
-						if (properties != null) {
-							property = (Element) properties.selectSingleNode("property[@name='"+propertyId+"']");
-							if (property != null) {
-								propertyValue = property.attributeValue("value", "");
-								propertyValueDefault = property.attributeValue("default", "");
-							}
+					}
+					String type = propertyConfig.attributeValue("type", "text");
+					if (type.equals("textarea")) {
+						if (!propertyConfig.attributeValue("caption", "").equals("")) {
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+							sb.append("\n<br>\n");
 						}
-						String type = propertyConfig.attributeValue("type", "text");
-						if (type.equals("textarea")) {
-							if (!propertyConfig.attributeValue("caption", "").equals("")) {
-								sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
-								sb.append("\n<br>\n");
-							}
-							sb.append("<textarea name='propertyId_" + propertyId + "' rows='6' cols='60' "+readonly+">"+propertyValue+"</textarea>\n");
-						
-						} else if (type.equals("boolean") || type.equals("checkbox")) {
-							String checked = "";
-							if (propertyValue.equals("")) {
-								if (propertyConfig.attributeValue("default", "false").equalsIgnoreCase("true")) {
-									checked = "checked";
-								}
-							} else if (propertyValue.equalsIgnoreCase("true")) {
+						sb.append("<textarea name='propertyId_" + propertyId + "' rows='6' cols='60' "+readonly+">"+propertyValue+"</textarea>\n");
+					
+					} else if (type.equals("boolean") || type.equals("checkbox")) {
+						String checked = "";
+						if (propertyValue.equals("")) {
+							if (propertyConfig.attributeValue("default", "false").equalsIgnoreCase("true")) {
 								checked = "checked";
 							}
-							sb.append("<input type='checkbox' name='propertyId_" + propertyId + "' "+checked+" "+readonly+"> ");
+						} else if (propertyValue.equalsIgnoreCase("true")) {
+							checked = "checked";
+						}
+						sb.append("<input type='checkbox' name='propertyId_" + propertyId + "' "+checked+" "+readonly+"> ");
+						sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+					
+					} else if (type.equals("selectbox")) {
+						if (!propertyConfig.attributeValue("caption", "").equals("")) {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
-						
-						} else if (type.equals("selectbox")) {
-							if (!propertyConfig.attributeValue("caption", "").equals("")) {
-								sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
-								sb.append("\n<br>\n");
+							sb.append("\n<br>\n");
+						}
+						sb.append("<select name='propertyId_" + propertyId + "'>\n");
+						//See if there are any built-in options
+						Iterator  itSelections = propertyConfig.elementIterator("option");
+						while (itSelections.hasNext()) {
+							Element selection = (Element) itSelections.next();
+							String checked = "";
+							if ((!propertyValue.equals("") && propertyValue.equals(selection.attributeValue("name", ""))) || 
+									(!propertyValueDefault.equals("") && propertyValueDefault.equals(selection.attributeValue("name", "")))) {
+								checked = " selected";
 							}
-							sb.append("<select name='propertyId_" + propertyId + "'>\n");
-							//See if there are any built-in options
-							Iterator  itSelections = propertyConfig.elementIterator("option");
-							while (itSelections.hasNext()) {
-								Element selection = (Element) itSelections.next();
-								String checked = "";
-								if ((!propertyValue.equals("") && propertyValue.equals(selection.attributeValue("name", ""))) || 
-										(!propertyValueDefault.equals("") && propertyValueDefault.equals(selection.attributeValue("name", "")))) {
-									checked = " selected";
-								}
-								sb.append("<option value='").append(selection.attributeValue("name", "")).append("'").append(checked).append(">");
-								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
-								sb.append("</option>\n");
-							}
-							//See if there are any data items to be shown from the "sourceRoot" entry form
-							itSelections = propertyConfig.elementIterator("option_entry_data");
-							while (itSelections.hasNext()) {
-								Element selection = (Element) itSelections.next();
-								String selectionSelectType = selection.attributeValue("select_type", "");
-								//Select the data items from the actual definition, not from the base configuration definition
-								Element entryFormElement = (Element) sourceRoot.selectSingleNode("item[@name='entryForm']");
-								if (entryFormElement != null) {
-									Iterator itEntryFormElements = entryFormElement.selectNodes(".//item").iterator();
-									while (itEntryFormElements.hasNext()) {
-										Element entryFormItem = (Element) itEntryFormElements.next();
-										Element entryFormItemNameProperty = (Element) entryFormItem.selectSingleNode("./properties/property[@name='name']");
-										String entryFormItemNamePropertyValue = "";
-										if (entryFormItemNameProperty != null) {
-											entryFormItemNamePropertyValue = entryFormItemNameProperty.attributeValue("value", "");
-										}
-										String entryFormItemNamePropertyName = "";
-										if (entryFormItemNameProperty != null) {
-											entryFormItemNamePropertyName = entryFormItemNamePropertyValue;
-										}
-										if (entryFormItemNamePropertyName.equals("")) {
-											entryFormItemNamePropertyName = entryFormItem.attributeValue("name", "");
-										}
-										Element entryFormItemCaptionProperty = (Element) entryFormItem.selectSingleNode("./properties/property[@name='caption']");
-										String entryFormItemCaptionPropertyValue = "";
-										if (entryFormItemCaptionProperty != null) {
-											entryFormItemCaptionPropertyValue = entryFormItemCaptionProperty.attributeValue("value", "");
-										}
-										if (entryFormItemCaptionPropertyValue.equals("")) {
-											entryFormItemCaptionPropertyValue = entryFormItemNamePropertyName;
-										}
-										//See if this is a data type by looking in the base configuration
-										Element itemDefinition = (Element) this.configDocument.getRootElement().selectSingleNode("//item[@name='"+entryFormItem.attributeValue("name", "")+"']");
-										if (itemDefinition != null) {
-											if (itemDefinition.attributeValue("type", "").equalsIgnoreCase(selectionSelectType)) {
-												String checked = "";
-												if (entryFormItemNamePropertyName.equals(propertyValue) || 
-														(propertyValue.equals("") && entryFormItemNamePropertyName.equals(propertyValueDefault))) {
-													checked = " selected";
-												}
-												sb.append("<option value='").append(entryFormItemNamePropertyName).append("'").append(checked).append(">");
-												sb.append(entryFormItemCaptionPropertyValue);
-												sb.append("</option>\n");
+							sb.append("<option value='").append(selection.attributeValue("name", "")).append("'").append(checked).append(">");
+							sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
+							sb.append("</option>\n");
+						}
+						//See if there are any data items to be shown from the "sourceRoot" entry form
+						itSelections = propertyConfig.elementIterator("option_entry_data");
+						while (itSelections.hasNext()) {
+							Element selection = (Element) itSelections.next();
+							String selectionSelectType = selection.attributeValue("select_type", "");
+							//Select the data items from the actual definition, not from the base configuration definition
+							Element entryFormElement = (Element) sourceRoot.selectSingleNode("item[@name='entryForm']");
+							if (entryFormElement != null) {
+								Iterator itEntryFormElements = entryFormElement.selectNodes(".//item").iterator();
+								while (itEntryFormElements.hasNext()) {
+									Element entryFormItem = (Element) itEntryFormElements.next();
+									Element entryFormItemNameProperty = (Element) entryFormItem.selectSingleNode("./properties/property[@name='name']");
+									String entryFormItemNamePropertyValue = "";
+									if (entryFormItemNameProperty != null) {
+										entryFormItemNamePropertyValue = entryFormItemNameProperty.attributeValue("value", "");
+									}
+									String entryFormItemNamePropertyName = "";
+									if (entryFormItemNameProperty != null) {
+										entryFormItemNamePropertyName = entryFormItemNamePropertyValue;
+									}
+									if (entryFormItemNamePropertyName.equals("")) {
+										entryFormItemNamePropertyName = entryFormItem.attributeValue("name", "");
+									}
+									Element entryFormItemCaptionProperty = (Element) entryFormItem.selectSingleNode("./properties/property[@name='caption']");
+									String entryFormItemCaptionPropertyValue = "";
+									if (entryFormItemCaptionProperty != null) {
+										entryFormItemCaptionPropertyValue = entryFormItemCaptionProperty.attributeValue("value", "");
+									}
+									if (entryFormItemCaptionPropertyValue.equals("")) {
+										entryFormItemCaptionPropertyValue = entryFormItemNamePropertyName;
+									}
+									//See if this is a data type by looking in the base configuration
+									Element itemDefinition = (Element) this.configDocument.getRootElement().selectSingleNode("//item[@name='"+entryFormItem.attributeValue("name", "")+"']");
+									if (itemDefinition != null) {
+										if (itemDefinition.attributeValue("type", "").equalsIgnoreCase(selectionSelectType)) {
+											String checked = "";
+											if (entryFormItemNamePropertyName.equals(propertyValue) || 
+													(propertyValue.equals("") && entryFormItemNamePropertyName.equals(propertyValueDefault))) {
+												checked = " selected";
 											}
+											sb.append("<option value='").append(entryFormItemNamePropertyName).append("'").append(checked).append(">");
+											sb.append(entryFormItemCaptionPropertyValue);
+											sb.append("</option>\n");
 										}
 									}
 								}
 							}
-							
-							sb.append("</select>\n");
+						}
 						
-						} else {
-							if (!propertyConfig.attributeValue("caption", "").equals("")) {
-								sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
-								sb.append("\n<br>\n");
+						sb.append("</select>\n");
+					
+					} else if (type.equals("replyStyle")) {
+						if (!propertyConfig.attributeValue("caption", "").equals("")) {
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+							sb.append("\n<br>\n");
+						}
+						sb.append("<select multiple name='propertyId_" + propertyId + "'>\n");
+						sb.append("<option value=''>").append(NLT.get("definition.select_reply_styles")).append("</option>\n");
+						Iterator itEntryDefinitions = this.entryDefinitions.keySet().iterator();
+						while (itEntryDefinitions.hasNext()) {
+							//Build a list of the entry definitions
+							Definition entryDef = (Definition) this.entryDefinitions.get((String) itEntryDefinitions.next());
+							sb.append("<option value='").append(entryDef.getId()).append("'");
+							Iterator itReplyStyles = sourceRoot.selectNodes("properties/property[@name='replyStyle']").iterator();
+							while (itReplyStyles.hasNext()) {
+								if (entryDef.getId().equals(((Element)itReplyStyles.next()).attributeValue("value", ""))) {
+									sb.append(" selected");
+									break;
+								}
 							}
-							sb.append("<input type='text' name='propertyId_" + propertyId + "' size='40' value=\""+propertyValue+"\" "+readonly+">\n");
+							sb.append(">").append(entryDef.getTitle()).append(" (").append(entryDef.getName()).append(")</option>\n");
 						}
-						//See if this property has any help
-						Element help = (Element) propertyConfig.selectSingleNode("./help");
-						if (help != null) {
-							hb.append("<div id='help_div_");
-							hb.append(Integer.toString(++helpDivCount));
-							hb.append("' class='ss_helpPopUp'>\n");
-							hb.append("<span class='ss_content'>");
-							hb.append(NLT.getDef(help.getText()));
-							hb.append("</span>\n</div>\n");
-							sb.append("&nbsp;<a name='help_div_");
-							sb.append(Integer.toString(helpDivCount));
-							sb.append("_a' onClick=\"activateMenuLayer('help_div_");
-							sb.append(Integer.toString(helpDivCount));
-							sb.append("');return false;\"><img src='"+helpImgUrl+"'></a>\n");
+						sb.append("</select>\n<br><br>\n");
+					
+					} else {
+						if (!propertyConfig.attributeValue("caption", "").equals("")) {
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+							sb.append("\n<br>\n");
 						}
-						
-						sb.append("<input type='hidden' name='propertyName_" + propertyId + "' value='"+propertyName+"'>\n");
-						sb.append("<br>\n");
+						sb.append("<input type='text' name='propertyId_" + propertyId + "' size='40' ");
+						sb.append("value=\""+propertyValue.replaceAll("\"", "&quot;")+"\" "+readonly+">\n");
 					}
+					//See if this property has any help
+					Element help = (Element) propertyConfig.selectSingleNode("./help");
+					if (help != null) {
+						helpDivCount++;
+						hb.append("<div id='help_div_" + rootElementId);
+						hb.append(Integer.toString(helpDivCount));
+						hb.append("' class='ss_helpPopUp'>\n");
+						hb.append("<span class='ss_content'>");
+						hb.append(NLT.getDef(help.getText()));
+						hb.append("</span>\n</div>\n");
+						sb.append("&nbsp;<a name='help_div_" + rootElementId);
+						sb.append(Integer.toString(helpDivCount));
+						sb.append("_a' onClick=\"activateMenuLayer('help_div_" + rootElementId);
+						sb.append(Integer.toString(helpDivCount));
+						sb.append("');return false;\"><img src='"+helpImgUrl+"'></a>\n");
+					}
+					
+					sb.append("<input type='hidden' name='propertyName_" + propertyId + "' ");
+					sb.append("value=\""+propertyName.replaceAll("\"", "&quot;")+"\">\n");
+					sb.append("<br>\n");
 				}
-				sb.append("<br>");
-				sb.append("<input type='submit' name='okBtn' value=' Ok '>\n");
-				sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-				sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
-				sb.append("<input type='hidden' name='definitionType_"+rootElementId+"' value='"+ rootElement.attributeValue("definitionType", "") +"'>\n");
+			}
+			sb.append("<br>");
+			sb.append("<input type='submit' name='okBtn' value=' Ok '>\n");
+			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+			sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
+			sb.append("<input type='hidden' name='definitionType_"+rootElementId+"' value='"+ rootElement.attributeValue("definitionType", "") +"'>\n");
 
+			if (this.option.equals("")) {
 				sb.append("</div>\n");
 				sb.append("<script language='javascript'>\n");
 				sb.append("    self.ss_setDeclaredDiv('properties_" + rootElementId + "')\n");
 				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
 				sb.append("</script>\n");
 			}
-			
-			//See if this element has any sub elements to do
-			buildDivs(rootElement, sourceRoot, sb, hb, "item");
 		}
-		
 	}
 	
 	private void buildDefaultDivs(StringBuffer sb, StringBuffer hb) {
@@ -636,6 +718,18 @@ public class BuildDefinitionDivs extends TagSupport {
 	    this.entryDefinitions = entryDefinitions;
 	}
 
+	public void setOption(String option) {
+	    this.option = option;
+	}
+	
+	public void setItemId(String itemId) {
+	    this.itemId = itemId;
+	}
+	
+	public void setItemName(String itemName) {
+	    this.itemName = itemName;
+	}
+	
 }
 
 
