@@ -14,7 +14,7 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<jsp:useBean id="ss_wsDomTree" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="wsDomTree" type="org.dom4j.Document" scope="request" />
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
@@ -39,7 +39,7 @@ function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
 	return false
 }
 </script>
-<ssf:tree treeName="wsTree" treeDocument="<%= ss_wsDomTree %>"  rootOpen="true" />
+<ssf:tree treeName="wsTree" treeDocument="<%= wsDomTree %>"  rootOpen="true" />
 </form>
 <br>
 

@@ -14,7 +14,7 @@ import javax.portlet.PortletSession;
 import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.portlet.Constants;
+import com.sitescape.ef.portlet.PortletKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 
 /**
@@ -32,13 +32,13 @@ public class WorkspaceTreeController extends SAbstractController {
 		
 
 		Map model = new HashMap();
-		Document wsTree = (Document)ses.getAttribute(Constants.WORKSPACE_DOM_TREE);
+		Document wsTree = (Document)ses.getAttribute(PortletKeys.WORKSPACE_DOM_TREE);
 		if (wsTree == null) {
 			wsTree = getWorkspaceModule().getDomWorkspaceTree();
 			//Save the tree for the session as a performance improvement
-			ses.setAttribute(Constants.WORKSPACE_DOM_TREE, wsTree);
+			ses.setAttribute(PortletKeys.WORKSPACE_DOM_TREE, wsTree);
 		}
-		model.put(Constants.WORKSPACE_DOM_TREE, wsTree);
+		model.put(PortletKeys.WORKSPACE_DOM_TREE, wsTree);
 			
 	    return new ModelAndView("workspacetree/view", model);
 	}

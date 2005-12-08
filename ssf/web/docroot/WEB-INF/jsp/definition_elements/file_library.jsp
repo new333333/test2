@@ -1,9 +1,9 @@
 <% // File library %>
 <%
-	String folderId = ss_forum_forum.getStringId();
+	String folderId = folder.getStringId();
 	String parentFolderId = "";
-	if (ss_forum_forum instanceof Folder) {
-		Folder parentFolder = ((Folder) ss_forum_forum).getParentFolder();
+	if (folder instanceof Folder) {
+		Folder parentFolder = ((Folder) folder).getParentFolder();
 		if (parentFolder != null) parentFolderId = parentFolder.getId().toString();
 	}
 %>
@@ -24,7 +24,7 @@ function loadEntry(obj,id) {
 <tr>
   <td>
 	<div>
-	  <ssf:tree treeName="folderTree" treeDocument="<%= ss_folder_tree %>" 
+	  <ssf:tree treeName="folderTree" treeDocument="<%= folderDomTree %>" 
 	    commonImg="<%= COMMON_IMG %>" rootOpen="false" 
 	    nodeOpen="<%= parentFolderId %>" highlightNode="<%= folderId %>" />
 	</div>
@@ -41,12 +41,12 @@ function loadEntry(obj,id) {
   <th align="left">Date</th>
   <th align="left">Author</th>
 </tr>
-<c:forEach var="fileEntry" items="${ss_folder_entries}" >
+<c:forEach var="fileEntry" items="${folderEntries}" >
 <jsp:useBean id="fileEntry" type="com.sitescape.ef.domain.FolderEntry" />
 <tr id="folderLine_<c:out value="${fileEntry.id}"/>">
   <td align="right" valign="top" width="1%">
 <%
-	if (ss_folder_seenmap.checkIfSeen(fileEntry)) {
+	if (seenMap.checkIfSeen(fileEntry)) {
 %>&nbsp;<%
 	} else {
 %><img border="0" src="<%= contextPath %>/html/pics/sym_s_unseen.gif"><%

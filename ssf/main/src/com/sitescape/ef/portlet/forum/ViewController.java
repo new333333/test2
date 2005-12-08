@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.HistoryMap;
-import com.sitescape.ef.portlet.Constants;
+import com.sitescape.ef.portlet.PortletKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.ObjectKeys;
@@ -33,16 +33,16 @@ public class ViewController  extends SAbstractController {
 			RenderResponse response) throws Exception {
 		Map model;		
 		PortletSession ses = request.getPortletSession();
-		request.setAttribute(Constants.HISTORY_CACHE, ses.getAttribute(Constants.HISTORY_CACHE));
+		request.setAttribute(PortletKeys.HISTORY_CACHE, ses.getAttribute(PortletKeys.HISTORY_CACHE));
 		Map formData = request.getParameterMap();
 		Long folderId=null;
 		try {
 			folderId = ActionUtil.getForumId(formData, request);
 		} catch (NoFolderByTheIdException nf) {
-			return new ModelAndView(Constants.VIEW);
+			return new ModelAndView(PortletKeys.VIEW);
 		}
 		if (request.getWindowState().equals(WindowState.NORMAL)) {
-			return new ModelAndView(Constants.VIEW, Constants.FOLDER, getFolderModule().getFolder(folderId));
+			return new ModelAndView(PortletKeys.VIEW, PortletKeys.FOLDER, getFolderModule().getFolder(folderId));
 		}
 
 			
@@ -56,70 +56,70 @@ public class ViewController  extends SAbstractController {
          * This controller routine will forward to the desired jsp
          */
 			        
-		String op = ActionUtil.getStringValue(formData, Constants.ACTION);
-		request.setAttribute(Constants.ACTION, op);
+		String op = ActionUtil.getStringValue(formData, PortletKeys.ACTION);
+		request.setAttribute(PortletKeys.ACTION, op);
 			
-		formData.put(Constants.SESSION_LAST_ENTRY_VIEWED, ses.getAttribute(Constants.SESSION_LAST_ENTRY_VIEWED));
-		formData.put(Constants.SESSION_LAST_HISTORY_ENTRY_VIEWED, ses.getAttribute(Constants.SESSION_LAST_HISTORY_ENTRY_VIEWED));
-		String viewPath=Constants.VIEW_FORUM;
-		if (op.equals(Constants.FORUM_OPERATION_VIEW_ENTRY)) {
+		formData.put(PortletKeys.SESSION_LAST_ENTRY_VIEWED, ses.getAttribute(PortletKeys.SESSION_LAST_ENTRY_VIEWED));
+		formData.put(PortletKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, ses.getAttribute(PortletKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED));
+		String viewPath=PortletKeys.VIEW_FORUM;
+		if (op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY)) {
 			model = getForumActionModule().getShowEntry(formData, request, folderId);
-			Object obj = model.get(Constants.CONFIG_ELEMENT);
+			Object obj = model.get(PortletKeys.CONFIG_ELEMENT);
 			if ((obj == null) || (obj.equals(""))) 
-				return new ModelAndView(Constants.VIEW_NO_DEFINITION, model);
-			obj = model.get(Constants.CONFIG_DEFINITION);
+				return new ModelAndView(PortletKeys.VIEW_NO_DEFINITION, model);
+			obj = model.get(PortletKeys.CONFIG_DEFINITION);
 			if ((obj == null) || (obj.equals(""))) 
-				return new ModelAndView(Constants.VIEW_NO_DEFINITION, model);
-			String entryId = (String)model.get(Constants.ENTRY_ID);
-			request.setAttribute(Constants.FORUM_URL_ENTRY_ID, entryId);
-			ses.setAttribute(Constants.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
+				return new ModelAndView(PortletKeys.VIEW_NO_DEFINITION, model);
+			String entryId = (String)model.get(PortletKeys.ENTRY_ID);
+			request.setAttribute(PortletKeys.FORUM_URL_ENTRY_ID, entryId);
+			ses.setAttribute(PortletKeys.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
 			setHistorySeen(model, ses, folderId, false); 
-			ses.setAttribute(Constants.SESSION_LAST_HISTORY_ENTRY_VIEWED, null);
-		} else if (op.equals("") || op.equals(Constants.FORUM_OPERATION_VIEW_FORUM)) {
-			request.setAttribute(Constants.ACTION, Constants.FORUM_OPERATION_VIEW_FORUM);
+			ses.setAttribute(PortletKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, null);
+		} else if (op.equals("") || op.equals(PortletKeys.FORUM_OPERATION_VIEW_FORUM)) {
+			request.setAttribute(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_VIEW_FORUM);
 			model = getForumActionModule().getShowFolder(formData, request, folderId);
-			Object obj = model.get(Constants.CONFIG_ELEMENT);
+			Object obj = model.get(PortletKeys.CONFIG_ELEMENT);
 			if ((obj == null) || (obj.equals(""))) 
-				return new ModelAndView(Constants.VIEW_NO_DEFINITION, model);
-			obj = model.get(Constants.CONFIG_DEFINITION);
+				return new ModelAndView(PortletKeys.VIEW_NO_DEFINITION, model);
+			obj = model.get(PortletKeys.CONFIG_DEFINITION);
 			if ((obj == null) || (obj.equals(""))) 
-				return new ModelAndView(Constants.VIEW_NO_DEFINITION, model);
-		} else if (op.equals(Constants.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
-   			String displayStyle = ActionUtil.getStringValue(formData,Constants.FORUM_URL_VALUE);
+				return new ModelAndView(PortletKeys.VIEW_NO_DEFINITION, model);
+		} else if (op.equals(PortletKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
+   			String displayStyle = ActionUtil.getStringValue(formData,PortletKeys.FORUM_URL_VALUE);
    			getProfileModule().setUserProperty(null,ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, displayStyle);
 			model = getForumActionModule().getShowFolder(formData, request, folderId);
-		} else if (op.equals(Constants.FORUM_OPERATION_VIEW_ENTRY_HISTORY_NEXT) ||
-			op.equals(Constants.FORUM_OPERATION_VIEW_ENTRY_HISTORY_PREVIOUS)) {
+		} else if (op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_NEXT) ||
+			op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_PREVIOUS)) {
 			model = getForumActionModule().getShowEntry(formData, request, folderId);
-			String entryId = (String)model.get(Constants.ENTRY_ID);
-			request.setAttribute(Constants.ACTION, Constants.FORUM_OPERATION_VIEW_ENTRY);
-			request.setAttribute(Constants.FORUM_URL_ENTRY_ID, entryId);
+			String entryId = (String)model.get(PortletKeys.ENTRY_ID);
+			request.setAttribute(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_VIEW_ENTRY);
+			request.setAttribute(PortletKeys.FORUM_URL_ENTRY_ID, entryId);
 			if (!Validator.isNull(entryId)) {
-				ses.setAttribute(Constants.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
+				ses.setAttribute(PortletKeys.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
 				setHistorySeen(model, ses, folderId, true);
-				ses.setAttribute(Constants.SESSION_LAST_HISTORY_ENTRY_VIEWED, Long.valueOf(entryId));
+				ses.setAttribute(PortletKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, Long.valueOf(entryId));
 			} else {
-				ses.setAttribute(Constants.SESSION_LAST_ENTRY_VIEWED, null);
-				viewPath = Constants.VIEW_NO_ENTRY;
+				ses.setAttribute(PortletKeys.SESSION_LAST_ENTRY_VIEWED, null);
+				viewPath = PortletKeys.VIEW_NO_ENTRY;
 			}
 			
-		} else if (op.equals(Constants.FORUM_OPERATION_VIEW_ENTRY_NEXT) ||
-			op.equals(Constants.FORUM_OPERATION_VIEW_ENTRY_PREVIOUS)) {
+		} else if (op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY_NEXT) ||
+			op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY_PREVIOUS)) {
 			model = getForumActionModule().getShowEntry(formData, request, folderId);
-			String entryId = (String)model.get(Constants.ENTRY_ID);
-			request.setAttribute(Constants.ACTION, Constants.FORUM_OPERATION_VIEW_ENTRY);
-			request.setAttribute(Constants.FORUM_URL_ENTRY_ID, entryId);
+			String entryId = (String)model.get(PortletKeys.ENTRY_ID);
+			request.setAttribute(PortletKeys.ACTION, PortletKeys.FORUM_OPERATION_VIEW_ENTRY);
+			request.setAttribute(PortletKeys.FORUM_URL_ENTRY_ID, entryId);
 			if (!Validator.isNull(entryId)) {
-				ses.setAttribute(Constants.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
+				ses.setAttribute(PortletKeys.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
 				setHistorySeen(model, ses, folderId, false); 
-				ses.setAttribute(Constants.SESSION_LAST_HISTORY_ENTRY_VIEWED, null);
+				ses.setAttribute(PortletKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, null);
 			} else {
-				ses.setAttribute(Constants.SESSION_LAST_ENTRY_VIEWED, null);
-				viewPath = Constants.VIEW_NO_ENTRY;
+				ses.setAttribute(PortletKeys.SESSION_LAST_ENTRY_VIEWED, null);
+				viewPath = PortletKeys.VIEW_NO_ENTRY;
 			}
 		} else {
 			model = new HashMap();
-			model.put(Constants.FOLDER,	 getFolderModule().getFolder(folderId));
+			model.put(PortletKeys.FOLDER,	 getFolderModule().getFolder(folderId));
 			viewPath = op;					
 		}
 
@@ -129,20 +129,20 @@ public class ViewController  extends SAbstractController {
 
 	protected void setHistorySeen(Map model, PortletSession ses, Long folderId, boolean inPlace) {
 		Entry entry = setSeen(model, folderId);
-		HistoryMap history = (HistoryMap)model.get(Constants.HISTORY_MAP);
+		HistoryMap history = (HistoryMap)model.get(PortletKeys.HISTORY_MAP);
 		if (history == null) return;
 		//cache history - will update itself every 5 minutes
-		HistoryCache cache = (HistoryCache)ses.getAttribute(Constants.HISTORY_CACHE);
+		HistoryCache cache = (HistoryCache)ses.getAttribute(PortletKeys.HISTORY_CACHE);
 		if (cache == null) {
 			cache = new HistoryCache(history);
-			ses.setAttribute(Constants.HISTORY_CACHE, cache);
+			ses.setAttribute(PortletKeys.HISTORY_CACHE, cache);
 		} else if (!cache.getId().equals(history.getId())) {
-			ses.removeAttribute(Constants.HISTORY_CACHE);
+			ses.removeAttribute(PortletKeys.HISTORY_CACHE);
 			cache = new HistoryCache(history);
-			ses.setAttribute(Constants.HISTORY_CACHE, cache);
+			ses.setAttribute(PortletKeys.HISTORY_CACHE, cache);
 		}
 		//set the cache so it can check whether to flush the history
-		Long lastHistoryEntryViewed = (Long) ses.getAttribute(Constants.SESSION_LAST_HISTORY_ENTRY_VIEWED);
+		Long lastHistoryEntryViewed = (Long) ses.getAttribute(PortletKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED);
 		if (lastHistoryEntryViewed == null) {
 			if (inPlace) {
 				cache.setHistorySeenInPlace(entry);
@@ -161,8 +161,8 @@ public class ViewController  extends SAbstractController {
 		}
 	}
 	protected Entry setSeen(Map model, Long folderId) {
-		SeenMap seen = (SeenMap)model.get(Constants.SEEN_MAP);
-		Entry entry = (Entry)model.get(Constants.FOLDER_ENTRY);
+		SeenMap seen = (SeenMap)model.get(PortletKeys.SEEN_MAP);
+		Entry entry = (Entry)model.get(PortletKeys.FOLDER_ENTRY);
 		//only start transaction if necessary
 		List replies = new ArrayList((List)model.get("ss_forum_entry_descendants"));
 		if (replies != null)  {

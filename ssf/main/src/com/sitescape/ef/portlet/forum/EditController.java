@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sitescape.ef.portlet.Constants;
+import com.sitescape.ef.portlet.PortletKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 
@@ -26,10 +26,10 @@ public class EditController extends SAbstractController {
 
 		PortletPreferences prefs = request.getPreferences();
 
-		String forumId = ActionUtil.getStringValue(request.getParameterMap(), Constants.FORUM_URL_FORUM_ID);
+		String forumId = ActionUtil.getStringValue(request.getParameterMap(), PortletKeys.FORUM_URL_FORUM_ID);
 
 		//Get the name of the forum to be displayed
-		prefs.setValue(Constants.FORUM_URL_FORUM_ID, forumId);
+		prefs.setValue(PortletKeys.FORUM_URL_FORUM_ID, forumId);
 
 		prefs.store();
 	}
@@ -41,19 +41,19 @@ public class EditController extends SAbstractController {
         //Make the prefs available to the jsp
         Map model = new HashMap();
 		
-		model.put(Constants.WORKSPACE_DOM_TREE, getWorkspaceModule().getDomWorkspaceTree());
+		model.put(PortletKeys.WORKSPACE_DOM_TREE, getWorkspaceModule().getDomWorkspaceTree());
 		
 		PortletPreferences prefsPP = request.getPreferences();
-		String forumPref = prefsPP.getValue(Constants.FORUM_URL_FORUM_ID, "");
+		String forumPref = prefsPP.getValue(PortletKeys.FORUM_URL_FORUM_ID, "");
     	if (!forumPref.equals("")) {		
 			//Build the jsp beans
 			try {
-				model.put(Constants.FOLDER, getFolderModule().getFolder(new Long(forumPref)));    
+				model.put(PortletKeys.FOLDER, getFolderModule().getFolder(new Long(forumPref)));    
 			} catch (NoFolderByTheIdException nf) {
 				//fall thru
 			}
     	}
 			
-		return new ModelAndView(Constants.VIEW_EDIT, model);
+		return new ModelAndView(PortletKeys.VIEW_EDIT, model);
 	}
 }
