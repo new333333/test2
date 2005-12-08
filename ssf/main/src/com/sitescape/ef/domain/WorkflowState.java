@@ -1,5 +1,8 @@
 package com.sitescape.ef.domain;
 /**
+ * Use this object as component object.  This would be useful for objects that
+ * implement SingletonWorkflowSupport.  Objects that maintain multiple workflows,
+ * should use WorkflowStateObject.
  * @author Janet McCann
  *
  */
