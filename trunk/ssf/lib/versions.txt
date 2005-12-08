@@ -1,5 +1,6 @@
 Ant 1.6.2
 Ant Contrib 0.6
+Antlr (needed by Hibernate)
 Axis 1.2rc1 (removed log4j.properties)
 bsh 2.0b2
 Commons Beanutils 1.6.1
@@ -15,6 +16,7 @@ Commons Logging 1.0.3
 Concurrent Library
 dom4j 1.5.2
 EasyMock 1.2 (Java 1.3)
+Ehcache (needed by Hibernate)
 Generama 1.2
 Hibernate 3.0.5
 Jaxen 1.1-beta-5
@@ -38,6 +40,7 @@ Quartz 1.4.5
 Servlet 2.3.1/JSP 1.2.1
 Slide WebDAV client library 2.1
 Spring 1.2.2
+Spring mock 1.2.2 (comes with Spring)
 Spring Portlet spring-portlet.jar
 Stellent export.jar
 Trove 1.0.2
