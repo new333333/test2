@@ -18,6 +18,8 @@
 <c:set var="folderIdList" value=""/>
 <jsp:useBean id="folderIdList" type="java.lang.String" />
 
+<div id="ss_showfolder" class="ss_portlet">
+
 <% // Toolbar %>
 <c:if test="${!empty ssForumToolbar}">
 <c:set var="toolbar" value="${ssForumToolbar}" scope="request" />
@@ -38,14 +40,15 @@
 					<table cellspacing="0" cellpadding="0">
 					<c:forEach var="folder" items="${ssFolderList}">
 					<jsp:useBean id="folder" type="com.sitescape.ef.domain.Folder" />
-					  <tr><td>
+					  <tr>
+					  <td><span id="count_<c:out value="${folder.id}"/>"><font color="silver">-</font></span></td>
+					  <td>&nbsp;&nbsp;&nbsp;</td>
+					  <td>
 						<a href="<portlet:renderURL windowState="maximized">
 								<portlet:param name="action" value="view_forum"/>
 								<portlet:param name="forumId" value="${folder.id}"/>
 							</portlet:renderURL>"><c:out value="${folder.title}"/></a>
 					  </td>
-					  <td>&nbsp;&nbsp;&nbsp;</td>
-					  <td><span id="count_<c:out value="${folder.id}"/>"></span></td>
 					  </tr>
 					  <%
 					  	if (!folderIdList.equals("")) folderIdList += " ";
@@ -62,6 +65,7 @@
 </tr>
 </table>
 
+</div>
 <script language="JavaScript" src="<html:rootPath/>js/common/taconite-client.js"></script>
 <script language="JavaScript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
 <script language="javascript">
