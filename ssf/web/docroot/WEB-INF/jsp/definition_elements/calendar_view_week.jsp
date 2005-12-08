@@ -17,7 +17,7 @@ function getFilteredEntries() {
 <c:forEach var="daymap" items="${ssCalendarViewBean}">
 
 <c:choose>
-<c:when test="daymap.isToday">
+<c:when test="${daymap.isToday}">
 <tr class="ss_todayHighlight">
 </c:when>
 <c:otherwise>
