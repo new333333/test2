@@ -53,7 +53,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 div.ss_toolbar {
   width: 100%; 
   background-color: <%= gammaColor %>;
-  margin-top: 8px;
+  margin-top: 0px;
   margin-bottom: 8px;
   }
   
@@ -75,7 +75,10 @@ div.ss_historybar {
   }
   
 .ss_highlight_gamma {
-  background-color: <%= gammaColor %>;
+  font-size: .7em;
+  font-family: arial, helvetica, sans-serif;
+  font-weight: bold;
+  color: <%= betaColor %>;
   }
   
 .ss_titlebold {
