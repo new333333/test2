@@ -125,6 +125,11 @@
 		<url-pattern>/a/*</url-pattern>		
 	</servlet-mapping>
 
+	<!-- Do NOT ever change this timeout value -->
+	<session-config>
+		<session-timeout>0</session-timeout>
+	</session-config>
+
     <taglib>
         <taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
         <taglib-location>/WEB-INF/tags/c.tld</taglib-location>
