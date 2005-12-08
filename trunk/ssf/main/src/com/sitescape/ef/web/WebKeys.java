@@ -24,6 +24,7 @@ public class WebKeys {
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
     public static final String FORUM_URL_ATTRIBUTE = "attr";
+    public static final String FORUM_URL_ATTRIBUTE_ID = "attrId";
 	public static final String FORUM_URL_ENTRY_ID = "entryId";
     public static final String FORUM_URL_ENTRY_TYPE="entryType";
 	public static final String FORUM_URL_FILE = "file";
