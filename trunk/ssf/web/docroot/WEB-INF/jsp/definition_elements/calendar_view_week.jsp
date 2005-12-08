@@ -15,6 +15,8 @@ function getFilteredEntries() {
    <fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
 <a href="${set_day_view}">Day view</a>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+<a href="${set_month_view}">Month view</a>
 </td>
 </tr>
 
