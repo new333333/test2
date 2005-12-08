@@ -94,7 +94,7 @@ public class AdaptedPortletURL {
 		
 		sb.append(WebUrlUtil.getAdapterRootURL(req, secure));
 		
-		sb.append("/do?");
+		sb.append("do?");
 		
 		sb.append(KeyNames.PORTLET_URL_PORTLET_NAME);
 		sb.append(Constants.EQUAL);
