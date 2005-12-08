@@ -98,8 +98,8 @@ div.ss_historybar {
 
 <%
 
-String op = PortletKeys.FORUM_ACTION_VIEW_ENTRY;
-if (op == null) op = PortletKeys.FORUM_ACTION_VIEW_FORUM;
+String op = WebKeys.FORUM_ACTION_VIEW_ENTRY;
+if (op == null) op = WebKeys.FORUM_ACTION_VIEW_FORUM;
 String displayStyle = ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL;
 if (ssUserProperties.containsKey(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
 	displayStyle = (String) ssUserProperties.get(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE);
@@ -107,7 +107,7 @@ if (ssUserProperties.containsKey(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
 
 boolean statePopUp = false;
 boolean popupValue = false;
-if (!op.equals(PortletKeys.FORUM_ACTION_VIEW_ENTRY)) {
+if (!op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY)) {
 	popupValue = true;
 } else {
 	if (statePopUp) popupValue = true;
@@ -132,7 +132,7 @@ request.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
 %>
 <jsp:useBean id="ss_entryWindowWidth" type="java.lang.Integer" scope="request" />
 <jsp:useBean id="ss_toolbarWidth" type="java.lang.Integer" scope="request" />
-<c:if test="<%= !op.equals(PortletKeys.FORUM_ACTION_VIEW_ENTRY) %>">
+<c:if test="<%= !op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY) %>">
 <c:set var="showEntryCallbackRoutine" value="showEntryInDiv" scope="request"/>
 <c:set var="showEntryMessageRoutine" value="showMessageInDiv" scope="request"/>
 <script language="javascript">
@@ -310,7 +310,7 @@ function highlightLineById(id) {
 </script>
 </c:if>
 
-<c:if test="<%= !op.equals(PortletKeys.FORUM_ACTION_VIEW_ENTRY) %>">
+<c:if test="<%= !op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY) %>">
 
 <div id="showentryhighwatermark" style="position:absolute; visibility:visible;">
 <img src="<html:imagesPath/>pics/1pix.gif">
@@ -331,7 +331,7 @@ function highlightLineById(id) {
 	}
 %>
 </c:if>
-<c:if test="<%= op.equals(PortletKeys.FORUM_ACTION_VIEW_ENTRY) %>">
+<c:if test="<%= op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY) %>">
 <jsp:useBean id="ssFolderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
   <c:if test="<%= !statePopUp %>">
 <script language="javascript">

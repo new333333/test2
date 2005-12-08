@@ -12,7 +12,7 @@
 	}
 	String formName = (String) request.getAttribute("property_name");
 	if (formName == null || formName.equals("")) {
-		formName = PortletKeys.DEFINITION_DEFAULT_FORM_NAME;
+		formName = WebKeys.DEFINITION_DEFAULT_FORM_NAME;
 	}
 	request.setAttribute("formName", formName);
 	String methodName = (String) request.getAttribute("property_method");
