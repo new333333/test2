@@ -66,6 +66,8 @@
     <xsd:attribute name="formItem" type="xsd:string"/>
     <xsd:attribute name="multipleAllowed" type="xsd:boolean"/>
     <xsd:attribute name="canBeDeleted" type="xsd:boolean"/>
+    <xsd:attribute name="x" type="xsd:unsignedInt"/>
+    <xsd:attribute name="y" type="xsd:unsignedInt"/>
   </xsd:complexType>
 
   <xsd:complexType name="propertiesType">
