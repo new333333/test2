@@ -251,7 +251,6 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
 	</item>
 	
 	<item name="description" caption="Description" type="data" multipleAllowed="false" category="entryData">
