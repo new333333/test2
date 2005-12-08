@@ -1,5 +1,5 @@
 <%@ page import="com.sitescape.ef.domain.Event" %>
-<%@ page import="edu.columbia.cpl.Duration" %>
+<%@ page import="com.sitescape.util.cal.Duration" %>
 <%@ page import="java.util.Calendar" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.text.SimpleDateFormat" %>

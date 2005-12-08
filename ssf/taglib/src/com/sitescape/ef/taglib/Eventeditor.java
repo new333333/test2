@@ -73,7 +73,7 @@ public class Eventeditor extends TagSupport {
       req.setAttribute("evid", id);
       req.setAttribute("formName", formName);
       req.setAttribute("recurIcon", icon);
-      // req.setAttribute("hasDuration", hasDuration);
+      req.setAttribute("hasDuration", hasDuration);
       req.setAttribute("hasRecurrence", hasRecurrence);
       req.setAttribute("startDate", startDate);
       req.setAttribute("endDate", endDate);
