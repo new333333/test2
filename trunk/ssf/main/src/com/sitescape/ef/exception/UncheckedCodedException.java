@@ -36,7 +36,12 @@ public abstract class UncheckedCodedException extends UncheckedException impleme
     }
 
     public String getLocalizedMessage() {
-    	return NLT.get(getErrorCode(), getErrorArgs());
+    	try {
+    		return NLT.get(getErrorCode(), getErrorArgs());
+    	}
+    	catch(Exception e) {
+    		return super.getMessage();
+    	}
     }
     
     public String getErrorCode() {
