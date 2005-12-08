@@ -4,6 +4,8 @@
  */
 package com.sitescape.ef.web.util;
 
+import com.sitescape.ef.util.NLT;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -100,4 +102,48 @@ public class DateHelper {
         d = cal.getTime();
         return d;
     }
+    
+    // map day of week numbers into strings representing full day name
+    static public String getDayNameString (int dayNum) {
+    	switch (dayNum) {
+    	case Calendar.SUNDAY: 
+    		return NLT.get("calendar.day.names.su");
+    	case Calendar.MONDAY:
+    		return NLT.get("calendar.day.names.mo");
+    	case Calendar.TUESDAY:
+    		return NLT.get("calendar.day.names.tu");
+    	case Calendar.WEDNESDAY:
+    		return NLT.get("calendar.day.names.we");
+    	case Calendar.THURSDAY:
+    		return NLT.get("calendar.day.names.th");
+    	case Calendar.FRIDAY:
+    		return NLT.get("calendar.day.names.fr");
+    	case Calendar.SATURDAY:
+    		return NLT.get("calendar.day.names.sa");
+    	default: 
+    		return "";
+    	}    		
     }
+    // map day of week numbers into strings representing two letter abbrevs
+    static public String getDayAbbrevString (int dayNum) {
+    	switch (dayNum) {
+    	case Calendar.SUNDAY: 
+    		return NLT.get("calendar.day.abbrevs.su");
+    	case Calendar.MONDAY:
+    		return NLT.get("calendar.day.abbrevs.mo");
+    	case Calendar.TUESDAY:
+    		return NLT.get("calendar.day.abbrevs.tu");
+    	case Calendar.WEDNESDAY:
+    		return NLT.get("calendar.day.abbrevs.we");
+    	case Calendar.THURSDAY:
+    		return NLT.get("calendar.day.abbrevs.th");
+    	case Calendar.FRIDAY:
+    		return NLT.get("calendar.day.abbrevs.fr");
+    	case Calendar.SATURDAY:
+    		return NLT.get("calendar.day.abbrevs.sa");
+    	default: 
+    		return "";
+    	}    		
+    }
+}
+
