@@ -14,7 +14,7 @@
     folderId="${ssFolderEntry.parentFolder.id}"
     entryId="${ssFolderEntry.id}" >
     <ssf:param name="fileId" value="${selection.id}"/>
-    </ssf:url>"><c:out value="${selection.fileItem.name}"/></a><br>
+    </ssf:url>"><c:out value="${selection.fileItem.name} (${selection.repositoryServiceName})"/></a><br>
  </c:forEach>
  </span>
 </div>

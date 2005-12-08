@@ -155,11 +155,14 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     }
     
     /**
-     * Return FileAttachment corresponding to the specified file name.
+     * Return FileAttachment corresponding to the specified combination of 
+     * repository service name and file name. In other words, file namespace
+     * is not based on the file name alone. 
+     * 
      * @param fileName
      * @return
      */
-    public FileAttachment getFileAttachment(String fileName) {
+    public FileAttachment getFileAttachment(String repositoryServiceName, String fileName) {
     	List atts = getAttachments();
     	Attachment att;
     	FileAttachment fatt;
@@ -167,7 +170,8 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     		att = (Attachment)atts.get(i);
     		if (att instanceof FileAttachment) {
     			fatt = (FileAttachment) att;
-    			if(fatt.getFileItem().getName().equals(fileName))
+    			if(fatt.getRepositoryServiceName().equals(repositoryServiceName) &&
+    					fatt.getFileItem().getName().equals(fileName))
     				return fatt;
     		}
     	}

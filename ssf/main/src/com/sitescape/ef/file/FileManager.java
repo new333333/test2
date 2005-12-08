@@ -1,7 +1,6 @@
 package com.sitescape.ef.file;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -83,7 +82,7 @@ public class FileManager {
 		// In other words, regardless of the data elements used for accessing
 		// the file, the files are treated identical globally within a single
 		// Entry instance as long as their file names are identical. 
-    	FileAttachment fAtt = entry.getFileAttachment(fileName);
+    	FileAttachment fAtt = entry.getFileAttachment(fui.getRepositoryServiceName(), fileName);
 
     	boolean isNew = false;
     	
@@ -137,9 +136,9 @@ public class FileManager {
 	 * @param fileName
 	 * @return
 	 */
-	public HistoryStamp getCheckoutInfo(Folder folder, FolderEntry entry, 
-			String fileName) {
-		FileAttachment fAtt = entry.getFileAttachment(fileName);
+	public HistoryStamp getCheckoutInfo(String repositoryServiceName, 
+			Folder folder, FolderEntry entry, String fileName) {
+		FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
 		return fAtt.getCheckout();
 	}
 	
@@ -160,9 +159,10 @@ public class FileManager {
 	 * @param fileName
 	 * @throws CheckedOutByOtherException
 	 */
-	public void checkout(Folder folder, FolderEntry entry, String fileName) 
-		throws CheckedOutByOtherException, NoSuchFileException, RepositoryServiceException {
-    	FileAttachment fAtt = entry.getFileAttachment(fileName);
+	public void checkout(String repositoryServiceName, Folder folder, 
+			FolderEntry entry, String fileName) throws CheckedOutByOtherException, 
+			NoSuchFileException, RepositoryServiceException {
+    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
     	
     	if(fAtt == null)
     		throw new NoSuchFileException(entry, fileName);
@@ -213,9 +213,10 @@ public class FileManager {
 	 * @throws CheckedOutByOtherException
 	 * @throws RepositoryServiceException
 	 */
-	public void uncheckout(Folder folder, FolderEntry entry, String fileName) 
-		throws CheckedOutByOtherException, NoSuchFileException, RepositoryServiceException {
-    	FileAttachment fAtt = entry.getFileAttachment(fileName);
+	public void uncheckout(String repositoryServiceName, Folder folder, 
+			FolderEntry entry, String fileName) throws CheckedOutByOtherException, 
+			NoSuchFileException, RepositoryServiceException {
+    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
     	
     	if(fAtt == null)
     		throw new NoSuchFileException(entry, fileName);
@@ -259,9 +260,10 @@ public class FileManager {
 	 * @param fileName
 	 * @throws RepositoryServiceException
 	 */
-	public void checkin(Folder folder, FolderEntry entry, String fileName) 
-		throws CheckedOutByOtherException, NoSuchFileException, RepositoryServiceException {
-    	FileAttachment fAtt = entry.getFileAttachment(fileName);
+	public void checkin(String repositoryServiceName, Folder folder, 
+			FolderEntry entry, String fileName) throws CheckedOutByOtherException, 
+			NoSuchFileException, RepositoryServiceException {
+    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
     	
     	if(fAtt == null)
     		throw new NoSuchFileException(entry, fileName);
@@ -312,7 +314,8 @@ public class FileManager {
 
         String fileName = fui.getMultipartFile().getOriginalFilename();
         
-		HistoryStamp co = getCheckoutInfo(folder, entry, fileName); 
+		HistoryStamp co = getCheckoutInfo(fui.getRepositoryServiceName(), 
+				folder, entry, fileName); 
 		
         if(co == null) {
 			// This file is not checked out by anyone. 
