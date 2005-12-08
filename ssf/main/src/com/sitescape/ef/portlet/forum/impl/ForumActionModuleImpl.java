@@ -35,6 +35,7 @@ import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.portlet.forum.HistoryCache;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.profile.ProfileModule;
@@ -288,13 +289,13 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 			int count = 0;
 			HashMap e = (HashMap) entryIterator.next();
 			//Entry e = (Entry) entryIterator.next();
-			String ec = (String)e.get("_eventCount");
+			String ec = (String)e.get(IndexUtils.EVENT_COUNT_FIELD);
 			if (ec != null)
 				count = new Integer(ec).intValue();
 			// look through the custom attrs of this entry for any of type EVENT
 			for (int j = 0; j < count; j++) {
-				Date evStartDate = (Date)e.get("_event" + count + "StartDate");
-				Date evEndDate = (Date)e.get("_event" + count + "EndDate");
+				Date evStartDate = (Date)e.get(IndexUtils.EVENT_FIELD + count + IndexUtils.EVENT_FIELD_START_DATE);
+				Date evEndDate = (Date)e.get(IndexUtils.EVENT_FIELD + count + IndexUtils.EVENT_FIELD_END_DATE);
 				Event ev = new Event();
 				GregorianCalendar gcal = new GregorianCalendar();
 				gcal.setTime(evStartDate);
