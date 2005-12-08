@@ -7,6 +7,7 @@ import org.dom4j.Document;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.security.AccessControlException;
 
 /**
@@ -37,7 +38,7 @@ public interface FolderCoreProcessor {
     public Long addFileEntry(Folder forum, Definition def, Map inputData, Map fileItems) throws AccessControlException;
     public Long addReply(FolderEntry parent, Definition def, Map inputData, Map fileItems) throws AccessControlException;
     public void modifyEntry(Folder parentFolder, Long entryId, Map inputData, Map fileItems) throws AccessControlException;
-    public Document getDomFolderTree(Folder folder);
+    public Document getDomFolderTree(Folder folder, DomTreeBuilder domTreeHelper);
 	public Map getFolderEntries(Folder folder, int maxNumEntries) throws AccessControlException;
 
 	public Long addFolder(Folder parentFolder, Folder folder) throws AccessControlException;
