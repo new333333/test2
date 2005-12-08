@@ -29,7 +29,6 @@ import com.sitescape.ef.jobs.LdapSynchronization;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.module.ldap.LdapConfig;
 import com.sitescape.ef.module.ldap.LdapModule;
-import com.sitescape.ef.module.ldap.LdapNameMapper;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.User;
@@ -212,7 +211,7 @@ public class LdapModuleImpl implements LdapModule {
 		// Make sure the fetched user dn and password combination can bind
 		// against the LDAP server
 		try {
-			ctx = getContext(info, dn, password, userDomain);
+			ctx = getContext(dn, password, userDomain);
 			ctx.close();
 		} catch (Exception e) {
 			return false;
@@ -250,18 +249,19 @@ public class LdapModuleImpl implements LdapModule {
 	public void syncAll(String zoneName)throws NamingException {
 		Workspace ws = (Workspace)coreDao.findTopWorkspace(zoneName);
 		LdapConfig info = ws.getLdapConfig();
-   		LdapNameMapper mapper = (LdapNameMapper)processorManager.getProcessor(ws, LdapNameMapper.PROCESSOR_KEY);
    		LdapContext ctx=null;
    		String dn;
    		Object[] gRow,uRow;
    		Iterator iter;
    		try {
-			ctx = getContext(info, null, null, userDomain);
-			Map dnUsers  = syncUsers(ws, ctx, info, mapper);
-			ctx.close();
-			ctx = null;
-			ctx = getContext(info, null, null, groupDomain);
-			Map [] gResults = syncGroups(ws, ctx, info, mapper);
+			ctx = getContext(null, null, userDomain);
+			Map dnUsers  = syncUsers(ws, ctx, info);
+			if (!userDomain.equals(groupDomain)) {
+				ctx.close();
+				ctx = null;
+				ctx = getContext(null, null, groupDomain);
+			}
+			Map [] gResults = syncGroups(ws, ctx, info);
 			if (info.isMembershipSync()) {
 				Map dnGroups = (Map)gResults[0];
 				Map ldapGroups = (Map)gResults[1];
@@ -345,7 +345,7 @@ public class LdapModuleImpl implements LdapModule {
 		EntryBuilder.updateEntry(profile, mods);
 
 	}
-	protected Map syncUsers(Workspace ws, LdapContext ctx, LdapConfig info, LdapNameMapper mapper) 
+	protected Map syncUsers(Workspace ws, LdapContext ctx, LdapConfig info) 
 		throws NamingException {
 		String ssName;
 		Object[] row;
@@ -384,7 +384,7 @@ public class LdapModuleImpl implements LdapModule {
 			id = lAttrs.get(userIdAttribute);
 			if (id == null) continue;
 			//map ldap id to sitescapeName
-			ssName = mapper.idToName((String)id.get());
+			ssName = idToName((String)id.get());
 			if (ssName == null) continue;
 			String dn;
 			if (bd.isRelative()) {
@@ -396,7 +396,7 @@ public class LdapModuleImpl implements LdapModule {
 			if (row != null) {
 				if (sync) {
 					Map userMods = new HashMap();
-					getUpdates(info, userAttributeNames, userAttributes, lAttrs, userMods);
+					getUpdates(userAttributeNames, userAttributes, lAttrs, userMods);
 					userMods.put("foreignName", dn);
 					ldap_existing.put(row[1], userMods);
 				} 
@@ -406,7 +406,7 @@ public class LdapModuleImpl implements LdapModule {
 				dnUsers.put(dn, row);
 			} else if (create) {
 				Map userMods = new HashMap();
-				getUpdates(info, userAttributeNames, userAttributes, lAttrs, userMods);
+				getUpdates(userAttributeNames, userAttributes, lAttrs, userMods);
 				userMods.put("name", ssName);
 				userMods.put("foreignName", dn);
 				userMods.put("zoneName", ws.getZoneName());
@@ -454,7 +454,7 @@ public class LdapModuleImpl implements LdapModule {
 		return dnUsers;
 	}
 
-	protected Map[] syncGroups(Workspace ws, LdapContext ctx, LdapConfig info, LdapNameMapper mapper) 
+	protected Map[] syncGroups(Workspace ws, LdapContext ctx, LdapConfig info) 
 		throws NamingException {
 		String ssName;
 		Object[] row;
@@ -510,13 +510,13 @@ public class LdapModuleImpl implements LdapModule {
 			if (row == null) { 
 				if (create) {
 					//see if name already exists
-					ssName = mapper.dnToGroupName(dn);
+					ssName = dnToGroupName(dn);
 					row = (Object[])ssGroups.get(ssName);
 					if (row != null) {
 						logger.error(dn + " Cannot create; ldap name mapped to an existing group without a foreignName mapping " + ssName);
 					} else {
 						Map userMods = new HashMap();
-						getUpdates(info, groupAttributeNames, groupAttributes, lAttrs, userMods);
+						getUpdates(groupAttributeNames, groupAttributes, lAttrs, userMods);
 						ldap_new.put(ssName, userMods);
 						userMods.put("foreignName", dn);
 						userMods.put("name",ssName);
@@ -529,7 +529,7 @@ public class LdapModuleImpl implements LdapModule {
 				ssName = (String)row[0];
 				if (sync) {
 					Map userMods = new HashMap();
-					getUpdates(info, groupAttributeNames, groupAttributes, lAttrs, userMods);
+					getUpdates(groupAttributeNames, groupAttributes, lAttrs, userMods);
 					ldap_existing.put(row[1], userMods);
 				} 
 				//exists in ldap, remove from missing list
@@ -595,7 +595,7 @@ public class LdapModuleImpl implements LdapModule {
 	 * @return LdapContext
 	 * @throws NamingException
 	 */
-	protected LdapContext getContext(LdapConfig info, String user, String pwd, String domain) throws NamingException { 
+	protected LdapContext getContext(String user, String pwd, String domain) throws NamingException { 
 		// Load user from ldap
 		try {
 			Hashtable env = new Hashtable();
@@ -613,6 +613,7 @@ public class LdapModuleImpl implements LdapModule {
 			if (!Validator.isNull(socketFactory))
 				env.put("java.naming.ldap.factory.socket", socketFactory);
 		
+
 			return new InitialLdapContext(env, null);
 		} catch (NamingException ex) {
 			logger.debug("context error:" + ex);
@@ -632,7 +633,7 @@ public class LdapModuleImpl implements LdapModule {
 	 * @throws NoUserByTheNameException
 	 */
 	protected String getUpdates(LdapConfig info, String loginName, Map mods) throws NamingException, NoUserByTheNameException {
-		LdapContext ctx = getContext(info, null, null, userDomain);
+		LdapContext ctx = getContext(null, null, userDomain);
 		String dn=null;
 		try {
 			SearchControls sch = new SearchControls(
@@ -643,7 +644,7 @@ public class LdapModuleImpl implements LdapModule {
 				throw new NoUserByTheNameException(loginName);
 			}
 			Binding bd = (Binding)ctxSearch.next();
-			getUpdates(info, userAttributeNames, userAttributes,  ctx.getAttributes(bd.getName()), mods);
+			getUpdates(userAttributeNames, userAttributes,  ctx.getAttributes(bd.getName()), mods);
 			if (bd.isRelative()) {
 				dn = bd.getName() + "," + userDomain;
 			} else {
@@ -655,7 +656,7 @@ public class LdapModuleImpl implements LdapModule {
 		}
 		return dn;
 	}
-	protected void getUpdates(LdapConfig info, String []ldapAttrNames, Map mapping, Attributes attrs, Map mods)  throws NamingException {
+	protected void getUpdates(String []ldapAttrNames, Map mapping, Attributes attrs, Map mods)  throws NamingException {
 			
 		for (int i=0; i<ldapAttrNames.length; i++) {
 			Attribute att = attrs.get(ldapAttrNames[i]);
@@ -676,13 +677,13 @@ public class LdapModuleImpl implements LdapModule {
 			}
 		}		
 	}
-	public String getFilterString(String userId) {
+	protected String getFilterString(String userId) {
 		StringBuffer filter = new StringBuffer();
 		filter.append("(" + userIdAttribute + "=" + userId + ")");		
 
 		return "(&" + getFilterString(userObjectClasses) + filter.toString() + ")";		
 	}
-	public String getFilterString(List values) {
+	protected String getFilterString(List values) {
 		StringBuffer filter = new StringBuffer();
 		if (values.size() > 1) {
 			filter.append("(|");
@@ -695,5 +696,13 @@ public class LdapModuleImpl implements LdapModule {
 		}
 		return filter.toString();		
 	}
-
+	protected String nameToId(String name) {
+		return name;
+	}
+	protected String idToName(String id) {
+		return id;
+	}
+	protected String dnToGroupName(String dn) {
+		return dn;
+	}
 }
