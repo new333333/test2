@@ -180,22 +180,21 @@
 	</tag>
 
 	<tag>
-		<name>forumDispatcher</name>
-		<tag-class>com.sitescape.ef.taglib.ForumDispatcher</tag-class>
+		<name>expandableArea</name>
+		<tag-class>com.sitescape.ef.taglib.ExpandableArea</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
-			<name>forum</name>
+			<name>name</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.Forum</type>
-		</attribute>		
+		</attribute>
 		<attribute>
-			<name>operation</name>
+			<name>title</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
+		</attribute>
 	</tag>
-
+	
 	<tag>
 		<name>htmleditor</name>
 		<tag-class>com.sitescape.ef.taglib.Htmleditor</tag-class>
