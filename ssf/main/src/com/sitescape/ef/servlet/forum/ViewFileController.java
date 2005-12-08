@@ -42,7 +42,8 @@ public class ViewFileController extends SAbstractController {
 			String name = ActionUtil.getStringValue(formData, WebKeys.FORUM_URL_ATTRIBUTE); 
 			if (!name.equals("")) {
 				CustomAttribute attr = entry.getCustomAttribute(name);
-				fa = (FileAttachment)attr.getValue();
+				if (attr != null)
+					fa = (FileAttachment)attr.getValue();
 			}
 		} else {
 			fa = (FileAttachment)entry.getAttachment(fileId);
