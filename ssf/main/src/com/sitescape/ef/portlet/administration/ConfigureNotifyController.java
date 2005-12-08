@@ -32,7 +32,7 @@ import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.Notification;
-
+import com.sitescape.ef.jobs.ScheduleInfo;
 public class ConfigureNotifyController extends  SAbstractController  {
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
@@ -48,8 +48,11 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			for (int i=0; i<uIds.length; ++i) {
 				userList.add(new Long(uIds[i]));
 			}
+			ScheduleInfo config = getAdminModule().getNotificationConfig(folderId);
+			getScheduleData(request, config);
+			getAdminModule().setNotificationConfig(folderId, config);
 			
-			getAdminModule().modifyNotification(folderId, getFormData(request), userList);
+			getAdminModule().modifyNotification(folderId, getNotifyData(request), userList);
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, "");
@@ -65,7 +68,6 @@ public class ConfigureNotifyController extends  SAbstractController  {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Map formData = request.getParameterMap();
 		try {
 			Map model = new HashMap();
 			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_FORUM_ID));
@@ -74,12 +76,15 @@ public class ConfigureNotifyController extends  SAbstractController  {
 
 			List groups = getProfileModule().getGroups();
 			model.put(WebKeys.GROUPS, groups);
+			ScheduleInfo config = getAdminModule().getNotificationConfig(folderId);
+			model.put(WebKeys.SCHEDULE_INFO, config);
 			if (PortletRequestUtils.getStringParameter(request, "showUsers", "0").equals("1")) {
 				//get any partially entered data
-				Map input = getFormData(request);
 				NotificationDef notify = new NotificationDef();
-		    	ObjectBuilder.updateObject(notify, input);
+		    	ObjectBuilder.updateObject(notify, getNotifyData(request));
 				model.put(WebKeys.NOTIFICATION, notify); 
+				
+				getScheduleData(request, config);
 				Map gList = new HashMap();
 				Map uList = new HashMap();
 				long [] gIds = PortletRequestUtils.getLongParameters(request, "sendToGroups");
@@ -121,16 +126,18 @@ public class ConfigureNotifyController extends  SAbstractController  {
 		}
 		
 	}
-	private Map getFormData(PortletRequest request) {
+	private Map getNotifyData(PortletRequest request) {
 		Map input = new HashMap();
 		
-		input.put("enabled", new Boolean(PortletRequestUtils.getBooleanParameter(request,  "enabled", false)));
 		String val = PortletRequestUtils.getStringParameter(request, "emailAddress", "");
 		input.put("emailAddress", StringUtil.split(val, "\n"));
-		
-		input.put("schedule", ScheduleHelper.getSchedule(request));
 		return input;
 		
+	}
+	private void getScheduleData(PortletRequest request, ScheduleInfo config) {
+		config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));
+		config.setSchedule(ScheduleHelper.getSchedule(request));
+
 	}
 	private class TreeHelper implements DomTreeBuilder {
 		private RenderResponse response;

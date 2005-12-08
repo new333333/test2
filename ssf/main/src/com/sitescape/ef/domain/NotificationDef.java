@@ -16,27 +16,14 @@ import com.sitescape.ef.util.CollectionUtil;
  */
 public class NotificationDef  {
    
-    private boolean enabled=false;
-    private String schedule;
     private List distribution;
     private String email;
     private boolean teamOn=false;
-    private Date lastNotification;
-    private String from,subject;
+     private String from,subject;
     public NotificationDef() {
     }
  
-    /**
-     * @hibernate.property  column="enabled"
-     * @return
-     */
-    public boolean isEnabled() {
-    	return enabled;
-    	
-    }
-    public void setEnabled(boolean enabled) {
-    	this.enabled = enabled;
-    }
+
     /**
      * @hibernate.property column="teamOn"
      * @return
@@ -48,16 +35,7 @@ public class NotificationDef  {
         this.teamOn  = teamOn;
     }
     
-    /**
-     * @hibernate.property column="lastNotification"
-     * @return
-     */
-    public Date getLastNotification() {
-        return this.lastNotification;
-    }
-    public void setLastNotification(Date lastNotification) {
-        this.lastNotification = lastNotification;
-    }
+
 
     /**
      * @hibernate.bag  lazy="true" cascade="all,delete-orphan" inverse="true"  optimistic-lock="false" node="."
@@ -86,23 +64,7 @@ public class NotificationDef  {
     	}
     	return dList;
     }
-    /**
-     * @hibernate.property length="64" column="schedule"
-     * This string represents the quartz schedule.
-     * @return
-     */
-    private String getHSchedule() {
-        return schedule;
-    }
-    private void setHSchedule(String schedule) {
-        this.schedule = schedule;
-    }
-	public Schedule getSchedule() {
-		return new Schedule(schedule);
-	}
-	public void setSchedule(Schedule schedule) {
-		this.schedule = schedule.getQuartzSchedule();
-	}
+
     /**
      * @hibernate.property type="org.springframework.orm.hibernate3.support.ClobStringType" column="email"
      * @return

@@ -171,7 +171,19 @@
 			</bean>
 		</property>
 	</bean>
-		
+	<bean id="zoneConfig" class="com.sitescape.ef.util.SZoneConfig">
+		<property name="configDocs">
+			<bean class="com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles">
+				<property name="configFiles">
+					<list>
+						<value>config/zone.cfg.xml</value>
+					</list>		
+				</property>
+				<property name="validating"><value>false</value></property>
+			</bean>
+		</property>
+	</bean>
+
 	<!-- ========================= Portlet Common Infrastructural Beans ======================== -->
 	
 	<!-- Portlet Parameter-based Mapping Interceptor -->
@@ -342,7 +354,7 @@
 	</bean>
 
 	<bean id="adminModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.admin.impl.AdminModuleImpl">
-		<property name="emailPostingJobClass"><value>com.sitescape.ef.jobs.DefaultEmailPosting</value></property>
+		<property name="mailModule"><ref local="mailModuleTarget"/></property>
 	</bean>
 
 	<bean id="folderModule" parent="baseTransactionProxy">
@@ -352,7 +364,7 @@
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
 	</bean>
 
-	<bean id="defaultFolderCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.LibraryCoreProcessor">
+	<bean id="defaultFolderCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.DefaultFolderCoreProcessor">
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 	</bean>
@@ -385,32 +397,21 @@
 			</bean>
 		</property>		
 	</bean>
-
+	<!-- referenced internally when viewing files -->
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap"/>
-
-	<bean id="mailPostingSession" class="com.sitescape.ef.util.JndiObjectFactoryBean">
-		<property name="jndiName"><value>java:comp/env/mail/SiteScapePosting</value></property>
-	</bean>
-	<bean id="mailSession" class="com.sitescape.ef.util.JndiObjectFactoryBean">
-		<property name="jndiName"><value>java:comp/env/mail/SiteScape</value></property>
-	</bean>
+	<!-- this bean is only used to allow setting of initial context properties -->
+	<bean id="mailJndiAccessor" class="org.springframework.jndi.JndiAccessor"/>
 	<bean id="mailSender" class="com.sitescape.ef.module.mail.impl.JavaMailSenderImpl">
-		<property name="session"><ref local="mailSession"/></property>
 		<property name="defaultEncoding"><value>utf-8</value></property>
 		<property name="defaultFileTypeMap"><ref local="mimeTypes"/></property>
 	</bean>
-	<bean id="mailConfig" class="com.sitescape.ef.util.XmlClassPathConfigFiles">
-		<property name="configFiles">
-			<list>
-				<value>config/mail.cfg.xml</value>
-			</list>		
-		</property>
-		<property name="validating"><value>false</value></property>
-	</bean>
+
+
 	<bean id="mailModule" parent="baseTransactionProxy">
 		<property name="transactionAttributes">
 			<props>
 				<prop key="sendNotifications">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="receivePostings">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="send*">PROPAGATION_REQUIRED,readOnly</prop>
 			</props>
 		</property>
@@ -420,23 +421,16 @@
 	</bean>	
 		
 	<bean id="mailModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.mail.impl.MailModuleImpl">
-		<!-- Since "mailSender" is used exclusively by this bean (i.e., it is
-		     not a general purpose service), it is added here rather than 
-		     to the "moduleDependencyTemplate" itself -->
-		<property name="configDocs"><ref local="mailConfig"/></property>
-		<!-- List of used to post email to folders  -->
-		<property name="mailPostingSessions">
-		    <list>
-		        	<ref bean="mailPostingSession"/>
-     		</list>
-		</property>
+		<property name="mailSender"><ref local="mailSender"/></property>
+		<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>
 	</bean>	
 	
-	<bean id="defaultFolderEmailFormatter" class="com.sitescape.ef.module.mail.impl.DefaultFolderEmailFormatter"  init-method="init">
+	<bean id="defaultFolderEmailFormatter" class="com.sitescape.ef.module.mail.impl.DefaultFolderEmailFormatter">
 		<property name="accessControlManager"><ref local="accessControlManager"/></property>
 		<property name="aclManager"><ref local="aclManager"/></property>
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
-		<property name="configDocs"><ref local="mailConfig"/></property>
+		<property name="folderModule"><ref local="folderModule"/></property>
+		<property name="mailModule"><ref local="mailModuleTarget"/></property>
 	</bean>
 	
 	<bean id="ldapModule"  parent="baseTransactionProxy">
@@ -453,18 +447,8 @@
 		</property>
 	</bean>	
 		
-	<bean id="ldapModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.ldap.impl.LdapModuleImpl" init-method="init">
+	<bean id="ldapModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.ldap.impl.LdapModuleImpl">
 		<property name="profileModule"><ref local="profileModuleTarget"/></property>
-		<property name="configDocs">
-			<bean class="com.sitescape.ef.util.XmlClassPathConfigFiles">
-				<property name="configFiles">
-					<list>
-						<value>config/ldap.cfg.xml</value>
-					</list>		
-				</property>
-				<property name="validating"><value>false</value></property>
-			</bean>
-		</property>
 	</bean>	
 	<bean id="workflowModule" parent="baseTransactionProxy">
 		<property name="target">

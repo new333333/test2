@@ -2,14 +2,20 @@ package com.sitescape.ef.module.mail;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.jobs.ScheduleInfo;
 
 public class PostingConfig extends ScheduleInfo {
-	public PostingConfig() {		
+	public PostingConfig() {
+		super(RequestContextHolder.getRequestContext().getZoneName());
+	}
+	public PostingConfig(String zoneName) {
+		super(zoneName);
 	}
 	public PostingConfig(ScheduleInfo scheduleInfo) {
+		super(scheduleInfo.getDetails());
 		setSchedule(scheduleInfo.getSchedule());
-		setDetails(scheduleInfo.getDetails());
 		setEnabled(scheduleInfo.isEnabled());
 	}
 	public PostingConfig(Map details) {

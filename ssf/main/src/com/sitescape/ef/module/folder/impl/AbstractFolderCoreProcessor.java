@@ -88,7 +88,8 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
 	}
-	
+
+
     //***********************************************************************************************************	
     public Long addEntry(Folder folder, Definition def, Map inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
@@ -103,9 +104,11 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         FolderEntry entry = addEntry_create();
         entry.setEntryDef(def);
         
-        addEntry_processFiles(folder, entry, fileData);
-        
+        //need to set entry/folder information before generating file attachments
+        //Attachments need folder info for AnyOwner
         addEntry_fillIn(folder, entry, inputData, entryData);
+        
+        addEntry_processFiles(folder, entry, fileData);
         
         addEntry_preSave(folder, entry, inputData, entryData);
         

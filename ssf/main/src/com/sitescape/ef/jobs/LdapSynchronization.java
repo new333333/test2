@@ -1,7 +1,6 @@
 
 package com.sitescape.ef.jobs;
-import org.quartz.Scheduler;
-import com.sitescape.ef.domain.Workspace;
+
 /**
  * @author Janet McCann
  *
@@ -14,5 +13,8 @@ public interface LdapSynchronization {
      */
     public static final String PROCESSOR_KEY = "processorKey_wsLdapSynchronizationJob";
 	public static final String LDAP_GROUP="ldap-synchronization";
-	public void checkSchedule(Scheduler scheduler, Workspace workspace);
+
+	public ScheduleInfo getScheduleInfo(String zoneName);
+	public void setScheduleInfo(ScheduleInfo info);
+	public void enable(boolean enable, String zoneName);
 }

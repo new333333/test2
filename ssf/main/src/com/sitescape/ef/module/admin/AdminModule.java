@@ -27,8 +27,9 @@ public interface AdminModule {
     public List getFunctions();
     public void modifyFunction(Long functionId, Map updates);
     public void modifyNotification(Long binderId, Map updates, Set users); 
-    public void disableNotification(Long binderId);
-    public void enableNotification(Long binderId);
+    public void setEnableNotification(Long binderId, boolean enable);
+    public ScheduleInfo getNotificationConfig(Long binderId);
+    public void setNotificationConfig(Long binderId, ScheduleInfo config);
     public void setEnablePostings(boolean enable);
     public PostingConfig getPostingConfig();
     public void setPostingConfig(PostingConfig postingConfig) throws ParseException;

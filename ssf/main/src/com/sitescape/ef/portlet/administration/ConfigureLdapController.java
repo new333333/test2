@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.ldap.LdapConfig;
+import com.sitescape.ef.module.mail.PostingConfig;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.ScheduleHelper;
 
@@ -22,19 +23,18 @@ public class ConfigureLdapController extends  SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
-			Map input = new HashMap();
-			String val; 
-			input.put("sessionSync", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "sessionSync", false)));
-			input.put("sessionRegister", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "sessionRegister", false)));
-			input.put("userDisable", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "userDisable", false)));
-			input.put("groupDisable", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "groupDisable", false)));
-			input.put("userRegister", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "userRegister", false)));
-			input.put("groupRegister", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "groupRegister", false)));
-			input.put("userSync", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "userSync", false)));
-			input.put("membershipSync", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false)));
-			input.put("scheduleEnabled", Boolean.valueOf(PortletRequestUtils.getBooleanParameter(request, "scheduleEnabled", false)));
-			input.put("schedule", ScheduleHelper.getSchedule(request));
-			getLdapModule().modifyLdapConfig(input);
+			LdapConfig config = getLdapModule().getLdapConfig();
+			config.setSchedule(ScheduleHelper.getSchedule(request));
+			config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
+			config.setSessionSync(PortletRequestUtils.getBooleanParameter(request, "sessionSync", false));
+			config.setSessionRegister(PortletRequestUtils.getBooleanParameter(request, "sessionRegister", false));
+			config.setUserDisable(PortletRequestUtils.getBooleanParameter(request, "userDisable", false));
+			config.setGroupDisable(PortletRequestUtils.getBooleanParameter(request, "groupDisable", false));
+			config.setUserRegister(PortletRequestUtils.getBooleanParameter(request, "userRegister", false));
+			config.setGroupRegister(PortletRequestUtils.getBooleanParameter(request, "groupRegister", false));
+			config.setUserSync(PortletRequestUtils.getBooleanParameter(request, "userSync", false));
+			config.setMembershipSync(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false));
+			getLdapModule().setLdapConfig(config);
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, "");

@@ -13,9 +13,8 @@ public interface EmailPosting  {
      */
     public static final String PROCESSOR_KEY = "processorKey_emailPostingJob";
 	public static final String POSTING_GROUP="email-posting";
-	public static final String POSTING_NAME = "email-posting";
-	public void enable(boolean enable);
-	public ScheduleInfo getScheduleInfo();
-	public void setScheduleInfo(ScheduleInfo schedulerInfo) throws ParseException;
+	public void enable(boolean enable, String zoneName);
+	public ScheduleInfo getScheduleInfo(String zoneName);
+	public void setScheduleInfo(ScheduleInfo schedulerInfo);
 	
 }

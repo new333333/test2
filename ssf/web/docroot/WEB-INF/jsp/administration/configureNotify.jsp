@@ -48,19 +48,19 @@ function <portlet:namespace/>setEnable() {
 	}
 }
 </script>
-<input type="hidden" id="enabled" name="enabled" value="${ssNotification.enabled}"/>
+<input type="hidden" id="enabled" name="enabled" value="${ssScheduleInfo.enabled}"/>
 <span class="ss_contentbold">Folder: ${ssFolder.title}</span>
 <div class="ss_divider"></div>
 <table border ="0" cellspacing="0" cellpadding="3">
 <tr><td class="ss_content"> 
-<input type="checkbox" class="ss_content" id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssNotification.enabled}">checked</c:if>/>
+<input type="checkbox" class="ss_content" id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssScheduleInfo.enabled}">checked</c:if>/>
 Disable outgoing e-mail<br/>
 </td></tr></table>
 
 <div class="ss_divider"></div>
 <span class="ss_contentbold">Specify when e-mail notification is sent</span>
 
-<c:set var="schedule" value="${ssNotification.schedule}"/>
+<c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
 <div class="ss_divider"></div>
 
