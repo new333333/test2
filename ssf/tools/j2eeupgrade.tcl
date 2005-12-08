@@ -47,8 +47,7 @@ array set ::j2ee_Forum_class_MAP {
    owner_principal     {owner_principal int32}   
    owningWorkspace {owningWorkspace int32}
    topFolder  {topFolder int32}
-   notify_contextLevel {notify_contextLevel int32}
-   notify_summaryLines {notify_summaryLines int32}
+   notify_enabled {notify_enabled boolean}
    notify_teamOn   {notify_teamOn boolean}
    notify_lastNotification {notify_lastNotification timestamp}
    notify_event    {notify_event int32}
@@ -519,6 +518,7 @@ proc doUsers {userList} {
     }
 	user_property unload -filter defaultSummit
 	wimsql_rw "update SS_Principals set emailAddress='[sql_quote_value test@${::zoneName}]' where name='wf_admin';"
+	wimsql_rw "update SS_Principals set name='liferay.com.1' where name='wf_admin';"
     wimsql_rw commit
 }
 
@@ -582,11 +582,9 @@ proc cleanup {} {
     wimsql_rw "update SS_Principals set preferredWorkspace=null;"
 	wimsql_rw "delete from SS_Notifications;"
 	wimsql_rw "delete from SS_WorkflowStates;"
-	wimsql_rw "delete from SS_Workflows;"
-    wimsql_rw "delete from SS_Forums;"
+   wimsql_rw "delete from SS_Forums;"
     wimsql_rw "delete from SS_Attachments;"
     wimsql_rw "delete from SS_PrincipalMembership;"
-	wimsql_rw "delete from SS_RoleMembership;"
     wimsql_rw "delete from SS_Principals;"
     wimsql_rw commit
 }
@@ -603,7 +601,7 @@ proc doZone {zoneName {cName {liferay.com}}} {
     set path [file join $::Wgw_HiddenBaseDirectory $zoneName]
     if {![file isdirectory $path]} {return}
     set ::Wgw_CurrentACA $zoneName
-    array unset ::Wgw_CurrentUser
+   array unset ::Wgw_CurrentUser
     if {[Wgw_LoadUserProfile wf_admin ::Wgw_CurrentUser false] == -1} {
         puts "Cannot convert $zoneName. Missing wf_admin"
         return
@@ -766,8 +764,7 @@ proc doZone {zoneName {cName {liferay.com}}} {
                 }
             }
 			doNotifications $zoneName $forum attrs
-
-            set map ::j2ee_Forum_class_MAP
+           set map ::j2ee_Forum_class_MAP
             set results [setupColVals $map attrs update]
             set cmdList [lindex $results 1]
             set cmd [lindex $cmdList 0] 
@@ -796,12 +793,12 @@ proc doZone {zoneName {cName {liferay.com}}} {
     if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {
 		wimsql_rw "update SS_Forums set notify_teamOn=B'0' where notify_teamOn is null;"
 		wimsql_rw "update SS_Principals set reserved=B'1' where name='wf_admin' or name='avf_admin';"
-	} else {
+		wimsql_rw "update SS_Forums set notify_enabled=B'0' where notify_enabled is null;"
+ 	} else {
 		wimsql_rw "update SS_Forums set notify_teamOn=0 where notify_teamOn is null;"
 		wimsql_rw "update SS_Principals set reserved=1 where name='wf_admin' or name='avf_admin';"
-	}
-	wimsql_rw "update SS_Forums set notify_contextLevel=2 where notify_contextLevel is null;"
-	wimsql_rw "update SS_Forums set notify_summaryLines=0 where notify_summaryLines is null;"
+		wimsql_rw "update SS_Forums set notify_enabled=0 where notify_enabled is null;"
+ 	}
     wimsql_rw commit
 }
 
@@ -1350,11 +1347,11 @@ proc doNotifications {zoneName forumName ats} {
 	upvar $ats attrs
 	set notifyEnabled [wim property get -aca $zoneName -name $forumName notifyEnabled]
 	if {$notifyEnabled == "title"} {
-		set attrs(notify_contextLevel) 1
+		set attrs(notify_enabled) 1
 	} elseif {$notifyEnabled == "summary"} {
-		set attrs(notify_contextLevel) 3
+		set attrs(notify_enabled) 1
 	} else {
-		set attrs(notify_contextLevel) 2
+		set attrs(notify_enabled) 0
 	}
 
 	set	dayString ""
@@ -1385,7 +1382,7 @@ proc doNotifications {zoneName forumName ats} {
 		#seconds minutes hours dayOfMonth months days year"
 		set attrs(notify_schedule) "0 $minute [join $timeString ","] ? * $dayString" 
 	}
-    set attrs(notify_summaryLines) [wim property get -aca $zoneName -name $forumName notifyWordCount]
+#    set attrs(notify_summaryLines) [wim property get -aca $zoneName -name $forumName notifyWordCount]
     set notifySendToTeam [wim property get -aca $zoneName -name $forumName notifySendToTeam]
 	if {$notifySendToTeam == "on"} {
 		set attrs(notify_teamOn) 1
