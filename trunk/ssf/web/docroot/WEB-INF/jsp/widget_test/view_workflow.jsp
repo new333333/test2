@@ -12,3 +12,9 @@ Current State:<c:out value="${workflowState}"/><br/>
 						<portlet:param name="processId" value="${processId}" />
 					</portlet:actionURL>">Move to next state</a><br>
 
+				<a href="<portlet:actionURL windowState="maximized">
+						<portlet:param name="action" value="workflow" />
+						<portlet:param name="operation" value="orphan" />
+						<portlet:param name="processId" value="${processId}" />
+					</portlet:actionURL>">Move to orphan state</a><br>
+

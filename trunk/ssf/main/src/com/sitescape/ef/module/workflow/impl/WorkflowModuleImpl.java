@@ -10,7 +10,9 @@ import com.sitescape.ef.security.acl.AclManager;
 
 import org.hibernate.HibernateException;
 import org.jbpm.db.JbpmSession;
+import org.jbpm.graph.def.Node;
 import org.jbpm.graph.def.ProcessDefinition;
+import org.jbpm.graph.def.Transition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
@@ -73,7 +75,22 @@ public class WorkflowModuleImpl extends AbstractModuleImpl implements WorkflowMo
 	    try {
 	       	JbpmSession session = workflowFactory.getSession();
         	ProcessInstance pI = session.getGraphSession().loadProcessInstance(processInstanceId.longValue());
-            pI.signal();
+        	Token token = pI.getRootToken();
+        	token.signal();
+            session.getGraphSession().saveProcessInstance(pI);
+            return pI;
+	    } catch (Exception ex) {
+	        throw convertJbpmException(ex);
+	    }	
+	}
+	public ProcessInstance setNode(Long processInstanceId, String nodeId) {
+	    try {
+	       	JbpmSession session = workflowFactory.getSession();
+        	ProcessInstance pI = session.getGraphSession().loadProcessInstance(processInstanceId.longValue());
+        	Token token = pI.getRootToken();
+            ProcessDefinition pD = pI.getProcessDefinition();
+            Node node = pD.findNode(nodeId);
+        	token.setNode(node);
             session.getGraphSession().saveProcessInstance(pI);
             return pI;
 	    } catch (Exception ex) {
