@@ -18,6 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SortField;
 import org.apache.lucene.document.DateField;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -526,7 +527,14 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     	QueryBuilder qb = new QueryBuilder();
     	SearchObject so = qb.buildQuery(qTree);
     	
+    	//Set the sort order
+    	SortField[] fields = new SortField[1];
+    	boolean descend = true;
+    	fields[0] = new SortField("_modificationDay",descend);
+    	so.setSortBy(fields);
+    	
     	System.out.println("Query is: " + qTree.asXML());
+    	System.out.println("Query is: " + so.getQuery().toString());
     	
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         
