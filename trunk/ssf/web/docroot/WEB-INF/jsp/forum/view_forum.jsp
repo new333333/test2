@@ -1,24 +1,32 @@
-<% // The main forum view - for viewing folder listings and for viewing entries
-%>
+<% // The main forum view - for viewing folder listings and for viewing entries %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssHistoryMap" type="com.sitescape.ef.domain.HistoryMap" scope="request" />
-
+<jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />
 <%
 
-String op = (String) request.getAttribute(ObjectKeys.FORUM_URL_OPERATION);
+String op = (String) request.getAttribute(PortletKeys.FORUM_URL_OPERATION);
 String displayStyle = ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL;
-if (ssUserProperties(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
-	displayStyle = (String) ssUserProperties(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE);
+if (ssUserProperties.containsKey(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE)) {
+	displayStyle = (String) ssUserProperties.get(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE);
 }
 
-boolean statePopUp = renderRequest.getWindowState().equals(LiferayWindowState.POP_UP) ? true : false;
-int boxWidth = (int)ParamUtil.get(request, "box_width", (double)RES_TOTAL);
-int entryWindowWidth = (int)ParamUtil.get(request, "box_width", (double)RES_TOTAL);
+boolean statePopUp = false;
+boolean popupValue = false;
+if (!((String) request.getAttribute(PortletKeys.FORUM_URL_OPERATION)).equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY)) {
+	popupValue = true;
+} else {
+	if (statePopUp) popupValue = true;
+}
+	
+//int boxWidth = (int)ParamUtil.get(request, "box_width", (double)RES_TOTAL);
+int boxWidth = 600;
+int entryWindowWidth = boxWidth;
 String autoScroll = "true";
 if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL) && !statePopUp) {
 	autoScroll = "false";
@@ -35,7 +43,7 @@ request.setAttribute("ss_toolbarWidth", new Integer(toolbarWidth));
 %>
 <jsp:useBean id="ss_entryWindowWidth" type="java.lang.Integer" scope="request" />
 <jsp:useBean id="ss_toolbarWidth" type="java.lang.Integer" scope="request" />
-<c_rt:if test="<%= !op.equals(ObjectKeys.FORUM_OPERATION_VIEW_ENTRY) %>">
+<c_rt:if test="<%= !op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY) %>">
 <c:set var="showEntryCallbackRoutine" value="showEntryInDiv" scope="request"/>
 <c:set var="showEntryMessageRoutine" value="showMessageInDiv" scope="request"/>
 <script language="javascript">
@@ -168,7 +176,7 @@ function scrollToSavedLocation() {
 	}
 }
 
-var highlightBgColor = "<%= GetterUtil.get(request.getParameter("body_background"), skin.getBeta().getBackground()) %>"
+var highlightBgColor = "<%= betaColor %>"
 var highlightedLine = null;
 var savedHighlightedLineBgCollor = null;
 function highlightLine(obj) {
@@ -213,28 +221,28 @@ function highlightLineById(id) {
 </script>
 </c_rt:if>
 
-<c_rt:if test="<%= !op.equals(ObjectKeys.FORUM_OPERATION_VIEW_ENTRY) %>">
+<c_rt:if test="<%= !op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY) %>">
 
 <div id="showentryhighwatermark" style="position:absolute; visibility:visible;">
-<img src="<%= contextPath %>/html/pics/1pix.gif">
+<img src="<html:imagesPath/>1pix.gif">
 </div>
 <%
 	if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_HORIZONTAL)) {
 %>
-<%@ include file="/html/portlet/forum/view_forum_horizontal.jsp" %>
+<%@ include file="/WEB-INF/jsp/forum/view_forum_horizontal.jsp" %>
 <%
 	} else if (displayStyle.equals(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE_IFRAME)) {
 %>
-<%@ include file="/html/portlet/forum/view_forum_iframe.jsp" %>
+<%@ include file="/WEB-INF/jsp/forum/view_forum_iframe.jsp" %>
 <%
 	} else {
 %>
-<%@ include file="/html/portlet/forum/view_forum_vertical.jsp" %>
+<%@ include file="/WEB-INF/jsp/forum/view_forum_vertical.jsp" %>
 <%
 	}
 %>
 </c_rt:if>
-<c_rt:if test="<%= op.equals(ObjectKeys.FORUM_OPERATION_VIEW_ENTRY) %>">
+<c_rt:if test="<%= op.equals(PortletKeys.FORUM_OPERATION_VIEW_ENTRY) %>">
 <jsp:useBean id="ssFolderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
   <c_rt:if test="<%= !statePopUp %>">
 <script language="javascript">
@@ -244,7 +252,7 @@ function loadEntry(obj,id) {
 }
 </script>
     <liferay:box top="/html/common/box_top.jsp" bottom="/html/common/box_bottom.jsp">
-<%@ include file="/html/portlet/forum/view_forum_history_bar.jsp" %>
+<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
     </liferay:box>
     <liferay:box top="/html/common/box_top.jsp" bottom="/html/common/box_bottom.jsp">
 	  <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 

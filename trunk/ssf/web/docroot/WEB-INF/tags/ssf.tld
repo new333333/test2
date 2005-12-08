@@ -298,7 +298,7 @@
 		<tag-class>com.sitescape.ef.taglib.UrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
-			<name>path</name>
+			<name>action</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
