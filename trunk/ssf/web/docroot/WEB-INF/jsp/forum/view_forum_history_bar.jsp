@@ -53,9 +53,9 @@ function ss_getPreviousEntryId() {
 }
 
 </script>
-<div class="ss_toolbar">
- <div class="ss_toolbar_item">
-        <a href="<ssf:url
+
+ <span class="ss_toolLeft">&nbsp;<a  
+          href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
           folderId="<%= ssFolder.getId().toString() %>"
@@ -64,9 +64,8 @@ function ss_getPreviousEntryId() {
           actionUrl="false"
           />"
           onClick="ss_loadEntry(this,'');return false;" ><img 
-          border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a>
-        <span class="ss_toolbar_item">History</span>
-        <a href="<ssf:url
+          border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a><span 
+           style="background-color:#cdcdcd">&nbsp;History&nbsp;</span><a href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
           folderId="<%= ssFolder.getId().toString() %>"
@@ -75,24 +74,18 @@ function ss_getPreviousEntryId() {
           actionUrl="false"
  		  />"
           onClick="ss_loadEntry(this,'');return false;" ><img 
-          border="0" src="<html:imagesPath/>pics/sym_s_next.gif"></a>
-      </div>
-      <div class="ss_toolbar_item">
-        <a  
+          border="0" src="<html:imagesPath/>pics/sym_s_next.gif"></a></span><span class="ss_toolRight"><a  
           href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
           folderId="<%= ssFolder.getId().toString() %>"
-          action="view_entry"
+          action="view_entry"        
           operation="entry_previous"
           actionUrl="false"
           />"
           onClick="ss_getNextEntryId();return false;" ><img 
-          border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a>
-        <span class="ss_toolbar_item">Entries</span>
-        <a 
-          class="ss_toolbar_item" 
-          href="<ssf:url
+          border="0" src="<html:imagesPath/>pics/sym_s_prev.gif"></a><span 
+           style="background-color:#cdcdcd">&nbsp;Entries&nbsp;</span><a href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
           folderId="<%= ssFolder.getId().toString() %>"
@@ -101,10 +94,9 @@ function ss_getPreviousEntryId() {
           actionUrl="false"
           />"
           onClick="ss_getPreviousEntryId(ss_currentEntryId);return false;" ><img 
-          border="0" src="<html:imagesPath/>pics/sym_s_next.gif"></a>
-      </div>
- </div>
+          border="0" src="<html:imagesPath/>pics/sym_s_next.gif"></a>&nbsp;</span>
 
+<br />
 <% // Debugging code (turned off) %>
 <c:if test="">
 <div> 
