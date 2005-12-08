@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -19,6 +21,8 @@ import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.CustomAttribute;
+import com.sitescape.ef.domain.FileItem;
 import com.sitescape.ef.domain.FolderHierarchyException;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.FileAttachment;
@@ -29,6 +33,7 @@ import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Description;
+import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.binder.BinderComparator;
@@ -53,7 +58,9 @@ import com.sitescape.ef.module.shared.EntryBuilder;
  */
 public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor {
     
-    private static final int DEFAULT_MAX_CHILD_ENTRIES = 20;
+	protected Log logger = LogFactory.getLog(getClass());
+
+	private static final int DEFAULT_MAX_CHILD_ENTRIES = 20;
     protected CoreDao coreDao;
     private FolderDao folderDao;
     protected DefinitionModule definitionModule;
@@ -99,11 +106,14 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         
         addEntry_accessControl(folder);
         
+        Map entryDataAll = addEntry_toEntryData(folder, def, inputData, fileItems);
+        Map entryData = (Map) entryDataAll.get("entryData");
+        List fileData = (List) entryDataAll.get("fileData");
+        
         FolderEntry entry = addEntry_create();
         entry.setEntryDef(def);
         
-        Map entryDataAll = addEntry_toEntryData(folder, entry, inputData, fileItems);
-        Map entryData = (Map) entryDataAll.get("entryData");
+        addEntry_processFiles(folder, entry, fileData);
         
         addEntry_fillIn(folder, entry, inputData, entryData);
         
@@ -125,9 +135,13 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         accessControlManager.checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);        
     }
     
-    protected Map addEntry_toEntryData(Folder folder, FolderEntry entry, Map inputData, Map fileItems) {
+    protected void addEntry_processFiles(Folder folder, FolderEntry entry, List fileData) {
+    	processFiles(folder, entry, fileData);
+    }
+    
+    protected Map addEntry_toEntryData(Folder folder, Definition def, Map inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
-        return getDefinitionModule().getEntryData(folder, entry, inputData, fileItems);
+        return getDefinitionModule().getEntryData(def, inputData, fileItems);
     }
     
      protected FolderEntry addEntry_create() {
@@ -156,6 +170,7 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
     
     protected void addEntry_postSave(Folder folder, FolderEntry entry, Map inputData, Map entryData) {
     }
+    
     protected void addEntry_indexAdd(Folder folder, FolderEntry entry, Map inputData) {
         
         // Create an index document from the entry object.
@@ -182,6 +197,9 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
  
         Map entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
         Map entryData = (Map) entryDataAll.get("entryData");
+        List fileData = (List) entryDataAll.get("fileData");
+        
+        modifyEntry_processFiles(folder, entry, fileData);
         
         modifyEntry_fillIn(folder, entry, inputData, entryData);
                     
@@ -196,9 +214,12 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         // Check if the user has "write" access to the particular entry.
         getAccessControlManager().checkAcl(folder, entry, AccessType.WRITE);
     }
+    protected void modifyEntry_processFiles(Folder folder, FolderEntry entry, List fileData) {
+    	processFiles(folder, entry, fileData);
+    }
     protected Map modifyEntry_toEntryData(FolderEntry entry, Map inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
-        return getDefinitionModule().getEntryData(entry.getParentFolder(), entry, inputData, fileItems);
+        return getDefinitionModule().getEntryData(entry.getEntryDef(), inputData, fileItems);
     }
     protected void modifyEntry_fillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -208,7 +229,7 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
     }
 
     protected void modifyEntry_postFillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData) {
-     }
+    }
     protected void modifyEntry_indexAdd(Folder folder, FolderEntry entry, Map inputData) {
         
         // Create an index document from the entry object.
@@ -224,11 +245,14 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         
         addReply_accessControl(parent);
         
+        Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems);
+        Map entryData = (Map) entryDataAll.get("entryData");
+        List fileData = (List) entryDataAll.get("fileData");
+        
         FolderEntry entry = addReply_create();
         entry.setEntryDef(def);
         
-        Map entryDataAll = addReply_toEntryData(parent, entry, inputData, fileItems);
-        Map entryData = (Map) entryDataAll.get("entryData");
+        addReply_processFiles(parent, entry, fileData);
         
         addReply_fillIn(parent, entry, inputData, entryData);
         
@@ -248,9 +272,9 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
    		getAccessControlManager().checkOperation(parent.getParentFolder(), WorkAreaOperation.ADD_REPLIES);
     }
     
-    protected Map addReply_toEntryData(FolderEntry parent, FolderEntry entry, Map inputData, Map fileItems) {
+    protected Map addReply_toEntryData(FolderEntry parent, Definition def, Map inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
-        return getDefinitionModule().getEntryData(parent.getParentFolder(), entry, inputData, fileItems);
+        return getDefinitionModule().getEntryData(def, inputData, fileItems);
     }
     
     /**
@@ -259,6 +283,10 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
      */
     protected FolderEntry addReply_create() {
         return new FolderEntry();
+    }
+    
+    protected void addReply_processFiles(FolderEntry parent, FolderEntry entry, List fileData) {
+    	processFiles(parent.getParentFolder(), entry, fileData);
     }
     
     protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData) {  
@@ -281,7 +309,7 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
     }
     
     protected void addReply_postSave(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData) {
-     }
+    }
     
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData) {
         // Create an index document from the entry object.
@@ -557,4 +585,78 @@ public abstract class AbstractFolderCoreProcessor implements FolderCoreProcessor
         return indexDoc;
     }
         
+    protected void processFiles(Folder folder, FolderEntry entry, List fileData) {
+    	for(int i = 0; i < fileData.size(); i++) {
+    		FileUploadItem fui = (FileUploadItem) fileData.get(i);
+    		processFile(folder, entry, fui);
+    	}
+    }
+    
+    protected void processFile(Folder folder, FolderEntry entry, FileUploadItem fui) {
+    	int type = fui.getType();
+    	String name = fui.getName();
+    	String fileName = fui.getMultipartFile().getOriginalFilename();
+    	
+    	if(type == FileUploadItem.TYPE_FILE) {
+    		// Find custom attribute by the attribute name. 
+	    	CustomAttribute ca = entry.getCustomAttribute(name);
+	    	
+	    	if(ca == null) { // New file
+	    		FileAttachment fAtt = createFile(folder, entry, fui);
+	    		entry.addCustomAttribute(fui.getName(), fAtt);
+	    	}
+	    	else { // Existing file
+	    		// No metadata update is necessary until checkin time.
+	    		RepositoryServiceUtil.update(folder, entry, fui);
+	    	}					    			
+    	}
+    	else if(type == FileUploadItem.TYPE_ATTACHMENT) {
+    		// Find file attachment by the name of the file itself not by the
+    		// attachment name (actually, file attachment doesn't have a name
+    		// because it is an unnamed attachment). 
+	    	FileAttachment fAtt = entry.getFileAttachment(fileName);
+	    	
+	    	if(fAtt == null) { // New file
+	    		fAtt = createFile(folder, entry, fui);
+	    		entry.addAttachment(fAtt);
+	    	}
+	    	else { // Existing file
+	    		// No metadata update is necessary until checkin time.
+	    		RepositoryServiceUtil.update(folder, entry, fui);
+	    	}    		
+    	}
+    	else {
+    		logger.error("Unrecognized file processing type " + type + " for [" +
+    				fui.getName() + "," + fui.getMultipartFile().getOriginalFilename() + "]");
+    	}
+    }
+
+	private FileAttachment createFile(Folder folder, FolderEntry entry, 
+			FileUploadItem fui) {
+    	// TODO Take care of file path info?
+    	
+        User user = RequestContextHolder.getRequestContext().getUser();
+
+        String fileName = fui.getMultipartFile().getOriginalFilename();
+	
+		FileAttachment fAtt = new FileAttachment(fui.getName());
+		fAtt.setOwner(entry);
+		fAtt.setCreation(new HistoryStamp(user));
+		fAtt.setModification(fAtt.getCreation());
+		fAtt.setLastVersion(new Integer(1));
+    	fAtt.setRepositoryServiceName(fui.getRepositoryServiceName());
+
+    	FileItem fItem = new FileItem();
+    	fItem.setName(fileName);
+    	fItem.setLength(fui.getMultipartFile().getSize());
+    	fAtt.setFileItem(fItem);
+
+		VersionAttachment vAtt = new VersionAttachment();
+		vAtt.setCreation(fAtt.getCreation()); // we don't need mod time for version
+		String versionName = RepositoryServiceUtil.create(folder, entry, fui);
+		vAtt.setVersionName(versionName);
+		fAtt.addFileVersion(vAtt);
+
+    	return fAtt;
+	}
 }
