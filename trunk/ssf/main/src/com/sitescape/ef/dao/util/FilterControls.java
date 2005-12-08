@@ -43,29 +43,26 @@ public class FilterControls {
 		this.filterNames = filterNames;
 	}
 	public void appendFilter(String alias, StringBuffer filter) {
+		String name;
       	if ((filterNames != null) && (filterNames.length > 0)) {
   	 		int count = filterNames.length;
    	 		filter.append(" where ");
    	 		for (int i=0; i<count; ++i) {
    	 			if (i > 0) filter.append(" and ");
-   	 			filter.append(alias + "." + filterNames[i] + "=? ");
+   	 			name = filterNames[i];
+   	 			int pos = name.lastIndexOf('(');
+   	 			if (pos == -1)
+   	 				filter.append(alias + "." + name + "=? ");
+   	 			else {
+   	 				++pos;
+  	 				filter.append(name.substring(0, pos) + alias + "." + name.substring(pos, name.length()) + "=? ");
+   	 			}
    	 		}
        	}
 		if (orderBy != null) filter.append( "order by " + orderBy.getOrderByClause(alias));
 		
 	}
-	public String getWhereString(String alias) {
-		StringBuffer filter = new StringBuffer();
-		if ((filterNames != null) && (filterNames.length > 0)) {
-  	 		int count = filterNames.length;
-   	 		filter.append(" where ");
-   	 		for (int i=0; i<count; ++i) {
-   	 			if (i > 0) filter.append(" and ");
-   	 			filter.append(filterNames[i] + "=? ");
-   	 		}
-       	}
-		return filter.toString();
-	}
+
 	public String getOrderBy(String alias) {
 		if (orderBy != null) return  "order by " + orderBy.getOrderByClause(alias);
 		return null;
@@ -73,15 +70,7 @@ public class FilterControls {
 	}
 	public String getFilterString(String alias) {
 		StringBuffer filter = new StringBuffer();
-       	if ((filterNames != null) && (filterNames.length > 0)) {
-  	 		int count = filterNames.length;
-   	 		filter.append(" where ");
-   	 		for (int i=0; i<count; ++i) {
-   	 			if (i > 0) filter.append(" and ");
-  	 			filter.append(alias + "." + filterNames[i] + "=? ");
-   	 		}
-       	}
-		if (orderBy != null) filter.append( "order by " + orderBy.getOrderByClause(alias));
+		appendFilter(alias, filter);
 		return filter.toString();
 	}
 	public Object[] getFilterValues() {
