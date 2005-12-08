@@ -5,6 +5,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import javax.activation.DataSource;
+import javax.activation.FileTypeMap;
+
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -107,7 +110,6 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			throw new RepositoryServiceException(e);
 		}
 	}
-	
 
 	public List getVersionNames(Object session, Folder folder, FolderEntry entry, String relativeFilePath) 
 		throws RepositoryServiceException {
@@ -121,6 +123,27 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
+	public DataSource getDataSource(Object session, Folder folder, FolderEntry entry, 
+			String relativeFilePath, FileTypeMap fileTypeMap)		
+		throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;		
+		return new WebDavDataSource(wdr, getResourcePath(folder, entry, relativeFilePath), relativeFilePath, fileTypeMap);
+	}
+	public DataSource getDataSourceVersion(Object session, Folder folder, FolderEntry entry, 
+			String relativeFilePath, String versionName, FileTypeMap fileTypeMap)		
+		throws RepositoryServiceException {
+		SWebdavResource wdr = (SWebdavResource) session;
+		
+		try {
+			String versionResourcePath = getVersionResourcePath(wdr, folder, entry, 
+					relativeFilePath, versionName);			
+			return new WebDavDataSource(wdr, versionResourcePath, relativeFilePath, fileTypeMap);
+			
+		} catch (IOException e) {
+			logError(wdr);
+			throw new RepositoryServiceException(e);
+		}
+	}	
 	// obsolete
 	public List fileVersionsURIs(Object session, Folder folder, FolderEntry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
@@ -462,5 +485,32 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	private String getResourcePath(Folder folder, FolderEntry entry, 
 			String relativeFilePath) {
 		return getResourcePath(getEntryDirPath(folder, entry), relativeFilePath);
+	}
+	public class WebDavDataSource implements DataSource {
+		protected SWebdavResource wdr;
+		protected String resourcePath, name;
+		protected FileTypeMap fileMap;
+		public WebDavDataSource(SWebdavResource wdr, String resourcePath, String name, FileTypeMap fileMap) {
+			this.wdr = wdr;
+			this.resourcePath = resourcePath;
+			this.fileMap = fileMap;
+			this.name = name;
+		}
+		public java.io.InputStream getInputStream() throws java.io.IOException {
+			return wdr.getMethodData(resourcePath);
+		}
+		
+		public java.io.OutputStream getOutputStream() throws java.io.IOException {
+			return null;
+		}
+		public java.lang.String getContentType() {
+			return fileMap.getContentType(resourcePath);
+		}
+		public java.lang.String getName() {
+			return name;
+			
+		}
+
+
 	}
 }
