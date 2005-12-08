@@ -17,6 +17,8 @@
 	String hR = (String) request.getAttribute("property_hasRecur");
 	Boolean hasDur = new Boolean(hD);
 	Boolean hasRecur = new Boolean(hR);
+	// hack because the definition impl does not return checkboxes for recur, duration correctly
+	Boolean tt = new Boolean("true");
 	if (caption == null) {caption = "";}
 %>
 <div class="formBreak">
@@ -30,6 +32,6 @@
 <ssf:eventeditor id="<%= elementName %>" 
          formName="<%= formName %>" 
          initEvent="<%= ev %>"
-         hasDuration="<%= hasDur %>"
-         hasRecurrence="<%= hasRecur %>" />
+         hasDuration="<%= tt %>"
+         hasRecurrence="<%= tt %>" />
 </div>
