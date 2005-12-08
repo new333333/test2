@@ -164,7 +164,8 @@ public class Folder extends Binder {
 
     }
     /**
-     * Removes the connection of this entry from the folder.  Must not be a reply
+     * Removes the connection of this entry from the folder.  
+     * Replies must also be removed from their parent entry
      * Caller must call delete() to remove the persistent instance, otherwise connect 
      * it to another folder using <code>addEntry()</code> 
      * @param entry
@@ -173,12 +174,12 @@ public class Folder extends Binder {
       if (!entry.getParentFolder().getId().equals(this.getId())) {
          throw new NoFolderEntryByTheIdException(entry.getId(),"Entry not in this folder");
       }
-      if (!entry.getParentEntry().getId().equals(this.getId())) {
+      if (entry.getParentEntry() != null) {
         throw new NoFolderEntryByTheIdException(entry.getId(),"Entry is a reply");
       }
       entry.setParentFolder(null);
-      entry.setParentEntry(null);
       entry.setHKey(null);
+      entry.setOwningFolderSortKey(null);
       getEntries().remove(entry);
 
     }    

@@ -16,6 +16,7 @@ import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.domain.EmailAlias;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
@@ -130,5 +131,7 @@ public interface CoreDao {
     public List loadDefinitions(Folder folder, ObjectControls objectDesc, FilterControls filter);       
     public List loadDefinitions(String ZoneName);
     
-	public List loadPostings();
+	public List loadPostings(String zoneName);
+	public List loadEmailAliases(String zoneName);
+	public EmailAlias loadEmailAlias(String aliasId, String zoneName);
  }

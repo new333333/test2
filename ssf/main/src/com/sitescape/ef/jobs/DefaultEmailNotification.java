@@ -18,7 +18,7 @@ import com.sitescape.ef.util.SpringContextUtil;
 public class DefaultEmailNotification extends SSStatefulJob implements EmailNotification {
 	 
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
+    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModuleTarget");
 		try {
 			Date end = mail.sendNotifications(new Long(jobDataMap.getLong("binder")), (Date)jobDataMap.get("lastNotification") );
 			jobDataMap.put("lastNotification", end);

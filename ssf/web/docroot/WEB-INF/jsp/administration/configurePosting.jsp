@@ -37,7 +37,6 @@
 <c:otherwise>
 <jsp:useBean id="ssFolderDomTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />
-<jsp:useBean id="ssPostingConfig" type="com.sitescape.ef.module.mail.PostingConfig" scope="request" />
 
 <form name="<portlet:namespace/>fm" id="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_posting"/>
@@ -117,10 +116,10 @@ function t_<portlet:namespace/>_folderTree_showId(id, obj) {
 var <portlet:namespace/>_selectKeys = new Array();
 var <portlet:namespace/>_selectValues = new Array();
 
-<c:forEach var="alias" varStatus="aStatus" items="${ssPostingConfig.aliases}">
+<c:forEach var="alias" varStatus="aStatus" items="${ssEmailAliases}">
 
-<portlet:namespace/>_selectValues[<c:out value="${aStatus.index}"/>] = '<c:out value="${alias.value}"/>';
-<portlet:namespace/>_selectKeys[<c:out value="${aStatus.index}"/>] = '<c:out value="${alias.key}"/>';
+<portlet:namespace/>_selectValues[<c:out value="${aStatus.index}"/>] = '<c:out value="${alias.id}"/>';
+<portlet:namespace/>_selectKeys[<c:out value="${aStatus.index}"/>] = '<c:out value="${alias.aliasName}"/>';
 
 </c:forEach>
 function <portlet:namespace/>_buildSelectBox(alias) {
@@ -140,14 +139,14 @@ function <portlet:namespace/>_select(alias) {
 		tbl.options[0].selected=true;
 	} else {
 		for (i=0; i < <portlet:namespace/>_selectValues.length; ++i) {
-			if (<portlet:namespace/>_selectKeys[i] == alias) {
+			if (<portlet:namespace/>_selectValues[i] == alias) {
 				tbl.options[i+1].selected=true;
 			}
 		}
 	}	
 }
 </script>
-<c:if test="${!ssPostingConfig.enabled}"><ssf:nlt tag="incoming.disabled"/></c:if><br/>
+<c:if test="${!ssScheduleInfo.enabled}"><ssf:nlt tag="incoming.disabled"/></c:if><br/>
 <div class="ss_divider"></div>
 <br/>
 <%
@@ -188,7 +187,7 @@ var <portlet:namespace/>_folderList = new Array();
 <portlet:namespace/>_folderList['<c:out value="${fld.id}"/>']='<c:out value="${fld.title}"/>';
 <c:forEach var="post" items="${fld.postings}">
 
-<portlet:namespace/>_addAlias('<c:out value="${post.binder.title}"/>', '<c:out value="${ssPostingConfig.ids[post.emailId]}"/>', 
+<portlet:namespace/>_addAlias('<c:out value="${post.binder.title}"/>', '<c:out value="${post.emailAlias.id}"/>', 
 					'<c:out value="${post.subject}"/>');
 </c:forEach>
 </c:forEach>

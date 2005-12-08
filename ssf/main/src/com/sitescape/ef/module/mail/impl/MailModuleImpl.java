@@ -39,12 +39,12 @@ import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.UserNotification;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.EmailAlias;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.mail.FolderEmailFormatter;
-import com.sitescape.ef.module.mail.PostingConfig;
 import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.util.SpringContextUtil;
@@ -102,7 +102,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		return getMailAttribute(folder.getZoneName(), node, name);
 	}
 
-	private JavaMailSender getSender(String jndiName) {
+	private synchronized JavaMailSender getSender(String jndiName) {
 		if (mailSenders.containsKey(jndiName)) 
 			return (JavaMailSender)mailSenders.get(jndiName);
 		try {
@@ -133,7 +133,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		if (sender == null) throw new ConfigurationException("Missing JavaMailSender bean");
 		return sender;
 	}
-	public List getMailPosters(String zoneName) {
+	public synchronized List getMailPosters(String zoneName) {
 		//posting map is indexed by zoneName.  Value is a list of mail sessions
 		List result = (List)mailPosters.get(zoneName);
 	    if (result != null) return result;
@@ -158,8 +158,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 * Read mail from all incomming mail servers.
 	 *
 	 */
-	public void receivePostings(ScheduleInfo info) {
-		PostingConfig config = new PostingConfig(info);
+	public void receivePostings(ScheduleInfo config) {
 		String storeProtocol, prefix, auth;
 		List posters = getMailPosters(config.getZoneName());
 		for (int i=0; i<posters.size(); ++i) {
@@ -185,11 +184,10 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				
 				mFolder.open(javax.mail.Folder.READ_WRITE);
 				//get list of folders acception postings
-				List pDefs = getCoreDao().loadPostings();
+				List pDefs = getCoreDao().loadPostings(config.getZoneName());
 				for (int j=0; j<pDefs.size(); ++j) {
 					PostingDef pDef = (PostingDef)pDefs.get(j); 
-					String alias = config.getAlias(pDef.getEmailId());
-					SearchTerm term = pDef.getSearchTerm(alias);
+					SearchTerm term = pDef.getSearchTerm();
 					if (term != null) {
 						Message msgs[] = mFolder.search(term);
 						if (pDef.isEnabled()) {
@@ -201,13 +199,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				           	RequestContextHolder.setRequestContext(rc);
 
 							FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
-							processor.postMessages(folder, pDef, alias, msgs, session);
+							processor.postMessages(folder, pDef, msgs, session);
 							RequestContextHolder.clear();
-						} else {
-							for (int m=0; m<msgs.length; ++m) {
-								Message msg = msgs[i];
-								//msg.setFlag(Flags.Flag.DELETED, true);
-							}
+						} 
+						for (int m=0; m<msgs.length; ++m) {
+							Message msg = msgs[i];
+							msg.setFlag(Flags.Flag.DELETED, true);
 						}
 					}
 				}

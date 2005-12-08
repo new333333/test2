@@ -24,6 +24,6 @@ public interface FolderEmailFormatter {
 	public String getSubject(Folder folder, Notify notify);
 	public String getFrom(Folder folder, Notify notify);
 	public Object[] validateIdList(Collection entries, Collection userIds);
-	public void postMessages(Folder folder, PostingDef pDef, String alias, Message[] msgs, Session session);
+	public void postMessages(Folder folder, PostingDef pDef, Message[] msgs, Session session);
 
 }

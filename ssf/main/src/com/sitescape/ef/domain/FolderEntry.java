@@ -71,7 +71,7 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
     private List getHEvents() {return allEvents;}
     private void setHEvents(List events) {this.allEvents = events;}   	
     /**
-     * @hibernate.bag lazy="true" cascade="all" inverse="true" optimistic-lock="false"
+     * @hibernate.bag lazy="true" cascade="all,delete-orphan" inverse="true" optimistic-lock="false"
      * @hibernate.key column="parentEntry"
      * @hibernate.one-to-many class="com.sitescape.ef.domain.FolderEntry"
      */
@@ -313,11 +313,11 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
         child.setParentEntry(null);
         child.setTopEntry(null);
         child.setHKey(null);
-        child.setParentFolder(null);
         getReplies().remove(child);
         --replyCount;
         removeAncestor(child);
-     }
+        parentFolder.removeEntry(child);
+    }
 
   
     /* 

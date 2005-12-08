@@ -88,7 +88,7 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 }
 
 </script>
-<input type="hidden" id="enabled" name="enabled" value="${ssPostingConfig.enabled}"/>
+<input type="hidden" id="enabled" name="enabled" value="${ssScheduleInfo.enabled}"/>
 
 <div class="ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="incoming.job_title" /></span><br/>
@@ -98,14 +98,14 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 
 <table border ="0" cellspacing="0" cellpadding="3">
 <tr><td class="ss_content"> 
-<input type="checkbox" class="ss_content" id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssPostingConfig.enabled}">checked</c:if>/>
+<input type="checkbox" class="ss_content" id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssScheduleInfo.enabled}">checked</c:if>/>
 Disable all incoming e-mail<br/>
 </td></tr></table>
 
 <div class="ss_divider"></div>
 <span class="ss_contentbold"><ssf:nlt tag="incoming.schedule_title" /></span>
 
-<c:set var="schedule" value="${ssPostingConfig.schedule}"/>
+<c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
 
 <div class="ss_divider"></div>
@@ -127,44 +127,41 @@ Disable all incoming e-mail<br/>
 </tr>
 </tBody>
 </table>
-<jsp:useBean id="ssPostings" type="java.util.List" scope="request" />
+<jsp:useBean id="ssEmailAliases" type="java.util.List" scope="request" />
 <%
 			java.util.HashMap postingMap = new java.util.HashMap();
 			java.util.HashSet forums;
-			for (int i=0; i<ssPostings.size(); ++i) {
-				com.sitescape.ef.domain.PostingDef post = (com.sitescape.ef.domain.PostingDef)ssPostings.get(i);
-				com.sitescape.ef.domain.Binder top = post.getBinder();
-				if (top instanceof com.sitescape.ef.domain.Folder) {
-					if (((com.sitescape.ef.domain.Folder)top).getTopFolder() != null) {
-						top = ((com.sitescape.ef.domain.Folder)top).getTopFolder();
-					}
-				}
-				Long key = post.getEmailId();
-				if (postingMap.containsKey(key)) {
-					forums = (java.util.HashSet)postingMap.get(key);
-					if (forums.contains(top)) continue;
-					forums.add(top);	
-				} else {
-					forums = new java.util.HashSet();
+			for (int i=0; i<ssEmailAliases.size(); ++i) {
+				com.sitescape.ef.domain.EmailAlias alias = (com.sitescape.ef.domain.EmailAlias)ssEmailAliases.get(i);
+				forums = new java.util.HashSet();
+				postingMap.put(alias.getId(), forums);
+				java.util.List postings = alias.getPostings();
+				for (int j=0; j<postings.size(); ++j) {
+					com.sitescape.ef.domain.PostingDef post = (com.sitescape.ef.domain.PostingDef)postings.get(j);
+					com.sitescape.ef.domain.Binder top = post.getBinder();
+					if (top instanceof com.sitescape.ef.domain.Folder) {
+						if (((com.sitescape.ef.domain.Folder)top).getTopFolder() != null) {
+							top = ((com.sitescape.ef.domain.Folder)top).getTopFolder();
+						}
+					}						
 					forums.add(top);
-					postingMap.put(key, forums);					
 				}
 			}
 			request.setAttribute("postMap", postingMap);
 	
 %>
 
-<c:forEach var="post" varStatus="status" items="${ssPostingConfig.aliases}" >
+<c:forEach var="alias" varStatus="status" items="${ssEmailAliases}" >
 <c:set var="title" value=" " scope="request"/>
-<c:forEach var="forum" varStatus="fStatus" items="${postMap[post.value]}">
+<c:forEach var="forum" varStatus="fStatus" items="${postMap[alias.id]}">
 <c:choose>
 <c:when test="${fStatus.first}"><c:set var="title" value="${forum.title}"/></c:when>
 <c:otherwise><c:set var="title" value="${title},${forum.title}"/></c:otherwise>
 </c:choose>
 </c:forEach>
-<input type="hidden" id="aliasId${status.index}" name="aliasId${status.index}" value="${post.value}"/>
+<input type="hidden" id="aliasId${status.index}" name="aliasId${status.index}" value="${alias.id}"/>
 <script language="javascript" type="text/javascript">
-<portlet:namespace/>_addAlias('<c:out value="${post.key}"/>','<c:out value="${title}"/>');
+<portlet:namespace/>_addAlias('<c:out value="${alias.aliasName}"/>','<c:out value="${title}"/>');
 </script>
 </c:forEach>
 

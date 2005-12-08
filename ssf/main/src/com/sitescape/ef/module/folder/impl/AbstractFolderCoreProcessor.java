@@ -625,11 +625,15 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     //***********************************************************************************************************   
     public void deleteEntry(Folder parentFolder, Long entryId) {
         FolderEntry entry = folderEntry_load(parentFolder, entryId);
+        deleteEntry(parentFolder, entry);
+    }
+    public void deleteEntry(Folder parentFolder, FolderEntry entry) {
         deleteEntry_accessControl(parentFolder, entry);
         deleteEntry_preDelete(parentFolder, entry);
         deleteEntry_delete(parentFolder, entry);
         deleteEntry_postDelete(parentFolder, entry);
         deleteEntry_indexDel(entry);
+   	
     }
     protected void deleteEntry_accessControl(Folder parentFolder, FolderEntry entry) {
         getAccessControlManager().checkOperation(parentFolder, WorkAreaOperation.DELETE_ENTRIES);
@@ -637,7 +641,10 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         getAccessControlManager().checkAcl(parentFolder, entry, AccessType.DELETE);
     }
     protected void deleteEntry_preDelete(Folder parentFolder, FolderEntry entry) {
-    	
+    	List replies = new ArrayList(entry.getReplies());
+    	for (int i=0; i<replies.size(); ++i) {
+    		deleteEntry(parentFolder, (FolderEntry)replies.get(i));
+    	}
         FolderEntry parent= entry.getParentEntry();
         if (parent != null) {
             parent.removeReply(entry);
@@ -648,6 +655,8 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         
     protected void deleteEntry_delete(Folder parentFolder, FolderEntry entry) {
     	List atts = entry.getAttachments();
+    	//need to get all attachments associated with replies
+    	//need to delete workflow stuff
     	for (int i=0; i<atts.size(); ++i) {
     		Attachment a = (Attachment)atts.get(i);
     	}
