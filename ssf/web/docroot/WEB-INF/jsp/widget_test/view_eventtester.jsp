@@ -56,6 +56,7 @@
       }
     %>
 
+<center>
 <b>You chose:</b>
 <br>
 <table border="1">
@@ -96,6 +97,8 @@ Nothing selected
 </td>
 </tr>
 </table>
+
+</center>
 <p>
 <%
     }
@@ -105,6 +108,7 @@ Nothing selected
 <span align="center">SiteScape Forum Event tester
 <br />
 </span>
+<center>
 <table border="0">
 <tr><td>
 <br />
@@ -132,5 +136,6 @@ This one has a duration
 	<br>
 	<hr>
 	<input type="submit" name="OK" value="OK">
+</center>
 </form>
 
