@@ -239,7 +239,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	        if (pD == null) {
 	        	//The process definition doesn't exist yet, go create one
 	        	pD = ProcessDefinition.createNewProcessDefinition();
-	    		pD.setName(definitionName);
+	    		pD.setName(definitionName);        	
 	        }
 	        updateProcessDefinition(pD, def);
 	    	session.getGraphSession().saveProcessDefinition(pD);
@@ -255,18 +255,19 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		Element defRoot = defDoc.getRootElement();
 		
 		//Start by deleting all of the nodes
-		List nodes = new ArrayList(pD.getNodes());
+		List nodes = pD.getNodes();
 		if (nodes != null) {
-			List nodes1 = new ArrayList(nodes);
-			Iterator itNodes = nodes1.iterator();
+			nodes = new ArrayList(nodes);
+			Iterator itNodes = nodes.iterator();
 			while (itNodes.hasNext()) {
 				Node node = (Node) itNodes.next();
 				if (node != null) pD.removeNode(node);
 			}
 		}
 		//Delete all of the actions and events
-		Map actions = new HashMap(pD.getActions());
+		Map actions = pD.getActions();
 		if (actions != null) {
+			actions = new HashMap(actions);
 			Iterator itActions = actions.entrySet().iterator();
 			while (itActions.hasNext()) {
 				Map.Entry me = (Map.Entry) itActions.next();
@@ -274,8 +275,9 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				if (action != null) pD.removeAction(action);
 			}
 		}
-		Map events = new HashMap(pD.getEvents());
+		Map events = pD.getEvents();
 		if (events != null) {
+			events = new HashMap(events);
 			Iterator itEvents = events.entrySet().iterator();
 			while (itEvents.hasNext()) {
 				Map.Entry me = (Map.Entry) itEvents.next();
