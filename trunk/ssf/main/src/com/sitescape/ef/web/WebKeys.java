@@ -59,6 +59,7 @@ public class WebKeys {
 	public static final String FORUM_ACTION_VIEW_ENTRY = "view_entry";
 	public static final String LDAP_ACTION_CONFIGURE="configure_ldap";
 	public static final String NOTIFY_ACTION_CONFIGURE="configure_notify";
+	public static final String POSTING_ACTION_CONFIGURE="configure_posting";
 	//oerations
  	public static final String FORUM_OPERATION_ADMINISTRATION = "administration";
 	public static final String FORUM_OPERATION_SET_DISPLAY_STYLE = "set_display_style";
@@ -98,6 +99,7 @@ public class WebKeys {
     public static final String HISTORY_MAP="ssHistoryMap";
     public static final String LDAP_CONFIG="ssLdapConfig";
     public static final String NOTIFICATION="ssNotification";
+    public static final String POSTING="ssPosting";
     public static final String PUBLIC_DEFINITIONS="ssPublicDefinitions";
     public static final String PUBLIC_ENTRY_DEFINITIONS="ssPublicEntryDefinitions";
     public static final String PUBLIC_FOLDER_DEFINITIONS="ssPublicFolderDefinitions";
@@ -128,6 +130,7 @@ public class WebKeys {
     public static final String VIEW_DEFINITION_XML="definition_builder/view_definition_xml";
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
     public static final String VIEW_ADMIN_CONFIGURE_NOTIFICATION="administration/configureNotify";
+    public static final String VIEW_ADMIN_CONFIGURE_POSTING="administration/configurePosting";
     
     //servlet paths
     public static final String SERVLET_VIEW_FILE="viewFile";
