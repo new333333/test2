@@ -235,6 +235,8 @@
 	
 	<bean id="portletInitRequestContextInterceptor" class="com.sitescape.ef.web.portlet.handler.InitRequestContextInterceptor"/>
 	
+	<bean id="portletInitRequestContextInterceptor" class="com.sitescape.ef.web.portlet.handler.InitRequestContextInterceptor"/>
+	
 	<bean id="portletUserPreloadInterceptor" class="com.sitescape.ef.web.portlet.handler.UserPreloadInterceptor">
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>	
@@ -321,6 +323,9 @@
 				<property name="coreDao"><ref local="coreDao"/></property>
 				<property name="scheduler"><ref local="scheduler"/></property>
 				<property name="processorManager"><ref local="modelProcessorManager"/></property>
+				<property name="functionManager"><ref local="functionManager"/></property>
+				<property name="accessControlManager"><ref local="accessControlManager"/></property>
+				<property name="aclManager"><ref local="aclManager"/></property>
 			</bean>
 		</property>
 	</bean>
@@ -372,11 +377,12 @@
 			</bean>
 		</property>
 	</bean>
-	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-		<property name="host"><value>host54a.simplicato.com</value></property>
+	<bean id="mailSession" class="com.sitescape.ef.util.JndiObjectFactoryBean">
+		<property name="jndiName"><value>java:comp/env/mail/SiteScapeMailOut</value></property>
 	</bean>
-	<bean id="mailMessage" class="org.springframework.mail.SimpleMailMessage">
-		<property name="from"><value>janet@sitescape.com</value></property>
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="session"><ref local="mailSession"/></property>
+		<property name="defaultEncoding"><value>utf-8</value></property>
 	</bean>
 	<bean id="mailModule" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager">
@@ -395,11 +401,25 @@
 		
 	<bean id="mailTarget" class="com.sitescape.ef.module.mail.impl.MailModuleImpl">
 		<property name="coreDao"><ref local="coreDao"/></property>
+		<property name="folderDao"><ref local="folderDao"/></property>
 		<property name="processorManager"><ref local="modelProcessorManager"/></property>
-		<property name="mailSender"><ref bean="mailSender"/></property>
-		<property name="message"><ref bean="mailMessage"/></property>
+		<property name="mailSender"><ref local="mailSender"/></property>
 		<property name="scheduler"><ref local="scheduler"/></property>
 	</bean>	
+	<bean id="defaultFolderEmailFormatter" class="com.sitescape.ef.module.mail.impl.DefaultFolderEmailFormatter"  init-method="init">
+		<property name="accessControlManager"><ref local="accessControlManager"/></property>
+		<property name="aclManager"><ref local="aclManager"/></property>
+		<property name="configDocs">
+			<bean class="com.sitescape.ef.util.XmlClassPathConfigFiles">
+				<property name="configFiles">
+					<list>
+						<value>config/mail.cfg.xml</value>
+					</list>		
+				</property>
+				<property name="validating"><value>false</value></property>
+			</bean>
+		</property>
+	</bean>
 	
 	<bean id="ldapModule"  parent="baseTransactionProxy">
 		<property name="transactionAttributes">
