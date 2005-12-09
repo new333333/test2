@@ -15,7 +15,7 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 
 	protected String jabberServer;
 	protected String jabberServerPort;
-	protected boolean disable = false;
+	protected boolean enable = false;
 	protected PresenceListener pl;
 	protected HashMap presenceMap = new HashMap();
 	
@@ -37,13 +37,13 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 		this.jabberServerPort = jabberServerPort;
 	}
 	
-	public void setDisable(boolean disable) {
-		this.disable = disable;
+	public void setEnable(boolean enable) {
+		this.enable = enable;
 	}
 	
 	public void afterPropertiesSet() throws Exception {
-		if(!disable) {
-			// Using jabberServer info, establishe a socket connection to the 
+		if(enable) {
+			// Using jabberServer info, establish a socket connection to the 
 			// Jabber server or any other initialization that you have to do
 			// at the system startup time. 
 			pl = new PresenceListener();
@@ -130,7 +130,9 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 	                    presenceMap.remove(user);
 	                    presenceMap.put(user,status);
 	                }
-		        }catch (Exception e ){} 
+		        }catch (Exception e ){
+		        	presenceSocket = null;
+		        } 
 	    	
 		        }	    
 		 }

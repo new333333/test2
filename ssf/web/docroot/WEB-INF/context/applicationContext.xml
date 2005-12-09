@@ -516,7 +516,7 @@
 	<bean id="presenceService" class="com.sitescape.ef.presence.impl.PresenceServiceImpl">
 		<property name="jabberServer"><value>iic.homedns.org</value></property>
 		<property name="jabberServerPort"><value>5353</value></property>
-		<property name="disable"><value>false</value></property>
+		<property name="enable"><value>false</value></property>
 	</bean>
 	
 </beans>
