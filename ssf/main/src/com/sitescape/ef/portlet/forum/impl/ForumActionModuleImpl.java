@@ -147,11 +147,6 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		this.workspaceModule = workspaceModule;
 	}
 	
-	private Definition getDefinition(String id) {
-		String companyId = RequestContextHolder.getRequestContext().getZoneName();
- 		return getCoreDao().loadDefinition(id, companyId);
-	}
-	
 	protected void getDefinitions(Folder folder, Map model) {
 		List folderViewDefs = folder.getForumViewDefs();
 		if (!folderViewDefs.isEmpty()) {
@@ -776,7 +771,7 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		Map model = new HashMap();
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(req, WebKeys.FORUM_URL_ENTRY_ID));
 		FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
-		model.put(WebKeys.FOLDER_ENTRY, entry);
+		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.FOLDER, entry.getParentFolder());
 		return model;
 	}
@@ -786,7 +781,7 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(req, WebKeys.FORUM_URL_ENTRY_ID));
 		entry  = getFolderModule().getEntry(folderId, entryId);
 		
-		model.put(WebKeys.FOLDER_ENTRY, entry);
+		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.FOLDER, entry.getParentFolder());
 		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 		getDefinition(entry.getEntryDef(), model, "//item[@name='entryForm']");
@@ -935,7 +930,7 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		}
 		model.put(WebKeys.ENTRY_ID, entryId);
 		model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(null));
-		model.put(WebKeys.FOLDER_ENTRY, entry);
+		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.FOLDER, folder);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
@@ -975,7 +970,7 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 		getDefinitions(folder, model);
 		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.FOLDER_ENTRIES);
-		//getEvents(entries, model, req, response);
+		getEvents(entries, model, req, response);
 		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
 		buildFolderToolbar(response, model, forumId);
 		return model;
