@@ -7,6 +7,7 @@
 <%@ page import="com.sitescape.ef.util.NLT" %>
 <%@ page import="com.sitescape.ef.web.WebKeys" %>
 <%@ page import="com.sitescape.ef.domain.Folder" %>
+<%@ page import="com.sitescape.ef.domain.Entry" %>
 <%@ page import="com.sitescape.ef.domain.FolderEntry" %>
 <%@ page import="com.sitescape.ef.domain.Event" %>
 <%@ page import="com.sitescape.ef.domain.CustomAttribute" %>
