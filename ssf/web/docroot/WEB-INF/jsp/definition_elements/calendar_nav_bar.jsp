@@ -8,22 +8,3 @@
 <form name="ssCalNavBar" action="${goto_form_url}" method="post" style="display:inline;">
 <input type="submit" class="ss_submit" name="go" value="Go to:">&nbsp;<span class="ss_content"><ssf:datepicker formName="ssCalNavBar" id="goto" initDate="${ssCurrentDate}" />
 </form>
-
-<<<<<<< SourceSafe version
-<%
-	Boolean tt = new Boolean(true);
-%>
-
-<form name="ssCalNavBar" action="${goto_form_url}" method="POST">
-<table border="0">
-<tr>
-<td align="left">
-<span class="ss_content">Go to: <ssf:datepicker formName="ssCalNavBar" id="goto" 
-                                     initDate="${ssCurrentDate}" immediateMode="<%= tt %>" />
-</span>
-</td>
-</tr>
-</table>
-</form>
-======= 
->>>>>>> Local version

@@ -62,7 +62,7 @@ ${dayabbrev}</td>
 <c:forEach var="evim" items="${ev.value}"> 
 <jsp:useBean id="evim" type="java.util.Map" />
 <%
-    FolderEntry e = (FolderEntry) evim.get("entry");
+    Entry e = (Entry) evim.get("entry");
 %>
 <div id="folderLine_${evim.entry.id}">	
 ${evim.cal_starttimestring}: 

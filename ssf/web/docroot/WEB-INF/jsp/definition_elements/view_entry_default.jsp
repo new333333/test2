@@ -7,7 +7,7 @@
 
 <div class="formBreak">
 <div class="ss_entryContent">
-<c:out value="${ssFolderEntry.description.text}"/>
+<c:out value="${ssEntry.description.text}"/>
 </div>
 </div>
 <%

@@ -22,7 +22,7 @@
 	}
 %>
 <c:set var="cb_checked" value=""/>
-<c:if test="${ssFolderEntry.customAttributes[property_name].value}" >
+<c:if test="${ssEntry.customAttributes[property_name].value}" >
 <c:set var="cb_checked" value="checked"/>
 </c:if>
 <div class="ss_contentEntry" style="display:<%= inline %>;">

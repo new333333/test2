@@ -28,8 +28,8 @@
 %>
 <span class="ss_labelAbove"><%= caption %><%= required %></span>
 
-<c:if test="${!empty ssFolderEntry.customAttributes[property_name]}" >
-<c:set var="ev" value="${ssFolderEntry.customAttributes[property_name].value}" />
+<c:if test="${!empty ssEntry.customAttributes[property_name]}" >
+<c:set var="ev" value="${ssEntry.customAttributes[property_name].value}" />
 </c:if>
 <jsp:useBean id="ev" type="com.sitescape.ef.domain.Event" class="com.sitescape.ef.domain.Event" />
 

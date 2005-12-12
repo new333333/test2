@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
-<jsp:useBean id="ssDefinitionEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
+<jsp:useBean id="ssDefinitionEntry" type="com.sitescape.ef.domain.Entry" scope="request" />
 <%
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
@@ -13,5 +13,5 @@
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= item %>" 
   configJspStyle="<%= ssConfigJspStyle %>" 
-  folderEntry="<%= ssDefinitionEntry %>" />
+  entry="<%= ssDefinitionEntry %>" />
 </div>
