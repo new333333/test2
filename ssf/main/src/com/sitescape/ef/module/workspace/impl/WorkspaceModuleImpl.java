@@ -14,6 +14,7 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
+import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
@@ -46,7 +47,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         } else {
         	workspace = (Workspace)getCoreDao().loadBinder(workspaceId, user.getZoneName());  
         }
-    	accessControlManager.checkOperation(workspace, WorkAreaOperation.VIEW);
+		// Check if the user has "read" access to the workspace.
+        getAccessControlManager().checkAcl(workspace, AccessType.READ);
  
        return workspace;
     }
@@ -59,7 +61,10 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         User user = RequestContextHolder.getRequestContext().getUser();
         if (id == null) top =  getCoreDao().findTopWorkspace(user.getZoneName());
         else top = (Workspace)getCoreDao().loadBinder(id, user.getZoneName());
-      	getAccessControlManager().checkOperation(top, WorkAreaOperation.VIEW);
+		
+		// Check if the user has "read" access to the top folder.
+        getAccessControlManager().checkAcl(top, AccessType.READ);
+
         Comparator c = new BinderComparator(user.getLocale());
     	Document wsTree = DocumentHelper.createDocument();
     	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
@@ -82,7 +87,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     		if (f.getTopFolder() != null) continue;
       	    // Check if the user has the privilege to view the folder 
             try {
-              	getAccessControlManager().checkOperation(f, WorkAreaOperation.VIEW);
+        		// Check if the user has "read" access to the folder.
+                getAccessControlManager().checkAcl(f, AccessType.READ);
             } catch (AccessControlException ac) {
                	continue;
             }
@@ -95,7 +101,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
      		w = (Workspace)iter.next();
        	    // Check if the user has the privilege to view the folder 
             try {
-               	getAccessControlManager().checkOperation(w, WorkAreaOperation.VIEW);
+        		// Check if the user has "read" access to the folder.
+                getAccessControlManager().checkAcl(w, AccessType.READ);
             } catch (AccessControlException ac) {
                 	continue;
             }
