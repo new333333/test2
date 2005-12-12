@@ -28,6 +28,7 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.UserPerFolderPK;
+import com.sitescape.ef.domain.WorkflowStateObject;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.portlet.forum.HistoryCache;
 import com.sitescape.ef.module.definition.DefinitionModule;
@@ -889,12 +890,56 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 			model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
 			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
 		}
+		Map workflowInfo = new HashMap();
+		if (entry != null) {
+			//Get the workflow information (if any)
+			List workflowStates = entry.getWorkflowStates();
+			for (int i = 0; i < workflowStates.size(); i++) {
+				Map transitionData = new HashMap();
+				WorkflowStateObject ws = (WorkflowStateObject) workflowStates.get(i);
+				Definition wfDef = ws.getDefinition();
+				Document wfDoc = wfDef.getDefinition();
+				Element wfRoot = wfDoc.getRootElement();
+				Element statePropertyEle = (Element) wfRoot.selectSingleNode("//item[@name='workflowProcess']/item[@name='state']/properties/property[@name='name' and @value='"+ws.getState()+"']");
+				if (statePropertyEle != null) {
+					Element stateEle = statePropertyEle.getParent().getParent();
+					List transitions = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionManual']");
+					if (transitions != null) {
+						for (int j = 0; j < transitions.size(); j++) {
+							Element toStateEle = (Element) ((Element) transitions.get(j)).selectSingleNode("./properties/property[@name='toState']");
+							if (toStateEle != null) {
+								String toStateValue = toStateEle.attributeValue("value", "");
+								String toStateCaption = "";
+								if (!toStateValue.equals("")) {
+									//We have a transition. get the caption;
+									Element toStateEle2 = (Element) wfRoot.selectSingleNode("//item[@name='workflowProcess']/item[@name='state']/properties/property[@name='name' and @value='"+toStateValue+"']");
+									if (toStateEle2 != null) {
+										Element toStateCaptionEle = (Element) toStateEle2.selectSingleNode("../property[@name='caption']");
+										if (toStateCaptionEle != null) {
+											toStateCaption = toStateCaptionEle.attributeValue("value", "");
+										}
+									}
+								}
+								if (toStateCaption.equals("")) toStateCaption = toStateValue;
+								if (!toStateValue.equals("") && !toStateCaption.equals("")) {
+									//Ok, add this transition to the map
+									transitionData.put(toStateValue, toStateCaption);
+								}
+							}
+						}
+					}
+				}
+				//Save the list of transitions for this workflowState
+				workflowInfo.put(ws.getTokenId(), transitionData);
+			}
+		}
 		model.put(WebKeys.ENTRY_ID, entryId);
 		model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(null));
 		model.put(WebKeys.FOLDER_ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.FOLDER, folder);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
+		model.put(WebKeys.ENTRY_WORKFLOW_TRANSITIONS, workflowInfo);
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
 		if (entry == null) {
 			getDefinition(null, model, "//item[@name='entryView']");
