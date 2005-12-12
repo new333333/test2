@@ -100,6 +100,7 @@ public class WebKeys {
     public static final String ENTRY_DEFINITION="ssEntryDefinition";
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_ID = "ssEntryId";
+    public static final String ENTRY_WORKFLOW_TRANSITIONS="ssEntryWorkflowTransitions";
     public static final String FOLDER = "ssFolder";
     public static final String FOLDER_DEFINTION_MAP="ssFolderDefinitionMap";
     public static final String FOLDER_LIST = "ssFolderList";
