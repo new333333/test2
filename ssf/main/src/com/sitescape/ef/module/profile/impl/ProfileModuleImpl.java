@@ -379,7 +379,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
       }
 
      protected void modifyUser_accessControl(Workspace ws, User user) throws AccessControlException {
-         getAccessControlManager().checkOperation(ws, WorkAreaOperation.VIEW);
+ 		// Check if the user has "read" access to the workspace.
+         getAccessControlManager().checkAcl(ws, AccessType.READ);
              
          // Check if the user has "write" access to the particular entry.
          //getAccessControlManager().checkAcl(ws, user, AccessType.WRITE);
@@ -514,7 +515,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
 
     protected void modifyGroup_accessControl(Workspace ws, Group group) throws AccessControlException {
-        getAccessControlManager().checkOperation(ws, WorkAreaOperation.VIEW);
+		// Check if the user has "read" access to the workspace.
+        getAccessControlManager().checkAcl(ws, AccessType.READ);
             
         // Check if the user has "write" access to the particular entry.
         //getAccessControlManager().checkAcl(ws, user, AccessType.WRITE);
