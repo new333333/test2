@@ -233,7 +233,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
           
      }
     protected void modifyEntry_accessControl(Folder folder, FolderEntry entry) throws AccessControlException {
-        getAccessControlManager().checkOperation(folder, WorkAreaOperation.VIEW);
+        getAccessControlManager().checkOperation(folder, WorkAreaOperation.MODIFY_ENTRIES);
         
         // Check if the user has "write" access to the particular entry.
         getAccessControlManager().checkAcl(folder, entry, AccessType.WRITE);
@@ -425,7 +425,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
 
     //***********************************************************************************************************
     public org.dom4j.Document getDomFolderTree(Folder top, DomTreeBuilder domTreeHelper) {
-       	getAccessControlManager().checkOperation(top, WorkAreaOperation.VIEW);
+    	getFolderEntries_accessControl(top);
         User user = RequestContextHolder.getRequestContext().getUser();
     	Comparator c = new BinderComparator(user.getLocale());
     	    	
@@ -448,7 +448,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
        		f = (Folder)iter.next();
       	    // Check if the user has the privilege to view the folder 
             try {
-              	getAccessControlManager().checkOperation(f, WorkAreaOperation.VIEW);
+            	getFolderEntries_accessControl(f);
             } catch (AccessControlException ac) {
                	continue;
             }
@@ -670,7 +670,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
            
         // Check if the user has the privilege to view the entries in the 
         // work area, which is the docshare forum.
-        getAccessControlManager().checkOperation(parentFolder, WorkAreaOperation.VIEW);
+    	getFolderEntries_accessControl(parentFolder);
               
         // Check if the user has "read" access to the particular entry.
         getAccessControlManager().checkAcl(parentFolder, entry, AccessType.READ);
