@@ -19,13 +19,13 @@
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
-<jsp:useBean id="ssFolderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
+<jsp:useBean id="ssEntry" type="com.sitescape.ef.domain.Entry" scope="request" />
 
 <table cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= ssConfigElement %>" 
   configJspStyle="<%= ssConfigJspStyle %>"
-  folderEntry="<%= ssFolderEntry %>"
+  entry="<%= ssEntry %>"
   processThisItem="true" />
 </td></tr></table>
 

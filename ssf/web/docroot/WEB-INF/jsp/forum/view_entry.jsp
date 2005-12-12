@@ -231,7 +231,7 @@ function highlightLineById(id) {
 </c:if>
 
 <c:if test="<%= op.equals(WebKeys.FORUM_ACTION_VIEW_ENTRY) %>">
-<jsp:useBean id="ssFolderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
+<jsp:useBean id="ssEntry" type="com.sitescape.ef.domain.entry" scope="request" />
   <c:if test="<%= !statePopUp %>">
 <script language="javascript">
 function ss_loadEntry(obj,id) {
@@ -243,13 +243,13 @@ function ss_loadEntry(obj,id) {
 	    configElement="<%= ssConfigElement %>" 
 	    configJspStyle="<%= ssConfigJspStyle %>"
 	    processThisItem="true" 
-	    folderEntry="<%= ssFolderEntry %>" />
+	    entry="<%= ssEntry %>" />
   </c:if>
   
   <c:if test="<%= statePopUp %>">
 <script language="javascript">
 if (self.parent && self.parent.highlightLineById) {
-	self.parent.highlightLineById("folderLine_<c:out value="${ssFolderEntry.id}"/>");
+	self.parent.highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
 }
 </script>
 <%
@@ -263,7 +263,7 @@ if (self.parent && self.parent.highlightLineById) {
 	  configElement="<%= ssConfigElement %>" 
 	  configJspStyle="<%= ssConfigJspStyle %>"
 	  processThisItem="true" 
-	  folderEntry="<%= ssFolderEntry %>" />
+	  entry="<%= ssEntry %>" />
     </ssf:box>
 <%
 	
@@ -274,7 +274,7 @@ if (self.parent && self.parent.highlightLineById) {
 	  configElement="<%= ssConfigElement %>" 
 	  configJspStyle="<%= ssConfigJspStyle %>"
 	  processThisItem="true" 
-	  folderEntry="<%= ssFolderEntry %>" />
+	  entry="<%= ssEntry %>" />
 <%
 	
 	//Popup view
@@ -284,7 +284,7 @@ if (self.parent && self.parent.highlightLineById) {
 	  configElement="<%= ssConfigElement %>" 
 	  configJspStyle="<%= ssConfigJspStyle %>"
 	  processThisItem="true" 
-	  folderEntry="<%= ssFolderEntry %>" />
+	  entry="<%= ssEntry %>" />
 <%
 	
 	//Vertical view
@@ -294,7 +294,7 @@ if (self.parent && self.parent.highlightLineById) {
 	  configElement="<%= ssConfigElement %>" 
 	  configJspStyle="<%= ssConfigJspStyle %>"
 	  processThisItem="true" 
-	  folderEntry="<%=  ssFolderEntry %>" />
+	  entry="<%=  ssEntry %>" />
 <%
 	}
 %>
