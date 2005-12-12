@@ -3,7 +3,6 @@
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <jsp:useBean id="ssDefinitionEntry" type="com.sitescape.ef.domain.Entry" scope="request" />
-<jsp:useBean id="ssEntryWorkflowTransitions" type="java.util.Map" scope="request" />
 
 <c:if test="${!empty ssDefinitionEntry.workflowStates}">
 <div class="ss_workflow">
@@ -12,6 +11,7 @@
 	String column1 = "<span><b>" + NLT.get("workflow", "Workflow") + ":</b></span>";
 %>
 <c:forEach var="workflow" items="${ssDefinitionEntry.workflowStates}">
+<c:if test="${!empty workflow.definition}">
 <jsp:useBean id="workflow" type="com.sitescape.ef.domain.WorkflowStateObject" />
 <%
 	//Find the actual caption of the state
@@ -33,6 +33,7 @@
 <td>&nbsp;&nbsp;&nbsp;</td>
 <td valign="top" align="right"><b>Transition to:</b></td>
 <td valign="top">
+<c:if test="${!empty ssEntryWorkflowTransitions}">
 <form method="post" action="" style="display:inline;">
 <input type="hidden" name="tokenId" value="${workflow.tokenId}">
 <select name="toState">
@@ -42,9 +43,11 @@
 </select><input type="submit" name="changeStateBtn" 
  value="<ssf:nlt tag="button.ok" text="OK"/>">
 </form>
+</c:if>
 </td>
 </tr>
 <%	column1 = "";  %>
+</c:if>
 </c:forEach>
 
 </table>
