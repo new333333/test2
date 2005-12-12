@@ -121,10 +121,10 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 		<attribute>
-			<name>folderEntry</name>
+			<name>entry</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.FolderEntry</type>
+			<type>com.sitescape.ef.domain.Entry</type>
 		</attribute>		
 		<attribute>
 			<name>processThisItem</name>
