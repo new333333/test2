@@ -50,7 +50,7 @@ Views:&nbsp;<a href="${set_week_view}">Week</a><c:out value="${delimiter}" /><a 
 <c:forEach var="evid" items="${ev.value}"> 
 <jsp:useBean id="evid" type="java.util.Map" />
 <%
-    FolderEntry e = (FolderEntry) evid.get("entry");
+    Entry e = (Entry) evid.get("entry");
 %>
 <script language="javascript">
 //getFilteredEntries()

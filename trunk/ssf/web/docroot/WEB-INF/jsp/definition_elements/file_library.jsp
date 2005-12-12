@@ -42,7 +42,7 @@ function ss_loadEntry(obj,id) {
   <th align="left">Author</th>
 </tr>
 <c:forEach var="fileEntry" items="${ssFolderEntries}" >
-<jsp:useBean id="fileEntry" type="com.sitescape.ef.domain.FolderEntry" />
+<jsp:useBean id="fileEntry" type="com.sitescape.ef.domain.Entry" />
 <tr id="folderLine_<c:out value="${fileEntry.id}"/>">
   <td align="right" valign="top" width="1%">
 <%

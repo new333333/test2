@@ -7,7 +7,7 @@
 	Element item = (Element) request.getAttribute("item");
 %>
 <c:set var="checked" value=""/>
-<c:if test="${ssFolderEntry.customAttributes[radioGroupName].value == property_name}">
+<c:if test="${ssEntry.customAttributes[radioGroupName].value == property_name}">
   <c:set var="checked" value="checked"/>
 </c:if>
 <input type="radio" name="<c:out value="${radioGroupName}"/>" 

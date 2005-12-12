@@ -1,6 +1,6 @@
 <% // Calendar view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="com.sitescape.ef.domain.FolderEntry" %>
+<%@ page import="com.sitescape.ef.domain.Entry" %>
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />
 <jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
 <jsp:useBean id="ssFolderDomTree" type="org.dom4j.Document" scope="request" />

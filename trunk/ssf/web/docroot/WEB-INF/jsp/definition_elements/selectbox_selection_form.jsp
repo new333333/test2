@@ -7,7 +7,7 @@
 	Element item = (Element) request.getAttribute("item");
 %>
 <c:set var="checked" value=""/>
-<c:forEach var="selection" items="${ssFolderEntry.customAttributes[selectboxName].valueSet}" >
+<c:forEach var="selection" items="${ssEntry.customAttributes[selectboxName].valueSet}" >
   <c:if test="${selection == property_name}">
     <c:set var="checked" value="selected"/>
   </c:if>

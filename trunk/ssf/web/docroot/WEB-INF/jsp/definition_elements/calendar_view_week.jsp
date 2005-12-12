@@ -53,7 +53,7 @@ Views:&nbsp;<a href="${set_day_view}">Day</a><c:out value="${delimiter}" /><a hr
 <c:forEach var="eviw" items="${ev.value}"> 
 <jsp:useBean id="eviw" type="java.util.Map" />
 <%
-    FolderEntry e = (FolderEntry) eviw.get("entry");
+    Entry e = (Entry) eviw.get("entry");
 %>
 <script language="javascript">
 //getFilteredEntries()
