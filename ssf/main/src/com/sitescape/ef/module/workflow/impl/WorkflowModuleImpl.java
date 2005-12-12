@@ -367,6 +367,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 							ws.setTokenId(new Long(token.getId()));
 							ws.setState(initialState);
 							ws.setOwner(entry);
+							ws.setDefinition(workflowDef);
 							getCoreDao().save(ws);
 							mEntry.addWorkflowState(ws);
 						} else if (entry instanceof SingletonWorkflowSupport) {
@@ -378,6 +379,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 							}
 							ws.setState(initialState);
 							ws.setTokenId(new Long(token.getId()));
+							ws.setDefinition(workflowDef);
 						}
 			        	//Start the workflow process at the initial state
 						token.setNode(node);
