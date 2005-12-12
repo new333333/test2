@@ -3,27 +3,18 @@ package com.sitescape.ef.jobs;
 import java.util.TimeZone;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.util.SpringContextUtil;
 
 public class DefaultEmailPosting extends SSStatefulJob implements EmailPosting {
-	protected Log logger = LogFactory.getLog(getClass());
 	public void doExecute(final JobExecutionContext context) throws JobExecutionException {
     	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
-		try {
-			ScheduleInfo config = new ScheduleInfo((Map)(context.getJobDetail().getJobDataMap()));
-			mail.receivePostings(config);
-		} catch (ConfigurationException cf) {
-			throw new JobExecutionException(cf);
-		} 
+		ScheduleInfo config = new ScheduleInfo((Map)(context.getJobDetail().getJobDataMap()));
+		mail.receivePostings(config);
     }
 	public ScheduleInfo getScheduleInfo(String zoneName) {
 		return getScheduleInfo(new MailJobDescription(zoneName));
