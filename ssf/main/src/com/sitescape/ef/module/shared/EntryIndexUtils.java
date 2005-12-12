@@ -48,6 +48,7 @@ public class EntryIndexUtils {
     public static final String EVENT_FIELD_START_DATE = "StartDate";
     public static final String EVENT_FIELD_END_DATE = "EndDate";
     public static final String EVENT_COUNT_FIELD = "_eventCount";
+    public static final String WORKFLOW_PROCESS_FIELD = "_workflowProcess";
     public static final String WORKFLOW_STATE_FIELD = "_workflowState";
     
     // Defines field values
@@ -121,14 +122,19 @@ public class EntryIndexUtils {
     				Field workflowStateField = Field.Keyword(WORKFLOW_STATE_FIELD, 
     						((WorkflowStateObject)workflowStates.get(i)).getState());
     				doc.add(workflowStateField);
+    				Field workflowProcessField = Field.Keyword(WORKFLOW_PROCESS_FIELD, 
+    						((WorkflowStateObject)workflowStates.get(i)).getDefinition().getId());
+    				doc.add(workflowProcessField);
     			}
     		}
     	} else if (entry instanceof SingletonWorkflowSupport) {
 			SingletonWorkflowSupport sEntry = (SingletonWorkflowSupport) entry;
 			WorkflowState ws = sEntry.getWorkflowState();
 			if (ws != null) {
-				Field workflowStateField = Field.Keyword(WORKFLOW_STATE_FIELD, (ws.getState()));
+				Field workflowStateField = Field.Keyword(WORKFLOW_STATE_FIELD, ws.getState());
 				doc.add(workflowStateField);
+				Field workflowProcessField = Field.Keyword(WORKFLOW_PROCESS_FIELD, ws.getDefinition().getId());
+				doc.add(workflowProcessField);
 			}
     	}
     }
