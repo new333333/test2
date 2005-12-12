@@ -22,6 +22,8 @@ import com.sitescape.util.Validator;
 public class Group extends Principal implements WorkArea {
     private List members;    
     
+    private Boolean functionMembershipInherited = Boolean.TRUE;
+    
     private static final String WORK_AREA_TYPE = "GROUP";
     
     public String getTitle() {
@@ -124,10 +126,34 @@ public class Group extends Principal implements WorkArea {
 		// TODO Then where should we inherit the function membership from?
 		return null; // For now
 	}
+	
+	// I have separate sets of methods for handling functionMembershipInherited
+	// field - one for WorkArea interface and the other for Hibernate persistence.
+	// Strictly speaking this separation is not at all necessary. But in order
+	// to allow people to continue working with existing databases without having
+	// to re-build them, I had to allow nulls for existing records, and hence
+	// this ugly code. 
 	public boolean isFunctionMembershipInherited() {
-		// TODO Once Janet creates a thing that can contain users and groups
-		// in the system, we will have all groups inherit function memberships
-		// from it. 
-		return false; // For now
-	} 	
+    	if(functionMembershipInherited == null)
+    		return true; // Default value
+    	else		
+    		return functionMembershipInherited.booleanValue();
+	}
+
+	public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
+        this.functionMembershipInherited = Boolean.valueOf(functionMembershipInherited);
+    }
+	
+	/**
+	 * @hibernate.property not-null="true"
+     * @hibernate.column name="functionMembershipInherited"
+     * 
+	 * @return
+	 */
+    private Boolean getHFunctionMembershipInherited() {
+    	return functionMembershipInherited;
+    }
+    private void setHFunctionMembershipInherited(Boolean functionMembershipInherited) {
+        this.functionMembershipInherited = functionMembershipInherited;
+    }
 }

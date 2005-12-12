@@ -19,4 +19,6 @@ public interface WorkArea {
     public WorkArea getParentWorkArea();
     
     public boolean isFunctionMembershipInherited();
+    
+    public void setFunctionMembershipInherited(boolean functionMembershipInherited);
 }
