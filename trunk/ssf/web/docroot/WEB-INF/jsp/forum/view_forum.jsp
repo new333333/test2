@@ -258,10 +258,10 @@ function ss_loadEntryUrl(url,id) {
 </script>
   </c:if>
   <c:if test="<%= !reloadCaller %>">
-<jsp:useBean id="ssFolderEntry" type="com.sitescape.ef.domain.FolderEntry" scope="request" />
+<jsp:useBean id="ssEntry" type="com.sitescape.ef.domain.Entry" scope="request" />
 <script language="javascript">
 if (self.parent && self.parent.highlightLineById) {
-	self.parent.highlightLineById("folderLine_<c:out value="${ssFolderEntry.id}"/>");
+	self.parent.highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
 }
 </script>
 <%
@@ -275,7 +275,7 @@ if (self.parent && self.parent.highlightLineById) {
 	  configElement="<%= ssConfigElement %>" 
 	  configJspStyle="<%= ssConfigJspStyle %>"
 	  processThisItem="true" 
-	  folderEntry="<%= ssFolderEntry %>" />
+	  entry="<%= ssEntry %>" />
     </ssf:box>
 <%
 	
@@ -286,7 +286,7 @@ if (self.parent && self.parent.highlightLineById) {
 	  configElement="<%= ssConfigElement %>" 
 	  configJspStyle="<%= ssConfigJspStyle %>"
 	  processThisItem="true" 
-	  folderEntry="<%= ssFolderEntry %>" />
+	  entry="<%= ssEntry %>" />
 <%
 	
 	//Popup view
@@ -296,7 +296,7 @@ if (self.parent && self.parent.highlightLineById) {
 	  configElement="<%= ssConfigElement %>" 
 	  configJspStyle="<%= ssConfigJspStyle %>"
 	  processThisItem="true" 
-	  folderEntry="<%= ssFolderEntry %>" />
+	  entry="<%= ssEntry %>" />
 <%
 	
 	//Vertical view
@@ -306,7 +306,7 @@ if (self.parent && self.parent.highlightLineById) {
 	  configElement="<%= ssConfigElement %>" 
 	  configJspStyle="<%= ssConfigJspStyle %>"
 	  processThisItem="true" 
-	  folderEntry="<%=  ssFolderEntry %>" />
+	  entry="<%=  ssEntry %>" />
 <%
 	}
 %>

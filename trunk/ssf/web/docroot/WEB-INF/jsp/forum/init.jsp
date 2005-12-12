@@ -7,4 +7,5 @@
 <%@ page import="com.sitescape.ef.ObjectKeys" %>
 <%@ page import="com.sitescape.ef.domain.Folder" %>
 <%@ page import="com.sitescape.ef.domain.FolderEntry" %>
+<%@ page import="com.sitescape.ef.domain.Entry" %>
 <%@ page import="com.sitescape.ef.domain.SeenMap" %>
