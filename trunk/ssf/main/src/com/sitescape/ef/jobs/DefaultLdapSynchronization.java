@@ -32,7 +32,7 @@ public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSyn
 		try {
 			ldap.syncAll(zoneName);
 		} catch (NamingException ne) {
-			logger.error("Error synchronizing with ldap " + ne.getMessage());
+			throw new JobExecutionException(ne);			
 		}
 	}
 	public ScheduleInfo getScheduleInfo(String zoneName) {

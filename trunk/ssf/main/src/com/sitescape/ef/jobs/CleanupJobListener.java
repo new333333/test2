@@ -25,6 +25,7 @@ public class CleanupJobListener implements JobListener {
 	public static final Integer DeleteJobOnError = new Integer(2);
 	public static final Integer UnscheduleJob = new Integer(3);
 	public static final Integer UnscheduleJobOnError = new Integer(4);
+	public static final String CLEANUPSTATUS="cleanupStatus";
 	protected Log logger = LogFactory.getLog(getClass());
 	public static final String name = "SS_CleanupJobListener";
 	/* (non-Javadoc)
@@ -59,22 +60,27 @@ public class CleanupJobListener implements JobListener {
 		//delete job and all triggers if successful
 		Scheduler scheduler = ctx.getScheduler();
 		JobDetail job = ctx.getJobDetail();
-		Integer result = (Integer)ctx.getResult();
+		Integer result = (Integer)ctx.get(CLEANUPSTATUS);
 		
 		try {
 			if (exc == null) {
-				if (result == DeleteJob) {
+				if (DeleteJob.equals(result)) {
+					logger.info("Removing job " + job.getFullName());
 					scheduler.deleteJob(job.getName(),job.getGroup());
-				} else if (result == UnscheduleJob) {
+				} else if (UnscheduleJob.equals(result)) {
+					logger.info("Unscheduling job " + job.getFullName());
 					scheduler.unscheduleJob(job.getName(), job.getGroup());
 				}
 			} else {
-				if (result == DeleteJobOnError) {
+				if (DeleteJobOnError.equals(result)) {
 					logger.error("Removing job " + job.getFullName() + " after error " + exc.getCause());
 					scheduler.deleteJob(job.getName(),job.getGroup());
-				} else if (result == UnscheduleJobOnError) {
+				} else if (UnscheduleJobOnError.equals(result)) {
 					logger.error("Unscheduling job " + job.getFullName() + " after error " + exc.getCause());
 					scheduler.unscheduleJob(job.getName(), job.getGroup());
+				} else {
+					logger.error("Error running job " + job.getFullName() + " " + exc.getCause());
+					
 				}
 			}
 		} catch (SchedulerException ex) {

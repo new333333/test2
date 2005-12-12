@@ -24,9 +24,7 @@ public class DefaultEmailNotification extends SSStatefulJob implements EmailNoti
 			jobDataMap.put("lastNotification", end);
 		} catch (NoFolderByTheIdException nf) {
 			removeJobOnError(context,nf);
-		} catch (ConfigurationException cf) {
-			throw new JobExecutionException(cf);
-		}
+		} 
     }
 
 

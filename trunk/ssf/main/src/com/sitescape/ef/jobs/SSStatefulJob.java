@@ -56,6 +56,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 		SessionUtil.sessionStartup();
     	coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
     	jobDataMap = context.getJobDetail().getJobDataMap();
+		context.setResult("Success");
 		try {  
 	           	//zone required
            	if (!jobDataMap.containsKey("zoneName")) {			
@@ -83,11 +84,15 @@ public abstract class SSStatefulJob implements StatefulJob {
 		} catch (NoUserByTheNameException nn) {
 			unscheduleJobOnError(context, nn);
 		} catch (JobExecutionException je) {
+			context.setResult("Failed");
 			//re-throw
 			throw je;
+		} catch (ConfigurationException cf) {
+			context.setResult("Failed");
+			throw new JobExecutionException(cf);
 		} catch (Exception e){
-			logger.error(e.getMessage());
-    		throw new JobExecutionException(e,false);
+			context.setResult("Failed");
+    		throw new JobExecutionException(e);
     	} finally {
     		SessionUtil.sessionStop();
     		RequestContextHolder.clear();
@@ -102,10 +107,9 @@ public abstract class SSStatefulJob implements StatefulJob {
 	 * @throws JobExecutionException
 	 */
 	protected void removeJobOnError(JobExecutionContext context, Exception e) throws JobExecutionException {
-		logger.error(e.getMessage());
-		logger.error("Removing triggers for " + context.getJobDetail().getFullName());
-		context.setResult(CleanupJobListener.DeleteJobOnError);
-		throw new JobExecutionException(e, false);
+		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJobOnError);
+		context.setResult("Failed");
+		throw new JobExecutionException(e);
 	}
 	/**
 	 * Job failed due to missing domain objects.  Return exception that will unschedule the
@@ -115,10 +119,9 @@ public abstract class SSStatefulJob implements StatefulJob {
 	 * @throws JobExecutionException
 	 */
 	protected void unscheduleJobOnError(JobExecutionContext context, Exception e) throws JobExecutionException {
-		logger.error(e.getMessage());
-		logger.error("Removing triggers for " + context.getJobDetail().getFullName());
-		context.setResult(CleanupJobListener.DeleteJobOnError);
-		throw new JobExecutionException(e, false);
+		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJobOnError);
+		context.setResult("Failed");
+		throw new JobExecutionException(e);
 	}
 	
 	protected abstract void doExecute(JobExecutionContext context) throws JobExecutionException;
