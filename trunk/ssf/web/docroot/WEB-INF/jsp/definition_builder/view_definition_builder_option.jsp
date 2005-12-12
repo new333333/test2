@@ -27,7 +27,7 @@
 <jsp:useBean id="ssPublicEntryDefinitions" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
-<%@ page import="com.sitescape.ef.domain.FolderEntry" %>
+<%@ page import="com.sitescape.ef.domain.Entry" %>
 
 <ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
   sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
