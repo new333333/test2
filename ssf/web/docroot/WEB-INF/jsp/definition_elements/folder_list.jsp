@@ -42,6 +42,7 @@ function highlightLineById(id) {
  <tr class="ss_headerRow">
   <td class="ss_contentbold"><img border="0" alt="Unread entries" src="<html:imagesPath/>pics/sym_s_unseen_header.gif"></td>
   <td class="ss_contentbold">Number</td>
+  <td class="ss_contentbold">State</td>
   <td class="ss_contentbold">Title</td>
   <td class="ss_contentbold">Author</td>
   <td class="ss_contentbold">Date</td>
@@ -72,21 +73,23 @@ function highlightLineById(id) {
 %></td>
   <td align="right" valign="top" width="5%" class="ss_content">
 	<c:out value="${entry._docNum}"/>.&nbsp;&nbsp;&nbsp;</td>
+  <td valign="top" width="10%" class="ss_content">
+	<c:out value="${entry._workflowState}"/></td>
   <td valign="top" width="40%" class="ss_content">
     <a class="ss_link" href="<ssf:url     
     adapter="true" 
     portletName="ss_forum" 
     folderId="<%= folderId %>" 
     action="view_entry" 
-    entryId="<%= entry.get("_docId").toString() %>" actionUrl="false" />" 
+    entryId="<%= entry.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry._docId}"/>');return false;" >
     <c:if test="${empty entry._title}">
     <span class="fineprint">--no title--</span>
     </c:if>
     <c:out value="${entry._title}"/></a></td>
-  <td valign="top" width="30%" class="ss_content">
+  <td valign="top" width="20%" class="ss_content">
     <c:out value="${entry._principal.title}"/></td>
-  <td valign="top" width="24%" class="ss_content">
+  <td valign="top" width="20%" class="ss_content">
     <c:out value="${entry._modificationDate}"/></td>
  </tr>
 </c:forEach>
