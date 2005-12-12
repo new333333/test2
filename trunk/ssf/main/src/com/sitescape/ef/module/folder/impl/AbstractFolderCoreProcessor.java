@@ -229,6 +229,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         modifyEntry_postFillIn(folder, entry, inputData, entryData);
         
         modifyEntry_indexAdd(folder, entry, inputData);
+        getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
           
      }
     protected void modifyEntry_accessControl(Folder folder, FolderEntry entry) throws AccessControlException {
