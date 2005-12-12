@@ -10,6 +10,7 @@ import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
+import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 
 /**
@@ -21,14 +22,20 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public Binder findBinder(String binderName) 
    			throws NoBinderByTheNameException, AccessControlException {
 		Binder binder = getCoreDao().findBinderByName(binderName, RequestContextHolder.getRequestContext().getZoneName());
-		accessControlManager.checkOperation(binder, WorkAreaOperation.VIEW);
+	    
+		// Check if the user has "read" access to the binder.
+        getAccessControlManager().checkAcl(binder, AccessType.READ);
+ 
 		return binder;
 	}
    
 	public Binder loadBinder(Long binderId)
 			throws NoBinderByTheIdException, AccessControlException {
 		Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-		accessControlManager.checkOperation(binder, WorkAreaOperation.VIEW);
-		return binder;        
+
+		// Check if the user has "read" access to the binder.
+        getAccessControlManager().checkAcl(binder, AccessType.READ);
+
+        return binder;        
 	}
 }
