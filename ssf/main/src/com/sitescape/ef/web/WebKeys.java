@@ -31,7 +31,6 @@ public class WebKeys {
     public static final String SESSION_LAST_ENTRY_VIEWED = "last_entry_viewed";
     public static final String SESSION_LAST_HISTORY_ENTRY_VIEWED = "last_history_entry_viewed";
     public static final String EVENT = "event";
-    public static final String ENTRY = "entry";
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
@@ -97,6 +96,7 @@ public class WebKeys {
     public static final String DEFINITION="ssDefinition";
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
     public static final String EMAIL_ALIASES="ssEmailAliases";
+    public static final String ENTRY="ssEntry";
     public static final String ENTRY_DEFINITION="ssEntryDefinition";
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_ID = "ssEntryId";
@@ -107,7 +107,7 @@ public class WebKeys {
     public static final String FOLDER_ID_LIST = "ssFolderIdList";
     public static final String FOLDERS = "ssFolders";
     public static final String FOLDER_DOM_TREE="ssFolderDomTree";
-    public static final String FOLDER_ENTRY="ssFolderEntry";
+//    public static final String FOLDER_ENTRY="ssFolderEntry";
     public static final String FOLDER_ENTRIES="ssFolderEntries";
     public static final String FOLDER_ENTRY_DESCENDANTS="ssFolderEntryDescendants";
     public static final String FOLDER_ENTRY_ANCESTORS="ssFolderEntryAncestors";
