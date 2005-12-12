@@ -120,20 +120,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 	
     protected void setDefinition(Definition def, Document doc) {
+    	//Write out the new definition file
+    	def.setDefintion(doc);
+    	
     	//If this is a workflow definition, build the corresponding JBPM workflow definition
-    	// Try to do this first before the changed definition gets modified on disk
-    	// Thus, if an error occurs in JBPM, the user gets told before writing out the def
     	if (def.getType() == Definition.WORKFLOW) {
-    		//Make sure there is actually a definition to use
-    		if (def.getDefinition() == null) def.setDefintion(doc);
-    		
     		//Use the definition id as the workflow process name
     		getWorkflowModule().buildProcessDefinition(def.getId(), def);
     	}
-    	
-    	//Write out the new definition file
-    	def.setDefintion(doc);
-    }
+   }
 
 	
 	public void modifyDefinitionProperties(String id, Map formData) {
@@ -418,14 +413,30 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			//Find the element to modify
 			Element item = (Element) root.selectSingleNode("//item[@id='"+itemId+"']");
 			if (item != null) {
+				Element itemNameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
+				String itemNamePropertyValue = "";
+				if (itemNameProperty != null) itemNamePropertyValue = itemNameProperty.attributeValue("value", "");
+
 				//Find the selected item type in the configuration document
 				String itemType = item.attributeValue("name", "");
 				Map uniqueNames = getUniqueNameMap(configRoot, root, itemType);
 				if (formData.containsKey("propertyId_name")) {
 					String name = ((String[]) formData.get("propertyId_name"))[0];
-					if (uniqueNames.containsKey(name)) {
+					//See if the item name is being changed
+					if (!name.equals("") && 
+							!name.equals(itemNamePropertyValue) && 
+							uniqueNames.containsKey(name)) {
 						//This name is not unique
 						throw new DefinitionInvalidException(defId, "Error: name not unique - "+name);
+					} else if (!name.equals("") && !name.equals(itemNamePropertyValue)) {
+						//The name is being changed. Check if this is a workflow state
+						if (item.getParent().attributeValue("name", "").equals("workflowProcess") && 
+								item.attributeValue("name", "").equals("state")) {
+							//This is a workflow state. Make sure no entries are using that state
+							//TODO ???Add code to check if any entries are in this state
+							throw new DefinitionInvalidException(defId, 
+									"Error: this state name cannot be changed because some entries are in this state.");
+						}
 					}
 				}
 				Element itemTypeEle = (Element) configRoot.selectSingleNode("item[@name='"+itemType+"']");
@@ -436,9 +447,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					//See if this is a "dataView" type
 					if (item.attributeValue("type", "").equals("dataView")) {
 						//This item is shadowing one of the form data items. Capture its form item name
-						Element itemNameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
+						itemNameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
 						if (itemNameProperty != null) {
-							String itemNamePropertyValue = itemNameProperty.attributeValue("value", "");
+							itemNamePropertyValue = itemNameProperty.attributeValue("value", "");
 							if (!itemNamePropertyValue.equals("")) {
 								//Find the form item with this name
 								Iterator itFormItems = root.selectNodes("//item/properties/property[@value='"+itemNamePropertyValue+"']").iterator();
@@ -481,6 +492,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			//Find the element to delete
 			Element item = (Element) root.selectSingleNode("//item[@id='"+itemId+"']");
 			if (item != null) {
+				if (item.getParent().attributeValue("name", "").equals("workflowProcess") && 
+						item.attributeValue("name", "").equals("state")) {
+					//This is a workflow state. Make sure no entries are using that state
+					//TODO ???Add code to check if any entries are in this state
+					throw new DefinitionInvalidException(defId, 
+							"Error: this state name cannot be deleted because some entries are in this state.");
+				}
+
 				//Find the selected item type in the configuration document
 				String itemType = item.attributeValue("name", "");
 				Element itemTypeEle = (Element) this.definitionConfig.getRootElement().selectSingleNode("item[@name='"+itemType+"']");
