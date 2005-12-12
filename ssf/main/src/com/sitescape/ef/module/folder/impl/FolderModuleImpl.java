@@ -77,8 +77,11 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	public Folder getFolder(Long folderId)
 		throws NoFolderByTheIdException, AccessControlException {
 		Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneName());
-		accessControlManager.checkOperation(folder, WorkAreaOperation.VIEW);
-		return folder;        
+		
+		// Check if the user has "read" access to the folder.
+        getAccessControlManager().checkAcl(folder, AccessType.READ);
+		
+        return folder;        
 	}    
 	public List getSortedFolderList(List folderIds) {
 		Map forumIdMap = new TreeMap();
