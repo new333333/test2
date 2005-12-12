@@ -12,14 +12,17 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.util.CollectionUtil;
 import com.sitescape.util.Validator;
 /**
  * @hibernate.subclass discriminator-value="G" dynamic-update="true" 
  *
  */
-public class Group extends Principal {
+public class Group extends Principal implements WorkArea {
     private List members;    
+    
+    private static final String WORK_AREA_TYPE = "GROUP";
     
     public String getTitle() {
     	String title = super.getTitle();
@@ -108,5 +111,23 @@ public class Group extends Principal {
    				members.add(g);
    			}
    		}	
-   	} 	
+   	}
+    
+	public Long getWorkAreaId() {
+		return getId();
+	}
+	public String getWorkAreaType() {
+		return WORK_AREA_TYPE;
+	}
+	public WorkArea getParentWorkArea() {
+		// Group can be a child of many other groups. No single parent.
+		// TODO Then where should we inherit the function membership from?
+		return null; // For now
+	}
+	public boolean isFunctionMembershipInherited() {
+		// TODO Once Janet creates a thing that can contain users and groups
+		// in the system, we will have all groups inherit function memberships
+		// from it. 
+		return false; // For now
+	} 	
 }
