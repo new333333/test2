@@ -56,4 +56,18 @@ public class NullAccessControlManager implements AccessControlManager {
     public boolean testAcl(User user, AclContainer aclContainer, AccessType accessType) {
         return true; // Permission granted with no checking. 
     }
+
+	public boolean testOperation(Long additionalPrincipalId, WorkArea workArea, WorkAreaOperation workAreaOperation) throws AccessControlException {
+        return true; // Permission granted with no checking. 
+	}
+
+	public boolean testOperation(User user, Long additionalPrincipalId, WorkArea workArea, WorkAreaOperation workAreaOperation) throws AccessControlException {
+        return true; // Permission granted with no checking. 
+	}
+
+	public void checkOperation(Long additionalPrincipalId, WorkArea workArea, WorkAreaOperation workAreaOperation) throws AccessControlException {
+	}
+
+	public void checkOperation(User user, Long additionalPrincipalId, WorkArea workArea, WorkAreaOperation workAreaOperation) throws AccessControlException {
+	}
 }
