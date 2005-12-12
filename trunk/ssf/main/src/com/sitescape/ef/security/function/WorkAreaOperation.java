@@ -21,8 +21,11 @@ public class WorkAreaOperation {
     // BEFORE pre-defined WorkAreOperation instances are created. 
     private static final Map Instances = new HashMap();
 
-    public final static WorkAreaOperation VIEW = new WorkAreaOperation("view");
+    //Workarea operations
+    //  Important: do not create operations that control the viewing of an entry of folder.
+    //  Such "view" operations should be controlled by the ACL.
     public final static WorkAreaOperation CREATE_ENTRIES = new WorkAreaOperation("createEntries");
+    public final static WorkAreaOperation MODIFY_ENTRIES = new WorkAreaOperation("modifyEntries");    
     public final static WorkAreaOperation DELETE_ENTRIES = new WorkAreaOperation("deleteEntries");    
     public final static WorkAreaOperation ADD_REPLIES = new WorkAreaOperation("addReplies");
     public final static WorkAreaOperation GENERATE_REPORTS = new WorkAreaOperation("generateReports");
