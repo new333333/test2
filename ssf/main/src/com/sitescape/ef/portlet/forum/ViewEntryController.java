@@ -148,7 +148,7 @@ public class ViewEntryController extends SAbstractForumController {
 	}
 	protected Entry setSeen(Map model, Long folderId) {
 		SeenMap seen = (SeenMap)model.get(WebKeys.SEEN_MAP);
-		FolderEntry entry = (FolderEntry)model.get(WebKeys.FOLDER_ENTRY);
+		FolderEntry entry = (FolderEntry)model.get(WebKeys.ENTRY);
 		//only start transaction if necessary
 		List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
 		if (replies != null)  {
