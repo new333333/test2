@@ -422,6 +422,13 @@ div.ss_portlet {
   text-align: left;
   }
 
+div.ss_workflow { 
+  border: 1px #666666 solid;
+  padding: 2px;
+  background-color: #ffffe8;
+  layer-background-color: #ffffe8;
+  }
+
 /* ------------------------------------------------------------------------ */
 /* table styles */
 
