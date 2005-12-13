@@ -51,6 +51,7 @@ import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
@@ -512,8 +513,8 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         for (int i = 0; i < childEntries.size(); i++) {
         	Principal p;
         	HashMap child = (HashMap)childEntries.get(i);
-        	if (child.get("_creatorId") != null) {
-        		child.put("_principal", getPrincipal(users,(String)child.get("_creatorId")));
+        	if (child.get(EntryIndexUtils.CREATORID_FIELD) != null) {
+        		child.put(WebKeys.PRINCIPAL, getPrincipal(users,(String)child.get(EntryIndexUtils.CREATORID_FIELD)));
         	}        	
         }
        	Map model = new HashMap();
@@ -755,10 +756,12 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
 
     protected void loadEntryHistory(HashMap entry) {
         Set ids = new HashSet();
-        if (entry.get("_creatorId") != null)
-    	    ids.add(entry.get("_creatorId"));
-        if (entry.get("_modificationId") != null) 
-    		ids.add(entry.get("_modificationId"));
+        if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
+    	    ids.add(entry.get(EntryIndexUtils.CREATORID_FIELD));
+        if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
+    		ids.add(entry.get(EntryIndexUtils.MODIFICATIONID_FIELD));
+        if (entry.get(EntryIndexUtils.RESERVEDBYID_FIELD) != null) 
+    		ids.add(entry.get(EntryIndexUtils.RESERVEDBYID_FIELD));
         getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      } 
     protected List loadEntryHistoryLuc(List pList) {
@@ -767,10 +770,12 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         HashMap entry;
         while (iter.hasNext()) {
             entry = (HashMap)iter.next();
-            if (entry.get("_creatorId") != null)
-        	    ids.add(entry.get("_creatorId"));
-            if (entry.get("_modificationId") != null) 
-        		ids.add(entry.get("_modificationId"));
+            if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
+        	    ids.add(entry.get(EntryIndexUtils.CREATORID_FIELD));
+            if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
+        		ids.add(entry.get(EntryIndexUtils.MODIFICATIONID_FIELD));
+            if (entry.get(EntryIndexUtils.RESERVEDBYID_FIELD) != null) 
+        		ids.add(entry.get(EntryIndexUtils.RESERVEDBYID_FIELD));
         }
         return getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      }   

@@ -38,6 +38,7 @@ public class EntryIndexUtils {
     public static final String MODIFICATION_DAY_FIELD = "_modificationDay";
     public static final String CREATORID_FIELD = "_creatorId";
     public static final String MODIFICATIONID_FIELD = "_modificationId";
+    public static final String RESERVEDBYID_FIELD = "_reservedById";
     public static final String DOCID_FIELD = "_docId";
     public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
     public static final String TITLE_FIELD = "_title";
@@ -190,6 +191,14 @@ public class EntryIndexUtils {
         if (entry.getModification() != null && entry.getModification().getPrincipal() != null) {
         	Field modificationIdField = Field.Keyword(MODIFICATIONID_FIELD, entry.getModification().getPrincipal().getId().toString());
         	doc.add(modificationIdField);
+        }
+    }   
+
+    public static void addReservedByPrincipleId(Document doc, FolderEntry entry) {
+    	//Add the id of the reserver
+        if (entry.getReservedDoc() != null && entry.getReservedDoc().getPrincipal() != null) {
+        	Field reservedByIdField = Field.Keyword(RESERVEDBYID_FIELD, entry.getReservedDoc().getPrincipal().getId().toString());
+        	doc.add(reservedByIdField);
         }
     }   
 
