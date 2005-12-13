@@ -12,38 +12,20 @@
 %>
 <c:forEach var="workflow" items="${ssDefinitionEntry.workflowStates}">
 <c:if test="${!empty workflow.definition}">
-<jsp:useBean id="workflow" type="com.sitescape.ef.domain.WorkflowStateObject" />
-<%
-	//Find the actual caption of the state
-	Document wfDef = workflow.getDefinition().getDefinition();
-	String stateCaption = "";
-	Element stateProperty = (Element) wfDef.getRootElement().selectSingleNode("//item[@name='state']/properties/property[@name='name' and @value='"+workflow.getState()+"']");
-	if (stateProperty != null) {
-		Element statePropertyCaption = (Element) stateProperty.getParent().selectSingleNode("./property[@name='caption']");
-		if (statePropertyCaption != null) stateCaption = statePropertyCaption.attributeValue("value", "");
-	}
-	if (stateCaption.equals("")) {
-		stateCaption = workflow.getState();
-	} else {
-		stateCaption = NLT.getDef(stateCaption);
-	}
-%>
 <tr><td valign="top"><%= column1 %></td>
-<td valign="top"><c:out value="${workflow.definition.title}"/> - <%= stateCaption %></td>
+<td valign="top"><c:out value="${workflow.definition.title}"/> - ${workflow.stateCaption}</td>
 <td>&nbsp;&nbsp;&nbsp;</td>
 <td valign="top" align="right"><b>Transition to:</b></td>
 <td valign="top">
-<c:if test="${!empty ssEntryWorkflowTransitions}">
 <form method="post" action="" style="display:inline;">
 <input type="hidden" name="tokenId" value="${workflow.tokenId}">
 <select name="toState">
-<c:forEach var="transition" items="${ssEntryWorkflowTransitions[workflow.tokenId]}">
+<c:forEach var="transition" items="${workflow.manualTransitions}">
 <option value="${transition.key}">${transition.value}</option>
 </c:forEach>
 </select><input type="submit" name="changeStateBtn" 
  value="<ssf:nlt tag="button.ok" text="OK"/>">
 </form>
-</c:if>
 </td>
 </tr>
 <%	column1 = "";  %>
