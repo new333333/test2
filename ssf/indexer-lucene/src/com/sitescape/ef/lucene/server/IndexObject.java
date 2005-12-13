@@ -20,7 +20,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
 
 import com.sitescape.ef.lucene.MixedCaseAnalyzer;
-import com.sitescape.ef.search.BasicIndexUtils;
 
 
 /**
@@ -262,7 +261,7 @@ public class IndexObject  {
             for (int i=0; i<delQ.size(); i++) {
                 SsfDocument sdoc = (SsfDocument)delQ.dequeue();
                 try {
-                    indexReader.delete(new Term(BasicIndexUtils.UID_FIELD, sdoc.getUID()));
+                    indexReader.delete(new Term("_uid", sdoc.getUID()));
                 } catch (IOException ioe) {
                     throw new RemoteException("Error emptying the Delete Queue: ", ioe);
                 }
