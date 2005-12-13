@@ -649,10 +649,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		EntryIndexUtils.addModificationDate(indexDoc,entry);
     
 		// Add creator id
-		EntryIndexUtils.addCreationPrincipleId(indexDoc,entry);
+		EntryIndexUtils.addCreationPrincipalId(indexDoc,entry);
     
-		// Add Modification Principle Id
-		EntryIndexUtils.addModificationPrincipleId(indexDoc,entry);
+		// Add Modification Principal Id
+		EntryIndexUtils.addModificationPrincipalId(indexDoc,entry);
     
 		// Add Doc Id
 		EntryIndexUtils.addDocId(indexDoc, entry);

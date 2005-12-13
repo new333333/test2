@@ -178,7 +178,7 @@ public class EntryIndexUtils {
         }
     }
         
-    public static void addCreationPrincipleId(Document doc, Entry entry) {
+    public static void addCreationPrincipalId(Document doc, Entry entry) {
     	//Add the id of the creator (no, not that one...)
         if (entry.getCreation() != null && entry.getCreation().getPrincipal() != null) {
         	Field creationIdField = Field.Keyword(CREATORID_FIELD, entry.getCreation().getPrincipal().getId().toString());
@@ -186,7 +186,7 @@ public class EntryIndexUtils {
         }
     }   
 
-    public static void addModificationPrincipleId(Document doc, Entry entry) {
+    public static void addModificationPrincipalId(Document doc, Entry entry) {
     	//Add the id of the creator (no, not that one...)
         if (entry.getModification() != null && entry.getModification().getPrincipal() != null) {
         	Field modificationIdField = Field.Keyword(MODIFICATIONID_FIELD, entry.getModification().getPrincipal().getId().toString());
@@ -194,7 +194,7 @@ public class EntryIndexUtils {
         }
     }   
 
-    public static void addReservedByPrincipleId(Document doc, FolderEntry entry) {
+    public static void addReservedByPrincipalId(Document doc, FolderEntry entry) {
     	//Add the id of the reserver
         if (entry.getReservedDoc() != null && entry.getReservedDoc().getPrincipal() != null) {
         	Field reservedByIdField = Field.Keyword(RESERVEDBYID_FIELD, entry.getReservedDoc().getPrincipal().getId().toString());

@@ -814,10 +814,13 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         EntryIndexUtils.addModificationDate(indexDoc,entry);
         
         // Add creator id
-        EntryIndexUtils.addCreationPrincipleId(indexDoc,entry);
+        EntryIndexUtils.addCreationPrincipalId(indexDoc,entry);
         
-        // Add Modification Principle Id
-        EntryIndexUtils.addModificationPrincipleId(indexDoc,entry);
+        // Add Modification Principal Id
+        EntryIndexUtils.addModificationPrincipalId(indexDoc,entry);
+        
+        // Add ReservedBy Principal Id
+        EntryIndexUtils.addModificationPrincipalId(indexDoc,entry);
         
         // Add Doc Id
         EntryIndexUtils.addDocId(indexDoc, entry);
