@@ -100,23 +100,40 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		if (def != null) {
 			
 			//Store the name and title (If they are not blank) in the definition object and in the definition document
+			boolean defChanged = false;
 			Document defDoc = def.getDefinition();
-			if (!name.equals("")) defDoc.getRootElement().addAttribute("name", name);
-			if (!title.equals("")) defDoc.getRootElement().addAttribute("caption", title);
+			if (!name.equals("") && !defDoc.getRootElement().attributeValue("name", "").equals(name)) {
+				defDoc.getRootElement().addAttribute("name", name);
+				defChanged = true;
+			}
+			if (!title.equals("") && !defDoc.getRootElement().attributeValue("caption", "").equals(title)) {
+				defDoc.getRootElement().addAttribute("caption", title);
+				defChanged = true;
+			}
 			
 			//set definition name after we get definition, so definition doc file will be found before the name is changed
-			if (!name.equals("")) def.setName(name);
-			if (!title.equals("")) def.setTitle(title);
-			setDefinition(def, defDoc);
+			if (!name.equals("") && !def.getName().equals(name)) {
+				def.setName(name);
+				defChanged = true;
+			}
+			if (!title.equals("") && !def.getName().equals(title)) {
+				def.setTitle(title);
+				defChanged = true;
+			}
+			
+			//Write out the changed definition (if it actually changed)
+			if (defChanged) setDefinition(def, defDoc);
 		}
 	}
 	
 	public void modifyDefinitionAttribute(String id, String key, String value) {
 		Definition def = getDefinition(id);
-		//Store this attribute in the definition document
+		//Store this attribute in the definition document (but only if it is different)
 		Document defDoc = def.getDefinition();
-		defDoc.getRootElement().addAttribute(key, value);
-		setDefinition(def, defDoc);
+		if (value.equals("") || !defDoc.getRootElement().attributeValue(key, "").equals(value)) {
+			defDoc.getRootElement().addAttribute(key, value);
+			setDefinition(def, defDoc);
+		}
 	}
 	
     protected void setDefinition(Definition def, Document doc) {
