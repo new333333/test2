@@ -32,9 +32,12 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FolderCounts;
 import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.MultipleWorkflowSupport;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Attachment;
+import com.sitescape.ef.domain.SingletonWorkflowSupport;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.BinderComparator;
@@ -52,6 +55,7 @@ import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
@@ -212,11 +216,18 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
           
      }
     protected void modifyEntry_accessControl(Folder folder, FolderEntry entry) throws AccessControlException {
-        getAccessControlManager().checkOperation(folder, WorkAreaOperation.MODIFY_ENTRIES);
-        
-        // Check if the user has "write" access to the particular entry.
-        getAccessControlManager().checkAcl(folder, entry, AccessType.WRITE);
+        try {
+        	//Check if the user is allowed to modify entries in the folder
+        	getAccessControlManager().checkOperation(folder, WorkAreaOperation.MODIFY_ENTRIES);
+        } catch(AccessControlException ace) {
+        	//The user doesn't have folder level priv's
+            // Check if the user has "read" access to the particular entry.
+            getAccessControlManager().checkAcl(folder, entry, AccessType.READ);
+            // Check if the user has "write" access to the particular entry.
+            getAccessControlManager().checkAcl(folder, entry, AccessType.WRITE);
+        }
     }
+    
     protected void modifyEntry_processFiles(Folder folder, FolderEntry entry, List fileData) 
     throws WriteFilesException {
     	EntryBuilder.writeFiles(getFileManager(), folder, entry, fileData);
@@ -245,6 +256,41 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
+    }
+    
+    public void changeWorkflowState(Folder folder, Long entryId, Map inputData) {
+        FolderEntry entry = folderEntry_load(folder, entryId);
+ 
+		//Get the workflow process to change and the name of the new state
+        String tokenId = ((String[]) inputData.get("tokenId"))[0];
+		String toState = ((String[]) inputData.get("toState"))[0];
+		
+		//Find the workflowState
+		WorkflowState ws = null;
+		if (entry instanceof MultipleWorkflowSupport) {
+			MultipleWorkflowSupport mEntry = (MultipleWorkflowSupport) entry;
+			List workflowStates = mEntry.getWorkflowStates();
+			for (int i = 0; i < workflowStates.size(); i++) {
+				if (((WorkflowState) workflowStates.get(i)).getTokenId().toString().equals(tokenId)) {
+					ws = (WorkflowState) workflowStates.get(i);
+					break;
+				}
+			}
+    	} else if (entry instanceof SingletonWorkflowSupport) {
+			SingletonWorkflowSupport sEntry = (SingletonWorkflowSupport) entry;
+			if (sEntry.getWorkflowState().getTokenId().toString().equals(tokenId)) {
+				ws = sEntry.getWorkflowState();
+			}
+    	}
+		if (ws != null) {
+			//We have the workflowState of the current state
+			//See if the user is allowed to go to this state
+			Map transitions = ws.getManualTransitions();
+			if (transitions.containsKey(toState)) {
+				//It is ok to transition to this state; go do it
+				getWorkflowModule().changeState(ws.getTokenId(), ws.getState(), toState);
+			}
+		}
     }
  
    //***********************************************************************************************************
