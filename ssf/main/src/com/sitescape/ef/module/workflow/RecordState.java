@@ -8,6 +8,7 @@ import com.sitescape.ef.domain.WorkflowStateObject;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.MultipleWorkflowSupport;
 import com.sitescape.ef.domain.SingletonWorkflowSupport;
+import com.sitescape.ef.module.shared.WorkflowUtils;
 
 
 public class RecordState extends AbstractActionHandler {
@@ -22,8 +23,8 @@ public class RecordState extends AbstractActionHandler {
 		  state = token.getNode().getName();
 		  ContextInstance ctx = executionContext.getContextInstance();
 		  Long id = new Long(token.getId());
-		  Long entryId = (Long)ctx.getVariable("entryId");
-		  String entryType = (String)ctx.getVariable("entryType");
+		  Long entryId = (Long)ctx.getVariable(WorkflowUtils.ENTRY_ID);
+		  String entryType = (String)ctx.getVariable(WorkflowUtils.ENTRY_TYPE);
 		  Entry entry = loadEntry(entryType, entryId);
 		  if (entry instanceof MultipleWorkflowSupport) {
 			  MultipleWorkflowSupport mEntry = (MultipleWorkflowSupport)entry;

@@ -122,9 +122,11 @@ public class EntryIndexUtils {
     			for (int i = 0; i < workflowStates.size(); i++) {
     				Field workflowStateField = Field.Keyword(WORKFLOW_STATE_FIELD, 
     						((WorkflowStateObject)workflowStates.get(i)).getState());
+    				//Index the workflow state
     				doc.add(workflowStateField);
     				Field workflowProcessField = Field.Keyword(WORKFLOW_PROCESS_FIELD, 
     						((WorkflowStateObject)workflowStates.get(i)).getDefinition().getId());
+    				//Index the workflow title (which is always the id of the workflow definition)
     				doc.add(workflowProcessField);
     			}
     		}

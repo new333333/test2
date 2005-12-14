@@ -5,20 +5,25 @@ import java.util.ArrayList;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
+import com.sitescape.ef.domain.AnyOwner;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.MultipleWorkflowSupport;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.SingletonWorkflowSupport;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowStateObject;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AclManager;
@@ -26,6 +31,7 @@ import com.sitescape.ef.security.acl.AclManager;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.hibernate.HibernateException;
+import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.db.JbpmSession;
 import org.jbpm.graph.def.Action;
 import org.jbpm.graph.def.Event;
@@ -254,8 +260,18 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		Document defDoc = def.getDefinition();
 		Element defRoot = defDoc.getRootElement();
 		
-		//Start by deleting all of the nodes
-		List nodes = pD.getNodes();
+		//Start by remembering all of the nodes
+		Map nodesMap = pD.getNodesMap();
+		if (nodesMap == null) nodesMap = new HashMap();
+		nodesMap = new HashMap(nodesMap);
+		
+		Map events = pD.getEvents();
+		if (events == null) events = new HashMap();
+		
+		Map actions = pD.getActions();
+		if (actions == null) actions = new HashMap();
+		/**
+		 * 
 		if (nodes != null) {
 			nodes = new ArrayList(nodes);
 			Iterator itNodes = nodes.iterator();
@@ -264,6 +280,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				if (node != null) pD.removeNode(node);
 			}
 		}
+		
 		//Delete all of the actions and events
 		Map actions = pD.getActions();
 		if (actions != null) {
@@ -285,27 +302,46 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				if (event != null) pD.removeEvent(event);
 			}
 		}
+		*/
 		
-		//Add the standard events
-		Action recordEvent = new Action();
-		recordEvent.setName("recordEvent");
-		Delegation recordDelegation = new Delegation("com.sitescape.ef.module.workflow.RecordEvent");
-		recordDelegation.setConfigType("bean");
-		recordEvent.setActionDelegation(recordDelegation);
+		//Add the standard events (if they aren't there already)
+		Action recordEvent = null;
+		if (!actions.containsKey("recordEvent")) {
+			recordEvent = new Action();
+			recordEvent.setName("recordEvent");
+			recordEvent.setProcessDefinition(pD);
+			Delegation recordDelegation = new Delegation("com.sitescape.ef.module.workflow.RecordEvent");
+			recordDelegation.setConfigType("bean");
+			recordEvent.setActionDelegation(recordDelegation);
+		} else {
+			recordEvent = (Action) actions.get("recordEvent");
+		}
 		
-		Event enterEvent = new Event("node-enter");
-		enterEvent.addAction(recordEvent);
-		pD.addEvent(enterEvent);
+		if (!events.containsKey("node-enter")) {
+			Event enterEvent = new Event("node-enter");
+			enterEvent.addAction(recordEvent);
+			pD.addEvent(enterEvent);
+		}
 		
-		Event exitEvent = new Event("node-exit");
-		exitEvent.addAction(recordEvent);
-		pD.addEvent(exitEvent);
+		if (!events.containsKey("node-exit")) {
+			Event exitEvent = new Event("node-exit");
+			exitEvent.addAction(recordEvent);
+			pD.addEvent(exitEvent);
+		}
 		
 		//Add our common start and end states
-		StartState startState = new StartState(ObjectKeys.WORKFLOW_START_STATE);
-		pD.addNode(startState);
-		EndState endState = new EndState(ObjectKeys.WORKFLOW_END_STATE);
-		pD.addNode(endState);
+		if (!nodesMap.containsKey(ObjectKeys.WORKFLOW_START_STATE)) {
+			StartState startState = new StartState(ObjectKeys.WORKFLOW_START_STATE);
+			pD.addNode(startState);
+		} else {
+			nodesMap.remove(ObjectKeys.WORKFLOW_START_STATE);
+		}
+		if (!nodesMap.containsKey(ObjectKeys.WORKFLOW_END_STATE)) {
+			EndState endState = new EndState(ObjectKeys.WORKFLOW_END_STATE);
+			pD.addNode(endState);
+		} else {
+			nodesMap.remove(ObjectKeys.WORKFLOW_END_STATE);
+		}
 		
 		//Add all of the states in the definition
 		Iterator itStates = defRoot.selectNodes("//item[@name='state']").iterator();
@@ -314,8 +350,53 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			Element stateNameProperty = (Element) state.selectSingleNode("./properties/property[@name='name']");
 			String stateName = stateNameProperty.attributeValue("value", "");
 			if (!stateName.equals("")) {
-				State pdState = new State(stateName);
-				pD.addNode(pdState);
+				if (!nodesMap.containsKey(stateName)) {
+					State pdState = new State(stateName);
+					Node node = pD.addNode(pdState);
+				} else {
+					nodesMap.remove(stateName);
+				}
+			}
+		}
+		
+		//Remove any nodes that are remaining in nodesMap. 
+		//  These must have been deleted from the definition.
+		Iterator itNodes = nodesMap.entrySet().iterator();
+		while (itNodes.hasNext()) {
+			Map.Entry me = (Map.Entry) itNodes.next();
+			pD.removeNode((Node)me.getValue());
+		}
+		
+		//Add all of the manual transitions
+		nodesMap = pD.getNodesMap();
+		itNodes = nodesMap.entrySet().iterator();
+		while (itNodes.hasNext()) {
+			Map.Entry me = (Map.Entry) itNodes.next();
+			Node fromNode = (Node) me.getValue();
+			
+			//Remove all of the old transitions
+			List transitions = fromNode.getLeavingTransitionsList();
+			if (transitions != null) {
+				for (int i = 0; i < transitions.size(); i++) {
+					fromNode.removeLeavingTransition((Transition)transitions.get(i));
+				}
+			}
+			
+			//Get the list of transitions from the workflow definition
+			Map manualTransitions = WorkflowUtils.getManualTransitions(def, fromNode.getName());
+			Iterator itTransitions = manualTransitions.entrySet().iterator();
+			while (itTransitions.hasNext()) {
+				Map.Entry me2 = (Map.Entry) itTransitions.next();
+				String toNodeName = (String) me2.getKey();
+				Node toNode = (Node) nodesMap.get(toNodeName);
+				if (toNode != null) {
+					Transition t = new Transition();
+					t.setProcessDefinition(pD);
+					t.setName(fromNode.getName() + "." + toNodeName);
+					t.setFrom(fromNode);
+					t.setTo(toNode);
+					fromNode.addLeavingTransition(t);
+				}
 			}
 		}
 		
@@ -328,6 +409,10 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	}
 	
 	public void startWorkflow(Entry entry, Definition workflowDef) {
+		String entryType = "";
+		if (entry instanceof FolderEntry) entryType = AnyOwner.FOLDERENTRY;
+		if (entry instanceof Principal) entryType = AnyOwner.PRINCIPAL;
+		
 		//Find the initial state of the workflow
 		Document workflowDoc = workflowDef.getDefinition();
 		if (workflowDoc != null) {
@@ -358,8 +443,11 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 
 			        Node node = pD.getNode(initialState);
 				    if (node != null) {
-						ProcessInstance pI = addWorkflowInstance(new Long(pD.getId()));
+			        	ProcessInstance pI = new ProcessInstance(pD);
 						Token token = pI.getRootToken();
+						ContextInstance cI = (ContextInstance) pI.getInstance(ContextInstance.class);
+						cI.setVariable(WorkflowUtils.ENTRY_ID, entry.getId(), token);
+						cI.setVariable(WorkflowUtils.ENTRY_TYPE, entryType, token);
 						if (entry instanceof MultipleWorkflowSupport) {
 							MultipleWorkflowSupport mEntry = (MultipleWorkflowSupport) entry;
 							//doesn't exist, add a new one
@@ -393,4 +481,16 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			}
 		}
 	}
+	
+	public void changeState(Long tokenId, String fromState, String toState) {
+	    try {
+	       	JbpmSession session = workflowFactory.getSession();
+        	Token t = session.getGraphSession().loadToken(tokenId.longValue());
+            t.signal(fromState + "." + toState);
+            session.getGraphSession().saveProcessInstance(t.getProcessInstance());
+	    } catch (Exception ex) {
+	        throw convertJbpmException(ex);
+	    }		
+	}
+	
 }

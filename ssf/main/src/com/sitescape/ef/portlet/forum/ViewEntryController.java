@@ -32,10 +32,8 @@ public class ViewEntryController extends SAbstractForumController {
 		
 		//See if the user asked to change state
 		if (formData.containsKey("changeStateBtn")) {
-			String tokenId = PortletRequestUtils.getStringParameter(request, "tokenId");
-			String toState = PortletRequestUtils.getStringParameter(request, "toState");
-			
-			//TODO - add code to change the state
+			//Change the state
+			getFolderModule().changeWorkflowState(folderId, entryId, formData);
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 

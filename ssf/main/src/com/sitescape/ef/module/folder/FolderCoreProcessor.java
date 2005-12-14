@@ -42,7 +42,9 @@ public interface FolderCoreProcessor {
     public Long addReply(FolderEntry parent, Definition def, Map inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
     public void modifyEntry(Folder parentFolder, Long entryId, Map inputData, Map fileItems) 
-    	throws AccessControlException, WriteFilesException;
+	throws AccessControlException, WriteFilesException;
+    public void changeWorkflowState(Folder parentFolder, Long entryId, Map inputData) 
+	throws AccessControlException, WriteFilesException;
     public Document getDomFolderTree(Folder folder, DomTreeBuilder domTreeHelper);
 	public Map getFolderEntries(Folder folder, int maxNumEntries) throws AccessControlException;
 	public void indexFolder(Folder folder);

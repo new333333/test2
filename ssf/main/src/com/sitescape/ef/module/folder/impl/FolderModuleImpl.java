@@ -146,6 +146,19 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         processor.modifyEntry(folder, entryId, inputData, fileItems);
     }
 
+    public void changeWorkflowState(Long folderId, Long entryId, Map inputData) throws AccessControlException {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        Folder folder = folderDao.loadFolder(folderId, user.getZoneName());
+       // This is nothing but a dispatcher to an appropriate processor. 
+        // Shared logic, if exists, must be put into the corresponding method in 
+        // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
+        // in this method.
+        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor(
+        	folder, FolderCoreProcessor.PROCESSOR_KEY);
+        
+        processor.changeWorkflowState(folder, entryId, inputData);
+    }
+
     public List applyEntryFilter(Definition entryFilter) {
         // TODO Auto-generated method stub
         return null;

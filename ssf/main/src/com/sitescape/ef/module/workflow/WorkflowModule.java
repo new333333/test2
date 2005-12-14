@@ -28,5 +28,6 @@ public interface WorkflowModule {
 	public void buildProcessDefinition(String definitionName, Definition def);
 	public void updateProcessDefinition(ProcessDefinition pD, Definition def);
 	public void startWorkflow(Entry entry, Definition workflowDef);
+	public void changeState(Long tokenId, String fromState, String toState);
 
 }
