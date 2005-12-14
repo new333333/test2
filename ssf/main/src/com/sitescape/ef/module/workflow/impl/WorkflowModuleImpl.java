@@ -15,6 +15,7 @@ import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.domain.AnyOwner;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.MultipleWorkflowSupport;
 import com.sitescape.ef.domain.Principal;
@@ -482,12 +483,59 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		}
 	}
 	
-	public void changeState(Long tokenId, String fromState, String toState) {
+	public void modifyWorkflowState(Long tokenId, String fromState, String toState) {
 	    try {
 	       	JbpmSession session = workflowFactory.getSession();
         	Token t = session.getGraphSession().loadToken(tokenId.longValue());
             t.signal(fromState + "." + toState);
             session.getGraphSession().saveProcessInstance(t.getProcessInstance());
+	    } catch (Exception ex) {
+	        throw convertJbpmException(ex);
+	    }		
+	}
+	
+	public void deleteEntryWorkflow(Folder parentFolder, FolderEntry entry) {
+		//Delete all JBPM tokens and process instances associated with this entry
+	    try {
+			List processInstances = new ArrayList();
+			List tokenIds = new ArrayList();
+	       	JbpmSession session = workflowFactory.getSession();
+			if (entry instanceof MultipleWorkflowSupport) {
+				MultipleWorkflowSupport mEntry = (MultipleWorkflowSupport) entry;
+				List workflowStates = mEntry.getWorkflowStates();
+				for (int i = 0; i < workflowStates.size(); i++) {
+					WorkflowState ws = (WorkflowState) workflowStates.get(i);
+					Token t = session.getGraphSession().loadToken(ws.getTokenId().longValue());
+					if (!tokenIds.contains(t)) {
+						//Remember all of the tokenIds that we have to end
+						tokenIds.add(t);
+					}
+					if (!processInstances.contains(t.getProcessInstance())) {
+						//Remember all of the process instances that we have to delete
+						processInstances.add(t.getProcessInstance());
+					}
+				}
+	    	} else if (entry instanceof SingletonWorkflowSupport) {
+				SingletonWorkflowSupport sEntry = (SingletonWorkflowSupport) entry;
+				WorkflowState ws = sEntry.getWorkflowState();
+				Token t = session.getGraphSession().loadToken(ws.getTokenId().longValue());
+				//Remember the tokenId that we have to end
+				tokenIds.add(t);
+				//Remember the process instance that we have to delete
+				processInstances.add(t.getProcessInstance());
+	    	}
+			//Now end the tokenIds used by this entry
+			for (int i = 0; i < tokenIds.size(); i++) {
+				Token t = (Token) tokenIds.get(i);
+				t.end();
+			}
+			//Now delete the process instances used by this entry
+			for (int i = 0; i < processInstances.size(); i++) {
+				ProcessInstance pI = (ProcessInstance) processInstances.get(i);
+				pI.end();
+				ContextInstance cI = pI.getContextInstance();
+				session.getGraphSession().deleteProcessInstance(pI);
+			}
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
 	    }		

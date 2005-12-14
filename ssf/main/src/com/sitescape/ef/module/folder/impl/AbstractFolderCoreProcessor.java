@@ -258,7 +258,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         IndexSynchronizationManager.addDocument(indexDoc);        
     }
     
-    public void changeWorkflowState(Folder folder, Long entryId, Map inputData) {
+    public void modifyWorkflowState(Folder folder, Long entryId, Map inputData) {
         FolderEntry entry = folderEntry_load(folder, entryId);
  
 		//Get the workflow process to change and the name of the new state
@@ -288,7 +288,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
 			Map transitions = ws.getManualTransitions();
 			if (transitions.containsKey(toState)) {
 				//It is ok to transition to this state; go do it
-				getWorkflowModule().changeState(ws.getTokenId(), ws.getState(), toState);
+				getWorkflowModule().modifyWorkflowState(ws.getTokenId(), ws.getState(), toState);
 			}
 		}
     }
@@ -739,6 +739,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     public void deleteEntry(Folder parentFolder, FolderEntry entry) {
         deleteEntry_accessControl(parentFolder, entry);
         deleteEntry_preDelete(parentFolder, entry);
+        deleteEntry_workflow(parentFolder, entry);
         deleteEntry_processFiles(parentFolder, entry);
         deleteEntry_delete(parentFolder, entry);
         deleteEntry_postDelete(parentFolder, entry);
@@ -763,6 +764,10 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         }
     }
         
+    protected void deleteEntry_workflow(Folder parentFolder, FolderEntry entry) {
+    	getWorkflowModule().deleteEntryWorkflow(parentFolder, entry);
+    }
+    
     protected void deleteEntry_processFiles(Folder parentFolder, FolderEntry entry) {
     	getFileManager().deleteFiles(parentFolder, entry);
     }
