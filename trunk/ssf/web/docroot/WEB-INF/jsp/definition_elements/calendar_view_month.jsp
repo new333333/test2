@@ -62,7 +62,7 @@ ${dayabbrev}</td>
 <c:forEach var="evim" items="${ev.value}"> 
 <jsp:useBean id="evim" type="java.util.Map" />
 <%
-    Entry e = (Entry) evim.get("entry");
+    java.util.HashMap e = (java.util.HashMap) evim.get("entry");
 %>
 <div id="folderLine_${evim.entry.id}">	
 ${evim.cal_starttimestring}: 
@@ -76,8 +76,8 @@ if (!ssSeenMap.checkIfSeen(e)) {
     portletName="ss_forum" 
     folderId="<%= folderId %>" 
     action="view_entry" 
-    entryId="<%= e.getId().toString() %>" actionUrl="false" />"
-    onClick="ss_loadEntry(this,'<c:out value="${evim.entry.id}"/>');return false;" >${evim.entry.title}</a></div>
+    entryId="<%= e.get("_docId").toString() %>" actionUrl="false" />"
+    onClick="ss_loadEntry(this,'<c:out value="${evim.entry._docId}"/>');return false;" >${evim.entry._title}</a></div>
 
 </c:forEach> <% // end of events within a single time slot %>
 </c:forEach> <% // end of time slot loop %>
