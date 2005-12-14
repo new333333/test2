@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.sitescape.ef.context.request.RequestContextUtil;
+import com.sitescape.ef.web.NoValidUserSessionException;
 import com.sitescape.ef.web.WebKeys;
 
 public class InitRequestContextInterceptor extends HandlerInterceptorAdapter {
@@ -17,7 +18,7 @@ public class InitRequestContextInterceptor extends HandlerInterceptorAdapter {
     	HttpSession ses = request.getSession(false);
     	
     	if(ses == null)
-    		throw new IllegalStateException("No session in place - Illegal request sequence.");
+    		throw new NoValidUserSessionException();    		
     	
 		RequestContextUtil.setThreadContext((String) ses.getAttribute(WebKeys.ZONE_NAME),
 				(String) ses.getAttribute(WebKeys.USER_NAME));

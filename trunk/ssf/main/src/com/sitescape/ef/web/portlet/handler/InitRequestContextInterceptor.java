@@ -10,17 +10,44 @@ import org.springframework.web.portlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.context.request.RequestContextUtil;
+import com.sitescape.ef.web.NoValidUserSessionException;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.WebHelper;
 
 public class InitRequestContextInterceptor implements HandlerInterceptor {
 
 	public boolean preHandle(PortletRequest request, PortletResponse response, Object handler) throws Exception {
 	    
-    	PortletSession ses = WebHelper.getRequiredPortletSession(request);
+    	PortletSession ses = request.getPortletSession(false);
     	
-		RequestContextUtil.setThreadContext((String) ses.getAttribute(WebKeys.ZONE_NAME, PortletSession.APPLICATION_SCOPE),
-				(String) ses.getAttribute(WebKeys.USER_NAME, PortletSession.APPLICATION_SCOPE));
+    	if(ses == null)
+    		throw new NoValidUserSessionException();
+    	
+    	String zoneName = null;
+    	String userName = null;
+    	
+    	try {
+    		zoneName = (String) ses.getAttribute(WebKeys.ZONE_NAME, PortletSession.APPLICATION_SCOPE);
+    		userName = (String) ses.getAttribute(WebKeys.USER_NAME, PortletSession.APPLICATION_SCOPE);
+    	}
+    	catch(IllegalStateException e) {
+    		// The PortletSession is invalidated.
+    		throw new NoValidUserSessionException(e);
+    	}
+
+    	// Due to bugs in some portlet containers (eg. Liferay) as well as in 
+    	// our own portlet adapter, when a user's session is invalidated or
+    	// expired, the associated PortletSession if any may not be properly 
+    	// notified of the change in the state of the underlying HttpSession.
+    	// When this occurs, application may still be able to call getAttribute
+    	// method on the PortletSession without incurring an exception. 
+    	// To work around that problem, I had to add the following checking 
+    	// (hack) as a way of indirectly detecting whether or not the user 
+    	// session has indeed expired. Yuck, but it works. 
+    	
+    	if(zoneName == null || userName == null)
+    		throw new NoValidUserSessionException();
+    	
+    	RequestContextUtil.setThreadContext(zoneName, userName);
 		
 	    return true;
 	}
