@@ -41,6 +41,7 @@ import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.portlet.forum.ActionUtil;
 import com.sitescape.ef.portlet.forum.ForumActionModule;
+import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
@@ -301,8 +302,8 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 				count = new Integer(ec).intValue();
 			// look through the custom attrs of this entry for any of type EVENT
 			for (int j = 0; j < count; j++) {
-				Date evStartDate = (Date)e.get(EntryIndexUtils.EVENT_FIELD + count + EntryIndexUtils.EVENT_FIELD_START_DATE);
-				Date evEndDate = (Date)e.get(EntryIndexUtils.EVENT_FIELD + count + EntryIndexUtils.EVENT_FIELD_END_DATE);
+				Date evStartDate = (Date)e.get(EntryIndexUtils.EVENT_FIELD + j + EntryIndexUtils.EVENT_FIELD_START_DATE);
+				Date evEndDate = (Date)e.get(EntryIndexUtils.EVENT_FIELD + j + EntryIndexUtils.EVENT_FIELD_END_DATE);
 				Event ev = new Event();
 				GregorianCalendar gcal = new GregorianCalendar();
 				gcal.setTime(evStartDate);
@@ -490,12 +491,12 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 					HashMap thisMap = (HashMap) evIt.next();
 					// dataMap is the map of data for the bean, to be keyed by the time
 					HashMap dataMap = new HashMap();
-					Entry e = (Entry) thisMap.get("entry");
+					HashMap e = (HashMap) thisMap.get("entry");
 					Event ev = (Event) thisMap.get("event");
 					SimpleDateFormat sdf2 = new SimpleDateFormat("hh:mm a");
 					// we build up the dataMap for this instance
 					dataMap.put("entry", e);
-					dataMap.put("entry_tostring", e.getId().toString());
+					dataMap.put("entry_tostring", e.get(BasicIndexUtils.UID_FIELD).toString());
 					dataMap.put(WebKeys.CALENDAR_STARTTIMESTRING, sdf2.format(ev.getDtStart().getTime()));
 					dataMap.put(WebKeys.CALENDAR_ENDTIMESTRING, sdf2.format(ev.getDtEnd().getTime()));
 					
@@ -927,7 +928,7 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 		getDefinitions(folder, model);
 		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.FOLDER_ENTRIES);
-		//getEvents(entries, model, req, response);
+		getEvents(entries, model, req, response);
 		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
 		buildFolderToolbar(response, model, forumId);
 		return model;

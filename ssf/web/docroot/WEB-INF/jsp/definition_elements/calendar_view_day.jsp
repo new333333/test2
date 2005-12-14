@@ -50,12 +50,12 @@ Views:&nbsp;<a href="${set_week_view}">Week</a><c:out value="${delimiter}" /><a 
 <c:forEach var="evid" items="${ev.value}"> 
 <jsp:useBean id="evid" type="java.util.Map" />
 <%
-    Entry e = (Entry) evid.get("entry");
+    java.util.HashMap e = (java.util.HashMap) evid.get("entry");
 %>
 <script language="javascript">
 //getFilteredEntries()
 </script>
-<div id="folderLine_<c:out value="${evid.entry.id}"/>">	
+<div id="folderLine_<c:out value="${evid.entry._docId}"/>">	
 <%
 if (ssSeenMap.checkIfSeen(e)) {
 %><img src="<html:imagesPath/>pics/1pix.gif" width="7px" alt="" \><%
@@ -69,8 +69,8 @@ if (ssSeenMap.checkIfSeen(e)) {
     portletName="ss_forum" 
     folderId="<%= folderId %>" 
     action="view_entry" 
-    entryId="<%= e.getId().toString() %>" actionUrl="false" />"
-    onClick="ss_loadEntry(this,'<c:out value="${evid.entry.id}"/>');return false;" >${evid.entry.title}</a></div>
+    entryId="<%= e.get("_docId").toString() %>" actionUrl="false" />"
+    onClick="ss_loadEntry(this,'<c:out value="${evid.entry._docId}"/>');return false;" >${evid.entry._title}</a></div>
 
 </c:forEach>
 </c:forEach></td>
