@@ -8,6 +8,8 @@ import org.jbpm.graph.exe.Token;
 
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.FolderEntry;
 
 public interface WorkflowModule {
 	public List getAllDefinitions();
@@ -28,6 +30,7 @@ public interface WorkflowModule {
 	public void buildProcessDefinition(String definitionName, Definition def);
 	public void updateProcessDefinition(ProcessDefinition pD, Definition def);
 	public void startWorkflow(Entry entry, Definition workflowDef);
-	public void changeState(Long tokenId, String fromState, String toState);
+	public void modifyWorkflowState(Long tokenId, String fromState, String toState);
+	public void deleteEntryWorkflow(Folder parentFolder, FolderEntry entry);
 
 }

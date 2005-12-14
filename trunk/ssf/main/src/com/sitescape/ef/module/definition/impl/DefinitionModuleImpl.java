@@ -451,6 +451,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								item.attributeValue("name", "").equals("state")) {
 							//This is a workflow state. Make sure no entries are using that state
 							//TODO ???Add code to check if any entries are in this state
+							//  If code is added to support changing state names, make sure to fix up
+							//  the toState property, the initialState property, and the startState property.
 							throw new DefinitionInvalidException(defId, 
 									"Error: this state name cannot be changed because some entries are in this state.");
 						}

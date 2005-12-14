@@ -146,7 +146,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         processor.modifyEntry(folder, entryId, inputData, fileItems);
     }
 
-    public void changeWorkflowState(Long folderId, Long entryId, Map inputData) throws AccessControlException {
+    public void modifyWorkflowState(Long folderId, Long entryId, Map inputData) throws AccessControlException {
         User user = RequestContextHolder.getRequestContext().getUser();
         Folder folder = folderDao.loadFolder(folderId, user.getZoneName());
        // This is nothing but a dispatcher to an appropriate processor. 
@@ -156,7 +156,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor(
         	folder, FolderCoreProcessor.PROCESSOR_KEY);
         
-        processor.changeWorkflowState(folder, entryId, inputData);
+        processor.modifyWorkflowState(folder, entryId, inputData);
     }
 
     public List applyEntryFilter(Definition entryFilter) {

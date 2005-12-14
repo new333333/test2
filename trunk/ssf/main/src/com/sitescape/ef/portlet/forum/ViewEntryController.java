@@ -33,7 +33,7 @@ public class ViewEntryController extends SAbstractForumController {
 		//See if the user asked to change state
 		if (formData.containsKey("changeStateBtn")) {
 			//Change the state
-			getFolderModule().changeWorkflowState(folderId, entryId, formData);
+			getFolderModule().modifyWorkflowState(folderId, entryId, formData);
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
