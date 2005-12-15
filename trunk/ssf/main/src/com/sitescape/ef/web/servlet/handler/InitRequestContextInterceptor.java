@@ -2,26 +2,28 @@ package com.sitescape.ef.web.servlet.handler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.web.NoValidUserSessionException;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.WebHelper;
 
 public class InitRequestContextInterceptor extends HandlerInterceptorAdapter {
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, 
 			Object handler) throws Exception {
 	    
-    	HttpSession ses = request.getSession(false);
-    	
-    	if(ses == null)
-    		throw new NoValidUserSessionException();    		
-    	
-		RequestContextUtil.setThreadContext((String) ses.getAttribute(WebKeys.ZONE_NAME),
-				(String) ses.getAttribute(WebKeys.USER_NAME));
+		try {
+			String userName = WebHelper.getRequiredUserName(request);
+			String zoneName = WebHelper.getRequiredZoneName(request);
+			
+			RequestContextUtil.setThreadContext(zoneName, userName);
+		}
+		catch(IllegalStateException e) {
+			throw new NoValidUserSessionException(e);
+		}
 		
 	    return true;
 	}
