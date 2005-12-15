@@ -64,21 +64,21 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				params.put("action", new String[] {this.action});
 			}
 			
-			if (this.folderId.equals("")) folderId = (String) req.getAttribute(WebKeys.FORUM_URL_FORUM_ID);
+			if (this.folderId.equals("")) folderId = (String) req.getAttribute(WebKeys.URL_BINDER_ID);
 			if (this.folderId != null && !this.folderId.equals("")) {
-				params.put(WebKeys.FORUM_URL_FORUM_ID, new String[] {folderId});
+				params.put(WebKeys.URL_BINDER_ID, new String[] {folderId});
 			} else {
 				this.folderId = "";
 			}
-			if (this.entryId.equals("")) entryId = (String) req.getAttribute(WebKeys.FORUM_URL_ENTRY_ID);
+			if (this.entryId.equals("")) entryId = (String) req.getAttribute(WebKeys.URL_ENTRY_ID);
 			if (this.entryId != null && !this.entryId.equals("")) {
-				params.put(WebKeys.FORUM_URL_ENTRY_ID, new String[] {entryId});
+				params.put(WebKeys.URL_ENTRY_ID, new String[] {entryId});
 			} else {
 				this.entryId = "";
 			}
-			if (this.operation.equals("")) operation = (String) req.getAttribute(WebKeys.FORUM_URL_OPERATION);
+			if (this.operation.equals("")) operation = (String) req.getAttribute(WebKeys.URL_OPERATION);
 			if (this.operation != null && !this.operation.equals("")) {
-				params.put(WebKeys.FORUM_URL_OPERATION, new String[] {operation});
+				params.put(WebKeys.URL_OPERATION, new String[] {operation});
 			} else {
 				this.operation = "";
 			}
