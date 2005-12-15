@@ -6,8 +6,12 @@ import java.util.Map;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.DefinitionUtils;
+
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -16,7 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class SAbstractForumController extends SAbstractController {
 	public ModelAndView returnToViewForum(RenderRequest request, RenderResponse response, Map formData, Long folderId) throws Exception {
-		request.setAttribute(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
+		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 		Map model = getForumActionModule().getShowFolder(formData, request, response, folderId);
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 
@@ -24,8 +28,9 @@ public class SAbstractForumController extends SAbstractController {
 		obj = model.get(WebKeys.CONFIG_DEFINITION);
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
-		return new ModelAndView(WebKeys.VIEW_FORUM, model);
+		return new ModelAndView(WebKeys.VIEW_LISTING, model);
 	}
+
 /*	public ModelAndView returnToWorkspace(RenderRequest req) {
 		Map model = new HashMap();
 		model.put(ObjectKeys.WORKSPACE_DOM_TREE, getWorkspaceModule().getDomWorkspaceTree());

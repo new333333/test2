@@ -4,17 +4,25 @@
  */
 package com.sitescape.ef.module.profile.impl;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
+import java.util.Set;
 
+import org.apache.lucene.document.DateField;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.search.SortField;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.CoreDao;
-import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
@@ -25,7 +33,9 @@ import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.domain.ProfileBinder;
+
+import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.profile.index.IndexUtils;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
@@ -40,50 +50,53 @@ import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.LuceneSession;
+import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.ef.domain.NoBinderByTheNameException;
 
 
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
-    protected DefinitionModule definitionModule;
+	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.FOLDER_MAX_PAGE_SIZE;
+   protected DefinitionModule definitionModule;
     
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
-    
-   public Map getProfile(Long userId) {
-   		Map model = new HashMap();
+	public void setDefinitionModule(DefinitionModule definitionModule) {
+		this.definitionModule = definitionModule;
+	}
+  
+	public ProfileBinder addProfileBinder() {
+		ProfileBinder pf;
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		try {
+			return (ProfileBinder)getCoreDao().findBinderByName("_profiles", zoneName);
+			
+		} catch (NoBinderByTheNameException nb) {
+			pf = new ProfileBinder();
+			pf.setName("_profiles");
+			pf.setZoneName(zoneName);
+			getCoreDao().save(pf);
+			getCoreDao().findTopWorkspace(zoneName).addChild(pf);
+			return pf;
+		}
+	}
+	public ProfileBinder getProfileBinder() {
+	   ProfileBinder pf = (ProfileBinder)getCoreDao().findBinderByName("_profiles", RequestContextHolder.getRequestContext().getZoneName());
+	   return pf;
+    }
+    public Principal getPrincipal(Long principaId) {
         Principal entry;
             
         User user = RequestContextHolder.getRequestContext().getUser();
-        entry = getCoreDao().loadPrincipal(userId, user.getZoneName());        
-        model.put("entry", entry);
-        if (entry instanceof Group) {
-            Group group = (Group)entry;
-            Iterator iter = group.getMembers().iterator();
-            ArrayList groupList = new ArrayList();
-            ArrayList memberList = new ArrayList();
-            while (iter.hasNext()) {
-                entry = (Principal)iter.next();
-                if (entry instanceof User) {
-                    memberList.add(entry);
-                } else {
-                   groupList.add(entry);
-                }
-            }
-            model.put("groupList", groupList);
-            model.put("memberList", memberList);
-                
-        }
-       
-        model.put(ObjectKeys.USER, user);
-
-        return model;
+        entry = getCoreDao().loadPrincipal(principaId, user.getZoneName());        
+        return entry;
     }
-
    public UserProperties setUserFolderProperty(Long userId, Long folderId, String property, Object value) {
    		UserProperties uProps=null;
    		User user = RequestContextHolder.getRequestContext().getUser();
@@ -250,23 +263,16 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	//TODO: check access
     	return result;
     }
-    public List getUsers() {
-    	FilterControls filter = new FilterControls();
-    	filter.setOrderBy(new OrderBy("title"));
-    	List result = coreDao.loadUsers(filter, RequestContextHolder.getRequestContext().getZoneName());
-    	//TODO: check access
-    	return result;
-    }
+ 
     //***********************************************************************************************************	
     public Long addUser(String definitionId, Map inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
-  		User user = RequestContextHolder.getRequestContext().getUser();
-        Workspace ws = getCoreDao().findTopWorkspace(user.getZoneName());
-        Definition def = getCoreDao().loadDefinition(definitionId, user.getZoneName());
-        addUser_accessControl(ws);
+        ProfileBinder binder = getProfileBinder();
+        Definition def = getCoreDao().loadDefinition(definitionId, binder.getZoneName());
+        addUser_accessControl(binder);
         
-        Map entryDataAll = addUser_toEntryData(ws, def, inputData, fileItems);
+        Map entryDataAll = addUser_toEntryData(binder, def, inputData, fileItems);
         Map entryData = (Map) entryDataAll.get("entryData");
         List fileData = (List) entryDataAll.get("fileData");
         
@@ -275,34 +281,34 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         
         //need to set entry/folder information before generating file attachments
         //Attachments need folder info for AnyOwner
-        addUser_fillIn(ws, entry, inputData, entryData);
+        addUser_fillIn(binder, entry, inputData, entryData);
         
-        addUser_processFiles(ws, entry, fileData);
+        addUser_processFiles(binder, entry, fileData);
         
-        addUser_preSave(ws, entry, inputData, entryData);
+        addUser_preSave(binder, entry, inputData, entryData);
         
         addUser_save(entry);
         
-        addUser_postSave(ws, entry, inputData, entryData);
+        addUser_postSave(binder, entry, inputData, entryData);
         
         // This must be done in a separate step after persisting the entry,
         // because we need the entry's persistent ID for indexing. 
-        addUser_indexAdd(ws, entry, inputData);
+        addUser_indexAdd(binder, entry, inputData);
       
         return entry.getId();
     }
 
      
-    protected void addUser_accessControl(Workspace ws) throws AccessControlException {
-        accessControlManager.checkOperation(ws, WorkAreaOperation.CREATE_ENTRIES);        
+    protected void addUser_accessControl(ProfileBinder binder) throws AccessControlException {
+        accessControlManager.checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);        
     }
     
-    protected void addUser_processFiles(Workspace ws, User user, List fileData) 
+    protected void addUser_processFiles(ProfileBinder binder, User user, List fileData) 
     	throws WriteFilesException {
-    	EntryBuilder.writeFiles(getFileManager(), ws, user, fileData);
+    	EntryBuilder.writeFiles(getFileManager(), binder, user, fileData);
     }
     
-    protected Map addUser_toEntryData(Workspace ws, Definition def, Map inputData, Map fileItems) {
+    protected Map addUser_toEntryData(ProfileBinder binder, Definition def, Map inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
         return getDefinitionModule().getEntryData(def, inputData, fileItems);
     }
@@ -311,103 +317,84 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	return new User();
     }
     
-    protected void addUser_fillIn(Workspace ws, User user, Map inputData, Map entryData) {  
-    	add_fillIn(ws, user, inputData, entryData);
+    protected void addUser_fillIn(ProfileBinder binder, User user, Map inputData, Map entryData) {  
+    	add_fillIn(binder, user, inputData, entryData);
      }
     
-    protected void addUser_preSave(Workspace ws, User user, Map inputData, Map entryData) {
+    protected void addUser_preSave(ProfileBinder binder, User user, Map inputData, Map entryData) {
     }
     
     protected void addUser_save(User user) {
         getCoreDao().save(user);
     }
     
-    protected void addUser_postSave(Workspace ws, User user, Map inputData, Map entryData) {
+    protected void addUser_postSave(ProfileBinder binder, User user, Map inputData, Map entryData) {
     }
     
 
-    protected void addUser_indexAdd(Workspace ws, User user, Map inputData) {
+    protected void addUser_indexAdd(ProfileBinder binder, User user, Map inputData) {
         
         // Create an index document from the entry object.
-        org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(ws, user);
+        org.apache.lucene.document.Document indexDoc = buildIndexDocument(binder, user);
         
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
     }
 
-    public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Workspace ws, User entry) {
-    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
-        
-    	buildIndexDocument(indexDoc, entry);
-      
-        IndexUtils.addName(indexDoc, entry);
-        IndexUtils.addFirstName(indexDoc, entry);
-        IndexUtils.addMiddleName(indexDoc, entry);
-        IndexUtils.addLastName(indexDoc, entry);
-        IndexUtils.addEmailAddress(indexDoc, entry);
-        
-        // Add data fields driven by the entry's definition object. 
-//        getDefinitionModule().addIndexFieldsForEntry(indexDoc, ws, entry);
-        
-        // Add ACL field. We only need to index ACLs for read access.
-//        IndexUtils.addReadAcls(indexDoc, folder, entry, getAclManager());
-        
-        // add the events
-        EntryIndexUtils.addEvents(indexDoc, entry);
-        
-        return indexDoc;
-    }
+
     //***********************************************************************************************************	
-    public void modifyUser(Long id, Map inputData, Map fileItems) 
+    public void modifyPrincipal(Long id, Map inputData, Map fileItems) 
    		throws AccessControlException, WriteFilesException {
-     	User user = coreDao.loadUser(id, RequestContextHolder.getRequestContext().getZoneName());
-     	Workspace ws = getCoreDao().findTopWorkspace(user.getZoneName());
+        ProfileBinder binder = getProfileBinder();
+     	Principal entry = coreDao.loadUser(id, binder.getZoneName());
 
-     	modifyUser_accessControl(ws,user);
+     	modifyEntry_accessControl(binder, entry);
 
-     	Map entryDataAll = modifyUser_toEntryData(user, inputData, fileItems);
+     	Map entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
      	Map entryData = (Map) entryDataAll.get("entryData");
      	List fileData = (List) entryDataAll.get("fileData");
+     	if (inputData.containsKey("displayStyle")) {
+     		entryData.put("displayStyle", inputData.get("displayStyle"));
+     	}
+     	modifyEntry_processFiles(binder, entry, fileData);
      	
-     	modifyUser_processFiles(ws, user, fileData);
-     	
-     	modifyUser_fillIn(ws, user, inputData, entryData);
+     	modifyEntry_fillIn(binder, entry, inputData, entryData);
                    
-     	modifyUser_postFillIn(ws, user, inputData, entryData);
+     	modifyEntry_postFillIn(binder, entry, inputData, entryData);
         
-     	modifyUser_indexAdd(ws, user, inputData);
+     	modifyEntry_indexAdd(binder, entry, inputData);
       }
 
-     protected void modifyUser_accessControl(Workspace ws, User user) throws AccessControlException {
+     protected void modifyEntry_accessControl(ProfileBinder binder, Principal entry) throws AccessControlException {
  		// Check if the user has "read" access to the workspace.
-         getAccessControlManager().checkAcl(ws, AccessType.READ);
+         getAccessControlManager().checkAcl(binder, AccessType.READ);
              
          // Check if the user has "write" access to the particular entry.
          //getAccessControlManager().checkAcl(ws, user, AccessType.WRITE);
      }
-     protected void modifyUser_processFiles(Workspace ws, User user, List fileData) 
+     protected void modifyEntry_processFiles(ProfileBinder binder, Principal entry, List fileData) 
          throws WriteFilesException {
-  	   EntryBuilder.writeFiles(getFileManager(), ws, user, fileData);
+  	   EntryBuilder.writeFiles(getFileManager(), binder, entry, fileData);
      }
-     protected Map modifyUser_toEntryData(User user, Map inputData, Map fileItems) {
+     protected Map modifyEntry_toEntryData(Principal entry, Map inputData, Map fileItems) {
   	   //Call the definition processor to get the entry data to be stored
-         return getDefinitionModule().getEntryData(user.getEntryDef(), inputData, fileItems);
+         return getDefinitionModule().getEntryData(entry.getEntryDef(), inputData, fileItems);
      }
-     protected void modifyUser_fillIn(Workspace ws, User user, Map inputData, Map entryData) {  
-         user.setModification(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
-         EntryBuilder.updateEntry(user, entryData);
+     protected void modifyEntry_fillIn(ProfileBinder binder, Principal entry, Map inputData, Map entryData) {  
+    	 entry.setModification(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
+         EntryBuilder.updateEntry(entry, entryData);
      }
 
-     protected void modifyUser_postFillIn(Workspace ws, User user, Map inputData, Map entryData) {
+     protected void modifyEntry_postFillIn(ProfileBinder binder, Principal entry, Map inputData, Map entryData) {
      }
          
-     protected void modifyUser_indexAdd(Workspace ws, User user, Map inputData) {
+     protected void modifyEntry_indexAdd(ProfileBinder binder, Principal entry, Map inputData) {
              
          // Create an index document from the entry object.
-         org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(ws, user);
+         org.apache.lucene.document.Document indexDoc = buildIndexDocument(binder, entry);
              
          // Delete the document that's currently in the index.
-         IndexSynchronizationManager.deleteDocument(user.getIndexDocumentUid());
+         IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
              
          // Register the index document for indexing.
          IndexSynchronizationManager.addDocument(indexDoc);        
@@ -417,12 +404,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     public Long addGroup(String definitionId, Map inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
-  		User user = RequestContextHolder.getRequestContext().getUser();
-        Workspace ws = getCoreDao().findTopWorkspace(user.getZoneName());
-        Definition def = getCoreDao().loadDefinition(definitionId, user.getZoneName());
-        addGroup_accessControl(ws);
+        ProfileBinder binder = getProfileBinder();
+        Definition def = getCoreDao().loadDefinition(definitionId, binder.getZoneName());
+        addGroup_accessControl(binder);
         
-        Map entryDataAll = addGroup_toEntryData(ws, def, inputData, fileItems);
+        Map entryDataAll = addGroup_toEntryData(binder, def, inputData, fileItems);
         Map entryData = (Map) entryDataAll.get("entryData");
         List fileData = (List) entryDataAll.get("fileData");
         
@@ -431,34 +417,34 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         
         //need to set entry/folder information before generating file attachments
         //Attachments need folder info for AnyOwner
-        addGroup_fillIn(ws, entry, inputData, entryData);
+        addGroup_fillIn(binder, entry, inputData, entryData);
         
-        addGroup_processFiles(ws, entry, fileData);
+        addGroup_processFiles(binder, entry, fileData);
         
-        addGroup_preSave(ws, entry, inputData, entryData);
+        addGroup_preSave(binder, entry, inputData, entryData);
         
         addGroup_save(entry);
         
-        addGroup_postSave(ws, entry, inputData, entryData);
+        addGroup_postSave(binder, entry, inputData, entryData);
         
         // This must be done in a separate step after persisting the entry,
         // because we need the entry's persistent ID for indexing. 
-        addGroup_indexAdd(ws, entry, inputData);
+        addGroup_indexAdd(binder, entry, inputData);
       
         return entry.getId();
     }
 
      
-    protected void addGroup_accessControl(Workspace ws) throws AccessControlException {
-        accessControlManager.checkOperation(ws, WorkAreaOperation.CREATE_ENTRIES);        
+    protected void addGroup_accessControl(ProfileBinder binder) throws AccessControlException {
+        accessControlManager.checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);        
     }
     
-    protected void addGroup_processFiles(Workspace ws, Group group, List fileData) 
+    protected void addGroup_processFiles(ProfileBinder binder, Group group, List fileData) 
     	throws WriteFilesException {
-    	EntryBuilder.writeFiles(getFileManager(), ws, group, fileData);
+    	EntryBuilder.writeFiles(getFileManager(), binder, group, fileData);
     }
     
-    protected Map addGroup_toEntryData(Workspace ws, Definition def, Map inputData, Map fileItems) {
+    protected Map addGroup_toEntryData(ProfileBinder binder, Definition def, Map inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
         return getDefinitionModule().getEntryData(def, inputData, fileItems);
     }
@@ -467,117 +453,84 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	return new Group();
     }
     
-    protected void addGroup_fillIn(Workspace ws, Group group, Map inputData, Map entryData) {  
-    	add_fillIn(ws, group, inputData, entryData);
+    protected void addGroup_fillIn(ProfileBinder binder, Group group, Map inputData, Map entryData) {  
+    	add_fillIn(binder, group, inputData, entryData);
  
     }
     
-    protected void addGroup_preSave(Workspace ws, Group group, Map inputData, Map entryData) {
+    protected void addGroup_preSave(ProfileBinder binder, Group group, Map inputData, Map entryData) {
     }
     
     protected void addGroup_save(Group group) {
         getCoreDao().save(group);
     }
     
-    protected void addGroup_postSave(Workspace ws, Group group, Map inputData, Map entryData) {
+    protected void addGroup_postSave(ProfileBinder binder, Group group, Map inputData, Map entryData) {
     }
     
 
-    protected void addGroup_indexAdd(Workspace ws, Group group, Map inputData) {
+    protected void addGroup_indexAdd(ProfileBinder binder, Group group, Map inputData) {
         
         // Create an index document from the entry object.
-        org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(ws, group);
+        org.apache.lucene.document.Document indexDoc = buildIndexDocument(binder, group);
         
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
     }
 
    //***********************************************************************************************************	
-   public void modifyGroup(Long id, Map inputData, Map fileItems) 
-  		throws AccessControlException, WriteFilesException {
-    	Group group = coreDao.loadGroup(id, RequestContextHolder.getRequestContext().getZoneName());
-    	Workspace ws = getCoreDao().findTopWorkspace(group.getZoneName());
-
-    	modifyGroup_accessControl(ws,group);
-
-    	Map entryDataAll = modifyGroup_toEntryData(group, inputData, fileItems);
-    	Map entryData = (Map) entryDataAll.get("entryData");
-    	List fileData = (List) entryDataAll.get("fileData");
-    	
-    	modifyGroup_processFiles(ws, group, fileData);
-    	
-    	modifyGroup_fillIn(ws, group, inputData, entryData);
-                  
-    	modifyGroup_postFillIn(ws, group, inputData, entryData);
-       
-    	modifyGroup_indexAdd(ws, group, inputData);
-         
-    }
-
-    protected void modifyGroup_accessControl(Workspace ws, Group group) throws AccessControlException {
-		// Check if the user has "read" access to the workspace.
-        getAccessControlManager().checkAcl(ws, AccessType.READ);
-            
-        // Check if the user has "write" access to the particular entry.
-        //getAccessControlManager().checkAcl(ws, user, AccessType.WRITE);
-    }
-    protected void modifyGroup_processFiles(Workspace ws, Group group, List fileData) 
-        throws WriteFilesException {
- 	   EntryBuilder.writeFiles(getFileManager(), ws, group, fileData);
-    }
-    protected Map modifyGroup_toEntryData(Group group, Map inputData, Map fileItems) {
- 	   //Call the definition processor to get the entry data to be stored
-        return getDefinitionModule().getEntryData(group.getEntryDef(), inputData, fileItems);
-    }
-    protected void modifyGroup_fillIn(Workspace ws, Group group, Map inputData, Map entryData) {  
-    	group.setModification(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
-        EntryBuilder.updateEntry(group, entryData);
-    }
-
-    protected void modifyGroup_postFillIn(Workspace ws, Group group, Map inputData, Map entryData) {
-    }
-        
-    protected void modifyGroup_indexAdd(Workspace ws, Group group, Map inputData) {
-            
-        // Create an index document from the entry object.
-        org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(ws, group);
-            
-        // Delete the document that's currently in the index.
-        IndexSynchronizationManager.deleteDocument(group.getIndexDocumentUid());
-            
-        // Register the index document for indexing.
-        IndexSynchronizationManager.addDocument(indexDoc);        
-    }        
     //***********************************************************************************************************	
-  
-    public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Workspace ws, Group entry) {
-    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
-        
-    	buildIndexDocument(indexDoc, entry);
-        
-        IndexUtils.addName(indexDoc, entry);
-        
-        // Add data fields driven by the entry's definition object. 
-//        getDefinitionModule().addIndexFieldsForEntry(indexDoc, ws, entry);
-        
-        // Add ACL field. We only need to index ACLs for read access.
-//        IndexUtils.addReadAcls(indexDoc, folder, entry, getAclManager());
-        
-        // add the events
-        EntryIndexUtils.addEvents(indexDoc, entry);
-        
-        return indexDoc;
+    public void deletePrincipal(Long principaId) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        ProfileBinder pf = (ProfileBinder)getCoreDao().findBinderByName("_profiles", user.getZoneName());
+           
+        Principal entry = getCoreDao().loadPrincipal(principaId, user.getZoneName());        
+        deleteEntry_accessControl(pf, entry);
+        deleteEntry_preDelete(pf, entry);
+        deleteEntry_processFiles(pf, entry);
+        deleteEntry_delete(pf, entry);
+        deleteEntry_postDelete(pf, entry);
+        deleteEntry_indexDel(pf, entry);
+   	
     }
+    protected void deleteEntry_accessControl(ProfileBinder binder, Principal entry) {
+        getAccessControlManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES);
+        
+  //      getAccessControlManager().checkAcl(binder, entry, AccessType.DELETE);
+    }
+    protected void deleteEntry_preDelete(ProfileBinder binder, Principal entry) {
+    }
+        
+    protected void deleteEntry_processFiles(ProfileBinder binder, Principal entry) {
+    	getFileManager().deleteFiles(binder, entry);
+    }
+    
+    protected void deleteEntry_delete(ProfileBinder binder, Principal entry) {
+    	List atts = entry.getAttachments();
+    	//need to get all attachments associated with replies
+    	//need to delete workflow stuff
+    	for (int i=0; i<atts.size(); ++i) {
+    		Attachment a = (Attachment)atts.get(i);
+    	}
+        getCoreDao().delete(entry);   
+    }
+    protected void deleteEntry_postDelete(ProfileBinder binder, Principal entry) {
+    }
+
+    protected void deleteEntry_indexDel(ProfileBinder binder, Principal entry) {
+        // Delete the document that's currently in the index.
+        IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
+    }
+
    //***********************************************************************************************************
     
     public void index() {
     	Principal entry;
-    	String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-    	Workspace ws = getCoreDao().findTopWorkspace(zoneName);
+ 	   ProfileBinder binder = getProfileBinder();
 
-    	index_accessControl(ws);
+    	index_accessControl(binder);
     	
-    	SFQuery query = getCoreDao().queryUsers(new FilterControls(), zoneName);
+    	SFQuery query = getCoreDao().queryUsers(new FilterControls(), binder.getZoneName());
         //iterate through results
         LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         try {
@@ -587,7 +540,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	                obj = ((Object [])obj)[0];
 	            entry = (Principal)obj;
 	            // Create an index document from the entry object.
-	            org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(ws, (User)entry);
+	            org.apache.lucene.document.Document indexDoc = buildIndexDocument(binder, entry);
 	            
 	            logger.info("Indexing (User) " + entry.getName() + ": " + indexDoc.toString());
 	            
@@ -598,14 +551,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	            luceneSession.addDocument(indexDoc);        
 	        }
         	query.close();
- 	        query = getCoreDao().queryGroups(new FilterControls(), zoneName);
+ 	        query = getCoreDao().queryGroups(new FilterControls(), binder.getZoneName());
  	        while (query.hasNext()) {
 	            Object obj = query.next();
 	            if (obj instanceof Object[])
 	                obj = ((Object [])obj)[0];
 	            entry = (Principal)obj;
 	            // Create an index document from the entry object.
-	            org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(ws, (Group)entry);
+	            org.apache.lucene.document.Document indexDoc = buildIndexDocument(binder, entry);
 	            
 	            logger.info("Indexing (Group) " + entry.getName() + ": " + indexDoc.toString());
 	            
@@ -620,28 +573,169 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	        luceneSession.close();
 	    }
     }
-    protected void index_accessControl(Workspace ws) {
-    	getAccessControlManager().checkAcl(ws, AccessType.READ);
+    protected void index_accessControl(ProfileBinder binder) {
+    	getAccessControlManager().checkAcl(binder, AccessType.READ);
     }
+    
+
+//  ***********************************************************************************************************
+    public Map getUsers() {
+    	return getUsers(DEFAULT_MAX_ENTRIES);
+    }
+    public Map getUsers(int maxEntries) {
+        int count=0;
+        Field fld;
+        ProfileBinder binder = getProfileBinder();
+        //check access to folder - might be able to get rid of this
+        getUsers_accessControl(binder);
+        //validate entry count
+        maxEntries = getUsers_maxEntries(maxEntries); 
+        //do actual search index query
+        Hits hits = getUsers_doSearch(binder, maxEntries);
+        //iterate through results
+        ArrayList childEntries = new ArrayList(hits.length());
+        try {
+ 	        while (count < hits.length()) {
+	            HashMap ent = new HashMap();
+	            Document doc = hits.doc(count);
+	            //enumerate thru all the returned fields, and add to the map object
+	            Enumeration flds = doc.fields();
+	            while (flds.hasMoreElements()) {
+	            	fld = (Field)flds.nextElement();
+	            	if (fld.name().toLowerCase().indexOf("date") > 0) 
+	            		ent.put(fld.name(),DateField.stringToDate(fld.stringValue()));
+	            	else
+	            		ent.put(fld.name(),fld.stringValue());
+	            }
+	            childEntries.add(ent);
+	            ++count;
+	            
+	        }
+        } finally {
+        }
+        List users = loadEntryHistoryLuc(childEntries);
+        // walk the entries, and stuff in the user object.
+        for (int i = 0; i < childEntries.size(); i++) {
+        	Principal p;
+        	HashMap child = (HashMap)childEntries.get(i);
+        	if (child.get("_creatorId") != null) {
+        		child.put("_principal", getPrincipal(users,(String)child.get("_creatorId")));
+        	}        	
+        }
+       	Map model = new HashMap();
+        model.put(ObjectKeys.BINDER, binder);      
+        model.put(ObjectKeys.ENTRIES, childEntries);
+        model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.length()));
+        return model;
+   }
+    private Principal getPrincipal(List users, String userId) {
+    	Principal p;
+    	for (int i=0; i<users.size(); i++) {
+    		p = (Principal)users.get(i);
+    		if (p.getId().toString().equalsIgnoreCase(userId)) return p;
+    	}
+    	new Principal();
+    	return null;
+    }
+    protected List loadEntryHistoryLuc(List pList) {
+        Set ids = new HashSet();
+        Iterator iter=pList.iterator();
+        HashMap entry;
+        while (iter.hasNext()) {
+            entry = (HashMap)iter.next();
+            if (entry.get("_creatorId") != null)
+        	    ids.add(entry.get("_creatorId"));
+            if (entry.get("_modificationId") != null) 
+        		ids.add(entry.get("_modificationId"));
+        }
+        return getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+     }   
+    protected void getUsers_accessControl(ProfileBinder binder) {
+        getAccessControlManager().checkAcl(binder, AccessType.READ);    	
+    }
+    protected int getUsers_maxEntries(int maxEntries) {
+        if (maxEntries == 0) maxEntries = DEFAULT_MAX_ENTRIES;
+        return maxEntries;
+    }
+    
+    protected Hits getUsers_doSearch(ProfileBinder binder, int maxResults) {
+       	Hits hits = null;
+       	// Build the query
+    	org.dom4j.Document qTree = DocumentHelper.createDocument();
+    	Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+    	Element boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
+    	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
+    	
+    	//Look only for entryType=entry
+    	Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	child.setText(BasicIndexUtils.DOC_TYPE_USER);
+    	
+     	//Create the Lucene query
+    	QueryBuilder qb = new QueryBuilder();
+    	SearchObject so = qb.buildQuery(qTree);
+    	
+    	//Set the sort order
+    	SortField[] fields = new SortField[1];
+    	boolean descend = true;
+    	fields[0] = new SortField(EntryIndexUtils.MODIFICATION_DATE_FIELD, descend);
+    	so.setSortBy(fields);
+    	//Set the sort order
+//    	SortField[] fields = new SortField[1];
+ //   	boolean descend = true;
+  //  	fields[0] = new SortField(EntryIndexUtils.TITLE_FIELD, descend);
+   // 	so.setSortBy(fields);
+    	
+    	System.out.println("Query is: " + qTree.asXML());
+    	System.out.println("Query is: " + so.getQuery().toString());
+    	
+    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+        
+        try {
+	        hits = luceneSession.search(so.getQuery(),so.getSortBy(),0,maxResults);
+        }
+        finally {
+            luceneSession.close();
+        }
+    	
+        return hits;
+     
+    }
+
+
+     
     //***********************************************************************************************************
 
-    private void add_fillIn(Workspace ws, Principal entry, Map inputData, Map entryData) {  
+    private void add_fillIn(ProfileBinder binder, Principal entry, Map inputData, Map entryData) {  
         User current = RequestContextHolder.getRequestContext().getUser();
         entry.setCreation(new HistoryStamp(current));
         entry.setModification(current.getCreation());
-        entry.setZoneName(ws.getZoneName());
+        entry.setZoneName(binder.getZoneName());
                 
         EntryBuilder.buildEntry(entry, entryData);
     }   
-	private void buildIndexDocument(org.apache.lucene.document.Document indexDoc, Principal entry) {
+	protected org.apache.lucene.document.Document buildIndexDocument(ProfileBinder binder, Principal entry) {
+		org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
 		// Add uid
 		BasicIndexUtils.addUid(indexDoc, entry.getIndexDocumentUid());
     
 		// Add doc type
-		if (entry instanceof User)
+		if (entry instanceof User) {
+			User user = (User)entry;
 			BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_USER);
-		else
+			IndexUtils.addName(indexDoc, user);
+	        IndexUtils.addFirstName(indexDoc, user);
+	        IndexUtils.addMiddleName(indexDoc, user);
+	        IndexUtils.addLastName(indexDoc, user);
+	        IndexUtils.addEmailAddress(indexDoc, user);
+		} else {
 			BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_GROUP);
+	        IndexUtils.addName(indexDoc, (Group)entry);
+			
+		}
+        // Add ACL field. We only need to index ACLs for read access.
+        BasicIndexUtils.addReadAcls(indexDoc, binder, entry, getAclManager());
 		// Add creation-date
 		EntryIndexUtils.addCreationDate(indexDoc, entry);
     
@@ -662,6 +756,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     
 		// Add command definition
 		EntryIndexUtils.addCommandDefinition(indexDoc, entry); 
+	       // Add data fields driven by the entry's definition object. 
+//      getDefinitionModule().addIndexFieldsForEntry(indexDoc, ws, entry);
+      
+      
+      // add the events
+      EntryIndexUtils.addEvents(indexDoc, entry);
+      return indexDoc;
+		
 	}    
 }
 

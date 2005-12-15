@@ -31,29 +31,29 @@ public class AddEntryController extends SAbstractForumController {
 		if (formData.containsKey("okBtn")) {
 			//The form was submitted. Go process it
 			// Returns a map where key is form field name (String) and value is LiferayFileItem.
-			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_ENTRY_TYPE, "");
+			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 			Map fileMap=null;
 			if (request instanceof MultipartFileSupport) {
 				fileMap = ((MultipartFileSupport) request).getFileMap();
 			} else {
 				fileMap = new HashMap();
 			}
-			if (action.equals(WebKeys.FORUM_ACTION_ADD_ENTRY)) {
+			if (action.equals(WebKeys.ACTION_ADD_ENTRY)) {
 				Long id = getFolderModule().addEntry(folderId, entryType, formData, fileMap);
 				entryId = id.toString();
 			} else if (action.equals(WebKeys.FORUM_ACTION_ADD_REPLY)) {
-				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_ENTRY_ID));				
+				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 				getFolderModule().addReply(folderId, id, entryType, formData, fileMap );
 				entryId = id.toString();
 			}
-			//response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-			//response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
+			//response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			//response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 		} else if (formData.containsKey("cancelBtn")) {
-			//response.setRenderParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-			//response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
-			if (action.equals(WebKeys.FORUM_ACTION_ADD_ENTRY)) {
+			//response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			//response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+			if (action.equals(WebKeys.ACTION_ADD_ENTRY)) {
 			} else if (action.equals(WebKeys.FORUM_ACTION_ADD_REPLY)) {
-				entryId = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_ENTRY_ID, "");				
+				entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");				
 			}
 		}
 		
@@ -76,7 +76,7 @@ public class AddEntryController extends SAbstractForumController {
 		//See if the add entry form was submitted
 		if (formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
 			String entryId = request.getParameter(WebKeys.ENTRY_ID);
-			formData.put(WebKeys.FORUM_URL_ENTRY_ID, entryId);
+			formData.put(WebKeys.URL_ENTRY_ID, entryId);
 			try {
 				if (entryId.equals("")) {
 					return returnToViewForum(request, response, formData, folderId);
@@ -86,19 +86,19 @@ public class AddEntryController extends SAbstractForumController {
 			} catch (NoDefinitionByTheIdException nd) {
 				return returnToViewForum(request, response, formData, folderId);
 			}
-			path = WebKeys.VIEW_FORUM;
-			model.put(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
-			request.setAttribute(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_ENTRY);
+			path = WebKeys.VIEW_LISTING;
+			model.put(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
+			request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
 			PortletURL reloadUrl = response.createRenderURL();
-			reloadUrl.setParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
-			reloadUrl.setParameter(WebKeys.FORUM_URL_ENTRY_ID, entryId);
-			reloadUrl.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
-			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_ENTRY);
+			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
+			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
 			request.setAttribute("ssReloadUrl", reloadUrl.toString());
 		} else {
 			//See if this is an "add entry" or an "add reply" request
 			try {
-				if (action.equals(WebKeys.FORUM_ACTION_ADD_ENTRY)) {
+				if (action.equals(WebKeys.ACTION_ADD_ENTRY)) {
 					model = getForumActionModule().getAddEntry(formData, request, folderId);
 				} else {
 					model = getForumActionModule().getAddReply(formData, request, folderId);

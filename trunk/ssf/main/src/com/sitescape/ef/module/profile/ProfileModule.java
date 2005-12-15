@@ -10,6 +10,8 @@ import java.util.Collection;
 
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.HistoryMap;
+import com.sitescape.ef.domain.ProfileBinder;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.module.shared.WriteFilesException;
@@ -20,19 +22,23 @@ public interface ProfileModule {
 		throws AccessControlException, WriteFilesException;
    public Long addGroup(String definitionId, Map inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
-   public void modifyUser(Long id, Map inputData, Map fileItems) 
+   public void modifyPrincipal(Long id, Map inputData, Map fileItems) 
    		throws AccessControlException, WriteFilesException;
-   public void modifyGroup(Long id, Map inputData, Map fileItems)
+   public void deletePrincipal(Long id)
 		throws AccessControlException, WriteFilesException;
+   public ProfileBinder addProfileBinder();
+   public ProfileBinder getProfileBinder();
+
     /**
      * @param userId
      * @return
      */
-    public Map getProfile(Long userId);
+    public Principal getPrincipal(Long userId);
 
     public List getGroups();
-    public List getUsers();
-  
+    public Map getUsers();
+    public Map getUsers(int maxEntries);
+    	   
     public void index();
     public UserProperties setUserFolderProperty(Long userId, Long folderId, String property, Object value);
     public UserProperties getUserFolderProperties(Long userId, Long folderId);

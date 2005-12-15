@@ -28,7 +28,7 @@ public class ViewEntryController extends SAbstractForumController {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
 		Long folderId = ActionUtil.getForumId(request);
-		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_ENTRY_ID));				
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		
 		//See if the user asked to change state
 		if (formData.containsKey("changeStateBtn")) {
@@ -41,7 +41,7 @@ public class ViewEntryController extends SAbstractForumController {
 		Map model;		
 		PortletSession ses = WebHelper.getRequiredPortletSession(request);
 		request.setAttribute(WebKeys.HISTORY_CACHE, ses.getAttribute(WebKeys.HISTORY_CACHE));
-		request.setAttribute(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_ENTRY);
+		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
 
 		Map formData1 = request.getParameterMap();
 		Map formData = new HashMap((Map)formData1);
@@ -50,7 +50,7 @@ public class ViewEntryController extends SAbstractForumController {
 		try {
 			folderId = ActionUtil.getForumId(request);
 		} catch (NoFolderByTheIdException nf) {
-			return new ModelAndView(WebKeys.VIEW);
+			return new ModelAndView(WebKeys.VIEW_FORUM);
 		}
 
 			
@@ -64,15 +64,15 @@ public class ViewEntryController extends SAbstractForumController {
          * This controller routine will forward to the desired jsp
          */
 			        
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_OPERATION, "");
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 	
 		formData.put(WebKeys.SESSION_LAST_ENTRY_VIEWED, ses.getAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED));
 		formData.put(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, ses.getAttribute(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED));
-		String viewPath=WebKeys.VIEW_FORUM;
-		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_ENTRY_ID, "");
+		String viewPath=WebKeys.VIEW_LISTING;
+		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		model = getForumActionModule().getShowEntry(entryId, formData, request, response, folderId);
 		entryId = (String)model.get(WebKeys.ENTRY_ID);
-		model.put(WebKeys.FORUM_URL_ENTRY_ID, entryId);
+		model.put(WebKeys.URL_ENTRY_ID, entryId);
 		if (op.equals("")) {
 			Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 			if ((obj == null) || (obj.equals(""))) 
@@ -84,7 +84,7 @@ public class ViewEntryController extends SAbstractForumController {
 			setHistorySeen(model, ses, folderId, false); 
 			ses.setAttribute(WebKeys.SESSION_LAST_HISTORY_ENTRY_VIEWED, null);
 		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY) && !entryId.equals("")) {
-			viewPath=WebKeys.VIEW_FORUM;
+			viewPath=WebKeys.VIEW_LISTING;
 		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_NEXT) ||
 			op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_PREVIOUS) || entryId.equals("")) {
 			if (!Validator.isNull(entryId) && !entryId.equals("")) {

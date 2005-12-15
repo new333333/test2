@@ -51,7 +51,7 @@ public class WorkflowController extends SAbstractController {
 
 		try {
 			PlatformTransactionManager txManager = (PlatformTransactionManager)SpringContextUtil.getBean("transactionManager");
-			String operation=PortletRequestUtils.getStringParameter(request,WebKeys.FORUM_URL_OPERATION);
+			String operation=PortletRequestUtils.getStringParameter(request,WebKeys.URL_OPERATION);
 			WorkflowFactory wf = (WorkflowFactory)SpringContextUtil.getBean("workflowFactory");
 			if (operation.equals("create")) {
 			    ProcessDefinition processDefinition = getWorkflowModule().addWorkflow(

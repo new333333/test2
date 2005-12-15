@@ -38,7 +38,7 @@ public class ConfigureNotifyController extends  SAbstractController  {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
-			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_FORUM_ID));
+			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 			Set userList = new HashSet();
 			long [] gIds = PortletRequestUtils.getLongParameters(request, "sendToGroups");
 			for (int i=0; i<gIds.length; ++i) {
@@ -70,7 +70,7 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			RenderResponse response) throws Exception {
 		try {
 			Map model = new HashMap();
-			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_FORUM_ID));
+			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 			Folder folder = getFolderModule().getFolder(folderId);
 			model.put(WebKeys.FOLDER, folder);
 
@@ -91,7 +91,7 @@ public class ConfigureNotifyController extends  SAbstractController  {
 				for (int i=0; i<gIds.length; ++i) {
 					gList.put(new Long(gIds[i]),Boolean.TRUE);
 				}
-				List users = getProfileModule().getUsers();
+/*				List users = getProfileModule().getUsers();
 				model.put(WebKeys.USERS, users );
 				//Go through selected list and add only users .  Already have new groups accounted for from input form
 				List defaultDistribution = folder.getNotificationDef().getDefaultDistribution();
@@ -99,7 +99,7 @@ public class ConfigureNotifyController extends  SAbstractController  {
 					Principal id = ((Notification)defaultDistribution.get(i)).getSendTo();
 					if (users.contains(id)) uList.put(id.getId(), Boolean.TRUE);
 				}
-				model.put(WebKeys.SELECTED_USERS, uList);
+*/				model.put(WebKeys.SELECTED_USERS, uList);
 				model.put(WebKeys.SELECTED_GROUPS, gList);
 				
 			} else {
@@ -162,7 +162,7 @@ public class ConfigureNotifyController extends  SAbstractController  {
 				element.addAttribute("image", "forum");
 				url = response.createRenderURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.NOTIFY_ACTION_CONFIGURE);
-				url.setParameter(WebKeys.FORUM_URL_FORUM_ID, f.getId().toString());
+				url.setParameter(WebKeys.URL_BINDER_ID, f.getId().toString());
 				try {
 					url.setWindowState(WindowState.MAXIMIZED);
 				} catch (Exception e) {};

@@ -14,6 +14,7 @@ import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.portlet.forum.ForumActionModule;
 import com.sitescape.ef.security.function.FunctionManager;
 import com.sitescape.ef.module.workflow.WorkflowModule;
+import com.sitescape.ef.module.binder.BinderModule;
 
 public abstract class SAbstractController extends AbstractController {
 
@@ -26,9 +27,10 @@ public abstract class SAbstractController extends AbstractController {
 	private ProfileModule profileModule;
 	private DefinitionModule definitionModule;
 	private ForumActionModule forumActionModule;
-	private LdapModule ldapModule;
 	private WorkflowModule workflowModule;
-
+	private BinderModule binderModule;
+	private LdapModule ldapModule;
+	
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
 	}
@@ -36,6 +38,14 @@ public abstract class SAbstractController extends AbstractController {
 	protected EmployeeModule getEmployeeModule() {
 		return employeeModule;
 	}
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
+	
+	protected BinderModule getBinderModule() {
+		return binderModule;
+	}
+
 	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
 		this.workspaceModule = workspaceModule;
 	}
@@ -82,13 +92,7 @@ public abstract class SAbstractController extends AbstractController {
 	protected ForumActionModule getForumActionModule() {
 		return forumActionModule;
 	}	
-	public void setLdapModule(LdapModule ldapModule) {
-		this.ldapModule = ldapModule;
-	}
-	protected LdapModule getLdapModule() {
-		return ldapModule;
-	}
-	
+
 	protected WorkflowModule getWorkflowModule() {
 		return workflowModule;
 	}
@@ -97,4 +101,11 @@ public abstract class SAbstractController extends AbstractController {
 		this.workflowModule = workflowModule;
 	}
 	
+	public void setLdapModule(LdapModule ldapModule) {
+		this.ldapModule = ldapModule;
+	}
+	
+	protected LdapModule getLdapModule() {
+		return ldapModule;
+	}
 }

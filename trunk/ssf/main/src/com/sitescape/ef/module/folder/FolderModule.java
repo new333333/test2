@@ -51,17 +51,7 @@ public interface FolderModule {
      */
     public List applyEntryFilter(Definition entryFilter);
     
-    /**
-     * Modify the folder configuration from a Map of input data
-      * 
-     * @param folderId
-     * @param inputData raw input data
-     * @return
-     * @throws AccessControlException
-     */
-    public void modifyFolderConfiguration(Long folderId, List definitionIds) throws AccessControlException;
-    public void modifyFolderConfiguration(Long folderId, List definitionIds, Map workflowAssociations) throws AccessControlException;
-    /**
+   /**
      * Return Dom tree of folders starting at the topFolder of the specified folder
      * @param folderId
      * @return

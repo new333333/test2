@@ -164,31 +164,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         return null;
     }
     
-    public void modifyFolderConfiguration(Long folderId, List definitionIds, Map workflowAssociations) 
-    		throws AccessControlException {
-    	modifyFolderConfiguration(folderId, definitionIds);
-		String companyId = RequestContextHolder.getRequestContext().getZoneName();
- 		Folder folder = getFolderDao().loadFolder(folderId, companyId);
-        getAccessControlManager().checkAcl(folder, AccessType.WRITE);    	
-        folder.setProperty(ObjectKeys.FOLDER_WORKFLOW_ASSOCIATIONS, workflowAssociations);
-    }
-    public void modifyFolderConfiguration(Long folderId, List definitionIds) throws AccessControlException {
-		String companyId = RequestContextHolder.getRequestContext().getZoneName();
-    	List definitions = new ArrayList(); 
-		Definition def;
-		Folder folder = getFolderDao().loadFolder(folderId, companyId);
-        getAccessControlManager().checkAcl(folder, AccessType.WRITE);    	
-		//Build up new set - domain object will handle associations
-    	if (definitionIds != null) {
-    		for (int i=0; i<definitionIds.size(); ++i) {
-    			def = getCoreDao().loadDefinition((String)definitionIds.get(i), companyId);
-    			//	TODO:	getAccessControlManager().checkAcl(def, AccessType.READ);
-    			definitions.add(def);
-    		}
-    	}
-     	
-		folder.setDefinitions(definitions);
-    }
+    
     
     public void indexFolderTree(Long folderId) {
 		Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneName());

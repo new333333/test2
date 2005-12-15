@@ -44,7 +44,7 @@ public class ListUnseenController  extends SAbstractForumController {
 		Map model = new HashMap();
 		Map seenMaps = new HashMap();
 
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_OPERATION, "");
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_COUNTS)) {
 			List folderIds = new ArrayList();
 			String[] forumList = new String[0];
@@ -64,6 +64,6 @@ public class ListUnseenController  extends SAbstractForumController {
 		} else if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_LIST)) {
 			
 		}
-		return new ModelAndView(WebKeys.VIEW, model);
+		return new ModelAndView(WebKeys.VIEW_FORUM, model);
 	} 
 }

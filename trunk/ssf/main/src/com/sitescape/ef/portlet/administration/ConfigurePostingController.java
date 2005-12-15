@@ -83,7 +83,7 @@ public class ConfigurePostingController extends  SAbstractController  {
 			RenderResponse response) throws Exception {
 		try {
 			Map model = new HashMap();
-			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_FORUM_ID));
+			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 			Folder folder = getFolderModule().getFolder(folderId);
 			Folder topFolder = folder.getTopFolder();
 			Document tree; 
@@ -154,7 +154,7 @@ public class ConfigurePostingController extends  SAbstractController  {
 				element.addAttribute("image", "forum");
 				url = response.createRenderURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.POSTING_ACTION_CONFIGURE);
-				url.setParameter(WebKeys.FORUM_URL_FORUM_ID, f.getId().toString());
+				url.setParameter(WebKeys.URL_BINDER_ID, f.getId().toString());
 				try {
 					url.setWindowState(WindowState.MAXIMIZED);
 				} catch (Exception e) {};

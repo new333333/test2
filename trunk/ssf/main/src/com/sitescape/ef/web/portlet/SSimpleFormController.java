@@ -3,6 +3,7 @@ package com.sitescape.ef.web.portlet;
 import org.springframework.web.portlet.mvc.SimpleFormController;
 
 import com.sitescape.ef.module.admin.AdminModule;
+import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.ldap.LdapModule;
@@ -22,8 +23,9 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	private ProfileModule profileModule;
 	private DefinitionModule definitionModule;
 	private ForumActionModule forumActionModule;
-	private LdapModule ldapModule;
 	private WorkflowModule workflowModule;
+	private BinderModule binderModule;
+	private LdapModule ldapModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -32,6 +34,14 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	protected EmployeeModule getEmployeeModule() {
 		return employeeModule;
 	}
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
+	
+	protected BinderModule getBinderModule() {
+		return binderModule;
+	}
+
 	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
 		this.workspaceModule = workspaceModule;
 	}
@@ -78,12 +88,6 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	protected ForumActionModule getForumActionModule() {
 		return forumActionModule;
 	}	
-	public void setLdapModule(LdapModule ldapModule) {
-		this.ldapModule = ldapModule;
-	}
-	protected LdapModule getLdapModule() {
-		return ldapModule;
-	}
 
 	protected WorkflowModule getWorkflowModule() {
 		return workflowModule;
@@ -91,5 +95,12 @@ public abstract class SSimpleFormController extends SimpleFormController {
 
 	public void setWorkflowModule(WorkflowModule workflowModule) {
 		this.workflowModule = workflowModule;
-	}	
+	}
+	public void setLdapModule(LdapModule ldapModule) {
+		this.ldapModule = ldapModule;
+	}
+	
+	protected LdapModule getLdapModule() {
+		return ldapModule;
+	}
 }
