@@ -9,6 +9,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.lang.Integer;
 import java.util.HashMap;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.presence.PresenceService;
 
 public class PresenceServiceImpl implements PresenceService, InitializingBean, DisposableBean {
@@ -57,10 +58,13 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 		// Do any other cleanup stuff as necessary. 
 	}
 
-	public void getPresenceInfo() {
-		// TODO Auto-generated method stub
-		// Do whatever the caller asks.
-		
+	public int getPresenceInfo(User user) {
+		String zonName = user.getZonName();
+		if (presenceMap.containsKey(zonName)) {
+			return ((Integer)presenceMap.get(zonName)).intValue();
+		} else {
+			return -1;
+		}
 	}
 	
 
