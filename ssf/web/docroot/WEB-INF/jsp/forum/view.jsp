@@ -45,8 +45,8 @@
 					  <td>&nbsp;&nbsp;&nbsp;</td>
 					  <td>
 						<a href="<portlet:renderURL windowState="maximized">
-								<portlet:param name="action" value="view_forum"/>
-								<portlet:param name="forumId" value="${folder.id}"/>
+								<portlet:param name="action" value="view_listing"/>
+								<portlet:param name="binderId" value="${folder.id}"/>
 							</portlet:renderURL>"><c:out value="${folder.title}"/></a>
 					  </td>
 					  </tr>
