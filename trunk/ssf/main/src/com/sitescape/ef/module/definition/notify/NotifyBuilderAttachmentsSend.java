@@ -32,9 +32,9 @@ public class NotifyBuilderAttachmentsSend extends AbstractNotifyBuilder {
 		    			FolderEntry fEntry = (FolderEntry)entry;
 		    		
 		    			String webUrl = WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?" +
-		    			WebKeys.FORUM_URL_FORUM_ID + "=" + fEntry.getParentFolder().getId().toString() +
-		    			"&" + WebKeys.FORUM_URL_ENTRY_ID + "=" + fEntry.getId().toString() +
-		    			"&" + WebKeys.FORUM_URL_FILE_ID + "=" + att.getId(); 
+		    			WebKeys.URL_BINDER_ID + "=" + fEntry.getParentFolder().getId().toString() +
+		    			"&" + WebKeys.URL_ENTRY_ID + "=" + fEntry.getId().toString() +
+		    			"&" + WebKeys.URL_FILE_ID + "=" + att.getId(); 
 		    			value.addAttribute("href", webUrl);
 		    		}
 		    	}
