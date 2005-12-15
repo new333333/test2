@@ -30,12 +30,10 @@
 	<bean id="defaultHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="interceptors">
 			<list>
-				<!-- Set up RequestContext -->
-				<ref bean="initRequestContextInterceptor"/>
-				<!-- Do not add OpenSessionInViewInterceptor or UserPreloadInterceptor
-				     here since the same functionality is provided by the Spring's
-				     PortletMVC framework and we designed adapter framework to work
-				     with it transparently (rather than reinventing the wheel). -->
+				<!-- Do not add InitRequestContextInterceptor, OpenSessionInViewInterceptor 
+					 or UserPreloadInterceptor here since the same functionality is provided 
+					 by the Spring's PortletMVC framework and we designed adapter framework 
+					 to work with it transparently (rather than reinventing the wheel). -->
 			</list>
 		</property>
 		<property name="urlMap">
@@ -45,7 +43,7 @@
 		</property>
 	</bean>
 
-	<bean id="initRequestContextInterceptor" class="com.sitescape.ef.web.servlet.handler.InitRequestContextInterceptor"/>
+	<!--<bean id="initRequestContextInterceptor" class="com.sitescape.ef.web.servlet.handler.InitRequestContextInterceptor"/>-->
 
 	<!-- Adapted portlets: In order for a portlet to plug into the adapter
 	     environment, it must to be listed here. -->

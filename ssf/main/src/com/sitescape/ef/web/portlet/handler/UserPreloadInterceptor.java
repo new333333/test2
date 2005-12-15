@@ -34,6 +34,9 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
     	throws Exception {
 		RequestContext requestContext = RequestContextHolder.getRequestContext();
 		
+		if(requestContext == null)
+			return true; // unauthenticated request
+		
 		// Load user only if it hasn't already been done for the current
 		// requesting thread. Since this handler is called once per SSF portlet, 
 		// it's possible that we end up loading the same user object multiple 

@@ -77,7 +77,7 @@ function ss_getUnseenCounts() {
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
-    	action="view_unseen" 
+    	action="__view_unseen" 
     	actionUrl="true" >
 		<ssf:param name="operation" value="unseen_counts" />
     	</ssf:url>"

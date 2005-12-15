@@ -60,7 +60,7 @@ public class WebKeys {
 	public static final String FORUM_ACTION_MODIFY_ENTRY = "modify_entry";
 	public static final String FORUM_ACTION_VIEW_FORUM = "view_forum";
 	public static final String FORUM_ACTION_VIEW_ENTRY = "view_entry";
-	public static final String FORUM_ACTION_UNSEEN = "view_unseen";
+	public static final String FORUM_ACTION_UNSEEN = "__view_unseen";
 	public static final String LDAP_ACTION_CONFIGURE="configure_ldap";
 	public static final String NOTIFY_ACTION_CONFIGURE="configure_notify";
 	public static final String POSTING_ACTION_CONFIGURE="configure_posting";
@@ -133,6 +133,7 @@ public class WebKeys {
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
     public static final String SELECTED_USERS="ssSelectedUsers";
     public static final String TOOLBAR="ssToolbar";
+    public static final String UNAUTHENTICATED_REQUEST = "com.sitescape.unauthenticated.request";
     public static final String USERS="ssUsers";
 	public static final String USER_NAME = "com.sitescape.username";
 	public static final String USER_PRINCIPAL = "com.sitescape.principal";
