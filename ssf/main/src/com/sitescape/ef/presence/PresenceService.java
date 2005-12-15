@@ -1,7 +1,9 @@
 package com.sitescape.ef.presence;
 
+import com.sitescape.ef.domain.User;
+
 public interface PresenceService {
 
-	public void getPresenceInfo();
+	public int getPresenceInfo(User user);
 	
 }
