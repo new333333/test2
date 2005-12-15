@@ -157,8 +157,8 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 		try {
 			AdaptedPortletURL url = new AdaptedPortletURL("ss_forum", false);
 			url.setParameter("action", "view_entry");
-			url.setParameter(WebKeys.FORUM_URL_FORUM_ID, entry.getTopFolder().getId().toString());
-			url.setParameter(WebKeys.FORUM_URL_ENTRY_ID, entry.getId().toString());
+			url.setParameter(WebKeys.URL_BINDER_ID, entry.getTopFolder().getId().toString());
+			url.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
 			entryUrl = url.toString();
 		} catch (Exception e) {
 			
