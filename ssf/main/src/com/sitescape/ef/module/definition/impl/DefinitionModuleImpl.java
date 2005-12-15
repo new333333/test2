@@ -759,7 +759,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		List fileData = new ArrayList();
 		entryDataAll.put("entryData", entryData);
 		entryDataAll.put("fileData", fileData);
-	//	entryDataAll.put("eventData", eventData);
 		
 		Document definitionTree = def.getDefinition();
 		if (definitionTree != null) {

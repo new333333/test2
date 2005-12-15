@@ -29,7 +29,7 @@ import com.sitescape.ef.util.CollectionUtil;
 * @author Jong Kim
 *
 */
-public class Principal extends Entry implements MultipleWorkflowSupport {
+public class Principal extends Entry  {
 	protected boolean disabled=false;
     protected String name;
     protected String lcName;
@@ -42,8 +42,6 @@ public class Principal extends Entry implements MultipleWorkflowSupport {
     protected boolean defaultIdentity;
     //events the principal is assigned to
     protected List assignments;
-    protected List workflowStates;   
-    protected HistoryStamp workflowChange;
     
 	/**
  	 * @hibernate.map  lazy="true" inverse="true" cascade="all,delete-orphan" embed-xml="false"
@@ -85,47 +83,7 @@ public class Principal extends Entry implements MultipleWorkflowSupport {
         this.workflowStates = workflowStates;
      }
 
-     public List getWorkflowStates() {
-   	 	if (workflowStates == null) return new ArrayList();
-   	 	return workflowStates;  
-     }
-     public void setWorkflowStates(List workflowStates) {
-    	 //Since ids are assigned on WorkflowState, don't need to do anything
-    	 //special to reduce updates.
-    	 this.workflowStates = workflowStates;
-     }
-   
-     public void addWorkflowState(WorkflowState state) {
-    	List wf = getWorkflowStates();
-    	
-    	for (int i=0; i<wf.size(); ++i) {
-    		WorkflowState c = (WorkflowState)wf.get(i);
-    		if (c.getTokenId().equals(state.getTokenId())) {
-    			wf.remove(c);
-    		}
-    	}
-    	wf.add(state);
-    }
-    public void removeWorkflowState(WorkflowState state) {
-    	List wf = getWorkflowStates();
-    	
-    	for (int i=0; i<wf.size(); ++i) {
-    		WorkflowState c = (WorkflowState)wf.get(i);
-    		if (c.getTokenId().equals(state.getTokenId())) {
-    			wf.remove(c);
-    		}
-    	}
-    }
     /**
-     * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="wrk_" 
-     */
-    public HistoryStamp getWorkflowChange() {
-        return this.workflowChange;
-    }
-    public void setWorkflowChange(HistoryStamp workflowChange) {
-        this.workflowChange = workflowChange;
-    }
-   /**
      * @hibernate.property
      * @return
      */

@@ -28,7 +28,6 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.UserPerFolderPK;
-import com.sitescape.ef.domain.WorkflowStateObject;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.portlet.forum.HistoryCache;
 import com.sitescape.ef.module.definition.DefinitionModule;
