@@ -35,6 +35,7 @@ public class User extends Principal {
     protected String phone="";
     protected Folder calendar;
     protected Workspace preferredWorkspace;
+    protected String zonName="";
     protected Locale locale;
 	protected TimeZone timeZone;
 	protected String timeZoneName;
@@ -239,6 +240,18 @@ public class User extends Principal {
         this.calendar = calendar;
     }
 
+    /**
+     * @hibernate.property length="100" not-null="true"
+     */
+	public String getZonName() {
+		return zonName;
+	}
+	/**
+	 * @param zonName The zonName to set.
+	 */
+	public void setZonName(String zonName) {
+		this.zonName = zonName;
+	}
 
     public Locale getLocale() {
         if (locale != null) return locale;
