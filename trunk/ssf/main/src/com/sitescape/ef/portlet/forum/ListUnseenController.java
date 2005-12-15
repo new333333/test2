@@ -31,13 +31,20 @@ public class ListUnseenController  extends SAbstractForumController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		if(!WebHelper.isUserLoggedIn(request)) {
-			// TODO Output whatever error message here or return appropriate
-			// view for reporting error. 
+			// TODO Send appropriate error message. 
 			// Note: Because request context is not set up in this case, the
-			// scope of the work this method can perform is very restricted.
-			// For example, no database access is possible, etc. So the code
-			// here should be limited to outputing appropriate error message.
-			return null;
+			// scope of the operations this method can use is very limited.
+			// For example, no database or index access is available. The sole
+			// purpose of this code should be to report meaningful error
+			// messages to the user. 
+			
+			// For now, simply return an empty map. This will at least prevent
+			// the ugly Javascript error on the browser. 
+			Map model = new HashMap();
+			Map unseenCounts = new HashMap();
+			response.setContentType("text/xml");			
+			model.put("unseenCounts", unseenCounts);
+			return new ModelAndView("forum/unseen_counts", model);
 		}
 		
         User user = RequestContextHolder.getRequestContext().getUser();
