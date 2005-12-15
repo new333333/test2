@@ -22,16 +22,17 @@ public class WorkflowState {
     protected AnyOwner owner;
     protected long lockVersion;
 	
-    /**
-	 * @hibernate.id generator-class="generated" unsaved-value="null" 
- 	 * @return
- 	 */
+   
  	public Long getId() {
  		return tokenId;
  	}
  	public void setId(Long tokenId) {
  		this.tokenId = tokenId;
  	}
+ 	 /**
+	 * @hibernate.id generator-class="assigned"  
+ 	 * @return
+ 	 */
  	public Long getTokenId() {
  		return tokenId;
  	}
@@ -47,6 +48,10 @@ public class WorkflowState {
     public void setLockVersion(long lockVersion) {
         this.lockVersion = lockVersion;
     } 	 
+    /**
+     * @hibernate.component class="com.sitescape.ef.domain.AnyOwner"
+     * @return
+     */
 
     public AnyOwner getOwner() {
     	return owner;
