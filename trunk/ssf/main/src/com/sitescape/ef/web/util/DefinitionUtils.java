@@ -160,7 +160,7 @@ public class DefinitionUtils {
 		Document def = getInstance().getDefinitionModule().getDefaultDefinition("ss_default_entry_view","__definition_default_entry_view", Definition.COMMAND, formData);
 		
 		//Add the "default viewer" item
-		Element entryView = (Element) def.getRootElement().selectSingleNode("//item[@name='entryView']");
+		Element entryView = (Element) def.getRootElement().selectSingleNode("//item[@name='entryView' or @name='profileEntryView']");
 		if (entryView != null) {
 			String itemId = entryView.attributeValue("id", "");
 			try {
