@@ -16,9 +16,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.MultipleWorkflowSupport;
-import com.sitescape.ef.domain.SingletonWorkflowSupport;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.WorkflowStateObject;
 import com.sitescape.ef.search.BasicIndexUtils;
 
 /**
@@ -115,32 +113,20 @@ public class EntryIndexUtils {
 
     public static void addWorkflow(Document doc, Entry entry) {
     	// Add the workflow fields
-    	if (entry instanceof MultipleWorkflowSupport) {
-			MultipleWorkflowSupport mEntry = (MultipleWorkflowSupport) entry;
-    		List workflowStates = mEntry.getWorkflowStates();
-    		if (workflowStates != null) {
-    			for (int i = 0; i < workflowStates.size(); i++) {
-    				Field workflowStateField = Field.Keyword(WORKFLOW_STATE_FIELD, 
-    						((WorkflowStateObject)workflowStates.get(i)).getState());
-    				//Index the workflow state
-    				doc.add(workflowStateField);
-    				Field workflowProcessField = Field.Keyword(WORKFLOW_PROCESS_FIELD, 
-    						((WorkflowStateObject)workflowStates.get(i)).getDefinition().getId());
-    				//Index the workflow title (which is always the id of the workflow definition)
-    				doc.add(workflowProcessField);
-    			}
-    		}
-    	} else if (entry instanceof SingletonWorkflowSupport) {
-			SingletonWorkflowSupport sEntry = (SingletonWorkflowSupport) entry;
-			WorkflowState ws = sEntry.getWorkflowState();
-			if (ws != null) {
-				Field workflowStateField = Field.Keyword(WORKFLOW_STATE_FIELD, ws.getState());
-				doc.add(workflowStateField);
-				Field workflowProcessField = Field.Keyword(WORKFLOW_PROCESS_FIELD, ws.getDefinition().getId());
-				doc.add(workflowProcessField);
-			}
-    	}
-    }
+   		List workflowStates = entry.getWorkflowStates();
+   		if (workflowStates != null) {
+   			for (int i = 0; i < workflowStates.size(); i++) {
+   				Field workflowStateField = Field.Keyword(WORKFLOW_STATE_FIELD, 
+   						((WorkflowState)workflowStates.get(i)).getState());
+   				//Index the workflow state
+   				doc.add(workflowStateField);
+   				Field workflowProcessField = Field.Keyword(WORKFLOW_PROCESS_FIELD, 
+   						((WorkflowState)workflowStates.get(i)).getDefinition().getId());
+   				//Index the workflow title (which is always the id of the workflow definition)
+   				doc.add(workflowProcessField);
+   			}
+   		}
+     }
 
     public static void addEvents(Document doc, Entry entry) {
     	int count = 0;

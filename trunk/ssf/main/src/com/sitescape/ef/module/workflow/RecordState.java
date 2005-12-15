@@ -4,10 +4,8 @@ import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
 import org.jbpm.context.exe.ContextInstance;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.WorkflowStateObject;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.MultipleWorkflowSupport;
-import com.sitescape.ef.domain.SingletonWorkflowSupport;
 import com.sitescape.ef.module.shared.WorkflowUtils;
 
 
@@ -26,30 +24,18 @@ public class RecordState extends AbstractActionHandler {
 		  Long entryId = (Long)ctx.getVariable(WorkflowUtils.ENTRY_ID);
 		  String entryType = (String)ctx.getVariable(WorkflowUtils.ENTRY_TYPE);
 		  Entry entry = loadEntry(entryType, entryId);
-		  if (entry instanceof MultipleWorkflowSupport) {
-			  MultipleWorkflowSupport mEntry = (MultipleWorkflowSupport)entry;
-			  WorkflowStateObject ws = (WorkflowStateObject)getCoreDao().load(WorkflowStateObject.class, id);
-			  if (ws != null) {
-				  ws.setState(state);
-			  } else {
-				  //doesn't exist, add a new one
-				  ws = new WorkflowStateObject();
-				  ws.setTokenId(id);
-				  ws.setState(state);
-				  ws.setOwner(entry);
-				  getCoreDao().save(ws);
-				  mEntry.addWorkflowState(ws);
-			  }
-		  } else if (entry instanceof SingletonWorkflowSupport) {
-			  SingletonWorkflowSupport sEntry = (SingletonWorkflowSupport)entry;
-			  WorkflowState ws = sEntry.getWorkflowState();
-			  if (ws == null) {
-				  ws = new WorkflowState();
-				  sEntry.setWorkflowState(ws);
-			  }
+		  WorkflowState ws = (WorkflowState)getCoreDao().load(WorkflowState.class, id);
+		  if (ws != null) {
 			  ws.setState(state);
+		  } else {
+			  //doesn't exist, add a new one
+			  ws = new WorkflowState();
 			  ws.setTokenId(id);
-		  }	   
+			  ws.setState(state);
+			  ws.setOwner(entry);
+			  getCoreDao().save(ws);
+			  entry.addWorkflowState(ws);
+		  }
 		  System.out.println("Set state to " + state);
 	  }
 

@@ -35,7 +35,6 @@ import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.MultipleWorkflowSupport;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Attachment;
-import com.sitescape.ef.domain.SingletonWorkflowSupport;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.ObjectKeys;
@@ -267,22 +266,14 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
 		
 		//Find the workflowState
 		WorkflowState ws = null;
-		if (entry instanceof MultipleWorkflowSupport) {
-			MultipleWorkflowSupport mEntry = (MultipleWorkflowSupport) entry;
-			List workflowStates = mEntry.getWorkflowStates();
-			for (int i = 0; i < workflowStates.size(); i++) {
-				if (((WorkflowState) workflowStates.get(i)).getTokenId().toString().equals(tokenId)) {
-					ws = (WorkflowState) workflowStates.get(i);
-					break;
-				}
+		List workflowStates = entry.getWorkflowStates();
+		for (int i = 0; i < workflowStates.size(); i++) {
+			if (((WorkflowState) workflowStates.get(i)).getTokenId().toString().equals(tokenId)) {
+				ws = (WorkflowState) workflowStates.get(i);
+				break;
 			}
-    	} else if (entry instanceof SingletonWorkflowSupport) {
-			SingletonWorkflowSupport sEntry = (SingletonWorkflowSupport) entry;
-			if (sEntry.getWorkflowState().getTokenId().toString().equals(tokenId)) {
-				ws = sEntry.getWorkflowState();
-			}
-    	}
-		if (ws != null) {
+		}
+ 		if (ws != null) {
 			//We have the workflowState of the current state
 			//See if the user is allowed to go to this state
 			Map transitions = ws.getManualTransitions();

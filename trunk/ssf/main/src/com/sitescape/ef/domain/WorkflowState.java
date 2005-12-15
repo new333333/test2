@@ -11,9 +11,7 @@ import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.ef.util.NLT;
 
 /**
- * Use this object as component object.  This would be useful for objects that
- * implement SingletonWorkflowSupport.  Objects that maintain multiple workflows,
- * should use WorkflowStateObject.
+ * @hibernate.class table="SS_WorkflowStates" dynamic-update="true"
  * @author Janet McCann
  *
  */
@@ -21,18 +19,44 @@ public class WorkflowState {
     protected String state;
     protected Long tokenId;
     protected Definition definition;
- 	
+    protected AnyOwner owner;
+    protected long lockVersion;
+	
     /**
- 	 * @hibernate.property type="long" 
+	 * @hibernate.id generator-class="generated" unsaved-value="null" 
  	 * @return
  	 */
+ 	public Long getId() {
+ 		return tokenId;
+ 	}
+ 	public void setId(Long tokenId) {
+ 		this.tokenId = tokenId;
+ 	}
  	public Long getTokenId() {
  		return tokenId;
  	}
  	public void setTokenId(Long tokenId) {
  		this.tokenId = tokenId;
  	}
- 
+    /**
+     * @hibernate.version type="long" column="lockVersion"
+     */
+    public long getLockVersion() {
+        return this.lockVersion;
+    }
+    public void setLockVersion(long lockVersion) {
+        this.lockVersion = lockVersion;
+    } 	 
+
+    public AnyOwner getOwner() {
+    	return owner;
+    }
+    public void setOwner(AnyOwner owner) {
+    	this.owner = owner;
+    } 
+ 	public void setOwner(Entry entry) {
+  		owner = new AnyOwner(entry);
+  	}
     /**
      * @hibernate.property length="64"
      * @return
@@ -66,7 +90,7 @@ public class WorkflowState {
             return false;
       
         WorkflowState o = (WorkflowState) obj;
-        if (this.tokenId.equals(o.getTokenId()))
+        if (this.tokenId.equals(o.getId()))
             return true;
                 
         return false;

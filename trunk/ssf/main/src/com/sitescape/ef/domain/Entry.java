@@ -16,7 +16,7 @@ import java.util.Collection;
  *
  */
 public abstract class Entry extends PersistentLongIdTimestampObject 
-	implements AttachmentSupport {
+	implements AttachmentSupport, MultipleWorkflowSupport {
 
     private String title="";
     private Description description;
@@ -28,6 +28,9 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     protected List allEvents;
     protected List unnamedEvents;
     protected Map namedEvents;
+    protected List workflowStates;   
+    protected HistoryStamp workflowChange;
+    
     public Entry() {
     }
     /**
@@ -50,7 +53,47 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     	}
         this.description = tmp; 
     }
-   /**
+    public List getWorkflowStates() {
+   	 	if (workflowStates == null) return new ArrayList();
+   	 	return workflowStates;  
+     }
+     public void setWorkflowStates(List workflowStates) {
+    	 //Since ids are assigned on WorkflowState, don't need to do anything
+    	 //special to reduce updates.
+    	 this.workflowStates = workflowStates;
+     }
+   
+     public void addWorkflowState(WorkflowState state) {
+    	List wf = getWorkflowStates();
+    	
+    	for (int i=0; i<wf.size(); ++i) {
+    		WorkflowState c = (WorkflowState)wf.get(i);
+    		if (c.equals(state)) {
+    			wf.remove(c);
+    		}
+    	}
+    	wf.add(state);
+    }
+    public void removeWorkflowState(WorkflowState state) {
+    	List wf = getWorkflowStates();
+    	
+    	for (int i=0; i<wf.size(); ++i) {
+    		WorkflowState c = (WorkflowState)wf.get(i);
+    		if (c.equals(state)) {
+    			wf.remove(c);
+    		}
+    	}
+    }
+    /**
+     * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="wrk_" 
+     */
+    public HistoryStamp getWorkflowChange() {
+        return this.workflowChange;
+    }
+    public void setWorkflowChange(HistoryStamp workflowChange) {
+        this.workflowChange = workflowChange;
+    }
+    /**
      * @hibernate.property length="1024"
      * @return
      */
