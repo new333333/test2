@@ -29,7 +29,7 @@ import com.sitescape.ef.util.CollectionUtil;
 * @author Jong Kim
 *
 */
-public class Principal extends Entry {
+public class Principal extends Entry implements MultipleWorkflowSupport {
 	protected boolean disabled=false;
     protected String name;
     protected String lcName;
@@ -42,6 +42,8 @@ public class Principal extends Entry {
     protected boolean defaultIdentity;
     //events the principal is assigned to
     protected List assignments;
+    protected List workflowStates;   
+    protected HistoryStamp workflowChange;
     
 	/**
  	 * @hibernate.map  lazy="true" inverse="true" cascade="all,delete-orphan" embed-xml="false"
@@ -70,6 +72,60 @@ public class Principal extends Entry {
     private void setHEvents(List events) {this.allEvents = events;}   	
 
     /**
+	 * @hibernate.bag lazy="true" inverse="true" cascade="all,delete-orphan" 
+     * @hibernate.key column="principal"
+     * @hibernate.one-to-many class="com.sitescape.ef.domain.WorkflowStateObject"
+     * @return
+     */
+     public List getHWorkflowStates() {
+        return workflowStates;
+        
+     }
+     public void setHWorkflowStates(List workflowStates) {
+        this.workflowStates = workflowStates;
+     }
+
+     public List getWorkflowStates() {
+   	 	if (workflowStates == null) return new ArrayList();
+   	 	return workflowStates;  
+     }
+     public void setWorkflowStates(List workflowStates) {
+    	 //Since ids are assigned on WorkflowState, don't need to do anything
+    	 //special to reduce updates.
+    	 this.workflowStates = workflowStates;
+     }
+   
+     public void addWorkflowState(WorkflowState state) {
+    	List wf = getWorkflowStates();
+    	
+    	for (int i=0; i<wf.size(); ++i) {
+    		WorkflowState c = (WorkflowState)wf.get(i);
+    		if (c.getTokenId().equals(state.getTokenId())) {
+    			wf.remove(c);
+    		}
+    	}
+    	wf.add(state);
+    }
+    public void removeWorkflowState(WorkflowState state) {
+    	List wf = getWorkflowStates();
+    	
+    	for (int i=0; i<wf.size(); ++i) {
+    		WorkflowState c = (WorkflowState)wf.get(i);
+    		if (c.getTokenId().equals(state.getTokenId())) {
+    			wf.remove(c);
+    		}
+    	}
+    }
+    /**
+     * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="wrk_" 
+     */
+    public HistoryStamp getWorkflowChange() {
+        return this.workflowChange;
+    }
+    public void setWorkflowChange(HistoryStamp workflowChange) {
+        this.workflowChange = workflowChange;
+    }
+   /**
      * @hibernate.property
      * @return
      */
@@ -238,53 +294,6 @@ public class Principal extends Entry {
      } 	
 
  
-    protected static String encodeXmlRef(Long id) {
-        return "<principalRef principalId=\"" + id +  "\"/>";
-    }    
-  
-    protected static String encodeXmlRefs(Set ref) {
-        Object obj;
-        Long id;
-        if ((ref == null) || ref.isEmpty()) return "";
-        StringBuffer buf = new StringBuffer(64);
-        Iterator iter = ref.iterator();
-        while (iter.hasNext()) {
-            obj = iter.next();
-            if (obj instanceof Long) {
-                id = (Long)obj;
-            } else {
-                Principal p = (Principal)obj;
-                id = p.getId();               
-            }
-            buf.append(encodeXmlRef(id));
-        }
-        return buf.toString();
-    }
-    /**
-     * Decode a jDom element that is a principalRef into a Long
-     * @param ref
-     * @return Long
-     */
-    protected static Long decodeXmlRef(Element ref) {
-        return new Long(ref.getAttributeValue("principalId"));  
-    } 
-    /**
-     * Decode the child elements that are principalRefs and return as a set of Longs
-     * @param ref
-     * @return Set of Long
-     */
-    protected static Set decodeXmlRefs(Element ref) {
-        List refs = ref.getChildren("principalRef");
- 
-        Iterator iter;
-        Set result = new HashSet();
-        if ((refs == null) || refs.isEmpty()) return result;
-        iter = refs.iterator();
-  	    while (iter.hasNext()) {
-   	        result.add(decodeXmlRef((Element)iter.next()));                            
-   	    }
-        return result;
-    }
     public String toString() {
     	return zoneName + ":" + name;
     }

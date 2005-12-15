@@ -67,6 +67,8 @@ public class AnyOwner {
     * @hibernate.any-column name="owner"
     * @hibernate.meta-value value="doc" class="com.sitescape.ef.domain.FolderEntry"		
 	* @hibernate.meta-value value="principal" class="com.sitescape.ef.domain.Principal"
+	* @hibernate.meta-value value="principal" class="com.sitescape.ef.domain.Group"
+	* @hibernate.meta-value value="principal" class="com.sitescape.ef.domain.User"
 	*/ 
    protected Entry getHEntry() {
        return entry;
