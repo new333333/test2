@@ -69,7 +69,7 @@ public class SAbstractProfileController extends SAbstractController {
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
-		if (DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
+		if (DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@name='profileEntryView']") == false) {
 			DefinitionUtils.getDefaultEntryView(model);
 		}
 		//	Build the toolbar array
