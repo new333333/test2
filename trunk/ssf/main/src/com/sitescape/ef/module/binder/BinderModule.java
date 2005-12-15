@@ -1,6 +1,9 @@
 
 package com.sitescape.ef.module.binder;
 
+import java.util.List;
+import java.util.Map;
+
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
@@ -19,7 +22,7 @@ public interface BinderModule {
      * @throws NoBinderByTheNameException
      * @throws AccessControlException
      */
-    public Binder findBinder(String binderName) 
+    public Binder getBinderByName(String binderName) 
 		throws NoBinderByTheNameException, AccessControlException;
     /**
      * 
@@ -28,6 +31,22 @@ public interface BinderModule {
      * @throws NoBinderByTheIdException
      * @throws AccessControlException
      */
-    public Binder loadBinder(Long binderId)
+    public Binder getBinder(Long binderId)
 		throws NoBinderByTheIdException, AccessControlException;
-}
+    /**
+     * Modify the list of definitions assocated with a binder
+     * @param binderId
+     * @param definitionIds
+     * @throws AccessControlException
+     */
+    public Binder modifyConfiguration(Long binderId, List definitionIds) throws AccessControlException;
+    /**
+      * Modify the list of definitions and workflows assocated with a binder
+     * @param binderId
+     * @param definitionIds
+     * @param workflowAssociations
+     * @throws AccessControlException
+     */
+    public Binder modifyConfiguration(Long binderId, List definitionIds, Map workflowAssociations) throws AccessControlException;
+ 
+ }
