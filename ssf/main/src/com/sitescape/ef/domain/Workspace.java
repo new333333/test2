@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class Workspace extends Binder  {
 	protected Set workspaces; 
-    protected Set dataForums;
+    protected Set folders;
     protected boolean forumsParsed;
     protected List forums;
    /**
@@ -40,7 +40,7 @@ public class Workspace extends Binder  {
       	if (!forumsParsed) {
     		parseForums();
     	}
-         return dataForums;
+         return folders;
     }
  
     public Set getWorkspaces() {
@@ -53,9 +53,10 @@ public class Workspace extends Binder  {
      	if (!forumsParsed) parseForums();
 		if (child instanceof Workspace) {
     		workspaces.add(child);
-    	} else {
-    		dataForums.add(child);
+    	} else if (child instanceof Folder){
+    		folders.add(child);
     	}
+		forums.add(child);
 		child.setOwningWorkspace(this);
 	}
     public void removeChild(Binder child) {
@@ -63,13 +64,14 @@ public class Workspace extends Binder  {
  		if (child instanceof Workspace) {
     		workspaces.remove(child);
     	} else {
-    		dataForums.remove(child);
+    		folders.remove(child);
     	}
+ 		forums.remove(child);
 		child.setOwningWorkspace(null);
  		
 	}
     protected void parseForums() {
-     	dataForums = new HashSet();
+     	folders = new HashSet();
     	workspaces = new HashSet();
     	Iterator iter = getForums().iterator();
     	Binder f,w;
@@ -81,8 +83,8 @@ public class Workspace extends Binder  {
     		if (w.getId().equals(getId())) {
     			if (f instanceof Workspace) {
     				workspaces.add(f);
-    			} else {
-    				dataForums.add(f);
+    			} else if (f instanceof Folder){
+    				folders.add(f);
     			}
     		}
     	}

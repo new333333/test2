@@ -18,7 +18,7 @@ import com.sitescape.ef.util.CollectionUtil;
 /**
  * This object represents a forum.
  * 
- * @hibernate.class table="SS_Forums" dynamic-update="true" lazy="false"
+ * @hibernate.class table="SS_Forums" dynamic-update="true" dynamic-insert="false" lazy="false"
  * @hibernate.discriminator type="string" length="16" column="type"
  * @hibernate.query name="find-Binder-Company" query="from com.sitescape.ef.domain.Binder binder where binder.name=:binderName and binder.zoneName=:zoneName"
  * @hibernate.cache usage="read-write"
@@ -59,8 +59,9 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     	this.zoneName = id;
     }
     /**
-     * @hibernate.bag table="SS_DefinitionMap" lazy="true" inverse="false" cascade="persist,merge,save-update"
+     * @hibernate.list table="SS_DefinitionMap" lazy="true" inverse="false" cascade="persist,merge,save-update"
      * @hibernate.key column="forum"
+     * @hibernate.index column="position" type="integer"
      * @hibernate.many-to-many fetch="join" class="com.sitescape.ef.domain.Definition"
      * @hibernate.column name="definition" sql-type="char(32)"
      * @hibernate.cache usage="read-write"
@@ -151,6 +152,7 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
      * @return
      */
     public NotificationDef getNotificationDef() {
+    	if (notificationDef ==null) notificationDef = new NotificationDef();
         return notificationDef;
     }
     public void setNotificationDef(NotificationDef notificationDef) {
@@ -194,20 +196,15 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
         this.owner = owner;
     }
     /**
-     * @hibernate.many-to-one access="field" node="owningWorkspace/@name" embed-xml="false"
+     * @hibernate.many-to-one
      * @return
      */
     public Workspace getOwningWorkspace() {
         return owningWorkspace;
     }
     public void setOwningWorkspace(Workspace owningWorkspace) {
-    	//Since Hibernate sets this property directly, we can assume this is a change
-    	if (this.owningWorkspace != null)
-    		this.owningWorkspace.removeChild(this);
-    	this.owningWorkspace = owningWorkspace;
-       	if (this.owningWorkspace != null)
-    		this.owningWorkspace.addChild(this);  	
-    }   
+     	this.owningWorkspace = owningWorkspace;
+    }
     
     /**
      * @hibernate.property type="org.springframework.orm.hibernate3.support.BlobSerializableType"
