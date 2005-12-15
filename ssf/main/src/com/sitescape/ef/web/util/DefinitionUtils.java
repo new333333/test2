@@ -39,16 +39,24 @@ public class DefinitionUtils {
 		Iterator itPublicDefinitions = defs.listIterator();
 		Map publicEntryDefinitions = new HashMap();
 		Map publicForumDefinitions = new HashMap();
+		Map publicProfileDefinitions = new HashMap();
+		Map publicProfileEntryDefinitions = new HashMap();
 		while (itPublicDefinitions.hasNext()) {
 			Definition def = (Definition) itPublicDefinitions.next();
 			if (def.getType() == Definition.COMMAND) {
 				publicEntryDefinitions.put(def.getId(), def);
 			} else if (def.getType() == Definition.FORUM_VIEW) {
 				publicForumDefinitions.put(def.getId(), def);
+			} else if (def.getType() == Definition.PROFILE_VIEW) {
+				publicProfileDefinitions.put(def.getId(), def);
+			} else if (def.getType() == Definition.PROFILE_ENTRY_VIEW) {
+				publicProfileEntryDefinitions.put(def.getId(), def);
 			}
 		}
 		model.put(WebKeys.PUBLIC_ENTRY_DEFINITIONS, publicEntryDefinitions);
 		model.put(WebKeys.PUBLIC_FOLDER_DEFINITIONS, publicForumDefinitions);
+		model.put(WebKeys.PUBLIC_PROFILE_DEFINITIONS, publicProfileDefinitions);
+		model.put(WebKeys.PUBLIC_PROFILE_ENTRY_DEFINITIONS, publicProfileEntryDefinitions);
 
 	}
 	
@@ -98,7 +106,7 @@ public class DefinitionUtils {
 		
 	}
     public static void getDefinitions(Binder binder, Map model) {
-		List folderViewDefs = binder.getForumViewDefs();
+		List folderViewDefs = binder.getBinderViewDefs();
 		if (!folderViewDefs.isEmpty()) {
 			Definition defaultForumDefinition = (Definition)folderViewDefs.get(0);
 			model.put(WebKeys.DEFAULT_FOLDER_DEFINITION, defaultForumDefinition);
@@ -107,7 +115,7 @@ public class DefinitionUtils {
 			if (forumViewDoc != null) {
 				Element forumViewElement ;
 				forumViewElement = forumViewDoc.getRootElement();
-				forumViewElement = (Element) forumViewElement.selectSingleNode("//item[@name='forumView']");
+				forumViewElement = (Element) forumViewElement.selectSingleNode("//item[@name='forumView' or @name='profileView']");
 				model.put(WebKeys.CONFIG_ELEMENT, forumViewElement);
 			} else {
 				model.put(WebKeys.CONFIG_ELEMENT, null);
@@ -128,7 +136,7 @@ public class DefinitionUtils {
 	}
 	public static Map getBinderDefsAsMap(Binder binder) {
 		Map defaultFolderDefinitions = new HashMap();
-		Iterator itDefaultFolderDefinitions = binder.getForumViewDefs().listIterator();
+		Iterator itDefaultFolderDefinitions = binder.getBinderViewDefs().listIterator();
 		while (itDefaultFolderDefinitions.hasNext()) {
 			Definition entryDef = (Definition) itDefaultFolderDefinitions.next();
 			defaultFolderDefinitions.put(entryDef.getId(), entryDef);

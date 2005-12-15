@@ -19,6 +19,18 @@
 		</operations>
 	</definition>
 	
+	<definition name="profileViewDefinition" definitionType="6" caption="__profile_views" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="profileViewType" caption="__add_a_new_profile_view" />
+		</operations>
+	</definition>
+	
+	<definition name="profileEntryViewDefinition" definitionType="7" caption="__profile_entry_view" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="profileEntryViewType" caption="__add_a_new_profile_entry_view" />
+		</operations>
+	</definition>
+	
 	<item name="entryType" definitionType="1" caption="__entry_definition">		
 		<properties>
 			<property name="name" caption="__name" type="text" />
@@ -661,17 +673,13 @@
 		</jsps>
 	</item>
 
-	<item name="profileList" caption="__profile_listing" category="forumView">
-		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_list.jsp" />
-		</jsps>
-	</item>
 	<item name="calendarView" caption="__calendar_view" category="forumView">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/calendar_view.jsp" />
 		</jsps>
 	</item>
 		
+
 	<item name="viewEntry" caption="__view_entry_selectbox" category="forumView">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_selectbox.jsp" />
@@ -865,5 +873,133 @@
 		</properties>
 	</item>
 	
+	<item name="profileViewType" definitionType="6" caption="__profile_view_definition">		
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+		</properties>
+		
+		<options>
+			<option name="profileView" caption="__profile_view" initial="true" multipleAllowed="false" />
+		</options>
+	</item>
+	
+	<item name="profileView" definitionType="6" caption="__profile_view" canBeDeleted="false" multipleAllowed="false" >		
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+		
+		<options>
+			<option_select path="//item[@category='profileView']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+	</item>
+	
+	<item name="profileList" caption="__profile_listing" category="profileView">
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_list.jsp" />
+		</jsps>
+	</item>
+
+	<item name="profileEntryViewType" definitionType="7" caption="__profile_entry_view_definition">		
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+		</properties>
+		
+		<options>
+			<option name="profileEntryForm" initial="true" />
+			<option name="profileEntryView" initial="true" />
+		</options>
+	</item>
+	
+	<item name="profileEntryForm" caption="__profile_entry_form_definition" canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+
+		<options>
+			<option name="profileEntryFormForm" initial="true" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_entry_form.jsp" />
+		</jsps>
+	</item>
+
+	<item name="profileEntryFormForm" caption="__form" canBeDeleted="false" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName"/>
+		</properties>
+		<options>
+			<option name="profileName" initial="true" />
+			<option name="entryFormButtons" initial="true" />
+			<option_select path="//item[@category='profileEntryData']" />
+			<option_select path="//item[@category='profileEntryLayout']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="profileName" caption="__profileName" type="data" 
+		canBeDeleted="false" multipleAllowed="false" category="profileEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="name" 
+			  readonly="true" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__profileName"/>
+			<property name="width" caption="__width" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_name_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_name_view.jsp" />
+		</jsps>
+		<help>__help_title_field</help>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderTitle" />
+	</item>
+	
+	<item name="profileEntryView" caption="__profile_entry_view_definition" canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+
+		<options>
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" />
+			<option name="profileEntryAttachments" caption="__profile_entry_attachments" />
+			<option_select path="//item[@category='profileLayout']" optionCaption="__profile_entry_layout_options" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_view.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData">
+		<properties>
+			<property name="name" caption="__profile_data_item_name" type="selectbox">
+			    <option_entry_data select_type="data" 
+					path="//item[@name='profileEntryForm']/.//item" optionCaption="__profile_data_items_from_the_profile_form" />
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_profile_data.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="profileEntryAttachments" type="dataView" caption="__profile_entry_attachments" category="profileEntryViewData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__profile_entry_attachments"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_profile_attachments.jsp" />
+		</jsps>
+	</item>
+		
 		
 </definitions>

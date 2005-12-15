@@ -96,6 +96,19 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     public List getForumViewDefs() {
     	return getDefs(Definition.FORUM_VIEW);
     }
+    public List getProfileViewDefs() {
+    	return getDefs(Definition.PROFILE_VIEW);
+    }
+    public List getBinderViewDefs() {
+    	if (this.getType().equals("FOLDER")) {
+    		return getForumViewDefs();
+    	} else if (this.getType().equals("PROFILES")) {
+    		return getProfileViewDefs();
+    	} else {
+    		return new ArrayList();
+    	}
+
+    }
     /**
      * @hibernate.many-to-one access="field" class="com.sitescape.ef.domain.Definition"
      * @hibernate.column name="defaultPostingDef" sql-type="char(32)"
