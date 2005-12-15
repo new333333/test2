@@ -35,4 +35,6 @@ public interface ObjectKeys {
     
     public static final String WORKFLOW_START_STATE = "__start_state";
     public static final String WORKFLOW_END_STATE = "__end_state";
+    public static final String WORKFLOW_PARALLEL_THREAD_NAME = "name";
+    public static final String WORKFLOW_PARALLEL_THREAD_START_STATE = "startState";
 }
