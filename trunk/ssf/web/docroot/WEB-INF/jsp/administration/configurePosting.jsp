@@ -40,7 +40,7 @@
 
 <form name="<portlet:namespace/>fm" id="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_posting"/>
-			<portlet:param name="forumId" value="${ssFolder.id}"/>
+			<portlet:param name="binderId" value="${ssFolder.id}"/>
 		</portlet:actionURL>">
 <script language="javascript" type="text/javascript">
 function <portlet:namespace/>setEnable() {
