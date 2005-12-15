@@ -27,7 +27,7 @@
 						<entry key="modify_entry"><ref bean="forumModifyEntryController"/></entry>
 						<entry key="delete_entry"><ref bean="forumModifyEntryController"/></entry>
 						<entry key="view_entry"><ref bean="forumViewEntryController"/></entry>
-						<entry key="view_forum"><ref bean="forumViewController"/></entry>
+						<entry key="view_listing"><ref bean="forumViewController"/></entry>
 						<entry key="__view_unseen"><ref bean="forumListUnseenController"/></entry>
 					</map>
 				</entry>

@@ -35,6 +35,7 @@
 	<!-- Template for the common dependency injection for controllers -->
 	<bean id="controllerDependencyTemplate" lazy-init="true" abstract="true">
 		<property name="adminModule"><ref bean="adminModule"/></property>
+		<property name="binderModule"><ref bean="binderModule"/></property>
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="employeeModule"><ref bean="employeeModule"/></property>
 		<property name="folderModule"><ref bean="folderModule"/></property>
@@ -160,7 +161,9 @@
 	</bean>
 	
 	<bean id="nlt" class="com.sitescape.ef.util.NLT"/>
-		
+	<bean id="definitionUtils" class="com.sitescape.ef.web.util.DefinitionUtils">
+		<property name="definitionModule"><ref bean="definitionModule"/> </property>
+	</bean>
 	<bean id="sPropsUtil" class="com.sitescape.ef.util.SPropsUtil">
 		<property name="config">
 			<bean class="com.sitescape.ef.util.PropertiesClassPathConfigFiles">
@@ -348,6 +351,7 @@
 	</bean>
 	
 	<bean id="profileModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.profile.impl.ProfileModuleImpl">
+		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
 	</bean>
 
 	<bean id="adminModule" parent="baseTransactionProxy">

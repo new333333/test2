@@ -54,6 +54,7 @@
 				<value>ss_widgettest</value>
 				<value>ss_forum</value>
 				<value>ss_administration</value>
+				<value>ss_profile</value>
 			</list>
 		</property>
 	</bean>
