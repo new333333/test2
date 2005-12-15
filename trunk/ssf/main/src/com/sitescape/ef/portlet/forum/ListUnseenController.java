@@ -15,6 +15,7 @@ import java.util.Map;
 
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.User;
@@ -29,6 +30,16 @@ public class ListUnseenController  extends SAbstractForumController {
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		if(!WebHelper.isUserLoggedIn(request)) {
+			// TODO Output whatever error message here or return appropriate
+			// view for reporting error. 
+			// Note: Because request context is not set up in this case, the
+			// scope of the work this method can perform is very restricted.
+			// For example, no database access is possible, etc. So the code
+			// here should be limited to outputing appropriate error message.
+			return null;
+		}
+		
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map model = new HashMap();
 		Map seenMaps = new HashMap();

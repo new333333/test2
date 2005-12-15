@@ -14,9 +14,21 @@ import com.sitescape.ef.web.NoValidUserSessionException;
 import com.sitescape.ef.web.WebKeys;
 
 public class InitRequestContextInterceptor implements HandlerInterceptor {
-
-	public boolean preHandle(PortletRequest request, PortletResponse response, Object handler) throws Exception {
-	    
+	
+	public boolean preHandle(PortletRequest request, PortletResponse response, 
+			Object handler) throws Exception {
+		RequestContextUtil.clearThreadContext();
+		
+		Boolean unathenticatedRequest = (Boolean) request.getAttribute
+			(WebKeys.UNAUTHENTICATED_REQUEST);
+	
+		if(Boolean.TRUE.equals(unathenticatedRequest)) {
+			// The framework says that this request is being made unauthenticated,
+			// that is, in no particular user's context. 
+			// In this case we simply pass up in the interceptor chain. 
+			return true;
+		}
+		
     	PortletSession ses = request.getPortletSession(false);
     	
     	if(ses == null)
