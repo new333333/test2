@@ -661,6 +661,11 @@
 		</jsps>
 	</item>
 
+	<item name="profileList" caption="__profile_listing" category="forumView">
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_list.jsp" />
+		</jsps>
+	</item>
 	<item name="calendarView" caption="__calendar_view" category="forumView">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/calendar_view.jsp" />
