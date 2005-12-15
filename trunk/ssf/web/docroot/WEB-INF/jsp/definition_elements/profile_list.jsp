@@ -2,6 +2,10 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssBinder" type="com.sitescape.ef.domain.Binder" scope="request" />
 
+<% // Toolbar %>
+<c:set var="toolbar" value="${ssFolderToolbar}" scope="request" />
+<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+
 <script language="javascript">
 function highlightLineById(id) {
     if (id == "") {return;}
