@@ -1,5 +1,4 @@
 <% // The default entry view if no definition exists for an entry %>
-<jsp:useBean id="ssFolderEntryDescendants" type="java.util.List" scope="request" />
 
 <div class="ss_portlet" width="100%">
 
@@ -10,17 +9,10 @@
 <c:out value="${ssEntry.description.text}"/>
 </div>
 </div>
-<%
-	Iterator itEntryData = ssFolderEntryDescendants.iterator();
-	while (itEntryData.hasNext()) {
-%>
+<c:forEach var="descendant" items="${ssFolderEntryDescendants}">
 <div class="formBreak">
-<%
-		itEntryData.next().toString();
-%>
+<c:out value="${descendant}"/>
 </div>
-<%
-	}
-%>
+</c:forEach>
 
 </div>
