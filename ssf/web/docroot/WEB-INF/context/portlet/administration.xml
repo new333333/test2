@@ -3,7 +3,6 @@
 <beans>
 
 	<!-- Controllers -->
-
 	<bean id="definitionBuilderController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.definitionBuilder.ViewController" />
 	<bean id="definitionBuilderXmlController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.definitionBuilder.ViewDefinitionXmlController" />
 	<bean id="adminViewController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ViewController" />
