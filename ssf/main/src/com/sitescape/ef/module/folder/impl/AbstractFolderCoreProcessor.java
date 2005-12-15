@@ -180,7 +180,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     
     protected void addEntry_startWorkflow(FolderEntry entry) {
     	Folder folder = entry.getParentFolder();
-    	Map workflowAssociations = (Map) folder.getProperty(ObjectKeys.FOLDER_WORKFLOW_ASSOCIATIONS);
+    	Map workflowAssociations = (Map) folder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS);
     	if (workflowAssociations != null) {
     		//See if the entry definition type has an associated workflow
     		Definition entryDef = entry.getEntryDef();
@@ -892,7 +892,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
         getDefinitionModule().addIndexFieldsForEntry(indexDoc, folder, entry);
         
         // Add ACL field. We only need to index ACLs for read access.
-        IndexUtils.addReadAcls(indexDoc, folder, entry, getAclManager());
+        BasicIndexUtils.addReadAcls(indexDoc, folder, entry, getAclManager());
         
         // Add the events
         EntryIndexUtils.addEvents(indexDoc, entry);

@@ -22,7 +22,7 @@ public class DownloadFileController extends SAbstractController {
 		DebugHelper.testRequestEnv("DownloadFileController", request);
 
 		// I expect filespec parameter to be present, so validate that it is.
-		String filespec = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.FORUM_URL_FILE);
+		String filespec = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE);
 		
 		File file = new File(filespec);
 		

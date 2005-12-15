@@ -26,9 +26,9 @@ public class ModifyEntryController extends SAbstractForumController {
 
 		Map formData = request.getParameterMap();
 		Long folderId = ActionUtil.getForumId(request);
-		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_ENTRY_ID));				
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
-		if (action.equals(WebKeys.FORUM_ACTION_DELETE_ENTRY)) {
+		if (action.equals(WebKeys.ACTION_DELETE_ENTRY)) {
 			getFolderModule().deleteEntry(folderId, entryId);			
 		} else if (formData.containsKey("okBtn")) {
 
@@ -45,8 +45,8 @@ public class ModifyEntryController extends SAbstractForumController {
 			//The user clicked the cancel button
 		}
 		response.setRenderParameters(formData);
-		response.setRenderParameter(WebKeys.FORUM_URL_FORUM_ID, folderId.toString());
-		response.setRenderParameter(WebKeys.FORUM_URL_ENTRY_ID, entryId.toString());
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 		
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -58,19 +58,19 @@ public class ModifyEntryController extends SAbstractForumController {
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		String path;
 		if (formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
-			if (action.equals(WebKeys.FORUM_ACTION_MODIFY_ENTRY)) {
-				path = WebKeys.VIEW_FORUM;
-				model.put(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
-				request.setAttribute(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_ENTRY);
+			if (action.equals(WebKeys.ACTION_MODIFY_ENTRY)) {
+				path = WebKeys.VIEW_LISTING;
+				model.put(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
+				request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
 				try {
-					Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_ENTRY_ID));				
-					model.put(WebKeys.FORUM_URL_ENTRY_ID, entryId.toString());
+					Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+					model.put(WebKeys.URL_ENTRY_ID, entryId.toString());
 					model = getForumActionModule().getShowEntry(entryId.toString(), model, request, response, folderId);
 				} catch (NoDefinitionByTheIdException nd) {
 					return returnToViewForum(request, response, formData, folderId);
 				}
 			} else return returnToViewForum(request, response, formData, folderId);
-		} else	if (action.equals(WebKeys.FORUM_ACTION_MODIFY_ENTRY)) {
+		} else	if (action.equals(WebKeys.ACTION_MODIFY_ENTRY)) {
 			try {
 				model = getForumActionModule().getModifyEntry(formData, request, folderId);
 				path = WebKeys.VIEW_MODIFY_ENTRY;

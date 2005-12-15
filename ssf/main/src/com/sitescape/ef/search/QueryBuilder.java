@@ -151,9 +151,9 @@ public class QueryBuilder {
 				User user = RequestContextHolder.getRequestContext().getUser();
 				Set principalIds = user.computePrincipalIds();
 				qString += "(";
-				qString += " " + IndexUtils.READ_DEF_ACL_FIELD + ":" + IndexUtils.READ_ACL_ALL + " ";
+				qString += " " + BasicIndexUtils.READ_DEF_ACL_FIELD + ":" + BasicIndexUtils.READ_ACL_ALL + " ";
 				for(Iterator i = principalIds.iterator(); i.hasNext();) {
-					qString += " OR " + IndexUtils.READ_ACL_FIELD + ":" + i.next();
+					qString += " OR " + BasicIndexUtils.READ_ACL_FIELD + ":" + i.next();
 				}
 				qString += ")";
 			}

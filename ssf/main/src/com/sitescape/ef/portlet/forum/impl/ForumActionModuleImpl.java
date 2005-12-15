@@ -39,11 +39,11 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
-import com.sitescape.ef.portlet.forum.ActionUtil;
 import com.sitescape.ef.portlet.forum.ForumActionModule;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.util.DateHelper;
+import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.WebKeys;
@@ -148,66 +148,7 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		this.workspaceModule = workspaceModule;
 	}
 	
-	protected void getDefinitions(Folder folder, Map model) {
-		List folderViewDefs = folder.getForumViewDefs();
-		if (!folderViewDefs.isEmpty()) {
-			Definition defaultForumDefinition = (Definition)folderViewDefs.get(0);
-			model.put(WebKeys.DEFAULT_FOLDER_DEFINITION, defaultForumDefinition);
-			model.put(WebKeys.DEFAULT_FOLDER_DEFINITION_ID, defaultForumDefinition.getId());
-			Document forumViewDoc = defaultForumDefinition.getDefinition();
-			if (forumViewDoc != null) {
-				Element forumViewElement ;
-				forumViewElement = forumViewDoc.getRootElement();
-				forumViewElement = (Element) forumViewElement.selectSingleNode("//item[@name='forumView']");
-				model.put(WebKeys.CONFIG_ELEMENT, forumViewElement);
-			} else {
-				model.put(WebKeys.CONFIG_ELEMENT, null);
-			}
-			
-		} else {
-			model.put(WebKeys.DEFAULT_FOLDER_DEFINITION, null);
-			model.put(WebKeys.DEFAULT_FOLDER_DEFINITION_ID, "");
-			model.put(WebKeys.CONFIG_ELEMENT, null);
-		
-		}
-		Map defaultFolderDefinitions = ActionUtil.getFolderDefsAsMap(folder);
-		model.put(WebKeys.FOLDER_DEFINTION_MAP, defaultFolderDefinitions);
-		Map defaultEntryDefinitions = ActionUtil.getEntryDefsAsMap(folder);
-		model.put(WebKeys.ENTRY_DEFINTION_MAP, defaultEntryDefinitions);
-		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
-		model.put(WebKeys.CONFIG_DEFINITION, getDefinitionModule().getDefinitionConfig());
-	}
-	public void getDefinitions(Map model) {
-		List defs = getDefinitionModule().getDefinitions();
-		model.put(WebKeys.PUBLIC_DEFINITIONS, defs);
-		Iterator itPublicDefinitions = defs.listIterator();
-		Map publicEntryDefinitions = new HashMap();
-		Map publicForumDefinitions = new HashMap();
-		while (itPublicDefinitions.hasNext()) {
-			Definition def = (Definition) itPublicDefinitions.next();
-			if (def.getType() == Definition.COMMAND) {
-				publicEntryDefinitions.put(def.getId(), def);
-			} else if (def.getType() == Definition.FORUM_VIEW) {
-				publicForumDefinitions.put(def.getId(), def);
-			}
-		}
-		model.put(WebKeys.PUBLIC_ENTRY_DEFINITIONS, publicEntryDefinitions);
-		model.put(WebKeys.PUBLIC_FOLDER_DEFINITIONS, publicForumDefinitions);
 
-	}
-	
-	public void getDefinitions(int defType, String key, Map model) {
-		List defs = getDefinitionModule().getDefinitions();
-		Iterator itDefinitions = defs.listIterator();
-		Map definitions = new HashMap();
-		while (itDefinitions.hasNext()) {
-			Definition def = (Definition) itDefinitions.next();
-			if (def.getType() == defType) {
-				definitions.put(def.getId(), def);
-			}
-		}
-		model.put(key, definitions);
-	}
 	
 	/* 
 	 * getEvents ripples through all the entries in the current entry list, finds their
@@ -239,26 +180,26 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 
 		// calendar navigation via nav bar; must be an action so form data is transmitted
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE);
 		model.put("goto_form_url", url.toString());
 		
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
-		url.setParameter(WebKeys.FORUM_URL_VALUE, WebKeys.CALENDAR_VIEW_DAY);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
+		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_DAY);
 		model.put("set_day_view", url.toString());
 
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
-		url.setParameter(WebKeys.FORUM_URL_VALUE, WebKeys.CALENDAR_VIEW_WEEK);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
+		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_WEEK);
 		model.put("set_week_view", url.toString());
 		
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
-		url.setParameter(WebKeys.FORUM_URL_VALUE, WebKeys.CALENDAR_VIEW_MONTH);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
+		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_MONTH);
 		model.put("set_month_view", url.toString());
 		
 		// calculate the start and end of the range as defined by current date and current view
@@ -441,8 +382,8 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 						// and we don't want to clobber urldatestring because it's used later for the week URL
 						urldatestring2 = urldatesdf.format(gcal.getTime());
 						url = response.createRenderURL();
-						url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-						url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
 						url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
 						url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring2);
 						emptyDayMap.put("dayURL", url.toString());
@@ -454,8 +395,8 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 					dayList = new ArrayList();
 				}
 				url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-				url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
 				url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "week");
 				url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring);
 				weekMap.put("weekURL", url.toString());
@@ -464,8 +405,8 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 			daymap.put(WebKeys.CALENDAR_DOW, DateHelper.getDayAbbrevString(loopCal.get(Calendar.DAY_OF_WEEK)));
 			daymap.put(WebKeys.CALENDAR_DOM, Integer.toString(loopCal.get(Calendar.DAY_OF_MONTH)));
 			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-			url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
 			url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
 			url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring);
 			daymap.put("dayURL", url.toString());
@@ -532,8 +473,8 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 				// and we don't want to clobber urldatestring because it's used later for the week URL
 				urldatestring2 = urldatesdf.format(loopCal.getTime());
 				url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-				url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
 				url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
 				url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring2);
 				emptyDayMap.put("dayURL", url.toString());
@@ -550,59 +491,6 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 	}
 	
 	
-	/**
-	 * Fill in the model values for a definition.  Return false if definition isn't
-	 * complete, true otherwise
-	 * @param currentDef
-	 * @param model
-	 * @param node
-	 * @return
-	 */
-	private boolean getDefinition(Definition currentDef, Map model, String node) {
-		model.put(WebKeys.ENTRY_DEFINITION, currentDef);
-		model.put(WebKeys.CONFIG_DEFINITION, getDefinitionModule().getDefinitionConfig());
-		if (currentDef == null) {
-			model.put(WebKeys.CONFIG_ELEMENT, null);
-			return false;
-		}
-		Document configDoc = currentDef.getDefinition();
-		if (configDoc == null) { 
-			model.put(WebKeys.CONFIG_ELEMENT, null);
-			return false;
-		} else {
-			Element configRoot = configDoc.getRootElement();
-			if (configRoot == null) {
-				model.put(WebKeys.CONFIG_ELEMENT, null);
-				return false;
-			} else {
-				Element configEle = (Element) configRoot.selectSingleNode(node);
-				model.put(WebKeys.CONFIG_ELEMENT, configEle);
-				if (configEle == null) return false;
-			}
-		}
-		return true;
-		
-	}
-	//Routine to build a definition file on the fly for viewing entries with no definition
-	private void getDefaultEntryView(Map model) {
-		//Create an empty entry definition
-		Map formData = new HashMap();
-		Document def = getDefinitionModule().getDefaultDefinition("ss_default_entry_view","__definition_default_entry_view", Definition.COMMAND, formData);
-		
-		//Add the "default viewer" item
-		Element entryView = (Element) def.getRootElement().selectSingleNode("//item[@name='entryView']");
-		if (entryView != null) {
-			String itemId = entryView.attributeValue("id", "");
-			try {
-				Element newItem = getDefinitionModule().addItemToDefinitionDocument("default", def, itemId, "defaultEntryView", formData);
-			}
-			catch (DefinitionInvalidException e) {
-				//An error occurred while processing the operation; pass the error message back to the jsp
-				//SessionErrors.add(req, e.getClass().getName(),e.getMessage());
-			}
-		}
-		model.put(WebKeys.CONFIG_ELEMENT, entryView);
-	}
 	private HistoryMap getHistory(RenderRequest req, Long folderId) {
 		HistoryCache cache = (HistoryCache)req.getAttribute(WebKeys.HISTORY_CACHE);
 		return getHistory(cache, folderId);
@@ -646,9 +534,9 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 				if (!replyStyleId.equals("")) {
 					Map params = new HashMap();
 					params.put(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
-					params.put(WebKeys.FORUM_URL_FORUM_ID, folderId);
-					params.put(WebKeys.FORUM_URL_ENTRY_TYPE, replyStyleId);
-					params.put(WebKeys.FORUM_URL_ENTRY_ID, entryId);
+					params.put(WebKeys.URL_BINDER_ID, folderId);
+					params.put(WebKeys.URL_ENTRY_TYPE, replyStyleId);
+					params.put(WebKeys.URL_ENTRY_ID, entryId);
 					Map qualifiers = new HashMap();
 					qualifiers.put("popup", new Boolean(true));
 					toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), params, qualifiers);
@@ -661,9 +549,9 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 			        	Definition replyDef = getCoreDao().loadDefinition(replyStyleId, user.getZoneName());
 						url = response.createActionURL();
 						url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
-						url.setParameter(WebKeys.FORUM_URL_FORUM_ID, folderId);
-						url.setParameter(WebKeys.FORUM_URL_ENTRY_TYPE, replyStyleId);
-						url.setParameter(WebKeys.FORUM_URL_ENTRY_ID, entryId);
+						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+						url.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
+						url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 						toolbar.addToolbarMenuItem("1_reply", "replies", replyDef.getTitle(), url);
 			        } catch (NoDefinitionByTheIdException e) {
 			        	continue;
@@ -674,28 +562,27 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 	    
 	    //The "Modify" menu
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_MODIFY_ENTRY);
-		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, folderId);
-		url.setParameter(WebKeys.FORUM_URL_ENTRY_TYPE, entryDefId);
-		url.setParameter(WebKeys.FORUM_URL_ENTRY_ID, entryId);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_ENTRY);
+		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+		url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+		url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 		toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
 		
 	    
 	    //The "Delete" menu
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DELETE_ENTRY);
-		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, folderId);
-		url.setParameter(WebKeys.FORUM_URL_ENTRY_TYPE, entryDefId);
-		url.setParameter(WebKeys.FORUM_URL_ENTRY_ID, entryId); 
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DELETE_ENTRY);
+		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+		url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+		url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
 		toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url);
 	    
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, toolbar.getToolbar());
 		
 	}
-	protected void buildFolderToolbar(RenderResponse response, Map model, String folderId) {
+	protected void buildFolderToolbar(RenderResponse response, Map model, String forumId) {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
-		String forumId = folderId.toString();
 		//	The "Add" menu
 		Folder folder = (Folder)model.get(WebKeys.FOLDER);
 		List defaultEntryDefinitions = folder.getEntryDefs();
@@ -705,9 +592,9 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 			for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
 				Definition def = (Definition) defaultEntryDefinitions.get(i);
 				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_ENTRY);
-				url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
-				url.setParameter(WebKeys.FORUM_URL_ENTRY_TYPE, def.getId());
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
 				toolbar.addToolbarMenuItem("1_add", "entries", def.getTitle(), url);
 			}
 		}
@@ -715,14 +602,14 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		//The "Administration" menu
 		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
 		//Configuration
-		url = response.createActionURL();
+		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_CONFIGURE_FORUM);
-		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);
 		//Definition builder
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
 		
 		//	The "Display styles" menu
@@ -730,47 +617,47 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		/**
 		//horizontal
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
-		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
-		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_HORIZONTAL);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_HORIZONTAL);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_horizontal"), url);
 		*/
 		//vertical
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
-		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
-		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_vertical"), url);
 		//accessible
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
-		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
-		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_accessible"), url);
 		//iframe
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
-		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
-		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_iframe"), url);
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
 		//popup
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-		url.setParameter(WebKeys.FORUM_URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
-		url.setParameter(WebKeys.FORUM_URL_FORUM_ID, forumId);
-		url.setParameter(WebKeys.FORUM_URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_popup"), url);
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
 		
 	}
 	public Map getDeleteEntry(Map formData, RenderRequest req, Long folderId) throws PortletRequestBindingException {
 		Map model = new HashMap();
-		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(req, WebKeys.FORUM_URL_ENTRY_ID));
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(req, WebKeys.URL_ENTRY_ID));
 		FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.FOLDER, entry.getParentFolder());
@@ -779,13 +666,13 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 	public Map getModifyEntry(Map formData, RenderRequest req, Long folderId) throws PortletRequestBindingException {
 		Map model = new HashMap();
 		FolderEntry entry=null;
-		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(req, WebKeys.FORUM_URL_ENTRY_ID));
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(req, WebKeys.URL_ENTRY_ID));
 		entry  = getFolderModule().getEntry(folderId, entryId);
 		
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.FOLDER, entry.getParentFolder());
 		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
-		getDefinition(entry.getEntryDef(), model, "//item[@name='entryForm']");
+		DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@name='entryForm']");
 
 		return model;
 		
@@ -796,7 +683,7 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		Map model = new HashMap();
 		HistoryMap history = getHistory(req, folderId);
 		model.put(WebKeys.HISTORY_MAP, history);
-		String op = PortletRequestUtils.getStringParameter(req, WebKeys.FORUM_URL_OPERATION, "");
+		String op = PortletRequestUtils.getStringParameter(req, WebKeys.URL_OPERATION, "");
 		Folder folder = null;
 		FolderEntry entry = null;
 		Map folderEntries = null;
@@ -895,11 +782,11 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
 		if (entry == null) {
-			getDefinition(null, model, "//item[@name='entryView']");
+			DefinitionUtils.getDefinition(null, model, "//item[@name='entryView']");
 			return model;
 		}
-		if (getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
-			getDefaultEntryView(model);
+		if (DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
+			DefinitionUtils.getDefaultEntryView(model);
 		}
 		if (!entryId.equals("")) {
 			buildEntryToolbar(response, model, folderId.toString(), entryId);
@@ -926,10 +813,10 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		model.put(WebKeys.FOLDER_ENTRIES, folderEntries.get(ObjectKeys.FOLDER_ENTRIES));
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
-		getDefinitions(folder, model);
+		DefinitionUtils.getDefinitions(folder, model);
 		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.FOLDER_ENTRIES);
 		getEvents(entries, model, req, response);
-		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
+		req.setAttribute(WebKeys.URL_BINDER_ID,forumId);
 		buildFolderToolbar(response, model, forumId);
 		return model;
 	}
@@ -945,48 +832,33 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.CONFIG_DEFINITION, getDefinitionModule().getDefinitionConfig());
 			
-		getDefinitions(model);
+		DefinitionUtils.getDefinitions(model);
 		if (!currentId.equals("")) {
 			model.put(WebKeys.DEFINITION, getDefinitionModule().getDefinition(currentId));
 		}
-		return model;
-	}
-	public Map getConfigureForum(Map formData, RenderRequest req, Long folderId) {
-		Map model = new HashMap();
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Folder folder = getFolderModule().getFolder(folderId);
-		
-		model.put(WebKeys.FOLDER, folder);
-		model.put(WebKeys.FOLDER_WORKFLOW_ASSOCIATIONS, folder.getProperty(ObjectKeys.FOLDER_WORKFLOW_ASSOCIATIONS));
-		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
-		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
-			
-		getDefinitions(model);
-		getDefinitions(folder, model);
-		getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 		return model;
 	}
 	public Map getAddEntry(Map formData, RenderRequest req, Long folderId) throws PortletRequestBindingException {
 		Map model = new HashMap();
 		Folder folder = getFolderModule().getFolder(folderId);
 		//Adding an entry; get the specific definition
-		Map folderEntryDefs = ActionUtil.getEntryDefsAsMap(folder);
-		String entryType = PortletRequestUtils.getStringParameter(req, WebKeys.FORUM_URL_ENTRY_TYPE, "");
+		Map folderEntryDefs = DefinitionUtils.getEntryDefsAsMap(folder);
+		String entryType = PortletRequestUtils.getStringParameter(req, WebKeys.URL_ENTRY_TYPE, "");
 		model.put(WebKeys.FOLDER, folder);
 		model.put(WebKeys.ENTRY_DEFINTION_MAP, folderEntryDefs);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 		//Make sure the requested definition is legal
 		if (folderEntryDefs.containsKey(entryType)) {
-			getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@name='entryForm']");
+			DefinitionUtils.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@name='entryForm']");
 		} else {
-			getDefinition(null, model, "//item[@name='entryForm']");
+			DefinitionUtils.getDefinition(null, model, "//item[@name='entryForm']");
 		}
 		return model;
 		
 	}
     public Map getAddReply(Map formData, RenderRequest req, Long folderId) throws PortletRequestBindingException {
-    	Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(req, WebKeys.FORUM_URL_ENTRY_ID));
-    	req.setAttribute(WebKeys.FORUM_URL_ENTRY_ID,entryId.toString());
+    	Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(req, WebKeys.URL_ENTRY_ID));
+    	req.setAttribute(WebKeys.URL_ENTRY_ID,entryId.toString());
     	Map model = new HashMap();
     	FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
     	model.put(WebKeys.DEFINITION_ENTRY, entry);
@@ -1006,8 +878,8 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		}
    	
     	//Adding an entry; get the specific definition
-		Map folderEntryDefs = ActionUtil.getEntryDefsAsMap(folder);
-    	String entryType = PortletRequestUtils.getStringParameter(req, WebKeys.FORUM_URL_ENTRY_TYPE, "");
+		Map folderEntryDefs = DefinitionUtils.getEntryDefsAsMap(folder);
+    	String entryType = PortletRequestUtils.getStringParameter(req, WebKeys.URL_ENTRY_TYPE, "");
     	model.put(WebKeys.ENTRY_DEFINTION_MAP, folderEntryDefs);
     	model.put(WebKeys.CONFIG_JSP_STYLE, "form");
     	
@@ -1021,9 +893,9 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
     	}
     	
 		if (replyStyleIsGood) {
-			getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@name='entryForm']");
+			DefinitionUtils.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@name='entryForm']");
 		} else {
-			getDefinition(null, model, "//item[@name='entryForm']");
+			DefinitionUtils.getDefinition(null, model, "//item[@name='entryForm']");
 		}
     	return model;
     }
@@ -1038,8 +910,8 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 			element.addAttribute("id", f.getId().toString());
 			element.addAttribute("image", "forum");
         	Element url = element.addElement("url");
-	    	url.addAttribute(WebKeys.ACTION, WebKeys.FORUM_ACTION_VIEW_FORUM);
-	     	url.addAttribute(WebKeys.FORUM_URL_FORUM_ID, f.getId().toString());
+	    	url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+	     	url.addAttribute(WebKeys.URL_BINDER_ID, f.getId().toString());
 		} else return null;
 		return element;
 	}

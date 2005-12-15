@@ -15,7 +15,6 @@ public interface ForumActionModule {
 
 	public Map getShowEntry(String entryId, Map formData, RenderRequest request, RenderResponse response, Long folderId) throws PortletRequestBindingException;
 	public Map getShowFolder(Map formData, RenderRequest request, RenderResponse response, Long folderId) throws PortletRequestBindingException;
-	public Map getConfigureForum(Map formData, RenderRequest request, Long folderId) throws PortletRequestBindingException;
 	public Map getAddEntry(Map formData, RenderRequest request, Long folderId) throws PortletRequestBindingException;
 	public Map getDeleteEntry(Map formData, RenderRequest request, Long folderId) throws PortletRequestBindingException;
 	public Map getModifyEntry(Map formData, RenderRequest request, Long folderId) throws PortletRequestBindingException;

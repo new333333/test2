@@ -19,11 +19,11 @@ public class ViewFileController extends SAbstractController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
-		Long forumId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_FORUM_ID));
-		Long entryId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.FORUM_URL_ENTRY_ID));
+		Long forumId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+		Long entryId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 		FolderEntry entry = getFolderModule().getEntry(forumId, entryId);
 		//Set up the beans needed by the jsps
-		String fileId = RequestUtils.getRequiredStringParameter(request, WebKeys.FORUM_URL_FILE_ID); 
+		String fileId = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE_ID); 
 		
 		FileAttachment fa = (FileAttachment)entry.getAttachment(fileId);
 		

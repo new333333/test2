@@ -55,34 +55,34 @@ public class ViewController  extends SAbstractForumController {
 			}
 			if (folderIds.size() > 0) {
 				model.put(WebKeys.FOLDER_LIST, getFolderModule().getSortedFolderList(folderIds));
-				return new ModelAndView(WebKeys.VIEW, model);
+				return new ModelAndView(WebKeys.VIEW_FORUM, model);
 			}
 			try {
 				folderId = ActionUtil.getForumId(request);
 			} catch (NoFolderByTheIdException nf) {
-				return new ModelAndView(WebKeys.VIEW);
+				return new ModelAndView(WebKeys.VIEW_FORUM);
 			}
 			
 			folderIds.add(folderId);
 			model.put(WebKeys.FOLDER_LIST, getFolderModule().getSortedFolderList(folderIds));
-			return new ModelAndView(WebKeys.VIEW, model);
+			return new ModelAndView(WebKeys.VIEW_FORUM, model);
 		}
 
 		try {
 			folderId = ActionUtil.getForumId(request);
 		} catch (NoFolderByTheIdException nf) {
-			return new ModelAndView(WebKeys.VIEW);
+			return new ModelAndView(WebKeys.VIEW_FORUM);
 		}
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_URL_OPERATION, "");
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
 			Map updates = new HashMap();
-			updates.put("displayStyle", PortletRequestUtils.getStringParameter(request,WebKeys.FORUM_URL_VALUE,""));
-			getProfileModule().modifyUser(user.getId(), updates, new HashMap());
+			updates.put("displayStyle", PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
+			getProfileModule().modifyPrincipal(user.getId(), updates, new HashMap());
 		}
 		if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE)) {
 			PortletSession ps = WebHelper.getRequiredPortletSession(request);
 			ps.setAttribute(WebKeys.CALENDAR_VIEWMODE, 
-					PortletRequestUtils.getStringParameter(request,WebKeys.FORUM_URL_VALUE,""));
+					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 		}
 		if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE)) {
 			PortletSession ps = WebHelper.getRequiredPortletSession(request);

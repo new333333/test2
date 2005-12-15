@@ -1,7 +1,16 @@
 package com.sitescape.ef.search;
 
+import java.util.Iterator;
+import java.util.Set;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+
+import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.ef.security.acl.AclManager;
 
 /**
  *
@@ -18,8 +27,12 @@ public class BasicIndexUtils {
     public static final String DOC_TYPE_FIELD = "_docType";
     public static final String THIS_CLASS_FIELD = "_class";
     public static final String ALL_TEXT_FIELD = "_allText";
+    public static final String READ_ACL_FIELD = "_readAcl";
+    public static final String READ_DEF_ACL_FIELD = "_readDefAcl";
 
-    
+    // Defines field values
+    public static final String READ_ACL_ALL = "all";
+
     // The following fields represent valid values for DOC_TYPE_FIELD.
     
     public final static String DOC_TYPE_ENTRY 		= "entry";
@@ -110,4 +123,26 @@ public class BasicIndexUtils {
     public static  Field allTextField(String text) {
         return new Field(ALL_TEXT_FIELD, text, false, true, true);
     }   
+    public static void addReadAcls(Document doc, Binder binder, Entry entry, AclManager aclManager) {
+        // Add ACL field. We only need to index ACLs for read access. 
+        Field racField;
+        if(entry instanceof AclControlledEntry) {
+	        StringBuffer pIds = new StringBuffer();
+	        Set readMemberIds = aclManager.getMembers(binder, (AclControlledEntry) entry, AccessType.READ);
+	        for(Iterator i = readMemberIds.iterator(); i.hasNext();) {
+	            pIds.append(i.next()).append(" ");
+	        }
+	        // I'm not sure if putting together a long string value is more
+	        // efficient than processing multiple short strings... We will see.
+	        if (pIds.length() != 0)
+	          racField = new Field(READ_ACL_FIELD, pIds.toString(), true, true, true);
+	        else
+	          racField = new Field(READ_DEF_ACL_FIELD, READ_ACL_ALL, true, true, true);
+        }
+        else {
+            racField = new Field(READ_DEF_ACL_FIELD, READ_ACL_ALL, true, true, true);
+        }
+        
+        doc.add(racField);
+    }    
 }

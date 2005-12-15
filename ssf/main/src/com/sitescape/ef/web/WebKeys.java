@@ -35,31 +35,29 @@ public class WebKeys {
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
-    public static final String FORUM_URL_ATTRIBUTE = "attr";
-    public static final String FORUM_URL_ATTRIBUTE_ID = "attrId";
-	public static final String FORUM_URL_ENTRY_ID = "entryId";
-    public static final String FORUM_URL_ENTRY_TYPE="entryType";
-	public static final String FORUM_URL_FILE = "file";
-	public static final String FORUM_URL_FILE_ID = "fileId";
-	public static final String FORUM_URL_FORUM = "forum";
-	public static final String FORUM_URL_FORUM_ID = "forumId";
-	public static final String FORUM_URL_OPERATION = "operation";
-	public static final String FORUM_URL_VALUE = "value";
-	
+    public static final String URL_ATTRIBUTE = "attr";
+    public static final String URL_ATTRIBUTE_ID = "attrId";
+	public static final String URL_ENTRY_ID = "entryId";
+    public static final String URL_ENTRY_TYPE="entryType";
+	public static final String URL_FILE = "file";
+	public static final String URL_FILE_ID = "fileId";
+	public static final String URL_VALUE = "value";
+    public static final String URL_BINDER_ID="binderId";
+    public static final String URL_OPERATION="operation";
 	//Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "forumIdList";
 	
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
-    public static final String FORUM_ACTION_ADD_ENTRY = "add_entry";
+    public static final String ACTION_ADD_ENTRY = "add_entry";
 	public static final String FORUM_ACTION_ADD_REPLY = "add_reply";
 	public static final String FORUM_ACTION_CONFIGURE_FORUM = "configure_forum";
 	public static final String FORUM_ACTION_DEFINITION_BUILDER = "definition_builder";
 	public static final String FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
-	public static final String FORUM_ACTION_DELETE_ENTRY = "delete_entry";
-	public static final String FORUM_ACTION_MODIFY_ENTRY = "modify_entry";
-	public static final String FORUM_ACTION_VIEW_FORUM = "view_forum";
-	public static final String FORUM_ACTION_VIEW_ENTRY = "view_entry";
+	public static final String ACTION_DELETE_ENTRY = "delete_entry";
+	public static final String ACTION_MODIFY_ENTRY = "modify_entry";
+	public static final String ACTION_VIEW_LISTING = "view_listing";
+	public static final String ACTION_VIEW_ENTRY = "view_entry";
 	public static final String FORUM_ACTION_UNSEEN = "__view_unseen";
 	public static final String LDAP_ACTION_CONFIGURE="configure_ldap";
 	public static final String NOTIFY_ACTION_CONFIGURE="configure_notify";
@@ -89,7 +87,9 @@ public class WebKeys {
 	// MODEL TAGS & Attributes
 	public static final String ACTION = "action";
 	public static final String ADMIN_TREE="ssAdminDomTree";
-    public static final String CONFIG_ELEMENT="ssConfigElement";
+	public static final String BINDER="ssBinder";
+	public static final String BINDER_ENTRIES="ssBinderEntries";
+	public static final String CONFIG_ELEMENT="ssConfigElement";
     public static final String CONFIG_DEFINITION="ssConfigDefinition";
     public static final String CONFIG_JSP_STYLE="ssConfigJspStyle";
     public static final String DEFAULT_FOLDER_DEFINITION="ssDefaultFolderDefinition";
@@ -98,6 +98,7 @@ public class WebKeys {
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
     public static final String EMAIL_ALIASES="ssEmailAliases";
     public static final String ENTRY="ssEntry";
+    public static final String ENTRIES="ssEntries";
     public static final String ENTRY_DEFINITION="ssEntryDefinition";
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_ID = "ssEntryId";
@@ -107,7 +108,6 @@ public class WebKeys {
     public static final String FOLDER_ID_LIST = "ssFolderIdList";
     public static final String FOLDERS = "ssFolders";
     public static final String FOLDER_DOM_TREE="ssFolderDomTree";
-//    public static final String FOLDER_ENTRY="ssFolderEntry";
     public static final String FOLDER_ENTRIES="ssFolderEntries";
     public static final String FOLDER_ENTRY_DESCENDANTS="ssFolderEntryDescendants";
     public static final String FOLDER_ENTRY_ANCESTORS="ssFolderEntryAncestors";
@@ -144,16 +144,17 @@ public class WebKeys {
 	public static final String ZONE_NAME = "com.sitescape.zonename";
 
     //View names
-    public static final String VIEW_CONFIGURE = "forum/configure";
+    public static final String VIEW_CONFIGURE = "binder/configure";
     public static final String VIEW_NO_DEFINITION="forum/view_default";
-    public static final String VIEW_FORUM="forum/view_forum";
-    public static final String VIEW_ENTRY="forum/view_entry";
-    public static final String VIEW="forum/view";
-    public static final String VIEW_NO_ENTRY="forum/view_forum_no_entry";
-    public static final String VIEW_MODIFY_ENTRY="forum/modify_entry";
-    public static final String VIEW_DELETE_ENTRY="forum/delete_entry";
+    public static final String VIEW_LISTING="entry/view_listing";
+    public static final String VIEW_ENTRY="entry/view_entry";
+    public static final String VIEW_FORUM="forum/view";
+    public static final String VIEW_PROFILE="profile/view";
+    public static final String VIEW_NO_ENTRY="entry/view_no_entry";
+    public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
+    public static final String VIEW_DELETE_ENTRY="entry/delete_entry";
     public static final String VIEW_EDIT="forum/edit";
-    public static final String VIEW_ADD_ENTRY = "forum/add_entry";
+    public static final String VIEW_ADD_ENTRY = "entry/add_entry";
     public static final String VIEW_DEFINITION="definition_builder/view_definition_builder";
     public static final String VIEW_DEFINITION_OPTION="definition_builder/view_definition_builder_option";
     public static final String VIEW_DEFINITION_XML="definition_builder/view_definition_xml";

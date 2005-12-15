@@ -11,12 +11,14 @@ public interface ObjectKeys {
      * Note: Maintain the symbols in alphabetical order. 
      */
     
+    public static final String BINDER="binder";
+    public static final String ENTRIES="entries";
     public static final String FOLDER_ENTRY_ANCESTORS="folderEntryAncestors";
     public static final String FOLDER_ENTRY_DESCENDANTS="folderEntryDescendants";
     public static final String FOLDER_ENTRY="folderEntry";
     public static final String FOLDER="folder";
     public static final String FOLDER_ENTRIES="folderEntries";
-    public static final String FOLDER_WORKFLOW_ASSOCIATIONS = "folderWorkflowAssociations";
+    public static final String BINDER_WORKFLOW_ASSOCIATIONS = "folderWorkflowAssociations";
     public static final String TOTAL_SEARCH_COUNT="totalSearchCount";
     public static final int FOLDER_MAX_PAGE_SIZE = 1000;
     public static final long SEEN_MAP_TIMEOUT = (long)30*24*60*60*1000;

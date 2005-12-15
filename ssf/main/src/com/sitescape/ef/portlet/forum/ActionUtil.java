@@ -61,13 +61,13 @@ public class ActionUtil {
 	public static Long getForumId(PortletRequest req) throws NoFolderByTheIdException {
 		Long forumId;
 		try {
-			forumId = PortletRequestUtils.getLongParameter(req, WebKeys.FORUM_URL_FORUM_ID); 
+			forumId = PortletRequestUtils.getLongParameter(req, WebKeys.URL_BINDER_ID); 
 			
 		} catch (Exception ex) {
 			forumId = null;
 		}
 		if (forumId == null) {
-			forumId = (Long) req.getPortletSession().getAttribute(WebKeys.FORUM_URL_FORUM_ID);
+			forumId = (Long) req.getPortletSession().getAttribute(WebKeys.URL_BINDER_ID);
 			if (forumId == null) {
 				try {
 					//Get the preferences settings to see if there is a forum defined
@@ -78,29 +78,9 @@ public class ActionUtil {
 				}
 			}
 		}
-		req.setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId.toString());
-		req.getPortletSession().setAttribute(WebKeys.FORUM_URL_FORUM_ID,forumId);
+		req.setAttribute(WebKeys.URL_BINDER_ID,forumId.toString());
+		req.getPortletSession().setAttribute(WebKeys.URL_BINDER_ID,forumId);
 		return forumId;
-	}
-
-	public static Map getFolderDefsAsMap(Folder folder) {
-		Map defaultFolderDefinitions = new HashMap();
-		Iterator itDefaultFolderDefinitions = folder.getForumViewDefs().listIterator();
-		while (itDefaultFolderDefinitions.hasNext()) {
-			Definition entryDef = (Definition) itDefaultFolderDefinitions.next();
-			defaultFolderDefinitions.put(entryDef.getId(), entryDef);
-		}
-		return defaultFolderDefinitions;
-	}
-
-	public static Map getEntryDefsAsMap(Folder folder) {
-		Map defaultEntryDefinitions = new HashMap();
-		Iterator itDefaultEntryDefinitions = folder.getEntryDefs().listIterator();
-		while (itDefaultEntryDefinitions.hasNext()) {
-			Definition entryDef = (Definition) itDefaultEntryDefinitions.next();
-			defaultEntryDefinitions.put(entryDef.getId(), entryDef);
-		}
-		return defaultEntryDefinitions;
 	}
 
 }
