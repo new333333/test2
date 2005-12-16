@@ -91,23 +91,22 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     	return getDefs(Definition.WORKFLOW);
     }
     public List getEntryDefs() {
-    	return getDefs(Definition.COMMAND);
-    }
-    public List getForumViewDefs() {
-    	return getDefs(Definition.FORUM_VIEW);
-    }
-    public List getProfileViewDefs() {
-    	return getDefs(Definition.PROFILE_VIEW);
-    }
-    public List getBinderViewDefs() {
     	if (this.getType().equals("FOLDER")) {
-    		return getForumViewDefs();
+    		return getDefs(Definition.COMMAND);
     	} else if (this.getType().equals("PROFILES")) {
-    		return getProfileViewDefs();
+    		return getDefs(Definition.PROFILE_ENTRY_VIEW);
     	} else {
     		return new ArrayList();
     	}
-
+    }
+    public List getBinderViewDefs() {
+    	if (this.getType().equals("FOLDER")) {
+    		return getDefs(Definition.FORUM_VIEW);
+    	} else if (this.getType().equals("PROFILES")) {
+    		return getDefs(Definition.PROFILE_VIEW);
+    	} else {
+    		return new ArrayList();
+    	}
     }
     /**
      * @hibernate.many-to-one access="field" class="com.sitescape.ef.domain.Definition"
