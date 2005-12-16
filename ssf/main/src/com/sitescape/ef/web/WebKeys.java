@@ -120,6 +120,9 @@ public class WebKeys {
     public static final String HISTORY_CACHE="ssHistoryCache";
     public static final String HISTORY_MAP="ssHistoryMap";
     public static final String LDAP_CONFIG="ssLdapConfig";
+    public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
+    public static final String LIST_UNSEEN_STATUS="ss_unseenStatus";
+    public static final String LIST_UNSEEN_STATUS_NOT_LOGGED_IN="ss_unseenNotLoggedIn";
     public static final String NOTIFICATION="ssNotification";
     public static final String POSTINGS="ssPostings";
     public static final String PUBLIC_DEFINITIONS="ssPublicDefinitions";

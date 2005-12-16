@@ -42,8 +42,14 @@ public class ListUnseenController  extends SAbstractForumController {
 			// the ugly Javascript error on the browser. 
 			Map model = new HashMap();
 			Map unseenCounts = new HashMap();
+			Map statusMap = new HashMap();
+			
+			//Mark that the user is not logged in
+			statusMap.put(WebKeys.LIST_UNSEEN_STATUS_NOT_LOGGED_IN, new Boolean(true));
+			
 			response.setContentType("text/xml");			
-			model.put("unseenCounts", unseenCounts);
+			model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
+			model.put(WebKeys.LIST_UNSEEN_STATUS, statusMap);
 			return new ModelAndView("forum/unseen_counts", model);
 		}
 		
@@ -62,10 +68,12 @@ public class ListUnseenController  extends SAbstractForumController {
 				folderIds.add(new Long(forumList[i]));
 			}
 			Map unseenCounts = getFolderModule().getUnseenCounts(folderIds);
+			Map statusMap = new HashMap();
 
 			response.setContentType("text/xml");
 			
-			model.put("unseenCounts", unseenCounts);
+			model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
+			model.put(WebKeys.LIST_UNSEEN_STATUS, statusMap);
 			return new ModelAndView("forum/unseen_counts", model);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_LIST)) {
