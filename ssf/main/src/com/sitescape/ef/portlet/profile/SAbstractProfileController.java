@@ -69,8 +69,28 @@ public class SAbstractProfileController extends SAbstractController {
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
-		if (DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@name='profileEntryView']") == false) {
-			DefinitionUtils.getDefaultEntryView(model);
+		//Get the definition used to view this entry
+		Definition entryDef = entry.getEntryDef();
+		if (entryDef == null) {
+			//There is no definition for this entry; get the default for the binder
+			List profileDefinitions = binder.getEntryDefs();
+			for (int i = 0; i < profileDefinitions.size(); i++) {
+				//Look for the first profile entry definition
+				Definition def = (Definition) profileDefinitions.get(i);
+				if (def.getType() == Definition.PROFILE_ENTRY_VIEW) {
+					//Found the first profile entry definition
+					entryDef = def;
+					break;
+				}
+			}
+		}
+		if (entryDef == null) {
+			DefinitionUtils.getDefaultEntryView(entry, model);
+		} else {
+			//Set up the definition used to show this profile entry
+			if (!DefinitionUtils.getDefinition(entryDef, model, "//item[@name='profileEntryView']")) {
+				DefinitionUtils.getDefaultEntryView(entry, model);
+			}
 		}
 		//	Build the toolbar array
 		Toolbar toolbar = new Toolbar();
@@ -79,7 +99,6 @@ public class SAbstractProfileController extends SAbstractController {
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_ENTRY);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		url.setParameter(WebKeys.URL_ENTRY_TYPE, entry.getEntryDef().getId());
 		url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 		toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
 	
@@ -88,7 +107,6 @@ public class SAbstractProfileController extends SAbstractController {
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DELETE_ENTRY);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		url.setParameter(WebKeys.URL_ENTRY_TYPE, entry.getEntryDef().getId());
 		url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 		toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url);
     

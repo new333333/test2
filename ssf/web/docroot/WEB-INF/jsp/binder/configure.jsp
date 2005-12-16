@@ -127,10 +127,10 @@
     <c:forEach var="item" items="${ssPublicProfileDefinitions}">
       <c:choose>
         <c:when test="${empty ssFolderDefinitionMap[item.key]}">
-  	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>"><c:out value="${item.value.name}"/><br/>
+  	      <input type="radio" name="binderDefinitions" value="<c:out value="${item.value.id}"/>"><c:out value="${item.value.name}"/><br/>
   	    </c:when>
 	    <c:otherwise>
-	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" checked><c:out value="${item.value.name}"/><br/>
+	      <input type="radio" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" checked><c:out value="${item.value.name}"/><br/>
 	    </c:otherwise>
       </c:choose>
     </c:forEach>
@@ -145,10 +145,10 @@
     <c:forEach var="item" items="${ssPublicProfileEntryDefinitions}">
 	  <c:choose>
 	    <c:when test="${empty ssEntryDefinitionMap[item.key]}">
-	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>"><c:out value="${item.value.name}"/><br/>
+	      <input type="radio" name="entryDefinition" value="<c:out value="${item.value.id}"/>"><c:out value="${item.value.name}"/><br/>
 	    </c:when>
 	    <c:otherwise>
-	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" checked><c:out value="${item.value.name}"/><br/>
+	      <input type="radio" name="entryDefinition" value="<c:out value="${item.value.id}"/>" checked><c:out value="${item.value.name}"/><br/>
 	    </c:otherwise>
 	  </c:choose>
     </c:forEach>

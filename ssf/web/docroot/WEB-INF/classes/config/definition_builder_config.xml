@@ -924,7 +924,7 @@
 		</options>
 		
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_entry_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
 		</jsps>
 	</item>
 
