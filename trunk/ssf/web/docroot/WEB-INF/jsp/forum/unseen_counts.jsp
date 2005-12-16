@@ -13,17 +13,15 @@
 <%@ page import="java.util.Iterator" %>
 <jsp:useBean id="ss_unseenCounts" type="java.util.Map" scope="request" />
 <jsp:useBean id="ss_unseenStatus" type="java.util.Map" scope="request" />
-<%
-	//Cannot translate this. User is not logged in. Therefore, we do not have a locale.
-	String notLoggedIn = "Your session timed out. Please log in again.";
-%>
 <taconite-root xml:space="preserve">
 <%
 	if (ss_unseenStatus.containsKey("ss_unseenNotLoggedIn")) {
 %>
 	<taconite-replace contextNodeID="status_message" parseInBrowser="true">
-		<div id="status_message" class="ss_labelLeftError">
-		  <span><%= notLoggedIn %></span>
+		<div id="status_message">
+		  <script language="javascript">
+		      if (self.showNotLoggedInMsg) self.showNotLoggedInMsg();
+		  </script>
 		</div>
 	</taconite-replace>
 <%
