@@ -248,6 +248,18 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 	</tag>
+	
+	<tag>
+		<name>presenceInfo</name>
+		<tag-class>com.sitescape.ef.taglib.PresenceInfo</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>user</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.ef.domain.User</type>
+		</attribute>		
+	</tag>	
 
 	<tag>
 		<name>param</name>
