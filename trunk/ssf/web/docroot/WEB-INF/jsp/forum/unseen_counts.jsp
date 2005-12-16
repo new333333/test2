@@ -7,13 +7,29 @@
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 <%@ page contentType="text/xml" %>
 <%@ page import="com.sitescape.ef.domain.Folder" %>
+<%@ page import="com.sitescape.ef.util.NLT" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.Map.Entry" %>
 <%@ page import="java.util.Iterator" %>
-<jsp:useBean id="unseenCounts" type="java.util.Map" scope="request" />
+<jsp:useBean id="ss_unseenCounts" type="java.util.Map" scope="request" />
+<jsp:useBean id="ss_unseenStatus" type="java.util.Map" scope="request" />
+<%
+	//Cannot translate this. User is not logged in. Therefore, we do not have a locale.
+	String notLoggedIn = "Your session timed out. Please log in again.";
+%>
 <taconite-root xml:space="preserve">
 <%
-	for (Iterator iter=unseenCounts.entrySet().iterator(); iter.hasNext();) {
+	if (ss_unseenStatus.containsKey("ss_unseenNotLoggedIn")) {
+%>
+	<taconite-replace contextNodeID="status_message" parseInBrowser="true">
+		<div id="status_message" class="ss_labelLeftError">
+		  <span><%= notLoggedIn %></span>
+		</div>
+	</taconite-replace>
+<%
+	}
+	
+	for (Iterator iter=ss_unseenCounts.entrySet().iterator(); iter.hasNext();) {
 		Map.Entry entry = (Map.Entry)iter.next();
 		Folder forum = (Folder)entry.getKey();
 %>

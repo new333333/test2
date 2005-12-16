@@ -26,6 +26,8 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 </c:if>
 
+<div id="status_message"></div>
+
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
 	<td>
