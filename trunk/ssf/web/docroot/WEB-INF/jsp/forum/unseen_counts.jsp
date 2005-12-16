@@ -27,6 +27,12 @@
 		</div>
 	</taconite-replace>
 <%
+	} else {
+%>
+	<taconite-replace contextNodeID="status_message" parseInBrowser="true">
+		<div id="status_message" ></div>
+	</taconite-replace>
+<%
 	}
 	
 	for (Iterator iter=ss_unseenCounts.entrySet().iterator(); iter.hasNext();) {
