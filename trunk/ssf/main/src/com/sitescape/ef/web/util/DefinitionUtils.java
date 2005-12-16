@@ -12,6 +12,8 @@ import com.sitescape.ef.SingletonViolationException;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinitionInvalidException;
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.definition.DefinitionModule;
 
@@ -154,10 +156,14 @@ public class DefinitionUtils {
 		return defaultEntryDefinitions;
 	}
 	//Routine to build a definition file on the fly for viewing entries with no definition
-	public static void getDefaultEntryView(Map model) {
+	public static void getDefaultEntryView(Entry entry, Map model) {
 		//Create an empty entry definition
 		Map formData = new HashMap();
-		Document def = getInstance().getDefinitionModule().getDefaultDefinition("ss_default_entry_view","__definition_default_entry_view", Definition.COMMAND, formData);
+		int definitionType = Definition.COMMAND;
+		if (entry instanceof Principal) {
+			definitionType = Definition.PROFILE_ENTRY_VIEW;
+		}
+		Document def = getInstance().getDefinitionModule().getDefaultDefinition("ss_default_entry_view","__definition_default_entry_view", definitionType, formData);
 		
 		//Add the "default viewer" item
 		Element entryView = (Element) def.getRootElement().selectSingleNode("//item[@name='entryView' or @name='profileEntryView']");

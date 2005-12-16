@@ -785,7 +785,7 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 			return model;
 		}
 		if (DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
-			DefinitionUtils.getDefaultEntryView(model);
+			DefinitionUtils.getDefaultEntryView(entry, model);
 		}
 		if (!entryId.equals("")) {
 			buildEntryToolbar(response, model, folderId.toString(), entryId);
