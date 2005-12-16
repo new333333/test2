@@ -25,7 +25,11 @@
 <c:set var="toolbar" value="${ssForumToolbar}" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 </c:if>
-
+<script language="javascript">
+function showNotLoggedInMsg() {
+	alert("<ssf:nlt tag="unseenCounts.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+}
+</script>
 <div id="status_message"></div>
 
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
