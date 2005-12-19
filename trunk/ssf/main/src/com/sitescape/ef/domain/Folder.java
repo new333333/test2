@@ -134,7 +134,7 @@ public class Folder extends Binder {
 
     /**
      * @hibernate.bag lazy="true" cascade="all" inverse="true" optimistic-lock="false"
- 	 * @hibernate.key column="parentFolder" 
+ 	 * @hibernate.key column="parentBinder" 
 	 * @hibernate.one-to-many class="com.sitescape.ef.domain.FolderEntry"
      * Returns a Set of Folder.
      * @return

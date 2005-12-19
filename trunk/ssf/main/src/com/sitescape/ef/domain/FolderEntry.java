@@ -18,7 +18,6 @@ import java.util.ArrayList;
  */
 public class FolderEntry extends AclControlledEntry implements MultipleWorkflowSupport {
 
-	protected Folder parentFolder;
     protected boolean allowEdits = false;
     protected HistoryStamp reservedDoc;
     protected boolean sendMail = false;
@@ -87,22 +86,18 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
     public void setDocContent(int docContent) {
         this.docContent = docContent;
     }
-    /**
-     * @hibernate.many-to-one
-     * @return
-     */
-    public Folder getParentFolder() {
-        return parentFolder;
+     public Folder getParentFolder() {
+        return (Folder)getParentBinder();
     }
     public void setParentFolder(Folder parentFolder) {
-        this.parentFolder = parentFolder;
+        setParentBinder(parentFolder);
     }
     public Folder getTopFolder() {
-		Folder f = parentFolder.getTopFolder();
+		Folder f = getParentFolder().getTopFolder();
   		if (f != null) {
   			return f;
   		} else {
-  			return parentFolder;
+  			return getParentFolder();
   		}
 
     }
@@ -259,7 +254,7 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
         child.setParentEntry(this);
         if (topEntry == null) child.setTopEntry(this); else child.setTopEntry(topEntry);
         child.setHKey(new HKey(docHKey, nextDescendant++));
-        child.setParentFolder(parentFolder);
+        child.setParentFolder(getParentFolder());
         child.setOwningFolderSortKey(owningFolderSortKey);
         ++replyCount;
         addAncestor(child);
@@ -274,7 +269,7 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
         getReplies().remove(child);
         --replyCount;
         removeAncestor(child);
-        parentFolder.removeEntry(child);
+        getParentFolder().removeEntry(child);
     }
 
   

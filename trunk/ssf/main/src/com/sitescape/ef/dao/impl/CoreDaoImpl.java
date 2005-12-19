@@ -283,10 +283,21 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         List result = (List)getHibernateTemplate().execute(
            	new HibernateCallback() {
             		public Object doInHibernate(Session session) throws HibernateException {
-            			return session.createQuery("from com.sitescape.ef.domain.Principal p where p.zoneName = :zone and p.id in (:pList)")
+            			List result = session.createQuery("from com.sitescape.ef.domain.Principal p where p.zoneName = :zone and p.id in (:pList)")
             			.setString("zone", zoneName)
             			.setParameterList("pList", ids)
             			.list();
+            			//remove proxies
+            			for (int i=0; i<result.size(); ++i) {
+            				Principal p = (Principal)result.get(i);
+            				if (!(p instanceof User) && !(p instanceof Group)) {
+            					Principal principal = (Principal)session.get(User.class, p.getId());
+            					if (principal==null) 
+            						principal = (Principal)session.get(Group.class, p.getId());
+            					result.set(i, principal);
+            				}
+            			}
+            			return result;
             		}
            	}
         );

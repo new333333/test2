@@ -788,16 +788,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							if (configItem.attributeValue("category", "").equals("entryData")) {
 								String nameValue = nameProperty.attributeValue("value", "");									
 								if (nameValue.equals("")) {nameValue = nextItem.attributeValue("name");}
+								if (!inputData.containsKey(nameValue)) continue;
 								
 								//We have the element name, see if it has a value in the input data
 								if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
 									//Use the helper routine to parse the date into a date object
-									if (inputData.containsKey(nameValue)) {
-										Description description = new Description();
-										description.setText(((String[])inputData.get(nameValue))[0]);
-										description.setFormat(Description.FORMAT_HTML);
-										entryData.put(nameValue, description);
-									}
+									Description description = new Description();
+									description.setText(((String[])inputData.get(nameValue))[0]);
+									description.setFormat(Description.FORMAT_HTML);
+									entryData.put(nameValue, description);
 								} else if (itemName.equals("date")) {
 									//Use the helper routine to parse the date into a date object
 									Date date = DateHelper.getDateFromMap(inputData, currentFormName, nameValue);
@@ -820,17 +819,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								        entryData.put(nameValue, event);
 								    }
 								} else if (itemName.equals("selectbox")) {
-									if (inputData.containsKey(nameValue)) {
 										entryData.put(nameValue, inputData.get(nameValue));
-									}
 								} else if (itemName.equals("checkbox")) {
-									if (inputData.containsKey(nameValue) && ((String[])inputData.get(nameValue))[0].equals("on")) {
+									if (((String[])inputData.get(nameValue))[0].equals("on")) {
 										entryData.put(nameValue, new Boolean(true));
 									} else {
 										entryData.put(nameValue, new Boolean(false));
 									}
 								} else if (itemName.equals("checkbox")) {
-									if (inputData.containsKey(nameValue) && ((String[])inputData.get(nameValue))[0].equals("on")) {
+									if (((String[])inputData.get(nameValue))[0].equals("on")) {
 										entryData.put(nameValue, new Boolean(true));
 									} else {
 										entryData.put(nameValue, new Boolean(false));
@@ -872,9 +869,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 										}
 								    }
 								} else {
-									if (inputData.containsKey(nameValue)) {
-										entryData.put(nameValue, ((String[])inputData.get(nameValue))[0]);
-									}
+									entryData.put(nameValue, ((String[])inputData.get(nameValue))[0]);
 								}
 							}
 						}

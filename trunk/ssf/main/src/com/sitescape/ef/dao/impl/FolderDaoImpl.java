@@ -48,7 +48,7 @@ import com.sitescape.ef.util.Constants;
  *
  */
 public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
-	private String[] cfAttrs = new String[]{"parentFolder", "HKey.level"};
+	private String[] cfAttrs = new String[]{"parentBinder", "HKey.level"};
 	private OrderBy cfOrder = new OrderBy("HKey.sortKey", OrderBy.DESCENDING);
 	private CoreDao coreDao;
 	
@@ -112,7 +112,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                  public Object doInHibernate(Session session) throws HibernateException {
                      String[] keys = entry.getHKey().getAncestorKeys();  
                      List query = session.createCriteria(entry.getClass())
-                     .add(Expression.eq("parentFolder", entry.getParentFolder().getId()))
+                     .add(Expression.eq("parentBinder", entry.getParentFolder().getId()))
                      .add(Expression.in("HKey.sortKey", keys))
                      .list();
   //TODO: add order by when get new frontbase                      

@@ -22,8 +22,8 @@ Generama 1.2
 Hibernate 3.0.5
 Jaxen 1.1-beta-5
 JAXRPC 1.1
-JBPM 3.0
-JBPM-Identity 3.0
+JBPM 3.0.2
+JBPM-Identity 3.0.2
 JDOM 1.0
 JTA 1.0.1b
 JTDS 0.9.1

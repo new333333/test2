@@ -30,6 +30,7 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     protected Map namedEvents;
     protected List workflowStates;   
     protected HistoryStamp workflowChange;
+    protected Binder parentBinder;
     
     public Entry() {
     }
@@ -113,6 +114,16 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     }
     public void setEntryDef(Definition entryDef) {
         this.entryDef = entryDef;
+    }
+    /**
+     * @hibernate.many-to-one
+     * @return
+     */
+    public Binder getParentBinder() {
+   	 return parentBinder;
+    }
+    public void setParentBinder(Binder parentBinder) {
+   	 this.parentBinder = parentBinder;
     }
  
     /**
