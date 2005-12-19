@@ -25,6 +25,8 @@
 		<property name="cglib.use_reflection_optimizer">false</property>
 		<!--<property name="cache.provider_class">net.sf.hibernate.cache.EhCacheProvider</property>-->
 		<property name="show_sql">true</property>
+		<!-- Set this property to false when running under production since it may affect performance -->
+		<property name="hibernate.generate_statistics">true</property>
 	
 		<!-- Sitescape Mappings -->
 		<mapping resource="com/sitescape/ef/security/function/Function.hbm.xml"/>
