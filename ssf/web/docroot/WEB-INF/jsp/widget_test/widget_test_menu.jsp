@@ -38,6 +38,10 @@
 						<portlet:param name="action" value="workflow" />
 						<portlet:param name="operation" value="null" />
 					</portlet:actionURL>">Workflow tester</a><br>
+				<a href="<portlet:actionURL windowState="normal">
+						<portlet:param name="action" value="flush" />
+						<portlet:param name="operation" value="null" />
+					</portlet:actionURL>">Flush cache</a><br>
 				<br>
 				<br><span><b>Forum operations</b></span><br>
 				<br>

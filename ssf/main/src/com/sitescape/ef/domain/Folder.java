@@ -136,7 +136,7 @@ public class Folder extends Binder {
      * @hibernate.bag lazy="true" cascade="all" inverse="true" optimistic-lock="false"
  	 * @hibernate.key column="parentBinder" 
 	 * @hibernate.one-to-many class="com.sitescape.ef.domain.FolderEntry"
-     * Returns a Set of Folder.
+     * Returns a Set of Folder entries.
      * @return
      */
     private List getIEntries() {
@@ -201,7 +201,12 @@ public class Folder extends Binder {
             ac = this.getTopFolder();
         return ac;
     } 
-	    
+    public List getEntryDefs() {
+   		return getDefs(Definition.COMMAND);
+    }
+    public List getBinderViewDefs() {
+   		return getDefs(Definition.FORUM_VIEW);
+    }	    
 
     /*
      * Each folder has a unique root sort key that it uses to

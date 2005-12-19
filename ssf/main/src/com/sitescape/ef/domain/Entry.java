@@ -105,13 +105,15 @@ public abstract class Entry extends PersistentLongIdTimestampObject
         this.title = title;
     }
     /** 
-     * @hibernate.many-to-one class="com.sitescape.ef.domain.Definition"
+     * @hibernate.many-to-one access="field" class="com.sitescape.ef.domain.Definition"
      * @hibernate.column name="entryDef" sql-type="char(32)"
      * @return
      */
     public Definition getEntryDef() {
-        return entryDef;
+    	if (entryDef != null) return entryDef;
+    	return getParentBinder().getDefaultEntryDef();
     }
+    
     public void setEntryDef(Definition entryDef) {
         this.entryDef = entryDef;
     }

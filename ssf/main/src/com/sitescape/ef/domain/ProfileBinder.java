@@ -16,5 +16,11 @@ public class ProfileBinder extends Binder {
 		// TODO Auto-generated method stub
 		return emptyList;
 	}
+    public List getEntryDefs() {
+   		return getDefs(Definition.PROFILE_ENTRY_VIEW);
+    }
+    public List getBinderViewDefs() {
+   		return getDefs(Definition.PROFILE_VIEW);
+    }	
 
 }

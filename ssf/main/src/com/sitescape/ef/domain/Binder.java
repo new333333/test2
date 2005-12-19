@@ -49,6 +49,8 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     private AclSet aclSet;
     private boolean inheritAclFromParent = true;
     
+    public abstract List getEntryDefs();
+    public abstract List getBinderViewDefs();
     /**
      * @hibernate.property length="100" not-null="true" node="zoneName"
      */
@@ -90,24 +92,14 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     public List getWorkflowDefs() {
     	return getDefs(Definition.WORKFLOW);
     }
-    public List getEntryDefs() {
-    	if (this.getType().equals("FOLDER")) {
-    		return getDefs(Definition.COMMAND);
-    	} else if (this.getType().equals("PROFILES")) {
-    		return getDefs(Definition.PROFILE_ENTRY_VIEW);
-    	} else {
-    		return new ArrayList();
-    	}
-    }
-    public List getBinderViewDefs() {
-    	if (this.getType().equals("FOLDER")) {
-    		return getDefs(Definition.FORUM_VIEW);
-    	} else if (this.getType().equals("PROFILES")) {
-    		return getDefs(Definition.PROFILE_VIEW);
-    	} else {
-    		return new ArrayList();
-    	}
-    }
+    public Definition getDefaultEntryDef() {
+    	
+    	List profileDefinitions = getEntryDefs();
+    	if (profileDefinitions.size() > 0)
+    		return (Definition)profileDefinitions.get(0);
+    	return null;
+	}
+    
     /**
      * @hibernate.many-to-one access="field" class="com.sitescape.ef.domain.Definition"
      * @hibernate.column name="defaultPostingDef" sql-type="char(32)"

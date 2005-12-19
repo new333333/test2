@@ -17,13 +17,12 @@
 		<property name="hibernate.query.factory_class">org.hibernate.hql.ast.ASTQueryTranslatorFactory</property>
 		<!-- Other miscellaneous Hibernate properties. -->
 		<property name="max_fetch_depth">3</property>
-		<property name="use_outer_join">false</property>
 		<property name="cache.use_query_cache">true</property>
 		<property name="statement_cache.size">20</property>
 		<property name="jdbc.batch_size">0</property>
 		<property name="jdbc.use_scrollable_resultset">true</property>
-		<property name="cglib.use_reflection_optimizer">false</property>
-		<!--<property name="cache.provider_class">net.sf.hibernate.cache.EhCacheProvider</property>-->
+		<property name="cglib.use_reflection_optimizer">true</property>
+		<property name="cache.provider_class">com.sitescape.ef.util.EhCacheProvider</property>
 		<property name="show_sql">true</property>
 		<!-- Set this property to false when running under production since it may affect performance -->
 		<property name="hibernate.generate_statistics">true</property>
