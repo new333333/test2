@@ -12,6 +12,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
 import com.sitescape.ef.domain.CustomAttribute;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FolderEntry;
@@ -120,10 +121,13 @@ public class EntryIndexUtils {
    						((WorkflowState)workflowStates.get(i)).getState());
    				//Index the workflow state
    				doc.add(workflowStateField);
-   				Field workflowProcessField = Field.Keyword(WORKFLOW_PROCESS_FIELD, 
-   						((WorkflowState)workflowStates.get(i)).getDefinition().getId());
-   				//Index the workflow title (which is always the id of the workflow definition)
-   				doc.add(workflowProcessField);
+   				Definition def = ((WorkflowState)workflowStates.get(i)).getDefinition();
+   				if (def != null) {
+	   				Field workflowProcessField = Field.Keyword(WORKFLOW_PROCESS_FIELD, 
+	   						def.getId());
+	   				//Index the workflow title (which is always the id of the workflow definition)
+	   				doc.add(workflowProcessField);
+   				}
    			}
    		}
      }
