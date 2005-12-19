@@ -528,8 +528,11 @@
 	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
 	    <property name="beans">
 	      <map>
-	        <entry key="bean:name=presenceService">
+	        <entry key="sitescape:name=presenceService">
 	          <ref local="presenceService"/>
+	        </entry>
+	        <entry key="sitescape:name=hibernateStatisticsService">
+	          <ref local="hibernateStatisticsService"/>
 	        </entry>
 	      </map>
 	    </property>
@@ -537,11 +540,15 @@
 	      <bean class="org.springframework.jmx.export.assembler.MethodNameBasedMBeanInfoAssembler">
 	      	<property name="methodMappings">
 	      		<map>
-	      			<entry key="bean:name=presenceService"><value>getJabberServer,getJabberServerPort,getEnable</value></entry>
+	      			<entry key="sitescape:name=presenceService"><value>getJabberServer,getJabberServerPort,getEnable</value></entry>
 	      		</map>
 	      	</property>
 	      </bean>
 	    </property>
 	</bean>
 
+	<bean id="hibernateStatisticsService" class="org.hibernate.jmx.StatisticsService">
+		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+	</bean>
+	
 </beans>
