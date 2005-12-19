@@ -29,6 +29,9 @@ array set ::j2ee_Principals_class_MAP {
    preferredWorkspace {preferredWorkspace int32}
    defaultIdentity	{defaultIdentity boolean}
    reserved	{reserved boolean}
+   parentBinder {parentBinder int32}
+   acl_inheritFromParent {acl_inheritFromParent boolean}
+   
 }
 
 array set ::j2ee_Forum_class_MAP {
@@ -89,7 +92,7 @@ array set ::j2ee_FolderEntry_class_MAP {
    creation_principal      {creation_principal int32}
    modification_date {modification_date timestamp}
    modification_principal     {modification_principal int32}
-   parentFolder {parentFolder int32}
+   parentBinder {parentBinder int32}
    topEntry {topEntry int32}
    parentEntry {parentEntry int32}
    commandDef  {commandDef "varchar 32"}
@@ -396,7 +399,8 @@ proc doUsers {userList} {
     set attrs(creation_principal) $::userIds(wf_admin)
     set attrs(modification_date) $attrs(creation_date)
     set attrs(modification_principal) $::userIds(wf_admin)
-
+    set attrs(parentBinder) $::_profileId
+	set attrs(acl_inheritFromParent) 1
     set results [setupColVals $map attrs insert]
     set cmdList [lindex $results 1]
     set cmd [lindex $cmdList 0] 
@@ -474,7 +478,7 @@ proc doUsers {userList} {
                 set attrs1(creation_principal) $attrs(creation_principal)
                 set attrs1(modification_principal) $attrs(creation_principal)
                 set attrs1(modification_date) $attrs(creation_date)
-                set attrs1(fileNname) $photos
+                set attrs1(fileName) $photos
                 set attrs1(fileLength) 0
                 set attrs1(ownerType) "principal"
                 set attrs1(owner) $::userIds($user)
@@ -531,6 +535,8 @@ proc doGroups {groupList} {
 	set attrs(disabled) 0
 	set attrs(defaultIdentity) 0
  	set attrs(reserved) 0
+    set attrs(parentBinder) $::_profileId
+	set attrs(acl_inheritFromParent) 1
 	
 	while {[llength [set bunchList [lrange $groupList $bunchIndex [expr {$bunchIndex + $bunchSize - 1}]]]]} {
         ::profile::select -type group -filter userName $bunchList -hint @
@@ -641,6 +647,8 @@ proc doZone {zoneName {cName {liferay.com}}} {
         }
         wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',0,0,0,'[sql_quote_value $::zoneName]');"
      }
+	set ::_profileId [new_forum_uuid]
+    wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'PROFILES',0,0,0,'[sql_quote_value $::zoneName]');"
     wimsql_rw "Update SS_Forums set owningWorkspace=$::forumIds(_admin) where not name='_admin';"
     wimsql_rw "Update SS_Forums set owningWorkspace=null,name='[sql_quote_value $::zoneName]' where name='_admin';"
     wimsql_rw commit
@@ -663,7 +671,7 @@ proc doZone {zoneName {cName {liferay.com}}} {
         set ::userIds($user) [new_user_uuid]
 
         #need to save so foreign key constraings are met.
-        wimsql_rw "INSERT INTO SS_Principals (id,lockVersion,type,zoneName) VALUES ($::userIds($user),1,'U','[sql_quote_value $::zoneName]');"
+        wimsql_rw "INSERT INTO SS_Principals (id,lockVersion,type,zoneName,acl_inheritFromParent) VALUES ($::userIds($user),1,'U','[sql_quote_value $::zoneName]',1);"
     }
     wimsql_rw commit
 	doUsers $personList 
@@ -679,8 +687,20 @@ proc doZone {zoneName {cName {liferay.com}}} {
     #map group membership
     doGM
 
-
+	#now update _profile with create/modify info
+	array unset attrs
+    set attrs(creation_principal) $::userIds(wf_admin) 
+    set attrs(creation_date) [date_time current]
+    set attrs(modification_principal) $::userIds(wf_admin) 
+    set attrs(modification_date) $attrs(creation_date)
+    set map ::j2ee_Forum_class_MAP
+    set results [setupColVals $map attrs update]
+    set cmdList [lindex $results 1]
+    set cmd [lindex $cmdList 0] 
+    wimsql_rw "UPDATE SS_Forums $cmd where id=$::_profileId;" [lindex $cmdList 1]
+ 
     if {[catch {
+	    
 
         foreach forum [array names ::forumIds] { 
 			wim property load -aca $zoneName -name $forum
@@ -764,14 +784,13 @@ proc doZone {zoneName {cName {liferay.com}}} {
 					set attrs(entryRoot_level) 0
 					set attrs(entryRoot_sortKey) $eRoot
 					set attrs(folder_level) 1
-					set attrs(folderRoot_sortKey) $fRoot
+					set attrs(folder_sortKey) $fRoot
                     set RESOURCE_TYPE 3      
                     wimsql_rw "Insert into SS_FolderCounts (lockVersion,id,nextFolder,nextEntry) values
                     			(1,$::forumIds($forum), 1,1);"   
                 }
             }
 			doNotifications $zoneName $forum attrs
-           set map ::j2ee_Forum_class_MAP
             set results [setupColVals $map attrs update]
             set cmdList [lindex $results 1]
             set cmd [lindex $cmdList 0] 
@@ -781,7 +800,6 @@ proc doZone {zoneName {cName {liferay.com}}} {
 			}
 			doAcls $zoneName $forum $RESOURCE_TYPE
 			wim property unload -aca $zoneName -name $forum
-    
         }
     } eMsg]} {
         
@@ -893,7 +911,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
             set attrs(id) [new_docshare_uuid]
             set entryId $attrs(id)
             set attrs(lockVersion) 1
-            set attrs(parentFolder) $parentFolderID
+            set attrs(parentBinder) $parentFolderID
             if {[isnull $topDocShareID]} {
                 set attrs(topEntry) $entryId
             } else {
@@ -2253,8 +2271,11 @@ proc setupColVals {map fromArray type {exclude {}}} {
             } elseif {($dType == "clob") || ($dType=="blob")} {
                 lappend vals "$userMods($a)"
             } else {
- 				if {[isnull $userMods($a)]} {set userMods($a) " "}
-                ::sqlDialect::checkLength $a [string bytelength $userMods($a)] $dType
+ 				if {[isnull $userMods($a)]} {
+ 					set userMods($a) " "
+                } else {
+                	set userMods($a) [::sqlDialect::checkLength $a $userMods($a)$dType]
+                }
                 lappend vals '[sql_quote_value $userMods($a)]'
             }            
 
@@ -2275,11 +2296,11 @@ proc setupColVals {map fromArray type {exclude {}}} {
             } else {
  				if {[isnull $userMods($a)] && ($dType != "int32")} { 
  					set userMods($a) " "
-				} 
-                lappend vals "$userMods($a)"
-                if {($dType != "int32")} {
-                    ::sqlDialect::checkLength $a [string bytelength $userMods($a)] $dType
+				
+                } elseif {($dType != "int32")} {
+                    set userMods($a) [::sqlDialect::checkLength $a $userMods($a) $dType]
                 }
+                lappend vals "$userMods($a)"
             }
         }            
         lappend attrs $newAtt
@@ -2318,7 +2339,8 @@ proc setupColVals {map fromArray type {exclude {}}} {
     }
     return [list $attrs $cmdList $kvps $notfound]
 }
-proc sqlDialect::checkLength {name length dType} {
+proc sqlDialect::checkLength {name val dType} {
+	set length [string bytelength $val]
     variable maxvarchar 
     variable maxfname 
     variable maxtext 
@@ -2343,13 +2365,14 @@ proc sqlDialect::checkLength {name length dType} {
         nmaxvarchar {set max $maxvarchar}
         nmaxtextSeg {set max $maxtextSeg}
         clob -
-		blob {return -1}
+		blob {return $val}
     }
 
     if {$length > $max} {
-        error "Specified $name value length is $length, maximum allowed is $max."
+        puts "TRUNCATE - Specified $name value length is $length, maximum allowed is $max."
+		return [sqlDialect::truncateField $val $max ]
     }
-    return $max
+    return $val
 }
 # need longer string than wgw__b1032
 proc B1036 { v {w 0} } {

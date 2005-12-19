@@ -35,8 +35,6 @@ public class SAbstractProfileController extends SAbstractController {
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 
-//	temp to bootstrap
-	getProfileModule().addProfileBinder();
 		Map users = getProfileModule().getUsers();
 		ProfileBinder binder = (ProfileBinder)users.get(ObjectKeys.BINDER);
 		model.put(WebKeys.BINDER, binder);

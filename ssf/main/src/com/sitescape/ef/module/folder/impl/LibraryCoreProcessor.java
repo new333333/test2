@@ -15,7 +15,7 @@ import com.sitescape.ef.domain.LibraryEntryExistsException;
  *
  */
 public class LibraryCoreProcessor extends DefaultFolderCoreProcessor {
-	private String[] cfAttrs = new String[]{"parentFolder", "HKey.level", "lower(title)"};
+	private String[] cfAttrs = new String[]{"parentBinder", "HKey.level", "lower(title)"};
 
 	   protected void addEntry_fillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData) {  
     	//title must be unique

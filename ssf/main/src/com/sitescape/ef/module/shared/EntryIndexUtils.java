@@ -50,6 +50,7 @@ public class EntryIndexUtils {
     public static final String EVENT_COUNT_FIELD = "_eventCount";
     public static final String WORKFLOW_PROCESS_FIELD = "_workflowProcess";
     public static final String WORKFLOW_STATE_FIELD = "_workflowState";
+    public static final String BINDER_ID_FIELD = "_binderId";
     
     // Defines field values
     public static final String READ_ACL_ALL = "all";
@@ -200,6 +201,10 @@ public class EntryIndexUtils {
         doc.add(docIdField);
     }
 
+    public static void addParentBinder(Document doc, Entry entry) {
+       	Field binderIdField = Field.Keyword(BINDER_ID_FIELD, entry.getParentBinder().getId().toString());
+       	doc.add(binderIdField);
+    }   
     
     public static String formatDayString(Date date) {
     	DateFormat df = DateFormat.getInstance();

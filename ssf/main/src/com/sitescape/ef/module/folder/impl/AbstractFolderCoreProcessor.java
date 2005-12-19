@@ -387,7 +387,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     	deleteFolderIndexEntries(folder);
     	
         //do actual db query 
-    	FilterControls filter = new FilterControls("parentFolder", folder);
+    	FilterControls filter = new FilterControls("parentBinder", folder);
         SFQuery query = (SFQuery)getFolderDao().queryEntries(filter);
         
         //iterate through results
@@ -567,7 +567,6 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     		p = (Principal)users.get(i);
     		if (p.getId().toString().equalsIgnoreCase(userId)) return p;
     	}
-    	new Principal();
     	return null;
     }
     protected void getFolderEntries_accessControl(Folder folder) {
@@ -764,12 +763,6 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     }
     
     protected void deleteEntry_delete(Folder parentFolder, FolderEntry entry) {
-    	List atts = entry.getAttachments();
-    	//need to get all attachments associated with replies
-    	//need to delete workflow stuff
-    	for (int i=0; i<atts.size(); ++i) {
-    		Attachment a = (Attachment)atts.get(i);
-    	}
         getCoreDao().delete(entry);   
     }
     protected void deleteEntry_postDelete(Folder parentFolder, FolderEntry entry) {

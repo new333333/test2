@@ -16,6 +16,7 @@ import java.util.Set;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.SortField;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -58,11 +59,13 @@ import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
+import com.sitescape.ef.module.workflow.WorkflowModule;
 
 
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.FOLDER_MAX_PAGE_SIZE;
-   protected DefinitionModule definitionModule;
+	protected DefinitionModule definitionModule;
+    protected WorkflowModule workflowModule;
     
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
@@ -71,6 +74,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		this.definitionModule = definitionModule;
 	}
   
+	protected WorkflowModule getWorkflowModule() {
+		return workflowModule;
+	}
+	public void setWorkflowModule(WorkflowModule workflowModule) {
+		this.workflowModule = workflowModule;
+	}
+ 
 	public ProfileBinder addProfileBinder() {
 		ProfileBinder pf;
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
@@ -83,6 +93,17 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			pf.setZoneName(zoneName);
 			getCoreDao().save(pf);
 			getCoreDao().findTopWorkspace(zoneName).addChild(pf);
+			List users = getCoreDao().loadUsers(new FilterControls(), zoneName);
+			for (int i=0; i<users.size(); ++i) {
+				User u = (User)users.get(i);
+				u.setParentBinder(pf);
+			}
+			
+			List groups = getCoreDao().loadGroups(new FilterControls(), zoneName);
+			for (int i=0; i<groups.size(); ++i) {
+				Group g = (Group)groups.get(i);
+				g.setParentBinder(pf);
+			}
 			return pf;
 		}
 	}
@@ -487,6 +508,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         Principal entry = getCoreDao().loadPrincipal(principaId, user.getZoneName());        
         deleteEntry_accessControl(pf, entry);
         deleteEntry_preDelete(pf, entry);
+        deleteEntry_workflow(pf, entry);
         deleteEntry_processFiles(pf, entry);
         deleteEntry_delete(pf, entry);
         deleteEntry_postDelete(pf, entry);
@@ -496,23 +518,20 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     protected void deleteEntry_accessControl(ProfileBinder binder, Principal entry) {
         getAccessControlManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES);
         
-  //      getAccessControlManager().checkAcl(binder, entry, AccessType.DELETE);
+        getAccessControlManager().checkAcl(binder, entry, AccessType.DELETE);
     }
     protected void deleteEntry_preDelete(ProfileBinder binder, Principal entry) {
     }
         
+    protected void deleteEntry_workflow(ProfileBinder binder, Principal entry) {
+    	getWorkflowModule().deleteEntryWorkflow(binder, entry);
+    }
     protected void deleteEntry_processFiles(ProfileBinder binder, Principal entry) {
     	getFileManager().deleteFiles(binder, entry);
     }
     
     protected void deleteEntry_delete(ProfileBinder binder, Principal entry) {
-    	List atts = entry.getAttachments();
-    	//need to get all attachments associated with replies
-    	//need to delete workflow stuff
-    	for (int i=0; i<atts.size(); ++i) {
-    		Attachment a = (Attachment)atts.get(i);
-    	}
-        getCoreDao().delete(entry);   
+    	getCoreDao().delete(entry);   
     }
     protected void deleteEntry_postDelete(ProfileBinder binder, Principal entry) {
     }
@@ -523,13 +542,32 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
 
    //***********************************************************************************************************
+    public void deleteIndexEntries(ProfileBinder binder) {
+    	FolderEntry entry;
+    	
+    	index_accessControl(binder);
+    	
+        //iterate through results
+        	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+        try {	            
+	        logger.info("Indexing (" + binder.getId().toString() + ") ");
+	        
+	        // Delete the document that's currently in the index.
+	        Term delTerm = new Term(EntryIndexUtils.BINDER_ID_FIELD, binder.getId().toString());
+	        luceneSession.deleteDocuments(delTerm);
+	            
+        } finally {
+	        luceneSession.close();
+	    }
+ 
+    }
     
     public void index() {
     	Principal entry;
  	   ProfileBinder binder = getProfileBinder();
 
     	index_accessControl(binder);
-    	
+    	deleteIndexEntries(binder);
     	SFQuery query = getCoreDao().queryUsers(new FilterControls(), binder.getZoneName());
         //iterate through results
         LuceneSession luceneSession = getLuceneSessionFactory().openSession();
@@ -634,7 +672,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     		p = (Principal)users.get(i);
     		if (p.getId().toString().equalsIgnoreCase(userId)) return p;
     	}
-    	new Principal();
     	return null;
     }
     protected List loadEntryHistoryLuc(List pList) {
@@ -672,7 +709,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
     	child.setText(BasicIndexUtils.DOC_TYPE_USER);
     	
-     	//Create the Lucene query
+    	//Look only for entryType=entry
+    	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.BINDER_ID_FIELD);
+    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	child.setText(binder.getId().toString());
+
+    	//Create the Lucene query
     	QueryBuilder qb = new QueryBuilder();
     	SearchObject so = qb.buildQuery(qTree);
     	
@@ -748,6 +791,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		// Add Modification Principal Id
 		EntryIndexUtils.addModificationPrincipalId(indexDoc,entry);
     
+		EntryIndexUtils.addParentBinder(indexDoc, entry);
 		// Add Doc Id
 		EntryIndexUtils.addDocId(indexDoc, entry);
    

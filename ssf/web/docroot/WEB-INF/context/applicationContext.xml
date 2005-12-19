@@ -352,6 +352,7 @@
 	
 	<bean id="profileModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.profile.impl.ProfileModuleImpl">
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
+		<property name="workflowModule"><ref local="workflowModuleTarget"/></property>
 	</bean>
 
 	<bean id="adminModule" parent="baseTransactionProxy">

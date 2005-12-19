@@ -29,7 +29,7 @@ import com.sitescape.ef.util.CollectionUtil;
 * @author Jong Kim
 *
 */
-public class Principal extends Entry  {
+public abstract class Principal extends AclControlledEntry  {
 	protected boolean disabled=false;
     protected String name;
     protected String lcName;
@@ -42,7 +42,6 @@ public class Principal extends Entry  {
     protected boolean defaultIdentity;
     //events the principal is assigned to
     protected List assignments;
-    
 	/**
  	 * @hibernate.map  lazy="true" inverse="true" cascade="all,delete-orphan" embed-xml="false"
  	 * @hibernate.key column="principal"
@@ -82,7 +81,6 @@ public class Principal extends Entry  {
      public void setHWorkflowStates(List workflowStates) {
         this.workflowStates = workflowStates;
      }
-
     /**
      * @hibernate.property
      * @return
