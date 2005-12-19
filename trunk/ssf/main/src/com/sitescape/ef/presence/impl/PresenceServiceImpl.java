@@ -26,7 +26,7 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 	public void setJabberServer(String jabberServer) {
 		this.jabberServer = jabberServer;
 	}
-	protected String getJabberServer() {
+	public String getJabberServer() {
 		return jabberServer;
 	}
 	
@@ -40,6 +40,9 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 	
 	public void setEnable(boolean enable) {
 		this.enable = enable;
+	}
+	public boolean getEnable() {
+		return enable;
 	}
 	
 	public void afterPropertiesSet() throws Exception {
