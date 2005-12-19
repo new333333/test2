@@ -28,6 +28,7 @@
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <%@ page import="com.sitescape.ef.domain.FolderEntry" %>
+<%@ page import="com.sitescape.ef.domain.User" %>
 <%
 	String nodeOpen = " ";
 	if (data.containsKey("nodeOpen")) {
@@ -166,11 +167,13 @@ function checkForInfo(id) {
 }
 
 function addOption(id, name, item) {
+	//alert("addOption: " + id + ", " + name + ", " + item)
 	showOptions(id, name, item)
 	return false;
 }
 
 function addDefinition(id, name, item) {
+	//alert("addDefinition: " + id + ", " + name + ", " + item)
 	showOptions(id, name, item)
 	return false;
 }
@@ -199,6 +202,7 @@ function deleteDefinition() {
 }
 
 function addItem(id, name, item) {
+	//alert("addItem: " + id + ", " + name + ", " + item)
 	showOptions(id, name, item)
 	return false;
 }
@@ -250,20 +254,27 @@ function showProperties(id, name, item) {
 
 var state = "";
 function setStateMachine(newState) {
+	//alert(newState)
 	state = newState
 	if (state == "definition_selected") {
+		//alert("info_"+selectedIdMapped)
 		//Hide: selection instructions
 		//Show: definition info, definition operations
 		ss_setDivHtml("displaydiv", "")
 		ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
 		ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
 	} else if (state == "operation_selected") {
+		//alert(operationSelection + ", info_"+selectedIdMapped)
 		if (operationSelection == "addDefinition" && operationSelectedItem != "") {
 			ss_setDivHtml("displaydiv", "")
-			ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
+		ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
+		ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
 			ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
 			//loadDiv('properties', "", operationSelectedItem)
 		} else if (operationSelection == "addOption") {
+			ss_setDivHtml("displaydiv", "")
+			ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
+			ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
 			ss_addToDiv("displaydiv", "options_"+selectedIdMapped)
 		} else {
 			ss_setDivHtml("displaydiv", "")
@@ -396,11 +407,19 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 	if (data.containsKey("selectedItem") && !data.get("selectedItem").equals("")) {
 		String selectedItem = (String)data.get("selectedItem");
 		//See if this is an entry definition
-		Element configElement = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='entryForm']");
-		if (configElement != null) {
-			//This is an entry definition; so show the preview of the form
+		Element configElementEntry = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='entryForm']");
+		Element configElementProfile = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='profileEntryForm']");
+		Element configElement = null;
+		if (configElementEntry != null || configElementProfile != null) {
+			//This is an entry or profile definition; so show the preview of the form
 			String definitionName = (String) ((Document) data.get("sourceDefinition")).getRootElement().attributeValue("caption","");
-			request.setAttribute("definitionEntry", new FolderEntry());
+			if (configElementEntry != null) {
+				configElement = configElementEntry;
+				request.setAttribute("definitionEntry", new FolderEntry());
+			} else {
+				configElement = configElementProfile;
+				request.setAttribute("definitionEntry", new User());
+			}
 			request.setAttribute("configElement", configElement);
 			ssConfigJspStyle = "form";
 			request.setAttribute("ssConfigJspStyle", "form");

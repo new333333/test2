@@ -107,7 +107,27 @@ public class DefinitionUtils {
 		return true;
 		
 	}
-    public static void getDefinitions(Binder binder, Map model) {
+
+	public static Definition getEntryDefinition(Binder binder, Principal entry) {
+		//Get the definition used to view this entry
+		Definition entryDef = entry.getEntryDef();
+		if (entryDef == null) {
+			//There is no definition for this entry; get the default for the binder
+			List profileDefinitions = binder.getEntryDefs();
+			for (int i = 0; i < profileDefinitions.size(); i++) {
+				//Look for the first profile entry definition
+				Definition def = (Definition) profileDefinitions.get(i);
+				if (def.getType() == Definition.PROFILE_ENTRY_VIEW) {
+					//Found the first profile entry definition
+					entryDef = def;
+					break;
+				}
+			}
+		}
+		return entryDef;
+	}
+
+	public static void getDefinitions(Binder binder, Map model) {
 		List folderViewDefs = binder.getBinderViewDefs();
 		if (!folderViewDefs.isEmpty()) {
 			Definition defaultForumDefinition = (Definition)folderViewDefs.get(0);

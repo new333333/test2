@@ -17,6 +17,7 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Principal;
 
@@ -35,9 +36,7 @@ public class ModifyEntryController extends SAbstractProfileController {
 		if (action.equals(WebKeys.ACTION_DELETE_ENTRY)) {
 			getProfileModule().deletePrincipal(entryId);			
 		} else if (formData.containsKey("okBtn")) {
-
-			//See if the add entry form was submitted
-			//The form was submitted. Go process it
+			//The modify form was submitted. Go process it
 			Map fileMap=null;
 			if (request instanceof MultipartFileSupport) {
 				fileMap = ((MultipartFileSupport) request).getFileMap();
@@ -50,8 +49,7 @@ public class ModifyEntryController extends SAbstractProfileController {
 		}
 		response.setRenderParameters(formData);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-		
+		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());		
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 		RenderResponse response) throws Exception {
@@ -73,7 +71,16 @@ public class ModifyEntryController extends SAbstractProfileController {
 		model.put(WebKeys.FOLDER, binder);
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
-		DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@name='entryForm']");
+		Definition entryDef = entry.getEntryDef();
+		if (entryDef == null) {
+			//There is no definition associated with this entry. Get the default definition from the binder.
+			entryDef = DefinitionUtils.getEntryDefinition(binder, entry);
+		}
+		if (entryDef == null) {
+			DefinitionUtils.getDefaultEntryView(entry, model);
+		} else {
+			DefinitionUtils.getDefinition(entryDef, model, "//item[@type='form']");
+		}
 		
 		return new ModelAndView(WebKeys.VIEW_MODIFY_ENTRY, model);
 	}

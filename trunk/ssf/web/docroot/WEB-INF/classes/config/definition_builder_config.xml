@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../resources/definition_builder_config.xsd">
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../main/classes/dtd/definition_builder_config.xsd">
 	<definition name="entryTypeDefinition" definitionType="1" caption="__entry_definitions" canBeDeleted="false">		
 		<operations>
 			<operation name="addDefinition" item="entryType" caption="__add_a_new_entry_definition" />
@@ -94,7 +94,7 @@
 		</options>
 	</item>
 	
-	<item name="entryForm" caption="__entry_form_definition" canBeDeleted="false" multipleAllowed="false">
+	<item name="entryForm" caption="__entry_form_definition" type="form" canBeDeleted="false" multipleAllowed="false">
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
@@ -169,12 +169,14 @@
 		
 	<item name="entryFormForm" caption="__form" canBeDeleted="false" multipleAllowed="false">
 		<properties>
-			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName"/>
+			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" 
+				value="form1" setAttribute="formName"/>
 		</properties>
 		<options>
 			<option name="title" initial="true" />
 			<option name="entryFormButtons" initial="true" />
 			<option_select path="//item[@category='entryData']" />
+			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
@@ -203,7 +205,7 @@
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderTitle" />
 	</item>
 	
-	<item name="text" caption="__text" type="data" category="entryData">
+	<item name="text" caption="__text" type="data" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
@@ -225,7 +227,7 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderText" />
 	</item>
 	
-	<item name="textarea" caption="__simple_text_area" type="data" category="entryData">
+	<item name="textarea" caption="__simple_text_area" type="data" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
@@ -248,7 +250,7 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderText" />
 	</item>
 	
-	<item name="htmlEditorTextarea" caption="__html_editor_text_area" type="data" category="entryData">
+	<item name="htmlEditorTextarea" caption="__html_editor_text_area" type="data" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
@@ -305,7 +307,7 @@
 		<notify summary="true" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
-	<item name="selectbox" caption="__selectbox" type="data" category="entryData">
+	<item name="selectbox" caption="__selectbox" type="data" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
@@ -345,7 +347,7 @@
 		</jsps>
 	</item>
 
-	<item name="radio" caption="__radio_buttons" type="data" category="entryData">
+	<item name="radio" caption="__radio_buttons" type="data" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
@@ -383,7 +385,7 @@
 		</jsps>
 	</item>
 
-	<item name="checkbox" caption="__checkbox" type="data" category="entryData">
+	<item name="checkbox" caption="__checkbox" type="data" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
@@ -404,7 +406,7 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderCheck" />
 	</item>
 
-	<item name="attachFiles" caption="__attach_files" multipleAllowed="false" category="entryData">
+	<item name="attachFiles" caption="__attach_files" multipleAllowed="false" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="ss_attachFile" readonly="true"/>
 			<property name="caption" caption="__caption" type="text"/>
@@ -422,7 +424,7 @@
 		<notify summary="true" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderAttachmentsSend" />
 	</item>
 	
-	<item name="file" caption="__file_upload" type="data" category="entryData">
+	<item name="file" caption="__file_upload" type="data" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
@@ -497,6 +499,7 @@
 		</properties>
 		<options>
 			<option_select path="//item[@category='entryData']" />
+			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" />
 		</options>
@@ -512,6 +515,7 @@
 		</properties>
 		<options>
 			<option_select path="//item[@category='entryData']" />
+			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" />
 		</options>
@@ -539,6 +543,7 @@
 		<options>
 			<option name="entryDataItem" caption="__entry_data_item" />
 			<option_select path="//item[@category='entryData']" optionCaption="__form_elements" />
+			<option_select path="//item[@category='commonEntryData']" optionCaption="__form_elements" />
 			<option_select path="//item[@category='entryLayout']" optionCaption="__entry_layout_options"  />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
 		</options>
@@ -558,6 +563,7 @@
 		</properties>
 		<options>
 			<option_select path="//item[@category='entryData']" />
+			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
@@ -576,6 +582,7 @@
 		</properties>
 		<options>
 			<option_select path="//item[@category='entryData']" />
+			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
@@ -591,6 +598,7 @@
 		</properties>
 		<options>
 			<option_select path="//item[@category='entryData']" />
+			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
@@ -644,6 +652,7 @@
 		</properties>
 		<options>
 			<option_select path="//item[@category='entryData']" />
+			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
@@ -707,9 +716,9 @@
 			<option name="onEntry" />
 			<option name="onExit" />
 			<option name="variable" />
-			<option name="startParallelExecution" />
-			<option name="waitForParallelExecution" />
-			<option name="endParallelExecution" />
+			<option name="startParallelThread" />
+			<option name="waitForParallelThread" />
+			<option name="endParallelThread" />
 		</options>
 	</item>
 	
@@ -850,25 +859,25 @@
 		</options>
 	</item>
 	
-	<item name="startParallelExecution" type="parallelExecution" caption="__startParallelExecution" >
+	<item name="startParallelThread" type="parallelThread" caption="__startParallelThread" >
 		<properties>
 			<property name="name" caption="__parallelStateName" type="text" path="//item[@name='state']" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" />
 			<property name="startState" caption="__startState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 	</item>
 	
-	<item name="waitForParallelExecution" caption="__waitForParallelExecution" >
+	<item name="waitForParallelThread" caption="__waitForParallelThread" >
 		<properties>
 			<property name="name" caption="__parallelStateName" type="selectbox">
-			    <option_entry_data select_type="parallelExecution" path="//item[@name='startParallelExecution']" optionCaption="__parallelStateName" />
+			    <option_entry_data select_type="parallelThread" path="//item[@name='startParallelThread']" optionCaption="__parallelStateName" />
 			</property>
 		</properties>
 	</item>
 	
-	<item name="endParallelExecution" caption="__endParallelExecution" >
+	<item name="endParallelThread" caption="__endParallelThread" >
 		<properties>
 			<property name="name" caption="__parallelStateName" type="selectbox">
-			    <option_entry_data select_type="parallelExecution" path="//item[@name='startParallelExecution']" optionCaption="__parallelStateName" />
+			    <option_entry_data select_type="parallelThread" path="//item[@name='startParallelThread']" optionCaption="__parallelStateName" />
 			</property>
 		</properties>
 	</item>
@@ -913,7 +922,7 @@
 		</options>
 	</item>
 	
-	<item name="profileEntryForm" caption="__profile_entry_form_definition" canBeDeleted="false" multipleAllowed="false">
+	<item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" canBeDeleted="false" multipleAllowed="false">
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
@@ -930,12 +939,15 @@
 
 	<item name="profileEntryFormForm" caption="__form" canBeDeleted="false" multipleAllowed="false">
 		<properties>
-			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName"/>
+			<property name="name" caption="__form_name" type="text" 
+				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName" value="form1"/>
 		</properties>
 		<options>
 			<option name="profileName" initial="true" />
 			<option name="entryFormButtons" initial="true" />
+			<option name="attachFiles" />
 			<option_select path="//item[@category='profileEntryData']" />
+			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='profileEntryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
@@ -958,10 +970,23 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_name_form.jsp" />
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_name_view.jsp" />
 		</jsps>
-		<help>__help_title_field</help>
-		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderTitle" />
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderProfileName" />
 	</item>
 	
+	<item name="profileElements" caption="__profile_elements" type="data" category="profileEntryData">
+		<properties>
+		    <property name="name" caption="__profile_element" type="selectbox">
+				<option name="emailAddress" caption="__emailAddress" />
+				<option name="country" caption="__country" />
+				<option name="organization" caption="__organization" />
+				<option name="zonName" caption="__zonName" />
+		    </property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+		</jsps>
+	</item>
+		
 	<item name="profileEntryView" caption="__profile_entry_view_definition" canBeDeleted="false" multipleAllowed="false">
 		<operations>
 			<operation name="addOption" caption="__add" />
@@ -992,12 +1017,12 @@
 		</jsps>
 	</item>
 		
-	<item name="profileEntryAttachments" type="dataView" caption="__profile_entry_attachments" category="profileEntryViewData">
+	<item name="profileEntryAttachments" type="dataView" caption="__profile_entry_attachments" category="profileEntryData">
 		<properties>
-			<property name="caption" caption="__caption" type="text" value="__profile_entry_attachments"/>
+			<property name="caption" caption="__caption" type="text" value="__entry_attachments"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_profile_attachments.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
 		</jsps>
 	</item>
 		

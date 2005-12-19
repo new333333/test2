@@ -29,7 +29,7 @@
 	}
 %>
 <div class="ss_entryContent" >
-<span class="ss_labelLeft"><%= caption %><%= required %></span>
+<span class="ss_labelAbove"><%= caption %><%= required %></span>
 <%
 	for (int i = 1; i <= count; i++) {
 %>
