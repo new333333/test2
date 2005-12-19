@@ -524,4 +524,24 @@
 		<property name="enable"><value>false</value></property>
 	</bean>
 	
+	<!-- ================================  JMX/MBean Support =============================== -->
+	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
+	    <property name="beans">
+	      <map>
+	        <entry key="bean:name=presenceService">
+	          <ref local="presenceService"/>
+	        </entry>
+	      </map>
+	    </property>
+	    <property name="assembler">
+	      <bean class="org.springframework.jmx.export.assembler.MethodNameBasedMBeanInfoAssembler">
+	      	<property name="methodMappings">
+	      		<map>
+	      			<entry key="bean:name=presenceService"><value>getJabberServer,getJabberServerPort,getEnable</value></entry>
+	      		</map>
+	      	</property>
+	      </bean>
+	    </property>
+	</bean>
+
 </beans>
