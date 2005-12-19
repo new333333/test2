@@ -328,7 +328,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 										//This is a "name" property. Now see if it under the entryForm tree
 										Element parentElement = formItemProperty.getParent();
 										while (parentElement != null) {
-											if (parentElement.getName().equals("item") && parentElement.attributeValue("name", "").equals("entryForm")) {
+											if (parentElement.getName().equals("item") && parentElement.attributeValue("type", "").equals("form")) {
 												//Found it. This item is part of the "entryForm" tree.
 												break;
 											}

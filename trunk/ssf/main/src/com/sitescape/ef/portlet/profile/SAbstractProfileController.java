@@ -112,6 +112,7 @@ public class SAbstractProfileController extends SAbstractController {
 
 		return new ModelAndView(WebKeys.VIEW_LISTING, model);
 	}	
+	
 	protected Toolbar buildViewToolbar(RenderResponse response, Binder binder) {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
