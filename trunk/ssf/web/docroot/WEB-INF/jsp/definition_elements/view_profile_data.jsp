@@ -6,14 +6,14 @@
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
 	String itemType = (String) item.attributeValue("formItem", "");
-		%>itemType: <%= itemType %><br><%
+
 	if (itemType.equals("name")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_name.jsp" %><%
 	
 	} else if (itemType.equals("profileElements")) {
 		Element profileElementNameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
 		String profileElementType = profileElementNameProperty.attributeValue("value", "");
-		%>element tyep: <%= profileElementType %><br><%
+
 		if (profileElementType.equals("title")) {
 			%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_title.jsp" %><%
 	
