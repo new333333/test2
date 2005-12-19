@@ -13,6 +13,7 @@ import com.sitescape.ef.domain.Entry;
 public interface FieldBuilder {
     
     public static final String INDEXING_TYPE_TITLE			= "title";
+    public static final String INDEXING_TYPE_ELEMENT		= "element";
     public static final String INDEXING_TYPE_DESCRIPTION 	= "desc";
     public static final String INDEXING_TYPE_TEXT			= "text";
     public static final String INDEXING_TYPE_SELECT			= "select";

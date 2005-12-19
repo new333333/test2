@@ -42,6 +42,8 @@ public class EntryIndexUtils {
     public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
     public static final String TITLE_FIELD = "_title";
     public static final String TITLE1_FIELD = "_title1";
+    public static final String NAME_FIELD = "_name";
+    public static final String NAME1_FIELD = "_name1";
     public static final String DESC_FIELD = "_desc";
     public static final String CUSTOM_ATTRS_FIELD = "_customAttributes";
     public static final String EVENT_FIELD = "_event";
