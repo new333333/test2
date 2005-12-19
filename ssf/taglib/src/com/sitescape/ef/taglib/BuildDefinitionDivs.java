@@ -369,6 +369,13 @@ public class BuildDefinitionDivs extends TagSupport {
 					e_option = (Element) itOptions.next();
 					String optionId = e_option.attributeValue("id", e_option.attributeValue("name"));
 					String optionName = e_option.attributeValue("name");
+					//See if this search is limited to a particular definition type (e.g., COMMAND or PROFILE_ENTRY_VIEW)
+					String optionDefinitionType = e_option.attributeValue("definitionType", "");
+					if (!optionDefinitionType.equals("")) {
+						//This request is for a specific definition type.
+						//Check that the definition type from the actual definition matches the desired type.
+						if (!optionDefinitionType.equals(sourceRoot.attributeValue("type", ""))) continue;
+					}
 					//Find this item in the definition config
 					Element optionItem = (Element) this.configDocument.getRootElement().selectSingleNode("item[@name='"+optionName+"']");
 					if (optionItem != null) {
@@ -406,12 +413,22 @@ public class BuildDefinitionDivs extends TagSupport {
 				itOptions = e_options.elementIterator("option_select");
 				while (itOptions.hasNext()) {
 					e_option = (Element) itOptions.next();
+					
+					//See if this search is limited to a particular definition type (e.g., COMMAND or PROFILE_ENTRY_VIEW)
+					String optionDefinitionType = e_option.attributeValue("definitionType", "");
+					if (!optionDefinitionType.equals("")) {
+						//This request is for a specific definition type.
+						//Check that the definition type from the actual definition matches the desired type.
+						if (!optionDefinitionType.equals(sourceRoot.attributeValue("type", ""))) continue;
+					}
+					String optionPath = e_option.attributeValue("path", "");
+					Iterator itOptionsSelect = rootConfigElement.selectNodes(optionPath).iterator();
+					if (!itOptionsSelect.hasNext()) continue;
+					
 					String optionCaption = NLT.getDef(e_option.attributeValue("optionCaption", ""));
 					if (!optionCaption.equals("")) {
 						sb.append("</ul>\n<br>\n<b>").append(optionCaption).append("</b>\n<ul>\n");
 					}
-					String optionPath = e_option.attributeValue("path", "");
-					Iterator itOptionsSelect = rootConfigElement.selectNodes(optionPath).iterator();
 					while (itOptionsSelect.hasNext()) {
 						Element optionSelect = (Element) itOptionsSelect.next();
 						String optionSelectId = optionSelect.attributeValue("id", optionSelect.attributeValue("name"));

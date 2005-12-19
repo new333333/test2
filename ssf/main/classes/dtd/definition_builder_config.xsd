@@ -110,12 +110,14 @@
      </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="caption" type="xsd:string"/>
+    <xsd:attribute name="definitionType" type="xsd:string"/>
     <xsd:attribute name="initial" type="xsd:boolean"/>
     <xsd:attribute name="multipleAllowed" type="xsd:boolean"/>
   </xsd:complexType>
 
   <xsd:complexType name="option_selectType">
      <xsd:sequence/>
+    <xsd:attribute name="definitionType" type="xsd:string"/>
     <xsd:attribute name="path" type="xsd:string"/>
     <xsd:attribute name="optionCaption" type="xsd:string"/>
     <xsd:attribute name="initial" type="xsd:boolean"/>

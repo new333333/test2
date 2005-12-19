@@ -115,7 +115,7 @@
 		</operations>
 
 		<options>
-			<option name="entryDataItem" caption="__entry_data_item" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
 			<option name="entryWorkflow" caption="__entry_Workflow" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option name="entryReplies" caption="__entry_replies" />
@@ -175,7 +175,8 @@
 		<options>
 			<option name="title" initial="true" />
 			<option name="entryFormButtons" initial="true" />
-			<option_select path="//item[@category='entryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -450,7 +451,7 @@
 		<notify summary="true" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderFile" />
 	</item>
 	
-	<item name="date" caption="__date" type="data" category="entryData">
+	<item name="date" caption="__date" type="data" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
@@ -498,7 +499,8 @@
 			<property name="style" caption="__style" type="text"/>
 		</properties>
 		<options>
-			<option_select path="//item[@category='entryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" />
@@ -514,7 +516,8 @@
 			<property name="legend" caption="__legend" type="text"/>
 		</properties>
 		<options>
-			<option_select path="//item[@category='entryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" />
@@ -541,9 +544,10 @@
 			</property>
 		</properties>
 		<options>
-			<option name="entryDataItem" caption="__entry_data_item" />
-			<option_select path="//item[@category='entryData']" optionCaption="__form_elements" />
-			<option_select path="//item[@category='commonEntryData']" optionCaption="__form_elements" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__form_elements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__form_elements" />
+			<option_select path="//item[@category='commonEntryData']" optionCaption="__form_elements_common" />
 			<option_select path="//item[@category='entryLayout']" optionCaption="__entry_layout_options"  />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
 		</options>
@@ -562,7 +566,8 @@
 			</property>
 		</properties>
 		<options>
-			<option_select path="//item[@category='entryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -581,7 +586,8 @@
 			<property name="htmlBottom" caption="__html_bottom" type="textarea"/>
 		</properties>
 		<options>
-			<option_select path="//item[@category='entryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -597,7 +603,8 @@
 			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName"/>
 		</properties>
 		<options>
-			<option_select path="//item[@category='entryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -651,7 +658,8 @@
 			<property name="viewJsp" caption="__view_jsp_name" type="text"/>
 		</properties>
 		<options>
-			<option_select path="//item[@category='entryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -760,17 +768,17 @@
 	<item name="conditionOnReply" caption="__transition_condition_on_reply" />
 	<item name="conditionOnResponse" caption="__transition_condition_on_response" >
 		<properties>
-			<property name="response" caption="__transition_condition_on_response_" type="text" />
+			<property name="response" caption="__transition_condition_on_response" type="text" />
 		</properties>
 	</item>
 	<item name="conditionOnDate" caption="__transition_condition_on_date" >
 		<properties>
-			<property name="response" caption="__transition_condition_on_response_" type="text" />
+			<property name="response" caption="__transition_condition_on_response" type="text" />
 		</properties>
 	</item>
 	<item name="conditionOnElapsedTime" caption="__transition_condition_on_elapsed_time" >
 		<properties>
-			<property name="response" caption="__transition_condition_on_response_" type="text" />
+			<property name="response" caption="__transition_condition_on_response" type="text" />
 		</properties>
 	</item>
 	<item name="conditionOnVariable" caption="__transition_condition_on_variable" >
@@ -948,7 +956,7 @@
 			<option name="attachFiles" />
 			<option_select path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" />
-			<option_select path="//item[@category='profileEntryLayout']" />
+			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
@@ -981,10 +989,16 @@
 				<option name="organization" caption="__organization" />
 				<option name="zonName" caption="__zonName" />
 		    </property>
+			<property name="caption" caption="__caption" type="text" />
+			<property name="width" caption="__width" type="text"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderProfileElement" />
 	</item>
 		
 	<item name="profileEntryView" caption="__profile_entry_view_definition" canBeDeleted="false" multipleAllowed="false">
@@ -993,7 +1007,7 @@
 		</operations>
 
 		<options>
-			<option name="profileEntryDataItem" caption="__profile_entry_data_item" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
 			<option name="profileEntryAttachments" caption="__profile_entry_attachments" />
 			<option_select path="//item[@category='profileLayout']" optionCaption="__profile_entry_layout_options" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
