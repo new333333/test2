@@ -70,19 +70,6 @@ public class SAbstractProfileController extends SAbstractController {
 		//Get the definition used to view this entry
 		Definition entryDef = entry.getEntryDef();
 		if (entryDef == null) {
-			//There is no definition for this entry; get the default for the binder
-			List profileDefinitions = binder.getEntryDefs();
-			for (int i = 0; i < profileDefinitions.size(); i++) {
-				//Look for the first profile entry definition
-				Definition def = (Definition) profileDefinitions.get(i);
-				if (def.getType() == Definition.PROFILE_ENTRY_VIEW) {
-					//Found the first profile entry definition
-					entryDef = def;
-					break;
-				}
-			}
-		}
-		if (entryDef == null) {
 			DefinitionUtils.getDefaultEntryView(entry, model);
 		} else {
 			//Set up the definition used to show this profile entry

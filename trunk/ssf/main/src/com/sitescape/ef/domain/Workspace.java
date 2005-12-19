@@ -20,8 +20,8 @@ import java.util.Set;
 public class Workspace extends Binder  {
 	protected Set workspaces; 
     protected Set folders;
-    protected boolean forumsParsed;
-    protected List forums;
+    protected boolean bindersParsed;
+    protected List binders;
    /**
      * @hibernate.bag lazy="true"  cascade="all" inverse="true" optimistic-lock="false"
 	 * @hibernate.key column="owningWorkspace" 
@@ -29,51 +29,50 @@ public class Workspace extends Binder  {
      * @hibernate.cache usage="read-write"
      * @return
      */
-    private List getHForums() {return forums;}
-    private void setHForums(List forums) {this.forums = forums;} 
-    
-    public List getForums() {
-        if (forums == null) forums = new ArrayList();
-    	return forums;
+    private List getHBinders() {return binders;}
+    private void setHBinders(List binders) {this.binders = binders;} 
+    public List getBinders() {
+    	if (binders == null) binders = new ArrayList();
+    	return binders;
     }
     public Set getFolders() {
-      	if (!forumsParsed) {
-    		parseForums();
+      	if (!bindersParsed) {
+    		parseBinders();
     	}
          return folders;
     }
  
     public Set getWorkspaces() {
-      	if (!forumsParsed) {
-    		parseForums();
+      	if (!bindersParsed) {
+      		parseBinders();
     	}
       	return workspaces;
     }
     public void addChild(Binder child) {
-     	if (!forumsParsed) parseForums();
+     	if (!bindersParsed) parseBinders();
 		if (child instanceof Workspace) {
     		workspaces.add(child);
     	} else if (child instanceof Folder){
     		folders.add(child);
     	}
-		forums.add(child);
+		binders.add(child);
 		child.setOwningWorkspace(this);
 	}
     public void removeChild(Binder child) {
-     	if (!forumsParsed) parseForums();
+     	if (!bindersParsed) parseBinders();
  		if (child instanceof Workspace) {
     		workspaces.remove(child);
     	} else {
     		folders.remove(child);
     	}
- 		forums.remove(child);
+ 		binders.remove(child);
 		child.setOwningWorkspace(null);
  		
 	}
-    protected void parseForums() {
+    protected void parseBinders() {
      	folders = new HashSet();
     	workspaces = new HashSet();
-    	Iterator iter = getForums().iterator();
+    	Iterator iter = getBinders().iterator();
     	Binder f,w;
     	while (iter.hasNext()) {
     		f = (Binder)iter.next();
@@ -88,7 +87,7 @@ public class Workspace extends Binder  {
     			}
     		}
     	}
-    	forumsParsed=true;
+    	bindersParsed=true;
     }
     /**
      * Overload so we can return parents definition if not set for this folder
@@ -101,10 +100,13 @@ public class Workspace extends Binder  {
     }
     
     public List getChildAclContainers() {
-        return new ArrayList(this.getForums());
+        return new ArrayList(this.getBinders());
     }
     
     public List getChildAclControlled() {
         return new ArrayList(); // empty
     }
+    public List getEntryDefs() {return new ArrayList();}
+    public List getBinderViewDefs() {return new ArrayList();}
+
 }
