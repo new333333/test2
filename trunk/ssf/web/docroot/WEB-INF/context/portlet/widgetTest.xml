@@ -11,7 +11,7 @@
 	<bean id="fragmentController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.widget_test.FragmentController" />
 	<bean id="definitionBuilderController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.definitionBuilder.ViewController" />
 	<bean id="workflowController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.widget_test.WorkflowController" />
-	<bean id="flushController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.widget_test.FlushController" />
+	<!--<bean id="flushController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.widget_test.FlushController" />-->
 
 	<!-- Handlers -->
 
@@ -28,7 +28,7 @@
 						<entry key="event"><ref bean="eventController"/></entry>
 						<entry key="htmledit"><ref bean="widgetTestController"/></entry>
 						<entry key="workflow"><ref bean="workflowController"/></entry>
-						<entry key="flush"><ref bean="flushController"/></entry>
+						<!--<entry key="flush"><ref bean="flushController"/></entry>-->
 					</map>
 				</entry>
 				<entry key="edit">
