@@ -15,6 +15,7 @@ import java.lang.Long;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
@@ -612,14 +613,15 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     	boolean descend = true;
     	fields[0] = new SortField(EntryIndexUtils.MODIFICATION_DATE_FIELD, descend);
     	so.setSortBy(fields);
+    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
     	System.out.println("Query is: " + qTree.asXML());
-    	System.out.println("Query is: " + so.getQuery().toString());
+    	System.out.println("Query is: " + soQuery.toString());
     	
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         
         try {
-	        hits = luceneSession.search(so.getQuery(),so.getSortBy(),0,maxResults);
+	        hits = luceneSession.search(soQuery,so.getSortBy(),0,maxResults);
         }
         finally {
             luceneSession.close();
