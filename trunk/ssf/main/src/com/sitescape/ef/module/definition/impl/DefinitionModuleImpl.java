@@ -285,7 +285,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				String name = ((String[]) formData.get("propertyId_name"))[0];
 				if (uniqueNames.containsKey(name)) {
 					//This name is not unique
-					throw new DefinitionInvalidException(defId, "Error: name not unique - "+name);
+					throw new DefinitionInvalidException(defId, NLT.get("definition.error.nameNotUnique")+ " ("+name+")");
 				}
 			}
 
@@ -322,14 +322,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								//Find the form item with this name
 								Iterator itFormItems = root.selectNodes("//item/properties/property[@value='"+newItemNamePropertyValue+"']").iterator();
 								while (itFormItems.hasNext()) {
-									//Look for the entryForm item with a "name" property
+									//Look for the form item with a "name" property
 									Element formItemProperty = (Element) itFormItems.next();
 									if (formItemProperty.attributeValue("name", "").equals("name")) {
-										//This is a "name" property. Now see if it under the entryForm tree
+										//This is a "name" property. Now see if it under the form tree
 										Element parentElement = formItemProperty.getParent();
 										while (parentElement != null) {
 											if (parentElement.getName().equals("item") && parentElement.attributeValue("type", "").equals("form")) {
-												//Found it. This item is part of the "entryForm" tree.
+												//Found it. This item is part of the "form" tree.
 												break;
 											}
 											parentElement = parentElement.getParent();
@@ -380,7 +380,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							//See if the user entered a valid name
 							if (!value.equals("") && !value.matches(characterMask)) {
 								//The value is not well formed, go complain to the user
-								throw new DefinitionInvalidException(defId, "Error: invalid character entered - "+value);
+								throw new DefinitionInvalidException(defId, NLT.get("definition.error.invalidCharacter") + " - " + value);
 							}
 						}
 						Element newPropertyEle = configProperty.createCopy();
@@ -392,7 +392,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						} else if (type.equals("integer")) {
 							if (value.matches("[^0-9]")) {
 								//The value is not a valid integer
-								throw new DefinitionInvalidException(defId, "Error: not an integer - "+configProperty.attributeValue("caption"));
+								throw new DefinitionInvalidException(defId, NLT.get("definition.error.notAnInteger") + " (" +configProperty.attributeValue("caption") + ")");
 							}
 							newPropertyEle.addAttribute("value", value);
 						} else if (type.equals("selectbox") || type.equals("itemSelect") || type.equals("replyStyle")) {
@@ -444,7 +444,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							!name.equals(itemNamePropertyValue) && 
 							uniqueNames.containsKey(name)) {
 						//This name is not unique
-						throw new DefinitionInvalidException(defId, "Error: name not unique - "+name);
+						throw new DefinitionInvalidException(defId, NLT.get("definition.error.nameNotUnique")+" ("+name+")");
 					} else if (!name.equals("") && !name.equals(itemNamePropertyValue)) {
 						//The name is being changed. Check if this is a workflow state
 						if (item.getParent().attributeValue("name", "").equals("workflowProcess") && 
@@ -476,11 +476,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									//Look for the entryForm item with a "name" property
 									Element formItemProperty = (Element) itFormItems.next();
 									if (formItemProperty.attributeValue("name", "").equals("name")) {
-										//This is a "name" property. Now see if it under the entryForm tree
+										//This is a "name" property. Now see if it under the "form" tree
 										Element parentElement = formItemProperty.getParent();
 										while (parentElement != null) {
-											if (parentElement.getName().equals("item") && parentElement.attributeValue("name", "").equals("entryForm")) {
-												//Found it. This item is part of the "entryForm" tree.
+											if (parentElement.getName().equals("item") && parentElement.attributeValue("type", "").equals("form")) {
+												//Found it. This item is part of the "form" tree.
 												break;
 											}
 											parentElement = parentElement.getParent();
@@ -495,7 +495,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 						}
 					}
-					
 					setDefinition(def, definitionTree);
 				}
 			}
@@ -568,7 +567,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								targetItem.add(sourceItem);
 							} else {
 								//The target item is not designed to accept this item as a child
-								throw new DefinitionInvalidException(defId, "error");
+								throw new DefinitionInvalidException(defId, NLT.get("definition.error.illegalMoveInto"));
 							}
 						} else if (position.equals("above")) {
 							//Get the parent of the target item
@@ -593,11 +592,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						setDefinition(def, definitionTree);
 					} else {
 						//Target item is no longer defined as a valid item
-						throw new DefinitionInvalidException(defId, "error");
+						throw new DefinitionInvalidException(defId, NLT.get("definition.error.noElement"));
 					}
 				} else {
 					//The item to be moved is no longer defined as a valid item
-					throw new DefinitionInvalidException(defId, "error");
+					throw new DefinitionInvalidException(defId, NLT.get("definition.error.noElement"));
 				}
 			}
 		}
@@ -751,6 +750,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     
     public Map getEntryData(Definition def, Map inputData, Map fileItems) {
 		this.getDefinitionConfig();
+		//Get the base configuration definition file root (i.e., not the entry's definition file)
 		Element configRoot = this.definitionConfig.getRootElement();
 		
     	// entryData will contain the Map of entry data as gleaned from the input data
@@ -762,12 +762,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		
 		Document definitionTree = def.getDefinition();
 		if (definitionTree != null) {
+			//root is the root of the entry's definition
 			Element root = definitionTree.getRootElement();
 			
-			//Get a list of all of the items in the definition
-			Element entryFormItem = (Element)root.selectSingleNode("item[@name='entryForm']");
+			//Get a list of all of the form items in the definition (i.e., from the "form" section of the definition)
+			Element entryFormItem = (Element)root.selectSingleNode("item[@type='form' or @name='entryForm' or @name='profileEntryForm']");
 			if (entryFormItem != null) {
-				//Wile going through the elements, keep track of the current form name (needed to process date elements)
+				//While going through the entry's elements, keep track of the current form name (needed to process date elements)
 				String currentFormName = "";
 				Iterator itItems = entryFormItem.selectNodes(".//item").listIterator();
 				while (itItems.hasNext()) {
@@ -778,25 +779,26 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					Element nameProperty = (Element) nextItem.selectSingleNode("./properties/property[@name='name']");
 					if (nameProperty != null) {
 						//See if this is a form element (if so, remember its element name)
-						if (itemName.equals("entryFormForm") || itemName.equals("form")) {
+						if (itemName.equals("entryFormForm") || itemName.equals("profileEntryFormForm") || itemName.equals("form")) {
 							currentFormName = nameProperty.attributeValue("value", "");
 							if (currentFormName.equals("")) currentFormName = WebKeys.DEFINITION_DEFAULT_FORM_NAME;
 						}
-						//Find the item in the configuration definition to see if it is a data item
+						//Find the item in the base configuration definition to see if it is a data item
 						Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "']");
 						if (configItem != null) {
-							if (configItem.attributeValue("category", "").equals("entryData")) {
+							if (configItem.attributeValue("type", "").equals("data")) {
 								String nameValue = nameProperty.attributeValue("value", "");									
 								if (nameValue.equals("")) {nameValue = nextItem.attributeValue("name");}
-								if (!inputData.containsKey(nameValue)) continue;
 								
 								//We have the element name, see if it has a value in the input data
 								if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
 									//Use the helper routine to parse the date into a date object
 									Description description = new Description();
-									description.setText(((String[])inputData.get(nameValue))[0]);
-									description.setFormat(Description.FORMAT_HTML);
-									entryData.put(nameValue, description);
+									if (inputData.containsKey(nameValue)) {
+										description.setText(((String[])inputData.get(nameValue))[0]);
+										description.setFormat(Description.FORMAT_HTML);
+										entryData.put(nameValue, description);
+									}
 								} else if (itemName.equals("date")) {
 									//Use the helper routine to parse the date into a date object
 									Date date = DateHelper.getDateFromMap(inputData, currentFormName, nameValue);
@@ -819,15 +821,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								        entryData.put(nameValue, event);
 								    }
 								} else if (itemName.equals("selectbox")) {
-										entryData.put(nameValue, inputData.get(nameValue));
+										if (inputData.containsKey(nameValue)) entryData.put(nameValue, inputData.get(nameValue));
 								} else if (itemName.equals("checkbox")) {
-									if (((String[])inputData.get(nameValue))[0].equals("on")) {
-										entryData.put(nameValue, new Boolean(true));
-									} else {
-										entryData.put(nameValue, new Boolean(false));
-									}
-								} else if (itemName.equals("checkbox")) {
-									if (((String[])inputData.get(nameValue))[0].equals("on")) {
+									if (inputData.containsKey(nameValue) && ((String[])inputData.get(nameValue))[0].equals("on")) {
 										entryData.put(nameValue, new Boolean(true));
 									} else {
 										entryData.put(nameValue, new Boolean(false));
@@ -869,7 +865,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 										}
 								    }
 								} else {
-									entryData.put(nameValue, ((String[])inputData.get(nameValue))[0]);
+									if (inputData.containsKey(nameValue)) entryData.put(nameValue, ((String[])inputData.get(nameValue))[0]);
 								}
 							}
 						}

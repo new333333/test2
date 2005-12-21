@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
+<!--
+	Concepts
+	
+	- Definitions (definitionType) must track the definition types defined in Definition.class
+	- Items can be added as needed. Each item specifies its properties, the jsps to draw the item, and its indexer routine
+	- Item type="data" indicates a data element to be processed and saved during "Add" and "Modify" operations.
+	- Item type="dataView" indicates that this item is shadowing a data element from the "form" definition.
+	- Item type="form" indicates that the item is a "<form>...</form>" element. 
+-->
+
+<!-- Definitions -->
 <definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../main/classes/dtd/definition_builder_config.xsd">
 	<definition name="entryTypeDefinition" definitionType="1" caption="__entry_definitions" canBeDeleted="false">		
 		<operations>
@@ -31,6 +42,7 @@
 		</operations>
 	</definition>
 	
+<!-- Items -->
 	<item name="entryType" definitionType="1" caption="__entry_definition">		
 		<properties>
 			<property name="name" caption="__name" type="text" />
@@ -407,7 +419,8 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderCheck" />
 	</item>
 
-	<item name="attachFiles" caption="__attach_files" multipleAllowed="false" category="commonEntryData">
+	<item name="attachFiles" caption="__attach_files" type="data" 
+			multipleAllowed="false" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="ss_attachFile" readonly="true"/>
 			<property name="caption" caption="__caption" type="text"/>
