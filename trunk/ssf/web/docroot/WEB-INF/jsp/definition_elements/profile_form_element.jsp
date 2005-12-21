@@ -2,6 +2,8 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="property_name" type="String" scope="request" />
 <jsp:useBean id="property_caption" type="String" scope="request" />
+<%@ page import="java.lang.reflect.Method" %>
+
 <%
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
@@ -10,22 +12,22 @@
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_name.jsp" %><%
 	
 	} else if (itemType.equals("profileElements")) {
-		Element profileElementNameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
-		String profileElementType = profileElementNameProperty.attributeValue("value", "");
-
-		//Get the item being displayed
-		Element formItem = (Element) request.getAttribute("item");
-		String formItemType = (String) formItem.attributeValue("name", "");
-		if (formItemType.equals("profileElements")) {
-			Element formProfileElementNameProperty = (Element) formItem.selectSingleNode("./properties/property[@name='name']");
-			String formProfileElementType = formProfileElementNameProperty.attributeValue("value", "");
+		User entry = (User) request.getAttribute("ssEntry");
+		String value = "";
+		if (entry != null) {
+		    String prop = Character.toUpperCase(property_name.charAt(0)) + 
+		    		property_name.substring(1);
+		    String mName = "get" + prop;
+		    Class[] types = new Class[] {};
+		    Method method = entry.getClass().getMethod(mName, types);
+		    value = (String) method.invoke(entry, new Object[0]);
+		}
 %>
 <div >
-<span class="ss_labelAbove"><%= formProfileElementType %></span>
-<input type="text" name="<%= formProfileElementType %>" 
- value="<c:out value="${ssEntry[formProfileElementType].value}"/>">
+<span class="ss_labelAbove"><c:out value="${property_caption}"/></span>
+<input type="text" name="<%= property_name %>" 
+ value="<%= value %>">
 </div>
 <%
-		}
 	}
 %>
