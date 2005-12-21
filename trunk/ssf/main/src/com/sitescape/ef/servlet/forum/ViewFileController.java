@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import javax.activation.FileTypeMap;
+
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.web.WebKeys;
@@ -21,7 +23,7 @@ public class ViewFileController extends SAbstractController {
 
 		Long forumId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 		Long entryId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
-		FolderEntry entry = getFolderModule().getEntry(forumId, entryId);
+		Entry entry = getBinderModule().getBinderEntry(forumId, entryId);
 		//Set up the beans needed by the jsps
 		String fileId = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE_ID); 
 		
@@ -47,7 +49,7 @@ public class ViewFileController extends SAbstractController {
 			// repository access, in which case we will need to use higher level service
 			// - possibly FileManager - rather than low level repository service. 
 			// But that's for later.  
-			RepositoryServiceUtil.read(repositoryServiceName, entry.getParentFolder(), entry, 
+			RepositoryServiceUtil.read(repositoryServiceName, entry.getParentBinder(), entry, 
 					fa.getFileItem().getName(), response.getOutputStream()); 
 
 			response.getOutputStream().flush();
