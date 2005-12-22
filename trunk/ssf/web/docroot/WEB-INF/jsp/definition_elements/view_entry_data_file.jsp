@@ -8,22 +8,13 @@
 <span class="ss_content">
 <c:set var="selections" value="${ssEntry.customAttributes[property_name].value}" />
 <c:forEach var="selection" items="${selections}">
-<% if (ssEntry instanceof FolderEntry) { %>
 <a target="_blank" 
   href="<ssf:url 
     webPath="viewFile"
-    folderId="${ssEntry.parentFolder.id}"
+    folderId="${ssEntry.parentBinder.id}"
     entryId="${ssEntry.id}" >
     <ssf:param name="fileId" value="${selection.id}"/>
     </ssf:url>"><c:out value="${selection.fileItem.name}"/></a><br>
-<% } else { %>
-<a target="_blank" 
-  href="<ssf:url 
-    webPath="viewFile"
-    entryId="${ssEntry.id}" >
-    <ssf:param name="fileId" value="${selection.id}"/>
-    </ssf:url>"><c:out value="${selection.fileItem.name}"/></a><br>
-<% } %>
 </c:forEach>
 </span>
 </div>

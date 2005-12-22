@@ -37,6 +37,9 @@
 	} else if (itemType.equals("file")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_file.jsp" %><%
 		
+	} else if (itemType.equals("graphic")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_graphic.jsp" %><%
+		
 	} else if (itemType.equals("user_list")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_user_list.jsp" %><%
 		

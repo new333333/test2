@@ -828,7 +828,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									} else {
 										entryData.put(nameValue, new Boolean(false));
 									}
-								} else if (itemName.equals("file")) {
+								} else if (itemName.equals("file") || itemName.equals("graphic")) {
 								    if(fileItems != null && fileItems.containsKey(nameValue)) {
 								    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
 								    	String fileName = myFile.getOriginalFilename();

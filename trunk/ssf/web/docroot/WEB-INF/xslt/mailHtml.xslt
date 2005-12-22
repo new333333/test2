@@ -157,6 +157,15 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 			</xsl:choose>
 			</xsl:for-each>
 		</xsl:when>
+		<xsl:when test="@type = 'graphic'">
+			<xsl:for-each select="graphic">
+				<xsl:choose>
+					<xsl:when test="@href != ''">
+						<img src="{@href}" />
+					</xsl:when>
+				<xsl:otherwise />
+			</xsl:for-each>
+		</xsl:when>
 		<xsl:when test="@type = 'event'">
 			<xsl:value-of select="startDate"/>-<xsl:value-of select="endDate"/><br/>
 		</xsl:when>
