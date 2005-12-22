@@ -28,7 +28,7 @@
 	} else {
 %>
 	<taconite-replace contextNodeID="status_message" parseInBrowser="true">
-		<div id="status_message" >xxxx<c:out value="${ss_unseenStatus.ss_unseenNotLoggedIn}" /></div>
+		<div id="status_message" ></div>
 	</taconite-replace>
 <%
 	}
