@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<project name="wsclient" basedir="." default="compile">
+	<target name="init">
+		<echo message="##### WSCLIENT #####" />
+		<property environment="env" />
+  		<property name="project.dir" value="../.." />
+  		<property file="${project.dir}/build.${user.name}.properties" />
+  		<property file="${project.dir}/build.properties" />
+		<path id="project.classpath">
+			<pathelement path="${classpath}" />
+			<fileset dir="${project.dir}/lib" includes="*.jar" />
+		</path>
+	</target>
+
+	<target name="clean" depends="init">
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${classes.dir}" excludes="${classes.dir.excludes}" />
+		</delete>
+	</target>
+
+	<target name="compile" depends="init">
+		<mkdir dir="${classes.dir}" />
+		<javac
+			classpathref="project.classpath"
+			compiler="${javac.compiler}"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${classes.dir}"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}"
+			srcdir="${source.dir}"
+		/>
+	</target>
+	
+	<target name="testRun" depends="compile">
+		<java 
+			classname="com.sitescape.ef.samples.wsclient.MyFacadeClient"
+			classpath="${classes.dir}"
+			classpathref="project.classpath"
+			fork="true"
+			dir="${basedir}"
+			failonerror="true">
+			<arg value="10"/>
+			<arg value="25"/>
+		</java>
+	</target>
+	
+</project>

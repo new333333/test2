@@ -104,10 +104,16 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>axis</servlet-name>
+		<servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>
+		<load-on-startup>4</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<servlet-name>ccDispatchServer</servlet-name>
 		<servlet-class>com.sitescape.ef.web.crosscontext.DispatchServer</servlet-class>
 	</servlet>
-
+	
 	<servlet-mapping>
 		<servlet-name>viewRendererServlet</servlet-name>
 		<url-pattern>/WEB-INF/servlet/view</url-pattern>
@@ -122,6 +128,11 @@
 		<servlet-name>portletAdapter</servlet-name>
 		<url-pattern>/a/*</url-pattern>		
 	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>axis</servlet-name>
+		<url-pattern>/ws/*</url-pattern>		
+	</servlet-mapping>	
 
 	<!-- Do NOT ever change this timeout value -->
 	<session-config>

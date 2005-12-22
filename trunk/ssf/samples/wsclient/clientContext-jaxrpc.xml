@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="jaxRpcProxy" class="org.springframework.remoting.jaxrpc.JaxRpcPortProxyFactoryBean">
+		<property name="serviceFactoryClass"><value>org.apache.axis.client.ServiceFactory</value></property>
+		<property name="wsdlDocumentUrl"><value>http://localhost:8080/ssf/ws/Facade?wsdl</value></property>
+		<property name="namespaceUri"><value>http://localhost:8080/ssf/ws/Facade</value></property>
+		<property name="serviceName"><value>JaxRpcFacadeService</value></property>
+		<property name="portName"><value>Facade</value></property>
+		<property name="serviceInterface"><value>com.sitescape.ef.remoting.api.Facade</value></property>
+		<property name="portInterface"><value>com.sitescape.ef.remoting.jaxrpc.RemoteFacade</value></property>
+		<property name="servicePostProcessors">
+			<list>
+				<bean class="com.sitescape.ef.samples.wsclient.BeanMappingServicePostProcessor"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="myFacadeClient" class="com.sitescape.ef.samples.wsclient.MyFacadeClient">
+		<property name="facade"><ref bean="jaxRpcProxy"/></property>
+	</bean>
+</beans>
