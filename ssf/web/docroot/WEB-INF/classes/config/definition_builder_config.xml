@@ -419,6 +419,26 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderCheck" />
 	</item>
 
+	<item name="graphic" caption="__graphic" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="width" caption="__width" type="text"/>
+			<property name="storage" caption="__storage_media" type="selectbox" default="fileRepositoryService">
+				<option name="fileRepositoryService" caption="__file_system" />
+				<option name="internalWebdavRepositoryService" caption="__internal_webdav" />
+				<help>__help_storage_media</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/graphic_form.jsp" />
+		</jsps>
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderGraphic" />
+	</item>
+
 	<item name="attachFiles" caption="__attach_files" type="data" 
 			multipleAllowed="false" category="commonEntryData">
 		<properties>
@@ -506,10 +526,13 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderUserList" />
 	</item>
 		
-	<item name="div" caption="__div" category="generalLayout">
+	<item name="box" caption="__box" category="generalLayout">
 		<properties>
-			<property name="id" caption="__id" type="text"/>
-			<property name="style" caption="__style" type="text"/>
+			<property name="style" caption="__box_style" type="selectbox" default="rounded">
+				<option name="rounded" caption="__box_rounded" />
+				<option name="rounded_shadow" caption="__box_rounded_with_shadow" />
+				<option name="square" caption="__box_square" />
+			</property>
 		</properties>
 		<options>
 			<option_select definitionType="1" path="//item[@category='entryData']" />
@@ -519,8 +542,29 @@
 			<option_select path="//item[@category='generalLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/div.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/div.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/box.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/box.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="expandableDiv" caption="__expandable_div" category="generalLayout">
+		<properties>
+			<property name="style" caption="__expandable_div_style" type="selectbox" default="rounded">
+				<option name="rounded" caption="__box_rounded" />
+				<option name="rounded_shadow" caption="__box_rounded_with_shadow" />
+				<option name="square" caption="__box_square" />
+			</property>
+		</properties>
+		<options>
+			<option_select definitionType="1" path="//item[@category='entryData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 		</jsps>
 	</item>
 		
@@ -977,14 +1021,14 @@
 		</jsps>
 	</item>
 		
-	<item name="profileName" caption="__profileName" type="data" 
+	<item name="profileName" caption="__profile_name" type="data" 
 		canBeDeleted="false" multipleAllowed="false" category="profileEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="name" 
 			  readonly="true" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text" value="__profileName"/>
+			<property name="caption" caption="__caption" type="text" value="__profile_name"/>
 			<property name="width" caption="__width" type="text"/>
 		</properties>
 		<jsps>
@@ -992,6 +1036,23 @@
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_name_view.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderProfileName" />
+	</item>
+	
+	<item name="profileTitle" caption="__profile_title" type="data" 
+		canBeDeleted="false" multipleAllowed="false" category="profileEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="title" 
+			  readonly="true" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__profile_name"/>
+			<property name="width" caption="__width" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_title_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_title_view.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderProfileTitle" />
 	</item>
 	
 	<item name="profileElements" caption="__profile_elements" type="data" category="profileEntryData">

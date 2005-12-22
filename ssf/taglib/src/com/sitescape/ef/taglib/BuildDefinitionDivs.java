@@ -599,7 +599,7 @@ public class BuildDefinitionDivs extends TagSupport {
 										}
 										if (type.equals("selectbox")) {
 											sb.append("<option value='").append(entryFormItemNamePropertyName).append("'").append(checked).append(">");
-											sb.append(entryFormItemCaptionPropertyValue);
+											sb.append(NLT.getDef(entryFormItemCaptionPropertyValue));
 											sb.append("</option>\n");
 										} else if (type.equals("radio")) {
 											sb.append("<input type='radio' name='propertyId_" + propertyId + "' value='");
