@@ -560,7 +560,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						//We have found both the source and the target ids; do the move
 						if (position.equals("into")) {
 							//Check that the target area is allowed to receive one of these types
-							if (checkTargetOptions(targetItem.attributeValue("name"), sourceItem.attributeValue("name"))) {
+							String sourceItemType = sourceItem.attributeValue("name", "");
+							//See if this is a dataView mirroring another element
+							if (sourceItem.attributeValue("type", "").equals("dataView")) {
+								//Get the actual element type being tracked
+								sourceItemType = sourceItem.attributeValue("formItem", "");
+							}
+							if (!sourceItemType.equals("") && checkTargetOptions(targetItem.attributeValue("name"), sourceItemType)) {
 								//Detach the source item
 								sourceItem.detach();
 								//Add it to the target element
