@@ -471,7 +471,10 @@
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
 	</bean>
 	
-<!-- =========================Portlet support =========================================================== -->	
+	<bean id="facade" class="com.sitescape.ef.remoting.impl.FacadeImpl">
+	</bean>
+
+	<!-- =========================Portlet support =========================================================== -->	
 	<bean id="forumActionModule" parent="baseTransactionProxy">
 		<property name="target">
 			<bean class="com.sitescape.ef.portlet.forum.impl.ForumActionModuleImpl">
