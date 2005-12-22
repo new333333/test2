@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="samples/wsclient/src"/>
 	<classpathentry kind="src" path="main/test/src"/>
 	<classpathentry kind="src" path="portal-module/src"/>
 	<classpathentry kind="src" path="liferay/src"/>
@@ -28,7 +29,6 @@
 	<classpathentry kind="lib" path="lib/log4j.jar"/>
 	<classpathentry kind="lib" path="lib/lucene.jar"/>
 	<classpathentry kind="lib" path="lib/quartz.jar"/>
-	<classpathentry kind="lib" path="lib/spring.jar"/>
 	<classpathentry kind="lib" path="lib/trove.jar"/>
 	<classpathentry kind="lib" path="lib/velocity.jar"/>
 	<classpathentry kind="lib" path="lib/md5crypt.jar"/>
@@ -64,5 +64,9 @@
 	<classpathentry kind="lib" path="lib/mail.jar"/>
 	<classpathentry kind="lib" path="lib/spring-mock.jar"/>
 	<classpathentry kind="lib" path="main/classes"/>
+	<classpathentry kind="lib" path="lib/commons-discovery.jar"/>
+	<classpathentry kind="lib" path="lib/saaj.jar"/>
+	<classpathentry kind="lib" path="lib/wsdl4j.jar"/>
+	<classpathentry kind="lib" path="lib/spring.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
