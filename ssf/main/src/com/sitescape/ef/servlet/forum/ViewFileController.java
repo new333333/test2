@@ -23,6 +23,7 @@ public class ViewFileController extends SAbstractController {
 
 		Long forumId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 		Long entryId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
+		String downloadFile = RequestUtils.getStringParameter(request, WebKeys.URL_DOWNLOAD_FILE, "");
 		Entry entry = getBinderModule().getBinderEntry(forumId, entryId);
 		//Set up the beans needed by the jsps
 		String fileId = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE_ID); 
@@ -36,9 +37,11 @@ public class ViewFileController extends SAbstractController {
 			response.setContentType(mimeTypes.getContentType(shortFileName));
 			response.setHeader("Cache-Control", "private");
 			response.setHeader("Pragma", "no-cache");
+			String attachment = "";
+			if (!downloadFile.equals("")) attachment = "attachment; ";
 			response.setHeader(
 						"Content-Disposition",
-						"attachment; filename=\"" + shortFileName + "\"");
+						attachment + "filename=\"" + shortFileName + "\"");
 			String repositoryServiceName = fa.getRepositoryServiceName();
 			if(repositoryServiceName == null)
 				repositoryServiceName = RepositoryServiceUtil.getDefaultRepositoryServiceName();

@@ -37,14 +37,16 @@ public class WebKeys {
     public static final String IS_ACTION_URL="actionUrl";
     public static final String URL_ATTRIBUTE = "attr";
     public static final String URL_ATTRIBUTE_ID = "attrId";
+    public static final String URL_BINDER_ID="binderId";
+    public static final String URL_DOWNLOAD_FILE="download";
 	public static final String URL_ENTRY_ID = "entryId";
     public static final String URL_ENTRY_TYPE="entryType";
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId";
-	public static final String URL_VALUE = "value";
-    public static final String URL_BINDER_ID="binderId";
     public static final String URL_OPERATION="operation";
-	//Preferences
+	public static final String URL_VALUE = "value";
+
+    //Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "forumIdList";
 	
     //actions
