@@ -18,9 +18,11 @@ package com.sitescape.ef.util;
 	    }
      /**
      * Reads an image in a file and creates a thumbnail in another file.
-     * @param orig   The name of image file.
-     * @param thumb  The name of thumbnail file. Will be created if necessary.
-     * @param maxDim The width and height of the thumbnail must be maxDim pixels or less.
+     * @param orig      The name of image file.
+     * @param thumb     The name of thumbnail file. Will be created if necessary.
+     * @param maxWidth  The maximum width of the thumbnail.
+     * @param maxHeight The maximum height of the thumbnail.
+     * The optimum fit is selected based on the width and height of the input image.
      */
     public static void createThumbnail(String orig, String thumb, int maxWidth, int maxHeight) {
         try {
