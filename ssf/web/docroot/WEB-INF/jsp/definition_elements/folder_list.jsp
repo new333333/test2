@@ -88,7 +88,7 @@ function highlightLineById(id) {
     </c:if>
     <c:out value="${entry._title}"/></a></td>
   <td valign="top" width="20%" class="ss_content">
-	<c:out value="${entry._principal.title}"/> </td>
+	<c:out value="${entry._principal.title}"/> <ssf:presenceInfo user="<%=(User)entry.get("_principal")%>"/></td>
   <td valign="top" width="20%" class="ss_content">
     <c:out value="${entry._modificationDate}"/></td>
  </tr>
