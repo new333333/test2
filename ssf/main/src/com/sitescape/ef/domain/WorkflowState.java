@@ -1,7 +1,5 @@
 package com.sitescape.ef.domain;
 
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.dom4j.Document;
@@ -17,6 +15,7 @@ import com.sitescape.ef.util.NLT;
  */
 public class WorkflowState {
     protected String state;
+    protected String threadName;
     protected Long tokenId;
     protected Definition definition;
     protected AnyOwner owner;
@@ -71,6 +70,17 @@ public class WorkflowState {
  	}
  	public void setState(String state) {
  		this.state = state;
+ 	}
+
+    /**
+     * @hibernate.property length="64"
+     * @return
+     */
+ 	public String getThreadName() {
+ 		return state;
+ 	}
+ 	public void setThreadName(String threadName) {
+ 		this.threadName = threadName;
  	}
 
     /**
