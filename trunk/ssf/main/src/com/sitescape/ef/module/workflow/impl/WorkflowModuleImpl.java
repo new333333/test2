@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.AnyOwner;
@@ -479,9 +480,9 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			List processInstances = new ArrayList();
 			List tokenIds = new ArrayList();
 	       	JbpmSession session = workflowFactory.getSession();
-			List workflowStates = entry.getWorkflowStates();
-			for (int i = 0; i < workflowStates.size(); i++) {
-				WorkflowState ws = (WorkflowState) workflowStates.get(i);
+	  		Set workflowStates = entry.getWorkflowStates();
+   			for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
+				WorkflowState ws = (WorkflowState)iter.next();
 				Token t = session.getGraphSession().loadToken(ws.getTokenId().longValue());
 				if (!tokenIds.contains(t)) {
 					//Remember all of the tokenIds that we have to end

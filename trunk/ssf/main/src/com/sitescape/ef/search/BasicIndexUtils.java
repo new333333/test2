@@ -36,8 +36,6 @@ public class BasicIndexUtils {
     // The following fields represent valid values for DOC_TYPE_FIELD.
     
     public final static String DOC_TYPE_ENTRY 		= "entry";
-    public final static String DOC_TYPE_USER 		= "user";
-    public final static String DOC_TYPE_GROUP 		= "group";
     public final static String DOC_TYPE_ATTACHMENT	= "attachment"; 
     
     private static final String UID_DELIM = "_";

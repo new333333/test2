@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.AclControlledEntry;
 import com.sitescape.ef.domain.LibraryEntryExistsException;
 
 /**
@@ -17,16 +17,16 @@ import com.sitescape.ef.domain.LibraryEntryExistsException;
 public class LibraryCoreProcessor extends DefaultFolderCoreProcessor {
 	private String[] cfAttrs = new String[]{"parentBinder", "HKey.level", "lower(title)"};
 
-	   protected void addEntry_fillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData) {  
+	   protected void addEntry_fillIn(Binder binder, AclControlledEntry entry, Map inputData, Map entryData) {  
     	//title must be unique
 	   	String title = (String)entryData.get("title");
 	   	if ((title == null) || title.equals("")) throw new IllegalArgumentException("title is required");
-     	Object[] cfValues = new Object[]{folder, new Integer(1), title.toLowerCase()};
+     	Object[] cfValues = new Object[]{binder, new Integer(1), title.toLowerCase()};
     	// see if title exists for this folder
      	Iterator result = getFolderDao().queryEntries(new FilterControls(cfAttrs, cfValues));
    		if (result.hasNext()) 
      		throw new LibraryEntryExistsException(title, "Title already exists");
-      	super.addEntry_fillIn(folder, entry, inputData, entryData);
+      	super.addEntry_fillIn(binder, entry, inputData, entryData);
     }
 
 }

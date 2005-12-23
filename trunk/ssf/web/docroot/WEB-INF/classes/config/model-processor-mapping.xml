@@ -11,9 +11,13 @@
 		<processor class="com.sitescape.ef.jobs.DefaultLdapSynchronization" spring-bean-type="none"/>
 		<processor class="com.sitescape.ef.jobs.DefaultFailedEmail" spring-bean-type="none"/>
 		<processor class="com.sitescape.ef.module.folder.impl.DefaultFolderCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultFolderCoreProcessor"/>
+		<processor class="com.sitescape.ef.module.profile.impl.DefaultProfileCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultProfileCoreProcessor"/>
 	</processors>
 	
 	<default-mappings>
+		<model-class name="com.sitescape.ef.domain.ProfileBinder">
+			<mapping processor-key="processorKey_profileCoreProcessor" processor-class="com.sitescape.ef.module.profile.impl.DefaultProfileCoreProcessor"/>
+		</model-class>
 		<model-class name="com.sitescape.ef.domain.Folder">
 			<mapping processor-key="processorKey_folderEmailFormatter" processor-class="com.sitescape.ef.module.mail.impl.DefaultFolderEmailFormatter"/>
 			<mapping processor-key="processorKey_folderCoreProcessor" processor-class="com.sitescape.ef.module.folder.impl.DefaultFolderCoreProcessor"/>

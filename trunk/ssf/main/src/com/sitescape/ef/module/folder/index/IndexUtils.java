@@ -20,7 +20,6 @@ public class IndexUtils  {
     
     // Defines field names
     public static final String DOCNUMBER_FIELD = "_docNum";
-    public static final String FOLDERID_FIELD = "_folderId";
     public static final String PARENT_FOLDERID_FIELD = "_parentFolderId";
     public static final String TOP_FOLDERID_FIELD = "_topFolderId";
    
@@ -34,9 +33,6 @@ public class IndexUtils  {
     }    
 
     public static void addFolderId(Document doc, Folder folder) {
-    	//Add the folder id to the document in the index
-        Field folderField = Field.Keyword(FOLDERID_FIELD, folder.getId().toString());
-        doc.add(folderField);
         
     	//Add the folder parentage to the document in the index
         Folder parentFolder = folder.getParentFolder();

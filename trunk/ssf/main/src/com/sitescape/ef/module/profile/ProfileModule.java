@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.Collection;
 
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.ProfileBinder;
@@ -28,12 +29,14 @@ public interface ProfileModule {
 		throws AccessControlException, WriteFilesException;
    public ProfileBinder addProfileBinder();
    public ProfileBinder getProfileBinder();
+   public void modifyWorkflowState(Long binderId, Long entryId, Long tokenId, String toState) 
+	throws AccessControlException;
 
     /**
      * @param userId
      * @return
      */
-    public Principal getPrincipal(Long userId);
+    public Principal getEntry(Long binderId, Long userId);
 
     public List getGroups();
     public Map getUsers();

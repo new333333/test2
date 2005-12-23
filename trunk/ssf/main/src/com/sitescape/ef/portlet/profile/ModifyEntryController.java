@@ -64,17 +64,17 @@ public class ModifyEntryController extends SAbstractProfileController {
 			return returnToView(request, response);
 		}
 		Map model = new HashMap();	
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-		Principal entry  = getProfileModule().getPrincipal(entryId);
-		ProfileBinder binder = getProfileModule().getProfileBinder();
+		Principal entry  = getProfileModule().getEntry(binderId, entryId);
 		model.put(WebKeys.ENTRY, entry);
-		model.put(WebKeys.FOLDER, binder);
-		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.FOLDER, entry.getParentBinder());
+		model.put(WebKeys.BINDER, entry.getParentBinder());
 		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 		Definition entryDef = entry.getEntryDef();
 		if (entryDef == null) {
 			//There is no definition associated with this entry. Get the default definition from the binder.
-			entryDef = DefinitionUtils.getEntryDefinition(binder, entry);
+			entryDef = DefinitionUtils.getEntryDefinition(entry.getParentBinder(), entry);
 		}
 		if (entryDef == null) {
 			DefinitionUtils.getDefaultEntryView(entry, model);

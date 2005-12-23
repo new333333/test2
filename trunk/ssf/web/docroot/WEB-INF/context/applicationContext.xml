@@ -377,6 +377,11 @@
 		<property name="workflowModule"><ref local="workflowModuleTarget"/></property>
 	</bean>
 
+	<bean id="defaultProfileCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.profile.impl.DefaultProfileCoreProcessor">
+		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
+		<property name="workflowModule"><ref local="workflowModuleTarget"/></property>
+	</bean>
+
 	<bean id="binderModule" parent="baseTransactionProxy">
 		<property name="target">
 			<ref local="binderModuleTarget"/>

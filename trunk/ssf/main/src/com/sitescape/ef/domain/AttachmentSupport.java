@@ -1,6 +1,6 @@
 package com.sitescape.ef.domain;
 
-import java.util.List;
+import java.util.Set;
 import java.util.Collection;
 
 /**
@@ -9,11 +9,11 @@ import java.util.Collection;
  */
 public interface AttachmentSupport {
     /**
-     * Returns a list of objects implementing {@link Attachable} interface.
+     * Returns a set of objects implementing {@link Attachable} interface.
      * 
      * @return
      */
-    public List getAttachments();
+    public Set getAttachments();
     
     public void setAttachments(Collection attachments);
 }

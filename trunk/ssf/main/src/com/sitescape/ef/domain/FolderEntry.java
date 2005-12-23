@@ -3,6 +3,7 @@ package com.sitescape.ef.domain;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Iterator;
 import java.util.ArrayList;
 
@@ -52,12 +53,14 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
     private void setHCustomAttributes(Map customAttributes) {this.customAttributes = customAttributes;}   	
     
     /**
-     * @hibernate.bag  lazy="true" inverse="true" cascade="all,delete-orphan" 
+     * @hibernate.set  lazy="true" inverse="true" cascade="all,delete-orphan" 
  	 * @hibernate.key column="folderEntry"
  	 * @hibernate.one-to-many class="com.sitescape.ef.domain.Attachment"
+ 	 * We are using a set here, cause any outer-joins to load this attribute
+ 	 * when using a list result in duplicates
    	 */
-    private List getHAttachments() {return attachments;}
-    private void setHAttachments(List attachments) {this.attachments = attachments;}   	
+    private Set getHAttachments() {return attachments;}
+    private void setHAttachments(Set attachments) {this.attachments = attachments;}   	
 
    /**
 	* @hibernate.bag lazy="true" inverse="true" cascade="all,delete-orphan" 
@@ -138,16 +141,16 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
     }
     
     /**
-	 * @hibernate.bag lazy="true" inverse="true" cascade="all,delete-orphan" 
+	 * @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan" 
      * @hibernate.key column="folderEntry"
      * @hibernate.one-to-many class="com.sitescape.ef.domain.WorkflowState"
      * @return
      */
-     public List getHWorkflowStates() {
+     public Set getHWorkflowStates() {
         return workflowStates;
         
      }
-     public void setHWorkflowStates(List workflowStates) {
+     public void setHWorkflowStates(Set workflowStates) {
         this.workflowStates = workflowStates;
      }
 

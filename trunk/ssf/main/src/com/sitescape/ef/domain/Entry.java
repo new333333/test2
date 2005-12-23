@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.util.CollectionUtil;
@@ -21,14 +22,14 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     private String title="";
     private Description description;
     protected boolean attachmentsParsed = false;
-    protected List attachments;
+    protected Set attachments;
     protected Map customAttributes;
     protected Definition entryDef;
     protected boolean eventsParsed = false;
     protected List allEvents;
     protected List unnamedEvents;
     protected Map namedEvents;
-    protected List workflowStates;   
+    protected Set workflowStates;   
     protected HistoryStamp workflowChange;
     protected Binder parentBinder;
     
@@ -54,36 +55,38 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     	}
         this.description = tmp; 
     }
-    public List getWorkflowStates() {
-   	 	if (workflowStates == null) return new ArrayList();
+    public Set getWorkflowStates() {
+   	 	if (workflowStates == null) return new HashSet();
    	 	return workflowStates;  
      }
-     public void setWorkflowStates(List workflowStates) {
+     public void setWorkflowStates(Set workflowStates) {
     	 //Since ids are assigned on WorkflowState, don't need to do anything
     	 //special to reduce updates.
     	 this.workflowStates = workflowStates;
      }
-   
+     public WorkflowState getWorkflowState(Long id) {
+     	//Make sure initialized
+     	getWorkflowStates();
+		WorkflowState ws=null;
+		for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
+			ws = (WorkflowState)iter.next();
+			if (ws.getId().equals(id)) return ws;
+		}
+		return null;
+     }
      public void addWorkflowState(WorkflowState state) {
-    	List wf = getWorkflowStates();
-    	
-    	for (int i=0; i<wf.size(); ++i) {
-    		WorkflowState c = (WorkflowState)wf.get(i);
-    		if (c.equals(state)) {
-    			wf.remove(c);
-    		}
-    	}
-    	wf.add(state);
+     	if (state == null) return;
+    	//Make sure initialized
+    	getWorkflowStates();
+        workflowStates.add(state);
+ 	   	state.setOwner(this);
     }
     public void removeWorkflowState(WorkflowState state) {
-    	List wf = getWorkflowStates();
-    	
-    	for (int i=0; i<wf.size(); ++i) {
-    		WorkflowState c = (WorkflowState)wf.get(i);
-    		if (c.equals(state)) {
-    			wf.remove(c);
-    		}
-    	}
+     	if (state == null) return;
+    	//Make sure initialized
+    	getWorkflowStates();
+        workflowStates.remove(state);
+ 	   	state.setOwner((AnyOwner)null);
     }
     /**
      * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="wrk_" 
@@ -132,14 +135,14 @@ public abstract class Entry extends PersistentLongIdTimestampObject
      * Return all attachments 
      * 
 	 */
-    public List getAttachments() {
+    public Set getAttachments() {
        	//need to implement here to setup the doclet tags
-    	if (attachments == null) attachments = new ArrayList();
+    	if (attachments == null) attachments = new HashSet();
     	return attachments;
     	
     }
     /**
-     * Set list of unnamed attachments
+     * Set attachments - this will effect File type custom attributes also
      */
     public void setAttachments(Collection attachments) {   	
     	getAttachments();
@@ -163,8 +166,8 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     public Attachment getAttachment(String id) {
     	//make sure loaded
     	getAttachments();
-    	for (int i=0; i<attachments.size(); ++i) {
-    		Attachment a = (Attachment)attachments.get(i);
+    	for (Iterator iter=attachments.iterator(); iter.hasNext();) {
+    		Attachment a = (Attachment)iter.next();
     		if (a.getId().equals(id)) {
     			return a;
     		}
@@ -200,11 +203,11 @@ public abstract class Entry extends PersistentLongIdTimestampObject
      * @return
      */
     public List getFileAttachments() {
-    	List atts = getAttachments();
+    	Set atts = getAttachments();
     	List result = new ArrayList();
     	Attachment att;
-    	for (int i=0; i<atts.size(); ++i) {
-    		att = (Attachment)atts.get(i);
+    	for (Iterator iter=atts.iterator(); iter.hasNext();) {
+    		att = (Attachment)iter.next();
     		//return only file attachments, not versions
     		if (att instanceof FileAttachment) {
     			result.add(att);
@@ -222,11 +225,11 @@ public abstract class Entry extends PersistentLongIdTimestampObject
      * @return
      */
     public FileAttachment getFileAttachment(String repositoryServiceName, String fileName) {
-    	List atts = getAttachments();
+    	Set atts = getAttachments();
     	Attachment att;
     	FileAttachment fatt;
-    	for (int i=0; i<atts.size(); ++i) {
-    		att = (Attachment)atts.get(i);
+    	for (Iterator iter=atts.iterator(); iter.hasNext();) {
+    		att = (Attachment)iter.next();
     		if (att instanceof FileAttachment) {
     			fatt = (FileAttachment) att;
     			if(fatt.getRepositoryServiceName().equals(repositoryServiceName) &&
@@ -243,11 +246,11 @@ public abstract class Entry extends PersistentLongIdTimestampObject
      */
  
     public List getBookmarks() {
-        List atts = getAttachments();
+        Set atts = getAttachments();
        	List result = new ArrayList();
     	Attachment att;
-    	for (int i=0; i<atts.size(); ++i) {
-    		att = (Attachment)atts.get(i);
+    	for (Iterator iter=atts.iterator(); iter.hasNext();) {
+   		att = (Attachment)iter.next();
      		if (att instanceof Bookmark) {
     			result.add(att);
     		}

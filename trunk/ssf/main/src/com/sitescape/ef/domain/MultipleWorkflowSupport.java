@@ -1,6 +1,6 @@
 package com.sitescape.ef.domain;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * @author Jong Kim
@@ -10,8 +10,8 @@ public interface MultipleWorkflowSupport {
     /**
      * @return Returns a list of <code>WorkflowStates</code>.
      */
-    public List getWorkflowStates();
-    public void setWorkflowStates(List workflowStates);   
+    public Set getWorkflowStates();
+    public void setWorkflowStates(Set workflowStates);   
     public void addWorkflowState(WorkflowState workflowState);
     public void removeWorkflowState(WorkflowState workflowState);
 
