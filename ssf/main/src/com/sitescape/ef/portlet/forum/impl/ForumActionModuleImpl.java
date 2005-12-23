@@ -587,6 +587,7 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		List defaultEntryDefinitions = folder.getEntryDefs();
 		PortletURL url;
 		if (!defaultEntryDefinitions.isEmpty()) {
+			int count = 1;
 			toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 			for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
 				Definition def = (Definition) defaultEntryDefinitions.get(i);
@@ -594,7 +595,11 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-				toolbar.addToolbarMenuItem("1_add", "entries", def.getTitle(), url);
+				String title = NLT.get(def.getTitle());
+				if (toolbar.checkToolbarMenuItem("1_add", "entries", title)) {
+					title = title + " (" + String.valueOf(count++) + ")";
+				}
+				toolbar.addToolbarMenuItem("1_add", "entries", title, url);
 			}
 		}
     
