@@ -25,7 +25,7 @@ import com.sitescape.ef.security.function.FunctionManager;
  * @author jong
  *
  */
-public class CommonDependencyInjection {
+public abstract class CommonDependencyInjection {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
