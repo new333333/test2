@@ -295,6 +295,15 @@ legend.ss_legend {
   color: #666666;;
   }
 
+fieldset.ss_fieldset_rounded {
+  margin-top: 6px;
+  margin-bottom: 4px;
+  }
+  
+legend.ss_legend_bold {
+  font: bold 140%/1.6 Arial,sans-serif;
+  }
+
 /* legend explaining the required-field indicator */
 div.ss_requiredLegend {
   font-family: arial, helvetica, sans-serif;
