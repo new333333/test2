@@ -140,7 +140,7 @@ return
     wObj1.style.background = "#ffffff"
 }
 
-function hideEntryDiv() {
+function ss_hideEntryDiv() {
     var wObj1 = null
     if (isNSN || isNSN6 || isMoz5) {
         wObj1 = self.document.getElementById('ss_showentrydiv')
@@ -185,7 +185,7 @@ createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
   <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
     <ssf:param name="box_width" value="400" />
     <ssf:param name="box_show_close_icon" value="true" />
-    <ssf:param name="box_show_close_routine" value="hideEntryDiv()" />
+    <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
   <iframe id="ss_showentryframe" name="ss_showentryframe" 
     src="<html:rootPath/>js/forum/null.html" height="250" width="100%" 
     frameBorder="no" >xxx</iframe>

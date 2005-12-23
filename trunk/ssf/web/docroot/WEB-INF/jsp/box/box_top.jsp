@@ -55,18 +55,17 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	decorateBox = true;
 }
 %>
-<div class="ssf-box-container" id="<%= divId %>" style="width: <%= width %>;">
+<div class="ss_box_rounded" id="<%= divId %>" style="width: <%= width %>;">
 <%@ include file="/WEB-INF/jsp/box/box_top-ext.jsp" %>
-  <div class="ssf-box-header-bar" id="<%= divId %>_header_bar">
 	<c:if test="<%= Validator.isNotNull(title) %>">
-	  <div class="ssf-box-title">
+	  <div class="ss_box_title">
 	    <div style="position: relative; font-size: smaller; padding-top: 5px;"><b>&nbsp;<%= title %>&nbsp;</b></div>
 	  </div>
 	</c:if>
 
-	<div class="ssf-box-small-icon-bar" id="<%= divId %>_icon_bar">
+	<div class="ss_box_small_icon_bar" id="<%= divId %>_icon_bar">
 	  <c:if test="<%= showCloseIcon %>">
-		<span class="ssf-box-small-icon"><a 
+		<span class="ss_box_small_icon"><a 
 			 href="javascript: <%= showCloseRoutine %>;"><img 
 			 border="0" height="14" hspace="0" 
 			 name="p_<portlet:namespace/>_close" 
@@ -74,17 +73,12 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 			 title="<ssf:nlt tag="close" text="Close" />" 
 			 vspace="0" width="14" ></a></span>
 	  </c:if>
-	</div><!-- end ssf-box-small-icon-bar -->
-  </div><!-- end ssf-box -->
+	</div><!-- end ss_box_small_icon_bar -->
 
-  <div class="ssf-box-top-decoration">
-    <div class="ssf-box-corner-ul"></div>
-	<div class="ssf-box-corner-ur"></div>
-  </div>
 	
 
-  <div class="ssf-box">
-    <div class="ssf-box-minimum-height">
+  <div class="ssf_box">
+     <div class="ss_box_minimum_height">
 	    <div style="margin-top: 0; margin-bottom: 0;">
 
 

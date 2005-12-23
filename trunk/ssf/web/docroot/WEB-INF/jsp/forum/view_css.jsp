@@ -21,6 +21,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:if test="${empty ssf_support_files_loaded}">
 
 <script language="javascript" type="text/javascript">
+function ss_createStyleSheet(url) {
+	var styles = "@import url('" + " " + url + " " + "');";
+	var newSS = document.createElement('link');
+	newSS.rel = 'stylesheet';
+	newSS.href = 'data:text/css,' + escape(styles);
+	document.getElementsByTagName("head")[0].appendChild(newSS);
+}
+
 var ss_urlBase = self.location.protocol + "//" + self.location.host + "/";
 var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
 <c:if test="<%= isIE %>">
@@ -29,21 +37,15 @@ var ss_forumCss2Url = ss_urlBase + "<html:rootPath/>css/forum_ie.css";
 <c:if test="<%= !isIE %>">
 var ss_forumCss2Url = ss_urlBase + "<html:rootPath/>css/forum_nn.css";
 </c:if>
+var niftyCornersCssUrl = ss_urlBase + "<html:rootPath/>css/nifty_corners.css";
 if (document.createStyleSheet) {
 	document.createStyleSheet(ss_forumCssUrl);
 	document.createStyleSheet(ss_forumCss2Url);
+	document.createStyleSheet(niftyCornersCssUrl);
 } else {
-	var styles = "@import url('" + " " + ss_forumCssUrl + " " + "');";
-	var newSS = document.createElement('link');
-	newSS.rel = 'stylesheet';
-	newSS.href = 'data:text/css,' + escape(styles);
-	document.getElementsByTagName("head")[0].appendChild(newSS);
-	
-	var styles2 = "@import url('" + " " + ss_forumCss2Url + " " + "');";
-	var newSS2 = document.createElement('link');
-	newSS2.rel = 'stylesheet';
-	newSS2.href = 'data:text/css,' + escape(styles2);	
-	document.getElementsByTagName("head")[0].appendChild(newSS2);
+	ss_createStyleSheet(ss_forumCssUrl);
+	ss_createStyleSheet(ss_forumCss2Url);
+	ss_createStyleSheet(niftyCornersCssUrl);
 }
 </script>
 
@@ -96,33 +98,24 @@ div.ss_historybar {
   }
 
 /* Box styles */
-.ssf-box-container {
-	margin-top: -5px;
+div.ss_box_rounded {
+	background-color: #cccccc;
 }
 
-.ssf-box {
+div.ssf_box {
 	background-color: #FFFFFF;
-	border: 1px solid #3366cc;
 	height: auto;
 <c:if test="<%= !isIE %>">
 	height: 100%;
 </c:if>
-	padding: 10px 0 0 0;
+	margin: 1px;
 }
 
-.ssf-box-minimum-height {
+div.ss_box_minimum_height {
 	height: 1px;
 }
 
-.ssf-box-header-bar {
-	background-color: none;
-	position: relative;
-	width:100%;
-	top: 9px;
-	z-index: 2;
-}
-
-.ssf-box-title {
+div.ss_box_title {
 	background: <%= gammaColor %> url(<html:imagesPath/>box/box_title_bg_gradient.gif) repeat-x;
 	color: #4A517D;
 	font-family: arial, helvetica, sans-serif;
@@ -133,58 +126,18 @@ div.ss_historybar {
 	position: absolute;
 }
 
-.ssf-box-small-icon-bar {
+div.ss_box_small_icon_bar {
 	height: 1em;
 	padding-right: 10px;
 	position:relative;
 	text-align: right;
-	top: 8px;
+	top: 0px;
 }
 
-.ssf-box-small-icon {
+div.ss_box_small_icon {
 	height: 14px;
 	margin: -1px;
 	width: 14px;
-}
-
-.ssf-box-corner-ul {
-	background: #FFFFFF url(<html:imagesPath/>box/box_corner_ul.gif) no-repeat;
-	height: 5px;
-	left: 0px;
-	overflow: hidden;
-	position: absolute;
-	top: 0px;
-	width: 5px;
-}
-
-.ssf-box-corner-ur {
-	background: #FFFFFF url(<html:imagesPath/>box/box_corner_ur.gif) no-repeat;
-	height: 5px;
-	overflow: hidden;
-	position: absolute;
-	right: 0px;
-	top: 0px;
-	width: 5px;
-}
-
-.ssf-box-corner-bl {
-	background: #FFFFFF url(<html:imagesPath/>box/box_corner_bl.gif) no-repeat;
-	height: 5px;
-	left: 0px;
-	overflow: hidden;
-	position: absolute;
-	top: 0px;
-	width: 5px;
-}
-
-.ssf-box-corner-br {
-	background: #FFFFFF url(<html:imagesPath/>box/box_corner_br.gif) no-repeat;
-	height: 5px;
-	overflow: hidden;
-	position: absolute;
-	right: 0px;
-	top: 0px;
-	width: 5px;
 }
 
 .ssf-box-corner-2-bl {
@@ -207,22 +160,6 @@ div.ss_historybar {
 	width: 6px;
 }
 
-.ssf-box-top-decoration {
-	height: 5px;
-	position: relative;
-	top: 5px;
-	width: 100%;
-	z-index: 1;
-}
-
-.ssf-box-bottom-decoration {
-	height: 5px;
-	position: relative;
-	top: -5px;
-	width: 100%;
-	z-index: 2;
-}
-
 .ssf-box-bottom-decoration-2 {
 	background: url(<html:imagesPath/>box/shadow_middle.gif) repeat-x;
 	height: 6px;
@@ -236,6 +173,9 @@ div.ss_historybar {
 
 </style>
 <script language="JavaScript" src="<html:rootPath/>js/forum/forum_common.js"></script>
+<script language="JavaScript" src="<html:rootPath/>js/common/nifty_corners.js"></script>
+<c:if test="0">
 <script language="JavaScript" src="<html:rootPath/>js/forum/forum_dragsort.js"></script>
+</c:if>
 </c:if>
 

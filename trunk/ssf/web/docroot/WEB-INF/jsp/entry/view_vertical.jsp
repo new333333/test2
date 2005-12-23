@@ -23,7 +23,7 @@ Scroll up to the folder listing...
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
     <ssf:param name="box_width" value="400" />
     <ssf:param name="box_show_close_icon" value="true" />
-    <ssf:param name="box_show_close_routine" value="hideEntryDiv()" />
+    <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
   <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; display:block;"
     src="<html:rootPath/>js/forum/null.html" height="95%" width="100%" 
     frameBorder="no" >xxx</iframe>
@@ -127,7 +127,7 @@ function ss_positionEntryDiv() {
     wObj1.style.visibility = "visible";
 }
 
-function hideEntryDiv() {
+function ss_hideEntryDiv() {
     var wObj1 = null
     if (isNSN || isNSN6 || isMoz5) {
         wObj1 = self.document.getElementById('ss_showentrydiv')
