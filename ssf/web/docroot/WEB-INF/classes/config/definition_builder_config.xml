@@ -427,6 +427,12 @@
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="width" caption="__width" type="text"/>
+			<property name="maxWidth" caption="__max_graphic_width" type="text">
+				<help>__help_graphic_constraints</help>
+			</property>
+			<property name="maxHeight" caption="__max_graphic_height" type="text">
+				<help>__help_graphic_constraints</help>
+			</property>
 			<property name="storage" caption="__storage_media" type="selectbox" default="fileRepositoryService">
 				<option name="fileRepositoryService" caption="__file_system" />
 				<option name="internalWebdavRepositoryService" caption="__internal_webdav" />
