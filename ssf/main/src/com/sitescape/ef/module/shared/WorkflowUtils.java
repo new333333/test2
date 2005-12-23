@@ -71,7 +71,7 @@ public class WorkflowUtils {
 		return transitionData;
     }
     
-    public static List getParallelExecutions(Definition wfDef, String stateName) {
+    public static List getParallelThreadStarts(Definition wfDef, String stateName) {
 		List parallelExecutions = new ArrayList();
 		Document wfDoc = wfDef.getDefinition();
 		Element wfRoot = wfDoc.getRootElement();
@@ -83,7 +83,7 @@ public class WorkflowUtils {
 			Element stateEle = statePropertyEle.getParent().getParent();
 			//Build a list of all parallel executions for this state
 			List startParallelExecutions = stateEle.selectNodes(
-					"./item[@name='startParallelExecution']");
+					"./item[@name='startParallelThread']");
 			if (startParallelExecutions != null) {
 				for (int j = 0; j < startParallelExecutions.size(); j++) {
 					//Get the "startState" property
