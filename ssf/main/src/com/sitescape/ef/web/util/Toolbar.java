@@ -144,6 +144,13 @@ public class Toolbar {
 		toolbarCategoryMap.put("qualifiers", qualifiers);
 		toolbarCategory.put(title, toolbarCategoryMap);
 	}
+	public boolean checkToolbarMenuItem(String name, String category, String title) {
+		Map toolbarCategory = getCategory(name, category);
+		if (toolbarCategory != null && toolbarCategory.containsKey(title)) {
+			return true;
+		}
+		return false;
+	}
 	public SortedMap getToolbar() {
 		return this.toolbar;
 	}
