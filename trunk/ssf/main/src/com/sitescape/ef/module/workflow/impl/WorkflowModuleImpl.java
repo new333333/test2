@@ -510,4 +510,10 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    }		
 	}
 	
+	public void deleteWorkflowToken(WorkflowState ws) {
+       	JbpmSession session = workflowFactory.getSession();
+		Token t = session.getGraphSession().loadToken(ws.getTokenId().longValue());
+		t.end();
+	}
+	
 }
