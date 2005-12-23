@@ -797,7 +797,7 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		Map model = new HashMap();
 		String forumId = folderId.toString();
 		folderEntries = getFolderModule().getFolderEntries(folderId);
-		Folder folder = (Folder)folderEntries.get(ObjectKeys.FOLDER);
+		Folder folder = (Folder)folderEntries.get(ObjectKeys.BINDER);
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 		//Build the beans depending on the operation being done
 		model.put(WebKeys.FOLDER, folder);
@@ -809,11 +809,11 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		} else {
 			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(topFolder.getId(), this));			
 		}
-		model.put(WebKeys.FOLDER_ENTRIES, folderEntries.get(ObjectKeys.FOLDER_ENTRIES));
+		model.put(WebKeys.FOLDER_ENTRIES, folderEntries.get(ObjectKeys.ENTRIES));
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 		DefinitionUtils.getDefinitions(folder, model);
-		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.FOLDER_ENTRIES);
+		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.ENTRIES);
 		getEvents(entries, model, req, response);
 		req.setAttribute(WebKeys.URL_BINDER_ID,forumId);
 		buildFolderToolbar(response, model, forumId);

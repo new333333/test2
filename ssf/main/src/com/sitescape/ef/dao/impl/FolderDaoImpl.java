@@ -33,6 +33,7 @@ import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.FolderCounts;
 import com.sitescape.ef.domain.NoFolderEntryByTheIdException;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
+import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
@@ -42,6 +43,7 @@ import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.UserPerFolderPK;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.UserPropertiesPK;
+import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.util.Constants;
 /**
  * @author Jong Kim
@@ -59,22 +61,86 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	    return coreDao;
 	}
 	 	
-
-    /**
-     * Load 1 FolderEntry
-     */
-    public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, String zoneName) throws DataAccessException {
-        FolderEntry entry = (FolderEntry)getHibernateTemplate().get(FolderEntry.class, entryId);         
-        if (entry == null) throw new NoFolderEntryByTheIdException(entryId);
-        if ((zoneName != null ) && !entry.getParentFolder().getZoneName().equals(zoneName)) {
-           	throw new NoFolderEntryByTheIdException(entryId);
-        }
-        if (!parentFolderId.equals(entry.getParentFolder().getId())) {
-           	throw new NoFolderEntryByTheIdException(entryId);        	
-        }
-        return entry;
+	//hibernate will sometimes return duplicates when doing joins.  Filter them out
+	//but maintain order.  
+	private List removeDuplicates(List entries) {
+		if (entries.isEmpty()) return entries;
+		List result = new ArrayList(entries.size());
+		FolderEntry entry;
+		Long lastId=null;
+		for (int i=0; i<entries.size(); ++i) {
+			entry = (FolderEntry)(entries.get(i));
+			if (!entry.getId().equals(lastId)) result.add(entry);
+		}
+		return result;
+	}
+	/**
+    * Load 1 FolderEntry and its customAttributes collection
+     * @param parentFolderId
+     * @param entryId
+     * @param zoneName
+     * @return
+     * @throws DataAccessException
+	 */
+	public FolderEntry loadFolderEntry(final Long parentFolderId, final Long entryId, final String zoneName) throws DataAccessException {
+        return (FolderEntry)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        List results = session.createCriteria(FolderEntry.class)
+                    		.add(Expression.eq("id", entryId))
+                    		.setFetchMode("HCustomAttributes", FetchMode.JOIN)
+                            .list();
+                        if (results.size() == 0)  throw new NoFolderEntryByTheIdException(entryId);
+                        //because of join may get non-distinct results (wierd)
+                        FolderEntry entry = (FolderEntry)results.get(0);
+                        if ((zoneName != null ) && !entry.getParentFolder().getZoneName().equals(zoneName)) {
+                           	throw new NoFolderEntryByTheIdException(entryId);
+                        }
+                        if (!parentFolderId.equals(entry.getParentFolder().getId())) {
+                           	throw new NoFolderEntryByTheIdException(entryId);        	
+                        }
+                        return entry;
+                    }
+                }
+             );
     }
     /**
+     * Load 1 FolderEntry and all its collections
+     * @param parentFolderId
+     * @param entryId
+     * @param zoneName
+     * @return
+     * @throws DataAccessException
+     */
+    public FolderEntry loadFullFolderEntry(final Long parentFolderId, final Long entryId, final String zoneName) throws DataAccessException {
+        return (FolderEntry)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        List results = session.createCriteria(FolderEntry.class)
+                        	.add(Expression.eq("id", entryId))
+                        	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
+                        	.setFetchMode("HAttachments", FetchMode.JOIN)
+                        	.setFetchMode("HWorkflowStates", FetchMode.JOIN)	
+                        	.setFetchMode("entryDef", FetchMode.SELECT)	
+                        	.setFetchMode("parentBinder", FetchMode.SELECT)	
+                        	.setFetchMode("topFolder", FetchMode.SELECT)	
+                            .list();
+                        if (results.size() == 0)  throw new NoFolderEntryByTheIdException(entryId);
+                        //because of join may get non-distinct results (wierd)
+                        FolderEntry entry = (FolderEntry)results.get(0);
+                        if ((zoneName != null ) && !entry.getParentFolder().getZoneName().equals(zoneName)) {
+                           	throw new NoFolderEntryByTheIdException(entryId);
+                        }
+                        if (!parentFolderId.equals(entry.getParentFolder().getId())) {
+                           	throw new NoFolderEntryByTheIdException(entryId);        	
+                        }
+                        return entry;
+                    }
+                }
+             );
+    }
+        
+     /**
      * Query for a collection of FolderEntries.  An iterator is returned.  The entries are 
      * not pre-loaded.
      */
@@ -103,6 +169,41 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     	// use default query
      	return queryEntries(new FilterControls(cfAttrs, cfValues, cfOrder));
     }
+	/*
+     * Load the ancestors and descendants of an entry
+     */
+    public List loadEntryTree(final FolderEntry entry) throws DataAccessException { 
+        List result;
+        final String[] keys = entry.getHKey().getAncestorKeys();  
+       
+       if (keys == null) {
+           result = loadEntryDescendants(entry);
+       } else {
+    	   //load ancestors and descendants
+           result = (List)getHibernateTemplate().execute(
+                   new HibernateCallback() {
+                       public Object doInHibernate(Session session) throws HibernateException {
+                            List result = session.createCriteria(FolderEntry.class)
+                            	.add(Expression.disjunction()
+                                	.add(Expression.in("HKey.sortKey", keys))
+                                	.add(Expression.conjunction()  
+                                       .add(Expression.gt("HKey.level", new Integer(entry.getDocLevel())))
+                                       .add(Expression.like("HKey.sortKey", ((FolderEntry)entry).getHKey().getSortKey() + "%"))
+                                	)
+                            	)
+                            	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
+                            	.setFetchMode("HAttachments", FetchMode.JOIN)
+                            	.setFetchMode("HWorkflowStates", FetchMode.JOIN)
+                            	.addOrder(Order.asc("HKey.sortKey"))
+                            	.list();
+                            return removeDuplicates(result);
+                        }
+                  }
+                  
+       		);
+       	}
+        return result;
+     }     
     /**
      * Given a folder entry, pre-load its chain of FolderEntry ancestors 
      */
@@ -111,12 +212,15 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
              new HibernateCallback() {
                  public Object doInHibernate(Session session) throws HibernateException {
                      String[] keys = entry.getHKey().getAncestorKeys();  
-                     List query = session.createCriteria(entry.getClass())
-                     .add(Expression.eq("parentBinder", entry.getParentFolder().getId()))
-                     .add(Expression.in("HKey.sortKey", keys))
-                     .list();
-  //TODO: add order by when get new frontbase                      
-                    return query;
+                     List result = session.createCriteria(entry.getClass())
+                     	.add(Expression.eq("parentBinder", entry.getParentFolder().getId()))
+                     	.add(Expression.in("HKey.sortKey", keys))
+                     	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
+                     	.setFetchMode("HAttachments", FetchMode.JOIN)
+                     	.setFetchMode("HWorkflowStates", FetchMode.JOIN)
+                     	.addOrder(Order.asc("HKey.sortKey"))
+                     	.list();
+                     return removeDuplicates(result);
                  }
              }
          );  
@@ -131,17 +235,17 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                  public Object doInHibernate(Session session) throws HibernateException {
                      //sqlqueries, filters and criteria don't help with frontbase problem
                      //
-                     Criteria crit = session.createCriteria(FolderEntry.class);
-                     crit.add(Expression.conjunction()  
+                     List result = session.createCriteria(FolderEntry.class)
+                     	.add(Expression.conjunction()  
                             .add(Expression.gt("HKey.level", new Integer(entry.getDocLevel())))
                             .add(Expression.like("HKey.sortKey", ((FolderEntry)entry).getHKey().getSortKey() + "%"))
-                     );
-                     crit.setFetchMode("topEntry", FetchMode.SELECT);
-                     crit.setFetchMode("parentEntry", FetchMode.SELECT);
-                     crit.setFetchMode("entryDef", FetchMode.SELECT);
-                     
-                     crit.addOrder(Order.asc("HKey.sortKey"));
-                     return crit.list();
+                     	)
+                     	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
+                     	.setFetchMode("HAttachments", FetchMode.JOIN)
+                     	.setFetchMode("HWorkflowStates", FetchMode.JOIN)
+                     	.addOrder(Order.asc("HKey.sortKey"))
+                     	.list();
+                     return removeDuplicates(result);
                  }
              }
          );  
@@ -211,45 +315,6 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
             );
 		return entries;
     }	
-	/*
-     * Load the ancestors and descendants of an entry
-     */
-    public List loadEntryTree(final FolderEntry entry) throws DataAccessException { 
-        List result;
-        final String[] keys = entry.getHKey().getAncestorKeys();  
-       
-       if (keys == null) {
-           result = loadEntryDescendants(entry);
-       } else {
-           result = (List)getHibernateTemplate().execute(
-                   new HibernateCallback() {
-                       public Object doInHibernate(Session session) throws HibernateException {
-                           //Hibernate doesn't like the ? in the in clause
-                          Disjunction dis = Expression.disjunction();
-                           for (int i=0; i<keys.length; ++i) {
-                               dis.add(Expression.eq("HKey.sortKey", keys[i]));
-                            };
-                            Criteria crit = session.createCriteria(FolderEntry.class);
-                            crit.add(Expression.disjunction()
-                                   .add(dis)
-                                   .add(Expression.conjunction()  
-                                       .add(Expression.gt("HKey.level", new Integer(entry.getDocLevel())))
-                                       .add(Expression.like("HKey.sortKey", ((FolderEntry)entry).getHKey().getSortKey() + "%"))
-                                   )
-                            );
-                            crit.setFetchMode("topEntry", FetchMode.SELECT);
-                            crit.setFetchMode("parentEntry", FetchMode.SELECT);
-                            crit.setFetchMode("entryDef", FetchMode.SELECT);
-                            
-                            crit.addOrder(Order.asc("HKey.sortKey"));
-                            return crit.list();
-                       }
-                  }
-                  
-       		);
-       	}
-        return result;
-     }     
 
 	/**
 	 * Load 1 folder

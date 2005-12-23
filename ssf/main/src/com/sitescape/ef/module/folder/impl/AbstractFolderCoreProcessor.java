@@ -2,7 +2,6 @@ package com.sitescape.ef.module.folder.impl;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,259 +32,166 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FolderCounts;
 import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.MultipleWorkflowSupport;
 import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.BinderComparator;
-import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.index.IndexUtils;
-import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.WriteFilesException;
-import com.sitescape.ef.module.workflow.WorkflowModule;
 /**
  *
  * @author Jong Kim
  */
-public abstract class AbstractFolderCoreProcessor extends CommonDependencyInjection 
+public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor 
 	implements FolderCoreProcessor {
     
-	private static final int DEFAULT_MAX_CHILD_ENTRIES = ObjectKeys.FOLDER_MAX_PAGE_SIZE;
-    protected DefinitionModule definitionModule;
- 
-	protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
-	}
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule = definitionModule;
-	}
-
-	private WorkflowModule workflowModule;
-    
-	public void setWorkflowModule(WorkflowModule workflowModule) {
-		this.workflowModule = workflowModule;
-	}
-	protected WorkflowModule getWorkflowModule() {
-		return workflowModule;
-	}
-
-
     //***********************************************************************************************************	
-    public Long addEntry(Folder folder, Definition def, Map inputData, Map fileItems) 
-    	throws AccessControlException, WriteFilesException {
-        // This default implementation is coded after template pattern. 
-        
-        addEntry_accessControl(folder);
-        
-        Map entryDataAll = addEntry_toEntryData(folder, def, inputData, fileItems);
-        Map entryData = (Map) entryDataAll.get("entryData");
-        List fileData = (List) entryDataAll.get("fileData");
-        
-        FolderEntry entry = addEntry_create();
-        entry.setEntryDef(def);
-        
-        //need to set entry/folder information before generating file attachments
-        //Attachments need folder info for AnyOwner
-        addEntry_fillIn(folder, entry, inputData, entryData);
-        
-        addEntry_processFiles(folder, entry, fileData);
-        
-        addEntry_preSave(folder, entry, inputData, entryData);
-        
-        addEntry_save(entry);
-        
-        addEntry_postSave(folder, entry, inputData, entryData);
-        
-        // This must be done in a separate step after persisting the entry,
-        // because we need the entry's persistent ID for indexing. 
-        addEntry_indexAdd(folder, entry, inputData);
-        
-        //After the entry is successfully added, start up any associated workflows
-        addEntry_startWorkflow(entry);
-        
+    protected void addEntry_fillIn(Binder binder, AclControlledEntry entry, Map inputData, Map entryData) {  
+    	Folder folder = (Folder)binder;
+    	folder.addEntry((FolderEntry)entry, getFolderDao().allocateEntryNumbers(folder, 1));         
+    	super.addEntry_fillIn(folder, entry, inputData, entryData);
+   }
+ 
+    protected void addEntry_postSave(Binder binder, AclControlledEntry entry, Map inputData, Map entryData) {
 		getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).
 							setSeen(entry);
-       
-        return entry.getId();
     }
 
-     
-    protected void addEntry_accessControl(Folder folder) throws AccessControlException {
-        accessControlManager.checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);        
-    }
-    
-    protected void addEntry_processFiles(Folder folder, FolderEntry entry, List fileData) 
-    	throws WriteFilesException {
-    	EntryBuilder.writeFiles(getFileManager(), folder, entry, fileData);
-    }
-    
-    protected Map addEntry_toEntryData(Folder folder, Definition def, Map inputData, Map fileItems) {
-        //Call the definition processor to get the entry data to be stored
-        return getDefinitionModule().getEntryData(def, inputData, fileItems);
-    }
-    
-     protected FolderEntry addEntry_create() {
-    	return new FolderEntry();
-    }
-    
-    protected void addEntry_fillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData) {  
-    	folder.addEntry(entry, getFolderDao().allocateEntryNumbers(folder, 1));         
-        User user = RequestContextHolder.getRequestContext().getUser();
-        entry.setCreation(new HistoryStamp(user));
-        entry.setModification(entry.getCreation());
-        
-        
-        // The entry inherits acls from the parent by default. 
-        getAclManager().doInherit(folder, (AclControlledEntry) entry);
-        
-        EntryBuilder.buildEntry(entry, entryData);
-    }
-    
-    protected void addEntry_preSave(Folder folder, FolderEntry entry, Map inputData, Map entryData) {
-    }
-    
-    protected void addEntry_save(FolderEntry entry) {
-        getCoreDao().save(entry);
-    }
-    
-    protected void addEntry_postSave(Folder folder, FolderEntry entry, Map inputData, Map entryData) {
-    }
-    
-    protected void addEntry_indexAdd(Folder folder, FolderEntry entry, Map inputData) {
-        
-        // Create an index document from the entry object.
-        org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(folder, entry);
-        
-        // Register the index document for indexing.
-        IndexSynchronizationManager.addDocument(indexDoc);        
-    }
-    
-    protected void addEntry_startWorkflow(FolderEntry entry) {
-    	Folder folder = entry.getParentFolder();
-    	Map workflowAssociations = (Map) folder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS);
-    	if (workflowAssociations != null) {
-    		//See if the entry definition type has an associated workflow
-    		Definition entryDef = entry.getEntryDef();
-    		if (entryDef != null) {
-	    		if (workflowAssociations.containsKey(entryDef.getId()) && 
-	    				!workflowAssociations.get(entryDef.getId()).equals("")) {
-	    			Definition wfDef = getDefinitionModule().getDefinition((String)workflowAssociations.get(entryDef.getId()));
-	    			getWorkflowModule().startWorkflow(entry, wfDef);
-	    		}
-    		}
-    	}
-    }
- 	
-
-   //***********************************************************************************************************
-    public void modifyEntry(Folder folder, Long entryId, Map inputData, Map fileItems) 
-    	throws AccessControlException, WriteFilesException {
-        FolderEntry entry = folderEntry_load(folder, entryId);
-        modifyEntry_accessControl(folder, entry);
- 
-        Map entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
-        Map entryData = (Map) entryDataAll.get("entryData");
-        List fileData = (List) entryDataAll.get("fileData");
-        
-        modifyEntry_processFiles(folder, entry, fileData);
-        
-        modifyEntry_fillIn(folder, entry, inputData, entryData);
-                    
-        modifyEntry_postFillIn(folder, entry, inputData, entryData);
-        
-        modifyEntry_indexAdd(folder, entry, inputData);
-        getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
-          
+	 protected void modifyEntry_postFillIn(Binder binder, AclControlledEntry entry, Map inputData, Map entryData) {
+		   getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
      }
-    protected void modifyEntry_accessControl(Folder folder, FolderEntry entry) throws AccessControlException {
-        try {
-        	//Check if the user is allowed to modify entries in the folder
-        	getAccessControlManager().checkOperation(folder, WorkAreaOperation.MODIFY_ENTRIES);
-        } catch(AccessControlException ace) {
-        	//The user doesn't have folder level priv's
-            // Check if the user has "read" access to the particular entry.
-            getAccessControlManager().checkAcl(folder, entry, AccessType.READ);
-            // Check if the user has "write" access to the particular entry.
-            getAccessControlManager().checkAcl(folder, entry, AccessType.WRITE);
+
+ 	protected SFQuery indexBinder_getQuery(Binder binder) {
+        //do actual db query 
+    	FilterControls filter = new FilterControls("parentBinder", binder);
+        return (SFQuery)getFolderDao().queryEntries(filter);
+   	}
+    protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, String [] entryTypes) {
+    	  
+    	org.dom4j.Document qTree = DocumentHelper.createDocument();
+    	Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+    	Element boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
+    	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
+ 
+    	//Look only for entryType=entry
+       	Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+       	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.ENTRY_TYPE_FIELD);
+       	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+       	child.setText(EntryIndexUtils.ENTRY_TYPE_ENTRY);
+     	
+    	//Look only for binderId=binder
+    	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.BINDER_ID_FIELD);
+    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	child.setText(binder.getId().toString());
+    	return qTree;
+ 
+    }
+          
+    protected  AclControlledEntry entry_load(Binder parentBinder, Long entryId) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        return folderDao.loadFolderEntry(parentBinder.getId(), entryId, user.getZoneName()); 
+    }
+         
+    protected  AclControlledEntry entry_loadFull(Binder parentBinder, Long entryId) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        return folderDao.loadFullFolderEntry(parentBinder.getId(), entryId, user.getZoneName()); 
+   }
+    protected void deleteEntry_preDelete(Folder parentFolder, FolderEntry entry) {
+    	List replies = new ArrayList(entry.getReplies());
+    	for (int i=0; i<replies.size(); ++i) {
+    		deleteEntry(parentFolder, ((FolderEntry)replies.get(i)).getId());
+    	}
+        FolderEntry parent= entry.getParentEntry();
+        if (parent != null) {
+            parent.removeReply(entry);
+        } else {
+            parentFolder.removeEntry(entry);
         }
     }
-    
-    protected void modifyEntry_processFiles(Folder folder, FolderEntry entry, List fileData) 
-    throws WriteFilesException {
-    	EntryBuilder.writeFiles(getFileManager(), folder, entry, fileData);
-    }
-    protected Map modifyEntry_toEntryData(FolderEntry entry, Map inputData, Map fileItems) {
-        //Call the definition processor to get the entry data to be stored
-        return getDefinitionModule().getEntryData(entry.getEntryDef(), inputData, fileItems);
-    }
-    protected void modifyEntry_fillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData) {  
-        User user = RequestContextHolder.getRequestContext().getUser();
-        entry.setModification(new HistoryStamp(user));
-        EntryBuilder.updateEntry(entry, entryData);
 
-    }
+    protected void loadEntryHistory(FolderEntry entry) {
+        Set ids = new HashSet();
+        if (entry.getCreation() != null)
+            ids.add(entry.getCreation().getPrincipal().getId());
+        if (entry.getModification() != null)
+            ids.add(entry.getModification().getPrincipal().getId());
+        if (entry.getReservedDoc() != null) 
+            ids.add(entry.getReservedDoc().getPrincipal().getId());
+        getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+     } 
 
-    protected void modifyEntry_postFillIn(Folder folder, FolderEntry entry, Map inputData, Map entryData) {
+    protected void loadEntryHistory(HashMap entry) {
+        Set ids = new HashSet();
+        if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
+    	    ids.add(entry.get(EntryIndexUtils.CREATORID_FIELD));
+        if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
+    		ids.add(entry.get(EntryIndexUtils.MODIFICATIONID_FIELD));
+        if (entry.get(EntryIndexUtils.RESERVEDBYID_FIELD) != null) 
+    		ids.add(entry.get(EntryIndexUtils.RESERVEDBYID_FIELD));
+        getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+     } 
+    protected List loadEntryHistoryLuc(List pList) {
+        Set ids = new HashSet();
+        Iterator iter=pList.iterator();
+        HashMap entry;
+        while (iter.hasNext()) {
+            entry = (HashMap)iter.next();
+            if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
+        	    ids.add(entry.get(EntryIndexUtils.CREATORID_FIELD));
+            if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
+        		ids.add(entry.get(EntryIndexUtils.MODIFICATIONID_FIELD));
+            if (entry.get(EntryIndexUtils.RESERVEDBYID_FIELD) != null) 
+        		ids.add(entry.get(EntryIndexUtils.RESERVEDBYID_FIELD));
+        }
+        return getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+     }   
+
+    protected void loadEntryHistory(List pList) {
+        Set ids = new HashSet();
+        Iterator iter=pList.iterator();
+        FolderEntry entry;
+        while (iter.hasNext()) {
+            entry = (FolderEntry)iter.next();
+            if (entry.getCreation() != null)
+                ids.add(entry.getCreation().getPrincipal().getId());
+            if (entry.getModification() != null)
+                ids.add(entry.getModification().getPrincipal().getId());
+            if (entry.getReservedDoc() != null) 
+                ids.add(entry.getReservedDoc().getPrincipal().getId());
+        }
+        getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+     }     
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, AclControlledEntry entry) {
+    	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry);
+    	               
+        // Add Doc number
+        IndexUtils.addDocNumber(indexDoc, (FolderEntry)entry);
+
+        // Add the folder Id
+        IndexUtils.addFolderId(indexDoc, (Folder)binder);
+               
+        return indexDoc;
     }
-    
-    protected void modifyEntry_indexAdd(Folder folder, FolderEntry entry, Map inputData) {
-        
-        // Create an index document from the entry object.
-        org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(folder, entry);
-        
-        // Delete the document that's currently in the index.
-        IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
-        
-        // Register the index document for indexing.
-        IndexSynchronizationManager.addDocument(indexDoc);        
-    }
-    
-    public void modifyWorkflowState(Folder folder, Long entryId, Map inputData) {
-        FolderEntry entry = folderEntry_load(folder, entryId);
- 
-		//Get the workflow process to change and the name of the new state
-        String tokenId = ((String[]) inputData.get("tokenId"))[0];
-		String toState = ((String[]) inputData.get("toState"))[0];
-		
-		//Find the workflowState
-		WorkflowState ws = null;
-		List workflowStates = entry.getWorkflowStates();
-		for (int i = 0; i < workflowStates.size(); i++) {
-			if (((WorkflowState) workflowStates.get(i)).getTokenId().toString().equals(tokenId)) {
-				ws = (WorkflowState) workflowStates.get(i);
-				break;
-			}
-		}
- 		if (ws != null) {
-			//We have the workflowState of the current state
-			//See if the user is allowed to go to this state
-			Map transitions = ws.getManualTransitions();
-			if (transitions.containsKey(toState)) {
-				//It is ok to transition to this state; go do it
-				getWorkflowModule().modifyWorkflowState(ws.getTokenId(), ws.getState(), toState);
-			}
-		}
-    }
- 
-   //***********************************************************************************************************
+       
+    //***********************************************************************************************************
    public Long addReply(FolderEntry parent, Definition def, Map inputData, Map fileItems) 
    	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
@@ -376,73 +282,11 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     	addEntry_startWorkflow(entry);
     }
     
-    //***********************************************************************************************************
-    
-    public void indexFolder(Folder folder) {
-    	FolderEntry entry;
-    	
-    	indexFolder_accessControl(folder);
-    	
-    	// this is just here until we get our indexes in sync with
-    	// the db.  (Early in development, they're not...
-    	deleteFolderIndexEntries(folder);
-    	
-        //do actual db query 
-    	FilterControls filter = new FilterControls("parentBinder", folder);
-        SFQuery query = (SFQuery)getFolderDao().queryEntries(filter);
-        
-        //iterate through results
-        	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-        try {
- 	        while (query.hasNext()) {
-	            Object obj = query.next();
-	            if (obj instanceof Object[])
-	                obj = ((Object [])obj)[0];
-	            entry = (FolderEntry)obj;
-	            // Create an index document from the entry object.
-	            org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(folder, entry);
-	            
-	            logger.info("Indexing (" + folder.getId().toString() + ") " + entry.getDocNumber() + ": " + indexDoc.toString());
-	            
-	            // Delete the document that's currently in the index.
-	            luceneSession.deleteDocument(entry.getIndexDocumentUid());
-	            
-	            // Register the index document for indexing.
-	            luceneSession.addDocument(indexDoc);        
-	        }
-        } finally {
-	        query.close();
-	        luceneSession.close();
-	    }
  
-    }
-    public void deleteFolderIndexEntries(Folder folder) {
-    	FolderEntry entry;
-    	
-    	indexFolder_accessControl(folder);
-    	
-        //iterate through results
-        	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-        try {	            
-	        logger.info("Indexing (" + folder.getId().toString() + ") ");
-	        
-	        // Delete the document that's currently in the index.
-	        Term delTerm = new Term(IndexUtils.FOLDERID_FIELD, folder.getId().toString());
-	        luceneSession.deleteDocuments(delTerm);
-	            
-        } finally {
-	        luceneSession.close();
-	    }
  
-    }
-    
-    protected void indexFolder_accessControl(Folder folder) {
-    	getAccessControlManager().checkAcl(folder, AccessType.READ);
-    }
-
     //***********************************************************************************************************
     public org.dom4j.Document getDomFolderTree(Folder top, DomTreeBuilder domTreeHelper) {
-    	getFolderEntries_accessControl(top);
+    	getBinderEntries_accessControl(top);
         User user = RequestContextHolder.getRequestContext().getUser();
     	Comparator c = new BinderComparator(user.getLocale());
     	    	
@@ -465,7 +309,7 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
        		f = (Folder)iter.next();
       	    // Check if the user has the privilege to view the folder 
             try {
-            	getFolderEntries_accessControl(f);
+            	getBinderEntries_accessControl(f);
             } catch (AccessControlException ac) {
                	continue;
             }
@@ -473,164 +317,9 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
        		buildFolderDomTree(next, f, c, domTreeHelper);
        	}
     }
-    //***********************************************************************************************************
-    public Map getFolderEntriesOrig(Folder folder, int maxChildEntries) {
-        int count=0;
-        
-        //check access to folder
-        getFolderEntries_accessControl(folder);
-        //validate entry count
-        maxChildEntries = getFolderEntries_maxEntries(maxChildEntries); 
-        //do actual db query
-        SFQuery query =getFolderEntries_doQuery(folder);
-        //iterate threw results
-        ArrayList childEntries = new ArrayList(maxChildEntries);
-        try {
- 	        while ((count < maxChildEntries) && query.hasNext()) {
-	            
-	            Object obj = query.next();
-	            if (obj instanceof Object[])
-	                obj = ((Object [])obj)[0];
-	            if (obj instanceof AclControlled) {
-	                // This object requires access-control checking.
-	                // TODO How do we handle workflow-controlled entries??
-	                if (getFolderEntries_accessControl(folder, (AclControlled)obj)) {
-	                    ++count;
-	                    childEntries.add(obj);
-	                }
-	            }
-	            else {
-	                ++count;
-	                childEntries.add(obj);
-	            }
-	        }
-        } finally {
-	        query.close();
-        }
-       	Map model = new HashMap();
-        model.put(ObjectKeys.FOLDER, folder);      
-        model.put(ObjectKeys.FOLDER_ENTRIES, childEntries);
-        loadEntryHistory(childEntries);
-        return model;
-   }
-    //***********************************************************************************************************
-    public Map getFolderEntries(Folder folder, int maxChildEntries) {
-        int count=0;
-        Enumeration fields;
-        Field fld;
-        
-        //check access to folder - might be able to get rid of this
-        getFolderEntries_accessControl(folder);
-        //validate entry count
-        maxChildEntries = getFolderEntries_maxEntries(maxChildEntries); 
-        //do actual search index query
-        Hits hits = getFolderEntries_doSearch(folder,maxChildEntries);
-        //iterate through results
-        ArrayList childEntries = new ArrayList(hits.length());
-        try {
- 	        while (count < hits.length()) {
-	            HashMap ent = new HashMap();
-	            Document doc = hits.doc(count);
-	            //enumerate thru all the returned fields, and add to the map object
-	            Enumeration flds = doc.fields();
-	            while (flds.hasMoreElements()) {
-	            	fld = (Field)flds.nextElement();
-	            	if (fld.name().toLowerCase().indexOf("date") > 0) 
-	            		ent.put(fld.name(),DateField.stringToDate(fld.stringValue()));
-	            	else
-	            		ent.put(fld.name(),fld.stringValue());
-	            }
-	            childEntries.add(ent);
-	            ++count;
-	            
-	        }
-        } finally {
-        }
-        List users = loadEntryHistoryLuc(childEntries);
-        // walk the entries, and stuff in the user object.
-        for (int i = 0; i < childEntries.size(); i++) {
-        	Principal p;
-        	HashMap child = (HashMap)childEntries.get(i);
-        	if (child.get(EntryIndexUtils.CREATORID_FIELD) != null) {
-        		child.put(WebKeys.PRINCIPAL, getPrincipal(users,(String)child.get(EntryIndexUtils.CREATORID_FIELD)));
-        	}        	
-        }
-       	Map model = new HashMap();
-        model.put(ObjectKeys.FOLDER, folder);      
-        model.put(ObjectKeys.FOLDER_ENTRIES, childEntries);
-        model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.length()));
-        return model;
-   }
  
-    private Principal getPrincipal(List users, String userId) {
-    	Principal p;
-    	for (int i=0; i<users.size(); i++) {
-    		p = (Principal)users.get(i);
-    		if (p.getId().toString().equalsIgnoreCase(userId)) return p;
-    	}
-    	return null;
-    }
-    protected void getFolderEntries_accessControl(Folder folder) {
-        getAccessControlManager().checkAcl(folder, AccessType.READ);    	
-    }
-    protected int getFolderEntries_maxEntries(int maxChildEntries) {
-        if (maxChildEntries == 0) maxChildEntries = DEFAULT_MAX_CHILD_ENTRIES;
-        return maxChildEntries;
-    }
-    protected SFQuery getFolderEntries_doQuery(Folder folder) {
-    	return (SFQuery)getFolderDao().queryChildEntries(folder);
-    }
-    protected boolean getFolderEntries_accessControl(Folder folder, AclControlled obj) {
-    	return getAccessControlManager().testAcl(folder, (AclControlled) obj, AccessType.READ);
-    }
-    
-    protected Hits getFolderEntries_doSearch(Folder folder, int maxResults) {
-       	Hits hits = null;
-       	// Build the query
-    	org.dom4j.Document qTree = DocumentHelper.createDocument();
-    	Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-    	Element boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
-    	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
-    	
-    	//Look only for entryType=entry
-    	Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.ENTRY_TYPE_FIELD);
-    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    	child.setText(EntryIndexUtils.ENTRY_TYPE_ENTRY);
-    	
-    	//Limit results to entries in the current folder
-    	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,IndexUtils.FOLDERID_FIELD);
-    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    	child.setText((folder.getId()).toString());
-    	
-    	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder();
-    	SearchObject so = qb.buildQuery(qTree);
-    	
-    	//Set the sort order
-    	SortField[] fields = new SortField[1];
-    	boolean descend = true;
-    	fields[0] = new SortField(EntryIndexUtils.MODIFICATION_DATE_FIELD, descend);
-    	so.setSortBy(fields);
-    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
-    	
-    	System.out.println("Query is: " + qTree.asXML());
-    	System.out.println("Query is: " + soQuery.toString());
-    	
-    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-        
-        try {
-	        hits = luceneSession.search(soQuery,so.getSortBy(),0,maxResults);
-        }
-        finally {
-            luceneSession.close();
-        }
-    	
-        return hits;
-     
-    }
-
+ 
+ 
 
 //***********************************************************************************************************
     public Long addFolder(Folder parentFolder, Folder folder) {
@@ -667,41 +356,15 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     }
  
     //***********************************************************************************************************
-    public FolderEntry getEntry(Folder parentFolder, Long entryId, int type) {
-    	//get the entry
-        FolderEntry entry = folderEntry_load(parentFolder, entryId);
-        //check access
-        getEntry_accessControl(parentFolder, entry);
-        //Initialize users
-        loadEntryHistory(entry);
-        return entry;
-    }
           
-    protected FolderEntry folderEntry_load(Folder parentFolder, Long entryId) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        FolderEntry entry = folderDao.loadFolderEntry(parentFolder.getId(), entryId, user.getZoneName()); 
-        return entry;
-    }    
-         
-    protected void getEntry_accessControl(Folder parentFolder, FolderEntry entry) {
-           
-        // Check if the user has the privilege to view the entries in the 
-        // work area, which is the docshare forum.
-    	getFolderEntries_accessControl(parentFolder);
-              
-        // Check if the user has "read" access to the particular entry.
-        getAccessControlManager().checkAcl(parentFolder, entry, AccessType.READ);
-        
-        // TODO If there is a workflow attached to the entry, we must perform
-        // additional access check based on the state the entry is currently in.
-    }
+
     public Map getEntryTree(Folder parentFolder, Long entryId, int type) {
     	int entryLevel;
     	List lineage;
     	Map model = new HashMap();
     	
     	//get the entry
-        FolderEntry entry = folderEntry_load(parentFolder, entryId);
+        FolderEntry entry = (FolderEntry)entry_load(parentFolder, entryId);
         //check access
         getEntry_accessControl(parentFolder, entry);
  
@@ -724,169 +387,6 @@ public abstract class AbstractFolderCoreProcessor extends CommonDependencyInject
     }
          
     //***********************************************************************************************************   
-    public void deleteEntry(Folder parentFolder, Long entryId) {
-        FolderEntry entry = folderEntry_load(parentFolder, entryId);
-        deleteEntry(parentFolder, entry);
-    }
-    public void deleteEntry(Folder parentFolder, FolderEntry entry) {
-        deleteEntry_accessControl(parentFolder, entry);
-        deleteEntry_preDelete(parentFolder, entry);
-        deleteEntry_workflow(parentFolder, entry);
-        deleteEntry_processFiles(parentFolder, entry);
-        deleteEntry_delete(parentFolder, entry);
-        deleteEntry_postDelete(parentFolder, entry);
-        deleteEntry_indexDel(entry);
-   	
-    }
-    protected void deleteEntry_accessControl(Folder parentFolder, FolderEntry entry) {
-        getAccessControlManager().checkOperation(parentFolder, WorkAreaOperation.DELETE_ENTRIES);
-        
-        getAccessControlManager().checkAcl(parentFolder, entry, AccessType.DELETE);
-    }
-    protected void deleteEntry_preDelete(Folder parentFolder, FolderEntry entry) {
-    	List replies = new ArrayList(entry.getReplies());
-    	for (int i=0; i<replies.size(); ++i) {
-    		deleteEntry(parentFolder, (FolderEntry)replies.get(i));
-    	}
-        FolderEntry parent= entry.getParentEntry();
-        if (parent != null) {
-            parent.removeReply(entry);
-        } else {
-            parentFolder.removeEntry(entry);
-        }
-    }
-        
-    protected void deleteEntry_workflow(Folder parentFolder, FolderEntry entry) {
-    	getWorkflowModule().deleteEntryWorkflow(parentFolder, entry);
-    }
-    
-    protected void deleteEntry_processFiles(Folder parentFolder, FolderEntry entry) {
-    	getFileManager().deleteFiles(parentFolder, entry);
-    }
-    
-    protected void deleteEntry_delete(Folder parentFolder, FolderEntry entry) {
-        getCoreDao().delete(entry);   
-    }
-    protected void deleteEntry_postDelete(Folder parentFolder, FolderEntry entry) {
-    }
 
-    protected void deleteEntry_indexDel(FolderEntry entry) {
-        // Delete the document that's currently in the index.
-        IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
-    }
-    
-    //***********************************************************************************************************
-    /*
-     * Load all principals assocated with an entry.  
-     * This is a performance optimization for display.
-     */
-    protected void loadEntryHistory(FolderEntry entry) {
-        Set ids = new HashSet();
-        if (entry.getCreation() != null)
-            ids.add(entry.getCreation().getPrincipal().getId());
-        if (entry.getModification() != null)
-            ids.add(entry.getModification().getPrincipal().getId());
-        if (entry.getReservedDoc() != null) 
-            ids.add(entry.getReservedDoc().getPrincipal().getId());
-        getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
-     } 
 
-    protected void loadEntryHistory(HashMap entry) {
-        Set ids = new HashSet();
-        if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
-    	    ids.add(entry.get(EntryIndexUtils.CREATORID_FIELD));
-        if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
-    		ids.add(entry.get(EntryIndexUtils.MODIFICATIONID_FIELD));
-        if (entry.get(EntryIndexUtils.RESERVEDBYID_FIELD) != null) 
-    		ids.add(entry.get(EntryIndexUtils.RESERVEDBYID_FIELD));
-        getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
-     } 
-    protected List loadEntryHistoryLuc(List pList) {
-        Set ids = new HashSet();
-        Iterator iter=pList.iterator();
-        HashMap entry;
-        while (iter.hasNext()) {
-            entry = (HashMap)iter.next();
-            if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
-        	    ids.add(entry.get(EntryIndexUtils.CREATORID_FIELD));
-            if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
-        		ids.add(entry.get(EntryIndexUtils.MODIFICATIONID_FIELD));
-            if (entry.get(EntryIndexUtils.RESERVEDBYID_FIELD) != null) 
-        		ids.add(entry.get(EntryIndexUtils.RESERVEDBYID_FIELD));
-        }
-        return getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
-     }   
-
-    protected void loadEntryHistory(List pList) {
-        Set ids = new HashSet();
-        Iterator iter=pList.iterator();
-        FolderEntry entry;
-        while (iter.hasNext()) {
-            entry = (FolderEntry)iter.next();
-            if (entry.getCreation() != null)
-                ids.add(entry.getCreation().getPrincipal().getId());
-            if (entry.getModification() != null)
-                ids.add(entry.getModification().getPrincipal().getId());
-            if (entry.getReservedDoc() != null) 
-                ids.add(entry.getReservedDoc().getPrincipal().getId());
-        }
-        getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
-     }     
-    public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Folder folder, FolderEntry entry) {
-    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
-        
-        // Add uid
-        BasicIndexUtils.addUid(indexDoc, entry.getIndexDocumentUid());
-        
-        // Add doc type
-        BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ENTRY);
-               
-        // Add the entry type (entry or reply)
-        EntryIndexUtils.addEntryType(indexDoc, entry);
-        
-        // Add creation-date
-        EntryIndexUtils.addCreationDate(indexDoc, entry);
-        
-        // Add modification-date
-        EntryIndexUtils.addModificationDate(indexDoc,entry);
-        
-        // Add creator id
-        EntryIndexUtils.addCreationPrincipalId(indexDoc,entry);
-        
-        // Add Modification Principal Id
-        EntryIndexUtils.addModificationPrincipalId(indexDoc,entry);
-        
-        // Add ReservedBy Principal Id
-        EntryIndexUtils.addModificationPrincipalId(indexDoc,entry);
-        
-        // Add Doc Id
-        EntryIndexUtils.addDocId(indexDoc, entry);
-        
-        // Add Doc title
-        EntryIndexUtils.addTitle(indexDoc, entry);
-        
-        // Add command definition
-        EntryIndexUtils.addCommandDefinition(indexDoc, entry); 
-        
-        // Add Doc number
-        IndexUtils.addDocNumber(indexDoc, entry);
-
-        // Add the folder Id
-        IndexUtils.addFolderId(indexDoc, folder);
-        
-        // Add data fields driven by the entry's definition object. 
-        getDefinitionModule().addIndexFieldsForEntry(indexDoc, folder, entry);
-        
-        // Add ACL field. We only need to index ACLs for read access.
-        BasicIndexUtils.addReadAcls(indexDoc, folder, entry, getAclManager());
-        
-        // Add the events
-        EntryIndexUtils.addEvents(indexDoc, entry);
-        
-        // Add the workflows
-        EntryIndexUtils.addWorkflow(indexDoc, entry);
-        
-        return indexDoc;
-    }
-       
 }

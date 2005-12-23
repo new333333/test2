@@ -53,12 +53,14 @@ public abstract class Principal extends AclControlledEntry  {
     private void setHCustomAttributes(Map customAttributes) {this.customAttributes = customAttributes;}   	
    
     /**
-     * @hibernate.bag  lazy="true" inverse="true" cascade="all,delete-orphan" embed-xml="false"
+     * @hibernate.set  lazy="true" inverse="true" cascade="all,delete-orphan" embed-xml="false"
  	 * @hibernate.key column="principal"
  	 * @hibernate.one-to-many class="com.sitescape.ef.domain.Attachment"
+ 	 * We are using a set here, cause any outer-joins to load this attribute
+ 	 * when using a list result in duplicates
    	 */
-    private List getHAttachments() {return attachments;}
-    private void setHAttachments(List attachments) {this.attachments = attachments;}   	
+    private Set getHAttachments() {return attachments;}
+    private void setHAttachments(Set attachments) {this.attachments = attachments;}   	
      /**
  	 * @hibernate.bag  lazy="true" inverse="true" cascade="all,delete-orphan" embed-xml="false"
  	 * @hibernate.key column="principal"
@@ -69,16 +71,16 @@ public abstract class Principal extends AclControlledEntry  {
     private void setHEvents(List events) {this.allEvents = events;}   	
 
     /**
-	 * @hibernate.bag lazy="true" inverse="true" cascade="all,delete-orphan" 
+	 * @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan" 
      * @hibernate.key column="principal"
      * @hibernate.one-to-many class="com.sitescape.ef.domain.WorkflowState"
      * @return
      */
-     public List getHWorkflowStates() {
+     public Set getHWorkflowStates() {
         return workflowStates;
         
      }
-     public void setHWorkflowStates(List workflowStates) {
+     public void setHWorkflowStates(Set workflowStates) {
         this.workflowStates = workflowStates;
      }
     /**

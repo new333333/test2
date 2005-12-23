@@ -6,7 +6,7 @@
 
 <div class="formBreak">
 <div class="ss_entryContent">
-<c:out value="${ssEntry.description.text}"/>
+<c:out value="${ssDefinitionEntry.description.text}"/>
 </div>
 </div>
 <c:forEach var="descendant" items="${ssFolderEntryDescendants}">

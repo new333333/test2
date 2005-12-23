@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,8 +14,9 @@ import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
+import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.MultipleWorkflowSupport;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.search.BasicIndexUtils;
 
@@ -31,6 +31,8 @@ public class EntryIndexUtils {
     public final static String ENTRY_TYPE_FIELD = "_entryType";
     public final static String ENTRY_TYPE_ENTRY = "entry";
     public final static String ENTRY_TYPE_REPLY = "reply";
+    public final static String ENTRY_TYPE_USER = "user";
+    public final static String ENTRY_TYPE_GROUP = "group";
     public static final String CREATION_DATE_FIELD = "_creationDate";
     public static final String CREATION_DAY_FIELD = "_creationDay";
     public static final String MODIFICATION_DATE_FIELD = "_modificationDate";
@@ -86,10 +88,13 @@ public class EntryIndexUtils {
 	        	Field entryTypeField = Field.Keyword(EntryIndexUtils.ENTRY_TYPE_FIELD, EntryIndexUtils.ENTRY_TYPE_REPLY);
 	        	doc.add(entryTypeField);
 	        }
-    	} else {
-        	Field entryTypeField = Field.Keyword(EntryIndexUtils.ENTRY_TYPE_FIELD, EntryIndexUtils.ENTRY_TYPE_ENTRY);
+    	} else if (entry instanceof User) {
+        	Field entryTypeField = Field.Keyword(EntryIndexUtils.ENTRY_TYPE_FIELD, EntryIndexUtils.ENTRY_TYPE_USER);
         	doc.add(entryTypeField);
-    	}
+    	} else if (entry instanceof Group) {
+    		Field entryTypeField = Field.Keyword(EntryIndexUtils.ENTRY_TYPE_FIELD, EntryIndexUtils.ENTRY_TYPE_GROUP);
+    		doc.add(entryTypeField);
+    	} 
     }
     
     public static void addCreationDate(Document doc, Entry entry) {
@@ -117,14 +122,15 @@ public class EntryIndexUtils {
 
     public static void addWorkflow(Document doc, Entry entry) {
     	// Add the workflow fields
-   		List workflowStates = entry.getWorkflowStates();
+   		Set workflowStates = entry.getWorkflowStates();
    		if (workflowStates != null) {
-   			for (int i = 0; i < workflowStates.size(); i++) {
+   			for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
+   				WorkflowState ws = (WorkflowState)iter.next();
    				Field workflowStateField = Field.Keyword(WORKFLOW_STATE_FIELD, 
-   						((WorkflowState)workflowStates.get(i)).getState());
+   						ws.getState());
    				//Index the workflow state
    				doc.add(workflowStateField);
-   				Definition def = ((WorkflowState)workflowStates.get(i)).getDefinition();
+   				Definition def = ws.getDefinition();
    				if (def != null) {
 	   				Field workflowProcessField = Field.Keyword(WORKFLOW_PROCESS_FIELD, 
 	   						def.getId());
@@ -203,7 +209,7 @@ public class EntryIndexUtils {
         doc.add(docIdField);
     }
 
-    public static void addParentBinder(Document doc, Entry entry) {
+    public static void addBinder(Document doc, Entry entry) {
        	Field binderIdField = Field.Keyword(BINDER_ID_FIELD, entry.getParentBinder().getId().toString());
        	doc.add(binderIdField);
     }   

@@ -57,14 +57,13 @@ public class SAbstractProfileController extends SAbstractController {
 		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-		ProfileBinder binder = getProfileModule().getProfileBinder();
-		Principal entry = getProfileModule().getPrincipal(entryId);
+		Principal entry = getProfileModule().getEntry(binderId, entryId);
 	
 		model.put(WebKeys.ENTRY_ID, entryId);
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
-		model.put(WebKeys.FOLDER, binder);
-		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.FOLDER, entry.getParentBinder());
+		model.put(WebKeys.BINDER, entry.getParentBinder());
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
 		//Get the definition used to view this entry

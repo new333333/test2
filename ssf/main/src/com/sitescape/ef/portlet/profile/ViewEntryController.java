@@ -28,13 +28,16 @@ public class ViewEntryController extends SAbstractProfileController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
-		Long folderId = ActionUtil.getForumId(request);
+		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		
 		//See if the user asked to change state
 		if (formData.containsKey("changeStateBtn")) {
 			//Change the state
-			getFolderModule().modifyWorkflowState(folderId, entryId, formData);
+			//Get the workflow process to change and the name of the new state
+	        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
+			String toState = PortletRequestUtils.getRequiredStringParameter(request, "toState");
+			getProfileModule().modifyWorkflowState(folderId, entryId, tokenId, toState);
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
