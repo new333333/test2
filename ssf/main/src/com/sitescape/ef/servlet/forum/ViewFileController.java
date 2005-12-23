@@ -9,6 +9,8 @@ import javax.activation.FileTypeMap;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.servlet.SAbstractController;
 import com.sitescape.util.FileUtil;
@@ -21,10 +23,17 @@ public class ViewFileController extends SAbstractController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
-		Long forumId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+		Long binderId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 		Long entryId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 		String downloadFile = RequestUtils.getStringParameter(request, WebKeys.URL_DOWNLOAD_FILE, "");
-		Entry entry = getBinderModule().getBinderEntry(forumId, entryId);
+		Binder binder = getBinderModule().getBinder(binderId);
+		Entry entry=null;
+		if (binder instanceof Folder) {
+			entry = getFolderModule().getEntry(binderId, entryId);
+		} else {
+			entry = getProfileModule().getEntry(binderId, entryId);
+			
+		}
 		//Set up the beans needed by the jsps
 		String fileId = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE_ID); 
 		
