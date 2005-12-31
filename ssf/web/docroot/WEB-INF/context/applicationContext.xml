@@ -489,6 +489,7 @@
 			<list>
 				<value>loggingInterceptor</value>
 				<value>remoteInitRequestContextInterceptor</value>
+				<value>remoteOpenSessionInViewInterceptor</value>
 				<value>remoteUserPreloadInterceptor</value>
 			</list>
 		</property>
@@ -497,6 +498,10 @@
 	<bean id="loggingInterceptor" class="com.sitescape.ef.remoting.interceptor.LoggingInterceptor"/>
 	
 	<bean id="remoteInitRequestContextInterceptor" class="com.sitescape.ef.remoting.interceptor.InitRequestContextInterceptor"/>
+	
+	<bean id="remoteOpenSessionInViewInterceptor" class="com.sitescape.ef.remoting.interceptor.OpenSessionInViewInterceptor">
+		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+	</bean>
 	
 	<bean id="remoteUserPreloadInterceptor" class="com.sitescape.ef.remoting.interceptor.UserPreloadInterceptor">
 		<property name="coreDao"><ref local="coreDao"/></property>
