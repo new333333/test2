@@ -24,7 +24,13 @@ public class InitRequestContextInterceptor implements MethodInterceptor {
 			return invocation.proceed();
 		}
 		finally {
-	    	RequestContextUtil.clearThreadContext();
+			// Do NOT clear the thread context because some of the interceptors
+			// that come before this intereptor may still depend upon the
+			// thread context being there. For example logging interceptor
+			// uses the user's locale information for error message).
+			// Since thread context is reset at the beginning of every new
+			// request, this omission shouldn't cause a serious problem. 
+	    	//RequestContextUtil.clearThreadContext();
 		}
 	}
 

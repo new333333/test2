@@ -1,5 +1,8 @@
 package com.sitescape.ef.remoting.impl;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.remoting.api.Entry;
 import com.sitescape.ef.remoting.api.Facade;
@@ -40,6 +43,12 @@ public class FacadeImpl implements Facade {
 		entry.setBinderId(bId);
 		entry.setId(eId);
 		entry.setTitle(domainEntry.getTitle());
+		
+		// TODO The following code tests lazy loading - to be removed
+		Map attrs = domainEntry.getCustomAttributes();
+		for(Iterator i = attrs.entrySet().iterator(); i.hasNext();) {
+			Map.Entry me = (Map.Entry) i.next();
+		}
 		
 		return entry;
 	}
