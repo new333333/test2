@@ -48,6 +48,9 @@ public class FacadeImpl implements Facade {
 		Map attrs = domainEntry.getCustomAttributes();
 		for(Iterator i = attrs.entrySet().iterator(); i.hasNext();) {
 			Map.Entry me = (Map.Entry) i.next();
+			Object key = me.getKey();
+			Object val = me.getValue();
+			System.out.println(key.toString());
 		}
 		
 		return entry;

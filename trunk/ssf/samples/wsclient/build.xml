@@ -42,8 +42,8 @@
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">
-			<arg value="10"/>
-			<arg value="25"/>
+			<arg value="74"/>
+			<arg value="491"/>
 		</java>
 	</target>
 	
