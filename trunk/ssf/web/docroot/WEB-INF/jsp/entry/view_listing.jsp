@@ -200,6 +200,13 @@ function highlightLine(obj) {
 	}
 }
 
+//Called when one of the "Add entry" toolbar menu options is selected
+function ss_addEntry(obj) {
+	alert(obj.href)
+	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
+	return false;
+}
+
 var ss_currentEntryId = "";
 function ss_loadEntry(obj,id) {
 	if (id == "") return false;
