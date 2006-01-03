@@ -81,6 +81,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE = "set_cal_display_date";
 	public static final String FORUM_OPERATION_CALENDAR_GOTO_DATE = "cal_goto_date";
 	public static final String FORUM_OPERATION_UNSEEN_COUNTS = "unseen_counts";
+	public static final String FORUM_OPERATION_SAVE_COLUMN_POSITIONS = "save_column_positions";
 	public static final String FORUM_OPERATION_UNSEEN_LIST = "unseen_list";
 	public static final String OPERATION_POSTING_ALIASES="alias";
 	public static final String OPERATION_ADD_POSTING_ALIASES="addAlias";
@@ -105,6 +106,7 @@ public class WebKeys {
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_ID = "ssEntryId";
     public static final String FOLDER = "ssFolder";
+    public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";
     public static final String FOLDER_DEFINTION_MAP="ssFolderDefinitionMap";
     public static final String FOLDER_LIST = "ssFolderList";
     public static final String FOLDER_ID_LIST = "ssFolderIdList";
@@ -146,6 +148,7 @@ public class WebKeys {
 	public static final String USER_PRINCIPAL = "com.sitescape.principal";
 	public static final String USER_ID = "com.sitescape.userId";
     public static final String USER_PROPERTIES="ssUserProperties";
+    public static final String USER_FOLDER_PROPERTIES="ssUserFolderProperties";
     public static final String WORKSPACE="ssWorkspace";
     public static final String WORKSPACE_DOM_TREE="ssWsDomTree";
 	public static final String ZONE_NAME = "com.sitescape.zonename";
