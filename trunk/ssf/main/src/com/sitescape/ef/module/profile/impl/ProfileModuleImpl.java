@@ -280,6 +280,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
                processor.modifyEntry(binder, id, inputData, fileItems);
      }
 
+    public void modifyPrincipalData(Long id, Map entryData) 
+			throws AccessControlException {
+	    ProfileBinder binder = getProfileBinder();
+	    ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
+	           	binder, ProfileCoreProcessor.PROCESSOR_KEY);
+	           processor.modifyEntryData(binder, id, entryData);
+    }
+
     public Long addGroup(String definitionId, Map inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         ProfileBinder binder = getProfileBinder();
