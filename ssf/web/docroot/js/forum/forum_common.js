@@ -25,6 +25,9 @@ var isMoz5 = ((navigator.userAgent.indexOf("Mozilla/5") > -1) && !isNSN6);
 var isMacIE = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("Mac") > -1));
 var isIE = ((navigator.userAgent.indexOf("IE ") > -1));
 
+var ss_savedOnResizeRoutine = null;
+var ss_onResizeRoutineLoaded;
+
 //Routine called by the body's onLoad event
 var ss_savedOnLoadRoutine = null;
 var ss_onLoadRoutineLoaded;
@@ -39,6 +42,13 @@ function ss_onLoadInit() {
     	window.onload = ss_savedOnLoadRoutine;
     	if (window.onload != null) window.onload();
     }
+    
+	//Add the onResize routine to the onresize event
+	if (!ss_onResizeRoutineLoaded) {
+		ss_onResizeRoutineLoaded = 1;
+		ss_savedOnResizeRoutine = window.onresize;
+		window.onresize = ssf_onresize_event_handler;
+	}
 }
 
 //Add the onLoadInit routine to the onload event
@@ -110,6 +120,8 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 	} else {
 		if (jsDebug) {alert('Div "'+objName+'" does not exist. (ss_showHideObj)')}
 	}
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
 //Routine to add the innerHMTL of one div to another div
@@ -126,6 +138,9 @@ function ss_addToDiv(target, source) {
     var targetHtml = ss_getDivHtml(target)
     var sourceHtml = ss_getDivHtml(source)
     ss_setDivHtml(target, targetHtml + sourceHtml)
+    
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
 //Routine to add html to a div
@@ -138,6 +153,9 @@ function ss_addHtmlToDiv(target, text) {
     }
     var targetHtml = ss_getDivHtml(target)
     ss_setDivHtml(target, targetHtml + text)
+
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
 //Routines to get and set the html of an area
@@ -165,6 +183,9 @@ function ss_setDivHtml(divId, value) {
     if (obj) {
     	obj.innerHTML = value
     }
+
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
 //Routines for the definition builder
@@ -300,9 +321,48 @@ function m_setResizeRoutine(resizeRoutine) {
     this.resizeRoutine = resizeRoutine;
 }
 function ssf_onresize_event_handler() {
-    for (var n in onResizeList) {
-        onResizeList[n].resizeRoutine();
+    //Call any routines that want to be called at resize time
+    for (var name in onResizeList) {
+        if (onResizeList[name].resizeRoutine) {
+        	onResizeList[name].resizeRoutine();
+        }
     }
+    if (ss_savedOnResizeRoutine != null) {
+    	window.onresize = ss_savedOnResizeRoutine;
+    	if (window.onresize != null) window.onresize();
+		window.onresize = ss_onResize;
+    }
+}
+
+var onLayoutChangeList = new Array();
+//Routine to create a new "onLayoutChangeObj" object
+//onLayoutChangeObj objects are set up whenever you want to be called if the layout changes dynamically.
+function createOnLayoutChangeObj(name, layoutRoutine) {
+    if (onLayoutChangeList[name] == null) {
+        onLayoutChangeList[name] = new onLayoutChangeObj(name);
+        onLayoutChangeList[name].setLayoutRoutine(layoutRoutine);
+    }
+}
+function onLayoutChangeObj(name) {
+    this.name = name;
+    this.layoutRoutine = null;
+    this.getLayoutRoutine = m_getLayoutRoutine;
+    this.setLayoutRoutine = m_setLayoutRoutine;
+}
+function m_getLayoutRoutine() {
+    return this.layoutRoutine;
+}
+function m_setLayoutRoutine(layoutRoutine) {
+    this.layoutRoutine = layoutRoutine;
+}
+
+//Common onLayoutChange handler
+//  This function will call the layout routines if the layout changes
+function ssf_onLayoutChange(obj) {
+    for (var i in onLayoutChangeList) {
+        onLayoutChangeList[i].layoutRoutine()
+    }
+    return true;
 }
 
 function getObjAbsX(obj) {
@@ -345,6 +405,28 @@ function getDivTop(divName) {
         }
     }
     return parseInt(top);
+}
+
+function getDivLeft(divName) {
+    var left = 0;
+    if (isNSN || isNSN6 || isMoz5) {
+        var obj = self.document.getElementById(divName)
+        while (1) {
+            if (!obj) {break}
+            left += parseInt(obj.offsetLeft)
+            if (obj == obj.offsetParent) {break}
+            obj = obj.offsetParent
+        }
+    } else {
+        var obj = self.document.all[divName]
+        while (1) {
+            if (!obj) {break}
+            left += obj.offsetLeft
+            if (obj == obj.offsetParent) {break}
+            obj = obj.offsetParent
+        }
+    }
+    return parseInt(left);
 }
 
 function getDivHeight(divName) {
@@ -528,6 +610,8 @@ function setObjectWidth(obj, width) {
     } else {
         obj.clientWidth = width;
     }
+    //Call the routines that want to be called on layout changes
+    ssf_onLayoutChange();
 }
 
 function setObjectHeight(obj, height) {
@@ -541,6 +625,8 @@ function setObjectHeight(obj, height) {
     } else {
         obj.clientHeight = height;
     }
+    //Call the routines that want to be called on layout changes
+    ssf_onLayoutChange();
 }
 
 function setObjectLeft(obj, value) {
@@ -551,6 +637,8 @@ function setObjectLeft(obj, value) {
     } else {
         obj.style.pixelLeft = value;
     }
+    //Call the routines that want to be called on layout changes
+    ssf_onLayoutChange();
 }
 
 function setObjectTop(obj, value) {
@@ -561,6 +649,8 @@ function setObjectTop(obj, value) {
     } else {
         obj.style.pixelTop = value;
     }
+    //Call the routines that want to be called on layout changes
+    ssf_onLayoutChange();
 }
 
 function getWindowWidth() {
@@ -626,23 +716,27 @@ function smoothScrollInTime(x, y, steps) {
 var active_menulayer = '';
 var lastActive_menulayer = '';
 var active_menulayer_form = 0;
+var activateMenuOffset = 10;
 
-function activateMenuLayer(divId, delayHide) {
+function activateMenuLayer(divId, parentDivId, delayHide) {
+	if (!parentDivId || parentDivId == null || parentDivId == 'undefined') {parentDivId=""}
 	if (!delayHide || delayHide == null || delayHide == 'undefined') {delayHide=""}
     // don't do anything if the divs aren't loaded yet
-    if (isNSN6 || isMoz5) {
-        if (self.document.getElementById(divId) == null) {return}
-    } else if (isNSN) {
-        var nn4obj = getNN4DivObject(divId)
-        if (nn4obj == null) {return}
-    } else {
-        if (self.document.all[divId] == null) {return}
-    }
+    if (self.document.getElementById(divId) == null) {return}
 
-    var x = getClickPositionX();
-    var y = getClickPositionY();
-    //Add a little to the y position so the div isn't occluding too much
-    y = parseInt(y) + 10
+	var x = 0;
+	var y = 0;
+    if (parentDivId != "") {
+    	x = getDivLeft(parentDivId)
+    	y = getDivTop(parentDivId)
+	    //Add a little to the y position so the div isn't occluding too much
+	    y = parseInt(parseInt(y) + getDivHeight(parentDivId) + 6)
+    } else {
+	    x = getClickPositionX();
+	    y = getClickPositionY();
+	    //Add a little to the y position so the div isn't occluding too much
+	    y = parseInt(y) + activateMenuOffset
+	}
 
     var maxWidth = 0;
     var divWidth = 0;
@@ -650,10 +744,6 @@ function activateMenuLayer(divId, delayHide) {
     if (isNSN6 || isMoz5) {
         // need to bump layer an extra bit to the right to avoid horiz scrollbar
         divWidth = parseInt(self.document.getElementById(divId).offsetWidth) + 25;
-        maxWidth = parseInt(window.innerWidth);
-    } else if (isNSN) {    
-        var nn4obj = getNN4DivObject(divId)
-        divWidth = parseInt(nn4obj.clip.width);
         maxWidth = parseInt(window.innerWidth);
     } else {
         divWidth = parseInt(self.document.all[divId].clientWidth) + 25;
