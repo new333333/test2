@@ -71,12 +71,15 @@ var ss_sTableMarginLeft = 2
 var ss_sTableMarginTop = 2
 var ss_sTableMarginBottom = 2
 
-var ss_sTableLastHeight = 0;
+var ss_sTableLastLeft = 0;
+var ss_sTableLastTop = 0;
 function ss_checkSlidingTableLayout() {
-	if (getDivTop("ss_sTable") != ss_sTableLastHeight) {
+	if (getDivTop("ss_sTable") != ss_sTableLastTop || getDivLeft("ss_sTable") != ss_sTableLastLeft) {
 		//The layout changed, go reposition things
-		ss_sTableLastHeight = getDivTop("ss_sTable")
+		ss_sTableLastTop = getDivTop("ss_sTable")
+		ss_sTableLastLeft = getDivLeft("ss_sTable")
 		ss_showSlidingTableCols()
+		ss_clearMouseOverInfo()
 	}
 }
 
@@ -302,8 +305,6 @@ createOnLayoutChangeObj('ss_checkSlidingTableLayout', ss_checkSlidingTableLayout
 <script language="javascript">
 var ss_columnCount = <%= String.valueOf(colSize) %>;
 </script>
-<div style="margin: 0px;" width="100%" 
- onMouseOver="ss_clearMouseOverInfo(this)" onMouseOut="ss_clearMouseOverInfo(this)">
 <div id="ss_sTable" style="margin: 2px; border: #666666 1px solid;" width="100%"
  onMouseOver="ss_clearMouseOverInfo(this)">
 
@@ -322,7 +323,6 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 		}		
 %>
 </table>
-</div>
 </div>
 </div>
 

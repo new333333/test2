@@ -48,6 +48,10 @@ function ss_showForumEntryInIframe(url) {
     }
     wObj.style.height = parseInt(wObj1.style.height) - 50 + "px";
     wObj.src = url
+
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+
     return false;
 }
 
