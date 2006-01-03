@@ -27,37 +27,48 @@ import com.sitescape.ef.lucene.Hits;
 public class ListUnseenController  extends SAbstractForumController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
+		Map formData = request.getParameterMap();
+		if(WebHelper.isUserLoggedIn(request)) {
+			String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+			if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
+				String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+				//Save the user's placement of columns in this folder
+				String columnPositions = ((String[])formData.get("column_positions"))[0];
+				if (!columnPositions.equals("")) {
+					//Save the column positions
+				   	User user = RequestContextHolder.getRequestContext().getUser();
+				   	getProfileModule().setUserFolderProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_COLUMN_POSITIONS, columnPositions);
+
+				}
+			}
+		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if(!WebHelper.isUserLoggedIn(request)) {
-			// TODO Send appropriate error message. 
-			// Note: Because request context is not set up in this case, the
-			// scope of the operations this method can use is very limited.
-			// For example, no database or index access is available. The sole
-			// purpose of this code should be to report meaningful error
-			// messages to the user. 
-			
-			// For now, simply return an empty map. This will at least prevent
-			// the ugly Javascript error on the browser. 
 			Map model = new HashMap();
 			Map unseenCounts = new HashMap();
 			Map statusMap = new HashMap();
 			
-			//Mark that the user is not logged in
+			//Signal that the user is not logged in. 
+			//  The code on the calling page will output the proper translated message.
 			statusMap.put(WebKeys.LIST_UNSEEN_STATUS_NOT_LOGGED_IN, new Boolean(true));
+			model.put(WebKeys.LIST_UNSEEN_STATUS, statusMap);
 			
 			response.setContentType("text/xml");			
-			model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
-			model.put(WebKeys.LIST_UNSEEN_STATUS, statusMap);
-			return new ModelAndView("forum/unseen_counts", model);
+			if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_COUNTS)) {
+				model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
+				return new ModelAndView("forum/unseen_counts", model);
+			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
+				return new ModelAndView("forum/ajax_return", model);
+			}
+			return new ModelAndView("forum/ajax_return", model);
 		}
 		
-        User user = RequestContextHolder.getRequestContext().getUser();
 		Map model = new HashMap();
-		Map seenMaps = new HashMap();
+		Map statusMap = new HashMap();
 
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_COUNTS)) {
 			List folderIds = new ArrayList();
 			String[] forumList = new String[0];
@@ -68,7 +79,6 @@ public class ListUnseenController  extends SAbstractForumController {
 				folderIds.add(new Long(forumList[i]));
 			}
 			Map unseenCounts = getFolderModule().getUnseenCounts(folderIds);
-			Map statusMap = new HashMap();
 
 			response.setContentType("text/xml");
 			
@@ -78,6 +88,10 @@ public class ListUnseenController  extends SAbstractForumController {
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_LIST)) {
 			
+		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
+			response.setContentType("text/xml");
+			model.put(WebKeys.LIST_UNSEEN_STATUS, statusMap);
+			return new ModelAndView("forum/ajax_return", model);
 		}
 		return new ModelAndView(WebKeys.VIEW_FORUM, model);
 	} 
