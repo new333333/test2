@@ -38,6 +38,7 @@ public class DebugHelper {
 				System.out.println("\tsession id: [" + ses.getId() + "]");
 				System.out.println("\tsession object: [" + ses + "]");
 				System.out.println("\tsession attributes: [" + getSessionAttributesAsString(ses) + "]");
+				System.out.println("\trequest attributes: [" + getRequestAttributesAsString(request) + "]");
 			}
 			else {
 				System.out.println("\tNo session object exists");
@@ -76,6 +77,7 @@ public class DebugHelper {
 				System.out.println("\tsession id: [" + pses.getId() + "]");
 				System.out.println("\tsession object: [" + pses + "]");
 				System.out.println("\tsession attributes: [" + getSessionAttributesAsString(pses) + "]");
+				System.out.println("\trequest attributes: [" + getRequestAttributesAsString(request) + "]");
 			}
 			else {
 				System.out.println("\tNo session object exists");				
@@ -106,4 +108,29 @@ public class DebugHelper {
 		}
 		return sb.toString();
 	}
+	
+	private static String getRequestAttributesAsString(HttpServletRequest req) {
+		StringBuffer sb = new StringBuffer();
+		for(Enumeration e = req.getAttributeNames();e.hasMoreElements();) {
+			String name = (String) e.nextElement();
+			Object value = req.getAttribute(name);
+			if(sb.length() > 0)
+				sb.append(", ");
+			sb.append(name).append("=").append(value.toString());
+		}
+		return sb.toString();
+	}
+	
+	private static String getRequestAttributesAsString(PortletRequest req) {
+		StringBuffer sb = new StringBuffer();
+		for(Enumeration e = req.getAttributeNames();e.hasMoreElements();) {
+			String name = (String) e.nextElement();
+			Object value = req.getAttribute(name);
+			if(sb.length() > 0)
+				sb.append(", ");
+			sb.append(name).append("=").append(value.toString());
+		}
+		return sb.toString();
+	}
+	
 }
