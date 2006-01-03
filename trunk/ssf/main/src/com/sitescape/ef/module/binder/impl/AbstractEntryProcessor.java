@@ -184,23 +184,31 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 
    //***********************************************************************************************************
     public Long modifyEntry(Binder binder, Long entryId, Map inputData, Map fileItems) 
-    	throws AccessControlException, WriteFilesException {
+    		throws AccessControlException, WriteFilesException {
+		AclControlledEntry entry = modifyEntry_load(binder, entryId);
+	    modifyEntry_accessControl(binder, entry);
+	
+	    Map entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
+	    Map entryData = (Map) entryDataAll.get("entryData");
+	    List fileData = (List) entryDataAll.get("fileData");
+	    
+	    modifyEntry_processFiles(binder, entry, fileData);
+	    
+	    modifyEntry_fillIn(binder, entry, inputData, entryData);
+	                
+	    modifyEntry_postFillIn(binder, entry, inputData, entryData);
+	    
+	    modifyEntry_indexAdd(binder, entry, inputData);
+	    return entry.getId();
+	}
+	public Long modifyEntryData(Binder binder, Long entryId, Map entryData) 
+			throws AccessControlException {
     	AclControlledEntry entry = modifyEntry_load(binder, entryId);
-        modifyEntry_accessControl(binder, entry);
- 
-        Map entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
-        Map entryData = (Map) entryDataAll.get("entryData");
-        List fileData = (List) entryDataAll.get("fileData");
-        
-        modifyEntry_processFiles(binder, entry, fileData);
-        
-        modifyEntry_fillIn(binder, entry, inputData, entryData);
-                    
-        modifyEntry_postFillIn(binder, entry, inputData, entryData);
-        
-        modifyEntry_indexAdd(binder, entry, inputData);
-        return entry.getId();
-     }
+	    modifyEntry_accessControl(binder, entry);
+	
+        EntryBuilder.updateEntry(entry, entryData);
+		return entry.getId();
+	}
     protected AclControlledEntry modifyEntry_load(Binder binder, Long entryId) {
     	return entry_load(binder, entryId);
     	
