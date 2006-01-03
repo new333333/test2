@@ -30,7 +30,9 @@ public interface EntryProcessor {
     public void deleteEntry(Binder binder, Long entryId) throws AccessControlException;
     public AclControlledEntry getEntry(Binder binder, Long entryId, int type) throws AccessControlException;
     public Long modifyEntry(Binder binder, Long entryId, Map inputData, Map fileItems) 
-    	throws AccessControlException, WriteFilesException;
+		throws AccessControlException, WriteFilesException;
+    public Long modifyEntryData(Binder binder, Long entryId, Map entryData) 
+		throws AccessControlException;
     public void modifyWorkflowState(Binder binder, Long entryId, Long tokenId, String toState) 
 		throws AccessControlException;
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries) throws AccessControlException;
