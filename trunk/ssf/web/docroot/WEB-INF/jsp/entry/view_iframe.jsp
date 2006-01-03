@@ -10,8 +10,8 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 </div>
 
 <div id="ss_showentrydiv" style="position:absolute; visibility:hidden; x:0; y:0;
-  width:600; height:80%; display:none; z-index:10;">
-  <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
+  width:600; height:80%; display:none; z-index:50;">
+  <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
     <ssf:param name="box_width" value="400" />
     <ssf:param name="box_show_close_icon" value="true" />

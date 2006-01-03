@@ -4,17 +4,17 @@
 var ss_entryList = new Array();
 var ss_entryCount = 0;
 <c:forEach var="entry" items="${ssFolderEntries}" >
-ss_entryList[ss_entryCount++] = '<c:out value="${entry.id}"/>';
+ss_entryList[ss_entryCount++] = '<c:out value="${entry._docId}"/>';
 </c:forEach>
 
 var left_end = "<html:imagesPath/>pics/sym_s_left_end.gif";
-var left = "<html:imagesPath/>pics/sym_s_left.gif";
+var left = "<html:imagesPath/>pics/sym_m_arrow_down_g.gif";
 var right_end = "<html:imagesPath/>pics/sym_s_right_end.gif";
-var right = "<html:imagesPath/>pics/sym_s_right.gif";
+var right = "<html:imagesPath/>pics/sym_m_arrow_up_g.gif";
 var left_end_g = "<html:imagesPath/>pics/sym_s_left_end_g.gif";
-var left_g = "<html:imagesPath/>pics/sym_s_left_g.gif";
+var left_g = "<html:imagesPath/>pics/sym_m_arrow_down_g.gif";
 var right_end_g = "<html:imagesPath/>pics/sym_s_right_end_g.gif";
-var right_g = "<html:imagesPath/>pics/sym_s_right_g.gif";
+var right_g = "<html:imagesPath/>pics/sym_m_arrow_up_g.gif";
 var g_alt = "no more entries";
 var left_alt = "previous entry"
 var left_end_alt = "first entry"
@@ -52,7 +52,6 @@ function restoreImages (currentEntry) {
 		return false;
 }
 
-var nextEntry = "";
 var ss_baseHistoryUrl = '<ssf:url
           adapter="true"
           portletName="ss_forum" 
@@ -63,6 +62,7 @@ var ss_baseHistoryUrl = '<ssf:url
           />';
           
 function ss_getNextEntryId() {
+	var nextEntry = "";
 	if (!ss_currentEntryId || ss_currentEntryId == "") {
 		if (ss_entryCount > 0) {nextEntry = ss_entryList[0];}
 	} else {
@@ -82,14 +82,14 @@ function ss_getNextEntryId() {
 			swapPrevFirst();
 		} 
 	} else {
-		alert("There are no more entries to view.")
+		//alert("There are no more entries to view.")
 		swapPrevFirst();
 	}
 	return false;
 }
 
-var prevEntry = "";
 function ss_getPreviousEntryId() {
+	var nextEntry = "";
     if (!ss_currentEntryId || ss_currentEntryId == "") {
 		if (ss_entryCount > 0) {nextEntry = ss_entryList[0];}
 	} else {
@@ -109,18 +109,18 @@ function ss_getPreviousEntryId() {
 			swapNextLast();
 		}
 	} else {
-		alert("There are no more entries to view.")
+		//alert("There are no more entries to view.")
 		swapNextLast()
 	}
 	return false;
 }
 
-var firstEntry = "";
 function ss_getFirstEntryId() {
+	var firstEntry = "";
     if (ss_entryCount > 0) {firstEntry = ss_entryList[0];}
     restoreImages();
-    if (ss_currentEntryId == firstEntry) {
-    	alert("You are already viewing the last entry.")
+    if (firstEntry == "" || ss_currentEntryId == firstEntry) {
+    	//alert("You are already viewing the last entry.")
     	swapNextLast()
     } else {
         var url = ss_baseHistoryUrl + '&entryId=' + firstEntry;
@@ -130,12 +130,12 @@ function ss_getFirstEntryId() {
 	return false;
 }
 
-var lastEntry = "";
 function ss_getLastEntryId() {
+	var lastEntry = "";
     if (ss_entryCount > 0) {lastEntry = ss_entryList[ss_entryCount - 1];}
     restoreImages();
-    if (ss_currentEntryId == lastEntry) {
-    	alert("You are already viewing the first entry.")
+    if (lastEntry == "" || ss_currentEntryId == lastEntry) {
+    	//alert("You are already viewing the first entry.")
     	swapPrevFirst()
     } else {
         var url = ss_baseHistoryUrl + '&entryId=' + lastEntry;
@@ -147,7 +147,7 @@ function ss_getLastEntryId() {
 </script>
 
 <div>
-      <span class="ss_buttonBarRight">
+      <span class="ss_buttonBarLeft">
 
      <a  
           href="<ssf:url
@@ -169,7 +169,7 @@ function ss_getLastEntryId() {
           actionUrl="false"
           />"
           onClick="ss_getNextEntryId();return false;" ><img alt="previous entry" id="prev"
-          border="0" src="<html:imagesPath/>pics/sym_s_left.gif"></a><span>Entries</span><a href="<ssf:url
+          border="0" src="<html:imagesPath/>pics/sym_m_arrow_down_g.gif"></a><span>Entries</span><a href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
           folderId="<%= ssFolder.getId().toString() %>"
@@ -178,7 +178,7 @@ function ss_getLastEntryId() {
           actionUrl="false"
           />"
           onClick="ss_getPreviousEntryId();return false;" ><img alt="next entry" id="next"
-          border="0" src="<html:imagesPath/>pics/sym_s_right.gif"></a><a 
+          border="0" src="<html:imagesPath/>pics/sym_m_arrow_up_g.gif"></a><a 
           href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
@@ -190,5 +190,5 @@ function ss_getLastEntryId() {
           onClick="ss_getFirstEntryId();return false;" ><img alt="last entry" id="last"
           border="0" src="<html:imagesPath/>pics/sym_s_right_end.gif"></a>&nbsp;
           </span>
-</div>
+</div><br>
 

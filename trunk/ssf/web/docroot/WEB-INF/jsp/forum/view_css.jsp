@@ -99,7 +99,13 @@ div.ss_historybar {
 
 /* Box styles */
 div.ss_box_rounded {
-	background-color: #cccccc;
+	background-color: #999999;
+}
+
+div.ss_box_bottom_rounded {
+	background-color: #999999;
+	height: 1px;
+	margin: 0px;
 }
 
 div.ssf_box {
@@ -108,11 +114,12 @@ div.ssf_box {
 <c:if test="<%= !isIE %>">
 	height: 100%;
 </c:if>
-	margin: 1px;
+	margin: 2px 2px 0px 2px;
 }
 
 div.ss_box_minimum_height {
 	height: 1px;
+	margin: 1px;
 }
 
 div.ss_box_title {
@@ -127,16 +134,18 @@ div.ss_box_title {
 }
 
 div.ss_box_small_icon_bar {
+	background-color: #999999;
 	height: 1em;
 	padding-right: 10px;
 	position:relative;
 	text-align: right;
 	top: 0px;
+	margin: 0px;
 }
 
 div.ss_box_small_icon {
 	height: 14px;
-	margin: -1px;
+	margin: 0px;
 	width: 14px;
 }
 

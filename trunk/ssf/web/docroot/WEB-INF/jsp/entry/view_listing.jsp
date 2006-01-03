@@ -174,11 +174,13 @@ function scrollToSavedLocation() {
 
 // var highlightBgColor = "<%= betaColor %>"
 var highlightBgColor = "#efefef"
+highlightBgColor = "#cccccc"
 var highlightedLine = null;
 var savedHighlightedLineBgColor = null;
-var highlightClassName = "highlightEntry";
+var highlightClassName = "ss_highlightEntry";
 var savedHighlightClassName = null;
 function highlightLine(obj) {
+	alert('highlightLine')
 	if (highlightedLine != null) {
 		if (highlightedLine.offsetParent.parentElement) {
 			highlightedLine.offsetParent.parentElement.className = savedHighlightClassName;
@@ -198,6 +200,7 @@ function highlightLine(obj) {
 
 var ss_currentEntryId = "";
 function ss_loadEntry(obj,id) {
+	if (id == "") return false;
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
 	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
@@ -212,10 +215,11 @@ function ss_loadEntry(obj,id) {
 }
 
 function ss_loadEntryUrl(url,id) {
+	if (id == "") return false;
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
 	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
-	if (window.highlightLineById()) {
+	if (window.highlightLineById) {
 		highlightLineById(folderLine);
 	}
 	ss_showForumEntry(url, <c:out value="${showEntryCallbackRoutine}"/>);
@@ -268,7 +272,7 @@ if (self.parent && self.parent.highlightLineById) {
 	//Horizontal view
 	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_HORIZONTAL)) {
 %>
-    <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
+    <ssf:box>
       <ssf:param name="box_width" value="<%= new Integer(entryWindowWidth).toString() %>" />
       <ssf:param name="box_show_close_icon" value="true" />
 	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 

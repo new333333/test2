@@ -182,7 +182,7 @@ createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
 </td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<td>
 </td><td>
 <div id="ss_showentrydiv" style="display:block; margin:2; wwidth:400; height:80%;">
-  <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
+  <ssf:box>
     <ssf:param name="box_width" value="400" />
     <ssf:param name="box_show_close_icon" value="true" />
     <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />

@@ -255,7 +255,7 @@ if (self.parent && self.parent.highlightLineById) {
 	//Horizontal view
 	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_HORIZONTAL)) {
 %>
-    <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
+    <ssf:box>
       <ssf:param name="box_width" value="<%= new Integer(entryWindowWidth).toString() %>" />
       <ssf:param name="box_show_close_icon" value="true" />
 	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
