@@ -3,19 +3,9 @@
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
-<%@ page contentType="text/html" isELIgnored="false" %>
-
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ page contentType="text/html" %>
 
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-
-<%@ taglib prefix="ssf" uri="http://www.sitescape.com/tags-ssf" %>
-
-<%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
-
 
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.ef.ObjectKeys" %>
