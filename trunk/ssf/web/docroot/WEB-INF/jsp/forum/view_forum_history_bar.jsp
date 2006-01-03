@@ -8,45 +8,47 @@ ss_entryList[ss_entryCount++] = '<c:out value="${entry._docId}"/>';
 </c:forEach>
 
 var left_end = "<html:imagesPath/>pics/sym_s_left_end.gif";
-var left = "<html:imagesPath/>pics/sym_m_arrow_down_g.gif";
+var left = "<html:imagesPath/>pics/sym_s_arrow_down.gif";
 var right_end = "<html:imagesPath/>pics/sym_s_right_end.gif";
-var right = "<html:imagesPath/>pics/sym_m_arrow_up_g.gif";
+var right = "<html:imagesPath/>pics/sym_s_arrow_up.gif";
 var left_end_g = "<html:imagesPath/>pics/sym_s_left_end_g.gif";
-var left_g = "<html:imagesPath/>pics/sym_m_arrow_down_g.gif";
+var left_g = "<html:imagesPath/>pics/sym_s_arrow_down_g.gif";
 var right_end_g = "<html:imagesPath/>pics/sym_s_right_end_g.gif";
-var right_g = "<html:imagesPath/>pics/sym_m_arrow_up_g.gif";
-var g_alt = "no more entries";
-var left_alt = "previous entry"
-var left_end_alt = "first entry"
-var right_alt = "next entry"
-var right_end_alt = "last entry"
+var right_g = "<html:imagesPath/>pics/sym_s_arrow_up_g.gif";
+var g_alt = "<ssf:nlt tag="nav.noEntries" text="No more entries"/>";
+var left_alt = "<ssf:nlt tag="nav.prevEntry" text="Previous entry"/>"
+var left_end_alt = "<ssf:nlt tag="nav.firstEntry" text="First entry"/>"
+var right_alt = "<ssf:nlt tag="nav.nextEntry" text="Next entry"/>"
+var right_end_alt = "<ssf:nlt tag="nav.lastEntry" text="Last entry"/>"
 
-function swapImages (id, img, alt) {
-		document.getElementById(id).src = img;
-		document.getElementById(id).alt = alt;
+function ss_swapImages (id, img, alt) {
+		if (document.getElementById(id)) {
+			document.getElementById(id).src = img;
+			document.getElementById(id).alt = alt;
+		}
 }
 
-function swapPrevFirst () {
-		swapImages('first', left_end_g, g_alt)
-		swapImages('prev', left_g, g_alt)
+function ss_swapPrevFirst () {
+		ss_swapImages('ss_first', left_end_g, g_alt)
+		ss_swapImages('ss_prev', left_g, g_alt)
 }
 
-function swapNextLast () {
-		swapImages('last', right_end_g, g_alt)
-		swapImages('next', right_g, g_alt)
+function ss_swapNextLast () {
+		ss_swapImages('ss_last', right_end_g, g_alt)
+		ss_swapImages('ss_next', right_g, g_alt)
 		return false;
 }
 
-function restoreImages (currentEntry) {
-		swapImages('last', right_end, right_end_alt)
-		swapImages('next', right, right_alt)
-		swapImages('first', left_end, left_end_alt)
-		swapImages('prev', left, left_alt)
+function ss_restoreImages (currentEntry) {
+		ss_swapImages('ss_last', right_end, right_end_alt)
+		ss_swapImages('ss_next', right, right_alt)
+		ss_swapImages('ss_first', left_end, left_end_alt)
+		ss_swapImages('ss_prev', left, left_alt)
 		if (currentEntry != null) {
 			if (currentEntry == ss_entryList[ss_entryCount - 1]) {				
-				swapPrevFirst();
+				ss_swapPrevFirst();
 			} else if (currentEntry == ss_entryList[0]) {
-				swapNextLast();
+				ss_swapNextLast();
 			}
 		}
 		return false;
@@ -74,16 +76,16 @@ function ss_getNextEntryId() {
 			}
 		}
 	}
-	restoreImages();
+	ss_restoreImages();
 	if (nextEntry != "") {
 		var url = ss_baseHistoryUrl + '&entryId=' + nextEntry;
 		ss_loadEntryUrl(url, nextEntry);
 		if (nextEntry == ss_entryList[ss_entryCount - 1]) {
-			swapPrevFirst();
+			ss_swapPrevFirst();
 		} 
 	} else {
 		//alert("There are no more entries to view.")
-		swapPrevFirst();
+		ss_swapPrevFirst();
 	}
 	return false;
 }
@@ -101,16 +103,16 @@ function ss_getPreviousEntryId() {
 			}
 		}
 	}
-	restoreImages();
+	ss_restoreImages();
 	if (nextEntry != "") {
 		var url = ss_baseHistoryUrl + '&entryId=' + nextEntry;
 		ss_loadEntryUrl(url, nextEntry);
 		if (nextEntry == ss_entryList[0]) {
-			swapNextLast();
+			ss_swapNextLast();
 		}
 	} else {
 		//alert("There are no more entries to view.")
-		swapNextLast()
+		ss_swapNextLast()
 	}
 	return false;
 }
@@ -118,14 +120,14 @@ function ss_getPreviousEntryId() {
 function ss_getFirstEntryId() {
 	var firstEntry = "";
     if (ss_entryCount > 0) {firstEntry = ss_entryList[0];}
-    restoreImages();
+    ss_restoreImages();
     if (firstEntry == "" || ss_currentEntryId == firstEntry) {
     	//alert("You are already viewing the last entry.")
-    	swapNextLast()
+    	ss_swapNextLast()
     } else {
         var url = ss_baseHistoryUrl + '&entryId=' + firstEntry;
 		ss_loadEntryUrl(url, firstEntry);
-		swapNextLast()
+		ss_swapNextLast()
     }
 	return false;
 }
@@ -133,23 +135,26 @@ function ss_getFirstEntryId() {
 function ss_getLastEntryId() {
 	var lastEntry = "";
     if (ss_entryCount > 0) {lastEntry = ss_entryList[ss_entryCount - 1];}
-    restoreImages();
+    ss_restoreImages();
     if (lastEntry == "" || ss_currentEntryId == lastEntry) {
     	//alert("You are already viewing the first entry.")
-    	swapPrevFirst()
+    	ss_swapPrevFirst()
     } else {
         var url = ss_baseHistoryUrl + '&entryId=' + lastEntry;
 		ss_loadEntryUrl(url, lastEntry);
-		swapPrevFirst()
+		ss_swapPrevFirst()
     }
 	return false;
 }
 </script>
 
-<div>
-      <span class="ss_buttonBarLeft">
+<table cellspacing="0" cellpadding="0">
+  <tr>
 
-     <a  
+<%
+if (false) {
+%>
+     <td><a  
           href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
@@ -158,8 +163,13 @@ function ss_getLastEntryId() {
           operation="entry_previous"
           actionUrl="false"
           />"
-          onClick="ss_getLastEntryId();return false;" ><img alt="first entry" id="first"
-          border="0" src="<html:imagesPath/>pics/sym_s_left_end.gif"></a><a  
+          onClick="ss_getLastEntryId();return false;" ><img 
+          alt="<ssf:nlt tag="nav.firstEntry" text="First entry"/>" id="ss_first"
+          border="0" src="<html:imagesPath/>pics/sym_s_left_end.gif"></a></td>
+<%
+}
+%>
+     <td><a  
           href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
@@ -168,8 +178,13 @@ function ss_getLastEntryId() {
           operation="entry_previous"
           actionUrl="false"
           />"
-          onClick="ss_getNextEntryId();return false;" ><img alt="previous entry" id="prev"
-          border="0" src="<html:imagesPath/>pics/sym_m_arrow_down_g.gif"></a><span>Entries</span><a href="<ssf:url
+          onClick="ss_getNextEntryId();return false;" ><img 
+          alt="<ssf:nlt tag="nav.prevEntry" text="Previous entry"/>" id="ss_prev"
+          border="0" src="<html:imagesPath/>pics/sym_s_arrow_down.gif"></a></td>
+          
+     <td><span>Entries</span></td>
+     
+     <td><a href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
           folderId="<%= ssFolder.getId().toString() %>"
@@ -177,8 +192,14 @@ function ss_getLastEntryId() {
           operation="entry_next"
           actionUrl="false"
           />"
-          onClick="ss_getPreviousEntryId();return false;" ><img alt="next entry" id="next"
-          border="0" src="<html:imagesPath/>pics/sym_m_arrow_up_g.gif"></a><a 
+          onClick="ss_getPreviousEntryId();return false;" ><img 
+          alt="<ssf:nlt tag="nav.nextEntry" text="Next entry"/>" id="ss_next"
+          border="0" src="<html:imagesPath/>pics/sym_s_arrow_up.gif"></a></td>
+          
+<%
+if (false) {
+%>
+      <td><a 
           href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
@@ -187,8 +208,13 @@ function ss_getLastEntryId() {
           operation="entry_next"
           actionUrl="false"
           />"
-          onClick="ss_getFirstEntryId();return false;" ><img alt="last entry" id="last"
-          border="0" src="<html:imagesPath/>pics/sym_s_right_end.gif"></a>&nbsp;
-          </span>
-</div><br>
+          onClick="ss_getFirstEntryId();return false;" ><img 
+          alt="<ssf:nlt tag="nav.lastEntry" text="Last entry"/>" id="ss_last"
+          border="0" src="<html:imagesPath/>pics/sym_s_right_end.gif"></a></td>
+<%
+}
+%>
+      <td>&nbsp;</td>
+  </tr>
+</table>
 
