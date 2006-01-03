@@ -24,7 +24,9 @@ public interface ProfileModule {
    public Long addGroup(String definitionId, Map inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
    public void modifyPrincipal(Long id, Map inputData, Map fileItems) 
-   		throws AccessControlException, WriteFilesException;
+		throws AccessControlException, WriteFilesException;
+   public void modifyPrincipalData(Long id, Map entryData) 
+		throws AccessControlException;
    public void deletePrincipal(Long id)
 		throws AccessControlException, WriteFilesException;
    public ProfileBinder addProfileBinder();
