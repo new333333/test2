@@ -1,10 +1,13 @@
 package com.sitescape.ef.web.util;
 
+import java.io.File;
+
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.WebKeys;
 
 public class WebHelper {
@@ -128,4 +131,21 @@ public class WebHelper {
 		else
 			return ses;
 	}
+	
+    public static String getWebinfDirPath() {
+    	return SpringContextUtil.getWebappRootDirPath() + File.separator + "WEB-INF";
+    }
+    
+    public static String getWebappDirPathVisible(String subdirName) {
+    	return SpringContextUtil.getWebappRootDirPath() + File.separator + subdirName;
+    }
+    
+    public static String getWebappDirPathHidden(String subdirName) {
+    	return getWebinfDirPath() + File.separator + subdirName;
+    }
+    
+	public static String getXsltDirPath() {
+		return getWebappDirPathHidden("xslt");
+	}
+    
 }

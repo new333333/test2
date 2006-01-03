@@ -74,9 +74,7 @@
 		<property name="hibernateConfiguration"><ref local="hibernateConfiguration"/></property>
 	</bean> 
 
-	<bean id="springContextUtil" class="com.sitescape.ef.util.SpringContextUtil">
-		<property name="webRoot"><value>/WEB-INF/xslt</value></property>
-	</bean>
+	<bean id="springContextUtil" class="com.sitescape.ef.util.SpringContextUtil" />
 
 	<bean id="dataSource" class="com.sitescape.ef.util.JndiObjectFactoryBean">
 		<property name="jndiName"><value>java:comp/env/jdbc/SiteScapePool</value></property>

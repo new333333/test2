@@ -49,6 +49,7 @@ import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.mail.FolderEmailFormatter;
 import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.repository.RepositoryService;
+import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.util.ConfigPropertyNotFoundException;
 import com.sitescape.ef.util.PortabilityUtil;
 import com.sitescape.ef.util.SPropsUtil;
@@ -459,7 +460,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			Set atts = notify.getAttachments();
 			for (Iterator iter=atts.iterator(); iter.hasNext();) {
 				FileAttachment fAtt = (FileAttachment)iter.next();
-				RepositoryService service = (RepositoryService)SpringContextUtil.getBean(fAtt.getRepositoryServiceName());
+				RepositoryService service = RepositoryServiceUtil.lookupRepositoryService(fAtt.getRepositoryServiceName());
 				if (service != null) {
 					FolderEntry entry = (FolderEntry)fAtt.getOwner().getEntry();
 					DataSource ds = service.getDataSource(service.openRepositorySession(), entry.getParentFolder(), 
