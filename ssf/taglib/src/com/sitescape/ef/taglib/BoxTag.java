@@ -60,8 +60,9 @@ public class BoxTag extends BodyTagSupport implements ParamAncestorTag {
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
 			// Top
-
-			RequestDispatcher rd = httpReq.getRequestDispatcher(_top);
+			String jsp = _top;
+			if (jsp == null || jsp.equals("")) jsp = "/WEB-INF/jsp/box/box_top.jsp";
+			RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 
 			ServletRequest req = null;
 			if (_params != null) {
@@ -83,7 +84,9 @@ public class BoxTag extends BodyTagSupport implements ParamAncestorTag {
 
 			// Bottom
 
-			rd = httpReq.getRequestDispatcher(_bottom);
+			jsp = _bottom;
+			if (jsp == null || jsp.equals("")) jsp = "/WEB-INF/jsp/box/box_bottom.jsp";
+			rd = httpReq.getRequestDispatcher(jsp);
 
 			res = new StringServletResponse(httpRes);
 
@@ -100,6 +103,8 @@ public class BoxTag extends BodyTagSupport implements ParamAncestorTag {
 			if (_params != null) {
 				_params.clear();
 			}
+			_top = "";
+			_bottom = "";
 		}
 	}
 
