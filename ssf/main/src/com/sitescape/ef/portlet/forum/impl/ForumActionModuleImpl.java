@@ -39,6 +39,7 @@ import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.portlet.forum.ForumActionModule;
+import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.util.DateHelper;
@@ -589,17 +590,20 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		if (!defaultEntryDefinitions.isEmpty()) {
 			int count = 1;
 			toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+			Map qualifiers = new HashMap();
+			String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
+			qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
 			for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
 				Definition def = (Definition) defaultEntryDefinitions.get(i);
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
-				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
 				String title = NLT.get(def.getTitle());
 				if (toolbar.checkToolbarMenuItem("1_add", "entries", title)) {
 					title = title + " (" + String.valueOf(count++) + ")";
 				}
-				toolbar.addToolbarMenuItem("1_add", "entries", title, url);
+				toolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
 			}
 		}
     
