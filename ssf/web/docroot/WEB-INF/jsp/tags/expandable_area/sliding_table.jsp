@@ -302,14 +302,15 @@ createOnLayoutChangeObj('ss_checkSlidingTableLayout', ss_checkSlidingTableLayout
 <script language="javascript">
 var ss_columnCount = <%= String.valueOf(colSize) %>;
 </script>
-<div style="margin: 0px;" width="100%">
+<div style="margin: 0px;" width="100%" 
+ onMouseOver="ss_clearMouseOverInfo(this)" onMouseOut="ss_clearMouseOverInfo(this)">
 <div id="ss_sTable" style="margin: 2px; border: #666666 1px solid;" width="100%"
  onMouseOver="ss_clearMouseOverInfo(this)">
 
 <div id="col0" class="ss_sliding_table_column0">
 <table class="ss_content" cellspacing="0" cellpadding="0">
  <tr>
-  <td><span style="font-size:small; text-decoration:none;">&nbsp;</span></td>
+  <td>&nbsp;</td>
  </tr>
 </table>
 <table class="ss_content" cellspacing="0" cellpadding="0">
@@ -356,14 +357,20 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					}
 %>
-<div id="col<%= String.valueOf(iCol + 1) %>" class="ss_sliding_table_column">
-<table class="ss_content" cellspacing="0" cellpadding="0"><tr><td>&nbsp;</td></tr></table>
+<div id="col<%= String.valueOf(iCol + 1) %>" class="ss_sliding_table_column1">
+<table class="ss_content" cellspacing="0" cellpadding="0" width="100%">
+<tr onMouseOver="ss_clearMouseOverInfo(this)">
+<td><a style="text-decoration:none;"><span 
+style="font-size:small; text-decoration:none;
+">&nbsp;</span></td>
+</tr>
+</table>
 <table class="ss_content" cellspacing="0" cellpadding="0" width="100%">
 <tr <%= rowIdText %>>
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="left">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
+<th align="left" onMouseOver="ss_clearMouseOverInfo(this)">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
 <%
 					} else {
 %>
@@ -386,7 +393,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 %>
 <div id="col<%= String.valueOf(iCol + 1) %>" class="ss_sliding_table_column"  style="z-index:<%= String.valueOf(iCol + 11) %>;">
 <table class="ss_content" cellspacing="0" cellpadding="0" width="100%">
-<tr>
+<tr onMouseOver="ss_clearMouseOverInfo(this)">
 <td><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
 onMousedown="ss_slidingTableStartDragCol(this, 'col<%= String.valueOf(iCol + 1) %>');"
 ><span style="cursor:w-resize; color:darkgreen; font-size:small; text-decoration:none;
@@ -400,7 +407,7 @@ onMousedown="ss_slidingTableStartDragCol(this, 'col<%= String.valueOf(iCol + 1) 
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="left">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
+<th align="left" onMouseOver="ss_clearMouseOverInfo(this)">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
 <%
 					} else {
 %>
@@ -425,7 +432,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="left">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
+<th align="left" onMouseOver="ss_clearMouseOverInfo(this)">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
 <%
 					} else {
 %>
