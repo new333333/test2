@@ -12,12 +12,12 @@
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>top</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<name>bottom</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
@@ -283,6 +283,55 @@
 		<body-content>empty</body-content>
 		<attribute>
 			<name>secure</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>slidingTable</name>
+		<tag-class>com.sitescape.ef.taglib.SlidingTableTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>folderId</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>jsp</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	
+	<tag>
+		<name>slidingTableRow</name>
+		<tag-class>com.sitescape.ef.taglib.SlidingTableRowTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>headerRow</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>slidingTableColumn</name>
+		<tag-class>com.sitescape.ef.taglib.SlidingTableColumnTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>width</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>

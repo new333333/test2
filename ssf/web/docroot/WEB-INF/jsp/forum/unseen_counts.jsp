@@ -17,18 +17,14 @@
 <%
 	if (ss_unseenStatus.containsKey("ss_unseenNotLoggedIn")) {
 %>
-	<taconite-replace contextNodeID="status_message" parseInBrowser="true">
-		<div id="status_message">
-		  <script language="javascript">
-		      if (self.showNotLoggedInMsg) self.showNotLoggedInMsg();
-		  </script>
-		</div>
+	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
+		<div id="ss_status_message" style="visibility:hidden; display:none;">error</div
 	</taconite-replace>
 <%
 	} else {
 %>
-	<taconite-replace contextNodeID="status_message" parseInBrowser="true">
-		<div id="status_message" ></div>
+	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
+		<div id="ss_status_message" style="visibility:hidden; display:none;">ok</div>
 	</taconite-replace>
 <%
 	}

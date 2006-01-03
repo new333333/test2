@@ -134,7 +134,9 @@ function Tree_toggle(treeId, node, bottom) {
 		iconEl.src = n.imageClosed;		                // folder.gif
 		divEl.style.display = "none";
 	}
-
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	
 	self.focus();
 }
 
@@ -225,6 +227,9 @@ function Tree_openNode(treeId, node) {
 			}
 			iconEl.src = n.imageOpen;	                    // folder_open.gif
 			divEl.style.display = "";
+
+			//Signal that the layout changed
+			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
 	}
 }
@@ -245,6 +250,9 @@ function Tree_closeNode(treeId, node) {
 			}
 			iconEl.src = n.imageClosed;		                // folder.gif
 			divEl.style.display = "none";
+
+			//Signal that the layout changed
+			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
 	}
 }
@@ -263,6 +271,9 @@ function Tree_openAll(treeId, node) {
 		}
 		iconEl.src = n.imageOpen;	                    // folder_open.gif
 		divEl.style.display = "";
+
+		//Signal that the layout changed
+		if (ssf_onLayoutChange) ssf_onLayoutChange();
 	}
 	
 	if (tree.hasChildNode(node)) {
@@ -295,6 +306,9 @@ function Tree_closeAll(treeId, node) {
 		}
 		iconEl.src = n.imageClosed;		                // folder.gif
 		divEl.style.display = "none";
+
+		//Signal that the layout changed
+		if (ssf_onLayoutChange) ssf_onLayoutChange();
 	}
 	
 	if (tree.hasChildNode(node)) {

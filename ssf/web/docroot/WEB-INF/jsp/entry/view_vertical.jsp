@@ -1,6 +1,7 @@
 <% //view a folder forum with folder on top and entry below %>
 
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+<br>
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 %>
@@ -13,13 +14,13 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 
 <br>
 <div id="ss_showentrydiv" class="ss_portlet" style="visibility:hidden; x:0; y:0;
-  display:none; z-index:10;">
+  display:none; z-index:50;">
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
 <a href="#return_to_folder_list" onClick="scrollToSavedLocation();return false;">
 Scroll up to the folder listing...
 </a>
 <br>
-  <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
+  <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
     <ssf:param name="box_width" value="400" />
     <ssf:param name="box_show_close_icon" value="true" />

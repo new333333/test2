@@ -1,6 +1,7 @@
 <% //view a folder forum with folder on the left and the entry on the right %>
 
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+<br>
 <%
 String ssfBoxId = renderResponse.getNamespace() + "_ssf_box_div";
 %>
@@ -11,9 +12,9 @@ String ssfBoxId = renderResponse.getNamespace() + "_ssf_box_div";
   configJspStyle="<%= ssConfigJspStyle %>" />
 </div>
 
-<div id="ss_showentrydiv" style="position:absolute; visibility:hidden; x:0; y:0; z-index:10;
+<div id="ss_showentrydiv" style="position:absolute; visibility:hidden; x:0; y:0; z-index:50;
   width:<%= ss_entryWindowWidth %>; height:80%; display:none;">
-  <ssf:box top="/WEB-INF/jsp/box/box_top.jsp" bottom="/WEB-INF/jsp/box/box_bottom.jsp">
+  <ssf:box>
     <ssf:param name="box_id" value="<%= ssfBoxId %>" />
     <ssf:param name="box_width" value="400" />
     <ssf:param name="box_show_close_icon" value="true" />

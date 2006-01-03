@@ -26,11 +26,11 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 </c:if>
 <script language="javascript">
-function showNotLoggedInMsg() {
+function ss_showNotLoggedInMsg() {
 	alert("<ssf:nlt tag="forum.unseenCounts.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 }
 </script>
-<div id="status_message"></div>
+<div id="ss_status_message" style="visibility:hidden; display:none;"></div>
 
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
@@ -91,7 +91,7 @@ function ss_getUnseenCounts() {
 	ajaxRequest.addFormElements("unseenCountForm")
 	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_preRequest);
-	//ajaxRequest.setPostRequest(ss_postRequest);
+	ajaxRequest.setPostRequest(ss_postRequest);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 }
@@ -99,7 +99,11 @@ function ss_preRequest(obj) {
 	alert('preRequest: ' + obj.getQueryString());
 }
 function ss_postRequest(obj) {
-	alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
+	//alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
+	//See if there was an error
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		if (self.ss_showNotLoggedInMsg) self.ss_showNotLoggedInMsg();
+	}
 }
 </script>
 <form id="unseenCountForm" >
