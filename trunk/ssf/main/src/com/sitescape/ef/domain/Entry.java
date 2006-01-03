@@ -83,6 +83,10 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     }
     public void removeWorkflowState(WorkflowState state) {
      	if (state == null) return;
+     	
+     	//End the JBPM workflow token
+     	//???Add code to delete the tokens
+     	
     	//Make sure initialized
     	getWorkflowStates();
         workflowStates.remove(state);
