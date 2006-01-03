@@ -359,7 +359,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="right">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
+<th align="left">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
 <%
 					} else {
 %>
@@ -396,7 +396,7 @@ onMousedown="ss_slidingTableStartDragCol(this, 'col<%= String.valueOf(iCol + 1) 
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="right">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
+<th align="left">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
 <%
 					} else {
 %>
@@ -421,7 +421,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="right">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
+<th align="left">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
 <%
 					} else {
 %>
