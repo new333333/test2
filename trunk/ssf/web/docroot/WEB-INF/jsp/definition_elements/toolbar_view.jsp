@@ -47,7 +47,7 @@ function ss_toolbarPopupUrl(url) {
 	          	onClick="return(ss_openUrlInPortlet(this.href, ${popup}));">
 	          </c:if>
 	          <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.onClick}">
-	          	onClick="${toolbarMenuCategoryItem.value.qualifiers.onClick}"">
+	          	onClick="${toolbarMenuCategoryItem.value.qualifiers.onClick}">
 	          </c:if>
 	          <span class="ss_content">
 	          <c:out value="${toolbarMenuCategoryItem.key}" /></span></a>
