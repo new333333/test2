@@ -442,14 +442,14 @@ div.ss_sliding_table_column {
   border-left: #cccccc solid 1px;
   background-color: #ffffff; 
   color: #000000;
-  margin: 2px;
+  margin: 0px;
 }
-div.ss_sliding_table_column1 {
+div.ss_sliding_table_column0 {
   display:block; 
   border: #cccccc 1px solid;
   background-color: #ffffff; 
   color: #000000;
-  margin: 2px;
+  margin: 0px;
 }
 
 div.ss_portlet {

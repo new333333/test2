@@ -70,6 +70,7 @@ function highlightLineById(id) {
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
 <br />
 <ssf:slidingTable type="sliding" folderId="<%= folderId %>">
+
 <ssf:slidingTableRow headerRow="true">
   <ssf:slidingTableColumn width="15"><img border="0" alt="Unread entries" src="<html:imagesPath/>pics/sym_s_unseen_header.gif"></ssf:slidingTableColumn>
   <ssf:slidingTableColumn width="10%">Number</ssf:slidingTableColumn>
@@ -119,6 +120,7 @@ function highlightLineById(id) {
     ><c:out value="${entry1._workflowState}"/></a>
     </c:if>
   </ssf:slidingTableColumn>
+
   <ssf:slidingTableColumn>
     <a class="ss_link" href="<ssf:url     
     adapter="true" 
@@ -131,12 +133,15 @@ function highlightLineById(id) {
     ><span class="fineprint">--no title--</span
     ></c:if><c:out value="${entry1._title}"/></a>
   </ssf:slidingTableColumn>
+  
   <ssf:slidingTableColumn>
 	<c:out value="${entry1._principal.title}"/> <ssf:presenceInfo user="<%=(User)entry1.get("_principal")%>"/>
   </ssf:slidingTableColumn>
+  
   <ssf:slidingTableColumn>
     <c:out value="${entry1._modificationDate}"/>
   </ssf:slidingTableColumn>
+  
  </ssf:slidingTableRow>
 </c:forEach>
 </ssf:slidingTable>
