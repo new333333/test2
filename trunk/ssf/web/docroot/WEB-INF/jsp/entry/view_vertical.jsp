@@ -94,6 +94,9 @@ function ss_showForumEntryInIframe(url) {
 	    }
 	}
 
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+
     return false;
 }
 

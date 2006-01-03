@@ -161,6 +161,8 @@ function ss_showEntryInDiv(str) {
 	    	smoothScroll(0,entryY)
 	    }
 	}
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
 var savedScrollPositionTop = null;
