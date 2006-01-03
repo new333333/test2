@@ -77,7 +77,7 @@ public class ViewController  extends SAbstractForumController {
 		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
 			Map updates = new HashMap();
 			updates.put("displayStyle", PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-			getProfileModule().modifyPrincipal(user.getId(), updates, new HashMap());
+			getProfileModule().modifyPrincipalData(user.getId(), updates);
 		}
 		if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE)) {
 			PortletSession ps = WebHelper.getRequiredPortletSession(request);
