@@ -24,7 +24,7 @@ import javax.portlet.PortletURL;
  * A third option when building the toolbar is a set of qualifiers:
  *   popup = true		pop up the url into a new window
  *   
- *   onClick = text     Add an onClick phrase
+ *   onClick = text     Add an onClick phrase (use: ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK)
  *                      (popup commands are not processed if an "onClick" phrase is specified)
  */
 public class Toolbar {
