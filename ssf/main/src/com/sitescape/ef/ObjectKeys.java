@@ -21,6 +21,7 @@ public interface ObjectKeys {
     public static final int LISTING_MAX_PAGE_SIZE = 1000;
     public static final long SEEN_MAP_TIMEOUT = (long)30*24*60*60*1000;
     public static final long SEEN_HISTORY_MAP_TIMEOUT = (long)7*24*60*60*1000;
+    public static final String TOOLBAR_QUALIFIER_ONCLICK = "onClick";
     public static final String USER = "user";
     
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
