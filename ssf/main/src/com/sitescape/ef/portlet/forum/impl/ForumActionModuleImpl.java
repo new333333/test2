@@ -816,6 +816,7 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 		}
 		model.put(WebKeys.FOLDER_ENTRIES, folderEntries.get(ObjectKeys.ENTRIES));
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
+		model.put(WebKeys.USER_FOLDER_PROPERTIES, getProfileModule().getUserFolderProperties(user.getId(), folderId));
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 		DefinitionUtils.getDefinitions(folder, model);
 		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.ENTRIES);
