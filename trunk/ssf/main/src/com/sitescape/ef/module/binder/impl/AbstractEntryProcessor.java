@@ -32,6 +32,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
@@ -73,7 +74,15 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 	protected WorkflowModule getWorkflowModule() {
 		return workflowModule;
 	}
-
+	
+	private FileModule fileModule;
+	
+	public void setFileModule(FileModule fileModule) {
+		this.fileModule = fileModule;
+	}
+	protected FileModule getFileModule() {
+		return fileModule;
+	}
 
     //***********************************************************************************************************	
     public Long addEntry(Binder binder, Definition def, Class clazz, Map inputData, Map fileItems) 
@@ -118,7 +127,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     
     protected void addEntry_processFiles(Binder binder, AclControlledEntry entry, List fileData) 
     	throws WriteFilesException {
-    	EntryBuilder.writeFiles(getFileManager(), binder, entry, fileData);
+    	EntryBuilder.writeFiles(getFileModule(), binder, entry, fileData);
     }
     
     protected Map addEntry_toEntryData(Binder binder, Definition def, Map inputData, Map fileItems) {
@@ -228,7 +237,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     
     protected void modifyEntry_processFiles(Binder binder, AclControlledEntry entry, List fileData) 
     throws WriteFilesException {
-    	EntryBuilder.writeFiles(getFileManager(), binder, entry, fileData);
+    	EntryBuilder.writeFiles(getFileModule(), binder, entry, fileData);
     }
     protected Map modifyEntry_toEntryData(AclControlledEntry entry, Map inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
@@ -510,7 +519,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     }
     
     protected void deleteEntry_processFiles(Binder parentBinder, AclControlledEntry entry) {
-    	getFileManager().deleteFiles(parentBinder, entry);
+    	getFileModule().deleteFiles(parentBinder, entry);
     }
     
     protected void deleteEntry_delete(Binder parentBinder, AclControlledEntry entry) {
