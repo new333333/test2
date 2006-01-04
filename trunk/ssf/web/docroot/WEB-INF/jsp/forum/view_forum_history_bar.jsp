@@ -1,5 +1,8 @@
 
 <% // History and entry navigation bar %>
+<c:if test="${empty ss_history_bar_loaded}">
+<c:set var="ss_history_bar_loaded" value="1" scope="request"/>
+
 <script language="javascript">
 var ss_entryList = new Array();
 var ss_entryCount = 0;
@@ -147,8 +150,9 @@ function ss_getLastEntryId() {
 	return false;
 }
 </script>
+</c:if>
 
-<table cellspacing="0" cellpadding="0">
+<table cellspacing="0" cellpadding="0" style="display: inline;">
   <tr>
 
 <%

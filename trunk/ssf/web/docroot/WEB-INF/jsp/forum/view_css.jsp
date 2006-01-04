@@ -122,32 +122,28 @@ div.ss_box_minimum_height {
 	margin: 1px;
 }
 
-div.ss_box_title {
+ss_box_small_icon_bar {
+	background-color: #999999;
+	height: 1em;
+	padding-right: 10px;
+	position:relative;
+	top: 0px;
+	margin: 0px;
+}
+
+ss_box_small_icon {
+	height: 14px;
+	margin: 0px;
+	width: 14px;
+}
+
+ss_box_title {
 	background: <%= gammaColor %> url(<html:imagesPath/>box/box_title_bg_gradient.gif) repeat-x;
 	color: #4A517D;
 	font-family: arial, helvetica, sans-serif;
 	font-size: smaller;
 	height: 20px;
-	top: 4px;
-	left: 10px;
 	padding: 0px 3px 0px 3px;
-	position: absolute;
-}
-
-div.ss_box_small_icon_bar {
-	background-color: #999999;
-	height: 1em;
-	padding-right: 10px;
-	position:relative;
-	text-align: right;
-	top: 0px;
-	margin: 0px;
-}
-
-div.ss_box_small_icon {
-	height: 14px;
-	margin: 0px;
-	width: 14px;
 }
 
 .ssf-box-corner-2-bl {

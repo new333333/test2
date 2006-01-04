@@ -23,41 +23,63 @@
 package com.sitescape.ef.taglib;
 
 import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 
+public class ParamTag extends BodyTagSupport {
+	private String _name;
+	private String _value;
+	private Boolean _useBody;
+	private String _bodyContent;
 
-/**
- * <a href="ParamTag.java.html"><b><i>View Source</i></b></a>
- *
- * @author  Brian Wing Shun Chan
- * @version $Revision: 1.7 $
- *
- */
-public class ParamTag extends TagSupport {
+	public int doStartTag() {
+		return EVAL_BODY_BUFFERED;
+	}
 
-	public int doStartTag() throws JspTagException {
-		ParamAncestorTag paramAncestor =
-			(ParamAncestorTag)findAncestorWithClass(
-				this, ParamAncestorTag.class);
+	public int doAfterBody() {
+		if (getBodyContent() != null) _bodyContent = getBodyContent().getString();
 
-		if (paramAncestor == null) {
-			throw new JspTagException();
+		return SKIP_BODY;
+	}
+
+	public int doEndTag() throws JspTagException {
+		try {
+			ParamAncestorTag paramAncestor =
+				(ParamAncestorTag)findAncestorWithClass(
+					this, ParamAncestorTag.class);
+	
+			if (paramAncestor == null) {
+				throw new JspTagException();
+			}
+	
+			if (_bodyContent == null) _bodyContent = "";
+			if (_value == null) _value = "";
+			if (_useBody.booleanValue()) {
+				paramAncestor.addParam(_name, _value.concat(_bodyContent));
+			} else {
+				paramAncestor.addParam(_name, _value);
+			}
+	
+			return EVAL_PAGE;
 		}
-
-		paramAncestor.addParam(_name, _value);
-
-		return EVAL_BODY_INCLUDE;
+		catch (Exception e) {
+			throw new JspTagException(e.getMessage());
+		}
+		finally {
+			_value = null;
+			_bodyContent = null;
+		}
 	}
 
 	public void setName(String name) {
 		_name = name;
 	}
 
+	public void setConcatBody(Boolean useBody) {
+		_useBody = useBody;
+	}
+
 	public void setValue(String value) {
 		_value = value;
 	}
-
-	private String _name;
-	private String _value;
 
 }

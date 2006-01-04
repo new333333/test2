@@ -50,31 +50,61 @@ boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", true);
 boolean showCloseIcon = ParamUtil.get(request, "box_show_close_icon", false);
 String showCloseRoutine = ParamUtil.get(request, "box_show_close_routine", "");
 
+boolean showMoveIcon = ParamUtil.get(request, "box_show_move_icon", false);
+String showMoveRoutine = ParamUtil.get(request, "box_show_move_routine", "");
+
+boolean showResizeIcon = ParamUtil.get(request, "box_show_resize_icon", false);
+String showResizeRoutine = ParamUtil.get(request, "box_show_resize_routine", "");
+String showResizeGif = ParamUtil.get(request, "box_show_resize_gif", "box/resize.gif");
+
 boolean decorateBox = false;
-if (Validator.isNotNull(title) || (showCloseIcon == true)) {
+if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == true)) {
 	decorateBox = true;
 }
 %>
 <div class="ss_box_rounded" id="<%= divId %>" style="width: <%= width %>;">
 <%@ include file="/WEB-INF/jsp/box/box_top-ext.jsp" %>
 	<div class="ss_box_small_icon_bar" id="<%= divId %>_icon_bar">
+	  <table cellspacing="0" cellpaddng="0" width="100%">
+	  <tr>
+	  <c:if test="<%= showMoveIcon %>">
+		<td align="left"><div style="display:inline;" onMouseDown="<%= showMoveRoutine %>"
+		  ><img 
+			 border="0" height="14" hspace="0" 
+			 name="p_<portlet:namespace/>_move" 
+			 src="<html:imagesPath/>box/move.gif" 
+			 title="<ssf:nlt tag="icon.move" text="Move" />" 
+			 vspace="0" width="14" ><div></td>
+	  </c:if>
+	  <c:if test="<%= showResizeIcon %>">
+		<td align="left"><div style="display:inline;" onMouseDown="<%= showResizeRoutine %>"
+		  ><span class="ss_box_small_icon" align="left"><img 
+			 border="0" hspace="0" 
+			 name="p_<portlet:namespace/>_resize" 
+			 src="<html:imagesPath/><%= showResizeGif %>" 
+			 title="<ssf:nlt tag="icon.resize" text="Resize" />" 
+			 vspace="0" ></span></div></td>
+	  </c:if>
+
+	  <c:if test="<%= Validator.isNotNull(title) %>">
+	    <td align="center"><div class="ss_box_title">
+	      <span style="font-size: smaller; padding-top: 5px;"><b>&nbsp;<%= title %>&nbsp;</b></span>
+	    </div></td>
+	  </c:if>
+	
 	  <c:if test="<%= showCloseIcon %>">
-		<span class="ss_box_small_icon"><a 
+		<td align="right"><span class="ss_box_small_icon"><a 
 			 href="javascript: <%= showCloseRoutine %>;"><img 
 			 border="0" height="14" hspace="0" 
 			 name="p_<portlet:namespace/>_close" 
 			 src="<html:imagesPath/>box/close_off.gif" 
-			 title="<ssf:nlt tag="close" text="Close" />" 
-			 vspace="0" width="14" ></a></span>
+			 title="<ssf:nlt tag="icon.close" text="Close" />" 
+			 vspace="0" width="14" ></a></span></td>
 	  </c:if>
+	  </tr>
+	  </table>
 	</div><!-- end ss_box_small_icon_bar -->
 
-	<c:if test="<%= Validator.isNotNull(title) %>">
-	  <div class="ss_box_title">
-	    <div style="position: relative; font-size: smaller; padding-top: 5px;"><b>&nbsp;<%= title %>&nbsp;</b></div>
-	  </div>
-	</c:if>
-	
   <div class="ssf_box">
      <div class="ss_box_minimum_height">
 	    <div style="margin-top: 0; margin-bottom: 0;">
