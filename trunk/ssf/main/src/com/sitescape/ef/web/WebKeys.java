@@ -82,6 +82,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_CALENDAR_GOTO_DATE = "cal_goto_date";
 	public static final String FORUM_OPERATION_UNSEEN_COUNTS = "unseen_counts";
 	public static final String FORUM_OPERATION_SAVE_COLUMN_POSITIONS = "save_column_positions";
+	public static final String FORUM_OPERATION_SAVE_ENTRY_WIDTH = "save_entry_width";
 	public static final String FORUM_OPERATION_UNSEEN_LIST = "unseen_list";
 	public static final String OPERATION_POSTING_ALIASES="alias";
 	public static final String OPERATION_ADD_POSTING_ALIASES="addAlias";
@@ -108,6 +109,7 @@ public class WebKeys {
     public static final String FOLDER = "ssFolder";
     public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";
     public static final String FOLDER_DEFINTION_MAP="ssFolderDefinitionMap";
+    public static final String FOLDER_ENTRY_WIDTH="folderEntryWidth";
     public static final String FOLDER_LIST = "ssFolderList";
     public static final String FOLDER_ID_LIST = "ssFolderIdList";
     public static final String FOLDERS = "ssFolders";
