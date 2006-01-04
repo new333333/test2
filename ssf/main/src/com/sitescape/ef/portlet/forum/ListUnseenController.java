@@ -9,7 +9,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,9 +16,8 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.lucene.Hits;
+
 /**
  * @author Peter Hurley
  *
@@ -39,6 +37,14 @@ public class ListUnseenController  extends SAbstractForumController {
 				   	User user = RequestContextHolder.getRequestContext().getUser();
 				   	getProfileModule().setUserFolderProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_COLUMN_POSITIONS, columnPositions);
 
+				}
+			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_WIDTH)) {
+				//Save the user's selected entry width
+				String entryWidth = ((String[])formData.get("entry_width"))[0];
+				if (!entryWidth.equals("")) {
+					//Save the entry width
+				   	User user = RequestContextHolder.getRequestContext().getUser();
+				   	getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);
 				}
 			}
 		}
@@ -61,7 +67,9 @@ public class ListUnseenController  extends SAbstractForumController {
 				model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
 				return new ModelAndView("forum/unseen_counts", model);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
-				return new ModelAndView("forum/ajax_return", model);
+				return new ModelAndView("forum/save_column_positions_return", model);
+			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_WIDTH)) {
+				return new ModelAndView("forum/save_entry_width_return", model);
 			}
 			return new ModelAndView("forum/ajax_return", model);
 		}
@@ -91,7 +99,12 @@ public class ListUnseenController  extends SAbstractForumController {
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
 			response.setContentType("text/xml");
 			model.put(WebKeys.LIST_UNSEEN_STATUS, statusMap);
-			return new ModelAndView("forum/ajax_return", model);
+			return new ModelAndView("forum/save_column_positions_return", model);
+			
+		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_WIDTH)) {
+			response.setContentType("text/xml");
+			model.put(WebKeys.LIST_UNSEEN_STATUS, statusMap);
+			return new ModelAndView("forum/save_entry_width_return", model);
 		}
 		return new ModelAndView(WebKeys.VIEW_FORUM, model);
 	} 
