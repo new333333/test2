@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.web.portlet.mvc.AbstractController;
 
 import com.sitescape.ef.module.sample.EmployeeModule;
+import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.module.profile.ProfileModule;
@@ -29,6 +30,7 @@ public abstract class SAbstractController extends AbstractController {
 	private WorkflowModule workflowModule;
 	private BinderModule binderModule;
 	private LdapModule ldapModule;
+	private FileModule fileModule;
 	
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -106,5 +108,13 @@ public abstract class SAbstractController extends AbstractController {
 	
 	protected LdapModule getLdapModule() {
 		return ldapModule;
+	}
+	
+	public void setFileModule(FileModule fileModule) {
+		this.fileModule = fileModule;
+	}
+	
+	protected FileModule getFileModule() {
+		return fileModule;
 	}
 }

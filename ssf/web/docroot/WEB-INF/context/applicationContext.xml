@@ -44,7 +44,7 @@
 		<property name="profileModule"><ref bean="profileModule"/></property>
 		<property name="workflowModule"><ref bean="workflowModule"/></property>
 		<property name="workspaceModule"><ref bean="workspaceModule"/></property>
-		
+		<property name="fileModule"><ref bean="fileModule"/></property>		
 	</bean>
 
 	<!-- add support for lobhandler to support hibernate UserType to handle different db clob implementations -->
@@ -326,7 +326,6 @@
 		<property name="aclManager"><ref local="aclManager"/></property>
 		<property name="scheduler"><ref local="scheduler"/></property>
 		<property name="processorManager"><ref local="modelProcessorManager"/></property>
-		<property name="fileManager"><ref local="fileManager"/></property>
 		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 	</bean>
 	
@@ -373,6 +372,7 @@
 	<bean id="defaultFolderCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.DefaultFolderCoreProcessor">
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
 		<property name="workflowModule"><ref local="workflowModuleTarget"/></property>
+		<property name="fileModule"><ref local="fileModule"/></property>
 	</bean>
 
 	<bean id="defaultProfileCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.profile.impl.DefaultProfileCoreProcessor">
@@ -505,6 +505,25 @@
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>
 	
+	<bean id="fileModule" class="com.sitescape.ef.module.file.impl.FileModuleImpl">
+		<property name="fileModuleMetadata">
+			<bean parent="baseTransactionProxy">
+				<property name="transactionAttributes">
+					<props>
+						<prop key="removeAttachment">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+						<prop key="writeFilePart2">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+						<prop key="setCheckout">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+					</props>
+				</property>
+				<property name="target">
+					<bean class="com.sitescape.ef.module.file.impl.FileModuleMetadata">
+						<property name="coreDao"><ref local="coreDao"/></property>						
+					</bean>
+				</property>				
+			</bean>
+		</property>
+	</bean>
+		
 	<!-- =========================Portlet support =========================================================== -->	
 	<bean id="forumActionModule" parent="baseTransactionProxy">
 		<property name="target">
@@ -531,10 +550,6 @@
 	</bean>
 
 	<!-- ======================== File & Repository Services ====================== -->
-	
-	<bean id="fileManager" class="com.sitescape.ef.file.FileManager">
-		<property name="coreDao"><ref local="coreDao"/></property>
-	</bean>
 	
 	<bean id="fileRepositoryService" class="com.sitescape.ef.repository.file.FileRepositoryService" depends-on="sPropsUtil">
 		<property name="dataRootDirProperty"><value>data.root.dir</value></property>	

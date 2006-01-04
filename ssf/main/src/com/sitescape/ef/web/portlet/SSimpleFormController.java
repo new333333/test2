@@ -5,6 +5,7 @@ import org.springframework.web.portlet.mvc.SimpleFormController;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.module.profile.ProfileModule;
@@ -26,6 +27,7 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	private WorkflowModule workflowModule;
 	private BinderModule binderModule;
 	private LdapModule ldapModule;
+	private FileModule fileModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -102,5 +104,13 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	
 	protected LdapModule getLdapModule() {
 		return ldapModule;
+	}
+
+	public void setFileModule(FileModule fileModule) {
+		this.fileModule = fileModule;
+	}
+	
+	protected FileModule getFileModule() {
+		return fileModule;
 	}
 }

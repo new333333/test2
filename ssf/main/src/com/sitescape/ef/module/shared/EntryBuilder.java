@@ -12,7 +12,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Binder;
 
 import com.sitescape.ef.domain.UpdateAttributeSupport;
-import com.sitescape.ef.file.FileManager;
+import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.InvokeUtil;
 import com.sitescape.ef.util.ObjectPropertyNotFoundException;
@@ -115,14 +115,14 @@ public class EntryBuilder {
 		}
 
 	}	
-    public static void writeFiles(FileManager fileManager, Binder binder, Entry entry, List fileData)
+    public static void writeFiles(FileModule fileModule, Binder binder, Entry entry, List fileData)
     			throws WriteFilesException {
     	WriteFilesException wfe = new WriteFilesException();
 	
     	for(int i = 0; i < fileData.size(); i++) {
     		FileUploadItem fui = (FileUploadItem) fileData.get(i);
     		try {
-    			fileManager.writeFile(binder, entry, fui);
+    			fileModule.writeFile(binder, entry, fui);
     		} catch (Exception e) {
     			wfe.addException(e);
     		}

@@ -51,18 +51,8 @@ public class ViewFileController extends SAbstractController {
 			response.setHeader(
 						"Content-Disposition",
 						attachment + "filename=\"" + shortFileName + "\"");
-			String repositoryServiceName = fa.getRepositoryServiceName();
-			if(repositoryServiceName == null)
-				repositoryServiceName = RepositoryServiceUtil.getDefaultRepositoryServiceName();
 			
-			// Since viewing of file resource does not require any metadata manipulation
-			// (at least for now), we can bypass FileManager layer and use repository
-			// service directly. We might want to capture some audit information around
-			// repository access, in which case we will need to use higher level service
-			// - possibly FileManager - rather than low level repository service. 
-			// But that's for later.  
-			RepositoryServiceUtil.read(repositoryServiceName, entry.getParentBinder(), entry, 
-					fa.getFileItem().getName(), response.getOutputStream()); 
+			getFileModule().readFile(fa, entry.getParentBinder(), entry, response.getOutputStream());
 
 			response.getOutputStream().flush();
 		}
