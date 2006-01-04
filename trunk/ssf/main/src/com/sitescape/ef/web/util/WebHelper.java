@@ -148,4 +148,7 @@ public class WebHelper {
 		return getWebappDirPathHidden("xslt");
 	}
     
+	public static String getImagesDirPath() {
+		return getWebappDirPathVisible("images");
+	}
 }
