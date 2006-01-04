@@ -64,7 +64,7 @@ public class FacadeImpl implements Facade {
 		// domain object above (dirty object) at the transaction commit.
 		// This technique works as long as the dirty object is part of the
 		// same session.
-		getFolderModule().setFake();
+		//getFolderModule().setFake();
 		
 		return entry;
 	}
