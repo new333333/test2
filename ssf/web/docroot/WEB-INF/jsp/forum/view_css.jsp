@@ -127,7 +127,8 @@ div.ss_box_title {
 	color: #4A517D;
 	font-family: arial, helvetica, sans-serif;
 	font-size: smaller;
-	height: 27px;
+	height: 20px;
+	top: 4px;
 	left: 10px;
 	padding: 0px 3px 0px 3px;
 	position: absolute;
