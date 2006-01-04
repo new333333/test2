@@ -57,12 +57,6 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 %>
 <div class="ss_box_rounded" id="<%= divId %>" style="width: <%= width %>;">
 <%@ include file="/WEB-INF/jsp/box/box_top-ext.jsp" %>
-	<c:if test="<%= Validator.isNotNull(title) %>">
-	  <div class="ss_box_title">
-	    <div style="position: relative; font-size: smaller; padding-top: 5px;"><b>&nbsp;<%= title %>&nbsp;</b></div>
-	  </div>
-	</c:if>
-
 	<div class="ss_box_small_icon_bar" id="<%= divId %>_icon_bar">
 	  <c:if test="<%= showCloseIcon %>">
 		<span class="ss_box_small_icon"><a 
@@ -75,8 +69,12 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	  </c:if>
 	</div><!-- end ss_box_small_icon_bar -->
 
+	<c:if test="<%= Validator.isNotNull(title) %>">
+	  <div class="ss_box_title">
+	    <div style="position: relative; font-size: smaller; padding-top: 5px;"><b>&nbsp;<%= title %>&nbsp;</b></div>
+	  </div>
+	</c:if>
 	
-
   <div class="ssf_box">
      <div class="ss_box_minimum_height">
 	    <div style="margin-top: 0; margin-bottom: 0;">
