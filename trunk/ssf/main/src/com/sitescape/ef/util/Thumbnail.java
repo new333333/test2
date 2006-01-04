@@ -18,6 +18,21 @@ package com.sitescape.ef.util;
 	    }
      /**
      * Reads an image in a file and creates a thumbnail in another file.
+     * @param imageData      An array of pixels in an image format supported
+     * by the AWT Toolkit, such as GIF or JPEG
+     * @param thumb     The name of thumbnail file. Will be created if necessary.
+     * @param maxWidth  The maximum width of the thumbnail.
+     * @param maxHeight The maximum height of the thumbnail.
+     * The optimum fit is selected based on the width and height of the input image.
+     */
+    public static void createThumbnail(byte[] imageData, String thumb, int maxWidth, int maxHeight) {
+    	// Get the image from the byte array.
+    	Image inImage = new ImageIcon(imageData).getImage();
+    	createThumbnail(inImage, thumb, maxWidth, maxHeight);
+    }
+    
+     /**
+     * Reads an image in a file and creates a thumbnail in another file.
      * @param orig      The name of image file.
      * @param thumb     The name of thumbnail file. Will be created if necessary.
      * @param maxWidth  The maximum width of the thumbnail.
@@ -25,10 +40,13 @@ package com.sitescape.ef.util;
      * The optimum fit is selected based on the width and height of the input image.
      */
     public static void createThumbnail(String orig, String thumb, int maxWidth, int maxHeight) {
+    	// Get the image from a file.
+        Image inImage = new ImageIcon(orig).getImage();
+    	createThumbnail(inImage, thumb, maxWidth, maxHeight);
+    }
+    
+    private static void createThumbnail(Image inImage, String thumb, int maxWidth, int maxHeight) {
         try {
-            // Get the image from a file.
-            Image inImage = new ImageIcon(orig).getImage();
-
             // Determine the scale.
 		    double scaleWidth = (double)maxWidth/(double)inImage.getWidth(null);
 		    double scaleHeight = (double)maxHeight/(double)inImage.getHeight(null);
