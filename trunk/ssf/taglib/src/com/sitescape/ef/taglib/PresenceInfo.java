@@ -36,15 +36,15 @@ public class PresenceInfo extends TagSupport {
 		    
 		    switch (userStatus) {
 				case -1: 
-					sb.append("<img border=\"0\" src=\"" + imagePath + "/pics/sym_m_white_dude.gif\">");
+					sb.append("<img border=\"0\" src=\"" + imagePath + "/pics/sym_s_white_dude.gif\">");
 					break;
 				case 1:
-					sb.append("<img border=\"0\" src=\"" + imagePath + "/pics/sym_m_green_dude.gif\">");
+					sb.append("<img border=\"0\" src=\"" + imagePath + "/pics/sym_s_green_dude.gif\">");
 					break;
 				case -99:
 					break;
 				default:
-					sb.append("<img border=\"0\" src=\"" + imagePath + "/pics/sym_m_yellow_dude.gif\">");
+					sb.append("<img border=\"0\" src=\"" + imagePath + "/pics/sym_s_yellow_dude.gif\">");
             }
             jspOut.print(sb.toString());
 		}
