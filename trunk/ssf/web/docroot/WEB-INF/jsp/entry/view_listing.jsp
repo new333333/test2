@@ -31,6 +31,9 @@ if (op.equals(WebKeys.ACTION_VIEW_ENTRY)) {
 }
 	
 int entryWindowWidth = 0;
+if (ssUserProperties.containsKey("folderEntryWidth")) {
+	entryWindowWidth = Integer.parseInt((String) ssUserProperties.get("folderEntryWidth"));
+}
 String autoScroll = "true";
 if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_HORIZONTAL) && !isViewEntry) {
 	autoScroll = "false";
