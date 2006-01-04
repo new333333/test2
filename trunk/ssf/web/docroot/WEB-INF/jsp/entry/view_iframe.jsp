@@ -14,6 +14,7 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
   <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
     <ssf:param name="box_width" value="400" />
+    <ssf:param name="box_title" value="<div onMouseDown='ss_startDragDiv()'>xxx</div>" />
     <ssf:param name="box_show_close_icon" value="true" />
     <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
   <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; display:block;"
@@ -24,6 +25,11 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 
 <script language="javascript">
 var ss_entryWindowWidth = <%= ss_entryWindowWidth %>;
+var ss_minEntryWindowWidth = 200;
+var ss_scrollbarWidth = 15;
+var ss_entryDivTopDelta = 25;
+var ss_entryDivBottomDelta = 50;
+var ss_scrollTopOffset = 4;
 
 function ss_showForumEntryInIframe(url) {
 	ss_positionEntryDiv();
@@ -46,7 +52,7 @@ function ss_showForumEntryInIframe(url) {
     if (wObj.src && wObj.src == url) {
     	wObj.src = "_blank";
     }
-    wObj.style.height = parseInt(wObj1.style.height) - 50 + "px";
+    wObj.style.height = parseInt(wObj1.style.height) - ss_entryDivBottomDelta + "px";
     wObj.src = url
 
 	//Signal that the layout changed
@@ -56,6 +62,8 @@ function ss_showForumEntryInIframe(url) {
 }
 
 function ss_positionEntryDiv() {
+	var maxEntryWidth = parseInt(getWindowWidth() - ss_scrollbarWidth);
+	
     var wObj = null
     if (isNSN || isNSN6 || isMoz5) {
         wObj = self.document.getElementById('ss_showfolder')
@@ -64,6 +72,9 @@ function ss_positionEntryDiv() {
     }
     var width = getObjectWidth(wObj);
     if (ss_entryWindowWidth == 0) {ss_entryWindowWidth = parseInt((width * 3) / 4);}
+    //Make sure the entry width is within the window
+    if (ss_entryWindowWidth > maxEntryWidth) ss_entryWindowWidth = maxEntryWidth;
+    if (ss_entryWindowWidth < ss_minEntryWindowWidth) ss_entryWindowWidth = ss_minEntryWindowWidth;
 
     var wObj1 = null
     var wObj2 = null
@@ -77,10 +88,11 @@ function ss_positionEntryDiv() {
         wObj2 = self.document.all['<portlet:namespace/>_iframe_box_div']
         wObj3 = self.document.all['ss_showentryframe']
     }
-    var top = parseInt(getDivTop('ss_showfolder') + 25);
-    if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + 4);} 
-    var left = parseInt(getWindowWidth() - ss_entryWindowWidth - 14);
-    var height = parseInt(getWindowHeight() + self.document.body.scrollTop - top - 25 );
+    var top = parseInt(getDivTop('ss_showfolder') + ss_entryDivTopDelta);
+    if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);} 
+    var left = parseInt(maxEntryWidth - ss_entryWindowWidth);
+    if (left < 0) left = 0;
+    var height = parseInt(getWindowHeight() + self.document.body.scrollTop - top - ss_entryDivTopDelta );
     setObjectTop(wObj1, top)
     setObjectLeft(wObj1, left);
     setObjectWidth(wObj1, ss_entryWindowWidth);
@@ -102,4 +114,101 @@ function ss_hideEntryDiv() {
 }
 
 createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
+createOnResizeObj('ss_positionEntryDiv', ss_positionEntryDiv)
+
+var ss_divDragObj = null
+var ss_divOffsetX
+var ss_divOffsetY
+
+var ss_startingToDragDiv = null;
+function ss_startDragDiv() {
+	ss_divDragObj = document.getElementById('ss_showentrydiv')
+    if (isNSN || isNSN6 || isMoz5) {
+    } else {
+        ss_divOffsetX = window.event.offsetX
+        ss_divOffsetY = window.event.offsetY
+    }
+    ss_startingToDragDiv = 1;
+    self.document.onmousemove = ss_divDrag
+    self.document.onmouseup = ss_divStopDrag
+
+    return false
+}
+
+function ss_divDrag(evt) {
+    if (!evt) evt = window.event;
+    if (ss_divDragObj) {
+        if (ss_startingToDragDiv == 1) {
+            if (evt.layerX) {
+                if (isNSN || isNSN6 || isMoz5) {
+                    ss_divOffsetX = evt.layerX;
+                    ss_divOffsetY = evt.layerY;
+                }
+            }
+            ss_startingToDragDiv = 0
+        }
+        var dObjLeft
+        if (isNSN || isNSN6 || isMoz5) {
+            dObjLeft = evt.pageX - ss_divOffsetX;
+        } else {
+            dObjLeft = evt.clientX - ss_divOffsetX;
+        }
+        var deltaW = parseInt(parseInt(dObjLeft) - parseInt(ss_divDragObj.style.left))
+        ss_entryWindowWidth = parseInt(parseInt(ss_divDragObj.style.width) - deltaW)
+        if (ss_entryWindowWidth >= ss_minEntryWindowWidth) {
+	        ss_divDragObj.style.left = dObjLeft
+	        ss_positionEntryDiv()
+	    }
+        return false
+    
+    } else {
+        return true
+    }
+}
+
+function ss_divStopDrag(evt) {
+    if (!evt) evt = window.event;
+    if (ss_divDragObj) {
+        ss_divDragObj = null
+    }
+    self.document.onmousemove = ''
+    self.document.onmouseup = ''
+    setTimeout("ss_saveEntryWidth(ss_entryWindowWidth);", 500)
+    return false
+}
+
+var ss_lastEntryWidth = -1;
+function ss_saveEntryWidth(entryWidth) {
+	if (entryWidth == ss_lastEntryWidth) return;
+	ss_lastEntryWidth = entryWidth;
+    self.document.forms['ss_saveEntryWidthForm'].entry_width.value = entryWidth;
+	var url = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__view_unseen" 
+    	actionUrl="true" >
+		<ssf:param name="operation" value="save_entry_width" />
+    	</ssf:url>"
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addFormElements("ss_saveEntryWidthForm")
+	//ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setPreRequest(ss_preRequest);
+	ajaxRequest.setPostRequest(ss_postEntryWidthRequest);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+}
+function ss_preRequest(obj) {
+	//alert('preRequest: ' + obj.getQueryString());
+}
+function ss_postEntryWidthRequest(obj) {
+	//See if there was an error
+	if (self.document.getElementById("ss_entry_width_status_message").innerHTML == "error") {
+		alert("<ssf:nlt tag="forum.unseenCounts.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+	}
+}
+
 </script>
+<form name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
+<input type="hidden" name="entry_width">
+</form>
+<div id="ss_entry_width_status_message" style="visibility:hidden; display:none;"></div>
