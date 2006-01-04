@@ -459,7 +459,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <script language="JavaScript" src="<html:rootPath/>js/common/taconite-client.js"></script>
 <script language="JavaScript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
 <script language="javascript">
-var count = 0
+
 function ss_saveSlidingTableCoords() {
     var s = ""
     var ss_sTableLeft = getDivLeft("ss_sTable")
@@ -479,27 +479,23 @@ function ss_saveSlidingTableCoords() {
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("ss_columnPositionForm")
 	//ajaxRequest.setEchoDebugInfo();
-	//ajaxRequest.setPreRequest(ss_preRequest);
-	ajaxRequest.setPostRequest(ss_postRequest);
+	//ajaxRequest.setPreRequest(ss_preSlidingTableRequest);
+	ajaxRequest.setPostRequest(ss_postSlidingTableRequest);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 }
-function ss_preRequest(obj) {
-	alert('preRequest: ' + obj.getQueryString());
+function ss_preSlidingTableRequest(obj) {
+	//alert('preRequest: ' + obj.getQueryString());
 }
-function ss_postRequest(obj) {
-	//alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
+function ss_postSlidingTableRequest(obj) {
 	//See if there was an error
-	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		if (self.ss_showNotLoggedInMsg) self.ss_showNotLoggedInMsg();
+	if (self.document.getElementById("ss_sliding_table_status_message").innerHTML == "error") {
+		alert("<ssf:nlt tag="forum.unseenCounts.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 	}
-}
-function ss_showNotLoggedInMsg() {
-	alert("<ssf:nlt tag="forum.unseenCounts.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 }
 </script>
 <form name="ss_columnPositionForm" id="ss_columnPositionForm" >
 <input type="hidden" name="column_positions">
 </form>
-<div id="ss_status_message" style="visibility:hidden; display:none;"></div>
+<div id="ss_sliding_table_status_message" style="visibility:hidden; display:none;"></div>
 <div id="ss_info_popup" class="ss_sliding_table_info_popup"></div>
