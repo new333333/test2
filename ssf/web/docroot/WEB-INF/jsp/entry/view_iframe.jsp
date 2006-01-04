@@ -14,7 +14,12 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
   <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
     <ssf:param name="box_width" value="400" />
-    <ssf:param name="box_title" value="<div onMouseDown='ss_startDragDiv()'>xxx</div>" />
+    <ssf:param name="box_title" useBody="true">
+<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+    </ssf:param>
+    <ssf:param name="box_show_resize_icon" value="true" />
+    <ssf:param name="box_show_resize_routine" value="ss_startDragDiv()" />
+    <ssf:param name="box_show_resize_gif" value="box/resize_east_west.gif" />
     <ssf:param name="box_show_close_icon" value="true" />
     <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
   <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; display:block;"

@@ -135,7 +135,7 @@ function highlightLineById(id) {
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn>
-	<c:out value="${entry1._principal.title}"/> <ssf:presenceInfo user="<%=(User)entry1.get("_principal")%>"/>
+	<ssf:presenceInfo user="<%=(User)entry1.get("_principal")%>"/> <c:out value="${entry1._principal.title}"/>
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn>
