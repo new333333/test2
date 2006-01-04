@@ -74,7 +74,7 @@ public class ParamTag extends BodyTagSupport {
 		_name = name;
 	}
 
-	public void setConcatBody(Boolean useBody) {
+	public void setUseBody(Boolean useBody) {
 		_useBody = useBody;
 	}
 
