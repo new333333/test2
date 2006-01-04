@@ -36,13 +36,16 @@ public class FacadeImpl implements Facade {
 		Long bId = new Long(binderId);
 		Long eId = new Long(entryId);
 		
+		// Fetch a domain entry - either read transaction or no transaction.
 		com.sitescape.ef.domain.FolderEntry domainEntry = 
 			getFolderModule().getEntry(bId, eId);
+		String title = domainEntry.getTitle();
 		
+		// Populate the remote entry with the data from domain entry.
 		Entry entry = new Entry();
 		entry.setBinderId(bId);
 		entry.setId(eId);
-		entry.setTitle(domainEntry.getTitle());
+		entry.setTitle(title);
 		
 		// TODO The following code tests lazy loading - to be removed
 		Map attrs = domainEntry.getCustomAttributes();
@@ -52,6 +55,16 @@ public class FacadeImpl implements Facade {
 			Object val = me.getValue();
 			System.out.println(key.toString());
 		}
+		
+		// Try updating a field on the entry - done outside of any transaction.
+		domainEntry.setTitle(title + ".a");
+		
+		// Invoking the following method causes an update transaction,
+		// which will make Hibernate to flush out the change we made to the
+		// domain object above (dirty object) at the transaction commit.
+		// This technique works as long as the dirty object is part of the
+		// same session.
+		getFolderModule().setFake();
 		
 		return entry;
 	}
