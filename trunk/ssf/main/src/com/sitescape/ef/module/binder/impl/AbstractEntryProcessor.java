@@ -102,11 +102,13 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         //Attachments need binder info for AnyOwner
         addEntry_fillIn(binder, entry, inputData, entryData);
         
-        addEntry_processFiles(binder, entry, fileData);
-        
         addEntry_preSave(binder, entry, inputData, entryData);
         
         addEntry_save(entry);
+        
+        // We must save the entry before processing files because it makes use
+        // of the persistent id of the entry. 
+        addEntry_processFiles(binder, entry, fileData);
         
         addEntry_postSave(binder, entry, inputData, entryData);
         
