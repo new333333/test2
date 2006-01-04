@@ -9,6 +9,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.lang.Integer;
 import java.util.HashMap;
+import java.util.Iterator;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.presence.PresenceService;
 
@@ -94,7 +95,7 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 	    	try {
  	            presenceSocket = new Socket(host, port);
 	        } catch (IOException e) {
-         	    System.out.println(e);
+         	    //System.out.println(e);
          	    return null;
          	}
 	        return presenceSocket;
@@ -107,18 +108,30 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 	    	String line;
 	    	String user;
 	    	Integer status;
+	    	int failCount = 0;
+	    	int maxFailCount = 30; //one minute
 	    	while (true) {
 		    	//set up the socket listener
 	    		if ((presenceSocket == null) || (presenceSocket.isClosed())) {
 	    			presenceSocket = openPresenceSocket(getJabberServer(),getJabberServerPort());
 	    			if (presenceSocket == null) {
 	    				try {
-		    				Thread.sleep(SLEEPINTERVAL);
+		    				Thread.sleep(SLEEPINTERVAL * failCount);
+		    				if ( failCount<maxFailCount) {
+		    					failCount++;
+		    					if (failCount == 5) {
+		    						Iterator itr = presenceMap.keySet().iterator();
+		    						while (itr.hasNext())
+		    							presenceMap.put(itr.next(),new Integer(0));
+		    					}
+		    				}
 		    				continue;
 	    				} catch (InterruptedException ie) {
 	    	                if (stop)
 	    	                    return;
 	    	            }
+	    			} else {
+	    				failCount = 0;
 	    			}
     		        try {
     			       dis = new DataInputStream(presenceSocket.getInputStream());
