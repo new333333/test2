@@ -26,7 +26,7 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 <script language="javascript">
 var ss_entryWindowWidth = <%= ss_entryWindowWidth %>;
 var ss_minEntryWindowWidth = 200;
-var ss_scrollbarWidth = 15;
+var ss_scrollbarWidth = 25;
 var ss_entryDivTopDelta = 25;
 var ss_entryDivBottomDelta = 50;
 var ss_scrollTopOffset = 4;
