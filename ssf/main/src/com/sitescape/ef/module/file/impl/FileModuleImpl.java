@@ -1,5 +1,6 @@
 package com.sitescape.ef.module.file.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.ef.util.Thumbnail;
 
 /**
  * This implementing class utilizes transactional demarcation strategies that 
@@ -152,16 +154,35 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	}
     	
     	getFileModuleMetadata().writeFilePart2(binder, entry, fui, fAtt, isNew);
+    	
+    	// TODO TBR - For testing purpose only
+    	/*
+    	if(fileName.endsWith(".jpeg")) {
+    		createThumbnail(fAtt, binder, entry, 
+    				com.sitescape.ef.web.util.WebHelper.getImagesDirPath() + 
+    				java.io.File.separator + "junk_thumbnail.jpeg", 100, 100);
+    	}
+    	else if(fileName.endsWith(".gif")) {
+    		createThumbnail(fAtt, binder, entry, 
+    				com.sitescape.ef.web.util.WebHelper.getImagesDirPath() + 
+    				java.io.File.separator + "junk_thumbnail.gif", 100, 100);
+    	}*/
     }
     
+	public void readFile(String repositoryServiceName, Binder binder, 
+			Entry entry, String fileName, OutputStream out) 
+		throws NoSuchFileException, RepositoryServiceException {	
+		RepositoryServiceUtil.read(repositoryServiceName, entry.getParentBinder(), entry, 
+				fileName, out); 		
+	}
+
 	public void readFile(FileAttachment fa, Binder binder, Entry entry, 
 			OutputStream out) throws RepositoryServiceException {
 		String repositoryServiceName = fa.getRepositoryServiceName();
 		if(repositoryServiceName == null)
 			repositoryServiceName = RepositoryServiceUtil.getDefaultRepositoryServiceName();
 		
-		RepositoryServiceUtil.read(repositoryServiceName, entry.getParentBinder(), entry, 
-				fa.getFileItem().getName(), out); 
+		readFile(repositoryServiceName, binder, entry, fa.getFileItem().getName(), out);
 	}
 	
 	/**
@@ -344,7 +365,34 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	}
 		
 	}
-
+	
+	public void createThumbnail(String repositoryServiceName, Binder binder, 
+			Entry entry, String fileName, String thumbFileName, int maxWidth, 
+			int maxHeight) throws NoSuchFileException, RepositoryServiceException {
+		// TODO To enhance robustness of the system, use temporary file for the 
+		// output of the thumbnail and then rename it to the final destination 
+		// file. But for now, we create destination file directly. 
+		
+		// Read the input file from the repository into a byte array. 
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		
+		readFile(repositoryServiceName, binder, entry, fileName, baos);
+		
+		Thumbnail.createThumbnail(baos.toByteArray(), thumbFileName, 
+				maxWidth, maxHeight);
+	}
+	
+	public void createThumbnail(FileAttachment fa, Binder binder, Entry entry, 
+			String thumbFileName, int maxWidth, int maxHeight) 
+	throws RepositoryServiceException {
+		String repositoryServiceName = fa.getRepositoryServiceName();
+		if(repositoryServiceName == null)
+			repositoryServiceName = RepositoryServiceUtil.getDefaultRepositoryServiceName();
+		
+		createThumbnail(repositoryServiceName, binder, entry, 
+				fa.getFileItem().getName(), thumbFileName, maxWidth, maxHeight);
+	}
+	
 	private void forceUncheckoutIfNecessary(Binder binder, Entry entry, 
 			FileAttachment fAtt) 
 		throws RepositoryServiceException {

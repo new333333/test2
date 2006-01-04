@@ -75,6 +75,21 @@ public interface FileModule {
     /**
      * Reads the specified file into the output stream.
      * 
+     * @param repositoryServiceName
+     * @param binder
+     * @param entry
+     * @param fileName
+     * @param out
+     * @throws NoSuchFileException
+     * @throws RepositoryServiceException
+     */
+    public void readFile(String repositoryServiceName, Binder binder, 
+    		Entry entry, String fileName, OutputStream out) 
+    	throws NoSuchFileException, RepositoryServiceException;
+    
+    /**
+     * Reads the specified file into the output stream.
+     * 
      * @param fa
      * @param binder
      * @param entry
@@ -159,4 +174,13 @@ public interface FileModule {
 	public void checkin(String repositoryServiceName, Binder binder, 
 			Entry entry, String fileName) throws CheckedOutByOtherException, 
 			NoSuchFileException, RepositoryServiceException;
+	
+	public void createThumbnail(String repositoryServiceName, Binder binder,
+			Entry entry, String fileName, String thumbFileName,
+			int maxWidth, int maxHeight) 
+		throws NoSuchFileException, RepositoryServiceException;
+	
+	public void createThumbnail(FileAttachment fa, Binder binder, Entry entry,
+			String thumbFileName,int maxWidth, int maxHeight) 
+	throws RepositoryServiceException;
 }
