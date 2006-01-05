@@ -21,6 +21,5 @@ public interface FieldBuilder {
     public static final String INDEXING_TYPE_DATE			= "date";
     public static final String INDEXING_TYPE_USERLIST		= "userlist";
     public static final String INDEXING_TYPE_NUMBER	 		= "number";
-    
     public Field[] buildField(Entry entry, String dataElemName, Map args);
 }
