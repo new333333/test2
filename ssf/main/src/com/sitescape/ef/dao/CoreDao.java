@@ -1,24 +1,21 @@
 package com.sitescape.ef.dao;
 
 
-import java.util.Date;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.List;
 import java.util.Collection;
 import org.springframework.dao.DataAccessException;
 
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.EmailAlias;
-import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.dao.util.SFQuery;
@@ -67,6 +64,7 @@ public interface CoreDao {
      * @return
      */
     public Principal loadPrincipal(Long prinId, String zoneName);
+    public Principal loadFullPrincipal(Long prinId, String zoneName);
     /**
      * 
      * @param ids
@@ -131,7 +129,7 @@ public interface CoreDao {
 	public Set getAllGroupMembership(Long principalId);
 
 	public Definition loadDefinition(String defId, String zoneName);   
-    public List loadDefinitions(Folder folder, ObjectControls objectDesc, FilterControls filter);       
+    public List loadDefinitions(Binder binder, ObjectControls objectDesc, FilterControls filter);       
     public List loadDefinitions(String ZoneName);
     
 	public List loadPostings(String zoneName);

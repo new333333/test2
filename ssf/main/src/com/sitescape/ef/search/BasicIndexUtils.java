@@ -39,7 +39,9 @@ public class BasicIndexUtils {
     public final static String DOC_TYPE_ATTACHMENT	= "attachment"; 
     
     private static final String UID_DELIM = "_";
-    
+    //use to separate field ids and names
+    public static final String DELIMITER = "#";
+   
     public static String makeUid(String className, String id) {
         return className + UID_DELIM + id;
     }

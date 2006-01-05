@@ -26,9 +26,6 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     protected Map customAttributes;
     protected Definition entryDef;
     protected boolean eventsParsed = false;
-    protected List allEvents;
-    protected List unnamedEvents;
-    protected Map namedEvents;
     protected Set workflowStates;   
     protected HistoryStamp workflowChange;
     protected Binder parentBinder;
@@ -245,7 +242,7 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     }
     
     /**
-     * Return list of unnamed bookmark Attachments
+     * Return list of bookmark Attachments
      * @return
      */
  
@@ -261,7 +258,6 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     	}
     	return result;
     }
-         
 
     /**
      * Return list of custom attributes. 
@@ -325,124 +321,7 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     	}
     	return null;
    }
-    /**
-     * Return list of unnamed events.
-     * @return
-     */
-    // doclet tags must be specified in concrete classes
-    public List getEvents() {
-  		//need to implement here to setup the doclet tags
-    	setupEvents();
-   		return unnamedEvents;
-   	}   
     
-    /**
-     * Set collection of unnamed events.  Orphans will be disconnected, and
-     * deleted from the database
-     * @param events
-     */
-    public void setEvents(Collection events) {
-    	setupEvents();
-    	Set remM = CollectionUtil.differences(unnamedEvents, events);
-    	Set addM = CollectionUtil.differences(events, unnamedEvents);
-        for (Iterator iter = remM.iterator(); iter.hasNext();) {
-        	Event e = (Event)iter.next();
-        	e.setOwner((AnyOwner)null);
-        	unnamedEvents.remove(e);
-        	allEvents.remove(e);
-        }
-        for (Iterator iter = addM.iterator(); iter.hasNext();) {
-        	Event e = (Event)iter.next();
-        	e.setOwner(this);
-        	e.setName(null);
-        	unnamedEvents.add(e);
-        	allEvents.add(e);
-        }
- 	
-    }
-    /**
-     * Add a new unnamed event
-     * @param event
-     */
-    public void addEvent(Event event) {
-    	if (event == null) return;
-    	setupEvents();
-   		event.setOwner(this);
-   	 	event.setName(null);
-   	 	unnamedEvents.add(event);
-   	 	allEvents.add(event);
-    }
-    /**
-     * Remove an unnamed event
-     * @param event
-     */
-    public void removeEvent(Event event) {
-    	if (event == null) return;
-    	setupEvents();
-       	unnamedEvents.remove(event);
-       	allEvents.remove(event);
-       	event.setOwner((AnyOwner)null);
-    }
-    /**
-     * Used by customAttribute to getValue when the valueType is event
-     * @param name
-     * @return
-     */
-    protected Event getNamedEvent(String name) {
-    	if (name == null) throw new IllegalArgumentException("name is null");
-    	setupEvents();
-        return (Event)namedEvents.get(name);
-    }
-    /**
-     * Used by customAttribute to change a value 
-     * @param name
-     */
-    protected void removeNamedEvent(String name) {
-        Event event = getNamedEvent(name);
-    	if (event != null) {
-    		allEvents.remove(event);
-    		namedEvents.remove(name);
-    		event.setOwner((AnyOwner)null);
-    	}
-    }
-    /**
-     * Used by customAttribute to add a new named event
-     * @param event
-     */
-    protected void addNamedEvent(Event event) {
-    	if (event == null) return;
-        Event oldE = getNamedEvent(event.getName());
-    	if (oldE != null) throw new IllegalArgumentException("name exists");
-   		event.setOwner(this);
-  		allEvents.add(event);
-     	namedEvents.put(event.getName(), event);   	
-    }
-    /**
-     * Internal routine to split the list of events into named and unnamed 
-     * lists.  Named events are only accessed through the CustomAttribute that 
-     * defines them
-     *
-     */
-    protected void setupEvents() {
-    	if (eventsParsed) return;
-    	eventsParsed=true;
-        namedEvents = new HashMap();
-        unnamedEvents = new ArrayList();
-    	if (allEvents == null)
-    		allEvents = new ArrayList();
-            
-        Event e;
-        String aName;
-        for (int i=0; i<allEvents.size(); ++i) {
-            e = (Event)allEvents.get(i);
-            aName = e.getName();
-            if (aName != null) {
-            	namedEvents.put(aName, e);
-            } else {
-            	unnamedEvents.add(e);
-            }
-        }
-    }   
     /**
      * After an attachment is removed, we must remove it from
      * any custom attributes

@@ -126,7 +126,7 @@ array set ::j2ee_Attachments_class_MAP {
    folderEntry {folderEntry int32}
 	principal 	{principal int32}
     ownerType 	{ownerType "varchar 16"}
-    owner 		{owner int32}
+    ownerId 		{ownerId int32}
     owningFolderSortKey {owningFolderSortKey "varchar 512"}
   name			{name "varchar 64"}
    fileName         {fileName "varchar 256"}
@@ -145,7 +145,7 @@ array set ::j2ee_CustomAttributes_class_MAP {
     folderEntry {folderEntry int32}
 	principal 	{principal int32}
     ownerType 	{ownerType "varchar 16"}
-    owner 		{owner int32}
+    ownerId 		{ownerId int32}
     owningFolderSortKey {owningFolderSortKey "varchar 512"}
     name 		{name "varchar 255"}
     stringValue {stringValue "varchar 4000"}
@@ -481,7 +481,7 @@ proc doUsers {userList} {
                 set attrs1(fileName) $photos
                 set attrs1(fileLength) 0
                 set attrs1(ownerType) "principal"
-                set attrs1(owner) $::userIds($user)
+                set attrs1(ownerId) $::userIds($user)
                 set attrs1(principal) $::userIds($user)
                 set results [setupColVals $map1 attrs1 insert]
                 set cmdList [lindex $results 1]
@@ -505,7 +505,7 @@ proc doUsers {userList} {
                 	set attrs1(fileLength) [file size $attrs1(fileName)]
                 } else {continue}
                 set attrs1(ownerType) "principal"
-                set attrs1(owner) $::userIds($user)           
+                set attrs1(ownerId) $::userIds($user)           
                 set attrs1(principal) $::userIds($user)
                 set results [setupColVals $map1 attrs1 insert]
                 set cmdList [lindex $results 1]
@@ -913,7 +913,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
             set attrs(lockVersion) 1
             set attrs(parentBinder) $parentFolderID
             if {[isnull $topDocShareID]} {
-                set attrs(topEntry) $entryId
+                set topDocShareID $entryId
             } else {
                 set attrs(topEntry) $topDocShareID
             }
@@ -982,7 +982,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set attaches(id) [newuuid]
                 set topAttachment $attaches(id)
                 set attaches(lockVersion) 1
-                set attaches(owner) $entryId
+                set attaches(ownerId) $entryId
                 set attaches(ownerType) "doc"
                 set attaches(folderEntry) $entryId
 				set attaches(owningFolderSortKey) $folderSortKey
@@ -1005,7 +1005,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 array unset attaches
                 set attaches(id) [newuuid]
                 set attaches(lockVersion) 1
-                set attaches(owner) $entryId
+                set attaches(ownerId) $entryId
                 set attaches(ownerType) "doc"
                 set attaches(folderEntry) $entryId
 				set attaches(owningFolderSortKey) $folderSortKey
@@ -1013,9 +1013,8 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set attaches(creation_principal) $attrs(creation_principal)
                 set attaches(modification_date) $attrs(creation_date)
                 set attaches(modification_principal) $attrs(creation_principal)
-                set attaches(fileName) [lindex $content 1]
+                set attaches(title) [lindex $content 1]
                 set savedName [lindex $content 1]
-                set attaches(fileLength) 0
                 set attaches(type) "U"
                 set attaches(name) "primary"
                 set attaches(lastVersion) 0
@@ -1027,7 +1026,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 array unset attaches
                 set attaches(id) [newuuid]
                 set attaches(lockVersion) 1
-                set attaches(owner) $entryId
+                set attaches(ownerId) $entryId
                 set attaches(ownerType) "doc"
                 set attaches(folderEntry) $entryId
 				set attaches(owningFolderSortKey) $folderSortKey
@@ -1049,7 +1048,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
             if {![isnull $versionFiles] && [info exists topAttachment]} {
                 array unset attaches
                 set attaches(lockVersion) 1
-                set attaches(owner) $entryId
+                set attaches(ownerId) $entryId
                 set attaches(ownerType) "doc"
                 set attaches(folderEntry) $entryId
 				set attaches(owningFolderSortKey) $folderSortKey
@@ -1151,7 +1150,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
 	                array unset attaches
 		            set attaches(lockVersion) 1
 			        set attaches(ownerType) "doc"
-				    set attaches(owner) $entryId
+				    set attaches(ownerId) $entryId
 	                set attaches(folderEntry) $entryId
 					set attaches(owningFolderSortKey) $folderSortKey
 					set attaches(lastVersion) [expr [llength $af] -1]
@@ -1198,7 +1197,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 array unset attaches
                 set attaches(lockVersion) 1
                 set attaches(ownerType) "doc"
-                set attaches(owner) $entryId
+                set attaches(ownerId) $entryId
                 set attaches(folderEntry) $entryId
     			set attaches(owningFolderSortKey) $folderSortKey
                 set attaches(type) "U"
@@ -1217,7 +1216,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 }
             }
 
-            doEntries $forum $entry $eRoot $folderSortKey $parentFolderID $attrs(topEntry) $entryId
+            doEntries $forum $entry $eRoot $folderSortKey $parentFolderID $topDocShareID $entryId
 
         }
         wimsql_rw commit
@@ -1227,7 +1226,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
 proc doDocCustomAttributes {forum entry entryId folderSortKey} {
 	set attrs(type) "A"
 	set attrs(ownerType) "doc"
-	set attrs(owner) $entryId
+	set attrs(ownerId) $entryId
 	set attrs(folderEntry) $entryId
 	set attrs(owningFolderSortKey) $folderSortKey
 	set val [aval -name $forum expiration $entry]

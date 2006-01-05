@@ -82,10 +82,14 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     }
          
     protected  AclControlledEntry entry_loadFull(Binder parentBinder, Long entryId) {
-        return getCoreDao().loadPrincipal(entryId, parentBinder.getZoneName());        
+        return getCoreDao().loadFullPrincipal(entryId, parentBinder.getZoneName());        
     }
  
-
+    protected void deleteEntry_delete(Binder parentBinder, AclControlledEntry entry) {
+    	Principal p = (Principal)entry;
+    	//we just disable principals, cause their ids are used all over
+    	p.setDisabled(true);
+    }
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, AclControlledEntry entry) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry);
     	

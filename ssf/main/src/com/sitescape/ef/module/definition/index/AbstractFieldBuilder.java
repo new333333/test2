@@ -18,7 +18,6 @@ import com.sitescape.ef.util.ObjectPropertyNotFoundException;
  */
 public abstract class AbstractFieldBuilder implements FieldBuilder {
 
-    protected static final String DELIMITER = "#";
     
     public Field[] buildField(Entry entry, String dataElemName, Map args) {
         Set dataElemValue = getEntryElementValue(entry, dataElemName);

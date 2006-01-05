@@ -29,6 +29,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.definition.DefinitionModule;
@@ -99,7 +100,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         entry.setEntryDef(def);
         
         //need to set entry/binder information before generating file attachments
-        //Attachments need binder info for AnyOwner
+        //Attachments/Events need binder info for AnyOwner
         addEntry_fillIn(binder, entry, inputData, entryData);
         
         addEntry_preSave(binder, entry, inputData, entryData);
@@ -153,7 +154,12 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         
         // The entry inherits acls from the parent by default. 
         getAclManager().doInherit(binder, (AclControlledEntry) entry);
-        
+        for (Iterator iter=entryData.values().iterator(); iter.hasNext();) {
+        	Object obj = iter.next();
+        	//need to generate id for the event so its id can be saved in customAttr
+        	if (obj instanceof Event)
+        		getCoreDao().save(obj);
+        }
         EntryBuilder.buildEntry(entry, entryData);
     }
     
@@ -505,7 +511,8 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
    	
     }
     protected AclControlledEntry deleteEntry_load(Binder binder, Long entryId) {
-    	return entry_load(binder, entryId);
+    	//load entry and all its collections - will need them to clean up
+    	return entry_loadFull(binder, entryId);
     }
         
     protected void deleteEntry_accessControl(Binder parentBinder, AclControlledEntry entry) {
@@ -524,9 +531,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	getFileModule().deleteFiles(parentBinder, entry);
     }
     
-    protected void deleteEntry_delete(Binder parentBinder, AclControlledEntry entry) {
-        getCoreDao().delete(entry);   
-    }
+    protected abstract void deleteEntry_delete(Binder parentBinder, AclControlledEntry entry); 
     protected void deleteEntry_postDelete(Binder parentBinder, AclControlledEntry entry) {
     }
 

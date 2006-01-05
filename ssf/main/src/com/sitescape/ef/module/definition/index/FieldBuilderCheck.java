@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.Map;
 
 import org.apache.lucene.document.Field;
-
+import com.sitescape.ef.search.BasicIndexUtils;
 /**
  *
  * @author Jong Kim
@@ -13,7 +13,7 @@ public class FieldBuilderCheck extends AbstractFieldBuilder {
 
     public String makeFieldName(String dataElemName) {
         // e.g. data element name = "abc" -> field name = "check#abc"
-        return INDEXING_TYPE_CHECK + DELIMITER + dataElemName;
+        return INDEXING_TYPE_CHECK + BasicIndexUtils.DELIMITER + dataElemName;
     }
     
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {

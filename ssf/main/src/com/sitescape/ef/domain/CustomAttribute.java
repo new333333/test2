@@ -41,6 +41,7 @@ public class CustomAttribute  {
     protected SSBlobXML xmlValue;
     protected Boolean booleanValue;
     protected Set values;
+    protected Event event;
     protected int valueType=NONE;
     	private static final int NONE=0;
     	public static final int STRING= 1;
@@ -89,11 +90,7 @@ public class CustomAttribute  {
    		this.owner = owner;
    	}
  	protected void setOwner(Entry entry) {
- 		if (entry == null) {
- 			if (valueType == EVENT)
- 				owner.getEntry().removeNamedEvent(name);
- 		}
-  		owner = new AnyOwner(entry); 		
+   		owner = new AnyOwner(entry); 		
   	}   	
     /**
      * @hibernate.property access="field" length="64"
@@ -176,9 +173,19 @@ public class CustomAttribute  {
     private void setBooleanValue(Boolean value) {
         this.booleanValue = value;
     }  
- 
     /**
-     * @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan" 
+     * @hibernate.many-to-one cascade="all,delete-orphan"
+     */
+    private Event getEvent() {
+    	return this.event;
+    }
+    private void setEvent(Event event) {
+    	this.event = event;
+    }
+    
+    
+    /**
+     * @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan"  batch-size="4" 
      * @hibernate.key column="parent"
  	 * @hibernate.one-to-many class="com.sitescape.ef.domain.CustomAttributeListElement"
      * 
@@ -205,6 +212,7 @@ public class CustomAttribute  {
         longValue=null;
         dateValue=null;
         booleanValue=null;
+        event=null;
         //allways setting mutable values to null, causes unnecessary updates
         if ((description !=null) && !description.getText().equals(""))
         	description=null;
@@ -212,7 +220,6 @@ public class CustomAttribute  {
          	serializedValue = null;
         if ((xmlValue != null) && (xmlValue.getValue() != null))
          	xmlValue = null;
-        if (valueType == EVENT) owner.getEntry().removeNamedEvent(name);
         //let hibernate delete the existing objects.
         if (values != null) values.clear();
         
@@ -290,14 +297,16 @@ public class CustomAttribute  {
          	clearVals();
          	valueType = ATTACHMENT;
          	Attachment att = (Attachment)value; 
+         	att.setName(name);
          	owner.getEntry().addAttachment(att);
          	stringValue=att.getId();
          } else if (value instanceof Event) {
          	clearVals();
          	valueType = EVENT;  
-         	Event e = (Event) value;
+        	Event e = (Event) value;
          	e.setName(name);
-         	owner.getEntry().addNamedEvent(e);
+        	e.setOwner(getOwner());
+         	event = e;
           } else {
             if (valueType != SERIALIZED) clearVals();
             valueType = SERIALIZED;
@@ -331,7 +340,7 @@ public class CustomAttribute  {
     	    	}
     	    	return v;
        		case EVENT:
-    		    return owner.getEntry().getNamedEvent(name);
+    		    return event;
     		case ATTACHMENT:
     			return owner.getEntry().getAttachment(stringValue);
  	    }

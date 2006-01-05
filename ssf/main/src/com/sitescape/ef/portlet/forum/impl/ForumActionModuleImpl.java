@@ -243,8 +243,9 @@ public class ForumActionModuleImpl extends CommonDependencyInjection implements 
 				count = new Integer(ec).intValue();
 			// look through the custom attrs of this entry for any of type EVENT
 			for (int j = 0; j < count; j++) {
-				Date evStartDate = (Date)e.get(EntryIndexUtils.EVENT_FIELD + j + EntryIndexUtils.EVENT_FIELD_START_DATE);
-				Date evEndDate = (Date)e.get(EntryIndexUtils.EVENT_FIELD + j + EntryIndexUtils.EVENT_FIELD_END_DATE);
+				String name = (String)e.get(EntryIndexUtils.EVENT_FIELD + j);
+				Date evStartDate = (Date)e.get(EntryIndexUtils.EVENT_FIELD + BasicIndexUtils.DELIMITER + name + BasicIndexUtils.DELIMITER + EntryIndexUtils.EVENT_FIELD_START_DATE);
+				Date evEndDate = (Date)e.get(EntryIndexUtils.EVENT_FIELD + BasicIndexUtils.DELIMITER + name + BasicIndexUtils.DELIMITER + EntryIndexUtils.EVENT_FIELD_END_DATE);
 				Event ev = new Event();
 				GregorianCalendar gcal = new GregorianCalendar();
 				gcal.setTime(evStartDate);

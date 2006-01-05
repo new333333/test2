@@ -61,15 +61,7 @@ public abstract class Principal extends AclControlledEntry  {
    	 */
     private Set getHAttachments() {return attachments;}
     private void setHAttachments(Set attachments) {this.attachments = attachments;}   	
-     /**
- 	 * @hibernate.bag  lazy="true" inverse="true" cascade="all,delete-orphan" embed-xml="false"
- 	 * @hibernate.key column="principal"
-     * @hibernate.one-to-many class="com.sitescape.ef.domain.Event"
-     * @return
-     */
-    private List getHEvents() {return allEvents;}
-    private void setHEvents(List events) {this.allEvents = events;}   	
-
+ 
     /**
 	 * @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan" 
      * @hibernate.key column="principal"

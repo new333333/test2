@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -141,11 +142,17 @@ public class EntryIndexUtils {
    		}
      }
 
+	/**
+	 * Events are index by their customAttribute name.  We need to get
+	 * the events associated with an entry from the search results.
+	 * This is needed for the calendar view.
+	 * To do this, we create a mapping to the real attribute name.
+	 * @param doc
+	 * @param entry
+	 */
     public static void addEvents(Document doc, Entry entry) {
     	int count = 0;
-    	String eventName;
-    	Field evDtStartField = null;
-    	Field evDtEndField = null;
+    	Field eventName;
 		Map customAttrs = entry.getCustomAttributes();
 		Set keyset = customAttrs.keySet();
 		Iterator attIt = keyset.iterator();
@@ -154,22 +161,15 @@ public class EntryIndexUtils {
 			CustomAttribute att = (CustomAttribute) customAttrs.get(attIt.next());
 			if (att.getValueType() == CustomAttribute.EVENT) {
 				// set the event name to event + count
-				eventName = EVENT_FIELD + count;
-				Event ev = (Event) att.getValue();
-				// range check to see if this event is in range
-		    	evDtStartField = Field.Keyword(eventName+EVENT_FIELD_START_DATE, ev.getDtStart().getTime());
-		    	doc.add(evDtStartField);
-		    	evDtEndField = Field.Keyword(eventName+EVENT_FIELD_END_DATE, ev.getDtEnd().getTime());
-		    	doc.add(evDtEndField);
-		    	//SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-				//String dateKey = sdf.format(ev.getDtStart().getTime());
-		    	//doc.add(evDtStartField);
+				eventName = Field.Keyword(EVENT_FIELD + count, att.getName());
+		    	doc.add(eventName);
 		    	count++;
 			}
 		}    	
 		// Add event count field
     	Field eventCountField = Field.Keyword(EVENT_COUNT_FIELD, Integer.toString(count));
     	doc.add(eventCountField);
+  
     }
     
     public static void addCommandDefinition(Document doc, Entry entry) {

@@ -53,14 +53,9 @@ public class FileAttachment extends Attachment {
     public void setLastVersion(Integer lastVersion) {
         this.lastVersion = lastVersion;
     }
-    /**
-     * @hibernate.bag  lazy="true" inverse="true" cascade="all,delete-orphan" 
- 	 * @hibernate.key column="folderEntry"
- 	 * @hibernate.one-to-many class="com.sitescape.ef.domain.Attachment"
-   	 */
     
     /**
-     * @hibernate.bag  lazy="false" cascade="all,delete-orphan" inverse="true" batch-size="4" optimistic-lock="false"
+     * @hibernate.bag  lazy="true" cascade="all,delete-orphan" inverse="true" batch-size="4" optimistic-lock="false"
  	 * @hibernate.key column="parentAttachment" 
      * @hibernate.one-to-many class="com.sitescape.ef.domain.VersionAttachment"
      */
