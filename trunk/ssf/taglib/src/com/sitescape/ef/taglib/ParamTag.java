@@ -53,6 +53,7 @@ public class ParamTag extends BodyTagSupport {
 	
 			if (_bodyContent == null) _bodyContent = "";
 			if (_value == null) _value = "";
+			if (_useBody == null) _useBody = Boolean.FALSE;
 			if (_useBody.booleanValue()) {
 				paramAncestor.addParam(_name, _value.concat(_bodyContent));
 			} else {
