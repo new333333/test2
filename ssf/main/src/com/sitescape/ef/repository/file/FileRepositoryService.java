@@ -175,9 +175,17 @@ public class FileRepositoryService implements RepositoryService {
 		File tempFile = getTempFile(binder, entry, relativeFilePath);
 		
 		if(!tempFile.exists()) { // It is not checked out
-			// Check it out by coping the content of the latest version of the file
 			try {
-				FileCopyUtils.copy(getLatestVersionFile(binder, entry, relativeFilePath), tempFile);
+				File latestVersionFile = getLatestVersionFile(binder, entry, relativeFilePath);
+				
+				if(latestVersionFile != null) {
+					// Check it out by coping the content of the latest version of the file
+					FileCopyUtils.copy(latestVersionFile, tempFile);
+				}
+				else {
+					// This shouldn't occur.
+					throw new RepositoryServiceException("No version file is found");
+				}
 			} catch (IOException e) {
 				throw new RepositoryServiceException(e);
 			}
@@ -331,9 +339,20 @@ public class FileRepositoryService implements RepositoryService {
 		return versionFileName.substring(versionNameBeginIndex, versionNameEndIndex);
 	}
 	
+	/**
+	 * Returns latest version file or <code>null</code> if no version file exists.
+	 * 
+	 * @param binder
+	 * @param entry
+	 * @param relativeFilePath
+	 * @return
+	 */
 	private File getLatestVersionFile(Binder binder, Entry entry, String relativeFilePath) {
 		String latestVersionName = getLatestVersionName(binder, entry, relativeFilePath);
-		return getVersionFile(binder, entry, relativeFilePath, latestVersionName);
+		if(latestVersionName != null)
+			return getVersionFile(binder, entry, relativeFilePath, latestVersionName);
+		else
+			return null;
 	}
 
 	private File getFileDir(Binder binder, Entry entry, String relativeFilePath) {
