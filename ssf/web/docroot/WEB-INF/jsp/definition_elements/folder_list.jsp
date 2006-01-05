@@ -72,7 +72,7 @@ function highlightLineById(id) {
 <ssf:slidingTable type="sliding" folderId="<%= folderId %>">
 
 <ssf:slidingTableRow headerRow="true">
-  <ssf:slidingTableColumn width="15"><img border="0" alt="Unread entries" src="<html:imagesPath/>pics/sym_s_unseen_header.gif"></ssf:slidingTableColumn>
+  <ssf:slidingTableColumn width="15">New</ssf:slidingTableColumn>
   <ssf:slidingTableColumn width="10%">Number</ssf:slidingTableColumn>
   <ssf:slidingTableColumn width="10%">State</ssf:slidingTableColumn>
   <ssf:slidingTableColumn width="40%">Title</ssf:slidingTableColumn>
@@ -92,7 +92,7 @@ function highlightLineById(id) {
 	if (ssSeenMap.checkIfSeen(entry1)) {
 %>&nbsp;<%
 	} else {
-%><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
+%><font color="red">&diams;</font><%
 	}
 %>
   </ssf:slidingTableColumn>
