@@ -176,11 +176,11 @@ function ss_position_sTableCol(divName, x, y, w) {
     if (isNSN || isNSN6 || isMoz5) {
         self.document.getElementById(divName).style.left= x + "px"
         self.document.getElementById(divName).style.top= y + "px"
-        self.document.getElementById(divName).style.clip = "rect(0px " + parseInt(w) + "px " + ss_sTableInnerHeight + "px 0px)"
+        self.document.getElementById(divName).style.clip = "rect(-9px " + parseInt(w) + "px " + ss_sTableInnerHeight + "px -9px)"
     } else {
         self.document.all[divName].style.left=x
         self.document.all[divName].style.top=y
-        self.document.all[divName].style.clip = "rect(0px " + parseInt(w) + "px " + ss_sTableInnerHeight + "px 0px)"
+        self.document.all[divName].style.clip = "rect(-9px " + parseInt(w) + "px " + ss_sTableInnerHeight + "px -9px)"
     }
 }
 
@@ -241,7 +241,7 @@ function ss_slidingTableDrag(evt) {
         var dObjClipWidth = parseInt(ss_sTableLeft + ss_sTableMarginLeft + ss_sTableInnerWidth - dObjLeft)
         if (dObjClipWidth < 4) dObjClipWidth = 4
         
-        ss_slidingTableDragObj.style.clip = "rect(0px " + dObjClipWidth + "px " + ss_sTableInnerHeight + "px 0px)"
+        ss_slidingTableDragObj.style.clip = "rect(-9px " + dObjClipWidth + "px " + ss_sTableInnerHeight + "px -9px)"
         return false
     
     } else {
@@ -394,12 +394,12 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <div id="col<%= String.valueOf(iCol + 1) %>" class="ss_sliding_table_column"  style="z-index:<%= String.valueOf(iCol + 11) %>;">
 <table class="ss_content" cellspacing="0" cellpadding="0" width="100%">
 <tr onMouseOver="ss_clearMouseOverInfo(this)">
-<td><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
-onMousedown="ss_slidingTableStartDragCol(this, 'col<%= String.valueOf(iCol + 1) %>');"
-><span style="cursor:w-resize; color:darkgreen; font-size:small; text-decoration:none;
+<td><div style="position:absolute; left:-9; top:0;"><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
+  onMousedown="ss_slidingTableStartDragCol(this, 'col<%= String.valueOf(iCol + 1) %>');"
+  ><span style="cursor:w-resize; color:darkgreen; font-size:small; text-decoration:none;
   background-position:center left;
   background-image:url(<html:imagesPath/>pics/sym_s_arrows_eastwest.gif);
-  background-repeat:no-repeat;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></a></td>
+  background-repeat:no-repeat;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></a></div>&nbsp;</td>
 </tr>
 </table>
 <table class="ss_content" cellspacing="0" cellpadding="0" width="100%">
