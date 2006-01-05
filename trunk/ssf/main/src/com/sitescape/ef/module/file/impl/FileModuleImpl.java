@@ -414,6 +414,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
         String fileName = fui.getMultipartFile().getOriginalFilename();
         
+        long contentLength = fui.getMultipartFile().getSize();
+        
 		HistoryStamp co = getCheckoutInfo(fui.getRepositoryServiceName(), 
 				binder, entry, fileName); 
 		
@@ -424,20 +426,25 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			(fAtt.getRepositoryServiceName());
 			Object session = service.openRepositorySession();
 			String versionName = null;
-			long contentLength = 0;
 			try {
-				if (service.exists(session, binder, entry, fileName)) {
+				if(service.exists(session, binder, entry, fileName)) { 
+					// This is normal condition. 
 					service.checkout(session, binder, entry, fileName);
 					service.update(session, binder, entry, fileName, fui.getMultipartFile());
 					versionName = service.checkin(session, binder, entry, fileName);
-					if(versionName != null)
-						contentLength = service.getContentLength(session, binder, entry, fileName, versionName);
-					else
-						contentLength = service.getContentLength(session, binder, entry, fileName);
-				} else {
-					//The file doesn't exist, so just create it
-					service.create(session, binder, entry, fileName, fui.getMultipartFile());
-					service.getContentLength(session, binder, entry, fileName);
+				}
+				else {
+					// For some reason the file doesn't exist in the repository.
+					// That is, our metadata says it exists, but the repository 
+					// says otherwise. This reflects some previous error condition.
+					// For example, previous attempt to add the file may have
+					// failed partially. Or someone may have gone and errorneously
+					// deleted the file from the repository. At any rate, the
+					// end result is descrepency between the repository system
+					// and our metadata. Although not ideal, better response to
+					// this kind of situation appears to be the one that is more
+					// forgiving or self-curing. This part of code implements that.
+					versionName = service.create(session, binder, entry, fileName, fui.getMultipartFile());
 				}
 			} finally {
 				service.closeRepositorySession(session);
