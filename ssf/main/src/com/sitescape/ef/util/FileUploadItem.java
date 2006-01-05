@@ -10,6 +10,8 @@ public class FileUploadItem {
 	private int type;
 	
 	private String name; // This is NOT file name.
+	private Integer maxWidth;
+	private Integer maxHeight;
 	
 	private MultipartFile mf;
 	
@@ -30,6 +32,22 @@ public class FileUploadItem {
 	
 	public String getName() {
 		return name;
+	}
+	
+	public Integer getMaxWidth() {
+		return maxWidth;
+	}
+	
+	public Integer getMaxHeight() {
+		return maxHeight;
+	}
+	
+	public void setMaxWidth(Integer value) {
+		maxWidth = value;
+	}
+	
+	public void setMaxHeight(Integer value) {
+		maxHeight = value;
 	}
 	
 	public MultipartFile getMultipartFile() {
