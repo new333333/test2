@@ -426,13 +426,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			String versionName = null;
 			long contentLength = 0;
 			try {
-				service.checkout(session, binder, entry, fileName);
-				service.update(session, binder, entry, fileName, fui.getMultipartFile());
-				versionName = service.checkin(session, binder, entry, fileName);
-				if(versionName != null)
-					contentLength = service.getContentLength(session, binder, entry, fileName, versionName);
-				else
-					contentLength = service.getContentLength(session, binder, entry, fileName);
+				if (service.exists(session, binder, entry, fileName)) {
+					service.checkout(session, binder, entry, fileName);
+					service.update(session, binder, entry, fileName, fui.getMultipartFile());
+					versionName = service.checkin(session, binder, entry, fileName);
+					if(versionName != null)
+						contentLength = service.getContentLength(session, binder, entry, fileName, versionName);
+					else
+						contentLength = service.getContentLength(session, binder, entry, fileName);
+				} else {
+					//The file doesn't exist, so just create it
+					service.create(session, binder, entry, fileName, fui.getMultipartFile());
+					service.getContentLength(session, binder, entry, fileName);
+				}
 			} finally {
 				service.closeRepositorySession(session);
 			}
