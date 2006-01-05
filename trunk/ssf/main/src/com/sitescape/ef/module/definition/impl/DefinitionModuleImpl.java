@@ -839,11 +839,28 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
 								    	String fileName = myFile.getOriginalFilename();
 								    	if (fileName.equals("")) continue;
-								    	
+
 								    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
 								    	String repositoryServiceName = storageElem.attributeValue("value",
 								    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
 								    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryServiceName);
+
+								    	//See if there is a scaling request for this graphic file. If yes, pass along the hieght and width
+								    	Element maxWidthEle = (Element) nextItem.selectSingleNode("./properties/property[@name='maxWidth']");
+								    	if (maxWidthEle != null) {
+								    		String maxWidth = maxWidthEle.attributeValue("value", "");
+								    		if (!maxWidth.equals("")) {
+								    			fui.setMaxWidth(Integer.valueOf(maxWidth));
+								    		}
+								    	}
+								    	Element maxHeightEle = (Element) nextItem.selectSingleNode("./properties/property[@name='maxHeight']");
+								    	if (maxHeightEle != null) {
+								    		String maxHeight = maxHeightEle.attributeValue("value", "");
+								    		if (!maxHeight.equals("")) {
+								    			fui.setMaxHeight(Integer.valueOf(maxHeight));
+								    		}
+								    	}
+								    	
 								    	fileData.add(fui);
 									}
 								} else if (itemName.equals("attachFiles")) {
