@@ -360,9 +360,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <div id="col<%= String.valueOf(iCol + 1) %>" class="ss_sliding_table_column1">
 <table class="ss_content" cellspacing="0" cellpadding="0" width="100%">
 <tr onMouseOver="ss_clearMouseOverInfo(this)">
-<td><a style="text-decoration:none;"><span 
-style="font-size:small; text-decoration:none;
-">&nbsp;</span></td>
+<td>&nbsp;</td>
 </tr>
 </table>
 <table class="ss_content" cellspacing="0" cellpadding="0" width="100%">

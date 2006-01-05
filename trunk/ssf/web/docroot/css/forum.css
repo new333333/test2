@@ -663,20 +663,18 @@ span.ss_required {
 /* link styles */
 
 a.ss_link {
-  text-decoration: underline;
   color: #3366cc;
   font-family: arial, helvetica, sans-serif;
   }
 
 a.ss_link:visited, a.ss_link:inactive {
-  text-decoration: underline;
-  color: #000000;
+  color: #3366cc;
   font-family: arial, helvetica, sans-serif;
   }
 
 a.ss_link:hover, a.ss_link:active {
   text-decoration: underline;
-  color: #ff0000;
+  color: ##3366cc;
   font-family: arial, helvetica, sans-serif;
   }
 

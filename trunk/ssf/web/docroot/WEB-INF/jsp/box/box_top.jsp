@@ -68,7 +68,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 	  <table cellspacing="0" cellpaddng="0" width="100%">
 	  <tr>
 	  <c:if test="<%= showMoveIcon %>">
-		<td align="left"><div style="display:inline;" onMouseDown="<%= showMoveRoutine %>"
+		<td align="left" width="45%"><div style="display:inline;" onMouseDown="<%= showMoveRoutine %>"
 		  ><img style="cursor:move;"
 			 border="0" height="14" hspace="0" 
 			 name="p_<portlet:namespace/>_move" 
@@ -77,7 +77,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 			 vspace="0" width="14" ><div></td>
 	  </c:if>
 	  <c:if test="<%= showResizeIcon %>">
-		<td align="left"><div style="display:inline;" onMouseDown="<%= showResizeRoutine %>"
+		<td align="left" width="45%"><div style="display:inline;" onMouseDown="<%= showResizeRoutine %>"
 		  ><span class="ss_box_small_icon" align="left"><img style="cursor:w-resize;"
 			 border="0" hspace="0" 
 			 name="p_<portlet:namespace/>_resize" 
@@ -87,13 +87,11 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 	  </c:if>
 
 	  <c:if test="<%= Validator.isNotNull(title) %>">
-	    <td align="center"><div class="ss_box_title">
-	      <span style="font-size: smaller; padding-top: 5px;"><b>&nbsp;<%= title %>&nbsp;</b></span>
-	    </div></td>
+	    <td align="center" width="10%"><div class="ss_box_title"><%= title %></div></td>
 	  </c:if>
 	
 	  <c:if test="<%= showCloseIcon %>">
-		<td align="right"><span class="ss_box_small_icon"><a 
+		<td align="right" width="45%"><span class="ss_box_small_icon"><a 
 			 href="javascript: <%= showCloseRoutine %>;"><img 
 			 border="0" height="14" hspace="0" 
 			 name="p_<portlet:namespace/>_close" 
