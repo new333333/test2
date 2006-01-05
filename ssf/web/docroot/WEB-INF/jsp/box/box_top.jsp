@@ -69,7 +69,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 	  <tr>
 	  <c:if test="<%= showMoveIcon %>">
 		<td align="left"><div style="display:inline;" onMouseDown="<%= showMoveRoutine %>"
-		  ><img 
+		  ><img style="cursor:move;"
 			 border="0" height="14" hspace="0" 
 			 name="p_<portlet:namespace/>_move" 
 			 src="<html:imagesPath/>box/move.gif" 
@@ -78,7 +78,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 	  </c:if>
 	  <c:if test="<%= showResizeIcon %>">
 		<td align="left"><div style="display:inline;" onMouseDown="<%= showResizeRoutine %>"
-		  ><span class="ss_box_small_icon" align="left"><img 
+		  ><span class="ss_box_small_icon" align="left"><img style="cursor:w-resize;"
 			 border="0" hspace="0" 
 			 name="p_<portlet:namespace/>_resize" 
 			 src="<html:imagesPath/><%= showResizeGif %>" 
