@@ -262,6 +262,16 @@ public class FileRepositoryService implements RepositoryService {
 		return versionFile.length();
 	}
 	
+	/**
+	 * Returns latest snapshot of the file (which is either the latest version
+	 * of the file or the working copy in progress which is created when the 
+	 * file is checked out).
+	 * 
+	 * @param binder
+	 * @param entry
+	 * @param relativeFilePath
+	 * @return
+	 */
 	private File getLatestFile(Binder binder, Entry entry, String relativeFilePath) {
 		File tempFile = getTempFile(binder, entry, relativeFilePath);
 		
@@ -269,7 +279,11 @@ public class FileRepositoryService implements RepositoryService {
 			return tempFile;
 		}
 		else {
-			return getLatestVersionFile(binder, entry, relativeFilePath);
+			File latestVersionFile = getLatestVersionFile(binder, entry, relativeFilePath);
+			if(latestVersionFile != null)
+				return latestVersionFile;
+			else
+				throw new RepositoryServiceException("The specified file does not exist");
 		}
 	}
 	
@@ -304,12 +318,22 @@ public class FileRepositoryService implements RepositoryService {
 		return versionFileNames;
 	}
 	
+	/**
+	 * Returns latest version name or <code>null</code> if no version exists.
+	 * 
+	 * @param binder
+	 * @param entry
+	 * @param relativeFilePath
+	 * @return
+	 */
 	private String getLatestVersionName(Binder binder, Entry entry, String relativeFilePath) {
 		String[] versionFileNames = getVersionFileNames(binder, entry, relativeFilePath);
 		String latestVersionName = null;
-		for(int i = 0; i < versionFileNames.length; i++) {
-			String versionName = getVersionName(versionFileNames[i]);
-			latestVersionName = getLaterVersionName(latestVersionName, versionName);
+		if(versionFileNames != null) {
+			for(int i = 0; i < versionFileNames.length; i++) {
+				String versionName = getVersionName(versionFileNames[i]);
+				latestVersionName = getLaterVersionName(latestVersionName, versionName);
+			}
 		}
 		return latestVersionName;
 	}
