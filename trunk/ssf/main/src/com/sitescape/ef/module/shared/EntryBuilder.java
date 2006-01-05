@@ -126,6 +126,11 @@ public class EntryBuilder {
     		} catch (Exception e) {
     			wfe.addException(e);
     		}
+    		//See if this file wants a scaled thumbnail
+    		if (fui.getMaxHeight() != null && fui.getMaxWidth() != null) {
+    			//Create the scaled file
+    			//??? TODO code needed
+    		}
     	}
 	
     	if(wfe.size() > 0) {
