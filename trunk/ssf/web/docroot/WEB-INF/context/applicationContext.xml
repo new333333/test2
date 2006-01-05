@@ -418,7 +418,7 @@
 	</bean>
 
 
-	<bean id="mailModule" parent="baseTransactionProxy">
+<!-- 	<bean id="mailModule" parent="baseTransactionProxy">
 		<property name="transactionAttributes">
 			<props>
 				<prop key="sendNotifications">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -430,7 +430,7 @@
 			<ref bean="mailModuleTarget"/>
 		</property>
 	</bean>	
-		
+-->		
 	<bean id="mailModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.mail.impl.MailModuleImpl">
 		<property name="mailSender"><ref local="mailSender"/></property>
 		<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>

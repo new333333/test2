@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.lucene.document.Field;
 
+import com.sitescape.ef.search.BasicIndexUtils;
+
 /**
  *
  * @author Jong Kim
@@ -14,7 +16,7 @@ public class FieldBuilderDate extends AbstractFieldBuilder {
 
     public String makeFieldName(String dataElemName) {
         // e.g. data element name = "abc" -> field name = "date#abc"
-        return INDEXING_TYPE_DATE + DELIMITER + dataElemName;
+        return INDEXING_TYPE_DATE + BasicIndexUtils.DELIMITER + dataElemName;
     }
     
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {

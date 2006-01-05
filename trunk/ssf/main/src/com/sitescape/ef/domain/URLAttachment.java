@@ -27,7 +27,6 @@ public class URLAttachment extends Attachment{
         return this.url;
     }
     public void setUrl(String url) {
-    	if (Validator.isNull(url)) throw new IllegalArgumentException("null url");
         this.url = url;
     }
     public boolean equals(Object obj) {

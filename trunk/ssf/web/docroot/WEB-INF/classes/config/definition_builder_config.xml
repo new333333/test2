@@ -298,6 +298,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp" />
 		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderEvent" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderEvent" />
 	</item>
 	

@@ -1,5 +1,8 @@
 package com.sitescape.ef.dao.impl;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 import java.util.Iterator;
@@ -26,24 +29,19 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.SFQuery;
+import com.sitescape.ef.domain.AnyOwner;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.FolderCounts;
 import com.sitescape.ef.domain.NoFolderEntryByTheIdException;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
-import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
-import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HKey;
-import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.UserPerFolderPK;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.UserPropertiesPK;
-import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.util.Constants;
 /**
  * @author Jong Kim
@@ -70,7 +68,10 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		Long lastId=null;
 		for (int i=0; i<entries.size(); ++i) {
 			entry = (FolderEntry)(entries.get(i));
-			if (!entry.getId().equals(lastId)) result.add(entry);
+			if (!entry.getId().equals(lastId)) {
+				result.add(entry);
+				lastId=entry.getId();
+			}
 		}
 		return result;
 	}
@@ -89,7 +90,10 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                         List results = session.createCriteria(FolderEntry.class)
                     		.add(Expression.eq("id", entryId))
                     		.setFetchMode("HCustomAttributes", FetchMode.JOIN)
-                            .list();
+                         	.setFetchMode("entryDef", FetchMode.SELECT)	
+                        	.setFetchMode("parentBinder", FetchMode.SELECT)	
+                        	.setFetchMode("topFolder", FetchMode.SELECT)	
+                           .list();
                         if (results.size() == 0)  throw new NoFolderEntryByTheIdException(entryId);
                         //because of join may get non-distinct results (wierd)
                         FolderEntry entry = (FolderEntry)results.get(0);
@@ -113,7 +117,10 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      * @throws DataAccessException
      */
     public FolderEntry loadFullFolderEntry(final Long parentFolderId, final Long entryId, final String zoneName) throws DataAccessException {
-        return (FolderEntry)getHibernateTemplate().execute(
+    	return loadFolderEntry(parentFolderId, entryId, zoneName);
+    	/*
+  	not sure if this makes sense
+    	return (FolderEntry)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                         List results = session.createCriteria(FolderEntry.class)
@@ -121,6 +128,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                         	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
                         	.setFetchMode("HAttachments", FetchMode.JOIN)
                         	.setFetchMode("HWorkflowStates", FetchMode.JOIN)	
+                        	.setFetchMode("HEvents", FetchMode.JOIN)	
                         	.setFetchMode("entryDef", FetchMode.SELECT)	
                         	.setFetchMode("parentBinder", FetchMode.SELECT)	
                         	.setFetchMode("topFolder", FetchMode.SELECT)	
@@ -138,8 +146,64 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                     }
                 }
              );
+*/
     }
-        
+    /**
+     * Delete an object and its assocations more efficiently then letting hibernate do it.
+      * @param entry
+     */
+    public void deleteEntry(final FolderEntry entry) {
+    	getHibernateTemplate().execute(
+    	   	new HibernateCallback() {
+    	   		public Object doInHibernate(Session session) throws HibernateException {
+     	   		
+    	   		session.createQuery("DELETE com.sitescape.ef.domain.Attachment where ownerId=:owner and ownerType=:type")
+       	   			.setLong("owner", entry.getId().longValue())
+       	   			.setString("type", AnyOwner.FOLDERENTRY)
+    	   			.executeUpdate();
+       	   		session.createQuery("DELETE com.sitescape.ef.domain.WorkflowState where ownerId=:owner and ownerType=:type")
+	   				.setLong("owner", entry.getId().longValue())
+	   				.setString("type", AnyOwner.FOLDERENTRY)
+	   				.executeUpdate();
+       	   		//need to remove event assignments
+       	   		List eventIds = session.createQuery("select id from com.sitescape.ef.domain.Event where ownerId=:owner and ownerType=:type")
+           	   			.setLong("owner", entry.getId().longValue())
+           	   			.setString("type", AnyOwner.FOLDERENTRY)
+           	   			.list();
+       	   		if (!eventIds.isEmpty()) {
+       	   			StringBuffer ids = new StringBuffer();
+       	   			ids.append("(");
+       	   			for (int i=0; i<eventIds.size(); ++i) {
+       	   				ids.append("'" + eventIds.get(i) + "',");
+       	   			}
+       	   			ids.replace(ids.length()-1, ids.length(), ")");
+       	   			Connection connect = session.connection();
+       	   			try {
+       	   				Statement s = connect.createStatement();
+       	   				s.executeUpdate("delete from SS_AssignmentsMap where event in " + ids);
+       	   			} catch (SQLException sq) {
+       	   				throw new HibernateException(sq);
+       	   			}
+       	   			session.createQuery("DELETE com.sitescape.ef.domain.Event where ownerId=:owner and ownerType=:type")
+       	   			.setLong("owner", entry.getId().longValue())
+       	   			.setString("type", AnyOwner.FOLDERENTRY)
+       	   			.executeUpdate();
+       	   		}
+    	   		session.createQuery("DELETE com.sitescape.ef.domain.CustomAttribute where ownerId=:owner and ownerType=:type")
+   	   				.setLong("owner", entry.getId().longValue())
+   	   				.setString("type", AnyOwner.FOLDERENTRY)
+   	   				.executeUpdate();
+
+    	   		session.createQuery("DELETE  com.sitescape.ef.domain.FolderEntry  where id=:id")
+       	   			.setLong("id", entry.getId().longValue())
+       	   			.executeUpdate();
+       	   		session.getSessionFactory().evict(com.sitescape.ef.domain.FolderEntry.class, entry.getId());
+       	   		return null;
+    	   		}
+    	   	}
+    	 );    	
+    	
+    }        
      /**
      * Query for a collection of FolderEntries.  An iterator is returned.  The entries are 
      * not pre-loaded.
@@ -183,17 +247,24 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
            result = (List)getHibernateTemplate().execute(
                    new HibernateCallback() {
                        public Object doInHibernate(Session session) throws HibernateException {
+                   		int nextPos = Integer.parseInt(entry.getHKey().getRelativeNumber(entry.getDocLevel())) + 1;
+               		 	HKey next = new HKey(entry.getParentEntry().getHKey(), nextPos);    
                             List result = session.createCriteria(FolderEntry.class)
                             	.add(Expression.disjunction()
                                 	.add(Expression.in("HKey.sortKey", keys))
-                                	.add(Expression.conjunction()  
-                                       .add(Expression.gt("HKey.level", new Integer(entry.getDocLevel())))
-                                       .add(Expression.like("HKey.sortKey", ((FolderEntry)entry).getHKey().getSortKey() + "%"))
-                                	)
+                                	.add(Expression.between("HKey.sortKey", entry.getHKey().getSortKey(), next.getSortKey()))
+ //                             	.add(Expression.conjunction()  
+ //                           				.add(Expression.gt("HKey.sortKey", entry.getHKey().getSortKey()))
+ //                            				.add(Expression.lt("HKey.sortKey", next.getSortKey()))
+ //                                        	)
                             	)
-                            	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
-                            	.setFetchMode("HAttachments", FetchMode.JOIN)
-                            	.setFetchMode("HWorkflowStates", FetchMode.JOIN)
+//                            	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
+//                            	.setFetchMode("HAttachments", FetchMode.JOIN)
+//                            	.setFetchMode("HWorkflowStates", FetchMode.JOIN)	
+//                            	.setFetchMode("HEvents", FetchMode.JOIN)	
+                            	.setFetchMode("entryDef", FetchMode.SELECT)	
+                            	.setFetchMode("parentBinder", FetchMode.SELECT)	
+                            	.setFetchMode("topFolder", FetchMode.SELECT)	
                             	.addOrder(Order.asc("HKey.sortKey"))
                             	.list();
                             return removeDuplicates(result);
@@ -213,11 +284,15 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                  public Object doInHibernate(Session session) throws HibernateException {
                      String[] keys = entry.getHKey().getAncestorKeys();  
                      List result = session.createCriteria(entry.getClass())
-                     	.add(Expression.eq("parentBinder", entry.getParentFolder().getId()))
+//                     	.add(Expression.eq("parentBinder", entry.getParentFolder().getId()))
                      	.add(Expression.in("HKey.sortKey", keys))
-                     	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
-                     	.setFetchMode("HAttachments", FetchMode.JOIN)
-                     	.setFetchMode("HWorkflowStates", FetchMode.JOIN)
+ //                    	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
+ //                    	.setFetchMode("HAttachments", FetchMode.JOIN)
+ //                    	.setFetchMode("HWorkflowStates", FetchMode.JOIN)
+ //                    	.setFetchMode("HEvents", FetchMode.JOIN)	
+                       	.setFetchMode("entryDef", FetchMode.SELECT)	
+                       	.setFetchMode("parentBinder", FetchMode.SELECT)	
+                       	.setFetchMode("topFolder", FetchMode.SELECT)	
                      	.addOrder(Order.asc("HKey.sortKey"))
                      	.list();
                      return removeDuplicates(result);
@@ -233,18 +308,30 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
         List result = (List)getHibernateTemplate().execute(
              new HibernateCallback() {
                  public Object doInHibernate(Session session) throws HibernateException {
-                     //sqlqueries, filters and criteria don't help with frontbase problem
-                     //
-                     List result = session.createCriteria(FolderEntry.class)
-                     	.add(Expression.conjunction()  
-                            .add(Expression.gt("HKey.level", new Integer(entry.getDocLevel())))
-                            .add(Expression.like("HKey.sortKey", ((FolderEntry)entry).getHKey().getSortKey() + "%"))
-                     	)
-                     	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
-                     	.setFetchMode("HAttachments", FetchMode.JOIN)
-                     	.setFetchMode("HWorkflowStates", FetchMode.JOIN)
-                     	.addOrder(Order.asc("HKey.sortKey"))
-                     	.list();
+                	 Criteria crit;
+                	 if (entry.getDocLevel() > 1) {
+                		int nextPos = Integer.parseInt(entry.getHKey().getRelativeNumber(entry.getDocLevel())) + 1;
+               		 	HKey next = new HKey(entry.getParentEntry().getHKey(), nextPos);    
+        				crit = session.createCriteria(FolderEntry.class)
+                            .add(Expression.between("HKey.sortKey", entry.getHKey().getSortKey(), next.getSortKey())
+//                     		.add(Expression.conjunction()  
+//                     				.add(Expression.gt("HKey.sortKey", entry.getHKey().getSortKey()))
+//                     				.add(Expression.lt("HKey.sortKey", next.getSortKey()))
+                     		);
+                	 } else {
+                		 //this works better as an index with the DBs
+                		 crit = session.createCriteria(FolderEntry.class)
+                		 	.add(Expression.eq("topEntry", entry));                 		 
+                	 };
+//                     crit.setFetchMode("HCustomAttributes", FetchMode.JOIN);
+//                     crit.setFetchMode("HAttachments", FetchMode.JOIN);
+//                     crit.setFetchMode("HWorkflowStates", FetchMode.JOIN);
+                     crit.setFetchMode("HEvents", FetchMode.JOIN);	
+                     crit.setFetchMode("entryDef", FetchMode.SELECT);	
+                     crit.setFetchMode("parentBinder", FetchMode.SELECT);	
+                     crit.setFetchMode("topFolder", FetchMode.SELECT);	
+                     crit.addOrder(Order.asc("HKey.sortKey"));
+                     List result = crit.list();
                      return removeDuplicates(result);
                  }
              }

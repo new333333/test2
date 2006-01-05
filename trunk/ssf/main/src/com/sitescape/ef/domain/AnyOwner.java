@@ -8,6 +8,8 @@ package com.sitescape.ef.domain;
  */
 public class AnyOwner {
     protected Entry entry;
+    protected String ownerType;
+    protected Long ownerId;
 	protected FolderEntry folderEntry;
 	protected Principal principal;
    //keep as reference for user queries only 
@@ -37,7 +39,15 @@ public class AnyOwner {
 			}
   		}
 	}
- 
+	public static String getType(Entry entry) {
+		if (entry instanceof FolderEntry) {
+			return FOLDERENTRY;
+		} else if (entry instanceof Principal) {
+			return PRINCIPAL;
+		}
+		return null;
+		
+	}
    /**
     * These fields are for foreign key mapping.  An <any> field cannot be
     * mapped as a foreign key to multiple tables.  Associations from the owner class,
@@ -64,7 +74,7 @@ public class AnyOwner {
    /**
     * @hibernate.any meta-type="string" id-type="java.lang.Long"
     * @hibernate.any-column name="ownerType" length="16"
-    * @hibernate.any-column name="owner"
+    * @hibernate.any-column name="ownerId"
     * @hibernate.meta-value value="doc" class="com.sitescape.ef.domain.FolderEntry"		
 	* @hibernate.meta-value value="principal" class="com.sitescape.ef.domain.Principal"
 	* @hibernate.meta-value value="principal" class="com.sitescape.ef.domain.Group"
@@ -75,6 +85,26 @@ public class AnyOwner {
    }
    protected void setHEntry(Entry entry) {
        this.entry = entry;
+   }
+   /**
+    * @hibernate.property insert="false" update="false"
+    * Used in queries
+    */
+   protected String getOwnerType() {
+   	return ownerType;
+   }
+   protected void setOwnerType(String ownerType) {
+   	this.ownerType = ownerType;
+   }
+   /**
+    * @hibernate.property insert="false" update="false" 
+    * Used in queries
+    */
+   protected Long getOwnerId() {
+   	return ownerId;
+   }
+   protected void setOwnerId(Long ownerId) {
+   	this.ownerId = ownerId;
    }
    public Entry getEntry() {
    		return getHEntry();

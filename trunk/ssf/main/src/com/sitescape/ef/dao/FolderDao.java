@@ -1,6 +1,7 @@
 package com.sitescape.ef.dao;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.SeenMap;
@@ -22,6 +23,7 @@ import java.util.List;
 public interface FolderDao {
 	public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, String zoneName) throws DataAccessException;
 	public FolderEntry loadFullFolderEntry(Long parentFolderId, Long entryId, String zoneName) throws DataAccessException;
+    public void deleteEntry(FolderEntry entry);
    /**
      * Return iterator of child entries
      * @param filter

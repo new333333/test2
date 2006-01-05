@@ -6,7 +6,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
-import org.hibernate.Hibernate;
 import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -25,7 +24,6 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.Collection;
 
-import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Group;
@@ -37,7 +35,6 @@ import com.sitescape.ef.domain.NoGroupByTheIdException;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Membership;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.NoPrincipalByTheIdException;
 import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
@@ -50,7 +47,6 @@ import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.EmailAlias;
 import com.sitescape.ef.domain.PostingDef;
 
-import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.dao.util.SFQuery;
@@ -62,8 +58,6 @@ import com.sitescape.util.Validator;
  */
 public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	protected Log logger = LogFactory.getLog(getClass());
-	private ObjectControls userControls = new ObjectControls(User.class);
-	private ObjectControls groupControls = new ObjectControls(Group.class);
 	public void save(Object obj) {
         getHibernateTemplate().save(obj);
     }
@@ -104,7 +98,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 }
             );
     }	
- 
+
     public Object load(Class clazz, String id) {
         return getHibernateTemplate().get(clazz, id);
     }
@@ -228,7 +222,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	 */
     public Binder loadBinder(Long binderId, String zoneName) {  
 		Binder binder = (Binder)load(Binder.class, binderId);
-        if (binder == null) {throw new NoFolderByTheIdException(binderId);};
+        if (binder == null) {throw new NoBinderByTheIdException(binderId);};
         if ((zoneName != null ) && !binder.getZoneName().equals(zoneName)) {
         	throw new NoBinderByTheIdException(binderId);
         }
@@ -259,7 +253,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         Principal principal = (Principal)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
-                        Principal principal = (Principal)session.get(Principal.class, prinId);
+                    	//hoping for cache hit
+                    	Principal principal = (Principal)session.get(Principal.class, prinId);
                         if (principal == null) {throw new NoPrincipalByTheIdException(prinId);}
                         //Get the real object, not a proxy to abstract class
                         principal = (Principal)session.get(User.class, prinId);
@@ -275,6 +270,40 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         return principal;
               
     }
+    /**
+     * Load 1 Principal and all its collections
+     * @param entryId
+     * @param zoneName
+     * @return
+     * @throws DataAccessException
+     */
+    public Principal loadFullPrincipal(final Long entryId, final String zoneName) throws DataAccessException {
+    	return loadPrincipal(entryId, zoneName);
+    	/*        return (Principal)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        List results = session.createCriteria(Principal.class)
+                        	.add(Expression.eq("id", entryId))
+                        	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
+                        	.setFetchMode("HAttachments", FetchMode.JOIN)
+                        	.setFetchMode("HWorkflowStates", FetchMode.JOIN)	
+                        	.setFetchMode("HEvents", FetchMode.JOIN)	
+                        	.setFetchMode("entryDef", FetchMode.SELECT)	
+                        	.setFetchMode("parentBinder", FetchMode.SELECT)	
+                            .list();
+                        if (results.size() == 0)  throw new NoPrincipalByTheIdException(entryId);
+                        //because of join may get non-distinct results (wierd)
+                        Principal entry = (Principal)results.get(0);
+                        if ((zoneName != null ) && !entry.getZoneName().equals(zoneName)) {
+                           	throw new NoPrincipalByTheIdException(entryId);
+                        }
+                        return entry;
+                    }
+                }
+             );
+*/
+    }
+            
     /* 
      * Optimization to load principals in bulk
      */
@@ -305,13 +334,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
      }
   
     public void disablePrincipals(final Collection ids, final String zoneName) {
-    	List result = loadPrincipals(ids, zoneName);
-    	for (int i=0; i<result.size(); ++i) {
-    		Principal p = (Principal)result.get(i);
-    		p.setDisabled(true);
-    	}
- /* TODO - this isn't working, but should      
-  * getHibernateTemplate().execute(
+    	getHibernateTemplate().execute(
         	new HibernateCallback() {
         		public Object doInHibernate(Session session) throws HibernateException {
         			session.createQuery("UPDATE Principal set disabled = :disable where reserved = :reserve and zoneName = :zone and id in (:pList)")
@@ -324,8 +347,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         		}
         	}
         );
- */
-    	}
+
+    }
     /*
      *  (non-Javadoc)
      * @see com.sitescape.ef.dao.CoreDao#loadUser(java.lang.Long, java.lang.Long)
@@ -581,19 +604,19 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
   		return def;
 	}
 	/**
-	 * Get definitions for the specified folder
-	 * @param folder
+	 * Get definitions for the specified binder
+	 * @param binder
 	 * @param objectDesc - only the attributes are used
 	 * @param filter
 	 * @return
 	 */
-	public List loadDefinitions(final Folder folder, final ObjectControls objectDesc, final FilterControls filter) {      
+	public List loadDefinitions(final Binder binder, final ObjectControls objectDesc, final FilterControls filter) {      
 		return (List)getHibernateTemplate().execute(
             new HibernateCallback() {
                 public Object doInHibernate(Session session) throws HibernateException {
                     StringBuffer query = objectDesc.getSelect("this");
                 	filter.appendFilter("this", query);
-                    List results = session.createFilter(folder.getDefinitions(),
+                    List results = session.createFilter(binder.getDefinitions(),
                             query.toString()) 
 					.list();
                     return results;                           

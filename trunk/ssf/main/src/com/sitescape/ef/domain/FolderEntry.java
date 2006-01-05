@@ -62,14 +62,6 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
     private Set getHAttachments() {return attachments;}
     private void setHAttachments(Set attachments) {this.attachments = attachments;}   	
 
-   /**
-	* @hibernate.bag lazy="true" inverse="true" cascade="all,delete-orphan" 
-    * @hibernate.key column="folderEntry"
-    * @hibernate.one-to-many class="com.sitescape.ef.domain.Event"
-    * @return
-    */
-    private List getHEvents() {return allEvents;}
-    private void setHEvents(List events) {this.allEvents = events;}   	
     /**
      * @hibernate.bag lazy="true" cascade="all,delete-orphan" inverse="true" optimistic-lock="false"
      * @hibernate.key column="parentEntry"
@@ -288,7 +280,7 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
        }
     }
     /*
-     * A reply was repmoved somewhere in the decendant tree
+     * A reply was removed somewhere in the decendant tree
      * Update cummulative replyCount
      */
     protected void removeAncestor(FolderEntry reply) {
