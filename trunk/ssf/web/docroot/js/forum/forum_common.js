@@ -601,6 +601,9 @@ function getObjectTop(obj) {
 
 function setObjectWidth(obj, width) {
 	obj.style.width = width;
+
+    //Call the routines that want to be called on layout changes
+    ssf_onLayoutChange();
 	return
 
     if (isNSN6 || isMoz5) {
@@ -610,12 +613,13 @@ function setObjectWidth(obj, width) {
     } else {
         obj.clientWidth = width;
     }
-    //Call the routines that want to be called on layout changes
-    ssf_onLayoutChange();
 }
 
 function setObjectHeight(obj, height) {
     obj.style.height = height;
+    
+    //Call the routines that want to be called on layout changes
+    ssf_onLayoutChange();
     return
     
     if (isNSN6 || isMoz5) {
