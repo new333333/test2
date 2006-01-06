@@ -6,8 +6,6 @@
  */
 package com.sitescape.ef.domain;
 
-import com.sitescape.util.Validator;
-
 /**
  * @hibernate.subclass discriminator-value="U" dynamic-update="true"
  * @author janet

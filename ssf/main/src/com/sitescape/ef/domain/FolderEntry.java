@@ -53,7 +53,7 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
     private void setHCustomAttributes(Map customAttributes) {this.customAttributes = customAttributes;}   	
     
     /**
-     * @hibernate.set  lazy="true" inverse="true" cascade="all,delete-orphan" 
+     * @hibernate.set  lazy="true" inverse="true" cascade="all,delete-orphan" batch-size="4" 
  	 * @hibernate.key column="folderEntry"
  	 * @hibernate.one-to-many class="com.sitescape.ef.domain.Attachment"
  	 * We are using a set here, cause any outer-joins to load this attribute
@@ -62,6 +62,14 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
     private Set getHAttachments() {return attachments;}
     private void setHAttachments(Set attachments) {this.attachments = attachments;}   	
 
+   /**
+	* @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan" batch-size="4" 
+    * @hibernate.key column="folderEntry"
+    * @hibernate.one-to-many class="com.sitescape.ef.domain.Event"
+    * @return
+    */
+    private Set getHEvents() {return events;}
+    private void setHEvents(Set events) {this.events = events;}   	
     /**
      * @hibernate.bag lazy="true" cascade="all,delete-orphan" inverse="true" optimistic-lock="false"
      * @hibernate.key column="parentEntry"
@@ -133,7 +141,7 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
     }
     
     /**
-	 * @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan" 
+	 * @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan" batch-size="4"
      * @hibernate.key column="folderEntry"
      * @hibernate.one-to-many class="com.sitescape.ef.domain.WorkflowState"
      * @return

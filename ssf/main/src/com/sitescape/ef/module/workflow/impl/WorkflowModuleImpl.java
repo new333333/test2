@@ -403,9 +403,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	}
 	
 	public void startWorkflow(Entry entry, Definition workflowDef) {
-		String entryType = "";
-		if (entry instanceof FolderEntry) entryType = AnyOwner.FOLDERENTRY;
-		if (entry instanceof Principal) entryType = AnyOwner.PRINCIPAL;
+		String entryType = AnyOwner.getType(entry);
 		
 		//Find the initial state of the workflow
 		Document workflowDoc = workflowDef.getDefinition();
@@ -446,15 +444,14 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 						WorkflowState ws = new WorkflowState();
 						ws.setTokenId(new Long(token.getId()));
 						ws.setState(initialState);
-						ws.setOwner(entry);
 						ws.setDefinition(workflowDef);
+						//need to save explicitly - actions called by the node.enter may look it up 
 						getCoreDao().save(ws);
 						entry.addWorkflowState(ws);
 						//Start the workflow process at the initial state
-						token.setNode(node);
-			            ExecutionContext executionContext = new ExecutionContext(token);
+					    ExecutionContext executionContext = new ExecutionContext(token);
 			            node.enter(executionContext);
-			            session.getGraphSession().saveProcessInstance(pI);
+//			            session.getGraphSession().saveProcessInstance(pI);
 				    }
 			    } catch (Exception ex) {
 			        throw convertJbpmException(ex);
@@ -468,7 +465,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	       	JbpmSession session = workflowFactory.getSession();
         	Token t = session.getGraphSession().loadToken(tokenId.longValue());
             t.signal(fromState + "." + toState);
-            session.getGraphSession().saveProcessInstance(t.getProcessInstance());
+ //           session.getGraphSession().saveProcessInstance(t.getProcessInstance());
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
 	    }		

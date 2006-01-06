@@ -128,7 +128,6 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                         	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
                         	.setFetchMode("HAttachments", FetchMode.JOIN)
                         	.setFetchMode("HWorkflowStates", FetchMode.JOIN)	
-                        	.setFetchMode("HEvents", FetchMode.JOIN)	
                         	.setFetchMode("entryDef", FetchMode.SELECT)	
                         	.setFetchMode("parentBinder", FetchMode.SELECT)	
                         	.setFetchMode("topFolder", FetchMode.SELECT)	
@@ -261,7 +260,6 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 //                            	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
 //                            	.setFetchMode("HAttachments", FetchMode.JOIN)
 //                            	.setFetchMode("HWorkflowStates", FetchMode.JOIN)	
-//                            	.setFetchMode("HEvents", FetchMode.JOIN)	
                             	.setFetchMode("entryDef", FetchMode.SELECT)	
                             	.setFetchMode("parentBinder", FetchMode.SELECT)	
                             	.setFetchMode("topFolder", FetchMode.SELECT)	
@@ -289,7 +287,6 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
  //                    	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
  //                    	.setFetchMode("HAttachments", FetchMode.JOIN)
  //                    	.setFetchMode("HWorkflowStates", FetchMode.JOIN)
- //                    	.setFetchMode("HEvents", FetchMode.JOIN)	
                        	.setFetchMode("entryDef", FetchMode.SELECT)	
                        	.setFetchMode("parentBinder", FetchMode.SELECT)	
                        	.setFetchMode("topFolder", FetchMode.SELECT)	
@@ -326,7 +323,6 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 //                     crit.setFetchMode("HCustomAttributes", FetchMode.JOIN);
 //                     crit.setFetchMode("HAttachments", FetchMode.JOIN);
 //                     crit.setFetchMode("HWorkflowStates", FetchMode.JOIN);
-                     crit.setFetchMode("HEvents", FetchMode.JOIN);	
                      crit.setFetchMode("entryDef", FetchMode.SELECT);	
                      crit.setFetchMode("parentBinder", FetchMode.SELECT);	
                      crit.setFetchMode("topFolder", FetchMode.SELECT);	

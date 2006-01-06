@@ -161,9 +161,11 @@ public class EntryIndexUtils {
 			CustomAttribute att = (CustomAttribute) customAttrs.get(attIt.next());
 			if (att.getValueType() == CustomAttribute.EVENT) {
 				// set the event name to event + count
-				eventName = Field.Keyword(EVENT_FIELD + count, att.getName());
-		    	doc.add(eventName);
-		    	count++;
+				if (att.getValue() != null) {
+					eventName = Field.Keyword(EVENT_FIELD + count, att.getName());
+					doc.add(eventName);
+					count++;
+				}
 			}
 		}    	
 		// Add event count field

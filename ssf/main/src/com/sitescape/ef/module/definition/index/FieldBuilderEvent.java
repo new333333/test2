@@ -19,7 +19,7 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 	        
 	        Event ev = (Event) getFirstElement(dataElemValue);
 	        
-	        if(ev == null)
+	        if (ev == null)
 	            return new Field[0];
 
 			// range check to see if this event is in range

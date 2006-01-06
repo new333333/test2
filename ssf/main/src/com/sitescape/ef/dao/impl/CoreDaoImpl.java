@@ -287,7 +287,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                         	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
                         	.setFetchMode("HAttachments", FetchMode.JOIN)
                         	.setFetchMode("HWorkflowStates", FetchMode.JOIN)	
-                        	.setFetchMode("HEvents", FetchMode.JOIN)	
                         	.setFetchMode("entryDef", FetchMode.SELECT)	
                         	.setFetchMode("parentBinder", FetchMode.SELECT)	
                             .list();
