@@ -77,7 +77,7 @@ public class WorkflowState {
      * @return
      */
  	public String getThreadName() {
- 		return state;
+ 		return threadName;
  	}
  	public void setThreadName(String threadName) {
  		this.threadName = threadName;

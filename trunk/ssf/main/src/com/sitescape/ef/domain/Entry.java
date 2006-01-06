@@ -29,6 +29,7 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     protected Set workflowStates;   
     protected HistoryStamp workflowChange;
     protected Binder parentBinder;
+    protected Set events;
     
     public Entry() {
     }
@@ -53,7 +54,7 @@ public abstract class Entry extends PersistentLongIdTimestampObject
         this.description = tmp; 
     }
     public Set getWorkflowStates() {
-   	 	if (workflowStates == null) return new HashSet();
+   	 	if (workflowStates == null) workflowStates = new HashSet();
    	 	return workflowStates;  
      }
      public void setWorkflowStates(Set workflowStates) {
@@ -80,10 +81,6 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     }
     public void removeWorkflowState(WorkflowState state) {
      	if (state == null) return;
-     	
-     	//End the JBPM workflow token
-     	//???Add code to delete the tokens
-     	
     	//Make sure initialized
     	getWorkflowStates();
         workflowStates.remove(state);
@@ -131,7 +128,43 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     public void setParentBinder(Binder parentBinder) {
    	 this.parentBinder = parentBinder;
     }
- 
+    /**
+     * Events are only accessed through custom attributes
+     * Remove an event.  Event object will be deleted from
+     * database unless it is added somewhere else.
+     * @param event
+     */
+    protected void removeEvent(Event event) {
+       	if (event == null) return;
+        if (events == null) events = new HashSet();
+        events.remove(event);
+        event.setOwner((AnyOwner)null);           	
+    }
+    /**
+     * Add an event
+     * @param event
+     */
+    protected void addEvent(Event event) {
+    	if (event == null) return;
+        if (events == null) events = new HashSet();
+        events.add(event);
+        event.setOwner(this);
+    }
+    /**
+     * Find event by id
+     * @param id
+     */
+    protected Event getEvent(String id) {
+        if (events == null) return null;
+        for (Iterator iter=events.iterator(); iter.hasNext();) {
+    		Event e = (Event)iter.next();
+    		if (e.getId().equals(id)) {
+    			return e;
+    		}
+    	}
+    	return null;
+    	
+    }
     /**
      * Return all attachments 
      * 

@@ -104,6 +104,7 @@ public class WorkflowUtils {
 							Map parallelThread = new HashMap();
 							parallelThread.put(ObjectKeys.WORKFLOW_PARALLEL_THREAD_NAME, parallelThreadName);
 							parallelThread.put(ObjectKeys.WORKFLOW_PARALLEL_THREAD_START_STATE, startStateValue);
+							parallelExecutions.add(parallelThread);
 						}
 					}
 				}
