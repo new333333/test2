@@ -1,7 +1,10 @@
 package com.sitescape.ef.applets.workflowviewer;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Paint;
+import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -33,13 +36,22 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import samples.graph.ShortestPathDemo.MyEdgePaintFunction;
+import samples.graph.ShortestPathDemo.MyEdgeStrokeFunction;
+import samples.graph.ShortestPathDemo.MyVertexPaintFunction;
+
 import edu.uci.ics.jung.graph.ArchetypeVertex;
+import edu.uci.ics.jung.graph.Edge;
 import edu.uci.ics.jung.graph.Vertex;
+import edu.uci.ics.jung.graph.decorators.AbstractEdgePaintFunction;
 import edu.uci.ics.jung.graph.decorators.EdgeStringer;
+import edu.uci.ics.jung.graph.decorators.EdgeStrokeFunction;
+import edu.uci.ics.jung.graph.decorators.VertexPaintFunction;
 import edu.uci.ics.jung.graph.decorators.VertexStringer;
 import edu.uci.ics.jung.graph.impl.DirectedSparseEdge;
 import edu.uci.ics.jung.graph.impl.SparseGraph;
 import edu.uci.ics.jung.graph.impl.SparseVertex;
+import edu.uci.ics.jung.utils.UserData;
 import edu.uci.ics.jung.visualization.FRLayout;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
 import edu.uci.ics.jung.visualization.Layout;
@@ -73,7 +85,10 @@ public class WorkflowViewer extends JApplet implements ActionListener {
     protected VisualizationViewer vv;
     protected PopupGraphMouse gm;
     protected Transformer affineTransformer;
-    
+
+	private static final Object COLORKEY = "COLORKEY";
+	private static final Object THICKNESSKEY = "THICKNESSKEY";
+
     public void init() {
     	//System.out.println("Applet initialized!");
     }
@@ -114,6 +129,9 @@ public class WorkflowViewer extends JApplet implements ActionListener {
         pr = new PluggableRenderer();
         layout = new FRLayout(g);
         vv = new VisualizationViewer(layout, pr);
+        pr.setVertexPaintFunction(new WorkflowVertexPaintFunction());
+        pr.setEdgePaintFunction(new WorkflowEdgePaintFunction());
+        pr.setEdgeStrokeFunction(new WorkflowEdgeStrokeFunction());
         pr.setVertexStringer(new VertexNodeNameStringer(v));
         JPanel jp = new JPanel();
         jp.setLayout(new BorderLayout());
@@ -275,14 +293,55 @@ public class WorkflowViewer extends JApplet implements ActionListener {
         }
     }
     
+	public class WorkflowEdgePaintFunction extends AbstractEdgePaintFunction {
+	    
+		/**
+		 * @see edu.uci.ics.jung.graph.decorators.EdgePaintFunction#getDrawPaint(edu.uci.ics.jung.graph.Edge)
+		 */
+		public Paint getDrawPaint(Edge e) {
+			Color k = (Color) e.getUserDatum(COLORKEY);
+			if (k != null)
+				return k;
+			return Color.BLACK;
+		}
+	}
+	
+	public class WorkflowEdgeStrokeFunction implements EdgeStrokeFunction {
+        protected final Stroke THIN = new BasicStroke(1);
+        protected final Stroke THICK = new BasicStroke(1);
+
+        public Stroke getStroke(Edge e) {
+			Stroke s = (Stroke) e.getUserDatum(THICKNESSKEY);
+			if (s != null)
+				return s;
+			return THICK;
+        }
+	    
+	}
+	
+	public class WorkflowVertexPaintFunction implements VertexPaintFunction {
+
+		public Paint getDrawPaint(Vertex v) {
+			return Color.black;
+		}
+		
+		public Paint getFillPaint( Vertex v ) {
+			Color k = (Color) v.getUserDatum(COLORKEY);
+			if (k != null)
+				return k;
+			return Color.BLUE;
+		}
+	}
+
     /**
      * create some vertices
      * @return the Vertices in an array
      */
     private Vertex[] createVertices() {
     	Element workflowRoot = workflowDoc.getRootElement();
+        Element workflowProcess = (Element)workflowRoot.selectSingleNode("//item[@name='workflowProcess']");
     	List states = workflowRoot.selectNodes("//item[@name='state']");
-    	if (states == null) return null;
+    	if (workflowProcess == null || states == null) return null;
     	
         int nodeCount = states.size();
         System.out.println("node count is: " + String.valueOf(nodeCount).toString());
@@ -305,6 +364,18 @@ public class WorkflowViewer extends JApplet implements ActionListener {
                     vertexName.put(v[i], name);
                     vertexCaption.put(v[i], caption);
                     nameVertex.put(name, v[i]);
+                    
+                    //Set the color of the vertex
+                    Element initialState = (Element)workflowRoot.selectSingleNode("properties/property[@name='initialState']");
+                    Element endState = (Element)workflowRoot.selectSingleNode("properties/property[@name='endState']");
+                    if (initialState != null && initialState.attributeValue("value", "").equals(name)) {
+                    	v[i].setUserDatum(COLORKEY, Color.YELLOW, UserData.REMOVE);
+                    } else if (endState != null && endState.attributeValue("value", "").equals(name)) {
+                    	v[i].setUserDatum(COLORKEY, Color.RED, UserData.REMOVE);
+                    } else {
+                    	v[i].setUserDatum(COLORKEY, Color.BLUE, UserData.REMOVE);
+                    }
+                    
                     i++;
             	}
             }
@@ -337,7 +408,11 @@ public class WorkflowViewer extends JApplet implements ActionListener {
             		String toState = transition.attributeValue("value", "");
             		if (!toState.equals(")")) {
                         if (nameVertex.containsKey(name) && nameVertex.containsKey(toState)) {
-                        	g.addEdge(new DirectedSparseEdge((Vertex)nameVertex.get(name), (Vertex)nameVertex.get(toState)));
+                        	Edge newEdge = g.addEdge(new DirectedSparseEdge((Vertex)nameVertex.get(name), (Vertex)nameVertex.get(toState)));
+                        	if (transition.getParent().getParent().attributeValue("name", "").equals("startParallelThread")) {
+                        		//Mark the starting of a parallel thread with a different edge color
+                        		newEdge.setUserDatum(COLORKEY, Color.GREEN, UserData.REMOVE);
+                        	}
                         }
             		}
             	}
@@ -534,6 +609,9 @@ public class WorkflowViewer extends JApplet implements ActionListener {
 			xmlPostUrl = "";
 			nltSaveLayout = "Save layout";			
 		}
+		if (xmlGetUrl == null) xmlGetUrl = "file:///ss/wfp1";
+		if (xmlPostUrl == null) xmlPostUrl = "";
+		if (nltSaveLayout == null) nltSaveLayout = "Save layout";			
 		
 		appletData.put("xmlGetUrl", xmlGetUrl);
 		appletData.put("xmlPostUrl", xmlPostUrl);
@@ -541,3 +619,4 @@ public class WorkflowViewer extends JApplet implements ActionListener {
 	}
 
 }
+
