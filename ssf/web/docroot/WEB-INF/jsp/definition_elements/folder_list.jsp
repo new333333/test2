@@ -66,9 +66,15 @@ function highlightLineById(id) {
 <div class="ss_folder">
 <% // First include the folder tree %>
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
+
+<div style="margin:0px;">
+<div style="position:relative; top:2; margin:2px; 
+  border-top:solid #666666 1px; border-right:solid #666666 1px; border-left:solid #666666 1px; 
+  background-color:#cecece;">
 <% // Then include the navigation widgets for this view %>
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
-
+</div>
+</div>
 <ssf:slidingTable type="sliding" folderId="<%= folderId %>">
 
 <ssf:slidingTableRow headerRow="true">

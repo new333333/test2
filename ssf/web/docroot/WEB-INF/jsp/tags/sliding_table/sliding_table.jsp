@@ -79,7 +79,7 @@ function ss_checkSlidingTableLayout() {
 		ss_sTableLastTop = getDivTop("ss_sTable")
 		ss_sTableLastLeft = getDivLeft("ss_sTable")
 		ss_showSlidingTableCols()
-		ss_clearMouseOverInfo()
+		if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo();
 	}
 }
 
@@ -306,7 +306,7 @@ createOnLayoutChangeObj('ss_checkSlidingTableLayout', ss_checkSlidingTableLayout
 var ss_columnCount = <%= String.valueOf(colSize) %>;
 </script>
 <div id="ss_sTable" style="margin: 2px; border: #666666 1px solid;" width="100%"
- onMouseOver="ss_clearMouseOverInfo(this)">
+ onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 
 <div id="col0" class="ss_sliding_table_column0">
 <table class="ss_content" cellspacing="0" cellpadding="0">
@@ -359,7 +359,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 %>
 <div id="col<%= String.valueOf(iCol + 1) %>" class="ss_sliding_table_column1">
 <table class="ss_content" cellspacing="0" cellpadding="0" width="100%">
-<tr onMouseOver="ss_clearMouseOverInfo(this)">
+<tr onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 <td>&nbsp;</td>
 </tr>
 </table>
@@ -368,12 +368,13 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="left" onMouseOver="ss_clearMouseOverInfo(this)">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
+<th align="left" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
 <%
 					} else {
 %>
 <td nowrap width="100%"
-  onMouseOver="ss_showMouseOverInfo(this)" onMouseOut="ss_clearMouseOverInfo(this)"
+  onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
+  onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
   >&nbsp;<%= columnMap.get("text") %></td>
 <%
 					}
@@ -391,7 +392,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 %>
 <div id="col<%= String.valueOf(iCol + 1) %>" class="ss_sliding_table_column"  style="z-index:<%= String.valueOf(iCol + 11) %>;">
 <table class="ss_content" cellspacing="0" cellpadding="0" width="100%">
-<tr onMouseOver="ss_clearMouseOverInfo(this)">
+<tr onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 <td><div style="position:absolute; left:-9; top:0;"><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
   onMousedown="ss_slidingTableStartDragCol(this, 'col<%= String.valueOf(iCol + 1) %>');"
   ><span style="cursor:w-resize; color:darkgreen; font-size:small; text-decoration:none;
@@ -405,12 +406,13 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="left" onMouseOver="ss_clearMouseOverInfo(this)">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
+<th align="left" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
 <%
 					} else {
 %>
 <td nowrap width="100%"
-  onMouseOver="ss_showMouseOverInfo(this)" onMouseOut="ss_clearMouseOverInfo(this)"
+  onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
+  onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
  >&nbsp;<%= columnMap.get("text") %></td>
 <%
 					}
@@ -430,12 +432,13 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="left" onMouseOver="ss_clearMouseOverInfo(this)">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
+<th align="left" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
 <%
 					} else {
 %>
 <td nowrap width="100%"
-  onMouseOver="ss_showMouseOverInfo(this)" onMouseOut="ss_clearMouseOverInfo(this)"
+  onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
+  onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
  >&nbsp;<%= columnMap.get("text") %></td>
 <%
 					}

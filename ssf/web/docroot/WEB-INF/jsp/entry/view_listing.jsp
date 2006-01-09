@@ -169,10 +169,14 @@ function ss_showEntryInDiv(str) {
 }
 
 var savedScrollPositionTop = null;
-function scrollToSavedLocation() {
-	if (autoScroll == "true") {
-		if (savedScrollPositionTop != null) {
-			smoothScroll(0,savedScrollPositionTop);
+function scrollToSavedLocation(anchor) {
+	if (anchor != "") {
+		smoothScroll(0, parseInt(getAnchorTop(anchor)));
+	} else {
+		if (autoScroll == "true") {
+			if (savedScrollPositionTop != null) {
+				smoothScroll(0,savedScrollPositionTop);
+			}
 		}
 	}
 }
@@ -279,52 +283,13 @@ if (self.parent && self.parent.highlightLineById) {
 	self.parent.highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
 }
 </script>
-<%
-	//Horizontal view
-	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_HORIZONTAL)) {
-%>
-    <ssf:box>
-      <ssf:param name="box_width" value="<%= new Integer(entryWindowWidth).toString() %>" />
-      <ssf:param name="box_show_close_icon" value="true" />
-	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-	  configElement="<%= ssConfigElement %>" 
-	  configJspStyle="<%= ssConfigJspStyle %>"
-	  processThisItem="true" 
-	  entry="<%= ssEntry %>" />
-    </ssf:box>
-<%
-	
-	//Iframe view
-	} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
-%>
-	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-	  configElement="<%= ssConfigElement %>" 
-	  configJspStyle="<%= ssConfigJspStyle %>"
-	  processThisItem="true" 
-	  entry="<%= ssEntry %>" />
-<%
-	
-	//Popup view
-	} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
-%>
-	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-	  configElement="<%= ssConfigElement %>" 
-	  configJspStyle="<%= ssConfigJspStyle %>"
-	  processThisItem="true" 
-	  entry="<%= ssEntry %>" />
-<%
-	
-	//Vertical view
-	} else {
-%>
-	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-	  configElement="<%= ssConfigElement %>" 
-	  configJspStyle="<%= ssConfigJspStyle %>"
-	  processThisItem="true" 
-	  entry="<%=  ssEntry %>" />
-<%
-	}
-%>
+
+<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
+  configElement="<%= ssConfigElement %>" 
+  configJspStyle="<%= ssConfigJspStyle %>"
+  processThisItem="true" 
+  entry="<%= ssEntry %>" />
+
   </c:if>
 </c:if>
 
