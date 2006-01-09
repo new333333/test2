@@ -949,9 +949,10 @@
 	
 	<item name="waitForParallelThread" caption="__waitForParallelThread" >
 		<properties>
-			<property name="name" caption="__parallelStateName" type="selectbox">
+			<property name="name" caption="__parallelStateName" type="selectbox" multipleAllowed="true">
 			    <option_entry_data select_type="parallelThread" path="//item[@name='startParallelThread']" optionCaption="__parallelStateName" />
 			</property>
+			<property name="toState" caption="__toStateAfterWait" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 	</item>
 	
