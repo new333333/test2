@@ -31,6 +31,7 @@
 String divId = ParamUtil.get(request, "box_id", "");
 String titleClassName = ParamUtil.get(request, "box_title_class", "beta");
 String bodyClassName = ParamUtil.get(request, "box_body_class", "bg");
+String ss_boxColor = ParamUtil.get(request, "box_color", "#cecece");
 
 String title = ParamUtil.get(request, "box_title", "");
 
@@ -45,7 +46,7 @@ catch (Exception e) {
 }
 
 boolean boldTitle = ParamUtil.get(request, "box_bold_title", true);
-boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", true);
+boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", false);
 
 boolean showCloseIcon = ParamUtil.get(request, "box_show_close_icon", false);
 String showCloseRoutine = ParamUtil.get(request, "box_show_close_routine", "");
@@ -62,9 +63,11 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 	decorateBox = true;
 }
 %>
-<div class="ss_box_rounded" id="<%= divId %>" style="width: <%= width %>;">
+<div class="ss_box_rounded" id="<%= divId %>" 
+  style="width: <%= width %>; background-color:<%= ss_boxColor %>;">
 <%@ include file="/WEB-INF/jsp/box/box_top-ext.jsp" %>
-	<div class="ss_box_small_icon_bar" id="<%= divId %>_icon_bar">
+	<div class="ss_box_small_icon_bar" id="<%= divId %>_icon_bar"
+	  style="background-color:<%= ss_boxColor %>;">
 	  <table cellspacing="0" cellpaddng="0" width="100%">
 	  <tr>
 	  <c:if test="<%= showMoveIcon %>">

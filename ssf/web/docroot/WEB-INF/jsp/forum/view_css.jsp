@@ -99,11 +99,11 @@ div.ss_historybar {
 
 /* Box styles */
 div.ss_box_rounded {
-	background-color: #999999;
+	background-color: #cecece;
 }
 
 div.ss_box_bottom_rounded {
-	background-color: #999999;
+	background-color: #cecece;
 	height: 1px;
 	margin: 0px;
 }
@@ -123,7 +123,7 @@ div.ss_box_minimum_height {
 }
 
 ss_box_small_icon_bar {
-	background-color: #999999;
+	background-color: #cecece;
 	height: 1em;
 	padding-right: 10px;
 	position:relative;
