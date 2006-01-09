@@ -26,6 +26,13 @@
 		<namespace>http://xml.apache.org/axis/wsdd/</namespace>
 	</service>-->
 	<service name="Facade" provider="java:RPC">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.ef.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken"/>
+   			</handler>
+  		</requestFlow>
+	
 		<parameter name="allowedMethods" value="*"/>
 		<parameter name="className" value="com.sitescape.ef.remoting.jaxrpc.JaxRpcFacade"/>
   		<!--<parameter name="wsdlTargetNamespace" value="urn:SSF" />-->

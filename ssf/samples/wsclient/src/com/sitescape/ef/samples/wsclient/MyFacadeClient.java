@@ -40,8 +40,10 @@ public class MyFacadeClient {
 			System.out.println("binder id = " + args[0] + ", entry id = " + args[1]);
 			int binderId = Integer.parseInt(args[0]);
 			int entryId = Integer.parseInt(args[1]);
+			
 			ListableBeanFactory beanFactory = new FileSystemXmlApplicationContext(CLIENT_CONTEXT_CONFIG_LOCATION);
 			MyFacadeClient client = (MyFacadeClient) beanFactory.getBean("myFacadeClient");
+			
 			client.printEntry(binderId, entryId);
 		}
 	}

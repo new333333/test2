@@ -1,16 +1,18 @@
 <?xml version="1.0"?>
 
-<project name="wsclient" basedir="." default="compile">
+<project name="wsclient" basedir="." default="testRun">
 	<target name="init">
 		<echo message="##### WSCLIENT #####" />
 		<property environment="env" />
   		<property name="project.dir" value="../.." />
   		<property file="${project.dir}/build.${user.name}.properties" />
   		<property file="${project.dir}/build.properties" />
+		<property name="generated.dir" value="${basedir}/generated" />
 		<path id="project.classpath">
 			<pathelement path="${classpath}" />
 			<fileset dir="${project.dir}/lib" includes="*.jar" />
 		</path>
+		<taskdef resource="axis-tasks.properties" classpathref="project.classpath"/>
 	</target>
 
 	<target name="clean" depends="init">
@@ -29,9 +31,10 @@
 			destdir="${classes.dir}"
 			fork="${javac.fork}"
 			memoryMaximumSize="${javac.memoryMaximumSize}"
-			nowarn="${javac.nowarn}"
-			srcdir="${source.dir}"
-		/>
+			nowarn="${javac.nowarn}">
+			<src path="${source.dir}" />
+			<src path="${generated.dir}" />
+		</javac>
 	</target>
 	
 	<target name="testRun" depends="compile">
@@ -42,9 +45,35 @@
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">
+			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
 			<arg value="74"/>
 			<arg value="491"/>
 		</java>
+	</target>
+	
+	<target name="testRun2" depends="compile">
+		<java 
+			classname="com.sitescape.ef.samples.wsclient.MyGeneratedFacadeClient"
+			classpath="${classes.dir}"
+			classpathref="project.classpath"
+			fork="true"
+			dir="${basedir}"
+			failonerror="true">
+			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
+			<arg value="74"/>
+			<arg value="491"/>
+		</java>
+	</target>
+	
+	<target name="wsdl2java" depends="init" description="Generate client service bindings from WSDL">
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="http://peace:8080/ssf/ws/Facade?wsdl" >
+			<mapping
+				namespace="http://localhost:8080/ssf/ws/Facade"
+				package="com.sitescape.ef.samples.wsclient" />
+		</axis-wsdl2java>
 	</target>
 	
 </project>
