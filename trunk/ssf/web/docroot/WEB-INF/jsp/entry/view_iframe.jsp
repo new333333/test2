@@ -40,19 +40,9 @@ var ss_scrollTopOffset = 4;
 
 function ss_showForumEntryInIframe(url) {
 	ss_positionEntryDiv();
-    var wObj
-    if (isNSN || isNSN6 || isMoz5) {
-        wObj = self.document.getElementById('ss_showentryframe')
-    } else {
-        wObj = self.document.all['ss_showentryframe']
-    }
-    
-    var wObj1 = null
-    if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('ss_showentrydiv')
-     } else {
-        wObj1 = self.document.all['ss_showentrydiv']
-    }
+    var wObj = self.document.getElementById('ss_showentryframe')
+    var wObj1 = self.document.getElementById('ss_showentrydiv')
+
     wObj1.style.display = "block";
     wObj1.style.visibility = "visible";
 
@@ -71,30 +61,18 @@ function ss_showForumEntryInIframe(url) {
 function ss_positionEntryDiv() {
 	var maxEntryWidth = parseInt(getWindowWidth() - ss_scrollbarWidth);
 	
-    var wObj = null
-    if (isNSN || isNSN6 || isMoz5) {
-        wObj = self.document.getElementById('ss_showfolder')
-    } else {
-        wObj = self.document.all['ss_showfolder']
-    }
+    var wObj = self.document.getElementById('ss_showfolder')
+
     var width = getObjectWidth(wObj);
     if (ss_entryWindowWidth == 0) {ss_entryWindowWidth = parseInt((width * 3) / 4);}
     //Make sure the entry width is within the window
     if (ss_entryWindowWidth > maxEntryWidth) ss_entryWindowWidth = maxEntryWidth;
     if (ss_entryWindowWidth < ss_minEntryWindowWidth) ss_entryWindowWidth = ss_minEntryWindowWidth;
 
-    var wObj1 = null
-    var wObj2 = null
-    var wObj3 = null
-    if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('ss_showentrydiv')
-        wObj2 = self.document.getElementById('<portlet:namespace/>_iframe_box_div')
-        wObj3 = self.document.getElementById('ss_showentryframe')
-    } else {
-        wObj1 = self.document.all['ss_showentrydiv']
-        wObj2 = self.document.all['<portlet:namespace/>_iframe_box_div']
-        wObj3 = self.document.all['ss_showentryframe']
-    }
+    var wObj1 = self.document.getElementById('ss_showentrydiv')
+    var wObj2 = self.document.getElementById('<portlet:namespace/>_iframe_box_div')
+    var wObj3 = self.document.getElementById('ss_showentryframe')
+
     var top = parseInt(getDivTop('ss_showfolder') + ss_entryDivTopDelta);
     if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);} 
     var left = parseInt(maxEntryWidth - ss_entryWindowWidth);
@@ -120,8 +98,16 @@ function ss_hideEntryDiv() {
     wObj1.style.visibility = "hidden";
 }
 
-createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
-createOnResizeObj('ss_positionEntryDiv', ss_positionEntryDiv)
+function ss_repositionEntryDiv() {
+    var wObj1 = self.document.getElementById('ss_showentrydiv')
+    if (wObj1.style.visibility == "visible") {
+    	//The entry div is visible, so reposition it to the new size
+    	ss_positionEntryDiv();
+    }
+}
+
+//createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
+createOnResizeObj('ss_repositionEntryDiv', ss_repositionEntryDiv)
 
 var ss_divDragObj = null
 var ss_divOffsetX
