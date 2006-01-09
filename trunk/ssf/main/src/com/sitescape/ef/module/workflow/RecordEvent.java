@@ -20,6 +20,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.MultipleWorkflowSupport;
 import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
+import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.ObjectKeys;
 
 
@@ -56,7 +57,8 @@ public class RecordEvent extends AbstractActionHandler {
 				startParallelWorkflowThread(entry, threadName, startState, ws, token);
 			}
 			//Re-index the entry after changing its state
-			//TODO add code to re-index the entry
+	        //org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(entry.getParentBinder(), entry);
+	        //IndexSynchronizationManager.addDocument(indexDoc);        
 			  
 			logger.info("Workflow event (" + eventType + ") recorded: " + state);
 		}
