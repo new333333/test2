@@ -43,6 +43,8 @@
 	</definition>
 	
 <!-- Items -->
+
+<!-- Entry items -->
 	<item name="entryType" definitionType="1" caption="__entry_definition">		
 		<properties>
 			<property name="name" caption="__name" type="text" />
@@ -53,56 +55,6 @@
 		<options>
 			<option name="entryForm" initial="true" />
 			<option name="entryView" initial="true" />
-		</options>
-	</item>
-	
-	<item name="workflowProcessType" definitionType="2" caption="__workflow_process">
-		<properties>
-			<property name="name" caption="__name" type="text" />
-			<property name="caption" caption="__caption" type="text" />
-			<property name="initialState" caption="__initialState" type="selectbox">
-				<option_entry_data path="//item[@name='workflowProcess']/.//item[@name='state']" optionCaption="__initialStateSelect" />
-			</property>
-		</properties>
-		
-		<options>
-			<option name="workflowProcess" initial="true" />
-		</options>
-	</item>
-	
-	<item name="workflowProcess" caption="__workflow_process" canBeDeleted="false" multipleAllowed="false">
-		<operations>
-			<operation name="addOption" caption="__add" />
-		</operations>
-
-		<options>
-			<option name="state" caption="__state" multipleAllowed="true" />
-		</options>
-	</item>
-	
-	<item name="forumViewType" definitionType="5" caption="__forum_view_definition">		
-		<properties>
-			<property name="name" caption="__name" type="text" />
-			<property name="caption" caption="__caption" type="text" />
-		</properties>
-		
-		<options>
-			<option name="forumView" caption="__forum_view" initial="true" multipleAllowed="false" />
-		</options>
-	</item>
-	
-	<item name="forumView" definitionType="5" caption="__forum_view" canBeDeleted="false" multipleAllowed="false" >		
-		<properties>
-			<property name="type" caption="__type" type="selectbox" default="folder">
-				<option name="folder" caption="__folder_folder" />
-				<option name="file" caption="__folder_file" />
-				<option name="event" caption="__folder_event" />
-				<help>__help_forum_view_type</help>
-			</property>
-		</properties>
-		<options>
-			<option_select path="//item[@category='forumView']" />
-			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 	</item>
 	
@@ -143,7 +95,8 @@
 	<item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData">
 		<properties>
 			<property name="name" caption="__data_item_name" type="selectbox">
-			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" optionCaption="__data_items_from_the_entry_form" />
+			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" 
+					optionCaption="__data_items_from_the_entry_form" />
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
@@ -218,6 +171,100 @@
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderTitle" />
 	</item>
 	
+	<item name="event" caption="__event" type="data" category="entryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="hasDuration" caption="__has_a_duration" type="boolean" default="true"/>
+			<property name="hasRecurrence" caption="__can_recur" type="boolean" default="true"/>
+			<property name="required" caption="__required" type="boolean" default="false" >
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderEvent" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderEvent" />
+	</item>
+	
+	<item name="description" caption="__description" type="data" multipleAllowed="false" category="entryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  value="description" readonly="true" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__description"/>
+			<property name="height" caption="__height_px" type="text"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
+		<notify summary="true" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderDescription" />
+	</item>
+	
+	<item name="form" caption="__form" category="entryLayout">
+		<properties>
+			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName"/>
+		</properties>
+		<options>
+			<option_select definitionType="1" path="//item[@category='entryData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryFormButtons" caption="__form_buttons" category="entryLayout">
+		<properties>
+		    <property name="alignment" caption="__alignment" type="selectbox" default="left">
+				<option name="left" caption="__left" />
+				<option name="right" caption="__right" />
+			    <help>__help_form_button_alignment</help>
+		    </property>
+		</properties>
+		<options>
+			<option name="okButton" caption="__ok_button" initial="true" />
+			<option name="cancelButton" caption="__cancel_button" initial="true" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_buttons_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/form_buttons_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="okButton" caption="__ok_button" category="entryLayout">
+		<properties>
+			<property name="caption" caption="__button_text" type="text" value="__ok"/>
+			<property name="onClick" caption="__onclick_routine" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/ok_button_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="cancelButton" caption="__cancel_button" category="entryLayout">
+		<properties>
+			<property name="caption" caption="__button_text" type="text" value="__cancel"/>
+			<property name="onClick" caption="__onclick_routine" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/cancel_button_form.jsp" />
+		</jsps>
+	</item>
+		
+<!-- Common entry form items -->
 	<item name="text" caption="__text" type="data" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
@@ -280,45 +327,6 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderDescription" />
-	</item>
-	
-	<item name="event" caption="__event" type="data" category="entryData">
-		<properties>
-			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
-				<help>__help_data_name</help>
-			</property>
-			<property name="caption" caption="__caption" type="text"/>
-			<property name="hasDuration" caption="__has_a_duration" type="boolean" default="true"/>
-			<property name="hasRecurrence" caption="__can_recur" type="boolean" default="true"/>
-			<property name="required" caption="__required" type="boolean" default="false" >
-				<help>__help_required</help>
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderEvent" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderEvent" />
-	</item>
-	
-	<item name="description" caption="__description" type="data" multipleAllowed="false" category="entryData">
-		<properties>
-			<property name="name" caption="__data_name" type="text" 
-			  value="description" readonly="true" unique="//item[@type='data']">
-				<help>__help_data_name</help>
-			</property>
-			<property name="caption" caption="__caption" type="text" value="__description"/>
-			<property name="height" caption="__height_px" type="text"/>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
-		<notify summary="true" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
 	<item name="selectbox" caption="__selectbox" type="data" category="commonEntryData">
@@ -514,7 +522,7 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderDate" />
 	</item>
 	
-	<item name="user_list" caption="__user_list" type="data" category="entryData">
+	<item name="user_list" caption="__user_list" type="data" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
@@ -535,6 +543,7 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderUserList" />
 	</item>
 		
+<!-- General layout items -->
 	<item name="box" caption="__box" category="generalLayout">
 		<properties>
 			<property name="style" caption="__box_style" type="selectbox" default="rounded">
@@ -664,60 +673,6 @@
 		</jsps>
 	</item>
 		
-	<item name="form" caption="__form" category="entryLayout">
-		<properties>
-			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName"/>
-		</properties>
-		<options>
-			<option_select definitionType="1" path="//item[@category='entryData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
-			<option_select path="//item[@category='commonEntryData']" />
-			<option_select path="//item[@category='entryLayout']" />
-			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
-		</options>
-		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
-		</jsps>
-	</item>
-		
-	<item name="entryFormButtons" caption="__form_buttons" category="entryLayout">
-		<properties>
-		    <property name="alignment" caption="__alignment" type="selectbox" default="left">
-				<option name="left" caption="__left" />
-				<option name="right" caption="__right" />
-			    <help>__help_form_button_alignment</help>
-		    </property>
-		</properties>
-		<options>
-			<option name="okButton" caption="__ok_button" initial="true" />
-			<option name="cancelButton" caption="__cancel_button" initial="true" />
-		</options>
-		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_buttons_form.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/form_buttons_form.jsp" />
-		</jsps>
-	</item>
-		
-	<item name="okButton" caption="__ok_button" category="entryLayout">
-		<properties>
-			<property name="caption" caption="__button_text" type="text" value="__ok"/>
-			<property name="onClick" caption="__onclick_routine" type="text"/>
-		</properties>
-		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/ok_button_form.jsp" />
-		</jsps>
-	</item>
-		
-	<item name="cancelButton" caption="__cancel_button" category="entryLayout">
-		<properties>
-			<property name="caption" caption="__button_text" type="text" value="__cancel"/>
-			<property name="onClick" caption="__onclick_routine" type="text"/>
-		</properties>
-		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/cancel_button_form.jsp" />
-		</jsps>
-	</item>
-		
 	<item name="customJsp" caption="__custom_jsp" category="generalLayout">
 		<properties>
 			<property name="formJsp" caption="__form_jsp_name" type="text"/>
@@ -732,6 +687,33 @@
 		</options>
 	</item>
 		
+<!-- Folder items -->
+	<item name="forumViewType" definitionType="5" caption="__forum_view_definition">		
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+		</properties>
+		
+		<options>
+			<option name="forumView" caption="__forum_view" initial="true" multipleAllowed="false" />
+		</options>
+	</item>
+	
+	<item name="forumView" definitionType="5" caption="__forum_view" canBeDeleted="false" multipleAllowed="false" >		
+		<properties>
+			<property name="type" caption="__type" type="selectbox" default="folder">
+				<option name="folder" caption="__folder_folder" />
+				<option name="file" caption="__folder_file" />
+				<option name="event" caption="__folder_event" />
+				<help>__help_forum_view_type</help>
+			</property>
+		</properties>
+		<options>
+			<option_select path="//item[@category='forumView']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+	</item>
+	
 	<item name="toolBar" caption="__tool_bar" category="forumView">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/toolbar.jsp" />
@@ -776,6 +758,30 @@
 	</item>
 		
 
+<!-- Workflow items -->
+	<item name="workflowProcessType" definitionType="2" caption="__workflow_process">
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+			<property name="initialState" caption="__initialState" type="itemSelect" path="//item[@name='state']" />
+			<property name="endState" caption="__endState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+		
+		<options>
+			<option name="workflowProcess" initial="true" />
+		</options>
+	</item>
+	
+	<item name="workflowProcess" caption="__workflow_process" canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+
+		<options>
+			<option name="state" caption="__state" multipleAllowed="true" />
+		</options>
+	</item>
+	
 	<item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true">
 		<properties>
 			<property name="name" caption="__data_name" type="text" unique="//item[@name='state']">
@@ -792,7 +798,7 @@
 			<option name="variable" />
 			<option name="startParallelThread" />
 			<option name="waitForParallelThread" />
-			<option name="endParallelThread" />
+			<option name="stopParallelThread" />
 		</options>
 	</item>
 	
@@ -937,6 +943,7 @@
 		<properties>
 			<property name="name" caption="__parallelStateName" type="text" path="//item[@name='state']" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" />
 			<property name="startState" caption="__startState" type="itemSelect" path="//item[@name='state']" />
+			<property name="endState" caption="__endState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 	</item>
 	
@@ -948,14 +955,17 @@
 		</properties>
 	</item>
 	
-	<item name="endParallelThread" caption="__endParallelThread" >
+	<item name="stopParallelThread" caption="__stopParallelThread" >
 		<properties>
 			<property name="name" caption="__parallelStateName" type="selectbox">
-			    <option_entry_data select_type="parallelThread" path="//item[@name='startParallelThread']" optionCaption="__parallelStateName" />
+			    <option_entry_data select_type="parallelThread" 
+					path="//item[@name='startParallelThread']" 
+					optionCaption="__parallelStateName" />
 			</property>
 		</properties>
 	</item>
 	
+<!-- Profile list items -->
 	<item name="profileViewType" definitionType="6" caption="__profile_view_definition">		
 		<properties>
 			<property name="name" caption="__name" type="text" />
@@ -984,6 +994,7 @@
 		</jsps>
 	</item>
 
+<!-- Profile entry items -->
 	<item name="profileEntryViewType" definitionType="7" caption="__profile_entry_view_definition">		
 		<properties>
 			<property name="name" caption="__name" type="text" />
@@ -1105,7 +1116,8 @@
 		<properties>
 			<property name="name" caption="__profile_data_item_name" type="selectbox">
 			    <option_entry_data select_type="data" 
-					path="//item[@name='profileEntryForm']/.//item" optionCaption="__profile_data_items_from_the_profile_form" />
+					path="//item[@name='profileEntryForm']/.//item" 
+					optionCaption="__profile_data_items_from_the_profile_form" />
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>

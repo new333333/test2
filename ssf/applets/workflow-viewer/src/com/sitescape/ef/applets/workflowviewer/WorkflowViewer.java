@@ -118,6 +118,9 @@ public class WorkflowViewer extends JApplet implements ActionListener {
         JPanel jp = new JPanel();
         jp.setLayout(new BorderLayout());
         
+        //Add the "save layout" button
+        addTopControls( jp );
+        
         vv.setBackground(Color.white);
         GraphZoomScrollPane scrollPane = new GraphZoomScrollPane(vv);
         jp.add(scrollPane);
@@ -125,8 +128,6 @@ public class WorkflowViewer extends JApplet implements ActionListener {
         vv.setGraphMouse(gm);
         //Initialize the mouse to picking mode
         gm.setMode(Mode.PICKING);
-
-        addBottomControls( jp );
 
         //Set the starting x and y of the verticies
         double dX = 100;
@@ -156,10 +157,10 @@ public class WorkflowViewer extends JApplet implements ActionListener {
     /**
      * @param jp    panel to which controls will be added
      */
-    protected void addBottomControls(final JPanel jp) 
+    protected void addTopControls(final JPanel jp) 
     {
         final JPanel control_panel = new JPanel();
-        jp.add(control_panel, BorderLayout.SOUTH);
+        jp.add(control_panel, BorderLayout.NORTH);
         control_panel.setLayout(new BorderLayout());
         final Box vertex_panel = Box.createVerticalBox();
         vertex_panel.setBorder(BorderFactory.createTitledBorder("Vertices"));
@@ -312,7 +313,7 @@ public class WorkflowViewer extends JApplet implements ActionListener {
     }
 
     /**
-     * create edges for this demo graph
+     * create edges for this graph
      * @param v an array of Vertices to connect
      */
     private void createEdges(Vertex[] v) {
@@ -329,7 +330,7 @@ public class WorkflowViewer extends JApplet implements ActionListener {
             	String name = stateName.attributeValue("value", "");
             	//Get the list of transitions out of this state
             	String transitionsPath = "item[@name='transitions']/item[@type='transition']/properties/property[@name='toState']" + 
-            		" | item[@name='startParallelExecution']/properties/property[@name='startState']";
+            		" | item[@name='startParallelThread']/properties/property[@name='startState']";
             	Iterator itTransitions = state.selectNodes(transitionsPath).iterator();
             	while (itTransitions.hasNext()) {
             		Element transition = (Element) itTransitions.next();

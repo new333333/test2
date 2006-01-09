@@ -95,6 +95,7 @@
     <xsd:attribute name="characterMask" type="xsd:string"/>
     <xsd:attribute name="path" type="xsd:string"/>
     <xsd:attribute name="unique" type="xsd:string"/>
+    <xsd:attribute name="multipleAllowed" type="xsd:boolean"/>
   </xsd:complexType>
 
   <xsd:complexType name="optionsType">

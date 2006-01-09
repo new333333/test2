@@ -656,8 +656,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					item.addAttribute("name", (String)nextOption.attributeValue("name"));
 					Element itemElement = (Element) configRoot.selectSingleNode("item[@name='"+nextOption.attributeValue("name")+"']");
 					if (itemElement == null) {continue;}
+					//Copy all of the attributes that should be in the definition
 					String caption = itemElement.attributeValue("caption", nextOption.attributeValue("name"));
 					item.addAttribute("caption", caption);
+					String itemType = itemElement.attributeValue("type", "");
+					if (!itemType.equals("")) item.addAttribute("type", itemType);
 					item.addAttribute("id", Integer.toString(id));
 					
 					//Get the properties to be copied

@@ -42,36 +42,28 @@ public class RecordEvent extends AbstractActionHandler {
 		String entryType = (String)ctx.getVariable(WorkflowUtils.ENTRY_TYPE);
 		Entry entry = loadEntry(entryType, entryId);
 		WorkflowState ws = null;
+		//Get the WorkflowState object associated with this token
 		ws = (WorkflowState)getCoreDao().load(WorkflowState.class, id);
 		if (ws != null) {
 			ws.setState(state);
-		} else {
-			//doesn't exist, add a new one
-			ws = (WorkflowState) new WorkflowState();
-			ws.setTokenId(id);
-			ws.setState(state);
-			ws.setDefinition(entry.getEntryDef());
-			//need to save explicitly - actions called by the node.enter may look it up 
-			getCoreDao().save(ws);
-			entry.addWorkflowState(ws);
-		}
-		//See if any parallel executions should be started
-		if (ws != null) {
+			
+			//See if any parallel executions should be started
 			List parallelThreadStarts = WorkflowUtils.getParallelThreadStarts(ws.getDefinition(), state);
 			for (int i = 0; i < parallelThreadStarts.size(); i++) {
 				Map pT = (Map) parallelThreadStarts.get(i);
 				String threadName = (String) pT.get(ObjectKeys.WORKFLOW_PARALLEL_THREAD_NAME);
 				String startState = (String) pT.get(ObjectKeys.WORKFLOW_PARALLEL_THREAD_START_STATE);
-				startParallelWorkflowThread(entry, threadName, startState, token);
+				startParallelWorkflowThread(entry, threadName, startState, ws, token);
 			}
+			//Re-index the entry after changing its state
+			//TODO add code to re-index the entry
+			  
+			logger.info("Workflow event (" + eventType + ") recorded: " + state);
 		}
-		//Re-index the entry after changing its state
-		//TODO add code to re-index the entry
-		  
-		logger.info("Workflow event (" + eventType + ") recorded: " + state);
 	}
 	  
-	protected void startParallelWorkflowThread(Entry entry, String threadName, String startState, Token currentToken) {
+	protected void startParallelWorkflowThread(Entry entry, String threadName, String startState, 
+			WorkflowState currentWs, Token currentToken) {
 		//See if there is a thread by this name already running
 		Iterator itWorkflowStates = entry.getWorkflowStates().iterator();
 		WorkflowState ws = null;
@@ -100,7 +92,8 @@ public class RecordEvent extends AbstractActionHandler {
 		    ws.setThreadName(threadName);
 		    ws.setTokenId(new Long(subToken.getId()));
 			ws.setState(startState);
-			ws.setDefinition(entry.getEntryDef());
+			//Use the same workflow definition as the current workflow state
+			ws.setDefinition(currentWs.getDefinition());
 			//need to save explicitly - actions called by the node.enter may look it up 
 			getCoreDao().save(ws);
 			entry.addWorkflowState(ws);
