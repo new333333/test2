@@ -241,7 +241,7 @@ public class User extends Principal {
     }
 
     /**
-     * @hibernate.property length="100" not-null="true"
+     * @hibernate.property length="100"
      */
 	public String getZonName() {
 		return zonName;
