@@ -211,6 +211,15 @@ function AjaxRequest(url) {
         elementValues = toQueryString(elements);
         accumulateQueryString(elementValues);
     }
+    
+    /**
+        Add a key/value pair to the query string to be
+        sent to the server as part of the Ajax request.
+    */
+    this.addKeyValue = function(key, value) {
+    	var tempString = key + "=" + encodeURIComponent(value)
+    	accumulateQueryString(tempString);
+    }
 
     /**
         Send the Ajax request.

@@ -472,7 +472,7 @@ function ss_saveSlidingTableCoords() {
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
-    	action="__view_unseen" 
+    	action="__ajax_request" 
     	actionUrl="true" >
 		<ssf:param name="operation" value="save_column_positions" />
 		<ssf:param name="binderId" value="<%= slidingTableFolderId %>" />

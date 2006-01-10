@@ -60,7 +60,7 @@ public class WebKeys {
 	public static final String ACTION_MODIFY_ENTRY = "modify_entry";
 	public static final String ACTION_VIEW_LISTING = "view_listing";
 	public static final String ACTION_VIEW_ENTRY = "view_entry";
-	public static final String FORUM_ACTION_UNSEEN = "__view_unseen";
+	public static final String FORUM_AJAX_REQUEST = "__ajax_request";
 	public static final String LDAP_ACTION_CONFIGURE="configure_ldap";
 	public static final String NOTIFY_ACTION_CONFIGURE="configure_notify";
 	public static final String POSTING_ACTION_CONFIGURE="configure_posting";

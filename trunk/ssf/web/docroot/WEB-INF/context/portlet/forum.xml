@@ -11,7 +11,7 @@
 	<bean id="forumModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ModifyEntryController" />
 	<bean id="forumViewEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewEntryController" />
 	<bean id="forumDefinitionController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.definitionBuilder.ViewController" />
-	<bean id="forumListUnseenController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ListUnseenController" />
+	<bean id="forumAjaxController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AjaxController" />
 
  	<!-- Handlers -->
 
@@ -28,7 +28,7 @@
 						<entry key="delete_entry"><ref bean="forumModifyEntryController"/></entry>
 						<entry key="view_entry"><ref bean="forumViewEntryController"/></entry>
 						<entry key="view_listing"><ref bean="forumViewController"/></entry>
-						<entry key="__view_unseen"><ref bean="forumListUnseenController"/></entry>
+						<entry key="__ajax_request"><ref bean="forumAjaxController"/></entry>
 					</map>
 				</entry>
 				<entry key="edit">

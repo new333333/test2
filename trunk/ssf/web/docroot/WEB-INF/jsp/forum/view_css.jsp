@@ -180,6 +180,9 @@ ss_box_title {
 </style>
 <script language="JavaScript" src="<html:rootPath/>js/forum/forum_common.js"></script>
 <script language="JavaScript" src="<html:rootPath/>js/common/nifty_corners.js"></script>
+<script language="JavaScript" src="<html:rootPath/>js/common/ss_drag.js"></script>
+<script language="JavaScript" src="<html:rootPath/>js/common/ss_dragdrop.js"></script>
+<script language="JavaScript" src="<html:rootPath/>js/common/ss_coordinates.js"></script>
 <c:if test="0">
 <script language="JavaScript" src="<html:rootPath/>js/forum/forum_dragsort.js"></script>
 </c:if>
