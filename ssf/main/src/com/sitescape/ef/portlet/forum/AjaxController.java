@@ -22,7 +22,7 @@ import com.sitescape.ef.domain.User;
  * @author Peter Hurley
  *
  */
-public class ListUnseenController  extends SAbstractForumController {
+public class AjaxController  extends SAbstractForumController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();

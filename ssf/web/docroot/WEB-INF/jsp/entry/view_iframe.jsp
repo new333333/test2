@@ -179,7 +179,7 @@ function ss_saveEntryWidth(entryWidth) {
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
-    	action="__view_unseen" 
+    	action="__ajax_request" 
     	actionUrl="true" >
 		<ssf:param name="operation" value="save_entry_width" />
     	</ssf:url>"
