@@ -395,7 +395,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <tr onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 <td><div style="position:absolute; left:-9; top:0;"><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
   onMousedown="ss_slidingTableStartDragCol(this, 'col<%= String.valueOf(iCol + 1) %>');"
-  ><span style="cursor:w-resize; color:darkgreen; font-size:small; text-decoration:none;
+  ><span style="cursor:w-resize; cursor:col-resize; color:darkgreen; font-size:small; text-decoration:none;
   background-position:center left;
   background-image:url(<html:imagesPath/>pics/sym_s_arrows_eastwest.gif);
   background-repeat:no-repeat;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></a></div>&nbsp;</td>

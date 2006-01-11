@@ -10,7 +10,15 @@ var ss_DragDrop = {
 	firstContainer : null,
 	lastContainer : null,
     dragStartParent : null,
+    dragStartCursor : null,
     	
+	initializeListContainer : function() {
+		this.firstContainer = null;
+		this.lastContainer = null;
+		this.dragStartParent = null;
+	    this.dragStartCursor = null
+	},
+	
 	makeListContainer : function(list) {
 		// each container becomes a linked list node
 		if (this.firstContainer == null) {
@@ -64,7 +72,8 @@ var ss_DragDrop = {
 	
         // remember the original parent
         ss_DragDrop.dragStartParent = this.parentNode;
-        // document.getElementById('debugLog').innerHTML = 'Remember parent: ' + ss_DragDrop.dragStartParent.id;
+        ss_DragDrop.dragStartCursor = this.style.cursor;
+        //document.getElementById('debugLog').innerHTML = 'Remember parent: ' + ss_DragDrop.dragStartParent.id;
         	
 		// item starts out over current parent
 		this.parentNode.onDragOver();
@@ -81,6 +90,8 @@ var ss_DragDrop = {
 					// we're inside this one
 					container.onDragOver();
 					this.isOutside = false;
+					//document.getElementById('debugLog').innerHTML = 'Over '+container.id;
+					this.style.cursor = "move";
 					
 					// since isOutside was true, the current parent is a
 					// temporary clone of some previous container node and
@@ -103,6 +114,10 @@ var ss_DragDrop = {
 			
 			this.parentNode.onDragOut();
 			this.isOutside = true;
+			//document.getElementById('debugLog').innerHTML = 'Outside all containters';
+			//Set the cursor to indicate "no drop". 
+			this.style.cursor = "text";		//Do it first to something guaranteed to be understood by all browsers
+			this.style.cursor = "not-allowed";
 			
 			// check if we're inside a new container's bounds
 			var container = ss_DragDrop.firstContainer;
@@ -112,6 +127,8 @@ var ss_DragDrop = {
 					// we're inside this one
 					container.onDragOver();
 					this.isOutside = false;
+					//document.getElementById('debugLog').innerHTML = 'Over '+container.id;
+					this.style.cursor = "move";
 					this.parentNode.removeChild( this );
 					container.appendChild( this );
 					break;
@@ -133,6 +150,7 @@ var ss_DragDrop = {
 		// everything the original dragsort script did to swap us into the
 		// correct position
 		
+		this.style.cursor = "move";
 		var parent = this.parentNode;
 				
 		var item = this;
@@ -163,13 +181,26 @@ var ss_DragDrop = {
 		// it's time to remove ourselves from the document
 		if (this.isOutside) {
 			var tempParent = this.parentNode;
-            // document.getElementById('debugLog').innerHTML = 'Restoring to: ' + ss_DragDrop.dragStartParent.id;
+            //document.getElementById('debugLog').innerHTML = 'Restoring to: ' + ss_DragDrop.dragStartParent.id;
 			this.parentNode.removeChild( this );
             ss_DragDrop.dragStartParent.appendChild(this);
             this.isOutside = false;
 			tempParent.parentNode.removeChild( tempParent );
 			// return;
+		} else {
+			// update all container bounds, since they may have changed
+			// on a previous drag
+			//
+			// could be more smart about when to do this
+			var container = ss_DragDrop.firstContainer;
+			while (container != null) {
+				container.northwest = ss_Coordinates.northwestOffset( container, true );
+				container.southeast = ss_Coordinates.southeastOffset( container, true );
+				container = container.nextContainer;
+			}
 		}
+		//Restore the cursor
+		this.style.cursor = ss_DragDrop.dragStartCursor;
 		this.parentNode.onDragOut();
 		this.style["top"] = "0px";
 		this.style["left"] = "0px";

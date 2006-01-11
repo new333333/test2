@@ -84,6 +84,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_SAVE_COLUMN_POSITIONS = "save_column_positions";
 	public static final String FORUM_OPERATION_SAVE_ENTRY_WIDTH = "save_entry_width";
 	public static final String FORUM_OPERATION_UNSEEN_LIST = "unseen_list";
+	public static final String FORUM_OPERATION_USER_LIST_SEARCH = "user_list_search";
 	public static final String OPERATION_POSTING_ALIASES="alias";
 	public static final String OPERATION_ADD_POSTING_ALIASES="addAlias";
 	public static final String OPERATION_MODIFY_POSTING_ALIASES="modifyAlias";
@@ -127,8 +128,8 @@ public class WebKeys {
     public static final String HISTORY_MAP="ssHistoryMap";
     public static final String LDAP_CONFIG="ssLdapConfig";
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
-    public static final String LIST_UNSEEN_STATUS="ss_unseenStatus";
-    public static final String LIST_UNSEEN_STATUS_NOT_LOGGED_IN="ss_unseenNotLoggedIn";
+    public static final String AJAX_STATUS="ss_ajaxStatus";
+    public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
     public static final String NOTIFICATION="ssNotification";
     public static final String POSTINGS="ssPostings";
     public static final String PUBLIC_DEFINITIONS="ssPublicDefinitions";

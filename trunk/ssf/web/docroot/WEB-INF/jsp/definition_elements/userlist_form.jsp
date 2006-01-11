@@ -16,73 +16,105 @@
 		caption = "<b>"+caption+"</b><br>";
 	}
 %>
+<c:if test="${empty ss_user_list_support_stuff_loaded}">
 <script language="JavaScript" src="<html:rootPath/>js/common/taconite-client.js"></script>
 <script language="JavaScript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
-<style type="text/css">
-ul.ss_dragable {
-    position: relative;
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
-    width: 200px;
-}
-
-ul.ss_dragable li {
-    position: relative;
-    cursor: move;
-    margin: 0px;
-    text-align: left;
-}
-</style>
-<table>
-  <tr>
-    <td valign="top">
-		<div ><%= caption %>
-		<ul id="added_<%= elementName %>" class="ss_dragable">
-			<li id="user1" class="sortList">user 1</li>
-			<li id="user2"  class="sortList">user 2</li>
-			<li id="user3"  class="sortList">user 3</li>
-		</ul>
-		</div>
-	</td>
-	<td valign="top">
-	    <input type="text" size="40" name="ss_userList_searchText" onKeyUp="ss_userListSearch(this.value, 'available_<%= elementName %>');">
-	    <br>
-	    <input type="radio" name="ss_userList_searchType" value="firstName">
-	    First name,
-	    <input type="radio" name="ss_userList_searchType" value="lastName" checked>
-	    Last name,
-	    <input type="radio" name="ss_userList_searchType" value="loginName">
-	    Login name
-	  <br>
-	  <ul id="available_<%= elementName %>" class="ss_dragable">
-			<li id="avuser1" class="sortList">available user 1</li>
-			<li id="avuser2"  class="sortList">available user 2</li>
-			<li id="avuser3"  class="sortList">available user 3</li>
-	  </ul>
-	</td>
-  </tr>
-</table>
 <script language="JavaScript" type="text/javascript">
-function ss_userListSearch(text, listDivId) {
+var ss_userList_searchType = "lastName"
+function ss_userListSetSearchType(type) {
+	ss_userList_searchType = type;
+}
+function ss_userListSearch(text, elementName) {
  	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
     	action="__ajax_request" 
-    	actionUrl="true" >
+    	actionUrl="false" >
 		<ssf:param name="operation" value="user_list_search" />
     	</ssf:url>"
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addKeyValue("searchText", text)
-	ajaxRequest.addKeyValue("listDivId", listDivId)
-	ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.addKeyValue("searchText", text + "*")
+	ajaxRequest.addKeyValue("listDivId", "available_"+elementName)
+	ajaxRequest.addKeyValue("maxEntries", "10")
+	ajaxRequest.addKeyValue("searchType", ss_userList_searchType)
+	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_preUserListRequest);
-	//ajaxRequest.setPostRequest(ss_postUserListRequest);
+	ajaxRequest.setPostRequest(ss_postUserListRequest);
+	ajaxRequest.setData("elementName", elementName)
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
 }
-
+function ss_postUserListRequest(obj) {
+	//See if there was an error
+	if (self.document.getElementById("ss_search_status_message").innerHTML == "error") {
+		alert("<ssf:nlt tag="forum.unseenCounts.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+	} else {
+		//Re-enable the dragable lists
+		ss_DragDrop.initializeListContainer();
+		ss_DragDrop.makeListContainer( document.getElementById('added_'+obj.getData('elementName')));
+		ss_DragDrop.makeListContainer( document.getElementById('available_'+obj.getData('elementName')));
+	}
+}
+</script>
+<div id="ss_search_status_message"></div>
+</c:if>
+<c:set var="ss_user_list_support_stuff_loaded" value="1" scope="request"/>
+<table>
+  <tr>
+    <td valign="top">
+		<div><%= caption %>
+		  <div style="border:solid #cecece 1px;">
+		    <ul id="added_<%= elementName %>" class="ss_dragable ss_userlist">
+		    </ul>
+		  </div>
+		</div>
+	</td>
+	<td valign="middle">
+	  <div style="margin:0px; padding:0px;"><img 
+	    src="<html:imagesPath />pics/sym_s_arrow_left.gif" 
+	    alt="<ssf:nlt tag="userlist.dragLeft" text="Drag to the left to add a name."/>"
+	    ></div>
+	  <div style="margin:0px; padding:0px;"><img 
+	    src="<html:imagesPath />pics/sym_s_arrow_right.gif" 
+	    alt="<ssf:nlt tag="userlist.dragRight" text="Drag to the right to delete a name."/>"
+	    ></div>
+	</td>
+	<td valign="top">
+	  <table cellspacing="0" cellpadding="0">
+	  <tr>
+	    <td colspan="2" valign="top" nowrap>
+	      <b><ssf:nlt tag="userlist.findName" text="Find name"/>:</b>
+	      <input type="text" size="15" name="ss_userList_searchText" 
+	        onKeyUp="ss_userListSearch(this.value, '<%= elementName %>');">
+	    </td>
+	  </tr>
+	  <tr>
+	    <td valign="top">
+		  <div style="border:solid #cecece 1px;">
+		    <ul id="available_<%= elementName %>" class="ss_dragable ss_userlist">
+		    </ul>
+		  </div>
+	    </td>
+	    <td valign="top">
+	      <input type="radio" name="ss_userList_searchType" value="firstName"
+	        onClick="ss_userListSetSearchType(this.value);">
+	      <ssf:nlt tag="userlist.firstName" text="First name"/><br>
+	      <input type="radio" name="ss_userList_searchType" value="lastName" checked
+	        onClick="ss_userListSetSearchType(this.value);">
+	      <ssf:nlt tag="userlist.lastName" text="Last name"/><br>
+	      <input type="radio" name="ss_userList_searchType" value="loginName"
+	        onClick="ss_userListSetSearchType(this.value);">
+	      <ssf:nlt tag="userlist.loginName" text="Login name"/>
+	    </td>
+	  </tr>
+	  </table>
+	</td>
+  </tr>
+</table>
+<script language="JavaScript" type="text/javascript">
   ss_DragDrop.makeListContainer( document.getElementById('added_<%= elementName %>'));
   ss_DragDrop.makeListContainer( document.getElementById('available_<%= elementName %>'));
 </script>
 
+<div id="debugLog">
+</div>

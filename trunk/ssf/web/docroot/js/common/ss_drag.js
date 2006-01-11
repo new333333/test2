@@ -116,7 +116,8 @@ var ss_Drag = {
 
 		ss_Drag.showStatus(mouse, nwPosition, sePosition, nwOffset, seOffset);
 
-		group.onDragStart(nwPosition, sePosition, nwOffset, seOffset);
+		//group.onDragStart(nwPosition, sePosition, nwOffset, seOffset);
+		group.onDragStart(nwPosition, sePosition, mouse, mouse);
 
 		// TODO: need better constraint API
 		if (group.minX != null)
@@ -159,7 +160,7 @@ var ss_Drag = {
 		var sePosition = ss_Coordinates.southeastPosition(group);
 		var seOffset = ss_Coordinates.southeastOffset(group, true);
 
-		ss_Drag.showStatus(mouse, nwPosition, sePosition, nwOffset, seOffset);
+		//ss_Drag.showStatus(mouse, nwPosition, sePosition, nwOffset, seOffset);
 
 		if (!ss_Drag.isDragging) {
 			if (group.threshold > 0) {
@@ -196,7 +197,8 @@ var ss_Drag = {
 		
 		// changed to be recursive/use absolute offset for corrections
 		var offsetBefore = ss_Coordinates.northwestOffset(group, true);
-		group.onDrag(nwPosition, sePosition, nwOffset, seOffset);
+		//group.onDrag(nwPosition, sePosition, nwOffset, seOffset);
+		group.onDrag(nwPosition, sePosition, mouse, mouse);
 		var offsetAfter = ss_Coordinates.northwestOffset(group, true);
 
 		if (!offsetBefore.equals(offsetAfter)) {
