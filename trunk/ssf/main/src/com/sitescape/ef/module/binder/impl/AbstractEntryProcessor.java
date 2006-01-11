@@ -356,6 +356,10 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 
     //***********************************************************************************************************
     public Map getBinderEntries(Binder binder, String[] entryTypes, int maxChildEntries) {
+    	org.dom4j.Document qTree = null;
+    	return getBinderEntries(binder, entryTypes, maxChildEntries, qTree);
+    }
+    public Map getBinderEntries(Binder binder, String[] entryTypes, int maxChildEntries, org.dom4j.Document qTree) {
         int count=0;
         Field fld;
         
@@ -364,7 +368,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         //validate entry count
         maxChildEntries = getBinderEntries_maxEntries(maxChildEntries); 
         //do actual search index query
-        Hits hits = getBinderEntries_doSearch(binder, entryTypes, maxChildEntries);
+        Hits hits = getBinderEntries_doSearch(binder, entryTypes, maxChildEntries, qTree);
         //iterate through results
         ArrayList childEntries = new ArrayList(hits.length());
         try {
@@ -421,21 +425,21 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	return getAccessControlManager().testAcl(binder, (AclControlled) obj, AccessType.READ);
     }
     
-    protected Hits getBinderEntries_doSearch(Binder binder, String [] entryTypes, int maxResults) {
+    protected Hits getBinderEntries_doSearch(Binder binder, String [] entryTypes, int maxResults, org.dom4j.Document qTree) {
        	Hits hits = null;
        	// Build the query
-    	org.dom4j.Document qTree = getBinderEntries_getSearchDocument(binder, entryTypes);
+       	org.dom4j.Document queryTree = getBinderEntries_getSearchDocument(binder, entryTypes, qTree);
     	//Create the Lucene query
     	QueryBuilder qb = new QueryBuilder();
-    	SearchObject so = qb.buildQuery(qTree);
+    	SearchObject so = qb.buildQuery(queryTree);
     	
     	//Set the sort order
     	SortField[] fields = getBinderEntries_getSortFields(binder); 
     	so.setSortBy(fields);
     	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
-    	System.out.println("Query is: " + qTree.asXML());
-    	System.out.println("Query is: " + soQuery.toString());
+    	logger.info("Query is: " + queryTree.asXML());
+    	logger.info("Query is: " + soQuery.toString());
     	
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         
@@ -449,18 +453,26 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         return hits;
      
     }
-    protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, String [] entryTypes) {
-    	org.dom4j.Document qTree = DocumentHelper.createDocument();
-    	Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-    	Element boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
+    protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, 
+    		String [] entryTypes, org.dom4j.Document qTree) {
+    	if (qTree == null) {
+    		qTree = DocumentHelper.createDocument();
+    		Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+        	rootElement.addElement(QueryBuilder.AND_ELEMENT);
+    	}
+    	Element rootElement = qTree.getRootElement();
+    	if (rootElement == null) return qTree;
+    	Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
+    	if (boolElement == null) return qTree;
     	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
-    	
-    	
+     	
     	//Look only for binderId=binder
-    	Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.BINDER_ID_FIELD);
-    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    	child.setText(binder.getId().toString());
+    	if (binder != null) {
+    		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.BINDER_ID_FIELD);
+        	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+        	child.setText(binder.getId().toString());
+    	}
     	return qTree;
     }
    	protected SortField[] getBinderEntries_getSortFields(Binder binder) {

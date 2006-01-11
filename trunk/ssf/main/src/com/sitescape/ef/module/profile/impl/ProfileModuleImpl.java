@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collection;
 
+import org.dom4j.Document;
+
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
@@ -320,10 +322,16 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	return getUsers(DEFAULT_MAX_ENTRIES);
     }
     public Map getUsers(int maxEntries) {
+    	Document qTree = null;
+        return getUsers(maxEntries, qTree);
+        
+   }
+ 
+    public Map getUsers(int maxEntries, Document qTree) {
         ProfileBinder binder = getProfileBinder();
         ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
                	binder, ProfileCoreProcessor.PROCESSOR_KEY);
-        return processor.getBinderEntries(binder, userDocType, maxEntries);
+        return processor.getBinderEntries(binder, userDocType, maxEntries, qTree);
         
    }
  

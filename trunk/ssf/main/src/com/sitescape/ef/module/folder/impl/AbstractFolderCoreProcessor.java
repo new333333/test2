@@ -68,10 +68,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	FilterControls filter = new FilterControls("parentBinder", binder);
         return (SFQuery)getFolderDao().queryEntries(filter);
    	}
-    protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, String [] entryTypes) {
+    protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, String [] entryTypes, org.dom4j.Document qTree) {
     	  
-    	org.dom4j.Document qTree = DocumentHelper.createDocument();
-    	Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+    	if (qTree == null) {
+    		qTree = DocumentHelper.createDocument();
+    	   	qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+    	}
+    	Element rootElement = qTree.getRootElement();
+    	if (rootElement == null) return qTree;
     	Element boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
     	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
  
