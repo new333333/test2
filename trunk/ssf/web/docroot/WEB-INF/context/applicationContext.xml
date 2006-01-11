@@ -511,7 +511,7 @@
 				<property name="transactionAttributes">
 					<props>
 						<prop key="removeAttachment">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-						<prop key="writeFilePart2">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+						<prop key="writeFile">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 						<prop key="setCheckout">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 					</props>
 				</property>

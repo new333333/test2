@@ -29,7 +29,7 @@ public class FileModuleMetadata {
 		this.coreDao = coreDao;
 	}
 
-    public void writeFilePart2(Binder binder, Entry entry, FileUploadItem fui,
+    public void writeFile(Binder binder, Entry entry, FileUploadItem fui,
     		FileAttachment fAtt, boolean isNew) {	
 		if(isNew) {
     		// Since file attachment is stored into custom attribute using

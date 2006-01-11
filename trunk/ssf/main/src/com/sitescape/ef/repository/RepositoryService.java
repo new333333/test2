@@ -1,5 +1,6 @@
 package com.sitescape.ef.repository;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +12,18 @@ import com.sitescape.ef.domain.Binder;
 
 public interface RepositoryService {
 
+	/**
+	 */
+	public static final int VERSIONED_FILE 		= 0;
+	/**
+	 * The file exists and is unversioned.
+	 */
+	public static final int UNVERSIONED_FILE	= 1;
+	/**
+	 * The file does not exist.
+	 */
+	public static final int NON_EXISTING_FILE	=2;
+	
 	/**
 	 * Opens a session with the repository system. 
 	 * 
@@ -26,13 +39,39 @@ public interface RepositoryService {
 	public void closeRepositorySession(Object session) throws RepositoryServiceException;
 	
 	/**
+	 * Returns one of the following values:<br>
+	 * <code>VERSIONED_FILE</code><br>
+	 * <code>UNVERSIONED_FILE</code><br>
+	 * <code>NON_EXISTING_FILE</code><br>
+	 * 
+	 * @param session
+	 * @param binder
+	 * @param entry
+	 * @param relativeFilePath
+	 * @return
+	 * @throws RepositoryServiceException
+	 */
+	public int fileInfo(Object session, Binder binder, Entry entry,
+			String relativeFilePath) throws RepositoryServiceException;
+	
+	/**
+	 * Returns whether or not the specified file resource is versioned.
+	 * 
+	 * @param session
+	 * @param binder
+	 * @param entry
+	 * @param relativeFilePath
+	 * @return
+	 * @throws RepositoryServiceException
+	 */
+	//public boolean isVersioned(Object session, Binder binder, Entry entry,
+	//		String relativeFilePath) throws RepositoryServiceException;
+	
+	/**
 	 * Creates a new file resource in the repository system. 
 	 * <p>
 	 * The first version of the resource is created and its version name is
 	 * returned. 
-	 * <p>
-	 * If the underlying repository system does not support versioning, it
-	 * returns <code>null</code>.
 	 * 
 	 * @param session
 	 * @param binder
@@ -43,16 +82,54 @@ public interface RepositoryService {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public String create(Object session, Binder binder, Entry entry, 
+	public String createVersioned(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, MultipartFile mf) 
+		throws RepositoryServiceException;
+	
+	/**
+	 * Creates a new file resource in the repository system. 
+	 * <p>
+	 * The first version of the resource is created and its version name is
+	 * returned. 
+	 * 
+	 * @param session
+	 * @param binder
+	 * @param entry
+	 * @param relativeFilePath A pathname of the file relative to the entry. This may
+	 * simply be the name of the file. 
+	 * @param in
+	 * @return
+	 * @throws RepositoryServiceException
+	 */
+	public String createVersioned(Object session, Binder binder, Entry entry, 
+			String relativeFilePath, InputStream in) 
+		throws RepositoryServiceException;
+	
+	/**
+	 * Creates a new file resource in the repository system. The specified file
+	 * resource is not versioned. 
+	 * 
+	 * @param session
+	 * @param binder
+	 * @param entry
+	 * @param relativeFilePath A pathname of the file relative to the entry. This may
+	 * simply be the name of the file. 
+	 * @param in
+	 * @throws RepositoryServiceException
+	 */
+	public void createUnversioned(Object session, Binder binder, Entry entry, 
+			String relativeFilePath, InputStream in) 
 		throws RepositoryServiceException;
 	
 	/**
 	 * Updates the existing file resource.  
 	 * <p>
-	 * The resource is expected to have been checked out prior to invoking this 
-	 * method. The changes made to the repository through this method are made 
-	 * permanent when {@link #checkin} is executed.
+	 * If the resource is versioned, it is expected to have been checked out
+	 * prior to invoking this method. The changes made to the repository 
+	 * through this method are made permanent when {@link #checkin} is executed.
+	 * <p>
+	 * If the resource is unversioned, on the other hand, the change is 
+	 * immediate and permanent.
 	 * 
 	 * @param session
 	 * @param binder
@@ -67,7 +144,30 @@ public interface RepositoryService {
 		throws RepositoryServiceException;
 	
 	/**
-	 * Deletes the file resource and all its versions. 
+	 * Updates the existing file resource.  
+	 * <p>
+	 * If the resource is versioned, it is expected to have been checked out
+	 * prior to invoking this method. The changes made to the repository 
+	 * through this method are made permanent when {@link #checkin} is executed.
+	 * <p>
+	 * If the resource is unversioned, on the other hand, the change is 
+	 * immediate and permanent.
+	 * 
+	 * @param session
+	 * @param binder
+	 * @param entry
+	 * @param relativeFilePath A pathname of the file relative to the entry. This may
+	 * simply be the name of the file. 
+	 * @param in
+	 * @throws RepositoryServiceException
+	 */
+	public void update(Object session, Binder binder, Entry entry, 
+			String relativeFilePath, InputStream in) 
+		throws RepositoryServiceException;
+	
+	/**
+	 * Deletes the file resource. If the resource is versioned all its versions
+	 * are also deleted.  
 	 * 
 	 * @param session
 	 * @param binder
@@ -77,13 +177,14 @@ public interface RepositoryService {
 	 */
 	public void delete(Object session, Binder binder, Entry entry,
 			String relativeFilePath) throws RepositoryServiceException;
-	
+		
 	/**
 	 * Reads the content of the specified file resource from the repository 
 	 * system. 
 	 * <p>
-	 * The content being read is identical to the latest checked-in version 
-	 * of the resource.
+	 * If the resource is versioned, it reads the latest snapshot of the file,
+	 * which may be either the latest checked-in version of the file or the 
+	 * working copy in progress if the file is currently checked out. 
 	 * 
 	 * @param session
 	 * @param binder
@@ -158,7 +259,8 @@ public interface RepositoryService {
 	//		String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
-	 * Checks out the specified file resource.
+	 * Checks out the specified file resource. It is illegal to call this method
+	 * on an unversioned resource.
 	 * <p>
 	 * If the resource is already checked out (by anyone), this method has no 
 	 * effect. If the specified resource does not exist, it throws an exception.
@@ -182,7 +284,8 @@ public interface RepositoryService {
 			String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
-	 * Cancels the checkout for the specified file resource. 
+	 * Cancels the checkout for the specified file resource. It is illegal to 
+	 * call this method on an unversioned resource.
 	 * <p>
 	 * If the resource is not checked out, this method has no effect. 
 	 * 
@@ -198,13 +301,11 @@ public interface RepositoryService {
 	
 	/**
 	 * Checks in the specified file resource and returns the name of the new
-	 * version created. 
+	 * version created. It is illegal to call this method on an unversioned 
+	 * resource.
 	 * <p>
 	 * If the resource is already checked in, this method has no effect but
 	 * returns the name of the current checked-in version of the resource.  
-	 * <p>
-	 * If the underlying repository system does not support versioning, it
-	 * returns <code>null</code>.
 	 * 
 	 * @param session
 	 * @param binder
@@ -219,7 +320,7 @@ public interface RepositoryService {
 	
 	/**
 	 * Returns whether the specified file resource is currently checked out
-	 * or not.
+	 * or not. It is illegal to call this method on an unversioned resource.
 	 * 
 	 * @param
 	 * @param binder
@@ -240,8 +341,8 @@ public interface RepositoryService {
 	 * @param relativeFilePath
 	 * @return
 	 */
-	public boolean exists(Object session, Binder binder, Entry entry, 
-			String relativeFilePath) throws RepositoryServiceException;
+	//public boolean exists(Object session, Binder binder, Entry entry, 
+	//		String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
 	 * Returns the length (in byte) of the content of the specific file resource. 
@@ -270,6 +371,13 @@ public interface RepositoryService {
 	 */
 	public long getContentLength(Object session, Binder binder, Entry entry,
 			String relativeFilePath, String versionName) throws RepositoryServiceException;
+	
+	/**
+	 * Returns whether or not the repository service supports versioning.
+	 * 
+	 * @return
+	 */
+	public boolean supportVersioning();
 	
 	/**
 	 * Returns whether the repository service allows users to delete individual

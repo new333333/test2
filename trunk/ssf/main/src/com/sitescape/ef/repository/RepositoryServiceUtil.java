@@ -1,5 +1,6 @@
 package com.sitescape.ef.repository;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.sitescape.ef.ConfigurationException;
@@ -22,7 +23,22 @@ import com.sitescape.ef.util.FileUploadItem;
  */
 public class RepositoryServiceUtil {
 
-	public static String create(Binder binder, Entry entry,
+	public static int fileInfo(String repositoryServiceName,
+			Binder binder, Entry entry, String fileName)
+		throws RepositoryServiceException {
+		RepositoryService service = lookupRepositoryService(repositoryServiceName);
+
+		Object session = service.openRepositorySession();
+		try {
+			// TODO For now we ignore file path relative to the owning entry.
+			// We simply treat that the file path is identical to the file name.
+			return service.fileInfo(session, binder, entry, fileName);
+		} finally {
+			service.closeRepositorySession(session);
+		}		
+	}
+	
+	public static String createVersioned(Binder binder, Entry entry,
 			FileUploadItem fui) throws RepositoryServiceException {
 		String repositoryServiceName = fui.getRepositoryServiceName();
 
@@ -32,9 +48,24 @@ public class RepositoryServiceUtil {
 		try {
 			// TODO For now we ignore file path relative to the owning entry.
 			// We simply treat that the file path is identical to the file name.
-			return service.create(session, binder, entry, fui
+			return service.createVersioned(session, binder, entry, fui
 					.getMultipartFile().getOriginalFilename(), fui
 					.getMultipartFile());
+		} finally {
+			service.closeRepositorySession(session);
+		}
+	}
+
+	public static void createUnversioned(String repositoryServiceName,
+			Binder binder, Entry entry, String fileName, InputStream in) 
+		throws RepositoryServiceException {
+		RepositoryService service = lookupRepositoryService(repositoryServiceName);
+
+		Object session = service.openRepositorySession();
+		try {
+			// TODO For now we ignore file path relative to the owning entry.
+			// We simply treat that the file path is identical to the file name.
+			service.createUnversioned(session, binder, entry, fileName, in);
 		} finally {
 			service.closeRepositorySession(session);
 		}

@@ -131,24 +131,4 @@ public class WebHelper {
 		else
 			return ses;
 	}
-	
-    public static String getWebinfDirPath() {
-    	return SpringContextUtil.getWebappRootDirPath() + File.separator + "WEB-INF";
-    }
-    
-    public static String getWebappDirPathVisible(String subdirName) {
-    	return SpringContextUtil.getWebappRootDirPath() + File.separator + subdirName;
-    }
-    
-    public static String getWebappDirPathHidden(String subdirName) {
-    	return getWebinfDirPath() + File.separator + subdirName;
-    }
-    
-	public static String getXsltDirPath() {
-		return getWebappDirPathHidden("xslt");
-	}
-    
-	public static String getImagesDirPath() {
-		return getWebappDirPathVisible("images");
-	}
 }

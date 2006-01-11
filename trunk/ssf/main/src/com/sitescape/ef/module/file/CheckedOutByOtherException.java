@@ -2,9 +2,9 @@ package com.sitescape.ef.module.file;
 
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.exception.CheckedCodedException;
+import com.sitescape.ef.exception.UncheckedCodedException;
 
-public class CheckedOutByOtherException extends CheckedCodedException {
+public class CheckedOutByOtherException extends UncheckedCodedException {
 	
 	private static final String CheckedOutByOtherException_ErrorCode = "errorcode.checked.out.by.other";
 	 

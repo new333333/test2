@@ -1,9 +1,12 @@
 package com.sitescape.ef.repository.file;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 
@@ -62,50 +65,162 @@ public class FileRepositoryService implements RepositoryService {
 	public void closeRepositorySession(Object session) throws RepositoryServiceException {
 	}
 	
-	public String create(Object session, Binder binder, Entry entry, 
+	public String createVersioned(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
-		if(!fileDir.exists())
-			fileDir.mkdirs();
-
-		String versionName = newVersionName();
-		
-		File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
-		
         try {
+    		FileHelper.mkdirsIfNecessary(fileDir);
+
+    		String versionName = newVersionName();
+    		
+    		File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
+    		
         	mf.transferTo(versionFile);
+        	
+        	return versionName;
 		} catch (IllegalStateException e) {
 			throw new RepositoryServiceException(e);
 
 		} catch (IOException e) {
 			throw new RepositoryServiceException(e);
 		}
-	
-		return versionName;
+	}
+
+	public String createVersioned(Object session, Binder binder, Entry entry, 
+			String relativeFilePath, InputStream in) throws RepositoryServiceException {
+		File fileDir = getFileDir(binder, entry, relativeFilePath);
+		
+		try {
+			FileHelper.mkdirsIfNecessary(fileDir);
+
+			String versionName = newVersionName();
+			
+			File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
+			
+			copyData(in, versionFile);
+			
+			return versionName;
+		}
+		catch(IOException e) {
+			throw new RepositoryServiceException(e);
+		}
+	}
+
+	public void createUnversioned(Object session, Binder binder, Entry entry, 
+			String relativeFilePath, InputStream in) throws RepositoryServiceException {
+		File fileDir = getFileDir(binder, entry, relativeFilePath);
+		
+		try {
+			FileHelper.mkdirsIfNecessary(fileDir);
+			
+			File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
+			
+			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(unversionedFile));
+			
+			try {
+				FileCopyUtils.copy(in, bos);
+			} 
+			finally {
+				try {
+					bos.close();
+				} catch (IOException e) {
+					logger.warn(e); // Log and eat up.
+				}
+			}
+		}
+		catch(IOException e) {
+			throw new RepositoryServiceException(e);
+		}
 	}
 
 	public void update(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
 		
-		File tempFile = getTempFile(binder, entry, relativeFilePath);
+		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
-		if(!tempFile.exists())
-			throw new RepositoryServiceException("Cannot update [" + entry.getId() 
-					+ "," + relativeFilePath + "]: It must be checked out first");
-
-    	try {
-			mf.transferTo(tempFile);
-		} catch (IllegalStateException e) {
-			throw new RepositoryServiceException(e);
-
-		} catch (IOException e) {
-			throw new RepositoryServiceException(e);
+		try {
+			if(fileInfo == VERSIONED_FILE) {
+				File tempFile = getTempFile(binder, entry, relativeFilePath);
+				
+				if(!tempFile.exists())
+					throw new RepositoryServiceException("Cannot update file " + 
+							relativeFilePath + " for entry " + entry.getId() + 
+							": It must be checked out first"); 
+	
+				mf.transferTo(tempFile);
+			}
+			else if(fileInfo == UNVERSIONED_FILE) {
+				File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
+				
+				mf.transferTo(unversionedFile);
+			}
+			else {
+				throw new RepositoryServiceException("Cannot update file " + relativeFilePath + 
+						" for entry " + entry.getId() + ": It does not exist"); 
+			}
 		}
+		catch (IllegalStateException e) {
+			throw new RepositoryServiceException(e);
+		} 
+		catch (IOException e) {
+			throw new RepositoryServiceException(e);
+		}			
 	}
 
+	public void update(Object session, Binder binder, Entry entry, 
+			String relativeFilePath, InputStream in) throws RepositoryServiceException {
+		
+		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
+		
+		try {
+			if(fileInfo == VERSIONED_FILE) {
+				File tempFile = getTempFile(binder, entry, relativeFilePath);
+				
+				if(!tempFile.exists())
+					throw new RepositoryServiceException("Cannot update file " + 
+							relativeFilePath + " for entry " + entry.getId() + 
+							": It must be checked out first"); 
+	
+				copyData(in, tempFile);
+			}
+			else if(fileInfo == UNVERSIONED_FILE) {
+				File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
+				
+				copyData(in, unversionedFile);
+			}
+			else {
+				throw new RepositoryServiceException("Cannot update file " + relativeFilePath + 
+						" for entry " + entry.getId() + ": It does not exist"); 
+			}
+		}
+		catch (IOException e) {
+			throw new RepositoryServiceException(e);
+		}			
+	}
+	
 	public void delete(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
+		// Since this operation may involve deleting multiple files, it is 
+		// tricky to deal with error conditions precisely. For now, I'll 
+		// take simplistic approach of throwing an exception on the first
+		// I/O error. An alternative would be to stay in the method until
+		// it tries all files, accumulate all errors that may arise during
+		// the operation, and throw at the end one big exception that
+		// summarizes all the errors. 
+		
+		// Unlike other methods that take different actions based on the
+		// return value from fileInfo method, this method tries to account
+		// for all circumstances inclusive. Under some rare error situations,
+		// it is potentially possible that both unversioned and versioned
+		// files exist on disk (in which case fileInfo's return indicates
+		// that the file is unversioned, but that is rather implementation
+		// dependent and not well defined at the API level). In such case,
+		// we want delete method to be able to clean up the entire mess
+		// so that the next invocation of fileInfo returns NON_EXISTING_FILE. 
+		// At least this much is semantically clear and hence should be
+		// enforced. 
+		
 		// Delete temp file if exists
 		File tempFile = getTempFile(binder, entry, relativeFilePath);
 		
@@ -114,8 +229,8 @@ public class FileRepositoryService implements RepositoryService {
 				FileHelper.delete(tempFile);
 			}
 			catch(IOException e) {
-				logger.error("Error deleting file [" + tempFile.getAbsolutePath() + "]\n"
-						+ e.toString());
+				logger.error("Error deleting file [" + tempFile.getAbsolutePath() + "]");
+				throw new RepositoryServiceException(e);
 			}
 		}
 		
@@ -130,29 +245,82 @@ public class FileRepositoryService implements RepositoryService {
 				FileHelper.delete(versionFile);
 			}
 			catch(IOException e) {
-				logger.error("Error deleting file [" + versionFile.getAbsolutePath() + "]\n"
-						+ e.toString());				
+				logger.error("Error deleting file [" + versionFile.getAbsolutePath() + "]");			
+				throw new RepositoryServiceException(e);
 			}
 		}
 		
-		// TODO We should aggregate the IOException errors occured during this
-		// call and throws something that represents it. 
+		// Delete unversioned file if exists
+		File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
+		
+		try {
+			FileHelper.delete(unversionedFile);
+		}
+		catch(IOException e) {
+			logger.error("Error deleting file [" + unversionedFile.getAbsolutePath() + "]");
+			throw new RepositoryServiceException(e);
+		}			
 	}
 
 	public void read(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, OutputStream out) throws RepositoryServiceException {
-		File latestFile = getLatestFile(binder, entry, relativeFilePath);
+		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
-		readFile(latestFile, out);
+		if(fileInfo == VERSIONED_FILE) {
+			File latestFile = getLatestFile(binder, entry, relativeFilePath);
+			
+			readFile(latestFile, out);
+		}
+		else if(fileInfo == UNVERSIONED_FILE) {
+			File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
+			
+			readFile(unversionedFile, out);
+		}
+		else {
+			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
+					" for entry " + entry.getId() + ": It does not exist"); 
+		}			
 	}
 
 	public void readVersion(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, String versionName, OutputStream out) throws RepositoryServiceException {
-		File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
+		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
-		readFile(versionFile, out);
+		if(fileInfo == VERSIONED_FILE) {
+			File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
+			
+			readFile(versionFile, out);
+		}
+		else if(fileInfo == UNVERSIONED_FILE) {
+			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
+					" for entry " + entry.getId() + ": It is not versioned"); 
+		}
+		else {
+			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
+					" for entry " + entry.getId() + ": It does not exist"); 
+		}
 	}
 
+	public int fileInfo(Object session, Binder binder, Entry entry, 
+			String relativeFilePath) throws RepositoryServiceException {
+		File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
+		
+		if(unversionedFile.exists()) {
+			return UNVERSIONED_FILE;
+		}
+		else {
+			String[] versionFileNames = getVersionFileNames(binder, entry, relativeFilePath);
+			if(versionFileNames == null || versionFileNames.length == 0)
+				return NON_EXISTING_FILE;
+			else
+				return VERSIONED_FILE;
+		}
+	}
+
+	public boolean supportVersioning() {
+		return true;
+	}
+	
 	public DataSource getDataSource(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, FileTypeMap fileTypeMap)		
 		throws RepositoryServiceException {
@@ -172,60 +340,96 @@ public class FileRepositoryService implements RepositoryService {
 	
 	public void checkout(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
-		File tempFile = getTempFile(binder, entry, relativeFilePath);
+		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
-		if(!tempFile.exists()) { // It is not checked out
-			try {
-				File latestVersionFile = getLatestVersionFile(binder, entry, relativeFilePath);
-				
-				if(latestVersionFile != null) {
-					// Check it out by coping the content of the latest version of the file
-					FileCopyUtils.copy(latestVersionFile, tempFile);
+		if(fileInfo == VERSIONED_FILE) {
+			File tempFile = getTempFile(binder, entry, relativeFilePath);
+			
+			if(!tempFile.exists()) { // It is not checked out
+				try {
+					File latestVersionFile = getLatestVersionFile(binder, entry, relativeFilePath);
+					
+					if(latestVersionFile != null) {
+						// Check it out by coping the content of the latest version of the file
+						FileCopyUtils.copy(latestVersionFile, tempFile);
+					}
+					else {
+						// This shouldn't occur.
+						throw new RepositoryServiceException("No version file is found");
+					}
+				} catch (IOException e) {
+					throw new RepositoryServiceException(e);
 				}
-				else {
-					// This shouldn't occur.
-					throw new RepositoryServiceException("No version file is found");
-				}
-			} catch (IOException e) {
-				throw new RepositoryServiceException(e);
 			}
+		}
+		else if(fileInfo == UNVERSIONED_FILE) {
+			throw new RepositoryServiceException("Cannot checkout file " + relativeFilePath + 
+					" for entry " + entry.getId() + ": It is not versioned"); 			
+		}
+		else {
+			throw new RepositoryServiceException("Cannot checkout file " + relativeFilePath + 
+					" for entry " + entry.getId() + ": It does not exist"); 
 		}
 	}
 
 	public void uncheckout(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
-		File tempFile = getTempFile(binder, entry, relativeFilePath);
+		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
-		if(tempFile.exists()) { // It is checked out
-			// Delete the temp file
-			try {
-				FileHelper.delete(tempFile);
-			} catch (IOException e) {
-				throw new RepositoryServiceException(e);
+		if(fileInfo == VERSIONED_FILE) {
+			File tempFile = getTempFile(binder, entry, relativeFilePath);
+			
+			if(tempFile.exists()) { // It is checked out
+				// Delete the temp file
+				try {
+					FileHelper.delete(tempFile);
+				} catch (IOException e) {
+					throw new RepositoryServiceException(e);
+				}
 			}
+		}
+		else if(fileInfo == UNVERSIONED_FILE) {
+			throw new RepositoryServiceException("Cannot uncheckout file " + relativeFilePath + 
+					" for entry " + entry.getId() + ": It is not versioned"); 			
+		}
+		else {
+			throw new RepositoryServiceException("Cannot uncheckout file " + relativeFilePath + 
+					" for entry " + entry.getId() + ": It does not exist"); 
 		}
 	}
 
 	public String checkin(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
-		File tempFile = getTempFile(binder, entry, relativeFilePath);
+		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
-		if(tempFile.exists()) { // It is checked out
-			String versionName = newVersionName();
+		if(fileInfo == VERSIONED_FILE) {
+			File tempFile = getTempFile(binder, entry, relativeFilePath);
 			
-			File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
-			
-		    try {
-				FileHelper.move(tempFile, versionFile);
-			} catch (IOException e) {
-				throw new RepositoryServiceException(e);
+			if(tempFile.exists()) { // It is checked out
+				String versionName = newVersionName();
+				
+				File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
+				
+			    try {
+					FileHelper.move(tempFile, versionFile);
+				} catch (IOException e) {
+					throw new RepositoryServiceException(e);
+				}
+				
+				return versionName;
+			}	
+			else { // It is already checked in
+				return getLatestVersionName(binder, entry, relativeFilePath);
 			}
-			
-			return versionName;
-		}	
-		else { // It is already checked in
-			return getLatestVersionName(binder, entry, relativeFilePath);
 		}
+		else if(fileInfo == UNVERSIONED_FILE) {
+			throw new RepositoryServiceException("Cannot checkin file " + relativeFilePath + 
+					" for entry " + entry.getId() + ": It is not versioned"); 			
+		}
+		else {
+			throw new RepositoryServiceException("Cannot checkin file " + relativeFilePath + 
+					" for entry " + entry.getId() + ": It does not exist"); 
+		}		
 	}
 
 	public boolean isCheckedOut(Object session, Binder binder, Entry entry, 
@@ -236,9 +440,11 @@ public class FileRepositoryService implements RepositoryService {
 	}
 	
 	public boolean supportVersionDeletion() {
+		// Actually we can easily support this, but...
 		return false;
 	}
 
+	/*
 	public boolean exists(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		String[] versionFileNames = getVersionFileNames(binder, entry, relativeFilePath);
@@ -246,26 +452,51 @@ public class FileRepositoryService implements RepositoryService {
 			return false;
 		else
 			return true;
-	}
+	}*/
 
 	public long getContentLength(Object session, Binder binder, Entry entry, 
 			String relativeFilePath) throws RepositoryServiceException {
-		File latestFile = getLatestFile(binder, entry, relativeFilePath);
+		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
-		return latestFile.length();
+		if(fileInfo == VERSIONED_FILE) {
+			File latestFile = getLatestFile(binder, entry, relativeFilePath);
+			
+			return latestFile.length();
+		}
+		else if(fileInfo == UNVERSIONED_FILE) {
+			File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
+			
+			return unversionedFile.length();
+		}
+		else {
+			throw new RepositoryServiceException("Cannot get length of file " + relativeFilePath + 
+					" for entry " + entry.getId() + ": It does not exist"); 
+		}
 	}
 	
 	public long getContentLength(Object session, Binder binder, Entry entry, 
 			String relativeFilePath, String versionName) throws RepositoryServiceException {
-		File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
+		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
-		return versionFile.length();
+		if(fileInfo == VERSIONED_FILE) {
+			File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
+			
+			return versionFile.length();
+		}
+		else if(fileInfo == UNVERSIONED_FILE) {
+			throw new RepositoryServiceException("Cannot get length of file " + relativeFilePath + 
+					" for entry " + entry.getId() + ": It is not versioned"); 			
+		}
+		else {
+			throw new RepositoryServiceException("Cannot get length of file " + relativeFilePath + 
+					" for entry " + entry.getId() + ": It does not exist"); 
+		}
 	}
 	
 	/**
 	 * Returns latest snapshot of the file (which is either the latest version
 	 * of the file or the working copy in progress which is created when the 
-	 * file is checked out).
+	 * file is checked out). It is assumed that the file is versioned.
 	 * 
 	 * @param binder
 	 * @param entry
@@ -287,6 +518,14 @@ public class FileRepositoryService implements RepositoryService {
 		}
 	}
 	
+	/**
+	 * Returns an array of file names representing each version of the specified file. 
+	 * 
+	 * @param binder
+	 * @param entry
+	 * @param relativeFilePath
+	 * @return
+	 */
 	private String[] getVersionFileNames(Binder binder, Entry entry, String relativeFilePath) {
 		File file = getFile(binder, entry, relativeFilePath);
 		File fileDir = file.getParentFile();
@@ -338,6 +577,13 @@ public class FileRepositoryService implements RepositoryService {
 		return latestVersionName;
 	}
 	
+	/**
+	 * Return version name that is later of two.
+	 * 
+	 * @param versionName1
+	 * @param versionName2
+	 * @return
+	 */
 	private String getLaterVersionName(String versionName1, String versionName2) {
 		if(versionName1 == null) {
 			if(versionName2 == null)
@@ -356,6 +602,12 @@ public class FileRepositoryService implements RepositoryService {
 		}
 	}
 	
+	/**
+	 * Given a name of version file, return its version name portion. 
+	 * 
+	 * @param versionFileName
+	 * @return
+	 */
 	private String getVersionName(String versionFileName) {
 		int versionNameBeginIndex = versionFileName.indexOf(VERSION_NAME_PREFIX) + VERSION_NAME_PREFIX.length();
 		int versionNameEndIndex = versionFileName.indexOf(VERSION_NAME_SUFFIX, versionNameBeginIndex);
@@ -405,7 +657,6 @@ public class FileRepositoryService implements RepositoryService {
 		return new File(file.getParent(), versionFileName);
 	}
 	
-	
 	private File getVersionFile(Binder binder, Entry entry, 
 			String relativeFilePath, String versionName) {
 		File file = getFile(binder, entry, relativeFilePath);
@@ -423,6 +674,10 @@ public class FileRepositoryService implements RepositoryService {
 				versionName + VERSION_NAME_SUFFIX + "." + fileName.substring(index+1);
 		}
 		return new File(file.getParent(), versionFileName);		
+	}
+	
+	private File getUnversionedFile(Binder binder, Entry entry, String relativeFilePath) {
+		return getFile(binder, entry, relativeFilePath);
 	}
 	
 	private File getTempFile(Binder binder, Entry entry, String relativeFilePath) {
@@ -461,5 +716,20 @@ public class FileRepositoryService implements RepositoryService {
 				catch (IOException e) {}
 			}
 		}			
+	}
+
+	private void copyData(InputStream in, File outFile) throws IOException {
+		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(outFile));
+		
+		try {
+			FileCopyUtils.copy(in, bos);
+		} 
+		finally {
+			try {
+				bos.close();
+			} catch (IOException e) {
+				logger.warn(e); // Log and return normally.
+			}
+		}
 	}
 }

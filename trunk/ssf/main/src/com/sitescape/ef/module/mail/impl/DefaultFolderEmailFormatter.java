@@ -50,6 +50,7 @@ import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.module.mail.FolderEmailFormatter;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AclManager;
+import com.sitescape.ef.util.DirPath;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.web.WebKeys;
@@ -173,7 +174,7 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 		trans = (Templates)transformers.get(zoneName + ":" + type);
 		if (trans == null) {
 			String templateName = mailModule.getMailProperty(zoneName, type);
-			Source xsltSource = new StreamSource(new File(WebHelper.getXsltDirPath(),templateName));
+			Source xsltSource = new StreamSource(new File(DirPath.getXsltDirPath(),templateName));
 			trans = transFactory.newTemplates(xsltSource);
 			//replace name with actual template
 			if (GetterUtil.getBoolean(mailModule.getMailProperty(zoneName, MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED), false) == false)

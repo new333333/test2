@@ -6,12 +6,14 @@ import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.util.FileUploadItem;
 
 /**
- * Provides higher-level wrapper around repository service, and adds
- * metadata management (hence needs database transaction support).
+ * Provides uniform interface and integrated management for various file 
+ * resources in the system hiding the details of the actual repository
+ * systems from the caller. Provides higher-level wrapper around underlying
+ * repository system implementations and adds metadata management which
+ * may require database transaction support.   
  * 
  * @author jong
  *
@@ -19,7 +21,9 @@ import com.sitescape.ef.util.FileUploadItem;
 public interface FileModule {
 	
 	/**
-	 * Delete all files attached to the entry.
+	 * Delete all files attached to the entry. If applicable, also delete 
+	 * generated files (scaled files and thumbnail files) associated with 
+	 * the primary files. 
 	 * <p>
 	 * If any of the files is currently checked out, this forcefully unchecks 
 	 * it before deleting it.
@@ -28,10 +32,11 @@ public interface FileModule {
 	 * @param entry
 	 * metadata on the <code>entry</code>. 
 	 */
-	public void deleteFiles(Binder binder, Entry entry);
+	public void deleteFiles(Binder binder, Entry entry) throws FileException;
 	
 	/**
-	 * Deletes the specified file. 
+	 * Deletes the specified file. If applicable, also delete generated files
+	 * (scaled file and thumbnail file) associated with the primary file. 
 	 * <p>
 	 * If the file is currently checked out by anyone, this forcefully unchecks 
 	 * it before deleting it. 
@@ -41,14 +46,17 @@ public interface FileModule {
 	 * @param entry
 	 * @param fileName
 	 * @throws NoSuchFileException
-	 * @throws RepositoryServiceException
+	 * @throws FileException
 	 */
 	public void deleteFile(String repositoryServiceName, Binder binder, 
 			Entry entry, String fileName) throws NoSuchFileException, 
-			RepositoryServiceException;
+			FileException;
 	
 	/**
-	 * Writes the specified file to the system.
+	 * Writes the specified file to the system. If applicable, generate 
+	 * secondary files (scaled file and thumbnail file) associated with
+	 * the primary file and write them out as well. Generated files are 
+	 * NOT versioned. 
 	 * <p>
 	 * If the file doesn't already exist, it creates it.
 	 * <p>
@@ -67,10 +75,11 @@ public interface FileModule {
 	 * @param binder
 	 * @param entry
 	 * @param fui
-	 * @throws RepositoryServiceException
+	 * @throws CheckedOutByOtherException
+	 * @throws FileException
 	 */
     public void writeFile(Binder binder, Entry entry, FileUploadItem fui) 
-    	throws CheckedOutByOtherException, RepositoryServiceException;
+    	throws CheckedOutByOtherException, FileException;
     
     /**
      * Reads the specified file into the output stream.
@@ -81,11 +90,11 @@ public interface FileModule {
      * @param fileName
      * @param out
      * @throws NoSuchFileException
-     * @throws RepositoryServiceException
+     * @throws FileException
      */
     public void readFile(String repositoryServiceName, Binder binder, 
     		Entry entry, String fileName, OutputStream out) 
-    	throws NoSuchFileException, RepositoryServiceException;
+    	throws NoSuchFileException, FileException;
     
     /**
      * Reads the specified file into the output stream.
@@ -94,10 +103,177 @@ public interface FileModule {
      * @param binder
      * @param entry
      * @param out
-     * @throws RepositoryServiceException
+	 * @throws NoSuchFileException
+     * @throws FileException
      */
 	public void readFile(FileAttachment fa, Binder binder, Entry entry, 
-			OutputStream out) throws RepositoryServiceException;
+			OutputStream out) throws NoSuchFileException, FileException;
+	
+    /**
+     * Reads the specified scaled file into the output stream.
+     * 
+     * @param repositoryServiceName
+     * @param binder
+     * @param entry
+     * @param primaryFileName
+     * @param out
+     * @throws NoSuchFileException
+     * @throws FileException
+     */
+    public void readScaledFile(String repositoryServiceName, Binder binder, 
+    		Entry entry, String primaryFileName, OutputStream out) 
+    	throws NoSuchFileException, FileException;
+    
+    /**
+     * Reads the specified scaled file into the output stream.
+     * 
+     * @param fa
+     * @param binder
+     * @param entry
+     * @param out
+	 * @throws NoSuchFileException
+     * @throws FileException
+     */
+	public void readScaledFile(FileAttachment fa, Binder binder, Entry entry, 
+			OutputStream out) throws NoSuchFileException, FileException;
+	
+	/**
+	 * Returns a file object representing the thumbnail of the specified file. 
+	 * The returned thumbnail file is directly accessible by the caller.
+	 * If the thumbnail was originally stored as "indirectly accessible" file,
+	 * the caller must not use this method. 
+	 * <p>
+	 * This method does NOT tell whether or not the physical file actually
+	 * exists on the file system. The caller will have to use <code>exists</code>
+	 * method on the returned file object to actually determine the existence
+	 * of the file.
+	 * 
+	 * @param binder
+	 * @param entry
+	 * @param fileName
+	 * @return
+	 */
+	//public File getDirectlyAccessibleThumbnailFile(Binder binder, Entry entry, 
+	//		String fileName);
+	
+    /**
+     * Reads the specified thumbnail file into the output stream.
+     * If the thumbnail was originally stored as "directly accessible" file,
+     * the caller must not use this method. 
+     * 
+     * @param repositoryServiceName
+     * @param binder
+     * @param entry
+     * @param primaryFileName
+     * @param out
+     * @throws NoSuchFileException
+     * @throws FileException
+     */
+    public void readIndirectlyAccessibleThumbnailFile
+    	(String repositoryServiceName, Binder binder, 
+    		Entry entry, String primaryFileName, OutputStream out) 
+    	throws NoSuchFileException, FileException;
+    
+    /**
+     * Reads the specified scaled file into the output stream.
+     * If the thumbnail was originally stored as "directly accessible" file,
+     * the caller must not use this method. 
+     * 
+     * @param fa
+     * @param binder
+     * @param entry
+     * @param out
+	 * @throws NoSuchFileException
+     * @throws FileException
+     */
+	public void readIndirectlyAccessibleThumbnailFile(FileAttachment fa, 
+			Binder binder, Entry entry, OutputStream out) 
+		throws NoSuchFileException, FileException;
+	
+	/**
+	 * (Re)generate scaled file from the specified primary file.
+	 * Scaled file is not versioned, thus newly generated file replaces 
+	 * old one if exists.   
+	 * 
+	 * @param repositoryServiceName
+	 * @param binder
+	 * @param entry
+	 * @param primaryFileName
+	 * @param maxWidth
+	 * @param maxHeight
+	 * @throws NoSuchFileException
+	 * @throws FileException
+	 */
+	public void generateScaledFile(String repositoryServiceName, Binder binder, 
+    		Entry entry, String primaryFileName, int maxWidth, int maxHeight) 
+		throws NoSuchFileException, FileException;
+	
+	/**
+	 * (Re)generate thumbnail file from the specified primary file.
+	 * Thumbnail file is not versioned, thus newly generated file replaces 
+	 * old one if exists.   
+	 * 
+	 * @param repositoryServiceName
+	 * @param binder
+	 * @param entry
+	 * @param primaryFileName
+	 * @param thumbnailDirectlyAccessible
+	 * @throws NoSuchFileException
+	 * @throws FileException
+	 */
+	public void generateThumbnailFile(String repositoryServiceName, Binder binder, 
+    		Entry entry, String primaryFileName, int maxWidth, int maxHeight,
+    		boolean thumbnailDirectlyAccessible) 
+		throws NoSuchFileException, FileException;
+
+	/**
+	 * (Re)generate both scaled file and thumbnail file from the specified 
+	 * primary file. Generated files are not versioned, thus newly generated 
+	 * files replace old ones if exists.   
+	 * 
+	 * @param repositoryServiceName
+	 * @param binder
+	 * @param entry
+	 * @param primaryFileName
+	 * @param thumbnailDirectlyAccessible
+	 * @throws NoSuchFileException
+	 * @throws FileException
+	 */
+	public void generateFiles(String repositoryServiceName, Binder binder, 
+    		Entry entry, String primaryFileName, int maxWidth, int maxHeight,
+    		int thumbnailMaxWidth, int thumbnailMaxHeight, 
+    		boolean thumbnailDirectlyAccessible) 
+		throws NoSuchFileException, FileException;
+	
+	/**
+	 * Returns whether a scaled copy of the file exists or not. 
+	 * 
+	 * @param repositoryServiceName
+	 * @param binder
+	 * @param entry
+	 * @param primaryFileName
+	 * @return
+	 * @throws NoSuchFileException raised if unrecognized primary file
+	 * @throws FileException
+	 */
+	public boolean scaledFileExists(String repositoryServiceName, 
+			Binder binder, Entry entry, String primaryFileName) 
+		throws NoSuchFileException, FileException;
+	
+	/**
+	 * Returns whether a thumbnail of the file exists or not. 
+	 * 
+	 * @param repositoryServiceName
+	 * @param binder
+	 * @param entry
+	 * @param primaryFileName
+	 * @return
+	 * @throws NoSuchFileException raised if unrecognized primary file
+	 * @throws FileException
+	 */
+	public boolean thumbnailFileExists(String repositoryServiceName, 
+			Binder binder, Entry entry, String primaryFileName) 
+	throws NoSuchFileException, FileException;
 	
 	/**
 	 * If the specified file is checked out, returns <code>HistoryStamp</code>
@@ -127,11 +303,12 @@ public interface FileModule {
 	 * @param binder
 	 * @param entry
 	 * @param fileName
+	 * @throws NoSuchFileException
 	 * @throws CheckedOutByOtherException
 	 */
 	public void checkout(String repositoryServiceName, Binder binder, 
 			Entry entry, String fileName) throws CheckedOutByOtherException, 
-			NoSuchFileException, RepositoryServiceException;
+			NoSuchFileException, FileException;
 	
 	/**
 	 * Cancels the checkout for the specified file. 
@@ -148,11 +325,12 @@ public interface FileModule {
 	 * @param entry
 	 * @param fileName
 	 * @throws CheckedOutByOtherException
-	 * @throws RepositoryServiceException
+	 * @throws NoSuchFileException
+	 * @throws FileException
 	 */
 	public void uncheckout(String repositoryServiceName, Binder binder, 
 			Entry entry, String fileName) throws CheckedOutByOtherException, 
-			NoSuchFileException, RepositoryServiceException;
+			NoSuchFileException, FileException;
 
 	/**
 	 * Checkes in the specified file. 
@@ -169,18 +347,21 @@ public interface FileModule {
 	 * @param binder
 	 * @param entry
 	 * @param fileName
-	 * @throws RepositoryServiceException
+	 * @throws CheckedOutByOtherException
+	 * @throws NoSuchFileException
+	 * @throws FileException
 	 */
 	public void checkin(String repositoryServiceName, Binder binder, 
 			Entry entry, String fileName) throws CheckedOutByOtherException, 
-			NoSuchFileException, RepositoryServiceException;
-	
+			NoSuchFileException, FileException;
+	/*
 	public void createThumbnail(String repositoryServiceName, Binder binder,
 			Entry entry, String fileName, String thumbFileName,
 			int maxWidth, int maxHeight) 
-		throws NoSuchFileException, RepositoryServiceException;
+		throws NoSuchFileException, FileException;
 	
 	public void createThumbnail(FileAttachment fa, Binder binder, Entry entry,
 			String thumbFileName,int maxWidth, int maxHeight) 
-	throws RepositoryServiceException;
+		throws FileException;
+		*/
 }

@@ -853,15 +853,22 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								    	if (maxWidthEle != null) {
 								    		String maxWidth = maxWidthEle.attributeValue("value", "");
 								    		if (!maxWidth.equals("")) {
-								    			fui.setMaxWidth(Integer.valueOf(maxWidth));
+								    			fui.setMaxWidth(Integer.parseInt(maxWidth));
 								    		}
 								    	}
 								    	Element maxHeightEle = (Element) nextItem.selectSingleNode("./properties/property[@name='maxHeight']");
 								    	if (maxHeightEle != null) {
 								    		String maxHeight = maxHeightEle.attributeValue("value", "");
 								    		if (!maxHeight.equals("")) {
-								    			fui.setMaxHeight(Integer.valueOf(maxHeight));
+								    			fui.setMaxHeight(Integer.parseInt(maxHeight));
 								    		}
+								    	}
+								    	// TODO The following piece of code may need a better conditional
+								    	// statement than this, since we probably do not want to generate
+								    	// thumbnails for all graphic-type file uploads. Or do we? 
+								    	if(itemName.equals("graphic")) {
+								    		fui.setGenerateThumbnail(true);
+								    		fui.setThumbnailDirectlyAccessible(true);
 								    	}
 								    	
 								    	fileData.add(fui);
