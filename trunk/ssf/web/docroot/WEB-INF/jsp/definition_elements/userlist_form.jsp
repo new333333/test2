@@ -20,11 +20,19 @@
 <script language="JavaScript" src="<html:rootPath/>js/common/taconite-client.js"></script>
 <script language="JavaScript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
 <script language="JavaScript" type="text/javascript">
+var ss_userList_searchText = ""
 var ss_userList_searchType = "lastName"
 function ss_userListSetSearchType(type) {
 	ss_userList_searchType = type;
+	if (ss_userList_searchText != "") {
+		//Re-do the search with the new type
+		ss_userListSearch(ss_userList_searchText, "<%= elementName %>");
+	}
 }
 function ss_userListSearch(text, elementName) {
+ 	//Save the text in case the user changes the search type
+ 	ss_userList_searchText = text;
+ 	
  	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
