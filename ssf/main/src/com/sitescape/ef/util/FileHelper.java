@@ -39,6 +39,9 @@ public class FileHelper {
     }
 
 	public static void delete(File file) throws IOException {
+		if(!file.exists())
+			return; // noop
+		
 		int count = 1;
 		
 		while(count <= 3) {
