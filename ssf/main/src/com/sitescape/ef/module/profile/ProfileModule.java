@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.List;
 import java.util.Collection;
 
+import org.dom4j.Document;
+
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.HistoryMap;
@@ -43,6 +45,7 @@ public interface ProfileModule {
     public List getGroups();
     public Map getUsers();
     public Map getUsers(int maxEntries);
+    public Map getUsers(int maxEntries, Document qTree);
     	   
     public void index();
     public UserProperties setUserFolderProperty(Long userId, Long folderId, String property, Object value);

@@ -2,6 +2,8 @@ package com.sitescape.ef.module.binder;
 
 import java.util.Map;
 
+import org.dom4j.Document;
+
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.AclControlledEntry;
@@ -36,6 +38,7 @@ public interface EntryProcessor {
     public void modifyWorkflowState(Binder binder, Long entryId, Long tokenId, String toState) 
 		throws AccessControlException;
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries) throws AccessControlException;
+	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries, Document qTree) throws AccessControlException;
 	public void indexBinder(Binder binder);
 	   	  
 }
