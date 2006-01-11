@@ -57,4 +57,5 @@ WSS4J 1.1.0
 Xalan 2.6.0 (XPath and XSLT implementation; used by WSS4J)
 XDoclet 2.0.3
 xdoclet-plugin-hibernate-1.0.1
+xmlrpc 2.0.1
 xmlsec 1.2.1
