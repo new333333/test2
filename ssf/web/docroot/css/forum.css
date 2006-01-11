@@ -472,6 +472,29 @@ div.ss_workflow {
   layer-background-color: #ffffe8;
   }
 
+ul.ss_dragable {
+  position: relative;
+  width: 100px;
+  margin: 4px;
+}
+ul.ss_dragable li {
+  position: relative;
+  cursor: move;
+  margin: 0px;
+  text-align: left;
+}
+ul.ss_userlist {
+  list-style-type: none;
+  padding: 4px 10px;
+  width: 150px;
+  margin: 4px;
+}
+ul.ss_userlist li {
+  padding: 0px;
+  text-align: left;
+  margin: 0px;
+}
+
 /* ------------------------------------------------------------------------ */
 /* table styles */
 

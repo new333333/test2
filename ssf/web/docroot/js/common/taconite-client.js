@@ -52,6 +52,9 @@ function AjaxRequest(url) {
     var postRequest = null;
 
     /** @private */
+    var objectData = new Array();
+
+    /** @private */
     var debugResponse = false;
 
 
@@ -84,6 +87,18 @@ function AjaxRequest(url) {
     */
     this.setPostRequest = function(func) {
         postRequest = func;
+    }
+
+    /**
+        Set and get object local data. These routines are used to store information 
+        inside the ajaxRequest object such that it can be used by the 
+        pre and post processor routines.
+    */
+    this.setData = function(key, value) {
+        objectData[key] = value;
+    }
+    this.getData = function(key) {
+        return objectData[key];
     }
 
     /**

@@ -80,13 +80,13 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 			 vspace="0" width="14" ><div></td>
 	  </c:if>
 	  <c:if test="<%= showResizeIcon %>">
-		<td align="left" width="45%"><div style="display:inline;" onMouseDown="<%= showResizeRoutine %>"
-		  ><span class="ss_box_small_icon" align="left"><img style="cursor:w-resize;"
-			 border="0" hspace="0" 
-			 name="p_<portlet:namespace/>_resize" 
-			 src="<html:imagesPath/><%= showResizeGif %>" 
-			 title="<ssf:nlt tag="icon.resize" text="Resize" />" 
-			 vspace="0" ></span></div></td>
+		<td align="left" width="45%"><div style="display:inline; width:30px; 
+		    background-position:center left;
+            background-image:url(<html:imagesPath/><%= showResizeGif %>);
+            background-repeat:no-repeat;" onMouseDown="<%= showResizeRoutine %>"
+		  ><span class="ss_box_small_icon" align="left" 
+		  style="cursor:w-resize; width:30px;"><img src="<html:imagesPath/>pics/1pix.gif" 
+		  style="margin:4px 30px;"></span></div></td>
 	  </c:if>
 
 	  <c:if test="<%= Validator.isNotNull(title) %>">

@@ -7,10 +7,10 @@
 <%@ page import="java.util.Map.Entry" %>
 <%@ page import="java.util.Iterator" %>
 <jsp:useBean id="ss_unseenCounts" type="java.util.Map" scope="request" />
-<jsp:useBean id="ss_unseenStatus" type="java.util.Map" scope="request" />
+<jsp:useBean id="ss_ajaxStatus" type="java.util.Map" scope="request" />
 <taconite-root xml:space="preserve">
 <%
-	if (ss_unseenStatus.containsKey("ss_unseenNotLoggedIn")) {
+	if (ss_ajaxStatus.containsKey("ss_ajaxNotLoggedIn")) {
 %>
 	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
 		<div id="ss_status_message" style="visibility:hidden; display:none;">error</div
