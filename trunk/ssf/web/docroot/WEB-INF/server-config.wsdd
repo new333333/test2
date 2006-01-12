@@ -28,13 +28,13 @@
 	<service name="Facade" provider="java:RPC">
 	 	<requestFlow>
    			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
-    			<parameter name="passwordCallbackClass" value="com.sitescape.ef.ws.security.PWCallback"/>
+    			<parameter name="passwordCallbackClass" value="com.sitescape.ef.remoting.ws.security.PWCallback"/>
     			<parameter name="action" value="UsernameToken"/>
    			</handler>
   		</requestFlow>
 	
 		<parameter name="allowedMethods" value="*"/>
-		<parameter name="className" value="com.sitescape.ef.remoting.jaxrpc.JaxRpcFacade"/>
+		<parameter name="className" value="com.sitescape.ef.remoting.ws.jaxrpc.JaxRpcFacade"/>
   		<!--<parameter name="wsdlTargetNamespace" value="urn:SSF" />-->
 		<beanMapping qname="ssf:Entry" xmlns:ssf="urn:SSF" languageSpecificType="java:com.sitescape.ef.remoting.api.Entry"/>
 		<!-- The host name portion must be substituted appropriately. -->
