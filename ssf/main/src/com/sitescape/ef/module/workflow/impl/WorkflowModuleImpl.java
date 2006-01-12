@@ -251,6 +251,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	}
 
 	public void updateProcessDefinition(ProcessDefinition pD, Definition def) {
+       	JbpmSession session = workflowFactory.getSession();
 		Document defDoc = def.getDefinition();
 		Element defRoot = defDoc.getRootElement();
 		
@@ -264,39 +265,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		
 		Map actions = pD.getActions();
 		if (actions == null) actions = new HashMap();
-		/**
-		 * 
-		if (nodes != null) {
-			nodes = new ArrayList(nodes);
-			Iterator itNodes = nodes.iterator();
-			while (itNodes.hasNext()) {
-				Node node = (Node) itNodes.next();
-				if (node != null) pD.removeNode(node);
-			}
-		}
-		
-		//Delete all of the actions and events
-		Map actions = pD.getActions();
-		if (actions != null) {
-			actions = new HashMap(actions);
-			Iterator itActions = actions.entrySet().iterator();
-			while (itActions.hasNext()) {
-				Map.Entry me = (Map.Entry) itActions.next();
-				Action action = (Action) me.getValue();
-				if (action != null) pD.removeAction(action);
-			}
-		}
-		Map events = pD.getEvents();
-		if (events != null) {
-			events = new HashMap(events);
-			Iterator itEvents = events.entrySet().iterator();
-			while (itEvents.hasNext()) {
-				Map.Entry me = (Map.Entry) itEvents.next();
-				Event event = (Event) me.getValue();
-				if (event != null) pD.removeEvent(event);
-			}
-		}
-		*/
 		
 		//Add the standard events (if they aren't there already)
 		Action recordEvent = null;
@@ -309,6 +277,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		Action decisionAction = null;
 		if (!actions.containsKey("decisionAction")) {
 			decisionAction = setupAction(pD, "decisionAction", "com.sitescape.ef.module.workflow.DecisionAction");
+			pD.addAction(decisionAction);
 		} else {
 			decisionAction = (Action) actions.get("decisionAction");
 		}
@@ -316,10 +285,12 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		Action startThreads = null;
 		if (!actions.containsKey("startThreads")) {
 			startThreads = setupAction(pD, "startThreads", "com.sitescape.ef.module.workflow.StartThreads");
+			pD.addAction(startThreads);
 		} else {
 			startThreads = (Action) actions.get("startThreads");
 		}
 		
+		//add global named events - will fire on every node
 		if (!events.containsKey("node-enter")) {
 			Event enterEvent = new Event("node-enter");
 			enterEvent.addAction(recordEvent);
@@ -345,9 +316,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			nodesMap.remove(ObjectKeys.WORKFLOW_END_STATE);
 		}
 		
-		//keep list of states that start threads
-		List hasThreads = new ArrayList();
-		
+	
 		//Add all of the states in the definition
 		List stateNodes = defRoot.selectNodes("//item[@name='state']");
 		Iterator itStates = stateNodes.iterator();
@@ -360,29 +329,54 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				Node stateNode = (Node)nodesMap.get(stateName);
 				if (!nodesMap.containsKey(stateName)) {
 					stateNode = new Node(stateName);
-					stateNode.setAction(decisionAction);
+					Action action = new Action();
+					action.setReferencedAction(decisionAction);
+					stateNode.setAction(action);
 					pD.addNode(stateNode);
 				} else {
 					nodesMap.remove(stateName);
 				}
+				Event event = stateNode.getEvent(Event.EVENTTYPE_NODE_ENTER);
 				//Check if need parallel threads - if so add special node
 				List threads = (List)state.selectNodes("./item[@name='startParallelThread']");
 				if (!threads.isEmpty()) {
-					String name = stateName + ".startThreads";
-					//need a node to start parallel threads 
-					Node node = (Node)nodesMap.get(name);
-					if (node == null) {
-						node = new Node(name);
-						node.setAction(startThreads);
-						pD.addNode(node);
-						//only one transition is allowed
-						Transition t = new Transition();
-						t.setProcessDefinition(pD);
-						t.setTo(stateNode);
-						node.addLeavingTransition(t);
-					} else nodesMap.remove(name);
-					//save fact that this state has threads
-					hasThreads.add(stateName);
+					//make sure start threads event exits
+					if (event == null) {
+						event = new Event(Event.EVENTTYPE_NODE_ENTER);
+						stateNode.addEvent(event);
+					}
+					List eventActions=event.getActions();
+					boolean found = false;
+					if ((eventActions != null) && !eventActions.isEmpty()) {
+						for (int i=0; i<eventActions.size(); ++i) {
+							Action a = (Action)eventActions.get(i);
+							if ((a.getReferencedAction().equals(startThreads))) {
+								found = true;
+								break;
+							}
+						}
+					}
+					if (!found) {
+						Action a = new Action();
+						a.setReferencedAction(startThreads);
+						event.addAction(a);
+					}
+					
+				} else {
+					// remove any old startThreads for this node
+					if (event != null) {
+						List eventActions = event.getActions();
+						if ((eventActions != null) && !eventActions.isEmpty()) {
+							for (int i=0; i<eventActions.size(); ++i) {
+								Action a = (Action)eventActions.get(i);
+								if ((a.getReferencedAction().equals(startThreads))) {
+									event.removeAction(a);
+									session.getSession().delete(a);
+									break;
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -392,58 +386,52 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		Iterator itNodes = nodesMap.entrySet().iterator();
 		while (itNodes.hasNext()) {
 			Map.Entry me = (Map.Entry) itNodes.next();
-			pD.removeNode((Node)me.getValue());
-//TODO: probably need to explicity delete these
+			Node delNode = (Node)me.getValue();
+			pD.removeNode(delNode);
+			session.getSession().delete(delNode);
 		}
 		//Add all of the manual transitions
-		itStates = stateNodes.iterator();
-		while (itStates.hasNext()) {
-			Element state = (Element) itStates.next();
-			Element stateNameProperty = (Element) state.selectSingleNode("./properties/property[@name='name']");
-			String stateName = stateNameProperty.attributeValue("value", "");
-			if (!stateName.equals("")) {
-				Node fromNode = pD.getNode(stateName);
-				//Get all existing transitions
-				Map oldTransitions = new HashMap(fromNode.getLeavingTransitionsMap());
-				if (oldTransitions == null) oldTransitions = new HashMap();
+		nodesMap = pD.getNodesMap();
+		itNodes = nodesMap.entrySet().iterator();
+		while (itNodes.hasNext()) {
+			Map.Entry me = (Map.Entry) itNodes.next();
+			Node fromNode = (Node) me.getValue();
+			String stateName = fromNode.getName();
+			//Get all existing transitions
+			Map oldTransitions = fromNode.getLeavingTransitionsMap();
+			if (oldTransitions == null) oldTransitions = new HashMap();
+			else oldTransitions = new HashMap(oldTransitions);
 			
-				//Get the list of transitions from the workflow definition
-				Map manualTransitions = WorkflowUtils.getManualTransitions(def, fromNode.getName());
-				Iterator itTransitions = manualTransitions.entrySet().iterator();
-				while (itTransitions.hasNext()) {
-					Map.Entry me2 = (Map.Entry) itTransitions.next();
-					String toNodeName = (String) me2.getKey();
-					String tName = stateName + "." + toNodeName;					
-					if (oldTransitions.containsKey(tName))
-						oldTransitions.remove(tName);
-					else if (hasThreads.contains(toNodeName)) {
-						Node toNode = (Node) pD.getNode(toNodeName + ".startThreads");
-						if (toNode != null) {
-							Transition t = new Transition();
-							t.setProcessDefinition(pD);
-							t.setName(tName);
-							t.setTo(toNode);
-							fromNode.addLeavingTransition(t);
-						}
-					} else {
-						Node toNode = (Node) pD.getNode(toNodeName);
-						if (toNode != null) {
-							Transition t = new Transition();
-							t.setProcessDefinition(pD);
-							t.setName(tName);
-							t.setTo(toNode);
-							fromNode.addLeavingTransition(t);
-						}
-
+			//Get the list of transitions from the workflow definition
+			Map manualTransitions = WorkflowUtils.getManualTransitions(def, fromNode.getName());
+			Iterator itTransitions = manualTransitions.entrySet().iterator();
+			while (itTransitions.hasNext()) {
+				Map.Entry me2 = (Map.Entry) itTransitions.next();
+				String toNodeName = (String) me2.getKey();
+				String tName = stateName + "." + toNodeName;					
+				if (oldTransitions.containsKey(tName)) {
+					oldTransitions.remove(tName);
+				} else {
+					Node toNode = (Node) pD.getNode(toNodeName);
+					if (toNode != null) {
+						Transition t = new Transition();
+						t.setProcessDefinition(pD);
+						t.setName(tName);
+						t.setTo(toNode);
+						fromNode.addLeavingTransition(t);
 					}
-				}
-				Iterator itTrans = oldTransitions.entrySet().iterator();
-				while (itTrans.hasNext()) {
-					Map.Entry me = (Map.Entry) itTrans.next();
-					fromNode.removeLeavingTransition((Transition)me.getValue());
+
 				}
 			}
+			Iterator itTrans = oldTransitions.entrySet().iterator();
+			while (itTrans.hasNext()) {
+				Map.Entry me2 = (Map.Entry) itTrans.next();
+				Transition delTrans = (Transition)me2.getValue();
+				fromNode.removeLeavingTransition(delTrans);
+				session.getSession().delete(delTrans);
+			}
 		}
+		
 		
     	Writer writer = new StringWriter();
 	    JpdlXmlWriter jpdl = new JpdlXmlWriter(writer);
@@ -452,6 +440,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    System.out.println("Workflow process definition created: " + pD.getName());
 	    System.out.println(writer.toString());
 	}
+	
 	private Action setupAction(ProcessDefinition pD, String name, String className) {
 		Action action = new Action();
 		action.setName(name);
