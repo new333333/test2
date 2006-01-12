@@ -3,9 +3,9 @@ package com.sitescape.ef.samples.remoting.client.ws.jaxrpc;
 import java.rmi.RemoteException;
 import javax.xml.rpc.ServiceException;
 
-import com.sitescape.ef.samples.remoting.client.jaxrpc.JaxRpcFacade;
-import com.sitescape.ef.samples.remoting.client.jaxrpc.JaxRpcFacadeService;
-import com.sitescape.ef.samples.remoting.client.jaxrpc.JaxRpcFacadeServiceLocator;
+import com.sitescape.ef.samples.remoting.client.ws.jaxrpc.JaxRpcFacade;
+import com.sitescape.ef.samples.remoting.client.ws.jaxrpc.JaxRpcFacadeService;
+import com.sitescape.ef.samples.remoting.client.ws.jaxrpc.JaxRpcFacadeServiceLocator;
 
 /**
  * This WS client program uses JAX-RPC compliant client binding classes 
@@ -43,7 +43,7 @@ public class FacadeClient {
 			JaxRpcFacadeService locator = new JaxRpcFacadeServiceLocator(/*config*/);
 			JaxRpcFacade service = locator.getFacade();
 
-			com.sitescape.ef.samples.remoting.client.jaxrpc.Entry entry = 
+			com.sitescape.ef.samples.remoting.client.ws.jaxrpc.Entry entry = 
 				service.getEntry(binderId, entryId);
 
 			System.out.println("Entry(" + entry.getBinderId() + "," + entry.getId() + ") - " + entry.getTitle());
