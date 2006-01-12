@@ -4,7 +4,7 @@ import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
 import com.sitescape.ef.remoting.api.Entry;
 import com.sitescape.ef.remoting.api.Facade;
-import com.sitescape.ef.remoting.jaxrpc.RemoteFacade;
+import com.sitescape.ef.remoting.ws.jaxrpc.RemoteFacade;
 
 /**
  * JAX-RPC compliant implementation that simply delegates to the Facade 
