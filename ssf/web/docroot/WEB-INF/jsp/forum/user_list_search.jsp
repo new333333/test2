@@ -25,7 +25,7 @@
 	<taconite-replace contextNodeID="<c:out value="${listDivId}"/>" parseInBrowser="true">
 	  <ul id="<c:out value="${listDivId}"/>" class="ss_dragable ss_userlist">
 		<c:forEach var="entry" items="${ssUsers}">
-		  <li id="<c:out value="${entry._userName}"/>" 
+		  <li id="<c:out value="${entry._docId}"/>" 
 		    class="ss_dragable ss_userlist"><c:out value="${entry._title}"/></li>
 		</c:forEach>
 	  </ul>

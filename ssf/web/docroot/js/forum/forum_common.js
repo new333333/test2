@@ -1242,6 +1242,8 @@ function fetch_url(url, callbackRoutine) {
         if (x.status == 200) {
         	callbackRoutine(x.responseText)        	
         } else {
+        	alert(x.status)
+        	alert(x.statusText)
         	callbackRoutine(x.statusText)
         }
 	}
