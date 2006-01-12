@@ -1,4 +1,4 @@
-package com.sitescape.ef.remoting.jaxrpc;
+package com.sitescape.ef.remoting.ws.jaxrpc;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
