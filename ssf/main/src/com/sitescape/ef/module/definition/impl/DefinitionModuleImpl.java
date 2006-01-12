@@ -31,12 +31,14 @@ import org.dom4j.Element;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import com.sitescape.ef.domain.DefinitionInvalidException;
 
@@ -829,8 +831,20 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								        event.setName(nameValue);
 								        entryData.put(nameValue, event);
 								    }
+								} else if (itemName.equals("user_list")) {
+									if (inputData.containsKey(nameValue)) {
+										String[] userIds = ((String[])inputData.get(nameValue))[0].trim().split(" ");
+										Set users = new HashSet();
+										for (int i = 0; i < userIds.length; i++) {
+											Long uId = Long.valueOf(userIds[i]);
+											users.add(uId);
+										}
+										String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+										List foundUsers = coreDao.loadUsers(users, zoneName);
+										entryData.put(nameValue, new HashSet(foundUsers));
+									}
 								} else if (itemName.equals("selectbox")) {
-										if (inputData.containsKey(nameValue)) entryData.put(nameValue, inputData.get(nameValue));
+									if (inputData.containsKey(nameValue)) entryData.put(nameValue, inputData.get(nameValue));
 								} else if (itemName.equals("checkbox")) {
 									if (inputData.containsKey(nameValue) && ((String[])inputData.get(nameValue))[0].equals("on")) {
 										entryData.put(nameValue, new Boolean(true));
