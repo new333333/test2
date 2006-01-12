@@ -58,9 +58,9 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				pageContext.getOut().print(res.getString());
 				
 			} else if (_type == null || _type.equals("")) {
-				String jspStart = "/WEB-INF/jsp/tags/sliding_table/table_start.jsp";
-				String jspEnd = "/WEB-INF/jsp/tags/sliding_table/table_end.jsp";
-				String jspRow = "/WEB-INF/jsp/tags/sliding_table/table_row.jsp";
+				String jspStart = "/WEB-INF/jsp/tag_jsps/sliding_table/table_start.jsp";
+				String jspEnd = "/WEB-INF/jsp/tag_jsps/sliding_table/table_end.jsp";
+				String jspRow = "/WEB-INF/jsp/tag_jsps/sliding_table/table_row.jsp";
 				
 				// Output the table top
 				RequestDispatcher rd = httpReq.getRequestDispatcher(jspStart);
@@ -94,7 +94,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 
 			
 			} else if (_type != null && _type.equals("sliding")) {
-				String jspStart = "/WEB-INF/jsp/tags/sliding_table/sliding_table.jsp";
+				String jspStart = "/WEB-INF/jsp/tag_jsps/sliding_table/sliding_table.jsp";
 				
 				// Output the sliding table
 				RequestDispatcher rd = httpReq.getRequestDispatcher(jspStart);
