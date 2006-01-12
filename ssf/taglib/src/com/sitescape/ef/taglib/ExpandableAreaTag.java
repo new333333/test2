@@ -49,7 +49,7 @@ public class ExpandableAreaTag extends BodyTagSupport {
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 			
 			//Output the start of the area
-			RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tags/expandable_area/top.jsp");
+			RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/expandable_area/top.jsp");
 
 			Map _params = new HashMap();
 			_params.put("title", new String[] {this.title});
@@ -64,7 +64,7 @@ public class ExpandableAreaTag extends BodyTagSupport {
 			pageContext.getOut().print(_bodyContent);
 
 			//Output the end of the area
-			rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tags/expandable_area/bottom.jsp");
+			rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/expandable_area/bottom.jsp");
 			req = new DynamicServletRequest(httpReq, _params);
 			res = new StringServletResponse(httpRes);
 			rd.include(req, res);
