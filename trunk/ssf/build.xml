@@ -93,7 +93,7 @@
 	</target>
 
 	<target name="java2html">
-		<delete dir="api" />
+		<delete dir="${api.dir}" />
 
 		<ant dir="util" target="java2html" />
 		<ant dir="indexer-lucene" target="java2html" />
@@ -108,7 +108,7 @@
 	</target>
 
 	<target name="javadoc">
-		<delete dir="api" />
+		<delete dir="${api.dir}" />
 
 		<ant dir="util" target="javadoc" />
 		<ant dir="indexer-lucene" target="javadoc" />
