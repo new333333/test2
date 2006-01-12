@@ -151,7 +151,8 @@
 		</jsps>
 	</item>
 		
-	<item name="title" caption="__title" type="data" canBeDeleted="false" multipleAllowed="false" category="entryData">
+	<item name="title" caption="__title" type="data" canBeDeleted="false" 
+		multipleAllowed="false" category="entryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="title" 
 			  readonly="true" unique="//item[@type='data']">
@@ -942,6 +943,7 @@
 	<item name="startParallelThread" type="parallelThread" caption="__startParallelThread" >
 		<properties>
 			<property name="name" caption="__parallelStateName" type="text" path="//item[@name='state']" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" />
+			<property name="caption" caption="__parallelStateCaption" type="text" />
 			<property name="startState" caption="__startState" type="itemSelect" path="//item[@name='state']" />
 			<property name="endState" caption="__endState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
