@@ -8,11 +8,29 @@
   		<property file="${project.dir}/build.${user.name}.properties" />
   		<property file="${project.dir}/build.properties" />
 		<property name="generated.dir" value="${basedir}/generated" />
-		<path id="project.classpath">
-			<pathelement path="${classpath}" />
-			<fileset dir="${project.dir}/lib" includes="*.jar" />
+		<!-- Use explicit path elements rather than picking up every jar file
+		     in the system so that we can clearly document what subset of
+		     archives (both our own and 3rd party) we need to have on the
+		     client side -->
+		<path id="wsclient.project.classpath">
+			<pathelement path="${classes.dir};${project.dir}/remoting/classes" />
+			<pathelement location="${project.dir}/lib/spring.jar" />
+			<pathelement location="${project.dir}/lib/axis.jar" />
+			<pathelement location="${project.dir}/lib/axis-ant.jar" />
+			<pathelement location="${project.dir}/lib/jaxrpc.jar" />
+			<pathelement location="${project.dir}/lib/commons-logging.jar" />
+			<pathelement location="${project.dir}/lib/commons-discovery.jar" />
+			<pathelement location="${project.dir}/lib/saaj.jar" />
+			<pathelement location="${project.dir}/lib/wsdl4j.jar" />
+			<pathelement location="${project.dir}/lib/wss4j.jar" />
+			<pathelement location="${project.dir}/lib/addressing.jar" />
+			<pathelement location="${project.dir}/lib/bcprov-jdk13-128.jar.jar" />
+			<pathelement location="${project.dir}/lib/commons-codec.jar" />
+			<pathelement location="${project.dir}/lib/opensaml.jar" />
+			<pathelement location="${project.dir}/lib/xalan.jar" />
+			<pathelement location="${project.dir}/lib/xmlsec.jar" />
 		</path>
-		<taskdef resource="axis-tasks.properties" classpathref="project.classpath"/>
+		<taskdef resource="axis-tasks.properties" classpathref="wsclient.project.classpath"/>
 	</target>
 
 	<target name="clean" depends="init">
@@ -24,7 +42,7 @@
 	<target name="compile" depends="init">
 		<mkdir dir="${classes.dir}" />
 		<javac
-			classpathref="project.classpath"
+			classpathref="wsclient.project.classpath"
 			compiler="${javac.compiler}"
 			debug="${javac.debug}"
 			deprecation="${javac.deprecation}"
@@ -41,33 +59,13 @@
 		<java 
 			classname="com.sitescape.ef.samples.wsclient.MyFacadeClient"
 			classpath="${classes.dir}"
+			classpathref="wsclient.project.classpath"
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">
 			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
 			<arg value="74"/>
 			<arg value="491"/>
-			<!-- Use explicit path elements rather than picking up everything
-			     in the lib directory so that we can - for documentation 
-			     purpose - see what archive files are needed on the client
-			     side -->
-			<classpath>
-				<pathelement path="${classpath}" />
-				<pathelement location="${project.dir}/lib/spring.jar" />
-				<pathelement location="${project.dir}/lib/axis.jar" />
-				<pathelement location="${project.dir}/lib/jaxrpc.jar" />
-				<pathelement location="${project.dir}/lib/commons-logging.jar" />
-				<pathelement location="${project.dir}/lib/commons-discovery.jar" />
-				<pathelement location="${project.dir}/lib/saaj.jar" />
-				<pathelement location="${project.dir}/lib/wsdl4j.jar" />
-				<pathelement location="${project.dir}/lib/wss4j.jar" />
-				<pathelement location="${project.dir}/lib/addressing.jar" />
-				<pathelement location="${project.dir}/lib/bcprov-jdk13-128.jar.jar" />
-				<pathelement location="${project.dir}/lib/commons-codec.jar" />
-				<pathelement location="${project.dir}/lib/opensaml.jar" />
-				<pathelement location="${project.dir}/lib/xalan.jar" />
-				<pathelement location="${project.dir}/lib/xmlsec.jar" />
-			</classpath>
 		</java>
 	</target>
 	
@@ -75,7 +73,7 @@
 		<java 
 			classname="com.sitescape.ef.samples.wsclient.MyGeneratedFacadeClient"
 			classpath="${classes.dir}"
-			classpathref="project.classpath"
+			classpathref="wsclient.project.classpath"
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">

@@ -43,6 +43,7 @@
 		
 		<ant dir="util" target="clean" />
 		<ant dir="indexer-lucene" target="clean" />
+		<ant dir="remoting" target="clean" />
 
 		<ant dir="applets" target="clean" />
 
@@ -61,6 +62,7 @@
 	<target name="compile">
 		<ant dir="util" target="compile" />
 		<ant dir="indexer-lucene" target="compile" />			
+		<ant dir="remoting" target="compile" />			
 
 		<ant dir="main" target="compile-common" />
 
@@ -76,6 +78,7 @@
 	<target name="jar">
 		<ant dir="util" target="jar" />
 		<ant dir="indexer-lucene" target="jar" />
+		<ant dir="remoting" target="jar" />
 
 		<ant dir="applets" target="jar" />
 
@@ -97,6 +100,7 @@
 
 		<ant dir="util" target="java2html" />
 		<ant dir="indexer-lucene" target="java2html" />
+		<ant dir="remoting" target="java2html" />
 
 		<ant dir="applets" target="java2html" />
 
@@ -112,6 +116,7 @@
 
 		<ant dir="util" target="javadoc" />
 		<ant dir="indexer-lucene" target="javadoc" />
+		<ant dir="remoting" target="javadoc" />
 		
 		<ant dir="applets" target="javadoc" />
 

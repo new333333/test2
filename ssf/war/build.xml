@@ -35,6 +35,7 @@
 			<fileset dir="${project.dir}/util" includes="ssf-util.jar" />
 			<fileset dir="${project.dir}/taglib" includes="ssf-taglib.jar" />
 			<fileset dir="${project.dir}/indexer-lucene" includes="ssf-luceneapi.jar" />
+			<fileset dir="${project.dir}/remoting" includes="ssf-remotingapi.jar" />
 			<fileset dir="${project.dir}/lib" includes="${libraries.current}" />
 			<fileset dir="${project.dir}/lib" includes="jms.jar,mail.jar" />
 		</copy>
