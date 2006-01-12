@@ -43,7 +43,7 @@ public class FacadeClient {
 			int entryId = Integer.parseInt(args[1]);
 
 			ListableBeanFactory beanFactory = new FileSystemXmlApplicationContext(CLIENT_CONTEXT_CONFIG_LOCATION);
-			FacadeClient client = (FacadeClient) beanFactory.getBean("myFacadeClient");
+			FacadeClient client = (FacadeClient) beanFactory.getBean("facadeClient");
 
 			client.printEntry(binderId, entryId);
 		}

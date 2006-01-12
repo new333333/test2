@@ -63,7 +63,7 @@
 	
 	<target name="testRun" depends="compile">
 		<java 
-			classname="com.sitescape.ef.samples.wsclient.MyFacadeClient"
+			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
 			classpath="${classes.dir}"
 			classpathref="wsclient.project.classpath"
 			fork="true"
@@ -77,7 +77,7 @@
 	
 	<target name="testRun2" depends="compile">
 		<java 
-			classname="com.sitescape.ef.samples.wsclient.MyGeneratedFacadeClient"
+			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
 			classpathref="wsclient.project.classpath"
 			fork="true"

@@ -15,12 +15,12 @@
 		<property name="portInterface"><value>com.sitescape.ef.remoting.rmi.RemoteFacade</value></property>
 		<property name="servicePostProcessors">
 			<list>
-				<bean class="com.sitescape.ef.samples.wsclient.BeanMappingServicePostProcessor"/>
+				<bean class="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.BeanMappingServicePostProcessor"/>
 			</list>
 		</property>
 	</bean>
 	
-	<bean id="myFacadeClient" class="com.sitescape.ef.samples.wsclient.MyFacadeClient">
+	<bean id="facadeClient" class="com.sitescape.ef.samples.remoting.client.FacadeClient">
 		<property name="facade"><ref bean="jaxRpcProxy"/></property>
 	</bean>
 </beans>
