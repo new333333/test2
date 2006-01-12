@@ -2,6 +2,7 @@
 package com.sitescape.ef.domain;
 import java.io.FileWriter;
 import java.io.FileInputStream;
+import java.util.List;
 
 import org.dom4j.Document;
 import org.dom4j.io.XMLWriter;
@@ -170,4 +171,6 @@ public class Definition extends PersistentTimestampObject implements AclControll
     public void setInheritAclFromParent(boolean inherit) {
         this.inheritAclFromParent = inherit;
     }
+    
+
 }

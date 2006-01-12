@@ -10,6 +10,7 @@ import java.util.HashSet;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.util.CollectionUtil;
 import java.util.Collection;
+import com.sitescape.util.Validator;
 
 
 /**
@@ -65,6 +66,7 @@ public abstract class Entry extends PersistentLongIdTimestampObject
      public WorkflowState getWorkflowState(Long id) {
      	//Make sure initialized
      	getWorkflowStates();
+     	
 		WorkflowState ws=null;
 		for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
 			ws = (WorkflowState)iter.next();
@@ -72,6 +74,22 @@ public abstract class Entry extends PersistentLongIdTimestampObject
 		}
 		return null;
      }
+     public WorkflowState getWorkflowStateByThread(Definition def, String threadName) {
+      	//Make sure initialized
+      	getWorkflowStates();
+      	
+ 		WorkflowState ws=null;
+ 		for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
+ 			ws = (WorkflowState)iter.next();
+ 			if (!def.equals(ws.getDefinition())) continue;
+ 			if (Validator.isNull(ws.getThreadName())) {
+ 				if (Validator.isNull(threadName)) return ws; 
+ 			} else {
+ 				if (ws.getThreadName().equals(threadName)) return ws;
+ 			}
+ 		}
+ 		return null;
+      }
      public void addWorkflowState(WorkflowState state) {
      	if (state == null) return;
     	//Make sure initialized

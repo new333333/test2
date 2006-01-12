@@ -17,6 +17,7 @@ import com.sitescape.ef.security.AccessControlException;
  * @author Jong Kim
  */
 public interface EntryProcessor {
+    public static final String PROCESSOR_KEY = "processorKey_binderCoreProcessor";
 
     /**
      * This key is used to uniquely identify a type of processor (ie, a 
@@ -40,5 +41,5 @@ public interface EntryProcessor {
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries) throws AccessControlException;
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries, Document qTree) throws AccessControlException;
 	public void indexBinder(Binder binder);
-	   	  
+	public void indexEntry(AclControlledEntry entry);   	  
 }

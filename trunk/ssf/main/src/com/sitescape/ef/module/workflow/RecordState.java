@@ -11,14 +11,9 @@ import com.sitescape.ef.module.shared.WorkflowUtils;
 
 public class RecordState extends AbstractActionHandler {
 	  private static final long serialVersionUID = 1L;
-	  private String state;
-	  
-	  public void setWfState(String state) {
-		  this.state = state;
-	  }
 	  public void execute( ExecutionContext executionContext ) throws Exception {
 		  Token token = executionContext.getToken();
-		  state = token.getNode().getName();
+		  String state = token.getNode().getName();
 		  ContextInstance ctx = executionContext.getContextInstance();
 		  Long id = new Long(token.getId());
 		  Long entryId = (Long)ctx.getVariable(WorkflowUtils.ENTRY_ID);

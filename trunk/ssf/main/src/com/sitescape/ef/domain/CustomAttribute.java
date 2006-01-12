@@ -10,8 +10,6 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import com.sitescape.ef.domain.PersistentObject;
-
 import com.sitescape.ef.util.CollectionUtil;
 import com.sitescape.util.Validator;
 import org.dom4j.Document;
@@ -41,6 +39,8 @@ public class CustomAttribute  {
     protected SSBlobXML xmlValue;
     protected Boolean booleanValue;
     protected Set values;
+    protected User user;
+
     protected int valueType=NONE;
     	private static final int NONE=0;
     	public static final int STRING= 1;
@@ -53,6 +53,7 @@ public class CustomAttribute  {
        	public static final int XML=8;
        	public static final int EVENT=9;
        	public static final int ATTACHMENT=10;
+       	public static final int USER=11;
    protected String name;
    protected AnyOwner owner;
    protected String id;
@@ -186,9 +187,10 @@ public class CustomAttribute  {
     private void setValues(Set values) {
     	this.values = values;
     }
-    /**
-     * @hibernate.property 
-     */   	
+
+   /**
+    * @hibernate.property 
+    */   	
     public int getValueType() {
     	return this.valueType;
     }
@@ -306,7 +308,11 @@ public class CustomAttribute  {
          	e.setName(name);
         	owner.getEntry().addEvent(e);
          	stringValue = e.getId();
-          } else {
+         } else if (value instanceof User) {
+        	clearVals();
+        	valueType = USER;
+        	user = (User)value;
+         } else {
             if (valueType != SERIALIZED) clearVals();
             valueType = SERIALIZED;
             serializedValue = new SSBlobSerializable(value);
