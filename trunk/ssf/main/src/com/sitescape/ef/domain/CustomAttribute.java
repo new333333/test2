@@ -173,7 +173,16 @@ public class CustomAttribute  {
     private void setBooleanValue(Boolean value) {
         this.booleanValue = value;
     }  
-    
+    /**
+     * @hibernate.many-to-one
+     * 
+     */
+    private User getUserValue() {
+    	return this.user;
+    }
+    private void setUserValue(User user) {
+    	this.user = user;
+    }
     /**
      * @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan"  batch-size="4" 
      * @hibernate.key column="parent"
@@ -348,6 +357,8 @@ public class CustomAttribute  {
     		    return owner.getEntry().getEvent(stringValue);
     		case ATTACHMENT:
     			return owner.getEntry().getAttachment(stringValue);
+    		case USER:
+    			return user;
  	    }
 	    return null;
 	}
