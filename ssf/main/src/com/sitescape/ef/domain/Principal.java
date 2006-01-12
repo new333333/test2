@@ -40,8 +40,6 @@ public abstract class Principal extends AclControlledEntry  {
     protected Long preferredWorkspaceId;
     protected boolean reserved;
     protected boolean defaultIdentity;
-    //events the principal is assigned to
-    protected List assignments;
 	/**
  	 * @hibernate.map  lazy="true" inverse="true" cascade="all,delete-orphan" embed-xml="false"
  	 * @hibernate.key column="principal"
@@ -139,35 +137,7 @@ public abstract class Principal extends AclControlledEntry  {
 	public void setSignature(String signature) {
 	    this.signature = signature;
 	} 
-    /**
-     * @hibernate.bag table="SS_AssignmentsMap" lazy="true" inverse="true" cascade="persist,merge,save-update" optimistic-lock="false" embed-xml="false"
-     * @hibernate.key column="principal"
-	 * @hibernate.many-to-many fetch="join" class="com.sitescape.ef.domain.Event"
-	 * @hibernate.column name="event" sql-type="char(32)"
-    */
-	private List getHAssignments() {return assignments;}
-	private void setHAssignments(List assignments) {this.assignments = assignments;}
-     
-	public List getAssignments() {
-     	if (assignments == null) assignments = new ArrayList();
-     	return assignments;
-     }
-     public void setAssigments(Collection newAssigments) {
-   		if (assignments == null) assignments = new ArrayList();
-		Set newM = CollectionUtil.differences(newAssigments, assignments);
-		Set remM = CollectionUtil.differences(assignments, newAssigments);
-		this.assignments.addAll(newM);
-		this.assignments.removeAll(remM);
-		for (Iterator iter=newM.iterator(); iter.hasNext();) {
-			Event e = (Event)iter.next();
-			e.getAssignees().add(this);
-		}
-		for (Iterator iter=newM.iterator(); iter.hasNext();) {
-			Event e = (Event)iter.next();
-			e.getAssignees().remove(this);
-		}
-     } 	
-     
+ 
      /**
      * @hibernate.property 
      * @return Return disabled

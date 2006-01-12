@@ -20,7 +20,6 @@ import com.sitescape.ef.security.AccessControlException;
  */
 public interface FolderCoreProcessor extends EntryProcessor {
 
-    public static final String PROCESSOR_KEY = "processorKey_folderCoreProcessor";
 
     public Long addReply(FolderEntry parent, Definition def, Map inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;

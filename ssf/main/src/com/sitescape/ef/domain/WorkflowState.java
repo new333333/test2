@@ -1,12 +1,14 @@
 package com.sitescape.ef.domain;
 
 import java.util.Map;
+import java.util.List;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.util.Validator;
 
 /**
  * @hibernate.class table="SS_WorkflowStates" dynamic-update="true"
@@ -21,6 +23,10 @@ public class WorkflowState {
     protected AnyOwner owner;
     protected long lockVersion;
 	
+	//cached during transaction as needed 
+	protected List wfWaits=null;
+	protected String endState=null;
+	protected List wfStarts=null;
    
  	public Long getId() {
  		return tokenId;
@@ -70,6 +76,10 @@ public class WorkflowState {
  	}
  	public void setState(String state) {
  		this.state = state;
+ 		//on state change, clear cached values associated with previous state
+ 		endState=null;
+ 		wfWaits=null;
+ 		wfStarts = null;
  	}
 
     /**
@@ -139,6 +149,36 @@ public class WorkflowState {
         	}
     	}
     	return stateCaption;
+    }
+    
+    /**
+     * Waits are cached in this object, but not persisted here
+     * @return
+     */
+    public List getWfWaits() {
+    	if (wfWaits == null)
+    		wfWaits = WorkflowUtils.getParallelThreadWaits(definition, state);
+    	return wfWaits;
+    	
+    }
+    public List getWfStarts() {
+    	if (wfStarts == null) wfStarts = WorkflowUtils.getParallelThreadStarts(definition, state);
+    	return wfStarts; 
+    }
+    
+    public String getThreadEndState() {
+    	if (Validator.isNull(threadName)) {
+    		throw new IllegalArgumentException("Not a thread");
+    	}
+    	if (endState == null)
+    		endState = WorkflowUtils.getThreadEndState(definition, threadName);
+    	return endState;
+    	   	
+    }
+    public boolean isThreadEndState() {
+    	if (Validator.isNull(threadName)) return false;
+    	if (state.equals(getThreadEndState())) return true;
+    	return false;
     }
  	
 }

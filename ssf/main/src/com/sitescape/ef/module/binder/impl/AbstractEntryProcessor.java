@@ -113,12 +113,13 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         
         addEntry_postSave(binder, entry, inputData, entryData);
         
+        //After the entry is successfully added, start up any associated workflows
+        addEntry_startWorkflow(entry);
+
         // This must be done in a separate step after persisting the entry,
         // because we need the entry's persistent ID for indexing. 
         addEntry_indexAdd(binder, entry, inputData);
         
-        //After the entry is successfully added, start up any associated workflows
-        addEntry_startWorkflow(entry);
         
         return entry.getId();
     }
@@ -262,21 +263,13 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     }
     
     protected void modifyEntry_indexAdd(Binder binder, AclControlledEntry entry, Map inputData) {
-        
-        // Create an index document from the entry object.
-        org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry);
-        
-        // Delete the document that's currently in the index.
-        IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
-        
-        // Register the index document for indexing.
-        IndexSynchronizationManager.addDocument(indexDoc);        
+    	indexEntry(entry);
     }
     
     //***********************************************************************************************************
     public void modifyWorkflowState(Binder binder, Long entryId, Long tokenId, String toState) {
 
-    	Entry entry = entry_load(binder, entryId);
+    	AclControlledEntry entry = entry_load(binder, entryId);
  		
 		//Find the workflowState
 		WorkflowState ws = entry.getWorkflowState(tokenId);
@@ -287,6 +280,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 			if (transitions.containsKey(toState)) {
 				//It is ok to transition to this state; go do it
 				getWorkflowModule().modifyWorkflowState(ws.getTokenId(), ws.getState(), toState);
+	    		indexEntry(entry);
 			}
 		}
     }
@@ -353,7 +347,19 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     }
    	protected abstract SFQuery indexBinder_getQuery(Binder binder);
  
-
+    //***********************************************************************************************************
+   	public void indexEntry(AclControlledEntry entry) {
+		// 	Create an index document from the entry object.
+   		org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(entry.getParentBinder(), entry);
+        
+        
+        // Delete the document that's currently in the index.
+        IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
+            
+        // Register the index document for indexing.
+        IndexSynchronizationManager.addDocument(indexDoc);        
+        
+   	}
     //***********************************************************************************************************
     public Map getBinderEntries(Binder binder, String[] entryTypes, int maxChildEntries) {
     	org.dom4j.Document qTree = null;

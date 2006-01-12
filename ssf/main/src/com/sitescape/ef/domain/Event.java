@@ -233,7 +233,6 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
 
   protected AnyOwner owner;
   protected boolean timeZoneSensitive=false;
-  protected List assignees;
   protected String name;
    
  /* Constructors */
@@ -310,35 +309,7 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
     public void setName(String name) {
         this.name = name;
     }
-  /**
-	* @hibernate.bag table="SS_AssignmentsMap" lazy="true" inverse="false" cascade="persist,merge,save-update"
-	* @hibernate.key column="event" 
-	* hibernate.key-column name="event" sql-type="char(32)"
-	* @hibernate.many-to-many column="principal" fetch="join" class="com.sitescape.ef.domain.Principal"
-	*/
-  private List getHAssignees() {return assignees;}
-  private void setHAssignees(List assignees) {this.assignees = assignees;}
-  
-  public List getAssignees() {
-  	if (assignees == null) assignees = new ArrayList();
-  	return assignees;
-  }
-  public void setAssignees(Collection newAssignees) {
-		if (assignees == null) assignees = new ArrayList();
-	Set newM = CollectionUtil.differences(newAssignees, assignees);
-	Set remM = CollectionUtil.differences(assignees, newAssignees);
-	this.assignees.addAll(newM);
-	this.assignees.removeAll(remM);
-	for (Iterator iter=newM.iterator(); iter.hasNext();) {
-		Principal p = (Principal)iter.next();
-		p.getAssignments().add(this);
-	}
-	for (Iterator iter=newM.iterator(); iter.hasNext();) {
-		Principal p = (Principal)iter.next();
-		p.getAssignments().remove(this);
-	}
- } 	
-  
+
   /**
    * Get a string representation of the start time of the recurrence.
    * @return A string representing the start time.

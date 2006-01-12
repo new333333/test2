@@ -10,7 +10,8 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Definition;
-
+import com.sitescape.ef.util.SZoneConfig;
+import com.sitescape.ef.domain.WfWaits;
 /**
  * @author hurley
  *
@@ -20,11 +21,10 @@ import com.sitescape.ef.domain.Definition;
  *
  */
 public class WorkflowUtils {
-	
     // Defines variable names
     public final static String ENTRY_TYPE = "__entryType";
     public final static String ENTRY_ID = "__entryId";
-    
+       
     public static Map getManualTransitions(Definition wfDef, String stateName) {
 		Map transitionData = new LinkedHashMap();
 		Document wfDoc = wfDef.getDefinition();
@@ -113,4 +113,61 @@ public class WorkflowUtils {
 		return parallelExecutions;
     }
     
+    /**
+     * Return a lists of WfWaits objects. Represents all of the thread waits
+     * for the current state
+     * @param wfDef
+     * @param stateName
+     * @return
+     */
+    public static List getParallelThreadWaits(Definition wfDef, String stateName) {
+		List parallelExecutions = new ArrayList();
+		Document wfDoc = wfDef.getDefinition();
+		Element wfRoot = wfDoc.getRootElement();
+		//Find the current state in the definition
+		Element statePropertyEle = (Element) wfRoot.selectSingleNode(
+				"//item[@name='workflowProcess']/item[@name='state']"+
+				"/properties/property[@name='name' and @value='"+stateName+"']");
+		if (statePropertyEle != null) {
+			Element stateEle = statePropertyEle.getParent().getParent();
+			//Build a list of all parallel executions for this state
+			List waitParallelExecutions = stateEle.selectNodes(
+					"./item[@name='waitForParallelThread']");
+			if (waitParallelExecutions != null) {
+				for (int j = 0; j < waitParallelExecutions.size(); j++) {
+					//Get the "startState" property
+					List parallelThreads = (List) ((Element) 
+							waitParallelExecutions.get(j)).selectNodes(
+							"./properties/property[@name='name']");
+					Element transitionEle = (Element) ((Element) 
+							waitParallelExecutions.get(j)).selectSingleNode(
+							"./properties/property[@name='toState']");
+					List result = new ArrayList();
+					for (int k=0; k<parallelThreads.size(); ++k) {
+						Element thread = (Element)parallelThreads.get(k);
+						result.add(thread.attributeValue("value",""));
+					}
+					parallelExecutions.add(new WfWaits((String)transitionEle.attributeValue("value", ""),result));
+					
+				}
+			}
+		}
+		return parallelExecutions;
+    }
+    public static String getThreadEndState(Definition wfDef, String threadName) {
+		Document wfDoc = wfDef.getDefinition();
+		Element wfRoot = wfDoc.getRootElement();
+		//Find the thread definition
+		Element threadEle = (Element) wfRoot.selectSingleNode(
+				"//item[@name='workflowProcess']/item[@name='state']"+
+				"/item[@name='startParallelThread']" +
+				"/properties/property[@name='name' and @value='"+threadName+"']");
+		if (threadEle != null) {
+			Element properties = threadEle.getParent();
+			Element waitFor = (Element)properties.selectSingleNode("./property[@name='endState']");
+			if (waitFor != null) return waitFor.attributeValue("value");
+		}
+		return null;
+    }
+ 
 }

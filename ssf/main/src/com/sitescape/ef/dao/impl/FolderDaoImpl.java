@@ -165,7 +165,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	   				.setString("type", AnyOwner.FOLDERENTRY)
 	   				.executeUpdate();
        	   		//need to remove event assignments
-       	   		List eventIds = session.createQuery("select id from com.sitescape.ef.domain.Event where ownerId=:owner and ownerType=:type")
+ /*      	   		List eventIds = session.createQuery("select id from com.sitescape.ef.domain.Event where ownerId=:owner and ownerType=:type")
            	   			.setLong("owner", entry.getId().longValue())
            	   			.setString("type", AnyOwner.FOLDERENTRY)
            	   			.list();
@@ -183,12 +183,13 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
        	   			} catch (SQLException sq) {
        	   				throw new HibernateException(sq);
        	   			}
-       	   			session.createQuery("DELETE com.sitescape.ef.domain.Event where ownerId=:owner and ownerType=:type")
+       	   		}
+*/
+       	   		session.createQuery("DELETE com.sitescape.ef.domain.Event where ownerId=:owner and ownerType=:type")
        	   			.setLong("owner", entry.getId().longValue())
        	   			.setString("type", AnyOwner.FOLDERENTRY)
        	   			.executeUpdate();
-       	   		}
-    	   		session.createQuery("DELETE com.sitescape.ef.domain.CustomAttribute where ownerId=:owner and ownerType=:type")
+       	   		session.createQuery("DELETE com.sitescape.ef.domain.CustomAttribute where ownerId=:owner and ownerType=:type")
    	   				.setLong("owner", entry.getId().longValue())
    	   				.setString("type", AnyOwner.FOLDERENTRY)
    	   				.executeUpdate();
