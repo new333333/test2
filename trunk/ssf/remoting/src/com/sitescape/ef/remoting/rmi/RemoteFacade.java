@@ -10,12 +10,14 @@ import com.sitescape.ef.remoting.api.Entry;
  * It differs from <code>Facade</code> interface only in the remote
  * exception thrown. 
  * <p>
- * This class is NOT used. Most JAX-RPC implementations (including Axis)
+ * The JAX-RPC endpoint class <code>JaxRpcFacade</code> implements this
+ * RMI port interface which mirros the business interface <code>Facade</code>
+ * but complies to RMI conventions. Alternatively, we could choose not to
+ * use this class because most JAX-RPC implementations (including Axis)
  * accept endpoint class that just implements a business interface. 
- * If not, the endpoint class will have to implement this RMI port interface
- * which mirrors the business interface but complies to RMI conventions.
+ * However specifying RMI interface might give adgantages on certain
+ * JAX-RPC implementations, so we will use it. 
  *  
- * 
  * @author jong
  *
  */
