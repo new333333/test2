@@ -1,6 +1,8 @@
 <% // User list %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="formName" type="String" scope="request" />
+<jsp:useBean id="property_name" type="String" scope="request" />
 <%
 	String elementName = (String) request.getAttribute("property_name");
 	String caption = (String) request.getAttribute("property_caption");
@@ -16,17 +18,18 @@
 		caption = "<b>"+caption+"</b><br>";
 	}
 %>
+<c:set var="prefix" value="${formName}_${property_name}" />
 <c:if test="${empty ss_user_list_support_stuff_loaded}">
 <script language="JavaScript" src="<html:rootPath/>js/common/taconite-client.js"></script>
 <script language="JavaScript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
 <script language="JavaScript" type="text/javascript">
 var ss_userList_searchText = ""
 var ss_userList_searchType = "lastName"
-function ss_userListSetSearchType(type) {
+function ss_userListSetSearchType(type, elementName) {
 	ss_userList_searchType = type;
 	if (ss_userList_searchText != "") {
 		//Re-do the search with the new type
-		ss_userListSearch(ss_userList_searchText, "<%= elementName %>");
+		ss_userListSearch(ss_userList_searchText, elementName);
 	}
 }
 function ss_userListSearch(text, elementName) {
@@ -76,6 +79,7 @@ function ss_postUserListRequest(obj) {
 		    </ul>
 		  </div>
 		</div>
+		<input type="hidden" name="<%= elementName %>">
 	</td>
 	<td valign="middle">
 	  <div style="margin:0px; padding:0px;"><img 
@@ -105,13 +109,13 @@ function ss_postUserListRequest(obj) {
 	    </td>
 	    <td valign="top">
 	      <input type="radio" name="ss_userList_searchType" value="firstName"
-	        onClick="ss_userListSetSearchType(this.value);">
+	        onClick="ss_userListSetSearchType(this.value, '<%= elementName %>');">
 	      <ssf:nlt tag="userlist.firstName" text="First name"/><br>
 	      <input type="radio" name="ss_userList_searchType" value="lastName" checked
-	        onClick="ss_userListSetSearchType(this.value);">
+	        onClick="ss_userListSetSearchType(this.value, '<%= elementName %>');">
 	      <ssf:nlt tag="userlist.lastName" text="Last name"/><br>
 	      <input type="radio" name="ss_userList_searchType" value="loginName"
-	        onClick="ss_userListSetSearchType(this.value);">
+	        onClick="ss_userListSetSearchType(this.value, '<%= elementName %>');">
 	      <ssf:nlt tag="userlist.loginName" text="Login name"/>
 	    </td>
 	  </tr>
@@ -122,6 +126,20 @@ function ss_postUserListRequest(obj) {
 <script language="JavaScript" type="text/javascript">
   ss_DragDrop.makeListContainer( document.getElementById('added_<%= elementName %>'));
   ss_DragDrop.makeListContainer( document.getElementById('available_<%= elementName %>'));
+
+function ss_saveUserListData_<portlet:namespace/>_${prefix}() {
+	var elementObj = document.getElementById('<%= elementName %>');
+	var addedObj = document.getElementById('added_<%= elementName %>');
+
+	var s = "";
+	var items = addedObj.getElementsByTagName( "li" );
+	for (var i = 0; i < items.length; i++) {
+		s += items[i].id + " ";
+	}
+	elementObj.value = s;
+	return true;
+}
+createOnSubmitObj('${prefix}onSubmit', '${formName}', ss_saveUserListData_<portlet:namespace/>_${prefix});
 </script>
 
 <div id="debugLog">
