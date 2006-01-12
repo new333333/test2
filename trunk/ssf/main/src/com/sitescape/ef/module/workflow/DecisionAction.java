@@ -25,7 +25,7 @@ public class DecisionAction extends AbstractActionHandler {
 		AclControlledEntry entry = loadEntry(ctx);
 		WorkflowState ws = entry.getWorkflowState(id);
 		if (ws != null) {
-			logger.info("Workflow decision start:" + ws.getState() + ws.getThreadName());
+			logger.info("Begin decision :" + ws.getState() + ":" + ws.getThreadName());
 			if (ws.isThreadEndState()) {
 				//terminate - record event will kick off waiting threads
 				executionContext.getToken().end(false);	    
@@ -57,7 +57,7 @@ public class DecisionAction extends AbstractActionHandler {
 							}							
 						}
 						if (done) {
-							logger.info("Workflow decision transition: " + ws.getState() + "." + toState);
+							logger.info("Decision transition("+ ws.getThreadName() + "): " + ws.getState() + "." + toState);
 							token.getNode().leave(executionContext, ws.getState() + "." + toState);
 							return;
 						}
@@ -65,7 +65,7 @@ public class DecisionAction extends AbstractActionHandler {
 					}
 				}
 			}
-			logger.info("Workflow decision end:" + ws.getState() + ws.getThreadName());
+			logger.info("End decision:" + ws.getState() + ":" + ws.getThreadName());
 		}
 	}
 

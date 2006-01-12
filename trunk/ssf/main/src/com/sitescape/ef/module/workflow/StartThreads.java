@@ -19,8 +19,7 @@ import com.sitescape.ef.domain.AclControlledEntry;
 import com.sitescape.ef.module.shared.WorkflowUtils;
 
 /**
- * This node action starts parallel threads then proceeds to the only
- * transition.
+ * This node-enter action starts parallel threads .
  * @author Janet McCann
  *
  */
@@ -33,16 +32,14 @@ public class StartThreads extends AbstractActionHandler {
 		Token token = executionContext.getToken();
 		Long id = new Long(token.getId());
 		Node current = token.getNode();
-		String actualName = current.getName();
-		int index = actualName.indexOf(".startThreads");
-		actualName = actualName.substring(0, index);
+		String stateName = current.getName();
 		AclControlledEntry entry = loadEntry(ctx);
 		WorkflowState ws = entry.getWorkflowState(id);
-		logger.info("Begin start threads: " + actualName);
+		logger.info("Begin start threads: " + stateName);
 		if (ws != null) {
 			//See if any parallel executions should be started
 			//Note,we are in an intermediate state
-			List parallelThreadStarts = WorkflowUtils.getParallelThreadStarts(ws.getDefinition(), actualName);
+			List parallelThreadStarts = WorkflowUtils.getParallelThreadStarts(ws.getDefinition(), stateName);
 			try {
 				ctx.setTransientVariable("ignoreChecks", "");
 				for (int i = 0; i < parallelThreadStarts.size(); i++) {
@@ -55,8 +52,7 @@ public class StartThreads extends AbstractActionHandler {
 				ctx.setTransientVariable("ignoreChecks", null);				
 			}
 		}
-		current.leave(executionContext);
-		logger.info("End start threads: " + actualName);
+		logger.info("End start threads: " + stateName);
 	}
 	  
 	protected void startParallelWorkflowThread(AclControlledEntry entry, String threadName, String startState, 
