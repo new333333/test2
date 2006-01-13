@@ -23,7 +23,7 @@ import org.quartz.Scheduler;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.module.mail.JavaMailSender;
 
 /**
@@ -95,23 +95,23 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
     }
 
 		
-    public void schedule(Folder folder, JavaMailSender mailSender, MimeMessage mail, File fileDir) {
+    public void schedule(Binder binder, JavaMailSender mailSender, MimeMessage mail, File fileDir) {
 		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
 		//each job is new = don't use verify schedule, cause this a unique
 		GregorianCalendar start = new GregorianCalendar();
 		start.add(Calendar.HOUR_OF_DAY, 1);
 			
-		//add time to jobName - may have multple from same folder
-	 	String jobName =  folder.getId() + "-" + start.getTime().getTime();
-	   	String description = SSStatefulJob.trimDescription(start.getTime() + ":" + folder.toString());
+		//add time to jobName - may have multple from same binder
+	 	String jobName =  binder.getId() + "-" + start.getTime().getTime();
+	   	String description = SSStatefulJob.trimDescription(start.getTime() + ":" + binder.toString());
 	 	String className = this.getClass().getName();
 	  	try {		
 			JobDetail jobDetail = new JobDetail(jobName, RETRY_NOTIFICATION_GROUP, 
 					Class.forName(className),false, false, false);
 			jobDetail.setDescription(description);
 			JobDataMap data = new JobDataMap();
-			data.put("folder",folder.getId());
-			data.put("zoneName",folder.getZoneName());
+			data.put("binder",binder.getId());
+			data.put("zoneName",binder.getZoneName());
 			
 			if(!fileDir.exists())
 				fileDir.mkdirs();
