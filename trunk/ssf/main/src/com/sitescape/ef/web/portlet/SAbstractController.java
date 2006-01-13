@@ -86,13 +86,6 @@ public abstract class SAbstractController extends AbstractController {
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
-	public void setForumActionModule(ForumActionModule forumActionModule) {
-		this.forumActionModule = forumActionModule;
-	}
-	
-	protected ForumActionModule getForumActionModule() {
-		return forumActionModule;
-	}	
 
 	protected WorkflowModule getWorkflowModule() {
 		return workflowModule;

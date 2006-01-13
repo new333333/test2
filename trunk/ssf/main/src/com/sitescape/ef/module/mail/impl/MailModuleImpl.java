@@ -36,6 +36,8 @@ import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.UserNotification;
@@ -57,7 +59,7 @@ import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.module.mail.JavaMailSender;
 import com.sitescape.ef.jobs.FailedEmail;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.javamail.MimeMessagePreparator;
+import com.sitescape.ef.module.mail.MimeMessagePreparator;
 import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.MailAuthenticationException;
@@ -100,8 +102,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	public void setMailSender(JavaMailSender mailSender) {
 		this.mailSender = mailSender;
 	}
-	public File getMailDirPath(Folder folder) {
-		return new File(new StringBuffer(dataRootDir).append(folder.getZoneName()).append(File.separator).append(subDirName).append(File.separator).append(folder.getId().toString()).append(File.separator).toString());
+	public File getMailDirPath(Binder binder) {
+		return new File(new StringBuffer(dataRootDir).append(binder.getZoneName()).append(File.separator).append(subDirName).append(File.separator).append(binder.getId().toString()).append(File.separator).toString());
 	}
 	public String getMailProperty(String zoneName, String name) {
 		String val = SZoneConfig.getString(zoneName, "mailConfiguration/property[@name='" + name + "']");
@@ -115,13 +117,28 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		if (result == null) return null;
 		return result.attributeValue(name);
 	}
-	public String getMailAttribute(Folder folder, String node, String name) {
-		
-		String result = getMailAttribute(folder.getZoneName(), "folder[@id='" + folder.getId().toString() +"']/" + node, name);
-		if (result != null) return result;
-		return getMailAttribute(folder.getZoneName(), node, name);
-	}
 
+	public String getMailAttribute(Workspace ws, String node, String name) {
+		String result = getMailAttribute(ws.getZoneName(), "binder[@id='" + ws.getId().toString() +"']/" + node, name);
+		if (result != null) return result;
+		if (ws.getOwningWorkspace() != null) {
+			return getMailAttribute(ws.getOwningWorkspace(), node, name);
+		}
+		return getMailAttribute(ws.getZoneName(), node, name);
+	}
+	public String getMailAttribute(Folder folder, String node, String name) {
+		String result = getMailAttribute(folder.getZoneName(), "binder[@id='" + folder.getId().toString() +"']/" + node, name);
+		if (result != null) return result;
+		if (folder.getParentFolder() != null) {
+			return getMailAttribute(folder.getParentFolder(), node, name);
+		}
+		return getMailAttribute(folder.getOwningWorkspace(), node, name);
+	}
+	public String getMailAttribute(Binder binder, String node, String name) {
+		String result = getMailAttribute(binder.getZoneName(), "binder[@id='" + binder.getId().toString() +"']/" + node, name);
+		if (result != null) return result;
+		return getMailAttribute(binder.getOwningWorkspace(), node, name);
+	}
 	private synchronized JavaMailSender getSender(String jndiName) {
 		if (mailSenders.containsKey(jndiName)) 
 			return (JavaMailSender)mailSenders.get(jndiName);
@@ -138,9 +155,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			return null;
 		}
 	}
-	public JavaMailSender getMailSender(Folder folder) {
+	public JavaMailSender getMailSender(Binder binder) {
 		JavaMailSender sender=null;
-		String jndiName = PortabilityUtil.getJndiName(getMailAttribute(folder, "notify", "session"));
+		String jndiName = PortabilityUtil.getJndiName(getMailAttribute(binder, "notify", "session"));
 		if (!Validator.isNull(jndiName)) 
 	    sender = getSender(jndiName);
 		if (sender == null) throw new ConfigurationException("Missing JavaMailSender bean");
@@ -234,6 +251,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}
 		
 	}
+
     public Date sendNotifications(Long folderId, Date start) {
         String zoneName = RequestContextHolder.getRequestContext().getZoneName();
  		Folder folder = (Folder)coreDao.loadBinder(folderId, zoneName); 
@@ -263,7 +281,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		//expect results will maintain order used to do lookup
 		Object[] results = processor.validateIdList(entries, userIds);
 		JavaMailSender mailSender = getMailSender(folder);
-		MimeHelper mHelper = new MimeHelper(mailSender, processor, folder, start);
+		MimeHelper mHelper = new MimeHelper(processor, folder, start);
+		mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
 		mHelper.setAddrs(us);
 
 		for (int i=0; i<results.length; ++i) {
@@ -331,6 +350,21 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     	return true;
     }
 
+    public void sendMail(Binder binder, MimeMessagePreparator mHelper) {
+		JavaMailSender mailSender = getMailSender(binder);
+		mHelper.setDefaultFrom(mailSender.getDefaultFrom());
+		//Use spring callback to wrap exceptions into something more useful than javas 
+		try {
+			mailSender.send(mHelper);
+		} catch (MailSendException sx) {
+    		logger.error("Error sending mail:" + sx.getMessage());
+	  		FailedEmail process = (FailedEmail)processorManager.getProcessor(binder, FailedEmail.PROCESSOR_KEY);
+	   		process.schedule(binder, mailSender, mHelper.getMessage(), getMailDirPath(binder));
+	    	} catch (Exception ex) {
+       		logger.error(ex.getMessage());
+    	} 
+
+	}
     /*
      * Parse the distribution list.  Explode all groups in the list to
      * their user member ids.  Keep list of users requesting individual style
@@ -382,22 +416,16 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		String[] addrs;
 		MimeMessage message;
 		String messageType;
-		JavaMailSender mailSender;
 		Date startDate;
-
-		private MimeHelper(JavaMailSender mailSender, FolderEmailFormatter processor, Folder folder, Date startDate) {
+		String defaultFrom;
+		
+		private MimeHelper(FolderEmailFormatter processor, Folder folder, Date startDate) {
 			this.processor = processor;
 			this.folder = folder;
-			this.mailSender = mailSender;
-			this.startDate = startDate;
-			
-		}
-		protected MimeMessage getMessage() {
-			return message;
+			this.startDate = startDate;			
 		}
 		protected void setToIds(Collection toIds) {
-			this.toIds = toIds;
-			
+			this.toIds = toIds;			
 		}
 		protected void setEntries(Collection entries) {
 			this.entries = entries;
@@ -407,6 +435,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}
 		protected void setType(String type) {
 			messageType = type;
+		}
+		public MimeMessage getMessage() {
+			return message;
+		}
+		public void setDefaultFrom(String from) {
+			this.defaultFrom = from;
 		}
 		public void prepare(MimeMessage mimeMessage) throws MessagingException {
 			//make sure nothing saved yet
@@ -441,7 +475,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			}
 			String from = processor.getFrom(folder, notify);
 			if (Validator.isNull(from)) {
-				from = mailSender.getDefaultFrom();
+				from = defaultFrom;
 			}
 			helper.setFrom(from);
 			if (addrs != null) { 

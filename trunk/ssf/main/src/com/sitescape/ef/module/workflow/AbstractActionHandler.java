@@ -23,6 +23,7 @@ import com.sitescape.ef.module.binder.EntryProcessor;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
+import com.sitescape.ef.module.mail.MailModule;
 
 public abstract class AbstractActionHandler implements ActionHandler {
 
@@ -32,9 +33,11 @@ public abstract class AbstractActionHandler implements ActionHandler {
 	protected WorkflowFactory getWorkflowFactory() {
 		return (WorkflowFactory)SpringContextUtil.getBean("workflowFactory");
 	};
-	protected ProcessorManager getProcessorManager() {
-		return (ProcessorManager)SpringContextUtil.getBean("modelProcessorManager");
-	}
+
+	protected MailModule getMailModule() {
+		return (MailModule)SpringContextUtil.getBean("MailModuleTarget");
+	};
+
 	protected AclControlledEntry loadEntry(String type, Long id) {
 		if (Validator.isNull(type)) return null;
 		if (id == null) return null;
@@ -50,11 +53,7 @@ public abstract class AbstractActionHandler implements ActionHandler {
 		return loadEntry((String)ctx.getVariable(WorkflowUtils.ENTRY_TYPE),
 				(Long)ctx.getVariable(WorkflowUtils.ENTRY_ID));
 	}
-	protected void indexEntry(AclControlledEntry entry) {
-		EntryProcessor processor = (EntryProcessor) getProcessorManager().getProcessor(
-		            	entry.getParentBinder(), EntryProcessor.PROCESSOR_KEY);
-	    processor.indexEntry(entry);
-	}
+
 	protected void checkForWaits(Token current, AclControlledEntry entry) {
 		JbpmSession session = getWorkflowFactory().getSession();
 		HashMap oldStates = new HashMap();

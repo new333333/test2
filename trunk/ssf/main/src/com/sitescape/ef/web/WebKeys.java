@@ -29,7 +29,6 @@ public class WebKeys {
 	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
     public static final String LOCALE = "ss_locale";
     public static final String SESSION_LAST_ENTRY_VIEWED = "last_entry_viewed";
-    public static final String SESSION_LAST_HISTORY_ENTRY_VIEWED = "last_history_entry_viewed";
     public static final String EVENT = "event";
     public static final String PRINCIPAL = "_principal";
     
@@ -124,8 +123,6 @@ public class WebKeys {
     public static final String FORUM_ID_LIST = "ssForumIdList";
     public static final String FORUM_TOOLBAR="ssForumToolbar";
     public static final String GROUPS="ssGroups";
-    public static final String HISTORY_CACHE="ssHistoryCache";
-    public static final String HISTORY_MAP="ssHistoryMap";
     public static final String LDAP_CONFIG="ssLdapConfig";
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String AJAX_STATUS="ss_ajaxStatus";

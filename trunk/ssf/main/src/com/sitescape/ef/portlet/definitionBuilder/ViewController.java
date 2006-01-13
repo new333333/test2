@@ -26,6 +26,7 @@ import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
 
@@ -138,7 +139,7 @@ public class ViewController extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
-		Map model;
+		Map model = new HashMap();
 		Map formData = request.getParameterMap();
 
 		String selectedItem = PortletRequestUtils.getStringParameter(request, "selectedItem", "");
@@ -147,7 +148,13 @@ public class ViewController extends SAbstractController {
 		//See if there is a definition type requested
 		String definitionType = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, "");
 
-        model = getForumActionModule().getDefinitionBuilder(formData, request, selectedItem);
+		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
+		model.put(WebKeys.CONFIG_DEFINITION, getDefinitionModule().getDefinitionConfig());
+			
+		DefinitionUtils.getDefinitions(model);
+		if (!selectedItem.equals("")) {
+			model.put(WebKeys.DEFINITION, getDefinitionModule().getDefinition(selectedItem));
+		}
 
 		Map data = new HashMap();
 			
