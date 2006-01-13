@@ -39,7 +39,6 @@
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="employeeModule"><ref bean="employeeModule"/></property>
 		<property name="folderModule"><ref bean="folderModule"/></property>
-		<property name="forumActionModule"><ref bean="forumActionModule"/></property>
 		<property name="ldapModule"><ref bean="ldapModule"/></property>
 		<property name="profileModule"><ref bean="profileModule"/></property>
 		<property name="workflowModule"><ref bean="workflowModule"/></property>
@@ -525,19 +524,6 @@
 	</bean>
 		
 	<!-- =========================Portlet support =========================================================== -->	
-	<bean id="forumActionModule" parent="baseTransactionProxy">
-		<property name="target">
-			<bean class="com.sitescape.ef.portlet.forum.impl.ForumActionModuleImpl">
-				<property name="workspaceModule"><ref local="workspaceModuleTarget"/></property>		
-				<property name="profileModule"><ref local="profileModuleTarget"/></property>		
-				<property name="adminModule"><ref local="adminModuleTarget"/></property>		
-				<property name="folderModule"><ref local="folderModuleTarget"/></property>		
-				<property name="definitionModule"><ref local="definitionModuleTarget"/></property>		
-				<property name="mailModule"><ref local="mailModuleTarget"/></property>
-				<property name="coreDao"><ref local="coreDao"/></property>
-			</bean>
-		</property>
-	</bean>
 
 	<!-- ========================= Data Access (DAO) Components ====================== -->
 	
