@@ -146,7 +146,7 @@ function showEntryInDiv(str) {
 	    var entryY = getDivTop('ss_showentrydiv')
 	    var entryH = getDivHeight('ss_showentrydiv')
 	    var bodyY = self.document.body.scrollTop
-	    var windowH = getWindowHeight()
+	    var windowH = ss_getWindowHeight()
 	    if (entryY >= bodyY) {
 	    	if (entryY >= parseInt(bodyY + windowH)) {
 	    		if (entryH > windowH) {

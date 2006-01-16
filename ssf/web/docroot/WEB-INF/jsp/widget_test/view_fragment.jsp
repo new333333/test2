@@ -63,7 +63,7 @@ function ss_showEntryInDiv(str) {
 	    var entryY = getDivTop('ss_showentrydiv')
 	    var entryH = getDivHeight('ss_showentrydiv')
 	    var bodyY = self.document.body.scrollTop
-	    var windowH = getWindowHeight()
+	    var windowH = ss_getWindowHeight()
 	    if (entryY >= bodyY) {
 	    	if (entryY >= parseInt(bodyY + windowH)) {
 	    		if (entryH > windowH) {
@@ -131,7 +131,7 @@ return
     if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + 4);} 
     var left = parseInt(getDivWidth('showbutton') - entryWindowWidth - 14);
     var width = parseInt(entryWindowWidth);
-    var height = parseInt(getWindowHeight() + self.document.body.scrollTop - top );
+    var height = parseInt(ss_getWindowHeight() + self.document.body.scrollTop - top );
     setObjectTop(wObj1, top)
     setObjectLeft(wObj1, left);
     setObjectWidth(wObj1, width);

@@ -97,8 +97,8 @@ function ss_userListInterceptCR(e) {
 
 </script>
 <div id="ss_search_status_message"></div>
-</c:if>
 <c:set var="ss_user_list_support_stuff_loaded" value="1" scope="request"/>
+</c:if>
 <table>
   <tr>
     <td valign="top">
