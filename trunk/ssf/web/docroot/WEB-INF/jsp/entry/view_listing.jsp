@@ -270,9 +270,7 @@ function ss_loadEntryUrl(url,id) {
 %>
 </c:if>
 <c:if test="<%= isViewEntry %>">
-<% System.out.println("is view Entry"); %>
   <c:if test="<%= reloadCaller %>">
-<% System.out.println("is reload Entry: " + ssReloadUrl); %>
 <script language="javascript">
 	//Open the current url in the opener window
 	ss_reloadOpener('<%= ssReloadUrl %>')
