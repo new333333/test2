@@ -36,7 +36,7 @@ public class ViewFileController extends SAbstractController {
 		}
 		//Set up the beans needed by the jsps
 		String fileId = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE_ID); 
-		String viewType = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE); 
+		String viewType = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE, ""); 
 		
 		FileAttachment fa = (FileAttachment)entry.getAttachment(fileId);
 		
