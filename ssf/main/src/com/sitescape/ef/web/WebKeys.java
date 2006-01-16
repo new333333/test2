@@ -128,6 +128,8 @@ public class WebKeys {
     public static final String PRESENCE_DUDE="ss_presence_dude";
     public static final String PRESENCE_STATUS="ss_presence_userStatus";
     public static final String PRESENCE_TEXT="ss_presence_text";
+    public static final String PRESENCE_USER="ss_presence_user";
+    public static final String PRESENCE_ZON_BRIDGE="ss_presence_zonBridge";
     public static final String PUBLIC_DEFINITIONS="ssPublicDefinitions";
     public static final String PUBLIC_ENTRY_DEFINITIONS="ssPublicEntryDefinitions";
     public static final String PUBLIC_FOLDER_DEFINITIONS="ssPublicFolderDefinitions";
@@ -144,7 +146,7 @@ public class WebKeys {
     public static final String UNAUTHENTICATED_REQUEST = "com.sitescape.unauthenticated.request";
     public static final String USERS="ssUsers";
 	public static final String USER_NAME = "com.sitescape.username";
-	public static final String USER_PRINCIPAL = "com.sitescape.principal";
+	public static final String USER_PRINCIPAL = "ssUser";
 	public static final String USER_ID = "com.sitescape.userId";
     public static final String USER_PROPERTIES="ssUserProperties";
     public static final String USER_FOLDER_PROPERTIES="ssUserFolderProperties";
