@@ -11,8 +11,6 @@ import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
-import com.sitescape.ef.portlet.forum.ForumActionModule;
-import com.sitescape.ef.security.function.FunctionManager;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 
 public abstract class SSimpleFormController extends SimpleFormController {

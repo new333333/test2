@@ -12,7 +12,6 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.ldap.LdapModule;
-import com.sitescape.ef.portlet.forum.ForumActionModule;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.binder.BinderModule;
 
