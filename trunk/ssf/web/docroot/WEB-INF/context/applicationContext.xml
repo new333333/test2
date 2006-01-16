@@ -136,7 +136,6 @@
 				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="bulk*">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
 				<prop key="show*">PROPAGATION_REQUIRED,readOnly</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
 				<prop key="index*">PROPAGATION_REQUIRED,readOnly</prop>
@@ -454,23 +453,26 @@
 		<property name="mailModule"><ref local="mailModuleTarget"/></property>
 	</bean>
 	
-	<bean id="ldapModule"  parent="baseTransactionProxy">
-		<property name="transactionAttributes">
-			<props>
-				<prop key="authenticate">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
-				<prop key="sync*">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
-				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
-			</props>
+	<bean id="ldapModule"  class="com.sitescape.ef.module.ldap.impl.LdapModuleImpl">
+		<property name="coreDao"><ref local="coreDao"/></property>	
+		<property name="ldapHelper">
+			<bean parent="baseTransactionProxy">
+				<property name="transactionAttributes">
+					<props>
+						<prop key="syncUser">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+						<prop key="bulk*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+					</props>
+				</property>
+				<property name="target">
+					<bean class="com.sitescape.ef.module.ldap.impl.LdapHelper">
+						<property name="coreDao"><ref local="coreDao"/></property>						
+						<property name="processorManager"><ref local="modelProcessorManager"/></property>
+					</bean>
+				</property>				
+			</bean>
 		</property>
-		<property name="target">
-			<ref bean="ldapModuleTarget"/>
-		</property>
-	</bean>	
+	</bean>		
 		
-	<bean id="ldapModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.ldap.impl.LdapModuleImpl">
-		<property name="profileModule"><ref local="profileModuleTarget"/></property>
-	</bean>	
 	<bean id="workflowModule" parent="baseTransactionProxy">
 		<property name="target">
 			<ref local="workflowModuleTarget"/>

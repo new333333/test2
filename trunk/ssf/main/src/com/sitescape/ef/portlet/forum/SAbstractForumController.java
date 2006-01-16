@@ -83,10 +83,12 @@ public class SAbstractForumController extends SAbstractController {
 		DefinitionUtils.getDefinitions(folder, model);
 		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.ENTRIES);
 		Element view = (Element)model.get(WebKeys.CONFIG_ELEMENT);
-		List cals = view.selectNodes("./item[@name='calendarView']");
+		if (view != null) {
+			List cals = view.selectNodes("./item[@name='calendarView']");
 //		if ((cals != null) && !cals.isEmpty()) {
-			getEvents(entries, model, req, response);
+			getEvents(folder, entries, model, req, response);
 //		}
+		}
 		req.setAttribute(WebKeys.URL_BINDER_ID,forumId);
 		model.put(WebKeys.FOLDER_TOOLBAR, buildFolderToolbar(response, folder, forumId).getToolbar());
 		return model;
@@ -178,7 +180,7 @@ public class SAbstractForumController extends SAbstractController {
 	 * Returns: side-effects the bean "model" and adds a key called CALENDAR_EVENTDATES which is a
 	 * hashMap whose keys are dates and whose values are lists of events that occur on the given day.
 	 */
-	protected void getEvents(ArrayList entrylist, Map model, RenderRequest req, RenderResponse response) {
+	protected void getEvents(Folder folder, ArrayList entrylist, Map model, RenderRequest req, RenderResponse response) {
 		Iterator entryIterator = entrylist.listIterator();
 		PortletSession ps = WebHelper.getRequiredPortletSession(req);
 		// view mode is one of day, week, or month
@@ -187,6 +189,7 @@ public class SAbstractForumController extends SAbstractController {
 			ps.setAttribute(WebKeys.CALENDAR_VIEWMODE, WebKeys.CALENDAR_VIEW_WEEK);		
 			viewMode = WebKeys.CALENDAR_VIEW_WEEK;
 		}
+		String folderId = folder.getId().toString();
 		model.put(WebKeys.CALENDAR_VIEWMODE, viewMode);
 		// currentDate is the date selected by the user; we make sure this date is in view 
 		// whatever viewMode is set to
@@ -202,23 +205,27 @@ public class SAbstractForumController extends SAbstractController {
 		// calendar navigation via nav bar; must be an action so form data is transmitted
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE);
 		model.put("goto_form_url", url.toString());
 		
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
 		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_DAY);
 		model.put("set_day_view", url.toString());
 
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
 		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_WEEK);
 		model.put("set_week_view", url.toString());
 		
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
 		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_MONTH);
 		model.put("set_month_view", url.toString());

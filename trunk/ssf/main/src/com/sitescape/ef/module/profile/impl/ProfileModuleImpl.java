@@ -5,7 +5,6 @@
 package com.sitescape.ef.module.profile.impl;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
 
 import org.dom4j.Document;
 
@@ -23,10 +22,7 @@ import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileModule;
-import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.WriteFilesException;
-import com.sitescape.ef.util.ReflectHelper;
-import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
@@ -85,7 +81,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
 	}
 	public ProfileBinder getProfileBinder() {
-	   ProfileBinder pf = (ProfileBinder)getCoreDao().findBinderByName("_profiles", RequestContextHolder.getRequestContext().getZoneName());
+	   ProfileBinder pf = (ProfileBinder)getCoreDao().getProfileBinder(RequestContextHolder.getRequestContext().getZoneName());
 	   return pf;
     }
     public Principal getEntry(Long binderId, Long principaId) {
@@ -168,93 +164,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    			}
    		}
    }  	
-   public HistoryMap getUserHistory(Long userId, Long folderId) {
-   		User user = RequestContextHolder.getRequestContext().getUser();
-   		HistoryMap history = null;
-   		if (userId == null) userId = user.getId();
-		if (user.getId().equals(userId)) {
-			history = getFolderDao().loadHistoryMap(user.getId(), folderId);
-		}
-		return history;
-}
-   public void updateUserHistory(Long userId, Long folderId, Entry entry) {
-   		User user = RequestContextHolder.getRequestContext().getUser();
-   		HistoryMap history;
-   		if (userId == null) userId = user.getId();
-  		if (user.getId().equals(userId)) {
-   			history = getFolderDao().loadHistoryMap(user.getId(), folderId);
-   			history.setSeen(entry);
-   		}
-   }
-   public void updateUserHistory(HistoryMap history) {
-   		User user = RequestContextHolder.getRequestContext().getUser();
-   		if (history.getId().getPrincipalId().equals(user.getId())) {
-   			getCoreDao().update(history);
-   		}  		
-   }
-   
-   /**
-    * Update users with their own updates
-    * @param users - Map indexed by user id, value is map of updates
-    */
-    public void bulkUpdateUsers(Map users) {
-    	List foundEntries = coreDao.loadUsers(users.keySet(), RequestContextHolder.getRequestContext().getZoneName());
-    	EntryBuilder.updateEntries(foundEntries, users);
-
-    }
-    /**
-     * Update users with one shared updates
-     * @param ids - Collection of user ids
-     * @param updates - Map indexed by attribute name, value is update value
-     */
-    public void bulkUpdateUsers(Collection ids, Map updates) {
-    	List foundEntries = coreDao.loadUsers(ids, RequestContextHolder.getRequestContext().getZoneName());
-    	EntryBuilder.applyUpdate(foundEntries, updates);
-
-    }   
-    /**
-     * Update groups with their own updates
-     * @param groups - Map indexed by group id, value is map of updates
-     */    
-    public void bulkUpdateGroups(Map groups) {
-    	List foundEntries = coreDao.loadGroups(groups.keySet(), RequestContextHolder.getRequestContext().getZoneName());
-       	EntryBuilder.updateEntries(foundEntries, groups);
-    }
-    /**
-     * Update groups with one shared updates
-     * @param ids - Collection of group ids
-     * @param updates - Map indexed by attribute name, value is update value
-     */    
-    public void bulkUpdateGroups(Collection ids, Map updates) {
-    	List foundEntries = coreDao.loadGroups(ids, RequestContextHolder.getRequestContext().getZoneName());
-    	EntryBuilder.applyUpdate(foundEntries, updates);
-
-    }     
-    public List bulkCreateUsers(Map users) {
-    	try {
-    		List result = EntryBuilder.buildEntries(ReflectHelper.classForName("com.sitescape.ef.domain.User"), users.values());
-    		getCoreDao().save(result);
-    		return result;
-    	} catch (ClassNotFoundException ce) {
-    		throw new ConfigurationException(ce);
-    	}
-    }
-    public List bulkCreateGroups(Map groups) {
-       	try {
-       		List result = EntryBuilder.buildEntries(ReflectHelper.classForName("com.sitescape.ef.domain.Group"), groups.values());
-       		getCoreDao().save(result);
-       		return result;
-    	} catch (ClassNotFoundException ce) {
-    		throw new ConfigurationException(ce);
-    	}
-    }
-    public void bulkDisableUsers(Collection ids) {
-    	coreDao.disablePrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
-    }
-    public void bulkDisableGroups(Collection ids) {
-    	coreDao.disablePrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
-   }
-    public List getGroups() {
+  
+ 
+    public List getGroups(Long binderId) {
   		FilterControls filter = new FilterControls();
     	filter.setOrderBy(new OrderBy("title"));
     	List result = coreDao.loadGroups(filter, RequestContextHolder.getRequestContext().getZoneName());
@@ -263,10 +175,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
  
     //***********************************************************************************************************	
-    public Long addUser(String definitionId, Map inputData, Map fileItems) 
+    public Long addUser(Long binderId, String definitionId, Map inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
-        ProfileBinder binder = getProfileBinder();
+        ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
         Definition definition = getCoreDao().loadDefinition(definitionId, binder.getZoneName());
         ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
             	binder, ProfileCoreProcessor.PROCESSOR_KEY);
@@ -274,60 +186,59 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
 
      
-    public void modifyPrincipal(Long id, Map inputData, Map fileItems) 
+    public void modifyEntry(Long binderId, Long id, Map inputData, Map fileItems) 
    		throws AccessControlException, WriteFilesException {
-        ProfileBinder binder = getProfileBinder();
+        ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
         ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
                	binder, ProfileCoreProcessor.PROCESSOR_KEY);
-               processor.modifyEntry(binder, id, inputData, fileItems);
+        processor.modifyEntry(binder, id, inputData, fileItems);
      }
 
-    public void modifyPrincipalData(Long id, Map entryData) 
+    public void modifyEntryData(Long binderId, Long id, Map entryData) 
 			throws AccessControlException {
-	    ProfileBinder binder = getProfileBinder();
+        ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
 	    ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	           	binder, ProfileCoreProcessor.PROCESSOR_KEY);
-	           processor.modifyEntryData(binder, id, entryData);
+	    processor.modifyEntryData(binder, id, entryData);
     }
 
-    public Long addGroup(String definitionId, Map inputData, Map fileItems) 
+    public Long addGroup(Long binderId, String definitionId, Map inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
-        ProfileBinder binder = getProfileBinder();
+        ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
         Definition definition = getCoreDao().loadDefinition(definitionId, binder.getZoneName());
         ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
                	binder, ProfileCoreProcessor.PROCESSOR_KEY);
-                return processor.addEntry(binder, definition, Group.class, inputData, fileItems);
+        return processor.addEntry(binder, definition, Group.class, inputData, fileItems);
     }
 
 
-    public void deletePrincipal(Long principalId) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        ProfileBinder binder = (ProfileBinder)getCoreDao().findBinderByName("_profiles", user.getZoneName());
-           
+    public void deleteEntry(Long binderId, Long principalId) {
+        ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
+            
         ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
                	binder, ProfileCoreProcessor.PROCESSOR_KEY);
         processor.deleteEntry(binder, principalId);    	
     }
  
      
-    public void index() {
-    	ProfileBinder binder = getProfileBinder();
+    public void index(Long binderId) {
+        ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
         ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
                	binder, ProfileCoreProcessor.PROCESSOR_KEY);
         processor.indexBinder(binder);
 
     }
 
-    public Map getUsers() {
-    	return getUsers(DEFAULT_MAX_ENTRIES);
+    public Map getUsers(Long binderId) {
+    	return getUsers(binderId, DEFAULT_MAX_ENTRIES);
     }
-    public Map getUsers(int maxEntries) {
+    public Map getUsers(Long binderId, int maxEntries) {
     	Document qTree = null;
-        return getUsers(maxEntries, qTree);
+        return getUsers(binderId, maxEntries, qTree);
         
    }
  
-    public Map getUsers(int maxEntries, Document qTree) {
+    public Map getUsers(Long binderId, int maxEntries, Document qTree) {
         ProfileBinder binder = getProfileBinder();
         ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
                	binder, ProfileCoreProcessor.PROCESSOR_KEY);
@@ -335,8 +246,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         
    }
  
-    public void modifyWorkflowState(Long folderId, Long entryId, Long tokenId, String toState) throws AccessControlException {
-        ProfileBinder binder = getProfileBinder();
+    public void modifyWorkflowState(Long binderId, Long entryId, Long tokenId, String toState) throws AccessControlException {
+        ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
        // This is nothing but a dispatcher to an appropriate processor. 
         // Shared logic, if exists, must be put into the corresponding method in 
         // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 

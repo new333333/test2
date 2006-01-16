@@ -22,6 +22,7 @@ import com.sitescape.ef.util.SessionUtil;
  * @author Janet McCann
  *
  */
+
 public class HistoryCache implements HttpSessionBindingListener  {
 	protected Date lastFlush;
 	protected ProfileModule profileModule;
@@ -39,7 +40,7 @@ public class HistoryCache implements HttpSessionBindingListener  {
 	public void valueUnbound(HttpSessionBindingEvent event) {
 		//need to flush history into database
 		//open shared session
-		try {
+/*		try {
 			if (SessionUtil.sessionActive()) {
 				try {
 					profileModule.updateUserHistory(history);
@@ -53,6 +54,7 @@ public class HistoryCache implements HttpSessionBindingListener  {
 				}
 			} 
 		} catch (Exception e) {}
+*/
 		history = null;
 	}
 	public UserPerFolderPK getId() {
@@ -60,7 +62,7 @@ public class HistoryCache implements HttpSessionBindingListener  {
 	}
 	public void flush() {
 		if (history != null) {
-			profileModule.updateUserHistory(history);
+//			profileModule.updateUserHistory(history);
 			lastFlush = new Date();
 		}
 	}
@@ -72,7 +74,7 @@ public class HistoryCache implements HttpSessionBindingListener  {
      	Date now = new Date();
      	history.setSeen(entry, now);
        	if (now.getTime() - lastFlush.getTime() > 5*60*1000) {
-			profileModule.updateUserHistory(history);
+//			profileModule.updateUserHistory(history);
 			lastFlush = now;
 		}
 	}
@@ -80,7 +82,7 @@ public class HistoryCache implements HttpSessionBindingListener  {
      	Date now = new Date();
      	history.setSeenInPlace((Entry) entry, now);
        	if (now.getTime() - lastFlush.getTime() > 5*60*1000) {
-			profileModule.updateUserHistory(history);
+//			profileModule.updateUserHistory(history);
 			lastFlush = now;
 		}
 	}

@@ -35,6 +35,7 @@ public class ViewController extends  SAbstractController {
 		PortletURL url;
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
 		url.setWindowState(WindowState.MAXIMIZED);
 		toolbar.addToolbarMenu("listing", NLT.get("profile.list", "List"), url);
 		model.put(WebKeys.TOOLBAR, toolbar.getToolbar());

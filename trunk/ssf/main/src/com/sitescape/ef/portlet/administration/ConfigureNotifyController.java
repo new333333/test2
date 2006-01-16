@@ -27,7 +27,9 @@ import com.sitescape.util.StringUtil;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.ScheduleHelper;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.NotificationDef;
@@ -73,8 +75,9 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 			Folder folder = getFolderModule().getFolder(folderId);
 			model.put(WebKeys.FOLDER, folder);
+	       	User u = RequestContextHolder.getRequestContext().getUser();
 
-			List groups = getProfileModule().getGroups();
+			List groups = getProfileModule().getGroups(u.getParentBinder().getId());
 			model.put(WebKeys.GROUPS, groups);
 			ScheduleInfo config = getAdminModule().getNotificationConfig(folderId);
 			model.put(WebKeys.SCHEDULE_INFO, config);

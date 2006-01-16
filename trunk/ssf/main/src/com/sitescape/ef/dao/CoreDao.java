@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.UserProperties;
@@ -57,6 +58,7 @@ public interface CoreDao {
      */
     public Binder loadBinder(Long binderId, String zoneName);
     public Binder findBinderByName(String binderName, String zoneName);
+    public ProfileBinder getProfileBinder(String zoneName);
       
     /**
      * 

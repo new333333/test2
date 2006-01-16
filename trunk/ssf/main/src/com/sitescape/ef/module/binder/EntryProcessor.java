@@ -1,5 +1,6 @@
 package com.sitescape.ef.module.binder;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.dom4j.Document;
@@ -41,5 +42,7 @@ public interface EntryProcessor {
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries) throws AccessControlException;
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries, Document qTree) throws AccessControlException;
 	public void indexBinder(Binder binder);
-	public void indexEntry(AclControlledEntry entry);   	  
+	public void indexEntry(AclControlledEntry entry); 
+  	public void indexEntry(Collection entries);
+	
 }

@@ -34,7 +34,7 @@ public class ModifyEntryController extends SAbstractProfileController {
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		if (action.equals(WebKeys.ACTION_DELETE_ENTRY)) {
-			getProfileModule().deletePrincipal(entryId);			
+			getProfileModule().deleteEntry(binderId, entryId);			
 		} else if (formData.containsKey("okBtn")) {
 			//The modify form was submitted. Go process it
 			Map fileMap=null;
@@ -43,23 +43,24 @@ public class ModifyEntryController extends SAbstractProfileController {
 			} else {
 				fileMap = new HashMap();
 			}
-			getProfileModule().modifyPrincipal(entryId, formData, fileMap);
+			getProfileModule().modifyEntry(binderId, entryId, formData, fileMap);
+			setupViewEntry(response, binderId, entryId);
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
+			setupViewEntry(response, binderId, entryId);
+		} else {
+			response.setRenderParameters(formData);
 		}
-		response.setRenderParameters(formData);
-		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+	}
+	private void setupViewEntry(ActionResponse response, Long folderId, Long entryId) {
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());		
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 		RenderResponse response) throws Exception {
-		Map formData = request.getParameterMap();
+
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
-		if (formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
-			if (action.equals(WebKeys.ACTION_MODIFY_ENTRY)) {
-				return returnToViewEntry(request, response);
-			} else return returnToView(request, response);
-		}
 		if (!action.equals(WebKeys.ACTION_MODIFY_ENTRY)) {
 			return returnToView(request, response);
 		}
