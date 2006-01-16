@@ -39,7 +39,7 @@ public abstract class AbstractConfigureController extends SAbstractForumControll
 		if (formData.containsKey("okBtn")) {
 	    	List definitions = new ArrayList();
 	    	//Get the default binder view
-	    	String defBinderId = PortletRequestUtils.getStringParameter(request, "binderDefinition");
+	    	String defBinderId = PortletRequestUtils.getStringParameter(request, "binderDefinition", "");
 			String[] defBinderIds = PortletRequestUtils.getStringParameters(request, "binderDefinitions");
 			if (!Validator.isNull(defBinderId)) {
 				//The default binder view is always the first one in the list
