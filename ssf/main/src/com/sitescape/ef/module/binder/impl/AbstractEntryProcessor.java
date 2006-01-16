@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.lang.Long;
+import java.util.Collection;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -360,6 +361,12 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         IndexSynchronizationManager.addDocument(indexDoc);        
         
    	}
+   	public void indexEntry(Collection entries) {
+   		for (Iterator iter=entries.iterator(); iter.hasNext();) {
+   			indexEntry((AclControlledEntry)iter.next());
+   		}
+   	}
+   	
     //***********************************************************************************************************
     public Map getBinderEntries(Binder binder, String[] entryTypes, int maxChildEntries) {
     	org.dom4j.Document qTree = null;

@@ -31,7 +31,6 @@ public class ModifyEntryController extends SAbstractForumController {
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		if (action.equals(WebKeys.ACTION_DELETE_ENTRY)) {
 			getFolderModule().deleteEntry(folderId, entryId);
-			setupViewEntry(response, folderId, entryId);
 		} else if (formData.containsKey("okBtn")) {
 
 			//See if the add entry form was submitted

@@ -22,7 +22,7 @@ public class ListProfilesController extends  SAbstractProfileController {
 			Map updates = new HashMap();
 		   	User user = RequestContextHolder.getRequestContext().getUser();
 			updates.put("displayStyle", PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-			getProfileModule().modifyPrincipal(user.getId(), updates, new HashMap());
+			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), updates, new HashMap());
 		}
 		return returnToView(request, response);
 	}

@@ -135,7 +135,8 @@ public class AjaxController  extends SAbstractForumController {
         	child.setText(searchText);
 	    	
 			//Do a search to find the first few users who match the search text
-        	Map users = getProfileModule().getUsers(Integer.parseInt(maxEntries), qTree);
+        	User u = RequestContextHolder.getRequestContext().getUser();
+        	Map users = getProfileModule().getUsers(u.getParentBinder().getId(), Integer.parseInt(maxEntries), qTree);
     		model.put(WebKeys.USERS, users.get(ObjectKeys.ENTRIES));
     		model.put("listDivId", listDivId);
 			response.setContentType("text/xml");

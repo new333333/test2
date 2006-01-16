@@ -26,36 +26,45 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.jobs.LdapSynchronization;
-import com.sitescape.ef.modelprocessor.ProcessorManager;
-import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.ldap.LdapConfig;
 import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Group;
-import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Membership;
 import com.sitescape.ef.domain.NoUserByTheNameException;
-import com.sitescape.ef.module.shared.EntryBuilder;
-import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
-import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.util.SZoneConfig;
-import org.dom4j.Document;
 import org.dom4j.Element;
 /**
+ * This implementing class utilizes transactional demarcation strategies that 
+ * are finer granularity than typical module implementations, in an effort to
+ * avoid lengthy transaction duration that could have occured if the ldap
+ * database is large and many updates are made during the transaction. To support that,
+ * the public methods exposed by this implementation are not transaction 
+ * demarcated. Instead, this implementation uses helper methods (defined in
+ * another collaborator object) for the part of the operations that might
+ * require interaction with the database (that is, those operations that 
+ * change the state of one or more domain objects) and put the transactional 
+ * support around those methods hence reducing individual transaction duration.
+ * Of course, this finer granularity transactional control will be of no effect
+ * if the caller of this service was already transactional (i.e., it controls
+ * transaction bounrary that is more coarse). Whenever possible, this practise 
+ * is discouraged for obvious performance/scalability reasons.  
+ *   
  * @author Janet McCann
  *
  */
-public class LdapModuleImpl extends CommonDependencyInjection implements LdapModule {
+public class LdapModuleImpl implements LdapModule {
 	protected Log logger = LogFactory.getLog(getClass());
-	protected ProfileModule profileModule;
 	protected String [] principalAttrs = new String[]{"name", "id", "disabled", "reserved", "foreignName"};
-
+	protected CoreDao coreDao;
+	protected LdapHelper ldapHelper;
+	
 	protected static final String[] sample = new String[0];
 	HashMap defaultProps = new HashMap(); 
 	protected HashMap zones = new HashMap();
@@ -67,6 +76,23 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		defaultProps.put(LdapModule.OBJECT_CLASS, "objectClass");
     	defaultProps.put(LdapModule.SYNC_JOB, "com.sitescape.ef.jobs.DefaultLdapSynchronization");
 	}
+
+	/**
+	 * Loaded by Spring context
+	 */
+    protected CoreDao getCoreDao() {
+		return coreDao;
+	}
+	public void setCoreDao(CoreDao coreDao) {
+	    this.coreDao = coreDao;
+	}
+    protected LdapHelper getLdapHelper() {
+		return ldapHelper;
+	}
+	public void setLdapHelper(LdapHelper ldapHelper) {
+		this.ldapHelper = ldapHelper;
+	}
+	
 	public String getLdapProperty(String zoneName, String name) {
 		String val = SZoneConfig.getString(zoneName, "ldapConfiguration/property[@name='" + name + "']");
 		if (Validator.isNull(val)) {
@@ -74,6 +100,41 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		return val;
 	}
+	/**
+	 * Get the ldap configuration.  This object is stored in the scheduling database.  
+	 */
+	public LdapConfig getLdapConfig() {		
+		return new LdapConfig(getSyncObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneName()));
+	}
+	/**
+	 * Update ldap configuration with scheduler. Only properties specified in the props file will
+	 * be modified.
+	 * @param zoneId
+	 * @param props
+	 */
+	public void setLdapConfig(LdapConfig config) {
+    	getSyncObject().setScheduleInfo(config);
+	}
+    private LdapSynchronization getSyncObject() {
+    	String jobClass = getLdapProperty(RequestContextHolder.getRequestContext().getZoneName(), LdapModule.SYNC_JOB);
+    	try {
+            Class processorClass = ReflectHelper.classForName(jobClass);
+            LdapSynchronization job = (LdapSynchronization)processorClass.newInstance();
+            return job;
+        } catch (ClassNotFoundException e) {
+            throw new ConfigurationException(
+                    "Invalid LdapSynchronization class name '" + jobClass + "'",
+                    e);
+        } catch (InstantiationException e) {
+            throw new ConfigurationException(
+                    "Cannot instantiate LdapSynchronization of type '"
+                            + jobClass + "'");
+        } catch (IllegalAccessException e) {
+            throw new ConfigurationException(
+                    "Cannot instantiate LdapSynchronization of type '"
+                            + jobClass + "'");
+        }
+    }	
 	/**
 	 * Internal routine that caches ldap properties in more useful form
 	 * @param zoneName
@@ -148,58 +209,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		zones.put(zoneName, zone);
 		return zone;
 	}
-	/**
-	 * Loaded by Spring context
-	 */
-	public void setCoreDao(CoreDao coreDao) {
-	    this.coreDao = coreDao;
-	}
-
-	/**
-	 * Loaded by Spring context
-	 */
-	public void setProcessorManager(ProcessorManager processorManager) {
-	    this.processorManager = processorManager;
-	} 	
-	/**
-	 * Loaded by Spring context
-	 */
-	public void setProfileModule(ProfileModule profileModule) {
-	    this.profileModule = profileModule;
-	}
-	//methods protected by transaction in config file
-	public LdapConfig getLdapConfig() {		
-		return new LdapConfig(getSyncObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneName()));
-	}
-	/**
-	 * Update ldap configuration.  Only properties specified in the props file will
-	 * be modified.
-	 * @param zoneId
-	 * @param props
-	 */
-	public void setLdapConfig(LdapConfig config) {
-    	getSyncObject().setScheduleInfo(config);
-	}
-    private LdapSynchronization getSyncObject() {
-    	String jobClass = getLdapProperty(RequestContextHolder.getRequestContext().getZoneName(), LdapModule.SYNC_JOB);
-    	try {
-            Class processorClass = ReflectHelper.classForName(jobClass);
-            LdapSynchronization job = (LdapSynchronization)processorClass.newInstance();
-            return job;
-        } catch (ClassNotFoundException e) {
-            throw new ConfigurationException(
-                    "Invalid LdapSynchronization class name '" + jobClass + "'",
-                    e);
-        } catch (InstantiationException e) {
-            throw new ConfigurationException(
-                    "Cannot instantiate LdapSynchronization of type '"
-                            + jobClass + "'");
-        } catch (IllegalAccessException e) {
-            throw new ConfigurationException(
-                    "Cannot instantiate LdapSynchronization of type '"
-                            + jobClass + "'");
-        }
-    }	/**
+    /**
 	 * Authenticate user against ldap
 	 * @param zoneName
 	 * @param loginName
@@ -228,7 +238,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		if (!mods.isEmpty()) {
 			try {
-				syncUser(zoneName, loginName, mods);
+				getLdapHelper().syncUser(zoneName, loginName, mods);
 			} catch (NoUserByTheNameException nu) {
 				//do nothing - liferay will catch it
 			}
@@ -248,8 +258,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		LdapConfig info = new LdapConfig(getSyncObject().getScheduleInfo(zoneName));
 
 		Map mods = new HashMap();
-		String dn = getUpdates(info, loginName, mods);
-		syncUser(zoneName, loginName, mods);
+		getUpdates(info, loginName, mods);
+		getLdapHelper().syncUser(zoneName, loginName, mods);
 
 	}
 	/**
@@ -339,22 +349,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 	}
 	
-	// No transaction specified in config file
-	// Will run under existing
-	/**
-	 * Update a ssf user with attributes specified in the map.
-	 * Must be contained in another transaction
-	 *
-	 * @param zoneName
-	 * @param loginName
-	 * @param mods
-	 * @throws NoUserByTheNameException
-	 */
-	private void syncUser(String zoneName, String loginName, Map mods) throws NoUserByTheNameException {
-		User profile = coreDao.findUserByName(loginName, zoneName); 
-		EntryBuilder.updateEntry(profile, mods);
 
-	}
 	protected Map syncUsers(String zoneName, LdapContext ctx, LdapConfig info, String userDomain) 
 		throws NamingException {
 		String ssName;
@@ -380,15 +375,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				notInLdap.put(ssName, row[1]);
 			}
 		}
-		Map userAttributes = (Map)getZoneMap(zoneName).get("userAttributes");
+		Map zoneMap = getZoneMap(zoneName);
+		Map userAttributes = (Map)zoneMap.get("userAttributes");
 		Set la = new HashSet(userAttributes.keySet());
-		String userIdAttribute = (String)getZoneMap(zoneName).get("userIdAttribute");
-		String [] userAttributeNames = (String [])getZoneMap(zoneName).get("userAttributeNames");
+		String userIdAttribute = (String)zoneMap.get("userIdAttribute");
+		String [] userAttributeNames = (String [])zoneMap.get("userAttributeNames");
 		la.add(userIdAttribute);
 		SearchControls sch = new SearchControls(
 				SearchControls.SUBTREE_SCOPE, 0, 0, (String [])la.toArray(sample), false, false);
 
-		NamingEnumeration ctxSearch = ctx.search("", getFilterString(zoneName, (List)getZoneMap(zoneName).get("userObjectClasses")), sch);
+		NamingEnumeration ctxSearch = ctx.search("", getFilterString(zoneName, (List)zoneMap.get("userObjectClasses")), sch);
 		while (ctxSearch.hasMore()) {
 			Binding bd = (Binding)ctxSearch.next();
 			Attributes lAttrs = ctx.getAttributes(bd.getName());
@@ -428,13 +424,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			//do updates after every 100 users
 			if (sync && (ldap_existing.size()%100 == 0) && !ldap_existing.isEmpty()) {
 				//doLog("Updating users:", ldap_existing);
-				profileModule.bulkUpdateUsers(ldap_existing);
+				getLdapHelper().updateUsers(zoneName, ldap_existing);
 				ldap_existing.clear();
 			}
 			//do creates after every 100 users
 			if (create && (ldap_new.size()%100 == 0) && !ldap_new.isEmpty()) {
 				doLog("Creating users:", ldap_new);
-				List results = profileModule.bulkCreateUsers(ldap_new);
+				List results = getLdapHelper().createUsers(zoneName, ldap_new);
 				ldap_new.clear();
 				// fill in mapping from distinquished name to id
 				for (int i=0; i<results.size(); ++i) {
@@ -446,11 +442,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		if (sync && !ldap_existing.isEmpty()) {
 			//doLog("Updating users:", ldap_existing);
-			profileModule.bulkUpdateUsers(ldap_existing);
+			getLdapHelper().updateUsers(zoneName, ldap_existing);
 		}
 		if (create && !ldap_new.isEmpty()) {
 			doLog("Creating users:", ldap_new);
-			List results = profileModule.bulkCreateUsers(ldap_new);
+			List results = getLdapHelper().createUsers(zoneName, ldap_new);
 			for (int i=0; i<results.size(); ++i) {
 				User user = (User)results.get(i);
 				row = (Object[])dnUsers.get(user.getForeignName());
@@ -461,7 +457,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		//if disable is enabled, remove users that were not found in ldap
 		if (info.isUserDisable() && !notInLdap.isEmpty()) {
 			doLog("Disabling users:", notInLdap);
-			profileModule.bulkDisableUsers(notInLdap.values());
+			getLdapHelper().disableUsers(zoneName, notInLdap.values());
 		}
 		return dnUsers;
 	}
@@ -500,16 +496,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				notInLdap.put(ssName, row[1]);
 			}
 		}	
-		
-		Map groupAttributes = (Map)getZoneMap(zoneName).get("groupAttributes");
+		Map zoneMap = getZoneMap(zoneName);
+		Map groupAttributes = (Map)zoneMap.get("groupAttributes");
 		Set la = new HashSet(groupAttributes.keySet());
-		String [] groupAttributeNames = (String [])getZoneMap(zoneName).get("groupAttributeNames");
-		la.addAll((List)getZoneMap(zoneName).get("memberAttributes"));
+		String [] groupAttributeNames = (String [])zoneMap.get("groupAttributeNames");
+		la.addAll((List)zoneMap.get("memberAttributes"));
 		SearchControls sch = new SearchControls(
 				SearchControls.SUBTREE_SCOPE, 0, 0, (String [])la.toArray(sample), false, false);
 	
 
-		NamingEnumeration ctxSearch = ctx.search("", getFilterString(zoneName, (List)getZoneMap(zoneName).get("groupObjectClasses")), sch);
+		NamingEnumeration ctxSearch = ctx.search("", getFilterString(zoneName, (List)zoneMap.get("groupObjectClasses")), sch);
 		while (ctxSearch.hasMore()) {
 			Binding bd = (Binding)ctxSearch.next();
 			Attributes lAttrs = ctx.getAttributes(bd.getName());
@@ -553,13 +549,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			//do updates after every 100 users
 			if (sync && (ldap_existing.size()%100 == 0) && !ldap_existing.isEmpty()) {
 				//doLog("Updating groups:", ldap_existing);
-				profileModule.bulkUpdateGroups(ldap_existing);
+				getLdapHelper().updateGroups(zoneName, ldap_existing);
 				ldap_existing.clear();
 			}
 			//do creates after every 100 users
 			if (create && (ldap_new.size()%100 == 0) && !ldap_new.isEmpty()) {
 				doLog("Creating Groups:", ldap_new);
-				List results = profileModule.bulkCreateGroups(ldap_new);
+				List results = getLdapHelper().createGroups(zoneName, ldap_new);
 				ldap_new.clear();
 				// fill in mapping from distinquished name to id
 				for (int i=0; i<results.size(); ++i) {
@@ -571,11 +567,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		if (sync && !ldap_existing.isEmpty()) {
 			//doLog("Updating groups:", ldap_existing);
-			profileModule.bulkUpdateGroups(ldap_existing);
+			getLdapHelper().updateGroups(zoneName, ldap_existing);
 		}
 		if (create && !ldap_new.isEmpty()) {
 			doLog("Creating Groups:", ldap_new);
-			List results = profileModule.bulkCreateGroups(ldap_new);
+			List results = getLdapHelper().createGroups(zoneName, ldap_new);
 			for (int i=0; i<results.size(); ++i) {
 				Group group = (Group)results.get(i);
 				row = (Object[])dnGroups.get(group.getForeignName());
@@ -586,7 +582,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		//if disable is enabled, remove groups that were not found in ldap
 		if (info.isGroupDisable() && !notInLdap.isEmpty()) {
 			doLog("Disabling groups:", notInLdap);
-			profileModule.bulkDisableGroups(notInLdap.values());
+			getLdapHelper().disableGroups(zoneName,notInLdap.values());
 		}
 		return new Map[]{dnGroups,ldapGroups};
 	}

@@ -24,9 +24,11 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.Collection;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Group;
+import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.UserPropertiesPK;
@@ -245,6 +247,27 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 }
              );
     }
+    /**
+     * Lookup binder and cache result.  Profile binder is a fixed name
+     */
+    public ProfileBinder getProfileBinder(final String zoneName) {
+        return (ProfileBinder)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        Binder binder = (Binder)session.getNamedQuery("find-Binder-Company")
+                             		.setString(ParameterNames.BINDER_NAME, "_profiles")
+                             		.setString(ParameterNames.COMPANY_ID, zoneName)
+                             		.setCacheable(true)
+                             		.uniqueResult();
+                        if (binder == null) {
+                            throw new NoBinderByTheNameException("_profiles"); 
+                        }
+                        return binder;
+                    }
+                }
+             );
+    }
+
     /*
      *  (non-Javadoc)
      * @see com.sitescape.ef.dao.CoreDao#loadPrincipal(java.lang.Long, java.lang.Long)

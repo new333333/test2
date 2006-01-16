@@ -34,8 +34,8 @@ public class SAbstractProfileController extends SAbstractController {
 		HashMap model = new HashMap();
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
-
-		Map users = getProfileModule().getUsers();
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Map users = getProfileModule().getUsers(binderId);
 		ProfileBinder binder = (ProfileBinder)users.get(ObjectKeys.BINDER);
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FOLDER, binder);
@@ -51,54 +51,7 @@ public class SAbstractProfileController extends SAbstractController {
 		model.put(WebKeys.FOLDER_TOOLBAR, buildViewToolbar(response, binder).getToolbar());
 		return new ModelAndView(WebKeys.VIEW_LISTING, model);
 	}
-	public ModelAndView returnToViewEntry(RenderRequest request, RenderResponse response) throws Exception {
-		
-		Map model = new HashMap();	
-		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-		Principal entry = getProfileModule().getEntry(binderId, entryId);
-	
-		model.put(WebKeys.ENTRY_ID, entryId);
-		model.put(WebKeys.ENTRY, entry);
-		model.put(WebKeys.DEFINITION_ENTRY, entry);
-		model.put(WebKeys.FOLDER, entry.getParentBinder());
-		model.put(WebKeys.BINDER, entry.getParentBinder());
-		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
-		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
-		//Get the definition used to view this entry
-		Definition entryDef = entry.getEntryDef();
-		if (entryDef == null) {
-			DefinitionUtils.getDefaultEntryView(entry, model);
-		} else {
-			//Set up the definition used to show this profile entry
-			if (!DefinitionUtils.getDefinition(entryDef, model, "//item[@name='profileEntryView']")) {
-				DefinitionUtils.getDefaultEntryView(entry, model);
-			}
-		}
-		//	Build the toolbar array
-		Toolbar toolbar = new Toolbar();
-		PortletURL url;
-		//	The "Modify" menu
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_ENTRY);
-		url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-		toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
-	
-    
-		//	The "Delete" menu
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DELETE_ENTRY);
-		url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-		toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url);
-    
-		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, toolbar.getToolbar());
 
-		return new ModelAndView(WebKeys.VIEW_LISTING, model);
-	}	
-	
 	protected Toolbar buildViewToolbar(RenderResponse response, Binder binder) {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
