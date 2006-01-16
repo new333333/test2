@@ -16,14 +16,13 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
-import com.sitescape.ef.portlet.forum.ActionUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.WebHelper;
 
 /**
@@ -38,13 +37,12 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 			RenderResponse response) throws Exception {
 		
 		PortletSession ses = WebHelper.getRequiredPortletSession(request);
-		Map formData = request.getParameterMap();
 		
 		if (request.getWindowState().equals(WindowState.MAXIMIZED)) {
 			//See if there is a folder specified
 			Long folderId = null;
 			try {
-				folderId = ActionUtil.getForumId(request);
+				folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 			} catch (NoFolderByTheIdException nf) {
 				folderId = null;
 			}

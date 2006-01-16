@@ -71,10 +71,6 @@ public class WebKeys {
  	public static final String FORUM_OPERATION_ADMINISTRATION = "administration";
 	public static final String FORUM_OPERATION_SET_DISPLAY_STYLE = "set_display_style";
 	public static final String FORUM_OPERATION_VIEW_ENTRY = "view_entry";
-	public static final String FORUM_OPERATION_VIEW_ENTRY_HISTORY_NEXT = "history_next";
-	public static final String FORUM_OPERATION_VIEW_ENTRY_HISTORY_PREVIOUS = "history_previous";
-	public static final String FORUM_OPERATION_VIEW_ENTRY_NEXT = "entry_next";
-	public static final String FORUM_OPERATION_VIEW_ENTRY_PREVIOUS = "entry_previous";
 	public static final String FORUM_OPERATION_VIEW_FILE = "view_file";
 	public static final String FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE = "set_cal_display_mode";
 	public static final String FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE = "set_cal_display_date";
