@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.sitescape.ef.context.request.RequestContextUtil;
-import com.sitescape.ef.web.NoValidUserSessionException;
+import com.sitescape.ef.web.UnauthenticatedAccessException;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebHelper;
 
@@ -16,7 +16,7 @@ public class InitRequestContextInterceptor extends HandlerInterceptorAdapter {
 			Object handler) throws Exception {
 	    
 		if(!WebHelper.isUserLoggedIn(request))
-			throw new NoValidUserSessionException();
+			throw new UnauthenticatedAccessException();
 		
 		String userName = WebHelper.getRequiredUserName(request);
 		String zoneName = WebHelper.getRequiredZoneName(request);
