@@ -17,8 +17,8 @@ function ss_showForumEntryInIframe(url) {
     } else {
         wObj = self.document.all['ss_showfolder']
     }
-    var width = getObjectWidth(wObj);
-    var height = parseInt(getWindowHeight()) - 50;
+    var width = ss_getObjectWidth(wObj);
+    var height = parseInt(ss_getWindowHeight()) - 50;
     self.window.open(url, '_blank', 'width='+width+',height='+height+',resizable,scrollbars');
     return false;
 }

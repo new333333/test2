@@ -54,9 +54,11 @@ public class PresenceInfo extends BodyTagSupport {
 			}
 			
 			//Pass the user status to the jsp
+			httpReq.setAttribute(WebKeys.PRESENCE_USER, user);
 			httpReq.setAttribute(WebKeys.PRESENCE_STATUS, new Integer(userStatus));
 			httpReq.setAttribute(WebKeys.PRESENCE_DUDE, dudeGif);
 			httpReq.setAttribute(WebKeys.PRESENCE_TEXT, altText);
+			httpReq.setAttribute(WebKeys.PRESENCE_ZON_BRIDGE, "enabled");
 
 			// Output the presence info
 			String jsp = "/WEB-INF/jsp/tag_jsps/presence/show_dude.jsp";

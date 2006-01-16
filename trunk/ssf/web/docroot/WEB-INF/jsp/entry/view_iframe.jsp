@@ -64,7 +64,7 @@ function ss_positionEntryDiv() {
 	
     var wObj = self.document.getElementById('ss_showfolder')
 
-    var width = getObjectWidth(wObj);
+    var width = ss_getObjectWidth(wObj);
     if (ss_entryWindowWidth == 0) {ss_entryWindowWidth = parseInt((width * 3) / 4);}
     //Make sure the entry width is within the window
     if (ss_entryWindowWidth > maxEntryWidth) ss_entryWindowWidth = maxEntryWidth;
@@ -78,7 +78,7 @@ function ss_positionEntryDiv() {
     if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);} 
     var left = parseInt(maxEntryWidth - ss_entryWindowWidth);
     if (left < 0) left = 0;
-    var height = parseInt(getWindowHeight() + self.document.body.scrollTop - top - ss_entryDivTopDelta );
+    var height = parseInt(ss_getWindowHeight() + self.document.body.scrollTop - top - ss_entryDivTopDelta );
     setObjectTop(wObj1, top)
     setObjectLeft(wObj1, left);
     setObjectWidth(wObj1, ss_entryWindowWidth);

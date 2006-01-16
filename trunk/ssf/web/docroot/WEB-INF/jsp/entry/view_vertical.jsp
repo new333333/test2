@@ -60,7 +60,7 @@ function ss_showForumEntryInIframe(url) {
     wObj.src = url
 
     //Scroll to the bottom of the window
-	smoothScrollInTime(0 , parseInt(getWindowHeight()), 8)
+	smoothScrollInTime(0 , parseInt(ss_getWindowHeight()), 8)
 
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
@@ -78,7 +78,7 @@ function ss_positionEntryDiv() {
 	var marginLeft = 2
 	var marginRight = 2
 	
-    var width = parseInt(parseInt(getObjectWidth(wObj)) - marginLeft - marginRight);
+    var width = parseInt(parseInt(ss_getObjectWidth(wObj)) - marginLeft - marginRight);
     ss_entryWindowWidth = parseInt(width);
 
     var wObj1 = self.document.getElementById('ss_showentrydiv')
@@ -87,7 +87,7 @@ function ss_positionEntryDiv() {
 
     var top = parseInt(getDivTop('ss_showfolder_bottom'));
     var left = parseInt(parseInt(getDivLeft('ss_showfolder')) + marginLeft);
-    var height = parseInt(getWindowHeight() - ss_entryDivBottomDelta);
+    var height = parseInt(ss_getWindowHeight() - ss_entryDivBottomDelta);
     setObjectTop(wObj1, top)
     setObjectLeft(wObj1, left);
     setObjectWidth(wObj1, ss_entryWindowWidth);

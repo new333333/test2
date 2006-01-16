@@ -559,7 +559,7 @@ function getImageLeft(imageName) {
     return parseInt(left);
 }
 
-function getObjectWidth(obj) {
+function ss_getObjectWidth(obj) {
     if (isNSN6 || isMoz5) {
         return parseInt(obj.offsetWidth)
     } else if (isNSN) {
@@ -569,7 +569,7 @@ function getObjectWidth(obj) {
     }
 }
 
-function getObjectHeight(obj) {
+function ss_getObjectHeight(obj) {
     if (isNSN6 || isMoz5) {
         return parseInt(obj.offsetHeight)
     } else if (isNSN) {
@@ -675,7 +675,7 @@ function getWindowWidth() {
 	return myWidth;
 }
 
-function getWindowHeight() {
+function ss_getWindowHeight() {
 	if( typeof( window.innerWidth ) == 'number' ) {
 		//Non-IE
 		myWidth = window.innerWidth;
@@ -693,10 +693,10 @@ function getWindowHeight() {
 	return myHeight;
 }
 
-function getBodyHeight() {
+function ss_getBodyHeight() {
     var h = self.document.body.scrollHeight;
-    if (getWindowHeight() > h) {
-        h = getWindowHeight();
+    if (ss_getWindowHeight() > h) {
+        h = ss_getWindowHeight();
     }
     return h
 }
@@ -756,8 +756,8 @@ function activateMenuLayer(divId, parentDivId, delayHide) {
 	    //Add a little to the y position so the div isn't occluding too much
 	    y = parseInt(parseInt(y) + getDivHeight(parentDivId) + 6)
     } else {
-	    x = getClickPositionX();
-	    y = getClickPositionY();
+	    x = ss_getClickPositionX();
+	    y = ss_getClickPositionY();
 	    //Add a little to the y position so the div isn't occluding too much
 	    y = parseInt(y) + activateMenuOffset
 	}
@@ -936,19 +936,11 @@ function positionDiv(divName, x, y) {
     }
 }
 
-function getClickPositionX() {
+function ss_getClickPositionX() {
     return ss_mousePosX
 }
 
-function getClickPositionY() {
-    return ss_mousePosY
-}
-
-function getClickPositionX() {
-    return ss_mousePosX
-}
-
-function getClickPositionY() {
+function ss_getClickPositionY() {
     return ss_mousePosY
 }
 
@@ -1203,7 +1195,7 @@ function openUrlInWindow(obj,windowName) {
 //Routine to show a div at the bottom of the highest size attained by the window
 var ss_forum_maxBodyWindowHeight = 0;
 function setWindowHighWaterMark(divName) {
-	var currentPageHeight = getBodyHeight()
+	var currentPageHeight = ss_getBodyHeight()
 	if (parseInt(ss_forum_maxBodyWindowHeight) < parseInt(currentPageHeight)) {
 		//Time to set a new high water mark
 		ss_forum_maxBodyWindowHeight = currentPageHeight;

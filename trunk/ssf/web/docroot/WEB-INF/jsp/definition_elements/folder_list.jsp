@@ -12,6 +12,7 @@
 		if (parentFolder != null) parentFolderId = parentFolder.getId().toString();
 	}
 %>
+<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <script language="javascript">
 function highlightLineById(id) {
     if (id == "") {return;}

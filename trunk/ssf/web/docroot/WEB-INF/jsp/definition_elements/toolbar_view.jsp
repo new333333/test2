@@ -3,7 +3,7 @@
 function ss_toolbarPopupUrl(url) {
 	var width = getWindowWidth();
 	if (width < 600) width=600;
-	var height = getWindowHeight();
+	var height = ss_getWindowHeight();
 	if (height < 600) height=600;
 	self.window.open(url, "_blank", "resizable=yes,scrollbars=yes,width="+width+",height="+height);
 }

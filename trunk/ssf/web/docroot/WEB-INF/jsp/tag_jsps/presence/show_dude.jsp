@@ -7,6 +7,19 @@
 <portletadapter:defineObjects1/>
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
-
-<img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
- alt="<c:out value="${ss_presence_text}"/>">
+<c:set var="current" value=""/>
+<c:if test="${ssUser.zonName == ss_presence_user.zonName}">
+<c:set var="current" value="current"/>
+</c:if>
+<a href="javascript: ;"
+ onClick="popupPresenceMenu(this, '<c:out 
+     value="${ss_presence_user.id}"/>', '<c:out 
+     value="${ss_presence_user.title}"/>', '<c:out 
+     value="${ss_presence_userStatus}"/>', '<c:out 
+     value="${ss_presence_user.zonName}"/>', '<c:out 
+     value="${ss_presence_sweep_time}"/>', '<c:out 
+     value="${ss_presence_user.emailAddress}"/>', '<c:out 
+     value="${ss_presence_vcard}"/>', '<c:out 
+     value="${current}"/>');return false;"
+><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
+ alt="<c:out value="${ss_presence_text}"/>"></a>
