@@ -26,6 +26,7 @@
 	  <ul id="<c:out value="${listDivId}"/>" class="ss_dragable ss_userlist">
 		<c:forEach var="entry" items="${ssUsers}">
 		  <li id="<c:out value="${entry._docId}"/>" 
+		    onDblClick="ss_userListMoveItem(this);" 
 		    class="ss_dragable ss_userlist"><c:out value="${entry._title}"/></li>
 		</c:forEach>
 	  </ul>

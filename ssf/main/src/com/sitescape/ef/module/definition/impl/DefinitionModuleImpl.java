@@ -836,8 +836,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 										String[] userIds = ((String[])inputData.get(nameValue))[0].trim().split(" ");
 										Set users = new HashSet();
 										for (int i = 0; i < userIds.length; i++) {
-											Long uId = Long.valueOf(userIds[i]);
-											users.add(uId);
+											if (userIds[i].matches("^[0-9]+$")) {
+												Long uId = Long.valueOf(userIds[i]);
+												users.add(uId);
+											}
 										}
 										String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 										List foundUsers = coreDao.loadUsers(users, zoneName);

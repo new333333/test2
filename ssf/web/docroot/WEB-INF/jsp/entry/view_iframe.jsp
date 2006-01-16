@@ -115,6 +115,8 @@ var ss_divOffsetX
 var ss_divOffsetY
 
 var ss_startingToDragDiv = null;
+var ss_divDragSavedMouseMove = '';
+var ss_divDragSavedMouseUp = '';
 function ss_startDragDiv() {
 	ss_divDragObj = document.getElementById('ss_showentrydiv')
     if (isNSN || isNSN6 || isMoz5) {
@@ -123,6 +125,8 @@ function ss_startDragDiv() {
         ss_divOffsetY = window.event.offsetY
     }
     ss_startingToDragDiv = 1;
+    if (self.document.onmousemove) ss_divDragSavedMouseMove = self.document.onmousemove;
+    if (self.document.onmouseup) ss_divDragSavedMouseUp = self.document.onmouseup;
     self.document.onmousemove = ss_divDrag
     self.document.onmouseup = ss_divStopDrag
 
@@ -165,8 +169,8 @@ function ss_divStopDrag(evt) {
     if (ss_divDragObj) {
         ss_divDragObj = null
     }
-    self.document.onmousemove = ''
-    self.document.onmouseup = ''
+    self.document.onmousemove = ss_divDragSavedMouseMove;
+    self.document.onmouseup = ss_divDragSavedMouseUp;
     setTimeout("ss_saveEntryWidth(ss_entryWindowWidth);", 500)
     return false
 }

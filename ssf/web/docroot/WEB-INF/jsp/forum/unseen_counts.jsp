@@ -28,9 +28,9 @@
 		Map.Entry entry = (Map.Entry)iter.next();
 		Folder forum = (Folder)entry.getKey();
 %>
-	<taconite-replace contextNodeID="count_<%= forum.getId().toString() %>" parseInBrowser="true">
-		<span id="count_<%= forum.getId().toString() %>"><%= entry.getValue() %></span>
-	</taconite-replace>
+	<taconite-replace contextNodeID="count_<%= forum.getId().toString() %>" 
+	parseInBrowser="true"><span id="count_<%= forum.getId().toString() %>"
+	><%= entry.getValue() %></span></taconite-replace>
 <%
 	}
 %>

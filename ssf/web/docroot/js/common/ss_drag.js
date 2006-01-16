@@ -117,6 +117,9 @@ var ss_Drag = {
 		ss_Drag.showStatus(mouse, nwPosition, sePosition, nwOffset, seOffset);
 
 		//group.onDragStart(nwPosition, sePosition, nwOffset, seOffset);
+		//(pmh) Changed to use the mouse cursor single point coordinates 
+		//  instead of the box nw/se area coordinates. 
+		//  This feels better as an indicator of when you are in the target area.
 		group.onDragStart(nwPosition, sePosition, mouse, mouse);
 
 		// TODO: need better constraint API
