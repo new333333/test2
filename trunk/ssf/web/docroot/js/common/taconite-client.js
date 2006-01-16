@@ -51,11 +51,17 @@ function AjaxRequest(url) {
     /** @private */
     var postRequest = null;
 
-    /** @private */
+    /** @private - local edit by SiteScape */
     var objectData = new Array();
 
     /** @private */
     var debugResponse = false;
+	
+    /** @private */
+    var async = true;
+
+    /** @private errorHandler*/ 
+    var errorHandler = null;
 
 
     /**
@@ -90,6 +96,7 @@ function AjaxRequest(url) {
     }
 
     /**
+        Local edit by SiteScape (setData and getData)
         Set and get object local data. These routines are used to store information 
         inside the ajaxRequest object such that it can be used by the 
         pre and post processor routines.
@@ -155,6 +162,21 @@ function AjaxRequest(url) {
         return queryString;
     }
 
+    /** 
+        @param {Boolean} asyncBoolean, set to true if asynchronous request, false synchronous request. 
+    */
+    this.setAsync = function(asyncBoolean){
+            async = asyncBoolean;
+    }
+
+    /** 
+        @param {Function} Set the error handler function that is called if the 
+        server's HTTP response code is something other than 200.
+    */	
+    this.setErrorHandler = function(func){
+        errorHandler = func;
+    }
+	
     /**
         Add all of the form elements under the specified form to the query
         string to be sent to the server as part of the Ajax request. The values
@@ -177,6 +199,43 @@ function AjaxRequest(url) {
             queryString = queryString + "&" +  newValues;
         }
     }
+
+
+    
+
+   /**
+        Same as addNamedFormElements, except it will filter form elements by form's id.
+        For example, these are all valid uses:<br>
+        <br>ajaxRequest.addNamedFormElements("form-id""element-name-1");
+        <br>ajaxRequest.addNamedFormElements("form-id","element-name-1",
+        "element-name-2", "element-name-3");
+    */
+    this.addNamedFormElementsByFormID = function() {
+        var elementName = "";
+        var namedElements = null;
+
+        for(var i = 1; i < arguments.length; i++) {
+            elementName = arguments[i];
+            namedElements = document.getElementsByName(elementName);
+            var arNamedElements = new Array();
+            for(j = 0; j < namedElements.length; j++) {
+                if(namedElements[j].form  && namedElements[j].form.getAttribute("id") == arguments[0]){
+                    arNamedElements.push(namedElements[j]);				
+                }
+            }
+            if(arNamedElements.length > 0){
+                elementValues = toQueryString(arNamedElements);
+	        accumulateQueryString(elementValues);
+            }
+        }
+    }
+
+
+
+
+
+
+
 
     /**
         Add the values of the named form elements to the query string to be
@@ -264,9 +323,18 @@ function AjaxRequest(url) {
             xmlHttp.send(null);
         }
         else {
+            //Fix a bug in Firefox when posting
+            if (xmlHttp.overrideMimeType) {
+                //SiteScape turned this off. It appears to break FireFox, not fix it.
+                //xmlHttp.setRequestHeader("Connection", "close");
+            }
             xmlHttp.open(method, requestURL, true);
             xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); 
             xmlHttp.send(queryString);
+        }
+
+        if(!async) {  //synchronous request, handle the state change
+            handleStateChange(self);
         }
 
         if(self.isEchoDebugInfo()) {
@@ -277,6 +345,13 @@ function AjaxRequest(url) {
     handleStateChange = function(ajaxRequest) {
         if(ajaxRequest.getXMLHttpRequestObject().readyState != 4) {
             return;
+        }
+        try {
+        	//Guard against errors if the page was unloaded in the middle of this operation
+        	var status = ajaxRequest.getXMLHttpRequestObject().status
+        }
+        catch(e) {
+        	return;
         }
         if(ajaxRequest.getXMLHttpRequestObject().status == 200) {
 
@@ -292,7 +367,7 @@ function AjaxRequest(url) {
                 if(nodes[i].nodeType != 1 || !isTaconiteTag(nodes[i])) {
                     continue;
                 }
-                
+
                 parseInBrowser = nodes[i].getAttribute("parseInBrowser");
                 if(parseInBrowser == "true") {
                     parser = new XhtmlToDOMParser(nodes[i]);
@@ -311,8 +386,11 @@ function AjaxRequest(url) {
             if(postRequest) {
                 postRequest(ajaxRequest);
             }
-
-        
+        }
+        else {
+            if(errorHandler) {
+                errorHandler(self);
+            }
         }
     }
 
@@ -332,6 +410,11 @@ function AjaxRequest(url) {
             tempString = "";
             node = elements[i];
             name = node.getAttribute("name");
+
+            //use id if name is null
+            if (!name) {
+            	name = node.getAttribute("id");
+            }
 
             if(node.tagName.toLowerCase() == "input") {
                 if(node.type.toLowerCase() == "radio" || node.type.toLowerCase() == "checkbox") {
@@ -401,7 +484,9 @@ function AjaxRequest(url) {
         if(echoTextArea == null) {
             echoTextArea = createDebugTextArea("Server Response:", "debugResponse");
         }
-        echoTextArea.value = ajaxRequest.getXMLHttpRequestObject().responseText;
+        var debugText = ajaxRequest.getXMLHttpRequestObject().status 
+            + " " + ajaxRequest.getXMLHttpRequestObject().statusText + "\n\n\n";
+        echoTextArea.value = debugText + ajaxRequest.getXMLHttpRequestObject().responseText;
     }
 
     /** @private */
@@ -466,10 +551,22 @@ function AjaxRequest(url) {
     @return an instance of the XMLHttpRequest object.
 */
 function createXMLHttpRequest() {
-    if (window.ActiveXObject) {
-        return new ActiveXObject("Microsoft.XMLHTTP");
+    var req = false;
+    if (window.XMLHttpRequest) {
+        req = new XMLHttpRequest();
     }
-    else if (window.XMLHttpRequest) {
-        return new XMLHttpRequest();
+    else if (window.ActiveXObject) {
+       	try {
+            req = new ActiveXObject("Msxml2.XMLHTTP");
+      	}
+        catch(e) {
+            try {
+                req = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            catch(e) {
+                req = false;
+            }
+        }
     }
+    return req;
 }

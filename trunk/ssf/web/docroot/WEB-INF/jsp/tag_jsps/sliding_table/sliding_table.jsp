@@ -185,6 +185,8 @@ function ss_position_sTableCol(divName, x, y, w) {
 }
 
 var ss_slidingTableStartingToDrag = null;
+var ss_slidingTableSavedMouseMove = '';
+var ss_slidingTableSavedMouseUp = '';
 function ss_slidingTableStartDragCol(obj, divName) {
     var id = divName
     if (isNSN || isNSN6 || isMoz5) {
@@ -196,6 +198,8 @@ function ss_slidingTableStartDragCol(obj, divName) {
     }
 
     ss_slidingTableStartingToDrag = 1;
+    if (self.document.onmousemove) ss_slidingTableSavedMouseMove = self.document.onmousemove;
+    if (self.document.onmouseup) ss_slidingTableSavedMouseUp = self.document.onmouseup;
     self.document.onmousemove = ss_slidingTableDrag
     self.document.onmouseup = ss_slidingTableStopDrag
 	ss_showHideObj("ss_info_popup", "hidden", "none")
@@ -254,10 +258,11 @@ function ss_slidingTableStopDrag(evt) {
     if (ss_slidingTableDragObj) {
         ss_slidingTableDragObj = null
     }
-    self.document.onmousemove = ''
-    self.document.onmouseup = ''
+    self.document.onmousemove = ss_slidingTableSavedMouseMove;
+    self.document.onmouseup = ss_slidingTableSavedMouseUp;
     setTimeout("ss_saveSlidingTableCoords();", 200)
-    return false
+    ss_slidingTableStartingToDrag = 0;
+    return true
 }
 
 var ss_slidingTableMosueOverObj = null
@@ -292,6 +297,7 @@ function ss_clearMouseOverInfo(obj) {
 createOnLoadObj('ss_showSlidingTableCols', ss_showSlidingTableCols200);
 createOnResizeObj('ss_showSlidingTableCols', ss_showSlidingTableCols);
 createOnLayoutChangeObj('ss_checkSlidingTableLayout', ss_checkSlidingTableLayout);
+createEventObj('ss_slidingTableDrag', 'MOUSEMOVE');
 -->
 </script>
 

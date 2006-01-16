@@ -1,11 +1,11 @@
 <% // Folders %>
-<h1 class="ss_entryTitle">Folders</h1>
+<ssf:expandableArea title="${ssFolder.title}">
 <table width="100%" border="0" cellpadding="2" cellspacing="0">
  <tr>
   <td>
 	  <ssf:tree treeName="folderTree" treeDocument="<%= ssFolderDomTree %>" 
-	    rootOpen="false" 
+	    rootOpen="true" 
 	    nodeOpen="<%= parentFolderId %>" highlightNode="<%= folderId %>" /></td>
  </tr>
 </table>
-
+</ssf:expandableArea>

@@ -66,6 +66,35 @@ function ss_postUserListRequest(obj) {
 		ss_DragDrop.makeListContainer( document.getElementById('available_'+obj.getData('elementName')));
 	}
 }
+//Routine called when item is double clicked
+//  Move the item from one list to the other
+function ss_userListMoveItem(obj) {
+	//Get the names of the source and target lists
+	var elementName = obj.offsetParent.id.substr(obj.offsetParent.id.indexOf("_")+1);
+	var sourceList = obj.offsetParent.id.substr(0, obj.offsetParent.id.indexOf("_"));
+	var targetList = "added_" + elementName;
+	if (sourceList == "added") targetList = "available_" + elementName;
+	
+	//Now move the list item to the target list
+	var item = document.getElementById(obj.id);
+	var sourceListNode = item.parentNode;
+	var targetListNode = document.getElementById(targetList);
+	sourceListNode.removeChild( item );
+	targetListNode.appendChild( item );
+}
+
+//Routine to prevent early form submission
+function ss_userListInterceptCR(e) {
+	var key = "";
+	if (window.event) {
+		e = window.event;
+		if (e.keyCode == 13 || e.keyCode == 9) {e.keyCode = 0;return true}
+	} else {
+		if (e.which == 13 || e.which == 9) {e.which = 0; return true}
+	}
+	return false
+}
+
 </script>
 <div id="ss_search_status_message"></div>
 </c:if>
@@ -76,6 +105,9 @@ function ss_postUserListRequest(obj) {
 		<div><%= caption %>
 		  <div style="border:solid #cecece 1px;">
 		    <ul id="added_<%= elementName %>" class="ss_dragable ss_userlist">
+		      <c:forEach var="item" items="${ssEntry.customAttributes[property_name].valueSet}">
+		        <li id="<c:out value="${item.id}"/>" class="ss_dragable ss_userlist"><c:out value="${item.title}"/></li>
+		      </c:forEach>
 		    </ul>
 		  </div>
 		</div>
@@ -140,6 +172,7 @@ function ss_saveUserListData_<portlet:namespace/>_${prefix}() {
 	return true;
 }
 createOnSubmitObj('${prefix}onSubmit', '${formName}', ss_saveUserListData_<portlet:namespace/>_${prefix});
+createEventObj('ss_userListInterceptCR', 'KEYPRESS');
 </script>
 
 <div id="debugLog">
