@@ -244,7 +244,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	public void readScaledFile(String repositoryServiceName, Binder binder, 
 			Entry entry, String fileName, OutputStream out) {
-		readFile(repositoryServiceName, binder, entry, makeScaledFileName(fileName), out);
+		RepositoryServiceUtil.read(repositoryServiceName, binder, entry, makeScaledFileName(fileName), out);
 	}
 	
 	public void readScaledFile(FileAttachment fa, Binder binder, Entry entry, OutputStream out) {
@@ -254,7 +254,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	public void readIndirectlyAccessibleThumbnailFile(String repositoryServiceName, 
 			Binder binder, Entry entry, String fileName, OutputStream out) {
-		readFile(repositoryServiceName, binder, entry, makeThumbnailFileName(fileName), out);	
+		RepositoryServiceUtil.read(repositoryServiceName, binder, entry, makeThumbnailFileName(fileName), out);	
 	}
 	
 	public void readIndirectlyAccessibleThumbnailFile(FileAttachment fa, 
