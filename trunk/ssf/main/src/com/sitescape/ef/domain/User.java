@@ -41,6 +41,8 @@ public class User extends Principal {
 	protected String timeZoneName;
     protected Date loginDate;
     protected String displayStyle;
+    protected String password;
+    
 	public User() {
     }
 	public TimeZone getTimeZone() {
@@ -253,6 +255,18 @@ public class User extends Principal {
 		this.zonName = zonName;
 	}
 
+	/**
+	 * @hibernate.property length="64"
+	 * 
+	 * @return
+	 */
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
     public Locale getLocale() {
         if (locale != null) return locale;
         if(languageId == null) {

@@ -29,15 +29,13 @@ public class InitRequestContextInterceptor implements HandlerInterceptor {
 			return true;
 		}
 		
-		try {
-			String userName = WebHelper.getRequiredUserName(request);
-			String zoneName = WebHelper.getRequiredZoneName(request);
+		if(!WebHelper.isUserLoggedIn(request))
+			throw new NoValidUserSessionException();
+		
+		String userName = WebHelper.getRequiredUserName(request);
+		String zoneName = WebHelper.getRequiredZoneName(request);
 
-			RequestContextUtil.setThreadContext(zoneName, userName);
-		}
-		catch(IllegalStateException e) {
-			throw new NoValidUserSessionException(e);
-		}
+		RequestContextUtil.setThreadContext(zoneName, userName);
     	
 	    return true;
 	}

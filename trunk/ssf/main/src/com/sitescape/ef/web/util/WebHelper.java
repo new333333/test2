@@ -1,13 +1,10 @@
 package com.sitescape.ef.web.util;
 
-import java.io.File;
-
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.WebKeys;
 
 public class WebHelper {
@@ -34,12 +31,6 @@ public class WebHelper {
 	
 	public static String getRequiredUserName(HttpServletRequest request) 
 	throws IllegalStateException {
-		if(request.getRemoteUser() != null)
-			return request.getRemoteUser();
-		
-		if(request.getUserPrincipal() != null)
-			return request.getUserPrincipal().getName();
-		
 		HttpSession ses = request.getSession(false);
 		
 		if(ses == null)
@@ -53,11 +44,13 @@ public class WebHelper {
 	
 	public static String getRequiredUserName(PortletRequest request) 
 	throws IllegalStateException {
-		if(request.getRemoteUser() != null)
+		/*
+		if(request.getRemoteUser() != null)$$$
 			return request.getRemoteUser();
 		
 		if(request.getUserPrincipal() != null)
 			return request.getUserPrincipal().getName();
+		*/
 		
 		PortletSession ses = request.getPortletSession(false);
 		

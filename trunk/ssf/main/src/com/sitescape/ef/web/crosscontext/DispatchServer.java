@@ -15,6 +15,11 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitescape.ef.security.authentication.AuthenticationManager;
+import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
+import com.sitescape.ef.security.authentication.UserDoesNotExistException;
+import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.WebKeys;
 
 public class DispatchServer extends GenericServlet {
@@ -26,7 +31,25 @@ public class DispatchServer extends GenericServlet {
 	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
 		String operation = req.getParameter(CrossContextConstants.OPERATION);
 		
-		if(operation.equals("createSession")) {
+		if(operation.equals("authenticate")) {
+			String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
+			String userName = req.getParameter(CrossContextConstants.USER_NAME);
+			String password = req.getParameter(CrossContextConstants.PASSWORD);
+
+			// Authenticate the user against SSF user database.
+			try {
+				getAuthenticationManager().authenticate(zoneName, userName, password);
+			}
+			catch(UserDoesNotExistException e) {
+				logger.warn(e);
+				throw new ServletException(e);
+			}
+			catch(PasswordDoesNotMatchException e) {
+				logger.warn(e);
+				throw new ServletException(e);
+			}			
+		}
+		else if(operation.equals("createSession")) {
 			HttpServletRequest request = (HttpServletRequest) req;
 			
 			String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
@@ -61,5 +84,9 @@ public class DispatchServer extends GenericServlet {
 				throw new ServletException(errorMessage);
 			}
 		}
+	}
+	
+	private AuthenticationManager getAuthenticationManager() {
+		return (AuthenticationManager) SpringContextUtil.getBean("authenticationManager");
 	}
 }
