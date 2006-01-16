@@ -46,7 +46,7 @@ public abstract class AbstractConfigureController extends SAbstractForumControll
 				if (defBinderIds != null) {
 					for (int i = 0; i < defBinderIds.length; i++) {
 						String defId = defBinderIds[i];
-						if (!Validator.isNull(defId) && defId == defBinderId) {
+						if (!Validator.isNull(defId) && defId.toString().equals(defBinderId.toString())) {
 							definitions.add(defBinderId);
 							break;
 						}
@@ -58,7 +58,7 @@ public abstract class AbstractConfigureController extends SAbstractForumControll
 			if (defBinderIds != null) {
 				for (int i = 0; i < defBinderIds.length; i++) {
 					String defId = defBinderIds[i];
-					if (!Validator.isNull(defId) && defId != defBinderId) {
+					if (!Validator.isNull(defId) && !defId.toString().equals(defBinderId.toString())) {
 						definitions.add(defId);
 					}
 				}
