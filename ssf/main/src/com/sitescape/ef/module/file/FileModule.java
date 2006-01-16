@@ -259,6 +259,9 @@ public interface FileModule {
 	public boolean scaledFileExists(String repositoryServiceName, 
 			Binder binder, Entry entry, String primaryFileName) 
 		throws NoSuchFileException, FileException;
+	public boolean scaledFileExists(FileAttachment fAtt, 
+			Binder binder, Entry entry, String primaryFileName) 
+		throws NoSuchFileException, FileException;
 	
 	/**
 	 * Returns whether a thumbnail of the file exists or not. 

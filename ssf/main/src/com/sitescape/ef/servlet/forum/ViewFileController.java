@@ -36,6 +36,7 @@ public class ViewFileController extends SAbstractController {
 		}
 		//Set up the beans needed by the jsps
 		String fileId = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE_ID); 
+		String viewType = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE); 
 		
 		FileAttachment fa = (FileAttachment)entry.getAttachment(fileId);
 		
@@ -52,7 +53,12 @@ public class ViewFileController extends SAbstractController {
 						"Content-Disposition",
 						attachment + "filename=\"" + shortFileName + "\"");
 			
-			getFileModule().readFile(fa, entry.getParentBinder(), entry, response.getOutputStream());
+			if (viewType.equals(WebKeys.FILE_VIEW_TYPE_SCALED) && 
+					getFileModule().scaledFileExists(fa, entry.getParentBinder(), entry, fa.getFileItem().getName())) {
+				getFileModule().readScaledFile(fa, entry.getParentBinder(), entry, response.getOutputStream());
+			} else {
+				getFileModule().readFile(fa, entry.getParentBinder(), entry, response.getOutputStream());				
+			}
 
 			response.getOutputStream().flush();
 		}
