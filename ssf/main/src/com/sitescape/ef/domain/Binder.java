@@ -5,15 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
-import java.util.Set;
-
 
 import com.sitescape.util.Validator;
 import com.sitescape.ef.modelprocessor.InstanceLevelProcessorSupport;
 import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.security.acl.AclSet;
 import com.sitescape.ef.security.function.WorkArea;
-import com.sitescape.ef.util.CollectionUtil;
 
 /**
  * This object represents a forum.
@@ -76,12 +73,23 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
      	return definitions;
      }
     //definitions doesn't keep an inverse collection
-    public void setDefinitions(Collection newDefs) {
-		if (definitions == null) definitions = new ArrayList();
-		Set newM = CollectionUtil.differences(newDefs, definitions);
-		Set remM = CollectionUtil.differences(definitions, newDefs);
-		this.definitions.addAll(newM);
-		this.definitions.removeAll(remM); 
+    public void setDefinitions(List newDefs) {
+    	//order matters.
+    	List oldDefs = getDefinitions();
+    	if ((newDefs == null) || newDefs.isEmpty()) {
+    		oldDefs.clear();
+    		return;
+    	}
+    	//add new elements in order
+    	for (int i=0; i<newDefs.size(); ++i) {
+    		oldDefs.add(i, newDefs.get(i));
+    	}
+    	//remove extras
+    	int pos = newDefs.size();
+    	while (oldDefs.size() > newDefs.size()) {
+    		oldDefs.remove(pos);
+    	}
+    				
     }
     public void addDefinition(Definition cmd) {
         if (!definitions.contains(cmd)) definitions.add(cmd);

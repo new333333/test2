@@ -5,7 +5,6 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
@@ -27,11 +26,12 @@ public class ModifyEntryController extends SAbstractForumController {
 	throws Exception {
 
 		Map formData = request.getParameterMap();
-		Long folderId = ActionUtil.getForumId(request);
+		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		if (action.equals(WebKeys.ACTION_DELETE_ENTRY)) {
-			getFolderModule().deleteEntry(folderId, entryId);			
+			getFolderModule().deleteEntry(folderId, entryId);
+			setupViewEntry(response, folderId, entryId);
 		} else if (formData.containsKey("okBtn")) {
 
 			//See if the add entry form was submitted
@@ -43,36 +43,29 @@ public class ModifyEntryController extends SAbstractForumController {
 				fileMap = new HashMap();
 			}
 			getFolderModule().modifyEntry(folderId, entryId, formData, fileMap);
+			setupViewEntry(response, folderId, entryId);
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
+			setupViewEntry(response, folderId, entryId);
+		} else {
+			response.setRenderParameters(formData);		
 		}
-		response.setRenderParameters(formData);
-		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
-		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-		
 	}
+	private void setupViewEntry(ActionResponse response, Long folderId, Long entryId) {
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
+		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());		
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
+	}
+		
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 		RenderResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		Long folderId = ActionUtil.getForumId(request);
+		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 
 		Map model = new HashMap();	
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		String path;
-		if (formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
-			if (action.equals(WebKeys.ACTION_MODIFY_ENTRY)) {
-				path = WebKeys.VIEW_LISTING;
-				model.put(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
-				request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
-				try {
-					Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-					model.put(WebKeys.URL_ENTRY_ID, entryId.toString());
-					model = getShowEntry(entryId.toString(), model, request, response, folderId);
-				} catch (NoDefinitionByTheIdException nd) {
-					return returnToViewForum(request, response, formData, folderId);
-				}
-			} else return returnToViewForum(request, response, formData, folderId);
-		} else	if (action.equals(WebKeys.ACTION_MODIFY_ENTRY)) {
+		if (action.equals(WebKeys.ACTION_MODIFY_ENTRY)) {
 			try {
 				FolderEntry entry=null;
 				Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));

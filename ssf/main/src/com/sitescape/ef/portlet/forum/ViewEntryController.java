@@ -17,16 +17,13 @@ import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.SeenMap;
-import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
@@ -51,71 +48,41 @@ public class ViewEntryController extends SAbstractForumController {
 			String toState = PortletRequestUtils.getRequiredStringParameter(request, "toState");
 			getFolderModule().modifyWorkflowState(folderId, entryId, tokenId, toState);
 		}
+		response.setRenderParameters(formData);
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model;		
-		PortletSession ses = WebHelper.getRequiredPortletSession(request);
 		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
 
-		Map formData1 = request.getParameterMap();
-		Map formData = new HashMap((Map)formData1);
-
+		Map formData = request.getParameterMap();
 		Long folderId=null;
 		try {
-			folderId = ActionUtil.getForumId(request);
+			folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		} catch (NoFolderByTheIdException nf) {
 			return new ModelAndView(WebKeys.VIEW_FORUM);
 		}
 
-			
-        /**
-         * This is the main forum dispatcher
-         * You can get here for several reasons:
-         * 1)  You can get here from a static forum url ".../c/portal/forum?forum=xxx&zone=zzz&op=yyy"
-         * 2)  You can get here from the ss_forum portlet with no "op" specified
-         * 3)  You can get here from a link specifying a specific "op"
-         * 
-         * This controller routine will forward to the desired jsp
-         */
-			        
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-	
-		formData.put(WebKeys.SESSION_LAST_ENTRY_VIEWED, ses.getAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED));
 		String viewPath=WebKeys.VIEW_LISTING;
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		model = getShowEntry(entryId, formData, request, response, folderId);
 		entryId = (String)model.get(WebKeys.ENTRY_ID);
 		model.put(WebKeys.URL_ENTRY_ID, entryId);
-		if (op.equals("")) {
+		if (formData.containsKey("ssReloadUrl")) {
+			PortletURL reloadUrl = response.createRenderURL();
+			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
+			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
+			request.setAttribute("ssReloadUrl", reloadUrl.toString());			
+		} else {
 			Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 			if ((obj == null) || (obj.equals(""))) 
 				return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
 			obj = model.get(WebKeys.CONFIG_DEFINITION);
 			if ((obj == null) || (obj.equals(""))) 
 				return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
-			ses.setAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
-		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY) && !entryId.equals("")) {
-			viewPath=WebKeys.VIEW_LISTING;
-		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_NEXT) ||
-			op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_HISTORY_PREVIOUS) || entryId.equals("")) {
-			if (!Validator.isNull(entryId) && !entryId.equals("")) {
-				ses.setAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
-			} else {
-				ses.setAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED, null);
-				viewPath = WebKeys.VIEW_NO_ENTRY;
-			}
-			
-		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_NEXT) ||
-			op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY_PREVIOUS)) {
-			if (!Validator.isNull(entryId)) {
-				ses.setAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED, Long.valueOf(entryId));
-			} else {
-				ses.setAttribute(WebKeys.SESSION_LAST_ENTRY_VIEWED, null);
-				viewPath = WebKeys.VIEW_NO_ENTRY;
-			}
-		} 
-
+		}
 
 		return new ModelAndView(viewPath, model);
 	} 
@@ -140,6 +107,107 @@ public class ViewEntryController extends SAbstractForumController {
 		}
 		return entry;
 	}
+	protected Toolbar buildEntryToolbar(RenderResponse response, Map model, String folderId, String entryId) {
+		Element entryViewElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
+		Document entryView = entryViewElement.getDocument();
+		Definition def = (Definition)model.get(WebKeys.ENTRY_DEFINITION);
+		String entryDefId="";
+		if (def != null)
+			entryDefId= def.getId().toString();
+	    //Build the toolbar array
+		Toolbar toolbar = new Toolbar();
+	    //The "Reply" menu
+		List replyStyles = entryView.getRootElement().selectNodes("properties/property[@name='replyStyle']");
+		PortletURL url;
+		if (!replyStyles.isEmpty()) {
+			if (replyStyles.size() == 1) {
+				//There is only one reply style, so show it not as a drop down menu
+				String replyStyleId = ((Element)replyStyles.get(0)).attributeValue("value", "");
+				if (!replyStyleId.equals("")) {
+					Map params = new HashMap();
+					params.put(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
+					params.put(WebKeys.URL_BINDER_ID, folderId);
+					params.put(WebKeys.URL_ENTRY_TYPE, replyStyleId);
+					params.put(WebKeys.URL_ENTRY_ID, entryId);
+					Map qualifiers = new HashMap();
+					qualifiers.put("popup", new Boolean(true));
+					toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), params, qualifiers);
+				}
+			} else {
+				toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"));
+				for (int i = 0; i < replyStyles.size(); i++) {
+					String replyStyleId = ((Element)replyStyles.get(i)).attributeValue("value", "");
+			        try {
+			        	Definition replyDef = getDefinitionModule().getDefinition(replyStyleId);
+						url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
+						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+						url.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
+						url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+						toolbar.addToolbarMenuItem("1_reply", "replies", replyDef.getTitle(), url);
+			        } catch (NoDefinitionByTheIdException e) {
+			        	continue;
+			        }
+				}
+			}
+		}
+	    
+	    //The "Modify" menu
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_ENTRY);
+		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+		url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+		url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+		toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
+		
+	    
+	    //The "Delete" menu
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DELETE_ENTRY);
+		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+		url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+		url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+		toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url);
+	    
+		return toolbar;
+	}
 
+	protected Map getShowEntry(String entryId, Map formData, RenderRequest req, RenderResponse response, Long folderId)  {
+		Map model = new HashMap();
+		Folder folder = null;
+		FolderEntry entry = null;
+		Map folderEntries = null;
+		if (!entryId.equals("")) {
+			folderEntries  = getFolderModule().getEntryTree(folderId, Long.valueOf(entryId));
+			if (folderEntries != null) {
+				entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
+				folder = entry.getParentFolder();
+				model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
+				model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
+			}
+		} else {
+			folder = getFolderModule().getFolder(folderId);
+		}
+		
+		model.put(WebKeys.ENTRY_ID, entryId);
+		model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(null));
+		model.put(WebKeys.ENTRY, entry);
+		model.put(WebKeys.DEFINITION_ENTRY, entry);
+		model.put(WebKeys.FOLDER, folder);
+		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
+		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
+		if (entry == null) {
+			DefinitionUtils.getDefinition(null, model, "//item[@name='entryView']");
+			return model;
+		}
+		if (DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
+			DefinitionUtils.getDefaultEntryView(entry, model);
+		}
+		if (!entryId.equals("")) {
+			model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, buildEntryToolbar(response, model, folderId.toString(), entryId).getToolbar());
+		}
+		return model;
+	}
+	
 	
 }

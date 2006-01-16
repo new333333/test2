@@ -58,7 +58,7 @@ public class ViewController  extends SAbstractForumController {
 				return new ModelAndView(WebKeys.VIEW_FORUM, model);
 			}
 			try {
-				folderId = ActionUtil.getForumId(request);
+				folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 			} catch (NoFolderByTheIdException nf) {
 				return new ModelAndView(WebKeys.VIEW_FORUM);
 			}
@@ -69,7 +69,7 @@ public class ViewController  extends SAbstractForumController {
 		}
 
 		try {
-			folderId = ActionUtil.getForumId(request);
+			folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		} catch (NoFolderByTheIdException nf) {
 			return new ModelAndView(WebKeys.VIEW_FORUM);
 		}
