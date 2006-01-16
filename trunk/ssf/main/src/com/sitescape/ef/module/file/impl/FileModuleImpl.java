@@ -146,14 +146,28 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	public boolean scaledFileExists(String repositoryServiceName, Binder binder, 
 			Entry entry, String primaryFileName) throws NoSuchFileException, FileException {
+		FileAttachment fAtt = null;
 		try {
-			FileAttachment fAtt = entry.getFileAttachment(
+			fAtt = entry.getFileAttachment(
 					repositoryServiceName, primaryFileName);
 
+		}
+		catch(RepositoryServiceException e) {
+			throw new FileException(e);
+		}
+		if (fAtt == null)
+			throw new NoSuchFileException(entry, primaryFileName);
+		
+		return scaledFileExists(fAtt, binder, entry, primaryFileName);
+	}
+	
+	public boolean scaledFileExists(FileAttachment fAtt, Binder binder, 
+			Entry entry, String primaryFileName) throws NoSuchFileException, FileException {
+		try {
 			if (fAtt == null)
 				throw new NoSuchFileException(entry, primaryFileName);
 
-			int fileInfo = RepositoryServiceUtil.fileInfo(repositoryServiceName, 
+			int fileInfo = RepositoryServiceUtil.fileInfo(fAtt.getRepositoryServiceName(), 
 					binder, entry, makeScaledFileName(primaryFileName));
 			
 			if(fileInfo == RepositoryService.UNVERSIONED_FILE)

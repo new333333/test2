@@ -42,6 +42,7 @@ public class WebKeys {
     public static final String URL_ENTRY_TYPE="entryType";
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId";
+	public static final String URL_FILE_VIEW_TYPE = "viewType";
     public static final String URL_OPERATION="operation";
 	public static final String URL_VALUE = "value";
 
@@ -102,6 +103,8 @@ public class WebKeys {
     public static final String ENTRY_DEFINITION="ssEntryDefinition";
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_ID = "ssEntryId";
+    public static final String FILE_VIEW_TYPE_SCALED = "scaled";
+    public static final String FILE_VIEW_TYPE_THUMBNAIL = "thumbnail";
     public static final String FOLDER = "ssFolder";
     public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";
     public static final String FOLDER_DEFINTION_MAP="ssFolderDefinitionMap";
