@@ -68,6 +68,7 @@ public class SAbstractForumController extends SAbstractController {
 		Folder folder = (Folder)folderEntries.get(ObjectKeys.BINDER);
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 		//Build the beans depending on the operation being done
+		model.put(WebKeys.USER_PRINCIPAL, user);
 		model.put(WebKeys.FOLDER, folder);
 		Folder topFolder = folder.getTopFolder();
 		if (topFolder == null) {
