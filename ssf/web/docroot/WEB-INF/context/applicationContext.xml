@@ -303,9 +303,18 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
-	<bean id="authenticationManager" class="com.sitescape.ef.security.authentication.impl.AuthenticationManagerImpl">
-		<property name="coreDao"><ref local="coreDao"/></property>
-	</bean>
+	<bean id="authenticationManager" parent="baseTransactionProxy">
+		<property name="transactionAttributes">
+			<props>
+				<prop key="authenticate">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
+			</props>
+		</property>
+			<property name="target">
+				<bean class="com.sitescape.ef.security.authentication.impl.AuthenticationManagerImpl">
+					<property name="coreDao"><ref local="coreDao"/></property>						
+				</bean>
+			</property>				
+	</bean>	
 	
 	<!-- =========================== Business Components =========================== -->
 	
@@ -485,7 +494,19 @@
 		<property name="interceptorNames">
 			<list>
 				<value>loggingInterceptor</value>
-				<value>remoteInitRequestContextInterceptor</value>
+				<!-- When a user request is served, typically one of the very first 
+				     interceptors we define is one that sets up request context for 
+				     the serving thread. In the case of Web request, typically this
+				     information comes from either the request object or the session
+				     and the interceptor sets up thread context using the user 
+				     information. However, in the case Web Service, neither request
+				     object nor session is relevant. The same piece of information
+				     (i.e., zone and user names) must come from the WS framework. 
+				     Specifically, when used in conjunction with WS-Security compliant
+				     tool such as WSS4J, the hook is provided via a callback routine
+				     that the framework invokes to obtain password information for
+				     the user making the request. That's where we set up our request 
+				     context as well. -->
 				<value>remoteOpenSessionInViewInterceptor</value>
 				<value>remoteUserPreloadInterceptor</value>
 			</list>
@@ -493,8 +514,6 @@
 	</bean>
 	
 	<bean id="loggingInterceptor" class="com.sitescape.ef.remoting.interceptor.LoggingInterceptor"/>
-	
-	<bean id="remoteInitRequestContextInterceptor" class="com.sitescape.ef.remoting.interceptor.InitRequestContextInterceptor"/>
 	
 	<bean id="remoteOpenSessionInViewInterceptor" class="com.sitescape.ef.remoting.interceptor.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref local="sessionFactory"/></property>

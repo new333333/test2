@@ -5,10 +5,10 @@ import com.sitescape.ef.util.SpringContextUtil;
 
 public class AuthenticationManagerUtil {
 
-	public static User authenticate(String zoneName, String username)
-		throws UserDoesNotExistException {
+	public static User authenticate(String zoneName, String username, String password)
+		throws UserDoesNotExistException, PasswordDoesNotMatchException {
 		AuthenticationManager am = (AuthenticationManager) SpringContextUtil.getBean("authenticationManager");
-		return am.authenticate(zoneName, username);
+		return am.authenticate(zoneName, username, password);
 	}
 
 }

@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.NoSuchMessageException;
 
 import com.sitescape.ef.SingletonViolationException;
+import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
 
@@ -43,11 +44,17 @@ public class NLT implements ApplicationContextAware {
 	}
 	
 	private Locale getLocale() {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		if(user != null)
-			return user.getLocale();
-		else
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		if(rc != null) {
+			User user = rc.getUser();
+			if(user != null)
+				return user.getLocale();
+			else
+				return Locale.getDefault();			
+		}
+		else {
 			return Locale.getDefault();
+		}
 	}
 	
 	private String getMessageWithTagAsDefault(String tag) {

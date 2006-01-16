@@ -30,6 +30,8 @@ public class AuthenticationManagerImplTests extends TestCase {
 		coreDaoControl = MockControl.createControl(CoreDao.class);
 		coreDao = (CoreDao) coreDaoControl.getMock();
 		user = new User();
+		user.setZoneName("testZone");
+		user.setName("testUser");
 		
 		// Set up the actual object that we are testing.
 		authMgr = new AuthenticationManagerImpl();
@@ -43,8 +45,10 @@ public class AuthenticationManagerImplTests extends TestCase {
 		coreDaoControl.setReturnValue(user);
 		coreDaoControl.replay();
 		
+		user.setPassword("testPassword");
+
 		// Execute the method being tested.
-		User authenticatedUser = authMgr.authenticate("testZone", "testUser");
+		User authenticatedUser = authMgr.authenticate("testZone", "testUser", "testPassword");
 		assertEquals(user, authenticatedUser);
 		
 		// Verifies that all expectations have been met.
@@ -60,7 +64,7 @@ public class AuthenticationManagerImplTests extends TestCase {
 		
 		// Execute the method being tested.
 		try {
-			authMgr.authenticate("testZone", "testUser");
+			authMgr.authenticate("testZone", "testUser", "testPassword");
 			fail("Should throw UserDoesNotExistException");
 		}
 		catch(UserDoesNotExistException e) {
