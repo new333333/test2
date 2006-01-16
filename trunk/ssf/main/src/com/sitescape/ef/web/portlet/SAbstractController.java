@@ -26,7 +26,6 @@ public abstract class SAbstractController extends AbstractController {
 	private AdminModule adminModule;
 	private ProfileModule profileModule;
 	private DefinitionModule definitionModule;
-	private ForumActionModule forumActionModule;
 	private WorkflowModule workflowModule;
 	private BinderModule binderModule;
 	private LdapModule ldapModule;

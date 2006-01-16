@@ -23,7 +23,6 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	private AdminModule adminModule;
 	private ProfileModule profileModule;
 	private DefinitionModule definitionModule;
-	private ForumActionModule forumActionModule;
 	private WorkflowModule workflowModule;
 	private BinderModule binderModule;
 	private LdapModule ldapModule;
@@ -83,14 +82,6 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
-	public void setForumActionModule(ForumActionModule forumActionModule) {
-		this.forumActionModule = forumActionModule;
-	}
-	
-	protected ForumActionModule getForumActionModule() {
-		return forumActionModule;
-	}	
-
 	protected WorkflowModule getWorkflowModule() {
 		return workflowModule;
 	}
