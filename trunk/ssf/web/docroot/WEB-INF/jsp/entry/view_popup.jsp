@@ -2,7 +2,7 @@
 
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
 <br>
-<div id="ss_showfolder" class="ss_portlet" style="display:block; margin:2;">
+<div id="ss_showfolder" class="ss_style ss_portlet" style="display:block; margin:2;">
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= ssConfigElement %>" 
   configJspStyle="<%= ssConfigJspStyle %>" />

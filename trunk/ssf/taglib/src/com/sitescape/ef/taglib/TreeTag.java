@@ -183,11 +183,11 @@ public class TreeTag extends TagSupport {
 				sb.append("createOnLoadObj('ss_setSortable_" + treeName + "', ss_setSortable_" + treeName + ");\n");
 			}
 			sb.append("</script>\n\n\n");
-			//sb.append("\n<ul class=\"ss_treeWidget_ul\" id=\"" + this.treeName + "ul\">\n");
+			//sb.append("\n<ul class=\"ss_style ss_treeWidget_ul\" id=\"" + this.treeName + "ul\">\n");
 
 			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 				//This user is in accessibility mode, output a flat version of the tree
-				//jspOut.print("\n<ul class=\"ss_treeWidget_ul\" id=\"" + this.treeName + "ul\">\n");
+				//jspOut.print("\n<ul class=\"ss_style ss_treeWidget_ul\" id=\"" + this.treeName + "ul\">\n");
 				outputTreeNodesFlat(treeRoot, recursedNodes);
 				
 			} else {
@@ -262,7 +262,7 @@ public class TreeTag extends TagSupport {
 	
 			//jspOut.print("<li class='ss_treeWidget_li' id='" + this.treeName + "_li" + String.valueOf(this.liCount) + "'>");
 			this.liCount++;
-			jspOut.print("<table cellspacing='0' cellpadding='0' style='display:inline;'>\n");
+			jspOut.print("<table class='ss_style' cellspacing='0' cellpadding='0' style='display:inline;'>\n");
 			jspOut.print("<tr>\n");
 			if (this.multiSelect != null) {
 				if (s_id.equals("")) {
@@ -378,14 +378,14 @@ public class TreeTag extends TagSupport {
 			// Recurse if node has children
 	
 			if (hcn) {
-				jspOut.print("\n<div class=\"ss_treeWidget\" id=\"" + this.treeName + "div" + s_nodeId + "\"");
+				jspOut.print("\n<div class=\"ss_style ss_treeWidget\" id=\"" + this.treeName + "div" + s_nodeId + "\"");
 	
 				if (!ino) {
 					jspOut.print(" style=\"display: none;\"");
 				}
 	
 				jspOut.print(">\n");
-				//jspOut.print("\n<ul class=\"ss_treeWidget_ul\" id=\"" + this.treeName + "ul" + s_nodeId + "\">\n");
+				//jspOut.print("\n<ul class=\"ss_style ss_treeWidget_ul\" id=\"" + this.treeName + "ul" + s_nodeId + "\">\n");
 	
 				ListIterator it2 = e.elements("child").listIterator();
 				while (it2.hasNext()) {
@@ -463,7 +463,7 @@ public class TreeTag extends TagSupport {
 			boolean ls = (s_ls == "1") ? true : false;
 			boolean hcn = (e.attributeValue("treeHasChildren") == "1") ? true : false;
 	
-			jspOut.print("<table cellspacing='0' cellpadding='0' style='display:inline;'>\n<tr>\n<td valign='top' nowrap>");
+			jspOut.print("<table class='ss_style' cellspacing='0' cellpadding='0' style='display:inline;'>\n<tr>\n<td valign='top' nowrap>");
 			for (int j = recursedNodes.size() - 1; j >= 0; j--) {
 				if ((String) recursedNodes.get(j) != "1") {
 					jspOut.print("<img align='absmiddle' border='0' height='20' hspace='0' src='" + getImage("spacer") + "' vspace='0' width='19'>");
@@ -519,8 +519,8 @@ public class TreeTag extends TagSupport {
 			// Recurse if node has children
 	
 			if (hcn) {
-				jspOut.print("\n<div class=\"ss_treeWidget\" id=\"" + this.treeName + "div" + s_nodeId + "\">\n");
-				//jspOut.print("\n<ul class=\"ss_treeWidget_ul\" id=\"" + this.treeName + "ul" + s_nodeId + "\">\n");
+				jspOut.print("\n<div class=\"ss_style ss_treeWidget\" id=\"" + this.treeName + "div" + s_nodeId + "\">\n");
+				//jspOut.print("\n<ul class=\"ss_style ss_treeWidget_ul\" id=\"" + this.treeName + "ul" + s_nodeId + "\">\n");
 	
 				ListIterator it2 = e.elements("child").listIterator();
 				while (it2.hasNext()) {

@@ -1,6 +1,6 @@
 <% // Folders %>
 <ssf:expandableArea title="${ssFolder.title}">
-<table width="100%" border="0" cellpadding="2" cellspacing="0">
+<table class="ss_style" width="100%" border="0" cellpadding="2" cellspacing="0">
  <tr>
   <td>
 	  <ssf:tree treeName="folderTree" treeDocument="<%= ssFolderDomTree %>" 

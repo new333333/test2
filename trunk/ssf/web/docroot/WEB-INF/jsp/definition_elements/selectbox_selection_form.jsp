@@ -12,7 +12,7 @@
     <c:set var="checked" value="selected"/>
   </c:if>
 </c:forEach>
-<option class="ss_content" value="<c:out value="${property_name}"/>" 
+<option value="<c:out value="${property_name}"/>" 
   <c:out value="${checked}"/>><c:out value="${property_caption}"/><ssf:displayConfiguration 
   configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= item %>" 

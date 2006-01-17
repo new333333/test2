@@ -169,7 +169,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			this.divNames.put("info_"+rootElementId, "1");
 			sb.append("\n<div id='info_" + rootElementId + "' ");
 			sb.append("class='ss_definitionBuilder'>\n");
-			sb.append("<span class='ss_contentbold'>" + NLT.getDef(rootElement.attributeValue("caption")));
+			sb.append("<span class='ss_bold'>" + NLT.getDef(rootElement.attributeValue("caption")));
 			Element property = (Element) rootElement.selectSingleNode("./properties/property[@name='caption']");
 			String propertyCaptionValue = "";
 			if (property != null) {
@@ -199,24 +199,24 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("class='ss_definitionBuilder'>\n");
 			sb.append("<span class='ss_titlebold' id='infoDefinitionOptionsDefinitionName'></span>\n");
 			
-			sb.append("<table>\n");
+			sb.append("<table class='ss_style'>\n");
 			
 			sb.append("<tr><td>\n");
-			sb.append("<a class='ss_content' href='javascript: ;' "); 
+			sb.append("<a href='javascript: ;' "); 
 			sb.append("onClick=\"return viewDefinition();\">");
 			sb.append("View this definition");
 			sb.append("</a>\n");
 			sb.append("</td></tr>\n");
 			
 			sb.append("<tr><td>\n");
-			sb.append("<a class='ss_content' href='javascript: ;' "); 
+			sb.append("<a href='javascript: ;' "); 
 			sb.append("onClick=\"return modifyDefinition();\">");
 			sb.append("Modify the properties of this definition");
 			sb.append("</a>\n");
 			sb.append("</td></tr>\n");
 
 			sb.append("<tr><td>\n");
-			sb.append("<a class='ss_content' href='javascript: ;' "); 
+			sb.append("<a href='javascript: ;' "); 
 			sb.append("onClick=\"return deleteDefinition();\">");
 			sb.append("Delete this definition");
 			sb.append("</a>\n");
@@ -285,7 +285,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			this.divNames.put("operations_"+rootElementId, "1");
 			sb.append("\n<div id='operations_" + rootElementId + "' "); 
 			sb.append("class='ss_definitionBuilder'>\n");
-			sb.append("<table cellpadding='0' cellspacing='0'>\n");
+			sb.append("<table class='ss_style' cellpadding='0' cellspacing='0'>\n");
 
 			//Add the list of operations
 			Element operations = rootConfigElement.element("operations");
@@ -331,7 +331,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				String operationElementId = operationElement.attributeValue("id", operationElement.attributeValue("name"));
 				String operationElementName = operationElement.attributeValue("name");
 				
-				sb.append("<a class='ss_content' href='javascript: ;' "); 
+				sb.append("<a href='javascript: ;' "); 
 				if (operationElement.attributeValue("item", "").equals("")) {
 					sb.append("onClick=\""+operationElementId+"('" + operationElementId + "', '" + operationElementName + "', '')\">");
 				} else {
@@ -393,8 +393,8 @@ public class BuildDefinitionDivs extends TagSupport {
 									helpDivCount++;
 									hb.append("<div id='help_div_" + rootElementId);
 									hb.append(Integer.toString(helpDivCount));
-									hb.append("' class='ss_helpPopUp'>\n");
-									hb.append("<span class='ss_content'>");
+									hb.append("' class='ss_style ss_helpPopUp'>\n");
+									hb.append("<span>");
 									hb.append(NLT.getDef(help.getText()));
 									hb.append("</span>\n</div>\n");
 									sb.append("&nbsp;<a name='help_div_" + rootElementId);
@@ -447,8 +447,8 @@ public class BuildDefinitionDivs extends TagSupport {
 									helpDivCount++;
 									hb.append("<div id='help_div_" + rootElementId);
 									hb.append(Integer.toString(helpDivCount));
-									hb.append("' class='ss_helpPopUp'>\n");
-									hb.append("<span class='ss_content'>");
+									hb.append("' class='ss_style ss_helpPopUp'>\n");
+									hb.append("<span>");
 									hb.append(NLT.getDef(help.getText()));
 									hb.append("</span>\n</div>\n");
 									sb.append("&nbsp;<a name='help_div_" + rootElementId);
@@ -687,8 +687,8 @@ public class BuildDefinitionDivs extends TagSupport {
 						helpDivCount++;
 						hb.append("<div id='help_div_" + rootElementId);
 						hb.append(Integer.toString(helpDivCount));
-						hb.append("' class='ss_helpPopUp'>\n");
-						hb.append("<span class='ss_content'>");
+						hb.append("' class='ss_style ss_helpPopUp'>\n");
+						hb.append("<span>");
 						hb.append(NLT.getDef(help.getText()));
 						hb.append("</span>\n</div>\n");
 						sb.append("&nbsp;<a name='help_div_" + rootElementId);

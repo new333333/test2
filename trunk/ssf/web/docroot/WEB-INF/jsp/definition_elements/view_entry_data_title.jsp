@@ -17,6 +17,6 @@
     entryId="${ssDefinitionEntry.id}"/>">
 <% } %>
 <c:if test="${empty ssDefinitionEntry.title}">
-    <span class="ss_contentgray">--no title--</span>
+    <span class="ss_gray">--no title--</span>
     </c:if><c:out value="${ssDefinitionEntry.title}"/></a></h1>
 </div>

@@ -11,7 +11,7 @@ function getFilteredEntries() {
 </script>
 <c:set var="delimiter" value=" | "/>
 
-<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_ruledTable">
+<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_style ss_ruledTable">
 <tr class="ss_bglightgray">
 <td colspan="2"><span class="ss_toolbar_item">Week beginning 
    <fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
@@ -38,16 +38,16 @@ Views:&nbsp;<a href="${set_day_view}">Day</a><c:out value="${delimiter}" /><a hr
 <tr>
 </c:otherwise>
 </c:choose>
-<td align="center" width="1%" valign="top"><a class="ss_link_nodec" href="${daymap.dayURL}"><span class="ss_content">${daymap.cal_dow}</span>
-<br /><span class="ss_contentbold">${daymap.cal_dom}</a></td>
+<td align="center" width="1%" valign="top"><a class="ss_link_nodec" href="${daymap.dayURL}"><span>${daymap.cal_dow}</span>
+<br /><span class="ss_bold">${daymap.cal_dom}</a></td>
 
 <c:choose>
 <c:when test="${empty daymap.cal_eventdatamap}">
-<td class="ss_content">&nbsp;</td>
+<td>&nbsp;</td>
 </c:when>
 <c:otherwise>
 
-<td class="ss_content" valign="top">
+<td valign="top">
 <c:forEach var="ev" items="${daymap.cal_eventdatamap}">
 
 <c:forEach var="eviw" items="${ev.value}"> 

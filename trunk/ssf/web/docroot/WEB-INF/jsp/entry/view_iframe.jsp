@@ -3,7 +3,7 @@
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 %>
 
-<div id="ss_showfolder" class="ss_portlet">
+<div id="ss_showfolder" class="ss_style ss_portlet">
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= ssConfigElement %>" 
   configJspStyle="<%= ssConfigJspStyle %>" />
@@ -206,7 +206,7 @@ function ss_postEntryWidthRequest(obj) {
 }
 
 </script>
-<form name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
+<form class="ss_style" name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
 <input type="hidden" name="entry_width">
 </form>
 <div id="ss_entry_width_status_message" style="visibility:hidden; display:none;"></div>

@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<div class="ss_portlet">
+<div class="ss_style ss_portlet">
 
 <c:if test="${!empty ss_errorMessage}">
 <div class="ss_labelLeftError">
@@ -9,7 +9,7 @@
 <br/>
 </c:if>
 
-	<table border="0" cellpadding="0" cellspacing="0" width="95%">
+	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
 	<tr>
 		<td>
 Current State:<c:out value="${workflowState}"/><br/>

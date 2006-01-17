@@ -158,8 +158,8 @@ createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
 <br />
 <br />
 
-<table><tr><td valign="top">
-<div id="showbutton" class="ss_portlet" style="display:block; margin:2;">
+<table class="ss_style"><tr><td valign="top">
+<div id="showbutton" class="ss_style ss_portlet" style="display:block; margin:2;">
 <a href="<ssf:url 
     adapter="true" 
     portletName="ss_widgettest" 

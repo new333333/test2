@@ -99,7 +99,7 @@ function ss_userListInterceptCR(e) {
 <div id="ss_search_status_message"></div>
 <c:set var="ss_user_list_support_stuff_loaded" value="1" scope="request"/>
 </c:if>
-<table>
+<table class='ss_style'>
   <tr>
     <td valign="top">
 		<div><%= caption %>
@@ -124,7 +124,7 @@ function ss_userListInterceptCR(e) {
 	    ></div>
 	</td>
 	<td valign="top">
-	  <table cellspacing="0" cellpadding="0">
+	  <table class='ss_style' cellspacing="0" cellpadding="0">
 	  <tr>
 	    <td colspan="2" valign="top" nowrap>
 	      <b><ssf:nlt tag="userlist.findName" text="Find name"/>:</b>

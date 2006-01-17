@@ -10,7 +10,7 @@ function getFilteredEntries() {
 }
 </script>
 <c:set var="delimiter" value=" | "/>
-<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_ruledTable">
+<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_style ss_ruledTable">
 <tr class="ss_bglightgray">
 <td colspan="8"><span class="ss_toolbar_item">
    <fmt:formatDate value="${ssCalStartDate}" pattern="MMMM, yyyy" />
@@ -27,7 +27,7 @@ Views:&nbsp;<a href="${set_day_view}">Day</a><c:out value="${delimiter}" /><a hr
 <tr>
 <td width="1%" class="ss_fineprintgray" align="center">week</td>
 <c:forEach var="dayabbrev" items="${ssCalendarViewBean.dayHeaders}">
-<td width="13%" class="ss_contentbold" align="center">
+<td width="13%" class="ss_bold" align="center">
 ${dayabbrev}</td>
 </c:forEach>
 </tr>

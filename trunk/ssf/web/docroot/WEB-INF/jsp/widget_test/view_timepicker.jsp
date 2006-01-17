@@ -57,7 +57,7 @@
 <center>
 <b>You chose:</b>
 <br>
-<table border="1">
+<table class="ss_style" border="1">
 <tr>
 <th>Datepicker 1</th>
 <th>Datepicker 2</th>
@@ -79,7 +79,7 @@
    }
 %>
 
-<form method="POST" action="" name="timepickertest" onSubmit="return ssf_onSubmit(this);">
+<form class="ss_style" method="POST" action="" name="timepickertest" onSubmit="return ssf_onSubmit(this);">
 <span align="center">SiteScape Forum Widget Tester -  Timepicker Widget
 <br />
 This test page shows timepickers for the current date and an unspecified date. 
@@ -87,10 +87,10 @@ This test page shows timepickers for the current date and an unspecified date.
 <br>
 <br />
 
-	<table border="0" cellpadding="0" cellspacing="0" width="95%">
+	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
 	<tr>
 		<td>
-			<table align=center border="0" cellpadding="3" cellspacing="3">
+			<table class="ss_style" align=center border="0" cellpadding="3" cellspacing="3">
 			<tr>
 				<td>
 					First timepicker:<br>

@@ -4,9 +4,9 @@
 
 <h1><%= request.getAttribute("header") %></h1>
 
-<form method="post" enctype="multipart/form-data" action="<ssf:servletrooturl/>uploadFile">
+<form class="ss_style" method="post" enctype="multipart/form-data" action="<ssf:servletrooturl/>uploadFile">
 
-	<table border="0" cellpadding="4">
+	<table class="ss_style" border="0" cellpadding="4">
 		<tr>
 			<th>Title</th>
 			<td><input type="text" name="title" size="30" maxlength="80"/></td>

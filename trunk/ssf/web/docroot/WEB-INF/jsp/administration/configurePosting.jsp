@@ -16,13 +16,13 @@
 %>
 <%@ page import="com.sitescape.ef.domain.Folder" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<div class="ss_portlet">
+<div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="incoming.forum_title"/></span><br/>
 <br/>
 <c:choose>
 <c:when test="${!empty ssWsDomTree}">
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-	<table border="0" cellpadding="0" cellspacing="0" width="95%">
+	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
 	<tr align="left"><td><ssf:nlt tag="tree.choose_forum"/></td></tr>
 	<tr>
 		<td>
@@ -38,7 +38,7 @@
 <jsp:useBean id="ssFolderDomTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />
 
-<form name="<portlet:namespace/>fm" id="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
+<form class="ss_style" name="<portlet:namespace/>fm" id="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_posting"/>
 			<portlet:param name="binderId" value="${ssFolder.id}"/>
 		</portlet:actionURL>">
@@ -62,8 +62,8 @@ function <portlet:namespace/>_addAlias(title, alias, subject) {
 	var cellLeft = document.createElement("td");
 	row.appendChild(cellLeft);
     cellLeft.setAttribute("align", "center");
-    cellLeft.setAttribute("class", "ss_content");
-    cellLeft.setAttribute("className", "ss_content");
+    //cellLeft.setAttribute("class", "ss_content");
+    //cellLeft.setAttribute("className", "ss_content");
 	var inner = document.createElement("input");
 	inner.setAttribute("type", "checkbox");
     inner.setAttribute("name", "delete" + <portlet:namespace/>_alias_count);
@@ -73,22 +73,22 @@ function <portlet:namespace/>_addAlias(title, alias, subject) {
 	//folder title
 	cellLeft = document.createElement("td");
 	row.appendChild(cellLeft);
-	cellLeft.setAttribute("class", "ss_content");
-	cellLeft.setAttribute("className", "ss_content");
+	//cellLeft.setAttribute("class", "ss_content");
+	//cellLeft.setAttribute("className", "ss_content");
     cellLeft.appendChild(document.createTextNode(title));
 
 	//alias 
 	cellLeft = document.createElement("td");
 	row.appendChild(cellLeft);
-	cellLeft.setAttribute("class", "ss_content");
-	cellLeft.setAttribute("className", "ss_content");
+	//cellLeft.setAttribute("class", "ss_content");
+	//cellLeft.setAttribute("className", "ss_content");
 	cellLeft.innerHTML=<portlet:namespace/>_buildSelectBox(alias);
 	
 	//subject
 	cellLeft = document.createElement("td");
 	row.appendChild(cellLeft);
- 	cellLeft.setAttribute("class", "ss_content");
-	cellLeft.setAttribute("className", "ss_content");
+ 	//cellLeft.setAttribute("class", "ss_content");
+	//cellLeft.setAttribute("className", "ss_content");
 	inner = document.createElement("input");
 	inner.setAttribute("type", "text");
   	inner.setAttribute("size", "32");
@@ -157,8 +157,8 @@ function <portlet:namespace/>_select(alias) {
 		if (parentFolder != null) parentFolderId = parentFolder.getId().toString();
 	}
 %>
-<table width="100%" border="0" cellpadding="2" cellspacing="0">
- <tr align="left"><td class="ss_contentbold"><ssf:nlt tag="tree.choose_folder"/></td></tr>
+<table class="ss_style" width="100%" border="0" cellpadding="2" cellspacing="0">
+ <tr align="left"><td class="ss_bold"><ssf:nlt tag="tree.choose_folder"/></td></tr>
  <tr>
   <td>
 	  <ssf:tree treeName="folderTree" treeDocument="<%= ssFolderDomTree %>" 
@@ -169,13 +169,13 @@ function <portlet:namespace/>_select(alias) {
 <div class="ss_divider"></div>
 
 <div id="<portlet:namespace/>_alias_div" name="<portlet:namespace/>_alias_div">
-<table border="0" cellspacing="0" cellpadding="3" class="ss_borderTable" name="<portlet:namespace/>_alias_table" id="<portlet:namespace/>_alias_table">
+<table border="0" cellspacing="0" cellpadding="3" class="ss_style ss_borderTable" name="<portlet:namespace/>_alias_table" id="<portlet:namespace/>_alias_table">
 <tbody name="<portlet:namespace/>_alias_body" id="<portlet:namespace/>_alias_body">
 <tr class="ss_headerRow">
 <td class="ss_finestprintgray" align="center" width="5%" scope="col"><ssf:nlt tag="incoming.delete" /></td>
-<td class="ss_contentbold" scope="col"><ssf:nlt tag="incoming.folder"/></td>
-<td class="ss_contentbold" scope="col"><ssf:nlt tag="incoming.alias"/></td>
-<td class="ss_contentbold" scope="col"><ssf:nlt tag="incoming.subject"/></td>
+<td class="ss_bold" scope="col"><ssf:nlt tag="incoming.folder"/></td>
+<td class="ss_bold" scope="col"><ssf:nlt tag="incoming.alias"/></td>
+<td class="ss_bold" scope="col"><ssf:nlt tag="incoming.subject"/></td>
 </tr>
 </tbody>
 </table>

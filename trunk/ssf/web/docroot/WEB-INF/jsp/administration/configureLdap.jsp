@@ -17,7 +17,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <h3>Configure Ldap Synchronization</h3>
-<form name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
+<form class="ss_style" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_ldap"/>
 		</portlet:actionURL>">
 <script language="javascript" type="text/javascript">
@@ -31,13 +31,13 @@ function <portlet:namespace/>setEnable() {
 </script>
 <input type="hidden" id="enabled" name="enabled" value="${ssLdapConfig.enabled}"/>
 
-<table border ="1" cellspacing="0" cellpadding="3">
+<table class="ss_style" border ="1" cellspacing="0" cellpadding="3">
   <tr>
   <td align="center" class="contentbold">Session synchronization </td>
   <td colspan="2" align="center" class="contentbold">Scheduled synchronization</td>
   </tr>
   <tr><td class="content" valign="top"> 
-   	<table border="0" cellpadding="0" cellspacing="2">
+   	<table class="ss_style" border="0" cellpadding="0" cellspacing="2">
 	   <tr>
 	   <td class="content"><input type="checkbox" name="sessionSync" <c:if test="${ssLdapConfig.sessionSync}">checked</c:if>>
 	   <span class="content" nowrap="nowrap">User account synchronization</span></input></td>
@@ -47,7 +47,7 @@ function <portlet:namespace/>setEnable() {
 	   </tr>
 	 </table>
   </td><td class="content"  valign="top">
-  	 <table border="0" cellpadding="0" cellspacing="2">
+  	 <table class="ss_style" border="0" cellpadding="0" cellspacing="2">
 	   <tr><td class="content"><input type="checkbox" name="userSync" <c:if test="${ssLdapConfig.userSync}">checked</c:if>>
 	   <span class="content" nowrap="nowrap">User account synchronization</span></input></td>
 	   </tr><tr>
@@ -69,7 +69,7 @@ function <portlet:namespace/>setEnable() {
 	   </tr>
      </table>
   </td><td class="content"  valign="top">
-  	 <table border="0" cellpadding="0" cellspacing="2">
+  	 <table class="ss_style" border="0" cellpadding="0" cellspacing="2">
 	   <tr>
 	   <td class="content">	<input type="checkbox" class="content" id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssLdapConfig.enabled}">checked</c:if>>
 	   <span class="content">Disable schedule</span></input><br/>

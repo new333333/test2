@@ -34,4 +34,4 @@
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
 <c:set var="rowClass" value="ss_highlightGray" scope="request"/>
 
-<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_borderTable">
+<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_style ss_borderTable">

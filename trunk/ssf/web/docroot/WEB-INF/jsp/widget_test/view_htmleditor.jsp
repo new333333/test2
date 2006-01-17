@@ -33,7 +33,7 @@
 %>
 
 <center>	You entered: 
-	<table border="1">
+	<table class="ss_style" border="1">
 	<th>
 	First editor:
 	</th>
@@ -57,7 +57,7 @@
 	}
 %>
 
-<form method="POST" action="" name="htmleditortest">
+<form class="ss_style" method="POST" action="" name="htmleditortest">
 <span align="center">SiteScape Forum Widget Tester -  HTML Editor widget <p>
 Two HTML Editors on one form. <br>
 First editor has height=150, second one has no size specified, so defaults to 250 (pixels).
@@ -65,10 +65,10 @@ First editor has height=150, second one has no size specified, so defaults to 25
 </span>
 
 
-	<table border="0" cellpadding="0" cellspacing="0" width="95%">
+	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
 	<tr>
 		<td>
-			<table align=center border="0" cellpadding="3" cellspacing="3">
+			<table class="ss_style" align=center border="0" cellpadding="3" cellspacing="3">
 			<tr>
 				<td>
 					First editor:

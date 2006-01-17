@@ -20,9 +20,9 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<table width="100%"><tr><td>
+<table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssFolderList}">
-<table class="ss_content" cellspacing="0" cellpadding="0">
+<table class="ss_style" cellspacing="0" cellpadding="0">
 <tr><th align="left"><ssf:nlt tag="forum.selectedForums" text="Currently selected forums:"/></th></tr>
 <tr><td>&nbsp;</td></tr>
 <c:forEach var="folder" items="<%= ssFolderList %>">
@@ -32,11 +32,11 @@
 <br>
 </c:if>
 
-<form action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
+<form class="ss_style" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
 
 <br>
 <br>
-<span class="ss_contentbold"><ssf:nlt tag="forum.selectForums" text="Select the forums to be shown:"/></span>
+<span class="ss_bold"><ssf:nlt tag="forum.selectForums" text="Select the forums to be shown:"/></span>
 <br>
 <br>
 <script language="javascript">

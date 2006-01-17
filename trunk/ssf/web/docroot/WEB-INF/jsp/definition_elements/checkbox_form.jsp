@@ -25,7 +25,7 @@
 <c:if test="${ssEntry.customAttributes[property_name].value}" >
 <c:set var="cb_checked" value="checked"/>
 </c:if>
-<div class="ss_contentEntry" style="display:<%= inline %>;">
+<div style="display:<%= inline %>;">
 <input type="checkbox" name="<%= elementName %>" <c:out value="${cb_checked}"/>>&nbsp;<span class="ss_labelRight"><%= caption %><%= required %></span></checkbox>
 </div>
 <div class="ss_divider"></div>

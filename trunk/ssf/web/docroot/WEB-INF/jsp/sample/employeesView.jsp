@@ -18,7 +18,7 @@ return false;
 
 <h1>SiteScape Employees</h1>
 
-<table border="0" cellpadding="4">
+<table class="ss_style" border="0" cellpadding="4">
 	<tr><th>First Name</th><th>Last Name</th><th>Salary</th><th></th></tr>
 	<c:forEach items="${employees}" var="employee">
 		<tr>

@@ -6,7 +6,7 @@
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
 %>
-<div class="ss_portlet" width="100%">
+<div class="ss_style ss_portlet" width="100%">
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= item %>" 
   configJspStyle="<%= ssConfigJspStyle %>" />

@@ -26,8 +26,8 @@
 <script language="Javascript" src="<html:rootPath />js/common/AnchorPosition.js"></script>
 <c:set var="prefix" value="${formName}_${evid}" />
 
-<table border="0" cellpadding="0"><tr><td>
- <table border="0" cellpadding="4" cellspacing="0">
+<table class="ss_style" border="0" cellpadding="0"><tr><td>
+ <table class="ss_style" border="0" cellpadding="4" cellspacing="0">
  <c:choose>
  <c:when test="${attMap.hasDur}">
  <tr>
@@ -207,7 +207,7 @@ function ${prefix}_toggleRecur(name) {
   </div>
 
    <div name="${prefix}_recur_div" id="${prefix}_recur_div" style="visibility:hidden; display:none;">
-     <table border="0" cellpadding="4" cellspacing="0">
+     <table class="ss_style" border="0" cellpadding="4" cellspacing="0">
 
      <tr>
      <td colspan="3" class="contentbold">
