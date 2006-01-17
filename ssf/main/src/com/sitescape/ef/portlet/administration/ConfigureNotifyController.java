@@ -124,6 +124,7 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			
 		} catch (Exception e) {
 			//assume not selected yet
+			logger.warn(e); // log it
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(new TreeHelper(response));
 			return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_NOTIFICATION, WebKeys.WORKSPACE_DOM_TREE, wsTree);		
 		}
