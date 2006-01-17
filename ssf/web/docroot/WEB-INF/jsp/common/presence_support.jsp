@@ -30,11 +30,7 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
     var m = ''
     var imgid = "ppgpres"
     var ostatus = ""
-    if (isNSN || isNSN6 || isMoz5) {
-        obj = self.document.getElementById('presencePopUp')
-    } else {
-        obj = self.document.all['presencePopUp']
-    }
+    obj = self.document.getElementById('presencePopUp')
     m += '<div style="position: relative; background: #666; margin: 4px;">'
     m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1; border: 1px solid #666666; background-color:white">'
 
