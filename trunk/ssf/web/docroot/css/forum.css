@@ -7,11 +7,52 @@
   font-weight: inherit;
   font-size: 12px; 
   }
-
-/* lists */
-ul.ss_content li {
+.ss_largeprint {
+  font-size: 16px; 
+  }
+  
+.ss_smallprint {
+  font-size: 11px; 
+  }
+  
+.ss_bold {
+  font-weight: bold;
+  }
+  
+.ss_gray {
+  color: #999999;   
   }
 
+.ss_fineprint {
+  font-size: 9px; 
+  }
+
+.ss_fineprintbold {
+  font-size: 9px; 
+  font-weight: bold;
+  }
+
+.ss_fineprintgray {
+  font-size: 9px; 
+  color: #999999; 
+  }
+  
+span.ss_rightbold {
+  display: inline;
+  text-align: right;
+  float: right;
+  font-weight: bold;
+  color: #999999;
+  }
+  
+span.ss_right {
+  display: inline;
+  text-align: right;
+  float: right;
+  color: #999999;
+  }
+
+/* lists */
 ul.ss_nobullet {
   margin-left: 0em;
   padding-left: 0em;
@@ -31,46 +72,6 @@ ul.ss_nobullet li ul.ss_nobullet {
   padding-left: 0em;
   margin-top: 0px;
   margin-bottom: 0px;
-  }
-
-.ss_content {
-  }
-  
-.ss_bold {
-  font-weight: bold;
-  }
-  
-.ss_gray {
-  color: #999999;   
-  }
-
-.ss_fineprint {
-  font-size: 70%; 
-  }
-
-.ss_fineprintbold {
-  font-size: 70%; 
-  font-weight: bold;
-  }
-
-.ss_fineprintgray {
-  font-size: 70%; 
-  color: #999999; 
-  }
-  
-span.ss_rightbold {
-  display: inline;
-  text-align: right;
-  float: right;
-  font-weight: bold;
-  color: #999999;
-  }
-  
-span.ss_right {
-  display: inline;
-  text-align: right;
-  float: right;
-  color: #999999;
   }
 
 /* ------------------------------------------------------------------------ */
@@ -648,7 +649,7 @@ a.ss_link_nodec:hover, a.ss_link_nodec:active {
 
 /* Text styled as buttons */
 a.ss_linkButton:link, a.ss_linkButton:visited {
-  font-size: smaller;
+  font-size: 10px;
   color: #6699cc;
   font-weight: bold;
   border-top: 1px solid #666666;
@@ -667,7 +668,7 @@ a.ss_linkButton:link, a.ss_linkButton:visited {
   }
 
 a.ss_linkButton:focus, a.ss_linkButton:hover, a.ss_linkButton:active {
-  font-size: smaller;
+  font-size: 10px;
   color: #ff0000;
   font-weight: bold;
   border-top: 1px solid #d5d5d5;
@@ -686,7 +687,7 @@ a.ss_linkButton:focus, a.ss_linkButton:hover, a.ss_linkButton:active {
   }
 
 a.ss_smallLinkButton:link, a.ss_smallLinkButton:visited {
-  font-size: smaller;
+  font-size: 10px;
   color: #6699cc;
   font-weight: bold;
   border-top: 1px solid #666666;
@@ -705,7 +706,7 @@ a.ss_smallLinkButton:link, a.ss_smallLinkButton:visited {
   }
 
 a.ss_smallLinkButton:focus, a.ss_smallLinkButton:hover, a.ss_smallLinkButton:active {
-  font-size: smaller;
+  font-size: 10px;
   color: #ff0000;
   font-weight: bold;
   border-top: 1px solid #d5d5d5;

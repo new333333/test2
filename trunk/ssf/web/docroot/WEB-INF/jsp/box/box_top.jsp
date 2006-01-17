@@ -29,8 +29,8 @@
 // General variables
 
 String divId = ParamUtil.get(request, "box_id", "");
-String titleClassName = ParamUtil.get(request, "box_title_class", "beta");
-String bodyClassName = ParamUtil.get(request, "box_body_class", "bg");
+String titleClassName = ParamUtil.get(request, "box_title_class", "ss_style ss_largeprint");
+String bodyClassName = ParamUtil.get(request, "box_body_class", "ss_style");
 String ss_boxColor = ParamUtil.get(request, "box_color", "#cecece");
 
 String title = ParamUtil.get(request, "box_title", "");

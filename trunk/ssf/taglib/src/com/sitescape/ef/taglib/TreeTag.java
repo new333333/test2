@@ -45,7 +45,7 @@ public class TreeTag extends TagSupport {
     private String multiSelectPrefix;
     private boolean sortable = false;
     private String commonImg;
-    private String className = "bg";
+    private String className = "ss_style";
     private Map images;
     private Map imagesOpen;
 	private String displayStyle;
@@ -434,7 +434,7 @@ public class TreeTag extends TagSupport {
 			//id
 			String s_id = e.attributeValue("id");
 			String titleClass = className;
-			if ((s_id != null) && s_id.equals(this.highlightNode)) titleClass = "ss_highlight_gamma";
+			if ((s_id != null) && s_id.equals(this.highlightNode)) titleClass = "ss_style ss_highlight_gamma";
 	
 			//Image
 			String s_image = getImage(e.attributeValue("image"));

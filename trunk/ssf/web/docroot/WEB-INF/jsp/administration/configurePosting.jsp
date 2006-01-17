@@ -62,8 +62,6 @@ function <portlet:namespace/>_addAlias(title, alias, subject) {
 	var cellLeft = document.createElement("td");
 	row.appendChild(cellLeft);
     cellLeft.setAttribute("align", "center");
-    //cellLeft.setAttribute("class", "ss_content");
-    //cellLeft.setAttribute("className", "ss_content");
 	var inner = document.createElement("input");
 	inner.setAttribute("type", "checkbox");
     inner.setAttribute("name", "delete" + <portlet:namespace/>_alias_count);
@@ -73,22 +71,16 @@ function <portlet:namespace/>_addAlias(title, alias, subject) {
 	//folder title
 	cellLeft = document.createElement("td");
 	row.appendChild(cellLeft);
-	//cellLeft.setAttribute("class", "ss_content");
-	//cellLeft.setAttribute("className", "ss_content");
     cellLeft.appendChild(document.createTextNode(title));
 
 	//alias 
 	cellLeft = document.createElement("td");
 	row.appendChild(cellLeft);
-	//cellLeft.setAttribute("class", "ss_content");
-	//cellLeft.setAttribute("className", "ss_content");
 	cellLeft.innerHTML=<portlet:namespace/>_buildSelectBox(alias);
 	
 	//subject
 	cellLeft = document.createElement("td");
 	row.appendChild(cellLeft);
- 	//cellLeft.setAttribute("class", "ss_content");
-	//cellLeft.setAttribute("className", "ss_content");
 	inner = document.createElement("input");
 	inner.setAttribute("type", "text");
   	inner.setAttribute("size", "32");

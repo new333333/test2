@@ -54,8 +54,6 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 	var cellLeft = document.createElement("td");
 	row.appendChild(cellLeft);
     cellLeft.setAttribute("align", "center");
-    //cellLeft.setAttribute("class", "ss_content");
-    //cellLeft.setAttribute("className", "ss_content");
 	var inner = document.createElement("input");
 	inner.setAttribute("type", "checkbox");
     inner.setAttribute("name", "delete" + <portlet:namespace/>_alias_count);
@@ -65,8 +63,6 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 	//alias name
 	cellLeft = document.createElement("td");
 	row.appendChild(cellLeft);
-	//cellLeft.setAttribute("class", "ss_content");
-	//cellLeft.setAttribute("className", "ss_content");
 	inner = document.createElement("input");
 	inner.setAttribute("type", "text");
   	inner.setAttribute("size", "32");
@@ -78,8 +74,6 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 	//mapped forums
 	cellLeft = document.createElement("td");
 	row.appendChild(cellLeft);
- 	//cellLeft.setAttribute("class", "ss_content");
-	//cellLeft.setAttribute("className", "ss_content");
 	inner = document.createTextNode(forums);
  	cellLeft.appendChild(inner);
 
