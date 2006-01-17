@@ -6,7 +6,7 @@
 <div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}"/></span>
 
-<span class="ss_content">
+<span>
 <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
 <a target="_blank" 
   href="<ssf:url 
