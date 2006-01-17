@@ -18,10 +18,12 @@
 <div class="ss_style ss_portlet">
 <table class="ss_style" border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
-	<td align="center">
+	<td>
 		<table class="ss_style" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td valign="top">
+			    <span><b>Element tests</b></span>
+			    <br>
 				<a href="<portlet:renderURL windowState="maximized">
 						<portlet:param name="action" value="tree" />
 					</portlet:renderURL>">Tree test</a><br>
@@ -33,25 +35,27 @@
 					</portlet:renderURL>">Html Editor test</a><br>
 				<a href="<portlet:actionURL windowState="maximized">
 						<portlet:param name="action" value="event" />
-					</portlet:actionURL>">Event tester</a><br>
+					</portlet:actionURL>">Event tester</a>
+				<br>
+				<br><span><b>JBPM workflow tests</b></span>
+				<br>
 				<a href="<portlet:actionURL windowState="maximized">
 						<portlet:param name="action" value="workflow" />
 						<portlet:param name="operation" value="null" />
-					</portlet:actionURL>">Workflow tester</a><br>
-				<a href="<portlet:actionURL windowState="normal">
-						<portlet:param name="action" value="flush" />
-						<portlet:param name="operation" value="null" />
-					</portlet:actionURL>">Flush cache</a><br>
+					</portlet:actionURL>">Workflow tester</a>
 				<br>
-				<br><span><b>Forum operations</b></span><br>
+				<br><span><b>Servlet tests</b></span>
 				<br>
 				<a href="<portlet:renderURL windowState="maximized">
 						<portlet:param name="action" value="fragment" />
-					</portlet:renderURL>">Fragment test</a><br>
-				<a href="<portlet:actionURL windowState="maximized">
-						<portlet:param name="action" value="definition_builder" />
-					</portlet:actionURL>">Definition builder</a><br>
-				
+					</portlet:renderURL>">Fragment test</a>
+				<br>
+				<br><span><b>General tests</b></span>
+				<br>
+				<a href="<portlet:actionURL windowState="normal">
+						<portlet:param name="action" value="flush" />
+						<portlet:param name="operation" value="null" />
+					</portlet:actionURL>">Flush cache</a>
 				
 			</td>
 		</tr>
