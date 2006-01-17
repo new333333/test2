@@ -1,5 +1,7 @@
 package com.sitescape.ef.taglib;
 
+import java.util.Date;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +59,8 @@ public class PresenceInfo extends BodyTagSupport {
 				//Pass the user status to the jsp
 				httpReq.setAttribute(WebKeys.PRESENCE_USER, user);
 				httpReq.setAttribute(WebKeys.PRESENCE_STATUS, new Integer(userStatus));
+				// TODO get date in the user's local time zone
+				httpReq.setAttribute(WebKeys.PRESENCE_SWEEP_TIME, new Date());
 				httpReq.setAttribute(WebKeys.PRESENCE_DUDE, dudeGif);
 				httpReq.setAttribute(WebKeys.PRESENCE_TEXT, altText);
 				httpReq.setAttribute(WebKeys.PRESENCE_ZON_BRIDGE, "enabled");

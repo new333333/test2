@@ -534,6 +534,21 @@ table.ss_ruledTable td table td {
 .ss_bgmanila { background-color: #ffffe8; }
 .ss_bgworkflow { background-color: #e4e4e4; }
 
+a.ss_graymenu:link, a.graymenu:visited {
+  font-size: 11px; 
+  text-decoration: none; 
+}
+
+a.ss_graymenu:inactive {
+  font-size: 11px; 
+  text-decoration: none; 
+}
+
+a.ss_graymenu:focus, a.graymenu:hover, a.graymenu:active {
+  font-size: 11px; 
+  text-decoration: underline; 
+}
+
 /* highlight for selected entry in iframe view*/
 .ss_highlightEntry {
   background-color: #cecece;

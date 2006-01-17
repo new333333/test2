@@ -38,7 +38,7 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
     m += '<div style="position: relative; background: #666; margin: 4px;">'
     m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1; border: 1px solid #666666; background-color:white">'
 
-    m += '<table class="ss_style" class=graymenu border="0" cellspacing="0" cellpadding="3">';
+    m += '<table class="ss_style ss_graymenu" border="0" cellspacing="0" cellpadding="3">';
     m += '<tr>';
     if (status >= 0) {
         if (status & 1) {
@@ -54,46 +54,46 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
             imgid = "ppgpresoff"
         }
     }
-    m += '<td class=bglightgray valign=top><img src="" alt="" id=' +imgid +'></td>';
-    m += '<td><span class=content>' + userTitle;
+    m += '<td class="ss_bglightgray" valign=top><img src="" alt="" id=' +imgid +'></td>';
+    m += '<td><span>' + userTitle;
     if (status >= 0) {
         m += ostatus;
-        m += '</span><br><span class="fineprintgray">(<ssf:nlt tag="presence.statusAt" text="status at"/> ' + sweepTime + ')</span>';
+        m += '</span><br><span class="ss_fineprintgray">(<ssf:nlt tag="presence.statusAt" text="status at"/> ' + sweepTime + ')</span>';
     }
     m += '</td></tr>';
     if (screenName != '') {
         if (current == '') {
             m += '<tr>';
-            m += '<td class=bglightgray><img alt="" src="" id="ppgimsg"></td>';
+            m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgimsg"></td>';
             if (status == 0) {
-                m += '<td class=fineprintgray><ssf:nlt tag="presence.sendIM" text="Send instant message..."/></td>';
+                m += '<td class="ss_fineprintgray"><ssf:nlt tag="presence.sendIM" text="Send instant message..."/></td>';
             } else {
-                m += '<td><a class=graymenu href="iic:im?screenName=' + screenName + '"><ssf:nlt tag="presence.sendIM" text="Send instant message..."/></a></td>';
+                m += '<td><a class="ss_graymenu" href="iic:im?screenName=' + screenName + '"><ssf:nlt tag="presence.sendIM" text="Send instant message..."/></a></td>';
             }
             m += '</tr>';
         }
         m += '<tr>';
-        m += '<td class=bglightgray><img alt="" src="" id="ppgimtg"></td>';
-        m += '<td><a class=graymenu href="iic:meetone?screenName=' + screenName + '"><ssf:nlt tag="presence.startIM" text="Start instant meeting..."/></a></td></tr>';
+        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgimtg"></td>';
+        m += '<td><a class="ss_graymenu" href="iic:meetone?screenName=' + screenName + '"><ssf:nlt tag="presence.startIM" text="Start instant meeting..."/></a></td></tr>';
         m += '<tr>';
-        m += '<td class=bglightgray><img alt="" src="" id="ppgsched"></td>';
-        m += '<td><a class=graymenu href="javascript:quickMeetingRPC(\'??? addMeeting schedule\',\'' + userId + '\', \'\', \'\', \'\');"><ssf:nlt tag="presence.scheduleMeeting" text="Schedule a meeting..."/></a></td></tr>';
+        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgsched"></td>';
+        m += '<td><a class="ss_graymenu" href="javascript:quickMeetingRPC(\'??? addMeeting schedule\',\'' + userId + '\', \'\', \'\', \'\');"><ssf:nlt tag="presence.scheduleMeeting" text="Schedule a meeting..."/></a></td></tr>';
         m += '<tr>';
 <c:if test="${ss_presence_zonBridge == 'enabled'}">
-        m += '<td class=bglightgray><img alt="" src="" id="ppgphone"></td>';
-        m += '<td><a class=graymenu href="javascript:quickMeetingRPC(\'??? addMeeting call\',\'' + userId + '\', \'\', \'\', \'\');"><ssf:nlt tag="presence.call" text="Call..."/></a></td></tr>';
+        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgphone"></td>';
+        m += '<td><a class="ss_graymenu" href="javascript:quickMeetingRPC(\'??? addMeeting call\',\'' + userId + '\', \'\', \'\', \'\');"><ssf:nlt tag="presence.call" text="Call..."/></a></td></tr>';
 </c:if>
      }
     if (current == '') {
         if (email != '') {
             m += '<tr>';
-            m += '<td class=bglightgray><img alt="" src="" id="ppgmail"></td>';
+            m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgmail"></td>';
             bodyText = escape(window.location.href);
-            m += '<td><a class=graymenu href="mailto:' + email + '?body=' + bodyText +'"><ssf:nlt tag="presence.sendMail" text="Send mail"/> (' + email + ')...</a></td></tr>';
+            m += '<td><a class="ss_graymenu" href="mailto:' + email + '?body=' + bodyText +'"><ssf:nlt tag="presence.sendMail" text="Send mail"/> (' + email + ')...</a></td></tr>';
         }
         m += '<tr>';
-        m += '<td class=bglightgray><img alt="" src="" id="ppgvcard"></td>';
-        m += '<td><a class=graymenu href="' + vcard + '"><ssf:nlt tag="presence.addToOutlook" text="Add to Outlook contacts..."/></a></td></tr>';
+        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgvcard"></td>';
+        m += '<td><a class="ss_graymenu" href="' + vcard + '"><ssf:nlt tag="presence.addToOutlook" text="Add to Outlook contacts..."/></a></td></tr>';
     }
     m += '</table>'
 

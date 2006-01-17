@@ -331,6 +331,8 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 		//Process the same column in each row
 		for (int iCol = 0; iCol < colSize; iCol++) {
 
+			int rowCount = 0;
+			String rowStyle = "ss_bgwhite";
 			for (int iRow = 0; iRow < slidingTableRows.size(); iRow++) {
 				String rowId = (String)((Map) slidingTableRows.get(iRow)).get("id");
 				Boolean headerRow = (Boolean)((Map) slidingTableRows.get(iRow)).get("headerRow");
@@ -340,6 +342,13 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 				String rowIdText = "";
 				if (rowId != null && !rowId.equals("")) {
 					rowIdText = "id='" + rowId + "_" + String.valueOf(iCol) + "' ";
+				}
+				
+				//Get the row class
+				if (!headerRow.booleanValue()) {
+					rowStyle = "ss_bgwhite";
+					if ((rowCount % 2) == 0) rowStyle = "ss_bglightgray";
+					rowCount++;
 				}
 
 				//Process the columns
@@ -359,12 +368,12 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 %>
 <div id="col<%= String.valueOf(iCol + 1) %>" class="ss_style ss_sliding_table_column1">
 <table class="ss_style" cellspacing="0" cellpadding="0" width="100%">
-<tr onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
+<tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 <td>&nbsp;</td>
 </tr>
 </table>
 <table class="ss_style" cellspacing="0" cellpadding="0" width="100%">
-<tr <%= rowIdText %>>
+<tr class="<%= rowStyle %>" <%= rowIdText %>>
 <%
 					if (headerRow.booleanValue()) {
 %>
@@ -392,7 +401,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 %>
 <div id="col<%= String.valueOf(iCol + 1) %>" class="ss_style ss_sliding_table_column"  style="z-index:<%= String.valueOf(iCol + 11) %>;">
 <table class="ss_style" cellspacing="0" cellpadding="0" width="100%">
-<tr onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
+<tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 <td><div style="position:absolute; left:-9; top:0;"><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
   onMousedown="ss_slidingTableStartDragCol(this, 'col<%= String.valueOf(iCol + 1) %>');"
   ><span style="cursor:w-resize; cursor:col-resize; color:darkgreen; font-size:small; text-decoration:none;
@@ -428,7 +437,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					}
 %>
-<tr <%= rowIdText %>>
+<tr class="<%= rowStyle %>" <%= rowIdText %>>
 <%
 					if (headerRow.booleanValue()) {
 %>

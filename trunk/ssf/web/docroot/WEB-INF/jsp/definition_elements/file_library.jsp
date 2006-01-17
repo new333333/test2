@@ -58,7 +58,7 @@ function ss_loadEntry(obj,id) {
     entryId="<%= fileEntry.getId().toString() %>" />" 
     onClick="ss_loadEntry(this,'folderLine_<c:out value="${fileEntry.id}"/>');return false;" >
     <c:if test="${empty fileEntry.title}">
-    <span class="fineprint"><i>(no title)</i></span>
+    <span class="ss_fineprint"><i>(no title)</i></span>
     </c:if>
     <c:out value="${fileEntry.title}"/></a>
   </td>
