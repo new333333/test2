@@ -15,7 +15,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
+<div class="ss_style ss_portlet">
 <table class="ss_style" border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
 	<td align="center">
@@ -59,4 +59,5 @@
 	</td>
 </tr>
 </table>
+</div>
 
