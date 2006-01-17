@@ -19,15 +19,15 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<table width="100%"><tr><td>
+<table class="ss_style" width="100%"><tr><td>
 
-<form action="<portlet:actionURL>
+<form class="ss_style" action="<portlet:actionURL>
 			  <portlet:param name="action" value="configure_folder_index"/>
 		      </portlet:actionURL>" method="post" name="<portlet:namespace />fm">
 
 <br>
 <br>
-<span class="ss_contentbold"><ssf:nlt tag="forum.selectIndexForums" text="Select the forums to be re-indexed:"/></span>
+<span class="ss_bold"><ssf:nlt tag="forum.selectIndexForums" text="Select the forums to be re-indexed:"/></span>
 <br>
 <br>
 <script language="javascript">

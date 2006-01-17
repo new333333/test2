@@ -45,10 +45,10 @@ function t_<portlet:namespace/>_ws2Tree_showId(id, obj) {
 <br />
 <br />
 
-	<table border="0" cellpadding="0" cellspacing="0" width="95%">
+	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
 	<tr>
 		<td>
-			<table border="0" cellpadding="0" cellspacing="0">
+			<table class="ss_style" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					First tree:
@@ -63,10 +63,10 @@ function t_<portlet:namespace/>_ws2Tree_showId(id, obj) {
 	</table>
 	<br>
 	<br>
-	<table border="0" cellpadding="0" cellspacing="0" width="95%">
+	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
 	<tr>
 		<td>
-			<table border="0" cellpadding="0" cellspacing="0">
+			<table class="ss_style" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					Second tree:

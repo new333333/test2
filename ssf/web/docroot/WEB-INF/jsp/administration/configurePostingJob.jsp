@@ -16,7 +16,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<form name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
+<form class="ss_style" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_posting_job"/>
 		</portlet:actionURL>">
 <script language="javascript" type="text/javascript">
@@ -54,8 +54,8 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 	var cellLeft = document.createElement("td");
 	row.appendChild(cellLeft);
     cellLeft.setAttribute("align", "center");
-    cellLeft.setAttribute("class", "ss_content");
-    cellLeft.setAttribute("className", "ss_content");
+    //cellLeft.setAttribute("class", "ss_content");
+    //cellLeft.setAttribute("className", "ss_content");
 	var inner = document.createElement("input");
 	inner.setAttribute("type", "checkbox");
     inner.setAttribute("name", "delete" + <portlet:namespace/>_alias_count);
@@ -65,8 +65,8 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 	//alias name
 	cellLeft = document.createElement("td");
 	row.appendChild(cellLeft);
-	cellLeft.setAttribute("class", "ss_content");
-	cellLeft.setAttribute("className", "ss_content");
+	//cellLeft.setAttribute("class", "ss_content");
+	//cellLeft.setAttribute("className", "ss_content");
 	inner = document.createElement("input");
 	inner.setAttribute("type", "text");
   	inner.setAttribute("size", "32");
@@ -78,8 +78,8 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 	//mapped forums
 	cellLeft = document.createElement("td");
 	row.appendChild(cellLeft);
- 	cellLeft.setAttribute("class", "ss_content");
-	cellLeft.setAttribute("className", "ss_content");
+ 	//cellLeft.setAttribute("class", "ss_content");
+	//cellLeft.setAttribute("className", "ss_content");
 	inner = document.createTextNode(forums);
  	cellLeft.appendChild(inner);
 
@@ -90,20 +90,20 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 </script>
 <input type="hidden" id="enabled" name="enabled" value="${ssScheduleInfo.enabled}"/>
 
-<div class="ss_portlet">
+<div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="incoming.job_title" /></span><br/>
 <br/>
 <c:set var="toolbar" value="${ssToolbar}" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 
-<table border ="0" cellspacing="0" cellpadding="3">
-<tr><td class="ss_content"> 
-<input type="checkbox" class="ss_content" id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssScheduleInfo.enabled}">checked</c:if>/>
+<table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
+<tr><td> 
+<input type="checkbox" id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssScheduleInfo.enabled}">checked</c:if>/>
 Disable all incoming e-mail<br/>
 </td></tr></table>
 
 <div class="ss_divider"></div>
-<span class="ss_contentbold"><ssf:nlt tag="incoming.schedule_title" /></span>
+<span class="ss_bold"><ssf:nlt tag="incoming.schedule_title" /></span>
 
 <c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
@@ -117,13 +117,13 @@ Disable all incoming e-mail<br/>
 <div id="<portlet:namespace/>_alias_div" name="<portlet:namespace/>_alias_div" style="visibility:hidden; display:none;">
 <a class="ss_linkbutton" href="javascript:" onClick="<portlet:namespace/>_addAlias('','');"><ssf:nlt tag="button.add_alias" /></a>
 
-<table border="0" cellspacing="0" cellpadding="3" class="ss_borderTable" name="<portlet:namespace/>_alias_table" id="<portlet:namespace/>_alias_table">
+<table border="0" cellspacing="0" cellpadding="3" class="ss_style ss_borderTable" name="<portlet:namespace/>_alias_table" id="<portlet:namespace/>_alias_table">
 <tbody name="<portlet:namespace/>_alias_body" id="<portlet:namespace/>_alias_body">
 
   <tr class="ss_headerRow">
   <td class="ss_finestprintgray" align="center" width="5%" scope="col"><ssf:nlt tag="incoming.delete" /></td>
-  <td class="ss_contentbold" scope="col"><ssf:nlt tag="incoming.alias" /></td>
-  <td class="ss_contentbold" scope="col"><ssf:nlt tag="incoming.forums" /></td>
+  <td class="ss_bold" scope="col"><ssf:nlt tag="incoming.alias" /></td>
+  <td class="ss_bold" scope="col"><ssf:nlt tag="incoming.forums" /></td>
 </tr>
 </tBody>
 </table>

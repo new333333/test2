@@ -68,7 +68,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 <%@ include file="/WEB-INF/jsp/box/box_top-ext.jsp" %>
 	<div class="ss_box_small_icon_bar" id="<%= divId %>_icon_bar"
 	  style="background-color:<%= ss_boxColor %>;">
-	  <table cellspacing="0" cellpaddng="0" width="100%">
+	  <table class="ss_style" cellspacing="0" cellpaddng="0" width="100%">
 	  <tr>
 	  <c:if test="<%= showMoveIcon %>">
 		<td align="left" width="45%"><div style="display:inline;" onMouseDown="<%= showMoveRoutine %>"

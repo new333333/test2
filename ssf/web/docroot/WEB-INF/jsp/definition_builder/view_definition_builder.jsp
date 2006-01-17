@@ -282,7 +282,7 @@ function setStateMachine(newState) {
 		}
 	} else if (state == "view_definition_options") {
 		ss_setDivHtml("displaydiv", "")
-		var selectedIdNameText = "<span class='ss_contentbold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
+		var selectedIdNameText = "<span class='ss_bold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
 		ss_setDivHtml("infoDefinitionOptionsDefinitionName", selectedIdNameText)
 		ss_addToDiv("displaydiv", "infoDefinitionOptions")
 	} else if (state == "modifyDefinition") {
@@ -290,7 +290,7 @@ function setStateMachine(newState) {
 		loadDiv('properties', "", "")
 	} else if (state == "deleteDefinitionConfirm") {
 		ss_setDivHtml("displaydiv", "")
-		var selectedIdNameText = "<span class='ss_contentbold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
+		var selectedIdNameText = "<span class='ss_bold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
 		ss_setDivHtml("deleteDefinitionSelection", selectedIdNameText)
 		ss_addToDiv("displaydiv", "delete_definition_confirm")
 	} else if (state == "viewItem") {
@@ -316,7 +316,7 @@ function setStateMachine(newState) {
 		ss_setDivHtml("displaydiv", "")
 		ss_addToDiv("displaydiv", "info_"+selectedId)
 		var infoName = ""
-		if (idMapCaption[lastSelectedId]) {infoName = "<span class='ss_contentbold'>"+idMapCaption[lastSelectedId]+"</span>"}
+		if (idMapCaption[lastSelectedId]) {infoName = "<span class='ss_bold'>"+idMapCaption[lastSelectedId]+"</span>"}
 		ss_setDivHtml("moveItemSelection", infoName);
 		ss_addToDiv("displaydiv", "move_item_confirm")
 	} else if (state == "cloneItemConfirm") {
@@ -342,7 +342,7 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 
 </script>
 
-<div class="ss_portlet">
+<div class="ss_style ss_portlet">
 
 <c:if test="${!empty ss_configErrorMessage}">
 <div class="ss_labelLeftError">
@@ -371,11 +371,11 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 <br>
 <br>
 
-<form action="" method="post" name="definitionbuilder" onSubmit="setSubmitData(this)" >
+<form class="ss_style" action="" method="post" name="definitionbuilder" onSubmit="setSubmitData(this)" >
 <div id="definitionbuilder_tree_loading">
-<span class="ss_content"><ssf:nlt tag="definition.loading" text="Loading..."/></span><br>
+<span><ssf:nlt tag="definition.loading" text="Loading..."/></span><br>
 </div>
-<table width="100%">
+<table class="ss_style" width="100%">
 	<tr>
 		<td width="50%" valign="top">
 			<div id="definitionbuilder_tree" style="visibility:hidden;">
@@ -429,7 +429,7 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 <hr class="portlet-section-header">
 <br>
 
-<div class="ss_portlet">
+<div class="ss_style ss_portlet">
 <div align="center" width="100%">
   <span class="ss_titlebold">
     <ssf:nlt tag="definition.form_preview" text="Form Preview"/><br><%= definitionName %>
@@ -437,7 +437,7 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 </div>
 <br>
 
-<table cellpadding="10" width="100%"><tr><td>
+<table class="ss_style" cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration 
   configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= configElement %>" 
@@ -459,7 +459,7 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 <hr class="portlet-section-header">
 <br>
 
-<div class="ss_portlet">
+<div class="ss_style ss_portlet">
 <div align="center" width="100%">
   <span class="ss_titlebold">
     <ssf:nlt tag="definition.workflow_preview" text="Workflow Preview"/><br><%= definitionName %>

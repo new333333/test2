@@ -6,7 +6,7 @@
 String ssfBoxId = renderResponse.getNamespace() + "_ssf_box_div";
 %>
 
-<div id="ss_showfolder" class="ss_portlet" style="display:block; margin:2;">
+<div id="ss_showfolder" class="ss_style ss_portlet" style="display:block; margin:2;">
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= ssConfigElement %>" 
   configJspStyle="<%= ssConfigJspStyle %>" />

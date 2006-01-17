@@ -6,7 +6,7 @@
 
 <c:if test="${!empty ssDefinitionEntry.workflowStates}">
 <div class="ss_workflow">
-<table>
+<table class="ss_style">
 <%
 	String column1 = "<span><b>" + NLT.get("workflow", "Workflow") + ":</b></span>";
 %>
@@ -29,7 +29,7 @@
       <td valign="top" align="right"><b><ssf:nlt tag="workflow.transitionTo" 
         text="Transition to:"/></b></td>
       <td valign="top">
-	  <form method="post" action="" style="display:inline;">
+	  <form class="ss_style" method="post" action="" style="display:inline;">
 	  <input type="hidden" name="tokenId" value="${workflow.tokenId}">
 	  <select name="toState">
 	  <c:forEach var="transition" items="${workflow.manualTransitions}">

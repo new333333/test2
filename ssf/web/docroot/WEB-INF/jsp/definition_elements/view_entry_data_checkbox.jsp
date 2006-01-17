@@ -1,7 +1,7 @@
 <% //checkbox view %>
 <c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
 <div class="ss_entryContent">
-<input type="checkbox" class="ss_content" checked DISABLED>
+<input type="checkbox" checked DISABLED>
 </c:if>
 <c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
 <input type="checkbox" DISABLED>

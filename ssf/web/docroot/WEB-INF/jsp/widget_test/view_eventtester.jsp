@@ -60,7 +60,7 @@
 <center>
 <b>You chose:</b>
 <br>
-<table border="1">
+<table class="ss_style" border="1">
 <tr>
 <td align="center">First event </td></tr>
 <tr>
@@ -105,7 +105,7 @@ Nothing selected
     }
 %>
 
-<form method="POST" action="" name="eventtestertest" onSubmit="return ssf_onSubmit(this);">
+<form class="ss_style" method="POST" action="" name="eventtestertest" onSubmit="return ssf_onSubmit(this);">
 <span align="center">SiteScape Forum Event tester
 <br />
 </span>

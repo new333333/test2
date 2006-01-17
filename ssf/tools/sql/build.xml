@@ -173,7 +173,7 @@
 			password="${jdbc.password}">
 			<export dest="${data.output.file}"
 				format="flat">
-				<table name="Employees"/>
+				<table class="ss_style" name="Employees"/>
 			</export>
 		</dbunit>
 	</target>
@@ -187,7 +187,7 @@
 			password="${jdbc.password}">
 			<export dest="${basedir}/test/test-export.xml"
 				format="flat">
-				<table name="Employees"/>
+				<table class="ss_style" name="Employees"/>
 			</export>
 		</dbunit>
 	</target>

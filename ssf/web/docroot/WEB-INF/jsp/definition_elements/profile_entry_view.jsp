@@ -7,7 +7,7 @@
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
 %>
-<div class="ss_portlet">
+<div class="ss_style ss_portlet">
 <c:set var="toolbar" value="${ssFolderEntryToolbar}" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 

@@ -3,7 +3,7 @@
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 %>
 <a name="ss_top_of_folder"></a>
-<div id="ss_showfolder" class="ss_portlet">
+<div id="ss_showfolder" class="ss_style ss_portlet">
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= ssConfigElement %>" 
   configJspStyle="<%= ssConfigJspStyle %>" />
@@ -26,7 +26,7 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
     frameBorder="no" >xxx</iframe>
   </ssf:box>
 </div>
-<div id="ss_showfolder_scroll_link" class="ss_portlet" style="display:none; visibility:hidden;">
+<div id="ss_showfolder_scroll_link" class="ss_style ss_portlet" style="display:none; visibility:hidden;">
 <br>
 <br>
 <a href="#ss_top_of_folder" onClick="smoothScrollInTime(0 , 0, 8);return false;">
@@ -34,7 +34,7 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 </a>
 <br>
 </div>
-<div id="ss_showfolder_bottom" class="ss_portlet">
+<div id="ss_showfolder_bottom" class="ss_style ss_portlet">
 </div>
 
 <script language="javascript">
@@ -120,7 +120,7 @@ function ss_repositionEntryDiv() {
 createOnResizeObj('ss_repositionEntryDiv', ss_repositionEntryDiv)
 
 </script>
-<form name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
+<form class="ss_style" name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
 <input type="hidden" name="entry_width">
 </form>
 <div id="ss_entry_width_status_message" style="visibility:hidden; display:none;"></div>

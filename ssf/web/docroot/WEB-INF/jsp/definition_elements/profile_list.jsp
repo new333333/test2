@@ -29,11 +29,11 @@ function highlightLineById(id) {
 
 <div class="ss_folder">
 <br />
-<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_borderTable">
+<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_style ss_borderTable">
  <tr class="ss_headerRow">
-  <td class="ss_contentbold">Title</td>
-  <td class="ss_contentbold">Email</td>
-  <td class="ss_contentbold">LoginName</td>
+  <td class="ss_bold">Title</td>
+  <td class="ss_bold">Email</td>
+  <td class="ss_bold">LoginName</td>
 </tr>
 
 <c:set var="rowClass" value="ss_highlightGray"/>
@@ -51,7 +51,7 @@ function highlightLineById(id) {
 </c:otherwise>
 </c:choose>
 
-   <td valign="top" width="40%" class="ss_content">
+   <td valign="top" width="40%">
     <a class="ss_link" href="<ssf:url     
     adapter="true" 
     portletName="ss_profile" 
@@ -63,9 +63,9 @@ function highlightLineById(id) {
     <span class="fineprint">--no title--</span>
     </c:if>
     <c:out value="${entry._title}"/></a></td>
-  <td valign="top" width="30%" class="ss_content"><a class="ss_link" href="mailto:${entry._email}">
+  <td valign="top" width="30%"><a class="ss_link" href="mailto:${entry._email}">
     <c:out value="${entry._email}"/></a></td>
-  <td valign="top" width="24%" class="ss_content">
+  <td valign="top" width="24%">
     <c:out value="${entry._userName}"/></td>
  </tr>
 </c:forEach>

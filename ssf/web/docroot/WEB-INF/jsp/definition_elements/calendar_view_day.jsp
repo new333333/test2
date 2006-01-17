@@ -9,7 +9,7 @@ function getFilteredEntries() {
 }
 </script>
 <c:set var="delimiter" value=" | "/>
-<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_ruledTable">
+<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_style ss_ruledTable">
 <tr class="ss_bglightgray">
 <td colspan="2"><span class="ss_toolbar_item">
 <fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
@@ -35,16 +35,16 @@ Views:&nbsp;<a href="${set_week_view}">Week</a><c:out value="${delimiter}" /><a 
 <td align="center" width="1%" valign="top">
 </c:otherwise>
 </c:choose>
-<span class="ss_content">${daymap.cal_dow}</span>
- <span class="ss_contentbold">${daymap.cal_dom}</td>
+<span>${daymap.cal_dow}</span>
+ <span class="ss_bold">${daymap.cal_dom}</td>
 
 <c:choose>
 <c:when test="${empty daymap.cal_eventdatamap}">
-<td class="ss_content">&nbsp;</td>
+<td>&nbsp;</td>
 </c:when>
 <c:otherwise>
 
-<td class="ss_content" valign="top">
+<td valign="top">
 <c:forEach var="ev" items="${daymap.cal_eventdatamap}">
 
 <c:forEach var="evid" items="${ev.value}"> 

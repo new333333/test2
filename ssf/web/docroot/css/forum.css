@@ -1,11 +1,15 @@
 /* ------------------------------------------------------------------------ */
 /* general styles, used most everywhere */
 
+.ss_style {
+  font-family: arial, helvetica, sans-serif;
+  color: #000000;
+  font-weight: inherit;
+  font-size: 12px; 
+  }
+
 /* lists */
 ul.ss_content li {
-  font-family: arial, helvetica, sans-serif;
-  font-size: smaller; 
-  color: #000000;  
   }
 
 ul.ss_nobullet {
@@ -20,8 +24,6 @@ ul.ss_nobullet li {
   margin-left: 5px;
   margin-bottom: 0px;
   padding-left: 5px;
-  font-size: smaller;
-  font-family: arial, helvetica, sans-serif;
   }
 
 ul.ss_nobullet li ul.ss_nobullet {
@@ -32,40 +34,27 @@ ul.ss_nobullet li ul.ss_nobullet {
   }
 
 .ss_content {
-  font-family: arial, helvetica, sans-serif;
-  font-size: smaller; 
-  color: #000000; 
   }
   
-.ss_contentbold {
-  font-family: arial, helvetica, sans-serif;
-  font-size: smaller;
+.ss_bold {
   font-weight: bold;
-  color: #000000;  
   }
   
-.ss_contentgray {
-  font-family: arial, helvetica, sans-serif;
-  font-size: smaller; 
+.ss_gray {
   color: #999999;   
   }
 
 .ss_fineprint {
-  font-family: arial, helvetica, sans-serif;
   font-size: 70%; 
-  color: #000000;  
   }
 
 .ss_fineprintbold {
-  font-family: arial, helvetica, sans-serif;
   font-size: 70%; 
-  color: #000000;
   font-weight: bold;
   }
 
 .ss_fineprintgray {
-  font-family: arial, helvetica, sans-serif;
-  font-size: x-small; 
+  font-size: 70%; 
   color: #999999; 
   }
   
@@ -73,7 +62,6 @@ span.ss_rightbold {
   display: inline;
   text-align: right;
   float: right;
-  font-family: arial, helvetica, sans-serif;
   font-weight: bold;
   color: #999999;
   }
@@ -82,7 +70,6 @@ span.ss_right {
   display: inline;
   text-align: right;
   float: right;
-  font-family: arial, helvetica, sans-serif;
   color: #999999;
   }
 
@@ -91,9 +78,6 @@ span.ss_right {
 
 h1.ss_entryTitle {
   font-weight: bold;
-  font-size: smaller;
-  font-family: arial, helvetica, sans-serif;
-  color: #000000;
   margin-bottom: .5em;
   margin-top: .5em;
   }
@@ -122,37 +106,25 @@ div.ss_entryContent {
   margin-bottom: 2px;
   padding: 0px;
   display: block;
-  font-family: arial, helvetica, sans-serif;
-  font-size: smaller;
   font-weight: bold;
-  color: #000000;
   }
 
 .ss_labelLeft {
-  font-size: smaller;
   font-weight: bold;
-  color: #000000;
   display: inline;
   padding-right: 2px;
-  font-family: arial, helvetica, sans-serif;
   }
 
 .ss_labelRight {
-  font-size: smaller;
   font-weight: bold;
-  color: #000000;
   display: inline;
   padding-left: 2px;
-  font-family: arial, helvetica, sans-serif;
   }
   
 * toolbar */
 /* toolbar positioning */
 span.ss_toolRight {
   font-weight: bold;
-  font-size:smaller;
-  color: #000000;
-  font-family: arial, helvetica, sans-serif;
   font-decoration: none;
   text-align: right;
   float: right;
@@ -166,9 +138,6 @@ span.ss_toolRight {
   
 span.ss_toolLeft {
   font-weight: bold;
-  font-size:smaller;
-  color: #000000;
-  font-family: arial, helvetica, sans-serif;
   text-align: left;
   float: left;
   display: inline;
@@ -186,10 +155,7 @@ a.ss_toolbar_item {
   display: inline;
   text-align: left;
   font-weight: bold;
-  font-size:smaller;
   text-decoration: none;
-  color: #000000;
-  font-family: arial, helvetica, sans-serif;
   margin: 2px;
   padding-right: 2px;
   padding-left: 2px;
@@ -201,10 +167,7 @@ a.ss_toolbar_item:hover {
   display: inline;
   font-weight: bold;
   text-align: left;
-  font-size:smaller;
   text-decoration: underline;
-  color: #000000;
-  font-family: arial, helvetica, sans-serif;
   margin: 2px;
   padding-right: 2px;
   padding-left: 2px;
@@ -219,9 +182,6 @@ span.ss_toolbar_item {
   display: inline;
   text-align: left;
   font-weight: bold;
-  font-size: smaller;
-  color: #000000;
-  font-family: arial, helvetica, sans-serif;
   margin: 2px;
   padding-right: 2px;
   padding-left: 2px;
@@ -247,9 +207,6 @@ span.ss_buttonBarLeft {
   text-align: left;
   float: left;
   font-weight: bold;
-  font-size: smaller;
-  color: #000000;
-  font-family: arial, helvetica, sans-serif;
   padding: 5px;
   }
   
@@ -258,9 +215,6 @@ span.ss_buttonBarRight {
   text-align: right;
   float: right;
   font-weight: bold;
-  font-size: smaller;
-  color: #000000;
-  font-family: arial, helvetica, sans-serif;
   padding: 5px;
   }
 
@@ -306,7 +260,6 @@ legend.ss_legend_bold {
 
 /* legend explaining the required-field indicator */
 div.ss_requiredLegend {
-  font-family: arial, helvetica, sans-serif;
   text-align: left;
   margin-top: 8px;
   margin-bottom: 8px;
@@ -317,8 +270,7 @@ div.ss_requiredLegend {
   border-color: #cccccc; 
   border-style: solid; 
   border-width: 1px; 
-  font-family: arial, helvetica, sans-serif;
-  font-size: small;
+  font-size: smaller;
   padding: 2px;
   }
 
@@ -393,10 +345,7 @@ div.ss_widgetContent {
   visibility: hidden;
   display: none;
   background-color: #FFFFFF; 
-  color: #000000;
-  font-size: small;
   text-decoration: none;
-  font-family: arial, helvetica, sans-serif;
   border: 1px #3366cc solid;
   padding: 10px;
   width: 300px;
@@ -571,17 +520,6 @@ table.ss_ruledTable td table td {
   margin: 0px;
 }
 
-table.content td {
-  font-family: arial, helvetica, sans-serif;
-  font-size: smaller; 
-  color: #000000;  
-}
-
-table.fineprint td {
-  font-family: arial, helvetica, sans-serif;
-  font-size: x-small; 
-  color: #000000;  
-}
 /* ------------------------------------------------------------------------ */
 /* color styles */
 .ss_bgblue, td.bgblue, table.bgblue, tr.bgblue { background-color: #ceddf2; }
@@ -641,7 +579,6 @@ tr.ss_highlightGray {
   font-weight: bold;
   color: #a01e00;
   background-color: #f7f7f7;
-  font-family: arial, helvetica, sans-serif;
   }
   
 .ss_labelLeftError {
@@ -654,7 +591,6 @@ tr.ss_highlightGray {
   color: #a01e00;
   display: inline;
   background-color: #f7f7f7;
-  font-family: arial, helvetica, sans-serif;
   }
 
 .ss_labelRightError {
@@ -668,7 +604,6 @@ tr.ss_highlightGray {
   color: #a01e00;
   display: inline;
   background-color: #f7f7f7;
-  font-family: arial, helvetica, sans-serif;
   }
 
 /* red required-field indicator, usually an asterisk */
@@ -679,7 +614,6 @@ span.ss_required {
   padding: 2px;
   font-size: larger;
   font-weight: bold;
-  font-family: arial, helvetica, sans-serif;
   }
   
 /* ------------------------------------------------------------------------ */
@@ -687,36 +621,29 @@ span.ss_required {
 
 a.ss_link {
   color: #3366cc;
-  font-family: arial, helvetica, sans-serif;
   }
 
 a.ss_link:visited, a.ss_link:inactive {
   color: #3366cc;
-  font-family: arial, helvetica, sans-serif;
   }
 
 a.ss_link:hover, a.ss_link:active {
   text-decoration: underline;
   color: ##3366cc;
-  font-family: arial, helvetica, sans-serif;
   }
 
 a.ss_link_nodec {
   text-decoration: none;
   color: #000000;
-  font-family: arial, helvetica, sans-serif;
   }
 
 a.ss_link_nodec:visited, a.ss_link_nodec:inactive {
   text-decoration: none;
-  color: #000000;
-  font-family: arial, helvetica, sans-serif;
   }
 
 a.ss_link_nodec:hover, a.ss_link_nodec:active {
   text-decoration: underline;
   color: ff0000;
-  font-family: arial, helvetica, sans-serif;
   }
 
 /* Text styled as buttons */

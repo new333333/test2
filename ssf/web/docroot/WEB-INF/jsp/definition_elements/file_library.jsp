@@ -17,7 +17,7 @@ function ss_loadEntry(obj,id) {
 
 </script>
 <div class="folder">
-<table width="100%">
+<table class="ss_style" width="100%">
 <tr>
   <th align="left">Folders</th>
 </tr>
@@ -34,7 +34,7 @@ function ss_loadEntry(obj,id) {
 </div>
 <br>
 <div class="folder">
-<table width="100%">
+<table class="ss_style" width="100%">
 <tr>
   <th align="left"><img border="0" src="<html:imagesPath/>pics/sym_s_unseen_header.gif"></th>
   <th align="left">Title</th>

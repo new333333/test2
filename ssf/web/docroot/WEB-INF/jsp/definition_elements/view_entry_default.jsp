@@ -1,6 +1,6 @@
 <% // The default entry view if no definition exists for an entry %>
 
-<div class="ss_portlet" width="100%">
+<div class="ss_style ss_portlet" width="100%">
 
 <%@ include file="/WEB-INF/jsp/definition_elements/title_view.jsp" %>
 

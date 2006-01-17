@@ -15,19 +15,19 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<form method="post" enctype="multipart/form-data" 
+<form class="ss_style" method="post" enctype="multipart/form-data" 
 		  action="<portlet:actionURL>
 		 <portlet:param name="action" value="import_definition"/>
 		 </portlet:actionURL>" name="<portlet:namespace />fm">
-<div class="ss_portlet">
+<div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="administration.importDefinitions" text="Select files:"/></span>
 <br>
 
 <div class="ss_divider"></div>
 <br>
-<span class="ss_contentbold"><ssf:nlt tag="administration.selectFiles" text="Add definition files:"/></span>
+<span class="ss_bold"><ssf:nlt tag="administration.selectFiles" text="Add definition files:"/></span>
 <br>
-<table border="0" cellpadding="5" cellspacing="0" width="95%">
+<table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="95%">
 <tr><td>
 <input type="file" name="definition1" ><br>
 <input type="file" name="definition2" ><br>

@@ -11,6 +11,6 @@
     String ss_profileElementValue = (String) method.invoke(entry, new Object[0]);
 %>
 <div class="ss_entryContent">
-<span class="ss_contentbold"><c:out value="${property_caption}"/>:</span>
+<span class="ss_bold"><c:out value="${property_caption}"/>:</span>
 <%= ss_profileElementValue %>
 </div>

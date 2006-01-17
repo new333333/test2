@@ -20,7 +20,7 @@ function showUrl(params) {
 }
 </script>
 
-<div class="ss_portlet" align="left">
+<div class="ss_style ss_portlet" align="left">
 <a href="javascript: ;" onClick="return showUrl('action=fragment&')">
 return to portlet url
 </a>

@@ -17,10 +17,10 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<div class="ss_portlet">
+<div class="ss_style ss_portlet">
 
 <div class="forms">
-<form method="post" action="<portlet:actionURL>
+<form class="ss_style" method="post" action="<portlet:actionURL>
 					<portlet:param name="action" value="configure_forum"/>
 					<portlet:param name="binderId" value="${ssBinder.id}"/>
 					</portlet:actionURL>" >
@@ -99,7 +99,7 @@
   <fieldset class="fieldset">
     <legend class="legend"><ssf:nlt tag="forum.configure.workflowAssociations" text="Workflow associations"/></legend>
 
-	<table>
+	<table class="ss_style">
 	<c:forEach var="item" items="${ssPublicEntryDefinitions}">
 	  <c:if test="${!empty ssEntryDefinitionMap[item.key]}">
 	  <tr>

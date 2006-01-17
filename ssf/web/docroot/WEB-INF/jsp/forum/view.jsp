@@ -18,7 +18,7 @@
 <c:set var="folderIdList" value=""/>
 <jsp:useBean id="folderIdList" type="java.lang.String" />
 
-<div id="ss_showfolder" class="ss_portlet">
+<div id="ss_showfolder" class="ss_style ss_portlet">
 
 <% // Toolbar %>
 <c:if test="${!empty ssForumToolbar}">
@@ -30,12 +30,12 @@ function ss_showNotLoggedInMsg() {
 	alert("<ssf:nlt tag="forum.unseenCounts.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 }
 </script>
-<div id="ss_status_message" style="visibility:hidden; display:none;"></div>
+<div id="ss_status_message" class="ss_style" style="visibility:hidden; display:none;"></div>
 
-<table border="0" cellpadding="4" cellspacing="0" width="100%">
+<table class="ss_style" border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
 	<td>
-		<table border="0" cellpadding="0" cellspacing="0">
+		<table class="ss_style" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td valign="top">
 				<c:if test="${empty ssFolderList}">
@@ -43,7 +43,7 @@ function ss_showNotLoggedInMsg() {
 				   text="The portlet preferences are not set.  Choose the edit button to configure the portlet."/>
 				 </c:if>
 				<c:if test="${!empty ssFolderList}">
-					<table cellspacing="0" cellpadding="0">
+					<table class="ss_style" cellspacing="0" cellpadding="0">
 					<c:forEach var="folder" items="${ssFolderList}">
 					<jsp:useBean id="folder" type="com.sitescape.ef.domain.Folder" />
 					  <tr>
@@ -106,7 +106,7 @@ function ss_postRequest(obj) {
 	}
 }
 </script>
-<form id="unseenCountForm" >
+<form class="ss_style" id="unseenCountForm" >
 <input type="hidden" name="forumList" value="<%= folderIdList %>">
 </form>
 <div id="unseenCounts">

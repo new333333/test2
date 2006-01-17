@@ -70,29 +70,22 @@ div.ss_historybar {
   
 /* highlights */
 .ss_highlight_alpha {
-  font-size: smaller;
-  font-family: arial, helvetica, sans-serif;
   font-weight: bold;
   background-color: <%= alphaColor %>;
   }
   
 .ss_highlight_beta {
-  font-size: smaller;
-  font-family: arial, helvetica, sans-serif;
   font-weight: bold;
   background-color: <%= betaColor %>;
   }
   
 .ss_highlight_gamma {
-  font-size: smaller;
-  font-family: arial, helvetica, sans-serif;
   font-weight: bold;
   color: <%= betaColor %>;
   }
   
 .ss_titlebold {
-  font-family: arial, helvetica, sans-serif;
-  font-size: medium;
+  font-size: 16px;
   font-weight: bold;
   color: <%= alphaColor %>;  
   }
@@ -140,8 +133,6 @@ ss_box_small_icon {
 ss_box_title {
 	background: <%= gammaColor %> url(<html:imagesPath/>box/box_title_bg_gradient.gif) repeat-x;
 	color: #4A517D;
-	font-family: arial, helvetica, sans-serif;
-	font-size: smaller;
 	height: 20px;
 	padding: 0px 3px 0px 3px;
 }

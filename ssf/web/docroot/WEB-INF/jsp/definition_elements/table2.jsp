@@ -10,7 +10,7 @@
 		Iterator itItems = item.elementIterator("item");
 		if (itItems.hasNext()) {
 %>
-<table cellspacing="0" cellpadding="0" width="100%">
+<table class="ss_style" cellspacing="0" cellpadding="0" width="100%">
 <%
 			while (itItems.hasNext()) {
 %>

@@ -2,11 +2,11 @@
 
 <h1>${employee.key == null ? 'Add New Employee' : 'Edit Employee Details'}</h1>
 
-<form method="post" action="<portlet:actionURL>
+<form class="ss_style" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="editEmployee"/>
 			<portlet:param name="employee" value="${employee.key}"/>
 		</portlet:actionURL>">
-	<table border="0" cellpadding="4">
+	<table class="ss_style" border="0" cellpadding="4">
 		<tr>
 			<th>First Name</th>
 			<td><html:inputText object="employee.firstName" size="30" maxlength="80"/></td>

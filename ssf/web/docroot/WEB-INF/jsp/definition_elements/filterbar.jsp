@@ -3,5 +3,5 @@
 <jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <div class="ss_entryContent">
-<span class="ss_contentgray">[ Filterbar ]</span>
+<span class="ss_gray">[ Filterbar ]</span>
 </div>

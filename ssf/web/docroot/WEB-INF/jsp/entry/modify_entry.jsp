@@ -21,7 +21,7 @@
 <jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <jsp:useBean id="ssEntry" type="com.sitescape.ef.domain.Entry" scope="request" />
 
-<table cellpadding="10" width="100%"><tr><td>
+<table class="ss_style" cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= ssConfigElement %>" 
   configJspStyle="<%= ssConfigJspStyle %>"

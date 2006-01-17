@@ -10,7 +10,7 @@
 
 <c:forEach var="reply" items="${ssFolderEntryDescendants}">
 <jsp:useBean id="reply" type="com.sitescape.ef.domain.Entry" />
- <div class="ss_contentEntry">
+ <div>
 	  <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
 		configElement="<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']") %>" 
 		configJspStyle="<%= ssConfigJspStyle %>" 

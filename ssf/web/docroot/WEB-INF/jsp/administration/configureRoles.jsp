@@ -20,10 +20,10 @@
 <script language="javascript" type="text/javascript">
 </script>
 
-<div class="ss_portlet">
+<div class="ss_style ss_portlet">
 <h3><ssf:nlt tag="administration.configure_roles.configure" text="Configure SiteScape Forum Roles"/></h3>
 <ssf:expandableArea title="<%= NLT.get("administration.configure_roles.add") %>">
-<form name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
+<form class="ss_style" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_roles"/>
 		</portlet:actionURL>">
 		
@@ -47,7 +47,7 @@
 <c:forEach var="function" items="${ssFunctions}">
 <jsp:useBean id="function" type="com.sitescape.ef.security.function.Function" />
 <ssf:expandableArea title="<%= function.getName() %>">
-<form name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
+<form class="ss_style" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_roles"/>
 		</portlet:actionURL>">
 
@@ -72,7 +72,7 @@
 
 <br/>
 
-<form name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
+<form class="ss_style" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_roles"/>
 		</portlet:actionURL>">
 

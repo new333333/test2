@@ -18,10 +18,10 @@
 <%@ page import="org.dom4j.Document" %>
 <jsp:useBean id="ssAdminDomTree" type="org.dom4j.Document" scope="request" />
 
-	<table border="0" cellpadding="0" cellspacing="0" width="95%">
+	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
 	<tr>
 		<td>
-			<table border="0" cellpadding="0" cellspacing="0">
+			<table class="ss_style" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					<div>

@@ -16,10 +16,10 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<table border="0" cellpadding="4" cellspacing="0" width="100%">
+<table class="ss_style" border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
 	<td align="center">
-		<table border="0" cellpadding="0" cellspacing="0">
+		<table class="ss_style" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td valign="top">
 				<a href="<portlet:renderURL windowState="maximized">

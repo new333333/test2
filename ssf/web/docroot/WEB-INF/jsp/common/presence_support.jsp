@@ -38,7 +38,7 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
     m += '<div style="position: relative; background: #666; margin: 4px;">'
     m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1; border: 1px solid #666666; background-color:white">'
 
-    m += '<table class=graymenu border="0" cellspacing="0" cellpadding="3">';
+    m += '<table class="ss_style" class=graymenu border="0" cellspacing="0" cellpadding="3">';
     m += '<tr>';
     if (status >= 0) {
         if (status & 1) {

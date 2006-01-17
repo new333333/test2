@@ -1,11 +1,11 @@
 <% // Default view if the forum has not been set up yet %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<div class="ss_portlet">
-<span class="ss_content"><i>[This forum has not been configured yet.]</i></span>
+<div class="ss_style ss_portlet">
+<span><i>[This forum has not been configured yet.]</i></span>
 <br/>
 <br/>
-<table border="0" cellpadding="4" cellspacing="0" width="100%">
+<table class="ss_style" border="0" cellpadding="4" cellspacing="0" width="100%">
 <th align="left">Forum administration menu</th>
 <tr><td></td></tr>
 <tr>

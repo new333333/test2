@@ -21,10 +21,10 @@ ${prefix}_popupContents += "<link rel=\"stylesheet\" href=\"<html:rootPath />css
 ${prefix}_popupContents += "<title>Select a time</title>  \n";
 ${prefix}_popupContents += "</head><body>";
 
-${prefix}_popupContents += "<table border=\"0\" class=\"portlet-section-body\" style=\"font-size:smaller\"><tr><td>\n";
+${prefix}_popupContents += "<table border=\"0\" class=\"ss_style\" style=\"font-size:smaller\"><tr><td>\n";
 ${prefix}_popupContents += " <tr><td>Select hour:</td><td>minutes:</td></tr><td>\n";
 
-${prefix}_popupContents += "<table border=\"0\" cellpadding=\"4\" cellspacing=\"0\"  style=\"border: 1px solid #666666;\">\n";
+${prefix}_popupContents += "<table border=\"0\" class=\"ss_style\" cellpadding=\"4\" cellspacing=\"0\"  style=\"border: 1px solid #666666;\">\n";
 ${prefix}_popupContents += " <tr>\n";
 
 <c:forEach var="i" begin="8" end="11" step="1">
@@ -58,7 +58,7 @@ ${prefix}_popupContents += "</table>\n";
 
 ${prefix}_popupContents += " </td><td>\n";
 
-${prefix}_popupContents += "<table border=\"0\" cellpadding=\"4\" cellspacing=\"0\" style=\"border: 1px solid #666666;\">\n";
+${prefix}_popupContents += "<table class=\"ss_style\" border=\"0\" cellpadding=\"4\" cellspacing=\"0\" style=\"border: 1px solid #666666;\">\n";
 ${prefix}_popupContents += " <tr>\n";
 ${prefix}_popupContents += "  <td><a  \n";
 ${prefix}_popupContents += "      href=\"javascript: ;\" onclick=\"setmin('00');\">:00</a>&nbsp;</td>\n";
@@ -174,7 +174,7 @@ function getTimeMilliseconds(formName, id) {
 
 </script>
 
-<table border="0" cellpadding="0" cellspacing="1">
+<table class="ss_style" border="0" cellpadding="0" cellspacing="1">
  <tr>
   <td class="content" align="center">
 <select name="${prefix}_hour" size="1" id="${prefix}_hour"

@@ -93,7 +93,7 @@
 <%
     if (interval > 0) {
 %>
-<span class="ss_content">
+<span>
     Start: <%= startString %><br />
     End: <%= endString %><br />
     Frequency: <%= freqString %> <%= onString %> <%= untilString %>
@@ -101,7 +101,7 @@
 <%
     } else {
 %>
-<span class="ss_content">
+<span>
     When: <%= startString %> <br />
     Frequency: <%= freqString %> <%= onString %> <%= untilString %>
 </span>
