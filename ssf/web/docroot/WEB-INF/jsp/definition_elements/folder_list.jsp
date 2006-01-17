@@ -79,7 +79,6 @@ function highlightLineById(id) {
 <ssf:slidingTable type="sliding" folderId="<%= folderId %>">
 
 <ssf:slidingTableRow headerRow="true">
-  <ssf:slidingTableColumn width="15">New</ssf:slidingTableColumn>
   <ssf:slidingTableColumn width="10%">Number</ssf:slidingTableColumn>
   <ssf:slidingTableColumn width="10%">State</ssf:slidingTableColumn>
   <ssf:slidingTableColumn width="40%">Title</ssf:slidingTableColumn>
@@ -91,18 +90,12 @@ function highlightLineById(id) {
 <jsp:useBean id="entry1" type="java.util.HashMap" />
 <%
 	String folderLineId = "folderLine_" + (String) entry1.get("_docId");
-%>
-<ssf:slidingTableRow id="<%= folderLineId %>">
-
-  <ssf:slidingTableColumn>
-<%
-	if (ssSeenMap.checkIfSeen(entry1)) {
-%>&nbsp;<%
-	} else {
-%><font color="red">&diams;</font><%
+	String seenStyle = "";
+	if (!ssSeenMap.checkIfSeen(entry1)) {
+		seenStyle = "ss_bold";
 	}
 %>
-  </ssf:slidingTableColumn>
+<ssf:slidingTableRow id="<%= folderLineId %>">
 
   <ssf:slidingTableColumn>
     <a class="ss_link_nodec" href="<ssf:url     
@@ -112,7 +105,7 @@ function highlightLineById(id) {
     action="view_entry" 
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
-    ><c:out value="${entry1._docNum}"/>.</a>&nbsp;&nbsp;&nbsp;
+    ><span class="<%= seenStyle %>"><c:out value="${entry1._docNum}"/>.</span></a>&nbsp;&nbsp;&nbsp;
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn>
@@ -124,7 +117,7 @@ function highlightLineById(id) {
     action="view_entry" 
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
-    ><c:out value="${entry1._workflowState}"/></a>
+    ><span class="<%= seenStyle %>"><c:out value="${entry1._workflowState}"/></span></a>
     </c:if>
   </ssf:slidingTableColumn>
 
@@ -137,16 +130,19 @@ function highlightLineById(id) {
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
     ><c:if test="${empty entry1._title}"
-    ><span class="fineprint">--no title--</span
-    ></c:if><c:out value="${entry1._title}"/></a>
+    ><span class="<%= seenStyle %> ss_fineprint">--no title--</span
+    ></c:if><span class="<%= seenStyle %>"><c:out value="${entry1._title}"/></span></a>
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn>
-	<ssf:presenceInfo user="<%=(User)entry1.get("_principal")%>"/> <c:out value="${entry1._principal.title}"/>
+	<ssf:presenceInfo user="<%=(User)entry1.get("_principal")%>"/> 
+	<span class="<%= seenStyle %>"><c:out value="${entry1._principal.title}"/></span>
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn>
-    <c:out value="${entry1._modificationDate}"/>
+    <span class="<%= seenStyle %>"><fmt:formatDate 
+     value="${entry1._modificationDate}" type="both" 
+	 pattern="dd MMMM yyyy, HH:mm" /><c:out value="${entry1._modificationDate}"/>GMT</span>
   </ssf:slidingTableColumn>
   
  </ssf:slidingTableRow>

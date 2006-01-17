@@ -16,8 +16,9 @@
      value="${ss_presence_user.id}"/>', '<c:out 
      value="${ss_presence_user.title}"/>', '<c:out 
      value="${ss_presence_userStatus}"/>', '<c:out 
-     value="${ss_presence_user.zonName}"/>', '<c:out 
-     value="${ss_presence_sweep_time}"/>', '<c:out 
+     value="${ss_presence_user.zonName}"/>', '<fmt:formatDate 
+     value="${ss_presence_sweep_time}" type="both" 
+	 pattern="EEEE, HH:mm" />', '<c:out 
      value="${ss_presence_user.emailAddress}"/>', '<c:out 
      value="${ss_presence_vcard}"/>', '<c:out 
      value="${current}"/>');return false;"

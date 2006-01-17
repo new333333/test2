@@ -60,7 +60,7 @@ function highlightLineById(id) {
     entryId="<%= entry.get("_docId").toString() %>" actionUrl="false" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry._docId}"/>');return false;" >
     <c:if test="${empty entry._title}">
-    <span class="fineprint">--no title--</span>
+    <span class="ss_fineprint">--no title--</span>
     </c:if>
     <c:out value="${entry._title}"/></a></td>
   <td valign="top" width="30%"><a class="ss_link" href="mailto:${entry._email}">

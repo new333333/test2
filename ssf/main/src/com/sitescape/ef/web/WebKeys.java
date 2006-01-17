@@ -130,6 +130,7 @@ public class WebKeys {
     public static final String POSTINGS="ssPostings";
     public static final String PRESENCE_DUDE="ss_presence_dude";
     public static final String PRESENCE_STATUS="ss_presence_userStatus";
+    public static final String PRESENCE_SWEEP_TIME="ss_presence_sweep_time";
     public static final String PRESENCE_TEXT="ss_presence_text";
     public static final String PRESENCE_USER="ss_presence_user";
     public static final String PRESENCE_ZON_BRIDGE="ss_presence_zonBridge";
