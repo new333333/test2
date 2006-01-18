@@ -25,7 +25,6 @@ public interface ObjectKeys {
     public static final String USER = "user";
     
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
-    public static final String USER_DISPLAY_STYLE_HORIZONTAL = "horizontal";
     public static final String USER_DISPLAY_STYLE_IFRAME = "iframe";
     public static final String USER_DISPLAY_STYLE_POPUP = "popup";
     public static final String USER_DISPLAY_STYLE_VERTICAL = "vertical";
