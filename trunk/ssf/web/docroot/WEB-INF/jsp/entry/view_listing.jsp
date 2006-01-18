@@ -35,9 +35,6 @@ if (ssUserProperties.containsKey("folderEntryWidth")) {
 	entryWindowWidth = Integer.parseInt((String) ssUserProperties.get("folderEntryWidth"));
 }
 String autoScroll = "true";
-if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_HORIZONTAL) && !isViewEntry) {
-	autoScroll = "false";
-}
 renderRequest.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth));
 %>
 <jsp:useBean id="ss_entryWindowWidth" type="java.lang.Integer" scope="request" />
@@ -250,11 +247,7 @@ function ss_loadEntryUrl(url,id) {
 <img src="<html:imagesPath/>pics/1pix.gif">
 </div>
 <%
-	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_HORIZONTAL)) {
-%>
-<%@ include file="/WEB-INF/jsp/entry/view_horizontal.jsp" %>
-<%
-	} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
+	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 %>
 <%@ include file="/WEB-INF/jsp/entry/view_iframe.jsp" %>
 <%
