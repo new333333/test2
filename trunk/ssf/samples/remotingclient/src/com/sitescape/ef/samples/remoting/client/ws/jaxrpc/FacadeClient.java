@@ -21,7 +21,7 @@ public class FacadeClient {
 
 	public static void main(String[] args) throws ServiceException, RemoteException {
 
-		System.out.println("*** Calling MyGeneratedFacadeClient");
+		System.out.println("*** This Facade client uses Axis-generated client bindings");
 
 		// first argument - binder id
 		// second argument - entry id

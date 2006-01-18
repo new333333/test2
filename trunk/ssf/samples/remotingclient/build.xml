@@ -71,7 +71,7 @@
 			failonerror="true">
 			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
 			<arg value="74"/>
-			<arg value="491"/>
+			<arg value="482"/>
 		</java>
 	</target>
 	
@@ -85,7 +85,7 @@
 			failonerror="true">
 			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
 			<arg value="74"/>
-			<arg value="491"/>
+			<arg value="482"/>
 		</java>
 	</target>
 	

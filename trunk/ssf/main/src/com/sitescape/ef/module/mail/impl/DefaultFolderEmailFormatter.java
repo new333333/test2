@@ -55,6 +55,7 @@ import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebHelper;
+import com.sitescape.ef.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.HistoryStamp;
@@ -154,18 +155,9 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 		element.addAttribute("title", entry.getTitle());			    
 		element.addAttribute("docNumber", entry.getDocNumber());			    
 		element.addAttribute("docLevel", String.valueOf(entry.getDocLevel()));
-		String entryUrl="";
-		try {
-			AdaptedPortletURL url = new AdaptedPortletURL("ss_forum", false);
-			url.setParameter("action", "view_entry");
-			url.setParameter(WebKeys.URL_BINDER_ID, entry.getTopFolder().getId().toString());
-			url.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
-			entryUrl = url.toString();
-		} catch (Exception e) {
-			
-		}
+		String entryUrl = WebUrlUtil.getEntryViewURL(entry);
 		element.addAttribute("href", entryUrl);
-		definitionModule.addNotifyElementForEntry(element, notifyDef, entry);		
+		definitionModule.addNotifyElementForEntry(element, notifyDef, entry, new String[] {"entryData"});	
 	}
 	// get cached template.  If not cached yet,load it
 	protected Transformer getTransformer(String zoneName, String type) throws TransformerConfigurationException {

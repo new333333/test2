@@ -489,6 +489,7 @@
 		<property name="target">
 			<bean class="com.sitescape.ef.remoting.impl.FacadeImpl">
 				<property name="folderModule"><ref local="folderModule"/></property>
+				<property name="definitionModule"><ref local="definitionModule"/></property>
 			</bean>
 		</property>
 		<property name="proxyInterfaces">

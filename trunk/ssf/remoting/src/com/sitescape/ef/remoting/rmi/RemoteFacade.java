@@ -24,5 +24,6 @@ import com.sitescape.ef.remoting.api.Entry;
 public interface RemoteFacade extends Remote {
 	
 	public Entry getEntry(long binderId, long entryId) throws RemoteException;
-
+	
+	public String getEntryAsXML(long binderId, long entryId) throws RemoteException;
 }
