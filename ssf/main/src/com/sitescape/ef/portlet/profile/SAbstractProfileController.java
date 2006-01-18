@@ -40,6 +40,7 @@ public class SAbstractProfileController extends SAbstractController {
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FOLDER, binder);
 		model.put(WebKeys.ENTRIES, users.get(ObjectKeys.ENTRIES));
+		model.put(WebKeys.USER_FOLDER_PROPERTIES, getProfileModule().getUserFolderProperties(user.getId(), binderId));
 		DefinitionUtils.getDefinitions(binder, model);
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 
