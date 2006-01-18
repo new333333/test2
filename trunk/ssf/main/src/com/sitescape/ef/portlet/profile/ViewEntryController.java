@@ -39,6 +39,7 @@ public class ViewEntryController extends SAbstractProfileController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
+		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
 		Map model = new HashMap();	
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				

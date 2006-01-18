@@ -25,6 +25,7 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
@@ -39,6 +40,7 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
 
+import org.apache.lucene.document.DateField;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
@@ -80,14 +82,18 @@ public class SAbstractForumController extends SAbstractController {
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, getProfileModule().getUserFolderProperties(user.getId(), folderId));
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
-		DefinitionUtils.getDefinitions(folder, model);
+		
+		//See if the user has selected a specific view to use
+        UserProperties uProps = getProfileModule().getUserFolderProperties(user.getId(), folder.getId());
+		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+		DefinitionUtils.getDefinitions(folder, model, userDefaultDef);
+		
 		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.ENTRIES);
 		Element view = (Element)model.get(WebKeys.CONFIG_ELEMENT);
 		if (view != null) {
-			List cals = view.selectNodes("./item[@name='calendarView']");
-//		if ((cals != null) && !cals.isEmpty()) {
-			getEvents(folder, entries, model, req, response);
-//		}
+			if ((view.selectSingleNode("./item[@name='calendarView']") != null)) {
+				getEvents(folder, entries, model, req, response);
+			}
 		}
 		req.setAttribute(WebKeys.URL_BINDER_ID,forumId);
 		model.put(WebKeys.FOLDER_TOOLBAR, buildFolderToolbar(response, folder, forumId).getToolbar());
@@ -134,6 +140,19 @@ public class SAbstractForumController extends SAbstractController {
 		
 		//	The "Display styles" menu
 		toolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.display_styles"));
+		//Get the definitions available for use in this folder
+		List folderViewDefs = folder.getBinderViewDefs();
+		for (int i = 0; i < folderViewDefs.size(); i++) {
+			Definition def = (Definition)folderViewDefs.get(i);
+			//Build a url to switch to this view
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_DEFINITION);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_VALUE, def.getId());
+			toolbar.addToolbarMenuItem("3_display_styles", "", NLT.getDef(def.getTitle()), url);
+		}
+		
 		//vertical
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
@@ -164,6 +183,7 @@ public class SAbstractForumController extends SAbstractController {
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_popup"), url);
 		return toolbar;
 	}
+	
 	/* 
 	 * getEvents ripples through all the entries in the current entry list, finds their
 	 * associated events, checks each event against the session's current calendar view mode
@@ -252,14 +272,44 @@ public class SAbstractForumController extends SAbstractController {
 		long startMillis = startViewCal.getTime().getTime();
 		long endMillis = endViewCal.getTime().getTime();
 		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		HashMap results = new HashMap();  
 		while (entryIterator.hasNext()) {
-			int count = 0;
 			HashMap e = (HashMap) entryIterator.next();
 			//Entry e = (Entry) entryIterator.next();
+			
+			//Add the modification date as an event
+			Date modifyDate = (Date)e.get(EntryIndexUtils.MODIFICATION_DATE_FIELD);
+			long thisDateMillis = modifyDate.getTime();
+			if (thisDateMillis < endMillis && startMillis < thisDateMillis) {
+				Event ev = new Event();
+				GregorianCalendar gcal = new GregorianCalendar();
+				gcal.setTime(modifyDate);
+				ev.setDtStart(gcal);
+				ev.setDtEnd(gcal);				
+				String dateKey = sdf.format(modifyDate);
+				ArrayList entryList;
+				// reslist is going to be a list of maps; each map will carry the entry and 
+				// also the event that caused this entry to be in range
+				ArrayList resList = new ArrayList();
+				Map res = new HashMap();
+				res.put("event", ev);
+				res.put("entry", e);
+				entryList  = (ArrayList) results.get(dateKey);
+				if (entryList == null) {
+					resList.add(res);
+				} else {
+					resList.addAll(entryList);
+					resList.add(res);
+				}
+				results.put(dateKey, resList);
+			}			
+			
+			//Add the events 
+			int count = 0;
 			String ec = (String)e.get(EntryIndexUtils.EVENT_COUNT_FIELD);
-			if (ec != null)
-				count = new Integer(ec).intValue();
+			if (ec == null || ec.equals("")) ec = "0";
+			count = new Integer(ec).intValue();
 			// look through the custom attrs of this entry for any of type EVENT
 			for (int j = 0; j < count; j++) {
 				String name = (String)e.get(EntryIndexUtils.EVENT_FIELD + j);
@@ -271,11 +321,10 @@ public class SAbstractForumController extends SAbstractController {
 				ev.setDtStart(gcal);
 				gcal.setTime(evEndDate);
 				ev.setDtEnd(gcal);				
-				long thisDateMillis = evStartDate.getTime();
+				thisDateMillis = evStartDate.getTime();
 				if (thisDateMillis < endMillis && startMillis < thisDateMillis) {
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 					String dateKey = sdf.format(evStartDate);
-					ArrayList entryList = new ArrayList();
+					ArrayList entryList;
 					// reslist is going to be a list of maps; each map will carry the entry and 
 					// also the event that caused this entry to be in range
 					ArrayList resList = new ArrayList();
@@ -295,15 +344,15 @@ public class SAbstractForumController extends SAbstractController {
 		}
 		model.put(WebKeys.CALENDAR_EVENTDATES, results);
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK)) {
-			getCalendarViewBean(startViewCal, endViewCal, response, results, viewMode, model);
+			getCalendarViewBean(folder, startViewCal, endViewCal, response, results, viewMode, model);
 		}
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_DAY)) {
 			
-			getCalendarViewBean(startViewCal, endViewCal, response, results, viewMode, model);
+			getCalendarViewBean(folder, startViewCal, endViewCal, response, results, viewMode, model);
 		}
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
 			
-			getCalendarViewBean(startViewCal, endViewCal, response, results, viewMode, model);
+			getCalendarViewBean(folder, startViewCal, endViewCal, response, results, viewMode, model);
 		}
 	}
 	
@@ -343,7 +392,8 @@ public class SAbstractForumController extends SAbstractController {
 	 *                 endtime -- string
 	 *              
 	 */
-	private void getCalendarViewBean (Calendar startCal, Calendar endCal, RenderResponse response, Map eventDates, String viewMode, Map model) {
+	private void getCalendarViewBean (Folder folder, Calendar startCal, Calendar endCal, RenderResponse response, Map eventDates, String viewMode, Map model) {
+		String folderId = folder.getId().toString();
 		HashMap monthBean = new HashMap();
 		ArrayList dayheaders = new ArrayList();
 		GregorianCalendar loopCal = new GregorianCalendar();
@@ -416,6 +466,7 @@ public class SAbstractForumController extends SAbstractController {
 				}
 				url = response.createRenderURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
 				url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "week");
 				url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring);
@@ -426,6 +477,7 @@ public class SAbstractForumController extends SAbstractController {
 			daymap.put(WebKeys.CALENDAR_DOM, Integer.toString(loopCal.get(Calendar.DAY_OF_MONTH)));
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
 			url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
 			url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring);
@@ -494,6 +546,7 @@ public class SAbstractForumController extends SAbstractController {
 				urldatestring2 = urldatesdf.format(loopCal.getTime());
 				url = response.createRenderURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
 				url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
 				url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring2);

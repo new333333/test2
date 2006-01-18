@@ -28,6 +28,7 @@ public class SlidingTableColumnTag extends BodyTagSupport {
 			}
 
 			//Add this column to the current row
+			if (_width == null) _width = "";
 			slidingTableColumnAncestor.addColumn(_bodyContent, _width);
 
 			return EVAL_PAGE;

@@ -67,8 +67,10 @@ ${dayabbrev}</td>
 <div id="folderLine_${evim.entry.id}">	
 ${evim.cal_starttimestring}: 
 <%
-if (!ssSeenMap.checkIfSeen(e)) {
-%><br /><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif" alt="unread entry" \><%
+if (ssSeenMap.checkIfSeen(e)) {
+%><span><%
+	} else {
+%><span class="ss_bglightpink ss_bold"><%
 	}
 %>
     <a class="ss_link" href="<ssf:url 
@@ -77,7 +79,10 @@ if (!ssSeenMap.checkIfSeen(e)) {
     folderId="<%= folderId %>" 
     action="view_entry" 
     entryId="<%= e.get("_docId").toString() %>" actionUrl="false" />"
-    onClick="ss_loadEntry(this,'<c:out value="${evim.entry._docId}"/>');return false;" >${evim.entry._title}</a></div>
+    onClick="ss_loadEntry(this,'<c:out value="${evim.entry._docId}"/>');return false;" 
+    ><c:if test="${empty evim.entry._title}"
+    ><span class="ss_fineprint">--<ssf:nlt tag="entry.noTitle" text="no title"/>--</span
+    ></c:if><c:out value="${evim.entry._title}"/></a></span></div>
 
 </c:forEach> <% // end of events within a single time slot %>
 </c:forEach> <% // end of time slot loop %>

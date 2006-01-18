@@ -387,6 +387,7 @@ div.ss_sliding_table_column1 {
   position: absolute; 
   visibility: hidden;
   display: block; 
+  border-left: #ffffff solid 1px;
   background-color: #ffffff; 
   color: #000000;
   margin: 0px;
@@ -533,6 +534,8 @@ table.ss_ruledTable td table td {
 .ss_bgdarkergray { background-color: #333333; }
 .ss_bgblack { background-color: #000000; }
 .ss_bgmanila { background-color: #ffffe8; }
+.ss_bglightpink { background-color: #ffccff; }
+.ss_bgpink { background-color: #ff00ff; }
 .ss_bgworkflow { background-color: #e4e4e4; }
 
 a.ss_graymenu:link, a.graymenu:visited {

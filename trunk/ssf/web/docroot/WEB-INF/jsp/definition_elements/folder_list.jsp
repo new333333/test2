@@ -130,7 +130,7 @@ function highlightLineById(id) {
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
     ><c:if test="${empty entry1._title}"
-    ><span class="<%= seenStyle %> ss_fineprint">--no title--</span
+    ><span class="<%= seenStyle %> ss_fineprint">--<ssf:nlt tag="entry.noTitle"/>--</span
     ></c:if><span class="<%= seenStyle %>"><c:out value="${entry1._title}"/></span></a>
   </ssf:slidingTableColumn>
   

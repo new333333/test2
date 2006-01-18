@@ -36,17 +36,20 @@ var ss_colWidthsUser = new Array();
 	//Get the row and column data
 	List slidingTableRows = (List) request.getAttribute("ss_slidingTableRows");
 	String slidingTableFolderId = (String) request.getAttribute("ss_slidingTableFolderId");
+	if (slidingTableFolderId == null) slidingTableFolderId = "";
 	
 	//Get the user's column positions (if set)
 	UserProperties userFolderProperties = (UserProperties) request.getAttribute("ssUserFolderProperties");
-	Map userFolderPropertiesMap = userFolderProperties.getProperties();
-	if (userFolderPropertiesMap != null && userFolderPropertiesMap.containsKey("folderColumnPositions")) {
-		String folderColumnPositions = (String) userFolderPropertiesMap.get("folderColumnPositions");
-		String[] columnPositions = folderColumnPositions.split(" ");
-		for (int i = 0; i < columnPositions.length; i++) {
+	if (userFolderProperties != null) {
+		Map userFolderPropertiesMap = userFolderProperties.getProperties();
+		if (userFolderPropertiesMap != null && userFolderPropertiesMap.containsKey("folderColumnPositions")) {
+			String folderColumnPositions = (String) userFolderPropertiesMap.get("folderColumnPositions");
+			String[] columnPositions = folderColumnPositions.split(" ");
+			for (int i = 0; i < columnPositions.length; i++) {
 %>
 ss_colWidthsUser['col<%= String.valueOf(i) %>'] = '<%= columnPositions[i] %>';
 <%		
+			}
 		}
 	}
 %>
@@ -335,8 +338,11 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 			String rowStyle = "ss_bgwhite";
 			for (int iRow = 0; iRow < slidingTableRows.size(); iRow++) {
 				String rowId = (String)((Map) slidingTableRows.get(iRow)).get("id");
+				if (rowId == null) rowId = "";
 				Boolean headerRow = (Boolean)((Map) slidingTableRows.get(iRow)).get("headerRow");
+				if (headerRow == null) headerRow = new Boolean(false);
 				List columns = (List)((Map) slidingTableRows.get(iRow)).get("columns");
+				if (columns == null) break;
 				
 				//Get the row id text
 				String rowIdText = "";
@@ -352,9 +358,13 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 				}
 
 				//Process the columns
+				if (iCol >= columns.size()) break;
 				Map columnMap = (Map) columns.get(iCol);
 				String columnWidth = "";
-				if (columnMap.containsKey("width")) columnWidth = (String) columnMap.get("width");
+				if (columnMap != null && columnMap.containsKey("width")) columnWidth = (String) columnMap.get("width");
+				
+				String columnText = "";
+				if (columnMap != null && columnMap.containsKey("text")) columnText = (String) columnMap.get("text");
 					
 				//Output the containing div
 				if (iRow == 0 && iCol == 0) {
@@ -377,14 +387,14 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="left" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
+<th align="left" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnText %>&nbsp;</th>
 <%
 					} else {
 %>
 <td nowrap width="100%"
   onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
   onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
-  >&nbsp;<%= columnMap.get("text") %></td>
+  >&nbsp;<%= columnText %></td>
 <%
 					}
 %>
@@ -415,14 +425,14 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="left" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
+<th align="left" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnText %>&nbsp;</th>
 <%
 					} else {
 %>
 <td nowrap width="100%"
   onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
   onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
- >&nbsp;<%= columnMap.get("text") %></td>
+ >&nbsp;<%= columnText %></td>
 <%
 					}
 %>
@@ -441,14 +451,14 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="left" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnMap.get("text") %>&nbsp;</th>
+<th align="left" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnText %>&nbsp;</th>
 <%
 					} else {
 %>
 <td nowrap width="100%"
   onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
   onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
- >&nbsp;<%= columnMap.get("text") %></td>
+ >&nbsp;<%= columnText %></td>
 <%
 					}
 %>

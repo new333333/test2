@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Date;
 
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.PortletRequestUtils;
@@ -76,8 +77,14 @@ public class ViewController  extends SAbstractForumController {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
 			Map updates = new HashMap();
-			updates.put("displayStyle", PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
+			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
+					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 			getProfileModule().modifyEntryData(user.getParentBinder().getId(), user.getId(), updates);
+		}
+		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_DEFINITION)) {
+			getProfileModule().setUserFolderProperty(user.getId(), folderId, 
+					ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, 
+					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 		}
 		if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE)) {
 			PortletSession ps = WebHelper.getRequiredPortletSession(request);
