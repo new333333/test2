@@ -128,9 +128,27 @@ public class DefinitionUtils {
 	}
 
 	public static void getDefinitions(Binder binder, Map model) {
+		String userSelectedDefinition = "";
+		getDefinitions(binder, model, userSelectedDefinition);
+	}
+	public static void getDefinitions(Binder binder, Map model, String userSelectedDefinition) {
 		List folderViewDefs = binder.getBinderViewDefs();
 		if (!folderViewDefs.isEmpty()) {
+			//Get the default definition for this binder
 			Definition defaultForumDefinition = (Definition)folderViewDefs.get(0);
+			if (userSelectedDefinition != null && !userSelectedDefinition.equals("")) {
+				//The user has selected a default definition for this binder; check it out.
+				for (int i = 0; i < folderViewDefs.size(); i++) {
+					Definition def = (Definition)folderViewDefs.get(i);
+					//Is this an allowed definition?
+					if (userSelectedDefinition.equals(def.getId())) {
+						//Ok, this definition is allowed
+						defaultForumDefinition = def;
+						break;
+					}
+				}
+			}
+
 			model.put(WebKeys.DEFAULT_FOLDER_DEFINITION, defaultForumDefinition);
 			model.put(WebKeys.DEFAULT_FOLDER_DEFINITION_ID, defaultForumDefinition.getId());
 			Document forumViewDoc = defaultForumDefinition.getDefinition();

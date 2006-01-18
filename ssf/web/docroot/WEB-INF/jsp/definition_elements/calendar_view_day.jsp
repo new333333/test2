@@ -58,19 +58,27 @@ Views:&nbsp;<a href="${set_week_view}">Week</a><c:out value="${delimiter}" /><a 
 <div id="folderLine_<c:out value="${evid.entry._docId}"/>">	
 <%
 if (ssSeenMap.checkIfSeen(e)) {
-%><img src="<html:imagesPath/>pics/1pix.gif" width="7px" alt="" \><%
+%><span><%
 	} else {
-%><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif" alt="unread entry" \><%
+%><span class="ss_bold"><%
 	}
 %>
-    ${evid.cal_starttimestring}-${evid.cal_endtimestring}: 
+    <c:if test="${evid.cal_starttimestring == evid.cal_endtimestring}">
+    <c:out value="${evid.cal_starttimestring}"/>: 
+    </c:if>
+    <c:if test="${evid.cal_starttimestring != evid.cal_endtimestring}">
+    <c:out value="${evid.cal_starttimestring}"/>-<c:out value="${evid.cal_endtimestring}"/>: 
+    </c:if>
     <a class="ss_link" href="<ssf:url 
     adapter="true" 
     portletName="ss_forum" 
     folderId="<%= folderId %>" 
     action="view_entry" 
     entryId="<%= e.get("_docId").toString() %>" actionUrl="false" />"
-    onClick="ss_loadEntry(this,'<c:out value="${evid.entry._docId}"/>');return false;" >${evid.entry._title}</a></div>
+    onClick="ss_loadEntry(this,'<c:out value="${evid.entry._docId}"/>');return false;" 
+    ><c:if test="${empty evid.entry._title}"
+    ><span class="ss_fineprint">--<ssf:nlt tag="entry.noTitle" text="no title"/>--</span
+    ></c:if><c:out value="${evid.entry._title}"/></a></span></div>
 
 </c:forEach>
 </c:forEach></td>
