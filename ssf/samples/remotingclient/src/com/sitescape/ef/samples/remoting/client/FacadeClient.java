@@ -28,10 +28,23 @@ public class FacadeClient {
 
 	public void printEntry(long binderId, long entryId) {
 		Entry entry = this.facade.getEntry(binderId, entryId);
-		System.out.println("Entry(" + entry.getBinderId() + "," + entry.getId() + ") - " + entry.getTitle());
+		System.out.println();
+		System.out.println("*** Entry(" + entry.getBinderId() + "," + entry.getId() + ")");
+		System.out.println("Title: " + entry.getTitle());
+		System.out.println();
 	}
 
+	public void printEntryAsXML(long binderId, long entryId) {
+		String entryAsXML = this.facade.getEntryAsXML(binderId, entryId);
+		System.out.println();
+		System.out.println("*** Entry(" + binderId + "," + entryId + ")");
+		System.out.println(entryAsXML);
+		System.out.println();
+	}
+	
 	public static void main(String[] args) {
+		System.out.println("*** This Facade client uses Spring's jaxrpc proxy");
+
 		// first argument - binder id
 		// second argument - entry id
 		if(args.length < 2) {
@@ -46,6 +59,8 @@ public class FacadeClient {
 			FacadeClient client = (FacadeClient) beanFactory.getBean("facadeClient");
 
 			client.printEntry(binderId, entryId);
+			
+			client.printEntryAsXML(binderId, entryId);
 		}
 	}
 }

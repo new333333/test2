@@ -20,13 +20,14 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.sitescape.ef.InternalException;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.portletadapter.support.KeyNames;
 import com.sitescape.ef.portletadapter.support.PortletInfo;
 
 public class PortletRequestImpl implements PortletRequest, MultipartFileSupport {
 
+	public static final WindowState ADAPTED = new WindowState("adapted");
+	
 	protected HttpServletRequest req;
 	protected PortletInfo portletInfo;
 	protected PortletContext portletContext;
@@ -52,7 +53,7 @@ public class PortletRequestImpl implements PortletRequest, MultipartFileSupport 
 	}
 
 	public WindowState getWindowState() {
-		throw new UnsupportedOperationException();
+		return ADAPTED;
 	}
 
 	public PortletPreferences getPreferences() {

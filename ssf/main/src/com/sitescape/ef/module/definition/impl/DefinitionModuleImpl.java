@@ -1060,7 +1060,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
         }
         return map;
     }
-	public void addNotifyElementForEntry(Element element, Notify notifyDef, Entry entry) {
+	public void addNotifyElementForEntry(Element element, Notify notifyDef, Entry entry,
+			String[] categories) {
 
         Element configRoot = getDefinitionConfig().getRootElement();
         Definition def = entry.getEntryDef();
@@ -1091,8 +1092,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                                     .selectSingleNode("//item[@name='"
                                             + itemName + "']");
                             if (configItem != null) {
-                                if (configItem.attributeValue("category", "")
-                                        .equals("entryData")) {
+                            	if(matchCategory(configItem.attributeValue("category", ""), categories)) {
                                     String nameValue = nameProperty
                                             .attributeValue("value", "");
                                     if (nameValue.equals("")) {
@@ -1142,18 +1142,22 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                                     
                                
                                     Map notifyArgs = getOptionalArgs(notifyElem);
+                                    String captionValue = null;
                                     if (!notifyArgs.containsKey("caption")) {
                                     	Element captionProperty = (Element) nextItem
                                     		.selectSingleNode("./properties/property[@name='caption']");
-                                    	String captionValue = captionProperty
+                                    	captionValue = captionProperty
                                     		.attributeValue("value", "");
                                     	if (captionValue.equals("")) {
                                     		captionValue = nextItem
                                     			.attributeValue("caption");
                                     	} 
-                                    	notifyArgs.put("_caption", NLT.getDef(captionValue));
-                                    	notifyArgs.put("_itemName", itemName);
                                     }
+                                    else {
+                                    	captionValue = (String) notifyArgs.get("caption");
+                                    }
+                                	notifyArgs.put("_caption", NLT.getDef(captionValue));
+                                	notifyArgs.put("_itemName", itemName);
                                     NotifyBuilderUtil.buildElement(element, notifyDef, entry,
                                             nameValue, fieldBuilder,
                                             notifyArgs);
@@ -1164,5 +1168,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                 }
             }
         }
+    }
+        
+    private boolean matchCategory(String value, String[] categories) {
+    	for(int i = 0; i < categories.length; i++) {
+    		if(categories[i].equals(value))
+    			return true; // match
+    	}
+    	return false; // no match
     }
 }
