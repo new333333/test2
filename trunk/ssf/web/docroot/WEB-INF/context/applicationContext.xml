@@ -385,6 +385,7 @@
 	<bean id="defaultProfileCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.profile.impl.DefaultProfileCoreProcessor">
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
 		<property name="workflowModule"><ref local="workflowModuleTarget"/></property>
+		<property name="fileModule"><ref local="fileModule"/></property>
 	</bean>
 
 	<bean id="binderModule" parent="baseTransactionProxy">
