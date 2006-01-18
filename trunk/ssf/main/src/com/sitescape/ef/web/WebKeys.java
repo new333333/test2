@@ -71,6 +71,7 @@ public class WebKeys {
 	//oerations
  	public static final String FORUM_OPERATION_ADMINISTRATION = "administration";
 	public static final String FORUM_OPERATION_SET_DISPLAY_STYLE = "set_display_style";
+	public static final String FORUM_OPERATION_SET_DISPLAY_DEFINITION = "set_display_definition";
 	public static final String FORUM_OPERATION_VIEW_ENTRY = "view_entry";
 	public static final String FORUM_OPERATION_VIEW_FILE = "view_file";
 	public static final String FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE = "set_cal_display_mode";
