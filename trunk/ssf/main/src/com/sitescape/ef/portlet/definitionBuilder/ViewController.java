@@ -229,6 +229,7 @@ public class ViewController extends SAbstractController {
 					while (li.hasNext()) {
 						Definition curDef = (Definition)li.next();
 						Document curDefDoc = curDef.getDefinition();
+						if (curDefDoc == null) continue;
 						Element curDefDocRoot = curDefDoc.getRootElement();
 						if (curDef.getType() == Integer.valueOf(defEle.attributeValue("definitionType", "0")).intValue()) {
 							Element curDefEle = treeEle.addElement("child");
