@@ -215,7 +215,9 @@ function CalendarPopup() {
 	c.yearSelectStartOffset = 2;
 	c.currentDate = null;
 	c.todayText="Today";
-	c.cssPrefix="";
+	c.okText="OK";
+	c.cancelText="Cancel";
+	c.cssPrefix="ss_";
 	c.isShowNavigationDropdowns=false;
 	c.isShowYearNavigationInput=false;
 	window.CP_calendarObject = null;
@@ -477,10 +479,18 @@ function CP_getCalendar() {
 		if ( ( (year%4 == 0)&&(year%100 != 0) ) || (year%400 == 0) ) {
 			daysinmonth[2] = 29;
 			}
+		var display_year_current = year;
+		var display_month_current = month;
+		var display_date_current = this.currentDate.getDate();
+		if (display_date_current > daysinmonth[display_month_current]) {
+			display_date_current = daysinmonth[display_month_current];
+			}
+
 		var current_month = new Date(year,month-1,1);
 		var display_year = year;
 		var display_month = month;
 		var display_date = 1;
+		
 		var weekday= current_month.getDay();
 		var offset = 0;
 		
@@ -601,7 +611,8 @@ function CP_getCalendar() {
 			current_weekday += 7;
 			}
 		result += '<TR>\n';
-		result += '	<TD COLSPAN=7 ALIGN=CENTER CLASS="'+this.cssPrefix+'cpTodayText">\n';
+		result += '<TD CLASS="'+this.cssPrefix+'cpTodayText" ALIGN=CENTER WIDTH="22"><A CLASS="'+this.cssPrefix+'cpMonthNavigation" HREF="'+refreshLink+'('+this.index+','+last_month+','+last_month_year+');">&lt;&lt;</A></TD>\n';
+		result += '	<TD COLSPAN=5 ALIGN=CENTER CLASS="'+this.cssPrefix+'cpTodayText">\n';
 		if (this.disabledDatesExpression!="") {
 			var ds=""+now.getFullYear()+LZ(now.getMonth()+1)+LZ(now.getDate());
 			eval("disabled=("+this.disabledDatesExpression+")");
@@ -613,7 +624,21 @@ function CP_getCalendar() {
 			result += '		<A CLASS="'+this.cssPrefix+'cpTodayText" HREF="javascript:'+windowref+this.returnFunction+'(\''+now.getFullYear()+'\',\''+(now.getMonth()+1)+'\',\''+now.getDate()+'\');'+windowref+'CP_hideCalendar(\''+this.index+'\');">'+this.todayText+'</A>\n';
 			}
 		result += '		<BR>\n';
-		result += '	</TD></TR></TABLE></CENTER></TD></TR></TABLE>\n';
+		result += '	</TD>'
+		result += '<TD CLASS="'+this.cssPrefix+'cpTodayText" ALIGN=CENTER WIDTH="22"><A CLASS="'+this.cssPrefix+'cpMonthNavigation" HREF="'+refreshLink+'('+this.index+','+next_month+','+next_month_year+');">&gt;&gt;</A></TD>\n';
+        result += '</TR></TABLE></CENTER></TD></TR>'
+        result += '<tr>'
+        result += '<td align="center">'
+        result += '<A CLASS="'+this.cssPrefix+'cpTodayText" '
+        result += 'HREF="javascript:'+windowref+this.returnFunction
+		result += '('+display_year_current+','+display_month_current+','+display_date_current+');'+windowref+'CP_hideCalendar(\''+this.index+'\');">'
+		result += this.okText+'</A>'
+        result += '&nbsp;&nbsp;&nbsp;'
+        result += '<A CLASS="'+this.cssPrefix+'cpTodayText" '
+        result += 'HREF="javascript:'+windowref+'CP_hideCalendar(\''+this.index+'\');">'
+		result += this.cancelText+'</A>'
+        result += '</td></tr>'
+        result += '</TABLE>\n';
 	}
 
 	// Code common for MONTH, QUARTER, YEAR

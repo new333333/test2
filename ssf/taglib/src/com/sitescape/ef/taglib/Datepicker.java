@@ -31,6 +31,9 @@ public class Datepicker extends TagSupport {
     private Date initDate = null;
     private String componentOrder = "mdy";
     private Boolean immediateMode = new Boolean(false);
+    private Boolean showSelectors = new Boolean(true);
+    private String popupDivId = "";
+    
     private boolean initDateProvided;
     private DateFormat idf;
     private String contextPath;
@@ -38,7 +41,7 @@ public class Datepicker extends TagSupport {
     	public int doStartTag() throws JspException, DatepickerException {
 	    JspWriter jspOut = pageContext.getOut(); 
 	    if (id == null) {
-	        throw new DatepickerException("You must provide an id"); 
+	        throw new DatepickerException("ssf:datepicker calls must include a unique id"); 
 	    }
 	    String prefix = formName + "_" + id;
 	    Pattern pat;
@@ -48,12 +51,12 @@ public class Datepicker extends TagSupport {
 	    pat = Pattern.compile("^.* .*$");
 	    mat = pat.matcher(prefix);
 	    if (mat.find()) {
-	        throw new DatepickerException("unique id (formName and id) must not contain spaces");
+	        throw new DatepickerException("ssf:datepicker id (formName and id) must not contain spaces");
 	    }
 	    
 	    if (initDate == null) {
 	        initDate = new Date();
-		initDateProvided = false;
+	        initDateProvided = false;
 	    } else {
 	        initDateProvided = true;
 	    }
@@ -83,15 +86,17 @@ public class Datepicker extends TagSupport {
 	        StringBuffer sb = new StringBuffer();
 	        // load support for datapicker 
 	        sb.append("<script language=\"JavaScript\" src=\"")
-		  .append(contextPath)
-		  .append("/js/datepicker/CalendarPopup.js\"></script>\n");
+	          .append(contextPath)
+	          .append("/js/datepicker/CalendarPopup.js\"></script>\n");
 	        sb.append("<script language=\"JavaScript\" src=\"")
-		  .append(contextPath)
-		  .append("/js/common/AnchorPosition.js\"></script>\n");
+	          .append(contextPath)
+	          .append("/js/common/AnchorPosition.js\"></script>\n");
 	        sb.append("<script language=\"JavaScript\" src=\"")
-		  .append(contextPath)
-		  .append("/js/common/PopupWindow.js\"></script>\n");
-	        sb.append("<script language=\"JavaScript\" src=\"").append(contextPath).append("/js/datepicker/date.js\"></script>\n");
+	          .append(contextPath)
+	          .append("/js/common/PopupWindow.js\"></script>\n");
+	        sb.append("<script language=\"JavaScript\" src=\"")
+	          .append(contextPath)
+	          .append("/js/datepicker/date.js\"></script>\n");
 
 		String varname = prefix; // for some backward compatibility
 			// we have to keep the instance name and the setMultipleValues function name unique
@@ -116,9 +121,11 @@ public class Datepicker extends TagSupport {
 			  .append("',dpos_")
 			  .append(prefix)
 			  .append(")\n");
-			sb.append("var ").append(varname).append(" = new CalendarPopup();\n");
+			sb.append("var ").append(varname)
+			  .append(" = new CalendarPopup('"+popupDivId+"');\n");
 			sb.append(varname).append(".setYearSelectStartOffset(7);\n");
-			sb.append(varname).append(".setReturnFunction(\"setMultipleValues_").append(prefix).append("\");\n");
+			sb.append(varname).append(".setReturnFunction(\"setMultipleValues_")
+			  .append(prefix).append("\");\n");
 			sb.append(varname).append(".showNavigationDropdowns();\n");
 
 
@@ -200,88 +207,92 @@ public class Datepicker extends TagSupport {
 			  .append("return y + \"-\" + mm + \"-\" + dd + \"T00\" + \":\" + \"00\" + \":\" + \"00\";\n }\n}\n");
 
 			sb.append("</script>\n");
-			String selected = new String("");
-
-			for (int cp=0; cp<3; cp++) {
-			    int i;
-			    switch (componentOrder.charAt(cp)) {
-			    	case 'm': 
-				  if (immediateMode.booleanValue()) {
-				    sb.append("<input type=\"hidden\"")
-				      .append(" name=\"").append(prefix).append("_month\"")
-				      .append(" value=\"").append(cal.get(Calendar.MONTH)+1).append("\">\n");
-				  } else {
-				    sb.append("<select name=\"").append(prefix).append("_month\">\n");
-				    if (!initDateProvided) {
-				      selected = "selected";
+			
+			if (this.showSelectors.booleanValue()) {
+				String selected = new String("");
+				for (int cp=0; cp<3; cp++) {
+				    int i;
+				    switch (componentOrder.charAt(cp)) {
+				    	case 'm': 
+					  if (immediateMode.booleanValue()) {
+					    sb.append("<input type=\"hidden\"")
+					      .append(" name=\"").append(prefix).append("_month\"")
+					      .append(" value=\"").append(cal.get(Calendar.MONTH)+1).append("\">\n");
+					  } else {
+					    sb.append("<select name=\"").append(prefix).append("_month\">\n");
+					    if (!initDateProvided) {
+					      selected = "selected";
+					    }
+					    sb.append("<option value=\"0\"")
+					      .append(selected)
+					      .append(" >")
+					      .append("---")
+					      .append("</option>\n");
+					    for (i=1; i<13; i++) {
+					      if (cal.get(Calendar.MONTH) == i-1 && initDateProvided) {
+						selected = "selected";
+					      } else {
+						selected = "";
+					      }
+					      sb.append("<option value=\"").append(i)
+						.append("\" ").append(selected).append(">")
+						.append(monthnames[i-1])
+						.append("</option>\n");
+					    }
+					    sb.append("</select>\n");
+					    sb.append("\n");
+					  }
+					  break;
+				    	case 'd': 
+					  if (immediateMode.booleanValue()) {
+					    sb.append("<input type=\"hidden\"")
+					      .append(" name=\"").append(prefix).append("_date\"")
+					      .append(" value=\"").append(cal.get(Calendar.DATE)).append("\">\n");
+					  } else {
+					    sb.append("<select name=\"").append(prefix).append("_date\">\n");
+					    if (!initDateProvided) {
+					      selected = "selected";
+					    }
+					    sb.append("<option value=\"0\"")
+					      .append(selected)
+					      .append(" >")
+					      .append("---")
+					      .append("</option>\n");
+					    selected = "";
+					    for (i=1; i<32; i++) {
+					      if (cal.get(Calendar.DATE) == i && initDateProvided) {
+						selected = "selected";
+					      } else {
+						selected = "";
+					      }
+					      sb.append("<option value=\"").append(i)
+						.append("\" ").append(selected).append(">").append(i)
+						.append("</option>\n");
+					    }
+					    sb.append("</select>\n");
+					  }
+					  break;
+				    	case 'y': 
+					  if (immediateMode.booleanValue()) {
+					    sb.append("<input type=\"hidden\"")
+					      .append(" name=\"").append(prefix).append("_year\"")
+					      .append(" value=\"").append(cal.get(Calendar.YEAR)).append("\">\n");
+					  } else {
+					    sb.append("<INPUT TYPE=\"text\" NAME=\"").append(prefix)
+					      .append("_year\" VALUE=\"");
+					    if (initDateProvided) {
+					      sb.append(cal.get(Calendar.YEAR));
+					    } else {
+					      sb.append("\"\"");
+					    }
+					    sb.append("\" SIZE=4>\n");
+					  }
+					  break;
 				    }
-				    sb.append("<option value=\"0\"")
-				      .append(selected)
-				      .append(" >")
-				      .append("---")
-				      .append("</option>\n");
-				    for (i=1; i<13; i++) {
-				      if (cal.get(Calendar.MONTH) == i-1 && initDateProvided) {
-					selected = "selected";
-				      } else {
-					selected = "";
-				      }
-				      sb.append("<option value=\"").append(i)
-					.append("\" ").append(selected).append(">")
-					.append(monthnames[i-1])
-					.append("</option>\n");
-				    }
-				    sb.append("</select>\n");
-				    sb.append("\n");
-				  }
-				  break;
-			    	case 'd': 
-				  if (immediateMode.booleanValue()) {
-				    sb.append("<input type=\"hidden\"")
-				      .append(" name=\"").append(prefix).append("_date\"")
-				      .append(" value=\"").append(cal.get(Calendar.DATE)).append("\">\n");
-				  } else {
-				    sb.append("<select name=\"").append(prefix).append("_date\">\n");
-				    if (!initDateProvided) {
-				      selected = "selected";
-				    }
-				    sb.append("<option value=\"0\"")
-				      .append(selected)
-				      .append(" >")
-				      .append("---")
-				      .append("</option>\n");
-				    selected = "";
-				    for (i=1; i<32; i++) {
-				      if (cal.get(Calendar.DATE) == i && initDateProvided) {
-					selected = "selected";
-				      } else {
-					selected = "";
-				      }
-				      sb.append("<option value=\"").append(i)
-					.append("\" ").append(selected).append(">").append(i)
-					.append("</option>\n");
-				    }
-				    sb.append("</select>\n");
-				  }
-				  break;
-			    	case 'y': 
-				  if (immediateMode.booleanValue()) {
-				    sb.append("<input type=\"hidden\"")
-				      .append(" name=\"").append(prefix).append("_year\"")
-				      .append(" value=\"").append(cal.get(Calendar.YEAR)).append("\">\n");
-				  } else {
-				    sb.append("<INPUT TYPE=\"text\" NAME=\"").append(prefix)
-				      .append("_year\" VALUE=\"");
-				    if (initDateProvided) {
-				      sb.append(cal.get(Calendar.YEAR));
-				    } else {
-				      sb.append("\"\"");
-				    }
-				    sb.append("\" SIZE=4>\n");
-				  }
-				  break;
-			    }
+				}
 			}
+			
+			//Show the calendar popup icon
 			sb.append("<A HREF=\"#\" ");
                         sb.append("onClick=\"").append(prefix);
 			sb.append(".showCalendar('anchor_")
@@ -328,6 +339,10 @@ public class Datepicker extends TagSupport {
 	    this.id = id;
 	}
 
+	public void setPopupDivId(String id) {
+	    this.popupDivId = id;
+	}
+
 	public void setInitDate(Date initDate) {
 	    this.initDate = initDate;
 	}
@@ -357,6 +372,10 @@ public class Datepicker extends TagSupport {
 	
 	public void setImmediateMode(Boolean immediateMode) {
 		this.immediateMode = immediateMode;
+	}
+
+	public void setShowSelectors(Boolean value) {
+		this.showSelectors = value;
 	}
 
 }
