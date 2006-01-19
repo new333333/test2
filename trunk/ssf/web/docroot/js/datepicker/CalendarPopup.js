@@ -238,6 +238,8 @@ function CalendarPopup() {
 	c.addDisabledDates = CP_addDisabledDates;
 	c.setYearSelectStartOffset = CP_setYearSelectStartOffset;
 	c.setTodayText = CP_setTodayText;
+	c.setOkText = CP_setOkText;
+	c.setCancelText = CP_setCancelText;
 	c.showYearNavigation = CP_showYearNavigation;
 	c.showCalendar = CP_showCalendar;
 	c.hideCalendar = CP_hideCalendar;
@@ -343,9 +345,17 @@ function CP_addDisabledDates(start, end) {
 	else { this.disabledDatesExpression+="(ds>="+start+"&&ds<="+end+")"; }
 	}
 	
-// Set the text to use for the "Today" link
+// Set the text to use for the "Today", "OK", and "Cancel" links
 function CP_setTodayText(text) {
 	this.todayText = text;
+	}
+
+function CP_setOkText(text) {
+	this.okText = text;
+	}
+
+function CP_setCancelText(text) {
+	this.cancelText = text;
 	}
 
 // Set the prefix to be added to all CSS classes when writing output

@@ -81,6 +81,31 @@ public class Datepicker extends TagSupport {
 					NLT.get("calendar.december")
 			};
 			
+			String[] monthabvnames = { 
+					NLT.get("calendar.abbreviation.january"),
+					NLT.get("calendar.abbreviation.february"),
+					NLT.get("calendar.abbreviation.march"),
+					NLT.get("calendar.abbreviation.april"),
+					NLT.get("calendar.abbreviation.may"),
+					NLT.get("calendar.abbreviation.june"),
+					NLT.get("calendar.abbreviation.july"),
+					NLT.get("calendar.abbreviation.august"),
+					NLT.get("calendar.abbreviation.september"),
+					NLT.get("calendar.abbreviation.october"),
+					NLT.get("calendar.abbreviation.november"),
+					NLT.get("calendar.abbreviation.december")
+			};
+			
+			String[] dayHeaders = { 
+					NLT.get("calendar.day.abbrev1.su"),
+					NLT.get("calendar.day.abbrev1.mo"),
+					NLT.get("calendar.day.abbrev1.tu"),
+					NLT.get("calendar.day.abbrev1.we"),
+					NLT.get("calendar.day.abbrev1.th"),
+					NLT.get("calendar.day.abbrev1.fr"),
+					NLT.get("calendar.day.abbrev1.sa"),
+			};
+			
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 
 	        StringBuffer sb = new StringBuffer();
@@ -127,6 +152,27 @@ public class Datepicker extends TagSupport {
 			sb.append(varname).append(".setReturnFunction(\"setMultipleValues_")
 			  .append(prefix).append("\");\n");
 			sb.append(varname).append(".showNavigationDropdowns();\n");
+			sb.append(varname).append(".setTodayText('"+ NLT.get("button.today") +"');\n");
+			sb.append(varname).append(".setOkText('"+ NLT.get("button.ok") +"');\n");
+			sb.append(varname).append(".setCancelText('"+ NLT.get("button.cancel") +"');\n");
+			sb.append(varname).append(".setMonthNames(");
+			for (int i = 0; i <= 11; i++) {
+				sb.append("'" + monthnames[i] + "'");
+				if (i < 11) sb.append(",");
+			}
+			sb.append(");\n");
+			sb.append(varname).append(".setMonthAbbreviations(");
+			for (int i = 0; i <= 11; i++) {
+				sb.append("'" + monthabvnames[i] + "'");
+				if (i < 11) sb.append(",");
+			}
+			sb.append(");\n");
+			sb.append(varname).append(".setDayHeaders(");
+			for (int i = 0; i <= 6; i++) {
+				sb.append("'" + dayHeaders[i] + "'");
+				if (i < 6) sb.append(",");
+			}
+			sb.append(");\n");
 
 
 			// this routine is the callback when the user selects a date in the pop-up picker
