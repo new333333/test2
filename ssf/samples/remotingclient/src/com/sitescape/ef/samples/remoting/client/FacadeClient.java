@@ -1,5 +1,12 @@
 package com.sitescape.ef.samples.remoting.client;
 
+import java.io.IOException;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
@@ -40,11 +47,21 @@ public class FacadeClient {
 		System.out.println("*** Entry(" + binderId + "," + entryId + ")");
 		System.out.println(entryAsXML);
 		System.out.println();
+		try {
+			Document document = DocumentHelper.parseText(entryAsXML);
+			
+			prettyPrint(document);
+		} catch (DocumentException e) {
+			System.out.println(e);
+		}
+		System.out.println();
 	}
 	
 	public static void main(String[] args) {
 		System.out.println("*** This Facade client uses Spring's jaxrpc proxy");
 
+		System.out.println("*** Reading an entry ***");
+		
 		// first argument - binder id
 		// second argument - entry id
 		if(args.length < 2) {
@@ -62,5 +79,16 @@ public class FacadeClient {
 			
 			client.printEntryAsXML(binderId, entryId);
 		}
+		
+		System.out.println("*** Adding an entry ***");
+	}
+	
+	private void prettyPrint(Document doc) {
+		OutputFormat format = OutputFormat.createPrettyPrint();
+		try {
+			XMLWriter writer = new XMLWriter(System.out, format);
+			writer.write(doc);
+		}
+		catch(IOException e) {}
 	}
 }

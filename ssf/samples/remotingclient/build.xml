@@ -14,6 +14,8 @@
 		     client side -->
 		<path id="wsclient.project.classpath">
 			<pathelement path="${classes.dir};${project.dir}/remoting/classes" />
+			<pathelement location="${project.dir}/lib/activation.jar" />
+			<pathelement location="${project.dir}/lib/dom4j.jar" />
 			<pathelement location="${project.dir}/lib/spring.jar" />
 			<pathelement location="${project.dir}/lib/axis.jar" />
 			<pathelement location="${project.dir}/lib/axis-ant.jar" />
