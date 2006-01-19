@@ -27,7 +27,7 @@ function ss_showUrlInPortlet(params) {
 
 
 function ss_loadEntry(obj) {
-	ss_showMessageInDiv("Loading...");
+	ss_showMessageInDiv("<ssf:nlt tag="loading" text="Loading..."/>");
 	ss_showForumEntry(obj.href, ss_showEntryInDiv);
 	return false;
 }
