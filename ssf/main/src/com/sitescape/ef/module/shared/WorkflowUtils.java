@@ -87,26 +87,29 @@ public class WorkflowUtils {
 			if (startParallelExecutions != null) {
 				for (int j = 0; j < startParallelExecutions.size(); j++) {
 					//Get the "startState" property
-					Element parallelThreadEle = (Element) ((Element) 
+					Element startParallelThreadEle = (Element) ((Element) 
 							startParallelExecutions.get(j)).selectSingleNode(
 							"./properties/property[@name='name']");
-					Element startStateEle = (Element) ((Element) 
-							startParallelExecutions.get(j)).selectSingleNode(
-							"./properties/property[@name='startState']");
-					if (startStateEle != null && parallelThreadEle != null) {
-						String parallelThreadName = parallelThreadEle.attributeValue("value", "");
-						String startStateValue = startStateEle.attributeValue("value", "");
-						if (!startStateValue.equals("") && !parallelThreadName.equals("")) {
-							//We have a start state. 
-							//TODO Check that the user has the right to execute this transition
-							
-							//Ok, add this transition to the map
-							Map parallelThread = new HashMap();
-							parallelThread.put(ObjectKeys.WORKFLOW_PARALLEL_THREAD_NAME, parallelThreadName);
-							parallelThread.put(ObjectKeys.WORKFLOW_PARALLEL_THREAD_START_STATE, startStateValue);
-							parallelExecutions.add(parallelThread);
-						}
-					}
+					String parallelThreadName = startParallelThreadEle.attributeValue("value", "");
+            		if (!parallelThreadName.equals("")) {
+            			Element parallelThreadEle = (Element) wfRoot.selectSingleNode("//item[@name='parallelThread']/properties/property[@name='name' and @value='"+parallelThreadName+"']");
+            			if (parallelThreadEle != null) {
+            				Element startStateEle = (Element) parallelThreadEle.selectSingleNode("./properties/property[@name='startState']");
+        					if (startStateEle != null && parallelThreadEle != null) {
+        						String startStateValue = startStateEle.attributeValue("value", "");
+        						if (!startStateValue.equals("") && !parallelThreadName.equals("")) {
+        							//We have a start state. 
+        							//TODO Check that the user has the right to execute this transition
+        							
+        							//Ok, add this transition to the map
+        							Map parallelThread = new HashMap();
+        							parallelThread.put(ObjectKeys.WORKFLOW_PARALLEL_THREAD_NAME, parallelThreadName);
+        							parallelThread.put(ObjectKeys.WORKFLOW_PARALLEL_THREAD_START_STATE, startStateValue);
+        							parallelExecutions.add(parallelThread);
+        						}
+            				}
+            			}
+            		}
 				}
 			}
 		}

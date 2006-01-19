@@ -373,7 +373,7 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 
 <form class="ss_style" action="" method="post" name="definitionbuilder" onSubmit="setSubmitData(this)" >
 <div id="definitionbuilder_tree_loading">
-<span><ssf:nlt tag="definition.loading" text="Loading..."/></span><br>
+<span><ssf:nlt tag="loading" text="Loading..."/></span><br>
 </div>
 <table class="ss_style" width="100%">
 	<tr>

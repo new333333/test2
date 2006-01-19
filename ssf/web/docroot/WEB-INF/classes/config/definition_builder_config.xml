@@ -764,8 +764,6 @@
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
-			<property name="initialState" caption="__initialState" type="itemSelect" path="//item[@name='state']" />
-			<property name="endState" caption="__endState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		
 		<options>
@@ -774,12 +772,14 @@
 	</item>
 	
 	<item name="workflowProcess" caption="__workflow_process" canBeDeleted="false" multipleAllowed="false">
-		<operations>
-			<operation name="addOption" caption="__add" />
-		</operations>
+		<properties>
+			<property name="initialState" caption="__initialState" type="itemSelect" path="//item[@name='state']" />
+			<property name="endState" caption="__endState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
 
 		<options>
 			<option name="state" caption="__state" multipleAllowed="true" />
+			<option name="parallelThread" caption="__parallelThread" multipleAllowed="true" />
 		</options>
 	</item>
 	
@@ -801,6 +801,17 @@
 			<option name="waitForParallelThread" />
 			<option name="stopParallelThread" />
 		</options>
+	</item>
+	
+	<item name="parallelThread" caption="__parallelThread" canBeDeleted="true" multipleAllowed="true">
+		<properties>
+			<property name="name" caption="__data_name" type="text" unique="//item[@name='parallelThread']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" />
+			<property name="startState" caption="__startState" type="itemSelect" path="//item[@name='state']" />
+			<property name="endState" caption="__endState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
 	</item>
 	
 	<item name="transitions" caption="__transitions" canBeDeleted="false" multipleAllowed="false">
@@ -942,29 +953,20 @@
 	
 	<item name="startParallelThread" type="parallelThread" caption="__startParallelThread" >
 		<properties>
-			<property name="name" caption="__parallelStateName" type="text" path="//item[@name='state']" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" />
-			<property name="caption" caption="__parallelStateCaption" type="text" />
-			<property name="startState" caption="__startState" type="itemSelect" path="//item[@name='state']" />
-			<property name="endState" caption="__endState" type="itemSelect" path="//item[@name='state']" />
+			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" />
 		</properties>
 	</item>
 	
 	<item name="waitForParallelThread" caption="__waitForParallelThread" >
 		<properties>
-			<property name="name" caption="__parallelStateName" type="selectbox" multipleAllowed="true">
-			    <option_entry_data select_type="parallelThread" path="//item[@name='startParallelThread']" optionCaption="__parallelStateName" />
-			</property>
+			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" />
 			<property name="toState" caption="__toStateAfterWait" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 	</item>
 	
 	<item name="stopParallelThread" caption="__stopParallelThread" >
 		<properties>
-			<property name="name" caption="__parallelStateName" type="selectbox">
-			    <option_entry_data select_type="parallelThread" 
-					path="//item[@name='startParallelThread']" 
-					optionCaption="__parallelStateName" />
-			</property>
+			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" />
 		</properties>
 	</item>
 	
