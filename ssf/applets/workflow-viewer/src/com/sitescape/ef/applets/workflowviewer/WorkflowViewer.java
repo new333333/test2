@@ -366,8 +366,8 @@ public class WorkflowViewer extends JApplet implements ActionListener {
                     nameVertex.put(name, v[i]);
                     
                     //Set the color of the vertex
-                    Element initialState = (Element)workflowRoot.selectSingleNode("properties/property[@name='initialState']");
-                    Element endState = (Element)workflowRoot.selectSingleNode("properties/property[@name='endState']");
+                    Element initialState = (Element)workflowProcess.selectSingleNode("properties/property[@name='initialState']");
+                    Element endState = (Element)workflowProcess.selectSingleNode("properties/property[@name='endState']");
                     if (initialState != null && initialState.attributeValue("value", "").equals(name)) {
                     	v[i].setUserDatum(COLORKEY, Color.YELLOW, UserData.REMOVE);
                     } else if (endState != null && endState.attributeValue("value", "").equals(name)) {
@@ -397,23 +397,43 @@ public class WorkflowViewer extends JApplet implements ActionListener {
             Element state = (Element) itStates.next();
             //Build the transition edges for this state
             Element stateName = (Element) state.selectSingleNode("properties/property[@name='name']");
+            System.out.println("Creating edges, name: " + stateName;
             if (stateName != null) {
             	String name = stateName.attributeValue("value", "");
             	//Get the list of transitions out of this state
-            	String transitionsPath = "item[@name='transitions']/item[@type='transition']/properties/property[@name='toState']" + 
-            		" | item[@name='startParallelThread']/properties/property[@name='startState']";
+            	String transitionsPath = "item[@name='transitions']/item[@type='transition']/properties/property[@name='toState']";
             	Iterator itTransitions = state.selectNodes(transitionsPath).iterator();
             	while (itTransitions.hasNext()) {
             		Element transition = (Element) itTransitions.next();
             		String toState = transition.attributeValue("value", "");
-            		if (!toState.equals(")")) {
+            		if (!toState.equals("")) {
                         if (nameVertex.containsKey(name) && nameVertex.containsKey(toState)) {
                         	Edge newEdge = g.addEdge(new DirectedSparseEdge((Vertex)nameVertex.get(name), (Vertex)nameVertex.get(toState)));
-                        	if (transition.getParent().getParent().attributeValue("name", "").equals("startParallelThread")) {
-                        		//Mark the starting of a parallel thread with a different edge color
-                        		newEdge.setUserDatum(COLORKEY, Color.GREEN, UserData.REMOVE);
-                        	}
-                        }
+                         }
+            		}
+            	}
+            	//Get the list of parallel thread starts by this state
+            	String startThreadPath = "item[@name='startParallelThread']/properties/property[@name='name']";
+            	itTransitions = state.selectNodes(startThreadPath).iterator();
+            	while (itTransitions.hasNext()) {
+            		Element thread = (Element) itTransitions.next();
+            		String threadName = thread.attributeValue("value", "");
+                    System.out.println("startParallelThread name: " + threadName;
+            		if (!threadName.equals("")) {
+            			Element pThread = (Element) workflowRoot.selectSingleNode("//item[@name='parallelThread']/properties/property[@name='name' and @value='"+threadName+"']");
+            			if (pThread != null) {
+            				Element sThreadStartState = (Element) pThread.selectSingleNode("./properties/property[@name='startState']");
+            				if (sThreadStartState != null) {
+            					String toState = sThreadStartState.attributeValue("value", "");
+                        		if (!toState.equals("")) {
+                                    if (nameVertex.containsKey(name) && nameVertex.containsKey(toState)) {
+                                    	Edge newEdge = g.addEdge(new DirectedSparseEdge((Vertex)nameVertex.get(name), (Vertex)nameVertex.get(toState)));
+                                    	//Mark the starting of a parallel thread with a different edge color
+                                    	newEdge.setUserDatum(COLORKEY, Color.GREEN, UserData.REMOVE);
+                                    }
+                        		}
+            				}
+            			}
             		}
             	}
             }
