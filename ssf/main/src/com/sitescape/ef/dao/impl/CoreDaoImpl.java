@@ -60,6 +60,16 @@ import com.sitescape.util.Validator;
  */
 public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	protected Log logger = LogFactory.getLog(getClass());
+
+	public boolean isDirty() {
+		return getSession().isDirty();
+	}
+	public void flush() {
+		getSession().flush();
+	}
+	public void clear() {
+		getSession().clear();
+	}
 	public void save(Object obj) {
         getHibernateTemplate().save(obj);
     }

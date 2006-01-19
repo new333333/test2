@@ -2,6 +2,9 @@ package com.sitescape.ef.util;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Interceptor;
+import org.hibernate.engine.SessionImplementor;
+
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -19,10 +22,27 @@ public class SessionUtil {
 		return workflowFactory;
 		
 	}
+	public static Session getSession() {
+		return SessionFactoryUtils.getSession(getSessionFactory(), false);
+	}
 	public static void sessionStartup() {
 		//open shared session
 		Session session = SessionFactoryUtils.getSession(getSessionFactory(), true);
 		TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));		
+	}
+	public static void sessionStartup(Interceptor interceptor) {
+		//open shared session
+		Session session = SessionFactoryUtils.getSession(getSessionFactory(), interceptor, null);
+		TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));		
+	}
+	public static Interceptor getInterceptor() {
+		Session session = getSession();
+		if (session == null) return null;
+		if (session instanceof SessionImplementor) {
+			SessionImplementor sI = (SessionImplementor) session;
+			return sI.getInterceptor();
+		}
+		return null;
 	}
 	public static void sessionStop() {
 	   	if (TransactionSynchronizationManager.hasResource(getSessionFactory())) {

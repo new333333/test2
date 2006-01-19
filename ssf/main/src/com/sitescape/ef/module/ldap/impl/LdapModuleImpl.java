@@ -39,7 +39,9 @@ import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.util.SZoneConfig;
+
 import org.dom4j.Element;
+
 /**
  * This implementing class utilizes transactional demarcation strategies that 
  * are finer granularity than typical module implementations, in an effort to
@@ -53,7 +55,7 @@ import org.dom4j.Element;
  * support around those methods hence reducing individual transaction duration.
  * Of course, this finer granularity transactional control will be of no effect
  * if the caller of this service was already transactional (i.e., it controls
- * transaction bounrary that is more coarse). Whenever possible, this practise 
+ * transaction boundary that is more coarse). Whenever possible, this practise 
  * is discouraged for obvious performance/scalability reasons.  
  *   
  * @author Janet McCann
@@ -238,7 +240,7 @@ public class LdapModuleImpl implements LdapModule {
 		}
 		if (!mods.isEmpty()) {
 			try {
-				getLdapHelper().syncUser(zoneName, loginName, mods);
+				getLdapHelper().updateUser(zoneName, loginName, mods);
 			} catch (NoUserByTheNameException nu) {
 				//do nothing - liferay will catch it
 			}
@@ -259,7 +261,7 @@ public class LdapModuleImpl implements LdapModule {
 
 		Map mods = new HashMap();
 		getUpdates(info, loginName, mods);
-		getLdapHelper().syncUser(zoneName, loginName, mods);
+		getLdapHelper().updateUser(zoneName, loginName, mods);
 
 	}
 	/**
@@ -290,7 +292,7 @@ public class LdapModuleImpl implements LdapModule {
 				Set reservedIds = new HashSet();
 				buildReserved(dnUsers.values(), reservedIds);
 				buildReserved(dnGroups.values(), reservedIds);
-				//loop threw each ldapGroup that is now in forum
+				//loop through each ldapGroup that is now in forum
 				for (iter=ldapGroups.entrySet().iterator(); iter.hasNext();) {
 					Map.Entry entry = (Map.Entry)iter.next();
 					dn = (String)entry.getKey();
@@ -316,18 +318,8 @@ public class LdapModuleImpl implements LdapModule {
 								if (uRow == null) continue;
 								membership.add(new Membership(groupId, (Long)uRow[1]));
 							}
-							//have a list of users, now compare with what exists already
-							List current = getCoreDao().getMembership(groupId);
-							for (int j =0; j<current.size(); ++j) {
-								Membership c = (Membership)current.get(j);
-								if (!membership.contains(c) && !reservedIds.contains(c.getUserId())) {
-									getCoreDao().delete(c);
-								}
-							}
-							for (int j=0; j<membership.size(); ++j) {
-								Membership c = (Membership)membership.get(j);
-								if (!current.contains(c)) getCoreDao().save(c);
-							}
+							//do inside a transaction
+							getLdapHelper().updateMembership(groupId, membership, reservedIds);
 						}
 					}		
 				}
@@ -336,6 +328,7 @@ public class LdapModuleImpl implements LdapModule {
 			if (ctx != null) {
 				ctx.close();			
 			}
+						
 		}
 	}
 	private void buildReserved(Collection rows, Set reservedIds) {
@@ -360,9 +353,9 @@ public class LdapModuleImpl implements LdapModule {
 		Map ldap_new = new HashMap();
 		boolean create = info.isUserRegister();
 		boolean sync = info.isUserSync();
-		Map dnUsers;
+		Map dnUsers = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 		String [] sample = new String[0];
-		dnUsers = new TreeMap(String.CASE_INSENSITIVE_ORDER);
+	 
 		//get list of users.
 		List attrs = coreDao.loadObjects(new ObjectControls(User.class, principalAttrs), new FilterControls("zoneName", zoneName));
 		//convert list of objects to a Map of forumNames 

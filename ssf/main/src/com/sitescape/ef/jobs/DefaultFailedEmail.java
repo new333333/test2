@@ -37,7 +37,7 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
 	 * @see com.sitescape.ef.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
 	 */
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModuleTarget");
+    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 		String fileName = (String)jobDataMap.get("mailMessage");
 		//set file name for delete when trigger complete
     	File file = new File(fileName);

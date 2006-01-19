@@ -1,5 +1,4 @@
 package com.sitescape.ef.portlet.administration;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +18,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
@@ -56,13 +56,10 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			
 			getAdminModule().modifyNotification(folderId, getNotifyData(request), userList);
 			response.setRenderParameters(formData);
-		} else if (formData.containsKey("cancelBtn")) {
+		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, "");
 			response.setWindowState(WindowState.NORMAL);
 			response.setPortletMode(PortletMode.VIEW);
-		} else if (formData.containsKey("listUsers")) {
-			response.setRenderParameters(formData);
-			response.setRenderParameter("showUsers", "1");				
 		} else
 			response.setRenderParameters(formData);
 		
@@ -81,45 +78,24 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			model.put(WebKeys.GROUPS, groups);
 			ScheduleInfo config = getAdminModule().getNotificationConfig(folderId);
 			model.put(WebKeys.SCHEDULE_INFO, config);
-			if (PortletRequestUtils.getStringParameter(request, "showUsers", "0").equals("1")) {
-				//get any partially entered data
-				NotificationDef notify = new NotificationDef();
-		    	ObjectBuilder.updateObject(notify, getNotifyData(request));
-				model.put(WebKeys.NOTIFICATION, notify); 
-				
-				getScheduleData(request, config);
-				Map gList = new HashMap();
-				Map uList = new HashMap();
-				long [] gIds = PortletRequestUtils.getLongParameters(request, "sendToGroups");
-				for (int i=0; i<gIds.length; ++i) {
-					gList.put(new Long(gIds[i]),Boolean.TRUE);
-				}
-/*				List users = getProfileModule().getUsers();
-				model.put(WebKeys.USERS, users );
-				//Go through selected list and add only users .  Already have new groups accounted for from input form
-				List defaultDistribution = folder.getNotificationDef().getDefaultDistribution();
-				for (int i=0; i<defaultDistribution.size(); ++i) {
-					Principal id = ((Notification)defaultDistribution.get(i)).getSendTo();
-					if (users.contains(id)) uList.put(id.getId(), Boolean.TRUE);
-				}
-*/				model.put(WebKeys.SELECTED_USERS, uList);
-				model.put(WebKeys.SELECTED_GROUPS, gList);
-				
-			} else {
-				NotificationDef notify = folder.getNotificationDef();
-				model.put(WebKeys.NOTIFICATION, notify); 
-				List defaultDistribution = folder.getNotificationDef().getDefaultDistribution();
-				Map gList = new HashMap();
-				Map uList = new HashMap();
-				for (int i=0; i<defaultDistribution.size(); ++i) {
-					Principal id = ((Notification)defaultDistribution.get(i)).getSendTo();
-					if (groups.contains(id)) gList.put(id.getId(), Boolean.TRUE); 
-					else uList.put(id.getId(), Boolean.TRUE);
-				}
-			
-				model.put(WebKeys.SELECTED_USERS, uList);
-				model.put(WebKeys.SELECTED_GROUPS, gList);
+			NotificationDef notify = folder.getNotificationDef();
+			model.put(WebKeys.NOTIFICATION, notify); 
+			Map users = getProfileModule().getUsers(u.getParentBinder().getId());
+			//list of search results = map
+			List userEntries = (List)users.get(ObjectKeys.ENTRIES);
+			model.put(WebKeys.USERS, userEntries);
+			List defaultDistribution = folder.getNotificationDef().getDefaultDistribution();
+			Map gList = new HashMap();
+			Map uList = new HashMap();
+			for (int i=0; i<defaultDistribution.size(); ++i) {
+				Principal id = ((Notification)defaultDistribution.get(i)).getSendTo();
+				if (groups.contains(id)) gList.put(id.getId(), Boolean.TRUE); 
+				else uList.put(id.getId().toString(), Boolean.TRUE);
 			}
+		
+			model.put(WebKeys.SELECTED_USERS, uList);
+			model.put(WebKeys.SELECTED_GROUPS, gList);
+		
 			return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_NOTIFICATION, model);		
 			
 		} catch (Exception e) {

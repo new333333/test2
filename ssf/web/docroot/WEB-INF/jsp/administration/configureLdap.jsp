@@ -16,7 +16,9 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<h3>Configure Ldap Synchronization</h3>
+<div class="ss_portlet">
+<span class="ss_titlebold"><ssf:nlt tag="ldap.title"/></span><br/><br/>
+
 <form class="ss_style" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_ldap"/>
 		</portlet:actionURL>">
@@ -31,48 +33,52 @@ function <portlet:namespace/>setEnable() {
 </script>
 <input type="hidden" id="enabled" name="enabled" value="${ssLdapConfig.enabled}"/>
 
-<table class="ss_style" border ="1" cellspacing="0" cellpadding="3">
+<table class="ss_style"  border ="1" cellspacing="0" cellpadding="3">
   <tr>
-  <td align="center" class="contentbold">Session synchronization </td>
-  <td colspan="2" align="center" class="contentbold">Scheduled synchronization</td>
+  <td align="center" class="ss_bold"><ssf:nlt tag="ldap.session"/></td>
+  <td colspan="2" align="center" class="ss_bold"><ssf:nlt tag="ldap.schedule"/></td>
   </tr>
-  <tr><td class="content" valign="top"> 
-   	<table class="ss_style" border="0" cellpadding="0" cellspacing="2">
+  <tr><td  valign="top"> 
+   	<table class="ss_style"  border="0" cellpadding="0" cellspacing="2">
 	   <tr>
-	   <td class="content"><input type="checkbox" name="sessionSync" <c:if test="${ssLdapConfig.sessionSync}">checked</c:if>>
-	   <span class="content" nowrap="nowrap">User account synchronization</span></input></td>
+	   <td><input type="checkbox" name="sessionSync" <c:if test="${ssLdapConfig.sessionSync}">checked</c:if>>
+	   <span nowrap="nowrap"><ssf:nlt tag="ldap.session.sync"/></span></input></td>
 	   </tr><tr>
-	   <td class="content"><input type="checkbox" name="sessionRegister" <c:if test="${ssLdapConfig.sessionRegister}">checked</c:if>>
-	   <span class="content" nowrap="nowrap">Automatic registration of accounts</span></input></td>
+	   <td><input type="checkbox" name="sessionRegister" <c:if test="${ssLdapConfig.sessionRegister}">checked</c:if>>
+	   <span nowrap="nowrap"><ssf:nlt tag="ldap.session.register"/></span></input></td>
 	   </tr>
 	 </table>
-  </td><td class="content"  valign="top">
-  	 <table class="ss_style" border="0" cellpadding="0" cellspacing="2">
-	   <tr><td class="content"><input type="checkbox" name="userSync" <c:if test="${ssLdapConfig.userSync}">checked</c:if>>
-	   <span class="content" nowrap="nowrap">User account synchronization</span></input></td>
+  </td><td   valign="top">
+  	 <table class="ss_style"  border="0" cellpadding="0" cellspacing="2">
+	   <tr><td ><input type="checkbox" name="userSync" <c:if test="${ssLdapConfig.userSync}">checked</c:if>>
+	   <span  nowrap="nowrap"><ssf:nlt tag="ldap.schedule.user.sync"/></span></input></td>
 	   </tr><tr>
-	   <td class="content"><input type="checkbox" name="userRegister" <c:if test="${ssLdapConfig.userRegister}">checked</c:if>>
-	   <span class="content" nowrap="nowrap">Automatic registration of accounts</span></input></td>
+	   <td><input type="checkbox" name="userRegister" <c:if test="${ssLdapConfig.userRegister}">checked</c:if>>
+	   <span  nowrap="nowrap"><ssf:nlt tag="ldap.schedule.user.register"/></span></input></td>
 	   </tr><tr>
-	   <td class="content"><input type="checkbox" name="userDisable" <c:if test="${ssLdapConfig.userDisable}">checked</c:if>>
-	   <span class="content" nowrap="nowrap">Disable accounts not in LDAP</span></input></td>
+	   <td><input type="checkbox" name="userDisable" <c:if test="${ssLdapConfig.userDisable}">checked</c:if>>
+	   <span  nowrap="nowrap"><ssf:nlt tag="ldap.schedule.user.disable"/></span></input></td>
 	   </tr>
 	   <tr>
-	   <td class="content"><input type="checkbox" name="membershipSync" <c:if test="${ssLdapConfig.membershipSync}">checked</c:if>>
-	   <span class="content" nowrap="nowrap">Synchronization of group membership</span></input></td>
+	   <td><input type="checkbox" name="groupSync" <c:if test="${ssLdapConfig.groupSync}">checked</c:if>>
+	   <span  nowrap="nowrap"><ssf:nlt tag="ldap.schedule.group.sync"/></span></input></td>
 	   </tr><tr>
-	   <td class="content"><input type="checkbox" name="groupRegister" <c:if test="${ssLdapConfig.groupRegister}">checked</c:if>>
-	   <span class="content" nowrap="nowrap">Automatic registration of groups</span></input></td>
+	   <td><input type="checkbox" name="groupRegister" <c:if test="${ssLdapConfig.groupRegister}">checked</c:if>>
+	   <span  nowrap="nowrap"><ssf:nlt tag="ldap.schedule.group.register"/></span></input></td>
 	   </tr><tr>
-	   <td class="content"><input type="checkbox" name="groupDisable" <c:if test="${ssLdapConfig.groupDisable}">checked</c:if>>
-	   <span class="content" nowrap="nowrap">Disable groups not in LDAP</span></input></td>
+	   <td><input type="checkbox" name="groupDisable" <c:if test="${ssLdapConfig.groupDisable}">checked</c:if>>
+	   <span  nowrap="nowrap"><ssf:nlt tag="ldap.schedule.group.disable"/></span></input></td>
+	   <tr>
+	   <td><input type="checkbox" name="membershipSync" <c:if test="${ssLdapConfig.membershipSync}">checked</c:if>>
+	   <span  nowrap="nowrap"><ssf:nlt tag="ldap.schedule.membership.sync"/></span></input></td>
+	   </tr><tr>
 	   </tr>
      </table>
-  </td><td class="content"  valign="top">
+  </td><td valign="top">
   	 <table class="ss_style" border="0" cellpadding="0" cellspacing="2">
 	   <tr>
-	   <td class="content">	<input type="checkbox" class="content" id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssLdapConfig.enabled}">checked</c:if>>
-	   <span class="content">Disable schedule</span></input><br/>
+	   <td><input type="checkbox"  id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssLdapConfig.enabled}">checked</c:if>>
+	   <span wrap="nowrap"><ssf:nlt tag="ldap.schedule.disable"/></span></input><br/>
    <c:set var="schedule" value="${ssLdapConfig.schedule}"/>
    
 	<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
@@ -82,7 +88,7 @@ function <portlet:namespace/>setEnable() {
 </table>
 
 	<br/>
-	<input type="submit" name="okBtn" value="Ok">
-	<input type="submit" name="cancelBtn" value="Cancel">
+	<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+	<input type="submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 <form>
-
+</div>

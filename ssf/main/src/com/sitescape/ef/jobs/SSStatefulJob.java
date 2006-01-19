@@ -53,7 +53,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 		return description;
 	}
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
-		SessionUtil.sessionStartup();
+		setupSession();
     	coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
     	jobDataMap = context.getJobDetail().getJobDataMap();
 		context.setResult("Success");
@@ -98,7 +98,10 @@ public abstract class SSStatefulJob implements StatefulJob {
     		RequestContextHolder.clear();
     	}
 
-	}   
+	}  
+	protected void setupSession() {
+		SessionUtil.sessionStartup();		
+	}
 	/**
 	 * Job failed due to missing domain objects.  Return exception that will remove the
 	 * job triggers and the job if durablility=false;

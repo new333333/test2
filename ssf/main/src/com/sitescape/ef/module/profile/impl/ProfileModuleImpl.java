@@ -233,8 +233,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	return getUsers(binderId, DEFAULT_MAX_ENTRIES);
     }
     public Map getUsers(Long binderId, int maxEntries) {
-    	Document qTree = null;
-        return getUsers(binderId, maxEntries, qTree);
+        return getUsers(binderId, maxEntries, null);
         
    }
  

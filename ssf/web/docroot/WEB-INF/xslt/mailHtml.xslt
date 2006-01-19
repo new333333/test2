@@ -6,22 +6,22 @@
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:output method="html" encoding="utf-8" indent="yes"/>
 
-<xsl:param name="Lang" select="'en-US'"/>
+<xsl:param name="Lang" select="'en_US'"/>
 <xsl:variable name="StringFile" select="document('strings.xml')"/>
-<xsl:variable name="PrimaryLang" select="substring-before($Lang,'-')"/>
+<xsl:variable name="PrimaryLang" select="substring-before($Lang,'_')"/>
 
 <xsl:template name="getString">
   <xsl:param name="stringName"/>
-  <xsl:variable name="str" select="$StringFile/strings/str[@name=$stringName]"/>
+  <xsl:variable name="str" select="$StringFile/strings/str[@name=$stringName]"/>     
   <xsl:choose>
-    <xsl:when test="$str[lang($Lang)]">
-      <xsl:value-of select="$str[lang($Lang)][1]"/>
+    <xsl:when test="$str/lang[@name=$Lang]">
+      <xsl:value-of select="$str/lang[@name=$Lang][1]"/>
     </xsl:when>
-    <xsl:when test="$str[lang($PrimaryLang)]">
-      <xsl:value-of select="$str[lang($PrimaryLang)][1]"/>
+    <xsl:when test="$str/lang[@name=$PrimaryLang]">
+      <xsl:value-of select="$str/lang[@name=$PrimaryLang][1]"/>
     </xsl:when>
     <xsl:when test="$str">
-      <xsl:value-of select="$str[1]"/>
+      <xsl:value-of select="$str/lang[1]"/>
     </xsl:when>
     <xsl:otherwise>
       <xsl:message terminate="no">
@@ -35,7 +35,6 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <xsl:template match="/">
 <doc>
-
  <xsl:apply-templates select="/mail"/>
 </doc>
 </xsl:template>
@@ -60,6 +59,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:call-template name="getString">
   <xsl:with-param name="stringName" select="'TOC'"/>
 </xsl:call-template>
+
 <br/></span>
 
 <xsl:for-each select="folder">

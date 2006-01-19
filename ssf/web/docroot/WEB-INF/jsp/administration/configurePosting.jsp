@@ -195,8 +195,8 @@ var <portlet:namespace/>_folderList = new Array();
 <br/>
 <div class="ss_divider"></div>
 <br/>
-<input class="ss_submit" type="submit" name="okBtn" value="Ok">
-<input class="ss_submit" type="submit" name="cancelBtn" value="Cancel">
+	<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+	<input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </form>
 
 </c:otherwise>
