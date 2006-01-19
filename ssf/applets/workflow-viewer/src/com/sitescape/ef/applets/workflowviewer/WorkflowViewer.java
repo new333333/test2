@@ -397,7 +397,7 @@ public class WorkflowViewer extends JApplet implements ActionListener {
             Element state = (Element) itStates.next();
             //Build the transition edges for this state
             Element stateName = (Element) state.selectSingleNode("properties/property[@name='name']");
-            System.out.println("Creating edges, name: " + stateName;
+            System.out.println("Creating edges, name: " + stateName);
             if (stateName != null) {
             	String name = stateName.attributeValue("value", "");
             	//Get the list of transitions out of this state
@@ -418,7 +418,7 @@ public class WorkflowViewer extends JApplet implements ActionListener {
             	while (itTransitions.hasNext()) {
             		Element thread = (Element) itTransitions.next();
             		String threadName = thread.attributeValue("value", "");
-                    System.out.println("startParallelThread name: " + threadName;
+                    System.out.println("startParallelThread name: " + threadName);
             		if (!threadName.equals("")) {
             			Element pThread = (Element) workflowRoot.selectSingleNode("//item[@name='parallelThread']/properties/property[@name='name' and @value='"+threadName+"']");
             			if (pThread != null) {
