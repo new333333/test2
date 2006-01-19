@@ -87,26 +87,6 @@ public class ViewEntryController extends SAbstractForumController {
 		return new ModelAndView(viewPath, model);
 	} 
 
-	protected Entry setSeen(Map model, Long folderId) {
-		SeenMap seen = (SeenMap)model.get(WebKeys.SEEN_MAP);
-		FolderEntry entry = (FolderEntry)model.get(WebKeys.ENTRY);
-		//only start transaction if necessary
-		List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
-		if (replies != null)  {
-			replies.add(entry);
-			for (int i=0; i<replies.size(); i++) {
-				Entry reply = (Entry)replies.get(i);
-				//if any reply is not seen, add it to list - try to avoid update transaction
-				if (!seen.checkIfSeen(reply)) {
-					getProfileModule().updateUserSeenEntry(null, replies);
-					break;
-				}
-			}
-		} else if (!seen.checkIfSeen(entry)) {
-			getProfileModule().updateUserSeenEntry(null, entry);
-		}
-		return entry;
-	}
 	protected Toolbar buildEntryToolbar(RenderResponse response, Map model, String folderId, String entryId) {
 		Element entryViewElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
 		Document entryView = entryViewElement.getDocument();
@@ -188,9 +168,9 @@ public class ViewEntryController extends SAbstractForumController {
 		} else {
 			folder = getFolderModule().getFolder(folderId);
 		}
-		
+		SeenMap seen = getProfileModule().getUserSeenMap(null);
 		model.put(WebKeys.ENTRY_ID, entryId);
-		model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(null));
+		model.put(WebKeys.SEEN_MAP, seen);
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.FOLDER, folder);
@@ -205,6 +185,21 @@ public class ViewEntryController extends SAbstractForumController {
 		}
 		if (!entryId.equals("")) {
 			model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, buildEntryToolbar(response, model, folderId.toString(), entryId).getToolbar());
+		}
+		//only start transaction if necessary
+		List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
+		if (replies != null)  {
+			replies.add(entry);
+			for (int i=0; i<replies.size(); i++) {
+				Entry reply = (Entry)replies.get(i);
+				//if any reply is not seen, add it to list - try to avoid update transaction
+				if (!seen.checkIfSeen(reply)) {
+					getProfileModule().updateUserSeenEntry(null, replies);
+					break;
+				}
+			}
+		} else if (!seen.checkIfSeen(entry)) {
+			getProfileModule().updateUserSeenEntry(null, entry);
 		}
 		return model;
 	}

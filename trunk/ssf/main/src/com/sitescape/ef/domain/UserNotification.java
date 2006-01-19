@@ -23,6 +23,8 @@ public class UserNotification extends Notification {
         this.style = style;
     }
     /**
+     * This allows users to explicity turn off notification, which would be needed
+     * if they are enabled by an admin.
      * @hibernate.property
      * @return
      */

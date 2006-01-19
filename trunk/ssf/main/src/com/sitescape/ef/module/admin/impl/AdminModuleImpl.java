@@ -102,7 +102,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
    			notifyUsers.add(new Notification(binder, p));   			
    		}
 
-   		current.setDistribution(notifyUsers);
+   		current.setDefaultDistribution(notifyUsers);
     }
  
  

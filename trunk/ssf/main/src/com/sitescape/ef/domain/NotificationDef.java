@@ -3,6 +3,7 @@ package com.sitescape.ef.domain;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.StringUtil;
@@ -55,14 +56,30 @@ public class NotificationDef  {
     public void setDistribution(Collection newDistribution) {
     	distribution = CollectionUtil.mergeAsSet(getDistribution(), newDistribution);
      }
+    /**
+     * Return list of Notifications excluding UserNotifications
+     * 
+     */ 
     public List getDefaultDistribution() {
     	List dList = new ArrayList();
     	List cList = getDistribution();
     	for (int i=0; i<cList.size(); ++i) {
     		Notification n = (Notification)cList.get(i);
-    		if (n.getType().equals("N")) dList.add(n);
+    		if (! (n instanceof UserNotification)) dList.add(n);
     	}
     	return dList;
+    }
+    /**
+     * Set the Notifications.  Leave UserNotifications as is
+     * @param newDefault
+     */
+    public void setDefaultDistribution(Collection newDefault) {
+   		if (newDefault == null) newDefault = new ArrayList();
+		List oldDefault = getDefaultDistribution();
+		Set newM = CollectionUtil.differences(newDefault, oldDefault);
+		Set remM = CollectionUtil.differences(oldDefault, newDefault);
+		distribution.addAll(newM);
+		distribution.removeAll(remM);
     }
 
     /**

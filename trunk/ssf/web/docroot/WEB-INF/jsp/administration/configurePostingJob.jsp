@@ -93,7 +93,7 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
 <tr><td> 
 <input type="checkbox" id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssScheduleInfo.enabled}">checked</c:if>/>
-Disable all incoming e-mail<br/>
+<ssf:nlt tag="incoming.disable.all"/><br/>
 </td></tr></table>
 
 <div class="ss_divider"></div>

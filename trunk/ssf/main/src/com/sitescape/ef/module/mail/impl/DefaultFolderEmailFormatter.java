@@ -4,10 +4,12 @@ package com.sitescape.ef.module.mail.impl;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.TreeSet;
 import java.util.ArrayList;
 import java.io.File;
@@ -43,9 +45,14 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.AclControlledEntry;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.Notification;
+import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.UserNotification;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.module.mail.FolderEmailFormatter;
 import com.sitescape.ef.security.AccessControlManager;
@@ -64,14 +71,14 @@ import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.mail.MailModule;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.security.acl.AccessType;
 /**
  * @author Janet McCann
  *
  */
-public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
+public class DefaultFolderEmailFormatter extends CommonDependencyInjection implements FolderEmailFormatter {
 	private Log logger = LogFactory.getLog(getClass());
-    protected AccessControlManager accessControlManager;
-    protected AclManager aclManager;
     private FolderModule folderModule;
     protected DefinitionModule definitionModule;
     protected MailModule mailModule;
@@ -80,13 +87,6 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 	protected Map transformers = new HashMap();
     public DefaultFolderEmailFormatter () {
 	}
-    public void setAccessControlManager(
-            AccessControlManager accessControlManager) {
-        this.accessControlManager = accessControlManager;
-    }
-    public void setAclManager(AclManager aclManager) {
-        this.aclManager = aclManager;
-    }
     public void setDefinitionModule(DefinitionModule definitionModule) {
         this.definitionModule = definitionModule;
     }
@@ -99,10 +99,218 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 
 
 	/**
-	 * Only supports lookups from topFolder ie)per forum
+	 * Get updates to this folder and all its sub-folders
 	 */
-	public OrderBy getLookupOrder(Folder folder) {
-		return new OrderBy("HKey.sortKey");
+	public List getEntries(Folder folder, Date start, Date until) {
+ 		Folder top = folder.getTopFolder();
+		if (top == null) top = folder;
+		return getFolderDao().loadFolderTreeUpdates(top, start ,until, new OrderBy("HKey.sortKey"));
+ 		
+    }
+	/**
+	 * Determine which users have access to which entries.
+	 * Return a list of Object[].  Each Object[0] contains a list of entries,
+	 * Object[1] contains a map.  The map maps locales to a list of emailAddress of userse
+	 * using that locale that have access to the entries.
+	 * The list of entries will maintain the order used to do lookup.  This is important
+	 * when actually building the message	
+	 */
+	public List buildDigestDistributionList(Folder folder, Collection entries) {
+ 		NotificationDef nDef = folder.getNotificationDef();
+ 		List notifications = nDef.getDistribution(); 
+		String [] emailAddrs = nDef.getEmailAddress();
+		List result = new ArrayList();
+		//done if no-one is interested
+		if ((emailAddrs.length == 0) && (notifications.size() == 0)) return result;
+
+		//Users wanting digest style messages
+		List users = getDigestUsers(folder);
+		//check access to folder/entry and build lists of users to receive mail
+		List checkList = new ArrayList();
+		for (Iterator iter=users.iterator(); iter.hasNext();) {
+			User u = (User)iter.next();
+			if (!Validator.isNull(u.getEmailAddress())) {
+				AclChecker check = new AclChecker(u);
+				check.checkEntries(entries);
+				checkList.add(check);
+			}
+		}
+		//get a map containing a list of users mapped to a list of entries
+		while (!checkList.isEmpty()) {
+			Object [] lists = mapEntries(checkList);
+			result.add(lists);
+		}
+		if (emailAddrs.length != 0) {
+			Set emailSet = new HashSet();
+			//add email address listed 
+			for (int j=0; j<emailAddrs.length; ++j) {
+				if (!Validator.isNull(emailAddrs[j]))
+					emailSet.add(emailAddrs[j].trim());
+			}
+			
+			Locale l = Locale.getDefault();
+			//see if an entry already exists for the entire list
+			boolean done = false;
+			for (int i=0; i<result.size(); ++i) {
+				Object[] objs = (Object[])result.get(i);
+				List es = (List)objs[0];
+				//	if this is the full entry list
+				if (es.size() == entries.size()) {
+					Map lang = (Map)objs[1];
+					Set email = (Set)lang.get(l);
+					if (email == null) {
+						lang.put(l, emailSet);
+					} else {
+						email.addAll(emailSet);
+					}
+					done = true;
+					break;
+				}
+			}
+			if (!done) {
+				Map lang = new HashMap();
+				lang.put(l, emailSet);
+				result.add(new Object[] {entries, lang});
+			}
+		}
+		
+		return result;
+	}
+	/**
+	 * Determine which users have access to which entries.
+	 * Return a list of Object[].  Each Object[0] contains a list of entries,
+	 * Object[1] contains a map.  The map maps locales to a list of emailAddress of userse
+	 * using that locale that have access to the entries.
+	 * The list of entries will maintain the order used to do lookup.  This is important
+	 * when actually building the message	
+	 */
+	public List buildMessageDistributionList(Folder folder, Collection entries) {
+ 		NotificationDef nDef = folder.getNotificationDef();
+ 		List notifications = nDef.getDistribution(); 
+		//done if no-one is interested
+		List result = new ArrayList();
+		if (notifications.size() == 0) return result;
+
+		//Users wanting digest style messages
+		List users = getMessageUsers(folder);
+		//check access to folder/entry and build lists of users to receive mail
+		List checkList = new ArrayList();
+		for (Iterator iter=users.iterator(); iter.hasNext();) {
+			User u = (User)iter.next();
+			if (!Validator.isNull(u.getEmailAddress())) {
+				AclChecker check = new AclChecker(u);
+				check.checkEntries(entries);
+				checkList.add(check);
+			}
+		}
+		//get a map containing a list of users mapped to a list of entries
+		while (!checkList.isEmpty()) {
+			Object [] lists = mapEntries(checkList);
+			result.add(lists);
+		}
+		
+		return result;
+	}
+	/**
+	 * 
+	 * @param checkList
+	 * @return List of users, list of entries they all have access to
+	 */
+	private Object[] mapEntries(List checkList) {
+		
+		AclChecker check = (AclChecker)checkList.get(0);
+		checkList.remove(0);
+		Set email = new HashSet();
+		//separate into languages
+		email.add(check.getUser().getEmailAddress());
+		Map languageMap = new HashMap();
+		languageMap.put(check.getUser().getLocale(), email);
+		//make a copy so we can alter original
+		List toDo = new ArrayList(checkList);
+		//compare the list of entries each user has access to
+		for (int i=0; i<toDo.size(); ++i) {
+			AclChecker c = (AclChecker)toDo.get(i);
+			if (check.compareEntries(c)) {
+				email = (Set)languageMap.get(c.getUser().getLocale());
+				if (email != null) {
+					email.add(c.getUser().getEmailAddress().trim());
+				} else {
+					email = new HashSet();
+					email.add(c.getUser().getEmailAddress().trim());
+					languageMap.put(c.getUser().getLocale(), email);
+				}
+				checkList.remove(c);
+			}
+		}
+		
+		return new Object[] {check.getEntries(), languageMap};
+		
+	}
+	public String getSubject(Folder folder, Notify notify) {
+		String subject = folder.getNotificationDef().getSubject();
+		if (Validator.isNull(subject))
+			subject = mailModule.getMailProperty(folder.getZoneName(), MailModule.NOTIFY_SUBJECT);
+		//if not specified, us a localized default
+		if (Validator.isNull(subject))
+			return NLT.get("notify.subject", notify.getLocale()) + " " + folder.toString();
+		return subject;
+	}
+	
+	public String getFrom(Folder folder, Notify notify) {
+		String from = folder.getNotificationDef().getFromAddress();
+		if (Validator.isNull(from))
+			from = mailModule.getMailProperty(folder.getZoneName(), MailModule.NOTIFY_FROM);
+		return from;
+	}
+
+	private List getDigestUsers(Folder folder) {
+		List notifications = folder.getNotificationDef().getDistribution();
+		Set userIds = new HashSet();
+		//Build id set to build user list
+		//get all users setup by admin
+		for (int i=0; i<notifications.size();++i) {
+			Notification notify = (Notification)notifications.get(i);
+			if (!(notify instanceof UserNotification))
+				userIds.add(notify.getSendTo().getId());
+		}
+		//turn list of users and groups into list of only users
+		userIds = coreDao.explodeGroups(userIds);
+		
+		//now alter list to handle users that made request themselves
+		for (int i=0; i<notifications.size();++i) {
+			Notification notify = (Notification)notifications.get(i);
+			if ((notify instanceof UserNotification)) {
+				UserNotification userNotify = (UserNotification)notify;
+				if (userNotify.isDisabled()) {
+					userIds.remove(userNotify.getSendTo().getId());
+				} else if (userNotify.getStyle() == UserNotification.DIGEST_STYLE_EMAIL_NOTIFICATION) {
+					userIds.add(userNotify.getSendTo().getId());
+				} else {
+					userIds.remove(userNotify.getSendTo().getId());
+				}
+			}
+		}
+		
+		
+ 		return coreDao.loadEnabledUsers(userIds, folder.getZoneName());
+ 		
+	}
+	private List getMessageUsers(Folder folder) {
+		List notifications = folder.getNotificationDef().getDistribution();
+		Set userIds = new HashSet();
+		//Build id set to build user list
+		//get all users setup by admin
+		for (int i=0; i<notifications.size();++i) {
+			Notification notify = (Notification)notifications.get(i);
+			if ((notify instanceof UserNotification)) {
+				UserNotification userNotify = (UserNotification)notify;
+				if (!userNotify.isDisabled() && (userNotify.getStyle() == UserNotification.MESSAGE_STYLE_EMAIL_NOTIFICATION)) {
+					userIds.add(userNotify.getSendTo().getId());
+				}
+			}
+		}
+		
+ 		return coreDao.loadEnabledUsers(userIds, folder.getZoneName());
 	}
 	private int checkDate(HistoryStamp dt1, Date dt2) {
 		if (dt1 == null) return -1;
@@ -235,30 +443,6 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML, notify.getLocale()));
 		
 		return result;
-	}
-	public Object[] validateIdList(Collection entries, Collection userIds) {
-	   	Object[] result = new Object[1];
-    	Object[] row = new Object[2];
-    	result[0] = row;
-    	row[0] = entries;
-    	row[1] = userIds;
-    	return result;
-	}
-	public String getSubject(Folder folder, Notify notify) {
-		String subject = folder.getNotificationDef().getSubject();
-		if (Validator.isNull(subject))
-			subject = mailModule.getMailProperty(folder.getZoneName(), MailModule.NOTIFY_SUBJECT);
-		//if not specified, us a localized default
-		if (Validator.isNull(subject))
-			return NLT.get("notify.subject", notify.getLocale()) + " " + folder.toString();
-		return subject;
-	}
-	
-	public String getFrom(Folder folder, Notify notify) {
-		String from = folder.getNotificationDef().getFromAddress();
-		if (Validator.isNull(from))
-			from = mailModule.getMailProperty(folder.getZoneName(), MailModule.NOTIFY_FROM);
-		return from;
 	}
 	public void postMessages(Folder folder, PostingDef pDef, Message[] msgs, Session session) {
 		String type;
@@ -452,5 +636,36 @@ public class DefaultFolderEmailFormatter implements FolderEmailFormatter {
 				throw new IOException("Could not transfer to file: " + ex.getMessage());
 			}
 		}
+	}
+	protected class AclChecker {
+		private User user;
+		//keep an ordered list for easier comparision
+		protected List entries = new ArrayList();
+		
+		protected AclChecker(User user) {
+			this.user = user;	
+		}
+		protected User getUser() {
+			return user;
+		}
+		protected void checkEntries(Collection entries) {
+			for (Iterator iter=entries.iterator(); iter.hasNext(); ) {
+				AclControlledEntry e = (AclControlledEntry)iter.next();
+				if (getAccessControlManager().testAcl(user, e.getParentBinder(), e, AccessType.READ))
+					this.entries.add(e);
+			}
+		}
+		protected List getEntries() {
+			return entries;
+		}
+		protected boolean compareEntries(AclChecker c) {
+			if (c.entries.size() != entries.size()) return false;
+			// address compare is okay, working from same input
+			for (int i=0; i<entries.size(); ++i) {
+				if (entries.get(i) != c.entries.get(i)) return false;
+			}
+			return true;
+		}
+		
 	}
 }

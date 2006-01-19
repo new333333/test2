@@ -46,7 +46,7 @@ public class Membership implements Serializable {
         if(this == obj)
             return true;
 
-        if ((obj == null) || (obj.getClass() != getClass()))
+        if ((obj == null) || !(obj instanceof Membership))
             return false;
             
         Membership mem = (Membership) obj;

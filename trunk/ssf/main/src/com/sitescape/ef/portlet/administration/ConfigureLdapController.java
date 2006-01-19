@@ -32,10 +32,11 @@ public class ConfigureLdapController extends  SAbstractController {
 			config.setUserRegister(PortletRequestUtils.getBooleanParameter(request, "userRegister", false));
 			config.setGroupRegister(PortletRequestUtils.getBooleanParameter(request, "groupRegister", false));
 			config.setUserSync(PortletRequestUtils.getBooleanParameter(request, "userSync", false));
+			config.setGroupSync(PortletRequestUtils.getBooleanParameter(request, "groupSync", false));
 			config.setMembershipSync(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false));
 			getLdapModule().setLdapConfig(config);
 			response.setRenderParameters(formData);
-		} else if (formData.containsKey("cancelBtn")) {
+		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, "");
 			response.setWindowState(WindowState.NORMAL);
 			response.setPortletMode(PortletMode.VIEW);

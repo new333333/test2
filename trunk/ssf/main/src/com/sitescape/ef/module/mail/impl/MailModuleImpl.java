@@ -30,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
-import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.domain.FileAttachment;
@@ -43,10 +42,8 @@ import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.UserNotification;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.EmailAlias;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.mail.FolderEmailFormatter;
 import com.sitescape.ef.jobs.ScheduleInfo;
@@ -67,6 +64,14 @@ import org.springframework.jndi.JndiAccessor;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.util.SZoneConfig;
 /**
+ * The public methods exposed by this implementation are not transaction 
+ * demarcated. If transactions are needed, the FolderEmailProcessors will be 
+ * responsible.
+ * Of course, this finer granularity transactional control will be of no effect
+ * if the caller of this service was already transactional (i.e., it controls
+ * transaction boundary that is more coarse). Whenever possible, this practise 
+ * is discouraged for obvious performance/scalability reasons.  
+ *   
  * @author Janet McCann
  *
  */
@@ -193,7 +198,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		return result;
 	}
 	/**
-	 * Read mail from all incomming mail servers.
+	 * Read mail from all incoming mail servers.
 	 *
 	 */
 	public void receivePostings(ScheduleInfo config) {
@@ -251,53 +256,41 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}
 		
 	}
-
+	/**
+	 * Send email notifications for recent changes
+	 */
     public Date sendNotifications(Long folderId, Date start) {
         String zoneName = RequestContextHolder.getRequestContext().getZoneName();
  		Folder folder = (Folder)coreDao.loadBinder(folderId, zoneName); 
 		Date until = new Date();
-		//get folder specific helper to build messages
+		//get folder specific helper to build message
   		FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
-		NotificationDef nDef = folder.getNotificationDef();
-		Folder top = folder.getTopFolder();
-		if (top == null) top = folder;
-		List entries = folderDao.loadFolderTreeUpdates(top, start ,until, processor.getLookupOrder(folder));
+  		List entries = processor.getEntries(folder, start, until);
  		if (entries.isEmpty()) {
 			return until;
 		}
-		
-		List notifications = nDef.getDistribution(); 
-		String [] us = nDef.getEmailAddress();
-		if ((us.length == 0) && (notifications.size() == 0)) return until;
-		//All users
-		Set userIds = new TreeSet();
+ 		
+		List digestResults = processor.buildDigestDistributionList(folder, entries);
 		// Users wanting individual, message style email
-		Set indivUserIds = new TreeSet(); 
-		//check access to folder and build lists of users to recieve mail
-		buildToLists(folder, userIds, indivUserIds);
-		//TODO: need to further seperate list for languages
-		//TODO: check read access - remove users who don't have acess
-		//TODO: need to check access for each user against each entry
-		//expect results will maintain order used to do lookup
-		Object[] results = processor.validateIdList(entries, userIds);
+		List messageResults = processor.buildMessageDistributionList(folder, entries);
+		
 		JavaMailSender mailSender = getMailSender(folder);
 		MimeHelper mHelper = new MimeHelper(processor, folder, start);
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
-		mHelper.setAddrs(us);
 
-		for (int i=0; i<results.length; ++i) {
-			Object row[] = (Object [])results[i];
-			//Eventually need to remove individual users from user list and make
-			//2 calls - one for digest, one for full
+		for (int i=0; i<digestResults.size(); ++i) {
+			Object row[] = (Object [])digestResults.get(i);
 			
 			//Use spring callback to wrap exceptions into something more useful than javas 
 			try {
 				mHelper.setEntries((Collection)row[0]);
-				mHelper.setToIds((Collection)row[1]);
 				mHelper.setType(Notify.SUMMARY);
-				mailSender.send(mHelper);
-//				mHelper.setType(Notify.FULL);
-//				mailSender.send(mHelper);
+				for (Iterator iter=((Map)row[1]).entrySet().iterator(); iter.hasNext();) {
+					Map.Entry e = (Map.Entry)iter.next();
+					mHelper.setLocale((Locale)e.getKey());
+					mHelper.setToAddrs((Set)e.getValue());
+					mailSender.send(mHelper);
+				}
 			} catch (MailSendException sx) {
 	    		logger.error("Error sending mail:" + sx.getMessage());
 		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
@@ -307,6 +300,27 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	    	} 
 		}
 		
+		for (int i=0; i<messageResults.size(); ++i) {
+			Object row[] = (Object [])messageResults.get(i);
+			
+			//Use spring callback to wrap exceptions into something more useful than javas 
+			try {
+				mHelper.setEntries((Collection)row[0]);
+				mHelper.setType(Notify.FULL);
+				for (Iterator iter=((Map)row[1]).entrySet().iterator(); iter.hasNext();) {
+					Map.Entry e = (Map.Entry)iter.next();
+					mHelper.setLocale((Locale)e.getKey());
+					mHelper.setToAddrs((Set)e.getValue());
+					mailSender.send(mHelper);
+				}
+			} catch (MailSendException sx) {
+	    		logger.error("Error sending mail:" + sx.getMessage());
+		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
+		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
+ 	    	} catch (Exception ex) {
+	       		logger.error(ex.getMessage());
+	    	} 
+		}
 		return until;
 	}
     public boolean sendMail(String mailSenderName, java.io.InputStream input) {
@@ -365,73 +379,30 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     	} 
 
 	}
-    /*
-     * Parse the distribution list.  Explode all groups in the list to
-     * their user member ids.  Keep list of users requesting individual style
-     * email.  
-     * 
-     */
-	private void buildToLists(Folder folder, Set userIds, Set indivUserIds) {
-		List notifications = folder.getNotificationDef().getDistribution();
-		//Build id set to build user list
-		for (int i=0; i<notifications.size();++i) {
-			Notification notify = (Notification)notifications.get(i);
-			if (!(notify instanceof UserNotification))
-				userIds.add(notify.getSendTo().getId());
-		}
-		
-        //turn list of users and groups into list of only users
-		Set newIds = coreDao.explodeGroups(userIds);
-		userIds.clear();
-		userIds.addAll(newIds);
-		for (int i=0; i<notifications.size();++i) {
-			Notification notify = (Notification)notifications.get(i);			
-			if (notify instanceof UserNotification) {
-				UserNotification userNotify = (UserNotification)notify;
-				if (userNotify.isDisabled()) {
-					userIds.remove(userNotify.getSendTo().getId());
-				} else if (userNotify.getStyle() == UserNotification.DIGEST_STYLE_EMAIL_NOTIFICATION) {
-					userIds.add(userNotify.getSendTo().getId());
-				} else { //may have to check if this option is enabled zone wide?
-					indivUserIds.add(userNotify.getSendTo().getId());
-					//add user to main list for access checks. - remove later
-					userIds.add(userNotify.getSendTo().getId());
-				}
-			}
-		}		
-		//remove disabled users
-		List users = coreDao.loadEnabledUsers(userIds, folder.getZoneName());
-		userIds.clear();
-		for (int i=0;i<users.size(); ++i) {
-			userIds.add(((User)users.get(i)).getId());
-		}
-		indivUserIds.retainAll(userIds);
-	}
-		
-	private class MimeHelper implements MimeMessagePreparator {
+ 	private class MimeHelper implements MimeMessagePreparator {
 		FolderEmailFormatter processor;
 		Folder folder;
-		Collection toIds;
+		Collection toAddrs;
 		Collection entries;
-		String[] addrs;
 		MimeMessage message;
 		String messageType;
 		Date startDate;
 		String defaultFrom;
+		Locale locale;
 		
 		private MimeHelper(FolderEmailFormatter processor, Folder folder, Date startDate) {
 			this.processor = processor;
 			this.folder = folder;
 			this.startDate = startDate;			
 		}
-		protected void setToIds(Collection toIds) {
-			this.toIds = toIds;			
+		protected void setToAddrs(Collection toAddrs) {
+			this.toAddrs = toAddrs;			
 		}
 		protected void setEntries(Collection entries) {
 			this.entries = entries;
 		}
-		protected void setAddrs(String[] addrs) {
-			this.addrs = addrs;
+		protected void setLocale(Locale locale) {
+			this.locale = locale;
 		}
 		protected void setType(String type) {
 			messageType = type;
@@ -444,50 +415,28 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}
 		public void prepare(MimeMessage mimeMessage) throws MessagingException {
 			//make sure nothing saved yet
-			Locale locale;
 			Notify notify = new Notify();
 			notify.setType(messageType);
 			notify.setStartDate(startDate);
+			notify.setLocale(locale);
+			notify.setDateFormat(DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, locale));
 			message = null;
-			String zoneName = folder.getZoneName();
 			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-			if ((toIds != null) && !toIds.isEmpty()) {
-				User user = coreDao.loadUser((Long)toIds.iterator().next(), zoneName);
-				locale = user.getLocale();
-				notify.setLocale(locale);
-				notify.setDateFormat(DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, locale));
-				helper.setSubject(processor.getSubject(folder, notify));
-				for (Iterator iter=toIds.iterator();iter.hasNext();) {
-					user = coreDao.loadUser((Long)iter.next(), zoneName);
-					String email = user.getEmailAddress();
-					try	{
-						if (!Validator.isNull(email)) helper.addTo(email);
-					} catch (AddressException ae) {
-						logger.error("Skipping email notifications for " + user.getTitle() + " Bad email address");
-					}
+			helper.setSubject(processor.getSubject(folder, notify));
+			for (Iterator iter=toAddrs.iterator();iter.hasNext();) {
+				String email = (String)iter.next();
+				try	{
+					if (!Validator.isNull(email)) helper.addTo(email);
+				} catch (AddressException ae) {
+					logger.error("Skipping email notifications for " + email + " Bad email address");
 				}
-				
-			} else {
-				locale = Locale.getDefault();
-				notify.setLocale(locale);
-				notify.setDateFormat(DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, locale));
-				helper.setSubject(processor.getSubject(folder, notify));				
 			}
 			String from = processor.getFrom(folder, notify);
 			if (Validator.isNull(from)) {
 				from = defaultFrom;
 			}
 			helper.setFrom(from);
-			if (addrs != null) { 
-				for (int i=0; i<addrs.length; ++i) {
-					String email = addrs[i];
-					try {
-						if (!Validator.isNull(email)) helper.addTo(email);
-					} catch (AddressException ae) {
-						logger.error("Skipping email notifications for " + email + " Bad email address");
-					}
-				}
-			}
+
 			mimeMessage.addHeader("Content-Transfer-Encoding", "8bit");
 			Map result = processor.buildNotificationMessage(folder, entries, notify);
 			helper.setText((String)result.get(FolderEmailFormatter.PLAIN), (String)result.get(FolderEmailFormatter.HTML));

@@ -21,50 +21,63 @@
    <table class="ss_style" border="0" cellpadding="0" cellspacing="2">
    <tr>
    <td >
-   
     <input type="radio" name="minuteType" id="minuteType" value="repeat" <c:if test="${schedule.repeatMinutes}">checked</c:if>/>
-   <span>Repeat every</span>
+   <ssf:nlt tag="schedule.repeat"/>
    <input type="text" name="minutesRepeat" id="minutesRepeat" size="2" value="${schedule.minutesRepeat}"/>
-  	<span>&nbsp;minutes</span>
+  	&nbsp;<ssf:nlt tag="schedule.minutes"/>
   	<br/>
     <input type="radio" name="minuteType" id="minuteType" value="absolute" <c:if test="${!schedule.repeatMinutes}">checked</c:if>/>
-    <span>At minutes(s)</span>
+    <ssf:nlt tag="schedule.atminutes"/>
    <input type="text" name="schedMinutes" id="schedMinutes" size="3" <c:if test="${!schedule.repeatMinutes}">value="${schedule.minutes}"</c:if>/>
    <br/>
 <hr shade=noshade size=1/>
-    <input type="radio" name="hourType" id="hourType" value="repeat" <c:if test="${schedule.repeatHours}">checked</c:if>/>
-    <span>Repeat every</span> 
-  <input type="text" name="hoursRepeat" id="hoursRepeat" size="2" value="${schedule.hoursRepeat}"/>
-  <span class="content">&nbsp;hours</span>
+    <input type="radio"  name="hourType" id="hourType" value="repeat" <c:if test="${schedule.repeatHours}">checked</c:if>/>
+    <ssf:nlt tag="schedule.repeat"/> 
+  <input type="text"  name="hoursRepeat" id="hoursRepeat" size="2" value="${schedule.hoursRepeat}"/>
+  &nbsp;<ssf:nlt tag="schedule.hours"/>
   <br/>
-   <input type="radio" name="hourType" id="hourType" value="absolute"   <c:if test="${!schedule.repeatHours}">checked</c:if>/>
-   <span>At hour(s)</span>
-   <input type="text" name="schedHours" id="schedHours" size="5" <c:if test="${!schedule.repeatHours}">value="${schedule.hours}"</c:if>/>
+   <input type="radio"  name="hourType" id="hourType" value="absolute"   <c:if test="${!schedule.repeatHours}">checked</c:if>/>
+   <ssf:nlt tag="schedule.athours"/>
+   <input type="text"  name="schedHours" id="schedHours" size="5" <c:if test="${!schedule.repeatHours}">value="${schedule.hours}"</c:if>/>
    <br/>
 <hr shade=noshade size=1/>
-   <input type="radio" name="schedType" id="schedType" value="daily" <c:if test="${schedule.daily}">checked</c:if>/> 
-   <span>Every day</span>
+   <input type="radio"  name="schedType" id="schedType" value="daily" <c:if test="${schedule.daily}">checked</c:if>/> 
+   <ssf:nlt tag="schedule.everyday"/>
    <br/>
-   <input type="radio" name="schedType" id="schedType" value="weekly" <c:if test="${!schedule.daily}">checked</c:if>/> 
-   <span>Weekly (on the days selected below)</span>
+   <input type="radio"  name="schedType" id="schedType" value="weekly" <c:if test="${!schedule.daily}">checked</c:if>/> 
+   <ssf:nlt tag="schedule.weekly"/>
    <br/>
    <table class="ss_style" border="0" cellpadding="0" cellspacing="2">
-	  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-	  <td>
-	<input type="checkbox" name="onday_sun" id="onday_sun"  <c:if test="${schedule.onSunday}">checked</c:if>/>
-	<span>Sun&nbsp;&nbsp;</span>
-	<input type="checkbox" name="onday_mon" id="onday_mon" <c:if test="${schedule.onMonday}">checked</c:if>/>
-	<span>Mon&nbsp;&nbsp;</span>
-	<input type="checkbox" name="onday_tue" id="onday_tue" <c:if test="${schedule.onTuesday}">checked</c:if>/>
-	<span>Tue&nbsp;&nbsp;</span>
-	<input type="checkbox" name="onday_wed" id="onday_wed" <c:if test="${schedule.onWednesday}">checked</c:if>/>
-	<span>Wed&nbsp;&nbsp;</span>
-	<input type="checkbox" name="onday_thu" id="onday_thu" <c:if test="${schedule.onThursday}">checked</c:if>/>
-	<span>Thu&nbsp;&nbsp;</span>
-	<input type="checkbox" name="onday_fri" id="onday_fri" <c:if test="${schedule.onFriday}">checked</c:if>/>
-	<span>Fri&nbsp;&nbsp;</span>
-	<input type="checkbox" name="onday_sat" id="onday_sat" <c:if test="${schedule.onSaturday}">checked</c:if>/>
-	<span">Sat</span></td>
+	  <tr><td >&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	  <td >
+	<td ><label>
+	<input type="checkbox"  name="onday_sun" id="onday_sun"  <c:if test="${schedule.onSunday}">checked</c:if>/><br/>
+	<ssf:nlt tag="calendar.day.abbrevs.su"/>
+	</label></td>
+	<td ><label>
+	<input type="checkbox"  name="onday_mon" id="onday_mon" <c:if test="${schedule.onMonday}">checked</c:if>/><br/>
+	<ssf:nlt tag="calendar.day.abbrevs.mo"/>
+	</label></td>
+	<td ><label>
+	<input type="checkbox"  name="onday_tue" id="onday_tue" <c:if test="${schedule.onTuesday}">checked</c:if>/><br/>
+	<ssf:nlt tag="calendar.day.abbrevs.tu"/>
+	</label></td>
+	<td ><label>
+	<input type="checkbox"  name="onday_wed" id="onday_wed" <c:if test="${schedule.onWednesday}">checked</c:if>/><br/>
+	<ssf:nlt tag="calendar.day.abbrevs.we"/>
+	</label></td>
+	<td ><label>
+	<input type="checkbox"  name="onday_thu" id="onday_thu" <c:if test="${schedule.onThursday}">checked</c:if>/><br/>
+	<ssf:nlt tag="calendar.day.abbrevs.th"/>
+	</label></td>
+	<td ><label>
+	<input type="checkbox"  name="onday_fri" id="onday_fri" <c:if test="${schedule.onFriday}">checked</c:if>/><br/>
+	<ssf:nlt tag="calendar.day.abbrevs.fr"/>
+	</label></td>
+	<td ><label>
+	<input type="checkbox"  name="onday_sat" id="onday_sat" <c:if test="${schedule.onSaturday}">checked</c:if>/><br/>
+	<ssf:nlt tag="calendar.day.abbrevs.sa"/>
+	</label></td>
 	
 	</tr>
 	</table></td></tr>

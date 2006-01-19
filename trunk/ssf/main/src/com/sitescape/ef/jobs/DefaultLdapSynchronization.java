@@ -1,22 +1,17 @@
 
 package com.sitescape.ef.jobs;
-import java.util.Date;
 import java.util.TimeZone;
 
-import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.Scheduler;
 
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Workspace;
 import javax.naming.NamingException;
 
-import com.sitescape.ef.jobs.DefaultEmailNotification.MailJobDescription;
-import com.sitescape.ef.jobs.SSStatefulJob.JobDescription;
 import com.sitescape.ef.module.ldap.LdapModule;
-import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.util.SessionUtil;
 import com.sitescape.ef.util.SpringContextUtil;
+
+import com.sitescape.ef.util.DirtyInterceptor;
 /**
  * @author Janet McCann
  *
@@ -34,6 +29,11 @@ public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSyn
 		} catch (NamingException ne) {
 			throw new JobExecutionException(ne);			
 		}
+	}
+	protected void setupSession() {
+		//provide an entity interceptor to index only entries that are modified
+		SessionUtil.sessionStartup(new DirtyInterceptor());
+
 	}
 	public ScheduleInfo getScheduleInfo(String zoneName) {
 		return getScheduleInfo(new LdapJobDescription(zoneName));
@@ -76,6 +76,7 @@ public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSyn
     	}
        	
 	}
+
 
 
 }

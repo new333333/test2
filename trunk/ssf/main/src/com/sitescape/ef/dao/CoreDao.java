@@ -31,6 +31,9 @@ public interface CoreDao {
 	 * @parm obj
 	 * @throws DataAccessException
 	 */
+	public void clear();
+	public boolean isDirty();
+	public void flush();
 	public void save(Object obj);
 	public void save(Collection objs);
 	public void saveNewSession(Object obj);

@@ -16,13 +16,13 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <div class="ss_style ss_portlet">
-<span class="ss_titlebold">Set the outgoing e-mail schedule</span><br/>
+<span class="ss_titlebold"><ssf:nlt tag="notify.title"/></span><br/>
 <br/>
 <c:choose>
 <c:when test="${!empty ssWsDomTree}">
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
-	<tr align="left"><td>Choose a folder</td></tr>
+	<tr align="left"><td><ssf:nlt tag="notify.choose"/></td></tr>
 	<tr>
 		<td>
 			<div>
@@ -49,52 +49,43 @@ function <portlet:namespace/>setEnable() {
 }
 </script>
 <input type="hidden" id="enabled" name="enabled" value="${ssScheduleInfo.enabled}"/>
-<span class="ss_bold">Folder: ${ssFolder.title}</span>
+<span class="ss_bold"><ssf:nlt tag="notify.folder.label"/> ${ssFolder.title}</span>
 <div class="ss_divider"></div>
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
 <tr><td> 
 <input type="checkbox" id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssScheduleInfo.enabled}">checked</c:if>/>
-Disable outgoing e-mail<br/>
+<ssf:nlt tag="notify.disable"/><br/>
 </td></tr></table>
 
 <div class="ss_divider"></div>
-<span class="ss_bold">Specify when e-mail notification is sent</span>
+<span class="ss_bold"><ssf:nlt tag="notify.schedule"/></span>
 
 <c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
 <div class="ss_divider"></div>
 
-<span class="ss_bold">Set the default distribution list</span>
+<span class="ss_bold"><ssf:nlt tag="notify.distributionlist"/></span>
 <br><br>
-<span class="ss_bold">Send to a group (or groups)</span>
+<span class="ss_bold"><ssf:nlt tag="notify.groups"/></span>
 <br /><select name="sendToGroups" id="sendToGroups" multiple size="6">
-<option value="" <c:if test="${empty ssSelectedGroups}">selected</c:if>>--none--</option>
+<option value="" <c:if test="${empty ssSelectedGroups}">selected</c:if>><ssf:nlt tag="selected.none"/></option>
 <c:forEach var="group" items="${ssGroups}">
 <c:set var="id" value="${group.id}"/>
 <option value="${group.id}" <c:if test="${ssSelectedGroups[id] == true}">selected</c:if>>${group.title} (${group.name})</option>
 </c:forEach>
 </select>
 <br><br>
-<c:choose>
-<c:when test="${empty ssUsers}" >
-<input type="submit" class="ss_submit" name="listUsers" value="Select from user list..."/>
-<input type="hidden" name="showUsers" id="showUsers" value="0"/>
-</c:when>
-<c:otherwise>
-<input type="hidden" name="showUsers" id="showUsers" value="1">
-<span class="ss_bold">Send to selected users</span><br />
+
+<span class="ss_bold"><ssf:nlt tag="notify.selected.users"/></span><br />
 <select name="sendToUsers" id="sendToUsers" multiple size="11">
-<option value="" <c:if test="${empty ssSelectedUsers}">selected</c:if>>--none--</option>
+<option value="" <c:if test="${empty ssSelectedUsers}">selected</c:if>><ssf:nlt tag="selected.none"/></option>
 <c:forEach var="user" items="${ssUsers}">
-<c:set var="id" value="${user.id}"/>
-<option value="${user.id}" <c:if test="${ssSelectedUsers[id] == true}">selected</c:if>>${user.title} (${user.name})</option>
+<c:set var="id" value="${user._docId}"/>
+<option value="${user._docId}" <c:if test="${ssSelectedUsers[id] == true}">selected</c:if>>${user._title} (${user._userName})</option>
 </c:forEach>
 </select>
-</c:otherwise>
-</c:choose>
 <br><br>
-<span class="ss_bold">
-Send to a list of e-mail addresses.</span><span> (Enter one e-mail address per line)
+<span class="ss_bold"><ssf:nlt tag="notify.addresses"/></span><span class="ss_fineprint"><ssf:nlt tag="notify.addresses.instructions"/>
 </span><br />
 
 <textarea name="emailAddress" rows=4 cols=50 >
@@ -104,8 +95,8 @@ Send to a list of e-mail addresses.</span><span> (Enter one e-mail address per l
 <br><br>
 <div class="ss_divider"></div>
 <br/>
-<input class="ss_submit" type="submit" name="okBtn" value="Ok">
-<input class="ss_submit" type="submit" name="cancelBtn" value="Cancel">
+	<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+	<input type="submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 </form>
 
 </c:otherwise>

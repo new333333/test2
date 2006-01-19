@@ -1,13 +1,32 @@
 <strings>
-   <str xml:lang="en" name="TOC">Table of contents</str>
-   <str xml:lang="en" name="forumLabel">Forum:</str>
-   <str xml:lang="en" name="ChangedOne">changed entry in </str>
-   <str xml:lang="en" name="ChangedMany">changed entries in </str>
-   <str xml:lang="en" name="fromLabel">From</str>
-   <str xml:lang="en" name="dateLabel">Date</str>
-   <str xml:lang="en" name="folderLabel">Folder</str>
-   <str xml:lang="en" name="newEntry">new</str>
-   <str xml:lang="en" name="modifiedEntry">modified</str>
-   <str xml:lang="en" name="workflowEntry">Workflow state modified</str>
+    <str name="TOC">
+	   	<lang name="en">Table of contents</lang>
+    </str>
+    <str name="forumLabel">
+	   	<lang name="en">Forum:</lang>
+   	</str>
+    <str name="ChangedOne">
+   		<lang name="en">changed entry in</lang>
+    </str>
+    <str name="ChangedMany">
+   		<lang name="en">changed entries in </lang>
+    </str>
+    <str name="fromLabel">
+   		<lang name="en">From</lang>
+    </str>
+    <str name="dateLabel">
+   		<lang name="en">Date</lang>
+    </str>
+    <str name="folderLabel">
+	   <lang name="en">Folder</lang>
+    </str>
+    <str name="newEntry">
+	   <lang name="en">new</lang></str>
+    <str name="modifiedEntry">
+	   <lang name="en">modified</lang>
+    </str>
+    <str name="workflowEntry">
+	   <lang name="en">Workflow state modified</lang>
+    </str>
 
 </strings>
