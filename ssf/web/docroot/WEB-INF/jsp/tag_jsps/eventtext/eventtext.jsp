@@ -1,5 +1,5 @@
 <%@ page import="com.sitescape.ef.domain.Event" %>
-<%@ page import="com.sitescape.util.cal.Duration" %>
+<%@ page import="com.sitescape.ef.util.NLT" %>
 <%@ page import="java.util.Calendar" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.text.SimpleDateFormat" %>
@@ -17,20 +17,20 @@
     // array of text strings for days of the week
     // these should be removed from this file (mhu)
     String days[] = new String[10];
-    days[Calendar.SUNDAY] = "<ssf:nlt tag="calendar.day.abbrevs.su" text="Sun"/>";
-    days[Calendar.MONDAY] = "<ssf:nlt tag="calendar.day.abbrevs.mo" text="Mon"/>";
-    days[Calendar.TUESDAY] = "<ssf:nlt tag="calendar.day.abbrevs.tu" text="Tue"/>";
-    days[Calendar.WEDNESDAY] = "<ssf:nlt tag="calendar.day.abbrevs.we" text="Wed"/>";
-    days[Calendar.THURSDAY] = "<ssf:nlt tag="calendar.day.abbrevs.th" text="Thu"/>";
-    days[Calendar.FRIDAY] = "<ssf:nlt tag="calendar.day.abbrevs.fr" text="Fri"/>";
-    days[Calendar.SATURDAY] = "<ssf:nlt tag="calendar.day.abbrevs.sa" text="Sat"/>";
+    days[Calendar.SUNDAY] = NLT.get("calendar.day.abbrevs.su");
+    days[Calendar.MONDAY] = NLT.get("calendar.day.abbrevs.mo");
+    days[Calendar.TUESDAY] = NLT.get("calendar.day.abbrevs.tu");
+    days[Calendar.WEDNESDAY] = NLT.get("calendar.day.abbrevs.we");
+    days[Calendar.THURSDAY] = NLT.get("calendar.day.abbrevs.th");
+    days[Calendar.FRIDAY] = NLT.get("calendar.day.abbrevs.fr");
+    days[Calendar.SATURDAY] = NLT.get("calendar.day.abbrevs.sa");
 
     String nums[] = new String[6];
-    nums[1] = "<ssf:nlt tag="calendar.first" text="first"/>";
-    nums[2] = "<ssf:nlt tag="calendar.second" text="second"/>";
-    nums[3] = "<ssf:nlt tag="calendar.third" text="third"/>";
-    nums[4] = "<ssf:nlt tag="calendar.fourth" text="fourth"/>";
-    nums[5] = "<ssf:nlt tag="calendar.last" text="last"/>";
+    nums[1] = NLT.get("calendar.first");
+    nums[2] = NLT.get("calendar.second");
+    nums[3] = NLT.get("calendar.third");
+    nums[4] = NLT.get("calendar.fourth");
+    nums[5] = NLT.get("calendar.last");
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy, hh:mm a");
     String startString = sdf.format(st.getTime());

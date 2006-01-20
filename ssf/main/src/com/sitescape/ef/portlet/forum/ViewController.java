@@ -102,7 +102,7 @@ public class ViewController  extends SAbstractForumController {
 		}
 		if (op.equals(WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE)) {
 			PortletSession ps = WebHelper.getRequiredPortletSession(request);
-			Date dt = DateHelper.getDateFromMap(formData, "ssCalNavBar", "goto");
+			Date dt = DateHelper.getDateFromMap(formData, "goto");
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, dt);
 		}
 
