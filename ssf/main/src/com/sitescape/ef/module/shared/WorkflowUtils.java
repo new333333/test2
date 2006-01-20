@@ -94,6 +94,7 @@ public class WorkflowUtils {
             		if (!parallelThreadName.equals("")) {
             			Element parallelThreadEle = (Element) wfRoot.selectSingleNode("//item[@name='parallelThread']/properties/property[@name='name' and @value='"+parallelThreadName+"']");
             			if (parallelThreadEle != null) {
+            				parallelThreadEle = parallelThreadEle.getParent().getParent();
             				Element startStateEle = (Element) parallelThreadEle.selectSingleNode("./properties/property[@name='startState']");
         					if (startStateEle != null && parallelThreadEle != null) {
         						String startStateValue = startStateEle.attributeValue("value", "");
