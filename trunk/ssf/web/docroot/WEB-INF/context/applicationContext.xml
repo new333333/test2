@@ -125,6 +125,7 @@
 			<list>
 				<ref bean="performanceMonitorInterceptor"/>
 				<ref bean="indexSynchronizationManagerInterceptor"/>
+				<ref bean="userReloadInterceptor"/>
 			</list>
 		</property>
 		<!-- Warning: When used with jta, specified isolation levels are ignored and ISOLATION_DEFAULT is used instead. -->
@@ -143,6 +144,10 @@
 		</property>
 	</bean>
 
+	<bean id="userReloadInterceptor" class="com.sitescape.ef.util.UserReloadInterceptor">
+		<property name="coreDao"><ref local="coreDao"/></property>
+	</bean>
+	
 	<bean id="modelProcessorManager" class="com.sitescape.ef.modelprocessor.ProcessorManager">
 		<property name="config">
 			<bean class="com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles">
