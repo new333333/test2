@@ -33,7 +33,7 @@ public class EventHelper {
             String id, Boolean hasDuration, Boolean hasRecurrence) { 
         // we make the id match what the event editor would do
         Event e = new Event();
-        String prefix = formName + "_" + id + "_";
+        String prefix = id + "_";
         if (hasDuration.booleanValue()) {
             // duration present means there is a start and end id
             String startId = "dp_" + id;

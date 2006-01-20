@@ -38,8 +38,8 @@ public class DateHelper {
     throws DatepickerException {
         Date d = new Date();
         // date fields don't have a sequence number; time fields do
-        String datePrefix = formName + "_" + id + "_";
-        String timePrefix = formName + "_" + id + "_" + sequenceNumber + "_";
+        String datePrefix = id + "_";
+        String timePrefix = id + "_" + sequenceNumber + "_";
         
         // check that the fields are there
         // date fields (select boxes) *must* be there

@@ -189,7 +189,7 @@ NOTES:
 // CONSTRUCTOR for the CalendarPopup Object
 function CalendarPopup() {
 	var c;
-	if (arguments.length>0) {
+	if (arguments.length>0 && arguments[0] != "") {
 		c = new PopupWindow(arguments[0]);
 		}
 	else {
@@ -371,8 +371,9 @@ function CP_showYearNavigationInput() { this.isShowYearNavigationInput = (argume
 
 // Hide a calendar object
 function CP_hideCalendar() {
-	if (arguments.length > 0) { window.popupWindowObjects[arguments[0]].hidePopup(); }
-	else { this.hidePopup(); }
+	if (arguments.length > 0) { 
+		if (window.popupWindowObjects[arguments[0]] && window.popupWindowObjects[arguments[0]].hidePopup) window.popupWindowObjects[arguments[0]].hidePopup(); 
+	} else { this.hidePopup(); }
 	}
 
 // Refresh the contents of the calendar display

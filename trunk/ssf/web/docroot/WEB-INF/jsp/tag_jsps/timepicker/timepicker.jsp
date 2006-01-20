@@ -7,7 +7,7 @@
 <jsp:useBean id="hour" type="Integer" scope="request" />
 <jsp:useBean id="minute" type="Integer" scope="request" />
 
-<c:set var="prefix" value="${formName}_${tpid}_${sequenceNumber}" />
+<c:set var="prefix" value="${tpid}_${sequenceNumber}" />
 
 <script language="Javascript" src="<html:rootPath />js/common/PopupWindow.js"></script>
 <script language="Javascript" src="<html:rootPath />js/common/AnchorPosition.js"></script>
@@ -106,8 +106,8 @@ function ${prefix}_popupTimepicker() {
 }
 
 function sethrOpener(hr, id, formName, sequenceNumber) {
-    var hourName = formName + "_" + id + "_" + sequenceNumber + "_hour";
-    var minuteName = formName + "_" + id + "_" + sequenceNumber + "_minute";
+    var hourName = id + "_" + sequenceNumber + "_hour";
+    var minuteName = id + "_" + sequenceNumber + "_minute";
     var valref;
     var timeIndex;
 
@@ -126,7 +126,7 @@ function sethrOpener(hr, id, formName, sequenceNumber) {
 }
 
 function setminOpener(min, id, formName, sequenceNumber) {
-    var minuteName = formName + "_" + id + "_" + sequenceNumber + "_minute";
+    var minuteName = id + "_" + sequenceNumber + "_minute";
     var valref;
     var timeIndex;
 
@@ -145,8 +145,8 @@ function setminOpener(min, id, formName, sequenceNumber) {
 function getTimeMilliseconds(formName, id) {
   var dt = new Date();
   dt.setTime(0);
-  var datePrefix = formName + "_" + id + "_"; 
-  var timePrefix = formName + "_" + id + "_" + "0_";
+  var datePrefix = id + "_"; 
+  var timePrefix = id + "_" + "0_";
   var yr;
   eval("yr = self.document." + formName + "." + datePrefix + "year.value");
   // year blank means no year selected
