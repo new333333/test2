@@ -780,7 +780,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			Element entryFormItem = (Element)root.selectSingleNode("item[@type='form' or @name='entryForm' or @name='profileEntryForm']");
 			if (entryFormItem != null) {
 				//While going through the entry's elements, keep track of the current form name (needed to process date elements)
-				String currentFormName = "";
 				Iterator itItems = entryFormItem.selectNodes(".//item").listIterator();
 				while (itItems.hasNext()) {
 					Element nextItem = (Element) itItems.next();
@@ -789,11 +788,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					//Get the form element name (property name)
 					Element nameProperty = (Element) nextItem.selectSingleNode("./properties/property[@name='name']");
 					if (nameProperty != null) {
-						//See if this is a form element (if so, remember its element name)
-						if (itemName.equals("entryFormForm") || itemName.equals("profileEntryFormForm") || itemName.equals("form")) {
-							currentFormName = nameProperty.attributeValue("value", "");
-							if (currentFormName.equals("")) currentFormName = WebKeys.DEFINITION_DEFAULT_FORM_NAME;
-						}
 						//Find the item in the base configuration definition to see if it is a data item
 						Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "']");
 						if (configItem != null) {
@@ -812,7 +806,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									}
 								} else if (itemName.equals("date")) {
 									//Use the helper routine to parse the date into a date object
-									Date date = DateHelper.getDateFromMap(inputData, currentFormName, nameValue);
+									Date date = DateHelper.getDateFromMap(inputData, nameValue);
 									if (date != null) {entryData.put(nameValue, date);}
 								} else if (itemName.equals("event")) {
 								    //Ditto for event helper routine
@@ -826,7 +820,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								    if (hasRecurElem != null && hasRecurElem.attributeValue("value", "").equals("false")) {
 								        hasRecur = Boolean.FALSE;
 								    }
-								    Event event = EventHelper.getEventFromMap(inputData, currentFormName, nameValue, hasDur, hasRecur);
+								    Event event = EventHelper.getEventFromMap(inputData, nameValue, hasDur, hasRecur);
 								    if (event != null) {
 								        event.setName(nameValue);
 								        entryData.put(nameValue, event);

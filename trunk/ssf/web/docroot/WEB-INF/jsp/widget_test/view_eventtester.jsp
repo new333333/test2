@@ -37,8 +37,8 @@
     String event2when = new String();
 
     if (formData.containsKey("OK")) {
-      e1 = EventHelper.getEventFromMap(formData, "eventtestertest", "et");
-      e2 = EventHelper.getEventFromMap(formData, "eventtestertest", "et2", nodur, hasrecur);
+      e1 = EventHelper.getEventFromMap(formData, "et");
+      e2 = EventHelper.getEventFromMap(formData, "et2", nodur, hasrecur);
  
       if (e1 == null) {
 	event1start = "Nothing selected";

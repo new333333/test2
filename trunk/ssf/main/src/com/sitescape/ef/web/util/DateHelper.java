@@ -24,9 +24,9 @@ public class DateHelper {
   * are paired, and the sequence number for the timepicker tag will be 0. 
   * Use this call, without the sequence number, for the vanilla case
   */
-    static public Date getDateFromMap (Map formData, String formName, String id) 
+    static public Date getDateFromMap (Map formData, String id) 
     throws DatepickerException {
-        return getDateFromMap (formData, formName, id, "0");
+        return getDateFromMap (formData, id, "0");
     }
     
 /*
@@ -34,7 +34,7 @@ public class DateHelper {
  * datepicker tag -- for example, to specify the start and end time on the same day.
  * In this case, the sequence number is passed in to select which timepicker tag is to be used.
  */
-    static public Date getDateFromMap (Map formData, String formName, String id, String sequenceNumber) 
+    static public Date getDateFromMap (Map formData, String id, String sequenceNumber) 
     throws DatepickerException {
         Date d = new Date();
         // date fields don't have a sequence number; time fields do

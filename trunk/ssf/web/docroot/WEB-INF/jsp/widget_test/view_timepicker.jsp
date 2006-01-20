@@ -31,12 +31,8 @@
         if (formData.containsKey("OK")) {
 
 	  String ed1hidden = "foo";
-	  Date entered_date1 = DateHelper.getDateFromMap(formData, 
-							 "timepickertest",
-							 "date1");
-	  Date entered_date2 = DateHelper.getDateFromMap(formData, 
-							 "timepickertest",
-							 "date2");
+	  Date entered_date1 = DateHelper.getDateFromMap(formData, "date1");
+	  Date entered_date2 = DateHelper.getDateFromMap(formData, "date2");
 							 
 	  String ed1str = "";
 	  if (entered_date1 == null) {

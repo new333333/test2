@@ -20,17 +20,17 @@ public class EventHelper {
     
 
     // default method assumes duration and recurrence patterns
-    static public Event getEventFromMap (Map formData, String formName, String id) {
+    static public Event getEventFromMap (Map formData, String id) {
         Boolean hasDur = new Boolean("true");
         Boolean hasRecur = new Boolean("true");
-        Event e = getEventFromMap(formData, formName, id, hasDur, hasRecur);
+        Event e = getEventFromMap(formData, id, hasDur, hasRecur);
         return e;
     }
 
     
     // basic method
-    static public Event getEventFromMap (Map formData, String formName, 
-            String id, Boolean hasDuration, Boolean hasRecurrence) { 
+    static public Event getEventFromMap (Map formData, String id, 
+    		Boolean hasDuration, Boolean hasRecurrence) { 
         // we make the id match what the event editor would do
         Event e = new Event();
         String prefix = id + "_";
@@ -39,8 +39,8 @@ public class EventHelper {
             String startId = "dp_" + id;
             String endId = "dp2_" + id;
 
-            Date start = DateHelper.getDateFromMap(formData, formName, startId);
-            Date end = DateHelper.getDateFromMap(formData, formName, endId);
+            Date start = DateHelper.getDateFromMap(formData, startId);
+            Date end = DateHelper.getDateFromMap(formData, endId);
             // for now, if either date in the range is missing, we return null Event
             // (consider instead making a checked exception?)
             if (start == null || end == null) {
@@ -54,7 +54,7 @@ public class EventHelper {
             e.setDtEnd(endc);
         } else {
             String whenId = "dp3_" + id;
-            Date when = DateHelper.getDateFromMap(formData, formName, whenId);
+            Date when = DateHelper.getDateFromMap(formData, whenId);
             if (when == null) {
                 return null;
             }
@@ -186,7 +186,7 @@ public class EventHelper {
                 e.setCount(repeatCount);
             } else if (rangeSel.equals("until")) {
                 String untilId = "endRange_" + id;
-                Date until = DateHelper.getDateFromMap(formData, formName, untilId);
+                Date until = DateHelper.getDateFromMap(formData, untilId);
                 GregorianCalendar untilCal = new GregorianCalendar();
                 untilCal.setTime(until);
                 e.setUntil(untilCal);
