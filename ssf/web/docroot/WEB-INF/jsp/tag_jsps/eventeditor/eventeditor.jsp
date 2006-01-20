@@ -24,7 +24,7 @@
 %>
 <script language="Javascript" src="<html:rootPath />js/common/PopupWindow.js"></script>
 <script language="Javascript" src="<html:rootPath />js/common/AnchorPosition.js"></script>
-<c:set var="prefix" value="${formName}_${evid}" />
+<c:set var="prefix" value="${evid}" />
 
 <table class="ss_style" border="0" cellpadding="0"><tr><td>
  <table class="ss_style" border="0" cellpadding="4" cellspacing="0">
@@ -462,14 +462,14 @@ function ${prefix}_onsub() {
   var weekrptidx = getRadioButtonIdx(fieldref, '${prefix}_repeatUnit', 'week');
   var monthrptidx = getRadioButtonIdx(fieldref, '${prefix}_repeatUnit', 'month');
 
-  if (fieldref.${prefix}_repeatUnit[dayrptidx].checked) {
-      fieldref.${prefix}_everyN.value = fieldref.${prefix}_everyNday.value;
+  if (document.getElementById('${prefix}_repeatUnit')[dayrptidx].checked) {
+      document.getElementById('${prefix}_everyN').value = document.getElementById('${prefix}_everyNday').value;
   }
-  if (fieldref.${prefix}_repeatUnit[weekrptidx].checked) {
-      fieldref.${prefix}_everyN.value = fieldref.${prefix}_everyNweek.value;
+  if (document.getElementById('${prefix}_repeatUnit')[weekrptidx].checked) {
+      document.getElementById('${prefix}_everyN').value = document.getElementById('${prefix}_everyNweek').value;
   }
-  if (fieldref.${prefix}_repeatUnit[monthrptidx].checked) {
-      fieldref.${prefix}_everyN.value = fieldref.${prefix}_everyNmonth.value;
+  if (document.getElementById('${prefix}_repeatUnit')[monthrptidx].checked) {
+      document.getElementById('${prefix}_everyN').value = document.getElementById('${prefix}_everyNmonth').value;
   }
 
   </c:if>

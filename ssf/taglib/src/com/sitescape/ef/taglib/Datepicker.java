@@ -30,20 +30,21 @@ public class Datepicker extends TagSupport {
     private String formName;
     private Date initDate = null;
     private String componentOrder = "mdy";
-    private Boolean immediateMode = new Boolean(false);
+    private String callbackRoutine = null;
     private Boolean showSelectors = new Boolean(true);
     private String popupDivId = "";
     
     private boolean initDateProvided;
     private DateFormat idf;
     private String contextPath;
+    private Boolean immediateMode = new Boolean(false);
 
     	public int doStartTag() throws JspException, DatepickerException {
 	    JspWriter jspOut = pageContext.getOut(); 
 	    if (id == null) {
 	        throw new DatepickerException("ssf:datepicker calls must include a unique id"); 
 	    }
-	    String prefix = formName + "_" + id;
+	    String prefix = id;
 	    Pattern pat;
 	    Matcher mat;
 	    
@@ -416,8 +417,8 @@ public class Datepicker extends TagSupport {
 	    this.formName = formName;
 	}
 	
-	public void setImmediateMode(Boolean immediateMode) {
-		this.immediateMode = immediateMode;
+	public void setCallbackRoutine(String callbackRoutine) {
+		this.callbackRoutine = callbackRoutine;
 	}
 
 	public void setShowSelectors(Boolean value) {

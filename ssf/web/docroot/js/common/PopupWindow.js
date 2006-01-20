@@ -266,7 +266,7 @@ function PopupWindow_hidePopupWindows(e) {
 	for (var i=0; i<popupWindowObjects.length; i++) {
 		if (popupWindowObjects[i] != null) {
 			var p = popupWindowObjects[i];
-			p.hideIfNotClicked(e);
+			if (p.hideIfNotClicked) p.hideIfNotClicked(e);
 			}
 		}
 	}

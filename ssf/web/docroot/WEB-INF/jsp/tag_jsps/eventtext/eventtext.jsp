@@ -17,20 +17,20 @@
     // array of text strings for days of the week
     // these should be removed from this file (mhu)
     String days[] = new String[10];
-    days[Calendar.SUNDAY] = "Sun";
-    days[Calendar.MONDAY] = "Mon";
-    days[Calendar.TUESDAY] = "Tue";
-    days[Calendar.WEDNESDAY] = "Wed";
-    days[Calendar.THURSDAY] = "Thu";
-    days[Calendar.FRIDAY] = "Fri";
-    days[Calendar.SATURDAY] = "Sat";
+    days[Calendar.SUNDAY] = "<ssf:nlt tag="calendar.day.abbrevs.su" text="Sun"/>";
+    days[Calendar.MONDAY] = "<ssf:nlt tag="calendar.day.abbrevs.mo" text="Mon"/>";
+    days[Calendar.TUESDAY] = "<ssf:nlt tag="calendar.day.abbrevs.tu" text="Tue"/>";
+    days[Calendar.WEDNESDAY] = "<ssf:nlt tag="calendar.day.abbrevs.we" text="Wed"/>";
+    days[Calendar.THURSDAY] = "<ssf:nlt tag="calendar.day.abbrevs.th" text="Thu"/>";
+    days[Calendar.FRIDAY] = "<ssf:nlt tag="calendar.day.abbrevs.fr" text="Fri"/>";
+    days[Calendar.SATURDAY] = "<ssf:nlt tag="calendar.day.abbrevs.sa" text="Sat"/>";
 
     String nums[] = new String[6];
-    nums[1] = "first";
-    nums[2] = "second";
-    nums[3] = "third";
-    nums[4] = "fourth";
-    nums[5] = "last";
+    nums[1] = "<ssf:nlt tag="calendar.first" text="first"/>";
+    nums[2] = "<ssf:nlt tag="calendar.second" text="second"/>";
+    nums[3] = "<ssf:nlt tag="calendar.third" text="third"/>";
+    nums[4] = "<ssf:nlt tag="calendar.fourth" text="fourth"/>";
+    nums[5] = "<ssf:nlt tag="calendar.last" text="last"/>";
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy, hh:mm a");
     String startString = sdf.format(st.getTime());
@@ -94,16 +94,16 @@
     if (interval > 0) {
 %>
 <span>
-    Start: <%= startString %><br />
-    End: <%= endString %><br />
-    Frequency: <%= freqString %> <%= onString %> <%= untilString %>
+    <ssf:nlt tag="calendar.start" text="Start"/>: <%= startString %><br />
+    <ssf:nlt tag="calendar.end" text="End"/>: <%= endString %><br />
+    <ssf:nlt tag="calendar.frequency" text="Frequency"/>: <%= freqString %> <%= onString %> <%= untilString %>
 </span>
 <%
     } else {
 %>
 <span>
-    When: <%= startString %> <br />
-    Frequency: <%= freqString %> <%= onString %> <%= untilString %>
+    <ssf:nlt tag="calendar.when" text="When"/>: <%= startString %> <br />
+    <ssf:nlt tag="calendar.frequency" text="Frequency"/>: <%= freqString %> <%= onString %> <%= untilString %>
 </span>
 <%
     }
