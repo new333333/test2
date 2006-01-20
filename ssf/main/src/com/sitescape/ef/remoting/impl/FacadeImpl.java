@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
@@ -16,8 +17,6 @@ import org.dom4j.io.XMLWriter;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.exception.UncheckedCodedException;
-import com.sitescape.ef.exception.UncheckedException;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.folder.FolderModule;
@@ -127,6 +126,22 @@ public class FacadeImpl implements Facade {
 		prettyPrint(doc);
 		
 		return xml;
+	}
+	
+	public long addEntry(long binderId, String definitionId, String inputDataAsXML) {
+
+		// Parse XML string into a document tree.
+		Document doc = null;
+		try {
+			doc = DocumentHelper.parseText(inputDataAsXML);
+		} catch (DocumentException e) {
+			logger.error(e);
+			throw new IllegalArgumentException(e.toString());
+		}
+		
+		//return getFolderModule().addEntry(binderId, definitionId, doc, null).longValue();
+		// TODO
+		return 0; // $$$
 	}
 	
 	private void prettyPrint(Document doc) {
