@@ -30,4 +30,8 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade,Remot
 	public String getEntryAsXML(long binderId, long entryId) {
 		return this.facade.getEntryAsXML(binderId, entryId);
 	}
+	
+	public long addEntry(long binderId, String definitionId, String inputDataAsXML) {
+		return this.facade.addEntry(binderId, definitionId, inputDataAsXML);
+	}
 }

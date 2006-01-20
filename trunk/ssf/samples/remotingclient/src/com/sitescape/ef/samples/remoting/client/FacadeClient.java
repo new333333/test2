@@ -1,6 +1,7 @@
 package com.sitescape.ef.samples.remoting.client;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -57,30 +58,51 @@ public class FacadeClient {
 		System.out.println();
 	}
 	
+	public void addEntry(int binderId, String definitionId) {
+		StringBuffer sb = new StringBuffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		sb.append("<entry title=\"WS test ")
+			.append(new Date().getTime())
+			.append("\">")
+			.append("<attribute name=\"description\">Added through Web Service</attribute>")
+			.append("<attribute name=\"birthDate_date\">21</attribute>")
+			.append("<attribute name=\"birthDate_month\">05</attribute>")
+			.append("<attribute name=\"birthDate_year\">1992</attribute>")
+			.append("<attribute name=\"birthDate_timezoneid\">GMT</attribute>")
+			.append("</entry>");
+
+		long entryId =this.facade.addEntry(binderId, definitionId, sb.toString());
+		
+		System.out.println("*** ID of the newly created entry is " + entryId);
+	}
+	
 	public static void main(String[] args) {
 		System.out.println("*** This Facade client uses Spring's jaxrpc proxy");
 
-		System.out.println("*** Reading an entry ***");
-		
 		// first argument - binder id
 		// second argument - entry id
 		if(args.length < 2) {
 			System.out.println("You need to specify a binder id and an entry id");
-		}
-		else {
-			System.out.println("binder id = " + args[0] + ", entry id = " + args[1]);
-			int binderId = Integer.parseInt(args[0]);
-			int entryId = Integer.parseInt(args[1]);
-
-			ListableBeanFactory beanFactory = new FileSystemXmlApplicationContext(CLIENT_CONTEXT_CONFIG_LOCATION);
-			FacadeClient client = (FacadeClient) beanFactory.getBean("facadeClient");
-
-			client.printEntry(binderId, entryId);
-			
-			client.printEntryAsXML(binderId, entryId);
+			return;
 		}
 		
+		System.out.println("binder id = " + args[0] + ", entry id = " + args[1]);
+
+		System.out.println("*** Reading an entry ***");
+		
+		int binderId = Integer.parseInt(args[0]);
+		int entryId = Integer.parseInt(args[1]);
+
+		ListableBeanFactory beanFactory = new FileSystemXmlApplicationContext(CLIENT_CONTEXT_CONFIG_LOCATION);
+		FacadeClient client = (FacadeClient) beanFactory.getBean("facadeClient");
+
+		client.printEntry(binderId, entryId);
+		
+		client.printEntryAsXML(binderId, entryId);
+
 		System.out.println("*** Adding an entry ***");
+
+		String definitionId = "402883cc08da22a50108da5a83260002"; // id of "discussion" definition
+		client.addEntry(binderId, definitionId);
 	}
 	
 	private void prettyPrint(Document doc) {

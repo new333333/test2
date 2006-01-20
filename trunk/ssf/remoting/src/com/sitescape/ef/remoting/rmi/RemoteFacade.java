@@ -26,4 +26,7 @@ public interface RemoteFacade extends Remote {
 	public Entry getEntry(long binderId, long entryId) throws RemoteException;
 	
 	public String getEntryAsXML(long binderId, long entryId) throws RemoteException;
+	
+	public long addEntry(long binderId, String definitionId, String inputDataAsXML) 
+		throws RemoteException;
 }
