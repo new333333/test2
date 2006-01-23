@@ -941,6 +941,10 @@
 		<properties>
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
 			<property name="userGroupNotification" caption="__userGroup" type="userGroupSelect" />
+			<property name="subjText" caption="__notification_subject_text" type="text" />
+			<property name="appendTitle" caption="__notification_append_title" type="checkbox" />
+			<property name="bodyText" caption="__notification_body_text" type="text" />
+			<property name="appendBody" caption="__notification_append_Body" type="checkbox" />
 		</properties>
 	</item>
 	
@@ -948,6 +952,10 @@
 		<properties>
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
 			<property name="userGroupNotification" caption="__userGroup" type="userGroupSelect" />
+			<property name="subjText" caption="__notification_subject_text" type="text" />
+			<property name="appendTitle" caption="__notification_append_title" type="checkbox" />
+			<property name="bodyText" caption="__notification_body_text" type="text" />
+			<property name="appendBody" caption="__notification_append_Body" type="checkbox" />
 		</properties>
 	</item>
 	
