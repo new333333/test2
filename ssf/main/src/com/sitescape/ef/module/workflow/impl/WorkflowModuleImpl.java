@@ -13,14 +13,14 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.AnyOwner;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.AclControlledEntry;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.module.binder.EntryProcessor;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.ef.module.workflow.WorkflowModule;
+import com.sitescape.ef.domain.WfWaits;
+import com.sitescape.util.Validator;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -37,7 +37,6 @@ import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
 import org.jbpm.graph.node.EndState;
 import org.jbpm.graph.node.StartState;
-import org.jbpm.graph.node.State;
 import org.jbpm.instantiation.Delegation;
 import org.jbpm.jpdl.xml.JpdlXmlWriter;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
@@ -290,6 +289,14 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			startThreads = (Action) actions.get("startThreads");
 		}
 		
+		Action stopThreads = null;
+		if (!actions.containsKey("stopThreads")) {
+			stopThreads = setupAction(pD, "stopThreads", "com.sitescape.ef.module.workflow.StopThreads");
+			pD.addAction(stopThreads);
+		} else {
+			stopThreads = (Action) actions.get("stopThreads");
+		}
+
 		//add global named events - will fire on every node
 		if (!events.containsKey("node-enter")) {
 			Event enterEvent = new Event("node-enter");
@@ -340,42 +347,33 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				//Check if need parallel threads - if so add special node
 				List threads = (List)state.selectNodes("./item[@name='startParallelThread']");
 				if (!threads.isEmpty()) {
-					//make sure start threads event exits
 					if (event == null) {
 						event = new Event(Event.EVENTTYPE_NODE_ENTER);
 						stateNode.addEvent(event);
 					}
-					List eventActions=event.getActions();
-					boolean found = false;
-					if ((eventActions != null) && !eventActions.isEmpty()) {
-						for (int i=0; i<eventActions.size(); ++i) {
-							Action a = (Action)eventActions.get(i);
-							if ((a.getReferencedAction().equals(startThreads))) {
-								found = true;
-								break;
-							}
-						}
-					}
-					if (!found) {
-						Action a = new Action();
-						a.setReferencedAction(startThreads);
-						event.addAction(a);
-					}
+					//make sure start threads event exists
+					addEventAction(threads, event, startThreads);
 					
 				} else {
 					// remove any old startThreads for this node
 					if (event != null) {
-						List eventActions = event.getActions();
-						if ((eventActions != null) && !eventActions.isEmpty()) {
-							for (int i=0; i<eventActions.size(); ++i) {
-								Action a = (Action)eventActions.get(i);
-								if ((a.getReferencedAction().equals(startThreads))) {
-									event.removeAction(a);
-									session.getSession().delete(a);
-									break;
-								}
-							}
-						}
+						removeEventAction(event, startThreads);
+					}
+				}
+				//Check if top stop threads - if so add special node
+				threads = (List)state.selectNodes("./item[@name='stopParallelThread']");
+				if (!threads.isEmpty()) {
+					if (event == null) {
+						event = new Event(Event.EVENTTYPE_NODE_ENTER);
+						stateNode.addEvent(event);
+					}
+					//make sure start threads event exists
+					addEventAction(threads, event, stopThreads);
+					
+				} else {
+					// remove any old stopThreads for this node
+					if (event != null) {
+						removeEventAction(event, stopThreads);
 					}
 				}
 			}
@@ -402,12 +400,32 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			if (oldTransitions == null) oldTransitions = new HashMap();
 			else oldTransitions = new HashMap(oldTransitions);
 			
-			//Get the list of transitions from the workflow definition
+			//Get the list of manual transitions from the workflow definition
 			Map manualTransitions = WorkflowUtils.getManualTransitions(def, fromNode.getName());
 			Iterator itTransitions = manualTransitions.entrySet().iterator();
 			while (itTransitions.hasNext()) {
 				Map.Entry me2 = (Map.Entry) itTransitions.next();
 				String toNodeName = (String) me2.getKey();
+				String tName = stateName + "." + toNodeName;					
+				if (oldTransitions.containsKey(tName)) {
+					oldTransitions.remove(tName);
+				} else {
+					Node toNode = (Node) pD.getNode(toNodeName);
+					if (toNode != null) {
+						Transition t = new Transition();
+						t.setProcessDefinition(pD);
+						t.setName(tName);
+						t.setTo(toNode);
+						fromNode.addLeavingTransition(t);
+					}
+
+				}
+			}
+			//Get the list of automatic transitions from the workflow definition
+			List waits = WorkflowUtils.getParallelThreadWaits(def, stateName);
+			for (int i=0; i<waits.size(); ++i) {
+				WfWaits w = (WfWaits)waits.get(i);
+				String toNodeName = w.getToStateName();
 				String tName = stateName + "." + toNodeName;					
 				if (oldTransitions.containsKey(tName)) {
 					oldTransitions.remove(tName);
@@ -440,7 +458,41 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    System.out.println("Workflow process definition created: " + pD.getName());
 	    System.out.println(writer.toString());
 	}
+	private void addEventAction(List threads, Event event, Action action) {
+		//	make sure start threads event exits
+		List eventActions=event.getActions();
+		boolean found = false;
+		if ((eventActions != null) && !eventActions.isEmpty()) {
+			for (int i=0; i<eventActions.size(); ++i) {
+				Action a = (Action)eventActions.get(i);
+				if ((a.getReferencedAction().equals(action))) {
+					found = true;
+					break;
+				}
+			}
+		}
+		if (!found) {
+			Action a = new Action();
+			a.setReferencedAction(action);
+			event.addAction(a);
+		}
 	
+	}
+	private void removeEventAction(Event event, Action action) {
+		List eventActions = event.getActions();
+		if ((eventActions != null) && !eventActions.isEmpty()) {
+			JbpmSession session = workflowFactory.getSession();
+			for (int i=0; i<eventActions.size(); ++i) {
+				Action a = (Action)eventActions.get(i);
+				if ((a.getReferencedAction().equals(action))) {
+					event.removeAction(a);
+					session.getSession().delete(a);
+					break;
+				}
+			}
+		}
+	}
+
 	private Action setupAction(ProcessDefinition pD, String name, String className) {
 		Action action = new Action();
 		action.setName(name);
@@ -453,60 +505,38 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	}
 	public void startWorkflow(Entry entry, Definition workflowDef) {
 		String entryType = AnyOwner.getType(entry);
-		
-		//Find the initial state of the workflow
-		Document workflowDoc = workflowDef.getDefinition();
-		if (workflowDoc != null) {
-			Element workflowRoot = workflowDoc.getRootElement();
-			Element initialStateProperty = (Element) workflowRoot.selectSingleNode("./properties/property[@name='initialState']");
-			String initialState = "";
-			if (initialStateProperty != null) {
-				initialState = initialStateProperty.attributeValue("value", "");
-				//Validate that this is an existing state
-				if (!initialState.equals("")) {
-					Element state = (Element) workflowRoot.selectSingleNode("./item[@name='workflowProcess']/item[@name='state']/properties/property[@name='name' and @value='"+initialState+"']");
-					if (state == null) initialState = "";
-				}
-			}
-			//See if the workflow definition actually defined an initial state
-			if (initialState.equals("")) {
-				//There is no defined initial state, so use the first state in the list
-				initialStateProperty = (Element) workflowRoot.selectSingleNode("./item[@name='workflowProcess']/item[@name='state']/properties/property[@name='name']");
-				initialState = initialStateProperty.attributeValue("value", "");
-			}
-			if (!initialState.equals("")) {
-				//Now start the workflow at the desired initial state
-				JbpmSession session;
-				ProcessDefinition pD;
-				try {
-			       	session = workflowFactory.getSession();
-			        pD = session.getGraphSession().findLatestProcessDefinition(workflowDef.getId());
-
-			        Node node = pD.getNode(initialState);
-				    if (node != null) {
-			        	ProcessInstance pI = new ProcessInstance(pD);
-						Token token = pI.getRootToken();
-						ContextInstance cI = (ContextInstance) pI.getInstance(ContextInstance.class);
-						cI.setVariable(WorkflowUtils.ENTRY_ID, entry.getId(), token);
-						cI.setVariable(WorkflowUtils.ENTRY_TYPE, entryType, token);
-						//doesn't exist, add a new one
-						WorkflowState ws = new WorkflowState();
-						ws.setTokenId(new Long(token.getId()));
-						ws.setState(initialState);
-						ws.setDefinition(workflowDef);
-						//need to save explicitly - actions called by the node.enter may look it up 
-						getCoreDao().save(ws);
-						entry.addWorkflowState(ws);
-						//Start the workflow process at the initial state
-					    ExecutionContext executionContext = new ExecutionContext(token);
-			            node.enter(executionContext);
-			            
-//			            session.getGraphSession().saveProcessInstance(pI);
-				    }
-			    } catch (Exception ex) {
-			        throw convertJbpmException(ex);
+		String initialState = WorkflowUtils.getInitialState(workflowDef);
+		if (!Validator.isNull(initialState)) {
+			//Now start the workflow at the desired initial state
+			JbpmSession session;
+			ProcessDefinition pD;
+			try {
+		       	session = workflowFactory.getSession();
+		        pD = session.getGraphSession().findLatestProcessDefinition(workflowDef.getId());
+		        Node node = pD.getNode(initialState);
+			    if (node != null) {
+		        	ProcessInstance pI = new ProcessInstance(pD);
+					Token token = pI.getRootToken();
+					ContextInstance cI = (ContextInstance) pI.getInstance(ContextInstance.class);
+					cI.setVariable(WorkflowUtils.ENTRY_ID, entry.getId(), token);
+					cI.setVariable(WorkflowUtils.ENTRY_TYPE, entryType, token);
+					//doesn't exist, add a new one
+					WorkflowState ws = new WorkflowState();
+					ws.setTokenId(new Long(token.getId()));
+					ws.setState(initialState);
+					ws.setDefinition(workflowDef);
+					//need to save explicitly - actions called by the node.enter may look it up 
+					getCoreDao().save(ws);
+					entry.addWorkflowState(ws);
+					//Start the workflow process at the initial state
+				    ExecutionContext executionContext = new ExecutionContext(token);
+		            node.enter(executionContext);
+		            
+		            session.getGraphSession().saveProcessInstance(pI);
 			    }
-			}
+		    } catch (Exception ex) {
+		        throw convertJbpmException(ex);
+		    }
 		}
 	}
 	
@@ -515,7 +545,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	       	JbpmSession session = workflowFactory.getSession();
         	Token t = session.getGraphSession().loadToken(tokenId.longValue());
             t.signal(fromState + "." + toState);
- //           session.getGraphSession().saveProcessInstance(t.getProcessInstance());
+            //need to make this call to save logs
+            session.getGraphSession().saveProcessInstance(t.getProcessInstance());
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
 	    }		

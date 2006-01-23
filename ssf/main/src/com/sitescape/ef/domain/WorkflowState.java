@@ -25,7 +25,7 @@ public class WorkflowState {
 	
 	//cached during transaction as needed 
 	protected List wfWaits=null;
-	protected String endState=null;
+	protected List endStates=null;
 	protected List wfStarts=null;
    
  	public Long getId() {
@@ -77,7 +77,7 @@ public class WorkflowState {
  	public void setState(String state) {
  		this.state = state;
  		//on state change, clear cached values associated with previous state
- 		endState=null;
+ 		endStates=null;
  		wfWaits=null;
  		wfStarts = null;
  	}
@@ -166,18 +166,19 @@ public class WorkflowState {
     	return wfStarts; 
     }
     
-    public String getThreadEndState() {
-    	if (Validator.isNull(threadName)) {
-    		throw new IllegalArgumentException("Not a thread");
+    public List getThreadEndStates() {
+    	if (endStates == null) {
+    		if (Validator.isNull(threadName)) {
+    			endStates = WorkflowUtils.getEndState(definition);
+    		} else {
+    			endStates = WorkflowUtils.getThreadEndState(definition, threadName);
+    		}
     	}
-    	if (endState == null)
-    		endState = WorkflowUtils.getThreadEndState(definition, threadName);
-    	return endState;
+    	return endStates;
     	   	
     }
     public boolean isThreadEndState() {
-    	if (Validator.isNull(threadName)) return false;
-    	if (state.equals(getThreadEndState())) return true;
+    	if (getThreadEndStates().contains(state)) return true;
     	return false;
     }
  	

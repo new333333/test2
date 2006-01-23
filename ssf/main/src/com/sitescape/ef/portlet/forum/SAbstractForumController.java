@@ -60,6 +60,7 @@ public class SAbstractForumController extends SAbstractController {
 		obj = model.get(WebKeys.CONFIG_DEFINITION);
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
+		response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
 		return new ModelAndView(WebKeys.VIEW_LISTING, model);
 	}
 	protected Map getShowFolder(Map formData, RenderRequest req, RenderResponse response,Long folderId) throws PortletRequestBindingException {
