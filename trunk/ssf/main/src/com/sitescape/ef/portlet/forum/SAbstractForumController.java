@@ -150,7 +150,7 @@ public class SAbstractForumController extends SAbstractController {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_DEFINITION);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_VALUE, def.getId());
-			toolbar.addToolbarMenuItem("3_display_styles", "", NLT.getDef(def.getTitle()), url);
+			toolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.getDef(def.getTitle()), url);
 		}
 		
 		//vertical
@@ -159,28 +159,28 @@ public class SAbstractForumController extends SAbstractController {
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
-		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_vertical"), url);
+		toolbar.addToolbarMenuItem("3_display_styles", "styles", NLT.get("toolbar.menu.display_style_vertical"), url);
 		//accessible
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
-		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_accessible"), url);
+		toolbar.addToolbarMenuItem("3_display_styles", "styles", NLT.get("toolbar.menu.display_style_accessible"), url);
 		//iframe
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
-		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_iframe"), url);
+		toolbar.addToolbarMenuItem("3_display_styles", "styles", NLT.get("toolbar.menu.display_style_iframe"), url);
 		//popup
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
-		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_popup"), url);
+		toolbar.addToolbarMenuItem("3_display_styles", "styles", NLT.get("toolbar.menu.display_style_popup"), url);
 		return toolbar;
 	}
 	

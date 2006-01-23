@@ -136,7 +136,7 @@ public class WorkflowUtils {
 			Element stateEle = statePropertyEle.getParent().getParent();
 			//Build a list of all parallel executions for this state
 			List waitParallelExecutions = stateEle.selectNodes(
-					"./item[@name='waitForParallelThread']");
+					"./transitions/item[@name='waitForParallelThread']");
 			if (waitParallelExecutions != null) {
 				for (int j = 0; j < waitParallelExecutions.size(); j++) {
 					//Get the "startState" property

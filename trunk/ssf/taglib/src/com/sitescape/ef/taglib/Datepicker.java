@@ -28,16 +28,17 @@ import java.text.DateFormat;
 public class Datepicker extends TagSupport {
     private String id;
     private String formName;
+    private String altText = "";
     private Date initDate = null;
     private String componentOrder = "mdy";
     private String callbackRoutine = null;
     private Boolean showSelectors = new Boolean(true);
+    private Boolean immediateMode = new Boolean(false);
     private String popupDivId = "";
     
     private boolean initDateProvided;
     private DateFormat idf;
     private String contextPath;
-    private Boolean immediateMode = new Boolean(false);
 
     	public int doStartTag() throws JspException, DatepickerException {
 	    JspWriter jspOut = pageContext.getOut(); 
@@ -156,6 +157,7 @@ public class Datepicker extends TagSupport {
 			sb.append(varname).append(".setTodayText('"+ NLT.get("button.today") +"');\n");
 			sb.append(varname).append(".setOkText('"+ NLT.get("button.ok") +"');\n");
 			sb.append(varname).append(".setCancelText('"+ NLT.get("button.cancel") +"');\n");
+			sb.append(varname).append(".offsetX = -75;\n");
 			sb.append(varname).append(".setMonthNames(");
 			for (int i = 0; i <= 11; i++) {
 				sb.append("'" + monthnames[i] + "'");
@@ -353,7 +355,8 @@ public class Datepicker extends TagSupport {
 			  .append("\"")
 			  .append("><IMG BORDER=\"0\" SRC=\"")
 			  .append(contextPath)
-			  .append("/images/pics/sym_s_cal.gif\"></A>\n");
+			  .append("/images/pics/sym_s_cal.gif\" ");
+			sb.append("alt=\"").append(this.altText).append("\"></A>\n");
 			sb.append("<input type=\"hidden\" name=\"")
 			  .append(prefix)
 			  .append("_hidden\" value=\"\">\n");
@@ -417,12 +420,20 @@ public class Datepicker extends TagSupport {
 	    this.formName = formName;
 	}
 	
+	public void setAltText(String text) {
+	    this.altText = text;
+	}
+	
 	public void setCallbackRoutine(String callbackRoutine) {
 		this.callbackRoutine = callbackRoutine;
 	}
 
 	public void setShowSelectors(Boolean value) {
 		this.showSelectors = value;
+	}
+
+	public void setImmediateMode(Boolean value) {
+		this.immediateMode = value;
 	}
 
 }

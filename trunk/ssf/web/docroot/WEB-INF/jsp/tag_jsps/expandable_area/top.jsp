@@ -41,9 +41,14 @@ function <portlet:namespace/>_toggleExpandableArea(divName, imgName) {
     }
 }
 </script>
-<a href="javascript: ;" 
+<table class="ss_style" cellspacing="0" cellpadding="2">
+<tr>
+<td valign="middle"><a href="javascript: ;" 
 onClick="<portlet:namespace/>_toggleExpandableArea('<%= name %>', 'img_<%= name %>'); return false;"><img 
 border="0" src="<html:imagesPath />pics/sym_s_expand.gif" 
-name="<portlet:namespace/>img_<%= name %>" />
-<span class="ss_bold"><%= title %></span></a></div>
+name="<portlet:namespace/>img_<%= name %>" /></td>
+<td valign="middle"><span class="ss_bold"><%= title %></span></a></td>
+</tr>
+</table>
+</div>
 <div id="<portlet:namespace/><%= name %>" class="ss_expandable_area_content">
