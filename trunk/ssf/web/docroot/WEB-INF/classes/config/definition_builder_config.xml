@@ -774,7 +774,8 @@
 	<item name="workflowProcess" caption="__workflow_process" canBeDeleted="false" multipleAllowed="false">
 		<properties>
 			<property name="initialState" caption="__initialState" type="itemSelect" path="//item[@name='state']" />
-			<property name="endState" caption="__endState" type="itemSelect" path="//item[@name='state']" />
+			<property name="endState" caption="__endState" type="itemSelect" 
+				path="//item[@name='state']" multipleAllowed="true"/>
 		</properties>
 
 		<options>
@@ -829,7 +830,8 @@
 			</property>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="startState" caption="__startState" type="itemSelect" path="//item[@name='state']" />
-			<property name="endState" caption="__endState" type="itemSelect" path="//item[@name='state']" />
+			<property name="endState" caption="__endState" type="itemSelect" 
+				path="//item[@name='state']" multipleAllowed="true"/>
 		</properties>
 	</item>
 	
