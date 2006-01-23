@@ -368,13 +368,18 @@ public class WorkflowViewer extends JApplet implements ActionListener {
                     
                     //Set the color of the vertex
                     Element initialState = (Element)workflowProcess.selectSingleNode("properties/property[@name='initialState']");
-                    Element endState = (Element)workflowProcess.selectSingleNode("properties/property[@name='endState']");
                     if (initialState != null && initialState.attributeValue("value", "").equals(name)) {
                     	v[i].setUserDatum(COLORKEY, Color.YELLOW, UserData.REMOVE);
-                    } else if (endState != null && endState.attributeValue("value", "").equals(name)) {
-                    	v[i].setUserDatum(COLORKEY, Color.RED, UserData.REMOVE);
                     } else {
                     	v[i].setUserDatum(COLORKEY, Color.BLUE, UserData.REMOVE);
+                    }
+                    //See if this is an end state
+                    Iterator endStates = workflowProcess.selectNodes("properties/property[@name='endState']").iterator();
+                    while (endStates.hasNext()) {
+                    	Element endState = (Element)endStates.next();
+                        if (endState != null && endState.attributeValue("value", "").equals(name)) {
+                        	v[i].setUserDatum(COLORKEY, Color.RED, UserData.REMOVE);
+                        }
                     }
                     
                     i++;
@@ -457,18 +462,21 @@ public class WorkflowViewer extends JApplet implements ActionListener {
 	            					"properties/property[@name='name' and @value='"+threadName+"']");
 	            			if (pThread != null) {
 	            				pThread = pThread.getParent().getParent();
-	            				Element sThreadEndState = (Element) pThread.selectSingleNode("./properties/property[@name='endState']");
-	            				if (sThreadEndState != null) {
-	            					String endState = sThreadEndState.attributeValue("value", "");
-	                        		if (!endState.equals("")) {
-	                                    if (nameVertex.containsKey(name) && nameVertex.containsKey(endState)) {
-	                                    	//Draw an edge going from the end state to the one that is waiting
-	                                    	Edge newEdge = g.addEdge(new DirectedSparseEdge((Vertex)nameVertex.get(endState), 
-	                                    			(Vertex)nameVertex.get(name)));
-	                                    	//Mark the starting of a parallel thread with a different edge color
-	                                    	newEdge.setUserDatum(COLORKEY, Color.PINK, UserData.REMOVE);
-	                                    }
-	                        		}
+	            				Iterator itThreadEndStates = pThread.selectNodes("./properties/property[@name='endState']").iterator();
+	            				while (itThreadEndStates.hasNext()) {
+		            				Element sThreadEndState = (Element) itThreadEndStates.next();
+		            				if (sThreadEndState != null) {
+		            					String endState = sThreadEndState.attributeValue("value", "");
+		                        		if (!endState.equals("")) {
+		                                    if (nameVertex.containsKey(name) && nameVertex.containsKey(endState)) {
+		                                    	//Draw an edge going from the end state to the one that is waiting
+		                                    	Edge newEdge = g.addEdge(new DirectedSparseEdge((Vertex)nameVertex.get(endState), 
+		                                    			(Vertex)nameVertex.get(name)));
+		                                    	//Mark the starting of a parallel thread with a different edge color
+		                                    	newEdge.setUserDatum(COLORKEY, Color.PINK, UserData.REMOVE);
+		                                    }
+		                        		}
+		            				}
 	            				}
 	            			}
 	            		}
