@@ -139,8 +139,7 @@ public class FacadeImpl implements Facade {
 			throw new IllegalArgumentException(e.toString());
 		}
 		
-		//return getFolderModule().addEntry(binderId, definitionId, doc, null).longValue();
-		return 0;// TODO 
+		return getFolderModule().addEntry(new Long(binderId), definitionId, new DomInputData(doc), null).longValue();
 	}
 	
 	private void prettyPrint(Document doc) {

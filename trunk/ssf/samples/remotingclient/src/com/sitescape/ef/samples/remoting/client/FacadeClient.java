@@ -69,8 +69,8 @@ public class FacadeClient {
 			.append("<attribute name=\"birthDate_month\">05</attribute>")
 			.append("<attribute name=\"birthDate_year\">1992</attribute>")
 			.append("<attribute name=\"birthDate_timezoneid\">GMT</attribute>")
-			.append("<attribute name=\"Colors\">white</attribute>")
-			.append("<attribute name=\"Colors\">blue</attribute>")
+			.append("<attribute name=\"colors\">white</attribute>")
+			.append("<attribute name=\"colors\">blue</attribute>")
 			.append("</entry>");
 
 		long entryId =this.facade.addEntry(binderId, definitionId, sb.toString());
