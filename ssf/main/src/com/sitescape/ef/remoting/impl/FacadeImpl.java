@@ -140,8 +140,7 @@ public class FacadeImpl implements Facade {
 		}
 		
 		//return getFolderModule().addEntry(binderId, definitionId, doc, null).longValue();
-		// TODO
-		return 0; // $$$
+		return 0;// TODO 
 	}
 	
 	private void prettyPrint(Document doc) {

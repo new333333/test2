@@ -60,14 +60,17 @@ public class FacadeClient {
 	
 	public void addEntry(int binderId, String definitionId) {
 		StringBuffer sb = new StringBuffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		sb.append("<entry title=\"WS test ")
+		sb.append("<entry>")
+			.append("<attribute name=\"title\">WS test ")
 			.append(new Date().getTime())
-			.append("\">")
+			.append("</attribute>")
 			.append("<attribute name=\"description\">Added through Web Service</attribute>")
 			.append("<attribute name=\"birthDate_date\">21</attribute>")
 			.append("<attribute name=\"birthDate_month\">05</attribute>")
 			.append("<attribute name=\"birthDate_year\">1992</attribute>")
 			.append("<attribute name=\"birthDate_timezoneid\">GMT</attribute>")
+			.append("<attribute name=\"Colors\">white</attribute>")
+			.append("<attribute name=\"Colors\">blue</attribute>")
 			.append("</entry>");
 
 		long entryId =this.facade.addEntry(binderId, definitionId, sb.toString());

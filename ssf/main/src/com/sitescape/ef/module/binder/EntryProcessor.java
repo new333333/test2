@@ -8,6 +8,7 @@ import org.dom4j.Document;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.module.shared.WriteFilesException;
 import com.sitescape.ef.security.AccessControlException;
 
@@ -29,11 +30,11 @@ public interface EntryProcessor {
     public static int CURRENT_ENTRY=3;
 
 
-    public Long addEntry(Binder binder, Definition def, Class clazz, Map inputData, Map fileItems) 
+    public Long addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
     public void deleteEntry(Binder binder, Long entryId) throws AccessControlException;
     public AclControlledEntry getEntry(Binder binder, Long entryId, int type) throws AccessControlException;
-    public Long modifyEntry(Binder binder, Long entryId, Map inputData, Map fileItems) 
+    public Long modifyEntry(Binder binder, Long entryId, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
     public Long modifyEntryData(Binder binder, Long entryId, Map entryData) 
 		throws AccessControlException;

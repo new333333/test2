@@ -8,6 +8,7 @@ import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.AclControlledEntry;
 import com.sitescape.ef.domain.LibraryEntryExistsException;
+import com.sitescape.ef.module.folder.InputDataAccessor;
 
 /**
  * Library folders have the restriction that the title of all toplevel entries must be unique
@@ -17,7 +18,7 @@ import com.sitescape.ef.domain.LibraryEntryExistsException;
 public class LibraryCoreProcessor extends DefaultFolderCoreProcessor {
 	private String[] cfAttrs = new String[]{"parentBinder", "HKey.level", "lower(title)"};
 
-	   protected void addEntry_fillIn(Binder binder, AclControlledEntry entry, Map inputData, Map entryData) {  
+	   protected void addEntry_fillIn(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
     	//title must be unique
 	   	String title = (String)entryData.get("title");
 	   	if ((title == null) || title.equals("")) throw new IllegalArgumentException("title is required");

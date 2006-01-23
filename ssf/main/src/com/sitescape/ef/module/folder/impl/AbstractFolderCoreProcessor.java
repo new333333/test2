@@ -32,6 +32,7 @@ import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
+import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
@@ -48,18 +49,18 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	implements FolderCoreProcessor {
     
     //***********************************************************************************************************	
-    protected void addEntry_fillIn(Binder binder, AclControlledEntry entry, Map inputData, Map entryData) {  
+    protected void addEntry_fillIn(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
     	Folder folder = (Folder)binder;
     	folder.addEntry((FolderEntry)entry, getFolderDao().allocateEntryNumbers(folder, 1));         
     	super.addEntry_fillIn(folder, entry, inputData, entryData);
    }
  
-    protected void addEntry_postSave(Binder binder, AclControlledEntry entry, Map inputData, Map entryData) {
+    protected void addEntry_postSave(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {
 		getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).
 							setSeen(entry);
     }
 
-	 protected void modifyEntry_postFillIn(Binder binder, AclControlledEntry entry, Map inputData, Map entryData) {
+	 protected void modifyEntry_postFillIn(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {
 		   getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
      }
 
@@ -185,7 +186,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
        
     //***********************************************************************************************************
-   public Long addReply(FolderEntry parent, Definition def, Map inputData, Map fileItems) 
+   public Long addReply(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems) 
    	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
         
@@ -222,7 +223,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    		getAccessControlManager().checkOperation(parent.getParentFolder(), WorkAreaOperation.ADD_REPLIES);
     }
     
-    protected Map addReply_toEntryData(FolderEntry parent, Definition def, Map inputData, Map fileItems) {
+    protected Map addReply_toEntryData(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
         return getDefinitionModule().getEntryData(def, inputData, fileItems);
     }
@@ -240,7 +241,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	EntryBuilder.writeFiles(getFileModule(), parent.getParentFolder(), entry, fileData);
     }
     
-    protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData) {  
+    protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {  
         parent.addReply(entry);         
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setCreation(new HistoryStamp(user));
@@ -258,17 +259,17 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         EntryBuilder.buildEntry(entry, entryData);
     }
     
-    protected void addReply_preSave(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData) {
+    protected void addReply_preSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
     }
     
     protected void addReply_save(FolderEntry entry) {
         getCoreDao().save(entry);
     }
     
-    protected void addReply_postSave(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData) {
+    protected void addReply_postSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
     }
     
-    protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, Map inputData, Map entryData) {
+    protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
         // Create an index document from the entry object.
         org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(entry.getParentFolder(), entry);
         

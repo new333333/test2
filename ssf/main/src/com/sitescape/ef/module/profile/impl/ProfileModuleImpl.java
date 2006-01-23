@@ -20,6 +20,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.WriteFilesException;
@@ -175,7 +176,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
  
     //***********************************************************************************************************	
-    public Long addUser(Long binderId, String definitionId, Map inputData, Map fileItems) 
+    public Long addUser(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
         ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
@@ -186,7 +187,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
 
      
-    public void modifyEntry(Long binderId, Long id, Map inputData, Map fileItems) 
+    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, Map fileItems) 
    		throws AccessControlException, WriteFilesException {
         ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
         ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
@@ -202,7 +203,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	    processor.modifyEntryData(binder, id, entryData);
     }
 
-    public Long addGroup(Long binderId, String definitionId, Map inputData, Map fileItems) 
+    public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
         Definition definition = getCoreDao().loadDefinition(definitionId, binder.getZoneName());

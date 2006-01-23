@@ -70,7 +70,9 @@ import com.sitescape.util.GetterUtil;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.module.mail.MailModule;
+import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.security.acl.AccessType;
 /**
@@ -470,7 +472,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 					processMime((MimeMultipart)content, inputData, fileItems);
 				}
 				//msgs[i].setFlag(Flags.Flag.DELETED, true); // set the DELETED flag
-				folderModule.addEntry(folder.getId(), definition.getId(), inputData, fileItems);
+				folderModule.addEntry(folder.getId(), definition.getId(), new MapInputData(inputData), fileItems);
 				fileItems.clear();
 				inputData.clear();
 			} catch (MessagingException me) {			

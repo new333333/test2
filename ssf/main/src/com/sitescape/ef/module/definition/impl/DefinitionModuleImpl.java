@@ -7,6 +7,7 @@ import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
 import com.sitescape.ef.module.definition.notify.NotifyBuilderUtil;
 import com.sitescape.ef.module.definition.notify.Notify;
+import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
@@ -759,7 +760,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	return this.definitionConfig;
     }
     
-    public Map getEntryData(Definition def, Map inputData, Map fileItems) {
+    public Map getEntryData(Definition def, InputDataAccessor inputData, Map fileItems) {
 		this.getDefinitionConfig();
 		//Get the base configuration definition file root (i.e., not the entry's definition file)
 		Element configRoot = this.definitionConfig.getRootElement();
@@ -799,14 +800,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
 									//Use the helper routine to parse the date into a date object
 									Description description = new Description();
-									if (inputData.containsKey(nameValue)) {
-										description.setText(((String[])inputData.get(nameValue))[0]);
+									if (inputData.exists(nameValue)) {
+										description.setText(inputData.getSingleValue(nameValue));
 										description.setFormat(Description.FORMAT_HTML);
 										entryData.put(nameValue, description);
 									}
 								} else if (itemName.equals("date")) {
 									//Use the helper routine to parse the date into a date object
-									Date date = DateHelper.getDateFromMap(inputData, nameValue);
+									Date date = DateHelper.getDateFromInput(inputData, nameValue);
 									if (date != null) {entryData.put(nameValue, date);}
 								} else if (itemName.equals("event")) {
 								    //Ditto for event helper routine
@@ -826,8 +827,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								        entryData.put(nameValue, event);
 								    }
 								} else if (itemName.equals("user_list")) {
-									if (inputData.containsKey(nameValue)) {
-										String[] userIds = ((String[])inputData.get(nameValue))[0].trim().split(" ");
+									if (inputData.exists(nameValue)) {
+										String[] userIds = inputData.getSingleValue(nameValue).trim().split(" ");
 										Set users = new HashSet();
 										for (int i = 0; i < userIds.length; i++) {
 											if (userIds[i].matches("^[0-9]+$")) {
@@ -840,9 +841,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 										entryData.put(nameValue, new HashSet(foundUsers));
 									}
 								} else if (itemName.equals("selectbox")) {
-									if (inputData.containsKey(nameValue)) entryData.put(nameValue, inputData.get(nameValue));
+									if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getValues(nameValue));
 								} else if (itemName.equals("checkbox")) {
-									if (inputData.containsKey(nameValue) && ((String[])inputData.get(nameValue))[0].equals("on")) {
+									if (inputData.exists(nameValue) && inputData.getSingleValue(nameValue).equals("on")) {
 										entryData.put(nameValue, new Boolean(true));
 									} else {
 										entryData.put(nameValue, new Boolean(false));
@@ -908,7 +909,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 										}
 								    }
 								} else {
-									if (inputData.containsKey(nameValue)) entryData.put(nameValue, ((String[])inputData.get(nameValue))[0]);
+									if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getSingleValue(nameValue));
 								}
 							}
 						}

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
+import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
@@ -43,7 +44,7 @@ public class ModifyEntryController extends SAbstractProfileController {
 			} else {
 				fileMap = new HashMap();
 			}
-			getProfileModule().modifyEntry(binderId, entryId, formData, fileMap);
+			getProfileModule().modifyEntry(binderId, entryId, new MapInputData(formData), fileMap);
 			setupViewEntry(response, binderId, entryId);
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button

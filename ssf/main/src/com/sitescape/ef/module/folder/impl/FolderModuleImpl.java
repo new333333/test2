@@ -23,6 +23,7 @@ import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
@@ -93,7 +94,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		return forumIdList;
 	}
 
-    public Long addEntry(Long folderId, String definitionId, Map inputData, Map fileItems) throws AccessControlException {
+    public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, Map fileItems) throws AccessControlException {
         User user = RequestContextHolder.getRequestContext().getUser();
         Folder folder = folderDao.loadFolder(folderId, user.getZoneName());
         Definition def = getCoreDao().loadDefinition(definitionId, user.getZoneName());
@@ -107,7 +108,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         return processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems);
     }
 
-    public Long addReply(Long folderId, Long parentId, String definitionId, Map inputData, Map fileItems) throws AccessControlException {
+    public Long addReply(Long folderId, Long parentId, String definitionId, InputDataAccessor inputData, Map fileItems) throws AccessControlException {
         User user = RequestContextHolder.getRequestContext().getUser();
         Folder folder = folderDao.loadFolder(folderId, user.getZoneName());
         Definition def = getCoreDao().loadDefinition(definitionId, user.getZoneName());
@@ -121,7 +122,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId, CURRENT_ENTRY);
         return processor.addReply(entry, def, inputData, fileItems);
     }
-    public void modifyEntry(Long folderId, Long entryId, Map inputData, Map fileItems) throws AccessControlException {
+    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, Map fileItems) throws AccessControlException {
         User user = RequestContextHolder.getRequestContext().getUser();
         Folder folder = folderDao.loadFolder(folderId, user.getZoneName());
        // This is nothing but a dispatcher to an appropriate processor. 

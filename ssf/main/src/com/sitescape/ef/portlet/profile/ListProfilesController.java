@@ -11,6 +11,7 @@ import java.util.Map;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 
 public class ListProfilesController extends  SAbstractProfileController {
@@ -22,7 +23,7 @@ public class ListProfilesController extends  SAbstractProfileController {
 			Map updates = new HashMap();
 		   	User user = RequestContextHolder.getRequestContext().getUser();
 			updates.put("displayStyle", PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), updates, new HashMap());
+			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates), new HashMap());
 		}
 		return returnToView(request, response);
 	}

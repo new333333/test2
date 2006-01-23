@@ -16,6 +16,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
+import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.module.profile.index.IndexUtils;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 /**
@@ -27,7 +28,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     
     //***********************************************************************************************************	
             
-    protected void addEntry_fillIn(Binder binder, AclControlledEntry entry, Map inputData, Map entryData) {  
+    protected void addEntry_fillIn(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
     	super.addEntry_fillIn(binder, entry, inputData, entryData);
         ((Principal)entry).setZoneName(binder.getZoneName());
     }

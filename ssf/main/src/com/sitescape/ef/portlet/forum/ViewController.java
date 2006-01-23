@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Date;
 
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.PortletRequestUtils;
@@ -102,7 +103,7 @@ public class ViewController  extends SAbstractForumController {
 		}
 		if (op.equals(WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE)) {
 			PortletSession ps = WebHelper.getRequiredPortletSession(request);
-			Date dt = DateHelper.getDateFromMap(formData, "goto");
+			Date dt = DateHelper.getDateFromInput(new MapInputData(formData), "goto");
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, dt);
 		}
 

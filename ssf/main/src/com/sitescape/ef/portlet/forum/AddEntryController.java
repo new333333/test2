@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
@@ -35,6 +36,7 @@ public class AddEntryController extends SAbstractForumController {
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		//See if the add entry form was submitted
 		Long entryId=null;
+		MapInputData inputData = new MapInputData(formData);
 		if (formData.containsKey("okBtn")) {
 			//The form was submitted. Go process it
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
@@ -45,10 +47,10 @@ public class AddEntryController extends SAbstractForumController {
 				fileMap = new HashMap();
 			}
 			if (action.equals(WebKeys.ACTION_ADD_ENTRY)) {
-				entryId= getFolderModule().addEntry(folderId, entryType, formData, fileMap);
+				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap);
 			} else if (action.equals(WebKeys.FORUM_ACTION_ADD_REPLY)) {
 				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-				entryId = getFolderModule().addReply(folderId, id, entryType, formData, fileMap );
+				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap );
 			}
 			setupViewEntry(response, folderId, entryId);
 			//flag reload
