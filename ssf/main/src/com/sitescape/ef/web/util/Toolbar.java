@@ -99,11 +99,11 @@ public class Toolbar {
 	public void addToolbarMenuItem(String name, String category, String title, Map urlParams, Map qualifiers) {
 		Map toolbarCategory = getCategory(name, category);
 		if (toolbarCategory == null) return;
-		Map toolbarCategoryMap;
+		SortedMap toolbarCategoryMap;
 		if (toolbarCategory.containsKey(title)) {
-			toolbarCategoryMap = (Map) toolbarCategory.get(title);
+			toolbarCategoryMap = (SortedMap) toolbarCategory.get(title);
 		} else {
-			toolbarCategoryMap = new HashMap();
+			toolbarCategoryMap = new TreeMap();
 		}
 		toolbarCategoryMap.put("urlParams", urlParams);
 		toolbarCategoryMap.put("qualifiers", qualifiers);
@@ -117,11 +117,11 @@ public class Toolbar {
 	public void addToolbarMenuItem(String name, String category, String title, PortletURL url, Map qualifiers) {
 		Map toolbarCategory = getCategory(name, category);
 		if (toolbarCategory == null) return;
-		Map toolbarCategoryMap;
+		SortedMap toolbarCategoryMap;
 		if (toolbarCategory.containsKey(title)) {
-			toolbarCategoryMap = (Map) toolbarCategory.get(title);
+			toolbarCategoryMap = (SortedMap) toolbarCategory.get(title);
 		} else {
-			toolbarCategoryMap = new HashMap();
+			toolbarCategoryMap = new TreeMap();
 		}
 		toolbarCategoryMap.put("url", url);
 		toolbarCategoryMap.put("qualifiers", qualifiers);
@@ -134,11 +134,11 @@ public class Toolbar {
 	public void addToolbarMenuItem(String name, String category, String title, String url, Map qualifiers) {
 		Map toolbarCategory = getCategory(name, category);
 		if (toolbarCategory == null) return;
-		Map toolbarCategoryMap;
+		SortedMap toolbarCategoryMap;
 		if (toolbarCategory.containsKey(title)) {
-			toolbarCategoryMap = (Map) toolbarCategory.get(title);
+			toolbarCategoryMap = (SortedMap) toolbarCategory.get(title);
 		} else {
-			toolbarCategoryMap = new HashMap();
+			toolbarCategoryMap = new TreeMap();
 		}
 		toolbarCategoryMap.put("url", url);
 		toolbarCategoryMap.put("qualifiers", qualifiers);

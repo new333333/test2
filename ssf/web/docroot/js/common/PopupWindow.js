@@ -158,16 +158,29 @@ function PopupWindow_showPopup(anchorname) {
 	if (this.divName != null) {
 		// Show the DIV object
 		if (this.use_gebi) {
-			document.getElementById(this.divName).style.left = this.x + "px";
+			if (parseInt(this.x) < 0) {
+				document.getElementById(this.divName).style.left = "0px";
+			} else {
+				document.getElementById(this.divName).style.left = this.x + "px";
+			}
 			document.getElementById(this.divName).style.top = this.y + "px";
 			document.getElementById(this.divName).style.visibility = "visible";
 			}
 		else if (this.use_css) {
-			document.all[this.divName].style.left = this.x;
+			if (parseInt(this.x) < 0) {
+				document.all[this.divName].style.left = 0;
+			} else {
+				document.all[this.divName].style.left = this.x;
+			}
 			document.all[this.divName].style.top = this.y;
 			document.all[this.divName].style.visibility = "visible";
 			}
 		else if (this.use_layers) {
+			if (parseInt(this.x) < 0) {
+				document.layers[this.divName].left = 0;
+			} else {
+				document.layers[this.divName].left = this.x;
+			}
 			document.layers[this.divName].left = this.x;
 			document.layers[this.divName].top = this.y;
 			document.layers[this.divName].visibility = "visible";

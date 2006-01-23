@@ -40,6 +40,7 @@ var ss_scrollbarWidth = 25;
 var ss_entryDivTopDelta = 25;
 var ss_entryDivBottomDelta = 50;
 var ss_scrollTopOffset = 4;
+var ss_nextUrl = ""
 
 function ss_showForumEntryInIframe(url) {
 	ss_positionEntryDiv();
@@ -48,12 +49,16 @@ function ss_showForumEntryInIframe(url) {
 
     wObj1.style.display = "block";
     wObj1.style.visibility = "visible";
+    wObj.style.height = parseInt(wObj1.style.height) - ss_entryDivBottomDelta + "px";
 
     if (wObj.src && wObj.src == url) {
-    	wObj.src = "_blank";
+    	ss_nextUrl = url
+    	wObj.src = "<html:rootPath/>js/forum/refresh.html";
+    } else if (wObj.src && wObj.src == "<html:rootPath/>js/forum/refresh.html" && ss_nextUrl == url) {
+    	wObj.src = "<html:rootPath/>js/forum/refresh.html";
+    } else {
+    	wObj.src = url
     }
-    wObj.style.height = parseInt(wObj1.style.height) - ss_entryDivBottomDelta + "px";
-    wObj.src = url
 
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();

@@ -798,8 +798,27 @@
 			<option name="onExit" />
 			<option name="variable" />
 			<option name="startParallelThread" />
-			<option name="waitForParallelThread" />
 			<option name="stopParallelThread" />
+		</options>
+	</item>
+	
+	<item name="transitions" caption="__transitions" canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+		<options>
+			<option name="transitionManual" />
+			<option name="transitionConditional" />
+			<option name="waitForParallelThread" />
+		</options>
+	</item>
+	
+	<item name="transitionManual" caption="__transitionManual" type="transition" >
+		<properties>
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+		<options>
+			<option name="variable" />
 		</options>
 	</item>
 	
@@ -812,25 +831,6 @@
 			<property name="startState" caption="__startState" type="itemSelect" path="//item[@name='state']" />
 			<property name="endState" caption="__endState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
-	</item>
-	
-	<item name="transitions" caption="__transitions" canBeDeleted="false" multipleAllowed="false">
-		<operations>
-			<operation name="addOption" caption="__add" />
-		</operations>
-		<options>
-			<option name="transitionManual" />
-			<option name="transitionConditional" />
-		</options>
-	</item>
-	
-	<item name="transitionManual" caption="__transitionManual" type="transition" >
-		<properties>
-			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
-		</properties>
-		<options>
-			<option name="variable" />
-		</options>
 	</item>
 	
 	<item name="transitionConditional" caption="__transitionConditional" type="transition" >
@@ -959,7 +959,7 @@
 	
 	<item name="waitForParallelThread" caption="__waitForParallelThread" >
 		<properties>
-			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" />
+			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" multipleAllowed="true" />
 			<property name="toState" caption="__toStateAfterWait" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 	</item>

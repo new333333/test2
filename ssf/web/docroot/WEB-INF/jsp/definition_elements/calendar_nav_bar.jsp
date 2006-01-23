@@ -7,13 +7,10 @@
 %>
 <form class="ss_style" name="ssCalNavBar" action="${goto_form_url}" 
   method="post" style="display:inline;">
-<input type="submit" class="ss_submit" name="go" value="Go to:">
-&nbsp;
 <span>
 	<ssf:datepicker formName="ssCalNavBar" showSelectors="true" 
-	 popupDivId="ss_calDivPopup" id="goto" initDate="${ssCurrentDate}" />
+	 popupDivId="ss_calDivPopup" id="goto" initDate="${ssCurrentDate}" 
+	 immediateMode="true" altText="<%= NLT.get("calendar.view.popupAltText") %>"/>
 </span>
 </form>
-<div id="ss_calDivPopup" STYLE="position:absolute; 
-  visibility:hidden; background-color:#f7f7f7; 
-  layer-background-color:white;"></div>
+<div id="ss_calDivPopup" class="ss_calPopupDiv"></div>

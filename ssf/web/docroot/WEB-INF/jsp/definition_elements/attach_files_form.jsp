@@ -20,16 +20,9 @@
 	} else {
 		caption = caption;
 	}
-	String required = (String) request.getAttribute("property_required");
-	if (required == null) {required = "";}
-	if (required.equals("true")) {
-		required = "<span class=\"ss_required\">*</span>";
-	} else {
-		required = "";
-	}
 %>
 <div class="ss_entryContent" >
-<span class="ss_labelAbove"><%= caption %><%= required %></span>
+<span class="ss_labelAbove"><%= caption %></span>
 <%
 	for (int i = 1; i <= count; i++) {
 %>

@@ -744,6 +744,14 @@ a.ss_smallLinkButton:focus, a.ss_smallLinkButton:hover, a.ss_smallLinkButton:act
   }
 
 /* Calendar popup styles (used in the datepicker) */
+
+div.ss_calPopupDiv {
+  position:absolute; 
+  visibility:hidden; 
+  background-color:#f7f7f7; 
+  layer-background-color:#f7f7f7;
+  }
+
 .ss_cpYearNavigation,
 .ss_cpMonthNavigation
 	{
@@ -751,7 +759,7 @@ a.ss_smallLinkButton:focus, a.ss_smallLinkButton:hover, a.ss_smallLinkButton:act
 	text-align:center;
 	vertical-align:center;
 	text-decoration:none;
-	color:#FFFFFF;
+	color:#000000;
 	font-weight:bold;
 	}
 .ss_cpDayColumnHeader,
@@ -798,7 +806,7 @@ TD.ss_cpDayColumnHeader
 	}
 .ss_cpCurrentDate
 	{
-	color: #FFFFFF;
+	color: #000000;
 	font-weight:bold;
 	}
 .ss_cpOtherMonthDate
@@ -807,7 +815,7 @@ TD.ss_cpDayColumnHeader
 	}
 TD.ss_cpCurrentDate
 	{
-	color:#FFFFFF;
+	color:#000000;
 	background-color: #cecece;
 	border-width:1;
 	border:solid thin #000000;

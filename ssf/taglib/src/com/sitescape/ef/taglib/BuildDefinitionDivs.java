@@ -12,7 +12,9 @@ import org.dom4j.Element;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.util.NLT;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -499,31 +501,38 @@ public class BuildDefinitionDivs extends TagSupport {
 					if (propertyConfig.attributeValue("readonly", "false").equalsIgnoreCase("true")) {
 						readonly = "readonly='readonly'";
 					}
-					String propertyValue = "";
-					String propertyValueDefault = "";
+					List propertyValues = new ArrayList();
 					if (properties != null) {
-						//See if there is already a value for this property in the actual definition file
-						property = (Element) properties.selectSingleNode("property[@name='"+propertyId+"']");
-						if (property != null) {
-							propertyValue = property.attributeValue("value", "");
-							propertyValueDefault = property.attributeValue("default", "");
+						//See if there are already values for this property in the actual definition file
+						List propertyNameElements = (List) properties.selectNodes("property[@name='"+propertyId+"']");
+						if (propertyNameElements != null) {
+							for (int i = 0; i < propertyNameElements.size(); i++) {
+								String propertyValue = ((Element)propertyNameElements.get(i)).attributeValue("value", "");
+								if (!propertyValue.equals("")) {
+									//Add this value to the list so it can be used to set "selected" or "checked" values later
+									propertyValues.add(propertyValue);
+								}
+							}
 						}
 					}
+					String propertyValue0 = "";
+					if (propertyValues.size() > 0) propertyValue0 = (String) propertyValues.get(0);
+					String propertyValueDefault = propertyConfig.attributeValue("default", "");
 					String type = propertyConfig.attributeValue("type", "text");
 					if (type.equals("textarea")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 							sb.append("\n<br>\n");
 						}
-						sb.append("<textarea name='propertyId_" + propertyId + "' rows='6' cols='60' "+readonly+">"+propertyValue+"</textarea>\n");
+						sb.append("<textarea name='propertyId_" + propertyId + "' rows='6' cols='60' "+readonly+">"+propertyValue0+"</textarea>\n");
 					
 					} else if (type.equals("boolean") || type.equals("checkbox")) {
 						String checked = "";
-						if (propertyValue.equals("")) {
+						if (propertyValue0.equals("")) {
 							if (propertyConfig.attributeValue("default", "false").equalsIgnoreCase("true")) {
 								checked = "checked";
 							}
-						} else if (propertyValue.equalsIgnoreCase("true")) {
+						} else if (propertyValue0.equalsIgnoreCase("true")) {
 							checked = "checked";
 						}
 						sb.append("<input type='checkbox' name='propertyId_" + propertyId + "' "+checked+" "+readonly+"> ");
@@ -545,8 +554,14 @@ public class BuildDefinitionDivs extends TagSupport {
 						while (itSelections.hasNext()) {
 							Element selection = (Element) itSelections.next();
 							String checked = "";
-							if ((!propertyValue.equals("") && propertyValue.equals(selection.attributeValue("name", ""))) || 
-									(!propertyValueDefault.equals("") && propertyValueDefault.equals(selection.attributeValue("name", "")))) {
+							for (int i = 0; i < propertyValues.size(); i++) {
+								if (((String)propertyValues.get(i)).equals(selection.attributeValue("name", ""))) {
+									checked = " selected";
+									break;
+								}
+							}
+							if ((propertyValues.size() == 0 && !propertyValueDefault.equals("") && 
+									propertyValueDefault.equals(selection.attributeValue("name", "")))) {
 								checked = " selected";
 							}
 							if (type.equals("selectbox")) {
@@ -596,10 +611,17 @@ public class BuildDefinitionDivs extends TagSupport {
 								if (itemDefinition != null) {
 									if (itemDefinition.attributeValue("type", "").equalsIgnoreCase(selectionSelectType)) {
 										String checked = "";
-										if (entryFormItemNamePropertyName.equals(propertyValue) || 
-												(propertyValue.equals("") && entryFormItemNamePropertyName.equals(propertyValueDefault))) {
+										for (int i = 0; i < propertyValues.size(); i++) {
+											if (((String)propertyValues.get(i)).equals(entryFormItemNamePropertyName)) {
+												checked = " selected";
+												break;
+											}
+										}
+										if ((propertyValues.size() == 0 && !propertyValueDefault.equals("") && 
+												propertyValueDefault.equals(entryFormItemNamePropertyName))) {
 											checked = " selected";
 										}
+
 										if (type.equals("selectbox")) {
 											sb.append("<option value='").append(entryFormItemNamePropertyName).append("'").append(checked).append(">");
 											sb.append(NLT.getDef(entryFormItemCaptionPropertyValue));
@@ -625,7 +647,9 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 							sb.append("\n<br>\n");
 						}
-						sb.append("<select name='propertyId_" + propertyId + "'>\n");
+						String multiple = "";
+						if (propertyConfig.attributeValue("multipleAllowed", "").equalsIgnoreCase("true")) multiple = "multiple";
+						sb.append("<select name='propertyId_" + propertyId + "' " + multiple + ">\n");
 						sb.append("<option value=''>").append(NLT.get("definition.select_item_select")).append("</option>\n");
 						
 						//Get the list of items in this definition
@@ -642,13 +666,16 @@ public class BuildDefinitionDivs extends TagSupport {
 								String selectedItemName = selectedItemNameEle.attributeValue("value", "");
 								String selectedItemCaption = selectedItemCaptionEle.attributeValue("value", "");
 								sb.append("<option value='").append(selectedItemName).append("'");
-								if (selectedItemName.equals(propertyValue)) {
-									sb.append(" selected");
+								for (int i = 0; i < propertyValues.size(); i++) {
+									if (((String)propertyValues.get(i)).equals(selectedItemName)) {
+										sb.append(" selected");
+										break;
+									}
 								}
 								sb.append(">").append(selectedItemCaption).append(" (").append(selectedItemName).append(")</option>\n");
 							}
 						}
-						sb.append("</select>\n<br><br>\n");
+						sb.append("</select>\n<br>\n");
 					
 					} else if (type.equals("replyStyle")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
@@ -679,7 +706,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("\n<br>\n");
 						}
 						sb.append("<input type='text' name='propertyId_" + propertyId + "' size='40' ");
-						sb.append("value=\""+propertyValue.replaceAll("\"", "&quot;")+"\" "+readonly+">\n");
+						sb.append("value=\""+propertyValue0.replaceAll("\"", "&quot;")+"\" "+readonly+">\n");
 					}
 					//See if this property has any help
 					Element help = (Element) propertyConfig.selectSingleNode("./help");
