@@ -892,7 +892,7 @@
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
-			<property name="userGroupAccess" caption="__userGroupAccess" type="userGroupSelect" />
+			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
 		</properties>
 	</item>
 	
@@ -900,7 +900,7 @@
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
-			<property name="userGroupAccess" caption="__userGroupAccess" type="userGroupSelect" />
+			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
 		</properties>
 	</item>
 	
@@ -908,7 +908,7 @@
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
-			<property name="userGroupAccess" caption="__userGroupAccess" type="userGroupSelect" />
+			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
 		</properties>
 	</item>
 	
@@ -916,7 +916,7 @@
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
-			<property name="userGroupAccess" caption="__userGroupAccess" type="userGroupSelect" />
+			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
 		</properties>
 	</item>
 	
@@ -924,7 +924,7 @@
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
-			<property name="userGroupAccess" caption="__userGroupAccess" type="userGroupSelect" />
+			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
 		</properties>
 	</item>
 	
@@ -935,6 +935,20 @@
 		<options>
 			<option_select path="//item[@category='notificationsLayout']" />
 		</options>
+	</item>
+	
+	<item name="entryNotification" caption="__entry_notification" category="notificationsLayout">
+		<properties>
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="userGroupNotification" caption="__userGroup" type="userGroupSelect" />
+		</properties>
+	</item>
+	
+	<item name="exitNotification" caption="__exit_notification" category="notificationsLayout">
+		<properties>
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="userGroupNotification" caption="__userGroup" type="userGroupSelect" />
+		</properties>
 	</item>
 	
 	<item name="onEntry" caption="__onEntry" canBeDeleted="true" multipleAllowed="false">
