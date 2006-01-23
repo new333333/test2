@@ -1,13 +1,14 @@
 package com.sitescape.ef.module.workflow;
 import java.util.List;
-
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Iterator;
+	
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.graph.exe.ExecutionContext;
-import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
-import org.jbpm.graph.def.Node;
 
 import com.sitescape.ef.domain.AclControlledEntry;
 import com.sitescape.ef.domain.WorkflowState;
@@ -20,22 +21,35 @@ public class DecisionAction extends AbstractActionHandler {
 
 	public void execute(ExecutionContext executionContext) throws Exception {
 		ContextInstance ctx = executionContext.getContextInstance();
-		Token token = executionContext.getToken();
-		Long id = new Long(token.getId());
+		Token current = executionContext.getToken();
 		AclControlledEntry entry = loadEntry(ctx);
-		WorkflowState ws = entry.getWorkflowState(id);
+		WorkflowState ws = entry.getWorkflowState(new Long(current.getId()));
 		if (ws != null) {
 			logger.info("Begin decision :" + ws.getState() + ":" + ws.getThreadName());
 			if (ws.isThreadEndState()) {
-				//terminate - record event will kick off waiting threads
-				executionContext.getToken().end(false);	    
-				entry.removeWorkflowState(ws);
-				checkForWaits(token, entry);
+				logger.info("ThreadEnd");
+				if (!current.isRoot()) {
+					current.end(false);
+				} else {
+					executionContext.getProcessInstance().end();
+				}
+				Map children = current.getChildren();
+				for (Iterator iter=children.values().iterator();iter.hasNext();) {
+					Token child = (Token)iter.next();
+					WorkflowState w = entry.getWorkflowState(new Long(child.getId()));
+					if (w != null) {
+						entry.removeWorkflowState(w);
+					}
+				}
+				if (!current.isRoot()) {
+					entry.removeWorkflowState(ws);
+					checkForWaits(current, entry);
+				} 
 				return;
 			}
 			//see if threads I am waiting for are done
 			List waitingFor = ws.getWfWaits();
-			Token root = token.getProcessInstance().getRootToken();
+			Token root = current.getProcessInstance().getRootToken();
 			for (int i=0; i<waitingFor.size(); ++i) {
 				WfWaits wait = (WfWaits)waitingFor.get(i);
 				List result = wait.getThreads();
@@ -58,7 +72,7 @@ public class DecisionAction extends AbstractActionHandler {
 						}
 						if (done) {
 							logger.info("Decision transition("+ ws.getThreadName() + "): " + ws.getState() + "." + toState);
-							token.getNode().leave(executionContext, ws.getState() + "." + toState);
+							current.signal(ws.getState() + "." + toState);
 							return;
 						}
  

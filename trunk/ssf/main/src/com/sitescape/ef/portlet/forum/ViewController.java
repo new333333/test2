@@ -67,6 +67,7 @@ public class ViewController  extends SAbstractForumController {
 			
 			folderIds.add(folderId);
 			model.put(WebKeys.FOLDER_LIST, getFolderModule().getSortedFolderList(folderIds));
+			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
 			return new ModelAndView(WebKeys.VIEW_FORUM, model);
 		}
 
