@@ -37,9 +37,9 @@ public interface FolderModule {
      * @return
      * @throws AccessControlException
      */
-    public Long addEntry(Long folderId, String definitionId, Map inputData, Map fileItems) throws AccessControlException;
-    public Long addReply(Long folderId, Long parentId, String definitionId, Map inputData, Map fileItems) throws AccessControlException;
-    public void modifyEntry(Long folderId, Long entryId, Map inputData, Map fileItems) throws AccessControlException;
+    public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, Map fileItems) throws AccessControlException;
+    public Long addReply(Long folderId, Long parentId, String definitionId, InputDataAccessor inputData, Map fileItems) throws AccessControlException;
+    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, Map fileItems) throws AccessControlException;
     public void modifyWorkflowState(Long folderId, Long entryId, Long tokenId, String toState) throws AccessControlException;
     
     /**

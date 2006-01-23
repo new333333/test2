@@ -35,6 +35,7 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.FileModule;
+import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
@@ -87,7 +88,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 	}
 
     //***********************************************************************************************************	
-    public Long addEntry(Binder binder, Definition def, Class clazz, Map inputData, Map fileItems) 
+    public Long addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
         
@@ -135,7 +136,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	EntryBuilder.writeFiles(getFileModule(), binder, entry, fileData);
     }
     
-    protected Map addEntry_toEntryData(Binder binder, Definition def, Map inputData, Map fileItems) {
+    protected Map addEntry_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
         return getDefinitionModule().getEntryData(def, inputData, fileItems);
     }
@@ -148,7 +149,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	}
     }
     
-    protected void addEntry_fillIn(Binder binder, AclControlledEntry entry, Map inputData, Map entryData) {  
+    protected void addEntry_fillIn(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setCreation(new HistoryStamp(user));
         entry.setModification(entry.getCreation());
@@ -165,17 +166,17 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         EntryBuilder.buildEntry(entry, entryData);
     }
     
-    protected void addEntry_preSave(Binder binder, AclControlledEntry entry, Map inputData, Map entryData) {
+    protected void addEntry_preSave(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {
     }
     
     protected void addEntry_save(AclControlledEntry entry) {
         getCoreDao().save(entry);
     }
     
-    protected void addEntry_postSave(Binder binder, AclControlledEntry entry, Map inputData, Map entryData) {
+    protected void addEntry_postSave(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {
     }
     
-    protected void addEntry_indexAdd(Binder binder, AclControlledEntry entry, Map inputData) {
+    protected void addEntry_indexAdd(Binder binder, AclControlledEntry entry, InputDataAccessor inputData) {
         
         // Create an index document from the entry object.
         org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry);
@@ -202,7 +203,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
  	
 
    //***********************************************************************************************************
-    public Long modifyEntry(Binder binder, Long entryId, Map inputData, Map fileItems) 
+    public Long modifyEntry(Binder binder, Long entryId, InputDataAccessor inputData, Map fileItems) 
     		throws AccessControlException, WriteFilesException {
 		AclControlledEntry entry = modifyEntry_load(binder, entryId);
 	    modifyEntry_accessControl(binder, entry);
@@ -249,21 +250,21 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     throws WriteFilesException {
     	EntryBuilder.writeFiles(getFileModule(), binder, entry, fileData);
     }
-    protected Map modifyEntry_toEntryData(AclControlledEntry entry, Map inputData, Map fileItems) {
+    protected Map modifyEntry_toEntryData(AclControlledEntry entry, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
         return getDefinitionModule().getEntryData(entry.getEntryDef(), inputData, fileItems);
     }
-    protected void modifyEntry_fillIn(Binder binder, AclControlledEntry entry, Map inputData, Map entryData) {  
+    protected void modifyEntry_fillIn(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setModification(new HistoryStamp(user));
         EntryBuilder.updateEntry(entry, entryData);
 
     }
 
-    protected void modifyEntry_postFillIn(Binder binder, AclControlledEntry entry, Map inputData, Map entryData) {
+    protected void modifyEntry_postFillIn(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {
     }
     
-    protected void modifyEntry_indexAdd(Binder binder, AclControlledEntry entry, Map inputData) {
+    protected void modifyEntry_indexAdd(Binder binder, AclControlledEntry entry, InputDataAccessor inputData) {
     	indexEntry(entry);
     }
     

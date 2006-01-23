@@ -4,12 +4,12 @@
  */
 package com.sitescape.ef.web.util;
 
+import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.util.NLT;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
-import java.util.Map;
 import java.util.Date;
 
 /**
@@ -24,9 +24,9 @@ public class DateHelper {
   * are paired, and the sequence number for the timepicker tag will be 0. 
   * Use this call, without the sequence number, for the vanilla case
   */
-    static public Date getDateFromMap (Map formData, String id) 
+    static public Date getDateFromInput(InputDataAccessor inputData, String id) 
     throws DatepickerException {
-        return getDateFromMap (formData, id, "0");
+        return getDateFromInput (inputData, id, "0");
     }
     
 /*
@@ -34,7 +34,7 @@ public class DateHelper {
  * datepicker tag -- for example, to specify the start and end time on the same day.
  * In this case, the sequence number is passed in to select which timepicker tag is to be used.
  */
-    static public Date getDateFromMap (Map formData, String id, String sequenceNumber) 
+    static public Date getDateFromInput (InputDataAccessor inputData, String id, String sequenceNumber) 
     throws DatepickerException {
         Date d = new Date();
         // date fields don't have a sequence number; time fields do
@@ -43,18 +43,18 @@ public class DateHelper {
         
         // check that the fields are there
         // date fields (select boxes) *must* be there
-        if (!formData.containsKey(datePrefix+"month")) {
+        if (!inputData.exists(datePrefix+"month")) {
             throw new DatepickerException("Cannot find required date field: month.");
         }
-        if (!formData.containsKey(datePrefix+"date")) {
+        if (!inputData.exists(datePrefix+"date")) {
             throw new DatepickerException("Cannot find required date field: date.");
         }
         
         // if the year isn't present, it probably means no date was entered
-        if (!formData.containsKey(datePrefix+"year")) {
+        if (!inputData.exists(datePrefix+"year")) {
             return null;
         }
-        String year = ((String[])formData.get(datePrefix + "year"))[0];
+        String year = inputData.getSingleValue(datePrefix + "year");
         // the calendar object will instantiate some date no matter what
         // we arbitrarily say that the date is not entered at all if the year is blank
         if (year.matches("")) {
@@ -64,7 +64,7 @@ public class DateHelper {
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTimeInMillis(0);
         cal.set(Calendar.YEAR, Integer.parseInt(year));
-        String month = ((String[])formData.get(datePrefix + "month"))[0];
+        String month = inputData.getSingleValue(datePrefix + "month");
         int mn = Integer.parseInt(month);
         // the first (zero-th) select box is for unselected, or "--"
         // once the year is supplied, we default any other unselected fields
@@ -72,7 +72,7 @@ public class DateHelper {
             cal.set(Calendar.MONTH, mn-1);
         }
 
-        String date = ((String[])formData.get(datePrefix + "date"))[0];
+        String date = inputData.getSingleValue(datePrefix + "date");
         int dd = Integer.parseInt(date);
         if (dd != 0) {
             cal.set(Calendar.DAY_OF_MONTH, dd);
@@ -81,21 +81,21 @@ public class DateHelper {
         // now on to the question of whether we use the time on the page...
         // we use time if a set of time fields is present with the specified sequenceNumber
         // if the time fields are missing, they default to present time (should they???) 
-        if (formData.containsKey(timePrefix + "hour")) {
-            String hour = ((String[])formData.get(timePrefix + "hour"))[0];
+        if (inputData.exists(timePrefix + "hour")) {
+            String hour = inputData.getSingleValue(timePrefix + "hour");
             int hh = Integer.parseInt(hour);
             // note that since 0 is a valid hour, we use 99 to indicate no selection 
             if (hh != 99) {
                 cal.set(Calendar.HOUR_OF_DAY, hh);
             }
-            String minute = ((String[])formData.get(timePrefix + "minute"))[0];
+            String minute = inputData.getSingleValue(timePrefix + "minute");
             int mm = Integer.parseInt(minute);
             if (mm != 99) {
                 cal.set(Calendar.MINUTE, mm);
             }
         }
-        if (formData.containsKey(datePrefix + "timezoneid")) {
-            String tzs = ((String[])formData.get(datePrefix + "timezoneid"))[0];
+        if (inputData.exists(datePrefix + "timezoneid")) {
+            String tzs = inputData.getSingleValue(datePrefix + "timezoneid");
             TimeZone tz = TimeZone.getTimeZone(tzs);
             cal.setTimeZone(tz);
         }

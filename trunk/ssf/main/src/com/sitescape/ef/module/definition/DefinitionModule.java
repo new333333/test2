@@ -12,6 +12,7 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.module.definition.notify.Notify;
+import com.sitescape.ef.module.folder.InputDataAccessor;
 
 /**
  * @author hurley
@@ -56,7 +57,7 @@ public interface DefinitionModule {
 	 * @param inputData
 	 * @return
 	 */
-	public Map getEntryData(Definition def, Map inputData, Map fileItems);
+	public Map getEntryData(Definition def, InputDataAccessor inputData, Map fileItems);
 	public List getDefinitions();
 	
 	public void addIndexFieldsForEntry(org.apache.lucene.document.Document indexDoc, Binder binder, Entry entry);

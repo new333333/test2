@@ -4,13 +4,13 @@
  */
 package com.sitescape.ef.web.util;
 
-import java.util.Map;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import com.sitescape.util.cal.DayAndPosition;
 
 import com.sitescape.ef.domain.Event;
+import com.sitescape.ef.module.folder.InputDataAccessor;
 
 /**
  * @author billmers
@@ -20,16 +20,16 @@ public class EventHelper {
     
 
     // default method assumes duration and recurrence patterns
-    static public Event getEventFromMap (Map formData, String id) {
+    static public Event getEventFromMap (InputDataAccessor inputData, String id) {
         Boolean hasDur = new Boolean("true");
         Boolean hasRecur = new Boolean("true");
-        Event e = getEventFromMap(formData, id, hasDur, hasRecur);
+        Event e = getEventFromMap(inputData, id, hasDur, hasRecur);
         return e;
     }
 
     
     // basic method
-    static public Event getEventFromMap (Map formData, String id, 
+    static public Event getEventFromMap (InputDataAccessor inputData, String id, 
     		Boolean hasDuration, Boolean hasRecurrence) { 
         // we make the id match what the event editor would do
         Event e = new Event();
@@ -39,8 +39,8 @@ public class EventHelper {
             String startId = "dp_" + id;
             String endId = "dp2_" + id;
 
-            Date start = DateHelper.getDateFromMap(formData, startId);
-            Date end = DateHelper.getDateFromMap(formData, endId);
+            Date start = DateHelper.getDateFromInput(inputData, startId);
+            Date end = DateHelper.getDateFromInput(inputData, endId);
             // for now, if either date in the range is missing, we return null Event
             // (consider instead making a checked exception?)
             if (start == null || end == null) {
@@ -54,7 +54,7 @@ public class EventHelper {
             e.setDtEnd(endc);
         } else {
             String whenId = "dp3_" + id;
-            Date when = DateHelper.getDateFromMap(formData, whenId);
+            Date when = DateHelper.getDateFromInput(inputData, whenId);
             if (when == null) {
                 return null;
             }
@@ -64,10 +64,10 @@ public class EventHelper {
             e.setDtEnd(whenc);
         }
         if (hasRecurrence.booleanValue()) {
-            String repeatUnit = ((String[])formData.get(prefix+"repeatUnit"))[0];
-            String intervalStr = ((String[])formData.get(prefix+"everyN"))[0];
+            String repeatUnit = inputData.getSingleValue(prefix+"repeatUnit");
+            String intervalStr = inputData.getSingleValue(prefix+"everyN");
             // rangeSel is the count/ until/ forever radio button
-            String rangeSel = ((String[])formData.get(prefix+"rangeSel"))[0];
+            String rangeSel = inputData.getSingleValue(prefix+"rangeSel");
             // this array maps the form checkboxes to the day-and-position constants
             int daysints[] = { 
                     Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, 
@@ -87,38 +87,38 @@ public class EventHelper {
                 // make the array of the correct size (setByDay will try to 
                 // clone the array, so any nulls inside will throw an exception)
                 String days[] = new String[7];
-                if (formData.containsKey(prefix+"day0")) {
-                	days[0] = ((String[])formData.get(prefix+"day0"))[0];
+                if (inputData.exists(prefix+"day0")) {
+                	days[0] = inputData.getSingleValue(prefix+"day0");
                 } else {
                 	days[0] = "";
                 }
-                if (formData.containsKey(prefix+"day1")) {
-                	days[1] = ((String[])formData.get(prefix+"day1"))[0];
+                if (inputData.exists(prefix+"day1")) {
+                	days[1] = inputData.getSingleValue(prefix+"day1");
                 } else {
                 	days[1] = "";
                 }
-                if (formData.containsKey(prefix+"day2")) {
-                	days[2] = ((String[])formData.get(prefix+"day2"))[0];
+                if (inputData.exists(prefix+"day2")) {
+                	days[2] = inputData.getSingleValue(prefix+"day2");
                 } else {
                 	days[2] = "";
                 }
-                if (formData.containsKey(prefix+"day3")) {
-                	days[3] = ((String[])formData.get(prefix+"day3"))[0];
+                if (inputData.exists(prefix+"day3")) {
+                	days[3] = inputData.getSingleValue(prefix+"day3");
                 } else {
                 	days[3] = "";
                 }
-                if (formData.containsKey(prefix+"day4")) {
-                	days[4] = ((String[])formData.get(prefix+"day4"))[0];
+                if (inputData.exists(prefix+"day4")) {
+                	days[4] = inputData.getSingleValue(prefix+"day4");
                 } else {
                 	days[4] = "";
                 }
-                if (formData.containsKey(prefix+"day5")) {
-                	days[5] = ((String[])formData.get(prefix+"day5"))[0];
+                if (inputData.exists(prefix+"day5")) {
+                	days[5] = inputData.getSingleValue(prefix+"day5");
                 } else {
                 	days[5] = "";
                 }
-                if (formData.containsKey(prefix+"day6")) {
-                	days[6] = ((String[])formData.get(prefix+"day6"))[0];
+                if (inputData.exists(prefix+"day6")) {
+                	days[6] = inputData.getSingleValue(prefix+"day6");
                 } else {
                 	days[6] = "";
                 }
@@ -143,8 +143,8 @@ public class EventHelper {
             if (repeatUnit.equals("month")) {
                 e.setFrequency(Event.MONTHLY);
                 e.setInterval(intervalStr);
-                String onDayCard = ((String[])formData.get(prefix+"onDayCard"))[0];
-                String dow = ((String[])formData.get(prefix+"dow"))[0];
+                String onDayCard = inputData.getSingleValue(prefix+"onDayCard");
+                String dow = inputData.getSingleValue(prefix+"dow");
                 int dayNum = 0;
                 if (onDayCard.equals("first")) {
                     dayNum = 1;
@@ -182,11 +182,11 @@ public class EventHelper {
                 }
             }
             if (rangeSel.equals("count")) {
-                String repeatCount = ((String[])formData.get(prefix+"repeatCount"))[0];
+                String repeatCount = inputData.getSingleValue(prefix+"repeatCount");
                 e.setCount(repeatCount);
             } else if (rangeSel.equals("until")) {
                 String untilId = "endRange_" + id;
-                Date until = DateHelper.getDateFromMap(formData, untilId);
+                Date until = DateHelper.getDateFromInput(inputData, untilId);
                 GregorianCalendar untilCal = new GregorianCalendar();
                 untilCal.setTime(until);
                 e.setUntil(untilCal);

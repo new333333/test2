@@ -17,15 +17,16 @@ import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.module.shared.WriteFilesException;
 import com.sitescape.ef.security.AccessControlException;
 
 public interface ProfileModule {
-   public Long addUser(Long binderId, String definitionId, Map inputData, Map fileItems) 
+   public Long addUser(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
-   public Long addGroup(Long binderId, String definitionId, Map inputData, Map fileItems) 
+   public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
-   public void modifyEntry(Long binderId, Long id, Map inputData, Map fileItems) 
+   public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
    public void modifyEntryData(Long binderId, Long id, Map entryData) 
 		throws AccessControlException;

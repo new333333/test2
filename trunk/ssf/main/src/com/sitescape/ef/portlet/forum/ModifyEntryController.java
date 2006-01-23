@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
+import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
@@ -41,7 +42,7 @@ public class ModifyEntryController extends SAbstractForumController {
 			} else {
 				fileMap = new HashMap();
 			}
-			getFolderModule().modifyEntry(folderId, entryId, formData, fileMap);
+			getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap);
 			setupViewEntry(response, folderId, entryId);
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
