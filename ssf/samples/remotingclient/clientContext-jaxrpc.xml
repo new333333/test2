@@ -4,11 +4,10 @@
 <beans>
 	<bean id="jaxRpcProxy" class="org.springframework.remoting.jaxrpc.JaxRpcPortProxyFactoryBean">
 		<property name="serviceFactoryClass"><value>org.apache.axis.client.ServiceFactory</value></property>
-		<!-- If you are running the client on a host different from the server, change
-		     localhost to the name of the host on which server is running. -->
-		<property name="wsdlDocumentUrl"><value>http://localhost:8080/ssf/ws/Facade?wsdl</value></property>
-		<!-- Do not change localhost even when your client is running on a different host. -->
-		<property name="namespaceUri"><value>http://localhost:8080/ssf/ws/Facade</value></property>
+		<!-- Change the host name to the one on which your server is running. -->
+		<property name="wsdlDocumentUrl"><value>http://peace:8080/ssf/ws/Facade?wsdl</value></property>
+		<!-- Change the host name to the one on which your server is running. -->
+		<property name="namespaceUri"><value>http://peace:8080/ssf/ws/Facade</value></property>
 		<property name="serviceName"><value>JaxRpcFacadeService</value></property>
 		<property name="portName"><value>Facade</value></property>
 		<property name="serviceInterface"><value>com.sitescape.ef.remoting.api.Facade</value></property>

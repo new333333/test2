@@ -63,7 +63,7 @@
 		</javac>
 	</target>
 	
-	<target name="testRun" depends="compile">
+	<target name="readEntry" depends="compile">
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
 			classpath="${classes.dir}"
@@ -72,12 +72,29 @@
 			dir="${basedir}"
 			failonerror="true">
 			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
+			<arg value="read"/>
 			<arg value="74"/>
 			<arg value="482"/>
 		</java>
 	</target>
 	
-	<target name="testRun2" depends="compile">
+	<target name="addEntry" depends="compile">
+		<java 
+			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
+			classpath="${classes.dir}"
+			classpathref="wsclient.project.classpath"
+			fork="true"
+			dir="${basedir}"
+			failonerror="true">
+			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
+			<arg value="add"/>
+			<arg value="74"/>
+			<!-- id of "discussion" definition -->
+			<arg value="402883cc08da22a50108da5a83260002"/>
+		</java>
+	</target>
+	
+	<target name="readEntryGenerated" depends="compile">
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
