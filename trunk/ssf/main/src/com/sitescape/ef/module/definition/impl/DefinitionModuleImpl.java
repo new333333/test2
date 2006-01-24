@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.TreeMap;
 
 import com.sitescape.ef.domain.DefinitionInvalidException;
 
@@ -1172,4 +1173,102 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	}
     	return false; // no match
     }
+    
+	//Routine to get the data elements for use in search queries
+    public Map getEntryDefinitionElements(String id) {
+		//Get a map for the results
+    	Map dataElements = new TreeMap();
+		
+		Definition def = getDefinition(id);
+		this.getDefinitionConfig();
+		//Get the base configuration definition file root (i.e., not the entry's definition file)
+		Element configRoot = this.definitionConfig.getRootElement();
+		
+		Document definitionTree = def.getDefinition();
+		if (definitionTree != null) {
+			//root is the root of the entry's definition
+			Element root = definitionTree.getRootElement();
+			
+			//Get a list of all of the form items in the definition (i.e., from the "form" section of the definition)
+			Element entryFormItem = (Element)root.selectSingleNode("item[@type='form' or @name='entryForm' or @name='profileEntryForm']");
+			if (entryFormItem != null) {
+				Iterator itItems = entryFormItem.selectNodes(".//item").listIterator();
+				while (itItems.hasNext()) {
+					//Get a map to store the results in
+					Map itemData = new HashMap();
+					
+					Element nextItem = (Element) itItems.next();
+					String itemName = (String) nextItem.attributeValue("name", "");
+					itemData.put("type", itemName);
+					
+					//Get the element name (property name)
+					Element nameProperty = (Element) nextItem.selectSingleNode("./properties/property[@name='name']");
+					Element captionProperty = (Element) nextItem.selectSingleNode("./properties/property[@name='caption']");
+					if (nameProperty != null && captionProperty != null) {
+						//Find the item in the base configuration definition to see if it is a data item
+						Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "']");
+						if (configItem != null) {
+							if (configItem.attributeValue("type", "").equals("data")) {
+								String nameValue = nameProperty.attributeValue("value", "");									
+								if (nameValue.equals("")) {nameValue = nextItem.attributeValue("name");}
+								String captionValue = captionProperty.attributeValue("value", "");									
+								if (captionValue.equals("")) {captionValue = nameValue;}
+								itemData.put("caption", NLT.getDef(captionValue));
+								
+								//We have the element name, see if it has option values
+								if (itemName.equals("selectbox")) {
+									Map valueMap = new TreeMap();
+									Iterator itSelectionItems = nextItem.selectNodes("item[@name='selectboxSelection']").iterator();
+									while (itSelectionItems.hasNext()) {
+										Element selection = (Element) itSelectionItems.next();
+										//Get the element name (property name)
+										Element selectionNameProperty = (Element) selection.selectSingleNode("./properties/property[@name='name']");
+										Element selectionCaptionProperty = (Element) selection.selectSingleNode("./properties/property[@name='caption']");
+										if (selectionNameProperty != null && selectionCaptionProperty != null) {
+											String selectionNameValue = selectionNameProperty.attributeValue("value", "");									
+											if (!selectionNameValue.equals("")) {
+												String selectionCaptionValue = selectionCaptionProperty.attributeValue("value", "");									
+												if (selectionCaptionValue.equals("")) {selectionCaptionValue = selectionNameValue;}
+												valueMap.put(selectionNameValue, NLT.getDef(selectionCaptionValue));
+											}
+										}
+									}
+									itemData.put("length", new Integer(valueMap.size()).toString());
+									if (valueMap.size() > 10) itemData.put("length", "10");
+									itemData.put("values", valueMap);
+								
+								} else if (itemName.equals("radio")) {
+									Map valueMap = new TreeMap();
+									Iterator itSelectionItems = nextItem.selectNodes("item[@name='radioSelection']").iterator();
+									while (itSelectionItems.hasNext()) {
+										Element selection = (Element) itSelectionItems.next();
+										//Get the element name (property name)
+										Element selectionNameProperty = (Element) selection.selectSingleNode("./properties/property[@name='name']");
+										Element selectionCaptionProperty = (Element) selection.selectSingleNode("./properties/property[@name='caption']");
+										if (selectionNameProperty != null && selectionCaptionProperty != null) {
+											String selectionNameValue = selectionNameProperty.attributeValue("value", "");									
+											if (!selectionNameValue.equals("")) {
+												String selectionCaptionValue = selectionCaptionProperty.attributeValue("value", "");									
+												if (selectionCaptionValue.equals("")) {selectionCaptionValue = selectionNameValue;}
+												valueMap.put(selectionNameValue, NLT.getDef(selectionCaptionValue));
+											}
+										}
+									}
+									itemData.put("length", new Integer(valueMap.size()).toString());
+									if (valueMap.size() > 10) itemData.put("length", "10");
+									itemData.put("values", valueMap);
+								}
+								
+								//Add this element to the results
+								dataElements.put(nameValue, itemData);
+							}
+						}
+					}
+				}
+			}
+		}
+   	
+    	return dataElements;
+    }
+
 }
