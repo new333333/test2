@@ -5,6 +5,7 @@
 	<bean id="jaxRpcProxy" class="org.springframework.remoting.jaxrpc.JaxRpcPortProxyFactoryBean">
 		<property name="serviceFactoryClass"><value>org.apache.axis.client.ServiceFactory</value></property>
 		<!-- Change the host name to the one on which your server is running. -->
+		<!-- To trace interactions using a tool like tcpmon, change the port number. -->
 		<property name="wsdlDocumentUrl"><value>http://peace:8080/ssf/ws/Facade?wsdl</value></property>
 		<!-- Change the host name to the one on which your server is running. -->
 		<property name="namespaceUri"><value>http://peace:8080/ssf/ws/Facade</value></property>
