@@ -6,6 +6,8 @@
 		<parameter name="sendMultiRefs" value="true"/>
 		<parameter name="sendXMLDeclaration" value="true"/>
 		<parameter name="axis.sendMinimizedElements" value="true"/>
+		<parameter name="attachments.Directory" value="./attachments"/>
+		<parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
 		<requestFlow>
 			<handler type="java:org.apache.axis.handlers.JWSHandler">
 				<parameter name="scope" value="session"/>

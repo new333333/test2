@@ -109,6 +109,7 @@ public class FacadeImpl implements Facade {
 		
 		// Handle structured fields of the entry known at compile time. 
 		entryElem.addAttribute("id", entry.getId().toString());
+		entryElem.addAttribute("binderId", entry.getParentBinder().getId().toString());
 		entryElem.addAttribute("title", entry.getTitle());
 		entryElem.addAttribute("docNumber", entry.getDocNumber());
 		entryElem.addAttribute("docLevel", String.valueOf(entry.getDocLevel()));
