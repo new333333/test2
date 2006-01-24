@@ -81,31 +81,42 @@ public class FacadeClient {
 	public static void main(String[] args) {
 		System.out.println("*** This Facade client uses Spring's jaxrpc proxy");
 
-		// first argument - binder id
-		// second argument - entry id
-		if(args.length < 2) {
-			System.out.println("You need to specify a binder id and an entry id");
+		// Arguments
+		// read <binder id> <entry id> 
+		// OR
+		// add <binder id> <definition id>
+
+		if(args.length < 3) {
+			System.out.println("Invalid arguments");
 			return;
 		}
-		
-		System.out.println("binder id = " + args[0] + ", entry id = " + args[1]);
-
-		System.out.println("*** Reading an entry ***");
-		
-		int binderId = Integer.parseInt(args[0]);
-		int entryId = Integer.parseInt(args[1]);
 
 		ListableBeanFactory beanFactory = new FileSystemXmlApplicationContext(CLIENT_CONTEXT_CONFIG_LOCATION);
 		FacadeClient client = (FacadeClient) beanFactory.getBean("facadeClient");
 
-		client.printEntry(binderId, entryId);
-		
-		client.printEntryAsXML(binderId, entryId);
+		if(args[0].equals("read")) {
+			System.out.println("*** Reading an entry ***");
+			
+			int binderId = Integer.parseInt(args[1]);
+			int entryId = Integer.parseInt(args[2]);
 
-		System.out.println("*** Adding an entry ***");
+			client.printEntry(binderId, entryId);
+			
+			client.printEntryAsXML(binderId, entryId);			
+		}
+		else if(args[0].equals("add")){
+			
+			System.out.println("*** Adding an entry ***");
 
-		String definitionId = "402883cc08da22a50108da5a83260002"; // id of "discussion" definition
-		client.addEntry(binderId, definitionId);
+			int binderId = Integer.parseInt(args[1]);
+			String definitionId = args[2];
+			
+			client.addEntry(binderId, definitionId);
+		}
+		else {
+			System.out.println("Invalid arguments");
+			return;
+		}
 	}
 	
 	private void prettyPrint(Document doc) {
