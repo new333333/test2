@@ -19,7 +19,7 @@
 
 <div class="ss_style ss_portlet">
 
-<div class="forms">
+<div>
 <form class="ss_style" method="post" action="<portlet:actionURL>
 					<portlet:param name="action" value="configure_forum"/>
 					<portlet:param name="binderId" value="${ssBinder.id}"/>
