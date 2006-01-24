@@ -70,6 +70,8 @@ public class WebKeys {
 	public static final String DEFINITION_ACTION_IMPORT="import_definition";
 	//oerations
  	public static final String FORUM_OPERATION_ADMINISTRATION = "administration";
+	public static final String FORUM_OPERATION_GET_ENTRY_ELEMENTS = "get_entry_elements";
+	public static final String FORUM_OPERATION_GET_ELEMENT_VALUES = "get_element_values";
 	public static final String FORUM_OPERATION_SET_DISPLAY_STYLE = "set_display_style";
 	public static final String FORUM_OPERATION_SET_DISPLAY_DEFINITION = "set_display_definition";
 	public static final String FORUM_OPERATION_VIEW_ENTRY = "view_entry";
@@ -103,9 +105,13 @@ public class WebKeys {
     public static final String ENTRIES="ssEntries";
     public static final String ENTRY_DEFINITION="ssEntryDefinition";
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
+    public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
     public static final String ENTRY_ID = "ssEntryId";
     public static final String FILE_VIEW_TYPE_SCALED = "scaled";
     public static final String FILE_VIEW_TYPE_THUMBNAIL = "thumbnail";
+    public static final String FILTER_ENTRY_DEF_ID = "ss_filter_entry_def_id";
+    public static final String FILTER_ENTRY_ELEMENT_NAME = "ss_filter_entry_element_name";
+    public static final String FILTER_ENTRY_FILTER_TERM_NUMBER="ss_filterTermNumber";
     public static final String FOLDER = "ssFolder";
     public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";
     public static final String FOLDER_DEFINTION_MAP="ssFolderDefinitionMap";
@@ -160,6 +166,7 @@ public class WebKeys {
 	public static final String ZONE_NAME = "com.sitescape.zonename";
 
     //View names
+    public static final String VIEW_BUILD_FILTER = "binder/build_filter";
     public static final String VIEW_CONFIGURE = "binder/configure";
     public static final String VIEW_NO_DEFINITION="forum/view_default";
     public static final String VIEW_LISTING="entry/view_listing";
