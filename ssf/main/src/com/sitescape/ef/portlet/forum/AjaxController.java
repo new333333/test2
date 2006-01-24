@@ -20,9 +20,12 @@ import com.sitescape.ef.module.profile.index.IndexUtils;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.User;
 
 /**
@@ -78,6 +81,8 @@ public class AjaxController  extends SAbstractForumController {
 				return new ModelAndView("forum/save_column_positions_return", model);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_WIDTH)) {
 				return new ModelAndView("forum/save_entry_width_return", model);
+			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS)) {
+				return new ModelAndView("binder/get_entry_elements", model);
 			}
 			return new ModelAndView("forum/ajax_return", model);
 		}
@@ -142,6 +147,39 @@ public class AjaxController  extends SAbstractForumController {
 			response.setContentType("text/xml");
 			model.put(WebKeys.AJAX_STATUS, statusMap);
 			return new ModelAndView("forum/user_list_search", model);
+
+		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
+				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES)) {
+			String filterTermNumber = ((String[])formData.get(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER))[0];
+			model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, filterTermNumber);
+			String defId = ((String[])formData.get(WebKeys.FILTER_ENTRY_DEF_ID+filterTermNumber))[0];
+			model.put(WebKeys.FILTER_ENTRY_DEF_ID, defId);
+			
+			if (formData.containsKey("elementName" + filterTermNumber)) {
+				String elementName = ((String[])formData.get("elementName" + filterTermNumber))[0];
+				model.put(WebKeys.FILTER_ENTRY_ELEMENT_NAME, elementName);
+			}
+
+			Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+			Binder binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
+			model.put(WebKeys.FOLDER_WORKFLOW_ASSOCIATIONS, binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS));
+				
+			Map defaultEntryDefinitions = DefinitionUtils.getEntryDefsAsMap(binder);
+			model.put(WebKeys.ENTRY_DEFINTION_MAP, defaultEntryDefinitions);
+			Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
+			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
+
+	    	Map workflowAssociations = (Map) binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS);
+	    	DefinitionUtils.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
+			
+	    	model.put(WebKeys.AJAX_STATUS, statusMap);
+			response.setContentType("text/xml");
+			if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS)) {
+				return new ModelAndView("binder/get_entry_elements", model);
+			} else {
+				return new ModelAndView("binder/get_element_value", model);
+			}
 		}
 		
 		return new ModelAndView(WebKeys.VIEW_FORUM, model);
