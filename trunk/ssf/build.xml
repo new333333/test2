@@ -238,6 +238,7 @@
 		     this line once we upgarde to a later version of Liferay that contains
 		     v1.0 of jdom. -->
 		<copy file="lib/jdom.jar" todir="${app.server.ssf.dir}/WEB-INF/lib" />
+		<copy file="lib/xalan.jar" todir="${app.server.dir}/common/endorsed" />
 	</target>
 		
 	<target name="deploy-liferay-jboss-tomcat" depends="init-liferay">	
