@@ -62,4 +62,5 @@ public interface DefinitionModule {
 	
 	public void addIndexFieldsForEntry(org.apache.lucene.document.Document indexDoc, Binder binder, Entry entry);
 	public void addNotifyElementForEntry(Element element, Notify notifyDef, Entry entry, String[] categories);
+	public Map getEntryDefinitionElements(String id);
 }
