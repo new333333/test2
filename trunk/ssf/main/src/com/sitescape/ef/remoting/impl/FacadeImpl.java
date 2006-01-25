@@ -28,10 +28,11 @@ import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.folder.FolderModule;
-import com.sitescape.ef.remoting.api.Entry;
+import com.sitescape.ef.remoting.api.Binder;
 import com.sitescape.ef.remoting.api.Facade;
 import com.sitescape.ef.web.util.WebUrlUtil;
 
@@ -47,6 +48,7 @@ public class FacadeImpl implements Facade {
 
 	private FolderModule folderModule;
 	private DefinitionModule definitionModule;
+	private BinderModule binderModule;
 
 	protected FolderModule getFolderModule() {
 		return folderModule;
@@ -59,8 +61,14 @@ public class FacadeImpl implements Facade {
 	}
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
-	}	
-
+	}
+	protected BinderModule getBinderModule() {
+		return binderModule;
+	}
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
+	
 	public String getDefinitionAsXML(String definitionId) {
 		return getDefinitionModule().getDefinition(definitionId).getDefinition().asXML();
 	}
@@ -68,6 +76,17 @@ public class FacadeImpl implements Facade {
 		return getDefinitionModule().getDefinitionConfig().asXML();
 	}
 
+	public Binder getBinder(long binderId) {
+		com.sitescape.ef.domain.Binder dbinder = getBinderModule().getBinder(new Long(binderId));
+		
+		// For now, we can only expose id and title. 
+		Binder binder = new Binder();
+		binder.setId(dbinder.getId().longValue());
+		binder.setTitle(dbinder.getTitle());
+		
+		return binder;
+	}
+	
 	public String getEntryAsXML(long binderId, long entryId) {
 		Long bId = new Long(binderId);
 		Long eId = new Long(entryId);

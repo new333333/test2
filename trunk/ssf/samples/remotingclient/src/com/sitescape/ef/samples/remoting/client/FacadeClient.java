@@ -3,7 +3,6 @@ package com.sitescape.ef.samples.remoting.client;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import com.sitescape.ef.remoting.api.Entry;
 import com.sitescape.ef.remoting.api.Facade;
 
 /**
