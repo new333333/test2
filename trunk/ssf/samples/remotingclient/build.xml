@@ -200,7 +200,7 @@
 			verbose="true"
 			url="http://peace:8080/ssf/ws/Facade?wsdl" >
 			<mapping
-				namespace="http://localhost:8080/ssf/ws/Facade"
+				namespace="http://peace:8080/ssf/ws/Facade"
 				package="com.sitescape.ef.samples.remoting.client.ws.jaxrpc" />
 			<mapping
 				namespace="urn:SSF"

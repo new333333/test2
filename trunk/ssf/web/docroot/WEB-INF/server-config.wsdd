@@ -40,7 +40,7 @@
   		<!--<parameter name="wsdlTargetNamespace" value="urn:SSF" />-->
 		<beanMapping qname="ssf:Binder" xmlns:ssf="urn:SSF" languageSpecificType="java:com.sitescape.ef.remoting.api.Binder"/>
 		<!-- The host name portion must be substituted appropriately. -->
-		<!--<endpointURL>http://localhost:8080/ssf/ws/Facade</endpointURL>-->
+		<endpointURL>http://peace:8080/ssf/ws/Facade</endpointURL>
 		<!--<namespace>http://peace:8080/ssf/ws/</namespace>-->
 	</service>
 	<!--<service name="Version" provider="java:RPC">
