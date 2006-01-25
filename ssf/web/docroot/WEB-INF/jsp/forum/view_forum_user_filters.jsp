@@ -2,9 +2,9 @@
 <% // User filters %>
 
 <select>
-<option>filter 1</option>
-<option>filter 2 filter 2 filter 2 </option>
-<option>filter 3 filter 3 filter 3 filter 3 filter 3 </option>
+<option value="">--none--</option>
+<c:forEach var="filter" items="${ssUserFolderProperties}">
+</c:forEach>
 </select>
 <a href="<portlet:renderURL windowState="maximized">
 		<portlet:param name="action" value="build_filter"/>

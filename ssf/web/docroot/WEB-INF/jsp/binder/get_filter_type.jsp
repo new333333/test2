@@ -27,7 +27,7 @@
 	style="display:inline;">
 	  <c:if test="${ss_filterType == 'text'}">
          <ssf:nlt tag="filter.searchText" text="Search text"/>: <input 
-         type="searchText" style="width:200px;" 
+         type="text" style="width:200px;" 
          name="elementValue<c:out value="${ss_filterTermNumber}"/>" />
 	  </c:if>
 	  <c:if test="${ss_filterType == 'entry'}">
@@ -47,6 +47,8 @@
 	  <c:if test="${ss_filterType == 'workflow'}">
 	    [workflows and workflow states will be listed here]
 	  </c:if>
+	  <input type="hidden" name="filterType<c:out value="${ss_filterTermNumber}"/>"
+	    value="<c:out value="${ss_filterType}"/>"/>
 	</div></taconite-replace>
 
 	<taconite-replace contextNodeID="elementList<c:out value="${ss_filterTermNumber}"/>" 
