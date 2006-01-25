@@ -9,7 +9,7 @@ import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
 import org.springframework.remoting.jaxrpc.JaxRpcServicePostProcessor;
 
-import com.sitescape.ef.remoting.api.Entry;
+import com.sitescape.ef.remoting.api.Binder;
 
 /**
  * Provides custom type mappings for Axis to use to serialize/deserialize
@@ -23,7 +23,7 @@ public class BeanMappingServicePostProcessor implements JaxRpcServicePostProcess
 	public void postProcessJaxRpcService(Service service) {
 		TypeMappingRegistry registry = service.getTypeMappingRegistry();
 		TypeMapping mapping = registry.createTypeMapping();
-		registerBeanMapping(mapping, Entry.class, "Entry");
+		registerBeanMapping(mapping, Binder.class, "Binder");
 		registry.register("http://schemas.xmlsoap.org/soap/encoding/", mapping);
 	}
 

@@ -2,7 +2,7 @@ package com.sitescape.ef.remoting.ws.jaxrpc;
 
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-import com.sitescape.ef.remoting.api.Entry;
+import com.sitescape.ef.remoting.api.Binder;
 import com.sitescape.ef.remoting.api.Facade;
 import com.sitescape.ef.remoting.rmi.RemoteFacade;
 
@@ -31,6 +31,10 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade,Remot
 		return this.facade.getDefinitionConfigAsXML();
 	}
 
+	public Binder getBinder(long binderId) {
+		return this.facade.getBinder(binderId);
+	}
+	
 	public String getEntryAsXML(long binderId, long entryId) {
 		return this.facade.getEntryAsXML(binderId, entryId);
 	}

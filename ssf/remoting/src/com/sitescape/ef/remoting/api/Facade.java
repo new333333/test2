@@ -12,6 +12,8 @@ public interface Facade {
 	
 	public String getDefinitionConfigAsXML();
 	
+	public Binder getBinder(long binderId);
+	
 	public String getEntryAsXML(long binderId, long entryId);
 	
 	public long addEntry(long binderId, String definitionId, String inputDataAsXML);

@@ -3,6 +3,8 @@ package com.sitescape.ef.remoting.rmi;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import com.sitescape.ef.remoting.api.Binder;
+
 /**
  * RMI interface (aka. port interface) for Facade service.
  * It differs from <code>Facade</code> interface only in the remote
@@ -25,6 +27,8 @@ public interface RemoteFacade extends Remote {
 	
 	public String getDefinitionConfigAsXML() throws RemoteException;
 	
+	public Binder getBinder(long binderId) throws RemoteException;
+
 	public String getEntryAsXML(long binderId, long entryId) throws RemoteException;
 	
 	public long addEntry(long binderId, String definitionId, String inputDataAsXML) 
