@@ -29,7 +29,7 @@ public class DomInputData implements InputDataAccessor {
 	}
 	
 	public String getSingleValue(String key) {
-		Element elem = (Element) root.selectSingleNode("attribute[@name='" + key + "']");
+		Element elem = (Element) root.selectSingleNode("property[@name='" + key + "']");
 		
 		if(elem != null) {
 			return elem.getText();
@@ -40,7 +40,7 @@ public class DomInputData implements InputDataAccessor {
 	}
 
 	public String[] getValues(String key) {
-		List nodes = root.selectNodes("attribute[@name='" + key + "']");
+		List nodes = root.selectNodes("property[@name='" + key + "']");
 		
 		int size = nodes.size();
 		
@@ -57,7 +57,7 @@ public class DomInputData implements InputDataAccessor {
 	}
 
 	public boolean exists(String key) {
-		if(root.selectSingleNode("attribute[@name='" + key + "']") != null)
+		if(root.selectSingleNode("property[@name='" + key + "']") != null)
 			return true;
 		else
 			return false;
