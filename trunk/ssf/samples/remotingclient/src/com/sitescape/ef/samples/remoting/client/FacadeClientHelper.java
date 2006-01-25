@@ -6,21 +6,15 @@ import java.util.Date;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 public class FacadeClientHelper {
 
-	public static void printEntryAsXML(String entryAsXML) {
+	public static void printXML(String xml) {
 		System.out.println();
 		try {
-			Document document = DocumentHelper.parseText(entryAsXML);
-			
-			Element rootElem = document.getRootElement();
-			
-			System.out.println("*** Entry(" + rootElem.attributeValue
-					("binderId") + "," + rootElem.attributeValue("id") + ")");
+			Document document = DocumentHelper.parseText(xml);
 			
 			prettyPrintXML(document);
 		} catch (DocumentException e) {

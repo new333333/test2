@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.activation.DataHandler;
 
@@ -27,6 +27,7 @@ import org.dom4j.io.XMLWriter;
 import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
@@ -79,12 +80,7 @@ public class FacadeImpl implements Facade {
 	public Binder getBinder(long binderId) {
 		com.sitescape.ef.domain.Binder dbinder = getBinderModule().getBinder(new Long(binderId));
 		
-		// For now, we can only expose id and title. 
-		Binder binder = new Binder();
-		binder.setId(dbinder.getId().longValue());
-		binder.setTitle(dbinder.getTitle());
-		
-		return binder;
+		return DBinderToBinder(dbinder);
 	}
 	
 	public String getEntryAsXML(long binderId, long entryId) {
@@ -217,5 +213,25 @@ public class FacadeImpl implements Facade {
 			attachments[count++] = part;
 		}
 		return attachments;
+	}
+	
+	private Binder DBinderToBinder(com.sitescape.ef.domain.Binder dbinder) {
+		Binder binder = new Binder();
+		
+		binder.setId(dbinder.getId().longValue());
+		binder.setName(dbinder.getName());
+		binder.setZoneName(dbinder.getZoneName());
+		binder.setType(dbinder.getType());
+		binder.setTitle(dbinder.getTitle());
+		binder.setOwningWorkspaceId(dbinder.getOwningWorkspace().getId().longValue());
+		
+		List entryDefs = dbinder.getEntryDefs();
+		String[] entryDefinitionIds = new String[entryDefs.size()];
+		for(int i = 0; i < entryDefinitionIds.length; i++) {
+			entryDefinitionIds[i] = ((Definition) entryDefs.get(i)).getId();
+		}
+		binder.setEntryDefinitionIds(entryDefinitionIds);
+		
+		return binder;	
 	}
 }
