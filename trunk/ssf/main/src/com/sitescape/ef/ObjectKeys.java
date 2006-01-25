@@ -30,6 +30,7 @@ public interface ObjectKeys {
     public static final String USER_DISPLAY_STYLE_VERTICAL = "vertical";
     public static final String USER_PROPERTY_DISPLAY_STYLE = "displayStyle";
     public static final String USER_PROPERTY_DISPLAY_DEFINITION = "displayDefinition";
+    public static final String USER_PROPERTY_SEARCH_FILTERS = "searchFilters";
 
     public static final String WORKAREA_OPERATION = "workarea_operation";
     
