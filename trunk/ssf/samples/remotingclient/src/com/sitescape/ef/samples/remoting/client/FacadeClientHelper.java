@@ -25,18 +25,18 @@ public class FacadeClientHelper {
 	
 	public static String generateEntryInputDataAsXML(long binderId, String definitionId) {
 		StringBuffer sb = new StringBuffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		sb.append("<entry>")
-			.append("<attribute name=\"title\">WS test ")
+		sb.append("<data>")
+			.append("<property name=\"title\">WS test ")
 			.append(new Date().getTime())
-			.append("</attribute>")
-			.append("<attribute name=\"description\">Added through Web Service</attribute>")
-			.append("<attribute name=\"birthDate_date\">21</attribute>")
-			.append("<attribute name=\"birthDate_month\">05</attribute>")
-			.append("<attribute name=\"birthDate_year\">1992</attribute>")
-			.append("<attribute name=\"birthDate_timezoneid\">GMT</attribute>")
-			.append("<attribute name=\"colors\">white</attribute>")
-			.append("<attribute name=\"colors\">blue</attribute>")
-			.append("</entry>");
+			.append("</property>")
+			.append("<property name=\"description\">Added through Web Service</property>")
+			.append("<property name=\"birthDate_date\">21</property>")
+			.append("<property name=\"birthDate_month\">05</property>")
+			.append("<property name=\"birthDate_year\">1992</property>")
+			.append("<property name=\"birthDate_timezoneid\">GMT</property>")
+			.append("<property name=\"colors\">white</property>")
+			.append("<property name=\"colors\">blue</property>")
+			.append("</data>");
 
 		return sb.toString();
 	}

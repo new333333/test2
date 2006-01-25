@@ -37,12 +37,18 @@
 	</target>
 
 	<target name="usage">
-		<echo message="readDefinition" />
-		<echo message="readDefinitionConfig" />
-		<echo message="readBinder" />
-		<echo message="readEntry" />
-		<echo message="addEntry" />
-		<echo message="uploadFile" />
+		<echo message="readDefinitionGenerated" />
+		<echo message="readDefinitionConfigGenerated" />
+		<echo message="readBinderGenerated" />
+		<echo message="readEntryGenerated" />
+		<echo message="addEntryGenerated" />
+		<echo message="uploadFileGenerated" />
+		<echo message="readDefinitionSpring" />
+		<echo message="readDefinitionConfigSpring" />
+		<echo message="readBinderSpring" />
+		<echo message="readEntrySpring" />
+		<echo message="addEntrySpring" />
+		<echo message="uploadFileSpring" />
 	</target>
 	
 	<target name="clean" depends="init">
@@ -73,6 +79,48 @@
 		</javac>
 	</target>
 	
+	<target name="readDefinitionSpring" depends="compile">
+		<java 
+			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
+			classpath="${classes.dir}"
+			classpathref="wsclient.project.classpath"
+			fork="true"
+			dir="${basedir}"
+			failonerror="true">
+			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
+			<arg value="readDefinition"/>
+			<!-- id of "discussion" definition -->
+			<arg value="402883cc08da22a50108da5a83260002"/>
+		</java>
+	</target>
+	
+	<target name="readDefinitionConfigSpring" depends="compile">
+		<java 
+			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
+			classpath="${classes.dir}"
+			classpathref="wsclient.project.classpath"
+			fork="true"
+			dir="${basedir}"
+			failonerror="true">
+			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
+			<arg value="readDefinitionConfig"/>
+		</java>
+	</target>
+	
+	<target name="readBinderSpring" depends="compile">
+		<java 
+			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
+			classpath="${classes.dir}"
+			classpathref="wsclient.project.classpath"
+			fork="true"
+			dir="${basedir}"
+			failonerror="true">
+			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
+			<arg value="readBinder"/>
+			<arg value="74"/>
+		</java>
+	</target>
+	
 	<target name="readEntrySpring" depends="compile">
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
@@ -82,7 +130,7 @@
 			dir="${basedir}"
 			failonerror="true">
 			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
-			<arg value="read"/>
+			<arg value="readEntry"/>
 			<arg value="74"/>
 			<arg value="482"/>
 		</java>
@@ -97,14 +145,14 @@
 			dir="${basedir}"
 			failonerror="true">
 			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
-			<arg value="add"/>
+			<arg value="addEntry"/>
 			<arg value="74"/>
 			<!-- id of "discussion" definition -->
 			<arg value="402883cc08da22a50108da5a83260002"/>
 		</java>
 	</target>
 	
-	<target name="readDefinition" depends="compile">
+	<target name="readDefinitionGenerated" depends="compile">
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
@@ -119,7 +167,7 @@
 		</java>
 	</target>
 	
-	<target name="readDefinitionConfig" depends="compile">
+	<target name="readDefinitionConfigGenerated" depends="compile">
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
@@ -132,7 +180,7 @@
 		</java>
 	</target>
 	
-	<target name="readBinder" depends="compile">
+	<target name="readBinderGenerated" depends="compile">
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
@@ -146,7 +194,7 @@
 		</java>
 	</target>
 	
-	<target name="readEntry" depends="compile">
+	<target name="readEntryGenerated" depends="compile">
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
@@ -161,7 +209,7 @@
 		</java>
 	</target>
 	
-	<target name="addEntry" depends="compile">
+	<target name="addEntryGenerated" depends="compile">
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
@@ -177,7 +225,7 @@
 		</java>
 	</target>
 	
-	<target name="uploadFile" depends="compile">
+	<target name="uploadFileGenerated" depends="compile">
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"

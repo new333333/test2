@@ -44,13 +44,7 @@ public class FacadeClient {
 		System.out.println("*** This Facade client uses Axis-generated client bindings");
 
 		if(args.length == 0) {
-			System.out.println("Usage:");
-			System.out.println("readDefinition <definition id>");
-			System.out.println("readDefinitionConfig");
-			System.out.println("readBinder <binder id>");
-			System.out.println("readEntry <binder id> <entry id>");
-			System.out.println("addEntry <binder id> <definition id>");
-			System.out.println("uploadFile <binder id> <entry id> <file path>");
+			printUsage();
 			return;
 		}
 
@@ -82,6 +76,7 @@ public class FacadeClient {
 			}
 			else {
 				System.out.println("Invalid arguments");
+				printUsage();
 				return;
 			}
 		}
@@ -150,6 +145,7 @@ public class FacadeClient {
 		long entryId = service.addEntry(binderId, definitionId, entryInputDataAsXML);
 		
 		System.out.println("*** ID of the newly created entry is " + entryId);	
+		System.out.println();
 	}
 	
 	private static void uploadFile(long binderId, long entryId, String filePath) 
@@ -184,9 +180,10 @@ public class FacadeClient {
 		int versionNumber = stub.uploadFile(binderId, entryId, fileUploadDataItemName, new File(filePath).getName());
 		
 		System.out.println("*** Version number of the uploaded file is " + versionNumber);
+		System.out.println();
 	}
 	
-	public static void printBinder(Binder binder) {
+	private static void printBinder(Binder binder) {
 		System.out.println();
 		System.out.println("*** Binder (id = " + binder.getId() + ")");
 		System.out.println("\tName: " + binder.getName());
@@ -200,5 +197,15 @@ public class FacadeClient {
 			System.out.println("\t\tID: " + ids[i]); 
 		
 		System.out.println();
+	}
+	
+	private static void printUsage() {
+		System.out.println("Usage:");
+		System.out.println("readDefinition <definition id>");
+		System.out.println("readDefinitionConfig");
+		System.out.println("readBinder <binder id>");
+		System.out.println("readEntry <binder id> <entry id>");
+		System.out.println("addEntry <binder id> <definition id>");
+		System.out.println("uploadFile <binder id> <entry id> <file path>");	
 	}
 }
