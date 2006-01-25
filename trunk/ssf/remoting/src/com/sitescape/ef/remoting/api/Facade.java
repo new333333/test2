@@ -13,4 +13,8 @@ public interface Facade {
 	public String getEntryAsXML(long binderId, long entryId);
 	
 	public long addEntry(long binderId, String definitionId, String inputDataAsXML);
+	
+	public int uploadFile(long binderId, long entryId, 
+			String fileUploadDataItemName, String fileName);
+
 }

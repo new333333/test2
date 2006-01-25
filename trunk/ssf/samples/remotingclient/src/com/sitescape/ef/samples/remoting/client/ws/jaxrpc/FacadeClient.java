@@ -1,7 +1,15 @@
 package com.sitescape.ef.samples.remoting.client.ws.jaxrpc;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.RemoteException;
+
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.xml.rpc.ServiceException;
+
+import org.apache.axis.client.Call;
 
 import com.sitescape.ef.samples.remoting.client.FacadeClientHelper;
 import com.sitescape.ef.samples.remoting.client.ws.jaxrpc.JaxRpcFacade;
@@ -20,17 +28,15 @@ public class FacadeClient {
 	public FacadeClient() {
 	}
 
-	public static void main(String[] args) throws ServiceException, RemoteException {
+	public static void main(String[] args) {
 
 		System.out.println("*** This Facade client uses Axis-generated client bindings");
 
-		// Arguments
-		// read <binder id> <entry id> 
-		// OR
-		// add <binder id> <definition id>
-
 		if(args.length < 3) {
-			System.out.println("Invalid arguments");
+			System.out.println("Usage:");
+			System.out.println("read <binder id> <entry id>");
+			System.out.println("add <binder id> <definition id>");
+			System.out.println("upload <binder id> <entry id> <file path>");
 			return;
 		}
 
@@ -41,47 +47,91 @@ public class FacadeClient {
 
 		//EngineConfiguration config = new FileProvider("client_deploy.wsdd");
 
-		if(args[0].equals("read")) {
-			System.out.println("*** Reading an entry ***");
-			
-			int binderId = Integer.parseInt(args[1]);
-			int entryId = Integer.parseInt(args[2]);
-
-			JaxRpcFacadeService locator = new JaxRpcFacadeServiceLocator(/*config*/);
-			JaxRpcFacade service = locator.getFacade();
-
-			// Invoke getEntry
-			com.sitescape.ef.samples.remoting.client.ws.jaxrpc.Entry entry = 
-				service.getEntry(binderId, entryId);
-
-			printEntry(entry);
-			
-			// Invoke getEntryAsXML
-			String entryAsXML = service.getEntryAsXML(binderId, entryId);
-			
-			FacadeClientHelper.printEntryAsXML(entryAsXML);			
+		try {
+			if(args[0].equals("read")) {
+				read(Long.parseLong(args[1]), Long.parseLong(args[2]));
+			}
+			else if(args[0].equals("add")){			
+				add(Long.parseLong(args[1]), args[2]);
+			}
+			else if(args[0].equals("upload")){	
+				upload(Long.parseLong(args[1]), Long.parseLong(args[2]), args[3]);
+			}
+			else {
+				System.out.println("Invalid arguments");
+				return;
+			}
 		}
-		else if(args[0].equals("add")){
-			
-			System.out.println("*** Adding an entry ***");
-
-			int binderId = Integer.parseInt(args[1]);
-			String definitionId = args[2];
-			
-			JaxRpcFacadeService locator = new JaxRpcFacadeServiceLocator(/*config*/);
-			JaxRpcFacade service = locator.getFacade();
-
-			String entryInputDataAsXML = 
-				FacadeClientHelper.generateEntryInputDataAsXML(binderId, definitionId);
-			
-			long entryId = service.addEntry(binderId, definitionId, entryInputDataAsXML);
-			
-			System.out.println("*** ID of the newly created entry is " + entryId);
+		catch(Exception e) {
+			e.printStackTrace();
 		}
-		else {
-			System.out.println("Invalid arguments");
-			return;
-		}
+	}
+	
+	private static void read(long binderId, long entryId) throws ServiceException, RemoteException {
+		System.out.println("*** Reading an entry ***");
+		
+		JaxRpcFacadeService locator = new JaxRpcFacadeServiceLocator(/*config*/);
+		JaxRpcFacade service = locator.getFacade();
+
+		// Invoke getEntry
+		com.sitescape.ef.samples.remoting.client.ws.jaxrpc.Entry entry = 
+			service.getEntry(binderId, entryId);
+
+		printEntry(entry);
+		
+		// Invoke getEntryAsXML
+		String entryAsXML = service.getEntryAsXML(binderId, entryId);
+		
+		FacadeClientHelper.printEntryAsXML(entryAsXML);				
+	}
+	
+	private static void add(long binderId, String definitionId) throws ServiceException, RemoteException {
+		
+		System.out.println("*** Adding an entry ***");
+
+		JaxRpcFacadeService locator = new JaxRpcFacadeServiceLocator(/*config*/);
+		JaxRpcFacade service = locator.getFacade();
+
+		String entryInputDataAsXML = 
+			FacadeClientHelper.generateEntryInputDataAsXML(binderId, definitionId);
+		
+		long entryId = service.addEntry(binderId, definitionId, entryInputDataAsXML);
+		
+		System.out.println("*** ID of the newly created entry is " + entryId);	
+	}
+	
+	private static void upload(long binderId, long entryId, String filePath) 
+		throws ServiceException, RemoteException, MalformedURLException {
+		System.out.println("*** Uploading file " + filePath + " ***");
+		
+		// Specify the URL to your webservice that is needed by the Stub
+		String endpoint = "http://peace:8080/ssf/ws/Facade";
+		URL targetURL = new URL(endpoint);
+		
+		String fileUploadDataItemName = "file"; // hard-coded name for now
+		
+		// Create a Service object
+		JaxRpcFacadeService service = new JaxRpcFacadeServiceLocator(/*config*/);
+		
+		// Create a stub for the webservice at the URL specified.
+		FacadeSoapBindingStub stub = new FacadeSoapBindingStub(targetURL, service);
+		
+		// Use classes from the Java Activation Framework to wrap the attachment.
+		DataHandler attachmentFile = new DataHandler(new FileDataSource(filePath));
+		
+		// Tell the stub that the message being formed also contains an attachment,
+		// and it is of type MIME encoding.
+		stub._setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_MIME);
+
+		// Add the attachment to the message
+		stub.addAttachment(attachmentFile);
+		
+		// Invoke the remote method through the stub passing in the necessary
+		// arguments. 
+		
+		int versionNumber = stub.uploadFile(binderId, entryId, fileUploadDataItemName, new File(filePath).getName());
+		
+		System.out.println("*** Version number of the uploaded file is " + versionNumber);
 	}
 	
 	public static void printEntry(Entry entry) {

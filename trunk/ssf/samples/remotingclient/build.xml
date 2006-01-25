@@ -126,6 +126,22 @@
 		</java>
 	</target>
 	
+	<target name="uploadFileGenerated" depends="compile">
+		<java 
+			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
+			classpath="${classes.dir}"
+			classpathref="wsclient.project.classpath"
+			fork="true"
+			dir="${basedir}"
+			failonerror="true">
+			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
+			<arg value="upload"/>
+			<arg value="74"/>
+			<arg value="482"/>
+			<arg value="C:/junk/dog6.gif"/>
+		</java>
+	</target>
+	
 	<target name="wsdl2java" depends="cleanGenerated" description="Generate client service bindings from WSDL">
 		<mkdir dir="${generated.dir}" />
 		<axis-wsdl2java
