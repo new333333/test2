@@ -72,12 +72,6 @@ public class FacadeClient {
 		
 		JaxRpcFacadeService locator = new JaxRpcFacadeServiceLocator(/*config*/);
 		JaxRpcFacade service = locator.getFacade();
-
-		// Invoke getEntry
-		com.sitescape.ef.samples.remoting.client.ws.jaxrpc.Entry entry = 
-			service.getEntry(binderId, entryId);
-
-		printEntry(entry);
 		
 		// Invoke getEntryAsXML
 		String entryAsXML = service.getEntryAsXML(binderId, entryId);

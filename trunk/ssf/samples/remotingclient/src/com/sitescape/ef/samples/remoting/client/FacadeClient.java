@@ -47,9 +47,6 @@ public class FacadeClient {
 			
 			int binderId = Integer.parseInt(args[1]);
 			int entryId = Integer.parseInt(args[2]);
-
-			Entry entry = client.facade.getEntry(binderId, entryId);
-			printEntry(entry);
 			
 			String entryAsXML = client.facade.getEntryAsXML(binderId, entryId);
 			FacadeClientHelper.printEntryAsXML(entryAsXML);
@@ -74,10 +71,4 @@ public class FacadeClient {
 		}
 	}
 
-	public static void printEntry(Entry entry) {
-		System.out.println();
-		System.out.println("*** Entry(" + entry.getBinderId() + "," + entry.getId() + ")");
-		System.out.println("Title: " + entry.getTitle());
-		System.out.println();
-	}
 }

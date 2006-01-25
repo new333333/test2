@@ -8,7 +8,9 @@ package com.sitescape.ef.remoting.api;
  *
  */
 public interface Facade {
-	public Entry getEntry(long binderId, long entryId);
+	public String getDefinitionAsXML(String definitionId);
+	
+	public String getDefinitionConfigAsXML();
 	
 	public String getEntryAsXML(long binderId, long entryId);
 	
