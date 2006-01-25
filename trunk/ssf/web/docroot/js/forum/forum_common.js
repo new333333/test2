@@ -200,6 +200,16 @@ function ss_hideAllDeclaredDivs() {
 	}
 }
 
+//Routine to get the form object of the containing form
+function ss_getContainingForm(obj) {
+	var formObj = obj;
+	while (formObj.nodeName.toLowerCase() != "body") {
+		if (formObj.nodeName.toLowerCase() == "form") break;
+		formObj = formObj.parentNode;
+	}
+	return formObj;
+}
+
 var eventList = new Array();
 var eventTypeList = new Array();
 //Routine to create a new "eventObj" object

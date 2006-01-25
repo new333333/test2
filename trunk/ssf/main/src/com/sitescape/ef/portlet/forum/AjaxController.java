@@ -63,6 +63,7 @@ public class AjaxController  extends SAbstractForumController {
 			RenderResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		if(!WebHelper.isUserLoggedIn(request)) {
 			Map model = new HashMap();
 			Map unseenCounts = new HashMap();
@@ -148,12 +149,20 @@ public class AjaxController  extends SAbstractForumController {
 			model.put(WebKeys.AJAX_STATUS, statusMap);
 			return new ModelAndView("forum/user_list_search", model);
 
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
+		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FILTER_TYPE) || 
+				op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES)) {
 			String filterTermNumber = ((String[])formData.get(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER))[0];
 			model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, filterTermNumber);
-			String defId = ((String[])formData.get(WebKeys.FILTER_ENTRY_DEF_ID+filterTermNumber))[0];
-			model.put(WebKeys.FILTER_ENTRY_DEF_ID, defId);
+			
+			//Get the definition id (if present)
+			if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
+					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES)) {
+				String defId = ((String[])formData.get(WebKeys.FILTER_ENTRY_DEF_ID+filterTermNumber))[0];
+				model.put(WebKeys.FILTER_ENTRY_DEF_ID, defId);
+				Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
+				model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
+			}
 			
 			if (formData.containsKey("elementName" + filterTermNumber)) {
 				String elementName = ((String[])formData.get("elementName" + filterTermNumber))[0];
@@ -167,15 +176,18 @@ public class AjaxController  extends SAbstractForumController {
 				
 			Map defaultEntryDefinitions = DefinitionUtils.getEntryDefsAsMap(binder);
 			model.put(WebKeys.ENTRY_DEFINTION_MAP, defaultEntryDefinitions);
-			Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
-			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
 
-	    	Map workflowAssociations = (Map) binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS);
+			DefinitionUtils.getDefinitions(model);
+			DefinitionUtils.getDefinitions(binder, model);
 	    	DefinitionUtils.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
+	    	Map workflowAssociations = (Map) binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS);
 			
 	    	model.put(WebKeys.AJAX_STATUS, statusMap);
 			response.setContentType("text/xml");
-			if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS)) {
+			if (op.equals(WebKeys.FORUM_OPERATION_GET_FILTER_TYPE)) {
+				model.put(WebKeys.FILTER_TYPE, op2);
+				return new ModelAndView("binder/get_filter_type", model);
+			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS)) {
 				return new ModelAndView("binder/get_entry_elements", model);
 			} else {
 				return new ModelAndView("binder/get_element_value", model);

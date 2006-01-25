@@ -6,7 +6,7 @@
 <jsp:useBean id="ss_filter_entry_def_id" type="java.lang.String" scope="request" />
 <jsp:useBean id="ssEntryDefinitionElementData" type="java.util.Map" scope="request" />
 
-<taconite-root xml:space="preserve">
+<taconite-root>
 <%
 	if (ss_ajaxStatus.containsKey("ss_ajaxNotLoggedIn")) {
 %>
@@ -27,8 +27,11 @@
 	<taconite-replace contextNodeID="elementList<c:out value="${ss_filterTermNumber}"/>" 
 	parseInBrowser="true"><div 
 	   id="elementList<c:out value="${ss_filterTermNumber}"/>" 
-	   style="visibility:visible;"><select 
-	   name="elementName<c:out value="${ss_filterTermNumber}"/>" onChange="ss_getElementValue(this)">
+	   style="visibility:visible; display:inline;"><select 
+	   name="elementName<c:out value="${ss_filterTermNumber}"/>" 
+	   onChange="ss_getFilterSelectionBox(this, 'elementName', 'get_element_values')">
+	     <option value="" selected="selected"><ssf:nlt 
+	       tag="filter.selectElement" text="--select an element--"/></option>
 	     <c:forEach var="element" items="${ssEntryDefinitionElementData}">
 	       <c:if test="${element.value.type == 'title' || element.value.type == 'event' || 
 	                     element.value.type == 'text'  || element.value.type == 'selectbox' || 
@@ -41,8 +44,8 @@
 
 	<taconite-replace contextNodeID="valueList<c:out value="${ss_filterTermNumber}"/>" 
 	parseInBrowser="true"><div 
-	id="valueList<c:out value="${ss_filterTermNumber}"/>" style="visibility:visible;">
-	 </div></taconite-replace>
+	id="valueList<c:out value="${ss_filterTermNumber}"/>" 
+	style="visibility:visible; display:inline;"></div></taconite-replace>
 <%
 	}
 %>	
