@@ -44,6 +44,7 @@ public class WebKeys {
 	public static final String URL_FILE_ID = "fileId";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
     public static final String URL_OPERATION="operation";
+    public static final String URL_OPERATION2="operation2";
 	public static final String URL_VALUE = "value";
 
     //Preferences
@@ -72,6 +73,7 @@ public class WebKeys {
  	public static final String FORUM_OPERATION_ADMINISTRATION = "administration";
 	public static final String FORUM_OPERATION_GET_ENTRY_ELEMENTS = "get_entry_elements";
 	public static final String FORUM_OPERATION_GET_ELEMENT_VALUES = "get_element_values";
+	public static final String FORUM_OPERATION_GET_FILTER_TYPE = "get_filter_type";
 	public static final String FORUM_OPERATION_SET_DISPLAY_STYLE = "set_display_style";
 	public static final String FORUM_OPERATION_SET_DISPLAY_DEFINITION = "set_display_definition";
 	public static final String FORUM_OPERATION_VIEW_ENTRY = "view_entry";
@@ -112,6 +114,7 @@ public class WebKeys {
     public static final String FILTER_ENTRY_DEF_ID = "ss_filter_entry_def_id";
     public static final String FILTER_ENTRY_ELEMENT_NAME = "ss_filter_entry_element_name";
     public static final String FILTER_ENTRY_FILTER_TERM_NUMBER="ss_filterTermNumber";
+    public static final String FILTER_TYPE="ss_filterType";
     public static final String FOLDER = "ssFolder";
     public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";
     public static final String FOLDER_DEFINTION_MAP="ssFolderDefinitionMap";

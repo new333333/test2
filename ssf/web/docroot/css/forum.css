@@ -668,7 +668,7 @@ a.ss_link_nodec:hover, a.ss_link_nodec:active {
 
 /* Text styled as buttons */
 a.ss_linkButton:link, a.ss_linkButton:visited {
-  font-size: 10px;
+  font-size: 12px;
   color: #6699cc;
   font-weight: bold;
   border-top: 1px solid #666666;
@@ -687,7 +687,7 @@ a.ss_linkButton:link, a.ss_linkButton:visited {
   }
 
 a.ss_linkButton:focus, a.ss_linkButton:hover, a.ss_linkButton:active {
-  font-size: 10px;
+  font-size: 12px;
   color: #ff0000;
   font-weight: bold;
   border-top: 1px solid #d5d5d5;

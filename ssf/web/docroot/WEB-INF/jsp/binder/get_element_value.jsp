@@ -6,7 +6,7 @@
 <jsp:useBean id="ss_filter_entry_def_id" type="java.lang.String" scope="request" />
 <jsp:useBean id="ssEntryDefinitionElementData" type="java.util.Map" scope="request" />
 
-<taconite-root xml:space="preserve">
+<taconite-root>
 <%
 	if (ss_ajaxStatus.containsKey("ss_ajaxNotLoggedIn")) {
 %>
@@ -26,13 +26,17 @@
 
 	<taconite-replace contextNodeID="valueList<c:out value="${ss_filterTermNumber}"/>" 
 	parseInBrowser="true"><div 
-	id="valueList<c:out value="${ss_filterTermNumber}"/>" style="visibility:visible;">
+	id="valueList<c:out value="${ss_filterTermNumber}"/>" 
+	style="visibility:visible; display:inline;">
 	  <c:forEach var="element" items="${ssEntryDefinitionElementData}">
 		<c:if test="${element.key == ss_filter_entry_element_name}">
 	       <c:if test="${element.value.type == 'title' || element.value.type == 'text'}">
-	         <input type="text" width="150px" name="elementValue<c:out value="${ss_filterTermNumber}"/>" />
+	         <ssf:nlt tag="filter.searchText" text="Search text"/>: <input 
+	         type="text" style="width:150px;" 
+	         name="elementValue<c:out value="${ss_filterTermNumber}"/>" />
 	       </c:if>
 	       <c:if test="${element.value.type == 'event' || element.value.type == 'date'}">
+	         <ssf:nlt tag="filter.date" text="Date"/>: ...
 	       </c:if>
 	       <c:if test="${element.value.type == 'selectbox' || element.value.type == 'radio'}">
 			 <select 
@@ -43,9 +47,12 @@
 		       </select>
 	       </c:if>
 	       <c:if test="${element.value.type == 'checkbox'}">
-	         <input type="checkbox" name="elementValue<c:out value="${ss_filterTermNumber}"/>" checked="checked"/>
+	         <input type="checkbox" 
+	         name="elementValue<c:out value="${ss_filterTermNumber}"/>" 
+	         checked="checked"/> <c:out value="${element.value.caption}"/>
 	       </c:if>
 	       <c:if test="${element.value.type == 'user_list'}">
+	         <ssf:nlt tag="filter.users" text="Users"/>: ...
 	       </c:if>
 		</c:if>
 	  </c:forEach>
