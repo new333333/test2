@@ -13,7 +13,12 @@ import com.sitescape.ef.remoting.api.Binder;
 
 /**
  * Provides custom type mappings for Axis to use to serialize/deserialize
- * application objects.
+ * application objects. 
+ * <p>
+ * The <code>JaxRpcServicePostProcessor</code> callback interface itself for 
+ * post-processing a JAX-RPC Service does NOT depend upon specific tools such 
+ * as Axis. However, this particular implementation utilizes the serializer/
+ * deserializer functionality provided by Axis.
  *
  * @author jong
  *

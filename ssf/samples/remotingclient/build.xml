@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="wsclient" basedir="." default="compile">
+<project name="wsclient" basedir="." default="usage">
 	<target name="init">
 		<echo message="##### WSCLIENT #####" />
 		<property environment="env" />
@@ -36,6 +36,15 @@
 		<taskdef resource="axis-tasks.properties" classpathref="wsclient.project.classpath"/>
 	</target>
 
+	<target name="usage">
+		<echo message="readDefinition" />
+		<echo message="readDefinitionConfig" />
+		<echo message="readBinder" />
+		<echo message="readEntry" />
+		<echo message="addEntry" />
+		<echo message="uploadFile" />
+	</target>
+	
 	<target name="clean" depends="init">
 		<delete includeEmptyDirs="true" failonerror="false">
 			<fileset dir="${classes.dir}" excludes="${classes.dir.excludes}" />
@@ -64,7 +73,7 @@
 		</javac>
 	</target>
 	
-	<target name="readEntry" depends="compile">
+	<target name="readEntrySpring" depends="compile">
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
 			classpath="${classes.dir}"
@@ -74,6 +83,79 @@
 			failonerror="true">
 			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
 			<arg value="read"/>
+			<arg value="74"/>
+			<arg value="482"/>
+		</java>
+	</target>
+	
+	<target name="addEntrySpring" depends="compile">
+		<java 
+			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
+			classpath="${classes.dir}"
+			classpathref="wsclient.project.classpath"
+			fork="true"
+			dir="${basedir}"
+			failonerror="true">
+			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
+			<arg value="add"/>
+			<arg value="74"/>
+			<!-- id of "discussion" definition -->
+			<arg value="402883cc08da22a50108da5a83260002"/>
+		</java>
+	</target>
+	
+	<target name="readDefinition" depends="compile">
+		<java 
+			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
+			classpath="${classes.dir}"
+			classpathref="wsclient.project.classpath"
+			fork="true"
+			dir="${basedir}"
+			failonerror="true">
+			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
+			<arg value="readDefinition"/>
+			<!-- id of "discussion" definition -->
+			<arg value="402883cc08da22a50108da5a83260002"/>
+		</java>
+	</target>
+	
+	<target name="readDefinitionConfig" depends="compile">
+		<java 
+			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
+			classpath="${classes.dir}"
+			classpathref="wsclient.project.classpath"
+			fork="true"
+			dir="${basedir}"
+			failonerror="true">
+			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
+			<arg value="readDefinitionConfig"/>
+		</java>
+	</target>
+	
+	<target name="readBinder" depends="compile">
+		<java 
+			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
+			classpath="${classes.dir}"
+			classpathref="wsclient.project.classpath"
+			fork="true"
+			dir="${basedir}"
+			failonerror="true">
+			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
+			<arg value="readBinder"/>
+			<arg value="74"/>
+		</java>
+	</target>
+	
+	<target name="readEntry" depends="compile">
+		<java 
+			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
+			classpath="${classes.dir}"
+			classpathref="wsclient.project.classpath"
+			fork="true"
+			dir="${basedir}"
+			failonerror="true">
+			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
+			<arg value="readEntry"/>
 			<arg value="74"/>
 			<arg value="482"/>
 		</java>
@@ -81,21 +163,21 @@
 	
 	<target name="addEntry" depends="compile">
 		<java 
-			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
+			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
 			classpathref="wsclient.project.classpath"
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">
 			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
-			<arg value="add"/>
+			<arg value="addEntry"/>
 			<arg value="74"/>
 			<!-- id of "discussion" definition -->
 			<arg value="402883cc08da22a50108da5a83260002"/>
 		</java>
 	</target>
 	
-	<target name="readEntryGenerated" depends="compile">
+	<target name="uploadFile" depends="compile">
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
@@ -104,38 +186,7 @@
 			dir="${basedir}"
 			failonerror="true">
 			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
-			<arg value="read"/>
-			<arg value="74"/>
-			<arg value="482"/>
-		</java>
-	</target>
-	
-	<target name="addEntryGenerated" depends="compile">
-		<java 
-			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
-			classpath="${classes.dir}"
-			classpathref="wsclient.project.classpath"
-			fork="true"
-			dir="${basedir}"
-			failonerror="true">
-			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
-			<arg value="add"/>
-			<arg value="74"/>
-			<!-- id of "discussion" definition -->
-			<arg value="402883cc08da22a50108da5a83260002"/>
-		</java>
-	</target>
-	
-	<target name="uploadFileGenerated" depends="compile">
-		<java 
-			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
-			classpath="${classes.dir}"
-			classpathref="wsclient.project.classpath"
-			fork="true"
-			dir="${basedir}"
-			failonerror="true">
-			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
-			<arg value="upload"/>
+			<arg value="uploadFile"/>
 			<arg value="74"/>
 			<arg value="482"/>
 			<arg value="C:/junk/dog6.gif"/>
@@ -149,7 +200,7 @@
 			verbose="true"
 			url="http://peace:8080/ssf/ws/Facade?wsdl" >
 			<mapping
-				namespace="http://peace:8080/ssf/ws/Facade"
+				namespace="http://localhost:8080/ssf/ws/Facade"
 				package="com.sitescape.ef.samples.remoting.client.ws.jaxrpc" />
 			<mapping
 				namespace="urn:SSF"

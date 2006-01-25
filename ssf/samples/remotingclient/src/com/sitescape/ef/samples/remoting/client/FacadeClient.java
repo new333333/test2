@@ -48,7 +48,7 @@ public class FacadeClient {
 			int entryId = Integer.parseInt(args[2]);
 			
 			String entryAsXML = client.facade.getEntryAsXML(binderId, entryId);
-			FacadeClientHelper.printEntryAsXML(entryAsXML);
+			FacadeClientHelper.printXML(entryAsXML);
 		}
 		else if(args[0].equals("add")){
 			
