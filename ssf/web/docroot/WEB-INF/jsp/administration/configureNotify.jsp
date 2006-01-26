@@ -39,7 +39,7 @@
 			<portlet:param name="action" value="configure_notify"/>
 			<portlet:param name="binderId" value="${ssFolder.id}"/>
 		</portlet:actionURL>">
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 function <portlet:namespace/>setEnable() {
 	if (document.<portlet:namespace/>fm.disabled.checked) {
 		document.<portlet:namespace/>fm.enabled.value = "false";

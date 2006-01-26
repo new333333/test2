@@ -28,7 +28,7 @@ String title = ParamUtil.get(request, "title", "");
 %>
 <jsp:useBean id="ss_expandable_area_name_count" type="java.lang.Integer" scope="request" />
 <div class="ss_expandable_area_title">
-<script language="javascript">
+<script type="text/javascript">
 function <portlet:namespace/>_toggleExpandableArea(divName, imgName) {
     var _divName = '<portlet:namespace/>' + divName
     var _imgName = '<portlet:namespace/>' + imgName

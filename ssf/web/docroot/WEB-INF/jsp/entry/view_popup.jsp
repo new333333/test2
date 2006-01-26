@@ -8,7 +8,7 @@
   configJspStyle="<%= ssConfigJspStyle %>" />
 </div>
 
-<script language="javascript">
+<script type="text/javascript">
 
 function ss_showForumEntryInIframe(url) {
     var wObj = null

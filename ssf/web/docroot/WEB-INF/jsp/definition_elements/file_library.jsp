@@ -7,7 +7,7 @@
 		if (parentFolder != null) parentFolderId = parentFolder.getId().toString();
 	}
 %>
-<script language="javascript">
+<script type="text/javascript">
 function ss_loadEntry(obj,id) {
 	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
 	highlightLineById(id);

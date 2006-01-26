@@ -16,7 +16,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<script language="javascript">
+<script type="text/javascript">
 
 var baseUrl = "<portlet:renderURL/>";
 function ss_showUrlInPortlet(params) {

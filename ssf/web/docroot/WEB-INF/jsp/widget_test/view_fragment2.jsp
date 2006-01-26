@@ -2,7 +2,7 @@
 
 <body>
 
-<script language="javascript">
+<script type="text/javascript">
 function showUrl(params) {
 	if (parent.ss_showUrlInPortlet) {
 		alert('Calling parent portlet: '+ params)

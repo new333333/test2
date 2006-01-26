@@ -27,7 +27,7 @@
 <portletadapter:defineObjects1/>
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
-<script language="javascript">
+<script type="text/javascript">
 <!--
 var ss_colWidths = new Array();
 var ss_colWidthsUser = new Array();
@@ -305,7 +305,7 @@ createEventObj('ss_slidingTableDrag', 'MOUSEMOVE');
 		
 		//Output the main div that holds them all
 %>
-<script language="javascript">
+<script type="text/javascript">
 var ss_columnCount = <%= String.valueOf(colSize) %>;
 </script>
 <div id="ss_sTable" style="margin: 2px; border: #666666 1px solid;" width="100%"
@@ -370,7 +370,7 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 				if (iRow == 0 && iCol == 0) {
 					if (!columnWidth.equals("")) {
 %>
-<script language="javascript">
+<script type="text/javascript">
 ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 </script>
 <%
@@ -403,7 +403,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 				} else if (iRow == 0 && iCol > 0) {
 					if (!columnWidth.equals("")) {
 %>
-<script language="javascript">
+<script type="text/javascript">
 ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 </script>
 <%
@@ -441,7 +441,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 				} else {
 					if (!columnWidth.equals("")) {
 %>
-<script language="javascript">
+<script type="text/javascript">
 ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 </script>
 <%
@@ -476,9 +476,9 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 	}
 	
 %>
-<script language="JavaScript" src="<html:rootPath/>js/common/taconite-client.js"></script>
-<script language="JavaScript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
-<script language="javascript">
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
+<script type="text/javascript">
 
 function ss_saveSlidingTableCoords() {
     var s = ""

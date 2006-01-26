@@ -9,9 +9,9 @@
 
 <c:set var="prefix" value="${tpid}_${sequenceNumber}" />
 
-<script language="Javascript" src="<html:rootPath />js/common/PopupWindow.js"></script>
-<script language="Javascript" src="<html:rootPath />js/common/AnchorPosition.js"></script>
-<script language="Javascript">
+<script type="text/javascript" src="<html:rootPath />js/common/PopupWindow.js"></script>
+<script type="text/javascript" src="<html:rootPath />js/common/AnchorPosition.js"></script>
+<script type="text/javascript">
 
 var ${prefix}_popupContents  = "";
 

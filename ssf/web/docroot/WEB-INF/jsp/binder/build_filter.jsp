@@ -17,10 +17,15 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<script language="JavaScript" src="<html:rootPath/>js/common/taconite-client.js"></script>
-<script language="JavaScript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
 <div class="ss_style ss_portlet" style="margin:6px;">
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
+
+function ss_getFilterTypeSelection(obj, op2) {
+	var divObj = obj.parentNode.parentNode.parentNode;
+	ss_getFilterSelectionBox(divObj, 'typeList', 'get_filter_type', op2)
+}
 function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
 	var formObj = ss_getContainingForm(obj)
 	//Set the term number
@@ -91,6 +96,19 @@ function ss_addFilterTerm() {
 	//alert(tbl.innerHTML)
 }
 
+var ss_buttonSelected = "";
+function ss_buttonSelect(btn) {
+	ss_buttonSelected = btn
+}
+function checkFilterForm(obj) {
+	if (ss_buttonSelected == 'ok' && obj.filterName.value == "") {
+		alert("<ssf:nlt tag="filter.enterName" text="Please fill in the filter name field."/>")
+		obj.filterName.focus()
+		return false;
+	}
+	return true;
+}
+
 </script>
 
 <form name="filterData" id="filterData" class="ss_style" method="post" 
@@ -98,12 +116,13 @@ function ss_addFilterTerm() {
 	<portlet:param name="action" value="build_filter"/>
 	<portlet:param name="binderId" value="${ssBinder.id}"/>
 	</portlet:actionURL>" 
+	onSubmit="return(checkFilterForm(this))"
 >
 
 <div class="ss_buttonBarRight">
-<input type="submit" name="okBtn" class="ss_submit" 
+<input type="submit" name="okBtn" class="ss_submit" onClick="ss_buttonSelect('ok');"
   value="<ssf:nlt tag="button.ok" text="OK"/>">&nbsp;<input 
-  type="submit" name="cancelBtn" class="ss_submit" 
+  type="submit" name="cancelBtn" class="ss_submit" onClick="ss_buttonSelect('cancel');"
   value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 </div>
 
@@ -118,27 +137,30 @@ function ss_addFilterTerm() {
   
   <fieldset class="fieldset">
     <legend class="legend"><ssf:nlt tag="filter.terms" text="Filter terms"/></legend>
+	<span class="ss_bold"><ssf:nlt tag="filter.selectFilterType" text="Select the type of filter to be added..."/></span>
+	<br/>
 	<div id="filterTerms">
 	  <table class="ss_style">
 	  <tbody>
 	  <tr>
 	  <td valign="top">
 	    <div id="typeList1" style="display:inline;">
-	      <a href="javascript: ;" 
-	        onClick="ss_getFilterSelectionBox(this.parentNode, 'typeList', 'get_filter_type', 'text');return false;">
+	      <ul class="ss_square" style="margin:0px 14px; padding:2px;">
+	      <li><a href="javascript: ;" 
+	        onClick="ss_getFilterTypeSelection(this, 'text');return false;">
 	          <ssf:nlt tag="filter.searchText" text="Search text"/>
-	      </a>
-	      <br/>
-	      <a href="javascript: ;" 
-	        onClick="ss_getFilterSelectionBox(this.parentNode, 'typeList', 'get_filter_type', 'entry');return false;">
+	      </a></li>
+	      
+	      <li><a href="javascript: ;" 
+	        onClick="ss_getFilterTypeSelection(this, 'entry');return false;">
 	          <ssf:nlt tag="filter.entryAttributes" text="Entry attributes"/>
-	      </a>
-	      <br/>
-	      <a href="javascript: ;" 
-	        onClick="ss_getFilterSelectionBox(this.parentNode, 'typeList', 'get_filter_type', 'workflow');return false;">
+	      </a></li>
+
+	      <li><a href="javascript: ;" 
+	        onClick="ss_getFilterTypeSelection(this, 'workflow');return false;">
 	          <ssf:nlt tag="filter.workflowStates" text="Workflow states"/>
-	      </a>
-	      <br/>
+	      </a></li>
+
 	    </div>
 	  </td>
 	  <td valign="top">
@@ -165,9 +187,9 @@ function ss_addFilterTerm() {
 <div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">
-<input type="submit" name="okBtn" class="ss_submit" 
+<input type="submit" name="okBtn" class="ss_submit" onClick="ss_buttonSelect('ok');"
   value="<ssf:nlt tag="button.ok" text="OK"/>">&nbsp;<input 
-  type="submit" name="cancelBtn" class="ss_submit" 
+  type="submit" name="cancelBtn" class="ss_submit" onClick="ss_buttonSelect('cancel');"
   value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 </div>
 
@@ -175,4 +197,7 @@ function ss_addFilterTerm() {
 </form>
 <div id="ss_filter_status_message" style="display:none;"></div>
 </div>
+<script type="text/javascript">
+self.document.getElementById('filterData').filterName.focus();
+</script>
 

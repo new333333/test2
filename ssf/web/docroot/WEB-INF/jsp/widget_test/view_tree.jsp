@@ -27,7 +27,7 @@
 <jsp:useBean id="wsTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ws2Tree" type="org.dom4j.Document" scope="request" />
 
-<script language="javascript">
+<script type="text/javascript">
 
 function t_<portlet:namespace/>_wsTree_showId(id, obj) {
 	alert('You selected "'+obj.innerText+' (id: '+id+') from the first widget.')

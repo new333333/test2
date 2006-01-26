@@ -12,7 +12,7 @@
 <c:set var="toolbar" value="${ssFolderToolbar}" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 
-<script language="javascript">
+<script type="text/javascript">
 function highlightLineById(id) {
     if (id == "") {return;}
     var obj = null

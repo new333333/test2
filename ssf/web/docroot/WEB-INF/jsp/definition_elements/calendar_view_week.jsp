@@ -1,7 +1,7 @@
 <% // Calendar week view %>
 
 
-<script language="javascript">
+<script type="text/javascript">
 var ss_entryList = new Array();
 var ss_entryCount = 0;
 function getFilteredEntries() {
@@ -55,7 +55,7 @@ Views:&nbsp;<a href="${set_day_view}">Day</a><c:out value="${delimiter}" /><a hr
 <%
     java.util.HashMap e = (java.util.HashMap) eviw.get("entry");
 %>
-<script language="javascript">
+<script type="text/javascript">
 //getFilteredEntries()
 </script>
 <div id="folderLine_<c:out value="${eviw.entry._docId}"/>">	

@@ -10,7 +10,7 @@
 %>
 	<taconite-replace contextNodeID="ss_filter_status_message" parseInBrowser="true">
 		<div id="ss_filter_status_message">
-		  <script type="text/javascript" language="javascript">
+		  <script type="text/javascript">
 		    if (self.ss_notLoggedIn) self.ss_notLoggedIn();
 		  </script>
 		</div

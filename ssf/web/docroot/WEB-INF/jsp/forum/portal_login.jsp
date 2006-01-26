@@ -23,7 +23,7 @@
 
 <%@ include file="/WEB-INF/jsp/forum/view_css.jsp" %>
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 
 var ss_targetUrlLoadCount = 0;
 function ss_loadTargetUrl() {
