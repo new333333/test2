@@ -14,7 +14,7 @@ String ss_boxColor = ParamUtil.get(request, "box_color", "#cecece");
 <%@ include file="/WEB-INF/jsp/box/box_bottom-ext.jsp" %>
   <div class="ss_box_bottom_rounded" style="background-color:<%= ss_boxColor %>;"></div>
 </div>
-<script language="javascript">
+<script type="text/javascript">
 function ss_roundBox() {
 	if(!NiftyCheck()) return;
 	Rounded("div.ss_box_rounded","top","#FFF","<%= ss_boxColor %>","smooth");

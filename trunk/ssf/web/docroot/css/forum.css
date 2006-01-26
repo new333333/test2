@@ -74,6 +74,10 @@ ul.ss_nobullet li ul.ss_nobullet {
   margin-bottom: 0px;
   }
 
+ul.ss_square li {
+  list-style-type: square;
+} 
+
 /* ------------------------------------------------------------------------ */
 /* entry styles: common to entry views and entry forms */
 

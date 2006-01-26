@@ -6,7 +6,7 @@
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
 %>
-<script language="javascript">
+<script type="text/javascript">
 function ss_roundFieldset() {
 	if(!NiftyCheck()) return;
 	Rounded("fieldset.ss_fieldset_rounded","#FFFFFF","#BBD8FF");

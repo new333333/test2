@@ -20,7 +20,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <c:if test="${empty ssf_support_files_loaded}">
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 function ss_createStyleSheet(url) {
 	var styles = "@import url('" + " " + url + " " + "');";
 	var newSS = document.createElement('link');
@@ -169,13 +169,13 @@ ss_box_title {
 }
 
 </style>
-<script language="JavaScript" src="<html:rootPath/>js/forum/forum_common.js"></script>
-<script language="JavaScript" src="<html:rootPath/>js/common/nifty_corners.js"></script>
-<script language="JavaScript" src="<html:rootPath/>js/common/ss_drag.js"></script>
-<script language="JavaScript" src="<html:rootPath/>js/common/ss_dragdrop.js"></script>
-<script language="JavaScript" src="<html:rootPath/>js/common/ss_coordinates.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/forum/forum_common.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/nifty_corners.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_drag.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_dragdrop.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_coordinates.js"></script>
 <c:if test="0">
-<script language="JavaScript" src="<html:rootPath/>js/forum/forum_dragsort.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/forum/forum_dragsort.js"></script>
 </c:if>
 </c:if>
 

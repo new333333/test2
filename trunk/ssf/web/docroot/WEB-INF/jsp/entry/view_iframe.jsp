@@ -31,9 +31,9 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
   </ssf:box>
 </div>
 
-<script language="JavaScript" src="<html:rootPath/>js/common/taconite-client.js"></script>
-<script language="JavaScript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
-<script language="javascript">
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
+<script type="text/javascript">
 var ss_entryWindowWidth = <%= ss_entryWindowWidth %>;
 var ss_minEntryWindowWidth = 200;
 var ss_scrollbarWidth = 25;

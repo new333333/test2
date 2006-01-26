@@ -44,7 +44,7 @@ request.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth));
 <c:if test="<%= !op.equals(WebKeys.ACTION_VIEW_ENTRY) %>">
 <c:set var="showEntryCallbackRoutine" value="showEntryInDiv" scope="request"/>
 <c:set var="showEntryMessageRoutine" value="ss_showMessageInDiv" scope="request"/>
-<script language="javascript">
+<script type="text/javascript">
 var autoScroll = "<%= autoScroll %>";
 
 function ss_showMessageInDiv(str) {
@@ -224,7 +224,7 @@ function highlightLineById(id) {
 <c:if test="<%= op.equals(WebKeys.ACTION_VIEW_ENTRY) %>">
 <jsp:useBean id="ssEntry" type="com.sitescape.ef.domain.Entry" scope="request" />
   <c:if test="<%= !statePopUp %>">
-<script language="javascript">
+<script type="text/javascript">
 function ss_loadEntry(obj,id) {
 	self.location.href = obj.href;
 	return false;
@@ -238,7 +238,7 @@ function ss_loadEntry(obj,id) {
   </c:if>
   
   <c:if test="<%= statePopUp %>">
-<script language="javascript">
+<script type="text/javascript">
 if (self.parent && self.parent.highlightLineById) {
 	self.parent.highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
 }

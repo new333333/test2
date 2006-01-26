@@ -1,7 +1,7 @@
 <% //Support routines for showing presence pop-ups %>
 
 <c:if test="${empty ss_presence_support_loaded}">
-<script language="javascript">
+<script type="text/javascript">
 // Presence popup support
 var ss_presencePopupGraphics = new Array();
 ss_presencePopupGraphics["pres"] = new Image();

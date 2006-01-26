@@ -41,7 +41,7 @@ renderRequest.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth))
 <c:if test="<%= !isViewEntry %>">
 <c:set var="showEntryCallbackRoutine" value="ss_showEntryInDiv" scope="request"/>
 <c:set var="showEntryMessageRoutine" value="ss_showMessageInDiv" scope="request"/>
-<script language="javascript">
+<script type="text/javascript">
 var autoScroll = "<%= autoScroll %>";
 
 function ss_showMessageInDiv(str) {
@@ -268,14 +268,14 @@ function ss_notLoggedIn() {
 </c:if>
 <c:if test="<%= isViewEntry %>">
   <c:if test="<%= reloadCaller %>">
-<script language="javascript">
+<script type="text/javascript">
 	//Open the current url in the opener window
 	ss_reloadOpener('<%= ssReloadUrl %>')
 </script>
   </c:if>
   <c:if test="<%= !reloadCaller %>">
 <jsp:useBean id="ssEntry" type="com.sitescape.ef.domain.Entry" scope="request" />
-<script language="javascript">
+<script type="text/javascript">
 if (self.parent && self.parent.highlightLineById) {
 	self.parent.highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
 }

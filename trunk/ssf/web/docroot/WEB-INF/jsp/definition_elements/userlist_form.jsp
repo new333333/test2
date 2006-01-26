@@ -20,9 +20,9 @@
 %>
 <c:set var="prefix" value="${formName}_${property_name}" />
 <c:if test="${empty ss_user_list_support_stuff_loaded}">
-<script language="JavaScript" src="<html:rootPath/>js/common/taconite-client.js"></script>
-<script language="JavaScript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
+<script type="text/javascript">
 var ss_userList_searchText = ""
 var ss_userList_searchType = "lastName"
 function ss_userListSetSearchType(type, elementName) {
@@ -155,7 +155,7 @@ function ss_userListInterceptCR(e) {
 	</td>
   </tr>
 </table>
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
   ss_DragDrop.makeListContainer( document.getElementById('added_<%= elementName %>'));
   ss_DragDrop.makeListContainer( document.getElementById('available_<%= elementName %>'));
 

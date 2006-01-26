@@ -36,7 +36,7 @@
 	}
 	if (nodeOpen.equals("")) {nodeOpen = " ";}
 %>
-<script language="javascript">
+<script type="text/javascript">
 
 var rn = Math.round(Math.random()*999999)
 var selectedId = null;
@@ -514,7 +514,7 @@ createOnLoadObj('initializeStateMachine', initializeStateMachine);
 %>
 </div>
 
-<script language="javascript">
+<script type="text/javascript">
 var idNames = new Array();
 var idCaptions = new Array();
 var idReplyStyles = new Array();

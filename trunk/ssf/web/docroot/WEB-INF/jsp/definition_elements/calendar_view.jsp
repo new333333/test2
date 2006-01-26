@@ -8,7 +8,7 @@
 <jsp:useBean id="ssCalendarViewMode" type="java.lang.String" scope="request" />
 <jsp:useBean id="ssConfigJspStyle" type="java.lang.String" scope="request" />
 
-<script language="javascript">
+<script type="text/javascript">
 function highlightLineById(id) {
     if (id == "") {return;}
     var obj = null

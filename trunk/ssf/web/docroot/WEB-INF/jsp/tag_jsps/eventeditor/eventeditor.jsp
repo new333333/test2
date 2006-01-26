@@ -22,8 +22,8 @@
    dateId3 = "dp3_" + evid;
    endrangeId = "endRange_" + evid;
 %>
-<script language="Javascript" src="<html:rootPath />js/common/PopupWindow.js"></script>
-<script language="Javascript" src="<html:rootPath />js/common/AnchorPosition.js"></script>
+<script type="text/javascript" src="<html:rootPath />js/common/PopupWindow.js"></script>
+<script type="text/javascript" src="<html:rootPath />js/common/AnchorPosition.js"></script>
 <c:set var="prefix" value="${evid}" />
 
 <table class="ss_style" border="0" cellpadding="0"><tr><td>
@@ -96,7 +96,7 @@
 </table>
 
 
-<script language="Javascript">
+<script type="text/javascript">
 
 var ${prefix}_isRecurVisible=false;
 
@@ -428,7 +428,7 @@ function ${prefix}_toggleRecur(name) {
 </c:if>
 
 
-<script language="Javascript">
+<script type="text/javascript">
 
 function getRadioButtonIdx(ptr, type, val) {
     for (i=0; i< ptr.length; i++) {

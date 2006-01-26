@@ -19,7 +19,7 @@
 <form class="ss_style" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_posting_job"/>
 		</portlet:actionURL>">
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 function <portlet:namespace/>setEnable() {
 	if (document.<portlet:namespace/>fm.disabled.checked) {
 		document.<portlet:namespace/>fm.enabled.value = "false";
@@ -154,7 +154,7 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 </c:choose>
 </c:forEach>
 <input type="hidden" id="aliasId${status.index}" name="aliasId${status.index}" value="${alias.id}"/>
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 <portlet:namespace/>_addAlias('<c:out value="${alias.aliasName}"/>','<c:out value="${title}"/>');
 </script>
 </c:forEach>

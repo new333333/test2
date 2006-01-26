@@ -37,7 +37,7 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 <div id="ss_showfolder_bottom" class="ss_style ss_portlet">
 </div>
 
-<script language="javascript">
+<script type="text/javascript">
 var ss_entryWindowWidth = <%= ss_entryWindowWidth %>;
 var ss_minEntryWindowWidth = 200;
 var ss_scrollbarWidth = 25;

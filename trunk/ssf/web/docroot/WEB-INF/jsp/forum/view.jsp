@@ -25,7 +25,7 @@
 <c:set var="toolbar" value="${ssForumToolbar}" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 </c:if>
-<script language="javascript">
+<script type="text/javascript">
 function ss_showNotLoggedInMsg() {
 	alert("<ssf:nlt tag="forum.unseenCounts.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 }
@@ -72,9 +72,9 @@ function ss_showNotLoggedInMsg() {
 </table>
 
 </div>
-<script language="JavaScript" src="<html:rootPath/>js/common/taconite-client.js"></script>
-<script language="JavaScript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
-<script language="javascript">
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
+<script type="text/javascript">
 var count = 0
 function ss_getUnseenCounts() {
 	<c:forEach var="folder" items="${ssFolderList}">

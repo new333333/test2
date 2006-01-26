@@ -17,7 +17,7 @@
 <%@ page import="com.sitescape.ef.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 </script>
 
 <div class="ss_style ss_portlet">

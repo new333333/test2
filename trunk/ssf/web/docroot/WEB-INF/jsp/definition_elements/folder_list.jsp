@@ -13,7 +13,7 @@
 	}
 %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-<script language="javascript">
+<script type="text/javascript">
 function highlightLineById(id) {
     if (id == "") {return;}
     var obj = null
@@ -77,7 +77,7 @@ function highlightLineById(id) {
 <% // Then include the navigation widgets for this view %>
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
 </td>
-<td align="center">
+<td>
 <%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
 </td>
 <td align="right">&nbsp;</td>

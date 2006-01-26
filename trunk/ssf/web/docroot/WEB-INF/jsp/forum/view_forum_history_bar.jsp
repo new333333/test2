@@ -3,7 +3,7 @@
 <c:if test="${empty ss_history_bar_loaded}">
 <c:set var="ss_history_bar_loaded" value="1" scope="request"/>
 
-<script language="javascript">
+<script type="text/javascript">
 var ss_entryList = new Array();
 var ss_entryCount = 0;
 <c:forEach var="entry" items="${ssFolderEntries}" >

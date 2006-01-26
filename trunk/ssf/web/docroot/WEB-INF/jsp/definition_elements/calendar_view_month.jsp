@@ -1,7 +1,7 @@
 <% // Calendar month view %>
 
 
-<script language="javascript">
+<script type="text/javascript">
 var ss_entryList = new Array();
 var ss_entryCount = 0;
 function getFilteredEntries() {

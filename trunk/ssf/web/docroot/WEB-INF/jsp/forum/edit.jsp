@@ -39,7 +39,7 @@
 <span class="ss_bold"><ssf:nlt tag="forum.selectForums" text="Select the forums to be shown:"/></span>
 <br>
 <br>
-<script language="javascript">
+<script type="text/javascript">
 function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
 	if (self.document.<portlet:namespace />fm["id_"+forum] && self.document.<portlet:namespace />fm["id_"+forum].checked) {
 		self.document.<portlet:namespace />fm["id_"+forum].checked=false

@@ -24,7 +24,7 @@ String ssfBoxId = renderResponse.getNamespace() + "_ssf_box_div";
   </ssf:box>
 </div>
 
-<script language="javascript">
+<script type="text/javascript">
 var ss_entryWindowWidth = <%= ss_entryWindowWidth %>;
 var ss_originalEntryDivHtml = null;
 if (isNSN || isNSN6 || isMoz5) {
