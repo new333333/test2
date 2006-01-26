@@ -11,7 +11,6 @@ import com.sitescape.ef.domain.AclControlledEntry;
 
 
 public class RecordEvent extends AbstractActionHandler {
-	protected Log logger = LogFactory.getLog(getClass());
 	private static final long serialVersionUID = 1L;
 	  
 	//Indexing the entry is handled by the code that initiates a transition/nodeEnter
@@ -26,7 +25,7 @@ public class RecordEvent extends AbstractActionHandler {
 		WorkflowState ws = entry.getWorkflowState(id);
 		if (ws != null) {
 			ws.setState(state);
-			logger.info("Workflow event (" + executionContext.getEvent().getEventType() + ") recorded: " + state);
+			if (infoEnabled) logger.info("Workflow event (" + executionContext.getEvent().getEventType() + ") recorded: " + state);
 		}
 //Don't think you can wait for arbitrary state changes, don't have control over ordering.
 //		if (ctx.getTransientVariable("ignoreChecks") == null)

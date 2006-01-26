@@ -8,6 +8,7 @@ import org.jbpm.graph.def.Node;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
 import org.jbpm.context.exe.ContextInstance;
+import org.jbpm.db.JbpmSession;
 
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.AclControlledEntry;
@@ -20,7 +21,6 @@ import com.sitescape.util.Validator;
  *
  */
 public class StopThreads extends AbstractActionHandler {
-	protected Log logger = LogFactory.getLog(getClass());
 	private static final long serialVersionUID = 1L;
 	  
 	public void execute( ExecutionContext executionContext ) throws Exception {
@@ -33,30 +33,29 @@ public class StopThreads extends AbstractActionHandler {
 		WorkflowState ws = entry.getWorkflowState(id);
 		 //record event may not have happened yet
 		ws.setState(stateName);
-		logger.info("Begin stop threads: " + stateName);
+		if (infoEnabled) logger.info("Stop threads begin at: " + stateName);
 		if (ws != null) {
 			//See if any parallel executions should be terminated
 			//Note,we are in an intermediate state
 			List parallelThreadStops = WorkflowUtils.getParallelThreadStops(ws.getDefinition(), stateName);
-			Token root = token.getProcessInstance().getRootToken();
 			boolean found = false;
 			for (int i = 0; i < parallelThreadStops.size(); i++) {
 				String threadName = (String) parallelThreadStops.get(i);
 				if (!Validator.isNull(threadName)) {
-					//All thread tokens are children of the root
-					Token child = root.getChild(threadName);
-					//If null, hasn't stated yet
-					if ((child != null) && !child.hasEnded()) {
-						child.end();
+					//See if child has ended
+					WorkflowState thread = entry.getWorkflowStateByThread(ws.getDefinition(), threadName);
+					if (thread != null) {
+						//child is active, end it
+						Token childToken = getWorkflowFactory().getSession().getGraphSession().loadToken(thread.getTokenId().longValue());
+						if (childToken != null)	childToken.end();
 						found = true;
-						WorkflowState state = entry.getWorkflowStateByThread(ws.getDefinition(), threadName);
-						if (state != null) entry.removeWorkflowState(state);
-						logger.info("End thread: " + threadName);
+						entry.removeWorkflowState(thread);
+						if (infoEnabled) logger.info("Stop threads: end thread " + threadName);
 					}
 				}
 			}
 			if (found) checkForWaits(token, entry);
 		}
-		logger.info("End stop threads: " + stateName);
+		if (infoEnabled) logger.info("Stop threads end at: " + stateName);
 	}
 }

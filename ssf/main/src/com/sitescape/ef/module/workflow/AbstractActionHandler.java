@@ -3,6 +3,8 @@ package com.sitescape.ef.module.workflow;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.db.JbpmSession;
 import org.jbpm.graph.def.ActionHandler;
@@ -26,6 +28,8 @@ import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 import com.sitescape.ef.module.mail.MailModule;
 
 public abstract class AbstractActionHandler implements ActionHandler {
+	protected Log logger = LogFactory.getLog(getClass());
+	protected boolean infoEnabled=logger.isInfoEnabled();
 
 	protected CoreDao getCoreDao() {
 		return (CoreDao)SpringContextUtil.getBean("coreDao");

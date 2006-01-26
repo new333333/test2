@@ -26,37 +26,36 @@ import com.sitescape.ef.domain.WfNotify;
 
 public class Notify extends AbstractActionHandler {
 	private static final long serialVersionUID = 1L;
-	protected Log logger = LogFactory.getLog(getClass());
-	 public void execute( ExecutionContext executionContext ) throws Exception {
-		 ContextInstance ctx = executionContext.getContextInstance();
-		 Token token = executionContext.getToken();
-		 Node current = token.getNode();
-		 String stateName = current.getName();
-		 AclControlledEntry entry = loadEntry(ctx);
-		 logger.info("Start workflow notification:" + stateName); 
-		 MimeHelper mHelper = new MimeHelper(entry, token);
-		 WorkflowState ws = entry.getWorkflowState(new Long(token.getId()));
-		 //record event may not have happened yet
-		 ws.setState(stateName);
+	public void execute( ExecutionContext executionContext ) throws Exception {
+		ContextInstance ctx = executionContext.getContextInstance();
+		Token token = executionContext.getToken();
+		Node current = token.getNode();
+		String stateName = current.getName();
+		AclControlledEntry entry = loadEntry(ctx);
+		if (infoEnabled) logger.info("Workflow notify start at:" + stateName); 
+		MimeHelper mHelper = new MimeHelper(entry, token);
+		WorkflowState ws = entry.getWorkflowState(new Long(token.getId()));
+		//record event may not have happened yet
+		ws.setState(stateName);
 
-		 if (ws == null) {
-			 logger.error("Workflow notify: Cannot find state for token:" + token.getId());
-			 return;
-		 }
-		 List notifications;
-		 if (Event.EVENTTYPE_NODE_ENTER.equals(executionContext.getEvent().getEventType())) {
-			 notifications = ws.getWfEnterNotifications();
-		 } else {
-			 notifications = ws.getWfExitNotifications();
-		 }
-		 for (int i=0; i<notifications.size(); ++i) {
-			 WfNotify n = (WfNotify)notifications.get(i);
-			 mHelper.setNotify(n);
-			 getMailModule().sendMail(entry.getParentBinder(), mHelper);
+		if (ws == null) {
+			if (infoEnabled) logger.error("Workflow notify: Cannot find state for token:" + token.getId());
+			return;
+		}
+		List notifications;
+		if (Event.EVENTTYPE_NODE_ENTER.equals(executionContext.getEvent().getEventType())) {
+			notifications = ws.getWfEnterNotifications();
+		} else {
+			notifications = ws.getWfExitNotifications();
+		}
+		for (int i=0; i<notifications.size(); ++i) {
+			WfNotify n = (WfNotify)notifications.get(i);
+			mHelper.setNotify(n);
+			getMailModule().sendMail(entry.getParentBinder(), mHelper);
 			 
-		 }
-		 logger.info("End workflow notification:" + stateName); 
-	 }
+		}
+		if (infoEnabled) logger.info("Workflow notify end at:" + stateName); 
+	}
 
 	 private class MimeHelper implements MimeMessagePreparator {
 			AclControlledEntry entry;
@@ -94,7 +93,7 @@ public class Notify extends AbstractActionHandler {
 					try	{
 						if (!Validator.isNull(email)) helper.addTo(email);
 					} catch (AddressException ae) {
-						logger.error("Skipping email notifications for " + user.getTitle() + " Bad email address");
+						logger.error("Workflow notify: Skipping email notifications for " + user.getTitle() + " Bad email address");
 					}
 					
 				}
