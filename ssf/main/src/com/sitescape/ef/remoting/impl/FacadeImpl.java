@@ -110,10 +110,12 @@ public class FacadeImpl implements Facade {
 		
 		String xml = doc.asXML();
 		
+		/*
 		System.out.println("*** XML representation for entry " + entry.getId());
 		System.out.println(xml);
 		System.out.println("*** Pretty XML representation for entry " + entry.getId());
 		prettyPrint(doc);
+		*/
 		
 		return xml;
 	}
@@ -129,13 +131,12 @@ public class FacadeImpl implements Facade {
 			throw new IllegalArgumentException(e.toString());
 		}
 		
-		return getFolderModule().addEntry(new Long(binderId), definitionId, new DomInputData(doc), null).longValue();
+		return getFolderModule().addEntry(new Long(binderId), definitionId, 
+				new DomInputData(doc), null).longValue();
 	}
 	
 	public int uploadFile(long binderId, long entryId, String fileUploadDataItemName, String fileName) {
-		// Just to make sure that everything is set up properly.
-		User user = RequestContextHolder.getRequestContext().getUser();
-		
+
 		
 		InputStream is =null;
 		FileOutputStream os = null;
@@ -201,7 +202,7 @@ public class FacadeImpl implements Facade {
 		Message reqMsg = msgContext.getRequestMessage();
 		Attachments messageAttachments = reqMsg.getAttachmentsImpl();
 		if (null == messageAttachments) {
-			System.out.println("no attachment support");
+			logger.warn("No attachment support");
 			return new AttachmentPart[0];
 		}
 		int attachmentCount = messageAttachments.getAttachmentCount();
