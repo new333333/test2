@@ -52,11 +52,19 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
  
        return workspace;
     }
-    public org.dom4j.Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper) throws AccessControlException {
-    	return getDomWorkspaceTree(null, domTreeHelper);
+    public org.dom4j.Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper, boolean recurse) throws AccessControlException {
+    	return getDomWorkspaceTree(null, domTreeHelper, recurse);
+    }
+    public org.dom4j.Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper) throws AccessControlException {
+    	return getDomWorkspaceTree(id, domTreeHelper, true);
+    }
+ 
+   	public org.dom4j.Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper) throws AccessControlException {
+    	return getDomWorkspaceTree(null, domTreeHelper, true);
     }
     	 
-    public org.dom4j.Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper) throws AccessControlException {
+    	 
+    public org.dom4j.Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper, boolean recurse) throws AccessControlException {
     	Workspace top;
         User user = RequestContextHolder.getRequestContext().getUser();
         if (id == null) top =  getCoreDao().findTopWorkspace(user.getZoneName());
@@ -68,11 +76,11 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         Comparator c = new BinderComparator(user.getLocale());
     	Document wsTree = DocumentHelper.createDocument();
     	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
-    	buildWorkspaceDomTree(rootElement, top, c, domTreeHelper);
+    	buildWorkspaceDomTree(rootElement, top, c, domTreeHelper, recurse);
     	return wsTree;
     }
     
-    protected void buildWorkspaceDomTree(Element current, Workspace top, Comparator c, DomTreeBuilder domTreeHelper) {
+    protected void buildWorkspaceDomTree(Element current, Workspace top, Comparator c, DomTreeBuilder domTreeHelper, boolean recurse) {
     	Element next; 
     	Folder f;
     	Workspace w;
@@ -107,7 +115,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
                 	continue;
             }
      		next = current.addElement(DomTreeBuilder.NODE_CHILD);
-     		buildWorkspaceDomTree(next, w, c, domTreeHelper);
+     		if (recurse)
+     			buildWorkspaceDomTree(next, w, c, domTreeHelper, recurse);
      	}    	
     }
 

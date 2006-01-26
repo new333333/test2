@@ -12,10 +12,9 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.domain.WfWaits;
-/**
- * @author hurley
- *
- */
+import com.sitescape.ef.domain.WfNotify;
+import com.sitescape.util.GetterUtil;
+
 /**
  * @author hurley
  *
@@ -30,11 +29,8 @@ public class WorkflowUtils {
 		Document wfDoc = wfDef.getDefinition();
 		Element wfRoot = wfDoc.getRootElement();
 		//Find the current state in the definition
-		Element statePropertyEle = (Element) wfRoot.selectSingleNode(
-				"//item[@name='workflowProcess']/item[@name='state']"+
-				"/properties/property[@name='name' and @value='"+stateName+"']");
-		if (statePropertyEle != null) {
-			Element stateEle = statePropertyEle.getParent().getParent();
+		Element stateEle = getState(wfRoot, stateName);
+		if (stateEle != null) {
 			//Build a list of all manual transitions for this state
 			List transitions = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionManual']");
 			if (transitions != null) {
@@ -76,11 +72,8 @@ public class WorkflowUtils {
 		Document wfDoc = wfDef.getDefinition();
 		Element wfRoot = wfDoc.getRootElement();
 		//Find the current state in the definition
-		Element statePropertyEle = (Element) wfRoot.selectSingleNode(
-				"//item[@name='workflowProcess']/item[@name='state']"+
-				"/properties/property[@name='name' and @value='"+stateName+"']");
-		if (statePropertyEle != null) {
-			Element stateEle = statePropertyEle.getParent().getParent();
+		Element stateEle = getState(wfRoot, stateName);
+		if (stateEle != null) {
 			//Build a list of all parallel executions for this state
 			List startParallelExecutions = stateEle.selectNodes(
 					"./item[@name='startParallelThread']");
@@ -121,11 +114,8 @@ public class WorkflowUtils {
 		Document wfDoc = wfDef.getDefinition();
 		Element wfRoot = wfDoc.getRootElement();
 		//Find the current state in the definition
-		Element statePropertyEle = (Element) wfRoot.selectSingleNode(
-				"//item[@name='workflowProcess']/item[@name='state']"+
-				"/properties/property[@name='name' and @value='"+stateName+"']");
-		if (statePropertyEle != null) {
-			Element stateEle = statePropertyEle.getParent().getParent();
+		Element stateEle = getState(wfRoot, stateName);
+		if (stateEle != null) {
 			//Build a list of all parallel executions for this state
 			List stopParallelExecutions = stateEle.selectNodes(
 					"./item[@name='stopParallelThread']");
@@ -155,11 +145,8 @@ public class WorkflowUtils {
 		Document wfDoc = wfDef.getDefinition();
 		Element wfRoot = wfDoc.getRootElement();
 		//Find the current state in the definition
-		Element statePropertyEle = (Element) wfRoot.selectSingleNode(
-				"//item[@name='workflowProcess']/item[@name='state']"+
-				"/properties/property[@name='name' and @value='"+stateName+"']");
-		if (statePropertyEle != null) {
-			Element stateEle = statePropertyEle.getParent().getParent();
+		Element stateEle = getState(wfRoot, stateName);
+		if (stateEle != null) {
 			//Build a list of all parallel executions for this state
 			List waitParallelExecutions = stateEle.selectNodes(
 					"./item[@name='transitions']/item[@name='waitForParallelThread']");
@@ -195,7 +182,7 @@ public class WorkflowUtils {
 				initialState = initialStateProperty.attributeValue("value", "");
 				//Validate that this is an existing state
 				if (!Validator.isNull(initialState)) {
-					Element state = (Element) workflowRoot.selectSingleNode("./item[@name='workflowProcess']/item[@name='state']/properties/property[@name='name' and @value='"+initialState+"']");
+					Element state = (Element)getState(workflowRoot, initialState);
 					if (state == null) initialState = "";
 				}
 			}
@@ -239,4 +226,69 @@ public class WorkflowUtils {
 		}
 		return endStates;
     }    
+    public static List getEnterNotifications(Definition wfDef, String stateName) {
+    	Document wfDoc = wfDef.getDefinition();
+		//Find the current state in the definition
+		Element stateEle = getState(wfDoc.getRootElement(), stateName);
+		if (stateEle != null) {  	
+			List notifications = (List)stateEle.selectNodes("./item[@name='notifications']/item[@name='entryNotification']");
+			return getNotifications(notifications);
+		}
+		return new ArrayList();
+
+    }
+    public static List getExitNotifications(Definition wfDef, String stateName) {
+    	Document wfDoc = wfDef.getDefinition();
+		//Find the current state in the definition
+		Element stateEle = getState(wfDoc.getRootElement(), stateName);
+		if (stateEle != null) {  	
+			List notifications = (List)stateEle.selectNodes("./item[@name='notifications']/item[@name='exitNotification']");
+			return getNotifications(notifications);
+		}
+		return new ArrayList();
+
+    }
+    private static List getNotifications(List notifications) {
+    	List result = new ArrayList();
+    	if ((notifications == null) || notifications.isEmpty()) return result;
+    	Element prop, notify;
+    	List props;
+    	String name, value;
+    	for (int i=0; i<notifications.size(); ++i) {
+    		WfNotify n = new WfNotify();
+    		notify = (Element)notifications.get(i);
+    		props = notify.selectNodes("./properties/property");
+    		if ((props == null) || props.isEmpty()) continue;
+    		for (int j=0; j<props.size(); ++j) {
+    			prop = (Element)props.get(j);
+    			name = prop.attributeValue("name","");
+    			value = prop.attributeValue("value","");
+    			if ("entryCreator".equals(name)) {
+    				n.setCreatorEnabled(GetterUtil.getBoolean(value, false));
+    			} else if ("subjText".equals(name)) {
+    				n.setSubject(value);
+    			} else if ("appendTitle".equals(name)) {
+    				n.setAppendTitle(GetterUtil.getBoolean(value, false));
+    			} else if ("bodyText".equals(name)) {
+    				n.setBody(value);
+    			} else if ("appendBody".equals(name)) {
+    				n.setAppendBody(GetterUtil.getBoolean(value, false));
+    			}
+    		}
+    		result.add(n);
+    	}
+    	return result;
+    	
+    }
+    private static Element getState(Element wfRoot, String stateName) {
+		//Find the current state in the definition
+		Element statePropertyEle = (Element) wfRoot.selectSingleNode(
+				"//item[@name='workflowProcess']/item[@name='state']"+
+				"/properties/property[@name='name' and @value='"+stateName+"']");
+		if (statePropertyEle != null) {
+			return statePropertyEle.getParent().getParent();
+		}
+		return null;
+
+    }
 }

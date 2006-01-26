@@ -31,6 +31,8 @@ public class StopThreads extends AbstractActionHandler {
 		String stateName = current.getName();
 		AclControlledEntry entry = loadEntry(ctx);
 		WorkflowState ws = entry.getWorkflowState(id);
+		 //record event may not have happened yet
+		ws.setState(stateName);
 		logger.info("Begin stop threads: " + stateName);
 		if (ws != null) {
 			//See if any parallel executions should be terminated
