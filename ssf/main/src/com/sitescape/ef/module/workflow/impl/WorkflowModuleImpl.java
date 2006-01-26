@@ -297,6 +297,14 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			stopThreads = (Action) actions.get("stopThreads");
 		}
 
+		Action notifyAction = null;
+		if (!actions.containsKey("notifyAction")) {
+			notifyAction = setupAction(pD, "notifyAction", "com.sitescape.ef.module.workflow.Notify");
+			pD.addAction(notifyAction);
+		} else {
+			notifyAction = (Action) actions.get("notifyAction");
+		}
+
 		//add global named events - will fire on every node
 		if (!events.containsKey("node-enter")) {
 			Event enterEvent = new Event("node-enter");
@@ -304,11 +312,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			pD.addEvent(enterEvent);
 		}
 		
-		if (!events.containsKey("node-exit")) {
-			Event exitEvent = new Event("node-exit");
-			exitEvent.addAction(recordEvent);
-			pD.addEvent(exitEvent);
-		}
 		//Add our common start and end states
 		if (!nodesMap.containsKey(ObjectKeys.WORKFLOW_START_STATE)) {
 			StartState startState = new StartState(ObjectKeys.WORKFLOW_START_STATE);
@@ -343,38 +346,40 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				} else {
 					nodesMap.remove(stateName);
 				}
-				Event event = stateNode.getEvent(Event.EVENTTYPE_NODE_ENTER);
-				//Check if need parallel threads - if so add special node
+				//Check if need parallel threads - if so add special actgion
 				List threads = (List)state.selectNodes("./item[@name='startParallelThread']");
 				if (!threads.isEmpty()) {
-					if (event == null) {
-						event = new Event(Event.EVENTTYPE_NODE_ENTER);
-						stateNode.addEvent(event);
-					}
-					//make sure start threads event exists
-					addEventAction(threads, event, startThreads);
-					
+					//make sure start threads action exists
+					 addEnterEventAction(stateNode, startThreads);				
 				} else {
 					// remove any old startThreads for this node
-					if (event != null) {
-						removeEventAction(event, startThreads);
-					}
+					removeEnterEventAction(stateNode, startThreads);
 				}
 				//Check if top stop threads - if so add special node
 				threads = (List)state.selectNodes("./item[@name='stopParallelThread']");
 				if (!threads.isEmpty()) {
-					if (event == null) {
-						event = new Event(Event.EVENTTYPE_NODE_ENTER);
-						stateNode.addEvent(event);
-					}
-					//make sure start threads event exists
-					addEventAction(threads, event, stopThreads);
+					//make sure start threads action exists
+					addEnterEventAction(stateNode, stopThreads);
 					
 				} else {
 					// remove any old stopThreads for this node
-					if (event != null) {
-						removeEventAction(event, stopThreads);
-					}
+					removeEnterEventAction(stateNode, stopThreads);
+				}
+				List notifications = (List)state.selectNodes("./item[@name='notifications']/item[@name='entryNotification']");
+				if (!notifications.isEmpty()) {
+					//make sure notify action exists
+					addEnterEventAction(stateNode, notifyAction);
+				} else {
+					// remove any old notifyAction for this node
+					removeEnterEventAction(stateNode, notifyAction);
+				}
+				notifications = (List)state.selectNodes("./item[@name='notifications']/item[@name='exitNotification']");
+				if (!notifications.isEmpty()) {
+					//make sure notify action exists
+					addExitEventAction(stateNode, notifyAction);
+				} else {
+					// remove any old notifyAction for this node
+					removeExitEventAction(stateNode, notifyAction);
 				}
 			}
 		}
@@ -454,12 +459,16 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     	Writer writer = new StringWriter();
 	    JpdlXmlWriter jpdl = new JpdlXmlWriter(writer);
 	    jpdl.write(pD);
-	    System.out.println("");
-	    System.out.println("Workflow process definition created: " + pD.getName());
-	    System.out.println(writer.toString());
+	    logger.info("Workflow process definition created: " + pD.getName());
+	    logger.info(writer.toString());
 	}
-	private void addEventAction(List threads, Event event, Action action) {
+	private Event addEnterEventAction(Node node, Action action) {
 		//	make sure start threads event exits
+		Event event = node.getEvent(Event.EVENTTYPE_NODE_ENTER);
+		if (event == null) {
+			event = new Event(Event.EVENTTYPE_NODE_ENTER);
+			node.addEvent(event);
+		}
 		List eventActions=event.getActions();
 		boolean found = false;
 		if ((eventActions != null) && !eventActions.isEmpty()) {
@@ -476,16 +485,70 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			a.setReferencedAction(action);
 			event.addAction(a);
 		}
+		return event;
 	
 	}
-	private void removeEventAction(Event event, Action action) {
-		List eventActions = event.getActions();
+	private void removeEnterEventAction(Node node, Action action) {
+		Event event = node.getEvent(Event.EVENTTYPE_NODE_ENTER);
+		if (event == null) return;
+		List eventActions = new ArrayList(event.getActions());
 		if ((eventActions != null) && !eventActions.isEmpty()) {
 			JbpmSession session = workflowFactory.getSession();
 			for (int i=0; i<eventActions.size(); ++i) {
 				Action a = (Action)eventActions.get(i);
 				if ((a.getReferencedAction().equals(action))) {
 					event.removeAction(a);
+					//this is necessary cause the hibernate settings try to do a cascade-delete on 
+					//these associations (STUPID)
+					a.setReferencedAction(null);
+					a.setActionDelegation(null);
+					session.getSession().delete(a);
+					break;
+				}
+			}
+		}
+	}
+
+	private Event addExitEventAction(Node node, Action action) {
+		//	make sure start threads event exits
+		Event event = node.getEvent(Event.EVENTTYPE_NODE_LEAVE);
+		if (event == null) {
+			event = new Event(Event.EVENTTYPE_NODE_LEAVE);
+			node.addEvent(event);
+		}
+		List eventActions=event.getActions();
+		boolean found = false;
+		if ((eventActions != null) && !eventActions.isEmpty()) {
+			for (int i=0; i<eventActions.size(); ++i) {
+				Action a = (Action)eventActions.get(i);
+				if ((a.getReferencedAction().equals(action))) {
+					found = true;
+					break;
+				}
+			}
+		}
+		if (!found) {
+			Action a = new Action();
+			a.setReferencedAction(action);
+			event.addAction(a);
+		}
+		return event;
+	
+	}
+	private void removeExitEventAction(Node node, Action action) {
+		Event event = node.getEvent(Event.EVENTTYPE_NODE_LEAVE);
+		if (event == null) return;
+		List eventActions = new ArrayList(event.getActions());
+		if ((eventActions != null) && !eventActions.isEmpty()) {
+			JbpmSession session = workflowFactory.getSession();
+			for (int i=0; i<eventActions.size(); ++i) {
+				Action a = (Action)eventActions.get(i);
+				if ((a.getReferencedAction().equals(action))) {
+					event.removeAction(a);
+					//this is necessary cause the hibernate settings try to do a cascade-delete on 
+					//these associations (STUPID)
+					a.setReferencedAction(null);
+					a.setActionDelegation(null);
 					session.getSession().delete(a);
 					break;
 				}

@@ -83,4 +83,9 @@ public class Description {
     	hash = 31*hash + getText().hashCode();
     	return hash;
     }    
+    public String getStrippedText() {
+    	if (getFormat() != FORMAT_HTML) return getText();
+    	return getText().replaceAll("\\<.*?\\>","");
+
+    }
 }

@@ -27,6 +27,8 @@ public class WorkflowState {
 	protected List wfWaits=null;
 	protected List endStates=null;
 	protected List wfStarts=null;
+	protected List wfEnterNotify=null;
+	protected List wfExitNotify = null;
    
  	public Long getId() {
  		return tokenId;
@@ -80,6 +82,8 @@ public class WorkflowState {
  		endStates=null;
  		wfWaits=null;
  		wfStarts = null;
+		wfExitNotify = null;
+		wfEnterNotify = null;
  	}
 
     /**
@@ -165,7 +169,19 @@ public class WorkflowState {
     	if (wfStarts == null) wfStarts = WorkflowUtils.getParallelThreadStarts(definition, state);
     	return wfStarts; 
     }
-    
+    public List getWfEnterNotifications() {
+    	if (wfEnterNotify == null)
+    		wfEnterNotify = WorkflowUtils.getEnterNotifications(definition, state);
+    	return wfEnterNotify;
+    	
+    }
+    public List getWfExitNotifications() {
+    	if (wfExitNotify == null)
+    		wfExitNotify = WorkflowUtils.getExitNotifications(definition, state);
+    	return wfExitNotify;
+    	
+    }
+   
     public List getThreadEndStates() {
     	if (endStates == null) {
     		if (Validator.isNull(threadName)) {

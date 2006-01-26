@@ -21,4 +21,6 @@ public interface WorkspaceModule {
 	public Workspace getWorkspace(Long workspaceId)	throws NoWorkspaceByTheIdException, AccessControlException;
     public Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper) throws AccessControlException;
     public Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper) throws AccessControlException;
+    public Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper, boolean recurse) throws AccessControlException;
+    public Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper, boolean recurse) throws AccessControlException;
 }

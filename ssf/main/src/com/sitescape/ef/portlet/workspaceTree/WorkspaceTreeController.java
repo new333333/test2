@@ -41,11 +41,8 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 		if (request.getWindowState().equals(WindowState.MAXIMIZED)) {
 			//See if there is a folder specified
 			Long folderId = null;
-			try {
-				folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-			} catch (NoFolderByTheIdException nf) {
-				folderId = null;
-			}
+			folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
+
 			if (folderId != null) {
 			    return new ModelAndView("forum/view_forum");
 			}
