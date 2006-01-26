@@ -1,11 +1,13 @@
 
 package com.sitescape.ef.module.mail;
+import java.util.Date;
+import java.util.Map;
+
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.module.mail.MimeMessagePreparator;
-import java.util.Date;
 
 import javax.mail.internet.MimeMessage;
 
@@ -25,7 +27,8 @@ public interface MailModule {
 	public void receivePostings(ScheduleInfo info);
 	public boolean sendMail(MimeMessage msg);
 	public boolean sendMail(String mailSenderName, java.io.InputStream input);
-    public void sendMail(Binder binder, MimeMessagePreparator preparer);
+    public boolean sendMail(String mailSenderName, MimeMessagePreparator preparer);
+    public void scheduleMail(Binder binder, Map message, String comment);
 	public String getMailProperty(String zoneName, String name);
 	public String getMailAttribute(String zoneName, String node, String name);
 	public String getMailAttribute(Folder folder, String node, String name);

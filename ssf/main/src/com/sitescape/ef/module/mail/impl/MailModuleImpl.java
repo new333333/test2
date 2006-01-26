@@ -55,6 +55,7 @@ import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.module.mail.JavaMailSender;
 import com.sitescape.ef.jobs.FailedEmail;
+import com.sitescape.ef.jobs.SendEmail;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import com.sitescape.ef.module.mail.MimeMessagePreparator;
 import org.springframework.mail.MailParseException;
@@ -344,6 +345,26 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     	}
     	return true;
     }
+    public boolean sendMail(String mailSenderName, MimeMessagePreparator mHelper) {
+    	JavaMailSender mailSender = (JavaMailSender)mailSenders.get(mailSenderName);
+		mHelper.setDefaultFrom(mailSender.getDefaultFrom());
+		//Use spring callback to wrap exceptions into something more useful than javas 
+		try {
+			mailSender.send(mHelper);
+		} catch (MailParseException px) {
+       		logger.error(px.getMessage());
+    		return false;
+    		
+    	} catch (MailSendException sx) {
+    		logger.error("Error sending mail:" + sx.getMessage());
+    		return false;
+    	} catch (MailAuthenticationException ax) {
+       		logger.error("Authentication Exception:" + ax.getMessage());
+    		return false;    		
+    	}
+    	return true;
+ 
+	}
     public boolean sendMail(MimeMessage mailMsg) {
         String zoneName = RequestContextHolder.getRequestContext().getZoneName();
         JavaMailSender mailSender = getMailSender(zoneName);
@@ -364,22 +385,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     	return true;
     }
 
-    public void sendMail(Binder binder, MimeMessagePreparator mHelper) {
-		JavaMailSender mailSender = getMailSender(binder);
-		mHelper.setDefaultFrom(mailSender.getDefaultFrom());
-		//Use spring callback to wrap exceptions into something more useful than javas 
-		try {
-			mailSender.send(mHelper);
-		} catch (MailSendException sx) {
-    		logger.error("Error sending mail:" + sx.getMessage());
-	  		FailedEmail process = (FailedEmail)processorManager.getProcessor(binder, FailedEmail.PROCESSOR_KEY);
-	   		process.schedule(binder, mailSender, mHelper.getMessage(), getMailDirPath(binder));
-	    	} catch (Exception ex) {
-       		logger.error(ex.getMessage());
-    	} 
 
+    public void scheduleMail(Binder binder, Map message, String comment) {
+  		SendEmail process = (SendEmail)processorManager.getProcessor(binder, SendEmail.PROCESSOR_KEY);
+   		process.schedule(getMailSender(binder).getName(), message, comment);
 	}
- 	private class MimeHelper implements MimeMessagePreparator {
+    private class MimeHelper implements MimeMessagePreparator {
 		FolderEmailFormatter processor;
 		Folder folder;
 		Collection toAddrs;
