@@ -25,14 +25,15 @@ public class DecisionAction extends AbstractActionHandler {
 		AclControlledEntry entry = loadEntry(ctx);
 		WorkflowState ws = entry.getWorkflowState(new Long(current.getId()));
 		if (ws != null) {
-			logger.info("Begin decision :" + ws.getState() + ":" + ws.getThreadName());
+			if (infoEnabled) logger.info("Decision begin: at state " + ws.getState() + " thread " + ws.getThreadName());
 			if (ws.isThreadEndState()) {
-				logger.info("ThreadEnd");
+				if (infoEnabled) logger.info("Decision: end thread");
 				if (!current.isRoot()) {
 					current.end(false);
 				} else {
 					executionContext.getProcessInstance().end();
 				}
+				// cleanup any children - should only have children if token is root
 				Map children = current.getChildren();
 				for (Iterator iter=children.values().iterator();iter.hasNext();) {
 					Token child = (Token)iter.next();
@@ -49,7 +50,6 @@ public class DecisionAction extends AbstractActionHandler {
 			}
 			//see if threads I am waiting for are done
 			List waitingFor = ws.getWfWaits();
-			Token root = current.getProcessInstance().getRootToken();
 			for (int i=0; i<waitingFor.size(); ++i) {
 				WfWaits wait = (WfWaits)waitingFor.get(i);
 				List result = wait.getThreads();
@@ -60,18 +60,17 @@ public class DecisionAction extends AbstractActionHandler {
 						for (int j=0; j<result.size(); ++j) {
 							String threadName = (String)result.get(j);
 							if (!Validator.isNull(threadName)) {
-								//The token we are waiting for is a child of the root.
-								//see if it has ended
-								Token child = root.getChild(threadName);
-								//If nulll, hasn't stated yet
-								if ((child == null) || !child.hasEnded()) {
+								//See if child has ended
+								WorkflowState child = entry.getWorkflowStateByThread(ws.getDefinition(), threadName);
+								//if found - still running
+								if (child != null) {
 									done = false;
 									break;
 								}
 							}							
 						}
 						if (done) {
-							logger.info("Decision transition("+ ws.getThreadName() + "): " + ws.getState() + "." + toState);
+							if (infoEnabled) logger.info("Decision transition("+ ws.getThreadName() + "): " + ws.getState() + "." + toState);
 							current.signal(ws.getState() + "." + toState);
 							return;
 						}
@@ -79,7 +78,7 @@ public class DecisionAction extends AbstractActionHandler {
 					}
 				}
 			}
-			logger.info("End decision:" + ws.getState() + ":" + ws.getThreadName());
+			if (infoEnabled) logger.info("Decision end: at state " + ws.getState() + " thread " + ws.getThreadName());
 		}
 	}
 
