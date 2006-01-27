@@ -72,7 +72,7 @@ public class FacadeClient {
 				addEntry(Long.parseLong(args[1]), args[2]);
 			}
 			else if(args[0].equals("uploadFile")){	
-				uploadFile(Long.parseLong(args[1]), Long.parseLong(args[2]), args[3]);
+				uploadFile(Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]);
 			}
 			else {
 				System.out.println("Invalid arguments");
@@ -148,15 +148,14 @@ public class FacadeClient {
 		System.out.println();
 	}
 	
-	private static void uploadFile(long binderId, long entryId, String filePath) 
+	private static void uploadFile(long binderId, long entryId, 
+			String fileUploadDataItemName, String filePath) 
 		throws ServiceException, RemoteException, MalformedURLException {
 		System.out.println("*** Uploading file " + filePath + " ***");
 		
 		// Specify the URL to your webservice that is needed by the Stub
 		String endpoint = "http://peace:8080/ssf/ws/Facade";
 		URL targetURL = new URL(endpoint);
-		
-		String fileUploadDataItemName = "file"; // hard-coded name for now
 		
 		// Create a Service object
 		JaxRpcFacadeService service = new JaxRpcFacadeServiceLocator(/*config*/);

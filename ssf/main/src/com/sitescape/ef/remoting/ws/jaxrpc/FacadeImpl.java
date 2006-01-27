@@ -1,52 +1,55 @@
 package com.sitescape.ef.remoting.ws.jaxrpc;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.activation.DataHandler;
+import javax.xml.soap.SOAPException;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.Message;
 import org.apache.axis.MessageContext;
 import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.attachments.Attachments;
-import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.ef.remoting.impl.AbstractFacade;
+import com.sitescape.ef.remoting.impl.EmptyInputData;
+import com.sitescape.ef.remoting.impl.RemotingException;
 
 public class FacadeImpl extends AbstractFacade {
 
-	public int uploadFile(long binderId, long entryId, String fileUploadDataItemName, String fileName) {
+	public int uploadFile(long binderId, long entryId, 
+			String fileUploadDataItemName, String fileName) {
 
-		
-		InputStream is =null;
-		FileOutputStream os = null;
-
-		try
-		{
-			// Get all the attachments
-			AttachmentPart[] attachments = getMessageAttachments();
-
-			//Extract the first attachment. (Since in this case we have only one attachment sent)
-			DataHandler dh = attachments[0].getDataHandler();
-
-			is = dh.getInputStream();
-			File file = new File("C:/junk2", fileName);
-			os = new FileOutputStream(file);
-			FileCopyUtils.copy(is, os);
-			is.close();
-			os.close();
-		}
-		catch(Exception e)
-		{
-			String status="File Could Not Be Saved: "+e.getMessage();
-			System.out.println("In Impl: "+e);
+		// Get all the attachments
+		AttachmentPart[] attachments;
+		try {
+			attachments = getMessageAttachments();
+		} catch (AxisFault e) {
+			throw new RemotingException(e);
 		}
 
-		return 1;
+		//Extract the first attachment. (Since in this case we have only one attachment sent)
+		DataHandler dh;
+		try {
+			dh = attachments[0].getDataHandler();
+		} catch (SOAPException e) {
+			throw new RemotingException(e);
+		}
+
+		// Wrap it up in a datastructure expected by our app.
+		AxisMultipartFile mf = new AxisMultipartFile(fileName, dh);
 		
+		// Create a map of file item names to items 
+		Map fileItems = new HashMap();
+		fileItems.put(fileUploadDataItemName, mf);
+		
+		// Finally invoke the business method. 
+		getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
+				new EmptyInputData(), fileItems);
+		
+		return 1; // TODO There's no way to get this....
 	}
 	
 	/**
