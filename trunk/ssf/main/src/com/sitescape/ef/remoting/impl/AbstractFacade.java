@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.axis.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;

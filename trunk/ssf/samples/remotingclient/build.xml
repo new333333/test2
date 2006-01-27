@@ -48,7 +48,6 @@
 		<echo message="readBinderSpring" />
 		<echo message="readEntrySpring" />
 		<echo message="addEntrySpring" />
-		<echo message="uploadFileSpring" />
 	</target>
 	
 	<target name="clean" depends="init">
@@ -237,6 +236,7 @@
 			<arg value="uploadFile"/>
 			<arg value="74"/>
 			<arg value="482"/>
+			<arg value="picture"/>
 			<arg value="C:/junk/dog6.gif"/>
 		</java>
 	</target>

@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Binder;
@@ -23,6 +26,9 @@ import com.sitescape.ef.ConfigurationException;
  *
  */
 public class EntryBuilder {
+	
+	private final static Log logger = LogFactory.getLog(EntryBuilder.class);
+	
 	public static List buildEntries(Class clazz, Collection data) {
 		try {
 			List results = new ArrayList();
@@ -124,6 +130,7 @@ public class EntryBuilder {
     		try {
     			fileModule.writeFile(binder, entry, fui);
     		} catch (Exception e) {
+    			logger.error(e.getMessage(), e);
     			wfe.addException(e);
     		}
     	}
