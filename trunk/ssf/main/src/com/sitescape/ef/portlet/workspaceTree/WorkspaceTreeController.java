@@ -32,24 +32,19 @@ import com.sitescape.ef.web.util.WebHelper;
 public class WorkspaceTreeController extends SAbstractController implements DomTreeBuilder {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
+		Long folderId = null;
+		folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
+		if (folderId != null) {
+			//redirect handler too forum action
+		    response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		    response.setWindowState(WindowState.MAXIMIZED);
+		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
-		PortletSession ses = WebHelper.getRequiredPortletSession(request);
-		
-		if (request.getWindowState().equals(WindowState.MAXIMIZED)) {
-			//See if there is a folder specified
-			Long folderId = null;
-			folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
-
-			if (folderId != null) {
-			    return new ModelAndView("forum/view_forum");
-			}
-		}
-		
-
 		Map model = new HashMap();
+		PortletSession ses = WebHelper.getRequiredPortletSession(request);
 		Document wsTree = (Document)ses.getAttribute(WebKeys.WORKSPACE_DOM_TREE);
 		if (wsTree == null) {
 			wsTree = getWorkspaceModule().getDomWorkspaceTree(this);
