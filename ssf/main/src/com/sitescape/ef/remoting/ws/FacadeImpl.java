@@ -19,7 +19,7 @@ import com.sitescape.ef.remoting.impl.RemotingException;
 
 public class FacadeImpl extends AbstractFacade {
 
-	public int uploadFile(long binderId, long entryId, 
+	public void uploadFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
 
 		// Get all the attachments
@@ -48,8 +48,6 @@ public class FacadeImpl extends AbstractFacade {
 		// Finally invoke the business method. 
 		getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
 				new EmptyInputData(), fileItems);
-		
-		return 1; // TODO There's no way to get this....
 	}
 	
 	/**
