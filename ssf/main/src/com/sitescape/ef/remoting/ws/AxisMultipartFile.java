@@ -1,4 +1,4 @@
-package com.sitescape.ef.remoting.ws.jaxrpc;
+package com.sitescape.ef.remoting.ws;
 
 import java.io.File;
 import java.io.IOException;

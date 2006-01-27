@@ -1,4 +1,4 @@
-package com.sitescape.ef.remoting.ws.jaxrpc;
+package com.sitescape.ef.remoting.ws;
 
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
