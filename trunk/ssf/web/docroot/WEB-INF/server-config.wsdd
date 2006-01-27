@@ -36,7 +36,7 @@
   		</requestFlow>
 	
 		<parameter name="allowedMethods" value="*"/>
-		<parameter name="className" value="com.sitescape.ef.remoting.ws.jaxrpc.JaxRpcFacade"/>
+		<parameter name="className" value="com.sitescape.ef.remoting.ws.JaxRpcFacade"/>
   		<!--<parameter name="wsdlTargetNamespace" value="urn:SSF" />-->
 		<beanMapping qname="ssf:Binder" xmlns:ssf="urn:SSF" languageSpecificType="java:com.sitescape.ef.remoting.api.Binder"/>
 		<!-- The host name portion must be substituted appropriately. -->

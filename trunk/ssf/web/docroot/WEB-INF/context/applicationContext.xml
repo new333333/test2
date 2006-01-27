@@ -471,7 +471,7 @@
 	
 	<bean id="facadeWS" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target">
-			<bean class="com.sitescape.ef.remoting.ws.jaxrpc.FacadeImpl">
+			<bean class="com.sitescape.ef.remoting.ws.FacadeImpl">
 				<property name="folderModule"><ref local="folderModule"/></property>
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 				<property name="binderModule"><ref local="binderModule"/></property>
