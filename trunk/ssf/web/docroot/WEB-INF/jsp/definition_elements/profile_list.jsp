@@ -73,8 +73,10 @@ function highlightLineById(id) {
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn>
-	<a class="ss_link" href="mailto:${entry._email}">
-    <c:out value="${entry._email}"/></a>
+    <c:if test="${!empty entry._email}">
+	  <a class="ss_link" href="mailto:${entry._email}">
+      <c:out value="${entry._email}"/></a>
+    </c:if>
   </ssf:slidingTableColumn>
 
   <ssf:slidingTableColumn>

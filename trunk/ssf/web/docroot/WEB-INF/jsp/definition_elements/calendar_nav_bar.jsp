@@ -9,7 +9,7 @@
   method="post" style="display:inline;">
 <span>
 	<ssf:datepicker formName="ssCalNavBar" showSelectors="true" 
-	 popupDivId="ss_calDivPopup" id="goto" initDate="${ssCurrentDate}" 
+	 popupDivId="ss_calDivPopup" id="ss_goto" initDate="${ssCurrentDate}" 
 	 immediateMode="true" altText="<%= NLT.get("calendar.view.popupAltText") %>"/>
 </span>
 </form>

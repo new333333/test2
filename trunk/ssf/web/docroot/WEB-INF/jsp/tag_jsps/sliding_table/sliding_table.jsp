@@ -265,31 +265,27 @@ function ss_slidingTableStopDrag(evt) {
 var ss_slidingTableMosueOverObj = null
 function ss_showMouseOverInfo(obj) {
 	if (obj != ss_slidingTableMosueOverObj) {
-		if (obj.innerHTML != "" && obj.innerHTML != "&nbsp;" && obj.innerHTML != "&nbsp;&nbsp;" && obj.innerHTML != "&nbsp;&nbsp;&nbsp;") {
-			//var divObj = document.createElement("div");
-			//var table = document.createElement("table");
-			//divObj.appendChild(table);
-			//table.className = "ss_style";
-			//var tableBody = document.createElement("tbody");
-			//table.appendChild(tableBody);
-			//var row = document.createElement("tr");
-			//tableBody.appendChild(row);
-			//var tdCopy = obj.cloneNode(true);
-			//row.appendChild(tdCopy);
-			
-			var s = "<table class='ss_style' cellspacing='0' cellpadding='0' style='border: solid black 1px;'><tr><td nowrap>"
-			s += obj.innerHTML
-			s += "&nbsp;&nbsp;&nbsp;</td></tr></table>"
-			ss_setDivHtml("ss_info_popup", s)
-			//self.document.getElementById("ss_info_popup").replaceNode(divObj);
-			//divObj.id = "ss_info_popup";
-			//divObj.className = "ss_style ss_sliding_table_info_popup";
-			if (self.document.getElementById("ss_info_popup")) {
-				var x = parseInt(obj.offsetParent.offsetParent.style.left) - 1
-				var y = parseInt(parseInt(obj.offsetTop) + parseInt(obj.offsetParent.offsetTop) + parseInt(obj.offsetParent.offsetParent.style.top)) - 1
-				self.document.getElementById("ss_info_popup").style.left = x + "px"
-				self.document.getElementById("ss_info_popup").style.top = y + "px"
-				ss_showHideObj("ss_info_popup", "visible", "block")
+		var ihtml = obj.innerHTML;
+		if (ihtml != "" && ihtml != "&nbsp;" && ihtml != "&nbsp;&nbsp;" && 
+		    ihtml != "&nbsp;&nbsp;&nbsp;") {
+		    if (ihtml.length == 1 && ihtml.charCodeAt(0) == 160) {
+		    	ss_showHideObj("ss_info_popup", "hidden", "none");
+		    } else if (ihtml.length == 2 && ihtml.charCodeAt(0) == 160 && ihtml.charCodeAt(1) == 160) {
+		    	ss_showHideObj("ss_info_popup", "hidden", "none");
+		    } else if (ihtml.length == 3 && ihtml.charCodeAt(0) == 160 && ihtml.charCodeAt(1) == 160 && ihtml.charCodeAt(2) == 160) {
+		    	ss_showHideObj("ss_info_popup", "hidden", "none");
+		    } else {
+				var s = "<table class='ss_style' cellspacing='0' cellpadding='0' style='border: solid black 1px;'><tr><td nowrap>"
+				s += obj.innerHTML
+				s += "&nbsp;&nbsp;&nbsp;</td></tr></table>"
+				ss_setDivHtml("ss_info_popup", s)
+				if (self.document.getElementById("ss_info_popup")) {
+					var x = parseInt(obj.offsetParent.offsetParent.style.left) - 1
+					var y = parseInt(parseInt(obj.offsetTop) + parseInt(obj.offsetParent.offsetTop) + parseInt(obj.offsetParent.offsetParent.style.top)) - 1
+					self.document.getElementById("ss_info_popup").style.left = x + "px"
+					self.document.getElementById("ss_info_popup").style.top = y + "px"
+					ss_showHideObj("ss_info_popup", "visible", "block")
+				}
 			}
 		} else {
 			ss_showHideObj("ss_info_popup", "hidden", "none")
