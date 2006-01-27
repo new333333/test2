@@ -176,9 +176,8 @@ public class FacadeClient {
 		// Invoke the remote method through the stub passing in the necessary
 		// arguments. 
 		
-		int versionNumber = stub.uploadFile(binderId, entryId, fileUploadDataItemName, new File(filePath).getName());
+		stub.uploadFile(binderId, entryId, fileUploadDataItemName, new File(filePath).getName());
 		
-		System.out.println("*** Version number of the uploaded file is " + versionNumber);
 		System.out.println();
 	}
 	

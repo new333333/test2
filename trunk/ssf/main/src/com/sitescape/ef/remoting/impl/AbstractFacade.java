@@ -124,7 +124,7 @@ public abstract class AbstractFacade implements Facade {
 				new DomInputData(doc), null).longValue();
 	}
 	
-	public abstract int uploadFile(long binderId, long entryId, 
+	public abstract void uploadFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
 	
 	private void prettyPrint(Document doc) {
