@@ -40,16 +40,7 @@ public class DateHelper {
         // date fields don't have a sequence number; time fields do
         String datePrefix = id + "_";
         String timePrefix = id + "_" + sequenceNumber + "_";
-        
-        // check that the fields are there
-        // date fields (select boxes) *must* be there
-        if (!inputData.exists(datePrefix+"month")) {
-            throw new DatepickerException("Cannot find required date field: month.");
-        }
-        if (!inputData.exists(datePrefix+"date")) {
-            throw new DatepickerException("Cannot find required date field: date.");
-        }
-        
+              
         // if the year isn't present, it probably means no date was entered
         if (!inputData.exists(datePrefix+"year")) {
             return null;
@@ -59,6 +50,15 @@ public class DateHelper {
         // we arbitrarily say that the date is not entered at all if the year is blank
         if (year.matches("")) {
             return null;
+        }
+
+        // check that the fields are there
+        // date fields (select boxes) *must* be there
+        if (!inputData.exists(datePrefix+"month")) {
+            throw new DatepickerException("Cannot find required date field: month.");
+        }
+        if (!inputData.exists(datePrefix+"date")) {
+            throw new DatepickerException("Cannot find required date field: date.");
         }
 
         GregorianCalendar cal = new GregorianCalendar();
