@@ -139,7 +139,7 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
         var diff = scrollHt + windowHt - mousePosY;
         if (divHt > 0) {
             if (diff <= divHt) {
-               positionDiv('presencePopUp', mousePosX, mousePosY - divHt);
+               ss_positionDiv('presencePopUp', mousePosX, mousePosY - divHt);
             }
         }
     }

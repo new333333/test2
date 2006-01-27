@@ -150,7 +150,7 @@ function ss_hideEntryDiv() {
     wObj1.style.visibility = "hidden";
 }
 
-createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
+ss_createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
 
 </script>
 

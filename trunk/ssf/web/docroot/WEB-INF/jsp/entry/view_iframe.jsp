@@ -47,6 +47,7 @@ function ss_showForumEntryInIframe(url) {
     var wObj = self.document.getElementById('ss_showentryframe')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
 
+    ss_hideSpannedAreas();
     wObj1.style.display = "block";
     wObj1.style.visibility = "visible";
     wObj.style.height = parseInt(wObj1.style.height) - ss_entryDivBottomDelta + "px";
@@ -104,6 +105,7 @@ function ss_hideEntryDiv() {
         wObj1 = self.document.all['ss_showentrydiv']
     }
     wObj1.style.visibility = "hidden";
+    ss_showSpannedAreas();
 }
 
 function ss_repositionEntryDiv() {
@@ -114,8 +116,8 @@ function ss_repositionEntryDiv() {
     }
 }
 
-//createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
-createOnResizeObj('ss_repositionEntryDiv', ss_repositionEntryDiv)
+//ss_createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
+ss_createOnResizeObj('ss_repositionEntryDiv', ss_repositionEntryDiv)
 
 var ss_divDragObj = null
 var ss_divOffsetX

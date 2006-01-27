@@ -11,7 +11,7 @@ function ss_roundFieldset() {
 	if(!NiftyCheck()) return;
 	Rounded("fieldset.ss_fieldset_rounded","#FFFFFF","#BBD8FF");
 }
-createOnLoadObj('ss_roundFieldset', ss_roundFieldset);
+ss_createOnLoadObj('ss_roundFieldset', ss_roundFieldset);
 </script>
 <div class="formBreak">
 <fieldset class="ss_fieldset_rounded">

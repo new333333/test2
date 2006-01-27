@@ -42,9 +42,10 @@ public class FilterHelper {
 	static public Document getSearchFilter (PortletRequest request) throws Exception {
 		Document searchFilter = DocumentHelper.createDocument();
 		Element sfRoot = searchFilter.addElement("search_filter");
-		
+
 		String filterName = PortletRequestUtils.getRequiredStringParameter(request, FilterNameField);
-		sfRoot.addElement(FilterName, filterName);
+		Element filterNameEle = sfRoot.addElement(FilterName);
+		filterNameEle.setText(filterName);
 		
 		Element filterTerms = sfRoot.addElement(FilterTerms);
 		
@@ -73,7 +74,8 @@ public class FilterHelper {
 						filterTerm.addAttribute(FilterEntryDefId, defId);
 						filterTerm.addAttribute(FilterElementName, name);
 						for (int j = 0; j < value.length; j++) {
-							filterTerm.addElement(FilterElementValue, value[j]);
+							Element newTerm = filterTerm.addElement(FilterElementValue);
+							newTerm.setText(value[j]);
 						}
 					}
 				} else if (filterType.equals(FilterTypeWorkflow)) {
@@ -81,7 +83,14 @@ public class FilterHelper {
 				}
 			}
 		}
+		//searchFilter.asXML();
 		return searchFilter;
+	}
+	
+	static public String getFilterName(Document searchFilter) {
+		Element sfRoot = searchFilter.getRootElement();
+		Element filterName = sfRoot.element(FilterName);
+		return filterName.getText();
 	}
 
 }

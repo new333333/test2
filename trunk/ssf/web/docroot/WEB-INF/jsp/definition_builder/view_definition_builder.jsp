@@ -338,7 +338,7 @@ function setSubmitData(formObj) {
 	formObj.sourceDefinitionId.value = sourceDefinitionId;
 }
 
-createOnLoadObj('initializeStateMachine', initializeStateMachine);
+ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 
 </script>
 

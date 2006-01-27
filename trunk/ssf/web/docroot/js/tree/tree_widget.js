@@ -4,7 +4,7 @@
 //Next, define the nodes in the tree - Tree.defineNode(nodeId, parentId, text, image, url)
 //Finally, create the tree - Tree.create(openNodes)
 
-if (!Tree_widget_treeList) var Tree_widget_treeList = new Array();
+if (!Tree_widget_treeList) var Tree_widget_treeList = new ssArray();
 
 function Tree(treeId, className, imageBase) {
 	if (!Tree_widget_treeList[treeId] || Tree_widget_treeList[treeId] == null) {
@@ -13,9 +13,9 @@ function Tree(treeId, className, imageBase) {
     this.treeId = treeId;
 	this.className = className;
 	this.imageBase = imageBase;
-	this.nodeList = new Array();
-	this.openNodes = new Array();
-	this.orderedNodeList = new Array();
+	this.nodeList = new ssArray();
+	this.openNodes = new ssArray();
+	this.orderedNodeList = new ssArray();
 	this.orderedNodeListCount = 0;
 
     this.defineNode = Tree_defineNode;
@@ -38,7 +38,7 @@ function Tree(treeId, className, imageBase) {
 
 function Tree_defineNode(nodeId, parentId, image, imageOpen) {
 	if (!this.nodeList[nodeId] || this.nodeList[nodeId] == null) {
-        this.nodeList[nodeId] = new Array();
+        this.nodeList[nodeId] = new ssArray();
     }
 	var n = this.nodeList[nodeId];
 	n.nodeId = nodeId;
@@ -46,7 +46,7 @@ function Tree_defineNode(nodeId, parentId, image, imageOpen) {
 	n.childCount = 0;
 	if (parentId != 0 && parentId != "") {
 		if (!this.nodeList[parentId].children || this.nodeList[parentId].children == null) {
-	        this.nodeList[parentId].children = new Array();
+	        this.nodeList[parentId].children = new ssArray();
 		}
 		var c = this.nodeList[parentId].childCount++;
 		this.nodeList[parentId].children[c] = nodeId;
@@ -148,7 +148,7 @@ function Tree_toggleAll(treeId, node, bottom) {
 
 	//Build a list of nodes
 	tree.orderedNodeListCount = tree.orderedNodeList.length;
-	tree.orderedNodeList = new Array();
+	tree.orderedNodeList = new ssArray();
 	tree.orderedNodeList = tree.getDescendantsWithChildren(treeId, node, tree.orderedNodeList)
 	tree.orderedNodeListCount = 0;
 	
@@ -323,9 +323,9 @@ function Tree_closeAll(treeId, node) {
 }
 
 function Tree_defineBasicIcons(tree) {
-	var treeIcons = new Array();
-	var treeIconsClosed = new Array();
-	var treeIconsOpen = new Array();
+	var treeIcons = new ssArray();
+	var treeIconsClosed = new ssArray();
+	var treeIconsOpen = new ssArray();
 	
 	// Basic icons
 	

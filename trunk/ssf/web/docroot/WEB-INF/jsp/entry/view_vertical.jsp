@@ -116,8 +116,8 @@ function ss_repositionEntryDiv() {
     }
 }
 
-//createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
-createOnResizeObj('ss_repositionEntryDiv', ss_repositionEntryDiv)
+//ss_createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
+ss_createOnResizeObj('ss_repositionEntryDiv', ss_repositionEntryDiv)
 
 </script>
 <form class="ss_style" name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >

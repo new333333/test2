@@ -171,8 +171,8 @@ function ss_saveUserListData_<portlet:namespace/>_${prefix}() {
 	elementObj.value = s;
 	return true;
 }
-createOnSubmitObj('${prefix}onSubmit', '${formName}', ss_saveUserListData_<portlet:namespace/>_${prefix});
-createEventObj('ss_userListInterceptCR', 'KEYPRESS');
+ss_createOnSubmitObj('${prefix}onSubmit', '${formName}', ss_saveUserListData_<portlet:namespace/>_${prefix});
+ss_createEventObj('ss_userListInterceptCR', 'KEYPRESS');
 </script>
 
 <div id="debugLog">
