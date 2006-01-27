@@ -141,7 +141,7 @@ public class Datepicker extends TagSupport {
 			  .append(prefix)
 			  .append("(\"yyyymmdd\");\n")
 			  .append("return true;\n};\n");
-			sb.append("createOnSubmitObj('datepickerOnsubmit_")
+			sb.append("ss_createOnSubmitObj('datepickerOnsubmit_")
 			  .append(prefix)
 			  .append("','")
 			  .append(formName)

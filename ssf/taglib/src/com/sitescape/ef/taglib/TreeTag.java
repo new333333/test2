@@ -180,7 +180,7 @@ public class TreeTag extends TagSupport {
 			if (this.sortable) {
 				//This tree is sortable. Add the calls to enable this.
 				sb.append("function ss_setSortable_" + treeName + "() {ss_setSortable('" + treeName + "ul');}\n");
-				sb.append("createOnLoadObj('ss_setSortable_" + treeName + "', ss_setSortable_" + treeName + ");\n");
+				sb.append("ss_createOnLoadObj('ss_setSortable_" + treeName + "', ss_setSortable_" + treeName + ");\n");
 			}
 			sb.append("</script>\n\n\n");
 			//sb.append("\n<ul class=\"ss_style ss_treeWidget_ul\" id=\"" + this.treeName + "ul\">\n");
@@ -398,7 +398,7 @@ public class TreeTag extends TagSupport {
 					//This tree is sortable. Add the calls to enable this.
 					jspOut.print("<script language=\"JavaScript\">\n");
 					jspOut.print("function ss_setSortable_" + treeName + "ul" + s_nodeId + "() {ss_setSortable('" + treeName + "ul" + s_nodeId + "');}\n");
-					jspOut.print("createOnLoadObj('ss_setSortable_" + treeName + "ul" + s_nodeId + "', ss_setSortable_" + treeName + "ul" + s_nodeId + ");\n");
+					jspOut.print("ss_createOnLoadObj('ss_setSortable_" + treeName + "ul" + s_nodeId + "', ss_setSortable_" + treeName + "ul" + s_nodeId + ");\n");
 					jspOut.print("</script>\n");
 				}
 			}
@@ -532,7 +532,7 @@ public class TreeTag extends TagSupport {
 					//This tree is sortable. Add the calls to enable this.
 					jspOut.print("<script language=\"JavaScript\">\n");
 					jspOut.print("function ss_setSortable_" + treeName + "ul" + s_nodeId + "() {ss_setSortable('" + treeName + "ul" + s_nodeId + "');}\n");
-					jspOut.print("createOnLoadObj('ss_setSortable_" + treeName + "ul" + s_nodeId + "', ss_setSortable_" + treeName + "ul" + s_nodeId + ");\n");
+					jspOut.print("ss_createOnLoadObj('ss_setSortable_" + treeName + "ul" + s_nodeId + "', ss_setSortable_" + treeName + "ul" + s_nodeId + ");\n");
 					jspOut.print("</script>\n");
 				}
 			}

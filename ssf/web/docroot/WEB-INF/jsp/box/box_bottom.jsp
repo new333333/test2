@@ -20,7 +20,7 @@ function ss_roundBox() {
 	Rounded("div.ss_box_rounded","top","#FFF","<%= ss_boxColor %>","smooth");
 	Rounded("div.ss_box_bottom_rounded","bottom","#CCC","<%= ss_boxColor %>","small");
 }
-createOnLoadObj('ss_roundBox', ss_roundBox);
+ss_createOnLoadObj('ss_roundBox', ss_roundBox);
 </script>
 
 

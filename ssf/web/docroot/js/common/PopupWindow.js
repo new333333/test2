@@ -284,9 +284,9 @@ function PopupWindow_hidePopupWindows(e) {
 		}
 	}
 // Run this immediately to attach the event listener
-createEventObj('PopupWindow_hidePopupWindows', 'MOUSEUP');
+ss_createEventObj('PopupWindow_hidePopupWindows', 'MOUSEUP');
 function PopupWindow_attachListener() {
-	//This routine was replaced by the "createEventObj" call above - pmh
+	//This routine was replaced by the "ss_createEventObj" call above - pmh
 	return
 	
 	if (document.layers) {

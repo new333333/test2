@@ -266,10 +266,24 @@ var ss_slidingTableMosueOverObj = null
 function ss_showMouseOverInfo(obj) {
 	if (obj != ss_slidingTableMosueOverObj) {
 		if (obj.innerHTML != "" && obj.innerHTML != "&nbsp;" && obj.innerHTML != "&nbsp;&nbsp;" && obj.innerHTML != "&nbsp;&nbsp;&nbsp;") {
+			//var divObj = document.createElement("div");
+			//var table = document.createElement("table");
+			//divObj.appendChild(table);
+			//table.className = "ss_style";
+			//var tableBody = document.createElement("tbody");
+			//table.appendChild(tableBody);
+			//var row = document.createElement("tr");
+			//tableBody.appendChild(row);
+			//var tdCopy = obj.cloneNode(true);
+			//row.appendChild(tdCopy);
+			
 			var s = "<table class='ss_style' cellspacing='0' cellpadding='0' style='border: solid black 1px;'><tr><td nowrap>"
 			s += obj.innerHTML
 			s += "&nbsp;&nbsp;&nbsp;</td></tr></table>"
 			ss_setDivHtml("ss_info_popup", s)
+			//self.document.getElementById("ss_info_popup").replaceNode(divObj);
+			//divObj.id = "ss_info_popup";
+			//divObj.className = "ss_style ss_sliding_table_info_popup";
 			if (self.document.getElementById("ss_info_popup")) {
 				var x = parseInt(obj.offsetParent.offsetParent.style.left) - 1
 				var y = parseInt(parseInt(obj.offsetTop) + parseInt(obj.offsetParent.offsetTop) + parseInt(obj.offsetParent.offsetParent.style.top)) - 1
@@ -291,10 +305,10 @@ function ss_clearMouseOverInfo(obj) {
 	}
 }
 
-createOnLoadObj('ss_showSlidingTableCols', ss_showSlidingTableCols200);
-createOnResizeObj('ss_showSlidingTableCols', ss_showSlidingTableCols);
-createOnLayoutChangeObj('ss_checkSlidingTableLayout', ss_checkSlidingTableLayout);
-createEventObj('ss_slidingTableDrag', 'MOUSEMOVE');
+ss_createOnLoadObj('ss_showSlidingTableCols', ss_showSlidingTableCols200);
+ss_createOnResizeObj('ss_showSlidingTableCols', ss_showSlidingTableCols);
+ss_createOnLayoutChangeObj('ss_checkSlidingTableLayout', ss_checkSlidingTableLayout);
+ss_createEventObj('ss_slidingTableDrag', 'MOUSEMOVE');
 -->
 </script>
 

@@ -476,7 +476,7 @@ function ${prefix}_onsub() {
   return(true);
 }
 
-createOnSubmitObj('${prefix}onsub', 
+ss_createOnSubmitObj('${prefix}onsub', 
      '${formName}', ${prefix}_onsub);
      
 

@@ -95,7 +95,7 @@ public class Htmleditor extends TagSupport {
       sb.append("function err() {\n")
 	.append("return true;\n")
 	.append("}\n");
-      sb.append("createOnErrorObj('err', err);\n");
+      sb.append("ss_createOnErrorObj('err', err);\n");
 
       sb.append("_editor_url = \"")
 	.append(contextPath)
