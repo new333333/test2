@@ -4,6 +4,7 @@ import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
 import com.sitescape.ef.remoting.api.Binder;
 import com.sitescape.ef.remoting.api.Facade;
+import com.sitescape.ef.remoting.api.Folder;
 import com.sitescape.ef.remoting.rmi.RemoteFacade;
 
 /**
@@ -46,5 +47,41 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade,Remot
 	public void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
 		this.facade.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
+	}
+
+	public Folder getFolder(long binderId) {
+		return this.facade.getFolder(binderId);
+	}
+
+	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
+		this.facade.modifyFolderEntry(binderId, entryId, inputDataAsXML);
+	}
+
+	public void deleteFolderEntry(long binderId, long entryId) {
+		this.facade.deleteFolderEntry(binderId, entryId);
+	}
+
+	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML) {
+		return this.facade.addReply(binderId, parentId, definitionId, inputDataAsXML);
+	}
+
+	public String getPrincipalAsXML(long binderId, long principalId) {
+		return this.facade.getPrincipalAsXML(binderId, principalId);
+	}
+
+	public long addUser(long binderId, String definitionId, String inputDataAsXML) {
+		return this.facade.addUser(binderId, definitionId, inputDataAsXML);
+	}
+
+	public long addGroup(long binderId, String definitionId, String inputDataAsXML) {
+		return this.facade.addGroup(binderId, definitionId, inputDataAsXML);
+	}
+
+	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML) {
+		this.facade.modifyPrincipal(binderId, principalId, inputDataAsXML);
+	}
+
+	public void deletePrincipal(long binderId, long principalId) {
+		this.facade.deletePrincipal(binderId, principalId);
 	}
 }
