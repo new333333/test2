@@ -53,15 +53,15 @@ function ss_positionEntryDiv() {
         wObj2 = self.document.all['<portlet:namespace/>_ssf_box_div']
     }
     
-    var top = parseInt(getDivTop('ss_showfolder') + 25);
+    var top = parseInt(ss_getDivTop('ss_showfolder') + 25);
     if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + 4);} 
-    var left = parseInt(getWindowWidth() - ss_entryWindowWidth - 14);
+    var left = parseInt(ss_getWindowWidth() - ss_entryWindowWidth - 14);
     var height = parseInt(ss_getWindowHeight() + self.document.body.scrollTop - top - 25 );
-    setObjectTop(wObj1, top)
-    setObjectLeft(wObj1, left);
-    setObjectWidth(wObj1, ss_entryWindowWidth);
-    setObjectWidth(wObj2, ss_entryWindowWidth);
-    setObjectHeight(wObj1, "");
+    ss_setObjectTop(wObj1, top)
+    ss_setObjectLeft(wObj1, left);
+    ss_setObjectWidth(wObj1, ss_entryWindowWidth);
+    ss_setObjectWidth(wObj2, ss_entryWindowWidth);
+    ss_setObjectHeight(wObj1, "");
     wObj1.style.background = "#ffffff"
     wObj1.style.visibility = "visible";
 }

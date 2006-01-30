@@ -1,7 +1,7 @@
 <% // Toolbar viewer %>
 <script type="text/javascript">
 function ss_toolbarPopupUrl(url) {
-	var width = getWindowWidth();
+	var width = ss_getWindowWidth();
 	if (width < 600) width=600;
 	var height = ss_getWindowHeight();
 	if (height < 600) height=600;

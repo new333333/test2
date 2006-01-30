@@ -140,8 +140,8 @@ function showEntryInDiv(str) {
     
     //Get the position of the div displaying the entry
     if (autoScroll == "true") {
-	    var entryY = getDivTop('ss_showentrydiv')
-	    var entryH = getDivHeight('ss_showentrydiv')
+	    var entryY = ss_getDivTop('ss_showentrydiv')
+	    var entryH = ss_getDivHeight('ss_showentrydiv')
 	    var bodyY = self.document.body.scrollTop
 	    var windowH = ss_getWindowHeight()
 	    if (entryY >= bodyY) {

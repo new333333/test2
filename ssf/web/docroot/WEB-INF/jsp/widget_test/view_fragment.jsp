@@ -60,8 +60,8 @@ function ss_showEntryInDiv(str) {
     
     //Get the position of the div displaying the entry
     if (autoScroll == "true") {
-	    var entryY = getDivTop('ss_showentrydiv')
-	    var entryH = getDivHeight('ss_showentrydiv')
+	    var entryY = ss_getDivTop('ss_showentrydiv')
+	    var entryH = ss_getDivHeight('ss_showentrydiv')
 	    var bodyY = self.document.body.scrollTop
 	    var windowH = ss_getWindowHeight()
 	    if (entryY >= bodyY) {
@@ -127,16 +127,16 @@ return
     } else {
         wObj1 = self.document.all['ss_showentrydiv']
     }
-    var top = parseInt(getDivTop('showbutton'));
+    var top = parseInt(ss_getDivTop('showbutton'));
     if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + 4);} 
-    var left = parseInt(getDivWidth('showbutton') - entryWindowWidth - 14);
+    var left = parseInt(ss_getDivWidth('showbutton') - entryWindowWidth - 14);
     var width = parseInt(entryWindowWidth);
     var height = parseInt(ss_getWindowHeight() + self.document.body.scrollTop - top );
-    setObjectTop(wObj1, top)
-    setObjectLeft(wObj1, left);
-    setObjectWidth(wObj1, width);
-    //setObjectHeight(wObj1, height);
-    setObjectHeight(wObj1, "");
+    ss_setObjectTop(wObj1, top)
+    ss_setObjectLeft(wObj1, left);
+    ss_setObjectWidth(wObj1, width);
+    //ss_setObjectHeight(wObj1, height);
+    ss_setObjectHeight(wObj1, "");
     wObj1.style.background = "#ffffff"
 }
 

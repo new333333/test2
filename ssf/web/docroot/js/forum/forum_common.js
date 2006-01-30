@@ -408,7 +408,7 @@ function getObjAbsY(obj) {
     return y
 }
 
-function getDivTop(divName) {
+function ss_getDivTop(divName) {
     var top = 0;
     if (isNSN || isNSN6 || isMoz5) {
         var obj = self.document.getElementById(divName)
@@ -430,7 +430,7 @@ function getDivTop(divName) {
     return parseInt(top);
 }
 
-function getDivLeft(divName) {
+function ss_getDivLeft(divName) {
     var left = 0;
     if (isNSN || isNSN6 || isMoz5) {
         var obj = self.document.getElementById(divName)
@@ -452,17 +452,17 @@ function getDivLeft(divName) {
     return parseInt(left);
 }
 
-function getDivScrollTop(divName) {
+function ss_getDivScrollTop(divName) {
     var obj = self.document.getElementById(divName)
     return parseInt(obj.scrollTop);
 }
 
-function getDivScrollLeft(divName) {
+function ss_getDivScrollLeft(divName) {
     var obj = self.document.getElementById(divName)
     return parseInt(obj.scrollLeft);
 }
 
-function getDivHeight(divName) {
+function ss_getDivHeight(divName) {
     if (isNSN || isNSN6 || isMoz5) {
         var obj = self.document.getElementById(divName)
     } else {
@@ -471,7 +471,7 @@ function getDivHeight(divName) {
     return parseInt(obj.offsetHeight);
 }
 
-function getDivWidth(divName) {
+function ss_getDivWidth(divName) {
     if (isNSN || isNSN6 || isMoz5) {
         var obj = self.document.getElementById(divName)
     } else {
@@ -481,22 +481,7 @@ function getDivWidth(divName) {
 }
 
 
-function getLeftMargin(defValue) {
-    var left = defValue;
-    if (isNSN6 || isMoz5) {
-        if (self.document.body.style.marginLeft && self.document.body.style.marginLeft != '') {
-            left = self.document.body.style.marginLeft
-        }
-    } else if (isNSN) {
-    } else {
-        if (self.document.body.leftMargin) {
-            left = self.document.body.leftMargin
-        }
-    }
-    return parseInt(left);
-}
-
-function getAnchorTop(anchorName) {
+function ss_getAnchorTop(anchorName) {
     var top = 0;
     if (isNSN6 || isMoz5) {
         var obj = document.anchors[anchorName]
@@ -520,7 +505,7 @@ function getAnchorTop(anchorName) {
     return parseInt(top);
 }
 
-function getAnchorLeft(anchorName) {
+function ss_getAnchorLeft(anchorName) {
     var left = 0;
     if (isNSN6 || isMoz5) {
         var obj = document.anchors[anchorName]
@@ -544,7 +529,7 @@ function getAnchorLeft(anchorName) {
     return parseInt(left);
 }
 
-function getImageTop(imageName) {
+function ss_getImageTop(imageName) {
     var top = 0;
     if (isNSN6 || isMoz5) {
         var obj = document.images[imageName]
@@ -568,7 +553,7 @@ function getImageTop(imageName) {
     return parseInt(top);
 }
 
-function getImageLeft(imageName) {
+function ss_getImageLeft(imageName) {
     var left = 0;
     if (isNSN6 || isMoz5) {
         var obj = document.images[imageName]
@@ -612,7 +597,7 @@ function ss_getObjectHeight(obj) {
     }
 }
 
-function getObjectLeft(obj) {
+function ss_getObjectLeft(obj) {
     if (isNSN6 || isMoz5) {
         return parseInt(obj.style.left)
     } else if (isNSN) {
@@ -622,7 +607,7 @@ function getObjectLeft(obj) {
     }
 }
 
-function getObjectTop(obj) {
+function ss_getObjectTop(obj) {
     if (isNSN6 || isMoz5) {
         return parseInt(obj.style.top)
     } else if (isNSN) {
@@ -632,7 +617,7 @@ function getObjectTop(obj) {
     }
 }
 
-function setObjectWidth(obj, width) {
+function ss_setObjectWidth(obj, width) {
 	obj.style.width = width;
 
     //Call the routines that want to be called on layout changes
@@ -648,7 +633,7 @@ function setObjectWidth(obj, width) {
     }
 }
 
-function setObjectHeight(obj, height) {
+function ss_setObjectHeight(obj, height) {
     obj.style.height = height;
     
     //Call the routines that want to be called on layout changes
@@ -666,7 +651,7 @@ function setObjectHeight(obj, height) {
     ssf_onLayoutChange();
 }
 
-function setObjectLeft(obj, value) {
+function ss_setObjectLeft(obj, value) {
     if (isNSN6 || isMoz5) {
         obj.style.left = value;
     } else if (isNSN) {
@@ -678,7 +663,7 @@ function setObjectLeft(obj, value) {
     ssf_onLayoutChange();
 }
 
-function setObjectTop(obj, value) {
+function ss_setObjectTop(obj, value) {
     if (isNSN6 || isMoz5) {
         obj.style.top = value;
     } else if (isNSN) {
@@ -690,7 +675,7 @@ function setObjectTop(obj, value) {
     ssf_onLayoutChange();
 }
 
-function getWindowWidth() {
+function ss_getWindowWidth() {
 	if( typeof( window.innerWidth ) == 'number' ) {
 		//Non-IE
 		myWidth = window.innerWidth;
@@ -734,10 +719,10 @@ function ss_getBodyHeight() {
     return h
 }
 
-function getBodyWidth() {
+function ss_getBodyWidth() {
     var w = self.document.body.scrollWidth;
-    if (getWindowWidth() > w) {
-        w = getWindowWidth();
+    if (ss_getWindowWidth() > w) {
+        w = ss_getWindowWidth();
     }
     return w
 }
@@ -784,10 +769,10 @@ function activateMenuLayer(divId, parentDivId, delayHide) {
 	var x = 0;
 	var y = 0;
     if (parentDivId != "") {
-    	x = getDivLeft(parentDivId)
-    	y = getDivTop(parentDivId)
+    	x = ss_getDivLeft(parentDivId)
+    	y = ss_getDivTop(parentDivId)
 	    //Add a little to the y position so the div isn't occluding too much
-	    y = parseInt(parseInt(y) + getDivHeight(parentDivId) + 6)
+	    y = parseInt(parseInt(y) + ss_getDivHeight(parentDivId) + 6)
     } else {
 	    x = ss_getClickPositionX();
 	    y = ss_getClickPositionY();
@@ -1016,8 +1001,8 @@ function captureXY(e) {
         ss_mouseY = event.clientY;
         var imgObj = window.event.srcElement
         if (imgObj.name != null && imgObj.name != "" && !isMacIE) {
-            ss_mouseX = getImageLeft(imgObj.name)
-            ss_mouseY = getImageTop(imgObj.name)
+            ss_mouseX = ss_getImageLeft(imgObj.name)
+            ss_mouseY = ss_getImageTop(imgObj.name)
         }
     }
 }
@@ -1196,7 +1181,7 @@ function setWindowHighWaterMark(divName) {
 		//Time to set a new high water mark
 		ss_forum_maxBodyWindowHeight = currentPageHeight;
 	}
-	var dh = getDivHeight(divName);
+	var dh = ss_getDivHeight(divName);
 	var x = 0
 	var y = parseInt(ss_forum_maxBodyWindowHeight - dh)
 	ss_positionDiv(divName, x, y);
