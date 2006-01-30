@@ -105,10 +105,11 @@ public class FilterHelper {
     	Element sfRootElement = searchFilter.getRootElement();
 
     	//Add the filter terms to the boolean query
-    	Iterator itFilterTerms = sfRootElement.selectNodes(FilterTerms + "/" + FilterTerm).iterator();
-		Element orField = qTreeBoolElement.addElement(QueryBuilder.OR_ELEMENT);
-    	while (itFilterTerms.hasNext()) {
-    		Element filterTerm = (Element) itFilterTerms.next();
+    	List liFilterTerms = sfRootElement.selectNodes(FilterTerms + "/" + FilterTerm);
+		Element orField = qTreeBoolElement;
+		if (liFilterTerms.size() > 1) orField = qTreeBoolElement.addElement(QueryBuilder.OR_ELEMENT);
+    	for (int i = 0; i < liFilterTerms.size(); i++) {
+    		Element filterTerm = (Element) liFilterTerms.get(i);
     		String filterType = filterTerm.attributeValue(FilterType, "");
     		if (filterType.equals(FilterTypeSearchText)) {
     			//Add the search text as a field
