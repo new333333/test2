@@ -19,7 +19,7 @@ import com.sitescape.ef.remoting.impl.RemotingException;
 
 public class FacadeImpl extends AbstractFacade {
 
-	public void uploadFile(long binderId, long entryId, 
+	public void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
 
 		// Get all the attachments

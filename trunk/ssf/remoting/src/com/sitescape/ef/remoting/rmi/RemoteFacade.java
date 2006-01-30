@@ -34,7 +34,7 @@ public interface RemoteFacade extends Remote {
 	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML) 
 		throws RemoteException;
 	
-	public void uploadFile(long binderId, long entryId, 
+	public void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) 
 		throws RemoteException;
 

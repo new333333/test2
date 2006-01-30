@@ -23,11 +23,18 @@ public interface Facade {
 	// 
 	// Folder operations
 	// 
-	public String getFolderEntryAsXML(long binderId, long entryId);
+	//public Folder getFolder(long folderId);
 	
-	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML);
+	public String getFolderEntryAsXML(long folderId, long entryId);
 	
-	public void uploadFile(long binderId, long entryId, 
-			String fileUploadDataItemName, String fileName);
+	public long addFolderEntry(long folderId, String definitionId, String inputDataAsXML);
+	
+	//public void modifyFolderEntry(long folderId, long entryId, String inputDataAsXML);
+	
+	//public long addReply(long folderId, long parentId, String definitionId, String inputDataAsXML);
 
+	
+	public void uploadFolderFile(long binderId, long entryId, 
+			String fileUploadDataItemName, String fileName);
 }
+
