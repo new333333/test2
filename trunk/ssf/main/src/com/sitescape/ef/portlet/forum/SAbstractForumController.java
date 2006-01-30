@@ -197,15 +197,17 @@ public class SAbstractForumController extends SAbstractController {
 	 * hashMap whose keys are dates and whose values are lists of events that occur on the given day.
 	 */
 	protected void getEvents(Folder folder, ArrayList entrylist, Map model, RenderRequest req, RenderResponse response) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		String folderId = folder.getId().toString();
 		Iterator entryIterator = entrylist.listIterator();
 		PortletSession ps = WebHelper.getRequiredPortletSession(req);
 		// view mode is one of day, week, or month
-		String viewMode = (String) ps.getAttribute(WebKeys.CALENDAR_VIEWMODE);
-		if (viewMode == null) {
-			ps.setAttribute(WebKeys.CALENDAR_VIEWMODE, WebKeys.CALENDAR_VIEW_WEEK);		
-			viewMode = WebKeys.CALENDAR_VIEW_WEEK;
+		Map userFolderProperties = (Map) getProfileModule().getUserFolderProperties(
+				user.getId(), folder.getId());
+		String viewMode = viewMode = WebKeys.CALENDAR_VIEW_WEEK;
+		if (userFolderProperties.containsKey(ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE)) {
+			viewMode = (String) userFolderProperties.get(ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE);
 		}
-		String folderId = folder.getId().toString();
 		model.put(WebKeys.CALENDAR_VIEWMODE, viewMode);
 		// currentDate is the date selected by the user; we make sure this date is in view 
 		// whatever viewMode is set to

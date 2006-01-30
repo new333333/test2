@@ -85,7 +85,7 @@ function highlightLineById(id) {
 </table>
 </div>
 </div>
-<ssf:slidingTable type="sliding" folderId="<%= folderId %>">
+<ssf:slidingTable type="sliding_scrolled" folderId="<%= folderId %>">
 
 <ssf:slidingTableRow headerRow="true">
   <ssf:slidingTableColumn width="10%">Number</ssf:slidingTableColumn>

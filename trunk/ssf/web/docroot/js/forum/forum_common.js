@@ -452,6 +452,16 @@ function getDivLeft(divName) {
     return parseInt(left);
 }
 
+function getDivScrollTop(divName) {
+    var obj = self.document.getElementById(divName)
+    return parseInt(obj.scrollTop);
+}
+
+function getDivScrollLeft(divName) {
+    var obj = self.document.getElementById(divName)
+    return parseInt(obj.scrollLeft);
+}
+
 function getDivHeight(divName) {
     if (isNSN || isNSN6 || isMoz5) {
         var obj = self.document.getElementById(divName)

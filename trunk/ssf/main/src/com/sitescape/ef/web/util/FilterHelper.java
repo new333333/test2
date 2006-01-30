@@ -20,6 +20,7 @@ import com.sitescape.ef.web.WebKeys;
  */
 public class FilterHelper {   	
    	//Search filter document element names
+   	private final static String FilterRootName = "search_filter";
    	private final static String FilterName = "filterName";
    	private final static String FilterTerms = "filterTerms";
    	private final static String FilterTerm = "filterTerm";
@@ -28,7 +29,7 @@ public class FilterHelper {
    	private final static String FilterElementName = "filterElementName";
    	private final static String FilterElementValue = "filterElementValue";
 
-   	//formData fields snd values
+   	//formData fields and values
    	private final static String FilterNameField = "filterName";
    	private final static String FilterTypeField = "filterType";
    	private final static String FilterTypeSearchText = "text";
@@ -41,7 +42,7 @@ public class FilterHelper {
 	
 	static public Document getSearchFilter (PortletRequest request) throws Exception {
 		Document searchFilter = DocumentHelper.createDocument();
-		Element sfRoot = searchFilter.addElement("search_filter");
+		Element sfRoot = searchFilter.addElement(FilterRootName);
 
 		String filterName = PortletRequestUtils.getRequiredStringParameter(request, FilterNameField);
 		Element filterNameEle = sfRoot.addElement(FilterName);

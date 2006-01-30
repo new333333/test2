@@ -92,7 +92,6 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
 
-			
 			} else if (_type != null && _type.equals("sliding")) {
 				String jspStart = "/WEB-INF/jsp/tag_jsps/sliding_table/sliding_table.jsp";
 				
@@ -105,6 +104,18 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
 				
+			} else if (_type != null && _type.equals("sliding_scrolled")) {
+				String jspStart = "/WEB-INF/jsp/tag_jsps/sliding_table/sliding_scrolled_table.jsp";
+				
+				// Output the sliding table
+				RequestDispatcher rd = httpReq.getRequestDispatcher(jspStart);
+				ServletRequest req = pageContext.getRequest();
+				StringServletResponse res = new StringServletResponse(httpRes);
+				req.setAttribute("ss_slidingTableRows", _rows);
+				req.setAttribute("ss_slidingTableFolderId", _folderId);
+				req.setAttribute("ss_slidingTableScrollHeight", "400");
+				rd.include(req, res);
+				pageContext.getOut().print(res.getString());
 			}
 
 			return EVAL_PAGE;
