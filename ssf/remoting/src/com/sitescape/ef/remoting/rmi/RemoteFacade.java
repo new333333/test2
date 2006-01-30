@@ -29,9 +29,9 @@ public interface RemoteFacade extends Remote {
 	
 	public Binder getBinder(long binderId) throws RemoteException;
 
-	public String getEntryAsXML(long binderId, long entryId) throws RemoteException;
+	public String getFolderEntryAsXML(long binderId, long entryId) throws RemoteException;
 	
-	public long addEntry(long binderId, String definitionId, String inputDataAsXML) 
+	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML) 
 		throws RemoteException;
 	
 	public void uploadFile(long binderId, long entryId, 

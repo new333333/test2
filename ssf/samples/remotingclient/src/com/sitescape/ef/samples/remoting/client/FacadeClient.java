@@ -58,7 +58,7 @@ public class FacadeClient {
 			int binderId = Integer.parseInt(args[1]);
 			int entryId = Integer.parseInt(args[2]);
 			
-			String entryAsXML = client.facade.getEntryAsXML(binderId, entryId);
+			String entryAsXML = client.facade.getFolderEntryAsXML(binderId, entryId);
 			
 			FacadeClientHelper.printXML(entryAsXML);
 		}
@@ -72,7 +72,7 @@ public class FacadeClient {
 			String entryInputDataAsXML = 
 				FacadeClientHelper.generateEntryInputDataAsXML(binderId, definitionId);
 			
-			long entryId = client.facade.addEntry(binderId, definitionId, entryInputDataAsXML);
+			long entryId = client.facade.addFolderEntry(binderId, definitionId, entryInputDataAsXML);
 			
 			System.out.println("*** ID of the newly created entry is " + entryId);
 			System.out.println();
