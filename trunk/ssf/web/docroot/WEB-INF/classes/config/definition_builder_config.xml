@@ -809,7 +809,12 @@
 		</operations>
 		<options>
 			<option name="transitionManual" />
-			<option name="transitionConditional" />
+			<option name="conditionOnModify" />
+			<option name="conditionOnReply" />
+			<option name="conditionOnResponse" />
+			<option name="conditionOnDate" />
+			<option name="conditionOnElapsedTime" />
+			<option name="conditionOnVariable" />
 			<option name="waitForParallelThread" />
 		</options>
 	</item>
@@ -835,48 +840,61 @@
 		</properties>
 	</item>
 	
-	<item name="transitionConditional" caption="__transitionConditional" type="transition" >
-		<properties>
-			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
-		</properties>
+	<item name="conditionOnModify" caption="__transition_condition_on_modify">
 		<options>
-			<option name="conditionOnModify" />
-			<option name="conditionOnReply" />
-			<option name="conditionOnResponse" />
-			<option name="conditionOnDate" />
-			<option name="conditionOnElapsedTime" />
-			<option name="conditionOnVariable" />
 			<option name="variable" />
 		</options>
-	</item>
+	</item>item>
 	
-	<item name="conditionOnModify" caption="__transition_condition_on_modify" />
-	<item name="conditionOnReply" caption="__transition_condition_on_reply" />
+	<item name="conditionOnReply" caption="__transition_condition_on_reply">
+		<options>
+			<option name="variable" />
+		</options>
+	</item>item>
+
 	<item name="conditionOnResponse" caption="__transition_condition_on_response" >
 		<properties>
 			<property name="response" caption="__transition_condition_on_response" type="text" />
 		</properties>
+		<options>
+			<option name="variable" />
+		</options>
 	</item>
 	<item name="conditionOnDate" caption="__transition_condition_on_date" >
 		<properties>
-			<property name="response" caption="__transition_condition_on_response" type="text" />
+			<property name="date" caption="__transition_condition_on_date" type="text" />
 		</properties>
+		<options>
+			<option name="variable" />
+		</options>
 	</item>
 	<item name="conditionOnElapsedTime" caption="__transition_condition_on_elapsed_time" >
 		<properties>
-			<property name="response" caption="__transition_condition_on_response" type="text" />
+			<property name="days" caption="__transition_condition_on_days" type="text" 
+				characterMask="^[0-9]*$" />
+			<property name="hours" caption="__transition_condition_on_hours" type="text"
+				characterMask="^[0-9]*$" />
+			<property name="mins" caption="__transition_condition_on_mins" type="text"
+				characterMask="^[0-9]*$" />
 		</properties>
+		<options>
+			<option name="variable" />
+		</options>
 	</item>
 	<item name="conditionOnVariable" caption="__transition_condition_on_variable" >
 		<properties>
 			<property name="name" caption="__transition_condition_on_variable_name" type="text" />
 			<property name="value" caption="__transition_condition_on_variable_value" type="text" />
 		</properties>
+		<options>
+			<option name="variable" />
+		</options>
 	</item>
 	
 	<item name="variable" caption="__workflow_variable" >
 		<properties>
-			<property name="name" caption="__workflow_variable_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" />
+			<property name="name" caption="__workflow_variable_name" type="text" 
+				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" />
 			<property name="value" caption="__workflow_variable_value" type="text" />
 		</properties>
 	</item>

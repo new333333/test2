@@ -26,14 +26,17 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
     frameBorder="no" >xxx</iframe>
   </ssf:box>
 </div>
-<div id="ss_showfolder_bottom" class="ss_style ss_portlet">bbbbbbbbbbb</div>
-<div id="ss_showfolder_slider" onMousedown="ss_startDragDiv()"
- style="position:absolute; margin:4px; top:4px;" width="100%">
-  <div style="border: 1px solid gray; margin:3px; 
-    background-color:silver;"
-    width="100%" align="center">
-  ^^^^^^^^^^^^^^^^^^
-  </div>
+<div id="ss_showfolder_bottom" class="ss_style ss_portlet"></div>
+<div id="ss_showfolder_slider" onMousedown="ss_startDragDiv();" width="100%"
+ style="position:absolute; margin:0px; padding:0px;
+ z-index:400;">
+  <table class="ss_style ss_bgmedgray" width="100%" cellpadding="0" cellspacing="0"
+    style="border: 1px solid black;">
+    <tr>
+      <td align="center">^^^^^^^^^^^^^^^^^^</td>
+    </tr>
+  </table>
+  <div height="10px" style="background-color:#ffffff;">&nbsp;</div>
 </div>
 
 <script type="text/javascript">
@@ -48,9 +51,22 @@ var ss_entryDivTopDelta = 25;
 var ss_entryDivBottomDelta = 50;
 var ss_scrollTopOffset = 4;
 
+var ss_marginLeft = 2
+var ss_marginRight = 2
+var ss_marginTop = 2
+var ss_marginBottom = 2
+
+var ss_scrollBarOffset = 20
+	
 function ss_positionSliderDiv() {
+    var wObj = self.document.getElementById('ss_showfolder')
+
+    var width = parseInt(parseInt(ss_getObjectWidth(wObj)) - ss_marginLeft - ss_marginRight);
+    var left = parseInt(parseInt(getDivLeft('ss_showfolder')) + ss_marginLeft);
 	var sliderObj = document.getElementById("ss_showfolder_slider");
-	setObjectTop(sliderObj, parseInt(getDivTop("ss_showfolder_bottom")));
+	setObjectLeft(sliderObj, left);
+	setObjectTop(sliderObj, parseInt(parseInt(getDivTop("ss_showfolder_bottom")) - ss_scrollBarOffset));
+	setObjectWidth(sliderObj, width);
 	sliderObj.style.visibility = "visible";
 }
 
@@ -82,13 +98,8 @@ function ss_showForumEntryInIframe(url) {
 function ss_positionEntryDiv() {
     var wObj = self.document.getElementById('ss_showfolder')
 
-	var marginLeft = 2
-	var marginRight = 2
-	var marginTop = 2
-	var marginBottom = 2
-	
-    var width = parseInt(parseInt(ss_getObjectWidth(wObj)) - marginLeft - marginRight);
-    var height = parseInt(parseInt(ss_getObjectHeight(wObj)) - marginTop - marginBottom);
+    var width = parseInt(parseInt(ss_getObjectWidth(wObj)) - ss_marginLeft - ss_marginRight);
+    var height = parseInt(parseInt(ss_getObjectHeight(wObj)) - ss_marginTop - ss_marginBottom);
     ss_entryWindowWidth = parseInt(width);
     ss_entryWindowHeight = parseInt(height);
 
@@ -97,7 +108,7 @@ function ss_positionEntryDiv() {
     var wObj3 = self.document.getElementById('ss_showentryframe')
 
     var top = parseInt(getDivTop('ss_showentrydiv'));
-    var left = parseInt(parseInt(getDivLeft('ss_showfolder')) + marginLeft);
+    var left = parseInt(parseInt(getDivLeft('ss_showfolder')) + ss_marginLeft);
     var height = parseInt(ss_getWindowHeight() - ss_entryDivBottomDelta);
     setObjectTop(wObj1, top)
     setObjectLeft(wObj1, left);
