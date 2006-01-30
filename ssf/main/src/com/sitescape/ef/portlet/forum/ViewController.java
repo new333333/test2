@@ -82,30 +82,37 @@ public class ViewController  extends SAbstractForumController {
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 			getProfileModule().modifyEntryData(user.getParentBinder().getId(), user.getId(), updates);
-		}
-		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_DEFINITION)) {
+		
+		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_DEFINITION)) {
 			getProfileModule().setUserFolderProperty(user.getId(), folderId, 
 					ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-		}
-		if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE)) {
-			PortletSession ps = WebHelper.getRequiredPortletSession(request);
-			ps.setAttribute(WebKeys.CALENDAR_VIEWMODE, 
+		
+		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE)) {
+			getProfileModule().setUserFolderProperty(user.getId(), folderId, 
+					ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-		}
-		if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE)) {
+		
+		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE)) {
 			PortletSession ps = WebHelper.getRequiredPortletSession(request);
 			String urldate = PortletRequestUtils.getStringParameter(request,WebKeys.CALENDAR_URL_NEWVIEWDATE, "");
-			String urlviewmode = PortletRequestUtils.getStringParameter(request,WebKeys.CALENDAR_URL_VIEWMODE, "");
-			ps.setAttribute(WebKeys.CALENDAR_VIEWMODE, urlviewmode);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd");
 			Date newdate = sdf.parse(urldate);
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, newdate);
-		}
-		if (op.equals(WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE)) {
+			String viewMode = PortletRequestUtils.getStringParameter(request,WebKeys.CALENDAR_URL_VIEWMODE, "");
+			getProfileModule().setUserFolderProperty(user.getId(), folderId, 
+					ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE, viewMode);
+		
+		} else if (op.equals(WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE)) {
 			PortletSession ps = WebHelper.getRequiredPortletSession(request);
 			Date dt = DateHelper.getDateFromInput(new MapInputData(formData), "ss_goto");
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, dt);
+		
+		} else if (op.equals(WebKeys.FORUM_OPERATION_SELECT_FILTER)) {
+			getProfileModule().setUserFolderProperty(user.getId(), folderId, 
+					ObjectKeys.USER_PROPERTY_USER_FILTER, 
+					PortletRequestUtils.getStringParameter(request,
+							WebKeys.FORUM_OPERATION_SELECT_FILTER,""));
 		}
 
 		return returnToViewForum(request, response, formData, folderId);

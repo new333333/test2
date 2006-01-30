@@ -13,7 +13,7 @@
 	if (ss_ajaxStatus.containsKey("ss_ajaxNotLoggedIn")) {
 %>
 	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
-		<div id="ss_status_message" style="visibility:hidden; display:none;">error</div
+		<div id="ss_status_message" style="visibility:hidden; display:none;">error</div>
 	</taconite-replace>
 <%
 	} else {
