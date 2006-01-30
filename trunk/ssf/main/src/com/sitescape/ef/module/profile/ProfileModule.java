@@ -46,7 +46,7 @@ public interface ProfileModule {
     public List getGroups(Long binderId);
     public Map getUsers(Long binderId);
     public Map getUsers(Long binderId, int maxEntries);
-    public Map getUsers(Long binderId, int maxEntries, Document qTree);
+    public Map getUsers(Long binderId, int maxEntries, Document searchFilter);
     	   
     public void index(Long binderId);
     public UserProperties setUserFolderProperty(Long userId, Long folderId, String property, Object value);

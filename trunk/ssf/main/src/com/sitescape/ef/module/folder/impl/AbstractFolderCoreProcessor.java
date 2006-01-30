@@ -37,6 +37,7 @@ import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
@@ -69,15 +70,24 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	FilterControls filter = new FilterControls("parentBinder", binder);
         return (SFQuery)getFolderDao().queryEntries(filter);
    	}
-    protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, String [] entryTypes, org.dom4j.Document qTree) {
+    protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, 
+    		String [] entryTypes, org.dom4j.Document searchFilter) {
     	  
-    	if (qTree == null) {
-    		qTree = DocumentHelper.createDocument();
-    	   	qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+    	if (searchFilter == null) {
+    		//Build a null search filter
+    		searchFilter = DocumentHelper.createDocument();
+    		Element rootElement = searchFilter.addElement(FilterHelper.FilterRootName);
+        	rootElement.addElement(FilterHelper.FilterTerms);
     	}
+    	org.dom4j.Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchFilter);
     	Element rootElement = qTree.getRootElement();
     	if (rootElement == null) return qTree;
-    	Element boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
+    	//Find the first "and" element and add to it
+    	Element boolElement = (Element) rootElement.selectSingleNode(QueryBuilder.AND_ELEMENT);
+    	if (boolElement == null) {
+    		//If there isn't one, then create one.
+    		boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
+    	}
     	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
  
     	//Look only for entryType=entry

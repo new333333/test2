@@ -21,6 +21,7 @@ import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -126,23 +127,24 @@ public class AjaxController  extends SAbstractForumController {
 			String listDivId = ((String[])formData.get("listDivId"))[0];
 			String maxEntries = ((String[])formData.get("maxEntries"))[0];
 			
-			//Build the search query
-			Document qTree = DocumentHelper.createDocument();
-			Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-	    	Element boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
-
-	    	//Add the search text
 	    	String nameType = IndexUtils.LASTNAME_FIELD;
 	    	if (searchType.equals("firstName")) nameType = IndexUtils.FIRSTNAME_FIELD;
 	    	if (searchType.equals("loginName")) nameType = IndexUtils.USERNAME_FIELD;
-    		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,nameType);
-        	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-        	child.setText(searchText);
-	    	
+
+	    	//Build the search query
+			Document searchFilter = DocumentHelper.createDocument();
+			Element sfRoot = searchFilter.addElement(FilterHelper.FilterRootName);
+			Element filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
+			Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
+			filterTerm.addAttribute(FilterHelper.FilterElementName, nameType);
+			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			filterTermValueEle.setText(searchText);
+			
 			//Do a search to find the first few users who match the search text
         	User u = RequestContextHolder.getRequestContext().getUser();
-        	Map users = getProfileModule().getUsers(u.getParentBinder().getId(), Integer.parseInt(maxEntries), qTree);
+        	Map users = getProfileModule().getUsers(u.getParentBinder().getId(), 
+        			Integer.parseInt(maxEntries), searchFilter);
     		model.put(WebKeys.USERS, users.get(ObjectKeys.ENTRIES));
     		model.put("listDivId", listDivId);
 			response.setContentType("text/xml");

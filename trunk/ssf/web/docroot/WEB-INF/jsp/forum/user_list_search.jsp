@@ -27,7 +27,7 @@
 		<c:forEach var="entry" items="${ssUsers}">
 		  <li id="<c:out value="${entry._docId}"/>" 
 		    onDblClick="ss_userListMoveItem(this);" 
-		    class="ss_dragable ss_userlist"><c:out value="${entry._title}"/></li>
+		    class="ss_dragable ss_userlist"><c:out value="${entry.title}"/></li>
 		</c:forEach>
 	  </ul>
 	</taconite-replace>

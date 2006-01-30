@@ -43,7 +43,7 @@ public class EntryIndexUtils {
     public static final String RESERVEDBYID_FIELD = "_reservedById";
     public static final String DOCID_FIELD = "_docId";
     public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
-    public static final String TITLE_FIELD = "_title";
+    public static final String TITLE_FIELD = "title";
     public static final String TITLE1_FIELD = "_title1";
     public static final String NAME_FIELD = "_name";
     public static final String NAME1_FIELD = "_name1";

@@ -70,10 +70,21 @@ public class SAbstractForumController extends SAbstractController {
 	protected Map getShowFolder(Map formData, RenderRequest req, RenderResponse response,Long folderId) throws PortletRequestBindingException {
 		Map folderEntries;
 		Map model = new HashMap();
-		String forumId = folderId.toString();
-		folderEntries = getFolderModule().getFolderEntries(folderId);
-		Folder folder = (Folder)folderEntries.get(ObjectKeys.BINDER);
 	   	User user = RequestContextHolder.getRequestContext().getUser();
+		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
+		UserProperties userFolderProperties = getProfileModule().getUserFolderProperties(user.getId(), folderId);
+		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+
+		String forumId = folderId.toString();
+		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
+		if (searchFilterName != null && !searchFilterName.equals("")) {
+			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+			Document searchFilter = (Document)searchFilters.get(searchFilterName);
+			folderEntries = getFolderModule().getFolderEntries(folderId, ObjectKeys.LISTING_MAX_PAGE_SIZE, searchFilter);
+		} else {
+			folderEntries = getFolderModule().getFolderEntries(folderId, ObjectKeys.LISTING_MAX_PAGE_SIZE);
+		}
+		Folder folder = (Folder)folderEntries.get(ObjectKeys.BINDER);
 		//Build the beans depending on the operation being done
 		model.put(WebKeys.USER_PRINCIPAL, user);
 		model.put(WebKeys.FOLDER, folder);
@@ -84,8 +95,6 @@ public class SAbstractForumController extends SAbstractController {
 			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder()));			
 		}
 		model.put(WebKeys.FOLDER_ENTRIES, folderEntries.get(ObjectKeys.ENTRIES));
-		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
-		model.put(WebKeys.USER_FOLDER_PROPERTIES, getProfileModule().getUserFolderProperties(user.getId(), folderId));
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 		
 		//See if the user has selected a specific view to use

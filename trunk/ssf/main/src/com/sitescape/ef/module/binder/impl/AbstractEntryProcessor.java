@@ -48,6 +48,7 @@ import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.WriteFilesException;
@@ -370,10 +371,10 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
    	
     //***********************************************************************************************************
     public Map getBinderEntries(Binder binder, String[] entryTypes, int maxChildEntries) {
-    	org.dom4j.Document qTree = null;
-    	return getBinderEntries(binder, entryTypes, maxChildEntries, qTree);
+    	org.dom4j.Document searchFilter = null;
+    	return getBinderEntries(binder, entryTypes, maxChildEntries, searchFilter);
     }
-    public Map getBinderEntries(Binder binder, String[] entryTypes, int maxChildEntries, org.dom4j.Document qTree) {
+    public Map getBinderEntries(Binder binder, String[] entryTypes, int maxChildEntries, org.dom4j.Document searchFilter) {
         int count=0;
         Field fld;
         
@@ -382,7 +383,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         //validate entry count
         maxChildEntries = getBinderEntries_maxEntries(maxChildEntries); 
         //do actual search index query
-        Hits hits = getBinderEntries_doSearch(binder, entryTypes, maxChildEntries, qTree);
+        Hits hits = getBinderEntries_doSearch(binder, entryTypes, maxChildEntries, searchFilter);
         //iterate through results
         ArrayList childEntries = new ArrayList(hits.length());
         try {
@@ -439,10 +440,17 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	return getAccessControlManager().testAcl(binder, (AclControlled) obj, AccessType.READ);
     }
     
-    protected Hits getBinderEntries_doSearch(Binder binder, String [] entryTypes, int maxResults, org.dom4j.Document qTree) {
+    protected Hits getBinderEntries_doSearch(Binder binder, String [] entryTypes, int maxResults, org.dom4j.Document searchFilter) {
        	Hits hits = null;
        	// Build the query
-       	org.dom4j.Document queryTree = getBinderEntries_getSearchDocument(binder, entryTypes, qTree);
+    	if (searchFilter == null) {
+    		//If there is no search filter, assume the caller wants everything
+    		searchFilter = DocumentHelper.createDocument();
+    		Element rootElement = searchFilter.addElement(FilterHelper.FilterRootName);
+        	rootElement.addElement(FilterHelper.FilterTerms);
+    		Element filterTerms = rootElement.addElement(FilterHelper.FilterTerms);
+    	}
+       	org.dom4j.Document queryTree = getBinderEntries_getSearchDocument(binder, entryTypes, searchFilter);
     	//Create the Lucene query
     	QueryBuilder qb = new QueryBuilder();
     	SearchObject so = qb.buildQuery(queryTree);
@@ -468,12 +476,13 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
      
     }
     protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, 
-    		String [] entryTypes, org.dom4j.Document qTree) {
-    	if (qTree == null) {
-    		qTree = DocumentHelper.createDocument();
-    		Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-        	rootElement.addElement(QueryBuilder.AND_ELEMENT);
+    		String [] entryTypes, org.dom4j.Document searchFilter) {
+    	if (searchFilter == null) {
+    		searchFilter = DocumentHelper.createDocument();
+    		Element rootElement = searchFilter.addElement(FilterHelper.FilterRootName);
+        	rootElement.addElement(FilterHelper.FilterTerms);
     	}
+    	org.dom4j.Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchFilter);
     	Element rootElement = qTree.getRootElement();
     	if (rootElement == null) return qTree;
     	Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
