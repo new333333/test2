@@ -81,7 +81,7 @@ function <portlet:namespace/>setEnable() {
 <option value="" <c:if test="${empty ssSelectedUsers}">selected</c:if>><ssf:nlt tag="selected.none"/></option>
 <c:forEach var="user" items="${ssUsers}">
 <c:set var="id" value="${user._docId}"/>
-<option value="${user._docId}" <c:if test="${ssSelectedUsers[id] == true}">selected</c:if>>${user._title} (${user._userName})</option>
+<option value="${user._docId}" <c:if test="${ssSelectedUsers[id] == true}">selected</c:if>>${user.title} (${user._userName})</option>
 </c:forEach>
 </select>
 <br><br>

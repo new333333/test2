@@ -197,12 +197,16 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     }
 
     public Map getFolderEntries(Long folderId, int maxChildEntries) {
+    	return getFolderEntries(folderId, 0, null);
+    }
+    
+    public Map getFolderEntries(Long folderId, int maxChildEntries, Document searchFilter) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Folder folder = folderDao.loadFolder(folderId, user.getZoneName());
         FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
     	(folder, FolderCoreProcessor.PROCESSOR_KEY);
     
-        return processor.getBinderEntries(folder, entryTypes, maxChildEntries);
+        return processor.getBinderEntries(folder, entryTypes, maxChildEntries, searchFilter);
     }
     
 

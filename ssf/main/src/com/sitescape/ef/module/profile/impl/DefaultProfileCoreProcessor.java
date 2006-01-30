@@ -14,6 +14,7 @@ import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
 import com.sitescape.ef.module.folder.InputDataAccessor;
@@ -41,13 +42,15 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
    	}
 
     //***********************************************************************************************************
-    protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, String [] entryTypes, org.dom4j.Document qTree) {
+    protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, String [] entryTypes, org.dom4j.Document searchFilter) {
   
-    	if (qTree == null) {
-    		qTree = DocumentHelper.createDocument();
-        	qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-        	qTree.getRootElement().addElement(QueryBuilder.AND_ELEMENT);
+    	if (searchFilter == null) {
+    		//Build a null search filter
+    		searchFilter = DocumentHelper.createDocument();
+    		Element rootElement = searchFilter.addElement(FilterHelper.FilterRootName);
+        	rootElement.addElement(FilterHelper.FilterTerms);
     	}
+    	org.dom4j.Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchFilter);
     	Element rootElement = qTree.getRootElement();
     	Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
     	if (boolElement == null) return qTree;

@@ -2,6 +2,7 @@ package com.sitescape.ef.web.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,10 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import com.sitescape.ef.module.profile.index.IndexUtils;
+import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.web.WebKeys;
 
 /*********************************************************************
@@ -20,27 +25,29 @@ import com.sitescape.ef.web.WebKeys;
  */
 public class FilterHelper {   	
    	//Search filter document element names
-   	private final static String FilterRootName = "search_filter";
-   	private final static String FilterName = "filterName";
-   	private final static String FilterTerms = "filterTerms";
-   	private final static String FilterTerm = "filterTerm";
-   	private final static String FilterType = "filterType";
-   	private final static String FilterEntryDefId = "filterEntryDefId";
-   	private final static String FilterElementName = "filterElementName";
-   	private final static String FilterElementValue = "filterElementValue";
+   	public final static String FilterRootName = "searchFilter";
+   	public final static String FilterName = "filterName";
+   	public final static String FilterTerms = "filterTerms";
+   	public final static String FilterTerm = "filterTerm";
+   	public final static String FilterType = "filterType";
+   	public final static String FilterEntryDefId = "filterEntryDefId";
+   	public final static String FilterElementName = "filterElementName";
+   	public final static String FilterElementValue = "filterElementValue";
 
    	//formData fields and values
    	private final static String FilterNameField = "filterName";
    	private final static String FilterTypeField = "filterType";
-   	private final static String FilterTypeSearchText = "text";
-   	private final static String FilterTypeEntry = "entry";
-   	private final static String FilterTypeWorkflow = "workflow";
    	
-   	private final static String FilterEntryDefIdField = "ss_filter_entry_def_id";
-   	private final static String FilterElementNameField = "elementName";
-   	private final static String FilterElementValueField = "elementValue";
+   	public final static String FilterTypeSearchText = "text";
+   	public final static String FilterTypeEntry = "entry";
+   	public final static String FilterTypeWorkflow = "workflow";
+   	
+   	public final static String FilterEntryDefIdField = "ss_filter_entry_def_id";
+   	public final static String FilterElementNameField = "elementName";
+   	public final static String FilterElementValueField = "elementValue";
 	
-	static public Document getSearchFilter (PortletRequest request) throws Exception {
+	//Routine to parse the results of submitting the filter builder form
+   	static public Document getSearchFilter (PortletRequest request) throws Exception {
 		Document searchFilter = DocumentHelper.createDocument();
 		Element sfRoot = searchFilter.addElement(FilterRootName);
 
@@ -86,6 +93,55 @@ public class FilterHelper {
 		}
 		//searchFilter.asXML();
 		return searchFilter;
+	}
+	
+	//Routine to convert a search filter into the form that Lucene wants 
+   	static public Document convertSearchFilterToSearchBoolean(Document searchFilter) {
+		//Build the search query
+		Document qTree = DocumentHelper.createDocument();
+		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+    	Element qTreeBoolElement = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
+    	
+    	Element sfRootElement = searchFilter.getRootElement();
+
+    	//Add the filter terms to the boolean query
+    	Iterator itFilterTerms = sfRootElement.selectNodes(FilterTerms + "/" + FilterTerm).iterator();
+		Element orField = qTreeBoolElement.addElement(QueryBuilder.OR_ELEMENT);
+    	while (itFilterTerms.hasNext()) {
+    		Element filterTerm = (Element) itFilterTerms.next();
+    		String filterType = filterTerm.attributeValue(FilterType, "");
+    		if (filterType.equals(FilterTypeSearchText)) {
+    			//Add the search text as a field
+    			Element field = orField.addElement(QueryBuilder.FIELD_ELEMENT);
+    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ALL_TEXT_FIELD);
+    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	    	child.setText(filterTerm.getText());
+    		} else if (filterType.equals(FilterTypeEntry)) {
+    			//This is an entry term. Build booleans from the element name and values.
+    			String defId = filterTerm.attributeValue(FilterHelper.FilterEntryDefId, "");
+    			String elementName = filterTerm.attributeValue(FilterHelper.FilterElementName, "");
+    			Iterator itTermValues = filterTerm.selectNodes(FilterHelper.FilterElementValue).iterator();
+    			while (itTermValues.hasNext()) {
+    				String value = ((Element) itTermValues.next()).getText();
+    				if (!value.equals("")) {
+    	    			Element andField = orField.addElement(QueryBuilder.AND_ELEMENT);
+    	    			Element field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+    	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntryIndexUtils.COMMAND_DEFINITION_FIELD);
+    	    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	    	    	child.setText(defId);
+    	    			
+    	    	    	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+    	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, elementName);
+    	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	    	    	child.setText(value);
+    				}
+    			}
+    		} else if (filterType.equals(FilterTypeWorkflow)) {
+    			//TODO Add the workflow boolean term
+    		}
+    	}
+    	//qTree.asXML();
+    	return qTree;
 	}
 	
 	static public String getFilterName(Document searchFilter) {

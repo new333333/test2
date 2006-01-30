@@ -79,9 +79,9 @@ if (ssSeenMap.checkIfSeen(e)) {
     action="view_entry" 
     entryId="<%= e.get("_docId").toString() %>" actionUrl="false" />"
     onClick="ss_loadEntry(this,'<c:out value="${eviw.entry._docId}"/>');return false;" 
-    ><c:if test="${empty eviw.entry._title}"
+    ><c:if test="${empty eviw.entry.title}"
     ><span class="ss_fineprint">--<ssf:nlt tag="entry.noTitle" text="no title"/>--</span
-    ></c:if><c:out value="${eviw.entry._title}"/></a></span></div>
+    ></c:if><c:out value="${eviw.entry.title}"/></a></span></div>
 
 </c:forEach>
 </c:forEach></td>

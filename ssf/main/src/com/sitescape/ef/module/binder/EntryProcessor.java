@@ -41,7 +41,7 @@ public interface EntryProcessor {
     public void modifyWorkflowState(Binder binder, Long entryId, Long tokenId, String toState) 
 		throws AccessControlException;
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries) throws AccessControlException;
-	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries, Document qTree) throws AccessControlException;
+	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries, Document searchFilter) throws AccessControlException;
 	public void indexBinder(Binder binder);
 	public void indexEntry(AclControlledEntry entry); 
   	public void indexEntry(Collection entries);

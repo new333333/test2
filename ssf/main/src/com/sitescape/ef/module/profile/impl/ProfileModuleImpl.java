@@ -238,11 +238,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         
    }
  
-    public Map getUsers(Long binderId, int maxEntries, Document qTree) {
+    public Map getUsers(Long binderId, int maxEntries, Document searchFilter) {
         ProfileBinder binder = getProfileBinder();
         ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
                	binder, ProfileCoreProcessor.PROCESSOR_KEY);
-        return processor.getBinderEntries(binder, userDocType, maxEntries, qTree);
+        return processor.getBinderEntries(binder, userDocType, maxEntries, searchFilter);
         
    }
  
