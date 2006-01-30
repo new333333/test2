@@ -72,7 +72,7 @@ public abstract class AbstractFacade implements Facade {
 		return DBinderToBinder(dbinder);
 	}
 	
-	public String getEntryAsXML(long binderId, long entryId) {
+	public String getFolderEntryAsXML(long binderId, long entryId) {
 		Long bId = new Long(binderId);
 		Long eId = new Long(entryId);
 		
@@ -109,7 +109,7 @@ public abstract class AbstractFacade implements Facade {
 		return xml;
 	}
 	
-	public long addEntry(long binderId, String definitionId, String inputDataAsXML) {
+	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML) {
 
 		// Parse XML string into a document tree.
 		Document doc = null;
