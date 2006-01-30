@@ -841,12 +841,18 @@
 	</item>
 	
 	<item name="conditionOnModify" caption="__transition_condition_on_modify">
+		<properties>
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
 		<options>
 			<option name="variable" />
 		</options>
 	</item>
 	
 	<item name="conditionOnReply" caption="__transition_condition_on_reply">
+		<properties>
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
 		<options>
 			<option name="variable" />
 		</options>
@@ -855,6 +861,7 @@
 	<item name="conditionOnResponse" caption="__transition_condition_on_response" >
 		<properties>
 			<property name="response" caption="__transition_condition_on_response" type="text" />
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
 			<option name="variable" />
@@ -863,6 +870,7 @@
 	<item name="conditionOnDate" caption="__transition_condition_on_date" >
 		<properties>
 			<property name="date" caption="__transition_condition_on_date" type="text" />
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
 			<option name="variable" />
@@ -876,6 +884,7 @@
 				characterMask="^[0-9]*$" />
 			<property name="mins" caption="__transition_condition_on_mins" type="text"
 				characterMask="^[0-9]*$" />
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
 			<option name="variable" />
@@ -885,6 +894,7 @@
 		<properties>
 			<property name="name" caption="__transition_condition_on_variable_name" type="text" />
 			<property name="value" caption="__transition_condition_on_variable_value" type="text" />
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
 			<option name="variable" />
