@@ -844,13 +844,13 @@
 		<options>
 			<option name="variable" />
 		</options>
-	</item>item>
+	</item>
 	
 	<item name="conditionOnReply" caption="__transition_condition_on_reply">
 		<options>
 			<option name="variable" />
 		</options>
-	</item>item>
+	</item>
 
 	<item name="conditionOnResponse" caption="__transition_condition_on_response" >
 		<properties>
