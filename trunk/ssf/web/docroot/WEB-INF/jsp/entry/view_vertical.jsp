@@ -44,6 +44,8 @@ var ss_entryWindowWidth = <%= ss_entryWindowWidth %>;
 var ss_minEntryWindowWidth = 200;
 var ss_scrollbarWidth = 25;
 //var ss_entryWindowHeight = <c:out value="${ss_entryWindowHeight}"/>;
+var ss_folderDivHeight = 400;
+var ss_minFolderDivHeight = 150;
 var ss_entryWindowHeight = 400;
 var ss_minEntryWindowHeight = 200;
 var ss_scrollbarHeight = 25;
@@ -62,11 +64,11 @@ function ss_positionSliderDiv() {
     var wObj = self.document.getElementById('ss_showfolder')
 
     var width = parseInt(parseInt(ss_getObjectWidth(wObj)) - ss_marginLeft - ss_marginRight);
-    var left = parseInt(parseInt(getDivLeft('ss_showfolder')) + ss_marginLeft);
+    var left = parseInt(parseInt(ss_getDivLeft('ss_showfolder')) + ss_marginLeft);
 	var sliderObj = document.getElementById("ss_showfolder_slider");
-	setObjectLeft(sliderObj, left);
-	setObjectTop(sliderObj, parseInt(parseInt(getDivTop("ss_showfolder_bottom")) - ss_scrollBarOffset));
-	setObjectWidth(sliderObj, width);
+	ss_setObjectLeft(sliderObj, left);
+	ss_setObjectTop(sliderObj, parseInt(parseInt(ss_getDivTop("ss_showfolder_bottom")) - ss_scrollBarOffset));
+	ss_setObjectWidth(sliderObj, width);
 	sliderObj.style.visibility = "visible";
 }
 
@@ -107,17 +109,17 @@ function ss_positionEntryDiv() {
     var wObj2 = self.document.getElementById('<portlet:namespace/>_iframe_box_div')
     var wObj3 = self.document.getElementById('ss_showentryframe')
 
-    var top = parseInt(getDivTop('ss_showentrydiv'));
-    var left = parseInt(parseInt(getDivLeft('ss_showfolder')) + ss_marginLeft);
+    var top = parseInt(ss_getDivTop('ss_showentrydiv'));
+    var left = parseInt(parseInt(ss_getDivLeft('ss_showfolder')) + ss_marginLeft);
     var height = parseInt(ss_getWindowHeight() - ss_entryDivBottomDelta);
-    setObjectTop(wObj1, top)
-    setObjectLeft(wObj1, left);
-    setObjectWidth(wObj1, ss_entryWindowWidth);
-    setObjectWidth(wObj2, ss_entryWindowWidth);
-    setObjectHeight(wObj1, ss_entryWindowHeight);
-    setObjectHeight(wObj2, ss_entryWindowHeight);
+    ss_setObjectTop(wObj1, top)
+    ss_setObjectLeft(wObj1, left);
+    ss_setObjectWidth(wObj1, ss_entryWindowWidth);
+    ss_setObjectWidth(wObj2, ss_entryWindowWidth);
+    ss_setObjectHeight(wObj1, ss_entryWindowHeight);
+    ss_setObjectHeight(wObj2, ss_entryWindowHeight);
 
-    setObjectHeight(wObj1, height);
+    ss_setObjectHeight(wObj1, height);
     wObj1.style.background = "#ffffff"
     wObj1.style.display = "block";
     wObj1.style.visibility = "visible";
@@ -184,11 +186,12 @@ function ss_divDrag(evt) {
             dObjLeft = evt.clientX - ss_divOffsetX;
             dObjTop = evt.clientY - ss_divOffsetY;
         }
-        var deltaW = parseInt(parseInt(dObjLeft) - parseInt(ss_divDragObj.style.left))
         var deltaH = parseInt(parseInt(dObjTop) - parseInt(ss_divDragObj.style.top))
-        ss_entryWindowWidth = parseInt(parseInt(ss_divDragObj.style.width) - deltaW)
-        ss_entryWindowHeight = parseInt(parseInt(ss_divDragObj.style.height) - deltaH)
-	    setObjectTop(ss_divDragObj, dObjTop)
+        var folderDivObj = document.getElementById('ss_showfolder');
+        ss_folderDivHeight = parseInt(parseInt(dObjTop) + ss_scrollBarOffset - parseInt(ss_getDivTop('ss_showfolder')));
+	    if (ss_folderDivHeight < ss_minFolderDivHeight) ss_folderDivHeight = ss_minFolderDivHeight;
+	    ss_setObjectHeight(folderDivObj, ss_folderDivHeight);
+	    ss_positionSliderDiv();
         return false
     
     } else {
@@ -203,7 +206,7 @@ function ss_divStopDrag(evt) {
     }
     self.document.onmousemove = ss_divDragSavedMouseMove;
     self.document.onmouseup = ss_divDragSavedMouseUp;
-    setTimeout("ss_saveEntryHeight(ss_entryWindowHeight);", 500)
+    setTimeout("ss_saveEntryHeight(ss_folderDivHeight);", 500)
     return false
 }
 

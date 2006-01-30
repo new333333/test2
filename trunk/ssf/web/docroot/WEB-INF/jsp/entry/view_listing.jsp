@@ -139,8 +139,8 @@ function ss_showEntryInDiv(str) {
     
     //Get the position of the div displaying the entry
     if (autoScroll == "true") {
-	    var entryY = getDivTop('ss_showentrydiv')
-	    var entryH = getDivHeight('ss_showentrydiv')
+	    var entryY = ss_getDivTop('ss_showentrydiv')
+	    var entryH = ss_getDivHeight('ss_showentrydiv')
 	    var bodyY = self.document.body.scrollTop
 	    var windowH = ss_getWindowHeight()
 	    if (entryY >= bodyY) {
@@ -168,7 +168,7 @@ function ss_showEntryInDiv(str) {
 var savedScrollPositionTop = null;
 function scrollToSavedLocation(anchor) {
 	if (anchor != "") {
-		smoothScroll(0, parseInt(getAnchorTop(anchor)));
+		smoothScroll(0, parseInt(ss_getAnchorTop(anchor)));
 	} else {
 		if (autoScroll == "true") {
 			if (savedScrollPositionTop != null) {

@@ -68,7 +68,7 @@ function ss_showForumEntryInIframe(url) {
 }
 
 function ss_positionEntryDiv() {
-	var maxEntryWidth = parseInt(getWindowWidth() - ss_scrollbarWidth);
+	var maxEntryWidth = parseInt(ss_getWindowWidth() - ss_scrollbarWidth);
 	
     var wObj = self.document.getElementById('ss_showfolder')
 
@@ -82,17 +82,17 @@ function ss_positionEntryDiv() {
     var wObj2 = self.document.getElementById('<portlet:namespace/>_iframe_box_div')
     var wObj3 = self.document.getElementById('ss_showentryframe')
 
-    var top = parseInt(getDivTop('ss_showfolder') + ss_entryDivTopDelta);
+    var top = parseInt(ss_getDivTop('ss_showfolder') + ss_entryDivTopDelta);
     if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);} 
     var left = parseInt(maxEntryWidth - ss_entryWindowWidth);
     if (left < 0) left = 0;
     var height = parseInt(ss_getWindowHeight() + self.document.body.scrollTop - top - ss_entryDivTopDelta );
-    setObjectTop(wObj1, top)
-    setObjectLeft(wObj1, left);
-    setObjectWidth(wObj1, ss_entryWindowWidth);
-    setObjectWidth(wObj2, ss_entryWindowWidth);
-    //setObjectWidth(wObj3, ss_entryWindowWidth);
-    setObjectHeight(wObj1, height);
+    ss_setObjectTop(wObj1, top)
+    ss_setObjectLeft(wObj1, left);
+    ss_setObjectWidth(wObj1, ss_entryWindowWidth);
+    ss_setObjectWidth(wObj2, ss_entryWindowWidth);
+    //ss_setObjectWidth(wObj3, ss_entryWindowWidth);
+    ss_setObjectHeight(wObj1, height);
     wObj1.style.background = "#ffffff"
     wObj1.style.visibility = "visible";
 }
