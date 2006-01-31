@@ -416,7 +416,12 @@ public class WorkflowViewer extends JApplet implements ActionListener {
                         if (nameVertex.containsKey(name) && nameVertex.containsKey(toState)) {
                         	Edge newEdge = g.addEdge(new DirectedSparseEdge((Vertex)nameVertex.get(name), 
                         			(Vertex)nameVertex.get(toState)));
-                         }
+	                        String itemName = transition.getParent().getParent().attributeValue("name", "");
+	                        if (!itemName.equals("transitionManual")) {
+	                        	//Mark all of the conditional transitions (i.e., not manual) in a different color
+	                        	newEdge.setUserDatum(COLORKEY, Color.ORANGE, UserData.REMOVE);
+	                        }
+                        }
             		}
             	}
             	//Get the list of parallel thread starts by this state
