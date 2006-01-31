@@ -154,6 +154,11 @@ public class AjaxController  extends SAbstractForumController {
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FILTER_TYPE) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES)) {
+			Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+			Binder binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
+			model.put(WebKeys.FOLDER_WORKFLOW_ASSOCIATIONS, binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS));
+				
 			String filterTermNumber = ((String[])formData.get(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER))[0];
 			model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, filterTermNumber);
 			
@@ -161,9 +166,15 @@ public class AjaxController  extends SAbstractForumController {
 			if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
 					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES)) {
 				String defId = ((String[])formData.get(WebKeys.FILTER_ENTRY_DEF_ID+filterTermNumber))[0];
-				model.put(WebKeys.FILTER_ENTRY_DEF_ID, defId);
-				Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
-				model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
+				if (defId.equals("_common")) {
+					model.put(WebKeys.FILTER_ENTRY_DEF_ID, "");
+					Map elementData = getFolderModule().getCommonEntryElements(binderId);
+					model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
+				} else {
+					model.put(WebKeys.FILTER_ENTRY_DEF_ID, defId);
+					Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
+					model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
+				}
 			}
 			
 			if (formData.containsKey("elementName" + filterTermNumber)) {
@@ -171,11 +182,6 @@ public class AjaxController  extends SAbstractForumController {
 				model.put(WebKeys.FILTER_ENTRY_ELEMENT_NAME, elementName);
 			}
 
-			Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-			Binder binder = getBinderModule().getBinder(binderId);
-			model.put(WebKeys.BINDER, binder);
-			model.put(WebKeys.FOLDER_WORKFLOW_ASSOCIATIONS, binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS));
-				
 			Map defaultEntryDefinitions = DefinitionUtils.getEntryDefsAsMap(binder);
 			model.put(WebKeys.ENTRY_DEFINTION_MAP, defaultEntryDefinitions);
 

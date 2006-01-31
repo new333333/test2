@@ -36,6 +36,8 @@
     	  onChange="ss_getFilterSelectionBox(this, 'ss_filter_entry_def_id', 'get_entry_elements')">
     	  <option value="" selected="selected"><ssf:nlt 
     	    tag="filter.selectElement" text="--select an entry type--"/></option>
+    	  <option value="_common"><ssf:nlt 
+    	    tag="filter.commonElements" text="--common elements (e.g., title)--"/></option>
 		    <c:forEach var="item" items="${ssPublicEntryDefinitions}">
 		      <c:if test="${!empty ssEntryDefinitionMap[item.key]}">
 		        <option value="<c:out value="${item.value.id}"/>"><c:out 
