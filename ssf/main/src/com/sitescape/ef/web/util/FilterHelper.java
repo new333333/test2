@@ -79,7 +79,8 @@ public class FilterHelper {
 					if (!defId.equals("") && !name.equals("") && value.length > 0) {
 						Element filterTerm = filterTerms.addElement(FilterTerm);
 						filterTerm.addAttribute(FilterType, filterType);
-						filterTerm.addAttribute(FilterEntryDefId, defId);
+						//If not selecting a "common" element, store the definition id, too
+						if (!defId.equals("_common")) filterTerm.addAttribute(FilterEntryDefId, defId);
 						filterTerm.addAttribute(FilterElementName, name);
 						for (int j = 0; j < value.length; j++) {
 							Element newTerm = filterTerm.addElement(FilterElementValue);
@@ -125,11 +126,16 @@ public class FilterHelper {
     			while (itTermValues.hasNext()) {
     				String value = ((Element) itTermValues.next()).getText();
     				if (!value.equals("")) {
-    	    			Element andField = orField.addElement(QueryBuilder.AND_ELEMENT);
-    	    			Element field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
-    	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntryIndexUtils.COMMAND_DEFINITION_FIELD);
-    	    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    	    	    	child.setText(defId);
+    					Element field;
+    					Element child;
+    					Element andField = orField;
+    	    			if (!defId.equals("")) {
+    	    				andField = orField.addElement(QueryBuilder.AND_ELEMENT);
+        	    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+        	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntryIndexUtils.COMMAND_DEFINITION_FIELD);
+        	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+        	    	    	child.setText(defId);
+    	    			}
     	    			
     	    	    	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
     	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, elementName);

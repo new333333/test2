@@ -33,6 +33,7 @@ import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.ef.util.NLT;
 
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -182,7 +183,39 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         processor.indexBinder(folder);
     }
 
- 
+    public Map getCommonEntryElements(Long folderId) {
+    	Map entryElements = new HashMap();
+    	Map itemData;
+    	//Build a map of common elements for use in search filters
+    	//  Each map has a "type" and a "caption". Types can be: title, text, user_list, or date.
+    	
+    	//title
+    	itemData = new HashMap();
+    	itemData.put("type", "title");
+    	itemData.put("caption", NLT.get("filter.title"));
+    	entryElements.put("title", itemData);
+    	
+    	//author
+    	itemData = new HashMap();
+    	itemData.put("type", "user_list");
+    	itemData.put("caption", NLT.get("filter.author"));
+    	entryElements.put("owner", itemData);
+    	
+    	//creation date
+    	itemData = new HashMap();
+    	itemData.put("type", "date");
+    	itemData.put("caption", NLT.get("filter.creationDate"));
+    	entryElements.put("creation", itemData);
+    	
+    	//modification date
+    	itemData = new HashMap();
+    	itemData.put("type", "date");
+    	itemData.put("caption", NLT.get("filter.modificationDate"));
+    	entryElements.put("modification", itemData);
+    	
+    	return entryElements;
+    }
+    
     public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Folder folder = folderDao.loadFolder(folderId, user.getZoneName());
