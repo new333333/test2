@@ -52,10 +52,26 @@ public abstract class AbstractFilterController extends SAbstractForumController 
 				//Save the updated search filters
 				getProfileModule().setUserFolderProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
 			}
-			
 			setResponseOnClose(response, binderId);
+		
+		} else if (formData.containsKey("deleteBtn")) {
+			//This is a request to delete a filter
+			String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilter", "");
+			if (!selectedSearchFilter.equals("")) {
+				UserProperties userForumProperties = getProfileModule().getUserFolderProperties(user.getId(), binderId);
+				Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+				if (searchFilters == null) searchFilters = new HashMap();
+				if (searchFilters.containsKey(selectedSearchFilter)) {
+					searchFilters.remove(selectedSearchFilter);
+					//Save the updated search filters
+					getProfileModule().setUserFolderProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
+				}
+			}
+			setResponseOnClose(response, binderId);
+		
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			setResponseOnClose(response, binderId);
+		
 		} else
 			response.setRenderParameters(formData);
 	}
@@ -63,10 +79,14 @@ public abstract class AbstractFilterController extends SAbstractForumController 
 			RenderResponse response) throws Exception {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		
+		Map formData = request.getParameterMap();
 		Map model = new HashMap();
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Binder binder = getBinderModule().getBinder(binderId);
 		
+		//Get the name of the selected filter (if one is selected)
+		String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilter", "");
+		model.put(WebKeys.FILTER_SELECTED_FILTER_NAME, selectedSearchFilter);
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FOLDER_WORKFLOW_ASSOCIATIONS, binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS));
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
@@ -74,8 +94,27 @@ public abstract class AbstractFilterController extends SAbstractForumController 
 		DefinitionUtils.getDefinitions(model);
 		DefinitionUtils.getDefinitions(binder, model);
 		DefinitionUtils.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
-	
-		return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);
+
+		UserProperties userForumProperties = getProfileModule().getUserFolderProperties(user.getId(), binderId);
+		Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+		model.put(WebKeys.FILTER_SEARCH_FILTERS, searchFilters);
+
+		if (formData.containsKey("addBtn")) {
+			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);
+		} else if (formData.containsKey("modifyBtn")) {
+			//Build a bean that contains all of the fields to be shown
+			if (searchFilters.containsKey(selectedSearchFilter)) {
+				Map elementData = getFolderModule().getCommonEntryElements(binderId);
+				Map searchFilterData = FilterHelper.buildFilterFormMap(
+						(Document)searchFilters.get(selectedSearchFilter),
+						(Map) model.get(WebKeys.PUBLIC_ENTRY_DEFINITIONS),
+						elementData);
+				model.put(WebKeys.FILTER_SEARCH_FILTER_DATA, searchFilterData);
+			}
+			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);
+		} else {
+			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER_SELECT, model);
+		}
 	}
 	protected abstract void setResponseOnClose(ActionResponse responose, Long binderId);
 

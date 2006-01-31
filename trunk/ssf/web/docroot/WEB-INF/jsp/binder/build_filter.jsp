@@ -15,7 +15,10 @@
  */
 %>
 
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.Iterator" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<jsp:useBean id="ss_searchFilterData" type="java.util.Map" scope="request" />
 
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
@@ -130,7 +133,7 @@ function checkFilterForm(obj) {
     <legend class="legend"><ssf:nlt tag="filter.filterName" text="Filter name"/></legend>
 
 	  <span class="ss_labelAbove"><ssf:nlt tag="filter.filterName" text="Filter name"/></span>
-	  <input type="text" style="width:400px;" name="filterName">
+	  <input type="text" style="width:400px;" name="filterName" value="<c:out value="${ss_selectedFilter}"/>">
   </fieldset>
 
 <div class="ss_formBreak"/>
@@ -142,6 +145,7 @@ function checkFilterForm(obj) {
 	<div id="filterTerms">
 	  <table class="ss_style">
 	  <tbody>
+	  <c:if test="${empty ss_selectedFilter}">
 	  <tr>
 	  <td valign="top">
 	    <div id="typeList1" style="display:inline;">
@@ -176,6 +180,91 @@ function checkFilterForm(obj) {
 	    </div>
 	  </td>
 	  </tr>
+	  </c:if>
+	  
+	  <c:if test="${!empty ss_selectedFilter}">
+<%
+		for (int i = 1; i <= ((Integer)ss_searchFilterData.get("filterTermCount")).intValue(); i++) {
+%>
+		  <tr>
+		  <td valign="top">
+		    <div id="typeList<%= String.valueOf(i) %>" style="display:inline;">
+		      <ul class="ss_square" style="margin:0px 14px; padding:2px;">
+		      <li><a href="javascript: ;" 
+		        onClick="ss_getFilterTypeSelection(this, 'text');return false;">
+		          <ssf:nlt tag="filter.searchText" text="Search text"/>
+		      </a></li>
+		      
+		      <li><a href="javascript: ;" 
+		        onClick="ss_getFilterTypeSelection(this, 'entry');return false;">
+		          <ssf:nlt tag="filter.entryAttributes" text="Entry attributes"/>
+		      </a></li>
+	
+		      <li><a href="javascript: ;" 
+		        onClick="ss_getFilterTypeSelection(this, 'workflow');return false;">
+		          <ssf:nlt tag="filter.workflowStates" text="Workflow states"/>
+		      </a></li>
+	
+		    </div>
+		  </td>
+		  <td valign="top">
+		    <div id="entryList<%= String.valueOf(i) %>" style="display:inline;">
+		      <select name="ss_filter_entry_def_id<%= String.valueOf(i) %>" size="1" multiple>
+<%
+			if (ss_searchFilterData.containsKey("ss_filter_entry_def_id" + String.valueOf(i))) {
+				%>
+				<option value="<%= (String) ss_searchFilterData.get("ss_filter_entry_def_id" + String.valueOf(i)) %>" 
+				  selected><%= (String) ss_searchFilterData.get("ss_filter_entry_def_id_caption" + String.valueOf(i)) %></option>
+				<%
+			}
+%>
+		      </select>
+			  <input type="hidden" name="filterType<%= String.valueOf(i) %>"
+			    value="<%= (String) ss_searchFilterData.get("filterType" + String.valueOf(i)) %>"/>
+		    </div>
+		  </td>
+		  <td valign="top">
+		    <div id="elementList<%= String.valueOf(i) %>" style="visibility:visible; display:inline;">
+<%
+			if (ss_searchFilterData.containsKey("elementName" + String.valueOf(i))) {
+				%>
+				<select name="elementName<%= String.valueOf(i) %>" size="1" multiple>
+				  <option value="<%= (String) ss_searchFilterData.get("elementName" + String.valueOf(i)) %>" selected>
+				    <%= (String) ss_searchFilterData.get("elementNameCaption" + String.valueOf(i)) %></option>
+				</select>
+				<%
+			}
+%>
+		    </div>
+		  </td>
+		  <td valign="top">
+		    <div id="valueList<%= String.valueOf(i) %>" style="visibility:visible; display:inline;">
+<%
+			if (ss_searchFilterData.containsKey("elementValue" + String.valueOf(i))) {
+				Map valueMap = (Map) ss_searchFilterData.get("elementValue" + String.valueOf(i));
+%>
+				<select name="elementValue<%= String.valueOf(i) %>" size="<%= String.valueOf(valueMap.entrySet().size()) %>" multiple>
+<%
+				Iterator itValues = valueMap.entrySet().iterator();
+				while (itValues.hasNext()) {
+					String value = (String)((Map.Entry)itValues.next()).getKey();
+					%>
+					<option name="<%= value %>" selected><%= value %></option>
+					<%
+				}
+%>
+				</select>
+<%
+			}
+%>
+		    </div>
+		  </td>
+		  </tr>
+<%
+		}
+%>
+	  </c:if>
+	  	  
 	  </tbody>
 	  </table>
 	</div>
@@ -194,6 +283,7 @@ function checkFilterForm(obj) {
 </div>
 
 <input type="hidden" name="ss_filterTermNumber" value="1"/>
+<input type="hidden" name="selectedSearchFilter" value="<c:out value="${ss_selectedFilter}"/>"/>
 </form>
 <div id="ss_filter_status_message" style="display:none;"></div>
 </div>

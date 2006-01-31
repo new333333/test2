@@ -12,10 +12,12 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.module.profile.index.IndexUtils;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 
 /*********************************************************************
@@ -33,17 +35,18 @@ public class FilterHelper {
    	public final static String FilterEntryDefId = "filterEntryDefId";
    	public final static String FilterElementName = "filterElementName";
    	public final static String FilterElementValue = "filterElementValue";
-
-   	//formData fields and values
-   	private final static String FilterNameField = "filterName";
-   	private final static String FilterTypeField = "filterType";
-   	
    	public final static String FilterTypeSearchText = "text";
    	public final static String FilterTypeEntry = "entry";
    	public final static String FilterTypeWorkflow = "workflow";
    	
+   	//formData fields and values
+   	private final static String FilterNameField = "filterName";
+   	private final static String FilterTypeField = "filterType";
+   	
    	public final static String FilterEntryDefIdField = "ss_filter_entry_def_id";
+   	public final static String FilterEntryDefIdCaptionField = "ss_filter_entry_def_id_caption";
    	public final static String FilterElementNameField = "elementName";
+   	public final static String FilterElementNameCaptionField = "elementNameCaption";
    	public final static String FilterElementValueField = "elementValue";
 	
 	//Routine to parse the results of submitting the filter builder form
@@ -95,6 +98,68 @@ public class FilterHelper {
 		//searchFilter.asXML();
 		return searchFilter;
 	}
+   	
+   	static public Map buildFilterFormMap(Document searchFilter, Map entryDefs, Map commonElements) {
+   		Map searchFilterData = new HashMap();
+   		Element sfRoot = searchFilter.getRootElement();
+    	List liFilterTerms = sfRoot.selectNodes(FilterTerms + "/" + FilterTerm);
+		searchFilterData.put("filterTermCount", new Integer(liFilterTerms.size()));
+    	for (int i = 0; i < liFilterTerms.size(); i++) {
+    		Element filterTerm = (Element) liFilterTerms.get(i);
+    		String filterType = filterTerm.attributeValue(FilterType, "");
+       		if (filterType.equals(FilterTypeSearchText)) {
+    			//Add the search text field
+    			searchFilterData.put(FilterTypeField + String.valueOf(i+1), FilterTypeSearchText);
+    			searchFilterData.put(FilterElementValueField+ String.valueOf(i+1), filterTerm.getText());
+    		} else if (filterType.equals(FilterTypeEntry)) {
+    			//This is an entry term. 
+    			String defId = filterTerm.attributeValue(FilterHelper.FilterEntryDefId, "");
+    			String elementName = filterTerm.attributeValue(FilterHelper.FilterElementName, "");
+    			String defIdCaption = defId;
+    			String elementNameCaption = elementName;
+    			Definition def;
+    			if (defId.equals("")) {
+    				defId = "_common";
+    				defIdCaption = NLT.get("filter.commonElements");
+    				if (commonElements.containsKey(elementName)) {
+    					elementNameCaption = (String) ((Map)commonElements.get(elementName)).get("caption");
+    				}
+    			} else {
+    				//Get the definition title
+    				if (entryDefs.containsKey(defId)) {
+    					def = (Definition)entryDefs.get(defId);
+    					defIdCaption = def.getTitle();
+    					Document defDoc = def.getDefinition();
+    					Element item = (Element)defDoc.getRootElement().selectSingleNode("//item/properties/property[@name='name' and @value='"+elementName+"']");
+    					if (item != null) {
+    						Element captionEle = (Element) item.selectSingleNode("../property[@name='caption']");
+    						if (captionEle != null) elementNameCaption = captionEle.attributeValue("value", elementName);
+    					}
+    				}
+    			}
+    			
+    			searchFilterData.put(FilterTypeField + String.valueOf(i+1), FilterTypeEntry);
+    			searchFilterData.put(FilterEntryDefIdField+ String.valueOf(i+1), defId);
+    			searchFilterData.put(FilterEntryDefIdCaptionField+ String.valueOf(i+1), defIdCaption);
+    			searchFilterData.put(FilterElementNameField+ String.valueOf(i+1), elementName);
+    			searchFilterData.put(FilterElementNameCaptionField+ String.valueOf(i+1), elementNameCaption);
+     			
+    			Iterator itTermValues = filterTerm.selectNodes(FilterHelper.FilterElementValue).iterator();
+    			Map valueMap = new HashMap();
+    			while (itTermValues.hasNext()) {
+    				String value = ((Element) itTermValues.next()).getText();
+    				if (!value.equals("")) {
+    					valueMap.put(value, value);
+    				}
+    			}
+    			searchFilterData.put(FilterElementValueField+ String.valueOf(i+1), valueMap);
+    		} else if (filterType.equals(FilterTypeWorkflow)) {
+    			//TODO Add the workflow boolean term
+    		}
+    	}
+   		
+   		return searchFilterData;
+   	}
 	
 	//Routine to convert a search filter into the form that Lucene wants 
    	static public Document convertSearchFilterToSearchBoolean(Document searchFilter) {
