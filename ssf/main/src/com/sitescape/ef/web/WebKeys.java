@@ -116,6 +116,9 @@ public class WebKeys {
     public static final String FILTER_ENTRY_DEF_ID = "ss_filter_entry_def_id";
     public static final String FILTER_ENTRY_ELEMENT_NAME = "ss_filter_entry_element_name";
     public static final String FILTER_ENTRY_FILTER_TERM_NUMBER="ss_filterTermNumber";
+    public static final String FILTER_SEARCH_FILTERS="ss_searchFilters";
+    public static final String FILTER_SEARCH_FILTER_DATA="ss_searchFilterData";
+    public static final String FILTER_SELECTED_FILTER_NAME="ss_selectedFilter";
     public static final String FILTER_TYPE="ss_filterType";
     public static final String FOLDER = "ssFolder";
     public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";
@@ -172,6 +175,7 @@ public class WebKeys {
 
     //View names
     public static final String VIEW_BUILD_FILTER = "binder/build_filter";
+    public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
     public static final String VIEW_CONFIGURE = "binder/configure";
     public static final String VIEW_NO_DEFINITION="forum/view_default";
     public static final String VIEW_LISTING="entry/view_listing";
