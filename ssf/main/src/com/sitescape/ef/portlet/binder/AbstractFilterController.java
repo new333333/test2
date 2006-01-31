@@ -98,6 +98,8 @@ public abstract class AbstractFilterController extends SAbstractForumController 
 		UserProperties userForumProperties = getProfileModule().getUserFolderProperties(user.getId(), binderId);
 		Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 		model.put(WebKeys.FILTER_SEARCH_FILTERS, searchFilters);
+		Map searchFilterData = new HashMap();
+		model.put(WebKeys.FILTER_SEARCH_FILTER_DATA, searchFilterData);
 
 		if (formData.containsKey("addBtn")) {
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);
@@ -105,7 +107,7 @@ public abstract class AbstractFilterController extends SAbstractForumController 
 			//Build a bean that contains all of the fields to be shown
 			if (searchFilters.containsKey(selectedSearchFilter)) {
 				Map elementData = getFolderModule().getCommonEntryElements(binderId);
-				Map searchFilterData = FilterHelper.buildFilterFormMap(
+				searchFilterData = FilterHelper.buildFilterFormMap(
 						(Document)searchFilters.get(selectedSearchFilter),
 						(Map) model.get(WebKeys.PUBLIC_ENTRY_DEFINITIONS),
 						elementData);

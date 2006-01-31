@@ -133,7 +133,7 @@ public class FilterHelper {
     					Element item = (Element)defDoc.getRootElement().selectSingleNode("//item/properties/property[@name='name' and @value='"+elementName+"']");
     					if (item != null) {
     						Element captionEle = (Element) item.selectSingleNode("../property[@name='caption']");
-    						if (captionEle != null) elementNameCaption = captionEle.attributeValue("value", elementName);
+    						if (captionEle != null) elementNameCaption = NLT.getDef(captionEle.attributeValue("value", elementName));
     					}
     				}
     			}
