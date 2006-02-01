@@ -74,7 +74,11 @@ function initializeStateMachine() {
 }
 
 function loadDiv(option, itemId, itemName) {
-	var url = "<ssf:url adapter="true" portletName="ss_administration" action="definition_builder" actionUrl="true" />";
+	//alert("load div: " + option + ", " + itemId + ", " + itemName)
+	var url = "<ssf:url adapter="true" 
+		portletName="ss_administration" 
+		action="definition_builder" 
+		actionUrl="true" />";
 	if (sourceDefinitionId != "") {url += "\&sourceDefinitionId=" + sourceDefinitionId;}
 	url += "\&option=" + option
 	if (itemId != "") {url += "\&itemId=" + itemId;}
@@ -153,12 +157,7 @@ function t_<portlet:namespace/>_definitionTree_showId(id, obj) {
 function checkForInfo(id) {
     //alert('checkForInfo: info_'+id)
     var objName = "info_"+id;
-    var obj
-    if (isNSN || isNSN6 || isMoz5) {
-        obj = self.document.getElementById(objName)
-    } else {
-        obj = self.document.all[objName]
-    }
+    var obj = self.document.getElementById(objName);
     if (obj) {
     	return true;
     } else {
@@ -254,33 +253,37 @@ function showProperties(id, name, item) {
 
 var state = "";
 function setStateMachine(newState) {
-	//alert(newState)
+	//alert("Entering new state: " + newState)
 	state = newState
 	if (state == "definition_selected") {
 		//alert("info_"+selectedIdMapped)
 		//Hide: selection instructions
 		//Show: definition info, definition operations
+		
 		ss_setDivHtml("displaydiv", "")
 		ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
-		ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
+		loadDiv('operations', selectedIdMapped, "")
+		//ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
 	} else if (state == "operation_selected") {
-		//alert(operationSelection + ", info_"+selectedIdMapped)
+		//alert("operation_selected: " + operationSelection + ", info_"+selectedIdMapped)
 		if (operationSelection == "addDefinition" && operationSelectedItem != "") {
 			ss_setDivHtml("displaydiv", "")
-		ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
-		ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
-			ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
-			//loadDiv('properties', "", operationSelectedItem)
+			ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
+			//ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
+			//ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
+			loadDiv('properties', "", operationSelectedItem)
 		} else if (operationSelection == "addOption") {
 			ss_setDivHtml("displaydiv", "")
 			ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
-			ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
-			ss_addToDiv("displaydiv", "options_"+selectedIdMapped)
+			//ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
+			//ss_addToDiv("displaydiv", "options_"+selectedIdMapped)
+			loadDiv('options', selectedIdMapped, "")
 		} else {
 			ss_setDivHtml("displaydiv", "")
 			ss_addToDiv("displaydiv", "info_select")
 		}
 	} else if (state == "view_definition_options") {
+		//alert("view_definition_options")
 		ss_setDivHtml("displaydiv", "")
 		var selectedIdNameText = "<span class='ss_bold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
 		ss_setDivHtml("infoDefinitionOptionsDefinitionName", selectedIdNameText)
@@ -294,17 +297,19 @@ function setStateMachine(newState) {
 		ss_setDivHtml("deleteDefinitionSelection", selectedIdNameText)
 		ss_addToDiv("displaydiv", "delete_definition_confirm")
 	} else if (state == "viewItem") {
+		//alert("viewItem: "+operationSelectedItem)
 		ss_setDivHtml("displaydiv", "")
 		ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
 	} else if (state == "addItem") {
 		ss_setDivHtml("displaydiv", "")
-		//ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
+		ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
 		//ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
 		loadDiv('properties', "", operationSelectedItem)
 	} else if (state == "modifyItem") {
 		ss_setDivHtml("displaydiv", "")
 		loadDiv('properties', selectedIdMapped, "")
 	} else if (state == "deleteItem") {
+		//alert("deleteItem: " + selectedId)
 		ss_setDivHtml("displaydiv", "")
 		ss_addToDiv("displaydiv", "info_"+selectedId)
 		ss_addToDiv("displaydiv", "delete_item")
@@ -322,6 +327,7 @@ function setStateMachine(newState) {
 	} else if (state == "cloneItemConfirm") {
 		ss_addToDiv("displaydiv", "clone_item_confirm")
 	} else {
+		//alert("State: " + state)
 		ss_setDivHtml("displaydiv", "")
 		ss_addToDiv("displaydiv", "info_select")
 	}
@@ -371,7 +377,10 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 <br>
 <br>
 
-<form class="ss_style" action="" method="post" name="definitionbuilder" onSubmit="setSubmitData(this)" >
+<form class="ss_style" action="<portlet:actionURL windowState="maximized">
+	<portlet:param name="action" value="definition_builder" />
+	<portlet:param name="definition_type" value="<%= definitionType %>" />
+	</portlet:actionURL>" method="post" name="definitionbuilder" onSubmit="setSubmitData(this)" >
 <div id="definitionbuilder_tree_loading">
 <span><ssf:nlt tag="loading" text="Loading..."/></span><br>
 </div>
