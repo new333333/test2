@@ -310,6 +310,7 @@ public class WorkflowViewer extends JApplet implements ActionListener {
 	public class WorkflowEdgeStrokeFunction implements EdgeStrokeFunction {
         protected final Stroke THIN = new BasicStroke(1);
         protected final Stroke THICK = new BasicStroke(1);
+        protected final Stroke DOTTED = PluggableRenderer.DOTTED;
 
         public Stroke getStroke(Edge e) {
 			Stroke s = (Stroke) e.getUserDatum(THICKNESSKEY);
@@ -445,6 +446,7 @@ public class WorkflowViewer extends JApplet implements ActionListener {
                                     			(Vertex)nameVertex.get(toState)));
                                     	//Mark the starting of a parallel thread with a different edge color
                                     	newEdge.setUserDatum(COLORKEY, Color.GREEN, UserData.REMOVE);
+                                    	newEdge.setUserDatum(THICKNESSKEY, PluggableRenderer.DOTTED, UserData.REMOVE);
                                     }
                         		}
             				}
@@ -479,6 +481,7 @@ public class WorkflowViewer extends JApplet implements ActionListener {
 		                                    			(Vertex)nameVertex.get(name)));
 		                                    	//Mark the starting of a parallel thread with a different edge color
 		                                    	newEdge.setUserDatum(COLORKEY, Color.PINK, UserData.REMOVE);
+		                                    	newEdge.setUserDatum(THICKNESSKEY, PluggableRenderer.DOTTED, UserData.REMOVE);
 		                                    }
 		                        		}
 		            				}
