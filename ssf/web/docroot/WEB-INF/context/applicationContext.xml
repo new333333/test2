@@ -567,7 +567,13 @@
 		<property name="jabberServerPort"><value>5353</value></property>
 		<property name="enable"><value>true</value></property>
 	</bean>
-	
+	<bean id="presenceBroker" class="com.sitescape.ef.presence.impl.PresenceBrokerImpl">
+		<property name="adminId"><value>admin</value></property>
+		<property name="adminPasswd"><value>zonscape</value></property>
+		<property name="zonUrl"><value>http://70.84.177.226:8000/imidio_api/</value></property>
+		<property name="jabberDomain"><value>iic.homedns.org</value></property>
+		<property name="defaultCommunityId"><value>sitescape</value></property>
+	</bean>
 	<!-- ================================  JMX/MBean Support =============================== -->
 	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
 	    <property name="beans">
