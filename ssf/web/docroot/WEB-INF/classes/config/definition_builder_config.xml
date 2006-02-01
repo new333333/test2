@@ -140,8 +140,8 @@
 		<options>
 			<option name="title" initial="true" />
 			<option name="entryFormButtons" initial="true" />
-			<option_select definitionType="1" path="//item[@category='entryData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -216,8 +216,8 @@
 			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName"/>
 		</properties>
 		<options>
-			<option_select definitionType="1" path="//item[@category='entryData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -554,8 +554,8 @@
 			</property>
 		</properties>
 		<options>
-			<option_select definitionType="1" path="//item[@category='entryData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" />
@@ -575,8 +575,8 @@
 			</property>
 		</properties>
 		<options>
-			<option_select definitionType="1" path="//item[@category='entryData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" />
@@ -592,8 +592,8 @@
 			<property name="legend" caption="__legend" type="text"/>
 		</properties>
 		<options>
-			<option_select definitionType="1" path="//item[@category='entryData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" />
@@ -642,8 +642,8 @@
 			</property>
 		</properties>
 		<options>
-			<option_select definitionType="1" path="//item[@category='entryData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements"/>
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -662,8 +662,8 @@
 			<property name="htmlBottom" caption="__html_bottom" type="textarea"/>
 		</properties>
 		<options>
-			<option_select definitionType="1" path="//item[@category='entryData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements"/>
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -680,8 +680,8 @@
 			<property name="viewJsp" caption="__view_jsp_name" type="text"/>
 		</properties>
 		<options>
-			<option_select definitionType="1" path="//item[@category='entryData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
 			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='entryLayout']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
