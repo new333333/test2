@@ -366,7 +366,7 @@ public class TreeTag extends TagSupport {
 				}
 				jspOut.print("style=\"text-decoration: none;\">");
 			}
-			jspOut.print("<font class=\"" + titleClass + "\" size=\"1\">");
+			jspOut.print("<font class=\"" + titleClass + "\" >");
 			jspOut.print(s_text);
 			jspOut.print("</font>");
 			
@@ -508,7 +508,7 @@ public class TreeTag extends TagSupport {
 				}
 				jspOut.print("style=\"text-decoration: none;\">");
 			}
-			jspOut.print("<font class=\"" + titleClass + "\" size=\"1\">");
+			jspOut.print("<font class=\"" + titleClass + "\" >");
 			jspOut.print(s_text);
 			jspOut.print("</font>");
 			

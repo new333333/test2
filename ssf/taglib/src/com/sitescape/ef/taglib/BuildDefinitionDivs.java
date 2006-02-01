@@ -64,7 +64,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				sb.append("\n<div id='info_select' class='ss_definitionBuilder'>\n");
 				sb.append("<span class='ss_titlebold'>" + this.title + "</span>\n");
 				sb.append("</div>\n");
-				sb.append("<script language='javascript'>\n");
+				sb.append("<script type='text/javascript'>\n");
 				sb.append("    self.ss_setDeclaredDiv('info_select')\n");
 				sb.append("    var idMap;\n");
 				sb.append("    if (!idMap) {idMap = new Array();}\n");
@@ -107,10 +107,10 @@ public class BuildDefinitionDivs extends TagSupport {
 		//See if this is a request for just one item
 		if (!this.option.equals("") && !this.itemId.equals("")) {
 			//We are looking for a single item, so only do that item
-			itRootElements = root.selectNodes("//item[@id='"+this.itemId+"']").iterator();
+			itRootElements = root.selectNodes("//item[@id='"+this.itemId+"'] | //definition[@name='"+this.itemId+"']").iterator();
 		} else if (!this.option.equals("") && !this.itemName.equals("")) {
 			//We are looking for an item in the definition config
-			itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='"+this.itemName+"']").iterator();
+			itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='"+this.itemName+"'] | //definition[@name='"+this.itemName+"']").iterator();
 		} else if (!this.option.equals("") && this.itemId.equals("") && this.itemName.equals("")) {
 			//We are looking for the definition itself
 			String definitionType = root.attributeValue("type", "");
@@ -169,8 +169,10 @@ public class BuildDefinitionDivs extends TagSupport {
 	private void buildInfoDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		if (this.option.equals("") && !this.divNames.containsKey("info_"+rootElementId)) {
 			this.divNames.put("info_"+rootElementId, "1");
-			sb.append("\n<div id='info_" + rootElementId + "' ");
-			sb.append("class='ss_definitionBuilder'>\n");
+			if (this.option.equals("")) {
+				sb.append("\n<div id='info_" + rootElementId + "' ");
+				sb.append("class='ss_definitionBuilder'>\n");
+			}
 			sb.append("<span class='ss_bold'>" + NLT.getDef(rootElement.attributeValue("caption")));
 			Element property = (Element) rootElement.selectSingleNode("./properties/property[@name='caption']");
 			String propertyCaptionValue = "";
@@ -184,12 +186,14 @@ public class BuildDefinitionDivs extends TagSupport {
 				propertyCaptionValue = rootElement.attributeValue("caption");
 			}
 			sb.append("</span>\n<br><br>\n");
-			sb.append("</div>\n");
-			sb.append("<script language='javascript'>\n");
-			sb.append("    self.ss_setDeclaredDiv('info_" + rootElementId + "')\n");
-			sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-			sb.append("    idMapCaption['"+rootElementId+"'] = '"+NLT.getDef(propertyCaptionValue).replaceAll("'", "\'")+"';\n");
-			sb.append("</script>\n");
+			if (this.option.equals("")) {
+				sb.append("</div>\n");
+				sb.append("<script type='text/javascript'>\n");
+				sb.append("    self.ss_setDeclaredDiv('info_" + rootElementId + "')\n");
+				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
+				sb.append("    idMapCaption['"+rootElementId+"'] = '"+NLT.getDef(propertyCaptionValue).replaceAll("'", "\'")+"';\n");
+				sb.append("</script>\n");
+			}
 		}
 
 	}
@@ -227,7 +231,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("</table>\n");
 
 			sb.append("</div>\n");
-			sb.append("<script language='javascript'>\n");
+			sb.append("<script type='text/javascript'>\n");
 			sb.append("    self.ss_setDeclaredDiv('infoDefinitionOptions')\n");
 			sb.append("</script>\n");
 		}
@@ -265,7 +269,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("class='ss_definitionBuilder'>\n");
 			sb.append("<span class='ss_titlebold'>Select the definition to be deleted</span>\n");
 			sb.append("</div>\n");
-			sb.append("<script language='javascript'>\n");
+			sb.append("<script type='text/javascript'>\n");
 			sb.append("    self.ss_setDeclaredDiv('delete_definition')\n");
 			sb.append("</script>\n");
 			sb.append("\n<div id='delete_definition_confirm' ");
@@ -276,17 +280,19 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 			sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
 			sb.append("</div>\n");
-			sb.append("<script language='javascript'>\n");
+			sb.append("<script type='text/javascript'>\n");
 			sb.append("    self.ss_setDeclaredDiv('delete_definition_confirm')\n");
 			sb.append("</script>\n");
 		}
 	}
 
 	private void buildOperationsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
-		if (this.option.equals("") && !this.divNames.containsKey("operations_"+rootElementId)) {
+		if (this.option.equals("operations") && !this.divNames.containsKey("operations_"+rootElementId)) {
 			this.divNames.put("operations_"+rootElementId, "1");
-			sb.append("\n<div id='operations_" + rootElementId + "' "); 
-			sb.append("class='ss_definitionBuilder'>\n");
+			if (this.option.equals("")) {
+				sb.append("\n<div id='operations_" + rootElementId + "' "); 
+				sb.append("class='ss_definitionBuilder'>\n");
+			}
 			sb.append("<table class='ss_style' cellpadding='0' cellspacing='0'>\n");
 
 			//Add the list of operations
@@ -296,17 +302,17 @@ public class BuildDefinitionDivs extends TagSupport {
 				//There are no operations listed in the definition file, so add in the standard operations
 				//See if there are any options. If so, add the "add" command.
 				operations = rootElement.addElement("operations");
-				if (rootElement.element("options") != null) {
+				if (rootConfigElement.element("options") != null) {
 					operationElement = operations.addElement("operation");
 					operationElement.addAttribute("name", "addOption");
 					operationElement.addAttribute("caption", "__add");
 				}
-				if (rootElement.element("properties") != null) {
+				if (rootConfigElement.element("properties") != null) {
 					operationElement = operations.addElement("operation");
 					operationElement.addAttribute("name", "modifyItem");
 					operationElement.addAttribute("caption", "__modify");
 				}
-				if (rootElement.attributeValue("canBeDeleted", "true").equalsIgnoreCase("true")) {
+				if (rootConfigElement.attributeValue("canBeDeleted", "true").equalsIgnoreCase("true")) {
 					operationElement = operations.addElement("operation");
 					operationElement.addAttribute("name", "deleteItem");
 					operationElement.addAttribute("caption", "__delete");
@@ -345,19 +351,23 @@ public class BuildDefinitionDivs extends TagSupport {
 			}
 
 			sb.append("</table>\n");
-			sb.append("</div>\n");
-			sb.append("<script language='javascript'>\n");
-			sb.append("    self.ss_setDeclaredDiv('operations_" + rootElementId + "')\n");
-			sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-			sb.append("</script>\n");
+			if (this.option.equals("")) {
+				sb.append("</div>\n");
+				sb.append("<script type='text/javascript'>\n");
+				sb.append("    self.ss_setDeclaredDiv('operations_" + rootElementId + "')\n");
+				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
+				sb.append("</script>\n");
+			}
 		}
 	}
 	
 	private void buildOptionsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
-		if (this.option.equals("") && !this.divNames.containsKey("options_"+rootElementId)) {
+		if (this.option.equals("options") && !this.divNames.containsKey("options_"+rootElementId)) {
 			this.divNames.put("options_"+rootElementId, "1");
-			sb.append("\n<div id='options_" + rootElementId + "' "); 
-			sb.append("class='ss_definitionBuilder'>\n");
+			if (this.option.equals("")) {
+				sb.append("\n<div id='options_" + rootElementId + "' "); 
+				sb.append("class='ss_definitionBuilder'>\n");
+			}
 
 			//Add the list of options
 			Element e_options = rootConfigElement.element("options");
@@ -468,16 +478,18 @@ public class BuildDefinitionDivs extends TagSupport {
 			}
 			sb.append("</ul>\n");
 			sb.append("<br>\n");
-			sb.append("</div>\n");
-			sb.append("<script language='javascript'>\n");
-			sb.append("    self.ss_setDeclaredDiv('options_" + rootElementId + "')\n");
-			sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-			sb.append("</script>\n");
+			if (this.option.equals("")) {
+				sb.append("</div>\n");
+				sb.append("<script type='text/javascript'>\n");
+				sb.append("    self.ss_setDeclaredDiv('options_" + rootElementId + "')\n");
+				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
+				sb.append("</script>\n");
+			}
 		}
 	}
 	private void buildPropertiesDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		//Build the properties div
-		if ((this.option.equals("") || this.option.equals("properties")) && 
+		if ((this.option.equals("properties")) && 
 				!this.divNames.containsKey("properties_"+rootElementId)) {
 			this.divNames.put("properties_"+rootElementId, "1");
 			if (this.option.equals("")) {
@@ -738,7 +750,7 @@ public class BuildDefinitionDivs extends TagSupport {
 
 			if (this.option.equals("")) {
 				sb.append("</div>\n");
-				sb.append("<script language='javascript'>\n");
+				sb.append("<script type='text/javascript'>\n");
 				sb.append("    self.ss_setDeclaredDiv('properties_" + rootElementId + "')\n");
 				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
 				sb.append("</script>\n");
@@ -759,7 +771,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 			sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
 			sb.append("</div>\n");
-			sb.append("<script language='javascript'>\n");
+			sb.append("<script type='text/javascript'>\n");
 			sb.append("    self.ss_setDeclaredDiv('delete_item')\n");
 			sb.append("</script>\n");
 		}
@@ -771,7 +783,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("class='ss_definitionBuilder'>\n");
 			sb.append("<span class='ss_titlebold'>Select the new location of the item to be moved</span><br>\n");
 			sb.append("</div>\n");
-			sb.append("<script language='javascript'>\n");
+			sb.append("<script type='text/javascript'>\n");
 			sb.append("    self.ss_setDeclaredDiv('move_item')\n");
 			sb.append("</script>\n");
 			sb.append("\n<div id='move_item_confirm' ");
@@ -788,7 +800,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 			sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
 			sb.append("</div>\n");
-			sb.append("<script language='javascript'>\n");
+			sb.append("<script type='text/javascript'>\n");
 			sb.append("    self.ss_setDeclaredDiv('move_item_confirm')\n");
 			sb.append("</script>\n");
 		}
