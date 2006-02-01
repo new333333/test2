@@ -358,6 +358,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 	
 	private void processProperties(String defId, Element configEle, Element newItem, Map formData) {
+		//Check to see if there are new attributes from the config file that should be copied into the definition
+		Iterator itAttributes = configEle.attributeIterator();
+		while (itAttributes.hasNext()) {
+			Attribute attr = (Attribute) itAttributes.next();
+			//If the attribute does not exist in the new item, copy it from the config file
+			if (newItem.attributeValue(attr.getName()) == null) 
+				newItem.addAttribute(attr.getName(), attr.getValue());
+		}
+		
 		//Copy the properties from the definition
 		Element configProperties = configEle.element("properties");
 		if (configProperties != null) {
