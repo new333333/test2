@@ -148,8 +148,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	    ids.add(entry.get(EntryIndexUtils.CREATORID_FIELD));
         if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
     		ids.add(entry.get(EntryIndexUtils.MODIFICATIONID_FIELD));
-        if (entry.get(EntryIndexUtils.RESERVEDBYID_FIELD) != null) 
-    		ids.add(entry.get(EntryIndexUtils.RESERVEDBYID_FIELD));
+        if (entry.get(IndexUtils.RESERVEDBYID_FIELD) != null) 
+    		ids.add(entry.get(IndexUtils.RESERVEDBYID_FIELD));
         getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      } 
     protected List loadEntryHistoryLuc(List pList) {
@@ -162,8 +162,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         	    ids.add(entry.get(EntryIndexUtils.CREATORID_FIELD));
             if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
         		ids.add(entry.get(EntryIndexUtils.MODIFICATIONID_FIELD));
-            if (entry.get(EntryIndexUtils.RESERVEDBYID_FIELD) != null) 
-        		ids.add(entry.get(EntryIndexUtils.RESERVEDBYID_FIELD));
+            if (entry.get(IndexUtils.RESERVEDBYID_FIELD) != null) 
+        		ids.add(entry.get(IndexUtils.RESERVEDBYID_FIELD));
         }
         return getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      }   

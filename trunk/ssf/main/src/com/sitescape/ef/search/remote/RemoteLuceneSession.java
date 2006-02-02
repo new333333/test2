@@ -1,4 +1,6 @@
 package com.sitescape.ef.search.remote;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -47,7 +49,13 @@ public class RemoteLuceneSession implements LuceneSession {
     		index.addDocument(indexName, uidField.stringValue(), doc);
     	} catch (RemoteException re) {throw new LuceneException(re);}
     }
-
+    public void addDocuments(Collection docs) {
+    	for (Iterator iter=docs.iterator(); iter.hasNext();) {
+    		Document doc = (Document)iter.next();
+    		addDocument(doc);
+    	}
+    	
+    }
     public void deleteDocument(String uid) throws LuceneException {
     	try {
     		index.deleteDocument(indexName, uid);

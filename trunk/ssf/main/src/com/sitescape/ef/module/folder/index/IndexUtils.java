@@ -1,17 +1,10 @@
 package com.sitescape.ef.module.folder.index;
 
-import java.util.Iterator;
-import java.util.Set;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
-import com.sitescape.ef.domain.AclControlledEntry;
-import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.security.acl.AccessType;
-import com.sitescape.ef.security.acl.AclManager;
 /**
  *
  * @author Jong Kim
@@ -22,6 +15,7 @@ public class IndexUtils  {
     public static final String DOCNUMBER_FIELD = "_docNum";
     public static final String PARENT_FOLDERID_FIELD = "_parentFolderId";
     public static final String TOP_FOLDERID_FIELD = "_topFolderId";
+    public static final String RESERVEDBYID_FIELD = "_reservedById";
    
      
 
@@ -47,8 +41,16 @@ public class IndexUtils  {
         if (topFolder == null) topFolder = folder;
         Field topFolderField = Field.Keyword(TOP_FOLDERID_FIELD, topFolder.getId().toString());
         doc.add(topFolderField);
-}   
+    }   
     
+    public static void addReservedByPrincipalId(Document doc, FolderEntry entry) {
+    	//Add the id of the reserver
+        if (entry.getReservedDoc() != null && entry.getReservedDoc().getPrincipal() != null) {
+        	Field reservedByIdField = Field.Keyword(RESERVEDBYID_FIELD, entry.getReservedDoc().getPrincipal().getId().toString());
+        	doc.add(reservedByIdField);
+        }
+    }   
+
  
     
 }

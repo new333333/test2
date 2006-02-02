@@ -30,5 +30,5 @@ public interface WorkflowModule {
 	public void startWorkflow(Entry entry, Definition workflowDef);
 	public void modifyWorkflowState(Long tokenId, String fromState, String toState);
 	public void deleteEntryWorkflow(Binder parent, Entry entry);
-
+	public void processTimeout(Long timerId);
 }

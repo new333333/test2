@@ -12,15 +12,9 @@ import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 
 public class SessionUtil {
 	private static SessionFactory sessionFactory=null;
-	private static WorkflowFactory workflowFactory=null;
 	private static SessionFactory getSessionFactory() {
 		if (sessionFactory == null) sessionFactory = (SessionFactory)SpringContextUtil.getBean("sessionFactory");
 		return sessionFactory;
-	}
-	private static WorkflowFactory getWorkflowFactory() {
-		if (workflowFactory == null) workflowFactory = (WorkflowFactory)SpringContextUtil.getBean("workflowFactory");
-		return workflowFactory;
-		
 	}
 	public static Session getSession() {
 		return SessionFactoryUtils.getSession(getSessionFactory(), false);
@@ -50,7 +44,7 @@ public class SessionUtil {
 			(SessionHolder) TransactionSynchronizationManager.unbindResource(sessionFactory);
 	   	 		SessionFactoryUtils.releaseSession(sessionHolder.getSession(), sessionFactory);
 	   	}
-	   	getWorkflowFactory().releaseSession();
+	   	WorkflowFactory.releaseSession();
 	}
 	public static boolean sessionActive() {
 	   	if (TransactionSynchronizationManager.hasResource(getSessionFactory())) return true;

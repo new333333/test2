@@ -14,6 +14,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Order;
 import org.hibernate.Criteria;
 
 import java.util.ArrayList;
@@ -23,11 +24,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.Collection;
+import java.util.HashMap;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Group;
+import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.domain.Attachment;
+import com.sitescape.ef.domain.Event;
+import com.sitescape.ef.domain.CustomAttribute;
+import com.sitescape.ef.util.LongIdComparator;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.UserProperties;
@@ -69,6 +76,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	public void clear() {
 		getSession().clear();
+	}
+	public void evict(Object obj) {
+		getSession().evict(obj);
 	}
 	public void save(Object obj) {
         getHibernateTemplate().save(obj);
@@ -699,5 +709,103 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
    		}
    		return seen;
 	}
-
-}
+	//build collections manually as an optimization for indexing
+	public void bulkLoadCollections(Collection entries) {
+		if ((entries == null) || entries.isEmpty())  return;
+       	final TreeSet sorted = new TreeSet(new LongIdComparator());
+       	sorted.addAll(entries);
+		getHibernateTemplate().execute(
+            new HibernateCallback() {
+                public Object doInHibernate(Session session) throws HibernateException {
+                	List ids = new ArrayList();
+                	Entry entry=null;
+                	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
+                		entry = (Entry)iter.next();
+                		//initialize collections
+                		entry.setIndexAttachments(new HashSet());
+                		entry.setIndexCustomAttributes(new HashMap());
+                		entry.setIndexEvents(new HashSet());
+                 		ids.add(entry.getId());
+                	}
+                	String type = entry.getAnyOwnerType();
+                	//Load workflow states
+                	List objs = session.createCriteria(WorkflowState.class)
+                    					.add(Expression.eq("owner.ownerType", type))
+                    					.add(Expression.in("owner.ownerId", ids))
+                    					.addOrder(Order.asc("id"))
+										.list();
+                   
+                   	HashSet tSet;
+                   	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
+                   		entry = (Entry)iter.next();
+                   		tSet = new HashSet();
+                   		for (int i=0; i<objs.size(); ++i) {
+                   			WorkflowState obj = (WorkflowState)objs.get(i);
+                   			if (entry.equals(obj.getOwner().getEntry())) {
+                   				tSet.add(obj);
+                   			} else break;
+                   		}
+                   		entry.setIndexWorkflowStates(tSet);
+                   		objs.removeAll(tSet);
+                    }
+                	//Load attachments
+                   	objs = session.createCriteria(Attachment.class)
+                     	.add(Expression.eq("owner.ownerType", type))
+                    	.add(Expression.in("owner.ownerId", ids))
+                  		.addOrder(Order.asc("id"))
+                  		.list();
+                   	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
+                   		entry = (Entry)iter.next();
+                   		tSet = new HashSet();
+                   		for (int i=0; i<objs.size(); ++i) {
+                   			Attachment obj = (Attachment)objs.get(i);
+                   			if (entry.equals(obj.getOwner().getEntry())) {
+                   				tSet.add(obj);
+                   			} else break;
+                   		}
+                   		entry.setIndexAttachments(tSet);
+                   		objs.removeAll(tSet);
+                    }
+                	//Load Events states
+                  	objs = session.createCriteria(Event.class)
+                     	.add(Expression.eq("owner.ownerType", type))
+                    	.add(Expression.in("owner.ownerId", ids))
+                 		.addOrder(Order.asc("id"))
+                  		.list();
+                  	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
+                   		entry = (Entry)iter.next();
+                   		tSet = new HashSet();
+                   		for (int i=0; i<objs.size(); ++i) {
+                   			Event obj = (Event)objs.get(i);
+                   			if (entry.equals(obj.getOwner().getEntry())) {
+                   				tSet.add(obj);
+                   			} else break;
+                   		}
+                   		entry.setIndexEvents(tSet);
+                   		objs.removeAll(tSet);
+                    }
+                	//Load customAttributes
+                 	objs = session.createCriteria(CustomAttribute.class)
+       					.add(Expression.eq("owner.ownerType", type))
+       					.add(Expression.in("owner.ownerId", ids))
+                 		.addOrder(Order.asc("id"))
+                  		.list();
+                   	HashMap tMap;
+                	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
+                   		entry = (Entry)iter.next();
+                   		tMap = new HashMap();
+                   		for (int i=0; i<objs.size(); ++i) {
+                   			CustomAttribute obj = (CustomAttribute)objs.get(i);
+                   			if (entry.equals(obj.getOwner().getEntry())) {
+                   				tMap.put(obj.getName(), obj);
+                   			} else break;
+                   		}
+                   		entry.setIndexCustomAttributes(tMap);
+                   		objs.removeAll(tMap.values());
+                	}
+                	return sorted;
+                }
+            }
+        );  
+	}
+ }

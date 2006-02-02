@@ -13,6 +13,13 @@ import java.util.Iterator;
 import com.sitescape.ef.util.CollectionUtil;
 import com.sitescape.util.Validator;
 import org.dom4j.Document;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
+import org.dom4j.DocumentException;
+import java.io.StringWriter;
+import java.io.StringReader;
+import java.io.IOException;
 /**
  * @hibernate.class table="SS_CustomAttributes" dynamic-update="true" lazy="false" discriminator-value="A"
  * @hibernate.discriminator type="char" column="type"
@@ -36,7 +43,7 @@ public class CustomAttribute  {
     protected Long longValue;
     protected Date dateValue;
     protected SSBlobSerializable serializedValue;
-    protected SSBlobXML xmlValue;
+    protected SSClobString xmlValue;
     protected Boolean booleanValue;
     protected Set values;
     protected User user;
@@ -156,12 +163,12 @@ public class CustomAttribute  {
         this.serializedValue = value;
     } 
     /**
-     * @hibernate.property type="com.sitescape.ef.dao.util.SSXmlBlobType"
+     * @hibernate.property type="com.sitescape.ef.dao.util.SSClobStringType"
      */
-    private SSBlobXML getXmlValue() {
+    private SSClobString getXmlValue() {
         return this.xmlValue;
     }
-    private void setXmlValue(SSBlobXML value) {
+    private void setXmlValue(SSClobString value) {
         this.xmlValue = value;
     } 
     /**
@@ -224,11 +231,11 @@ public class CustomAttribute  {
         dateValue=null;
         booleanValue=null;
         //allways setting mutable values to null, causes unnecessary updates
-        if ((description !=null) && !description.getText().equals(""))
+        if ((description !=null) && !Validator.isNull(description.getText()))
         	description=null;
         if ((serializedValue != null) && (serializedValue.getValue() != null))
          	serializedValue = null;
-        if ((xmlValue != null) && (xmlValue.getValue() != null))
+        if ((xmlValue != null) && !Validator.isNull(xmlValue.getText()))
          	xmlValue = null;
          //let hibernate delete the existing objects.
         if (values != null) values.clear();
@@ -240,7 +247,7 @@ public class CustomAttribute  {
     	setValue(value, true);
     }
 
-    protected void setValue(Object value, boolean allowed) {
+    protected void setValue(Object value, boolean allowed)  {
     	if (value instanceof String) {
             clearVals();
             valueType = STRING;
@@ -302,8 +309,21 @@ public class CustomAttribute  {
          }	else if (value instanceof Document) {
          	clearVals();
          	valueType = XML;
-         	xmlValue = new SSBlobXML(value);
-         } else if (value instanceof Attachment) {
+         	StringWriter sOut = new StringWriter();
+    		XMLWriter xOut = new XMLWriter(sOut, OutputFormat.createPrettyPrint());
+    		try {
+    			xOut.write((Document)value);
+    			xmlValue = new SSClobString(sOut.toString());
+         	} catch (IOException io) {
+         		throw new IllegalArgumentException(io.getMessage());
+         	} finally {
+         		try {
+         			xOut.close();
+         			sOut.close();
+         		} catch (IOException io) {};
+         	}
+         		
+          } else if (value instanceof Attachment) {
          	clearVals();
          	valueType = ATTACHMENT;
          	Attachment att = (Attachment)value; 
@@ -346,7 +366,17 @@ public class CustomAttribute  {
     		case SERIALIZED:
     		    return serializedValue.getValue();
     		case XML:
-    			return xmlValue.getValue();
+    			StringReader sIn = new StringReader(xmlValue.getText());
+        		SAXReader xIn = new SAXReader();
+        		Document doc;
+        		try {
+        			doc = xIn.read(sIn); 
+        		} catch (DocumentException de) {
+        			throw new IllegalArgumentException(de.getMessage());
+        		} finally {
+        			sIn.close();
+        		}
+        		return doc;
     	    case SET:
     	    	Set v = new HashSet();
     	    	for (Iterator iter=values.iterator(); iter.hasNext();) {

@@ -22,7 +22,8 @@ import org.springframework.orm.hibernate3.SessionFactoryUtils;
 public class SFQuery implements Iterator {
     private Query query;
     private ScrollableResults scroll = null;
- 
+    private boolean more = true;
+    
     public SFQuery(Query query) {
         this.query = query;
     }
@@ -45,7 +46,10 @@ public class SFQuery implements Iterator {
                 scroll = query.scroll();
                 return scroll.first();
             }            
-            return scroll.next();
+            //haven't choosen yet
+            if (scroll.isFirst()) return true;
+            return more;
+            
         } catch (HibernateException ex) {
             throw SessionFactoryUtils.convertHibernateAccessException(ex);
         }
@@ -61,7 +65,9 @@ public class SFQuery implements Iterator {
                 scroll = query.scroll();
                 scroll.first();
             }
-            return scroll.get();
+            Object result = scroll.get();
+            more = scroll.next();
+            return result;
         } catch (HibernateException ex) {
             throw SessionFactoryUtils.convertHibernateAccessException(ex);
         }

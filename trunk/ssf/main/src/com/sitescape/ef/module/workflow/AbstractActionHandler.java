@@ -21,8 +21,6 @@ import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.AnyOwner;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.module.binder.EntryProcessor;
-import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 import com.sitescape.ef.module.mail.MailModule;
@@ -33,9 +31,6 @@ public abstract class AbstractActionHandler implements ActionHandler {
 
 	protected CoreDao getCoreDao() {
 		return (CoreDao)SpringContextUtil.getBean("coreDao");
-	};
-	protected WorkflowFactory getWorkflowFactory() {
-		return (WorkflowFactory)SpringContextUtil.getBean("workflowFactory");
 	};
 
 	protected MailModule getMailModule() {
@@ -59,7 +54,7 @@ public abstract class AbstractActionHandler implements ActionHandler {
 	}
 
 	protected void checkForWaits(Token current, AclControlledEntry entry) {
-		JbpmSession session = getWorkflowFactory().getSession();
+		JbpmSession session = WorkflowFactory.getSession();
 		HashMap oldStates = new HashMap();
 		//save states to see if any change
 		for (Iterator iter=entry.getWorkflowStates().iterator(); iter.hasNext();) {
