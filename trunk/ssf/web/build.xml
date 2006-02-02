@@ -23,6 +23,7 @@
 		<propertycopy name="app.server.lib.dir" from="app.server.${app.server.type}.lib.dir" />
 		<propertycopy name="app.server.deploy.dir" from="app.server.${app.server.type}.deploy.dir" />
 		<propertycopy name="app.server.ssf.dir" from="app.server.${app.server.type}.ssf.dir" />
+		<property name="jsp.artifacts.dir" value="${basedir}/${jspclasses.dir}/${app.server.type}" />
 	</target>
 
 	<target name="clean" depends="init">
@@ -49,25 +50,29 @@
 		</copy>
 	</target>
 	
-	<target name="compile-deployed-jsp" depends="init">
+	<target name="precompile-jsp" depends="init">
 		<if>
 			<equals arg1="${app.server.type}" arg2="tomcat" />
 			<then>
-				<antcall target="compile-deployed-jsp-tomcat" />
+				<antcall target="precompile-jsp-tomcat" />
 			</then>
 			<elseif>
 				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
 				<then>
-					<antcall target="compile-deployed-jsp-jboss-tomcat" />
+					<antcall target="precompile-jsp-jboss-tomcat" />
 				</then>
 			</elseif>
 		</if>
 	</target>
 	
-	<target name="compile-deployed-jsp-tomcat" depends="init">
-		<property name="jspc.classes.dir" value="${basedir}/${jspclasses.dir}/${app.server.type}" />
+	<!-- We are not using this target that defines a task for JspC compiler
+		 (as opposed to executing the underlying class directly). For whatever 
+		 reason, this runs twice as slow as the other comparable approach. -->
+	<!--
+	<target name="jspc" depends="init">
+		<property name="jsp.artifacts.dir" value="${basedir}/${jspclasses.dir}/${app.server.type}" />
 		
-		<delete dir="${jspc.classes.dir}" />
+		<delete dir="${jsp.artifacts.dir}" />
 
 		<path id="jspc.classpath">        
 			<pathelement location="${env.JAVA_HOME}/jre/lib/rt.jar" />
@@ -82,37 +87,74 @@
 	            <include name="**/*.jar"/>
 	        </fileset>        
 	    </path>
-	 
+		
+		<taskdef classname="org.apache.jasper.JspC" name="jasper2" > 
+			<classpath refid="jspc.classpath"/>
+		</taskdef> 
+
+		<jasper2 
+			validateXml="false" 
+		    uriroot="${app.server.ssf.dir}"
+		    outputDir="${jsp.artifacts.dir}"
+			verbose="9"
+		/> 	
+	</target>
+	-->
+	
+	<target name="precompile-jsp-init-tomcat" depends="init">
+		<path id="jspc.classpath">        
+			<pathelement location="${env.JAVA_HOME}/jre/lib/rt.jar" />
+			<pathelement location="${env.JAVA_HOME}/lib/tools.jar" />
+			<pathelement location="${app.server.dir}/common/lib/commons-el.jar" />
+			<pathelement location="${app.server.dir}/common/lib/jasper-compiler.jar" />
+			<pathelement location="${app.server.dir}/common/lib/jasper-runtime.jar" />
+	        <fileset dir="${app.server.dir}/common/lib">
+	            <include name="**/*.jar"/>
+	        </fileset>
+	        <fileset dir="${app.server.dir}/common/endorsed">
+	            <include name="**/*.jar"/>
+	        </fileset>        
+	    </path>		
+	</target>
+	
+	<target name="jsp-to-java-tomcat" depends="precompile-jsp-init-tomcat">
 		<java 	classname="org.apache.jasper.JspC"
 				fork="true"
 				newenvironment="true"
 		>
 			<classpath refid="jspc.classpath" />
-			<arg line="-d ${jspc.classes.dir} -webapp ${app.server.ssf.dir}" />
-		</java>
-	 
+			<arg line="-d ${jsp.artifacts.dir} -webapp ${app.server.ssf.dir}" />
+		</java>	 
+	</target>
+	
+	<target name="remove-dependent-java-tomcat" depends="precompile-jsp-init-tomcat">
 		<delete>
-			<fileset dir="${jspc.classes.dir}">
-		    	<include name="**/calendar_005fnav_*.java"/>
-		    	<include name="**/calendar_005fview_*.java"/>
-		    	<include name="**/collection_005fview_*.java"/>
-		    	<include name="**/file_005flibrary_*.java"/>
-		    	<include name="**/folder_005flist_*.java"/>
-		    	<include name="**/view_005fprofile_*.java"/>
-		    	<include name="**/view_005fprofile_*.java"/>
-		    	<include name="**/view_005fiframe_*.java"/>
-		    	<include name="**/view_005fpopup_*.java"/>
-		    	<include name="**/view_005fvertical_*.java"/>
-		    	<include name="**/view_005fhorizontal_*.java"/>
-		    	<include name="**/view_005fforum_*.java"/>
-		    	<include name="**/view_005feventtester_*.java"/>
-		    	<include name="**/view_005ftimepicker_*.java"/>
+			<fileset dir="${jsp.artifacts.dir}">
+		    	<include name="**/calendar_005fview_005fday_jsp.java"/>
+		    	<include name="**/calendar_005fview_005fmonth_jsp.java"/>
+			    <include name="**/calendar_005fview_005fweek_jsp.java"/>
+		    	<include name="**/calendar_005fnav_005fbar_jsp.java"/>
+		    	<include name="**/collection_005fview_jsp.java"/>
+		    	<include name="**/file_005flibrary_jsp.java"/>
+		    	<include name="**/folder_005flist_005ffolders_jsp.java"/>
+		    	<include name="**/view_005fentry_005fdata_005ftitle_jsp.java"/>
+		    	<include name="**/view_005fprofile_005fdata_005felement_jsp.java"/>
+		    	<include name="**/view_005fiframe_jsp.java"/>
+		    	<include name="**/view_005fpopup_jsp.java"/>
+		    	<include name="**/view_005fvertical_jsp.java"/>
+		    	<include name="**/view_005fhorizontal_jsp.java"/>
+		    	<include name="**/view_005fforum_005fuser_005ffilters_jsp*.java"/>
+		    	<include name="**/view_005fforum_005fhistory_005fbar_jsp*.java"/>
+		    	<include name="**/view_005feventtester_jsp*.java"/>
+		    	<include name="**/view_005ftimepicker_jsp.java"/>
 		    	<include name="**/view_005fentry_005fdata_005ftitle_*.java"/>
 			</fileset>
 		</delete>
-		
-	    <javac srcdir="${jspc.classes.dir}"
-	           destdir="${jspc.classes.dir}"
+	</target>
+	
+	<target name="java-to-class-tomcat" depends="precompile-jsp-init-tomcat">
+	    <javac srcdir="${jsp.artifacts.dir}"
+	           destdir="${jsp.artifacts.dir}"
 	           debug="true"
 	           optimize="false"
 	           source="1.4">
@@ -125,19 +167,32 @@
 	    	            <include name="**/*.jar"/>
 	    	        </fileset>
 	            </classpath>           
-	    </javac>  
-		
+	    </javac>  		
+	</target>
+	
+	<target name="copy-artifacts-to-tomcat" depends="precompile-jsp-init-tomcat">
 		<delete dir="${app.server.dir}/work/Catalina/localhost/ssf" />
 		
 		<mkdir dir="${app.server.dir}/work/Catalina/localhost/ssf" />
 		
 		<copy todir="${app.server.dir}/work/Catalina/localhost/ssf">
-			<fileset dir="${jspc.classes.dir}">
+			<fileset dir="${jsp.artifacts.dir}">
 				<exclude name="**/*.jspc_error" />
-				<!--<exclude name="**/*.java" />-->
 			</fileset>
 		</copy>
 		
+	</target>
+	
+	<target name="precompile-jsp-tomcat" depends="precompile-jsp-init-tomcat">
+		<delete dir="${jsp.artifacts.dir}" />
+
+		<antcall target="jsp-to-java-tomcat" />
+		
+		<antcall target="remove-dependent-java-tomcat" />
+		
+		<antcall target="java-to-class-tomcat" />
+		
+		<antcall target="copy-artifacts-to-tomcat" />
 	</target>
 	
 </project>
