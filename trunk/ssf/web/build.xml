@@ -26,6 +26,7 @@
 	</target>
 
 	<target name="clean" depends="init">
+		<delete dir="{jspclasses.dir}" />
 		<delete file="${war.file}" failonerror="false" />
 	</target>
 
@@ -46,6 +47,97 @@
 		<copy todir="${app.server.ssf.dir}">
 			<fileset dir="${web.dir}" />
 		</copy>
+	</target>
+	
+	<target name="compile-deployed-jsp" depends="init">
+		<if>
+			<equals arg1="${app.server.type}" arg2="tomcat" />
+			<then>
+				<antcall target="compile-deployed-jsp-tomcat" />
+			</then>
+			<elseif>
+				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
+				<then>
+					<antcall target="compile-deployed-jsp-jboss-tomcat" />
+				</then>
+			</elseif>
+		</if>
+	</target>
+	
+	<target name="compile-deployed-jsp-tomcat" depends="init">
+		<property name="jspc.classes.dir" value="${basedir}/${jspclasses.dir}/${app.server.type}" />
+		
+		<delete dir="${jspc.classes.dir}" />
+
+		<path id="jspc.classpath">        
+			<pathelement location="${env.JAVA_HOME}/jre/lib/rt.jar" />
+			<pathelement location="${env.JAVA_HOME}/lib/tools.jar" />
+			<pathelement location="${app.server.dir}/common/lib/commons-el.jar" />
+			<pathelement location="${app.server.dir}/common/lib/jasper-compiler.jar" />
+			<pathelement location="${app.server.dir}/common/lib/jasper-runtime.jar" />
+	        <fileset dir="${app.server.dir}/common/lib">
+	            <include name="**/*.jar"/>
+	        </fileset>
+	        <fileset dir="${app.server.dir}/common/endorsed">
+	            <include name="**/*.jar"/>
+	        </fileset>        
+	    </path>
+	 
+		<java 	classname="org.apache.jasper.JspC"
+				fork="true"
+				newenvironment="true"
+		>
+			<classpath refid="jspc.classpath" />
+			<arg line="-d ${jspc.classes.dir} -webapp ${app.server.ssf.dir}" />
+		</java>
+	 
+		<delete>
+			<fileset dir="${jspc.classes.dir}">
+		    	<include name="**/calendar_005fnav_*.java"/>
+		    	<include name="**/calendar_005fview_*.java"/>
+		    	<include name="**/collection_005fview_*.java"/>
+		    	<include name="**/file_005flibrary_*.java"/>
+		    	<include name="**/folder_005flist_*.java"/>
+		    	<include name="**/view_005fprofile_*.java"/>
+		    	<include name="**/view_005fprofile_*.java"/>
+		    	<include name="**/view_005fiframe_*.java"/>
+		    	<include name="**/view_005fpopup_*.java"/>
+		    	<include name="**/view_005fvertical_*.java"/>
+		    	<include name="**/view_005fhorizontal_*.java"/>
+		    	<include name="**/view_005fforum_*.java"/>
+		    	<include name="**/view_005feventtester_*.java"/>
+		    	<include name="**/view_005ftimepicker_*.java"/>
+		    	<include name="**/view_005fentry_005fdata_005ftitle_*.java"/>
+			</fileset>
+		</delete>
+		
+	    <javac srcdir="${jspc.classes.dir}"
+	           destdir="${jspc.classes.dir}"
+	           debug="true"
+	           optimize="false"
+	           source="1.4">
+	            <classpath>
+	                <path refid="jspc.classpath"/>
+	    	        <fileset dir="${app.server.ssf.dir}/WEB-INF/lib">
+	    	            <include name="**/*.jar"/>
+	    	        </fileset>
+	    	        <fileset dir="${app.server.dir}/common/lib/ext">
+	    	            <include name="**/*.jar"/>
+	    	        </fileset>
+	            </classpath>           
+	    </javac>  
+		
+		<delete dir="${app.server.dir}/work/Catalina/localhost/ssf" />
+		
+		<mkdir dir="${app.server.dir}/work/Catalina/localhost/ssf" />
+		
+		<copy todir="${app.server.dir}/work/Catalina/localhost/ssf">
+			<fileset dir="${jspc.classes.dir}">
+				<exclude name="**/*.jspc_error" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		
 	</target>
 	
 </project>

@@ -284,6 +284,10 @@
 		<copy file="liferay/resources/MANIFEST.jboss.ssf.MF" tofile="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/META-INF/MANIFEST.MF" />
 	</target>
 		
+	<target name="compile-deployed-jsp">
+  		<ant dir="web" target="compile-deployed-jsp" />
+	</target>
+		
 	<target name="zip">
 		<antcall target="zip-api" />
 		<!--<antcall target="zip-src" />-->
