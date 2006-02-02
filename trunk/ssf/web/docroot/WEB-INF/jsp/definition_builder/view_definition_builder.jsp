@@ -75,6 +75,7 @@ function initializeStateMachine() {
 
 function loadDiv(option, itemId, itemName) {
 	//alert("load div: " + option + ", " + itemId + ", " + itemName)
+	hideDisplayDiv();
 	var url = "<ssf:url adapter="true" 
 		portletName="ss_administration" 
 		action="definition_builder" 
@@ -88,8 +89,37 @@ function loadDiv(option, itemId, itemName) {
 	fetch_url(url, loadDivCallback)
 }
 
+function hideDisplayDiv() {
+	var displaydiv2Obj = document.getElementById('displaydiv2');
+	displaydiv2Obj.style.visibility = "hidden";
+}
+
+var ss_scrollTopOffset = 15;
+var ss_boxRightOffset = 10;
 function loadDivCallback(s) {
 	ss_addHtmlToDiv("displaydiv", s)
+	var displaydivObj = document.getElementById('displaydiv');
+	var displaydivboxObj = document.getElementById('displaydivbox');
+	var displaydiv2Obj = document.getElementById('displaydiv2');
+    var holderObj = self.document.getElementById('displaydiv_holder')
+
+    //Position the div being displayed so it is in view
+    var holderTop = parseInt(ss_getDivTop('displaydiv_holder'));
+    var holderBottom = parseInt(ss_getDivTop('displaydiv_holder_bottom'));
+    var top = holderTop;
+    if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);} 
+    var left = parseInt(ss_getDivLeft('displaydiv_holder'));
+    var divHeight = parseInt(ss_getDivHeight('displaydiv2'));
+    if (parseInt(top + divHeight) > parseInt(holderBottom)) {
+    	divHeight = parseInt(top - holderTop + divHeight);
+    }
+    ss_setObjectHeight(holderObj, divHeight);
+    var width = parseInt(parseInt(ss_getObjectWidth(holderObj.parentNode)) - ss_boxRightOffset);
+    ss_setObjectWidth(displaydiv2Obj, width);
+    ss_setObjectWidth(displaydivboxObj, width);
+    ss_setObjectTop(displaydiv2Obj, top)
+    ss_setObjectLeft(displaydiv2Obj, left);
+	displaydiv2Obj.style.visibility = "visible";
 }
 
 function t_<portlet:namespace/>_definitionTree_showId(id, obj) {
@@ -395,7 +425,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 			</div>
 		</td>
 		<td width="50%" valign="top">
-			<div id="displaydiv">
+			<div id="displaydiv_holder">
 			</div>
 		</td>
 	</tr>
@@ -407,9 +437,22 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 <input type="hidden" name="operationItem" />
 <input type="hidden" name="operationItemName" />
 <input type='hidden' name='sourceDefinitionId'>
-</form>
 
 </div>
+<div id="displaydiv2" class="ss_style ss_portlet" 
+  style="position:absolute; visibility:hidden;">
+<ssf:box>
+  <ssf:param name="box_id" value="displaydivbox" />
+  <ssf:param name="box_width" value="300" />
+  <ssf:param name="box_color" value="#aeaeae" />
+  <ssf:param name="box_show_close_icon" value="true" />
+  <ssf:param name="box_show_close_routine" value="hideDisplayDiv()" />
+<div id="displaydiv" style="margin:4px;"></div>  
+</ssf:box>
+</div>
+<div id="displaydiv_holder_bottom">
+</div>
+</form>
 
 <%
 	//Show the preview area
