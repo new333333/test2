@@ -22,16 +22,11 @@ import org.springframework.dao.DataAccessException;
  */
 public class OpenSessionInViewInterceptor extends 
 	org.springframework.web.portlet.support.hibernate3.OpenSessionInViewInterceptor {
-    private WorkflowFactory workflowFactory;
-	
-	public void setWorkflowFactory(WorkflowFactory workflowFactory) {
-	        this.workflowFactory = workflowFactory;
-	}
 	public void afterCompletion(
 			PortletRequest request, PortletResponse response, Object handler, Exception ex)
 			throws DataAccessException {
 		super.afterCompletion(request, response, handler, ex);
-		workflowFactory.releaseSession();
+		WorkflowFactory.releaseSession();
 		
 	}
 

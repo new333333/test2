@@ -31,7 +31,10 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     protected HistoryStamp workflowChange;
     protected Binder parentBinder;
     protected Set events;
-    
+    // these collections are loaded for quicker indexing, hibernate will not persist them
+    protected Set iWorkflowStates,iEvents,iAttachments;
+    protected Map iCustomAttributes;
+ 
     public Entry() {
     }
     /**
@@ -55,7 +58,8 @@ public abstract class Entry extends PersistentLongIdTimestampObject
         this.description = tmp; 
     }
     public Set getWorkflowStates() {
-   	 	if (workflowStates == null) workflowStates = new HashSet();
+    	if (iWorkflowStates != null) return iWorkflowStates;
+    	if (workflowStates == null) workflowStates = new HashSet();
    	 	return workflowStates;  
      }
      public void setWorkflowStates(Set workflowStates) {
@@ -169,16 +173,28 @@ public abstract class Entry extends PersistentLongIdTimestampObject
         event.setOwner(this);
     }
     /**
-     * Find event by id
+     * Find event by id - used by CustomAttribute
      * @param id
      */
     protected Event getEvent(String id) {
-        if (events == null) return null;
-        for (Iterator iter=events.iterator(); iter.hasNext();) {
-    		Event e = (Event)iter.next();
-    		if (e.getId().equals(id)) {
-    			return e;
+    	//if not indexing, using hibernate maintained list
+    	if (iEvents == null) {
+    		if (events == null) return null;
+    		for (Iterator iter=events.iterator(); iter.hasNext();) {
+    			Event e = (Event)iter.next();
+    			if (e.getId().equals(id)) {
+    				return e;
+    			}	
     		}
+    	} else {
+    		//must be indexing.  Check manually loaded list
+       		for (Iterator iter=iEvents.iterator(); iter.hasNext();) {
+    			Event e = (Event)iter.next();
+    			if (e.getId().equals(id)) {
+    				return e;
+    			}	
+    		}
+    		
     	}
     	return null;
     	
@@ -188,6 +204,7 @@ public abstract class Entry extends PersistentLongIdTimestampObject
      * 
 	 */
     public Set getAttachments() {
+    	if (iAttachments != null) return iAttachments;
        	//need to implement here to setup the doclet tags
     	if (attachments == null) attachments = new HashSet();
     	return attachments;
@@ -213,16 +230,28 @@ public abstract class Entry extends PersistentLongIdTimestampObject
         }
     }
     /**
-     * Get an attachment by database id
+     * Get an attachment by database id - used by CustomAttribute lookup
      */
     public Attachment getAttachment(String id) {
-    	//make sure loaded
-    	getAttachments();
-    	for (Iterator iter=attachments.iterator(); iter.hasNext();) {
-    		Attachment a = (Attachment)iter.next();
-    		if (a.getId().equals(id)) {
-    			return a;
+       	//if not indexing, using hibernate maintained list
+    	if (iAttachments == null) {
+    		//make sure loaded
+    		getAttachments();
+    		for (Iterator iter=attachments.iterator(); iter.hasNext();) {
+    			Attachment a = (Attachment)iter.next();
+    			if (a.getId().equals(id)) {
+    				return a;
+    			}
     		}
+    	} else {
+    		//must be indexing.  Check manually loaded list
+      		for (Iterator iter=iAttachments.iterator(); iter.hasNext();) {
+    			Attachment a = (Attachment)iter.next();
+    			if (a.getId().equals(id)) {
+    				return a;
+    			}
+    		}
+   		
     	}
     	return null;
     }
@@ -315,7 +344,8 @@ public abstract class Entry extends PersistentLongIdTimestampObject
      */
     // doclet tags need to be specified in concrete class
 	public Map getCustomAttributes() {
-    	if (customAttributes == null) customAttributes = new HashMap();
+		if (iCustomAttributes != null) return iCustomAttributes;
+		if (customAttributes == null) customAttributes = new HashMap();
     	return customAttributes;
     }
 	/**
@@ -404,5 +434,24 @@ public abstract class Entry extends PersistentLongIdTimestampObject
     }
     public String getIndexDocumentUid() {
         return BasicIndexUtils.makeUid(this.getClass().getName(), this.getId());
+    }
+    public abstract String getAnyOwnerType();
+    /*
+     * The following methods are used for performance optimization during indexing.
+     * The values of each collection are loaded and built by hand.  
+     * They are not persisted.  This allows us to load greater than the 
+     * hibernate "batch-size" number of collections at once.
+     */
+    public void setIndexWorkflowStates(Set iWorkflowStates) {
+    	this.iWorkflowStates = iWorkflowStates;
+    }
+    public void setIndexEvents(Set iEvents) {
+    	this.iEvents = iEvents;
+    }    
+    public void setIndexAttachments(Set iAttachments) {
+    	this.iAttachments = iAttachments;
+    }
+    public void setIndexCustomAttributes(Map iCustomAttributes) {
+    	this.iCustomAttributes = iCustomAttributes;
     }
 }

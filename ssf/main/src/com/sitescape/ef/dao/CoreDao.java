@@ -39,6 +39,7 @@ public interface CoreDao {
 	public void saveNewSession(Object obj);
 	public void update(Object obj); 
 	public Object merge(Object obj); 
+	public void evict(Object obj); 
 	/**
 	 * 
 	 * @param obj
@@ -141,5 +142,5 @@ public interface CoreDao {
 	public List loadEmailAliases(String zoneName);
 	public EmailAlias loadEmailAlias(String aliasId, String zoneName);
     public SeenMap loadSeenMap(Long userId);
-	
+    public void bulkLoadCollections(Collection entries);	
  }

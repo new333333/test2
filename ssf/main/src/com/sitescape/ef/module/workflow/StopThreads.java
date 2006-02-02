@@ -2,18 +2,16 @@ package com.sitescape.ef.module.workflow;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jbpm.graph.def.Node;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
 import org.jbpm.context.exe.ContextInstance;
-import org.jbpm.db.JbpmSession;
 
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.AclControlledEntry;
 import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.util.Validator;
+import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 
 /**
  * This node-enter action stops parallel threads and checks to see if anyone is waiting
@@ -46,7 +44,7 @@ public class StopThreads extends AbstractActionHandler {
 					WorkflowState thread = entry.getWorkflowStateByThread(ws.getDefinition(), threadName);
 					if (thread != null) {
 						//child is active, end it
-						Token childToken = getWorkflowFactory().getSession().getGraphSession().loadToken(thread.getTokenId().longValue());
+						Token childToken = WorkflowFactory.getSession().getGraphSession().loadToken(thread.getTokenId().longValue());
 						if (childToken != null)	childToken.end();
 						found = true;
 						entry.removeWorkflowState(thread);

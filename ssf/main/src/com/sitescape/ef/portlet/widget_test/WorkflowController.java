@@ -52,7 +52,6 @@ public class WorkflowController extends SAbstractController {
 		try {
 			PlatformTransactionManager txManager = (PlatformTransactionManager)SpringContextUtil.getBean("transactionManager");
 			String operation=PortletRequestUtils.getStringParameter(request,WebKeys.URL_OPERATION);
-			WorkflowFactory wf = (WorkflowFactory)SpringContextUtil.getBean("workflowFactory");
 			if (operation.equals("create")) {
 			    ProcessDefinition processDefinition = getWorkflowModule().addWorkflow(
 			    	      "<process-definition name='hello world'>" +
@@ -215,7 +214,7 @@ public class WorkflowController extends SAbstractController {
 				    		while (itTransitions.hasNext()) {
 				    			Transition trans = (Transition)itTransitions.next();
 				    			pD.getNode("orphan2").removeLeavingTransition(trans);
-					    		wf.getSession().getSession().delete(trans);
+				    			WorkflowFactory.getSession().getSession().delete(trans);
 				    			
 				    		}
 				    		pD.getNode("orphan2").addLeavingTransition(transition2);
@@ -231,9 +230,9 @@ public class WorkflowController extends SAbstractController {
 				    try {
 				    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
 				    	if (pD.hasNode("orphan")) 
-				    		wf.getSession().getSession().delete(pD.removeNode(pD.getNode("orphan")));
+				    		WorkflowFactory.getSession().getSession().delete(pD.removeNode(pD.getNode("orphan")));
 				    	else if (pD.hasNode("orphan3")) 
-				    		wf.getSession().getSession().delete(pD.removeNode(pD.getNode("orphan3")));
+				    		WorkflowFactory.getSession().getSession().delete(pD.removeNode(pD.getNode("orphan3")));
 				    	txManager.commit(status);
 				    } catch (Exception e) {
 				    	txManager.rollback(status);
@@ -267,7 +266,7 @@ public class WorkflowController extends SAbstractController {
 			    		List defs = getWorkflowModule().getLatestDefinitions();
 			    		wId = String.valueOf(((ProcessDefinition)defs.get(0)).getId());
 			    	}
-			       	JbpmSession session = wf.getSession();
+			       	JbpmSession session = WorkflowFactory.getSession();
 		        	ProcessInstance pI = session.getGraphSession().loadProcessInstance(Long.valueOf(pId).longValue());
 		        	Token subToken = new Token(pI.getRootToken(), "parallel_1");
 		            ProcessDefinition pD = pI.getProcessDefinition();

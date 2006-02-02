@@ -40,6 +40,9 @@ public abstract class Principal extends AclControlledEntry  {
     protected Long preferredWorkspaceId;
     protected boolean reserved;
     protected boolean defaultIdentity;
+    public String getAnyOwnerType() {
+    	return AnyOwner.PRINCIPAL;
+    }
 	/**
  	 * @hibernate.map  lazy="true" inverse="true" cascade="all,delete-orphan" embed-xml="false"
  	 * @hibernate.key column="principal"

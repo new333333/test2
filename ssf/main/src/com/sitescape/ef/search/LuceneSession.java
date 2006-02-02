@@ -1,4 +1,5 @@
 package com.sitescape.ef.search;
+import java.util.Collection;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
@@ -42,6 +43,14 @@ public interface LuceneSession {
      */
     public void addDocument(Document doc) throws LuceneException;
     
+    /**
+     * Add a collection of document.
+     * 
+     * @param doc
+     * @throws LuceneException
+     */
+    public void addDocuments(Collection docs) throws LuceneException;
+
     /**
      * Delete the document identified by the uid. 
      * 

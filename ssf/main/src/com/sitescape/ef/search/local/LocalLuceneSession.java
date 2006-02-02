@@ -1,6 +1,8 @@
 package com.sitescape.ef.search.local;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -78,7 +80,36 @@ public class LocalLuceneSession implements LuceneSession {
             }
         }
     }
+    public void addDocuments(Collection docs) {
 
+	    IndexWriter indexWriter = null;
+        
+        try {
+            indexWriter = LuceneUtil.getWriter(indexPath);
+        } 
+        catch (IOException e) {
+            throw new LuceneException("Could not open writer on the index [" + this.indexPath + "]", e);
+        }
+        
+        try {
+        	for (Iterator iter=docs.iterator(); iter.hasNext();) {
+        		Document doc = (Document)iter.next();
+        	    if (doc.getField(BasicIndexUtils.UID_FIELD) == null)
+        	        throw new LuceneException("Document must contain a UID with field name " + BasicIndexUtils.UID_FIELD);
+        		indexWriter.addDocument(doc);
+        	}
+        } 
+        catch (IOException e) {
+            throw new LuceneException("Could not add document to the index [" + indexPath + "]", e);
+        }
+        finally {
+            try {
+                indexWriter.close();
+            }
+            catch(IOException e) {
+            }
+        }
+    }
     public void deleteDocument(String uid) {
         deleteDocuments(new Term(BasicIndexUtils.UID_FIELD, uid));
     }

@@ -50,6 +50,7 @@ public class PersistentLongIdObject implements PersistentLongId {
         if (obj == null)
             return false;
       
+        if (!(obj instanceof PersistentLongIdObject)) return false;
         PersistentLongIdObject o = (PersistentLongIdObject) obj;
         //assume object not persisted yet
         if (o.getId() == null) return false;

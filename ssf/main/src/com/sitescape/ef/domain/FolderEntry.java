@@ -77,7 +77,9 @@ public class FolderEntry extends AclControlledEntry implements MultipleWorkflowS
      */
     private List getHReplies() {return replies;}
     private void setHReplies(List replies) {this.replies = replies;}   	
-   
+    public String getAnyOwnerType() {
+    	return AnyOwner.FOLDERENTRY;
+    }
     /**
      * @hibernate.property
      * @return

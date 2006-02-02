@@ -913,8 +913,9 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
             set attrs(lockVersion) 1
             set attrs(parentBinder) $parentFolderID
             if {[isnull $topDocShareID]} {
-                set topDocShareID $entryId
+                set nextTop $entryId
             } else {
+            	set nextTop $topDocShareID
                 set attrs(topEntry) $topDocShareID
             }
             set attrs(parentEntry) $parentDocShareID
@@ -1216,7 +1217,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 }
             }
 
-            doEntries $forum $entry $eRoot $folderSortKey $parentFolderID $topDocShareID $entryId
+            doEntries $forum $entry $eRoot $folderSortKey $parentFolderID $nextTop $entryId
 
         }
         wimsql_rw commit

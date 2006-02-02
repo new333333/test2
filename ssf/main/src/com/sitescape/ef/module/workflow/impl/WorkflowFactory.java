@@ -12,6 +12,8 @@ import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.transaction.support.ResourceHolderSupport;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import com.sitescape.ef.SingletonViolationException;
+
 public class WorkflowFactory  implements InitializingBean {
 
     private JbpmSessionFactory sessionFactory;
@@ -19,16 +21,34 @@ public class WorkflowFactory  implements InitializingBean {
     private SessionFactory hibernateSessionFactory;
 
     private Configuration hibernateConfiguration;
-
+    private static WorkflowFactory instance;
+	
+    public WorkflowFactory() {
+		if(instance != null)
+			throw new SingletonViolationException(WorkflowFactory.class);
+		
+		instance = this;
+	}
+    private static WorkflowFactory getInstance() {
+    	return instance;
+    }
+    public JbpmSessionFactory getJbpmSessionFactory() {
+    	return sessionFactory;
+    }
+    
     public void setHibernateSessionFactory(SessionFactory hibernateSessionFactory) {
         this.hibernateSessionFactory = hibernateSessionFactory;
     }
-
+    public SessionFactory getHibernateSessionFactory() {
+    	return hibernateSessionFactory;
+    }
     public void setHibernateConfiguration(Configuration hibernateConfiguration) {
         this.hibernateConfiguration = hibernateConfiguration;
     }
 
-    public void afterPropertiesSet() throws Exception {
+
+	
+	public void afterPropertiesSet() throws Exception {
         if (this.hibernateConfiguration == null) {
             throw new FatalBeanException("Property [hibernateConfiguration] of [" + WorkflowFactory.class + "] is required.");
         }
@@ -41,32 +61,32 @@ public class WorkflowFactory  implements InitializingBean {
     }
 
     //create session and bind to thread
-    public JbpmSession getSession() {
-   	   JbpmSessionHolder jbpmSessionHolder = (JbpmSessionHolder) TransactionSynchronizationManager.getResource(sessionFactory);
+    public static JbpmSession getSession() {
+   	   JbpmSessionHolder jbpmSessionHolder = (JbpmSessionHolder) TransactionSynchronizationManager.getResource(getInstance().getJbpmSessionFactory());
        if (jbpmSessionHolder != null && jbpmSessionHolder.getJbpmSession() != null) {
            return jbpmSessionHolder.getJbpmSession();
        }
 
    	   
-   	   Session hSession = SessionFactoryUtils.getSession(this.hibernateSessionFactory, true);
-       JbpmSession jSession = new JbpmSession(sessionFactory, hSession);
+   	   Session hSession = SessionFactoryUtils.getSession(getInstance().getHibernateSessionFactory(), true);
+       JbpmSession jSession = new JbpmSession(getInstance().getJbpmSessionFactory(), hSession);
        jbpmSessionHolder = new JbpmSessionHolder(jSession);
 
-        TransactionSynchronizationManager.bindResource(sessionFactory, jbpmSessionHolder);
+        TransactionSynchronizationManager.bindResource(getInstance().getJbpmSessionFactory(), jbpmSessionHolder);
         return jSession;
     }
     //release session - this will cause the hibernate session to be closed if not already
     //closed
-    public void releaseSession() {
-    	if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
+    public static void releaseSession() {
+    	if (TransactionSynchronizationManager.hasResource(getInstance().getJbpmSessionFactory())) {
     		JbpmSessionHolder jbpmSessionHolder =
-    			(JbpmSessionHolder) TransactionSynchronizationManager.unbindResource(sessionFactory);
+    			(JbpmSessionHolder) TransactionSynchronizationManager.unbindResource(getInstance().getJbpmSessionFactory());
     		jbpmSessionHolder.getJbpmSession().close();
     		jbpmSessionHolder.clear();
     	}
 
     }
-    private class JbpmSessionHolder extends ResourceHolderSupport {
+    private static class JbpmSessionHolder extends ResourceHolderSupport {
 
         private JbpmSession jbpmSession;
 

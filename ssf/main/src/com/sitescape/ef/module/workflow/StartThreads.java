@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jbpm.graph.def.Node;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ExecutionContext;
@@ -18,6 +16,7 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.AclControlledEntry;
 import com.sitescape.ef.module.shared.WorkflowUtils;
+import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 
 /**
  * This node-enter action starts parallel threads .
@@ -56,7 +55,7 @@ public class StartThreads extends AbstractActionHandler {
 	protected void startParallelWorkflowThread(AclControlledEntry entry, String threadName, String startState, 
 			WorkflowState currentWs, Token currentToken) {
 		
-		JbpmSession session = getWorkflowFactory().getSession();
+		JbpmSession session = WorkflowFactory.getSession();
 		
 		//if thread exists, terminate it
 		WorkflowState thread = entry.getWorkflowStateByThread(currentWs.getDefinition(), threadName);

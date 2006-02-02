@@ -4,12 +4,15 @@
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
 <jsp:useBean id="ss_presence_user" type="com.sitescape.ef.domain.User" scope="request" />
 <%
-	String presenceUserTitle = "";
-	if (ss_presence_user.getTitle() != null) presenceUserTitle = ss_presence_user.getTitle().replaceAll("'", "\\\\'");
-	String presenceUserZonName = "";
-	if (ss_presence_user.getZonName() != null) presenceUserZonName = ss_presence_user.getZonName().replaceAll("'", "\\\\'");
-	String presenceUserEmailAddress = "";
-	if (ss_presence_user.getEmailAddress() != null) presenceUserEmailAddress = ss_presence_user.getEmailAddress().replaceAll("'", "\\\\'");
+	String presenceUserTitle = ss_presence_user.getTitle();
+	if (presenceUserTitle == null) presenceUserTitle="";
+	else presenceUserTitle = presenceUserTitle.replaceAll("'", "\\\\'");
+	String presenceUserZonName = ss_presence_user.getZonName();
+	if (presenceUserZonName == null) presenceUserZonName="";
+	else presenceUserZonName.replaceAll("'", "\\\\'");
+	String presenceUserEmailAddress = ss_presence_user.getEmailAddress();
+	if (presenceUserEmailAddress == null) presenceUserEmailAddress="";
+	else presenceUserEmailAddress.replaceAll("'", "\\\\'");
 %>
 <%@ page import="com.sitescape.util.ParamUtil" %>
 <portletadapter:defineObjects1/>

@@ -298,25 +298,51 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	// the db.  (Early in development, they're not...
    		//iterate through results
    		indexBinder_deleteEntries(binder);
-	   	SFQuery query = indexBinder_getQuery(binder);
+   		//flush any changes so any changes don't get lost
+   		getCoreDao().flush();
+   		SFQuery query = indexBinder_getQuery(binder);
 	   	
 	   	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
        	try {       
-       		while (query.hasNext()) {
-       			Object obj = query.next();
-       			if (obj instanceof Object[])
-       				obj = ((Object [])obj)[0];
-       			AclControlledEntry entry = (AclControlledEntry)obj;
-       			// 	Create an index document from the entry object.
-       			org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry);
+  			List batch = new ArrayList();
+  			List docs = new ArrayList();
+  			int total=0;
+      		while (query.hasNext()) {
+       			int count=0;
+       			batch.clear();
+       			docs.clear();
+       			// get 1000 entries, then build collections by hand 
+       			//for performance
+       			while (query.hasNext() && (count < 1000)) {
+       				Object obj = query.next();
+       				if (obj instanceof Object[])
+       					obj = ((Object [])obj)[0];
+       				batch.add(obj);
+       				++count;
+       			}
+       			total += count;
+       			//have 1000 entries, manually load their collections
+       			getCoreDao().bulkLoadCollections(batch);
+       			logger.info("Indexing at " + total + "(" + binder.getId().toString() + ")");
+       			
+       			for (int i=0; i<batch.size(); ++i) {
+       				AclControlledEntry entry = (AclControlledEntry)batch.get(i);
+       				// 	Create an index document from the entry object.
+       				org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry);
+           			if (logger.isDebugEnabled())
+           				logger.debug("Indexing (" + binder.getId().toString() + ") " + entry.toString() + ": " + indexDoc.toString());
+      				getCoreDao().evict(entry);
+      				docs.add(indexDoc);
+       			}
 	            
-        		logger.info("Indexing (" + binder.getId().toString() + ") " + entry.toString() + ": " + indexDoc.toString());
+       			// Delete the document that's currently in the index.
+ // turn back on later when don't delete everything
+//       				luceneSession.deleteDocument(entry.getIndexDocumentUid());
 	            
-        		// Delete the document that's currently in the index.
-        		luceneSession.deleteDocument(entry.getIndexDocumentUid());
-	            
-        		// Register the index document for indexing.
-        		luceneSession.addDocument(indexDoc);        
+       			// Register the index document for indexing.
+       			luceneSession.addDocuments(docs);
+       			logger.info("Indexing done at " + total + "("+ binder.getId().toString() + ")");
+       		
         	}
         	
         } finally {

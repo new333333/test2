@@ -50,6 +50,7 @@ public class PersistentObject implements PersistentStringId {
         if (obj == null) 
             return false;
         
+        if (!(obj instanceof PersistentObject)) return false;
         PersistentObject o = (PersistentObject) obj;
         //assume not persisted yet
         if (o.getId() == null) return false;

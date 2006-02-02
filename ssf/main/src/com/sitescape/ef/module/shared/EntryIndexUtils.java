@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -14,7 +13,7 @@ import org.apache.lucene.document.Field;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.Event;
+
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.FolderEntry;
@@ -22,6 +21,7 @@ import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.search.BasicIndexUtils;
 
 /**
+ * Index the fields common to all Entry types.
  *
  * @author Jong Kim
  */
@@ -40,7 +40,6 @@ public class EntryIndexUtils {
     public static final String MODIFICATION_DAY_FIELD = "_modificationDay";
     public static final String CREATORID_FIELD = "_creatorId";
     public static final String MODIFICATIONID_FIELD = "_modificationId";
-    public static final String RESERVEDBYID_FIELD = "_reservedById";
     public static final String DOCID_FIELD = "_docId";
     public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
     public static final String TITLE_FIELD = "title";
@@ -146,7 +145,8 @@ public class EntryIndexUtils {
 	 * Events are index by their customAttribute name.  We need to get
 	 * the events associated with an entry from the search results.
 	 * This is needed for the calendar view.
-	 * To do this, we create a mapping to the real attribute name.
+	 * To do this, we create another mapping of events here.  This mapping
+	 * maps a well known name to the real attribute name.
 	 * @param doc
 	 * @param entry
 	 */
@@ -197,15 +197,7 @@ public class EntryIndexUtils {
         }
     }   
 
-    public static void addReservedByPrincipalId(Document doc, FolderEntry entry) {
-    	//Add the id of the reserver
-        if (entry.getReservedDoc() != null && entry.getReservedDoc().getPrincipal() != null) {
-        	Field reservedByIdField = Field.Keyword(RESERVEDBYID_FIELD, entry.getReservedDoc().getPrincipal().getId().toString());
-        	doc.add(reservedByIdField);
-        }
-    }   
-
-    public static void addDocId(Document doc, Entry entry) {
+     public static void addDocId(Document doc, Entry entry) {
     	//Add the id of the creator (no, not that one...)
         Field docIdField = Field.Keyword(DOCID_FIELD, entry.getId().toString());
         doc.add(docIdField);
