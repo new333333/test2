@@ -134,7 +134,7 @@
 		<copy todir="${app.server.dir}/work/Catalina/localhost/ssf">
 			<fileset dir="${jspc.classes.dir}">
 				<exclude name="**/*.jspc_error" />
-				<exclude name="**/*.java" />
+				<!--<exclude name="**/*.java" />-->
 			</fileset>
 		</copy>
 		
