@@ -175,6 +175,16 @@
 	</target>	
 
 	  <target name="ss-create-tables" depends="init" description="Creates database tables for sitescape domain">
+			<property name="schemaexport.text.value" value="false" />
+	  		<antcall target="ss-create-tables-internal" />
+	  </target>
+	
+	  <target name="ss-create-tables-script-only" depends="init" description="Creates datbase creation script for sitescape domain">
+		<property name="schemaexport.text.value" value="true" />
+  		<antcall target="ss-create-tables-internal" />
+	  </target>
+	
+	  <target name="ss-create-tables-internal" depends="init">
 			<path id="initpath">
 	  			<pathelement location="${classes.dir}"/>
 				<fileset dir="${project.dir}/util" includes="*.jar"/>
@@ -186,7 +196,7 @@
 
 		    <schemaexport delimiter=";" drop="false" output="${hibernate.dir}/ss-create-tables.sql"
 		    	properties="${hibernate.dir}/ss-create-tables-hibernate.properties" 
-		          	quiet="false" text="false">
+		          	quiet="false" text="${schemaexport.text.value}">
 		    	<fileset dir="${classes.dir}" >
 		    		<include name="com/sitescape/ef/**/*hbm.xml"/>
 		            <include name="com/sitescape/ef/security/**/*hbm.xml"/>
