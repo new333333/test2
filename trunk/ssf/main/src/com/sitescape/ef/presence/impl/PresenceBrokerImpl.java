@@ -24,7 +24,7 @@ public class PresenceBrokerImpl implements PresenceBroker, InitializingBean, Dis
 	private final static String ADD_MEETING = "controller.add_meeting_param";
 	private String sessionId = "";
 	protected String zonUrl = "";
-	private HashMap communityIdCache = new HashMap();
+	private HashMap communityIdCache = new HashMap(250);
 	private XmlRpcClient server = null;
 //	 The location of our server.
 	protected String adminId;
@@ -166,7 +166,7 @@ public class PresenceBrokerImpl implements PresenceBroker, InitializingBean, Dis
         try {
 	        	
         	Object result = findScreenName(screenname);
-	        System.out.println("Object is " + result);
+	        // System.out.println("Object is " + result);
 	        // the result is buried 4 deep (vectors within vectors)
 	        
 	        String screenName = (String)((Vector)((Vector)((Vector)(result)).get(0)).get(0)).get(0);
@@ -181,48 +181,6 @@ public class PresenceBrokerImpl implements PresenceBroker, InitializingBean, Dis
 		return false;	
 	}
 	
-	public boolean getScreenNameExistsOrig(String screenname) {
-		
-		
-		if (sessionId.length() <= 0) {
-			try {
-				getSessionId();
-			} catch (Exception e) {
-				System.out.println("PresenceBroker: Failed to get sessionId");
-			}
-		}
-		
-        // Build our parameter list.
-		Vector users = new Vector();
-		users.add(screenname);
-        Vector params = new Vector();
-        params.addElement(sessionId);
-        params.addElement("");
-        params.addElement(users);
-       
-        // Call the server, and get our result.
-        try {
-	        	
-	        Object result =
-	            (Object) server.execute(FIND_USERS, params);
-	        System.out.println("Object is " + result);
-	        // the result is buried 4 deep (vectors within vectors)
-	        
-	        String screenName = (String)((Vector)((Vector)((Vector)(result)).get(0)).get(0)).get(0);
-	        
-	        if (screenName.equalsIgnoreCase(screenname))
-	        	return true;
-    	    else
-    	    	return false;
-        } catch (XmlRpcException exception) {
-        	//System.err.println("JavaClient: XML-RPC Fault #" +
-            //               Integer.toString(exception.code) + ": " +
-            //               exception.toString());
-        } catch (Exception exception) {
-        	//System.err.println("JavaClient: " + exception.toString());
-        }
-		return false;	
-	}
 
 	private void getSessionId() {
 		List result=null;
@@ -237,7 +195,7 @@ public class PresenceBrokerImpl implements PresenceBroker, InitializingBean, Dis
 	        	
 	        result =
 	            (List) server.execute(AUTHENTICATE_USER, params);
-	        System.out.println("Object is " + result);
+	        //System.out.println("Object is " + result);
 
         } catch (XmlRpcException exception) {
         	//System.err.println("JavaClient: XML-RPC Fault #" +
@@ -350,7 +308,7 @@ public class PresenceBrokerImpl implements PresenceBroker, InitializingBean, Dis
 
 		try {     	
         	result = findScreenName(screenname);
-	        System.out.println("Object is " + result);
+	        //System.out.println("Object is " + result);
 	        // the result is buried 4 deep (vectors within vectors)
 	        
 	        userId = (String)((Vector)((Vector)((Vector)(result)).get(0)).get(0)).get(1);
@@ -385,7 +343,7 @@ public class PresenceBrokerImpl implements PresenceBroker, InitializingBean, Dis
 		
 
 		if (communityIdCache != null) {
-			String commId = (String)communityIdCache.get(communityname);
+			String commId = (String)communityIdCache.get(communityname.toLowerCase());
 			if (commId != null) return commId;
 		}
 		
@@ -420,10 +378,10 @@ public class PresenceBrokerImpl implements PresenceBroker, InitializingBean, Dis
         for (int i=0; i<communityIds.size(); i++){
         	id = (String)((Vector)communityIds.elementAt(i)).get(0);
         	name = (String)((Vector)communityIds.elementAt(i)).get(1);
-        	communityIdCache.put(name, id);
+        	communityIdCache.put(name.toLowerCase(), id);
         }
         
-        result = (String)communityIdCache.get(communityname);
+        result = (String)communityIdCache.get(communityname.toLowerCase());
         
         return (String)result;
 	}
