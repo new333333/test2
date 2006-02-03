@@ -153,19 +153,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
     }
     
     public boolean testAcl(User user, AclContainer parent, AclControlled aclControlledObj, AccessType accessType) {
-        if(aclControlledObj.getInheritAclFromParent()) {
-            // This object inherits ACLs from the parent. In this case, we perform
-            // access control against the parent object. 
-            return testAcl(user, parent.getParentAclContainer(), parent, accessType);
-        }
-        else {
-            // This object does not inherit ACLs from the parent. It is expected
-            // that this object has a complete set of ACLs associated with it.
-            Set principalIds = user.computePrincipalIds();
-            Set memberIds = aclControlledObj.getAclSet().getMemberIds(accessType);
-            
-            return intersectedSets(principalIds, memberIds);
-        }        
+    	return testAcl(user, parent, aclControlledObj, accessType, false, false);        
     }
     
     public void checkAcl(AclContainer aclContainer, AccessType accessType) throws AccessControlException {
@@ -179,6 +167,78 @@ public class AccessControlManagerImpl implements AccessControlManager {
     }
     public boolean testAcl(User user, AclContainer aclContainer, AccessType accessType) {
         return testAcl(user, aclContainer.getParentAclContainer(), aclContainer, accessType);
+    }    
+
+    public void checkAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType, 
+    		boolean includeEntryCreator, boolean includeForumDefault) throws AccessControlException {
+        checkAcl(RequestContextHolder.getRequestContext().getUser(), parent,
+        	        aclControlledObj, accessType, includeEntryCreator, includeForumDefault);
+    }
+
+    public boolean testAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType,
+    		boolean includeEntryCreator, boolean includeForumDefault) {
+        return testAcl(RequestContextHolder.getRequestContext().getUser(), parent,
+                aclControlledObj, accessType, includeEntryCreator, includeForumDefault);
+    }
+    
+    public void checkAcl(User user, AclContainer parent, AclControlled aclControlledObj, AccessType accessType,
+    		boolean includeEntryCreator, boolean includeForumDefault) throws AccessControlException {
+        if(!testAcl(user, parent, aclControlledObj, accessType, includeEntryCreator, includeForumDefault))     	
+            throw new AclAccessControlException(user.getName(), accessType.toString()); 
+    }
+    
+    public boolean testAcl(User user, AclContainer parent, AclControlled aclControlledObj, AccessType accessType,
+    		boolean includeEntryCreator, boolean includeForumDefault) {
+        if(aclControlledObj.getInheritAclFromParent()) {
+            // This object inherits ACLs from the parent for all access types. 
+        	// In this case, we ignore includeEntryCreator and includeForumDefault
+        	// arguments, and simply perform access control against the parent 
+        	// object. 
+            return testAcl(user, parent.getParentAclContainer(), parent, accessType, includeEntryCreator, includeForumDefault);
+        }
+        else {
+            // This object does not inherit ACLs from the parent. It is expected
+            // that this object has its own set(s) of ACLs associated with it.
+
+            if(includeEntryCreator && user.getId().equals(aclControlledObj.getCreatorId())) {
+            	// The application desires to grant the creator of the acl-controlled
+            	// object an access (of the specified type) to the object, AND the 
+            	// specified user happens to be the creator. Grant it. 
+            	return true;
+            }
+            else {
+            	if(includeForumDefault) {
+            		// The acl set of the specified access type for the object must
+            		// include the default acl set associated with its parent. 
+            		// Let's check against the parent first. 
+            		// Note: We must NOT pass through the includeEntryCreator and
+            		// includeForumDefault arguments to the acl checking call against
+            		// the parent, because they are NOT meant to be applied recursively.
+            		// 
+            		if(testAcl(user, parent.getParentAclContainer(), parent, accessType))
+            			return true;
+            	}
+            	
+            	// We have to check against the explicit set associated with this object.
+            	Set principalIds = user.computePrincipalIds();
+            	Set memberIds = aclControlledObj.getAclSet().getMemberIds(accessType);
+            
+            	return intersectedSets(principalIds, memberIds);
+            }
+        }        
+    }
+    
+    public void checkAcl(AclContainer aclContainer, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) throws AccessControlException {
+        checkAcl(aclContainer.getParentAclContainer(), aclContainer, accessType, includeEntryCreator, includeForumDefault);
+    }
+    public boolean testAcl(AclContainer aclContainer, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) {
+        return testAcl(aclContainer.getParentAclContainer(), aclContainer, accessType, includeEntryCreator, includeForumDefault);
+    }
+    public void checkAcl(User user, AclContainer aclContainer, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) throws AccessControlException {
+        checkAcl(user, aclContainer.getParentAclContainer(), aclContainer, accessType, includeEntryCreator, includeForumDefault);
+    }
+    public boolean testAcl(User user, AclContainer aclContainer, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) {
+        return testAcl(user, aclContainer.getParentAclContainer(), aclContainer, accessType, includeEntryCreator, includeForumDefault);
     }    
     
     private boolean intersectedSets(Set set1, Set set2) {
