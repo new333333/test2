@@ -201,8 +201,8 @@ public interface AccessControlManager {
      * @throws AccessControlException
      */
     public void checkAcl(AclContainer parent, AclControlled aclControlledObj,
-            AccessType accessType, boolean includeEntryCreator, 
-            boolean includeForumDefault) throws AccessControlException;
+            AccessType accessType, boolean includeCreator, 
+            boolean includeParentAcl) throws AccessControlException;
     
     /**
      * Same as <code>checkObjectAccessControl</code> except that this returns
@@ -214,8 +214,8 @@ public interface AccessControlManager {
      * @return
      */
     public boolean testAcl(AclContainer parent, AclControlled aclControlledObj,
-            AccessType accessType, boolean includeEntryCreator, 
-            boolean includeForumDefault);
+            AccessType accessType, boolean includeCreator, 
+            boolean includeParentAcl);
     
     /**
      * Check if the specified user has the specified type of access to the object.
@@ -234,7 +234,7 @@ public interface AccessControlManager {
      */
     public void checkAcl(User user, AclContainer parent, 
             AclControlled aclControlledObj, AccessType accessType,
-            boolean includeEntryCreator, boolean includeForumDefault) 
+            boolean includeCreator, boolean includeParentAcl) 
     	throws AccessControlException;
     
     /**
@@ -249,21 +249,21 @@ public interface AccessControlManager {
      */
     public boolean testAcl(User user, AclContainer parent, 
             AclControlled aclControlledObj, AccessType accessType,
-            boolean includeEntryCreator, boolean includeForumDefault);
+            boolean includeCreator, boolean includeParentAcl);
     
     public void checkAcl(AclContainer aclContainer, AccessType accessType,
-    		boolean includeEntryCreator, boolean includeForumDefault) 
+    		boolean includeCreator, boolean includeParentAcl) 
     	throws AccessControlException;
     
     public boolean testAcl(AclContainer aclContainer, AccessType accessType,
-    		boolean includeEntryCreator, boolean includeForumDefault);
+    		boolean includeCreator, boolean includeParentAcl);
     
     public void checkAcl(User user, AclContainer aclContainer, 
-            AccessType accessType, boolean includeEntryCreator, 
-            boolean includeForumDefault) throws AccessControlException;
+            AccessType accessType, boolean includeCreator, 
+            boolean includeParentAcl) throws AccessControlException;
     
     public boolean testAcl(User user, AclContainer aclContainer,
-            AccessType accessType, boolean includeEntryCreator, 
-            boolean includeForumDefault);
+            AccessType accessType, boolean includeCreator, 
+            boolean includeParentAcl);
 
 }

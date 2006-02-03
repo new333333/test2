@@ -170,49 +170,49 @@ public class AccessControlManagerImpl implements AccessControlManager {
     }    
 
     public void checkAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType, 
-    		boolean includeEntryCreator, boolean includeForumDefault) throws AccessControlException {
+    		boolean includeCreator, boolean includeParentAcl) throws AccessControlException {
         checkAcl(RequestContextHolder.getRequestContext().getUser(), parent,
-        	        aclControlledObj, accessType, includeEntryCreator, includeForumDefault);
+        	        aclControlledObj, accessType, includeCreator, includeParentAcl);
     }
 
     public boolean testAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType,
-    		boolean includeEntryCreator, boolean includeForumDefault) {
+    		boolean includeCreator, boolean includeParentAcl) {
         return testAcl(RequestContextHolder.getRequestContext().getUser(), parent,
-                aclControlledObj, accessType, includeEntryCreator, includeForumDefault);
+                aclControlledObj, accessType, includeCreator, includeParentAcl);
     }
     
     public void checkAcl(User user, AclContainer parent, AclControlled aclControlledObj, AccessType accessType,
-    		boolean includeEntryCreator, boolean includeForumDefault) throws AccessControlException {
-        if(!testAcl(user, parent, aclControlledObj, accessType, includeEntryCreator, includeForumDefault))     	
+    		boolean includeCreator, boolean includeParentAcl) throws AccessControlException {
+        if(!testAcl(user, parent, aclControlledObj, accessType, includeCreator, includeParentAcl))     	
             throw new AclAccessControlException(user.getName(), accessType.toString()); 
     }
     
     public boolean testAcl(User user, AclContainer parent, AclControlled aclControlledObj, AccessType accessType,
-    		boolean includeEntryCreator, boolean includeForumDefault) {
+    		boolean includeCreator, boolean includeParentAcl) {
         if(aclControlledObj.getInheritAclFromParent()) {
             // This object inherits ACLs from the parent for all access types. 
-        	// In this case, we ignore includeEntryCreator and includeForumDefault
+        	// In this case, we ignore includeCreator and includeParentAcl
         	// arguments, and simply perform access control against the parent 
         	// object. 
-            return testAcl(user, parent.getParentAclContainer(), parent, accessType, includeEntryCreator, includeForumDefault);
+            return testAcl(user, parent.getParentAclContainer(), parent, accessType, includeCreator, includeParentAcl);
         }
         else {
             // This object does not inherit ACLs from the parent. It is expected
             // that this object has its own set(s) of ACLs associated with it.
 
-            if(includeEntryCreator && user.getId().equals(aclControlledObj.getCreatorId())) {
+            if(includeCreator && user.getId().equals(aclControlledObj.getCreatorId())) {
             	// The application desires to grant the creator of the acl-controlled
             	// object an access (of the specified type) to the object, AND the 
             	// specified user happens to be the creator. Grant it. 
             	return true;
             }
             else {
-            	if(includeForumDefault) {
+            	if(includeParentAcl) {
             		// The acl set of the specified access type for the object must
             		// include the default acl set associated with its parent. 
             		// Let's check against the parent first. 
-            		// Note: We must NOT pass through the includeEntryCreator and
-            		// includeForumDefault arguments to the acl checking call against
+            		// Note: We must NOT pass through the includeCreator and
+            		// includeParentAcl arguments to the acl checking call against
             		// the parent, because they are NOT meant to be applied recursively.
             		// 
             		if(testAcl(user, parent.getParentAclContainer(), parent, accessType))
@@ -228,17 +228,17 @@ public class AccessControlManagerImpl implements AccessControlManager {
         }        
     }
     
-    public void checkAcl(AclContainer aclContainer, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) throws AccessControlException {
-        checkAcl(aclContainer.getParentAclContainer(), aclContainer, accessType, includeEntryCreator, includeForumDefault);
+    public void checkAcl(AclContainer aclContainer, AccessType accessType, boolean includeCreator, boolean includeParentAcl) throws AccessControlException {
+        checkAcl(aclContainer.getParentAclContainer(), aclContainer, accessType, includeCreator, includeParentAcl);
     }
-    public boolean testAcl(AclContainer aclContainer, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) {
-        return testAcl(aclContainer.getParentAclContainer(), aclContainer, accessType, includeEntryCreator, includeForumDefault);
+    public boolean testAcl(AclContainer aclContainer, AccessType accessType, boolean includeCreator, boolean includeParentAcl) {
+        return testAcl(aclContainer.getParentAclContainer(), aclContainer, accessType, includeCreator, includeParentAcl);
     }
-    public void checkAcl(User user, AclContainer aclContainer, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) throws AccessControlException {
-        checkAcl(user, aclContainer.getParentAclContainer(), aclContainer, accessType, includeEntryCreator, includeForumDefault);
+    public void checkAcl(User user, AclContainer aclContainer, AccessType accessType, boolean includeCreator, boolean includeParentAcl) throws AccessControlException {
+        checkAcl(user, aclContainer.getParentAclContainer(), aclContainer, accessType, includeCreator, includeParentAcl);
     }
-    public boolean testAcl(User user, AclContainer aclContainer, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) {
-        return testAcl(user, aclContainer.getParentAclContainer(), aclContainer, accessType, includeEntryCreator, includeForumDefault);
+    public boolean testAcl(User user, AclContainer aclContainer, AccessType accessType, boolean includeCreator, boolean includeParentAcl) {
+        return testAcl(user, aclContainer.getParentAclContainer(), aclContainer, accessType, includeCreator, includeParentAcl);
     }    
     
     private boolean intersectedSets(Set set1, Set set2) {
