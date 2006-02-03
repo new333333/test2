@@ -15,4 +15,6 @@ public interface AclControlled {
     public boolean getInheritAclFromParent();
     
     public void setInheritAclFromParent(boolean inherit);
+    
+    public Long getCreatorId();
 }

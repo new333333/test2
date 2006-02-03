@@ -40,4 +40,14 @@ public abstract class AclControlledEntry extends Entry implements AclControlled 
     public void setInheritAclFromParent(boolean inherit) {
         this.inheritAclFromParent = inherit;
     }
+    
+    public Long getCreatorId() {
+    	HistoryStamp creation = getCreation();
+    	if(creation != null) {
+    		Principal principal = creation.getPrincipal();
+    		if(principal != null)
+    			return principal.getId();
+    	}
+    	return null;
+    }
 }

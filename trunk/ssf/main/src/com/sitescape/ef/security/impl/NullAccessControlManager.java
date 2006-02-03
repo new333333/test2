@@ -70,4 +70,39 @@ public class NullAccessControlManager implements AccessControlManager {
 
 	public void checkOperation(User user, Long additionalPrincipalId, WorkArea workArea, WorkAreaOperation workAreaOperation) throws AccessControlException {
 	}
+
+	public void checkAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) throws AccessControlException {
+
+	}
+
+	public boolean testAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) {
+        return true; // Permission granted with no checking. 
+
+	}
+
+	public void checkAcl(User user, AclContainer parent, AclControlled aclControlledObj, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) throws AccessControlException {
+	}
+
+	public boolean testAcl(User user, AclContainer parent, AclControlled aclControlledObj, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) {
+        return true; // Permission granted with no checking. 
+
+	}
+
+	public void checkAcl(AclContainer aclContainer, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) throws AccessControlException {		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean testAcl(AclContainer aclContainer, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) {
+        return true; // Permission granted with no checking. 
+
+	}
+
+	public void checkAcl(User user, AclContainer aclContainer, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) throws AccessControlException {
+
+	}
+
+	public boolean testAcl(User user, AclContainer aclContainer, AccessType accessType, boolean includeEntryCreator, boolean includeForumDefault) {
+        return true; // Permission granted with no checking. 
+
+	}
 }

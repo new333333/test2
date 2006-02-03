@@ -201,6 +201,15 @@ public class Folder extends Binder {
             ac = this.getTopFolder();
         return ac;
     } 
+    public Long getCreatorId() {
+    	HistoryStamp creation = getCreation();
+    	if(creation != null) {
+    		Principal principal = creation.getPrincipal();
+    		if(principal != null)
+    			return principal.getId();
+    	}
+    	return null;
+    }
     public List getEntryDefs() {
    		return getDefs(Definition.COMMAND);
     }
