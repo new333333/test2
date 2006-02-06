@@ -25,6 +25,7 @@ import java.util.HashMap;
  */
 public class BuildDefinitionDivs extends TagSupport {
     private String title;
+    private String onSubmitRoutine;
     private Document configDocument;
     private Document sourceDocument;
     private Map divNames;
@@ -39,7 +40,7 @@ public class BuildDefinitionDivs extends TagSupport {
 	private String rootElementId;
 	private String rootElementName;
 	private Element rootConfigElement;
-
+	
     
 	public int doStartTag() throws JspException {
 	    if(this.title == null)
@@ -65,7 +66,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				sb.append("<span class='ss_titlebold'>" + this.title + "</span>\n");
 				sb.append("</div>\n");
 				sb.append("<script type='text/javascript'>\n");
-				sb.append("    self.ss_setDeclaredDiv('info_select')\n");
+				//sb.append("    self.ss_setDeclaredDiv('info_select')\n");
 				sb.append("    var idMap;\n");
 				sb.append("    if (!idMap) {idMap = new Array();}\n");
 				sb.append("    var idMapCaption;\n");
@@ -94,6 +95,7 @@ public class BuildDefinitionDivs extends TagSupport {
 	
 	private void buildDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		Iterator itRootElements;
+		Iterator itRootElements2;
 		HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 		String contextPath = req.getContextPath();
 		if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
@@ -101,22 +103,55 @@ public class BuildDefinitionDivs extends TagSupport {
 
 		if (filter.equals("")) {
 			itRootElements = root.elementIterator();
+			itRootElements2 = root.elementIterator();
 		} else {
 			itRootElements = root.elementIterator(filter);
+			itRootElements2 = root.elementIterator(filter);
 		}
 		//See if this is a request for just one item
 		if (!this.option.equals("") && !this.itemId.equals("")) {
 			//We are looking for a single item, so only do that item
 			itRootElements = root.selectNodes("//item[@id='"+this.itemId+"'] | //definition[@name='"+this.itemId+"']").iterator();
+			itRootElements2 = root.selectNodes("//item[@id='"+this.itemId+"'] | //definition[@name='"+this.itemId+"']").iterator();
 		} else if (!this.option.equals("") && !this.itemName.equals("")) {
 			//We are looking for an item in the definition config
 			itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='"+this.itemName+"'] | //definition[@name='"+this.itemName+"']").iterator();
+			itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='"+this.itemName+"'] | //definition[@name='"+this.itemName+"']").iterator();
 		} else if (!this.option.equals("") && this.itemId.equals("") && this.itemName.equals("")) {
 			//We are looking for the definition itself
 			String definitionType = root.attributeValue("type", "");
 			if (!definitionType.equals("")) {
 				itRootElements = root.selectNodes(".").iterator();
+				itRootElements2 = root.selectNodes(".").iterator();
 			}
+		}
+		
+
+		if (this.option.equals("") && filter.equals("")) {
+			//Only do this routine once
+			sb.append("<script type='text/javascript'>\n");
+			while (itRootElements2.hasNext()) {
+				rootElement = (Element) itRootElements2.next();
+				rootElementId = rootElement.attributeValue("id", rootElement.attributeValue("name"));
+				rootElementName = rootElement.attributeValue("name");
+				
+				//Get the config version of this item
+				rootConfigElement = null;
+				if (rootElement.getDocument().getRootElement() == rootElement) {
+					//This is the root node
+					String definitionType = rootElement.attributeValue("type", "");
+					if (!definitionType.equals("")) {
+						rootConfigElement = (Element) this.configDocument.getRootElement().selectSingleNode("//item[@definitionType='"+definitionType+"']");
+					}
+				} else {
+					rootConfigElement = (Element) this.configDocument.getRootElement().selectSingleNode("item[@name='"+rootElementName+"']");
+				}
+				if (rootConfigElement == null) {rootConfigElement = rootElement;}
+				
+				//Build the javascript map info
+				buildMaps(root, sourceRoot, sb, hb, filter);
+			}
+			sb.append("</script>\n");
 		}
 
 		while (itRootElements.hasNext()) {
@@ -166,8 +201,26 @@ public class BuildDefinitionDivs extends TagSupport {
 		}
 	}
 
+	private void buildMaps(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
+		if (this.option.equals("") && !this.divNames.containsKey("maps_"+rootElementId)) {
+			this.divNames.put("maps_"+rootElementId, "1");
+			Element property = (Element) rootElement.selectSingleNode("./properties/property[@name='caption']");
+			String propertyCaptionValue = "";
+			if (property != null) {
+				propertyCaptionValue = property.attributeValue("value", "");
+			}
+			if (propertyCaptionValue.equals("")) {
+				propertyCaptionValue = rootElement.attributeValue("caption", "");
+			}
+			//sb.append("self.ss_setDeclaredDiv('info_" + rootElementId + "')\n");
+			sb.append("idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
+			sb.append("idMapCaption['"+rootElementId+"'] = '"+NLT.getDef(propertyCaptionValue).replaceAll("'", "\'")+"';\n");
+		}
+
+	}
+	
 	private void buildInfoDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
-		if (this.option.equals("") && !this.divNames.containsKey("info_"+rootElementId)) {
+		if (this.option.equals("info") && !this.divNames.containsKey("info_"+rootElementId)) {
 			this.divNames.put("info_"+rootElementId, "1");
 			if (this.option.equals("")) {
 				sb.append("\n<div id='info_" + rootElementId + "' ");
@@ -183,16 +236,11 @@ public class BuildDefinitionDivs extends TagSupport {
 				}
 			}
 			if (propertyCaptionValue.equals("")) {
-				propertyCaptionValue = rootElement.attributeValue("caption");
+				propertyCaptionValue = rootElement.attributeValue("caption", "");
 			}
-			sb.append("</span>\n<br><br>\n");
+			sb.append("</span>\n<br/><br/>\n");
 			if (this.option.equals("")) {
 				sb.append("</div>\n");
-				sb.append("<script type='text/javascript'>\n");
-				sb.append("    self.ss_setDeclaredDiv('info_" + rootElementId + "')\n");
-				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-				sb.append("    idMapCaption['"+rootElementId+"'] = '"+NLT.getDef(propertyCaptionValue).replaceAll("'", "\'")+"';\n");
-				sb.append("</script>\n");
 			}
 		}
 
@@ -231,9 +279,9 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("</table>\n");
 
 			sb.append("</div>\n");
-			sb.append("<script type='text/javascript'>\n");
-			sb.append("    self.ss_setDeclaredDiv('infoDefinitionOptions')\n");
-			sb.append("</script>\n");
+			//sb.append("<script type='text/javascript'>\n");
+			//sb.append("    self.ss_setDeclaredDiv('infoDefinitionOptions')\n");
+			//sb.append("</script>\n");
 		}
 	}
 
@@ -243,18 +291,18 @@ public class BuildDefinitionDivs extends TagSupport {
 			this.divNames.put("modify_definition", "1");
 			
 			//String definitionType = 
-			sb.append("<span class='ss_titlebold'>Modify the properties of this definition</span><br><br>\n");
-			sb.append("<span>Name</span><br>\n");
+			sb.append("<span class='ss_titlebold'>Modify the properties of this definition</span><br/><br/>\n");
+			sb.append("<span>Name</span><br/>\n");
 			sb.append("<input type='text' size='40' value=\"");
 			sb.append(sourceRoot.attributeValue("name", ""));
-			sb.append("\" disabled='true'>\n");
+			sb.append("\" disabled='true'/>\n");
 			sb.append("<input type='hidden' name='modifyDefinitionName' value=\"");
 			sb.append(sourceRoot.attributeValue("name", "").replaceAll("\"", "&quot;"));
-			sb.append("\" >\n<br>\n");
-			sb.append("<span>Caption</span><br>\n");
+			sb.append("\" />\n<br/>\n");
+			sb.append("<span>Caption</span><br/>\n");
 			sb.append("<input type='text' name='modifyDefinitionCaption' size='40' value=\"");
 			sb.append(sourceRoot.attributeValue("caption", "").replaceAll("\"", "&quot;"));
-			sb.append("\"><br>\n");
+			sb.append("\"/><br/>\n");
 
 			//Append the properties form elements
 			this.option = "properties";
@@ -269,20 +317,17 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("class='ss_definitionBuilder'>\n");
 			sb.append("<span class='ss_titlebold'>Select the definition to be deleted</span>\n");
 			sb.append("</div>\n");
-			sb.append("<script type='text/javascript'>\n");
-			sb.append("    self.ss_setDeclaredDiv('delete_definition')\n");
-			sb.append("</script>\n");
+			//sb.append("<script type='text/javascript'>\n");
+			//sb.append("    self.ss_setDeclaredDiv('delete_definition')\n");
+			//sb.append("</script>\n");
 			sb.append("\n<div id='delete_definition_confirm' ");
 			sb.append("class='ss_definitionBuilder'>\n");
 			sb.append("<span class='ss_titlebold'>Delete: <span id='deleteDefinitionSelection'></span></span>\n");
-			sb.append("<br><br>\n");
-			sb.append("<input type='submit' name='okBtn' value='  OK  '>\n");
-			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-			sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
+			sb.append("<br/>\n");
 			sb.append("</div>\n");
-			sb.append("<script type='text/javascript'>\n");
-			sb.append("    self.ss_setDeclaredDiv('delete_definition_confirm')\n");
-			sb.append("</script>\n");
+			//sb.append("<script type='text/javascript'>\n");
+			//sb.append("    self.ss_setDeclaredDiv('delete_definition_confirm')\n");
+			//sb.append("</script>\n");
 		}
 	}
 
@@ -353,10 +398,10 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("</table>\n");
 			if (this.option.equals("")) {
 				sb.append("</div>\n");
-				sb.append("<script type='text/javascript'>\n");
-				sb.append("    self.ss_setDeclaredDiv('operations_" + rootElementId + "')\n");
-				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-				sb.append("</script>\n");
+				//sb.append("<script type='text/javascript'>\n");
+				//sb.append("    self.ss_setDeclaredDiv('operations_" + rootElementId + "')\n");
+				//sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
+				//sb.append("</script>\n");
 			}
 		}
 	}
@@ -439,7 +484,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					
 					String optionCaption = NLT.getDef(e_option.attributeValue("optionCaption", ""));
 					if (!optionCaption.equals("")) {
-						sb.append("</ul>\n<br>\n<b>").append(optionCaption).append("</b>\n<ul>\n");
+						sb.append("</ul>\n<br/>\n<b>").append(optionCaption).append("</b>\n<ul>\n");
 					}
 					while (itOptionsSelect.hasNext()) {
 						Element optionSelect = (Element) itOptionsSelect.next();
@@ -477,13 +522,13 @@ public class BuildDefinitionDivs extends TagSupport {
 				}
 			}
 			sb.append("</ul>\n");
-			sb.append("<br>\n");
+			sb.append("<br/>\n");
 			if (this.option.equals("")) {
 				sb.append("</div>\n");
-				sb.append("<script type='text/javascript'>\n");
-				sb.append("    self.ss_setDeclaredDiv('options_" + rootElementId + "')\n");
-				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-				sb.append("</script>\n");
+				//sb.append("<script type='text/javascript'>\n");
+				//sb.append("    self.ss_setDeclaredDiv('options_" + rootElementId + "')\n");
+				//sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
+				//sb.append("</script>\n");
 			}
 		}
 	}
@@ -534,9 +579,9 @@ public class BuildDefinitionDivs extends TagSupport {
 					if (type.equals("textarea")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
-							sb.append("\n<br>\n");
+							sb.append("\n<br/>\n");
 						}
-						sb.append("<textarea name='propertyId_" + propertyId + "' rows='6' cols='60' "+readonly+">"+propertyValue0+"</textarea>\n");
+						sb.append("<textarea name='propertyId_" + propertyId + "' rows='6' cols='45' "+readonly+">"+propertyValue0+"</textarea>\n");
 					
 					} else if (type.equals("boolean") || type.equals("checkbox")) {
 						String checked = "";
@@ -547,13 +592,13 @@ public class BuildDefinitionDivs extends TagSupport {
 						} else if (propertyValue0.equalsIgnoreCase("true")) {
 							checked = "checked";
 						}
-						sb.append("<input type='checkbox' name='propertyId_" + propertyId + "' "+checked+" "+readonly+"> ");
+						sb.append("<input type='checkbox' name='propertyId_" + propertyId + "' "+checked+" "+readonly+"/> ");
 						sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 					
 					} else if (type.equals("selectbox") || type.equals("radio")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
-							sb.append("\n<br>\n");
+							sb.append("\n<br/>\n");
 						}
 						if (type.equals("selectbox")) {
 							//See if multiple selections are allowed
@@ -583,7 +628,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							} else if (type.equals("radio")) {
 								sb.append("<input type='radio' name='propertyId_" + propertyId + "' value='");
 								sb.append(selection.attributeValue("name", ""));
-								sb.append("'").append(checked).append(">");
+								sb.append("'").append(checked).append("/>");
 								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
 								sb.append("</input><br/>\n");
 							}
@@ -641,7 +686,7 @@ public class BuildDefinitionDivs extends TagSupport {
 										} else if (type.equals("radio")) {
 											sb.append("<input type='radio' name='propertyId_" + propertyId + "' value='");
 											sb.append(entryFormItemNamePropertyName);
-											sb.append("'").append(checked).append(">");
+											sb.append("'").append(checked).append("/>");
 											sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
 											sb.append("</input><br/>\n");
 										}
@@ -657,7 +702,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					} else if (type.equals("itemSelect")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
-							sb.append("\n<br>\n");
+							sb.append("\n<br/>\n");
 						}
 						String multiple = "";
 						if (propertyConfig.attributeValue("multipleAllowed", "").equalsIgnoreCase("true")) multiple = "multiple";
@@ -687,12 +732,12 @@ public class BuildDefinitionDivs extends TagSupport {
 								sb.append(">").append(selectedItemCaption).append(" (").append(selectedItemName).append(")</option>\n");
 							}
 						}
-						sb.append("</select>\n<br>\n");
+						sb.append("</select>\n<br/>\n");
 					
 					} else if (type.equals("replyStyle")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
-							sb.append("\n<br>\n");
+							sb.append("\n<br/>\n");
 						}
 						sb.append("<select multiple name='propertyId_" + propertyId + "'>\n");
 						sb.append("<option value=''>").append(NLT.get("definition.select_reply_styles")).append("</option>\n");
@@ -710,15 +755,15 @@ public class BuildDefinitionDivs extends TagSupport {
 							}
 							sb.append(">").append(entryDef.getTitle()).append(" (").append(entryDef.getName()).append(")</option>\n");
 						}
-						sb.append("</select>\n<br><br>\n");
+						sb.append("</select>\n<br/><br/>\n");
 					
 					} else {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
-							sb.append("\n<br>\n");
+							sb.append("\n<br/>\n");
 						}
 						sb.append("<input type='text' name='propertyId_" + propertyId + "' size='40' ");
-						sb.append("value=\""+propertyValue0.replaceAll("\"", "&quot;")+"\" "+readonly+">\n");
+						sb.append("value=\""+propertyValue0.replaceAll("\"", "&quot;")+"\" "+readonly+"/>\n");
 					}
 					//See if this property has any help
 					Element help = (Element) propertyConfig.selectSingleNode("./help");
@@ -738,22 +783,19 @@ public class BuildDefinitionDivs extends TagSupport {
 					}
 					
 					sb.append("<input type='hidden' name='propertyName_" + propertyId + "' ");
-					sb.append("value=\""+propertyName.replaceAll("\"", "&quot;")+"\">\n");
-					sb.append("<br>\n");
+					sb.append("value=\""+propertyName.replaceAll("\"", "&quot;")+"\"/>\n");
+					sb.append("<br/>\n");
 				}
 			}
-			sb.append("<br>");
-			sb.append("<input type='submit' name='okBtn' value=' Ok '>\n");
-			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-			sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
-			sb.append("<input type='hidden' name='definitionType_"+rootElementId+"' value='"+ rootElement.attributeValue("definitionType", "") +"'>\n");
+			sb.append("<br/>");
+			sb.append("<input type='hidden' name='definitionType_"+rootElementId+"' value='"+ rootElement.attributeValue("definitionType", "") +"'/>\n");
 
 			if (this.option.equals("")) {
 				sb.append("</div>\n");
-				sb.append("<script type='text/javascript'>\n");
-				sb.append("    self.ss_setDeclaredDiv('properties_" + rootElementId + "')\n");
-				sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-				sb.append("</script>\n");
+				//sb.append("<script type='text/javascript'>\n");
+				//sb.append("    self.ss_setDeclaredDiv('properties_" + rootElementId + "')\n");
+				//sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
+				//sb.append("</script>\n");
 			}
 		}
 	}
@@ -764,16 +806,13 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("\n<div id='delete_item' ");
 			sb.append("class='ss_definitionBuilder'>\n");
 			sb.append("<span>This will delete the selected item and all of its children (if any).</span>\n");
-			sb.append("<br>\n");
+			sb.append("<br/>\n");
 			sb.append("<span>Do you really want to delete the selected item?</span>\n");
-			sb.append("<br>\n");
-			sb.append("<input type='submit' name='okBtn' value='  OK  '>\n");
-			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-			sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
+			sb.append("<br/>\n");
 			sb.append("</div>\n");
-			sb.append("<script type='text/javascript'>\n");
-			sb.append("    self.ss_setDeclaredDiv('delete_item')\n");
-			sb.append("</script>\n");
+			//sb.append("<script type='text/javascript'>\n");
+			//sb.append("    self.ss_setDeclaredDiv('delete_item')\n");
+			//sb.append("</script>\n");
 		}
 		
 		//Build the move_item divs
@@ -781,28 +820,33 @@ public class BuildDefinitionDivs extends TagSupport {
 			this.divNames.put("move_item", "1");
 			sb.append("\n<div id='move_item' ");
 			sb.append("class='ss_definitionBuilder'>\n");
-			sb.append("<span class='ss_titlebold'>Select the new location of the item to be moved</span><br>\n");
+			sb.append("<span class='ss_titlebold'>Select the new location of the item to be moved</span><br/>\n");
 			sb.append("</div>\n");
-			sb.append("<script type='text/javascript'>\n");
-			sb.append("    self.ss_setDeclaredDiv('move_item')\n");
-			sb.append("</script>\n");
+			//sb.append("<script type='text/javascript'>\n");
+			//sb.append("    self.ss_setDeclaredDiv('move_item')\n");
+			//sb.append("</script>\n");
 			sb.append("\n<div id='move_item_confirm' ");
 			sb.append("class='ss_definitionBuilder'>\n");
 			sb.append("<span class='ss_titlebold'>Move: <div id='moveItemSelection' style='display:inline;'></div></span>\n");
-			sb.append("<br>\n");
-			sb.append("<input type='radio' name='moveTo' value='above'>");
-			sb.append("<span>Move to above the selected item<br>");
-			sb.append("<input type='radio' name='moveTo' value='below'>");
-			sb.append("<span>Move to below the selected item<br>");
-			sb.append("<input type='radio' name='moveTo' value='into'>");
-			sb.append("<span>Move into the selected item<br>");
-			sb.append("<input type='submit' name='okBtn' value='  OK  '>\n");
+			sb.append("<br/>\n");
+			sb.append("<input type='radio' name='moveTo' value='above'/>");
+			sb.append("<span>Move to above the selected item<br/>");
+			sb.append("<input type='radio' name='moveTo' value='below'/>");
+			sb.append("<span>Move to below the selected item<br/>");
+			sb.append("<input type='radio' name='moveTo' value='into'/>");
+			sb.append("<span>Move into the selected item<br/>");
+			sb.append("<input type='submit' name='okBtn' value='"+NLT.get("button.ok")+"'");
+			if (this.onSubmitRoutine != null && !this.onSubmitRoutine.equals("")) {
+				sb.append("onClick='return ");
+				sb.append(this.onSubmitRoutine + ";'");
+			}
+			sb.append("/>\n");
 			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-			sb.append("<input type='submit' name='cancelBtn' value='Cancel'>\n");
+			sb.append("<input type='submit' name='cancelBtn' value='"+NLT.get("button.cancel")+"'/>\n");
 			sb.append("</div>\n");
-			sb.append("<script type='text/javascript'>\n");
-			sb.append("    self.ss_setDeclaredDiv('move_item_confirm')\n");
-			sb.append("</script>\n");
+			//sb.append("<script type='text/javascript'>\n");
+			//sb.append("    self.ss_setDeclaredDiv('move_item_confirm')\n");
+			//sb.append("</script>\n");
 		}
 
 	}
@@ -813,6 +857,10 @@ public class BuildDefinitionDivs extends TagSupport {
 	
 	public void setTitle(String title) {
 	    this.title = title;
+	}
+	
+	public void setOnSubmitRoutine(String onSubmitRoutine) {
+	    this.onSubmitRoutine = onSubmitRoutine;
 	}
 	
 	public void setConfigDocument(Document configDocument) {

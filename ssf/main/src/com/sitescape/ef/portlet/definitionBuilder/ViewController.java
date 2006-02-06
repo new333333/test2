@@ -28,6 +28,7 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.util.Validator;
 
 /**
@@ -272,6 +273,14 @@ public class ViewController extends SAbstractController {
 		}
 		model.put("data", data);
 		if (!option.equals("")) {
+			//response.setContentType("text/xml");			
+			Map statusMap = new HashMap();
+			if(!WebHelper.isUserLoggedIn(request)) {
+				//Signal that the user is not logged in. 
+				//  The code on the calling page will output the proper translated message.
+				statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
+			}
+			model.put(WebKeys.AJAX_STATUS, statusMap);
 			return new ModelAndView("definition_builder/view_definition_builder_option", model);
 		}
 		return new ModelAndView(WebKeys.VIEW_DEFINITION, model);

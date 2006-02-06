@@ -151,7 +151,7 @@ function ss_addToDiv(target, source) {
     var targetHtml = ss_getDivHtml(target)
     var sourceHtml = ss_getDivHtml(source)
     ss_setDivHtml(target, targetHtml + sourceHtml)
-    
+
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
@@ -1211,7 +1211,8 @@ function fetch_url(url, callbackRoutine) {
 		if (x.readyState != 4) {
 			return;
 		}
-		fetch_url_debug("received " + x.responseText);
+		fetch_url_debug("status: " + x.status + ", received " + x.responseText);
+		fetch_url_debug("callbackRoutine " + callbackRoutine);
         if (x.status == 200) {
         	callbackRoutine(x.responseText)        	
         } else {
