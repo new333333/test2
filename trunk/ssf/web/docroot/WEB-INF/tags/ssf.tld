@@ -32,6 +32,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 		<attribute>
+			<name>onSubmitRoutine</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
 			<name>sourceDocument</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>

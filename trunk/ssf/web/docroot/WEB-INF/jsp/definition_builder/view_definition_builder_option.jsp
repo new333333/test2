@@ -28,12 +28,48 @@
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <%@ page import="com.sitescape.ef.domain.Entry" %>
+<jsp:useBean id="ss_ajaxStatus" type="java.util.Map" scope="request" />
+		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
+		  sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
+		  configDocument="<%= ssConfigDefinition %>"
+		  entryDefinitions="<%= ssPublicEntryDefinitions %>"
+		  option="<%= (String) data.get("option") %>" 
+		  itemId="<%= (String) data.get("itemId") %>" 
+		  itemName="<%= (String) data.get("itemName") %>" 
+		/>
+<%
+	if (1 == 0) {
+%>
+<taconite-root xml:space="preserve">
+<%
+  if (ss_ajaxStatus.containsKey("ss_ajaxNotLoggedIn")) {
+%>
+	<taconite-replace contextNodeID="ss_load_div_status_message" parseInBrowser="true">
+		<div id="ss_load_div_status_message" style="visibility:hidden; display:none;">error</div>
+	</taconite-replace>
+<%
+  } else {
+%>
+	<taconite-replace contextNodeID="ss_load_div_status_message" parseInBrowser="true">
+		<div id="ss_load_div_status_message" style="visibility:hidden; display:none;">ok</div>
+	</taconite-replace>
 
-<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
-  sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
-  configDocument="<%= ssConfigDefinition %>"
-  entryDefinitions="<%= ssPublicEntryDefinitions %>"
-  option="<%= (String) data.get("option") %>" 
-  itemId="<%= (String) data.get("itemId") %>" 
-  itemName="<%= (String) data.get("itemName") %>" 
-/>
+	<taconite-replace contextNodeID="displaydiv" parseInBrowser="true">
+	  <div id="displaydiv" style="margin:4px;"> 
+		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
+		  sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
+		  configDocument="<%= ssConfigDefinition %>"
+		  entryDefinitions="<%= ssPublicEntryDefinitions %>"
+		  option="<%= (String) data.get("option") %>" 
+		  itemId="<%= (String) data.get("itemId") %>" 
+		  itemName="<%= (String) data.get("itemName") %>" 
+		/>
+	  </div>
+	</taconite-replace>
+<%
+  }
+%>	
+</taconite-root>
+<%
+	}
+%>

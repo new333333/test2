@@ -36,6 +36,8 @@
 	}
 	if (nodeOpen.equals("")) {nodeOpen = " ";}
 %>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
 <script type="text/javascript">
 
 var rn = Math.round(Math.random()*999999)
@@ -66,15 +68,21 @@ var sourceDefinitionId = '<%= data.get("selectedItem") %>';
 %>
 
 function initializeStateMachine() {
-	ss_hideAllDeclaredDivs()
+	//ss_hideAllDeclaredDivs()
 	ss_setDivHtml("displaydiv", "")
 	ss_addToDiv("displaydiv", "info_select")
+	hideDisplayButtons()
+	showDisplayDiv()
 	ss_showHideObj('definitionbuilder_tree_loading', 'hidden', 'none')
 	ss_showHideObj('definitionbuilder_tree', 'visible', 'block')
 }
 
 function loadDiv(option, itemId, itemName) {
-	//alert("load div: " + option + ", " + itemId + ", " + itemName)
+	//alert("Load div: " + option + ", " + itemId + ", " + itemName)
+	//ss_loadNextDiv(option, itemId, itemName)
+	//return
+	
+	
 	hideDisplayDiv();
 	var url = "<ssf:url adapter="true" 
 		portletName="ss_administration" 
@@ -90,43 +98,63 @@ function loadDiv(option, itemId, itemName) {
 }
 
 function hideDisplayDiv() {
-	var displaydiv2Obj = document.getElementById('displaydiv2');
-	displaydiv2Obj.style.visibility = "hidden";
+	var displaydivObj = document.getElementById('displaydiv');
+	var displaydiv0Obj = document.getElementById('displaydiv0');
+	displaydiv0Obj.style.visibility = "hidden";
+	displaydiv0Obj.style.display = "none";
+}
+
+function showDisplayButtons() {
+	var displaydivButtonsObj = document.getElementById('displaydivButtons');
+	displaydivButtonsObj.style.visibility = "visible";
+	displaydivButtonsObj.style.display = "block";
+}
+
+function hideDisplayButtons() {
+	var displaydivButtonsObj = document.getElementById('displaydivButtons');
+	displaydivButtonsObj.style.visibility = "hidden";
+	displaydivButtonsObj.style.display = "none";
+}
+
+function showDisplayDiv() {
+	var displaydivObj = document.getElementById('displaydiv');
+	var displaydivboxObj = document.getElementById('displaydivbox');
+	var displaydiv0Obj = document.getElementById('displaydiv0');
+	var displaydivButtonsObj = document.getElementById('displaydivButtons');
+    var spacerObj = self.document.getElementById('displaydiv_spacer')
+	displaydivObj.style.visibility = "visible";
+	displaydiv0Obj.style.visibility = "visible";
+	displaydiv0Obj.style.display = "block";
+
+	//alert(displaydivObj.innerHTML) 
+	//alert("displaydiv: " + parseInt(ss_getDivHeight('displaydiv')) + ", displaydivbox: " + parseInt(ss_getDivHeight('displaydivbox')))
+
+    ss_setObjectHeight(displaydiv0Obj, parseInt(ss_getObjectHeight(displaydivObj)));
+    ss_setObjectHeight(displaydiv0Obj, parseInt(parseInt(ss_getObjectHeight(displaydivboxObj)) + parseInt(ss_getObjectHeight(displaydivButtonsObj))));
+
+    //Position the div being displayed so it is in view
+    var spacerTop = parseInt(ss_getDivTop('displaydiv_spacer'));
+    var spacerBottom = parseInt(ss_getDivTop('displaydiv_spacer_bottom'));
+    var divHeight = 0;
+    if (spacerTop < parseInt(self.document.body.scrollTop) + ss_scrollTopOffset) {
+    	divHeight = parseInt(self.document.body.scrollTop + ss_scrollTopOffset - spacerTop);
+   	}
+    ss_setObjectHeight(spacerObj, divHeight);
 }
 
 var ss_scrollTopOffset = 15;
-var ss_boxRightOffset = 10;
-function loadDivCallback(s) {
-	ss_addHtmlToDiv("displaydiv", s)
-	var displaydivObj = document.getElementById('displaydiv');
-	var displaydivboxObj = document.getElementById('displaydivbox');
-	var displaydiv2Obj = document.getElementById('displaydiv2');
-    var holderObj = self.document.getElementById('displaydiv_holder')
 
-    //Position the div being displayed so it is in view
-    var holderTop = parseInt(ss_getDivTop('displaydiv_holder'));
-    var holderBottom = parseInt(ss_getDivTop('displaydiv_holder_bottom'));
-    var top = holderTop;
-    if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);} 
-    var left = parseInt(ss_getDivLeft('displaydiv_holder'));
-    var divHeight = parseInt(ss_getDivHeight('displaydiv2'));
-    if (parseInt(top + divHeight) > parseInt(holderBottom)) {
-    	divHeight = parseInt(top - holderTop + divHeight);
-    }
-    ss_setObjectHeight(holderObj, divHeight);
-    var width = parseInt(parseInt(ss_getObjectWidth(holderObj.parentNode)) - ss_boxRightOffset);
-    ss_setObjectWidth(displaydiv2Obj, width);
-    ss_setObjectWidth(displaydivboxObj, width);
-    ss_setObjectTop(displaydiv2Obj, top)
-    ss_setObjectLeft(displaydiv2Obj, left);
-	displaydiv2Obj.style.visibility = "visible";
+function loadDivCallback(s) {
+	//alert("s: " +s)
+	ss_addHtmlToDiv("displaydiv", s)
+	showDisplayDiv();
 }
 
 function t_<portlet:namespace/>_definitionTree_showId(id, obj) {
 	//User selected an item from the tree
 	//See if this id has any info associated with it
 	var mappedId = id;
-	//alert('t_<portlet:namespace/>_definitionTree_showId: ' + id + '--> '+mappedId+', state: '+state)
+	//alert('t_<portlet:namespace/>_definitionTree_showId: ' + id + '--> '+mappedId+', state: '+state+ ', sourceDefinitionId: '+sourceDefinitionId)
 	lastSelectedId = selectedId;
 	selectedId = id;
 	selectedIdMapped = mappedId;
@@ -145,8 +173,15 @@ function t_<portlet:namespace/>_definitionTree_showId(id, obj) {
 	}
 	
 	//See if waiting for an item to be selected
-	if (state == "deleteItem" || state == "moveItem" || state == "cloneItem") {
-		setStateMachine(state + "Confirm")
+	if (state == "moveItem" || state == "cloneItem") {
+		//Make sure we aren't going back to the definition itself
+		if (sourceDefinitionId != id) {
+			setStateMachine(state + "Confirm")
+			return false
+		}
+		//The user must have clicked on the definition id
+		//Go back to square 1
+		setStateMachine("view_definition_options")
 		return false
 	}
 		
@@ -154,45 +189,34 @@ function t_<portlet:namespace/>_definitionTree_showId(id, obj) {
 	if (state == "deleteItem") {
 		//The user selected something else while in the confirmation step.
 		//Go back to square 1
-		setStateMachine("viewItem")
+		setStateMachine("definition_selected")
 		return false
 	}
 		
 	//See if in the confirmation state
-	if (state == "deleteDefinitionConfirm" || state == "deleteItemConfirm" || state == "moveItemConfirm" || state == "cloneItemConfirm") {
+	if (state == "deleteDefinitionConfirm" || state == "moveItemConfirm" || state == "cloneItemConfirm") {
 		//The user selected something else while in the confirmation step.
 		//Go back to square 1
-		state = "";
-		setStateMachine("")
+		setStateMachine("definition_selected")
 		return false
 	}
 		
-	if (checkForInfo(mappedId)) {
-		setStateMachine("definition_selected")
+	if (sourceDefinitionId == "" && !idMap[id]) {
+		//This is a request to view a definition
+		return viewDefinition();
+	}
+
+	//Put up the standard "view" and "delete" options
+	operationSelection = "viewDefinitionOptions";
+	operationSelectedItem = "";		
+	if (sourceDefinitionId == mappedId) {
+		setStateMachine("view_definition_options")
 		return false
 	} else {
-		//This id has no info div. Put up the standard "view" and "delete" options
-		operationSelection = "viewDefinitionOptions";
-		operationSelectedItem = "";		
-		if (sourceDefinitionId == mappedId) {
-			setStateMachine("view_definition_options")
-			return false
-		} else {
-			return viewDefinition();
-		}
+		setStateMachine("definition_selected");
+		return false;
 	}
 	return true;
-}
-
-function checkForInfo(id) {
-    //alert('checkForInfo: info_'+id)
-    var objName = "info_"+id;
-    var obj = self.document.getElementById(objName);
-    if (obj) {
-    	return true;
-    } else {
-    	return false;
-    }
 }
 
 function addOption(id, name, item) {
@@ -291,7 +315,8 @@ function setStateMachine(newState) {
 		//Show: definition info, definition operations
 		
 		ss_setDivHtml("displaydiv", "")
-		ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
+		//ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
+		hideDisplayButtons()
 		loadDiv('operations', selectedIdMapped, "")
 		//ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
 	} else if (state == "operation_selected") {
@@ -301,16 +326,20 @@ function setStateMachine(newState) {
 			ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
 			//ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
 			//ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
+			showDisplayButtons()
 			loadDiv('properties', "", operationSelectedItem)
 		} else if (operationSelection == "addOption") {
 			ss_setDivHtml("displaydiv", "")
-			ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
+			//ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
 			//ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
 			//ss_addToDiv("displaydiv", "options_"+selectedIdMapped)
+			hideDisplayButtons()
 			loadDiv('options', selectedIdMapped, "")
 		} else {
 			ss_setDivHtml("displaydiv", "")
-			ss_addToDiv("displaydiv", "info_select")
+			//ss_addToDiv("displaydiv", "info_select")
+			hideDisplayButtons()
+			loadDiv('info', '', 'select');
 		}
 	} else if (state == "view_definition_options") {
 		//alert("view_definition_options")
@@ -318,51 +347,80 @@ function setStateMachine(newState) {
 		var selectedIdNameText = "<span class='ss_bold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
 		ss_setDivHtml("infoDefinitionOptionsDefinitionName", selectedIdNameText)
 		ss_addToDiv("displaydiv", "infoDefinitionOptions")
+		hideDisplayButtons()
+		showDisplayDiv();
 	} else if (state == "modifyDefinition") {
 		ss_setDivHtml("displaydiv", "")
+		showDisplayButtons()
 		loadDiv('properties', "", "")
 	} else if (state == "deleteDefinitionConfirm") {
+		//alert('deleteDefinitionConfirm')
 		ss_setDivHtml("displaydiv", "")
 		var selectedIdNameText = "<span class='ss_bold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
 		ss_setDivHtml("deleteDefinitionSelection", selectedIdNameText)
 		ss_addToDiv("displaydiv", "delete_definition_confirm")
+		showDisplayButtons()
+		showDisplayDiv();
 	} else if (state == "viewItem") {
 		//alert("viewItem: "+operationSelectedItem)
 		ss_setDivHtml("displaydiv", "")
-		ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
+		//ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
+		hideDisplayButtons()
+		loadDiv('info', "", operationSelectedItem);
 	} else if (state == "addItem") {
 		ss_setDivHtml("displaydiv", "")
-		ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
+		//ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
 		//ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
+		showDisplayButtons()
 		loadDiv('properties', "", operationSelectedItem)
 	} else if (state == "modifyItem") {
 		ss_setDivHtml("displaydiv", "")
+		showDisplayButtons()
 		loadDiv('properties', selectedIdMapped, "")
 	} else if (state == "deleteItem") {
 		//alert("deleteItem: " + selectedId)
 		ss_setDivHtml("displaydiv", "")
-		ss_addToDiv("displaydiv", "info_"+selectedId)
+		//ss_addToDiv("displaydiv", "info_"+selectedId)
 		ss_addToDiv("displaydiv", "delete_item")
+		//loadDiv('info', '', 'delete_item');
+		showDisplayButtons()
+		showDisplayDiv();
 	} else if (state == "moveItem") {
 		ss_setDivHtml("displaydiv", "")
-		ss_addToDiv("displaydiv", "info_"+selectedId)
+		//ss_addToDiv("displaydiv", "info_"+selectedId)
 		ss_addToDiv("displaydiv", "move_item")
+		//loadDiv('info', '', 'move_item')
+		hideDisplayButtons()
+		showDisplayDiv();
 	} else if (state == "moveItemConfirm") {
 		ss_setDivHtml("displaydiv", "")
-		ss_addToDiv("displaydiv", "info_"+selectedId)
+		//ss_addToDiv("displaydiv", "info_"+selectedId)
+		//loadDiv('info', '', selectedId)
 		var infoName = ""
 		if (idMapCaption[lastSelectedId]) {infoName = "<span class='ss_bold'>"+idMapCaption[lastSelectedId]+"</span>"}
 		ss_setDivHtml("moveItemSelection", infoName);
 		ss_addToDiv("displaydiv", "move_item_confirm")
+		hideDisplayButtons()
+		showDisplayDiv();
 	} else if (state == "cloneItemConfirm") {
 		ss_addToDiv("displaydiv", "clone_item_confirm")
+		showDisplayButtons()
+		showDisplayDiv();
 	} else {
 		//alert("State: " + state)
 		ss_setDivHtml("displaydiv", "")
 		ss_addToDiv("displaydiv", "info_select")
+		hideDisplayButtons()
+		loadDiv('info', '', 'select')
 	}
 }
 
+function submitBuildForm(obj) {
+	//alert(obj.form.name)
+	setSubmitData(obj.form);
+	obj.form.submit();
+	return true;
+}
 function setSubmitData(formObj) {
 	//alert('setSubmitData: ' + formObj.name)
 	//alert('selectedId: '+selectedId+'\noperation: '+operationSelection+'\noperationItem: '+operationSelectedItem+'\noperationItemName: '+operationSelectedItemName)
@@ -374,10 +432,39 @@ function setSubmitData(formObj) {
 	formObj.sourceDefinitionId.value = sourceDefinitionId;
 }
 
+function ss_loadNextDiv(option, itemId, itemName) {
+	//alert("load div: " + option + ", " + itemId + ", " + itemName)
+	hideDisplayDiv();
+	var url = "<ssf:url adapter="true" 
+		portletName="ss_administration" 
+		action="definition_builder" 
+		actionUrl="true" />";
+	if (sourceDefinitionId != "") {url += "\&sourceDefinitionId=" + sourceDefinitionId;}
+	url += "\&option=" + option
+	if (itemId != "") {url += "\&itemId=" + itemId;}
+	if (itemName != "") {url += "\&itemName=" + itemName;}
+	url += "\&rn=" + rn++
+	//alert(url)
+	
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_postLoadNextDivRequest);
+	ajaxRequest.setUseGET();
+	ajaxRequest.sendRequest();  //Send the request
+}
+function ss_postLoadNextDivRequest(obj) {
+	//See if there was an error
+	if (self.document.getElementById("ss_load_div_status_message").innerHTML == "error") {
+		alert("<ssf:nlt tag="forum.unseenCounts.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+	} else {
+		showDisplayDiv()
+	}
+}
+
 ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 
 </script>
-
+<div id="ss_load_div_status_message"></div>
 <div class="ss_style ss_portlet">
 
 <c:if test="${!empty ss_configErrorMessage}">
@@ -404,15 +491,15 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 	}
 %>
 </span>
-<br>
-<br>
+<br/>
+<br/>
 
 <form class="ss_style" action="<portlet:actionURL windowState="maximized">
 	<portlet:param name="action" value="definition_builder" />
 	<portlet:param name="definition_type" value="<%= definitionType %>" />
 	</portlet:actionURL>" method="post" name="definitionbuilder" onSubmit="setSubmitData(this)" >
 <div id="definitionbuilder_tree_loading">
-<span><ssf:nlt tag="loading" text="Loading..."/></span><br>
+<span><ssf:nlt tag="loading" text="Loading..."/></span><br/>
 </div>
 <table class="ss_style" width="100%">
 	<tr>
@@ -425,8 +512,25 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 			</div>
 		</td>
 		<td width="50%" valign="top">
-			<div id="displaydiv_holder">
+			<div id="displaydiv_spacer" style="height:1px;">&nbsp;
 			</div>
+			<div id="displaydiv0" style="visibility:hidden;">
+			<ssf:box>
+			  <ssf:param name="box_id" value="displaydivbox" />
+			  <ssf:param name="box_width" value="300" />
+			  <ssf:param name="box_color" value="#aeaeae" />
+			  <ssf:param name="box_show_close_icon" value="true" />
+			  <ssf:param name="box_show_close_routine" value="hideDisplayDiv()" />
+			<div id="displaydiv" style="margin:4px;">&nbsp;</div>  
+			<div id="displaydivButtons" style="margin:4px; visibility:hidden;">
+			<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+			&nbsp;&nbsp;&nbsp;
+			<input type="submit" name="okBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
+			</div>
+			</ssf:box>
+			</div>
+			<div id="displaydiv_spacer_bottom"></div>
+			<br>
 		</td>
 	</tr>
 </table>
@@ -439,19 +543,30 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 <input type='hidden' name='sourceDefinitionId'>
 
 </div>
-<div id="displaydiv2" class="ss_style ss_portlet" 
-  style="position:absolute; visibility:hidden;">
-<ssf:box>
-  <ssf:param name="box_id" value="displaydivbox" />
-  <ssf:param name="box_width" value="300" />
-  <ssf:param name="box_color" value="#aeaeae" />
-  <ssf:param name="box_show_close_icon" value="true" />
-  <ssf:param name="box_show_close_routine" value="hideDisplayDiv()" />
-<div id="displaydiv" style="margin:4px;"></div>  
-</ssf:box>
+
+<div>
+<%
+	String ssSelectItemText = NLT.get("definition.select_item");
+	//Build the divs
+	if (!data.containsKey("selectedItem") || data.get("selectedItem").equals("")) {
+%>
+<ssf:buildDefinitionDivs title="<%= ssSelectItemText %>" 
+  sourceDocument="<%= ssConfigDefinition %>" configDocument="<%= ssConfigDefinition %>"
+  entryDefinitions="<%= ssPublicEntryDefinitions %>"/>
+<%
+	
+	} else {
+		//A definition type was selected. Build the page to edit that definition type
+%>
+<ssf:buildDefinitionDivs title="<%= ssSelectItemText %>" 
+  sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
+  configDocument="<%= ssConfigDefinition %>"
+  entryDefinitions="<%= ssPublicEntryDefinitions %>"/>
+<%
+	}
+%>
 </div>
-<div id="displaydiv_holder_bottom">
-</div>
+
 </form>
 
 <%
@@ -477,17 +592,17 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 			request.setAttribute("ssConfigJspStyle", "form");
 %>
 
-<br>
+<br/>
 <hr class="portlet-section-header">
-<br>
+<br/>
 
 <div class="ss_style ss_portlet">
 <div align="center" width="100%">
   <span class="ss_titlebold">
-    <ssf:nlt tag="definition.form_preview" text="Form Preview"/><br><%= definitionName %>
+    <ssf:nlt tag="definition.form_preview" text="Form Preview"/><br/><%= definitionName %>
   </span>
 </div>
-<br>
+<br/>
 
 <table class="ss_style" cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration 
@@ -507,17 +622,17 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 				String definitionName = (String) ((Document) data.get("sourceDefinition")).getRootElement().attributeValue("caption","");
 %>
 
-<br>
+<br/>
 <hr class="portlet-section-header">
-<br>
+<br/>
 
 <div class="ss_style ss_portlet">
 <div align="center" width="100%">
   <span class="ss_titlebold">
-    <ssf:nlt tag="definition.workflow_preview" text="Workflow Preview"/><br><%= definitionName %>
+    <ssf:nlt tag="definition.workflow_preview" text="Workflow Preview"/><br/><%= definitionName %>
   </span>
 
-<br>
+<br/>
 	<applet archive="workflow-viewer/workflow-viewer.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.0.jar,lib/dom4j.jar,lib/jaxen.jar" 
 	  code="com.sitescape.ef.applets.workflowviewer.WorkflowViewer" 
 	  codebase="<html:rootPath/>applets" height="600" width="100%" >
@@ -535,36 +650,13 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 	  <param name="nltSaveLayout" value="<ssf:nlt tag="definition.workflow_save_layout" text="Save layout"/>"/>
 	</applet>
 </div>
-<br>
+<br/>
 </div>
 <%
 			}
 		}
 	}
 %>
-
-<div>
-<%
-	String ssSelectItemText = NLT.get("definition.select_item");
-	//Build the divs
-	if (!data.containsKey("selectedItem") || data.get("selectedItem").equals("")) {
-%>
-<ssf:buildDefinitionDivs title="<%= ssSelectItemText %>" 
-  sourceDocument="<%= ssConfigDefinition %>" configDocument="<%= ssConfigDefinition %>"
-  entryDefinitions="<%= ssPublicEntryDefinitions %>"/>
-<%
-	
-	} else {
-		//A definition type was selected. Build the page to edit that definition type
-%>
-<ssf:buildDefinitionDivs title="<%= ssSelectItemText %>"
-  sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
-  configDocument="<%= ssConfigDefinition %>"
-  entryDefinitions="<%= ssPublicEntryDefinitions %>"/>
-<%
-	}
-%>
-</div>
 
 <script type="text/javascript">
 var idNames = new Array();
