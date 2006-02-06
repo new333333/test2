@@ -24,21 +24,7 @@ public interface AccessControlManager {
      */
     public boolean testOperation(WorkArea workArea,
             WorkAreaOperation workAreaOperation) throws AccessControlException;
-    
-    /**
-     * Same as {@link #checkOperation(Long, WorkArea, WorkAreaOperation)} except 
-     * that this returns <code>boolean</code> flag rather than throwing an 
-     * exception. 
-     * 
-     * @param additionalPrincipalId
-     * @param workArea
-     * @param workAreaOperation
-     * @return
-     * @throws AccessControlException
-     */
-    public boolean testOperation(Long additionalPrincipalId, WorkArea workArea,
-    		WorkAreaOperation workAreaOperation) throws AccessControlException;
-    
+        
     /**
      * Same as {@link #checkOperation(User, WorkArea, WorkAreaOperation)} except
      * that this returns <code>boolean</code> flag rather than throwing an 
@@ -53,22 +39,6 @@ public interface AccessControlManager {
             WorkAreaOperation workAreaOperation) throws AccessControlException;
 
     /**
-     * Same as {@link #checkOperation(User, Long, WorkArea, WorkAreaOperation)} 
-     * except that this returns <code>boolean</code> flag rather than throwing 
-     * an exception. 
-     * 
-     * @param user
-     * @param additionalPrincipalId
-     * @param workArea
-     * @param workAreaOperation
-     * @return
-     * @throws AccessControlException
-     */
-    public boolean testOperation(User user, Long additionalPrincipalId, 
-    		WorkArea workArea, WorkAreaOperation workAreaOperation)
-    	throws AccessControlException;
-    
-    /**
      * Check if the user associated with the current request context has the 
      * privilege to run the operation against the work area. 
      * 
@@ -78,20 +48,7 @@ public interface AccessControlManager {
      */
     public void checkOperation(WorkArea workArea,
             WorkAreaOperation workAreaOperation) throws AccessControlException;
-    
-    /**
-     * Check if the user associated with the current request context or the
-     * principal identified by the specified id has the privilege to run the
-     * operation against the work area. 
-     * 
-     * @param additionalPrincipalId
-     * @param workArea
-     * @param workAreaOperation
-     * @throws AccessControlException
-     */
-    public void checkOperation(Long additionalPrincipalId, WorkArea workArea,
-            WorkAreaOperation workAreaOperation) throws AccessControlException;
-    
+        
     /**
      * Check if the specified user has the privilege to run the operation
      * against the work area. 
@@ -109,20 +66,6 @@ public interface AccessControlManager {
      */
     public void checkOperation(User user, WorkArea workArea,
             WorkAreaOperation workAreaOperation) throws AccessControlException;
-    
-    /**
-     * Check if the specified user or the principal identified by the specified
-     * id has the privilege to run the operation against the work area. 
-     * 
-     * @param user
-     * @param additionalPrincipalId
-     * @param workArea
-     * @param workAreaOperation
-     * @throws AccessControlException
-     */
-    public void checkOperation(User user, Long additionalPrincipalId, 
-    		WorkArea workArea, WorkAreaOperation workAreaOperation) 
-    	throws AccessControlException;
     
     /**
      * Check if the user associated with the current request context has the

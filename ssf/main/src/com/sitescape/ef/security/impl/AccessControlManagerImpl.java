@@ -72,20 +72,8 @@ public class AccessControlManagerImpl implements AccessControlManager {
         	(RequestContextHolder.getRequestContext().getUser(), 
         	        workArea, workAreaOperation);
     }
-    
-	public boolean testOperation(Long additionalPrincipalId, WorkArea workArea, 
-			WorkAreaOperation workAreaOperation) throws AccessControlException {
-        return testOperation
-    	(RequestContextHolder.getRequestContext().getUser(), additionalPrincipalId, 
-    	        workArea, workAreaOperation);		
-	}
-
-	public boolean testOperation(User user, WorkArea workArea,
-			WorkAreaOperation workAreaOperation) throws AccessControlException {
-		return testOperation(user, null, workArea, workAreaOperation);
-	}
 	
-	public boolean testOperation(User user, Long additionalPrincipalId, 
+	public boolean testOperation(User user,
 			WorkArea workArea, WorkAreaOperation workAreaOperation) 
 		throws AccessControlException {
 		if (workArea.isFunctionMembershipInherited()) {
@@ -97,9 +85,6 @@ public class AccessControlManagerImpl implements AccessControlManager {
 				return testOperation(user, parentWorkArea, workAreaOperation);
 		} else {
 			Set membersToLookup = user.computePrincipalIds();
-			
-			if(additionalPrincipalId != null)
-				membersToLookup.add(additionalPrincipalId);
 
 			return getWorkAreaFunctionMembershipManager()
 					.checkWorkAreaFunctionMembership(user.getZoneName(),
@@ -113,12 +98,6 @@ public class AccessControlManagerImpl implements AccessControlManager {
         checkOperation(RequestContextHolder.getRequestContext().getUser(),
                 workArea, workAreaOperation);
     }
-    
-	public void checkOperation(Long additionalPrincipalId, WorkArea workArea, 
-			WorkAreaOperation workAreaOperation) throws AccessControlException {
-        checkOperation(RequestContextHolder.getRequestContext().getUser(),
-        		additionalPrincipalId, workArea, workAreaOperation);		
-	}
 
 	public void checkOperation(User user, WorkArea workArea, 
 			WorkAreaOperation workAreaOperation) 
@@ -127,15 +106,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
         	throw new OperationAccessControlException(user.getName(), 
         			workAreaOperation.toString(), workArea.getWorkAreaId());
     }
-    
-	public void checkOperation(User user, Long additionalPrincipalId, 
-			WorkArea workArea, WorkAreaOperation workAreaOperation) 
-		throws AccessControlException {
-        if(!testOperation(user, additionalPrincipalId, workArea, workAreaOperation))
-        	throw new OperationAccessControlException(user.getName(), 
-        			workAreaOperation.toString(), workArea.getWorkAreaId());
-	}
-    
+        
     public void checkAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType) throws AccessControlException {
         checkAcl
         	(RequestContextHolder.getRequestContext().getUser(), parent,
