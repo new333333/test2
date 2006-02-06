@@ -199,6 +199,8 @@ public class Folder extends Binder {
         AclContainer ac = this.getParentFolder();
         if(ac == null)
             ac = this.getTopFolder();
+        if(ac == null)
+        	ac = super.getParentAclContainer();
         return ac;
     } 
     public Long getCreatorId() {
