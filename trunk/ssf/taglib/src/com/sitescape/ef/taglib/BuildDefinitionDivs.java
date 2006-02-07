@@ -25,7 +25,6 @@ import java.util.HashMap;
  */
 public class BuildDefinitionDivs extends TagSupport {
     private String title;
-    private String onSubmitRoutine;
     private Document configDocument;
     private Document sourceDocument;
     private Map divNames;
@@ -835,14 +834,6 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("<span>Move to below the selected item<br/>");
 			sb.append("<input type='radio' name='moveTo' value='into'/>");
 			sb.append("<span>Move into the selected item<br/>");
-			sb.append("<input type='submit' name='okBtn' value='"+NLT.get("button.ok")+"'");
-			if (this.onSubmitRoutine != null && !this.onSubmitRoutine.equals("")) {
-				sb.append("onClick='return ");
-				sb.append(this.onSubmitRoutine + ";'");
-			}
-			sb.append("/>\n");
-			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-			sb.append("<input type='submit' name='cancelBtn' value='"+NLT.get("button.cancel")+"'/>\n");
 			sb.append("</div>\n");
 			//sb.append("<script type='text/javascript'>\n");
 			//sb.append("    self.ss_setDeclaredDiv('move_item_confirm')\n");
@@ -857,10 +848,6 @@ public class BuildDefinitionDivs extends TagSupport {
 	
 	public void setTitle(String title) {
 	    this.title = title;
-	}
-	
-	public void setOnSubmitRoutine(String onSubmitRoutine) {
-	    this.onSubmitRoutine = onSubmitRoutine;
 	}
 	
 	public void setConfigDocument(Document configDocument) {
