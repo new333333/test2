@@ -17,7 +17,7 @@ import org.dom4j.Element;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.SFQuery;
-import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FolderHierarchyException;
 import com.sitescape.ef.domain.FolderEntry;
@@ -50,18 +50,18 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	implements FolderCoreProcessor {
     
     //***********************************************************************************************************	
-    protected void addEntry_fillIn(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
+    protected void addEntry_fillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
     	Folder folder = (Folder)binder;
     	folder.addEntry((FolderEntry)entry, getFolderDao().allocateEntryNumbers(folder, 1));         
     	super.addEntry_fillIn(folder, entry, inputData, entryData);
    }
  
-    protected void addEntry_postSave(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {
+    protected void addEntry_postSave(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
 		getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).
 							setSeen(entry);
     }
 
-	 protected void modifyEntry_postFillIn(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {
+	 protected void modifyEntry_postFillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
 		   getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
      }
 
@@ -105,12 +105,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  
     }
           
-    protected  AclControlledEntry entry_load(Binder parentBinder, Long entryId) {
+    protected  WorkflowControlledEntry entry_load(Binder parentBinder, Long entryId) {
         User user = RequestContextHolder.getRequestContext().getUser();
         return folderDao.loadFolderEntry(parentBinder.getId(), entryId, user.getZoneName()); 
     }
          
-    protected  AclControlledEntry entry_loadFull(Binder parentBinder, Long entryId) {
+    protected  WorkflowControlledEntry entry_loadFull(Binder parentBinder, Long entryId) {
         User user = RequestContextHolder.getRequestContext().getUser();
         return folderDao.loadFullFolderEntry(parentBinder.getId(), entryId, user.getZoneName()); 
    }
@@ -127,7 +127,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         }
     }
   
-     protected void deleteEntry_delete(Binder parentBinder, AclControlledEntry entry) {
+     protected void deleteEntry_delete(Binder parentBinder, WorkflowControlledEntry entry) {
     	//use the optimized deleteEntry or hibernate deletes each collection entry one at a time
     	folderDao.deleteEntry((FolderEntry)entry);   
     }
@@ -183,7 +183,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         }
         getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      }     
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, AclControlledEntry entry) {
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, WorkflowControlledEntry entry) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry);
     	               
         // Add Doc number

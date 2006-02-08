@@ -13,7 +13,7 @@ import org.jbpm.graph.exe.Token;
 import org.jbpm.graph.def.Event;
 import org.jbpm.context.exe.ContextInstance;
 
-import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.User;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.domain.WorkflowState;
@@ -27,7 +27,7 @@ public class Notify extends AbstractActionHandler {
 		Token token = executionContext.getToken();
 		Node current = token.getNode();
 		String stateName = current.getName();
-		AclControlledEntry entry = loadEntry(ctx);
+		WorkflowControlledEntry entry = loadEntry(ctx);
 		if (infoEnabled) logger.info("Workflow notify start at:" + stateName); 
 		WorkflowState ws = entry.getWorkflowState(new Long(token.getId()));
 		//record event may not have happened yet

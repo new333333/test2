@@ -8,7 +8,7 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.SFQuery;
-import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
@@ -29,7 +29,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     
     //***********************************************************************************************************	
             
-    protected void addEntry_fillIn(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
+    protected void addEntry_fillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
     	super.addEntry_fillIn(binder, entry, inputData, entryData);
         ((Principal)entry).setZoneName(binder.getZoneName());
     }
@@ -86,20 +86,20 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 
     //***********************************************************************************************************
            
-    protected  AclControlledEntry entry_load(Binder parentBinder, Long entryId) {
+    protected  WorkflowControlledEntry entry_load(Binder parentBinder, Long entryId) {
         return getCoreDao().loadPrincipal(entryId, parentBinder.getZoneName());        
     }
          
-    protected  AclControlledEntry entry_loadFull(Binder parentBinder, Long entryId) {
+    protected  WorkflowControlledEntry entry_loadFull(Binder parentBinder, Long entryId) {
         return getCoreDao().loadFullPrincipal(entryId, parentBinder.getZoneName());        
     }
  
-    protected void deleteEntry_delete(Binder parentBinder, AclControlledEntry entry) {
+    protected void deleteEntry_delete(Binder parentBinder, WorkflowControlledEntry entry) {
     	Principal p = (Principal)entry;
     	//we just disable principals, cause their ids are used all over
     	p.setDisabled(true);
     }
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, AclControlledEntry entry) {
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, WorkflowControlledEntry entry) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry);
     	
 		// Add doc type

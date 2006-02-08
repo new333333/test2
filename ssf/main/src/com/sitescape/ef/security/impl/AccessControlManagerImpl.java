@@ -160,42 +160,38 @@ public class AccessControlManagerImpl implements AccessControlManager {
     
     public boolean testAcl(User user, AclContainer parent, AclControlled aclControlledObj, AccessType accessType,
     		boolean includeCreator, boolean includeParentAcl) {
+        if(includeCreator && user.getId().equals(aclControlledObj.getCreatorId())) {
+        	// The application desires to grant the creator of the acl-controlled
+        	// object an access (of the specified type) to the object, AND the 
+        	// specified user happens to be the creator. Grant it. 
+        	return true;
+        }
         if(aclControlledObj.getInheritAclFromParent()) {
             // This object inherits ACLs from the parent for all access types. 
         	// In this case, we ignore includeCreator and includeParentAcl
         	// arguments, and simply perform access control against the parent 
         	// object. 
-            return testAcl(user, parent.getParentAclContainer(), parent, accessType, includeCreator, includeParentAcl);
-        }
-        else {
+            return testAcl(user, parent.getParentAclContainer(), parent, accessType, false, false);
+        }  else {
             // This object does not inherit ACLs from the parent. It is expected
             // that this object has its own set(s) of ACLs associated with it.
-
-            if(includeCreator && user.getId().equals(aclControlledObj.getCreatorId())) {
-            	// The application desires to grant the creator of the acl-controlled
-            	// object an access (of the specified type) to the object, AND the 
-            	// specified user happens to be the creator. Grant it. 
-            	return true;
-            }
-            else {
-            	if(includeParentAcl) {
-            		// The acl set of the specified access type for the object must
-            		// include the default acl set associated with its parent. 
-            		// Let's check against the parent first. 
-            		// Note: We must NOT pass through the includeCreator and
-            		// includeParentAcl arguments to the acl checking call against
-            		// the parent, because they are NOT meant to be applied recursively.
-            		// 
-            		if(testAcl(user, parent.getParentAclContainer(), parent, accessType))
-            			return true;
-            	}
+       		if(includeParentAcl) {
+           		// The acl set of the specified access type for the object must
+           		// include the default acl set associated with its parent. 
+           		// Let's check against the parent first. 
+           		// Note: We must NOT pass through the includeCreator and
+           		// includeParentAcl arguments to the acl checking call against
+           		// the parent, because they are NOT meant to be applied recursively.
+           		// 
+           		if(testAcl(user, parent.getParentAclContainer(), parent, accessType))
+           			return true;
+           	}
             	
-            	// We have to check against the explicit set associated with this object.
-            	Set principalIds = user.computePrincipalIds();
-            	Set memberIds = aclControlledObj.getAclSet().getMemberIds(accessType);
+           	// We have to check against the explicit set associated with this object.
+           	Set principalIds = user.computePrincipalIds();
+           	Set memberIds = aclControlledObj.getAclSet().getMemberIds(accessType);
             
-            	return intersectedSets(principalIds, memberIds);
-            }
+           	return intersectedSets(principalIds, memberIds);
         }        
     }
     

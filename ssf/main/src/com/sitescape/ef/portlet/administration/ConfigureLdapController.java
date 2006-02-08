@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.module.ldap.LdapConfig;
+import com.sitescape.ef.ldap.LdapConfig;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.ScheduleHelper;
 

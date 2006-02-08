@@ -23,8 +23,8 @@ import org.quartz.Scheduler;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.module.mail.MailModule;
-import com.sitescape.ef.module.mail.MimeMessagePreparator;
+import com.sitescape.ef.mail.MailModule;
+import com.sitescape.ef.mail.MimeMessagePreparator;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.util.Validator;

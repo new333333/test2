@@ -29,7 +29,7 @@ import com.sitescape.ef.util.CollectionUtil;
 * @author Jong Kim
 *
 */
-public abstract class Principal extends AclControlledEntry  {
+public abstract class Principal extends WorkflowControlledEntry  {
 	protected boolean disabled=false;
     protected String name;
     protected String lcName;

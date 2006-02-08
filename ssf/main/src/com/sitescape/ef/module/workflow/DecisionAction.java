@@ -10,7 +10,7 @@ import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
 
-import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.domain.WfWaits;
@@ -22,7 +22,7 @@ public class DecisionAction extends AbstractActionHandler {
 	public void execute(ExecutionContext executionContext) throws Exception {
 		ContextInstance ctx = executionContext.getContextInstance();
 		Token current = executionContext.getToken();
-		AclControlledEntry entry = loadEntry(ctx);
+		WorkflowControlledEntry entry = loadEntry(ctx);
 		WorkflowState ws = entry.getWorkflowState(new Long(current.getId()));
 		if (ws != null) {
 			if (infoEnabled) logger.info("Decision begin: at state " + ws.getState() + " thread " + ws.getThreadName());

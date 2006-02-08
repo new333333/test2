@@ -1,4 +1,4 @@
-package com.sitescape.ef.module.mail.impl;
+package com.sitescape.ef.mail.impl;
 import javax.mail.Session;
 import com.sitescape.util.Validator;
 /**
@@ -10,7 +10,7 @@ import com.sitescape.util.Validator;
  */
 public class JavaMailSenderImpl extends
 		org.springframework.mail.javamail.JavaMailSenderImpl
-		implements com.sitescape.ef.module.mail.JavaMailSender {
+		implements com.sitescape.ef.mail.JavaMailSender {
 	private String name;
 	public String getDefaultFrom() {
 		Session session = getSession();

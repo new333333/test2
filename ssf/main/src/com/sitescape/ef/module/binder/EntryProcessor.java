@@ -7,7 +7,7 @@ import org.dom4j.Document;
 
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.module.shared.WriteFilesException;
 import com.sitescape.ef.security.AccessControlException;
@@ -33,7 +33,7 @@ public interface EntryProcessor {
     public Long addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
     public void deleteEntry(Binder binder, Long entryId) throws AccessControlException;
-    public AclControlledEntry getEntry(Binder binder, Long entryId, int type) throws AccessControlException;
+    public WorkflowControlledEntry getEntry(Binder binder, Long entryId, int type) throws AccessControlException;
     public Long modifyEntry(Binder binder, Long entryId, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
     public Long modifyEntryData(Binder binder, Long entryId, Map entryData) 
@@ -43,7 +43,7 @@ public interface EntryProcessor {
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries) throws AccessControlException;
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries, Document searchFilter) throws AccessControlException;
 	public void indexBinder(Binder binder);
-	public void indexEntry(AclControlledEntry entry); 
+	public void indexEntry(WorkflowControlledEntry entry); 
   	public void indexEntry(Collection entries);
 	
 }

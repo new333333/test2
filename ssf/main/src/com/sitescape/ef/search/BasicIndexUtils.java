@@ -6,7 +6,7 @@ import java.util.Set;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
-import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.security.acl.AccessType;
@@ -126,11 +126,14 @@ public class BasicIndexUtils {
     public static void addReadAcls(Document doc, Binder binder, Entry entry, AclManager aclManager) {
         // Add ACL field. We only need to index ACLs for read access. 
         Field racField;
-        if(entry instanceof AclControlledEntry) {
+        if(entry instanceof WorkflowControlledEntry) {
 	        StringBuffer pIds = new StringBuffer();
-	        Set readMemberIds = aclManager.getMembers(binder, (AclControlledEntry) entry, AccessType.READ);
-	        for(Iterator i = readMemberIds.iterator(); i.hasNext();) {
-	            pIds.append(i.next()).append(" ");
+	        //only want to index acls on the entry itself.  Otherwise we use READ_DEF_ACL
+	        if (((WorkflowControlledEntry)entry).getInheritAclFromParent() == false) {
+	        	Set readMemberIds = aclManager.getMembers(binder, (WorkflowControlledEntry) entry, AccessType.READ);
+	        	for(Iterator i = readMemberIds.iterator(); i.hasNext();) {
+	        		pIds.append(i.next()).append(" ");
+	        	}
 	        }
 	        // I'm not sure if putting together a long string value is more
 	        // efficient than processing multiple short strings... We will see.

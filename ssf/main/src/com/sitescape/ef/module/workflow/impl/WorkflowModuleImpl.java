@@ -27,7 +27,7 @@ import com.sitescape.ef.util.SZoneConfig;
 import com.sitescape.ef.domain.WfWaits;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.jobs.WorkflowTimeout;
-import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.module.binder.EntryProcessor;
 
 
@@ -785,11 +785,11 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
       	Timer timer = (Timer)session.getSession().load(Timer.class, timerId);
       	if (timer == null) return;
       	Token token = timer.getToken();
-      	AclControlledEntry entry = null;
+      	WorkflowControlledEntry entry = null;
       	if (token != null) {
       		//token id is id of workflowState
       		WorkflowState ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
-      		entry = (AclControlledEntry)ws.getOwner().getEntry();
+      		entry = (WorkflowControlledEntry)ws.getOwner().getEntry();
       	}
   
       	// execute

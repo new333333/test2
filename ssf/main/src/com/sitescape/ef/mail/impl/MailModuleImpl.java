@@ -1,5 +1,5 @@
 
-package com.sitescape.ef.module.mail.impl;
+package com.sitescape.ef.mail.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,10 +42,12 @@ import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.UserNotification;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.mail.FolderEmailFormatter;
+import com.sitescape.ef.mail.JavaMailSender;
+import com.sitescape.ef.mail.MailModule;
+import com.sitescape.ef.mail.MimeMessagePreparator;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.module.mail.MailModule;
-import com.sitescape.ef.module.mail.FolderEmailFormatter;
 import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceUtil;
@@ -53,11 +55,9 @@ import com.sitescape.ef.util.ConfigPropertyNotFoundException;
 import com.sitescape.ef.util.PortabilityUtil;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.ef.module.mail.JavaMailSender;
 import com.sitescape.ef.jobs.FailedEmail;
 import com.sitescape.ef.jobs.SendEmail;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import com.sitescape.ef.module.mail.MimeMessagePreparator;
 import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.MailAuthenticationException;

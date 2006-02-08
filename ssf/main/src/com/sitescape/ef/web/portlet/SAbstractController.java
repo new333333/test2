@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.portlet.mvc.AbstractController;
 
+import com.sitescape.ef.ldap.LdapModule;
 import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.folder.FolderModule;
@@ -11,7 +12,6 @@ import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
-import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.binder.BinderModule;
 

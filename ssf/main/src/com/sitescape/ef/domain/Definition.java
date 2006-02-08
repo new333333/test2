@@ -24,10 +24,9 @@ public class Definition extends PersistentTimestampObject implements AclControll
 	private int type=COMMAND;
 	private int visibility=PUBLIC;
     private byte[] xmlencoding;
-    private boolean dirty=true;
     private Document doc;
     private String zoneName;
-    private AclSet aclSet;
+    private PersistentAclSet aclSet;
     private boolean inheritAclFromParent = false;
     private String title="";
 
@@ -47,25 +46,34 @@ public class Definition extends PersistentTimestampObject implements AclControll
 	
 	public Definition() {
 		
-	}
-    
-    /**
-     * Used by security manager only. Application should NEVER invoke this
-     * method directly. 
-     * 
-     * @hibernate.component prefix="acl_"
+	}    
+   /**
+     * Hiberate interfaces to load actual class vs interface needed for AclControlled
+     *  
+     * @hibernate.component prefix="acl_" 
      */
-    public AclSet getAclSet() {
+    private PersistentAclSet getHAclSet() {
         return aclSet;
     }
-
+     private void setHAclSet(PersistentAclSet aclSet) {
+        this.aclSet = aclSet;
+    }
+     /**
+     * Used by security manager only. Application should NEVER invoke this
+     * method directly.  
+     * @hibernate.component prefix="acl_" class="com.sitescape.ef.domain.PersistentAclSet" 
+     */
+    public void setAclSet(AclSet aclSet) {
+        this.aclSet = (PersistentAclSet)aclSet;
+    }
     /**
      * Used by security manager only. Application should NEVER invoke this
      * method directly.  
      */
-    public void setAclSet(AclSet aclSet) {
-        this.aclSet = aclSet;
-    }	
+    public AclSet getAclSet() {
+        return aclSet;
+    } 
+
     /**
      * @hibernate.property length="64"
      */

@@ -1,5 +1,5 @@
 
-package com.sitescape.ef.module.ldap;
+package com.sitescape.ef.ldap;
 
 import java.util.Map;
 import java.util.Iterator;

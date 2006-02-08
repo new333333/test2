@@ -1,5 +1,5 @@
 
-package com.sitescape.ef.module.mail.impl;
+package com.sitescape.ef.mail.impl;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -45,7 +45,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.NotificationDef;
@@ -54,7 +54,8 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserNotification;
 import com.sitescape.ef.dao.util.OrderBy;
-import com.sitescape.ef.module.mail.FolderEmailFormatter;
+import com.sitescape.ef.mail.FolderEmailFormatter;
+import com.sitescape.ef.mail.MailModule;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AclManager;
 import com.sitescape.ef.util.DirPath;
@@ -71,7 +72,6 @@ import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.folder.InputDataAccessor;
-import com.sitescape.ef.module.mail.MailModule;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.security.acl.AccessType;
@@ -652,7 +652,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		}
 		protected void checkEntries(Collection entries) {
 			for (Iterator iter=entries.iterator(); iter.hasNext(); ) {
-				AclControlledEntry e = (AclControlledEntry)iter.next();
+				WorkflowControlledEntry e = (WorkflowControlledEntry)iter.next();
 				if (getAccessControlManager().testAcl(user, e.getParentBinder(), e, AccessType.READ))
 					this.entries.add(e);
 			}
