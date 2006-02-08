@@ -1,5 +1,12 @@
 package com.sitescape.ef.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileUploadItem {
@@ -9,6 +16,8 @@ public class FileUploadItem {
 	
 	private static final int THUMBNAIL_MAX_WIDTH_DEFAULT = 100;
 	private static final int THUMBNAIL_MAX_HEIGHT_DEFAULT = 100;
+	
+	private static final String TEMP_FILE_PREFIX = "upload_";
 	
 	private int type;
 	
@@ -29,8 +38,19 @@ public class FileUploadItem {
 	private MultipartFile mf;
 	
 	private String repositoryServiceName;
+	
+	private File tempFile;
+	
+	private boolean ready = false;
 
 	// path info?
+	
+	public FileUploadItem(int type, String name, MultipartFile mf, String repositoryServiceName) {
+		this.type = type;
+		this.name = name;
+		this.mf = mf;
+		this.repositoryServiceName = repositoryServiceName;
+	}
 	
 	public boolean getGenerateThumbnail() {
 		return generateThumbnail;
@@ -80,13 +100,6 @@ public class FileUploadItem {
 		this.thumbnailMaxWidth = thumbnailMaxWidth;
 	}
 
-	public FileUploadItem(int type, String name, MultipartFile mf, String repositoryServiceName) {
-		this.type = type;
-		this.name = name;
-		this.mf = mf;
-		this.repositoryServiceName = repositoryServiceName;
-	}
-	
 	public int getType() {
 		return type;
 	}
@@ -95,11 +108,60 @@ public class FileUploadItem {
 		return name;
 	}
 	
+	/**
+	 * Return the original filename in the client's filesystem. 
+	 * @return
+	 */
+	public String getOriginalFilename() {
+		return mf.getOriginalFilename();
+	}
+	
+	public long getSize() {
+		return mf.getSize();
+	}
+	
+	/*
 	public MultipartFile getMultipartFile() {
 		return mf;
-	}
+	}*/
 
 	public String getRepositoryServiceName() {
 		return repositoryServiceName;
+	}
+	
+	public byte[] getBytes() throws IOException {
+		if(!ready)
+			setup();
+		return FileCopyUtils.copyToByteArray(tempFile);
+	}
+	
+	public InputStream getInputStream() throws IOException  {
+		if(!ready)
+			setup();
+		return new FileInputStream(tempFile);
+	}
+
+	public File getFile() throws IOException {
+		if(!ready)
+			setup();
+		return tempFile;
+	}
+	
+	public void delete() throws IOException {
+		FileHelper.delete(tempFile);
+	}
+	
+	private void setup() throws IOException {
+		// Make sure that the uploaded data is accessible through File interface,
+		// regardless of the mechanism used. May not be the most efficient way though.
+		File tempDir = SPropsUtil.getFile("temp.dir");
+		if(!tempDir.exists())
+			FileHelper.mkdirs(tempDir);
+		
+		this.tempFile = File.createTempFile(TEMP_FILE_PREFIX, null, tempDir);
+		
+		this.mf.transferTo(this.tempFile);
+		
+		ready = true;
 	}
 }
