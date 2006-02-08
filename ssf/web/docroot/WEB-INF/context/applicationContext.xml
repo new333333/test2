@@ -282,13 +282,13 @@
 	
 	<!-- ================================ Security Service =============================== -->
 	
-	<bean id="accessControlManager" class="com.sitescape.ef.security.impl.AccessControlManagerImpl">
+	<!--<bean id="accessControlManager" class="com.sitescape.ef.security.impl.AccessControlManagerImpl">
 		<property name="functionManager"><ref local="functionManager"/></property>
 		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
 	</bean>
-	
-	<!--<bean id="accessControlManager" class="com.sitescape.ef.security.impl.NullAccessControlManager">
-	</bean>-->
+	-->
+	<bean id="accessControlManager" class="com.sitescape.ef.security.impl.NullAccessControlManager">
+	</bean>
 	
 	<bean id="aclManager" class="com.sitescape.ef.security.acl.impl.AclManagerImpl">
 	</bean>
@@ -423,31 +423,31 @@
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap"/>
 	<!-- this bean is only used to allow setting of initial context properties -->
 	<bean id="mailJndiAccessor" class="org.springframework.jndi.JndiAccessor"/>
-	<bean id="mailSender" class="com.sitescape.ef.module.mail.impl.JavaMailSenderImpl">
+	<bean id="mailSender" class="com.sitescape.ef.mail.impl.JavaMailSenderImpl">
 		<property name="defaultEncoding"><value>utf-8</value></property>
 		<property name="defaultFileTypeMap"><ref local="mimeTypes"/></property>
 	</bean>
 
 
-	<bean id="mailModule" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.mail.impl.MailModuleImpl">
+	<bean id="mailModule" parent="moduleDependencyTemplate" class="com.sitescape.ef.mail.impl.MailModuleImpl">
 		<property name="mailSender"><ref local="mailSender"/></property>
 		<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>
 		<property name="dataRootDirProperty"><value>data.root.dir</value></property>	
 		<property name="subDirName"><value>mail</value></property>
 	</bean>	
 	
-	<bean id="defaultFolderEmailFormatter" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.mail.impl.DefaultFolderEmailFormatter">
+	<bean id="defaultFolderEmailFormatter" parent="moduleDependencyTemplate" class="com.sitescape.ef.mail.impl.DefaultFolderEmailFormatter">
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
 		<property name="folderModule"><ref local="folderModule"/></property>
 		<property name="mailModule"><ref local="mailModule"/></property>
 	</bean>
 	
-	<bean id="ldapModule"  class="com.sitescape.ef.module.ldap.impl.LdapModuleImpl">
+	<bean id="ldapModule"  class="com.sitescape.ef.ldap.impl.LdapModuleImpl">
 		<property name="coreDao"><ref local="coreDao"/></property>	
 		<property name="ldapHelper">
 			<bean parent="baseTransactionProxy">
 				<property name="target">
-					<bean class="com.sitescape.ef.module.ldap.impl.LdapHelper">
+					<bean class="com.sitescape.ef.ldap.impl.LdapHelper">
 						<property name="coreDao"><ref local="coreDao"/></property>						
 						<property name="processorManager"><ref local="modelProcessorManager"/></property>
 					</bean>
