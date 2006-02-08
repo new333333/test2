@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.io.IOException;
 import java.lang.Long;
 import java.util.Collection;
 
@@ -46,6 +47,7 @@ import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.shared.EntryBuilder;
@@ -120,8 +122,9 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 
         // This must be done in a separate step after persisting the entry,
         // because we need the entry's persistent ID for indexing. 
-        addEntry_indexAdd(binder, entry, inputData);
+        addEntry_indexAdd(binder, entry, inputData, fileData);
         
+        cleanupFiles(fileData);
         
         return entry.getId();
     }
@@ -176,15 +179,44 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     protected void addEntry_postSave(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
     }
     
-    protected void addEntry_indexAdd(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData) {
+    protected void addEntry_indexAdd(Binder binder, WorkflowControlledEntry entry, 
+    		InputDataAccessor inputData, List fileData) {
         
         // Create an index document from the entry object.
         org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry);
         
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
+        
+        /* The following skeleton is to be completed by Roy 
+        
+        // Create separate documents one for each attached files and index them.
+        for(int i = 0; i < fileData.size(); i++) {
+        	// Get a handle on the uploaded file. 
+        	FileUploadItem fui = (FileUploadItem) fileData.get(i);
+        	// Create a Lucene document object from the uploaded file.
+        	// This involves applying additional processings such as doc
+        	// conversion, etc. 
+        	indexDoc = buildIndexDocumentFromFile(binder, entry, fui);
+            // Register the index document for indexing.
+            IndexSynchronizationManager.addDocument(indexDoc);
+        }
+        
+        */
     }
-    
+ 
+    protected void cleanupFiles(List fileData) {
+        for(int i = 0; i < fileData.size(); i++) {
+        	// Get a handle on the uploaded file. 
+        	FileUploadItem fui = (FileUploadItem) fileData.get(i);
+        	try {
+				fui.delete();
+			} catch (IOException e) {
+				logger.error(e.getMessage(), e);
+			}
+        }
+    }
+
     protected void addEntry_startWorkflow(WorkflowControlledEntry entry) {
     	Binder binder = entry.getParentBinder();
     	Map workflowAssociations = (Map) binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS);
@@ -218,7 +250,10 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 	                
 	    modifyEntry_postFillIn(binder, entry, inputData, entryData);
 	    
-	    modifyEntry_indexAdd(binder, entry, inputData);
+	    modifyEntry_indexAdd(binder, entry, inputData, fileData);
+	    
+	    cleanupFiles(fileData);
+	    
 	    return entry.getId();
 	}
 	public Long modifyEntryData(Binder binder, Long entryId, Map entryData) 
@@ -265,9 +300,12 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     protected void modifyEntry_postFillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
     }
     
-    protected void modifyEntry_indexAdd(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData) {
+    protected void modifyEntry_indexAdd(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, List fileData) {
     	indexEntry(entry);
+    	// Take care of attached files - to be completed by Roy
     }
+    
+    
     
     //***********************************************************************************************************
     public void modifyWorkflowState(Binder binder, Long entryId, Long tokenId, String toState) {
@@ -608,6 +646,9 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     protected void deleteEntry_indexDel(WorkflowControlledEntry entry) {
         // Delete the document that's currently in the index.
         IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
+        
+        // We must delete the index entries for attached files.
+        // To be completed by Roy.
     }
     
     //***********************************************************************************************************

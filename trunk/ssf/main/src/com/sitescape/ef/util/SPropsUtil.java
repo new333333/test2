@@ -96,6 +96,10 @@ public class SPropsUtil {
 		return dirPath;
 	}
 	
+	public static File getFile(String key) throws ConfigPropertyNotFoundException {
+		return new File(getString(key));
+	}
+	
 	private static String get(String key) {
 		return (String) getInstance().getProperties().get(key);			
 	}

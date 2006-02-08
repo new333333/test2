@@ -1,7 +1,11 @@
 package com.sitescape.ef.repository;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.util.SPropsUtil;
@@ -23,6 +27,8 @@ import com.sitescape.ef.util.FileUploadItem;
  */
 public class RepositoryServiceUtil {
 
+	private static final Log logger = LogFactory.getLog(RepositoryServiceUtil.class);
+	
 	public static int fileInfo(String repositoryServiceName,
 			Binder binder, Entry entry, String fileName)
 		throws RepositoryServiceException {
@@ -48,9 +54,20 @@ public class RepositoryServiceUtil {
 		try {
 			// TODO For now we ignore file path relative to the owning entry.
 			// We simply treat that the file path is identical to the file name.
-			return service.createVersioned(session, binder, entry, fui
-					.getMultipartFile().getOriginalFilename(), fui
-					.getMultipartFile());
+			InputStream is = fui.getInputStream();
+			try {
+				return service.createVersioned(session, binder, entry, fui
+					.getOriginalFilename(), is);
+			}
+			finally {
+				try {
+					is.close();
+				} catch (IOException e) {
+					logger.error(e.getMessage(), e);
+				}
+			}
+		} catch (IOException e) {
+			throw new RepositoryServiceException(e);
 		} finally {
 			service.closeRepositorySession(session);
 		}
@@ -79,8 +96,20 @@ public class RepositoryServiceUtil {
 
 		Object session = service.openRepositorySession();
 		try {
-			service.update(session, binder, entry, fui.getMultipartFile()
-					.getOriginalFilename(), fui.getMultipartFile());
+			InputStream is = fui.getInputStream();
+			
+			try {
+				service.update(session, binder, entry, fui.getOriginalFilename(), is);
+			}
+			finally {
+				try {
+					is.close();
+				} catch (IOException e) {
+					logger.error(e.getMessage(), e);
+				}
+			}
+		} catch (IOException e) {
+			throw new RepositoryServiceException(e);
 		} finally {
 			service.closeRepositorySession(session);
 		}

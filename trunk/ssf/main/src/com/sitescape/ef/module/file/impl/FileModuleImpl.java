@@ -483,11 +483,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if(type != FileUploadItem.TYPE_FILE && type != FileUploadItem.TYPE_ATTACHMENT) {
 			logger.error("Unrecognized file processing type " + type + " for ["
 					+ fui.getName() + ","
-					+ fui.getMultipartFile().getOriginalFilename() + "]");
+					+ fui.getOriginalFilename() + "]");
 			throw new InternalException();
 		}
 		
-		String fileName = fui.getMultipartFile().getOriginalFilename();
+		String fileName = fui.getOriginalFilename();
 		String repositoryServiceName = fui.getRepositoryServiceName();
 
 		// First, find out whether or not this is a new file for the entry.
@@ -512,7 +512,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		// not input stream as input. In this case we read the file content
 	    		// into a byte array once and reuse it for all repository operations
 	    		// to avoid having to incur file I/O multiple times. 
-	    		byte[] primaryContent = fui.getMultipartFile().getBytes();
+	    		byte[] primaryContent = fui.getBytes();
 	    		
 	    		// Store primary file first, since we do not want to generate secondary
 	    		// files unless we could successfully store the primary file first. 
@@ -562,13 +562,25 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		// creating a byte array with its content), because it "might" give
 	    		// the service implementation a small chance to optimize the I/O.
 	    		
-	    		if(fAtt == null) { // New file for the entry
-	    			isNew = true;
-	    			fAtt = createFile(service, session, binder, entry, fui, fui.getMultipartFile());
+	    		InputStream is = fui.getInputStream();
+	    		
+	    		try {
+		    		if(fAtt == null) { // New file for the entry
+		    			isNew = true;
+		    			fAtt = createFile(service, session, binder, entry, fui, is);
+		    		}
+		    		else { // Existing file for the entry
+		    			writeExistingFile(service, session, binder, entry, fui, is);
+		    		}	 
 	    		}
-	    		else { // Existing file for the entry
-	    			writeExistingFile(service, session, binder, entry, fui, fui.getMultipartFile());
-	    		}	    		
+	    		finally {
+	    			try {
+	    				is.close();
+	    			}
+	    			catch(IOException e) {
+	    				logger.error(e.getMessage(), e);
+	    			}
+	    		}
 	    	}
     	}
     	finally {
@@ -615,7 +627,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private void writeExistingFile(RepositoryService service, Object session,
     		Binder binder, Entry entry, FileUploadItem fui, Object inputData)
 		throws CheckedOutByOtherException, RepositoryServiceException {
-    	String fileName = fui.getMultipartFile().getOriginalFilename();
+    	String fileName = fui.getOriginalFilename();
     	FileAttachment fAtt = entry.getFileAttachment(fui.getRepositoryServiceName(), fileName);
     	User user = RequestContextHolder.getRequestContext().getUser();
 
@@ -646,7 +658,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			else {
 				throw new InternalException();
 			}
-			updateFileAttachment(fAtt, user, versionName, fui.getMultipartFile().getSize());
+			updateFileAttachment(fAtt, user, versionName, fui.getSize());
 		}
 		else {
 	   		if(user.equals(co.getPrincipal())) {
@@ -695,7 +707,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private FileAttachment createFile(RepositoryService service, Object session, 
 			Binder binder, Entry entry, FileUploadItem fui, Object inputData) 
 		throws RepositoryServiceException {
-		String fileName = fui.getMultipartFile().getOriginalFilename();
+		String fileName = fui.getOriginalFilename();
 		
 		FileAttachment fAtt = createFileAttachment(entry, fui);
 		
@@ -711,11 +723,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			Binder binder, Entry entry, String fileName, Object inputData)
 		throws RepositoryServiceException {
 		String versionName = null;
-		if(inputData instanceof MultipartFile) {
+		/*if(inputData instanceof MultipartFile) {
 			versionName = service.createVersioned(session, binder, entry, 
 					fileName, (MultipartFile) inputData);
 		}
-		else if(inputData instanceof byte[]) {
+		else*/ if(inputData instanceof byte[]) {
 			versionName = service.createVersioned(session, binder, entry, fileName,
 					new ByteArrayInputStream((byte[]) inputData));
 		}
@@ -733,11 +745,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private void updateWithInputData(RepositoryService service, Object session,
 			Binder binder, Entry entry, String fileName, Object inputData)
 		throws RepositoryServiceException {
-		if(inputData instanceof MultipartFile) {
+		/*if(inputData instanceof MultipartFile) {
 			service.update(session, binder, entry, 
 					fileName, (MultipartFile) inputData);
 		}
-		else if(inputData instanceof byte[]) {
+		else*/ if(inputData instanceof byte[]) {
 			service.update(session, binder, entry, fileName,
 					new ByteArrayInputStream((byte[]) inputData));
 		}
@@ -766,7 +778,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
         User user = RequestContextHolder.getRequestContext().getUser();
 
-        String fileName = fui.getMultipartFile().getOriginalFilename();
+        String fileName = fui.getOriginalFilename();
 	
 		FileAttachment fAtt = new FileAttachment();
 		fAtt.setOwner(entry);
@@ -777,7 +789,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	fAtt.setName(fui.getName());
     	FileItem fItem = new FileItem();
     	fItem.setName(fileName);
-    	fItem.setLength(fui.getMultipartFile().getSize());
+    	fItem.setLength(fui.getSize());
     	fAtt.setFileItem(fItem);
 	
     	return fAtt;

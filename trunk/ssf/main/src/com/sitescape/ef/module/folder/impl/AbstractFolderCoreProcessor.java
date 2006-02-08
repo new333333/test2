@@ -219,12 +219,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         
         addReply_postSave(parent, entry, inputData, entryData);
         
-        addReply_indexAdd(parent, entry, inputData, entryData);
+        addReply_indexAdd(parent, entry, inputData, entryData, fileData);
         
         addReply_startWorkflow(entry);
         
         getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
        
+        cleanupFiles(fileData);
+        
         return entry.getId();
     }
     
@@ -279,12 +281,15 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     protected void addReply_postSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
     }
     
-    protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
+    protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 
+    		InputDataAccessor inputData, Map entryData, List fileData) {
         // Create an index document from the entry object.
         org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(entry.getParentFolder(), entry);
         
         // Register the index document for indexing.
-        IndexSynchronizationManager.addDocument(indexDoc);        
+        IndexSynchronizationManager.addDocument(indexDoc);     
+        
+        // Take care of attached files - to be completed by Roy.
     }
     
     protected void addReply_startWorkflow(FolderEntry entry) {
