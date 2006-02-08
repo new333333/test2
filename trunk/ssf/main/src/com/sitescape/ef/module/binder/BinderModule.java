@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.security.AccessControlException;

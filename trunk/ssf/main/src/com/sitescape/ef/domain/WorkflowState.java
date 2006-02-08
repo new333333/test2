@@ -1,14 +1,16 @@
 package com.sitescape.ef.domain;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Set;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.util.Validator;
+import com.sitescape.ef.security.acl.AccessType;
 
 /**
  * @hibernate.class table="SS_WorkflowStates" dynamic-update="true"
@@ -29,6 +31,7 @@ public class WorkflowState {
 	protected List wfStarts=null;
 	protected List wfEnterNotify=null;
 	protected List wfExitNotify = null;
+	protected Map wfAcls=null;
    
  	public Long getId() {
  		return tokenId;
@@ -84,6 +87,7 @@ public class WorkflowState {
  		wfStarts = null;
 		wfExitNotify = null;
 		wfEnterNotify = null;
+		wfAcls = null;
  	}
 
     /**
@@ -181,6 +185,15 @@ public class WorkflowState {
     	return wfExitNotify;
     	
     }
+    public WfAcl getAcl(AccessType type) {
+    	WfAcl acl=null;
+    	if (wfAcls == null) wfAcls = new HashMap();
+    	else acl = (WfAcl)wfAcls.get(type);
+    	if (acl != null) return acl;
+    	acl = WorkflowUtils.getStateAcl(definition, owner.getEntry(), state, type);
+    	wfAcls.put(type, acl);
+    	return acl;
+    }
    
     public List getThreadEndStates() {
     	if (endStates == null) {
@@ -197,5 +210,5 @@ public class WorkflowState {
     	if (getThreadEndStates().contains(state)) return true;
     	return false;
     }
- 	
+
 }

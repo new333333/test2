@@ -8,7 +8,7 @@ import org.jbpm.graph.exe.Token;
 import org.jbpm.context.exe.ContextInstance;
 
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
@@ -27,7 +27,7 @@ public class StopThreads extends AbstractActionHandler {
 		Long id = new Long(token.getId());
 		Node current = token.getNode();
 		String stateName = current.getName();
-		AclControlledEntry entry = loadEntry(ctx);
+		WorkflowControlledEntry entry = loadEntry(ctx);
 		WorkflowState ws = entry.getWorkflowState(id);
 		 //record event may not have happened yet
 		ws.setState(stateName);

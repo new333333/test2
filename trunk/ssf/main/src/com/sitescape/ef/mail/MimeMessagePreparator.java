@@ -1,4 +1,4 @@
-package com.sitescape.ef.module.mail;
+package com.sitescape.ef.mail;
 
 import javax.mail.internet.MimeMessage;
 

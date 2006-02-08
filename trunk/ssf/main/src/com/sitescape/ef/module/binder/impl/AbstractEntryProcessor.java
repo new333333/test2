@@ -22,7 +22,7 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.SFQuery;
-import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Principal;
@@ -45,7 +45,6 @@ import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AccessType;
-import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
@@ -99,7 +98,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         Map entryData = (Map) entryDataAll.get("entryData");
         List fileData = (List) entryDataAll.get("fileData");
         
-        AclControlledEntry entry = addEntry_create(clazz);
+        WorkflowControlledEntry entry = addEntry_create(clazz);
         entry.setEntryDef(def);
         
         //need to set entry/binder information before generating file attachments
@@ -132,7 +131,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         accessControlManager.checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);        
     }
     
-    protected void addEntry_processFiles(Binder binder, AclControlledEntry entry, List fileData) 
+    protected void addEntry_processFiles(Binder binder, WorkflowControlledEntry entry, List fileData) 
     	throws WriteFilesException {
     	EntryBuilder.writeFiles(getFileModule(), binder, entry, fileData);
     }
@@ -142,22 +141,22 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         return getDefinitionModule().getEntryData(def, inputData, fileItems);
     }
     
-    protected AclControlledEntry addEntry_create(Class clazz)  {
+    protected WorkflowControlledEntry addEntry_create(Class clazz)  {
     	try {
-    		return (AclControlledEntry)clazz.newInstance();
+    		return (WorkflowControlledEntry)clazz.newInstance();
     	} catch (Exception ex) {
     		return null;
     	}
     }
     
-    protected void addEntry_fillIn(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
+    protected void addEntry_fillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setCreation(new HistoryStamp(user));
         entry.setModification(entry.getCreation());
         
         
         // The entry inherits acls from the parent by default. 
-        getAclManager().doInherit(binder, (AclControlledEntry) entry);
+        getAclManager().doInherit(binder, (WorkflowControlledEntry) entry);
         for (Iterator iter=entryData.values().iterator(); iter.hasNext();) {
         	Object obj = iter.next();
         	//need to generate id for the event so its id can be saved in customAttr
@@ -167,17 +166,17 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         EntryBuilder.buildEntry(entry, entryData);
     }
     
-    protected void addEntry_preSave(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {
+    protected void addEntry_preSave(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
     }
     
-    protected void addEntry_save(AclControlledEntry entry) {
+    protected void addEntry_save(WorkflowControlledEntry entry) {
         getCoreDao().save(entry);
     }
     
-    protected void addEntry_postSave(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {
+    protected void addEntry_postSave(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
     }
     
-    protected void addEntry_indexAdd(Binder binder, AclControlledEntry entry, InputDataAccessor inputData) {
+    protected void addEntry_indexAdd(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData) {
         
         // Create an index document from the entry object.
         org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry);
@@ -186,7 +185,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         IndexSynchronizationManager.addDocument(indexDoc);        
     }
     
-    protected void addEntry_startWorkflow(AclControlledEntry entry) {
+    protected void addEntry_startWorkflow(WorkflowControlledEntry entry) {
     	Binder binder = entry.getParentBinder();
     	Map workflowAssociations = (Map) binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS);
     	if (workflowAssociations != null) {
@@ -206,7 +205,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
    //***********************************************************************************************************
     public Long modifyEntry(Binder binder, Long entryId, InputDataAccessor inputData, Map fileItems) 
     		throws AccessControlException, WriteFilesException {
-		AclControlledEntry entry = modifyEntry_load(binder, entryId);
+		WorkflowControlledEntry entry = modifyEntry_load(binder, entryId);
 	    modifyEntry_accessControl(binder, entry);
 	
 	    Map entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
@@ -224,55 +223,56 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 	}
 	public Long modifyEntryData(Binder binder, Long entryId, Map entryData) 
 			throws AccessControlException {
-    	AclControlledEntry entry = modifyEntry_load(binder, entryId);
+    	WorkflowControlledEntry entry = modifyEntry_load(binder, entryId);
 	    modifyEntry_accessControl(binder, entry);
 	
         EntryBuilder.updateEntry(entry, entryData);
 		return entry.getId();
 	}
-    protected AclControlledEntry modifyEntry_load(Binder binder, Long entryId) {
+    protected WorkflowControlledEntry modifyEntry_load(Binder binder, Long entryId) {
     	return entry_load(binder, entryId);
     	
     }
-    protected void modifyEntry_accessControl(Binder binder, AclControlledEntry entry) throws AccessControlException {
-        try {
-        	//Check if the user is allowed to modify entries in the binder
-        	getAccessControlManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES);
-        } catch(AccessControlException ace) {
-        	//The user doesn't have binder level priv's
-            // Check if the user has "read" access to the particular entry.
-            getAccessControlManager().checkAcl(binder, entry, AccessType.READ);
-            // Check if the user has "write" access to the particular entry.
-            getAccessControlManager().checkAcl(binder, entry, AccessType.WRITE);
-        }
+    protected void modifyEntry_accessControl(Binder binder, WorkflowControlledEntry entry) throws AccessControlException {
+        //Check if the user is allowed to modify entries in the binder
+        if (entry.getInheritAclFromParent()) {
+            getAccessControlManager().checkAcl(binder, entry, AccessType.READ, true, false);
+        	getAccessControlManager().checkAcl(binder, entry, AccessType.WRITE, 
+        			getAccessControlManager().testOperation(binder, WorkAreaOperation.CREATOR_MODIFY), false);
+       } else { 
+            getAccessControlManager().checkAcl(binder, entry, AccessType.READ,  
+               		entry.checkOwner(AccessType.READ), entry.checkWorkArea(AccessType.READ));
+            getAccessControlManager().checkAcl(binder, entry, AccessType.WRITE, 
+               		entry.checkOwner(AccessType.WRITE), entry.checkWorkArea(AccessType.WRITE));
+        }        	        		
     }
     
-    protected void modifyEntry_processFiles(Binder binder, AclControlledEntry entry, List fileData) 
+    protected void modifyEntry_processFiles(Binder binder, WorkflowControlledEntry entry, List fileData) 
     throws WriteFilesException {
     	EntryBuilder.writeFiles(getFileModule(), binder, entry, fileData);
     }
-    protected Map modifyEntry_toEntryData(AclControlledEntry entry, InputDataAccessor inputData, Map fileItems) {
+    protected Map modifyEntry_toEntryData(WorkflowControlledEntry entry, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
         return getDefinitionModule().getEntryData(entry.getEntryDef(), inputData, fileItems);
     }
-    protected void modifyEntry_fillIn(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
+    protected void modifyEntry_fillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setModification(new HistoryStamp(user));
         EntryBuilder.updateEntry(entry, entryData);
 
     }
 
-    protected void modifyEntry_postFillIn(Binder binder, AclControlledEntry entry, InputDataAccessor inputData, Map entryData) {
+    protected void modifyEntry_postFillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
     }
     
-    protected void modifyEntry_indexAdd(Binder binder, AclControlledEntry entry, InputDataAccessor inputData) {
+    protected void modifyEntry_indexAdd(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData) {
     	indexEntry(entry);
     }
     
     //***********************************************************************************************************
     public void modifyWorkflowState(Binder binder, Long entryId, Long tokenId, String toState) {
 
-    	AclControlledEntry entry = entry_load(binder, entryId);
+    	WorkflowControlledEntry entry = entry_load(binder, entryId);
  		
 		//Find the workflowState
 		WorkflowState ws = entry.getWorkflowState(tokenId);
@@ -326,7 +326,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
        			logger.info("Indexing at " + total + "(" + binder.getId().toString() + ")");
        			
        			for (int i=0; i<batch.size(); ++i) {
-       				AclControlledEntry entry = (AclControlledEntry)batch.get(i);
+       				WorkflowControlledEntry entry = (WorkflowControlledEntry)batch.get(i);
        				// 	Create an index document from the entry object.
        				org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry);
            			if (logger.isDebugEnabled())
@@ -377,7 +377,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
    	protected abstract SFQuery indexBinder_getQuery(Binder binder);
  
     //***********************************************************************************************************
-   	public void indexEntry(AclControlledEntry entry) {
+   	public void indexEntry(WorkflowControlledEntry entry) {
 		// 	Create an index document from the entry object.
    		org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(entry.getParentBinder(), entry);
         
@@ -391,7 +391,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
    	}
    	public void indexEntry(Collection entries) {
    		for (Iterator iter=entries.iterator(); iter.hasNext();) {
-   			indexEntry((AclControlledEntry)iter.next());
+   			indexEntry((WorkflowControlledEntry)iter.next());
    		}
    	}
    	
@@ -462,10 +462,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         if (maxChildEntries == 0) maxChildEntries = DEFAULT_MAX_CHILD_ENTRIES;
         return maxChildEntries;
     }
-    protected boolean getBinderEntries_accessControl(Binder binder, AclControlled obj) {
-    	return getAccessControlManager().testAcl(binder, (AclControlled) obj, AccessType.READ);
-    }
-    
+     
     protected Hits getBinderEntries_doSearch(Binder binder, String [] entryTypes, int maxResults, org.dom4j.Document searchFilter) {
        	Hits hits = null;
        	// Build the query
@@ -533,9 +530,9 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     
 
     //***********************************************************************************************************
-    public AclControlledEntry getEntry(Binder parentBinder, Long entryId, int type) {
+    public WorkflowControlledEntry getEntry(Binder parentBinder, Long entryId, int type) {
     	//get the entry
-    	AclControlledEntry entry = getEntry_load(parentBinder, entryId);
+    	WorkflowControlledEntry entry = getEntry_load(parentBinder, entryId);
         //check access
         getEntry_accessControl(parentBinder, entry);
         //Initialize users
@@ -543,25 +540,26 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         return entry;
     }
           
-    protected AclControlledEntry getEntry_load(Binder binder, Long entryId) {
+    protected WorkflowControlledEntry getEntry_load(Binder binder, Long entryId) {
     	return entry_loadFull(binder, entryId);
     }
              
-    protected void getEntry_accessControl(Binder parentBinder, AclControlledEntry entry) {
+    protected void getEntry_accessControl(Binder parentBinder, WorkflowControlledEntry entry) {
            
         // Check if the user has the privilege to view the entries in the 
         // work area
     	getBinderEntries_accessControl(parentBinder);
-              
-        // Check if the user has "read" access to the particular entry.
-        getAccessControlManager().checkAcl(parentBinder, entry, AccessType.READ);
-        
-        // TODO If there is a workflow attached to the entry, we must perform
-        // additional access check based on the state the entry is currently in.
+         //Check if the user is allowed to read this entry
+        if (entry.getInheritAclFromParent()) {
+           	getAccessControlManager().checkAcl(parentBinder, entry, AccessType.READ, true, false);
+       } else { 
+            getAccessControlManager().checkAcl(parentBinder, entry, AccessType.READ,  
+            		entry.checkOwner(AccessType.READ), entry.checkWorkArea(AccessType.READ));      	        		
+       }
     }
    //***********************************************************************************************************   
     public void deleteEntry(Binder parentBinder, Long entryId) {
-    	AclControlledEntry entry = deleteEntry_load(parentBinder, entryId);
+    	WorkflowControlledEntry entry = deleteEntry_load(parentBinder, entryId);
         deleteEntry_accessControl(parentBinder, entry);
         deleteEntry_preDelete(parentBinder, entry);
         deleteEntry_workflow(parentBinder, entry);
@@ -571,32 +569,43 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         deleteEntry_indexDel(entry);
    	
     }
-    protected AclControlledEntry deleteEntry_load(Binder binder, Long entryId) {
+    protected WorkflowControlledEntry deleteEntry_load(Binder binder, Long entryId) {
     	//load entry and all its collections - will need them to clean up
     	return entry_loadFull(binder, entryId);
     }
         
-    protected void deleteEntry_accessControl(Binder parentBinder, AclControlledEntry entry) {
-        getAccessControlManager().checkOperation(parentBinder, WorkAreaOperation.DELETE_ENTRIES);
+    protected void deleteEntry_accessControl(Binder parentBinder, WorkflowControlledEntry entry) {
+ //       getAccessControlManager().checkOperation(parentBinder, WorkAreaOperation.DELETE_ENTRIES);
         
-        getAccessControlManager().checkAcl(parentBinder, entry, AccessType.DELETE);
+ //       getAccessControlManager().checkAcl(parentBinder, entry, AccessType.DELETE);
+        //Check if the user is allowed to delete entries in the binder
+        if (entry.getInheritAclFromParent()) {
+            getAccessControlManager().checkAcl(parentBinder, entry, AccessType.READ, true, false);
+        	getAccessControlManager().checkAcl(parentBinder, entry, AccessType.DELETE, 
+        			getAccessControlManager().testOperation(parentBinder, WorkAreaOperation.CREATOR_DELETE), true);
+       } else { 
+            getAccessControlManager().checkAcl(parentBinder, entry, AccessType.READ,  
+               		entry.checkOwner(AccessType.READ), entry.checkWorkArea(AccessType.READ));
+            getAccessControlManager().checkAcl(parentBinder, entry, AccessType.DELETE, 
+               		entry.checkOwner(AccessType.DELETE), entry.checkWorkArea(AccessType.DELETE));
+        }        	        		
     }
-    protected void deleteEntry_preDelete(Binder parentBinder, AclControlledEntry entry) {
+    protected void deleteEntry_preDelete(Binder parentBinder, WorkflowControlledEntry entry) {
     }
         
-    protected void deleteEntry_workflow(Binder parentBinder, AclControlledEntry entry) {
+    protected void deleteEntry_workflow(Binder parentBinder, WorkflowControlledEntry entry) {
     	getWorkflowModule().deleteEntryWorkflow(parentBinder, entry);
     }
     
-    protected void deleteEntry_processFiles(Binder parentBinder, AclControlledEntry entry) {
+    protected void deleteEntry_processFiles(Binder parentBinder, WorkflowControlledEntry entry) {
     	getFileModule().deleteFiles(parentBinder, entry);
     }
     
-    protected abstract void deleteEntry_delete(Binder parentBinder, AclControlledEntry entry); 
-    protected void deleteEntry_postDelete(Binder parentBinder, AclControlledEntry entry) {
+    protected abstract void deleteEntry_delete(Binder parentBinder, WorkflowControlledEntry entry); 
+    protected void deleteEntry_postDelete(Binder parentBinder, WorkflowControlledEntry entry) {
     }
 
-    protected void deleteEntry_indexDel(AclControlledEntry entry) {
+    protected void deleteEntry_indexDel(WorkflowControlledEntry entry) {
         // Delete the document that's currently in the index.
         IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
     }
@@ -606,11 +615,11 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
      * Load all principals assocated with an entry.  
      * This is a performance optimization for display.
      */
-    protected abstract AclControlledEntry entry_load(Binder parentBinder, Long entryId);
+    protected abstract WorkflowControlledEntry entry_load(Binder parentBinder, Long entryId);
     
-    protected abstract AclControlledEntry entry_loadFull(Binder parentBinder, Long entryId);
+    protected abstract WorkflowControlledEntry entry_loadFull(Binder parentBinder, Long entryId);
     
-    protected void loadEntryHistory(AclControlledEntry entry) {
+    protected void loadEntryHistory(WorkflowControlledEntry entry) {
         Set ids = new HashSet();
         if (entry.getCreation() != null)
             ids.add(entry.getCreation().getPrincipal().getId());
@@ -654,7 +663,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         }
         getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      }     
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, AclControlledEntry entry) {
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, WorkflowControlledEntry entry) {
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
         
         // Add uid

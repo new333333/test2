@@ -1,4 +1,4 @@
-package com.sitescape.ef.module.mail;
+package com.sitescape.ef.mail;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Date;

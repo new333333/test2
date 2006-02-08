@@ -7,7 +7,7 @@ import org.jbpm.graph.exe.Token;
 import org.jbpm.context.exe.ContextInstance;
 
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.AclControlledEntry;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 
 
 public class RecordEvent extends AbstractActionHandler {
@@ -21,7 +21,7 @@ public class RecordEvent extends AbstractActionHandler {
 		Token token = executionContext.getToken();
 		Long id = new Long(token.getId());
 		String state = token.getNode().getName();
-		AclControlledEntry entry = loadEntry(ctx);
+		WorkflowControlledEntry entry = loadEntry(ctx);
 		WorkflowState ws = entry.getWorkflowState(id);
 		if (ws != null) {
 			ws.setState(state);

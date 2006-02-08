@@ -5,7 +5,8 @@ import java.util.Date;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import com.sitescape.ef.module.mail.MailModule;
+
+import com.sitescape.ef.mail.MailModule;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.NoFolderByTheIdException;

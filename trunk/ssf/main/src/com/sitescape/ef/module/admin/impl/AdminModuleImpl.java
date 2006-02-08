@@ -23,6 +23,7 @@ import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.mail.MailModule;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.jobs.EmailNotification;
 import com.sitescape.ef.jobs.EmailPosting;
@@ -37,7 +38,6 @@ import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.EmailAlias;
-import com.sitescape.ef.module.mail.MailModule;
 /**
  * @author Janet McCann
  *

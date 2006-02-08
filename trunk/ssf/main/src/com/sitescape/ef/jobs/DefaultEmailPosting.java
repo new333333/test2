@@ -7,7 +7,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.module.mail.MailModule;
+import com.sitescape.ef.mail.MailModule;
 import com.sitescape.ef.util.SpringContextUtil;
 
 public class DefaultEmailPosting extends SSStatefulJob implements EmailPosting {

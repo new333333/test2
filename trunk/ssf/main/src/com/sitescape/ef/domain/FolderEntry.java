@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * <code>FolderEntry</code> represents a entry or a reply.
  *
  */
-public class FolderEntry extends AclControlledEntry implements MultipleWorkflowSupport {
+public class FolderEntry extends WorkflowControlledEntry implements MultipleWorkflowSupport {
 
     protected boolean allowEdits = false;
     protected HistoryStamp reservedDoc;

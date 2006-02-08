@@ -4,7 +4,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.File;
 
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.module.mail.JavaMailSender;
+import com.sitescape.ef.mail.JavaMailSender;
 
 public interface FailedEmail {
     /**

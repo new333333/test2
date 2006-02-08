@@ -1,5 +1,5 @@
 
-package com.sitescape.ef.module.ldap.impl;
+package com.sitescape.ef.ldap.impl;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.HashMap;
@@ -26,8 +26,8 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.jobs.LdapSynchronization;
-import com.sitescape.ef.module.ldap.LdapConfig;
-import com.sitescape.ef.module.ldap.LdapModule;
+import com.sitescape.ef.ldap.LdapConfig;
+import com.sitescape.ef.ldap.LdapModule;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.User;

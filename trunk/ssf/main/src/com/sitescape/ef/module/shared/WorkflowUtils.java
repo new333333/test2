@@ -13,7 +13,11 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.domain.WfWaits;
 import com.sitescape.ef.domain.WfNotify;
+import com.sitescape.ef.domain.WfAcl;
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.util.GetterUtil;
+import com.sitescape.ef.security.acl.AccessType;
+
 
 /**
  * @author hurley
@@ -225,7 +229,58 @@ public class WorkflowUtils {
 			}
 		}
 		return endStates;
-    }    
+    } 
+    public static WfAcl getStateAcl(Definition wfDef, Entry entry, String stateName, AccessType type) {
+    	Document wfDoc = wfDef.getDefinition();
+		//Find the current state in the definition
+		Element stateEle = getState(wfDoc.getRootElement(), stateName);
+		if (stateEle != null) {
+			Element accessControls = (Element)stateEle.selectSingleNode("./item[@name='accessControls']");
+			if (accessControls != null) {
+				if (AccessType.READ.equals(type))
+						return getAcl((Element)accessControls.selectSingleNode("./item[@name='readAccess']"));
+				else if (AccessType.WRITE.equals(type))  
+						return getAcl((Element)accessControls.selectSingleNode("./item[@name='modifyAccess']"));
+				else if (AccessType.DELETE.equals(type)) 
+						return getAcl((Element)accessControls.selectSingleNode("./item[@name='deleteAccess']"));
+			}
+			
+		}
+		return getAcl(null);
+    }
+    public static Map getAcls(Definition wfDef, Entry entry, String stateName) {
+    	Document wfDoc = wfDef.getDefinition();
+		//Find the current state in the definition
+		Element stateEle = getState(wfDoc.getRootElement(), stateName);
+		Map results = new HashMap();
+		if (stateEle != null) {
+			Element accessControls = (Element)stateEle.selectSingleNode("./item[@name='accessControls']");
+			if (accessControls != null) {
+				results.put(AccessType.READ, 
+						getAcl((Element)accessControls.selectSingleNode("./item[@name='readAccess']")));
+				results.put(AccessType.WRITE, 
+						getAcl((Element)accessControls.selectSingleNode("./item[@name='modifyAccess']")));
+				results.put(AccessType.DELETE, 
+						getAcl((Element)accessControls.selectSingleNode("./item[@name='deleteAccess']")));
+			}
+			
+		}
+		return results;
+    }
+    private static WfAcl getAcl(Element aclElement) {
+    	WfAcl result = new WfAcl();
+    	if (aclElement == null) return result;
+    	Element props = (Element)aclElement.selectSingleNode("./properties/property[@name='folderDefault']");
+    	if (props != null)
+    		result.setUseDefault(GetterUtil.getBoolean(props.attributeValue("value"), true));
+    	props = (Element)aclElement.selectSingleNode("./properties/property[@name='entryCreator']");
+    	if (props != null)
+    		result.setCreator(GetterUtil.getBoolean(props.attributeValue("value"), false));
+    	props = (Element)aclElement.selectSingleNode("./properties/property[@name='userGroupAccess']");
+    	if (props != null)
+    		result.setPrincipals(props.attributeValue("value"));
+    	return result;
+    }
     public static List getEnterNotifications(Definition wfDef, String stateName) {
     	Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition

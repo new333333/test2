@@ -1,4 +1,4 @@
-package com.sitescape.ef.module.ldap.impl;
+package com.sitescape.ef.ldap.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -43,7 +43,7 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     private Definition defaultPostingDef;
 
     private boolean functionMembershipInherited = true;
-    private AclSet aclSet;
+    private PersistentAclSet aclSet;
     private boolean inheritAclFromParent = true;
     
     public abstract List getEntryDefs();
@@ -313,21 +313,31 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     }
     
     /**
-     * Used by security manager only. Application should NEVER invoke this
-     * method directly.
+     * Hiberate interfaces to load actual class vs interface needed for AclControlled
      *  
-     * @hibernate.component prefix="acl_"
+     * @hibernate.component prefix="acl_" 
      */
-    public AclSet getAclSet() {
+    private PersistentAclSet getHAclSet() {
         return aclSet;
+    }
+     private void setHAclSet(PersistentAclSet aclSet) {
+        this.aclSet = aclSet;
+    }
+     /**
+     * Used by security manager only. Application should NEVER invoke this
+     * method directly.  
+     * @hibernate.component prefix="acl_" class="com.sitescape.ef.domain.PersistentAclSet" 
+     */
+    public void setAclSet(AclSet aclSet) {
+        this.aclSet = (PersistentAclSet)aclSet;
     }
     /**
      * Used by security manager only. Application should NEVER invoke this
      * method directly.  
      */
-    public void setAclSet(AclSet aclSet) {
-        this.aclSet = aclSet;
-    }
+    public AclSet getAclSet() {
+        return aclSet;
+    } 
     
     /**
      * @hibernate.property column="acl_inheritFromParent" not-null="true"

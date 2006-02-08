@@ -21,10 +21,10 @@ import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
 
 import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.module.mail.MailModule;
+import com.sitescape.ef.mail.JavaMailSender;
+import com.sitescape.ef.mail.MailModule;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.module.mail.JavaMailSender;
 
 /**
  * @author Janet McCann

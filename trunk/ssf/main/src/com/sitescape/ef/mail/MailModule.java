@@ -1,5 +1,5 @@
 
-package com.sitescape.ef.module.mail;
+package com.sitescape.ef.mail;
 import java.util.Date;
 import java.util.Map;
 
@@ -7,7 +7,7 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.jobs.ScheduleInfo;
-import com.sitescape.ef.module.mail.MimeMessagePreparator;
+import com.sitescape.ef.mail.MimeMessagePreparator;
 
 import javax.mail.internet.MimeMessage;
 
