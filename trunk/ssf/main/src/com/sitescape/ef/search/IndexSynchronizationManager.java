@@ -126,7 +126,7 @@ public class IndexSynchronizationManager {
      * Warning: For use by framework only. Not to be called directly by application code.
      *
      */
-    public static void commit() {
+    public static void applyChanges() {
         // Question - Should we send one document at a time to the indexer
         //            or batch them in a single request??
         
@@ -151,7 +151,12 @@ public class IndexSynchronizationManager {
         finally {
             clear();
         }
-     }
+    }
+    
+    public static void discardChanges() {
+    	// Discard all requests. 
+    	clear(); 
+    }
     
     private static List getRequests() {
         List list = (List) requests.get();

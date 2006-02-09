@@ -144,6 +144,12 @@
 		</property>
 	</bean>
 
+	<bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="isolationLevelName"><value>ISOLATION_READ_COMMITTED</value></property>
+		<property name="propagationBehaviorName"><value>PROPAGATION_REQUIRED</value></property>
+	</bean>
+
 	<bean id="userReloadInterceptor" class="com.sitescape.ef.util.UserReloadInterceptor">
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>
@@ -374,18 +380,27 @@
 
 	<bean id="folderModule" parent="baseTransactionProxy">
 		<property name="target"><ref local="folderModuleTarget"/></property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="addFolder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modifyWorkflowState">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="deleteEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+			</props>
+		</property>
 	</bean>
 	<bean id="folderModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.FolderModuleImpl">
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
 	</bean>
 
 	<bean id="defaultFolderCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.DefaultFolderCoreProcessor">
+		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
 		<property name="workflowModule"><ref local="workflowModuleTarget"/></property>
 		<property name="fileModule"><ref local="fileModule"/></property>
 	</bean>
 
 	<bean id="defaultProfileCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.profile.impl.DefaultProfileCoreProcessor">
+		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 		<property name="definitionModule"><ref local="definitionModuleTarget"/></property>
 		<property name="workflowModule"><ref local="workflowModuleTarget"/></property>
 		<property name="fileModule"><ref local="fileModule"/></property>
