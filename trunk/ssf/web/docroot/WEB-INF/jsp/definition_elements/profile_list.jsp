@@ -36,6 +36,19 @@ function highlightLineById(id) {
 <div class="ss_folder">
 <br />
 
+<div style="margin:0px;">
+<div style="position:relative; top:2; margin:2px; 
+  border-top:solid #666666 1px; border-right:solid #666666 1px; border-left:solid #666666 1px; 
+  background-color:#cecece;">
+<table class="ss_style" cellspacing="0" cellpadding="0" width="95%">
+<tr>
+<td align="center">
+<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
+</td>
+</tr>
+</table>
+</div>
+</div>
 <ssf:slidingTable type="sliding" folderId="<%= binderId %>">
 
 <ssf:slidingTableRow headerRow="true">

@@ -13,6 +13,7 @@ import com.sitescape.ef.portlet.binder.AbstractFilterController;
 public class FilterController extends AbstractFilterController {
 	protected void setResponseOnClose(ActionResponse response, Long binderId) {
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 	}
 
 }
