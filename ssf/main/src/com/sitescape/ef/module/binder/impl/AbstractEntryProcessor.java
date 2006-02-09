@@ -20,6 +20,9 @@ import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.SFQuery;
@@ -88,34 +91,51 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 	protected FileModule getFileModule() {
 		return fileModule;
 	}
+	
+	private TransactionTemplate transactionTemplate;
 
-    //***********************************************************************************************************	
-    public Long addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
+    protected TransactionTemplate getTransactionTemplate() {
+		return transactionTemplate;
+	}
+	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+		this.transactionTemplate = transactionTemplate;
+	}
+	
+	//***********************************************************************************************************	
+    public Long addEntry(final Binder binder, Definition def, Class clazz, 
+    		final InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
         
         addEntry_accessControl(binder);
         
         Map entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems);
-        Map entryData = (Map) entryDataAll.get("entryData");
+        final Map entryData = (Map) entryDataAll.get("entryData");
         List fileData = (List) entryDataAll.get("fileData");
         
-        WorkflowControlledEntry entry = addEntry_create(clazz);
+        final WorkflowControlledEntry entry = addEntry_create(clazz);
         entry.setEntryDef(def);
         
-        //need to set entry/binder information before generating file attachments
-        //Attachments/Events need binder info for AnyOwner
-        addEntry_fillIn(binder, entry, inputData, entryData);
+        // The following part requires update database transaction.
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+                //need to set entry/binder information before generating file attachments
+                //Attachments/Events need binder info for AnyOwner
+                addEntry_fillIn(binder, entry, inputData, entryData);
+                
+                addEntry_preSave(binder, entry, inputData, entryData);      
+
+                addEntry_save(binder, entry, inputData, entryData);      
+                
+                return null;
+        	}
+        });
         
-        addEntry_preSave(binder, entry, inputData, entryData);
-        
-        addEntry_save(entry);
+        addEntry_postSave(binder, entry, inputData, entryData);
         
         // We must save the entry before processing files because it makes use
         // of the persistent id of the entry. 
         addEntry_processFiles(binder, entry, fileData);
-        
-        addEntry_postSave(binder, entry, inputData, entryData);
         
         //After the entry is successfully added, start up any associated workflows
         addEntry_startWorkflow(entry);
@@ -168,17 +188,17 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         }
         EntryBuilder.buildEntry(entry, entryData);
     }
-    
+
     protected void addEntry_preSave(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
     }
-    
-    protected void addEntry_save(WorkflowControlledEntry entry) {
+
+    protected void addEntry_save(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
         getCoreDao().save(entry);
     }
     
     protected void addEntry_postSave(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
     }
-    
+
     protected void addEntry_indexAdd(Binder binder, WorkflowControlledEntry entry, 
     		InputDataAccessor inputData, List fileData) {
         

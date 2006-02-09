@@ -18,6 +18,6 @@ public class HistoryMapComparator implements Comparator {
 		if (f1 == f2) return 0;
 		if (f1 == null) return 1;
 		if (f2 == null) return -1;
-		return ((Date) f1.getValue()).compareTo(f2.getValue());
+		return ((Date) f1.getValue()).compareTo((Date) f2.getValue());
 	}
 }
