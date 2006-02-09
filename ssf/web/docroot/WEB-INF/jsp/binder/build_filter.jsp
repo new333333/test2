@@ -209,16 +209,22 @@ function checkFilterForm(obj) {
 		  </td>
 		  <td valign="top">
 		    <div id="entryList<%= String.valueOf(i) %>" style="display:inline;">
+<%
+			if (!((String) ss_searchFilterData.get("filterType" + String.valueOf(i))).equals("text")) {
+%>
 		      <select name="ss_filter_entry_def_id<%= String.valueOf(i) %>" size="1" multiple>
 <%
-			if (ss_searchFilterData.containsKey("ss_filter_entry_def_id" + String.valueOf(i))) {
-				%>
+				if (ss_searchFilterData.containsKey("ss_filter_entry_def_id" + String.valueOf(i))) {
+%>
 				<option value="<%= (String) ss_searchFilterData.get("ss_filter_entry_def_id" + String.valueOf(i)) %>" 
 				  selected><%= (String) ss_searchFilterData.get("ss_filter_entry_def_id_caption" + String.valueOf(i)) %></option>
-				<%
-			}
+<%
+				}
 %>
 		      </select>
+<%
+			}
+%>
 			  <input type="hidden" name="filterType<%= String.valueOf(i) %>"
 			    value="<%= (String) ss_searchFilterData.get("filterType" + String.valueOf(i)) %>"/>
 		    </div>
@@ -226,13 +232,17 @@ function checkFilterForm(obj) {
 		  <td valign="top">
 		    <div id="elementList<%= String.valueOf(i) %>" style="visibility:visible; display:inline;">
 <%
-			if (ss_searchFilterData.containsKey("elementName" + String.valueOf(i))) {
-				%>
+			if (((String) ss_searchFilterData.get("filterType" + String.valueOf(i))).equals("text")) {
+%>
+				<span><ssf:nlt tag="filter.searchText" text="Search text"/>:</span>
+<%
+			} else if (ss_searchFilterData.containsKey("elementName" + String.valueOf(i))) {
+%>
 				<select name="elementName<%= String.valueOf(i) %>" size="1" multiple>
 				  <option value="<%= (String) ss_searchFilterData.get("elementName" + String.valueOf(i)) %>" selected>
 				    <%= (String) ss_searchFilterData.get("elementNameCaption" + String.valueOf(i)) %></option>
 				</select>
-				<%
+<%
 			}
 %>
 		    </div>
@@ -240,21 +250,31 @@ function checkFilterForm(obj) {
 		  <td valign="top">
 		    <div id="valueList<%= String.valueOf(i) %>" style="visibility:visible; display:inline;">
 <%
-			if (ss_searchFilterData.containsKey("elementValue" + String.valueOf(i))) {
-				Map valueMap = (Map) ss_searchFilterData.get("elementValue" + String.valueOf(i));
+			if (((String) ss_searchFilterData.get("filterType" + String.valueOf(i))).equals("text")) {
+				if (ss_searchFilterData.containsKey("elementValue" + String.valueOf(i))) {
+					String value = (String) ss_searchFilterData.get("elementValue" + String.valueOf(i));
+%>
+				<input type="text" name="elementValue<%= String.valueOf(i) %>" style="width:150px;" 
+				  value="<%= value.replaceAll("\\\"", "\\\"") %>">
+<%
+				}
+			} else {
+				if (ss_searchFilterData.containsKey("elementValue" + String.valueOf(i))) {
+					Map valueMap = (Map) ss_searchFilterData.get("elementValue" + String.valueOf(i));
 %>
 				<select name="elementValue<%= String.valueOf(i) %>" size="<%= String.valueOf(valueMap.entrySet().size()) %>" multiple>
 <%
-				Iterator itValues = valueMap.entrySet().iterator();
-				while (itValues.hasNext()) {
-					String value = (String)((Map.Entry)itValues.next()).getKey();
-					%>
-					<option name="<%= value %>" selected><%= value %></option>
-					<%
-				}
+					Iterator itValues = valueMap.entrySet().iterator();
+					while (itValues.hasNext()) {
+						String value = (String)((Map.Entry)itValues.next()).getKey();
+						%>
+						<option name="<%= value %>" selected><%= value %></option>
+						<%
+					}
 %>
 				</select>
 <%
+				}
 			}
 %>
 		    </div>

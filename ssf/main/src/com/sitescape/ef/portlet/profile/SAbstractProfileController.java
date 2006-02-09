@@ -16,6 +16,7 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
@@ -23,6 +24,7 @@ import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
 
+import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -35,7 +37,16 @@ public class SAbstractProfileController extends SAbstractController {
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		Map users = getProfileModule().getUsers(binderId);
+		UserProperties userFolderProperties = getProfileModule().getUserFolderProperties(user.getId(), binderId);
+		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
+		Map users = null;
+		if (searchFilterName != null && !searchFilterName.equals("")) {
+			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+			Document searchFilter = (Document)searchFilters.get(searchFilterName);
+			users = getProfileModule().getUsers(binderId, ObjectKeys.LISTING_MAX_PAGE_SIZE, searchFilter);
+		} else {
+			users = getProfileModule().getUsers(binderId, ObjectKeys.LISTING_MAX_PAGE_SIZE);
+		}
 		ProfileBinder binder = (ProfileBinder)users.get(ObjectKeys.BINDER);
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FOLDER, binder);
