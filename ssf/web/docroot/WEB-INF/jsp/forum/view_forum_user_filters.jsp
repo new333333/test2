@@ -10,6 +10,7 @@
 		renderRequest.setAttribute("ss_searchFilters", searchFilters);
 	}
 %>
+
 <div style="display:inline;" id="<portlet:namespace/>ss_filter_select">
 <form class="ss_style" action="<portlet:renderURL windowState="maximized">
 		<portlet:param name="action" value="view_listing"/>
@@ -32,6 +33,8 @@ name="select_filter" onChange="ss_changeUserFilter(this);">
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		</portlet:renderURL>"
 ><span class="ss_fineprint"><ssf:nlt tag="edit" text="edit"/></span></a>
+
+
 </form></div>
 <script type="text/javascript">
 	var spanObj = ss_createSpannedAreaObj("<portlet:namespace/>ss_filter_select");
