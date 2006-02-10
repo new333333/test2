@@ -54,10 +54,10 @@ public class ViewFileController extends SAbstractController {
 						attachment + "filename=\"" + shortFileName + "\"");
 			
 			if (viewType.equals(WebKeys.FILE_VIEW_TYPE_SCALED) && 
-					getFileModule().scaledFileExists(fa, entry.getParentBinder(), entry, fa.getFileItem().getName())) {
-				getFileModule().readScaledFile(fa, entry.getParentBinder(), entry, response.getOutputStream());
+					getFileModule().scaledFileExists(entry.getParentBinder(), entry, fa)) {
+				getFileModule().readScaledFile(entry.getParentBinder(), entry, fa, response.getOutputStream());
 			} else {
-				getFileModule().readFile(fa, entry.getParentBinder(), entry, response.getOutputStream());				
+				getFileModule().readFile(entry.getParentBinder(), entry, fa, response.getOutputStream());				
 			}
 
 			response.getOutputStream().flush();
