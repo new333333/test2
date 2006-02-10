@@ -10,6 +10,8 @@
 //   http://dynarch.com/mishoo
 //
 // $Id: htmlarea.js,v 1.59 2004/02/09 09:38:47 mishoo Exp $
+var ss_htmlareacount;
+if (ss_htmlareacount == "undefined" || ss_htmlareacount == null) ss_htmlareacount = 0;
 
 if (typeof _editor_url == "string") {
 	// Leave exactly one backslash at the end of _editor_url
@@ -642,34 +644,17 @@ HTMLArea.prototype.generate = function () {
 		// we have a form, on submit get the HTMLArea content and
 		// update original textarea.
 		var f = textarea.form;
-		if (typeof f.onsubmit == "function") {
-			var funcref = f.onsubmit;
-			if (typeof f.__msh_prevOnSubmit == "undefined") {
-				f.__msh_prevOnSubmit = [];
-			}
-			f.__msh_prevOnSubmit.push(funcref);
-		}
-		// modified by MAB 11/24/2004 for V3.0 rc1, to make the return
-		// correctly reflect previous submit methods return values
-		f.onsubmit = function() {
+		
+		//Create the onSubmit routine that copies the text into the original textarea
+		var osf = function() {
 			editor._textArea.value = editor.getHTML();
-			var a = this.__msh_prevOnSubmit;
-			// call previous submit methods if they were there.
-			var previous_return = true;
-			if (typeof a != "undefined") {
-				for (var i in a) {
-					previous_return = previous_return && a[i]();
-				}
-			}
-			return previous_return;
+			return true;
 		};
+		
+		//Create an onSubmit routine and add it to the list in forum_common.js
+		ss_htmlareacount++
+		ss_createOnSubmitObj("ss_htmlarea"+ss_htmlareacount, f.name, osf)
 	}
-
-	// add a handler for the "back/forward" case -- on body.unload we save
-	// the HTML content into the original textarea.
-	window.onunload = function() {
-		editor._textArea.value = editor.getHTML();
-	};
 
 	// creates & appends the toolbar
 	this._createToolbar();
@@ -688,9 +673,6 @@ HTMLArea.prototype.generate = function () {
 
 	if (!HTMLArea.is_ie) {
 		iframe.style.borderWidth = "1px";
-	// iframe.frameBorder = "1";
-	// iframe.marginHeight = "0";
-	// iframe.marginWidth = "0";
 	}
 
 	// size the IFRAME according to user's prefs or initial textarea
@@ -699,8 +681,8 @@ HTMLArea.prototype.generate = function () {
 	var width = (this.config.width == "auto" ? (this._ta_size.w + "px") : this.config.width);
 	width = parseInt(width);
 
-		height -= 2;
-		width -= 2;
+	height -= 2;
+	width -= 2;
 	iframe.style.width = width + "px";
 	if (this.config.sizeIncludesToolbar) {
 		// substract toolbar height
@@ -747,7 +729,7 @@ HTMLArea.prototype.generate = function () {
 			html += "<style> html,body { border: 0px; } " +
 				editor.config.pageStyle + "</style>\n";
 			html += "</head>\n";
-			html += "<body>\n";
+			html += "<body onUnload='parent.document.getElementById(\"" + editor._textArea.name + "\").value = document.body.innerHTML'>\n";
 			html += editor._textArea.value;
 			html += "</body>\n";
 			html += "</html>";

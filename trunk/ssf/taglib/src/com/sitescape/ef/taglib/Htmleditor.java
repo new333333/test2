@@ -81,7 +81,7 @@ public class Htmleditor extends TagSupport {
 
       // one-time stuff (once per page, not once per tag instance)
       sb.append("if (!editorInitialized) {\n")
-	.append("var editorInitialized = 1;\n");
+      	.append("var editorInitialized = 1;\n");
 	
       // one-time stuff goes here
       sb.append("var editorFormArray = new Array;\n");
@@ -93,68 +93,68 @@ public class Htmleditor extends TagSupport {
       sb.append("}\n");
 	
       sb.append("function err() {\n")
-	.append("return true;\n")
-	.append("}\n");
+      	.append("return true;\n")
+      	.append("}\n");
       sb.append("ss_createOnErrorObj('err', err);\n");
 
       sb.append("_editor_url = \"")
-	.append(contextPath)
-	.append("/js/htmleditor/\";\n");
+      	.append(contextPath)
+      	.append("/js/htmleditor/\";\n");
       sb.append("_editor_lang = \"en\";\n");
       sb.append("var editorCallerForm = '")
-	.append(formName)
-	.append("';\n");
+		.append(formName)
+		.append("';\n");
       sb.append("var editorCallerElement = '")
-	.append(id)
-	.append("';\n");
+		.append(id)
+		.append("';\n");
       sb.append("editorFormArray[editorIndex] = '")
-	.append(formName)
-	.append("';\n");
+		.append(formName)
+		.append("';\n");
       sb.append("editorElementArray[editorIndex++] = '")
-	.append(id)
-	.append("';\n");
+		.append(id)
+		.append("';\n");
       sb.append("</script>\n");
 
       sb.append("<div style=\"width: 500px; height: ")
-	.append(height)
-	.append("px; \">\n");
+		.append(height)
+		.append("px; \">\n");
       sb.append("<textarea name=\"")
-	.append(id)
-	.append("\" id=\"")
-	.append(id)
-	.append("\" style=\"width: 100%; height: 100%;\">")
-	.append(initText)
-	.append("</textarea>\n")
-	.append("</div>\n");
+		.append(id)
+		.append("\" id=\"")
+		.append(id)
+		.append("\" style=\"width: 100%; height: 100%;\">")
+		.append(initText)
+		.append("</textarea>\n")
+		.append("</div>\n");
 	
 
       sb.append("<script type=\"text/javascript\" src=\"")
-	.append(contextPath)
-	.append("/js/htmleditor/htmlarea.js\">;\n");
+		.append(contextPath)
+		.append("/js/htmleditor/htmlarea.js\">;\n");
       sb.append("</script>\n");
 
       String suffix = "_" + formName + "_" + id;
       sb.append("<script type=\"text/javascript\" defer=\"1\">\n");
       sb.append("  var config")
-	.append(suffix)
-	.append(" = new HTMLArea.Config();\n");
+		.append(suffix)
+		.append(" = new HTMLArea.Config();\n");
       sb.append("config")
-	.append(suffix)
-	.append(".width=\"500px\";\n");
+		.append(suffix)
+		.append(".width=\"500px\";\n");
       sb.append("config")
-	.append(suffix)
-	.append(".height=\"")
-	.append(height)
-	.append("px\";\n");
+		.append(suffix)
+		.append(".height=\"")
+		.append(height)
+		.append("px\";\n");
       sb.append("config")
-	.append(suffix)
-	.append(".statusBar = false;\n");
+		.append(suffix)
+		.append(".statusBar = false;\n");
       sb.append("config")
-	.append(suffix)
-	.append(".pageStyle = \"body {font-family: arial; font-size: 12px;}\"\n");
+		.append(suffix)
+		.append(".pageStyle = \"body {font-family: arial; font-size: 12px;}\"\n");
       sb.append("config")
-	.append(suffix)
-	.append(".toolbar = [\n");
+		.append(suffix)
+		.append(".toolbar = [\n");
       sb.append("  ['fontname', 'space',\n");
       sb.append("   'fontsize', 'space',\n");
       sb.append("   'formatblock', 'space',\n");
@@ -169,8 +169,8 @@ public class Htmleditor extends TagSupport {
       sb.append("];\n");
 
       sb.append("config")
-	.append(suffix)
-	.append(".fontsize = {\n");
+		.append(suffix)
+		.append(".fontsize = {\n");
       sb.append("    \"Default size\": \"2\",\n");
       sb.append("    \"1 (8 pt)\":  \"1\",\n");
       sb.append("    \"2 (10 pt)\": \"2\",\n");
@@ -182,8 +182,8 @@ public class Htmleditor extends TagSupport {
       sb.append("};\n");
 
       sb.append("config")
-	.append(suffix)
-	.append(".formatblock = {\n");
+		.append(suffix)
+		.append(".formatblock = {\n");
       sb.append("    \"Normal\": \"p\",\n");
       sb.append("    \"Heading 1\": \"h1\",\n");
       sb.append("    \"Heading 2\": \"h2\",\n");
@@ -197,8 +197,8 @@ public class Htmleditor extends TagSupport {
 
 
       sb.append("config")
-	.append(suffix)
-	.append(".fontname = {\n");
+		.append(suffix)
+		.append(".fontname = {\n");
       sb.append("    \"Default font\": \"arial,helvetica,sans-serif\", \n");
       sb.append("    \"Arial\":	   'arial,helvetica,sans-serif',\n");
       sb.append("    \"Courier New\":	   'courier new,courier,monospace',\n");
@@ -211,20 +211,22 @@ public class Htmleditor extends TagSupport {
       sb.append("};\n");
 
       sb.append("var ta")
-	.append(suffix)
-	.append(" = HTMLArea.getElementById(\"textarea\", '")
-	.append(id)
-	.append("');\n");
+		.append(suffix)
+		.append(" = HTMLArea.getElementById(\"textarea\", '")
+		.append(id)
+		.append("');\n");
       sb.append("var htmlEditor")
-	.append(suffix)
-	.append(" = new HTMLArea(ta")
-	.append(suffix)
-	.append(", config")
-	.append(suffix)
-	.append(");\n");
-      sb.append("htmlEditor")
-	.append(suffix)
-	.append(".generate();\n");
+		.append(suffix)
+		.append(" = new HTMLArea(ta")
+		.append(suffix)
+		.append(", config")
+		.append(suffix)
+		.append(");\n");
+      sb.append("function htmlEditor"+suffix+"generate() {\n");
+      sb.append("    htmlEditor"+suffix+".generate();\n");
+      sb.append("}\n");
+      sb.append("ss_createOnLoadObj('htmlEditor"+suffix+"generate', ")
+        .append("htmlEditor"+suffix+"generate);\n");
       sb.append("htmlEditorUsed = 1;\n");
       sb.append("</script>\n");
 

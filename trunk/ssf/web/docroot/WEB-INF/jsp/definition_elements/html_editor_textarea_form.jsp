@@ -39,5 +39,11 @@
     <ssf:htmleditor id="<%= elementName %>" 
       formName="<%= formName %>" height="<%= height %>" color="<%= background %>"
       initText="<%= textValue %>" />
+<script type="text/javascript">
+ss_createEventObj('ss_htmlareaUnload_<%= formName %>_<%= elementName %>', "UNLOAD")
+function ss_htmlareaUnload_<%= formName %>_<%= elementName %>() {
+	//alert('ss_htmlareaUnload_<%= formName %>_<%= elementName %>' + document.forms.<%= formName %>.<%= elementName %>.value)
+}
+</script>
 </div>
 <div class="ss_divider"></div>
