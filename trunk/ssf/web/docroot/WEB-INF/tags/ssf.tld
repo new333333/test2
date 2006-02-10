@@ -255,6 +255,22 @@
 	</tag>
 	
 	<tag>
+		<name>menu</name>
+		<tag-class>com.sitescape.ef.taglib.MenuTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>title</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>class</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	
+	<tag>
 		<name>nlt</name>
 		<tag-class>com.sitescape.ef.taglib.Nlt</tag-class>
 		<body-content>JSP</body-content>
