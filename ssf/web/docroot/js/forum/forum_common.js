@@ -228,10 +228,11 @@ var ss_eventTypeList = new ssArray();
 //Routine to create a new "ss_eventObj" object
 //ss_eventObj objects are set up whenever you want to call a routine on an event.
 //   event_name is the event name (e.g., "MOUSEDOWN")
-function ss_createEventObj(function_name, event_name) {
+function ss_createEventObj(function_name, event_name, function_def) {
     if (ss_eventList[function_name] == null) {
         ss_eventList[function_name] = new ss_eventObj(function_name);
         ss_eventList[function_name].setEventName(event_name);
+        ss_eventList[function_name].setFunctionDef(function_def);
     }
     if (ss_eventTypeList[event_name] == null) {
         ss_eventTypeList[event_name] = event_name
@@ -239,17 +240,27 @@ function ss_createEventObj(function_name, event_name) {
         if (isNSN) {
             eval("self.document.captureEvents(Event."+event_name+")")
         }
-        eval("self.document.on"+ss_eventList[function_name].eventName+" = ssf_event_handler;")
+        if (ss_eventList[function_name].eventName.toLowerCase() == "unload") {
+        	//Add the unload event to the body object
+        	eval("self.document.body.on"+ss_eventList[function_name].eventName.toLowerCase()+" = ssf_event_handler;")
+        } else {
+        	eval("self.document.on"+ss_eventList[function_name].eventName.toLowerCase()+" = ssf_event_handler;")
+        }
     }
 }
 function ss_eventObj(function_name) {
     this.functionName = function_name;
     this.eventName = null;
+    this.functionDef = null;
     this.setEventName = m_setEventName;
+    this.setFunctionDef = m_setFunctionDef;
     this.callEventFunction = this.functionName;
 }
 function m_setEventName(event_name) {
     this.eventName = event_name.toLowerCase();
+}
+function m_setFunctionDef(function_def) {
+    this.functionDef = function_def;
 }
 
 //Common event handler
@@ -258,7 +269,11 @@ function ssf_event_handler(e) {
     if (!isNSN) {e = event}
     for (var n in ss_eventList) {
         if (e.type.toLowerCase() == ss_eventList[n].eventName) {
-            eval(ss_eventList[n].functionName+'(e)');
+        	if (ss_eventList[n].functionDef != null && ss_eventList[n].functionDef != "undefined") {
+        		ss_eventList[n].functionDef(e);
+        	} else {
+            	eval(ss_eventList[n].functionName+'(e)');
+            }
         }
     }
 }
