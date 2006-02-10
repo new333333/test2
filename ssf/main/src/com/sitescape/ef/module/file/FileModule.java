@@ -48,9 +48,9 @@ public interface FileModule {
 	 * @throws NoSuchFileException
 	 * @throws FileException
 	 */
-	public void deleteFile(String repositoryServiceName, Binder binder, 
-			Entry entry, String fileName) throws NoSuchFileException, 
-			FileException;
+	public void deleteFile(Binder binder, Entry entry, 
+			String repositoryServiceName, String fileName) 
+		throws NoSuchFileException, FileException;
 	
 	/**
 	 * Writes the specified file to the system. If applicable, generate 
@@ -92,8 +92,8 @@ public interface FileModule {
      * @throws NoSuchFileException
      * @throws FileException
      */
-    public void readFile(String repositoryServiceName, Binder binder, 
-    		Entry entry, String fileName, OutputStream out) 
+    public void readFile(Binder binder, Entry entry, 
+    		String repositoryServiceName, String fileName, OutputStream out) 
     	throws NoSuchFileException, FileException;
     
     /**
@@ -106,7 +106,7 @@ public interface FileModule {
 	 * @throws NoSuchFileException
      * @throws FileException
      */
-	public void readFile(FileAttachment fa, Binder binder, Entry entry, 
+	public void readFile(Binder binder, Entry entry, FileAttachment fa, 
 			OutputStream out) throws NoSuchFileException, FileException;
 	
     /**
@@ -120,8 +120,9 @@ public interface FileModule {
      * @throws NoSuchFileException
      * @throws FileException
      */
-    public void readScaledFile(String repositoryServiceName, Binder binder, 
-    		Entry entry, String primaryFileName, OutputStream out) 
+    public void readScaledFile(Binder binder, 
+    		Entry entry, String repositoryServiceName, String primaryFileName, 
+    		OutputStream out) 
     	throws NoSuchFileException, FileException;
     
     /**
@@ -134,7 +135,7 @@ public interface FileModule {
 	 * @throws NoSuchFileException
      * @throws FileException
      */
-	public void readScaledFile(FileAttachment fa, Binder binder, Entry entry, 
+	public void readScaledFile(Binder binder, Entry entry, FileAttachment fa, 
 			OutputStream out) throws NoSuchFileException, FileException;
 	
 	/**
@@ -170,8 +171,8 @@ public interface FileModule {
      * @throws FileException
      */
     public void readIndirectlyAccessibleThumbnailFile
-    	(String repositoryServiceName, Binder binder, 
-    		Entry entry, String primaryFileName, OutputStream out) 
+    	(Binder binder, 
+    		Entry entry, String repositoryServiceName, String primaryFileName, OutputStream out) 
     	throws NoSuchFileException, FileException;
     
     /**
@@ -186,8 +187,8 @@ public interface FileModule {
 	 * @throws NoSuchFileException
      * @throws FileException
      */
-	public void readIndirectlyAccessibleThumbnailFile(FileAttachment fa, 
-			Binder binder, Entry entry, OutputStream out) 
+	public void readIndirectlyAccessibleThumbnailFile(
+			Binder binder, Entry entry, FileAttachment fa, OutputStream out) 
 		throws NoSuchFileException, FileException;
 	
 	/**
@@ -204,8 +205,8 @@ public interface FileModule {
 	 * @throws NoSuchFileException
 	 * @throws FileException
 	 */
-	public void generateScaledFile(String repositoryServiceName, Binder binder, 
-    		Entry entry, String primaryFileName, int maxWidth, int maxHeight) 
+	public void generateScaledFile(Binder binder, 
+    		Entry entry, String repositoryServiceName, String primaryFileName, int maxWidth, int maxHeight) 
 		throws NoSuchFileException, FileException;
 	
 	/**
@@ -221,8 +222,8 @@ public interface FileModule {
 	 * @throws NoSuchFileException
 	 * @throws FileException
 	 */
-	public void generateThumbnailFile(String repositoryServiceName, Binder binder, 
-    		Entry entry, String primaryFileName, int maxWidth, int maxHeight,
+	public void generateThumbnailFile(Binder binder, 
+    		Entry entry, String repositoryServiceName, String primaryFileName, int maxWidth, int maxHeight,
     		boolean thumbnailDirectlyAccessible) 
 		throws NoSuchFileException, FileException;
 
@@ -239,8 +240,8 @@ public interface FileModule {
 	 * @throws NoSuchFileException
 	 * @throws FileException
 	 */
-	public void generateFiles(String repositoryServiceName, Binder binder, 
-    		Entry entry, String primaryFileName, int maxWidth, int maxHeight,
+	public void generateFiles(Binder binder, 
+    		Entry entry, String repositoryServiceName, String primaryFileName, int maxWidth, int maxHeight,
     		int thumbnailMaxWidth, int thumbnailMaxHeight, 
     		boolean thumbnailDirectlyAccessible) 
 		throws NoSuchFileException, FileException;
@@ -256,11 +257,12 @@ public interface FileModule {
 	 * @throws NoSuchFileException raised if unrecognized primary file
 	 * @throws FileException
 	 */
-	public boolean scaledFileExists(String repositoryServiceName, 
-			Binder binder, Entry entry, String primaryFileName) 
+	public boolean scaledFileExists(Binder binder, Entry entry, 
+			String repositoryServiceName, String primaryFileName) 
 		throws NoSuchFileException, FileException;
-	public boolean scaledFileExists(FileAttachment fAtt, 
-			Binder binder, Entry entry, String primaryFileName) 
+	
+	public boolean scaledFileExists(Binder binder, Entry entry, 
+			FileAttachment fAtt) 
 		throws NoSuchFileException, FileException;
 	
 	/**
@@ -274,8 +276,8 @@ public interface FileModule {
 	 * @throws NoSuchFileException raised if unrecognized primary file
 	 * @throws FileException
 	 */
-	public boolean thumbnailFileExists(String repositoryServiceName, 
-			Binder binder, Entry entry, String primaryFileName) 
+	public boolean thumbnailFileExists(Binder binder, Entry entry, 
+			String repositoryServiceName, String primaryFileName) 
 	throws NoSuchFileException, FileException;
 	
 	/**
@@ -288,8 +290,8 @@ public interface FileModule {
 	 * @param fileName
 	 * @return
 	 */
-	public HistoryStamp getCheckoutInfo(String repositoryServiceName, 
-			Binder binder, Entry entry, String fileName);
+	public HistoryStamp getCheckoutInfo(Binder binder, Entry entry, 
+			String repositoryServiceName, String fileName);
 	
 	/**
 	 * Checkes out the specified file. 
@@ -309,8 +311,8 @@ public interface FileModule {
 	 * @throws NoSuchFileException
 	 * @throws CheckedOutByOtherException
 	 */
-	public void checkout(String repositoryServiceName, Binder binder, 
-			Entry entry, String fileName) throws CheckedOutByOtherException, 
+	public void checkout(Binder binder, 
+			Entry entry, String repositoryServiceName, String fileName) throws CheckedOutByOtherException, 
 			NoSuchFileException, FileException;
 	
 	/**
@@ -331,8 +333,8 @@ public interface FileModule {
 	 * @throws NoSuchFileException
 	 * @throws FileException
 	 */
-	public void uncheckout(String repositoryServiceName, Binder binder, 
-			Entry entry, String fileName) throws CheckedOutByOtherException, 
+	public void uncheckout(Binder binder, 
+			Entry entry, String repositoryServiceName, String fileName) throws CheckedOutByOtherException, 
 			NoSuchFileException, FileException;
 
 	/**
@@ -354,8 +356,8 @@ public interface FileModule {
 	 * @throws NoSuchFileException
 	 * @throws FileException
 	 */
-	public void checkin(String repositoryServiceName, Binder binder, 
-			Entry entry, String fileName) throws CheckedOutByOtherException, 
+	public void checkin(Binder binder, 
+			Entry entry, String repositoryServiceName, String fileName) throws CheckedOutByOtherException, 
 			NoSuchFileException, FileException;
 	/*
 	public void createThumbnail(String repositoryServiceName, Binder binder,

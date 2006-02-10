@@ -86,8 +86,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
-	public void deleteFile(String repositoryServiceName, Binder binder,
-			Entry entry, String fileName) {
+	public void deleteFile(Binder binder,
+			Entry entry, String repositoryServiceName, String fileName) {
 		try {
 			FileAttachment fAtt = entry.getFileAttachment(
 					repositoryServiceName, fileName);
@@ -113,8 +113,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
     }
 	
-	public void readFile(String repositoryServiceName, Binder binder,
-			Entry entry, String fileName, OutputStream out) {
+	public void readFile(Binder binder,
+			Entry entry, String repositoryServiceName, String fileName, OutputStream out) {
 		try {
 			FileAttachment fAtt = entry.getFileAttachment(
 					repositoryServiceName, fileName);
@@ -129,7 +129,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 
-	public void readFile(FileAttachment fa, Binder binder, Entry entry, 
+	public void readFile(Binder binder, Entry entry, FileAttachment fa, 
 			OutputStream out) {
 		try {
 			String repositoryServiceName = fa.getRepositoryServiceName();
@@ -144,8 +144,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
-	public boolean scaledFileExists(String repositoryServiceName, Binder binder, 
-			Entry entry, String primaryFileName) throws NoSuchFileException, FileException {
+	public boolean scaledFileExists(Binder binder, 
+			Entry entry, String repositoryServiceName, String primaryFileName) throws NoSuchFileException, FileException {
 		FileAttachment fAtt = null;
 		try {
 			fAtt = entry.getFileAttachment(
@@ -158,17 +158,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if (fAtt == null)
 			throw new NoSuchFileException(entry, primaryFileName);
 		
-		return scaledFileExists(fAtt, binder, entry, primaryFileName);
+		return scaledFileExists(binder, entry, fAtt);
 	}
 	
-	public boolean scaledFileExists(FileAttachment fAtt, Binder binder, 
-			Entry entry, String primaryFileName) throws NoSuchFileException, FileException {
+	public boolean scaledFileExists(Binder binder, 
+			Entry entry, FileAttachment fAtt) throws NoSuchFileException, FileException {
 		try {
 			if (fAtt == null)
-				throw new NoSuchFileException(entry, primaryFileName);
+				throw new IllegalArgumentException("FileAttachment must be passed in");
 
 			int fileInfo = RepositoryServiceUtil.fileInfo(fAtt.getRepositoryServiceName(), 
-					binder, entry, makeScaledFileName(primaryFileName));
+					binder, entry, makeScaledFileName(fAtt.getFileItem().getName()));
 			
 			if(fileInfo == RepositoryService.UNVERSIONED_FILE)
 				return true;
@@ -182,8 +182,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
-	public boolean thumbnailFileExists(String repositoryServiceName, Binder binder, 
-			Entry entry, String primaryFileName) throws NoSuchFileException, FileException {
+	public boolean thumbnailFileExists(Binder binder, 
+			Entry entry, String repositoryServiceName, String primaryFileName) throws NoSuchFileException, FileException {
 		try {
 			FileAttachment fAtt = entry.getFileAttachment(
 					repositoryServiceName, primaryFileName);
@@ -206,14 +206,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
-	public HistoryStamp getCheckoutInfo(String repositoryServiceName, 
-			Binder binder, Entry entry, String fileName) {
+	public HistoryStamp getCheckoutInfo(
+			Binder binder, Entry entry, String repositoryServiceName, String fileName) {
 		FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
 		return fAtt.getCheckout();
 	}
 
-	public void checkout(String repositoryServiceName, Binder binder, 
-			Entry entry, String fileName) {
+	public void checkout(Binder binder, 
+			Entry entry, String repositoryServiceName, String fileName) {
 		try {
 			checkoutInternal(repositoryServiceName, binder, entry, fileName);
 		}
@@ -222,8 +222,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
-	public void uncheckout(String repositoryServiceName, Binder binder, 
-			Entry entry, String fileName) {
+	public void uncheckout(Binder binder, 
+			Entry entry, String repositoryServiceName, String fileName) {
 		try {
 			uncheckoutInternal(repositoryServiceName, binder, entry, fileName);
 		}
@@ -232,8 +232,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 
-	public void checkin(String repositoryServiceName, Binder binder, 
-			Entry entry, String fileName) {
+	public void checkin(Binder binder, 
+			Entry entry, String repositoryServiceName, String fileName) {
 		try {
 			checkinInternal(repositoryServiceName, binder, entry, fileName);
 		}
@@ -242,29 +242,29 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
-	public void readScaledFile(String repositoryServiceName, Binder binder, 
-			Entry entry, String fileName, OutputStream out) {
+	public void readScaledFile(Binder binder, 
+			Entry entry, String repositoryServiceName, String fileName, OutputStream out) {
 		RepositoryServiceUtil.read(repositoryServiceName, binder, entry, makeScaledFileName(fileName), out);
 	}
 	
-	public void readScaledFile(FileAttachment fa, Binder binder, Entry entry, OutputStream out) {
-		readScaledFile(fa.getRepositoryServiceName(), binder, entry, 
+	public void readScaledFile(Binder binder, Entry entry, FileAttachment fa, OutputStream out) {
+		readScaledFile(binder, entry, fa.getRepositoryServiceName(), 
 				fa.getFileItem().getName(), out);
 	}
 	
-	public void readIndirectlyAccessibleThumbnailFile(String repositoryServiceName, 
-			Binder binder, Entry entry, String fileName, OutputStream out) {
+	public void readIndirectlyAccessibleThumbnailFile(
+			Binder binder, Entry entry, String repositoryServiceName, String fileName, OutputStream out) {
 		RepositoryServiceUtil.read(repositoryServiceName, binder, entry, makeThumbnailFileName(fileName), out);	
 	}
 	
-	public void readIndirectlyAccessibleThumbnailFile(FileAttachment fa, 
-			Binder binder, Entry entry, OutputStream out) {
-		readIndirectlyAccessibleThumbnailFile(fa.getRepositoryServiceName(), 
-				binder, entry, fa.getFileItem().getName(), out);
+	public void readIndirectlyAccessibleThumbnailFile(
+			Binder binder, Entry entry, FileAttachment fa, OutputStream out) {
+		readIndirectlyAccessibleThumbnailFile(
+				binder, entry, fa.getRepositoryServiceName(), fa.getFileItem().getName(), out);
 	}
 	
-	public void generateScaledFile(String repositoryServiceName, Binder binder, 
-			Entry entry, String fileName, int maxWidth, int maxHeight) {
+	public void generateScaledFile(Binder binder, 
+			Entry entry, String repositoryServiceName, String fileName, int maxWidth, int maxHeight) {
 		try {
 			RepositoryService service = RepositoryServiceUtil.lookupRepositoryService(repositoryServiceName);
 			
@@ -288,8 +288,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}		
 	}
 	
-	public void generateThumbnailFile(String repositoryServiceName, Binder binder, 
-			Entry entry, String fileName, int maxWidth, int maxHeight, 
+	public void generateThumbnailFile(Binder binder, 
+			Entry entry, String repositoryServiceName, String fileName, int maxWidth, int maxHeight, 
 			boolean thumbnailDirectlyAccessible) {
 		try {
 			RepositoryService service = RepositoryServiceUtil.lookupRepositoryService(repositoryServiceName);
@@ -326,8 +326,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	 * more efficient than calling them separately because it reads in the
 	 * primary file only once. 
 	 */
-	public void generateFiles(String repositoryServiceName, Binder binder, 
-			Entry entry, String fileName, int maxWidth, int maxHeight, 
+	public void generateFiles(Binder binder, 
+			Entry entry, String repositoryServiceName, String fileName, int maxWidth, int maxHeight, 
 			int thumbnailMaxWidth, int thumbnailMaxHeight, 
 			boolean thumbnailDirectlyAccessible) {
 		try {
