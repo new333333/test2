@@ -811,6 +811,8 @@ function activateMenuLayer(divId, parentDivId, delayHide) {
         x = maxWidth - divWidth;
     } 
   
+    //alert('divId: ' + divId + ', x: ' + x + ', y: ' + y)
+    //alert(document.getElementById(divId).innerHTML)
     ss_ShowHideDivXY(divId, x, y, delayHide);
     ss_HideDivOnSecondClick(divId);
 }
