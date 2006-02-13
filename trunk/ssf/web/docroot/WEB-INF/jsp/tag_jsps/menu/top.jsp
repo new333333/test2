@@ -19,6 +19,10 @@ Integer nameCount = (Integer) renderRequest.getAttribute("ss_menu_tag_name_count
 if (nameCount == null) {
 	nameCount = new Integer(0);
 }
+String menuDivWidth = (String) renderRequest.getAttribute("ss_menu_tag_width");
+if (menuDivWidth == null) {
+	menuDivWidth = "200px";
+}
 nameCount = new Integer(nameCount.intValue() + 1);
 renderRequest.setAttribute("ss_menu_tag_name_count", new Integer(nameCount.intValue()));
 
@@ -26,4 +30,5 @@ String menuTagDivId = "ss_menuTagDiv" + nameCount.toString();
 String divClass = ParamUtil.get(request, "class", "ss_toolbar_menu");
 
 %>
-<div class="ss_style <%= divClass %>" id="<%= menuTagDivId %>">
+<div class="ss_style ss_portlet <%= divClass %>" style="width:<%= menuDivWidth %>;" 
+  id="<%= menuTagDivId %>">

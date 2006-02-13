@@ -24,6 +24,6 @@ String title = ParamUtil.get(request, "title", "");
 %>
 <div id="parent_<%= menuTagDivId %>" style="display:inline;">
 <a class="ss_toolbar_item" href="javascript: ;" 
-	  onClick="activateMenuLayer('<%= menuTagDivId %>', 'parent_<%= menuTagDivId %>');"
+	  onClick="activateMenuLayerClone('<%= menuTagDivId %>', 'parent_<%= menuTagDivId %>');"
 ><%= title %></a>
 </div>

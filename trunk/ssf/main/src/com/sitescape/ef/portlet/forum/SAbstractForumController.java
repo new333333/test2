@@ -141,6 +141,11 @@ public class SAbstractForumController extends SAbstractController {
     
 		//The "Administration" menu
 		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
+		//Access control
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ACCESS_CONTROL);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url);
 		//Configuration
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_CONFIGURE_FORUM);

@@ -36,6 +36,7 @@ import com.sitescape.ef.domain.User;
 public class AjaxController  extends SAbstractForumController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
+	   	User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		if(WebHelper.isUserLoggedIn(request)) {
 			String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -45,23 +46,14 @@ public class AjaxController  extends SAbstractForumController {
 				String columnPositions = ((String[])formData.get("column_positions"))[0];
 				if (!columnPositions.equals("")) {
 					//Save the column positions
-				   	User user = RequestContextHolder.getRequestContext().getUser();
 				   	getProfileModule().setUserFolderProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_COLUMN_POSITIONS, columnPositions);
-
-				}
-			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_WIDTH)) {
-				//Save the user's selected entry width
-				String entryWidth = ((String[])formData.get("entry_width"))[0];
-				if (!entryWidth.equals("")) {
-					//Save the entry width
-				   	User user = RequestContextHolder.getRequestContext().getUser();
-				   	getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);
 				}
 			}
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+	   	User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
@@ -117,6 +109,17 @@ public class AjaxController  extends SAbstractForumController {
 			return new ModelAndView("forum/save_column_positions_return", model);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_WIDTH)) {
+			//Save the user's selected entry width
+			String entryWidth = ((String[])formData.get("entry_width"))[0];
+			if (!entryWidth.equals("")) {
+				//Save the entry width
+			   	getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);
+			}
+			String entryHeight = ((String[])formData.get("entry_height"))[0];
+			if (!entryHeight.equals("")) {
+				//Save the entry width
+			   	getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
+			}
 			response.setContentType("text/xml");
 			model.put(WebKeys.AJAX_STATUS, statusMap);
 			return new ModelAndView("forum/save_entry_width_return", model);

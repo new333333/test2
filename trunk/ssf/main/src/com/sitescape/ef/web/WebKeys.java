@@ -54,6 +54,7 @@ public class WebKeys {
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String ACTION_ADD_ENTRY = "add_entry";
 	public static final String FORUM_ACTION_ADD_REPLY = "add_reply";
+	public static final String FORUM_ACTION_ACCESS_CONTROL = "configure_access_control";
 	public static final String FORUM_ACTION_CONFIGURE_FORUM = "configure_forum";
 	public static final String FORUM_ACTION_DEFINITION_BUILDER = "definition_builder";
 	public static final String FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
@@ -124,6 +125,7 @@ public class WebKeys {
     public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";
     public static final String FOLDER_DEFINTION_MAP="ssFolderDefinitionMap";
     public static final String FOLDER_ENTRY_WIDTH="folderEntryWidth";
+    public static final String FOLDER_ENTRY_HEIGHT="folderEntryHeight";
     public static final String FOLDER_LIST = "ssFolderList";
     public static final String FOLDER_ID_LIST = "ssFolderIdList";
     public static final String FOLDERS = "ssFolders";
@@ -174,6 +176,7 @@ public class WebKeys {
 	public static final String ZONE_NAME = "com.sitescape.zonename";
 
     //View names
+    public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
     public static final String VIEW_BUILD_FILTER = "binder/build_filter";
     public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
     public static final String VIEW_CONFIGURE = "binder/configure";

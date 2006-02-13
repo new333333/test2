@@ -486,8 +486,11 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 	}
 	
 %>
+<c:if test="${empty ss_taconite_loaded}">
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
+<c:set var="ss_taconite_loaded" value="1" scope="request"/>
+</c:if>
 <script type="text/javascript">
 
 function ss_saveSlidingTableCoords() {
