@@ -774,7 +774,19 @@ var active_menulayer = '';
 var lastActive_menulayer = '';
 var active_menulayer_form = 0;
 var activateMenuOffset = 10;
+var menuPrefix = "temp_menu_";
 
+//Create a clone of the menu before showing it; attach it to the "body" outside of any div
+//  This makes sure that the z-index will be on top of everything else (IE fix)
+function activateMenuLayerClone(divId, parentDivId, delayHide) {
+	var divObj = document.getElementById(divId);
+	if (!document.getElementById(menuPrefix + divId)) {
+		var tempNode = divObj.cloneNode( true );
+		tempNode.id = menuPrefix + divId;
+		document.getElementsByTagName( "body" ).item(0).appendChild( tempNode );
+	}
+	activateMenuLayer(menuPrefix + divId, parentDivId, delayHide);
+}
 function activateMenuLayer(divId, parentDivId, delayHide) {
 	if (!parentDivId || parentDivId == null || parentDivId == 'undefined') {parentDivId=""}
 	if (!delayHide || delayHide == null || delayHide == 'undefined') {delayHide=""}

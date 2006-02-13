@@ -6,6 +6,7 @@
 
 	<bean id="forumViewController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewController" />
 	<bean id="forumEditController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.EditController" />
+	<bean id="forumAccessControlController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AccessControlController" />
 	<bean id="forumConfigureController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ConfigureController" />
 	<bean id="forumFilterController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.FilterController" />
 	<bean id="forumAddEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AddEntryController" />
@@ -24,6 +25,7 @@
 						<entry key="add_entry"><ref bean="forumAddEntryController"/></entry>
 						<entry key="add_reply"><ref bean="forumAddEntryController"/></entry>
 						<entry key="build_filter"><ref bean="forumFilterController"/></entry>
+						<entry key="configure_access_control"><ref bean="forumAccessControlController"/></entry>
 						<entry key="configure_forum"><ref bean="forumConfigureController"/></entry>
 						<entry key="definition_builder"><ref bean="forumDefinitionController"/></entry>
 						<entry key="modify_entry"><ref bean="forumModifyEntryController"/></entry>

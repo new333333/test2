@@ -37,10 +37,16 @@ int entryWindowWidth = 0;
 if (ssUserProperties.containsKey("folderEntryWidth")) {
 	entryWindowWidth = Integer.parseInt((String) ssUserProperties.get("folderEntryWidth"));
 }
+int entryWindowHeight = 0;
+if (ssUserProperties.containsKey("folderEntryHeight")) {
+	entryWindowHeight = Integer.parseInt((String) ssUserProperties.get("folderEntryHeight"));
+}
 String autoScroll = "true";
 request.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth));
+request.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight));
 %>
 <jsp:useBean id="ss_entryWindowWidth" type="java.lang.Integer" scope="request" />
+<jsp:useBean id="ss_entryWindowHeight" type="java.lang.Integer" scope="request" />
 <c:if test="<%= !op.equals(WebKeys.ACTION_VIEW_ENTRY) %>">
 <c:set var="showEntryCallbackRoutine" value="showEntryInDiv" scope="request"/>
 <c:set var="showEntryMessageRoutine" value="ss_showMessageInDiv" scope="request"/>

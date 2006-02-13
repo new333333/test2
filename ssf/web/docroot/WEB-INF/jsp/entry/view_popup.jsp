@@ -1,7 +1,5 @@
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
 
-<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
-<br>
 <div id="ss_showfolder" class="ss_style ss_portlet" style="display:block; margin:2;">
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= ssConfigElement %>" 
@@ -10,6 +8,8 @@
 
 <script type="text/javascript">
 
+var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
+var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
 function ss_showForumEntryInIframe(url) {
     var wObj = null
     if (isNSN || isNSN6 || isMoz5) {
@@ -17,9 +17,9 @@ function ss_showForumEntryInIframe(url) {
     } else {
         wObj = self.document.all['ss_showfolder']
     }
-    var width = ss_getObjectWidth(wObj);
-    var height = parseInt(ss_getWindowHeight()) - 50;
-    self.window.open(url, '_blank', 'width='+width+',height='+height+',resizable,scrollbars');
+	if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
+	if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
+    self.window.open(url, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars');
     return false;
 }
 

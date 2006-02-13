@@ -5,6 +5,8 @@
 <body>
 </ssf:ifadapter>
 
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
@@ -34,10 +36,16 @@ int entryWindowWidth = 0;
 if (ssUserProperties.containsKey("folderEntryWidth")) {
 	entryWindowWidth = Integer.parseInt((String) ssUserProperties.get("folderEntryWidth"));
 }
+int entryWindowHeight = 0;
+if (ssUserProperties.containsKey("folderEntryHeight")) {
+	entryWindowHeight = Integer.parseInt((String) ssUserProperties.get("folderEntryHeight"));
+}
 String autoScroll = "true";
 renderRequest.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth));
+renderRequest.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight));
 %>
 <jsp:useBean id="ss_entryWindowWidth" type="java.lang.Integer" scope="request" />
+<jsp:useBean id="ss_entryWindowHeight" type="java.lang.Integer" scope="request" />
 <c:if test="<%= !isViewEntry %>">
 <c:set var="showEntryCallbackRoutine" value="ss_showEntryInDiv" scope="request"/>
 <c:set var="showEntryMessageRoutine" value="ss_showMessageInDiv" scope="request"/>
@@ -287,6 +295,59 @@ if (self.parent && self.parent.highlightLineById) {
   processThisItem="true" 
   entry="<%= ssEntry %>" />
 
+<%
+	//See if this is the Popup view
+	if (ssUser.getDisplayStyle() != null && 
+	    ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
+%>
+<script type="text/javascript">
+var ss_viewEntryResizeHappened = 0;
+var ss_viewEntryResizeTimeout = null;
+function ss_viewEntryResize() {
+	ss_viewEntryResizeHappened = 1
+	if (ss_viewEntryResizeTimeout != null) {
+		clearTimeout(ss_viewEntryResizeTimeout)
+		ss_viewEntryResizeTimeout = null;
+	}
+	ss_viewEntryResizeTimeout = setTimeout('ss_viewEntrySaveSize()', 250);
+}
+function ss_viewEntrySaveSize() {
+	clearTimeout(ss_viewEntryResizeTimeout);
+	ss_viewEntryResizeTimeout = null;
+	if (ss_viewEntryResizeHappened == 1) {
+		//See if the user is finished resizing; wait for activity to stop
+		ss_viewEntryResizeHappened = 0;
+		ss_viewEntryResizeTimeout = setTimeout('ss_viewEntrySaveSize()', 250);
+	} else {
+		//Resizing must have finished, save the new size
+		if (self.opener) {
+			//Write the current size back onto the opener page for future use
+			self.opener.ss_viewEntryPopupHeight = ss_getWindowHeight()
+			self.opener.ss_viewEntryPopupWidth = ss_getWindowWidth()
+		}
+	 	var url = "<ssf:url 
+	    	adapter="true" 
+	    	portletName="ss_forum" 
+	    	action="__ajax_request" 
+	    	actionUrl="false" >
+			<ssf:param name="operation" value="save_entry_width" />
+	    	</ssf:url>"
+		var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+		ajaxRequest.addKeyValue("entry_height", ss_getWindowHeight())
+		ajaxRequest.addKeyValue("entry_width", ss_getWindowWidth())
+		//ajaxRequest.setEchoDebugInfo();
+		//ajaxRequest.setPreRequest(ss_preRequest);
+		//ajaxRequest.setPostRequest(ss_postRequest);
+		ajaxRequest.setUseGET();
+		ajaxRequest.sendRequest();  //Send the request
+	}
+}
+ss_createOnResizeObj('ss_viewEntryResize', ss_viewEntryResize);
+</script>
+<div id="ss_entry_width_status_message" style="visibility:hidden; display:none;"></div>
+<%
+	}
+%>
   </c:if>
 </c:if>
 
