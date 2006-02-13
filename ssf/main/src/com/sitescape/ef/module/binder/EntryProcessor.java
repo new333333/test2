@@ -8,8 +8,8 @@ import org.dom4j.Document;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
+import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.InputDataAccessor;
-import com.sitescape.ef.module.shared.WriteFilesException;
 import com.sitescape.ef.security.AccessControlException;
 
 /**

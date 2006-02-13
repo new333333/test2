@@ -17,8 +17,8 @@ import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.InputDataAccessor;
-import com.sitescape.ef.module.shared.WriteFilesException;
 import com.sitescape.ef.security.AccessControlException;
 
 public interface ProfileModule {
