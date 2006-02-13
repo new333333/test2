@@ -140,6 +140,7 @@ public class WebKeys {
     public static final String FORUM_ID_LIST = "ssForumIdList";
     public static final String FORUM_TOOLBAR="ssForumToolbar";
     public static final String FUNCTIONS="ssFunctions";
+    public static final String FUNCTION_MAP="ssFunctionMap";
     public static final String FUNCTION_MEMBERSHIP="ssFunctionMemberships";
     public static final String GROUPS="ssGroups";
     public static final String LDAP_CONFIG="ssLdapConfig";

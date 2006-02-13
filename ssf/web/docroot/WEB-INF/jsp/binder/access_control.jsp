@@ -20,20 +20,28 @@
 <div class="ss_style ss_portlet">
 <h3><ssf:nlt tag="binder.configure.access_control" text="Configure access control"/></h3>
 
-<c:if test="${ssFunctionMembershipInherited}">
+<c:if test="${ssBinder.functionMembershipInherited}">
 This folder is inheriting its access control settings from its parent folder.<br>
 </c:if>
 
-<c:if test="${!ssFunctionMembershipInherited}">
-<c:forEach var="function" items="${ssFunctions}">
-<jsp:useBean id="function" type="com.sitescape.ef.security.function.Function" />
-<ssf:expandableArea title="<%= function.getName() %>">
+<c:if test="${!ssBinder.functionMembershipInherited}">
+<c:forEach var="function" items="${ssFunctionMap}">
+<ssf:expandableArea title="${function.key.name}">
 <form class="ss_style" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_access_control"/>
 			<portlet:param name="binderId" value="${ssBinder.id}"/>
 		</portlet:actionURL>">
-
-	<input type="hidden" name="roleId" value="${function.id}">
+	<ul>
+	<c:forEach var="user" items="${function.value.ssUsers}">
+		<li><c:out value="${user.title}"/></li>
+	</c:forEach>
+	</ul>
+	<ul>
+	<c:forEach var="user" items="${function.value.ssGroups}">
+		<li><c:out value="${user.title}"/></li>
+	</c:forEach>
+	</ul>
+	<input type="hidden" name="roleId" value="${function.key.id}">
 	<input type="submit" name="modifyBtn"
 	 value="<ssf:nlt tag="button.modify" text="Modify"/>">
 </form>
