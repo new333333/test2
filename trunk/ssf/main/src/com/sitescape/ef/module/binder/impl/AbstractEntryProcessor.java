@@ -39,6 +39,7 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.FileModule;
+import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.LuceneSession;
@@ -56,7 +57,6 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
-import com.sitescape.ef.module.shared.WriteFilesException;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 /**
  *

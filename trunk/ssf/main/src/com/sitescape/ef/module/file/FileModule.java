@@ -7,7 +7,6 @@ import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.module.shared.WriteFilesException;
 import com.sitescape.ef.util.FileUploadItem;
 
 /**
