@@ -132,8 +132,8 @@ function checkFilterForm(obj) {
   value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 </div>
 
-  <fieldset class="fieldset">
-    <legend class="legend"><ssf:nlt tag="filter.filterName" text="Filter name"/></legend>
+  <fieldset class="ss_fieldset">
+    <legend class="ss_legend"><ssf:nlt tag="filter.filterName" text="Filter name"/></legend>
 
 	  <span class="ss_labelAbove"><ssf:nlt tag="filter.filterName" text="Filter name"/></span>
 	  <input type="text" style="width:400px;" name="filterName" value="<c:out value="${ss_selectedFilter}"/>">
@@ -141,8 +141,8 @@ function checkFilterForm(obj) {
 
 <div class="ss_formBreak"/>
   
-  <fieldset class="fieldset">
-    <legend class="legend"><ssf:nlt tag="filter.terms" text="Filter terms"/></legend>
+  <fieldset class="ss_fieldset">
+    <legend class="ss_legend"><ssf:nlt tag="filter.terms" text="Filter terms"/></legend>
 	<span class="ss_bold"><ssf:nlt tag="filter.selectFilterType" text="Select the type of filter to be added..."/></span>
 	<br/>
 	<div id="filterTerms">
