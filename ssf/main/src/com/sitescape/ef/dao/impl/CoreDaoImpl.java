@@ -34,6 +34,7 @@ import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.CustomAttribute;
+import com.sitescape.ef.domain.CustomAttributeListElement;
 import com.sitescape.ef.util.LongIdComparator;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.SeenMap;
@@ -732,7 +733,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 	List objs = session.createCriteria(WorkflowState.class)
                     					.add(Expression.eq("owner.ownerType", type))
                     					.add(Expression.in("owner.ownerId", ids))
-                    					.addOrder(Order.asc("id"))
+                    					.addOrder(Order.asc("owner.ownerId"))
 										.list();
                    
                    	HashSet tSet;
@@ -752,7 +753,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                    	objs = session.createCriteria(Attachment.class)
                      	.add(Expression.eq("owner.ownerType", type))
                     	.add(Expression.in("owner.ownerId", ids))
-                  		.addOrder(Order.asc("id"))
+                  		.addOrder(Order.asc("owner.ownerId"))
                   		.list();
                    	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
                    		entry = (Entry)iter.next();
@@ -770,7 +771,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                   	objs = session.createCriteria(Event.class)
                      	.add(Expression.eq("owner.ownerType", type))
                     	.add(Expression.in("owner.ownerId", ids))
-                 		.addOrder(Order.asc("id"))
+                 		.addOrder(Order.asc("owner.ownerId"))
                   		.list();
                   	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
                    		entry = (Entry)iter.next();
@@ -786,26 +787,31 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                     }
                 	//Load customAttributes
                  	objs = session.createCriteria(CustomAttribute.class)
-       					.add(Expression.eq("owner.ownerType", type))
+                 		.add(Expression.eq("owner.ownerType", type))
        					.add(Expression.in("owner.ownerId", ids))
-                 		.addOrder(Order.asc("id"))
+                 		.addOrder(Order.asc("owner.ownerId"))
                   		.list();
                    	HashMap tMap;
-                	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
+                   	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
                    		entry = (Entry)iter.next();
                    		tMap = new HashMap();
-                   		for (int i=0; i<objs.size(); ++i) {
-                   			CustomAttribute obj = (CustomAttribute)objs.get(i);
+                   		while (objs.size() > 0) {
+                   			CustomAttribute obj = (CustomAttribute)objs.get(0);
                    			if (entry.equals(obj.getOwner().getEntry())) {
-                   				tMap.put(obj.getName(), obj);
+                   				if (obj instanceof CustomAttributeListElement) {
+                   					CustomAttributeListElement lEle = (CustomAttributeListElement)obj;
+                   					lEle.getParent().addIndexValue(lEle);
+                   				} else {
+                   					tMap.put(obj.getName(), obj);
+                   				}
+                   				objs.remove(0);
                    			} else break;
                    		}
                    		entry.setIndexCustomAttributes(tMap);
-                   		objs.removeAll(tMap.values());
                 	}
-                	return sorted;
+                   	return sorted;
                 }
-            }
+           }
         );  
 	}
  }

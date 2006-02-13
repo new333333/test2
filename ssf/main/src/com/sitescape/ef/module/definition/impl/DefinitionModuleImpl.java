@@ -20,6 +20,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.domain.CommaSeparatedValue;
 
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DateHelper;
@@ -841,14 +842,16 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 										String[] userIds = inputData.getSingleValue(nameValue).trim().split(" ");
 										Set users = new HashSet();
 										for (int i = 0; i < userIds.length; i++) {
-											if (userIds[i].matches("^[0-9]+$")) {
-												Long uId = Long.valueOf(userIds[i]);
-												users.add(uId);
-											}
+											try {
+												Long.parseLong(userIds[i]);
+												users.add(userIds[i]);
+											} catch (NumberFormatException ne) {}
 										}
-										String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-										List foundUsers = coreDao.loadUsers(users, zoneName);
-										entryData.put(nameValue, new HashSet(foundUsers));
+										if (!users.isEmpty()) {
+											CommaSeparatedValue v = new CommaSeparatedValue();
+											v.setValue((String[])users.toArray(userIds));
+											entryData.put(nameValue, v);
+										}
 									}
 								} else if (itemName.equals("selectbox")) {
 									if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getValues(nameValue));

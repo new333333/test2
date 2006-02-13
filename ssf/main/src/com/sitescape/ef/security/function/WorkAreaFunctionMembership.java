@@ -8,6 +8,7 @@ import java.util.Set;
  * @hibernate.mapping auto-import="false"
  * need auto-import = false so names don't collide with jbpm
  * @hibernate.query name="check-WorkAreaFunctionMembership" query="select fm.id from com.sitescape.ef.security.function.Function function join function.operationNames operationName, com.sitescape.ef.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneName=:zoneName and fm.zoneName=:zoneName and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)"
+ * @hibernate.query name="get-WorkAreaOperation" query="select fm.id from com.sitescape.ef.security.function.Function function join function.operationNames operationName, com.sitescape.ef.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneName=:zoneName and fm.zoneName=:zoneName and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)"
  * 
  * <code>FunctionMembership</code> defines the members of a function for 
  * a work area.

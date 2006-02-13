@@ -21,7 +21,7 @@ public class CustomAttributeListElement extends CustomAttribute {
      * @hibernate.column name="parent" sql-type="char(32)"
 	 * @return
 	 */
-	protected CustomAttribute getParent() {
+	public CustomAttribute getParent() {
 		return parent;
 	}
 	protected void setParent(CustomAttribute parent) {

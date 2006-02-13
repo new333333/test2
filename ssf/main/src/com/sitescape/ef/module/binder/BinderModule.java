@@ -35,6 +35,16 @@ public interface BinderModule {
     public Binder getBinder(Long binderId)
 		throws NoBinderByTheIdException, AccessControlException;
     /**
+     * 
+     * @param binderId
+     * @return
+     * @throws NoBinderByTheIdException
+     * @throws AccessControlException
+     */	
+    public Map getBinderFunctionMembership(Long binderId) 
+		throws NoBinderByTheIdException, AccessControlException;
+
+    /**
      * Modify the list of definitions assocated with a binder
      * @param binderId
      * @param definitionIds

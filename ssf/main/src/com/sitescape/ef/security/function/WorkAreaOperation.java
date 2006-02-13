@@ -27,6 +27,7 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation CREATE_ENTRIES = new WorkAreaOperation("createEntries");
     public final static WorkAreaOperation MODIFY_ENTRIES = new WorkAreaOperation("modifyEntries");    
     public final static WorkAreaOperation DELETE_ENTRIES = new WorkAreaOperation("deleteEntries");    
+    public final static WorkAreaOperation READ_ENTRIES = new WorkAreaOperation("readEntries");
     public final static WorkAreaOperation ADD_REPLIES = new WorkAreaOperation("addReplies");
     public final static WorkAreaOperation GENERATE_REPORTS = new WorkAreaOperation("generateReports");
     public final static WorkAreaOperation SITE_ADMINISTRATION = new WorkAreaOperation("siteAdministration");
@@ -36,6 +37,7 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation MANAGE_WORKFLOW_DEFINITIONS = new WorkAreaOperation("manageWorkflowDefinitions");
     public final static WorkAreaOperation CREATOR_MODIFY = new WorkAreaOperation("creatorModifyEntries");
     public final static WorkAreaOperation CREATOR_DELETE = new WorkAreaOperation("creatorDeleteEntries");
+    public final static WorkAreaOperation CREATOR_READ = new WorkAreaOperation("creatorReadEntries");
     
     private String name;
     

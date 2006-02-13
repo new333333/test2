@@ -57,10 +57,11 @@ public abstract class WorkflowControlledEntry extends Entry implements AclContro
 	    for (Iterator iter=states.iterator(); iter.hasNext();) {
 	    	WorkflowState state = (WorkflowState)iter.next();
 	    	WfAcl a = state.getAcl(type);
-	       	if ((a != null) && a.isUseDefault()) return true;
+	    	//return least restrictive
+	    	if ((a != null) && a.isUseDefault()) return true;
 	       }
-	       return false;
-	   }
+       return false;
+   }
 	public boolean checkOwner(AccessType type) {
 	   Set states = getWorkflowStates();
 	   if ((states == null) || states.isEmpty()) return true; 
@@ -68,6 +69,7 @@ public abstract class WorkflowControlledEntry extends Entry implements AclContro
 	   for (Iterator iter=states.iterator(); iter.hasNext();) {
 	    	WorkflowState state = (WorkflowState)iter.next();
 	    	WfAcl a = state.getAcl(type);
+	    	//return least restrictive
 	       	if ((a != null) && a.isCreator()) return true;
 	   }
 	   return false;
