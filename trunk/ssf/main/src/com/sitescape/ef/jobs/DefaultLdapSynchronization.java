@@ -27,7 +27,11 @@ public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSyn
 		try {
 			ldap.syncAll(zoneName);
 		} catch (NamingException ne) {
-			logger.error("Ldap Syncronization error:" + ne.getLocalizedMessage());
+			if (ne.getCause() != null)
+				logger.error("Ldap Syncronization error:" + ne.getCause().getLocalizedMessage());
+			else
+				logger.error("Ldap Syncronization error:" + ne.getExplanation());
+				
 			context.setResult("Failed");
 		}
 	}

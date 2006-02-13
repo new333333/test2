@@ -45,6 +45,11 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     private boolean functionMembershipInherited = true;
     private PersistentAclSet aclSet;
     private boolean inheritAclFromParent = true;
+    // these bits signify whether entries of a binder can allow wider access
+    // than the binder's .  This does not apply to sub-binders.
+    private boolean widenRead=false;
+    private boolean widenModify=false;
+    private boolean widenDelete=false;
     
     public abstract List getEntryDefs();
     public abstract List getBinderViewDefs();
@@ -340,7 +345,7 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     } 
     
     /**
-     * @hibernate.property column="acl_inheritFromParent" not-null="true"
+     * @hibernate.property column="acl_inheritFromParent" 
      */
     public boolean getInheritAclFromParent() {
         return inheritAclFromParent;
@@ -349,7 +354,36 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     public void setInheritAclFromParent(boolean inherit) {
         this.inheritAclFromParent = inherit;
     }
+    /**
+     * @hibernate.property column="acl_widenRead" 
+     */
+    public boolean isWidenRead() {
+        return widenRead;
+    }
 
+    public void setWidenRead(boolean widenRead) {
+        this.widenRead = widenRead;
+    }
+    /**
+     * @hibernate.property column="acl_widenModify" 
+     */
+    public boolean isWidenModify() {
+        return widenModify;
+    }
+
+    public void setWidenModify(boolean widenModify) {
+        this.widenModify = widenModify;
+    }
+    /**
+     * @hibernate.property column="acl_widenDelete" 
+     */
+    public boolean isWidenDelete() {
+        return widenDelete;
+    }
+
+    public void setWidenDelete(boolean widenDelete) {
+        this.widenDelete = widenDelete;
+    }    
     public Long getCreatorId() {
     	HistoryStamp creation = getCreation();
     	if(creation != null) {

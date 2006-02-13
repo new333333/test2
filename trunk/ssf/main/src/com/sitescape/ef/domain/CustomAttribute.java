@@ -6,6 +6,7 @@
  */
 package com.sitescape.ef.domain;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -46,7 +47,8 @@ public class CustomAttribute  {
     protected SSClobString xmlValue;
     protected Boolean booleanValue;
     protected Set values;
-    protected User user;
+    // these collections are loaded for quicker indexing, hibernate will not persist them
+    protected Set iValues;
 
     protected int valueType=NONE;
     	private static final int NONE=0;
@@ -60,7 +62,7 @@ public class CustomAttribute  {
        	public static final int XML=8;
        	public static final int EVENT=9;
        	public static final int ATTACHMENT=10;
-       	public static final int USER=11;
+       	public static final int COMMASEPARATEDSTRING=11;
    protected String name;
    protected AnyOwner owner;
    protected String id;
@@ -180,17 +182,7 @@ public class CustomAttribute  {
     private void setBooleanValue(Boolean value) {
         this.booleanValue = value;
     }  
-    /**
-     * @hibernate.many-to-one
-     * 
-     */
-    private User getUserValue() {
-    	return this.user;
-    }
-    private void setUserValue(User user) {
-    	this.user = user;
-    }
-    /**
+   /**
      * @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan"  batch-size="4" 
      * @hibernate.key column="parent"
  	 * @hibernate.one-to-many class="com.sitescape.ef.domain.CustomAttributeListElement"
@@ -198,6 +190,7 @@ public class CustomAttribute  {
      * @return
      */
     private Set getValues() {
+    	if (iValues != null) return iValues;
     	return values;
     }
     private void setValues(Set values) {
@@ -306,6 +299,11 @@ public class CustomAttribute  {
          		newValues.add(vals[i]);
          	}
          	setValue(newValues);
+         } else if (value instanceof CommaSeparatedValue) {
+        	 //store as a string
+        	 setValue(value.toString());
+        	 valueType = COMMASEPARATEDSTRING;
+        	 
          }	else if (value instanceof Document) {
          	clearVals();
          	valueType = XML;
@@ -337,10 +335,6 @@ public class CustomAttribute  {
          	e.setName(name);
         	owner.getEntry().addEvent(e);
          	stringValue = e.getId();
-         } else if (value instanceof User) {
-        	clearVals();
-        	valueType = USER;
-        	user = (User)value;
          } else {
             if (valueType != SERIALIZED) clearVals();
             valueType = SERIALIZED;
@@ -355,8 +349,17 @@ public class CustomAttribute  {
     		        return stringValue;
     		    else if (description != null)
     		        return description.getText();
+    		    return "";
     		case DESCRIPTION:
     			return description;
+       		case COMMASEPARATEDSTRING:
+       			CommaSeparatedValue v1 = new CommaSeparatedValue();
+    		    if (!Validator.isNull(stringValue))
+    		        v1.setValue(stringValue);
+    		    else if (description != null)
+    		        v1.setValue(description.getText());
+    		    return v1;
+    			
     		case BOOLEAN:
     			return booleanValue;
     		case NUMBER:
@@ -387,14 +390,14 @@ public class CustomAttribute  {
     		    return owner.getEntry().getEvent(stringValue);
     		case ATTACHMENT:
     			return owner.getEntry().getAttachment(stringValue);
-    		case USER:
-    			return user;
  	    }
 	    return null;
 	}
 	public Set getValueSet() {
 		Object result = getValue();
 		if (result instanceof Set) return (Set)result;
+		if (result instanceof CommaSeparatedValue) 
+			return ((CommaSeparatedValue)(result)).getValueSet();
     	Set v = new HashSet();
     	v.add(result);
     	return v;
@@ -415,6 +418,14 @@ public class CustomAttribute  {
             return true;
         return false;
     }	
-
- 
+    /*
+     * The following methods are used for performance optimization during indexing.
+     * The values of each collection are loaded and built by hand.  
+     * They are not persisted.  This allows us to load greater than the 
+     * hibernate "batch-size" number of collections at once.
+     */
+    public void addIndexValue(CustomAttributeListElement value) {
+    	if (iValues == null) iValues = new HashSet();
+    	iValues.add(value);
+    }
 }

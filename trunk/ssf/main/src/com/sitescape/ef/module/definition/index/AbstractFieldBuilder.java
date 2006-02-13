@@ -30,18 +30,19 @@ public abstract class AbstractFieldBuilder implements FieldBuilder {
 
     protected Set getEntryElementValue(Entry entry, String dataElemName) {
 	    Object dataElemValue = null;
+	    Set result = null;
 	    try {
 	        dataElemValue = InvokeUtil.invokeGetter(entry, dataElemName);
 	    }
 	    catch (ObjectPropertyNotFoundException pe) {
 	        CustomAttribute cAttr = entry.getCustomAttribute(dataElemName);
 	        if(cAttr != null)
-	            dataElemValue = cAttr.getValue();
+	        	//let customAttribute do set conversion to handle comman separated values
+	            result = cAttr.getValueSet();
 		}
 	    
-	    Set result = null;
 	    
-	    if(dataElemValue != null) {
+	    if ((result == null) && (dataElemValue != null)) {
 	        if(dataElemValue instanceof Set) {
 	            result = (Set) dataElemValue;
 	        }

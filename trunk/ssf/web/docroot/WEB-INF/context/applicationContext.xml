@@ -413,6 +413,7 @@
 	</bean>
 
 	<bean id="binderModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.binder.impl.BinderModuleImpl">
+		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
 	</bean>
 
 	<bean id="definitionModule" parent="baseTransactionProxy">

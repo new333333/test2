@@ -134,13 +134,13 @@ public class WebKeys {
     public static final String FOLDER_ENTRY_DESCENDANTS="ssFolderEntryDescendants";
     public static final String FOLDER_ENTRY_ANCESTORS="ssFolderEntryAncestors";
     public static final String FOLDER_ENTRY_TOOLBAR="ssFolderEntryToolbar";
-    public static final String FOLDER_FUNCTIONS="ssFunctions";
     public static final String FOLDER_FUNCTION_MEMBERSHIP_INHERITED="ssFunctionMembershipInherited";
-    public static final String FOLDER_FUNCTION_MEMBERSHIPS="ssFunctionMemberships";
     public static final String FOLDER_TOOLBAR="ssFolderToolbar";
     public static final String FOLDER_WORKFLOW_ASSOCIATIONS="ssFolderWorkflowAssociations";
     public static final String FORUM_ID_LIST = "ssForumIdList";
     public static final String FORUM_TOOLBAR="ssForumToolbar";
+    public static final String FUNCTIONS="ssFunctions";
+    public static final String FUNCTION_MEMBERSHIP="ssFunctionMemberships";
     public static final String GROUPS="ssGroups";
     public static final String LDAP_CONFIG="ssLdapConfig";
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";

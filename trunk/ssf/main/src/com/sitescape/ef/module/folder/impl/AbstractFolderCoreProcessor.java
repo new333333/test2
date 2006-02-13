@@ -301,7 +301,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  
     //***********************************************************************************************************
     public org.dom4j.Document getDomFolderTree(Folder top, DomTreeBuilder domTreeHelper) {
-    	getBinderEntries_accessControl(top);
+    	getBinder_accessControl(top);
         User user = RequestContextHolder.getRequestContext().getUser();
     	Comparator c = new BinderComparator(user.getLocale());
     	    	
@@ -324,7 +324,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
        		f = (Folder)iter.next();
       	    // Check if the user has the privilege to view the folder 
             try {
-            	getBinderEntries_accessControl(f);
+            	getBinder_accessControl(f);
             } catch (AccessControlException ac) {
                	continue;
             }

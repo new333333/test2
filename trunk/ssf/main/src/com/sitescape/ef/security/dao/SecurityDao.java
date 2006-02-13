@@ -35,4 +35,8 @@ public interface SecurityDao {
      */
     public boolean checkWorkAreaFunctionMembership(String zoneName, Long workAreaId, 
             String workAreaType, String workAreaOperationName, Set membersToLookup);
+    
+    public List getWorkAreaOperationMembership(String zoneName, Long workAreaId, String workAreaType, 
+	        String workAreaOperationName);
+
 }

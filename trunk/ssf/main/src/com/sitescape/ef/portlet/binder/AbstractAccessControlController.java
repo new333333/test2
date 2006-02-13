@@ -52,10 +52,11 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 		
 		Map model = new HashMap();
 		User user = RequestContextHolder.getRequestContext().getUser();
-		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		Binder binder = getBinderModule().getBinder(binderId);
-		
+		Map binderConf = getBinderModule().getBinderFunctionMembership(binderId);
+		Binder binder = (Binder)binderConf.get(ObjectKeys.BINDER);
 		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.FUNCTIONS, binderConf.get(ObjectKeys.FUNCTIONS));
+		model.put(WebKeys.FUNCTION_MEMBERSHIP, binderConf.get(ObjectKeys.FUNCTION_MEMBERSHIP));
 		model.put(WebKeys.FOLDER_WORKFLOW_ASSOCIATIONS, binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS));
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
@@ -65,7 +66,6 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 		DefinitionUtils.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 	
 		//Add the list of existing functions for this zone
-		model.put(WebKeys.FOLDER_FUNCTIONS, getAdminModule().getFunctions());
 		model.put(WebKeys.FOLDER_FUNCTION_MEMBERSHIP_INHERITED, new Boolean(binder.isFunctionMembershipInherited()));
 		//model.put(WebKeys.FOLDER_FUNCTION_MEMBERSHIPS, findWorkAreaFunctionMemberships(zoneName, binder));
 

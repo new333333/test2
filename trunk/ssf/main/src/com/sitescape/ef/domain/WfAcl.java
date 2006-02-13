@@ -8,7 +8,7 @@ import com.sitescape.util.StringUtil;
  * Helper class for workflow Acl descriptions
  */
 public class WfAcl {
-	boolean creator=false;
+	boolean creator=true;
 	boolean useDefault=true;
 	Set ids;
 	

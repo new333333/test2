@@ -49,6 +49,7 @@ import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.ef.security.function.OperationAccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.web.WebKeys;
@@ -92,8 +93,8 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 		return fileModule;
 	}
 	
-	private TransactionTemplate transactionTemplate;
 
+	private TransactionTemplate transactionTemplate;
     protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
 	}
@@ -101,6 +102,9 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 		this.transactionTemplate = transactionTemplate;
 	}
 	
+	protected void getBinder_accessControl(Binder binder) {
+		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+	}
 	//***********************************************************************************************************	
     public Long addEntry(final Binder binder, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems) 
@@ -151,7 +155,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 
      
     protected void addEntry_accessControl(Binder binder) throws AccessControlException {
-        accessControlManager.checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);        
+        getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);        
     }
     
     protected void addEntry_processFiles(Binder binder, WorkflowControlledEntry entry, List fileData) 
@@ -289,19 +293,9 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	
     }
     protected void modifyEntry_accessControl(Binder binder, WorkflowControlledEntry entry) throws AccessControlException {
-        //Check if the user is allowed to modify entries in the binder
-        if (entry.getInheritAclFromParent()) {
-            getAccessControlManager().checkAcl(binder, entry, AccessType.READ, true, false);
-        	getAccessControlManager().checkAcl(binder, entry, AccessType.WRITE, 
-        			getAccessControlManager().testOperation(binder, WorkAreaOperation.CREATOR_MODIFY), false);
-       } else { 
-            getAccessControlManager().checkAcl(binder, entry, AccessType.READ,  
-               		entry.checkOwner(AccessType.READ), entry.checkWorkArea(AccessType.READ));
-            getAccessControlManager().checkAcl(binder, entry, AccessType.WRITE, 
-               		entry.checkOwner(AccessType.WRITE), entry.checkWorkArea(AccessType.WRITE));
-        }        	        		
-    }
-    
+    	modifyAccessCheck(binder, entry);
+   }
+
     protected void modifyEntry_processFiles(Binder binder, WorkflowControlledEntry entry, List fileData) 
     throws WriteFilesException {
     	EntryBuilder.writeFiles(getFileModule(), binder, entry, fileData);
@@ -410,7 +404,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
  
     }
     protected void indexBinder_accessControl(Binder binder) {
-    	getAccessControlManager().checkAcl(binder, AccessType.READ);
+    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
     }
 
     protected void indexBinder_deleteEntries(Binder binder) {
@@ -461,10 +455,8 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     public Map getBinderEntries(Binder binder, String[] entryTypes, int maxChildEntries, org.dom4j.Document searchFilter) {
         int count=0;
         Field fld;
-        
-        //check access to binder - might be able to get rid of this
-        getBinderEntries_accessControl(binder);
-        //validate entry count
+        //search engine will only return entries you have access to
+         //validate entry count
         maxChildEntries = getBinderEntries_maxEntries(maxChildEntries); 
         //do actual search index query
         Hits hits = getBinderEntries_doSearch(binder, entryTypes, maxChildEntries, searchFilter);
@@ -512,9 +504,6 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     		if (p.getId().toString().equalsIgnoreCase(userId)) return p;
     	}
     	return null;
-    }
-    protected void getBinderEntries_accessControl(Binder binder) {
-        getAccessControlManager().checkAcl(binder, AccessType.READ);    	
     }
     protected int getBinderEntries_maxEntries(int maxChildEntries) {
         if (maxChildEntries == 0) maxChildEntries = DEFAULT_MAX_CHILD_ENTRIES;
@@ -603,17 +592,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     }
              
     protected void getEntry_accessControl(Binder parentBinder, WorkflowControlledEntry entry) {
-           
-        // Check if the user has the privilege to view the entries in the 
-        // work area
-    	getBinderEntries_accessControl(parentBinder);
-         //Check if the user is allowed to read this entry
-        if (entry.getInheritAclFromParent()) {
-           	getAccessControlManager().checkAcl(parentBinder, entry, AccessType.READ, true, false);
-       } else { 
-            getAccessControlManager().checkAcl(parentBinder, entry, AccessType.READ,  
-            		entry.checkOwner(AccessType.READ), entry.checkWorkArea(AccessType.READ));      	        		
-       }
+        readAccessCheck(parentBinder, entry);   
     }
    //***********************************************************************************************************   
     public void deleteEntry(Binder parentBinder, Long entryId) {
@@ -633,20 +612,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     }
         
     protected void deleteEntry_accessControl(Binder parentBinder, WorkflowControlledEntry entry) {
- //       getAccessControlManager().checkOperation(parentBinder, WorkAreaOperation.DELETE_ENTRIES);
-        
- //       getAccessControlManager().checkAcl(parentBinder, entry, AccessType.DELETE);
-        //Check if the user is allowed to delete entries in the binder
-        if (entry.getInheritAclFromParent()) {
-            getAccessControlManager().checkAcl(parentBinder, entry, AccessType.READ, true, false);
-        	getAccessControlManager().checkAcl(parentBinder, entry, AccessType.DELETE, 
-        			getAccessControlManager().testOperation(parentBinder, WorkAreaOperation.CREATOR_DELETE), true);
-       } else { 
-            getAccessControlManager().checkAcl(parentBinder, entry, AccessType.READ,  
-               		entry.checkOwner(AccessType.READ), entry.checkWorkArea(AccessType.READ));
-            getAccessControlManager().checkAcl(parentBinder, entry, AccessType.DELETE, 
-               		entry.checkOwner(AccessType.DELETE), entry.checkWorkArea(AccessType.DELETE));
-        }        	        		
+    	deleteAccessCheck(parentBinder, entry);
     }
     protected void deleteEntry_preDelete(Binder parentBinder, WorkflowControlledEntry entry) {
     }
@@ -774,5 +740,110 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         
         return indexDoc;
     }
-       
+ 
+    protected void modifyAccessCheck(Binder binder, WorkflowControlledEntry entry) {
+        if (!entry.hasAclSet()) {
+           	try {
+           		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES);
+           	} catch (OperationAccessControlException ex) {
+          		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) 
+       				getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATOR_MODIFY);
+          		else throw ex;
+          	}     
+        } else {         	
+        	//entry has a workflow
+        	//see if owner can modify
+        	if (entry.checkOwner(AccessType.WRITE)) {
+    		   if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) {
+    			   if (binder.isWidenModify()) return;
+    			   if (getAccessControlManager().testOperation(binder, WorkAreaOperation.CREATOR_MODIFY)) return;
+    		   }
+    	   }
+		    //see if folder default is enabled.
+    	   if (entry.checkWorkArea(AccessType.WRITE)) {
+    		   try {
+    	       		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES); 
+    	       		return;
+    		   } catch (OperationAccessControlException ex) {
+    			   //at this point we can stop if workflow cannot widen access
+    			   if (!binder.isWidenModify()) throw ex;
+    		   }
+    	   }
+    	   //if fail this test exception is thrown
+    	   getAccessControlManager().checkAcl(binder, entry, AccessType.WRITE, false, false);
+    	   if (binder.isWidenModify()) return;
+    	   //make sure acl list is sub-set of binder access
+      		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES);     	   
+        }    	
+    }
+    protected void readAccessCheck(Binder binder, WorkflowControlledEntry entry) {
+        if (!entry.hasAclSet()) {
+           	try {
+           		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+           	} catch (OperationAccessControlException ex) {
+          		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) 
+       				getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATOR_READ);
+          		else throw ex;
+          	}     
+        } else {         	
+        	//entry has a workflow
+        	//see if owner can read
+        	if (entry.checkOwner(AccessType.READ)) {
+    		   if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) {
+    			   if (binder.isWidenRead()) return;
+    			   if (getAccessControlManager().testOperation(binder, WorkAreaOperation.CREATOR_READ)) return;
+    		   }
+    	   }
+		    //see if folder default is enabled.
+    	   if (entry.checkWorkArea(AccessType.READ)) {
+    		   try {
+    	       		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES); 
+    	       		return;
+    		   } catch (OperationAccessControlException ex) {
+    			   //at this point we can stop if workflow cannot widen access
+    			   if (!binder.isWidenRead()) throw ex;
+    		   }
+    	   }
+    	   //if fails this test exception is thrown
+    	   getAccessControlManager().checkAcl(binder, entry, AccessType.READ, false, false);
+    	   if (binder.isWidenRead()) return;
+    	   //make sure acl list is sub-set of binder access
+      		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);     	   
+        }    	
+    }
+    protected void deleteAccessCheck(Binder binder, WorkflowControlledEntry entry) {
+        if (!entry.hasAclSet()) {
+           	try {
+           		getAccessControlManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES);
+           	} catch (OperationAccessControlException ex) {
+          		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) 
+       				getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATOR_DELETE);
+          		else throw ex;
+          	}     
+        } else {         	
+        	//entry has a workflow
+        	//see if owner can delete
+        	if (entry.checkOwner(AccessType.DELETE)) {
+    		   if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) {
+    			   if (binder.isWidenDelete()) return;
+    			   if (getAccessControlManager().testOperation(binder, WorkAreaOperation.CREATOR_DELETE)) return;
+    		   }
+    	   }
+		    //see if folder default is enabled.
+    	   if (entry.checkWorkArea(AccessType.DELETE)) {
+    		   try {
+    	       		getAccessControlManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES); 
+    	       		return;
+    		   } catch (OperationAccessControlException ex) {
+    			   //at this point we can stop if workflow cannot widen access
+    			   if (!binder.isWidenDelete()) throw ex;
+    		   }
+    	   }
+    	   //if fails this test exception is thrown
+    	   getAccessControlManager().checkAcl(binder, entry, AccessType.DELETE, false, false);
+    	   if (binder.isWidenDelete()) return;
+    	   //make sure acl list is sub-set of binder access
+      		getAccessControlManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES);     	   
+        }    	
+    }
 }
