@@ -533,22 +533,8 @@
 	</bean>
 	
 	<bean id="fileModule" class="com.sitescape.ef.module.file.impl.FileModuleImpl">
-		<property name="fileModuleMetadata">
-			<bean parent="baseTransactionProxy">
-				<property name="transactionAttributes">
-					<props>
-						<prop key="removeAttachment">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-						<prop key="writeFile">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-						<prop key="setCheckout">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-					</props>
-				</property>
-				<property name="target">
-					<bean class="com.sitescape.ef.module.file.impl.FileModuleMetadata">
-						<property name="coreDao"><ref local="coreDao"/></property>						
-					</bean>
-				</property>				
-			</bean>
-		</property>
+		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+		<property name="coreDao"><ref local="coreDao"/></property>						
 	</bean>
 		
 	<!-- =========================Portlet support =========================================================== -->	

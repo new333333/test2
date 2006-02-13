@@ -8,14 +8,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FileItem;
 import com.sitescape.ef.domain.Binder;
@@ -63,13 +69,23 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	protected Log logger = LogFactory.getLog(getClass());
 
-	private FileModuleMetadata fileModuleMetadata;
+	private CoreDao coreDao;
+	private TransactionTemplate transactionTemplate;
 	
-	protected FileModuleMetadata getFileModuleMetadata() {
-		return fileModuleMetadata;
+	protected CoreDao getCoreDao() {
+		return coreDao;
 	}
-	public void setFileModuleMetadata(FileModuleMetadata fileModuleMetadata) {
-		this.fileModuleMetadata = fileModuleMetadata;
+
+	public void setCoreDao(CoreDao coreDao) {
+		this.coreDao = coreDao;
+	}
+
+	protected TransactionTemplate getTransactionTemplate() {
+		return transactionTemplate;
+	}
+
+	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+		this.transactionTemplate = transactionTemplate;
 	}
 
 	public void deleteFiles(Binder binder, Entry entry) {
@@ -364,6 +380,69 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
+    protected void writeFileMetadata(final Binder binder, final Entry entry, 
+    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew) {	
+    	
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		if(isNew) {
+            		// Since file attachment is stored into custom attribute using
+            		// its id value rather than association, this new object must
+            		// be persisted here just in case it is to be put into custom
+            		// attribute down below. 
+            		getCoreDao().save(fAtt);    		
+            	}
+
+            	if (fui.getType() == FileUploadItem.TYPE_FILE) {
+        			// Find custom attribute by the attribute name. 
+        			Set fAtts = null;
+        			CustomAttribute ca = entry.getCustomAttribute(fui.getName());
+        			if(ca != null)
+        				fAtts = (Set) ca.getValue();
+        			else
+        				fAtts = new HashSet();
+
+        			// Simply because the file already exists for the entry does not 
+        			// mean that it is known through this particular data element
+        			// (i.e., custom attribute). So we need to make sure that it is
+        			// made visible through this element.
+        			fAtts.add(fAtt); // If it is already in the set, it will have no effect
+        			
+        			if(ca != null)
+        				ca.setValue(fAtts);
+        			else
+        				entry.addCustomAttribute(fui.getName(), fAtts);
+        		} else if (fui.getType() == FileUploadItem.TYPE_ATTACHMENT) {
+        			// Add the file attachment to the entry only if new file. 
+        			if(isNew) {
+        				entry.addAttachment(fAtt);
+        			}
+        		}     	
+                return null;
+        	}
+        });
+    }
+
+	protected void setCheckoutMetadata(final FileAttachment fAtt, final HistoryStamp co) {
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		fAtt.setCheckout(co);      
+                
+                return null;
+        	}
+        });
+	}
+	
+	protected void removeAttachmentMetadata(final Entry entry, final FileAttachment fAtt) {
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		entry.removeAttachment(fAtt);  
+                
+                return null;
+        	}
+        });
+	}
+	
 	private void checkinInternal(String repositoryServiceName, Binder binder, 
 			Entry entry, String fileName) {
     	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
@@ -402,7 +481,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			updateFileAttachment(fAtt, user, versionName, contentLength);		
     			
         		// Mark our metadata that the file is not checked out.
-    			getFileModuleMetadata().setCheckout(fAtt, null);
+    			setCheckoutMetadata(fAtt, null);
     		}
     		else {
     			// The file is checked out by some other person. 
@@ -432,7 +511,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         		RepositoryServiceUtil.uncheckout(fAtt.getRepositoryServiceName(),
         				binder, entry, fileName);
         		// Mark our metadata that the file is not checked out.
-        		getFileModuleMetadata().setCheckout(fAtt, null);
+        		setCheckoutMetadata(fAtt, null);
     		}
     		else {
     			// The file is checked out by some other person. 
@@ -463,7 +542,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		RepositoryServiceUtil.checkout(fAtt.getRepositoryServiceName(),
     				binder, entry, fileName);
     		// Mark our metadata that the file is checked out by the user.
-    		getFileModuleMetadata().setCheckout(fAtt, new HistoryStamp(user));
+    		setCheckoutMetadata(fAtt, new HistoryStamp(user));
     	}
     	else { // The file is checked out by someone. 
     		if(user.equals(co.getPrincipal())) {
@@ -599,7 +678,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	// When a repository supports JCA, this should be possible to do
     	// using JTA. But that's not always available, and this version of
     	// the system does not try to address that). 
-    	getFileModuleMetadata().writeFile(binder, entry, fui, fAtt, isNew);
+    	writeFileMetadata(binder, entry, fui, fAtt, isNew);
     }
     
     private File getDirectlyAccessibleThumbnailFile(Entry entry, String primaryFileName) {
@@ -620,7 +699,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		RepositoryServiceUtil.uncheckout(fAtt.getRepositoryServiceName(),
     				binder, entry, fAtt.getFileItem().getName());
     		// Mark our metadata that the file is not checked out.
-    		getFileModuleMetadata().setCheckout(fAtt, null);	
+    		setCheckoutMetadata(fAtt, null);	
 		}
 	}
 
@@ -769,7 +848,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		RepositoryServiceUtil.delete(fAtt.getRepositoryServiceName(), binder,
 				entry, fAtt.getFileItem().getName());
 
-		getFileModuleMetadata().removeAttachment(entry, fAtt);
+		removeAttachmentMetadata(entry, fAtt);
 
 	}
 	
