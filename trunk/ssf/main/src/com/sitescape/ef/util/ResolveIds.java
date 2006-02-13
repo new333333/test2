@@ -24,4 +24,8 @@ public class ResolveIds {
 		}
 		return null;
 	}
+	public static Collection getPrincipals(Collection ids) {
+		CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
+		return coreDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+	}
 }
