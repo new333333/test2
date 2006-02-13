@@ -25,6 +25,31 @@ This folder is inheriting its access control settings from its parent folder.<br
 </c:if>
 
 <c:if test="${!ssBinder.functionMembershipInherited}">
+<fieldset class="ss_fieldset">
+  <legend class="ss_legend"><ssf:nlt tag="accessControl.currentMembershipSettings" text="Current membership settings"/></legend>
+<c:forEach var="function" items="${ssFunctionMap}">
+  <c:if test="${!empty function.value.ssUsers || !empty function.value.ssGroups}">
+	<span calss="ss_bold"><c:out value="${function.key.name}"/></span>
+	<br>
+	<span><ssf:nlt tag="accessControl.users" text="Users"/></span>
+	<br>
+	<ul>
+	<c:forEach var="user" items="${function.value.ssUsers}">
+		<li><c:out value="${user.title}"/></li>
+	</c:forEach>
+	</ul>
+	<br>
+	<span><ssf:nlt tag="accessControl.users" text="Users"/></span>
+	<br>
+	<ul>
+	<c:forEach var="user" items="${function.value.ssGroups}">
+		<li><c:out value="${user.title}"/></li>
+	</c:forEach>
+	</ul>
+  </c:if>
+</c:forEach>
+</fieldset>
+
 <c:forEach var="function" items="${ssFunctionMap}">
 <ssf:expandableArea title="${function.key.name}">
 <form class="ss_style" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>

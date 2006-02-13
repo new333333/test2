@@ -212,6 +212,40 @@
 	</tag>
 	
 	<tag>
+		<name>findGroups</name>
+		<tag-class>com.sitescape.ef.taglib.FindGroups</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>formElement</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>groupList</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.List</type>
+		</attribute>		
+	</tag>
+	
+	<tag>
+		<name>findUsers</name>
+		<tag-class>com.sitescape.ef.taglib.FindUsers</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>formElement</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>userList</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.List</type>
+		</attribute>		
+	</tag>
+	
+	<tag>
 		<name>htmleditor</name>
 		<tag-class>com.sitescape.ef.taglib.Htmleditor</tag-class>
 		<body-content>JSP</body-content>

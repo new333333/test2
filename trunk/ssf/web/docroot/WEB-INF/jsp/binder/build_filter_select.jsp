@@ -32,7 +32,7 @@ function ss_buttonSelect(btn) {
 function checkFilterForm(obj) {
 	if (ss_buttonSelected == 'delete' && 
 			document.forms.filterData.selectedSearchFilter.value != "") {
-		if (!confirm("<ssf:nlt tag="filter.enterName" 
+		if (!confirm("<ssf:nlt tag="filter.confirmDelete" 
 		text="Please confirm that you want to delete the filter named:"
 		/>\n" + document.forms.filterData.selectedSearchFilter.value)) return false;
 	}
@@ -55,8 +55,8 @@ function checkFilterForm(obj) {
   value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 </div>
 
-  <fieldset class="fieldset">
-    <legend class="legend"><ssf:nlt tag="filter.filterAddModDelete" text="Add, modify or delete filters"/></legend>
+  <fieldset class="ss_fieldset">
+    <legend class="ss_legend"><ssf:nlt tag="filter.filterAddModDelete" text="Add, modify or delete filters"/></legend>
 
 	<br>
 	<input type="submit" name="addBtn"  onClick="ss_buttonSelect('add');"
