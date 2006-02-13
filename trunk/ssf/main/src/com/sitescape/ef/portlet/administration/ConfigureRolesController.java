@@ -68,7 +68,7 @@ public class ConfigureRolesController extends  SAbstractController {
 		Map model = new HashMap();
 		
 		//Add the list of existing functions for this zone
-		model.put("ssFunctions", getAdminModule().getFunctions());
+		model.put(WebKeys.FOLDER_FUNCTIONS, getAdminModule().getFunctions());
 		
 		//Add the list of workAreaOperations that can be added to each function
 		Map operations = new HashMap();

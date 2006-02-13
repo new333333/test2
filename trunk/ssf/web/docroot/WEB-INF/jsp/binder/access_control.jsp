@@ -20,6 +20,11 @@
 <div class="ss_style ss_portlet">
 <h3><ssf:nlt tag="binder.configure.access_control" text="Configure access control"/></h3>
 
+<c:if test="${ssFunctionMembershipInherited}">
+This folder is inheriting its access control settings from its parent folder.<br>
+</c:if>
+
+<c:if test="${!ssFunctionMembershipInherited}">
 <c:forEach var="function" items="${ssFunctions}">
 <jsp:useBean id="function" type="com.sitescape.ef.security.function.Function" />
 <ssf:expandableArea title="<%= function.getName() %>">
@@ -36,7 +41,7 @@
 </ssf:expandableArea>
 
 </c:forEach>
-
+</c:if>
 <br/>
 
 <form class="ss_style" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
