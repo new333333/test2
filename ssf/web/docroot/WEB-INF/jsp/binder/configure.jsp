@@ -30,8 +30,8 @@
 </div>
 
 <c:if test="${ssBinder.type == 'FOLDER'}">
-  <fieldset class="fieldset">
-    <legend class="legend"><ssf:nlt tag="forum.configure.allowedViews" text="Allowed folder views"/></legend>
+  <fieldset class="ss_fieldset">
+    <legend class="ss_legend"><ssf:nlt tag="forum.configure.allowedViews" text="Allowed folder views"/></legend>
 
     <c:set var="folderViewCount" value=""/>
     <c:forEach var="item" items="${ssPublicFolderDefinitions}">
@@ -53,8 +53,8 @@
   <br>
 
   <c:if test="${!empty folderViewCount}">
-    <fieldset class="fieldset">
-      <legend class="legend"><ssf:nlt tag="forum.configure.defaultView" text="Default folder view"/></legend>
+    <fieldset class="ss_fieldset">
+      <legend class="ss_legend"><ssf:nlt tag="forum.configure.defaultView" text="Default folder view"/></legend>
 
       <c:forEach var="item" items="${ssPublicFolderDefinitions}">
         <c:if test="${!empty ssFolderDefinitionMap[item.key]}">
@@ -76,8 +76,8 @@
     <br>
   </c:if>
 
-  <fieldset class="fieldset">
-    <legend class="legend"><ssf:nlt tag="forum.configure.defaultEntryTypes" text="Default entry types"/></legend>
+  <fieldset class="ss_fieldset">
+    <legend class="ss_legend"><ssf:nlt tag="forum.configure.defaultEntryTypes" text="Default entry types"/></legend>
 
     <c:forEach var="item" items="${ssPublicEntryDefinitions}">
 	  <c:choose>
@@ -96,8 +96,8 @@
   </fieldset>
   <br>
 
-  <fieldset class="fieldset">
-    <legend class="legend"><ssf:nlt tag="forum.configure.workflowAssociations" text="Workflow associations"/></legend>
+  <fieldset class="ss_fieldset">
+    <legend class="ss_legend"><ssf:nlt tag="forum.configure.workflowAssociations" text="Workflow associations"/></legend>
 
 	<table class="ss_style">
 	<c:forEach var="item" items="${ssPublicEntryDefinitions}">
@@ -129,8 +129,8 @@
 </c:if>
 
 <c:if test="${ssBinder.type == 'PROFILES'}">
-  <fieldset class="fieldset">
-    <legend class="legend"><ssf:nlt tag="forum.configure.profileView" text="Profile listing"/></legend>
+  <fieldset class="ss_fieldset">
+    <legend class="ss_legend"><ssf:nlt tag="forum.configure.profileView" text="Profile listing"/></legend>
 
     <c:forEach var="item" items="${ssPublicProfileDefinitions}">
       <c:choose>
@@ -149,8 +149,8 @@
   </fieldset>
   <br>
   
-  <fieldset class="fieldset">
-    <legend class="legend"><ssf:nlt tag="forum.configure.profileEntryType" text="Profile type"/></legend>
+  <fieldset class="ss_fieldset">
+    <legend class="ss_legend"><ssf:nlt tag="forum.configure.profileEntryType" text="Profile type"/></legend>
 
     <c:forEach var="item" items="${ssPublicProfileEntryDefinitions}">
 	  <c:choose>
