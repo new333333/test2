@@ -131,7 +131,7 @@ public class SAbstractForumController extends SAbstractController {
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
 				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-				String title = NLT.get(def.getTitle());
+				String title = NLT.getDef(def.getTitle());
 				if (toolbar.checkToolbarMenuItem("1_add", "entries", title)) {
 					title = title + " (" + String.valueOf(count++) + ")";
 				}
