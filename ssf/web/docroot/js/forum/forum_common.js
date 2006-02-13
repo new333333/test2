@@ -799,7 +799,7 @@ function activateMenuLayer(divId, parentDivId, delayHide) {
     	x = ss_getDivLeft(parentDivId)
     	y = ss_getDivTop(parentDivId)
 	    //Add a little to the y position so the div isn't occluding too much
-	    y = parseInt(parseInt(y) + ss_getDivHeight(parentDivId) + 6)
+	    y = parseInt(parseInt(y) + ss_getDivHeight(parentDivId) + 4)
     } else {
 	    x = ss_getClickPositionX();
 	    y = ss_getClickPositionY();
