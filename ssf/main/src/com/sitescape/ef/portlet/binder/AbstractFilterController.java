@@ -115,9 +115,6 @@ public abstract class AbstractFilterController extends SAbstractForumController 
 				model.put(WebKeys.FILTER_SEARCH_FILTER_DATA, searchFilterData);
 			}
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);
-		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
-			return new ModelAndView(WebKeys.VIEW_PROFILE_LIST, model);
 		} else {
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER_SELECT, model);
 		}
