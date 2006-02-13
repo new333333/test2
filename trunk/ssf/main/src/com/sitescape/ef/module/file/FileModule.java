@@ -1,11 +1,13 @@
 package com.sitescape.ef.module.file;
 
 import java.io.OutputStream;
+import java.util.List;
 
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.module.shared.WriteFilesException;
 import com.sitescape.ef.util.FileUploadItem;
 
 /**
@@ -369,4 +371,7 @@ public interface FileModule {
 			String thumbFileName,int maxWidth, int maxHeight) 
 		throws FileException;
 		*/
+	
+    public void writeFiles(Binder binder, Entry entry, List fileUploadItems)
+		throws WriteFilesException;
 }

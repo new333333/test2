@@ -121,26 +121,7 @@ public class EntryBuilder {
 		}
 
 	}	
-    public static void writeFiles(FileModule fileModule, Binder binder, Entry entry, List fileData)
-    			throws WriteFilesException {
-    	WriteFilesException wfe = new WriteFilesException();
-	
-    	for(int i = 0; i < fileData.size(); i++) {
-    		FileUploadItem fui = (FileUploadItem) fileData.get(i);
-    		try {
-    			fileModule.writeFile(binder, entry, fui);
-    		} catch (Exception e) {
-    			logger.error(e.getMessage(), e);
-    			wfe.addException(e);
-    		}
-    	}
-	
-    	if(wfe.size() > 0) {
-    		//At least one file failed to be written successfully.
-    		wfe.setErrorArgs(entry, fileData.size(), wfe.size());
-    		throw wfe;
-    	}
-    }	
+
 }
 
 

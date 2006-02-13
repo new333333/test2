@@ -250,7 +250,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     
     protected void addReply_processFiles(FolderEntry parent, FolderEntry entry, List fileData) 
     	throws WriteFilesException {
-    	EntryBuilder.writeFiles(getFileModule(), parent.getParentFolder(), entry, fileData);
+    	getFileModule().writeFiles(parent.getParentFolder(), entry, fileData);
     }
     
     protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {  

@@ -34,6 +34,7 @@ import com.sitescape.ef.module.file.FileException;
 import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.file.NoSuchFileException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.module.shared.WriteFilesException;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositoryServiceUtil;
@@ -380,6 +381,28 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
+	
+    public void writeFiles(Binder binder, Entry entry, List fileUploadItems)
+		throws WriteFilesException {
+    	WriteFilesException wfe = new WriteFilesException();
+    	
+    	for(int i = 0; i < fileUploadItems.size(); i++) {
+    		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
+    		try {
+    			this.writeFile(binder, entry, fui);
+    		} catch (Exception e) {
+    			logger.error(e.getMessage(), e);
+    			wfe.addException(e);
+    		}
+    	}
+	
+    	if(wfe.size() > 0) {
+    		//At least one file failed to be written successfully.
+    		wfe.setErrorArgs(entry, fileUploadItems.size(), wfe.size());
+    		throw wfe;
+    	}
+    }
+    
     protected void writeFileMetadata(final Binder binder, final Entry entry, 
     		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew) {	
     	
