@@ -160,7 +160,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     
     protected void addEntry_processFiles(Binder binder, WorkflowControlledEntry entry, List fileData) 
     	throws WriteFilesException {
-    	EntryBuilder.writeFiles(getFileModule(), binder, entry, fileData);
+    	getFileModule().writeFiles(binder, entry, fileData);
     }
     
     protected Map addEntry_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems) {
@@ -298,7 +298,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 
     protected void modifyEntry_processFiles(Binder binder, WorkflowControlledEntry entry, List fileData) 
     throws WriteFilesException {
-    	EntryBuilder.writeFiles(getFileModule(), binder, entry, fileData);
+    	getFileModule().writeFiles(binder, entry, fileData);
     }
     protected Map modifyEntry_toEntryData(WorkflowControlledEntry entry, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
