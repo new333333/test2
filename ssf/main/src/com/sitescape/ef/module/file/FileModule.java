@@ -79,8 +79,8 @@ public interface FileModule {
 	 * @throws CheckedOutByOtherException
 	 * @throws FileException
 	 */
-    public void writeFile(Binder binder, Entry entry, FileUploadItem fui) 
-    	throws CheckedOutByOtherException, FileException;
+    //public void writeFile(Binder binder, Entry entry, FileUploadItem fui) 
+    //	throws CheckedOutByOtherException, FileException;
     
     /**
      * Reads the specified file into the output stream.
