@@ -33,6 +33,7 @@ import com.sitescape.ef.module.file.CheckedOutByOtherException;
 import com.sitescape.ef.module.file.FileException;
 import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.file.NoSuchFileException;
+import com.sitescape.ef.module.file.PrimaryFileException;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.repository.RepositoryService;
@@ -117,18 +118,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			throw new FileException(e);
 		}
 	}
-	
-    public void writeFile(Binder binder, Entry entry, FileUploadItem fui) {
-    	try {
-    		writeFileInternal(binder, entry, fui);
-    	}
-		catch(RepositoryServiceException e) {
-			throw new FileException(e);
-		} 
-		catch (IOException e) {
-			throw new FileException(e);
-		}
-    }
 	
 	public void readFile(Binder binder,
 			Entry entry, String repositoryServiceName, String fileName, OutputStream out) {
@@ -381,24 +370,25 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
-	
     public void writeFiles(Binder binder, Entry entry, List fileUploadItems)
 		throws WriteFilesException {
-    	WriteFilesException wfe = new WriteFilesException();
+    	WriteFilesException wfe = new WriteFilesException(binder, entry);
     	
     	for(int i = 0; i < fileUploadItems.size(); i++) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
     		try {
-    			this.writeFile(binder, entry, fui);
-    		} catch (Exception e) {
-    			logger.error(e.getMessage(), e);
-    			wfe.addException(e);
+    			this.writeFileInternal(binder, entry, fui, wfe);
+    		}
+    		catch(Exception e) {
+    			logger.error("Error processing file " + fui.getOriginalFilename(), e);
+    			wfe.addProblem(new WriteFilesException.Problem
+    					(fui.getRepositoryServiceName(),  fui.getOriginalFilename(), 
+    							WriteFilesException.Problem.OTHER_PROBLEM, e));
     		}
     	}
 	
-    	if(wfe.size() > 0) {
-    		//At least one file failed to be written successfully.
-    		wfe.setErrorArgs(entry, fileUploadItems.size(), wfe.size());
+    	if(wfe.getProblems().size() > 0) {
+    		// At least one error occured during the operation. 
     		throw wfe;
     	}
     }
@@ -579,8 +569,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	}
 	}
 
-    private void writeFileInternal(Binder binder, Entry entry, FileUploadItem fui) 
-    	throws IOException, RepositoryServiceException {
+    private void writeFileInternal(Binder binder, Entry entry, 
+    		FileUploadItem fui, WriteFilesException wfe) {
+    	
+    	/// Work Flow:
+    	/// step1: write primary file
+    	/// step2: generate and write scaled file (if necessary)
+    	/// step3: generate and write thumbnail file (if necessary)
+    	/// step4: update metadata in database
+    	
 		int type = fui.getType();
 		if(type != FileUploadItem.TYPE_FILE && type != FileUploadItem.TYPE_ATTACHMENT) {
 			logger.error("Unrecognized file processing type " + type + " for ["
@@ -614,24 +611,42 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		// not input stream as input. In this case we read the file content
 	    		// into a byte array once and reuse it for all repository operations
 	    		// to avoid having to incur file I/O multiple times. 
-	    		byte[] primaryContent = fui.getBytes();
+	    		byte[] primaryContent = null;
 	    		
-	    		// Store primary file first, since we do not want to generate secondary
-	    		// files unless we could successfully store the primary file first. 
-	    		
-	    		if(fAtt == null) { // New file for the entry
-	    			isNew = true;
-	    			fAtt = createFile(service, session, binder, entry, fui, primaryContent);
+	    		try {
+		    		primaryContent = fui.getBytes();
+		    		
+		    		// Store primary file first, since we do not want to generate secondary
+		    		// files unless we could successfully store the primary file first. 
+		    		
+		    		if(fAtt == null) { // New file for the entry
+		    			isNew = true;
+		    			fAtt = createFile(service, session, binder, entry, fui, primaryContent);
+		    		}
+		    		else { // Existing file for the entry
+		    			writeExistingFile(service, session, binder, entry, fui, primaryContent);
+		    		}
 	    		}
-	    		else { // Existing file for the entry
-	    			writeExistingFile(service, session, binder, entry, fui, primaryContent);
+	    		catch(Exception e) {
+	    			logger.error("Error storing file " + fileName, e);
+	    			// We failed to write the primary file. In this case, we 
+	    			// discard the rest of the operation (i.e., step2 thru 4).
+	    			wfe.addProblem(new WriteFilesException.Problem
+	    					(repositoryServiceName, fileName, 
+	    							WriteFilesException.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
+	    			return;
 	    		}
 	    		
+
 	    		// Scaled file
 	        	if(fui.getMaxWidth() > 0 && fui.getMaxHeight() > 0) {
 	            	// Generate scaled file which goes into the same repository as
 	        		// the primary file except that the generated file is not versioned.
 	        		try {
+	        			//for testing only
+	        			//if(1==1)
+	        			//	throw new ThumbnailException("Fake error");
+	        			
 	        			generateAndStoreScaledFile(service, session, binder, entry, fileName,
 	        				primaryContent, fui.getMaxWidth(),fui.getMaxWidth());
 	        		}
@@ -640,8 +655,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	        			// when the file format is not supported. Do not cause this to
 	        			// fail the entire operation. Simply log it and proceed.  
 	        			logger.warn("Error generating scaled version of " + fileName, e);
+		    			wfe.addProblem(new WriteFilesException.Problem
+		    					(repositoryServiceName, fileName, 
+		    							WriteFilesException.Problem.PROBLEM_GENERATING_SCALED_FILE, e));
 	        		}
-	        	}    	
+	        		catch(Exception e) {
+		    			// Failed to store scaled file. In this case, we report the 
+	        			// problem to the client but still proceed here.
+	        			logger.warn("Error storing scaled version of " + fileName, e);
+		    			wfe.addProblem(new WriteFilesException.Problem
+		    					(repositoryServiceName, fileName, 
+		    							WriteFilesException.Problem.PROBLEM_STORING_SCALED_FILE, e));	        			
+	        		}
+	        	}    
 
 	        	// Thumbnail file
 	        	if(fui.getGenerateThumbnail()) {
@@ -651,37 +677,53 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	        				fui.getThumbnailMaxHeight(), fui.isThumbnailDirectlyAccessible());
 	        		}
 	        		catch(ThumbnailException e) {
-	        			// Scaling operation can fail for a variety of reasons, primarily
-	        			// when the file format is not supported. Do not cause this to
-	        			// fail the entire operation. Simply log it and proceed.  
 	        			logger.warn("Error generating thumbnail version of " + fileName, e);
+		    			wfe.addProblem(new WriteFilesException.Problem
+		    					(repositoryServiceName, fileName, 
+		    							WriteFilesException.Problem.PROBLEM_GENERATING_THUMBNAIL_FILE, e));
+	        		}
+	        		catch(Exception e) {
+	        			logger.warn("Error storing thumbnail version of " + fileName, e);
+		    			wfe.addProblem(new WriteFilesException.Problem
+		    					(repositoryServiceName, fileName, 
+		    							WriteFilesException.Problem.PROBLEM_STORING_THUMBNAIL_FILE, e));	        			
 	        		}
 	        	}
 	    	}
-	    	else { // We do not need to generate secondary files. 
-	    		// In this case, we pass the MultipartFile directly to the underlying 
-	    		// repository service (as opposed to obtaining an InputStream or
-	    		// creating a byte array with its content), because it "might" give
-	    		// the service implementation a small chance to optimize the I/O.
-	    		
-	    		InputStream is = fui.getInputStream();
-	    		
+	    	else { // We do not need to generate secondary files. 	  
 	    		try {
-		    		if(fAtt == null) { // New file for the entry
-		    			isNew = true;
-		    			fAtt = createFile(service, session, binder, entry, fui, is);
+	    			//for testing only
+	    			//if(fileName.equals("junk.txt"))
+	    			//	throw new IllegalArgumentException("Something bad happend");
+	    			
+		    		InputStream is = fui.getInputStream();
+		    		
+		    		try {
+			    		if(fAtt == null) { // New file for the entry
+			    			isNew = true;
+			    			fAtt = createFile(service, session, binder, entry, fui, is);
+			    		}
+			    		else { // Existing file for the entry
+			    			writeExistingFile(service, session, binder, entry, fui, is);
+			    		}	 
 		    		}
-		    		else { // Existing file for the entry
-		    			writeExistingFile(service, session, binder, entry, fui, is);
-		    		}	 
+		    		finally {
+		    			try {
+		    				is.close();
+		    			}
+		    			catch(IOException e) {
+		    				logger.error(e.getMessage(), e);
+		    			}
+		    		}
 	    		}
-	    		finally {
-	    			try {
-	    				is.close();
-	    			}
-	    			catch(IOException e) {
-	    				logger.error(e.getMessage(), e);
-	    			}
+	    		catch(Exception e) {
+	    			// We failed to write the primary file. In this case, we 
+	    			// discard the rest of the operation (i.e., step2 thru 4).
+	    			logger.error("Error storing file " + fileName, e);
+	    			wfe.addProblem(new WriteFilesException.Problem
+	    					(repositoryServiceName, fileName, 
+	    							WriteFilesException.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
+	    			return;
 	    		}
 	    	}
     	}
