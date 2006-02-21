@@ -85,6 +85,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_UNSEEN_COUNTS = "unseen_counts";
 	public static final String FORUM_OPERATION_SAVE_COLUMN_POSITIONS = "save_column_positions";
 	public static final String FORUM_OPERATION_SAVE_ENTRY_WIDTH = "save_entry_width";
+	public static final String FORUM_OPERATION_SAVE_ENTRY_HEIGHT = "save_entry_height";
 	public static final String FORUM_OPERATION_SELECT_FILTER = "select_filter";
 	public static final String FORUM_OPERATION_USER_FILTER = "user_filter";
 	public static final String FORUM_OPERATION_UNSEEN_LIST = "unseen_list";
