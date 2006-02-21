@@ -4,6 +4,7 @@
 <jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
 <jsp:useBean id="ssFolderDomTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssUserFolderProperties" type="com.sitescape.ef.domain.UserProperties" scope="request" />
+<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
 <%
 	String folderId = ssFolder.getId().toString();
 	String parentFolderId = "";
@@ -11,6 +12,18 @@
 		Folder parentFolder = ((Folder) ssFolder).getParentFolder();
 		if (parentFolder != null) parentFolderId = parentFolder.getId().toString();
 	}
+	String slidingTableStyle = "sliding";
+	if (ssUser.getDisplayStyle() != null && 
+	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+		slidingTableStyle = "sliding_scrolled";
+	}
+	String ssFolderTableHeight = "";
+	Map ssFolderPropertiesMap = ssUserFolderProperties.getProperties();
+	if (ssFolderPropertiesMap != null && ssFolderPropertiesMap.containsKey("folderEntryHeight")) {
+		ssFolderTableHeight = (String) ssFolderPropertiesMap.get("folderEntryHeight");
+	}
+	if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
+			ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
 %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <script type="text/javascript">
@@ -85,7 +98,8 @@ function highlightLineById(id) {
 </table>
 </div>
 </div>
-<ssf:slidingTable type="sliding_scrolled" folderId="<%= folderId %>">
+<ssf:slidingTable id="ss_folder_table" type="<%= slidingTableStyle %>" 
+ height="<%= ssFolderTableHeight %>" folderId="<%= folderId %>">
 
 <ssf:slidingTableRow headerRow="true">
   <ssf:slidingTableColumn width="10%">Number</ssf:slidingTableColumn>

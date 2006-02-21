@@ -130,6 +130,8 @@ var ss_startingToDragDiv = null;
 var ss_divDragSavedMouseMove = '';
 var ss_divDragSavedMouseUp = '';
 function ss_startDragDiv() {
+	if (ss_clearMouseOverInfo) ss_clearMouseOverInfo(null);
+	
 	ss_divDragObj = document.getElementById('ss_showentrydiv')
     if (isNSN || isNSN6 || isMoz5) {
     } else {

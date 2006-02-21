@@ -71,10 +71,10 @@ var ss_sTableMarginBottom = 2
 var ss_sTableLastLeft = 0;
 var ss_sTableLastTop = 0;
 function ss_checkSlidingTableLayout() {
-	if (ss_getDivTop("ss_sTable") != ss_sTableLastTop || ss_getDivLeft("ss_sTable") != ss_sTableLastLeft) {
+	if (ss_getDivTop("<c:out value="${ss_slidingTableId}"/>_2") != ss_sTableLastTop || ss_getDivLeft("<c:out value="${ss_slidingTableId}"/>_2") != ss_sTableLastLeft) {
 		//The layout changed, go reposition things
-		ss_sTableLastTop = ss_getDivTop("ss_sTable")
-		ss_sTableLastLeft = ss_getDivLeft("ss_sTable")
+		ss_sTableLastTop = ss_getDivTop("<c:out value="${ss_slidingTableId}"/>_2")
+		ss_sTableLastLeft = ss_getDivLeft("<c:out value="${ss_slidingTableId}"/>_2")
 		ss_showSlidingTableCols()
 		if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo();
 	}
@@ -85,13 +85,13 @@ function ss_showSlidingTableCols200() {
 }
 
 function ss_showSlidingTableCols() {
-	ss_sTableMarginLeft = parseInt(self.document.getElementById("ss_sTable").style.marginRight)
-	ss_sTableMarginRight =  parseInt(self.document.getElementById("ss_sTable").style.marginLeft)
-	ss_sTableMarginTop = parseInt(self.document.getElementById("ss_sTable").style.marginTop)
-	ss_sTableMarginBottom =  parseInt(self.document.getElementById("ss_sTable").style.marginBottom)
+	ss_sTableMarginLeft = parseInt(self.document.getElementById("<c:out value="${ss_slidingTableId}"/>_2").style.marginRight)
+	ss_sTableMarginRight =  parseInt(self.document.getElementById("<c:out value="${ss_slidingTableId}"/>_2").style.marginLeft)
+	ss_sTableMarginTop = parseInt(self.document.getElementById("<c:out value="${ss_slidingTableId}"/>_2").style.marginTop)
+	ss_sTableMarginBottom =  parseInt(self.document.getElementById("<c:out value="${ss_slidingTableId}"/>_2").style.marginBottom)
 	
 	//Calculate the default column positions
-    var ss_sTableWidth = ss_getDivWidth("ss_sTable")
+    var ss_sTableWidth = ss_getDivWidth("<c:out value="${ss_slidingTableId}"/>_2")
     if (ss_sTableWidth == 0) ss_sTableWidth = parseInt(ss_defTableWidth);
     var ss_sTableInnerWidth = parseInt(ss_sTableWidth - ss_sTableMarginLeft - ss_sTableMarginRight);
     var maxColLeft = ss_sTableInnerWidth - 8
@@ -119,8 +119,8 @@ function ss_showSlidingTableCols() {
     var percentageWidth = parseInt(ss_sTableInnerWidth - widthTotalPixels)
 	
     //Now, position the columns (starting at the left inner side of the ss_sTable boundary)
-    var top = parseInt(ss_getDivTop("ss_sTable") + ss_sTableMarginTop)
-    var left = ss_getDivLeft("ss_sTable") + ss_sTableMarginLeft
+    var top = parseInt(ss_getDivTop("<c:out value="${ss_slidingTableId}"/>_2") + ss_sTableMarginTop)
+    var left = ss_getDivLeft("<c:out value="${ss_slidingTableId}"/>_2") + ss_sTableMarginLeft
     var deltaLeft = 0
     var w = parseInt(ss_sTableInnerWidth - deltaLeft) + "px"
     
@@ -167,7 +167,7 @@ function ss_showSlidingTableCols() {
 }
 
 function ss_position_sTableCol(divName, x, y, w) {
-    var ss_sTableHeight = ss_getDivHeight("ss_sTable")
+    var ss_sTableHeight = ss_getDivHeight("<c:out value="${ss_slidingTableId}"/>_2")
     var ss_sTableInnerHeight = parseInt(ss_sTableHeight- ss_sTableMarginTop - ss_sTableMarginBottom)
 
     if (isNSN || isNSN6 || isMoz5) {
@@ -205,11 +205,11 @@ function ss_slidingTableStartDragCol(obj, divName) {
 }
 
 function ss_slidingTableDrag(evt) {
-    var ss_sTableLeft = ss_getDivLeft("ss_sTable")
-    var ss_sTableWidth = ss_getDivWidth("ss_sTable")
+    var ss_sTableLeft = ss_getDivLeft("<c:out value="${ss_slidingTableId}"/>_2")
+    var ss_sTableWidth = ss_getDivWidth("<c:out value="${ss_slidingTableId}"/>_2")
     if (ss_sTableWidth == 0) ss_sTableWidth = parseInt(ss_defTableWidth);
     var ss_sTableInnerWidth = parseInt(ss_sTableWidth - ss_sTableMarginLeft - ss_sTableMarginRight);
-    var ss_sTableHeight = ss_getDivHeight("ss_sTable")
+    var ss_sTableHeight = ss_getDivHeight("<c:out value="${ss_slidingTableId}"/>_2")
     var ss_sTableInnerHeight = parseInt(ss_sTableHeight- ss_sTableMarginTop - ss_sTableMarginBottom)
 
     if (!evt) evt = window.event;
@@ -318,7 +318,8 @@ ss_createEventObj('ss_slidingTableDrag', 'MOUSEMOVE');
 <script type="text/javascript">
 var ss_columnCount = <%= String.valueOf(colSize) %>;
 </script>
-<div id="ss_sTable" style="margin: 2px; border: #666666 1px solid;" width="100%"
+<div id="<c:out value="${ss_slidingTableId}"/>_2" 
+ style="margin: 2px; border: #666666 1px solid;" width="100%"
  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 
 <div id="col0" class="ss_style ss_sliding_table_column0">
@@ -495,7 +496,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 
 function ss_saveSlidingTableCoords() {
     var s = ""
-    var ss_sTableLeft = ss_getDivLeft("ss_sTable")
+    var ss_sTableLeft = ss_getDivLeft("<c:out value="${ss_slidingTableId}"/>_2")
     for (var i = 0; i <= ss_columnCount; i++) {
     	var colLeft = parseInt(parseInt(self.document.getElementById("col"+i).style.left) - ss_sTableLeft - ss_sTableMarginLeft)
 	    s += colLeft+" "

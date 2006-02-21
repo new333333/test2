@@ -75,6 +75,8 @@ public class AjaxController  extends SAbstractForumController {
 				return new ModelAndView("forum/save_column_positions_return", model);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_WIDTH)) {
 				return new ModelAndView("forum/save_entry_width_return", model);
+			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_HEIGHT)) {
+				return new ModelAndView("forum/save_entry_height_return", model);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS)) {
 				return new ModelAndView("binder/get_entry_elements", model);
 			}
@@ -115,14 +117,19 @@ public class AjaxController  extends SAbstractForumController {
 				//Save the entry width
 			   	getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);
 			}
-			String entryHeight = ((String[])formData.get("entry_height"))[0];
-			if (!entryHeight.equals("")) {
-				//Save the entry width
-			   	getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
-			}
 			response.setContentType("text/xml");
 			model.put(WebKeys.AJAX_STATUS, statusMap);
 			return new ModelAndView("forum/save_entry_width_return", model);
+		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_HEIGHT)) {
+			String entryHeight = ((String[])formData.get("entry_height"))[0];
+			if (!entryHeight.equals("")) {
+				//Save the entry width
+				String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+			   	getProfileModule().setUserFolderProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
+			}
+			response.setContentType("text/xml");
+			model.put(WebKeys.AJAX_STATUS, statusMap);
+			return new ModelAndView("forum/save_entry_height_return", model);
 		
 		} else if (op.equals(WebKeys.FORUM_OPERATION_USER_LIST_SEARCH)) {
 			String searchText = ((String[])formData.get("searchText"))[0];
