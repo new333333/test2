@@ -248,6 +248,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	                
 	        			addEntry_postSave(binder, entry, inputData, entryData);
 	        			newEntries.put(entry, inputData);
+	        			addEntry_startWorkflow(entry);
 	        		}
 	                return newEntries;
 	        	}
