@@ -75,6 +75,7 @@ public abstract class SSStatefulJob implements StatefulJob {
     	
            	//Setup thread context expected by business logic
            	RequestContext rc = new RequestContext(user.getZoneName(), user.getName());
+           	rc.setUser(user);
            	RequestContextHolder.setRequestContext(rc);
            	//	do the real work
            	doExecute(context);

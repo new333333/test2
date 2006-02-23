@@ -13,6 +13,7 @@ public interface LdapModule {
 	public static String USER_DOMAIN="userDomain";
 	public static String GROUP_DOMAIN="groupDomain";
 	public static String OBJECT_CLASS="objectClass";
+
 	public LdapConfig getLdapConfig();
 	public void setLdapConfig(LdapConfig config);
 

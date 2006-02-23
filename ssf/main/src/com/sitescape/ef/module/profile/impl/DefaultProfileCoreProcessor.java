@@ -41,21 +41,30 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************	
             
     protected void addEntry_fillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
-    	super.addEntry_fillIn(binder, entry, inputData, entryData);
+        doFillin(entry, inputData, entryData);
+        super.addEntry_fillIn(binder, entry, inputData, entryData);
         ((Principal)entry).setZoneName(binder.getZoneName());
-    }
+     }
        
     protected void modifyEntry_fillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
     	//see if we have updates to fields not covered by definition build
-    	if (entry instanceof User) {
-    		User user = (User)entry;
-    		if (inputData.exists("displayStyle")) {
-    			user.setDisplayStyle(inputData.getSingleValue("displayStyle"));
-    		}
-    	}
+    	doFillin(entry, inputData, entryData);
     	super.modifyEntry_fillIn(binder, entry, inputData, entryData);
     }
- 
+    /**
+     * Handle fields that are not covered by the definition builder
+     * @param entry
+     * @param inputData
+     * @param entryData
+     */
+    protected void doFillin( WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
+    	if (inputData.exists("foreignName") && !entryData.containsKey("foreignName")) {
+    		entryData.put("foreignName", inputData.getSingleValue("foreignName"));
+    	}
+    	if (inputData.exists("displayStyle") && !entryData.containsKey("displayStyle")) {
+    		entryData.put("displayStyle", inputData.getSingleValue("displayStyle"));
+    	}
+    }
     //***********************************************************************************************************
     
    	protected SFQuery indexBinder_getQuery(Binder binder) {
@@ -170,7 +179,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        				getCoreDao().save(obj);
 	        	}
 	        }
-	        
+	        doFillin(entry, inputData, entryData);
 	        boolean changed = EntryBuilder.updateEntry(entry, entryData);
 	        if (changed) {
 	 	       User user = RequestContextHolder.getRequestContext().getUser();
@@ -228,7 +237,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        			Map entryData = (Map) entryDataAll.get("entryData");
 	   	        
 	        			WorkflowControlledEntry entry = addEntry_create(clazz);
-	        			newEntries.put(entry, inputData);
 	        			entry.setEntryDef(definition);
 	        			//	need to set entry/binder information before generating file attachments
 	        			//	Attachments/Events need binder info for AnyOwner
@@ -239,6 +247,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        			addEntry_save(binder, entry, inputData, entryData);      
 	                
 	        			addEntry_postSave(binder, entry, inputData, entryData);
+	        			newEntries.put(entry, inputData);
 	        		}
 	                return newEntries;
 	        	}
