@@ -1,13 +1,23 @@
 package com.sitescape.ef.module.profile.impl;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.lang.Long;
+import java.util.HashMap;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.SFQuery;
+import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Event;
+import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Principal;
@@ -17,9 +27,10 @@ import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
-import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.module.profile.index.IndexUtils;
+import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.InputDataAccessor;
 /**
  *
  * @author Jong Kim
@@ -34,6 +45,16 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         ((Principal)entry).setZoneName(binder.getZoneName());
     }
        
+    protected void modifyEntry_fillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
+    	//see if we have updates to fields not covered by definition build
+    	if (entry instanceof User) {
+    		User user = (User)entry;
+    		if (inputData.exists("displayStyle")) {
+    			user.setDisplayStyle(inputData.getSingleValue("displayStyle"));
+    		}
+    	}
+    	super.modifyEntry_fillIn(binder, entry, inputData, entryData);
+    }
  
     //***********************************************************************************************************
     
@@ -119,5 +140,117 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         
        return indexDoc;
     }
-       
+    /**
+     * Use to synchronize a user with an outside source.
+     * Don't index if not changed
+     */
+	public void syncEntry(final Principal entry, final InputDataAccessor inputData) {
+	    Map entryDataAll = modifyEntry_toEntryData(entry, inputData, null);
+	    final Map entryData = (Map) entryDataAll.get("entryData");
+	        
+        // The following part requires update database transaction.
+        Boolean changed = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		boolean result1 = syncEntry_fillIn(entry, inputData, entryData);
+	                
+        		boolean result2 = syncEntry_postFillIn(entry, inputData, entryData);
+        		if (result1 || result2) return Boolean.TRUE;
+        		return Boolean.FALSE;
+        	}});
+	    if (changed.booleanValue() == true) modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null);		
+		
+	}
+	public boolean syncEntry_fillIn(WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
+	        for (Iterator iter=entryData.entrySet().iterator(); iter.hasNext();) {
+	        	Map.Entry mEntry = (Map.Entry)iter.next();
+	        	//need to generate id for the event so its id can be saved in customAttr
+	        	if (entry.getCustomAttribute((String)mEntry.getKey()) == null) {
+	        			Object obj = mEntry.getValue();
+	        			if (obj instanceof Event)
+	        				getCoreDao().save(obj);
+	        	}
+	        }
+	        
+	        boolean changed = EntryBuilder.updateEntry(entry, entryData);
+	        if (changed) {
+	 	       User user = RequestContextHolder.getRequestContext().getUser();
+	 	       entry.setModification(new HistoryStamp(user));
+	        }
+	        return changed;
+		
+	}
+
+	public boolean syncEntry_postFillIn(WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
+		return false;		
+	}
+	/**
+	 * Synchronize a list of entries.  The map key is entry Id, value
+	 * is a map of updates
+	 */
+	public void syncEntries(final Map entries) {
+	        
+        // The following part requires update database transaction.
+        Map changedEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		Map changes = new HashMap();
+        	    for (Iterator i=entries.entrySet().iterator(); i.hasNext();) {
+        	    	Map.Entry mEntry = (Map.Entry)i.next();
+        	    	WorkflowControlledEntry entry = (WorkflowControlledEntry)mEntry.getKey();
+        	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
+        	    	
+        	    	Map entryDataAll = modifyEntry_toEntryData(entry, inputData, null);
+        	    	Map entryData = (Map) entryDataAll.get("entryData");
+        	    	boolean result1 = syncEntry_fillIn(entry, inputData, entryData);
+	                
+        	    	boolean result2 = syncEntry_postFillIn(entry, inputData, entryData);
+        	    	if (result1 || result2) changes.put(entry, inputData);
+        	    } 
+        	    return changes;
+        	}});
+        
+	    for (Iterator i=changedEntries.entrySet().iterator(); i.hasNext();) {
+	    	Map.Entry mEntry = (Map.Entry)i.next();
+	    	WorkflowControlledEntry entry = (WorkflowControlledEntry)mEntry.getKey();
+	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
+	    	modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null);	
+	    }
+		
+	}
+	public List syncNewEntries(final Binder binder, final Definition definition, final Class clazz, final List inputAccessors) {
+	        
+	    // The following part requires update database transaction.
+		Map newEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
+	        	public Object doInTransaction(TransactionStatus status) {
+	        		Map newEntries = new HashMap();
+	        		for (int i=0; i<inputAccessors.size(); ++i) {
+	        			InputDataAccessor inputData = (InputDataAccessor)inputAccessors.get(i);
+	        			Map entryDataAll = addEntry_toEntryData(binder, definition, inputData, null);
+	        			Map entryData = (Map) entryDataAll.get("entryData");
+	   	        
+	        			WorkflowControlledEntry entry = addEntry_create(clazz);
+	        			newEntries.put(entry, inputData);
+	        			entry.setEntryDef(definition);
+	        			//	need to set entry/binder information before generating file attachments
+	        			//	Attachments/Events need binder info for AnyOwner
+	        			addEntry_fillIn(binder, entry, inputData, entryData);
+	                
+	        			addEntry_preSave(binder, entry, inputData, entryData);      
+
+	        			addEntry_save(binder, entry, inputData, entryData);      
+	                
+	        			addEntry_postSave(binder, entry, inputData, entryData);
+	        		}
+	                return newEntries;
+	        	}
+	        });
+	    for (Iterator i=newEntries.entrySet().iterator(); i.hasNext();) {
+	    	Map.Entry mEntry = (Map.Entry)i.next();
+	    	WorkflowControlledEntry entry = (WorkflowControlledEntry)mEntry.getKey();
+	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
+	    	addEntry_indexAdd(entry.getParentBinder(), entry, inputData, null);	
+	    }
+	    return new ArrayList(newEntries.keySet()); 
+		
+	}
+
 }

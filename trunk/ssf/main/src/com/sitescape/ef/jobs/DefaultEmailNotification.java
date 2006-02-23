@@ -6,7 +6,7 @@ import java.util.Date;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import com.sitescape.ef.mail.MailModule;
+import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
@@ -19,7 +19,7 @@ import com.sitescape.ef.util.SpringContextUtil;
 public class DefaultEmailNotification extends SSStatefulJob implements EmailNotification {
 	 
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
+    	MailManager mail = (MailManager)SpringContextUtil.getBean("mailManager");
 		try {
 			Date end = mail.sendNotifications(new Long(jobDataMap.getLong("binder")), (Date)jobDataMap.get("lastNotification") );
 			jobDataMap.put("lastNotification", end);

@@ -12,7 +12,7 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.module.definition.notify.Notify;
-import com.sitescape.ef.module.folder.InputDataAccessor;
+import com.sitescape.ef.module.shared.InputDataAccessor;
 
 /**
  * @author hurley

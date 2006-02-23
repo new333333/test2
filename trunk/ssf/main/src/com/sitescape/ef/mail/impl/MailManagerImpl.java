@@ -44,7 +44,7 @@ import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.mail.FolderEmailFormatter;
 import com.sitescape.ef.mail.JavaMailSender;
-import com.sitescape.ef.mail.MailModule;
+import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.mail.MimeMessagePreparator;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
@@ -76,7 +76,7 @@ import com.sitescape.ef.util.SZoneConfig;
  * @author Janet McCann
  *
  */
-public class MailModuleImpl extends CommonDependencyInjection implements MailModule {
+public class MailManagerImpl extends CommonDependencyInjection implements MailManager {
 	protected Log logger = LogFactory.getLog(getClass());
 	protected Map zoneProps = new HashMap();
 	protected Map mailPosters = new HashMap();
@@ -87,11 +87,11 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	private String dataRootDir;
 	private String subDirName;
 
-	public MailModuleImpl() {
-		defaultProps.put(MailModule.POSTING_JOB, "com.sitescape.ef.jobs.DefaultEmailPosting");
-		defaultProps.put(MailModule.NOTIFY_TEMPLATE_TEXT, "mailText.xslt");
-		defaultProps.put(MailModule.NOTIFY_TEMPLATE_HTML, "mailHtml.xslt");
-		defaultProps.put(MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED, "false");
+	public MailManagerImpl() {
+		defaultProps.put(MailManager.POSTING_JOB, "com.sitescape.ef.jobs.DefaultEmailPosting");
+		defaultProps.put(MailManager.NOTIFY_TEMPLATE_TEXT, "mailText.xslt");
+		defaultProps.put(MailManager.NOTIFY_TEMPLATE_HTML, "mailHtml.xslt");
+		defaultProps.put(MailManager.NOTIFY_TEMPLATE_CACHE_DISABLED, "false");
 	}
 
 	public void setDataRootDirProperty(String dataRootDirProperty)

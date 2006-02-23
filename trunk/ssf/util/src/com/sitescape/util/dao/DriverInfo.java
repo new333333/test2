@@ -57,7 +57,7 @@ public class DriverInfo {
 	// Alternate driver for MSSQL
 	public static String SQLSERVER2_URL="jdbc:jtds:sqlserver:";
 	
-	public static String FRONTBASE_URL="jdbc:FrontBase:";
+	public static String FRONTBASE_URL="jdbc:frontbase:";
 	
 	public String FRONTBASE_DRIVER="com.frontbase.jdbc.FBJDriver";
 

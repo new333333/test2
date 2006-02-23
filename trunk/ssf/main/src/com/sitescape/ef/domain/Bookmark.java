@@ -48,10 +48,17 @@ public class Bookmark extends Attachment {
         this.bookmarkEntry = bookmarkEntry;
     }
 
-    public void update(Object newVal) {
-    	super.update(newVal);
+    public boolean update(Object newVal) {
+    	boolean changed = super.update(newVal);
     	Bookmark nb = (Bookmark)newVal;
-    	setActive(nb.isActive());
-    	setTitle(nb.getTitle());
+    	if (isActive() != nb.isActive()) {
+        	setActive(nb.isActive());
+        	changed = true;
+    	}
+    	if (!getTitle().equals(nb.getTitle())) {
+    		setTitle(nb.getTitle());
+    		changed=true;
+    	}
+    	return changed;
     }
 }

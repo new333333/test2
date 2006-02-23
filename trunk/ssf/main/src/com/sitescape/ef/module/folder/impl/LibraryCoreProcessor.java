@@ -8,7 +8,7 @@ import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.LibraryEntryExistsException;
-import com.sitescape.ef.module.folder.InputDataAccessor;
+import com.sitescape.ef.module.shared.InputDataAccessor;
 
 /**
  * Library folders have the restriction that the title of all toplevel entries must be unique

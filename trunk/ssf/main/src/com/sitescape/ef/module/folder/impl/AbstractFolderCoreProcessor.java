@@ -12,6 +12,8 @@ import java.util.TreeSet;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 //import org.dom4j.Document;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -23,7 +25,6 @@ import com.sitescape.ef.domain.FolderHierarchyException;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.FolderCounts;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Binder;
@@ -33,7 +34,6 @@ import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
-import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
@@ -42,6 +42,7 @@ import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.InputDataAccessor;
 /**
  *
  * @author Jong Kim
@@ -52,7 +53,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************	
     protected void addEntry_fillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
     	Folder folder = (Folder)binder;
-    	folder.addEntry((FolderEntry)entry, getFolderDao().allocateEntryNumbers(folder, 1));         
+    	getCoreDao().refresh(folder);
+    	folder.addEntry((FolderEntry)entry);         
     	super.addEntry_fillIn(folder, entry, inputData, entryData);
    }
  
@@ -114,16 +116,17 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         User user = RequestContextHolder.getRequestContext().getUser();
         return folderDao.loadFullFolderEntry(parentBinder.getId(), entryId, user.getZoneName()); 
    }
-    protected void deleteEntry_preDelete(Folder parentFolder, FolderEntry entry) {
-    	List replies = new ArrayList(entry.getReplies());
+    protected void deleteEntry_preDelete(Binder parentBinder, WorkflowControlledEntry entry) {
+    	FolderEntry fEntry = (FolderEntry)entry;
+    	List replies = new ArrayList(fEntry.getReplies());
     	for (int i=0; i<replies.size(); ++i) {
-    		deleteEntry(parentFolder, ((FolderEntry)replies.get(i)).getId());
+    		deleteEntry(parentBinder, ((FolderEntry)replies.get(i)).getId());
     	}
-        FolderEntry parent= entry.getParentEntry();
+        FolderEntry parent= fEntry.getParentEntry();
         if (parent != null) {
-            parent.removeReply(entry);
+            parent.removeReply(fEntry);
         } else {
-            parentFolder.removeEntry(entry);
+            ((Folder)parentBinder).removeEntry(fEntry);
         }
     }
   
@@ -131,25 +134,29 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	//use the optimized deleteEntry or hibernate deletes each collection entry one at a time
     	folderDao.deleteEntry((FolderEntry)entry);   
     }
-    protected void loadEntryHistory(FolderEntry entry) {
+    protected void loadEntryHistory(WorkflowControlledEntry entry) {
+    	FolderEntry fEntry = (FolderEntry)entry;
         Set ids = new HashSet();
-        if (entry.getCreation() != null)
-            ids.add(entry.getCreation().getPrincipal().getId());
-        if (entry.getModification() != null)
-            ids.add(entry.getModification().getPrincipal().getId());
-        if (entry.getReservedDoc() != null) 
-            ids.add(entry.getReservedDoc().getPrincipal().getId());
+        if (fEntry.getCreation() != null)
+            ids.add(fEntry.getCreation().getPrincipal().getId());
+        if (fEntry.getModification() != null)
+            ids.add(fEntry.getModification().getPrincipal().getId());
+        if (fEntry.getReservedDoc() != null) 
+            ids.add(fEntry.getReservedDoc().getPrincipal().getId());
         getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      } 
 
     protected void loadEntryHistory(HashMap entry) {
         Set ids = new HashSet();
         if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
-    	    ids.add(entry.get(EntryIndexUtils.CREATORID_FIELD));
-        if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
-    		ids.add(entry.get(EntryIndexUtils.MODIFICATIONID_FIELD));
+    	    try {ids.add(new Long((String)entry.get(EntryIndexUtils.CREATORID_FIELD)));
+    	    } catch (Exception ex) {};
+    	if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
+    		try {ids.add(new Long((String)entry.get(EntryIndexUtils.MODIFICATIONID_FIELD)));
+    		} catch (Exception ex) {};
         if (entry.get(IndexUtils.RESERVEDBYID_FIELD) != null) 
-    		ids.add(entry.get(IndexUtils.RESERVEDBYID_FIELD));
+    		try {ids.add(new Long((String)entry.get(IndexUtils.RESERVEDBYID_FIELD)));
+    	    } catch (Exception ex) {};
         getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      } 
     protected List loadEntryHistoryLuc(List pList) {
@@ -159,11 +166,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         while (iter.hasNext()) {
             entry = (HashMap)iter.next();
             if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
-        	    ids.add(entry.get(EntryIndexUtils.CREATORID_FIELD));
-            if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
-        		ids.add(entry.get(EntryIndexUtils.MODIFICATIONID_FIELD));
-            if (entry.get(IndexUtils.RESERVEDBYID_FIELD) != null) 
-        		ids.add(entry.get(IndexUtils.RESERVEDBYID_FIELD));
+        	    try {ids.add(new Long((String)entry.get(EntryIndexUtils.CREATORID_FIELD)));
+           	    } catch (Exception ex) {};
+           if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
+        		try {ids.add(new Long((String)entry.get(EntryIndexUtils.MODIFICATIONID_FIELD)));
+        		} catch (Exception ex) {};
+   	       if (entry.get(IndexUtils.RESERVEDBYID_FIELD) != null) 
+        		try {ids.add(new Long((String)entry.get(IndexUtils.RESERVEDBYID_FIELD)));
+	    	} catch (Exception ex) {};
         }
         return getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      }   
@@ -196,35 +206,39 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
        
     //***********************************************************************************************************
-   public Long addReply(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems) 
+   public Long addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems) 
    	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
         
         addReply_accessControl(parent);
         
         Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems);
-        Map entryData = (Map) entryDataAll.get("entryData");
+        final Map entryData = (Map) entryDataAll.get("entryData");
         List fileData = (List) entryDataAll.get("fileData");
         
-        FolderEntry entry = addReply_create();
+        final FolderEntry entry = addReply_create();
         entry.setEntryDef(def);
         
         addReply_processFiles(parent, entry, fileData);
         
-        addReply_fillIn(parent, entry, inputData, entryData);
+        // The following part requires update database transaction.
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		addReply_fillIn(parent, entry, inputData, entryData);
         
-        addReply_preSave(parent, entry, inputData, entryData);
+        		addReply_preSave(parent, entry, inputData, entryData);
+        		
+        		addReply_save(entry);
         
-        addReply_save(entry);
-        
-        addReply_postSave(parent, entry, inputData, entryData);
+        		addReply_postSave(parent, entry, inputData, entryData);
+        		return null;
+        	}});
         
         addReply_indexAdd(parent, entry, inputData, entryData, fileData);
         
         addReply_startWorkflow(entry);
         
-        getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
-       
+        
         cleanupFiles(fileData);
         
         return entry.getId();
@@ -279,6 +293,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     
     protected void addReply_postSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
+        getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
     }
     
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 
@@ -352,7 +367,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	getAccessControlManager().checkOperation(parentFolder, WorkAreaOperation.CREATE_FOLDERS);
     }
     protected void addFolder_preSave(Folder parentFolder, Folder folder) {
-        parentFolder.addFolder(folder, getFolderDao().allocateFolderNumbers(folder, 1));
+        getCoreDao().refresh(parentFolder);
+    	parentFolder.addFolder(folder);
         // The sub-folder inherits the default ACLs of the parent folder.
         // The default ACLs of the sub-folder can be changed subsequently. 
         getAclManager().doInherit(folder);
@@ -363,9 +379,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     protected void addFolder_save(Folder folder) {
         getCoreDao().save(folder);
-        //Save record of last docNumber as separate object
-        FolderCounts fCounts = new FolderCounts(folder.getId());
-        getCoreDao().save(fCounts);
     }
     protected void addFolder_postSave(Folder folder) {        
     }

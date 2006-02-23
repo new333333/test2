@@ -5,6 +5,7 @@
 package com.sitescape.ef.module.profile.impl;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import org.dom4j.Document;
 
@@ -14,23 +15,20 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.SeenMap;
-import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
-import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.WriteFilesException;
-import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileModule;
+import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
-import com.sitescape.ef.module.workflow.WorkflowModule;
 
 
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
@@ -38,22 +36,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	private String[] userDocType = {EntryIndexUtils.ENTRY_TYPE_USER};
 	private String[] groupDocType = {EntryIndexUtils.ENTRY_TYPE_GROUP};
 	
-	protected DefinitionModule definitionModule;
-    protected WorkflowModule workflowModule;
-    
-	protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
-	}
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule = definitionModule;
-	}
-  
-	protected WorkflowModule getWorkflowModule() {
-		return workflowModule;
-	}
-	public void setWorkflowModule(WorkflowModule workflowModule) {
-		this.workflowModule = workflowModule;
-	}
  
 	public ProfileBinder addProfileBinder() {
 		ProfileBinder pf;
@@ -195,14 +177,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         processor.modifyEntry(binder, id, inputData, fileItems);
      }
 
-    public void modifyEntryData(Long binderId, Long id, Map entryData) 
+    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
 			throws AccessControlException {
-        ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-	    ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
-	           	binder, ProfileCoreProcessor.PROCESSOR_KEY);
-	    processor.modifyEntryData(binder, id, entryData);
+    	modifyEntry(binderId, id, inputData, new HashMap());
     }
-
     public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());

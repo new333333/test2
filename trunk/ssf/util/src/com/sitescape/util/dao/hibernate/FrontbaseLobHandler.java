@@ -12,6 +12,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobCreator;
@@ -32,7 +33,10 @@ public class FrontbaseLobHandler extends DefaultLobHandler {
 		public void setBlobAsBytes(PreparedStatement ps, int paramIndex, byte[] content)
 				throws SQLException {
 			//ps.setBytes(paramIndex, content);
-		    setBlobAsBinaryStream(ps, paramIndex, new ByteArrayInputStream(content), content.length);
+			if (content == null) 
+				ps.setBytes(paramIndex, null);
+			else 
+				setBlobAsBinaryStream(ps, paramIndex, new ByteArrayInputStream(content), content.length);
 			logger.debug(content != null ? "Set bytes for BLOB with length " + content.length :
 					"Set BLOB to null");
 		}
@@ -40,7 +44,7 @@ public class FrontbaseLobHandler extends DefaultLobHandler {
 		public void setBlobAsBinaryStream(
 				PreparedStatement ps, int paramIndex, InputStream binaryStream, int contentLength)
 				throws SQLException {
-			ps.setBinaryStream(paramIndex, binaryStream, contentLength);
+			ps.setObject(paramIndex, binaryStream, Types.BLOB);
 			logger.debug(binaryStream != null ? "Set binary stream for BLOB with length " + contentLength :
 					"Set BLOB to null");
 		}
@@ -48,7 +52,10 @@ public class FrontbaseLobHandler extends DefaultLobHandler {
 		public void setClobAsString(PreparedStatement ps, int paramIndex, String content)
 		    throws SQLException {
 			//ps.setString(paramIndex, content);
-			setClobAsCharacterStream(ps, paramIndex, new StringReader(content), content.length());
+			if (content == null)
+				ps.setString(paramIndex, null);
+			else
+				setClobAsCharacterStream(ps, paramIndex, new StringReader(content), content.length());
 		    logger.debug(content != null ? "Set string for CLOB with length " + content.length() :
 					"Set CLOB to null");
 		}

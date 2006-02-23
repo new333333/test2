@@ -19,16 +19,15 @@ public interface WorkflowModule {
 	public ProcessDefinition getWorkflow(Long id);
 	public ProcessDefinition addWorkflow(String xmlString);
 	public ProcessInstance addWorkflowInstance(Long id);
-	public Token addWorkflowSubToken(Long processInstanceId, String name);
 	public void deleteProcessInstance(Long processInstanceId);
 	public void deleteProcessDefinition(Long id);
 	public ProcessInstance setNextTransition(Long processInstanceId);
 	public ProcessInstance setTransition(Long processInstanceId, String transitionId);
 	public ProcessInstance setNode(Long processInstanceId, String nodeId);
-	public void buildProcessDefinition(String definitionName, Definition def);
-	public void updateProcessDefinition(ProcessDefinition pD, Definition def);
-	public void startWorkflow(Entry entry, Definition workflowDef);
-	public void modifyWorkflowState(Long tokenId, String fromState, String toState);
+	public void modifyProcessDefinition(String definitionName, Definition def);
+	public void modifyProcessDefinition(ProcessDefinition pD, Definition def);
+	public void addEntryWorkflow(Entry entry, Definition workflowDef);
 	public void deleteEntryWorkflow(Binder parent, Entry entry);
-	public void processTimeout(Long timerId);
+	public void modifyWorkflowState(Long tokenId, String fromState, String toState);
+	public void modifyWorkflowStateOnTimeout(Long timerId);
 }

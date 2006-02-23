@@ -10,7 +10,7 @@ import java.util.GregorianCalendar;
 import com.sitescape.util.cal.DayAndPosition;
 
 import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.module.folder.InputDataAccessor;
+import com.sitescape.ef.module.shared.InputDataAccessor;
 
 /**
  * @author billmers

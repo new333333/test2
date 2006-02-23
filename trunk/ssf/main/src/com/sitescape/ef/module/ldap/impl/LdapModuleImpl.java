@@ -1,5 +1,5 @@
 
-package com.sitescape.ef.ldap.impl;
+package com.sitescape.ef.module.ldap.impl;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.HashMap;
@@ -26,21 +26,42 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.jobs.LdapSynchronization;
-import com.sitescape.ef.ldap.LdapConfig;
-import com.sitescape.ef.ldap.LdapModule;
+import com.sitescape.ef.modelprocessor.ProcessorManager;
+import com.sitescape.ef.module.ldap.LdapConfig;
+import com.sitescape.ef.module.ldap.LdapModule;
+import com.sitescape.ef.module.profile.ProfileCoreProcessor;
+import com.sitescape.ef.module.profile.ProfileModule;
+import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Membership;
 import com.sitescape.ef.domain.NoUserByTheNameException;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.util.Validator;
+import com.sitescape.ef.search.IndexSynchronizationManager;
+import com.sitescape.ef.util.CollectionUtil;
+import com.sitescape.ef.util.DirtyInterceptor;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.util.SZoneConfig;
+import com.sitescape.ef.util.SessionUtil;
+import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.module.shared.MapInputData;
 
 import org.dom4j.Element;
+import org.hibernate.Interceptor;
+import org.hibernate.SessionFactory;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * This implementing class utilizes transactional demarcation strategies that 
@@ -48,8 +69,8 @@ import org.dom4j.Element;
  * avoid lengthy transaction duration that could have occured if the ldap
  * database is large and many updates are made during the transaction. To support that,
  * the public methods exposed by this implementation are not transaction 
- * demarcated. Instead, this implementation uses helper methods (defined in
- * another collaborator object) for the part of the operations that might
+ * demarcated. Instead, this implementation uses helper methods 
+ * for the part of the operations that might
  * require interaction with the database (that is, those operations that 
  * change the state of one or more domain objects) and put the transactional 
  * support around those methods hence reducing individual transaction duration.
@@ -65,12 +86,13 @@ public class LdapModuleImpl implements LdapModule {
 	protected Log logger = LogFactory.getLog(getClass());
 	protected String [] principalAttrs = new String[]{"name", "id", "disabled", "reserved", "foreignName"};
 	protected CoreDao coreDao;
-	protected LdapHelper ldapHelper;
 	
 	protected static final String[] sample = new String[0];
 	HashMap defaultProps = new HashMap(); 
 	protected HashMap zones = new HashMap();
-	
+	protected ProcessorManager processorManager;
+	protected TransactionTemplate transactionTemplate;
+	protected ProfileModule profileModule;
 	public LdapModuleImpl () {
 		defaultProps.put("java.naming.factory.initial", "com.sun.jndi.ldap.LdapCtxFactory");
 		defaultProps.put("java.naming.security.authentication", "simple");
@@ -88,11 +110,26 @@ public class LdapModuleImpl implements LdapModule {
 	public void setCoreDao(CoreDao coreDao) {
 	    this.coreDao = coreDao;
 	}
-    protected LdapHelper getLdapHelper() {
-		return ldapHelper;
+	/**
+	 * Loaded by Spring context
+	 */
+	protected ProcessorManager getProcessorManager() {
+		return processorManager;
 	}
-	public void setLdapHelper(LdapHelper ldapHelper) {
-		this.ldapHelper = ldapHelper;
+	public void setProcessorManager(ProcessorManager processorManager) {
+	    this.processorManager = processorManager;
+	} 	
+    protected TransactionTemplate getTransactionTemplate() {
+		return transactionTemplate;
+	}
+	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+		this.transactionTemplate = transactionTemplate;
+	}
+	public ProfileModule getProfileModule() {
+		return profileModule;
+	}
+	public void setProfileModule(ProfileModule profileModule) {
+		this.profileModule = profileModule;
 	}
 	
 	public String getLdapProperty(String zoneName, String name) {
@@ -114,10 +151,14 @@ public class LdapModuleImpl implements LdapModule {
 	 * @param zoneId
 	 * @param props
 	 */
-	public void setLdapConfig(LdapConfig config) {
-    	getSyncObject().setScheduleInfo(config);
+	public void setLdapConfig(final LdapConfig config) {
+	       getTransactionTemplate().execute(new TransactionCallback() {
+	        	public Object doInTransaction(TransactionStatus status) {
+	            	getSyncObject().setScheduleInfo(config);
+	        		return null;
+	        	}});
 	}
-    private LdapSynchronization getSyncObject() {
+    protected LdapSynchronization getSyncObject() {
     	String jobClass = getLdapProperty(RequestContextHolder.getRequestContext().getZoneName(), LdapModule.SYNC_JOB);
     	try {
             Class processorClass = ReflectHelper.classForName(jobClass);
@@ -142,7 +183,7 @@ public class LdapModuleImpl implements LdapModule {
 	 * @param zoneName
 	 * @return
 	 */
-	private Map getZoneMap(String zoneName) {
+	protected Map getZoneMap(String zoneName) {
 		if (zones.containsKey(zoneName)) return (Map)zones.get(zoneName);
 		Map zone = new HashMap();
 		zone.put("java.naming.factory.initial", getLdapProperty(zoneName, "java.naming.factory.initial"));
@@ -240,7 +281,7 @@ public class LdapModuleImpl implements LdapModule {
 		}
 		if (!mods.isEmpty()) {
 			try {
-				getLdapHelper().updateUser(zoneName, loginName, mods);
+				updateUser(zoneName, loginName, mods);
 			} catch (NoUserByTheNameException nu) {
 				//do nothing - liferay will catch it
 			}
@@ -261,7 +302,7 @@ public class LdapModuleImpl implements LdapModule {
 
 		Map mods = new HashMap();
 		getUpdates(info, loginName, mods);
-		getLdapHelper().updateUser(zoneName, loginName, mods);
+		updateUser(zoneName, loginName, mods);
 
 	}
 	/**
@@ -319,7 +360,7 @@ public class LdapModuleImpl implements LdapModule {
 								membership.add(new Membership(groupId, (Long)uRow[1]));
 							}
 							//do inside a transaction
-							getLdapHelper().updateMembership(groupId, membership, reservedIds);
+							updateMembership(groupId, membership, reservedIds);
 						}
 					}		
 				}
@@ -331,7 +372,7 @@ public class LdapModuleImpl implements LdapModule {
 						
 		}
 	}
-	private void buildReserved(Collection rows, Set reservedIds) {
+	protected void buildReserved(Collection rows, Set reservedIds) {
 		Object [] row;
 		for (Iterator iter=rows.iterator(); iter.hasNext();) {
 			row = (Object[])iter.next();
@@ -417,13 +458,13 @@ public class LdapModuleImpl implements LdapModule {
 			//do updates after every 100 users
 			if (sync && (ldap_existing.size()%100 == 0) && !ldap_existing.isEmpty()) {
 				//doLog("Updating users:", ldap_existing);
-				getLdapHelper().updateUsers(zoneName, ldap_existing);
+				updateUsers(zoneName, ldap_existing);
 				ldap_existing.clear();
 			}
 			//do creates after every 100 users
 			if (create && (ldap_new.size()%100 == 0) && !ldap_new.isEmpty()) {
 				doLog("Creating users:", ldap_new);
-				List results = getLdapHelper().createUsers(zoneName, ldap_new);
+				List results = createUsers(zoneName, ldap_new);
 				ldap_new.clear();
 				// fill in mapping from distinquished name to id
 				for (int i=0; i<results.size(); ++i) {
@@ -435,11 +476,11 @@ public class LdapModuleImpl implements LdapModule {
 		}
 		if (sync && !ldap_existing.isEmpty()) {
 			//doLog("Updating users:", ldap_existing);
-			getLdapHelper().updateUsers(zoneName, ldap_existing);
+			updateUsers(zoneName, ldap_existing);
 		}
 		if (create && !ldap_new.isEmpty()) {
 			doLog("Creating users:", ldap_new);
-			List results = getLdapHelper().createUsers(zoneName, ldap_new);
+			List results = createUsers(zoneName, ldap_new);
 			for (int i=0; i<results.size(); ++i) {
 				User user = (User)results.get(i);
 				row = (Object[])dnUsers.get(user.getForeignName());
@@ -450,7 +491,7 @@ public class LdapModuleImpl implements LdapModule {
 		//if disable is enabled, remove users that were not found in ldap
 		if (info.isUserDisable() && !notInLdap.isEmpty()) {
 			doLog("Disabling users:", notInLdap);
-			getLdapHelper().disableUsers(zoneName, notInLdap.values());
+			disableUsers(zoneName, notInLdap.values());
 		}
 		return dnUsers;
 	}
@@ -542,13 +583,13 @@ public class LdapModuleImpl implements LdapModule {
 			//do updates after every 100 users
 			if (sync && (ldap_existing.size()%100 == 0) && !ldap_existing.isEmpty()) {
 				//doLog("Updating groups:", ldap_existing);
-				getLdapHelper().updateGroups(zoneName, ldap_existing);
+				updateGroups(zoneName, ldap_existing);
 				ldap_existing.clear();
 			}
 			//do creates after every 100 users
 			if (create && (ldap_new.size()%100 == 0) && !ldap_new.isEmpty()) {
 				doLog("Creating Groups:", ldap_new);
-				List results = getLdapHelper().createGroups(zoneName, ldap_new);
+				List results = createGroups(zoneName, ldap_new);
 				ldap_new.clear();
 				// fill in mapping from distinquished name to id
 				for (int i=0; i<results.size(); ++i) {
@@ -560,11 +601,11 @@ public class LdapModuleImpl implements LdapModule {
 		}
 		if (sync && !ldap_existing.isEmpty()) {
 			//doLog("Updating groups:", ldap_existing);
-			getLdapHelper().updateGroups(zoneName, ldap_existing);
+			updateGroups(zoneName, ldap_existing);
 		}
 		if (create && !ldap_new.isEmpty()) {
 			doLog("Creating Groups:", ldap_new);
-			List results = getLdapHelper().createGroups(zoneName, ldap_new);
+			List results = createGroups(zoneName, ldap_new);
 			for (int i=0; i<results.size(); ++i) {
 				Group group = (Group)results.get(i);
 				row = (Object[])dnGroups.get(group.getForeignName());
@@ -575,11 +616,11 @@ public class LdapModuleImpl implements LdapModule {
 		//if disable is enabled, remove groups that were not found in ldap
 		if (info.isGroupDisable() && !notInLdap.isEmpty()) {
 			doLog("Disabling groups:", notInLdap);
-			getLdapHelper().disableGroups(zoneName,notInLdap.values());
+			disableGroups(zoneName,notInLdap.values());
 		}
 		return new Map[]{dnGroups,ldapGroups};
 	}
-	private void doLog(String caption, Map names) {
+	protected void doLog(String caption, Map names) {
 		if (logger.isInfoEnabled()) {
 			logger.info(caption);
 			for (Iterator iter=names.keySet().iterator(); iter.hasNext();) {
@@ -683,7 +724,7 @@ public class LdapModuleImpl implements LdapModule {
 				for (NamingEnumeration valEnum=att.getAll(); valEnum.hasMoreElements();) {
 					vals.add(valEnum.nextElement());
 				}
-				mods.put(mapping.get(ldapAttrNames[i]), vals);
+				mods.put(mapping.get(ldapAttrNames[i]), vals.toArray(sample));
 			}
 		}		
 	}
@@ -716,4 +757,153 @@ public class LdapModuleImpl implements LdapModule {
 	protected String dnToGroupName(String dn) {
 		return dn;
 	}
-}
+	
+	/**
+	 * Transaction enabled methods for finer granularity.  We load the ldap attributes
+	 * as string values.  We are not using the definition builder.
+	 * 
+	 */
+	/**
+	 * Update a user with attributes specified in the map.
+	 *
+	 * @param zoneName
+	 * @param loginName
+	 * @param mods
+	 * @throws NoUserByTheNameException
+	 */
+	protected void updateUser(String zoneName, String loginName, Map mods) throws NoUserByTheNameException {
+
+		User profile = coreDao.findUserByName(loginName, zoneName); 
+ 		IndexSynchronizationManager.begin();
+		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
+	            	profile.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
+		processor.syncEntry(profile, new MapInputData(mods));
+		IndexSynchronizationManager.applyChanges();
+	}	
+	/**
+	 * Update users with their own map of updates
+	 * @param users - Map indexed by user id, value is map of updates for a user
+	 */
+	protected void updateUsers(String zoneName, final Map users) {
+		ProfileBinder pf = getCoreDao().getProfileBinder(zoneName);
+	   	List foundEntries = coreDao.loadUsers(users.keySet(), zoneName);
+	   	Map entries = new HashMap();
+	   	for (int i=0; i<foundEntries.size(); ++i) {
+	   		User u = (User)foundEntries.get(i);
+	   		entries.put(u, new MapInputData((Map)users.get(u.getId())));
+	   	}
+	   	IndexSynchronizationManager.begin();
+	    ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
+            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
+	    processor.syncEntries(entries);
+		IndexSynchronizationManager.applyChanges();
+	}
+
+    /**
+     * Update groups with their own updates
+     * @param groups - Map keyed by group id, value is map of updates for a group
+     */    
+	protected void updateGroups(String zoneName, final Map groups) {
+		ProfileBinder pf = getCoreDao().getProfileBinder(zoneName);
+		List foundEntries = coreDao.loadGroups(groups.keySet(), RequestContextHolder.getRequestContext().getZoneName());
+	   	Map entries = new HashMap();
+	   	for (int i=0; i<foundEntries.size(); ++i) {
+	   		Group g = (Group)foundEntries.get(i);
+	   		entries.put(g, new MapInputData((Map)groups.get(g.getId())));
+	   	}
+	   	IndexSynchronizationManager.begin();
+	    ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
+            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
+	    processor.syncEntries(entries);
+		IndexSynchronizationManager.applyChanges();
+    }
+    protected void updateMembership(Long groupId, Collection newMembers, final Collection reservedIds) {
+		//have a list of users, now compare with what exists already
+		List oldMembers = getCoreDao().getMembership(groupId);
+		final Set newM = CollectionUtil.differences(newMembers, oldMembers);
+		final Set remM = CollectionUtil.differences(oldMembers, newMembers);
+
+        // The following part requires update database transaction.
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		//only remove entries that are not reserved
+        		for (Iterator iter=remM.iterator(); iter.hasNext();) {
+        			Membership c = (Membership)iter.next();
+        			if (!reservedIds.contains(c.getUserId())) {
+        				getCoreDao().delete(c);
+        			}
+        		}
+		
+        		getCoreDao().save(newM);
+        		return null;
+        	}});
+		SessionFactory sF = (SessionFactory)SpringContextUtil.getBean("sessionFactory");
+		sF.evictCollection("com.sitescape.ef.domain.Principal.HMemberOf");
+		
+    }
+    /**
+     * Create users.  
+     * @param zoneName
+     * @param users - Map keyed by user id, value is map of attributes
+     * @return
+     */
+    protected List createUsers(String zoneName, Map users) {
+		ProfileBinder pf = getCoreDao().getProfileBinder(zoneName);
+		List newUsers = new ArrayList();
+		for (Iterator i=users.values().iterator(); i.hasNext();) {
+			newUsers.add(new MapInputData((Map)i.next()));
+		}
+	   	IndexSynchronizationManager.begin();
+	    ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
+            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
+	    newUsers = processor.syncNewEntries(pf, null, User.class, newUsers);
+		IndexSynchronizationManager.applyChanges();
+		return newUsers;
+     }
+    /**
+     * Create groups.
+     * @param zoneName
+     * @param groups - Map keyed by user id, value is map of attributes
+     * @return
+     */
+    protected List createGroups(String zoneName, Map groups) {
+		ProfileBinder pf = getCoreDao().getProfileBinder(zoneName);
+		List newGroups = new ArrayList();
+		for (Iterator i=groups.values().iterator(); i.hasNext();) {
+			newGroups.add(new MapInputData((Map)i.next()));
+		}
+	   	IndexSynchronizationManager.begin();
+	    ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
+            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
+	    newGroups = processor.syncNewEntries(pf, null, Group.class, newGroups);
+		IndexSynchronizationManager.applyChanges();
+		return newGroups;
+    }
+    protected void disableUsers(final String zoneName, final Collection ids) {
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		coreDao.disablePrincipals(ids, zoneName);
+        		return null;
+        	}});
+        //remove from index
+   		IndexSynchronizationManager.begin();
+   		for (Iterator i=ids.iterator(); i.hasNext();) {
+   	   	    IndexSynchronizationManager.deleteDocument(BasicIndexUtils.makeUid("com.sitescape.ef.domain.User", (Long)i.next()));  			
+   		}
+   		IndexSynchronizationManager.applyChanges();
+   	    
+    }
+    protected void disableGroups(final String zoneName, final Collection ids) {
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		coreDao.disablePrincipals(ids, zoneName);
+        		return null;
+        	}});
+        //remove from index
+   		IndexSynchronizationManager.begin();
+   		for (Iterator i=ids.iterator(); i.hasNext();) {
+   	   	    IndexSynchronizationManager.deleteDocument(BasicIndexUtils.makeUid("com.sitescape.ef.domain.Group", (Long)i.next()));  			
+   		}
+   		IndexSynchronizationManager.applyChanges();
+   }
+ }

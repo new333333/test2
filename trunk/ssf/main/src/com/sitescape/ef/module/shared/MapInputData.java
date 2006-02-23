@@ -2,7 +2,6 @@ package com.sitescape.ef.module.shared;
 
 import java.util.Map;
 
-import com.sitescape.ef.module.folder.InputDataAccessor;
 
 public class MapInputData implements InputDataAccessor {
 

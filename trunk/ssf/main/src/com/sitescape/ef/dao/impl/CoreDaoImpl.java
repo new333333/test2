@@ -16,7 +16,7 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.Criteria;
-
+import org.hibernate.ReplicationMode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.TreeSet;
@@ -32,6 +32,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.Attachment;
+import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.CustomAttributeListElement;
@@ -81,6 +82,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	public void evict(Object obj) {
 		getSession().evict(obj);
 	}
+	public void refresh(Object obj) {
+		getSession().refresh(obj);
+	}
 	public void save(Object obj) {
         getHibernateTemplate().save(obj);
     }
@@ -104,6 +108,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	public Object merge(Object obj) {
 	    return getHibernateTemplate().merge(obj);
+	}
+	public void replicate(final Object obj) {
+	      getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                    	 session.replicate(obj, ReplicationMode.EXCEPTION);
+                    	 return null;
+                    }
+                }
+            );
 	}
 	public void delete(Object obj) {
         getHibernateTemplate().delete(obj);
@@ -711,6 +725,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
    		return seen;
 	}
 	//build collections manually as an optimization for indexing
+	//evict from session cache, so not longer available to everyone else
 	public void bulkLoadCollections(Collection entries) {
 		if ((entries == null) || entries.isEmpty())  return;
        	final TreeSet sorted = new TreeSet(new LongIdComparator());
@@ -719,6 +734,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
             new HibernateCallback() {
                 public Object doInHibernate(Session session) throws HibernateException {
                 	List ids = new ArrayList();
+                	List readObjs = new ArrayList();
                 	Entry entry=null;
                 	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
                 		entry = (Entry)iter.next();
@@ -736,7 +752,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                     					.addOrder(Order.asc("owner.ownerId"))
 										.list();
                    
-                   	HashSet tSet;
+                   	readObjs.addAll(objs);
+                	HashSet tSet;
                    	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
                    		entry = (Entry)iter.next();
                    		tSet = new HashSet();
@@ -755,25 +772,29 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                     	.add(Expression.in("owner.ownerId", ids))
                   		.addOrder(Order.asc("owner.ownerId"))
                   		.list();
+                   	readObjs.addAll(objs);
                    	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
                    		entry = (Entry)iter.next();
                    		tSet = new HashSet();
-                   		for (int i=0; i<objs.size(); ++i) {
-                   			Attachment obj = (Attachment)objs.get(i);
-                   			if (entry.equals(obj.getOwner().getEntry())) {
-                   				tSet.add(obj);
+                   		while (objs.size() > 0) {
+                   			Attachment obj = (Attachment)objs.get(0);
+                  			if (entry.equals(obj.getOwner().getEntry())) {
+                  				if (!(obj instanceof VersionAttachment)) {
+                  					tSet.add(obj);
+                  				}
+                  				objs.remove(0);
                    			} else break;
                    		}
                    		entry.setIndexAttachments(tSet);
-                   		objs.removeAll(tSet);
-                    }
+                     }
                 	//Load Events states
                   	objs = session.createCriteria(Event.class)
                      	.add(Expression.eq("owner.ownerType", type))
                     	.add(Expression.in("owner.ownerId", ids))
                  		.addOrder(Order.asc("owner.ownerId"))
                   		.list();
-                  	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
+                   	readObjs.addAll(objs);
+                 	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
                    		entry = (Entry)iter.next();
                    		tSet = new HashSet();
                    		for (int i=0; i<objs.size(); ++i) {
@@ -791,7 +812,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        					.add(Expression.in("owner.ownerId", ids))
                  		.addOrder(Order.asc("owner.ownerId"))
                   		.list();
-                   	HashMap tMap;
+                   	readObjs.addAll(objs);
+                  	HashMap tMap;
                    	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
                    		entry = (Entry)iter.next();
                    		tMap = new HashMap();
@@ -809,6 +831,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                    		}
                    		entry.setIndexCustomAttributes(tMap);
                 	}
+                   	for (int i=0; i<readObjs.size(); ++i) {
+                   		evict(readObjs.get(i));
+                   	}
                    	return sorted;
                 }
            }

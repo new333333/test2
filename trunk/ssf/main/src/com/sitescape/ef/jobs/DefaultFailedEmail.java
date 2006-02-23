@@ -22,7 +22,7 @@ import org.quartz.Scheduler;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.mail.JavaMailSender;
-import com.sitescape.ef.mail.MailModule;
+import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.domain.Binder;
 
@@ -37,7 +37,7 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
 	 * @see com.sitescape.ef.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
 	 */
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
+    	MailManager mail = (MailManager)SpringContextUtil.getBean("mailManager");
 		String fileName = (String)jobDataMap.get("mailMessage");
 		//set file name for delete when trigger complete
     	File file = new File(fileName);

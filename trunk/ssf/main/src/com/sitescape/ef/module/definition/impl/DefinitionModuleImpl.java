@@ -2,12 +2,10 @@ package com.sitescape.ef.module.definition.impl;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
 import com.sitescape.ef.module.definition.notify.NotifyBuilderUtil;
 import com.sitescape.ef.module.definition.notify.Notify;
-import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
@@ -21,10 +19,14 @@ import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.CommaSeparatedValue;
+import com.sitescape.util.Validator;
 
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.EventHelper;
+import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.ef.module.workflow.WorkflowModule;
+
 import org.apache.lucene.document.Field;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -69,8 +71,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		String type = root.attributeValue("type");
 		def.setType(Integer.parseInt(type));
 		def.setZoneName(RequestContextHolder.getRequestContext().getZoneName());
-		setDefinition(def,doc);
-		coreDao.save(def);
+		String id = root.attributeValue("databaseId", "");
+		if (Validator.isNull(id)) {
+			//doesn't have an it, so generate one
+			getCoreDao().save(def);
+			root.addAttribute("databaseId", def.getId());
+			setDefinition(def,doc);
+		} else {
+			//import - try reusing existing guid
+			def.setId(id);
+			setDefinition(def,doc);
+			getCoreDao().replicate(def);
+		}
 		return def.getId();
 	}
 	public Definition getDefinition(String id) {
@@ -88,15 +100,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     }
     
 	public Definition addDefinition(String name, String title, int type, Map formData) {
-		String companyId = RequestContextHolder.getRequestContext().getZoneName();
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 
 		Definition newDefinition = new Definition();
 		newDefinition.setName(name);
 		newDefinition.setTitle(title);
 		newDefinition.setType(type);
-		newDefinition.setZoneName(companyId);
-		coreDao.save(newDefinition);
-		setDefinition(newDefinition, getDefaultDefinition(name, title, type, formData));
+		newDefinition.setZoneName(zoneName);
+		getCoreDao().save(newDefinition);
+		Document doc = getDefaultDefinition(name, title, type, formData);
+		Element root = doc.getRootElement();
+		root.addAttribute("databaseId", newDefinition.getId());
+		setDefinition(newDefinition, doc);
 		return newDefinition;
 	}
 	
@@ -148,7 +163,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	//If this is a workflow definition, build the corresponding JBPM workflow definition
     	if (def.getType() == Definition.WORKFLOW) {
     		//Use the definition id as the workflow process name
-    		getWorkflowModule().buildProcessDefinition(def.getId(), def);
+    		getWorkflowModule().modifyProcessDefinition(def.getId(), def);
     	}
    }
 

@@ -135,7 +135,6 @@ public class WebKeys {
     public static final String FOLDER_ENTRY_DESCENDANTS="ssFolderEntryDescendants";
     public static final String FOLDER_ENTRY_ANCESTORS="ssFolderEntryAncestors";
     public static final String FOLDER_ENTRY_TOOLBAR="ssFolderEntryToolbar";
-    public static final String FOLDER_FUNCTION_MEMBERSHIP_INHERITED="ssFunctionMembershipInherited";
     public static final String FOLDER_TOOLBAR="ssFolderToolbar";
     public static final String FOLDER_WORKFLOW_ASSOCIATIONS="ssFolderWorkflowAssociations";
     public static final String FORUM_ID_LIST = "ssForumIdList";
@@ -190,7 +189,6 @@ public class WebKeys {
     public static final String VIEW_ENTRY="entry/view_entry";
     public static final String VIEW_FORUM="forum/view";
     public static final String VIEW_PROFILE="profile/view";
-    public static final String VIEW_PROFILE_LIST="profile/view_listing";
     public static final String VIEW_NO_ENTRY="entry/view_no_entry";
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
     public static final String VIEW_DELETE_ENTRY="entry/delete_entry";

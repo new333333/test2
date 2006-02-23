@@ -2,6 +2,8 @@ package com.sitescape.ef.security.impl;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.security.AccessControlException;
@@ -15,6 +17,8 @@ import com.sitescape.ef.security.function.OperationAccessControlException;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.ef.security.function.Function;
+import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
 
@@ -40,7 +44,36 @@ public class AccessControlManagerImpl implements AccessControlManager {
             WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager) {
         this.workAreaFunctionMembershipManager = workAreaFunctionMembershipManager;
     }
-    
+    public List getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
+        if(workArea.isFunctionMembershipInherited()) {
+            WorkArea parentWorkArea = workArea.getParentWorkArea();
+            if(parentWorkArea == null)
+                throw new InternalException("Cannot inherit function membership when it has no parent");
+            else
+                return getWorkAreaAccessControl(parentWorkArea, workAreaOperation);
+        }
+        else {
+	        String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+	        //Get list of functions that allow the operation
+	        List functions = getFunctionManager().findFunctions(zoneName, workAreaOperation);
+	        //get all function memberships for this workarea
+	        List memberships = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(zoneName, workArea);
+	        //build list of users by merging  
+	        List result = new ArrayList();
+	        for (int i=0; i<memberships.size(); ++i) {
+	        	WorkAreaFunctionMembership m = (WorkAreaFunctionMembership)memberships.get(i);
+	        	for (int j=0; j<functions.size(); ++j) {
+	        		Function f = (Function)functions.get(j);
+	        		if (f.getId().equals(m.getFunctionId())) {
+	        			result.addAll(m.getMemberIds());
+	        			break;
+	        		}
+	        	}
+	        }
+	        return result;
+	        
+        }    	
+    }
     /*
     public void checkWorkAreaAccessControl(WorkArea workArea, 
             WorkAreaOperation workAreaOperation) throws AccessControlException {

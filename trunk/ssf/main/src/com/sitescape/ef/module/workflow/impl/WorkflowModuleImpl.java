@@ -17,8 +17,6 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.module.definition.DefinitionModule;
-import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.ef.module.workflow.WorkflowModule;
@@ -58,14 +56,8 @@ import org.jbpm.scheduler.exe.Timer;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
 public class WorkflowModuleImpl extends CommonDependencyInjection implements WorkflowModule {
-	protected DefinitionModule definitionModule;
-    static BusinessCalendar businessCalendar = new BusinessCalendar();
+   static BusinessCalendar businessCalendar = new BusinessCalendar();
 
-
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule=definitionModule;
-	}
- 
 
 	public List getAllDefinitions() {
 	    try {
@@ -163,18 +155,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	        throw convertJbpmException(ex);
 	    }
 	}
-	public Token addWorkflowSubToken(Long processInstanceId, String name) {
-	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-        	ProcessInstance pI = session.getGraphSession().loadProcessInstance(processInstanceId.longValue());
-        	Token token = pI.getRootToken();
-        	Token subToken = new Token(token, name);
-		    session.getGraphSession().saveProcessInstance(pI);
-        	return subToken;
-	    } catch (Exception ex) {
-	        throw convertJbpmException(ex);
-	    }
-	}
 	public ProcessInstance setTransition(Long processInstanceId, String transitionId) {
 	    try {
 	       	JbpmSession session = WorkflowFactory.getSession();
@@ -244,7 +224,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	}
 	
 	//Routine to build (or modify) a workflow process definition from a Definition
-	public void buildProcessDefinition(String definitionName, Definition def) {
+	public void modifyProcessDefinition(String definitionName, Definition def) {
 	    try {
 	       	JbpmSession session = WorkflowFactory.getSession();
 	        ProcessDefinition pD = session.getGraphSession().findLatestProcessDefinition(definitionName);
@@ -275,7 +255,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	        	}
 
 	        }
-	        updateProcessDefinition(pD, def);
+	        modifyProcessDefinition(pD, def);
 	    	session.getGraphSession().saveProcessDefinition(pD);
 
 	    } catch (Exception ex) {
@@ -284,7 +264,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		
 	}
 
-	public void updateProcessDefinition(ProcessDefinition pD, Definition def) {
+	public void modifyProcessDefinition(ProcessDefinition pD, Definition def) {
        	JbpmSession session = WorkflowFactory.getSession();
 		Document defDoc = def.getDefinition();
 		Element defRoot = defDoc.getRootElement();
@@ -729,7 +709,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		return action;
 
 	}
-	public void startWorkflow(Entry entry, Definition workflowDef) {
+	public void addEntryWorkflow(Entry entry, Definition workflowDef) {
 		String entryType = AnyOwner.getType(entry);
 		String initialState = WorkflowUtils.getInitialState(workflowDef);
 		if (!Validator.isNull(initialState)) {
@@ -778,7 +758,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    }		
 	}
 
-	public void processTimeout(Long timerId) {
+	public void modifyWorkflowStateOnTimeout(Long timerId) {
 		//Assume RequestContext is set
 		JbpmSession session = WorkflowFactory.getSession();
    		SchedulerSession schedulerSession = new SchedulerSession(session);

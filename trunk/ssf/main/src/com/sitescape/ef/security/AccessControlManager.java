@@ -1,5 +1,7 @@
 package com.sitescape.ef.security;
 
+import java.util.List;
+
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.security.acl.AclControlled;
@@ -13,6 +15,16 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
  */
 public interface AccessControlManager {
 
+	/**
+	 * Return a list of principalIds that have the 
+     * privilege to run the operation against the work area. 
+	 * @param workArea
+	 * @param workAreaOperation
+	 * @return
+	 */
+	public List getWorkAreaAccessControl(WorkArea workArea,
+			WorkAreaOperation workAreaOperation); 
+	
     /**
      * Same as {@link #checkOperation(WorkArea, WorkAreaOperation)} except 
      * that this returns <code>boolean</code> flag rather than throwing an 

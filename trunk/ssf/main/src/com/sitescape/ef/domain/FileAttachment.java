@@ -117,10 +117,14 @@ public class FileAttachment extends Attachment {
     public int hashCode() {
     	return  fileItem.hashCode();
     }
-    public void update(Object newVal) {
-    	super.update(newVal);
+    public boolean update(Object newVal) {
+    	boolean changed = super.update(newVal);
     	FileAttachment f = (FileAttachment)newVal;
-    	setFileItem(f.getFileItem());
+    	if (!getFileItem().equals(f.getFileItem())) {
+    		setFileItem(f.getFileItem());
+    		changed=true;
+    	}
+    	return changed;
     }
     
     /**

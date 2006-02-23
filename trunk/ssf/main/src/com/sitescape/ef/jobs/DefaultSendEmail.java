@@ -23,7 +23,7 @@ import org.quartz.Scheduler;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.mail.MailModule;
+import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.mail.MimeMessagePreparator;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -40,7 +40,7 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 	 * @see com.sitescape.ef.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
 	 */
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
+    	MailManager mail = (MailManager)SpringContextUtil.getBean("mailManager");
 		Map message = (Map)jobDataMap.get("mailMessage");
 		MimeHelper helper = new MimeHelper(message);
 		String name = (String)jobDataMap.get("mailSender");

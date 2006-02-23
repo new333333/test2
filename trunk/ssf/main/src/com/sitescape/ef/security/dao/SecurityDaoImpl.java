@@ -123,23 +123,5 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
         else
             return false;
     }
-    public List getWorkAreaOperationMembership(final String zoneName, final Long workAreaId, final String workAreaType, 
-	        final String workAreaOperationName) {
-        List matches = (List) getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        // The following query performs 4 table joins in a single SQL query.
-                        return session.getNamedQuery("get-WorkAreaOperationMembership")
-                       		.setString(ZONE_ID, zoneName)
-                            .setLong(WORK_AREA_ID, workAreaId.longValue())
-                        	.setString(WORK_AREA_TYPE, workAreaType)
-                        	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
-                        	.list();
-                    }
-                }
-            );
-        return matches;
-    	
-    }
     
 }

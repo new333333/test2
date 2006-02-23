@@ -1,4 +1,4 @@
-package com.sitescape.ef.module.folder;
+package com.sitescape.ef.module.shared;
 
 public interface InputDataAccessor {
 
