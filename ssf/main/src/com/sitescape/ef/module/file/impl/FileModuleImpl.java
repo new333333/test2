@@ -30,6 +30,7 @@ import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.module.file.CheckedOutByOtherException;
+import com.sitescape.ef.module.file.FileErrors;
 import com.sitescape.ef.module.file.FileException;
 import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.file.NoSuchFileException;
@@ -372,24 +373,24 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
     public void writeFiles(Binder binder, Entry entry, List fileUploadItems)
 		throws WriteFilesException {
-    	WriteFilesException wfe = new WriteFilesException(binder, entry);
+    	FileErrors errors = new FileErrors(binder, entry);
     	
     	for(int i = 0; i < fileUploadItems.size(); i++) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
     		try {
-    			this.writeFileInternal(binder, entry, fui, wfe);
+    			this.writeFileInternal(binder, entry, fui, errors);
     		}
     		catch(Exception e) {
     			logger.error("Error processing file " + fui.getOriginalFilename(), e);
-    			wfe.addProblem(new WriteFilesException.Problem
+    			errors.addProblem(new FileErrors.Problem
     					(fui.getRepositoryServiceName(),  fui.getOriginalFilename(), 
-    							WriteFilesException.Problem.OTHER_PROBLEM, e));
+    							FileErrors.Problem.OTHER_PROBLEM, e));
     		}
     	}
 	
-    	if(wfe.getProblems().size() > 0) {
+    	if(errors.getProblems().size() > 0) {
     		// At least one error occured during the operation. 
-    		throw wfe;
+    		throw new WriteFilesException(errors);
     	}
     }
     
@@ -570,7 +571,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 
     private void writeFileInternal(Binder binder, Entry entry, 
-    		FileUploadItem fui, WriteFilesException wfe) {
+    		FileUploadItem fui, FileErrors errors) {
     	
     	/// Work Flow:
     	/// step1: write primary file
@@ -631,9 +632,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    			logger.error("Error storing file " + fileName, e);
 	    			// We failed to write the primary file. In this case, we 
 	    			// discard the rest of the operation (i.e., step2 thru 4).
-	    			wfe.addProblem(new WriteFilesException.Problem
+	    			errors.addProblem(new FileErrors.Problem
 	    					(repositoryServiceName, fileName, 
-	    							WriteFilesException.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
+	    							FileErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
 	    			return;
 	    		}
 	    		
@@ -655,17 +656,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	        			// when the file format is not supported. Do not cause this to
 	        			// fail the entire operation. Simply log it and proceed.  
 	        			logger.warn("Error generating scaled version of " + fileName, e);
-		    			wfe.addProblem(new WriteFilesException.Problem
+		    			errors.addProblem(new FileErrors.Problem
 		    					(repositoryServiceName, fileName, 
-		    							WriteFilesException.Problem.PROBLEM_GENERATING_SCALED_FILE, e));
+		    							FileErrors.Problem.PROBLEM_GENERATING_SCALED_FILE, e));
 	        		}
 	        		catch(Exception e) {
 		    			// Failed to store scaled file. In this case, we report the 
 	        			// problem to the client but still proceed here.
 	        			logger.warn("Error storing scaled version of " + fileName, e);
-		    			wfe.addProblem(new WriteFilesException.Problem
+		    			errors.addProblem(new FileErrors.Problem
 		    					(repositoryServiceName, fileName, 
-		    							WriteFilesException.Problem.PROBLEM_STORING_SCALED_FILE, e));	        			
+		    							FileErrors.Problem.PROBLEM_STORING_SCALED_FILE, e));	        			
 	        		}
 	        	}    
 
@@ -678,15 +679,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	        		}
 	        		catch(ThumbnailException e) {
 	        			logger.warn("Error generating thumbnail version of " + fileName, e);
-		    			wfe.addProblem(new WriteFilesException.Problem
+		    			errors.addProblem(new FileErrors.Problem
 		    					(repositoryServiceName, fileName, 
-		    							WriteFilesException.Problem.PROBLEM_GENERATING_THUMBNAIL_FILE, e));
+		    							FileErrors.Problem.PROBLEM_GENERATING_THUMBNAIL_FILE, e));
 	        		}
 	        		catch(Exception e) {
 	        			logger.warn("Error storing thumbnail version of " + fileName, e);
-		    			wfe.addProblem(new WriteFilesException.Problem
+		    			errors.addProblem(new FileErrors.Problem
 		    					(repositoryServiceName, fileName, 
-		    							WriteFilesException.Problem.PROBLEM_STORING_THUMBNAIL_FILE, e));	        			
+		    							FileErrors.Problem.PROBLEM_STORING_THUMBNAIL_FILE, e));	        			
 	        		}
 	        	}
 	    	}
@@ -720,9 +721,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    			// We failed to write the primary file. In this case, we 
 	    			// discard the rest of the operation (i.e., step2 thru 4).
 	    			logger.error("Error storing file " + fileName, e);
-	    			wfe.addProblem(new WriteFilesException.Problem
+	    			errors.addProblem(new FileErrors.Problem
 	    					(repositoryServiceName, fileName, 
-	    							WriteFilesException.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
+	    							FileErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
 	    			return;
 	    		}
 	    	}
