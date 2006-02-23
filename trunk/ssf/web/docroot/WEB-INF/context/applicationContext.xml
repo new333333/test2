@@ -460,11 +460,20 @@
 		<property name="mailManager"><ref local="mailManager"/></property>
 	</bean>
 	
-	<bean id="ldapModule"  class="com.sitescape.ef.module.ldap.impl.LdapModuleImpl">
-		<property name="coreDao"><ref local="coreDao"/></property>	
-		<property name="processorManager"><ref local="modelProcessorManager"/></property>
-		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
-		<property name="profileModule"><ref local="profileModule"/></property>
+	<bean id="ldapModule"  parent="baseTransactionProxy">
+		<property name="target">
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.ldap.impl.LdapModuleImpl">
+				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+				<property name="profileModule"><ref local="profileModule"/></property>
+			</bean>
+		</property>
+		<!-- synchronize methods handled by processor through transactionTemplate-->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
+		</property>
 	</bean>		
 		
 	<bean id="workflowModule" parent="baseTransactionProxy">

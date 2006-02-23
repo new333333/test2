@@ -191,6 +191,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setCreation(new HistoryStamp(user));
         entry.setModification(entry.getCreation());
+        entry.setParentBinder(binder);
         
         
         // The entry inherits acls from the parent by default. 

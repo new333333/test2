@@ -969,7 +969,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	
 	            //Get a list of all of the items in the definition
 	            Element entryFormItem = (Element) root
-	                    .selectSingleNode("item[@name='entryForm']");
+	                    .selectSingleNode("item[@name='entryForm' or @name='profileEntryForm']");
 	            if (entryFormItem != null) {
 	                Iterator itItems = entryFormItem.selectNodes("//item")
 	                        .listIterator();
@@ -1095,7 +1095,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
             //Get a list of all of the items in the definition
             Element entryFormItem = (Element) root
-                    .selectSingleNode("item[@name='entryForm']");
+                    .selectSingleNode("item[@name='entryForm'  or @name='profileEntryForm']");
             if (entryFormItem != null) {
                 Iterator itItems = entryFormItem.selectNodes("//item")
                         .listIterator();

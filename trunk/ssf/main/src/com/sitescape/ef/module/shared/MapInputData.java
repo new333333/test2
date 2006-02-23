@@ -12,11 +12,17 @@ public class MapInputData implements InputDataAccessor {
 	}
 	
 	public String getSingleValue(String key) {
+		Object result = source.get(key);
+		if (result instanceof String) return (String)result;
 		return ((String[]) source.get(key))[0];
 	}
 
 	public String[] getValues(String key) {
-		return (String[]) source.get(key);
+		Object result = source.get(key);
+		if (result instanceof String[]) return (String[])result;
+		String[] val = new String[1];
+		val[0] = (String)result;
+		return val;
 	}
 
 	public boolean exists(String key) {

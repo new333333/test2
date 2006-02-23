@@ -8,10 +8,8 @@ import org.quartz.JobExecutionException;
 import javax.naming.NamingException;
 
 import com.sitescape.ef.module.ldap.LdapModule;
-import com.sitescape.ef.util.SessionUtil;
 import com.sitescape.ef.util.SpringContextUtil;
 
-import com.sitescape.ef.util.DirtyInterceptor;
 /**
  * @author Janet McCann
  *
@@ -34,11 +32,6 @@ public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSyn
 				
 			context.setResult("Failed");
 		}
-	}
-	protected void setupSession() {
-		//provide an entity interceptor to index only entries that are modified
-		SessionUtil.sessionStartup(new DirtyInterceptor());
-
 	}
 	public ScheduleInfo getScheduleInfo(String zoneName) {
 		return getScheduleInfo(new LdapJobDescription(zoneName));

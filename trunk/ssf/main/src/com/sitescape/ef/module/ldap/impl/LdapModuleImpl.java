@@ -27,37 +27,31 @@ import org.apache.commons.logging.LogFactory;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.jobs.LdapSynchronization;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.ldap.LdapConfig;
 import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.profile.ProfileModule;
-import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
-import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Membership;
 import com.sitescape.ef.domain.NoUserByTheNameException;
-import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.util.CollectionUtil;
-import com.sitescape.ef.util.DirtyInterceptor;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.util.SZoneConfig;
-import com.sitescape.ef.util.SessionUtil;
 import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.module.shared.MapInputData;
+import com.sitescape.ef.search.BasicIndexUtils;
 
 import org.dom4j.Element;
-import org.hibernate.Interceptor;
 import org.hibernate.SessionFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -82,15 +76,13 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author Janet McCann
  *
  */
-public class LdapModuleImpl implements LdapModule {
+public class LdapModuleImpl extends CommonDependencyInjection implements LdapModule {
 	protected Log logger = LogFactory.getLog(getClass());
 	protected String [] principalAttrs = new String[]{"name", "id", "disabled", "reserved", "foreignName"};
-	protected CoreDao coreDao;
 	
 	protected static final String[] sample = new String[0];
 	HashMap defaultProps = new HashMap(); 
 	protected HashMap zones = new HashMap();
-	protected ProcessorManager processorManager;
 	protected TransactionTemplate transactionTemplate;
 	protected ProfileModule profileModule;
 	public LdapModuleImpl () {
@@ -100,25 +92,7 @@ public class LdapModuleImpl implements LdapModule {
 		defaultProps.put(LdapModule.OBJECT_CLASS, "objectClass");
     	defaultProps.put(LdapModule.SYNC_JOB, "com.sitescape.ef.jobs.DefaultLdapSynchronization");
 	}
-
-	/**
-	 * Loaded by Spring context
-	 */
-    protected CoreDao getCoreDao() {
-		return coreDao;
-	}
-	public void setCoreDao(CoreDao coreDao) {
-	    this.coreDao = coreDao;
-	}
-	/**
-	 * Loaded by Spring context
-	 */
-	protected ProcessorManager getProcessorManager() {
-		return processorManager;
-	}
-	public void setProcessorManager(ProcessorManager processorManager) {
-	    this.processorManager = processorManager;
-	} 	
+	
     protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
 	}
@@ -151,12 +125,8 @@ public class LdapModuleImpl implements LdapModule {
 	 * @param zoneId
 	 * @param props
 	 */
-	public void setLdapConfig(final LdapConfig config) {
-	       getTransactionTemplate().execute(new TransactionCallback() {
-	        	public Object doInTransaction(TransactionStatus status) {
-	            	getSyncObject().setScheduleInfo(config);
-	        		return null;
-	        	}});
+	public void setLdapConfig(LdapConfig config) {
+           	getSyncObject().setScheduleInfo(config);
 	}
     protected LdapSynchronization getSyncObject() {
     	String jobClass = getLdapProperty(RequestContextHolder.getRequestContext().getZoneName(), LdapModule.SYNC_JOB);
@@ -853,10 +823,17 @@ public class LdapModuleImpl implements LdapModule {
 		for (Iterator i=users.values().iterator(); i.hasNext();) {
 			newUsers.add(new MapInputData((Map)i.next()));
 		}
+		Definition userDef = null;
+		List defs = pf.getEntryDefs();
+		if ((defs !=null) && !defs.isEmpty()) {
+			userDef = (Definition)defs.get(0);
+		}
+		
+		
 	   	IndexSynchronizationManager.begin();
 	    ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
             	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-	    newUsers = processor.syncNewEntries(pf, null, User.class, newUsers);
+	    newUsers = processor.syncNewEntries(pf, userDef, User.class, newUsers);
 		IndexSynchronizationManager.applyChanges();
 		return newUsers;
      }
@@ -872,10 +849,15 @@ public class LdapModuleImpl implements LdapModule {
 		for (Iterator i=groups.values().iterator(); i.hasNext();) {
 			newGroups.add(new MapInputData((Map)i.next()));
 		}
+		Definition groupDef = null;
+		List defs = pf.getEntryDefs();
+		if ((defs !=null) && !defs.isEmpty()) {
+		groupDef = (Definition)defs.get(0);
+		}
 	   	IndexSynchronizationManager.begin();
 	    ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
             	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-	    newGroups = processor.syncNewEntries(pf, null, Group.class, newGroups);
+	    newGroups = processor.syncNewEntries(pf, groupDef, Group.class, newGroups);
 		IndexSynchronizationManager.applyChanges();
 		return newGroups;
     }
