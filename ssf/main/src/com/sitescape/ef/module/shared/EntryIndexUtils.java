@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -14,11 +16,16 @@ import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.ef.security.AccessControlManager;
+import com.sitescape.ef.security.function.WorkAreaOperation;
 
 /**
  * Index the fields common to all Entry types.
@@ -55,9 +62,6 @@ public class EntryIndexUtils {
     public static final String WORKFLOW_PROCESS_FIELD = "_workflowProcess";
     public static final String WORKFLOW_STATE_FIELD = "_workflowState";
     public static final String BINDER_ID_FIELD = "_binderId";
-    
-    // Defines field values
-    public static final String READ_ACL_ALL = "all";
     
  
     
@@ -213,5 +217,38 @@ public class EntryIndexUtils {
     	SimpleDateFormat sf = (SimpleDateFormat)df;
     	sf.applyPattern("yyyyMMdd");
     	return(df.format(date));
+    }
+    public static void addReadAcls(Document doc, Binder binder, WorkflowControlledEntry entry, AccessControlManager accessManager) {
+        // Add ACL field. We only need to index ACLs for read access. 
+        Field racField;
+    	List readMemberIds = accessManager.getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES);
+		Set ids = new HashSet();
+        if (entry.hasAclSet()) {
+        	//index binders access
+        	if (entry.checkWorkArea(AccessType.READ)) {
+        		ids.addAll(readMemberIds);
+ 	        }
+        	//index workflow access - ignore widen for search engine - prune results later
+           	ids.addAll(entry.getAclSet().getMemberIds(AccessType.READ));
+        	if (entry.checkOwner(AccessType.READ)) {
+        		ids.add(entry.getCreatorId());
+        	}
+        	//no access specified, add binder default
+        	if (ids.isEmpty())
+        		ids.addAll(readMemberIds);
+        		
+       } else {
+            ids.addAll(readMemberIds);
+            if (accessManager.testOperation(binder, WorkAreaOperation.CREATOR_READ))
+            	ids.add(entry.getCreatorId());
+        }
+        // I'm not sure if putting together a long string value is more
+        // efficient than processing multiple short strings... We will see.
+        StringBuffer pIds = new StringBuffer();
+   		for (Iterator i = ids.iterator(); i.hasNext();) {
+    		pIds.append(i.next()).append(" ");
+    	}
+        racField = new Field(BasicIndexUtils.READ_ACL_FIELD, pIds.toString(), true, true, true);      
+        doc.add(racField);
     }
 }

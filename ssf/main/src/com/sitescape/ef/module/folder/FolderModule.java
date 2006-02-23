@@ -7,6 +7,7 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.domain.Definition;
 
@@ -40,6 +41,7 @@ public interface FolderModule {
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, Map fileItems) throws AccessControlException;
     public Long addReply(Long folderId, Long parentId, String definitionId, InputDataAccessor inputData, Map fileItems) throws AccessControlException;
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, Map fileItems) throws AccessControlException;
+    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData) throws AccessControlException;
     public void modifyWorkflowState(Long folderId, Long entryId, Long tokenId, String toState) throws AccessControlException;
     
     /**

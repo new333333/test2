@@ -21,7 +21,7 @@ import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.AnyOwner;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.mail.MailModule;
+import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 
@@ -33,8 +33,8 @@ public abstract class AbstractActionHandler implements ActionHandler {
 		return (CoreDao)SpringContextUtil.getBean("coreDao");
 	};
 
-	protected MailModule getMailModule() {
-		return (MailModule)SpringContextUtil.getBean("mailModule");
+	protected MailManager getMailManager() {
+		return (MailManager)SpringContextUtil.getBean("mailManager");
 	};
 
 	protected WorkflowControlledEntry loadEntry(String type, Long id) {

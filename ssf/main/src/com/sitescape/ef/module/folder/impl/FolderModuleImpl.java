@@ -23,11 +23,11 @@ import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.FolderModule;
-import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
@@ -134,6 +134,10 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	(folder, FolderCoreProcessor.PROCESSOR_KEY);
         
         processor.modifyEntry(folder, entryId, inputData, fileItems);
+    }
+    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
+	throws AccessControlException {
+    	modifyEntry(binderId, id, inputData, new HashMap());
     }
 
     public void modifyWorkflowState(Long folderId, Long entryId, Long tokenId, String toState) throws AccessControlException {

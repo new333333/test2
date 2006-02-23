@@ -6,19 +6,16 @@ package com.sitescape.ef.module.profile;
 
 import java.util.Map;
 import java.util.List;
-import java.util.Collection;
 
 import org.dom4j.Document;
 
-import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.file.WriteFilesException;
-import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.security.AccessControlException;
 
 public interface ProfileModule {
@@ -28,7 +25,7 @@ public interface ProfileModule {
 		throws AccessControlException, WriteFilesException;
    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
-   public void modifyEntryData(Long binderId, Long id, Map entryData) 
+   public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
 		throws AccessControlException;
    public void deleteEntry(Long binderId, Long id)
 		throws AccessControlException, WriteFilesException;

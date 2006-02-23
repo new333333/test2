@@ -15,7 +15,7 @@ import javax.mail.internet.MimeMessage;
  * @author Janet McCann
  *
  */
-public interface MailModule {
+public interface MailManager {
 	public static String POSTING_JOB="posting.job";
 	public static final String NOTIFY_TEMPLATE_TEXT="notify.mailText";
 	public static final String NOTIFY_TEMPLATE_HTML="notify.mailHtml";

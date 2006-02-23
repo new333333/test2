@@ -23,7 +23,7 @@ import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.mail.MailModule;
+import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.jobs.EmailNotification;
 import com.sitescape.ef.jobs.EmailPosting;
@@ -46,9 +46,9 @@ import com.sitescape.ef.domain.EmailAlias;
  */
 public class AdminModuleImpl extends CommonDependencyInjection implements AdminModule {
 
-	protected MailModule mailModule;
-    public void setMailModule(MailModule mailModule) {
-    	this.mailModule = mailModule;
+	protected MailManager mailManager;
+    public void setmailManager(MailManager mailManager) {
+    	this.mailManager = mailManager;
     }
 	/**
      * Do actual work to either enable or disable email notification.
@@ -147,7 +147,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	return getCoreDao().loadPostings(RequestContextHolder.getRequestContext().getZoneName());
     }
     private EmailPosting getPostingObject() {
-    	String emailPostingClass = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.POSTING_JOB);
+    	String emailPostingClass = mailManager.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailManager.POSTING_JOB);
         try {
             Class processorClass = ReflectHelper.classForName(emailPostingClass);
             EmailPosting job = (EmailPosting)processorClass.newInstance();

@@ -50,7 +50,8 @@ public abstract class Attachment extends PersistentTimestampObject
         this.name = name;
     } 	
 
-    public void update(Object obj) {
+    public boolean update(Object obj) {
+    	return true;
     	
     }
 }

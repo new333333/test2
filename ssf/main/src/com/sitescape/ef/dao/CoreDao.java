@@ -11,7 +11,6 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.SeenMap;
@@ -34,6 +33,8 @@ public interface CoreDao {
 	public void clear();
 	public boolean isDirty();
 	public void flush();
+	public void refresh(Object obj);
+	public void replicate(Object obj);
 	public void save(Object obj);
 	public void save(Collection objs);
 	public void saveNewSession(Object obj);

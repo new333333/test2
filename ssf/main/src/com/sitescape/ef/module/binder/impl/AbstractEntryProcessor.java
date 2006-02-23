@@ -40,7 +40,6 @@ import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.file.WriteFilesException;
-import com.sitescape.ef.module.folder.InputDataAccessor;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
@@ -55,9 +54,11 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
+import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
-import com.sitescape.ef.module.workflow.WorkflowModule;
+import com.sitescape.ef.module.shared.InputDataAccessor;
+
 /**
  *
  * @author Jong Kim
@@ -131,11 +132,12 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 
                 addEntry_save(binder, entry, inputData, entryData);      
                 
+                addEntry_postSave(binder, entry, inputData, entryData);
+                
                 return null;
         	}
         });
         
-        addEntry_postSave(binder, entry, inputData, entryData);
         
         // We must save the entry before processing files because it makes use
         // of the persistent id of the entry. 
@@ -251,7 +253,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 	    		if (workflowAssociations.containsKey(entryDef.getId()) && 
 	    				!workflowAssociations.get(entryDef.getId()).equals("")) {
 	    			Definition wfDef = getDefinitionModule().getDefinition((String)workflowAssociations.get(entryDef.getId()));
-	    			getWorkflowModule().startWorkflow(entry, wfDef);
+	    			getWorkflowModule().addEntryWorkflow(entry, wfDef);
 	    		}
     		}
     	}
@@ -259,35 +261,32 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
  	
 
    //***********************************************************************************************************
-    public Long modifyEntry(Binder binder, Long entryId, InputDataAccessor inputData, Map fileItems) 
+    public Long modifyEntry(final Binder binder, Long entryId, final InputDataAccessor inputData, Map fileItems) 
     		throws AccessControlException, WriteFilesException {
-		WorkflowControlledEntry entry = modifyEntry_load(binder, entryId);
+		final WorkflowControlledEntry entry = modifyEntry_load(binder, entryId);
 	    modifyEntry_accessControl(binder, entry);
 	
 	    Map entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
-	    Map entryData = (Map) entryDataAll.get("entryData");
+	    final Map entryData = (Map) entryDataAll.get("entryData");
 	    List fileData = (List) entryDataAll.get("fileData");
 	    
 	    modifyEntry_processFiles(binder, entry, fileData);
 	    
-	    modifyEntry_fillIn(binder, entry, inputData, entryData);
+        // The following part requires update database transaction.
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		modifyEntry_fillIn(binder, entry, inputData, entryData);
 	                
-	    modifyEntry_postFillIn(binder, entry, inputData, entryData);
-	    
+        		modifyEntry_postFillIn(binder, entry, inputData, entryData);
+        		return null;
+        	}});
 	    modifyEntry_indexAdd(binder, entry, inputData, fileData);
 	    
 	    cleanupFiles(fileData);
 	    
 	    return entry.getId();
 	}
-	public Long modifyEntryData(Binder binder, Long entryId, Map entryData) 
-			throws AccessControlException {
-    	WorkflowControlledEntry entry = modifyEntry_load(binder, entryId);
-	    modifyEntry_accessControl(binder, entry);
-	
-        EntryBuilder.updateEntry(entry, entryData);
-		return entry.getId();
-	}
+
     protected WorkflowControlledEntry modifyEntry_load(Binder binder, Long entryId) {
     	return entry_load(binder, entryId);
     	
@@ -307,6 +306,16 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     protected void modifyEntry_fillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setModification(new HistoryStamp(user));
+        for (Iterator iter=entryData.entrySet().iterator(); iter.hasNext();) {
+        	Map.Entry mEntry = (Map.Entry)iter.next();
+        	//need to generate id for the event so its id can be saved in customAttr
+        	if (entry.getCustomAttribute((String)mEntry.getKey()) == null) {
+        			Object obj = mEntry.getValue();
+        			if (obj instanceof Event)
+        				getCoreDao().save(obj);
+        	}
+        }
+        
         EntryBuilder.updateEntry(entry, entryData);
 
     }
@@ -350,7 +359,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	// the db.  (Early in development, they're not...
    		//iterate through results
    		indexBinder_deleteEntries(binder);
-   		//flush any changes so any changes don't get lost
+   		//flush any changes so any exiting changes don't get lost on the evict
    		getCoreDao().flush();
    		SFQuery query = indexBinder_getQuery(binder);
 	   	
@@ -382,7 +391,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
        				// 	Create an index document from the entry object.
        				org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry);
            			if (logger.isDebugEnabled())
-           				logger.debug("Indexing (" + binder.getId().toString() + ") " + entry.toString() + ": " + indexDoc.toString());
+           				logger.debug("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
       				getCoreDao().evict(entry);
       				docs.add(indexDoc);
        			}
@@ -658,9 +667,11 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     protected void loadEntryHistory(HashMap entry) {
         Set ids = new HashSet();
         if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
-    	    ids.add(entry.get(EntryIndexUtils.CREATORID_FIELD));
+    	    try {ids.add(new Long((String)entry.get(EntryIndexUtils.CREATORID_FIELD)));
+    	    } catch (Exception ex) {}
         if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
-    		ids.add(entry.get(EntryIndexUtils.MODIFICATIONID_FIELD));
+    		try {ids.add(new Long((String)entry.get(EntryIndexUtils.MODIFICATIONID_FIELD)));
+    	    } catch (Exception ex) {}
         getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      } 
     protected List loadEntryHistoryLuc(List pList) {
@@ -670,9 +681,11 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         while (iter.hasNext()) {
             entry = (HashMap)iter.next();
             if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
-        	    ids.add(entry.get(EntryIndexUtils.CREATORID_FIELD));
+            	try {ids.add(new Long((String)entry.get(EntryIndexUtils.CREATORID_FIELD)));
+        	    } catch (Exception ex) {}
             if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
-        		ids.add(entry.get(EntryIndexUtils.MODIFICATIONID_FIELD));
+        		try {ids.add(new Long((String)entry.get(EntryIndexUtils.MODIFICATIONID_FIELD)));
+        		} catch (Exception ex) {}
         }
         return getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      }   
@@ -730,7 +743,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         getDefinitionModule().addIndexFieldsForEntry(indexDoc, binder, entry);
         
         // Add ACL field. We only need to index ACLs for read access.
-        BasicIndexUtils.addReadAcls(indexDoc, binder, entry, getAclManager());
+        EntryIndexUtils.addReadAcls(indexDoc, binder, entry, getAccessControlManager());
         
         // Add the events
         EntryIndexUtils.addEvents(indexDoc, entry);

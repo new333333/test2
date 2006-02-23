@@ -204,7 +204,29 @@
 		     </schemaexport>
 	    </target>
 	
-	  <target name="ss-update-tables" depends="init" description="Update database tables for sitescape domain">
+	  <target name="ss-create-tables-jbpm-internal" depends="init">
+			<path id="initpath">
+	  			<pathelement location="${classes.dir}"/>
+				<fileset dir="${project.dir}/util" includes="*.jar"/>
+				<fileset dir="${project.dir}/lib" includes="*.jar" />
+			</path>
+	        <taskdef classname="org.hibernate.tool.hbm2ddl.SchemaExportTask"
+		             classpathref="initpath" name="schemaexport">
+	 		</taskdef> 
+
+		    <schemaexport delimiter=";" drop="false" output="${hibernate.dir}/ss-create-jbpm-tables.sql"
+		    	properties="${hibernate.dir}/ss-create-tables-hibernate.properties" 
+		          	quiet="false" text="${schemaexport.text.value}">
+				<fileset dir="${project.dir}/lib" includes="jbpm.jar" >
+		    		<include name="org/jbpm/**/*hbm.xml"/>
+		        </fileset>
+				<fileset dir="${project.dir}/lib" includes="jbpm-identity.jar" >
+		    		<include name="org/jbpm/**/*hbm.xml"/>
+		        </fileset>
+		     </schemaexport>
+	    </target>
+
+	<target name="ss-update-tables" depends="init" description="Update database tables for sitescape domain">
 				<path id="initpath">
 		  			<pathelement location="${classes.dir}"/>
 					<fileset dir="${project.dir}/util" includes="*.jar"/>

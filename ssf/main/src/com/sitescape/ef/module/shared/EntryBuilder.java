@@ -89,36 +89,59 @@ public class EntryBuilder {
     	}		
 	}
 
-	public static void updateEntry(Entry target, Map data) {
+	public static boolean updateEntry(Entry target, Map data) {
 		Set kvps = data.entrySet();
 		Map.Entry entry;
+		boolean changed=false;
 		for (Iterator iter=kvps.iterator(); iter.hasNext();) {
 			entry = (Map.Entry)iter.next();
 			String attr = (String)entry.getKey();
 			Object val = entry.getValue();
 			try {
-				InvokeUtil.invokeSetter(target, attr, val);
+				Object currentVal = InvokeUtil.invokeGetter(target, attr);
+				if (currentVal != null) {
+					if (!currentVal.equals(val)) {
+						changed=true;
+						InvokeUtil.invokeSetter(target, attr, val);
+					}
+				} if (val != null) {
+					changed=true;
+					InvokeUtil.invokeSetter(target, attr, val);
+				}
 			} catch (ObjectPropertyNotFoundException pe) {
-				if (val == null) 
-					target.removeCustomAttribute(attr);
-				else {
+				if (val == null) { 
+					if (target.getCustomAttribute(attr) != null) {
+						changed=true;
+						target.removeCustomAttribute(attr);
+					}
+				
+				} else {
 					CustomAttribute cAttr = target.getCustomAttribute(attr);
 					if (cAttr != null) {
 						Object oldVal = cAttr.getValue();
 						if (oldVal instanceof UpdateAttributeSupport) {
 							try {
-								((UpdateAttributeSupport)oldVal).update(val);
+								if (((UpdateAttributeSupport)oldVal).update(val)) {
+									changed=true;
+								}
 							} catch (ClassCastException ce) {
 								cAttr.setValue(val);
+								changed=true;
 							}
-						} else
-							cAttr.setValue(val);
+						} else {
+							if (!val.equals(oldVal)) {
+								cAttr.setValue(val);
+								changed=true;
+							}
+						}
 					} else {
+						changed=true;
 						target.addCustomAttribute(attr, val);					
-					}
+					}					
 				}
 			}				
 		}
+		return changed;
 
 	}	
 

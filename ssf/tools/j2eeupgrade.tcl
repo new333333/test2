@@ -30,7 +30,8 @@ array set ::j2ee_Principals_class_MAP {
    defaultIdentity	{defaultIdentity boolean}
    reserved	{reserved boolean}
    parentBinder {parentBinder int32}
-   acl_inheritFromParent {acl_inheritFromParent boolean}
+   functionMembershipInherited   {functionMembershipInherited boolean}
+   
    
 }
 
@@ -49,7 +50,7 @@ array set ::j2ee_Forum_class_MAP {
    owningWorkspace {owningWorkspace int32}
    topFolder  {topFolder int32}
    notify_teamOn   {notify_teamOn boolean}
-   notify_email    {notify_email blob}
+   notify_email    {notify_email clob}
    defaultReplyDef {defaultReplyDef uuid}
    featureMask			{featureMask int32}
    functionMembershipInherited   {functionMembershipInherited boolean}
@@ -60,6 +61,9 @@ array set ::j2ee_Forum_class_MAP {
    entryRoot_sortKey   {entryRoot_sortKey "varchar 512"}
    entryRoot_level		{entryRoot_level int32}   
    acl_inheritFromParent {acl_inheritFromParent boolean}
+   nextEntryNumber		{nextEntryNumber int32}
+   nextFolderNumber		{nextFolderNumber int32}
+   
 }
 
 array set ::j2ee_Acls_class_MAP {
@@ -112,7 +116,6 @@ array set ::j2ee_FolderEntry_class_MAP {
    entry_sortKey   {entry_sortKey "varchar 512"}
    nextDescendant {nextDescendant int32}
    replyCount {replyCount int32}
-   acl_inheritFromParent {acl_inheritFromParent boolean}
 }
 
 array set ::j2ee_Attachments_class_MAP {
@@ -154,10 +157,10 @@ array set ::j2ee_CustomAttributes_class_MAP {
     longValue 	{longValue int32}
     dateValue 	{dateValue timestamp}
     serializedValue {serializedValue blob}
-	xmlValue	{xmlValue blob}
+	xmlValue	{xmlValue clob}
     booleanValue {booleanValue boolean}
     valueType 	{valueType int32}
-    parent 		{parent int32}
+    parent 		{parent uuid}
 }
 				
 array set ::j2ee_Notification_class_MAP {
@@ -400,7 +403,6 @@ proc doUsers {userList} {
     set attrs(modification_date) $attrs(creation_date)
     set attrs(modification_principal) $::userIds(wf_admin)
     set attrs(parentBinder) $::_profileId
-	set attrs(acl_inheritFromParent) 1
     set results [setupColVals $map attrs insert]
     set cmdList [lindex $results 1]
     set cmd [lindex $cmdList 0] 
@@ -433,7 +435,6 @@ proc doUsers {userList} {
             	unset attrs(description_text)
             }
             set attrs(description_format) 2
-			set attrs(preferredWorkspace) ""
 			set summit [user_property get -for $user defaultSummit]
 			if {![isnull $summit] && ![strequal $summit "__topsummit__"] && 
 				[info exists ::forumIds($summit)]} {
@@ -536,7 +537,7 @@ proc doGroups {groupList} {
 	set attrs(defaultIdentity) 0
  	set attrs(reserved) 0
     set attrs(parentBinder) $::_profileId
-	set attrs(acl_inheritFromParent) 1
+	set attrs(functionMembershipInherited) 1
 	
 	while {[llength [set bunchList [lrange $groupList $bunchIndex [expr {$bunchIndex + $bunchSize - 1}]]]]} {
         ::profile::select -type group -filter userName $bunchList -hint @
@@ -645,10 +646,18 @@ proc doZone {zoneName {cName {liferay.com}}} {
         } else {
             set type "BINDER"
         }
-        wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',0,0,0,'[sql_quote_value $::zoneName]');"
+	    if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {    
+        	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',0,B'0',B'0','[sql_quote_value $::zoneName]');"
+		} else {
+    	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',0,0,0,'[sql_quote_value $::zoneName]');"
+		}
      }
 	set ::_profileId [new_forum_uuid]
-    wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'PROFILES',0,0,0,'[sql_quote_value $::zoneName]');"
+    if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {    
+ 	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'PROFILES',0,B'0',B'0','[sql_quote_value $::zoneName]');"
+ 	} else {
+    	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'PROFILES',0,0,0,'[sql_quote_value $::zoneName]');"
+    }
     wimsql_rw "Update SS_Forums set owningWorkspace=$::forumIds(_admin) where not name='_admin';"
     wimsql_rw "Update SS_Forums set owningWorkspace=null,name='[sql_quote_value $::zoneName]' where name='_admin';"
     wimsql_rw commit
@@ -671,7 +680,7 @@ proc doZone {zoneName {cName {liferay.com}}} {
         set ::userIds($user) [new_user_uuid]
 
         #need to save so foreign key constraings are met.
-        wimsql_rw "INSERT INTO SS_Principals (id,lockVersion,type,zoneName,acl_inheritFromParent) VALUES ($::userIds($user),1,'U','[sql_quote_value $::zoneName]',1);"
+        wimsql_rw "INSERT INTO SS_Principals (id,lockVersion,type,zoneName) VALUES ($::userIds($user),1,'U','[sql_quote_value $::zoneName]');"
     }
     wimsql_rw commit
 	doUsers $personList 
@@ -785,9 +794,9 @@ proc doZone {zoneName {cName {liferay.com}}} {
 					set attrs(entryRoot_sortKey) $eRoot
 					set attrs(folder_level) 1
 					set attrs(folder_sortKey) $fRoot
+					set attrs(nextEntryNumber) 1
+ 					set attrs(nextFolderNumber) 1
                     set RESOURCE_TYPE 3      
-                    wimsql_rw "Insert into SS_FolderCounts (lockVersion,id,nextFolder,nextEntry) values
-                    			(1,$::forumIds($forum), 1,1);"   
                 }
             }
 			doNotifications $zoneName $forum attrs
@@ -817,10 +826,12 @@ proc doZone {zoneName {cName {liferay.com}}} {
 	#need to set default column values
     if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {
 		wimsql_rw "update SS_Forums set notify_teamOn=B'0' where notify_teamOn is null;"
+		wimsql_rw "update SS_Forums set acl_widenRead=B'1',acl_widenModify=B'1',acl_widenDelete=B'1';"
 		wimsql_rw "update SS_Principals set reserved=B'1' where name='wf_admin' or name='avf_admin';"
 #		wimsql_rw "update SS_Forums set notify_enabled=B'0' where notify_enabled is null;"
  	} else {
 		wimsql_rw "update SS_Forums set notify_teamOn=0 where notify_teamOn is null;"
+		wimsql_rw "update SS_Forums set acl_widenRead=1,acl_widenModify=1,acl_widenDelete=1;"
 		wimsql_rw "update SS_Principals set reserved=1 where name='wf_admin' or name='avf_admin';"
 #		wimsql_rw "update SS_Forums set notify_enabled=0 where notify_enabled is null;"
  	}
@@ -840,6 +851,9 @@ proc doFolders {forum folder level hKey parentID} {
 	set attrs(folder_sortKey) $hKey
 	set attrs(folder_level) $level
 	set attrs(featureMask) 0
+	set attrs(nextEntryNumber) [expr [aval -name $forum topLeafNumber $entryBranch]+1]
+ 	set attrs(nextFolderNumber) [expr [llength $subFolders]+1]
+   	
     set map ::j2ee_Forum_class_MAP
     if {$level == 1} {
 	    set attrs(entryRoot_sortKey) [B1036 $::forumIds($forum) 15]
@@ -880,8 +894,6 @@ proc doFolders {forum folder level hKey parentID} {
 	if {$::dialect == "mssql"} {
 	    wimsql_rw "SET IDENTITY_INSERT SS_FolderEntries ON;"
 	}	
-    wimsql_rw "Insert into SS_FolderCounts (lockVersion,id,nextFolder,nextEntry) values
-           			(1,$attrs(id), [expr [llength $subFolders]+1],[expr [aval -name $forum topLeafNumber $entryBranch]+1]);"  
      doEntries $forum $entryBranch $attrs(entryRoot_sortKey) $hKey $attrs(id) {} {}
     if {$::dialect == "mssql"} {
         wimsql_rw "SET IDENTITY_INSERT SS_FolderEntries OFF;"
@@ -936,8 +948,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
             set attrs(reserved_principal) [mapName [aval -name $forum reserveDoc $entry]]
             set attrs(sendMail) [aval -name $forum sendMail $entry]
             set attrs(owningFolderSortKey) $folderSortKey
-            set attrs(acl_inheritFromParent) 1
-			set abstract [read_abstract  -name $forum $entry]
+ 			set abstract [read_abstract  -name $forum $entry]
             if {![isnull $abstract]} {set attrs(description_text) [doClob $abstract]}
             
             set attrs(description_format) 2
@@ -1230,6 +1241,8 @@ proc doDocCustomAttributes {forum entry entryId folderSortKey} {
 	set attrs(ownerId) $entryId
 	set attrs(folderEntry) $entryId
 	set attrs(owningFolderSortKey) $folderSortKey
+	#frontbase doesn't like nulls
+	set attrs(booleanValue) 0
 	set val [aval -name $forum expiration $entry]
 	if {![isnull $val]} {
 		set attrs(id) [newuuid]
@@ -1252,7 +1265,7 @@ proc doDocCustomAttributes {forum entry entryId folderSortKey} {
         set cmdList [lindex $results 1]
         set cmd [lindex $cmdList 0] 
         wimsql_rw "INSERT INTO SS_CustomAttributes $cmd ;" [lindex $cmdList 1]
-        unset attrs(booleanValue)
+		set attrs(booleanValue) 0
 	}
 	set val [aval -name $forum rTypes $entry]
 	if {![isnull $val]} {
@@ -1265,7 +1278,7 @@ proc doDocCustomAttributes {forum entry entryId folderSortKey} {
 		}
 		append xml "</rTypes>"
 
-		set attrs(xmlValue) $xml
+		set attrs(xmlValue) [doClob $xml]
 		set attrs(name) rTypes
         set results [setupColVals ::j2ee_CustomAttributes_class_MAP attrs insert]
         set cmdList [lindex $results 1]
@@ -1359,7 +1372,7 @@ proc doDocCustomAttributes {forum entry entryId folderSortKey} {
 		if {![isnull $val]} {
 			set attrs(id) [newuuid]
 			set attrs(valueType) 1
-			set attrs(description_text) $val
+			set attrs(description_text) [doClob $val]
 			set attrs(description_format) 2
 			set attrs(name)  $n
 	        set results [setupColVals ::j2ee_CustomAttributes_class_MAP attrs insert]
@@ -1491,7 +1504,7 @@ proc doNotifications {zoneName forumName ats} {
 		}
 		set addrs [string trim $addrs ","]
 		if {![isnull $addrs]} {
-			set attrs(notify_email) $addrs
+			set attrs(notify_email) [doClob $addrs]
 		}
 	}
 
@@ -2249,7 +2262,8 @@ proc setupColVals {map fromArray type {exclude {}}} {
         }
         if {$sqlDialect::noParams} {
            if {$dType == "int32"} {
-                 lappend vals "$userMods($a)"
+           		if {[isnull $userMods($a)]} continue;
+                lappend vals "$userMods($a)"
             } elseif {$dType == "timestamp"} {
                 try {                    
                     lappend vals "TIMESTAMP'[fmtdate -format {%Y-%m-%d %T} $userMods($a)]'"
@@ -2274,7 +2288,7 @@ proc setupColVals {map fromArray type {exclude {}}} {
  				if {[isnull $userMods($a)]} {
  					set userMods($a) " "
                 } else {
-                	set userMods($a) [::sqlDialect::checkLength $a $userMods($a)$dType]
+                	set userMods($a) [::sqlDialect::checkLength $a $userMods($a) $dType]
                 }
                 lappend vals '[sql_quote_value $userMods($a)]'
             }            

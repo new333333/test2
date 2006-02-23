@@ -1,5 +1,5 @@
 
-package com.sitescape.ef.ldap;
+package com.sitescape.ef.module.ldap;
 
 import com.sitescape.ef.domain.NoUserByTheNameException;
 import javax.naming.NamingException;

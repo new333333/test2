@@ -45,7 +45,8 @@ public class CustomAttribute  {
     protected Date dateValue;
     protected SSBlobSerializable serializedValue;
     protected SSClobString xmlValue;
-    protected Boolean booleanValue;
+    //frontbase doesn't like null booleans
+    protected Boolean booleanValue=Boolean.FALSE;
     protected Set values;
     // these collections are loaded for quicker indexing, hibernate will not persist them
     protected Set iValues;
@@ -190,8 +191,7 @@ public class CustomAttribute  {
      * @return
      */
     private Set getValues() {
-    	if (iValues != null) return iValues;
-    	return values;
+     	return values;
     }
     private void setValues(Set values) {
     	this.values = values;
@@ -222,7 +222,8 @@ public class CustomAttribute  {
         stringValue=null;
         longValue=null;
         dateValue=null;
-        booleanValue=null;
+        //frontbase doesn't like null booleans
+        booleanValue=Boolean.FALSE;
         //allways setting mutable values to null, causes unnecessary updates
         if ((description !=null) && !Validator.isNull(description.getText()))
         	description=null;
@@ -382,8 +383,14 @@ public class CustomAttribute  {
         		return doc;
     	    case SET:
     	    	Set v = new HashSet();
-    	    	for (Iterator iter=values.iterator(); iter.hasNext();) {
-    	    		v.add(((CustomAttributeListElement)iter.next()).getValue());
+    	    	if (iValues == null) {
+    	    		for (Iterator iter=values.iterator(); iter.hasNext();) {
+    	    			v.add(((CustomAttributeListElement)iter.next()).getValue());
+    	    		}
+    	    	} else {
+    	    		for (Iterator iter=iValues.iterator(); iter.hasNext();) {
+    	    			v.add(((CustomAttributeListElement)iter.next()).getValue());
+    	    		}
     	    	}
     	    	return v;
        		case EVENT:

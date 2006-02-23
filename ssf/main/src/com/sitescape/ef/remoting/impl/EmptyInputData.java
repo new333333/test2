@@ -1,6 +1,6 @@
 package com.sitescape.ef.remoting.impl;
 
-import com.sitescape.ef.module.folder.InputDataAccessor;
+import com.sitescape.ef.module.shared.InputDataAccessor;
 
 /**
  * An implementation of <code>InputDataAccessor</code> interface

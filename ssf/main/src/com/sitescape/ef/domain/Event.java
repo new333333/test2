@@ -573,6 +573,7 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
 
   /**
    * @hibernate.property
+   * @hibernate.column name="repeatInterval"
    * Get the interval of the recurrence.
    * @return The recurrence interval.
    */
@@ -725,9 +726,9 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
 
   /**
    * Need internal routine for hibernate.  Don't want to make decisions based
-   * on properties that are not loaded yet as is don in getCount
+   * on properties that are not loaded yet as is done in getCount
    * @hibernate.property
-   * @hibernate.column name="count"
+   * @hibernate.column name="repeatCount"
    */
   private int getHCount() {
     return count;
@@ -2905,28 +2906,94 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
 	private void setHDuration(String durationString) {
 		setDuration(new Duration(durationString));
 	}	
-	public void update(Object obj) {
+	public boolean update(Object obj) {
 		Event newEvent = (Event)obj;
-		setDtStart(newEvent.getDtStart());
-		setDuration(newEvent.getDuration());
+		boolean changed=true;
+		if (!getDtStart().equals(newEvent.getDtStart())) {
+			changed=true;
+			setDtStart(newEvent.getDtStart());
+		}
+		if (!getDuration().equals(newEvent.getDuration())) {
+			changed=true;
+			setDuration(newEvent.getDuration());
+		}
 	    if (newEvent.getCount() == -1) {
-	    	setCount(0);
-			setUntil(newEvent.getUntil());
+    		setCount(0);
+	    	if (!getUntil().equals(newEvent.getUntil())) {
+	    		setUntil(newEvent.getUntil());
+	    		changed=true;
+	    	}
 	    } else {
 	    	setUntil((Calendar)null);
-	    	setCount(newEvent.getCount());
+	    	if (getCount()!=newEvent.getCount())
+	    		setCount(newEvent.getCount());
+	    		changed=true;
 	    }
-	    setFrequency(newEvent.getFrequency());
-		setInterval(newEvent.getInterval());
-		setTimeZoneSensitive(newEvent.isTimeZoneSensitive());
-	    setBySecond(newEvent.getBySecond());
-	    setByMinute(newEvent.getByMinute());
-	    setByHour(newEvent.getByHour());
-	    setByDay(newEvent.getByDay());
-	    setByMonthDay(newEvent.getByMonthDay());
-	    setByYearDay(newEvent.getByYearDay());
-	    setByWeekNo(newEvent.getByWeekNo());
-	    setByMonth(newEvent.getByMonth());
+	    	
+	    if (getFrequency() != newEvent.getFrequency()) {
+	    	setFrequency(newEvent.getFrequency());
+	    	changed=true;
+	    }
+	    
+		if (getInterval() != newEvent.getInterval()) {
+			setInterval(newEvent.getInterval());
+			changed=true;
+		}
+		if (isTimeZoneSensitive() != newEvent.isTimeZoneSensitive()) {
+			setTimeZoneSensitive(newEvent.isTimeZoneSensitive());
+			changed=true;
+		}
+		int [] val = newEvent.getBySecond();
+		if ((bySecond != val) && hasDiffs(bySecond, val)) {
+			setBySecond(val);
+			changed=true;
+		}
 
+		val = newEvent.getByMinute();
+		if ((byMinute != val) && hasDiffs(byMinute, val)) {
+			setByMinute(val);
+			changed=true;
+		}
+
+		val = newEvent.getByHour();
+		if ((byHour != val) && hasDiffs(byHour, val)) {
+			setByHour(val);
+			changed=true;
+		}
+		
+		if (!getByDayString().equals(newEvent.getByDayString())) {
+			setByDay(newEvent.getByDay());
+			changed=true;
+		}
+
+		val = newEvent.getByMonthDay();
+		if ((byMonthDay != val) && hasDiffs(byMonthDay, val)) {
+			setByMonthDay(val);
+			changed=true;
+		}
+
+		val = newEvent.getByYearDay();
+		if ((byYearDay != val) && hasDiffs(byYearDay, val)) {
+			setByYearDay(val);
+			changed=true;
+		}
+		val = newEvent.getByWeekNo();
+		if ((byWeekNo != val) && hasDiffs(byWeekNo, val)) {
+			setByWeekNo(val);
+			changed=true;
+		}
+		val = newEvent.getByMonth();
+		if ((byMonth != val) && hasDiffs(byMonth, val)) {
+			setByMonth(val);
+			changed=true;
+		}
+		return changed;
+	}
+	private boolean hasDiffs(int[] curVal, int[] newVal) {
+	    if (curVal == newVal) return false;
+	    if ((curVal == null) && (newVal != null)) return true;
+	    if ((newVal == null) && (curVal != null)) return true;
+	    if (curVal.length != newVal.length) return true;
+	    return !curVal.equals(newVal);
 	}
 }

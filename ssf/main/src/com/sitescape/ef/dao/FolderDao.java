@@ -64,9 +64,7 @@ public interface FolderDao {
      */
     public List loadFolderTree(Folder folder) throws DataAccessException; 
     public List loadFolderAncestors(Folder folder) throws DataAccessException;
-    public int allocateEntryNumbers(Folder folder, int count);
-    public int allocateFolderNumbers(Folder folder, int count);
-
+ 
     public UserProperties loadUserFolderProperties(Long userId, Long folderId);
     public HistoryMap loadHistoryMap(Long userId, Long folderId);
 

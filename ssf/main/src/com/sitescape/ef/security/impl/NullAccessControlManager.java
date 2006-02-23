@@ -1,6 +1,11 @@
 package com.sitescape.ef.security.impl;
 
+import java.util.List;
+import java.util.ArrayList;
+
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AclContainer;
@@ -8,13 +13,32 @@ import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-
+import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.ef.dao.util.FilterControls;
 /**
  *
  * @author Jong Kim
  */
 public class NullAccessControlManager implements AccessControlManager {
-
+	private static List groups;
+	private Boolean lock = new Boolean(true);
+	
+	public List getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
+		if (groups == null) {
+			synchronized (lock) {
+				if (groups == null) {
+					CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
+					List result = coreDao.loadGroups(new FilterControls(), RequestContextHolder.getRequestContext().getZoneName());
+					groups = new ArrayList();
+					for (int i=0; i<result.size(); ++i) {
+						groups.add(((Group)result.get(i)).getId());
+					}
+				}
+			}
+		}
+		return groups;
+	}
     public void checkOperation(WorkArea workArea, WorkAreaOperation workAreaOperation) throws AccessControlException {
     }
 

@@ -25,6 +25,8 @@ public class Folder extends Binder {
     protected HKey folderHKey;
     protected HKey entryRootHKey;
     protected Folder topFolder;
+    protected int nextFolderNumber=1;
+    protected int nextEntryNumber=1;
 
     public Folder() {
         
@@ -53,7 +55,26 @@ public class Folder extends Binder {
     public void setParentFolder(Folder parentFolder) {
         this.parentFolder = parentFolder;
     }
-   
+    /** 
+     * @hibernate.property 
+     * @return
+     */
+    public int getNextEntryNumber() {
+    	return nextEntryNumber;
+    }
+    public void setNextEntryNumber(int nextEntryNumber) {
+    	this.nextEntryNumber = nextEntryNumber;
+    }
+    /** 
+     * @hibernate.property 
+     * @return
+     */
+    public int getNextFolderNumber() {
+    	return nextFolderNumber;
+    }
+    public void setNextFolderNumber(int nextFolderNumber) {
+    	this.nextFolderNumber = nextFolderNumber;
+    }   
     /**
      * @hibernate.property node="displayStyle"
      * @return
@@ -114,12 +135,12 @@ public class Folder extends Binder {
     	if (folders == null) folders = new ArrayList();
         return folders;
     }
-    public void addFolder(Folder child, int childNum) {
+    public void addFolder(Folder child) {
   		getFolders().add(child);
    		child.setParentFolder(this);
    		child.setTopFolder(topFolder);
    		//	Set root for subfolders
-   		child.setFolderHKey(new HKey(getFolderHKey(), childNum));
+   		child.setFolderHKey(new HKey(getFolderHKey(), nextFolderNumber++));
      }
     public void removeFolder(Folder child) {
         if (!child.getParentFolder().equals(this)) {
@@ -154,12 +175,12 @@ public class Folder extends Binder {
      * Add entry to this folder.  Setup parent/child connections.
      * @param entry
      */
-    public void addEntry(FolderEntry entry, int childNum) {
+    public void addEntry(FolderEntry entry) {
       entry.setParentEntry(null);
       entry.setTopEntry(null);
       entry.setParentFolder((Folder)this);
       entry.setOwningFolderSortKey(getFolderHKey().getSortKey());
-      entry.setHKey(new HKey(getEntryRootHKey(), childNum));
+      entry.setHKey(new HKey(getEntryRootHKey(), nextEntryNumber++));
       getEntries().add(entry);
 
     }

@@ -81,7 +81,7 @@ public class ViewController  extends SAbstractForumController {
 			Map updates = new HashMap();
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-			getProfileModule().modifyEntryData(user.getParentBinder().getId(), user.getId(), updates);
+			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
 		
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_DEFINITION)) {
 			getProfileModule().setUserFolderProperty(user.getId(), folderId, 

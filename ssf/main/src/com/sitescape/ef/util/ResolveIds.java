@@ -14,7 +14,7 @@ public class ResolveIds {
 			Set ids = new HashSet();
 			for (Iterator i=strIds.iterator(); i.hasNext();) {
 				try {
-					ids.add(Long.getLong((String)i.next()));
+					ids.add(Long.valueOf((String)i.next()));
 				} catch (NumberFormatException ne) {};
 			}
 			

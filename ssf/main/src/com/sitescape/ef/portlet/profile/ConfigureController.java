@@ -12,6 +12,7 @@ import com.sitescape.ef.portlet.binder.AbstractConfigureController;
 public class ConfigureController extends AbstractConfigureController {
 	protected void setResponseOnClose(ActionResponse response, Long binderId) {
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 	}
 
 }

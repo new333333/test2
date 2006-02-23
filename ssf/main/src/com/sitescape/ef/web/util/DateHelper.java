@@ -4,7 +4,7 @@
  */
 package com.sitescape.ef.web.util;
 
-import com.sitescape.ef.module.folder.InputDataAccessor;
+import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.util.NLT;
 
 import java.util.Calendar;

@@ -71,10 +71,4 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType(), 
         	        workAreaOperation.getName(), membersToLookup);
     }
-    public List getWorkAreaOperationMembership(String zoneName, WorkArea workArea, 
-            WorkAreaOperation workAreaOperation) {
-        return getSecurityDao().getWorkAreaOperationMembership
-        	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType(), 
-        	        workAreaOperation.getName());
-    }
 }

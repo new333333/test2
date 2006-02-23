@@ -6,6 +6,11 @@ package com.sitescape.ef.domain;
  *
  */
 public interface UpdateAttributeSupport {
-	public void update(Object newVal);
+	/**
+	 * Update the object.  If no changes are made return false;
+	 * @param newVal
+	 * @return
+	 */
+	public boolean update(Object newVal);
 
 }

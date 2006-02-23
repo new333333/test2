@@ -1,8 +1,5 @@
 package com.sitescape.ef.dao.impl;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 import java.util.Iterator;
@@ -12,12 +9,8 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.StaleObjectStateException;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.Conjunction;
-
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.Order;
 
@@ -33,7 +26,6 @@ import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.AnyOwner;
 import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.FolderCounts;
 import com.sitescape.ef.domain.NoFolderEntryByTheIdException;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.Folder;
@@ -463,13 +455,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      }  
 
 
-    public int allocateEntryNumbers(Folder folder, int count) throws StaleObjectStateException {
-    	return allocateNumbers(folder, count, 0);
-    }
-    public int allocateFolderNumbers(Folder folder, int count) {
-    	return allocateNumbers(folder, count, 1);
-    }
-    public UserProperties loadUserFolderProperties(Long userId, Long folderId) {
+     public UserProperties loadUserFolderProperties(Long userId, Long folderId) {
     	UserPropertiesPK id = new UserPropertiesPK(userId, folderId);
         UserProperties uProps = (UserProperties)getHibernateTemplate().get(UserProperties.class, id);
         if (uProps == null) {
@@ -491,75 +477,6 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
    		}
    		return history;
 	}	
-	/**
-     * Allocate folder numbers using a new session. This allows us to reserve the number and commit
-     * the operation quickly.
-     * @param folder
-     * @param count
-     * @param type
-     * @return
-     */
-    private int allocateNumbers(Folder folder, int count, int type) {
-		SessionFactory sf = getSessionFactory();
-		Session s = sf.openSession();
-		StaleObjectStateException lastSo=null;
-		int next;		
-		try {
-			FolderCounts fCounts = (FolderCounts)s.get(FolderCounts.class, folder.getId());
-			if (fCounts == null) fCounts = rebuildFolderCounts(s, folder.getId());
-			for (int i=0; i<5; ++i) {
-					try {
-						if (type == 0) {
-							next = fCounts.allocateEntryNumbers(count);
-						} else {
-							next = fCounts.allocateFolderNumbers(count);
-						}
-						s.flush();
-						return next;
-					} catch (StaleObjectStateException so) {
-					//	try again
-						s.refresh(fCounts);
-						lastSo = so;
-					}
-		   		}
-		   		throw lastSo;
-		} finally {
-			s.close();
-		}
-	}
-    private FolderCounts rebuildFolderCounts(Session session, Long folderId) {
-   		int nextFolder;
-   		int nextEntry;
-   		//need to get in current session
-   		Folder folder = (Folder)session.get(Folder.class, folderId);
-   		List results = session.createFilter(folder.getFolders(), "order by this.folderHKey.sortKey desc")
-						.setMaxResults(1)
-						.list();
-    	if (results.size() == 0) {
-    		nextFolder=1;
-    	} else {
-    		Folder subFolder = (Folder)results.get(0);
-    		HKey key = subFolder.getFolderHKey();
-    		String num = key.getRelativeNumber(key.getLevel());
-    		nextFolder = Integer.parseInt(num)+1;
-    	}
-			
-    	results = session.createFilter(folder.getEntries(), "order by this.HKey.sortKey desc")
-				.setMaxResults(1)
-					.list();
-    	if (results.size() == 0) {
-    		nextEntry=1;
-    	} else {
-    		FolderEntry entry = (FolderEntry)results.get(0);
-    		HKey key = entry.getHKey();
-    		String num = key.getRelativeNumber(key.getLevel());
-    		nextEntry = Integer.parseInt(num)+1;
-    	}
-    	FolderCounts fCounts = new FolderCounts(folder.getId());
-    	fCounts.setNextFolder(nextFolder);
-    	fCounts.setNextEntry(nextEntry);
-    	session.save(fCounts);
-    	return fCounts;
-    }
 
+ 
 }
