@@ -30,11 +30,12 @@ import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.module.file.CheckedOutByOtherException;
-import com.sitescape.ef.module.file.FileErrors;
+import com.sitescape.ef.module.file.ContentFilter;
+import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FileException;
 import com.sitescape.ef.module.file.FileModule;
+import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.NoSuchFileException;
-import com.sitescape.ef.module.file.PrimaryFileException;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.repository.RepositoryService;
@@ -67,6 +68,13 @@ import com.sitescape.ef.util.ThumbnailException;
  */
 public class FileModuleImpl extends CommonDependencyInjection implements FileModule {
 
+	private static final String FAILED_FILTER_FILE_DELETE 			= "DELETE";
+	private static final String FAILED_FILTER_FILE_RENAME 			= "RENAME";
+	private static final String FAILED_FILTER_FILE_DEFAULT			= FAILED_FILTER_FILE_DELETE;
+	private static final String FAILED_FILTER_TRANSACTION_CONTINUE 	= "CONTINUE";
+	private static final String FAILED_FILTER_TRANSACTION_ABORT 	= "ABORT";
+	private static final String FAILED_FILTER_TRANSACTION_DEFAULT	= FAILED_FILTER_TRANSACTION_ABORT;
+
 	private static final String SCALED_FILE_SUFFIX = "__ssfscaled_";
 	private static final String THUMBNAIL_FILE_SUFFIX = "__ssfthumbnail_";
 	
@@ -74,6 +82,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
 	private CoreDao coreDao;
 	private TransactionTemplate transactionTemplate;
+	private ContentFilter contentFilter;
+	private String failedFilterFile;
+	private String failedFilterTransaction;
 	
 	protected CoreDao getCoreDao() {
 		return coreDao;
@@ -89,6 +100,48 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
 	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
 		this.transactionTemplate = transactionTemplate;
+	}
+
+	protected ContentFilter getContentFilter() {
+		return contentFilter;
+	}
+	
+	public void setContentFilter(ContentFilter contentFilter) {
+		this.contentFilter = contentFilter;
+	}
+	
+	protected String getFailedFilterFile() {
+		return failedFilterFile;
+	}
+
+	public void setFailedFilterFile(String failedFilterFile) {
+		if(FAILED_FILTER_FILE_DELETE.equals(failedFilterFile)) {
+			this.failedFilterFile = FAILED_FILTER_FILE_DELETE;
+		}
+		else if(FAILED_FILTER_FILE_RENAME.equals(failedFilterFile)) {
+			this.failedFilterFile = FAILED_FILTER_FILE_RENAME;
+		}
+		else {
+			logger.info("Unknown failedFilterFile " + failedFilterFile + " defaults to " + FAILED_FILTER_FILE_DEFAULT);
+			this.failedFilterFile = FAILED_FILTER_FILE_DEFAULT;
+		}
+	}
+
+	protected String getFailedFilterTransaction() {
+		return failedFilterTransaction;
+	}
+
+	public void setFailedFilterTransaction(String failedFilterTransaction) {
+		if(FAILED_FILTER_TRANSACTION_CONTINUE.equals(failedFilterTransaction)) {
+			this.failedFilterTransaction = FAILED_FILTER_TRANSACTION_CONTINUE;
+		}
+		else if(FAILED_FILTER_TRANSACTION_ABORT.equals(failedFilterTransaction)) {
+			this.failedFilterTransaction = FAILED_FILTER_TRANSACTION_ABORT;
+		}
+		else {
+			logger.info("Unknown failedFilterTransaction " + failedFilterTransaction + " defaults to " + FAILED_FILTER_TRANSACTION_DEFAULT);
+			this.failedFilterTransaction = FAILED_FILTER_TRANSACTION_DEFAULT;
+		}
 	}
 
 	public void deleteFiles(Binder binder, Entry entry) {
@@ -371,9 +424,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
-    public void writeFiles(Binder binder, Entry entry, List fileUploadItems)
-		throws WriteFilesException {
-    	FileErrors errors = new FileErrors(binder, entry);
+    public void writeFiles(Binder binder, Entry entry, List fileUploadItems,
+    		FilesErrors errors) throws WriteFilesException {
+    	if(errors == null)
+    		errors = new FilesErrors();
     	
     	for(int i = 0; i < fileUploadItems.size(); i++) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
@@ -382,9 +436,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		}
     		catch(Exception e) {
     			logger.error("Error processing file " + fui.getOriginalFilename(), e);
-    			errors.addProblem(new FileErrors.Problem
+    			errors.addProblem(new FilesErrors.Problem
     					(fui.getRepositoryServiceName(),  fui.getOriginalFilename(), 
-    							FileErrors.Problem.OTHER_PROBLEM, e));
+    							FilesErrors.Problem.OTHER_PROBLEM, e));
     		}
     	}
 	
@@ -394,7 +448,37 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	}
     }
     
-    protected void writeFileMetadata(final Binder binder, final Entry entry, 
+
+	public FilesErrors filterFiles(List fileUploadItems) throws FilterException {
+		FilesErrors errors = null;
+		// Note that we do not have to use String comparison in the expression
+		// below. Just reference comparison is enough. 
+		if(getFailedFilterTransaction() == FAILED_FILTER_TRANSACTION_CONTINUE) {
+			errors = new FilesErrors();
+		}
+		
+    	for(int i = 0; i < fileUploadItems.size(); i++) {
+    		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
+    		try {
+    			getContentFilter().filter(fui);
+    		}
+    		catch(FilterException e) {
+    			logger.error("Error filtering file " + fui.getOriginalFilename(), e);
+    			if(errors != null) {
+    				errors.addProblem(new FilesErrors.Problem
+    					(fui.getRepositoryServiceName(),  fui.getOriginalFilename(), 
+    							FilesErrors.Problem.PROBLEM_FILTERING, e));
+    			}
+    			else {
+    				throw e;
+    			}
+    		}
+    	}
+	
+    	return errors;
+	}
+
+	protected void writeFileMetadata(final Binder binder, final Entry entry, 
     		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew) {	
     	
         getTransactionTemplate().execute(new TransactionCallback() {
@@ -571,7 +655,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 
     private void writeFileInternal(Binder binder, Entry entry, 
-    		FileUploadItem fui, FileErrors errors) {
+    		FileUploadItem fui, FilesErrors errors) {
     	
     	/// Work Flow:
     	/// step1: write primary file
@@ -632,9 +716,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    			logger.error("Error storing file " + fileName, e);
 	    			// We failed to write the primary file. In this case, we 
 	    			// discard the rest of the operation (i.e., step2 thru 4).
-	    			errors.addProblem(new FileErrors.Problem
+	    			errors.addProblem(new FilesErrors.Problem
 	    					(repositoryServiceName, fileName, 
-	    							FileErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
+	    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
 	    			return;
 	    		}
 	    		
@@ -656,17 +740,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	        			// when the file format is not supported. Do not cause this to
 	        			// fail the entire operation. Simply log it and proceed.  
 	        			logger.warn("Error generating scaled version of " + fileName, e);
-		    			errors.addProblem(new FileErrors.Problem
+		    			errors.addProblem(new FilesErrors.Problem
 		    					(repositoryServiceName, fileName, 
-		    							FileErrors.Problem.PROBLEM_GENERATING_SCALED_FILE, e));
+		    							FilesErrors.Problem.PROBLEM_GENERATING_SCALED_FILE, e));
 	        		}
 	        		catch(Exception e) {
 		    			// Failed to store scaled file. In this case, we report the 
 	        			// problem to the client but still proceed here.
 	        			logger.warn("Error storing scaled version of " + fileName, e);
-		    			errors.addProblem(new FileErrors.Problem
+		    			errors.addProblem(new FilesErrors.Problem
 		    					(repositoryServiceName, fileName, 
-		    							FileErrors.Problem.PROBLEM_STORING_SCALED_FILE, e));	        			
+		    							FilesErrors.Problem.PROBLEM_STORING_SCALED_FILE, e));	        			
 	        		}
 	        	}    
 
@@ -679,15 +763,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	        		}
 	        		catch(ThumbnailException e) {
 	        			logger.warn("Error generating thumbnail version of " + fileName, e);
-		    			errors.addProblem(new FileErrors.Problem
+		    			errors.addProblem(new FilesErrors.Problem
 		    					(repositoryServiceName, fileName, 
-		    							FileErrors.Problem.PROBLEM_GENERATING_THUMBNAIL_FILE, e));
+		    							FilesErrors.Problem.PROBLEM_GENERATING_THUMBNAIL_FILE, e));
 	        		}
 	        		catch(Exception e) {
 	        			logger.warn("Error storing thumbnail version of " + fileName, e);
-		    			errors.addProblem(new FileErrors.Problem
+		    			errors.addProblem(new FilesErrors.Problem
 		    					(repositoryServiceName, fileName, 
-		    							FileErrors.Problem.PROBLEM_STORING_THUMBNAIL_FILE, e));	        			
+		    							FilesErrors.Problem.PROBLEM_STORING_THUMBNAIL_FILE, e));	        			
 	        		}
 	        	}
 	    	}
@@ -721,9 +805,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    			// We failed to write the primary file. In this case, we 
 	    			// discard the rest of the operation (i.e., step2 thru 4).
 	    			logger.error("Error storing file " + fileName, e);
-	    			errors.addProblem(new FileErrors.Problem
+	    			errors.addProblem(new FilesErrors.Problem
 	    					(repositoryServiceName, fileName, 
-	    							FileErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
+	    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
 	    			return;
 	    		}
 	    	}

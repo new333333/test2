@@ -4,13 +4,13 @@ import com.sitescape.ef.exception.UncheckedException;
 
 public class WriteFilesException extends UncheckedException {
 	
-	private FileErrors errors;
+	private FilesErrors errors;
 	
-	public WriteFilesException(FileErrors errors) {
+	public WriteFilesException(FilesErrors errors) {
 		this.errors = errors;
 	}
 	
-	public FileErrors getErrors() {
+	public FilesErrors getErrors() {
 		return errors;
 	}
 }

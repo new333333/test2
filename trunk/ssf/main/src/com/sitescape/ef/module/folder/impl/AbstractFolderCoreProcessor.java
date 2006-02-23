@@ -32,6 +32,8 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
 import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.module.file.FilesErrors;
+import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.index.IndexUtils;
@@ -216,10 +218,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         final Map entryData = (Map) entryDataAll.get("entryData");
         List fileData = (List) entryDataAll.get("fileData");
         
+        // Before doing anything else (especially writing anything to the 
+        // database), make sure to run the filter on the uploaded files. 
+        FilesErrors filesErrors = addReply_filterFiles(fileData);
+        
         final FolderEntry entry = addReply_create();
         entry.setEntryDef(def);
         
-        addReply_processFiles(parent, entry, fileData);
+        addReply_processFiles(parent, entry, fileData, filesErrors);
         
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
@@ -261,10 +267,15 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     protected FolderEntry addReply_create() {
         return new FolderEntry();
     }
-    
-    protected void addReply_processFiles(FolderEntry parent, FolderEntry entry, List fileData) 
+
+    protected FilesErrors addReply_filterFiles(List fileData) throws FilterException {
+    	return getFileModule().filterFiles(fileData);
+    }
+
+    protected void addReply_processFiles(FolderEntry parent, FolderEntry entry, 
+    		List fileData, FilesErrors filesErrors) 
     	throws WriteFilesException {
-    	getFileModule().writeFiles(parent.getParentFolder(), entry, fileData);
+    	getFileModule().writeFiles(parent.getParentFolder(), entry, fileData, filesErrors);
     }
     
     protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {  
