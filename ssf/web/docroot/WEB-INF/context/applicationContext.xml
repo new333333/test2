@@ -521,7 +521,14 @@
 	
 	<bean id="fileModule" class="com.sitescape.ef.module.file.impl.FileModuleImpl">
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
-		<property name="coreDao"><ref local="coreDao"/></property>						
+		<property name="coreDao"><ref local="coreDao"/></property>		
+		<property name="contentFilter">
+			<bean class="com.sitescape.ef.module.file.impl.VirusScanningFilter"/>
+		</property>			
+		<!-- valid values are DELETE and RENAME -->
+		<property name="failedFilterFile"><value>DELETE</value></property>
+		<!-- valid values are CONTINUE and ABORT -->
+		<property name="failedFilterTransaction"><value>CONTINUE</value></property>
 	</bean>
 
 	<!-- referenced internally when viewing files and sending mail -->

@@ -39,6 +39,8 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.FileModule;
+import com.sitescape.ef.module.file.FilesErrors;
+import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.LuceneSession;
@@ -118,6 +120,8 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         final Map entryData = (Map) entryDataAll.get("entryData");
         List fileData = (List) entryDataAll.get("fileData");
         
+        FilesErrors filesErrors = addEntry_filterFiles(fileData);
+
         final WorkflowControlledEntry entry = addEntry_create(clazz);
         entry.setEntryDef(def);
         
@@ -141,7 +145,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         
         // We must save the entry before processing files because it makes use
         // of the persistent id of the entry. 
-        addEntry_processFiles(binder, entry, fileData);
+        addEntry_processFiles(binder, entry, fileData, filesErrors);
         
         //After the entry is successfully added, start up any associated workflows
         addEntry_startWorkflow(entry);
@@ -160,9 +164,14 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);        
     }
     
-    protected void addEntry_processFiles(Binder binder, WorkflowControlledEntry entry, List fileData) 
+    protected FilesErrors addEntry_filterFiles(List fileData) throws FilterException {
+    	return getFileModule().filterFiles(fileData);
+    }
+
+    protected void addEntry_processFiles(Binder binder, 
+    		WorkflowControlledEntry entry, List fileData, FilesErrors filesErrors) 
     	throws WriteFilesException {
-    	getFileModule().writeFiles(binder, entry, fileData);
+    	getFileModule().writeFiles(binder, entry, fileData, filesErrors);
     }
     
     protected Map addEntry_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems) {
@@ -270,7 +279,9 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 	    final Map entryData = (Map) entryDataAll.get("entryData");
 	    List fileData = (List) entryDataAll.get("fileData");
 	    
-	    modifyEntry_processFiles(binder, entry, fileData);
+        FilesErrors filesErrors = modifyEntry_filterFiles(fileData);
+
+	    modifyEntry_processFiles(binder, entry, fileData, filesErrors);
 	    
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
@@ -295,9 +306,14 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	modifyAccessCheck(binder, entry);
    }
 
-    protected void modifyEntry_processFiles(Binder binder, WorkflowControlledEntry entry, List fileData) 
+    protected FilesErrors modifyEntry_filterFiles(List fileData) throws FilterException {
+    	return getFileModule().filterFiles(fileData);
+    }
+
+    protected void modifyEntry_processFiles(Binder binder, 
+    		WorkflowControlledEntry entry, List fileData, FilesErrors filesErrors) 
     throws WriteFilesException {
-    	getFileModule().writeFiles(binder, entry, fileData);
+    	getFileModule().writeFiles(binder, entry, fileData, filesErrors);
     }
     protected Map modifyEntry_toEntryData(WorkflowControlledEntry entry, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
