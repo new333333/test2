@@ -534,10 +534,10 @@
 		<property name="contentFilter">
 			<bean class="com.sitescape.ef.module.file.impl.VirusScanningFilter"/>
 		</property>			
-		<!-- valid values are DELETE and RENAME -->
-		<property name="failedFilterFile"><value>DELETE</value></property>
+		<!-- valid values are DELETE and MOVE -->
+		<property name="failedFilterFile"><value>MOVE</value></property>
 		<!-- valid values are CONTINUE and ABORT -->
-		<property name="failedFilterTransaction"><value>CONTINUE</value></property>
+		<property name="failedFilterTransaction"><value>ABORT</value></property>
 	</bean>
 
 	<!-- referenced internally when viewing files and sending mail -->

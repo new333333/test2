@@ -145,7 +145,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         
         // We must save the entry before processing files because it makes use
         // of the persistent id of the entry. 
-        addEntry_processFiles(binder, entry, fileData, filesErrors);
+        filesErrors = addEntry_processFiles(binder, entry, fileData, filesErrors);
         
         //After the entry is successfully added, start up any associated workflows
         addEntry_startWorkflow(entry);
@@ -156,7 +156,13 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         
         cleanupFiles(fileData);
         
-        return entry.getId();
+    	if(filesErrors.getProblems().size() > 0) {
+    		// At least one error occured during the operation. 
+    		throw new WriteFilesException(filesErrors);
+    	}
+    	else {
+    		return entry.getId();
+    	}
     }
 
      
@@ -168,10 +174,9 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	return getFileModule().filterFiles(fileData);
     }
 
-    protected void addEntry_processFiles(Binder binder, 
-    		WorkflowControlledEntry entry, List fileData, FilesErrors filesErrors) 
-    	throws WriteFilesException {
-    	getFileModule().writeFiles(binder, entry, fileData, filesErrors);
+    protected FilesErrors addEntry_processFiles(Binder binder, 
+    		WorkflowControlledEntry entry, List fileData, FilesErrors filesErrors) {
+    	return getFileModule().writeFiles(binder, entry, fileData, filesErrors);
     }
     
     protected Map addEntry_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems) {
@@ -282,7 +287,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 	    
         FilesErrors filesErrors = modifyEntry_filterFiles(fileData);
 
-	    modifyEntry_processFiles(binder, entry, fileData, filesErrors);
+	    filesErrors = modifyEntry_processFiles(binder, entry, fileData, filesErrors);
 	    
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
@@ -296,7 +301,13 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 	    
 	    cleanupFiles(fileData);
 	    
-	    return entry.getId();
+    	if(filesErrors.getProblems().size() > 0) {
+    		// At least one error occured during the operation. 
+    		throw new WriteFilesException(filesErrors);
+    	}
+    	else {
+    		return entry.getId();
+    	}
 	}
 
     protected WorkflowControlledEntry modifyEntry_load(Binder binder, Long entryId) {
@@ -311,10 +322,9 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	return getFileModule().filterFiles(fileData);
     }
 
-    protected void modifyEntry_processFiles(Binder binder, 
-    		WorkflowControlledEntry entry, List fileData, FilesErrors filesErrors) 
-    throws WriteFilesException {
-    	getFileModule().writeFiles(binder, entry, fileData, filesErrors);
+    protected FilesErrors modifyEntry_processFiles(Binder binder, 
+    		WorkflowControlledEntry entry, List fileData, FilesErrors filesErrors) {
+    	return getFileModule().writeFiles(binder, entry, fileData, filesErrors);
     }
     protected Map modifyEntry_toEntryData(WorkflowControlledEntry entry, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored

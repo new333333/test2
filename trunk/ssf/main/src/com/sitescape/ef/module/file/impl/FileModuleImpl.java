@@ -44,6 +44,7 @@ import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.util.DirPath;
 import com.sitescape.ef.util.FileHelper;
 import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.Thumbnail;
 import com.sitescape.ef.util.ThumbnailException;
 
@@ -69,7 +70,7 @@ import com.sitescape.ef.util.ThumbnailException;
 public class FileModuleImpl extends CommonDependencyInjection implements FileModule {
 
 	private static final String FAILED_FILTER_FILE_DELETE 			= "DELETE";
-	private static final String FAILED_FILTER_FILE_RENAME 			= "RENAME";
+	private static final String FAILED_FILTER_FILE_MOVE 			= "MOVE";
 	private static final String FAILED_FILTER_FILE_DEFAULT			= FAILED_FILTER_FILE_DELETE;
 	private static final String FAILED_FILTER_TRANSACTION_CONTINUE 	= "CONTINUE";
 	private static final String FAILED_FILTER_TRANSACTION_ABORT 	= "ABORT";
@@ -118,8 +119,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if(FAILED_FILTER_FILE_DELETE.equals(failedFilterFile)) {
 			this.failedFilterFile = FAILED_FILTER_FILE_DELETE;
 		}
-		else if(FAILED_FILTER_FILE_RENAME.equals(failedFilterFile)) {
-			this.failedFilterFile = FAILED_FILTER_FILE_RENAME;
+		else if(FAILED_FILTER_FILE_MOVE.equals(failedFilterFile)) {
+			this.failedFilterFile = FAILED_FILTER_FILE_MOVE;
 		}
 		else {
 			logger.info("Unknown failedFilterFile " + failedFilterFile + " defaults to " + FAILED_FILTER_FILE_DEFAULT);
@@ -424,8 +425,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
-    public void writeFiles(Binder binder, Entry entry, List fileUploadItems,
-    		FilesErrors errors) throws WriteFilesException {
+    public FilesErrors writeFiles(Binder binder, Entry entry, List fileUploadItems,
+    		FilesErrors errors) {
     	if(errors == null)
     		errors = new FilesErrors();
     	
@@ -442,10 +443,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		}
     	}
 	
-    	if(errors.getProblems().size() > 0) {
-    		// At least one error occured during the operation. 
-    		throw new WriteFilesException(errors);
-    	}
+    	return errors;
     }
     
 
@@ -463,7 +461,27 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			getContentFilter().filter(fui);
     		}
     		catch(FilterException e) {
-    			logger.error("Error filtering file " + fui.getOriginalFilename(), e);
+    			if(errors != null) {
+    				// Since we are not throwing an exception immediately in 
+    				// this case, log the error right here. 
+    				logger.error("Error filtering file " + fui.getOriginalFilename(), e);
+    			}
+    			// Remove the failed file from the list first. 
+    			fileUploadItems.remove(i);
+    			if(getFailedFilterFile() == FAILED_FILTER_FILE_DELETE) {
+    				try {
+						fui.delete();
+					} catch (IOException e1) {
+						logger.error("Failed to delete bad file " + fui.getOriginalFilename(), e1);
+					}
+    			}
+    			else {
+    				try {
+						move(fui);
+					} catch (IOException e1) {
+						logger.error("Failed to move bad file " + fui.getOriginalFilename(), e1);
+					}
+    			}
     			if(errors != null) {
     				errors.addProblem(new FilesErrors.Problem
     					(fui.getRepositoryServiceName(),  fui.getOriginalFilename(), 
@@ -478,6 +496,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	return errors;
 	}
 
+	private void move(FileUploadItem fui) throws IOException {
+		File filteringFailedDir = SPropsUtil.getFile("filtering.failed.dir");
+		if(!filteringFailedDir.exists())
+			FileHelper.mkdirs(filteringFailedDir);
+		// TODO Make the destination file name more unique and meaningful!!! $$$
+		FileHelper.move(fui.getFile(), new File(filteringFailedDir, fui.getFile().getName()));
+	}
+	
 	protected void writeFileMetadata(final Binder binder, final Entry entry, 
     		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew) {	
     	

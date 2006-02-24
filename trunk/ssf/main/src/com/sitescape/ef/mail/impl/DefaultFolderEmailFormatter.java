@@ -70,6 +70,7 @@ import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.notify.Notify;
+import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.MapInputData;
@@ -477,6 +478,9 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 				inputData.clear();
 			} catch (MessagingException me) {			
 			} catch (IOException io) {}
+			catch(WriteFilesException e) {
+				logger.error(e.getMessage(), e);
+			}
 		}
 	}
 	private void processText(Object content, Map inputData) {

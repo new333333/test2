@@ -6,6 +6,7 @@ import org.dom4j.Document;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.lucene.Hits;
+import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.security.AccessControlException;
@@ -38,10 +39,14 @@ public interface FolderModule {
      * @return
      * @throws AccessControlException
      */
-    public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, Map fileItems) throws AccessControlException;
-    public Long addReply(Long folderId, Long parentId, String definitionId, InputDataAccessor inputData, Map fileItems) throws AccessControlException;
-    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, Map fileItems) throws AccessControlException;
-    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData) throws AccessControlException;
+    public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems) throws AccessControlException, WriteFilesException;
+    public Long addReply(Long folderId, Long parentId, String definitionId, 
+    		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException;
+    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
+    		Map fileItems) throws AccessControlException, WriteFilesException;
+    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData) 
+    	throws AccessControlException, WriteFilesException;
     public void modifyWorkflowState(Long folderId, Long entryId, Long tokenId, String toState) throws AccessControlException;
     
     /**

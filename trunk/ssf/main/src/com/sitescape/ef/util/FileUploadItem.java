@@ -147,7 +147,9 @@ public class FileUploadItem {
 	}
 	
 	public void delete() throws IOException {
-		FileHelper.delete(tempFile);
+		if(tempFile != null) {
+			FileHelper.delete(tempFile);
+		}
 	}
 	
 	private void setup() throws IOException {

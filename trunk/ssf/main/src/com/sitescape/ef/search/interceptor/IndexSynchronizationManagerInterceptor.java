@@ -37,6 +37,18 @@ public class IndexSynchronizationManagerInterceptor implements MethodInterceptor
 			rval = invocation.proceed();
 			successful = true;
 		}
+		catch(RuntimeException e) {
+			// Upon RuntimeException, we rollback user transaction.
+			// This is consistent with the way we decide whether to
+			// rollback database transaction or not. 
+			throw e;
+		}
+		catch(Exception e) {
+			// Non RuntimeException does not cause database transaction
+			// to rollback. Keep the same policy for user transaction as well.
+			successful = true;
+			throw e;
+		}
 		finally {
 			decrDepth();
 			

@@ -178,7 +178,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
      }
 
     public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
-			throws AccessControlException {
+			throws AccessControlException, WriteFilesException {
     	modifyEntry(binderId, id, inputData, new HashMap());
     }
     public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 

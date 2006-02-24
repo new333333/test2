@@ -371,8 +371,8 @@ public interface FileModule {
 		throws FileException;
 		*/
 	
-    public void writeFiles(Binder binder, Entry entry, List fileUploadItems, 
-    		FilesErrors errors) throws WriteFilesException;
+    public FilesErrors writeFiles(Binder binder, Entry entry, List fileUploadItems, 
+    		FilesErrors errors);
     
     public FilesErrors filterFiles(List fileUploadItems) throws FilterException;
 }
