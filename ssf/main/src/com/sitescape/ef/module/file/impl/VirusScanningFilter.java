@@ -7,8 +7,11 @@ import com.sitescape.ef.util.FileUploadItem;
 public class VirusScanningFilter implements ContentFilter {
 
 	public void filter(FileUploadItem fui) throws FilterException {
-		if(fui.getOriginalFilename().equals("junk.txt"))
-			throw new FilterException("I don't like the file name!");
+		// Write here some code that actually does something useful,
+		// e.g. invoking some external program to scan the file, etc.
+		
+		//if(fui.getOriginalFilename().equals("junk.txt"))
+		//	throw new FilterException(fui.getOriginalFilename());
 	}
 
 }

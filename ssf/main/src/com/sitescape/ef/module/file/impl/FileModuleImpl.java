@@ -19,6 +19,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.InternalException;
+import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.CustomAttribute;
@@ -447,7 +448,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
     
 
-	public FilesErrors filterFiles(List fileUploadItems) throws FilterException {
+	public FilesErrors filterFiles(Binder binder, List fileUploadItems) 
+		throws FilterException {
 		FilesErrors errors = null;
 		// Note that we do not have to use String comparison in the expression
 		// below. Just reference comparison is enough. 
@@ -477,7 +479,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			}
     			else {
     				try {
-						move(fui);
+						move(binder, fui);
 					} catch (IOException e1) {
 						logger.error("Failed to move bad file " + fui.getOriginalFilename(), e1);
 					}
@@ -496,12 +498,27 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	return errors;
 	}
 
-	private void move(FileUploadItem fui) throws IOException {
+	private void move(Binder binder, FileUploadItem fui) throws IOException {
 		File filteringFailedDir = SPropsUtil.getFile("filtering.failed.dir");
 		if(!filteringFailedDir.exists())
 			FileHelper.mkdirs(filteringFailedDir);
-		// TODO Make the destination file name more unique and meaningful!!! $$$
-		FileHelper.move(fui.getFile(), new File(filteringFailedDir, fui.getFile().getName()));
+		FileHelper.move(fui.getFile(), new File(filteringFailedDir, makeFileName(binder, fui)));
+	}
+	
+	private static final String DELIM = "_";
+	private String makeFileName(Binder binder, FileUploadItem fui) {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		StringBuffer sb = new StringBuffer();
+		sb.append(rc.getZoneName()).	// zone name
+			append(DELIM).
+			append(rc.getUserName()).	// user name
+			append(DELIM).
+			append(binder.getId()).		// binder id
+			append(DELIM).
+			append(fui.getOriginalFilename()).	// file name
+			append(DELIM).
+			append(System.currentTimeMillis());	// timestamp (in milliseconds)
+		return sb.toString();
 	}
 	
 	protected void writeFileMetadata(final Binder binder, final Entry entry, 
