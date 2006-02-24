@@ -225,7 +225,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         final FolderEntry entry = addReply_create();
         entry.setEntryDef(def);
         
-        addReply_processFiles(parent, entry, fileData, filesErrors);
+        filesErrors = addReply_processFiles(parent, entry, fileData, filesErrors);
         
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
@@ -247,7 +247,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         
         cleanupFiles(fileData);
         
-        return entry.getId();
+    	if(filesErrors.getProblems().size() > 0) {
+    		// At least one error occured during the operation. 
+    		throw new WriteFilesException(filesErrors);
+    	}
+    	else {
+    		return entry.getId();
+    	}
     }
     
     protected void addReply_accessControl(FolderEntry parent) throws AccessControlException {
@@ -272,10 +278,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	return getFileModule().filterFiles(fileData);
     }
 
-    protected void addReply_processFiles(FolderEntry parent, FolderEntry entry, 
-    		List fileData, FilesErrors filesErrors) 
-    	throws WriteFilesException {
-    	getFileModule().writeFiles(parent.getParentFolder(), entry, fileData, filesErrors);
+    protected FilesErrors addReply_processFiles(FolderEntry parent, FolderEntry entry, 
+    		List fileData, FilesErrors filesErrors) {
+    	return getFileModule().writeFiles(parent.getParentFolder(), entry, fileData, filesErrors);
     }
     
     protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {  

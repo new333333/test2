@@ -1,8 +1,8 @@
 package com.sitescape.ef.module.file;
 
-import com.sitescape.ef.exception.UncheckedException;
+import com.sitescape.ef.exception.CheckedException;
 
-public class WriteFilesException extends UncheckedException {
+public class WriteFilesException extends CheckedException {
 	
 	private FilesErrors errors;
 	

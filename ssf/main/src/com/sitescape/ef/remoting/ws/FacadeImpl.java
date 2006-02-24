@@ -13,6 +13,7 @@ import org.apache.axis.MessageContext;
 import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.attachments.Attachments;
 
+import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.remoting.impl.AbstractFacade;
 import com.sitescape.ef.remoting.impl.EmptyInputData;
 import com.sitescape.ef.remoting.impl.RemotingException;
@@ -45,9 +46,14 @@ public class FacadeImpl extends AbstractFacade {
 		Map fileItems = new HashMap();
 		fileItems.put(fileUploadDataItemName, mf);
 		
-		// Finally invoke the business method. 
-		getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
+		try {
+			// Finally invoke the business method. 
+			getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
 				new EmptyInputData(), fileItems);
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
 	}
 	
 	/**

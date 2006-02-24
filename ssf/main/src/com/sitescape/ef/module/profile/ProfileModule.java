@@ -26,7 +26,7 @@ public interface ProfileModule {
    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
-		throws AccessControlException;
+		throws AccessControlException, WriteFilesException;
    public void deleteEntry(Long binderId, Long id)
 		throws AccessControlException, WriteFilesException;
    public ProfileBinder addProfileBinder();

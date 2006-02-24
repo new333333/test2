@@ -23,6 +23,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.notify.Notify;
+import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.remoting.api.Binder;
@@ -124,8 +125,13 @@ public abstract class AbstractFacade implements Facade {
 	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML) {
 		Document doc = getDocument(inputDataAsXML);
 		
-		return getFolderModule().addEntry(new Long(binderId), definitionId, 
+		try {
+			return getFolderModule().addEntry(new Long(binderId), definitionId, 
 				new DomInputData(doc), null).longValue();
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
 	}
 	
 	public abstract void uploadFolderFile(long binderId, long entryId, 
@@ -138,8 +144,13 @@ public abstract class AbstractFacade implements Facade {
 	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
 		Document doc = getDocument(inputDataAsXML);
 		
-		getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
+		try {
+			getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
 				new DomInputData(doc), null);
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}			
 	}
 	
 	public void deleteFolderEntry(long binderId, long entryId) {
@@ -149,8 +160,13 @@ public abstract class AbstractFacade implements Facade {
 	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML) {
 		Document doc = getDocument(inputDataAsXML);
 		
-		return getFolderModule().addReply(new Long(binderId), new Long(parentId), 
+		try {
+			return getFolderModule().addReply(new Long(binderId), new Long(parentId), 
 				definitionId, new DomInputData(doc), null).longValue();
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
 	}
 	
 	public String getPrincipalAsXML(long binderId, long principalId) {
@@ -184,23 +200,47 @@ public abstract class AbstractFacade implements Facade {
 	public long addUser(long binderId, String definitionId, String inputDataAsXML) {
 		Document doc = getDocument(inputDataAsXML);
 		
-		return getProfileModule().addUser(new Long(binderId), definitionId, new DomInputData(doc), null).longValue();
+		try {
+			return getProfileModule().addUser(new Long(binderId), definitionId, new DomInputData(doc), null).longValue();
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+
 	}
 	
 	public long addGroup(long binderId, String definitionId, String inputDataAsXML) {
 		Document doc = getDocument(inputDataAsXML);
 		
-		return getProfileModule().addGroup(new Long(binderId), definitionId, new DomInputData(doc), null).longValue();
+		try {
+			return getProfileModule().addGroup(new Long(binderId), definitionId, new DomInputData(doc), null).longValue();
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+
 	}
 	
 	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML) {
 		Document doc = getDocument(inputDataAsXML);
 		
-		getProfileModule().modifyEntry(new Long(binderId), new Long(principalId), new DomInputData(doc), null);
+		try {
+			getProfileModule().modifyEntry(new Long(binderId), new Long(principalId), new DomInputData(doc), null);
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+
 	}
 	
 	public void deletePrincipal(long binderId, long principalId) {
-		getProfileModule().deleteEntry(new Long(binderId), new Long(principalId));
+		try {
+			getProfileModule().deleteEntry(new Long(binderId), new Long(principalId));
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+
 	}
 	
 	private Binder DBinderToBinder(com.sitescape.ef.domain.Binder dbinder) {
