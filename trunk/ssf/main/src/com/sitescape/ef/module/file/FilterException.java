@@ -1,19 +1,13 @@
 package com.sitescape.ef.module.file;
 
-import com.sitescape.ef.exception.UncheckedException;
+import com.sitescape.ef.exception.UncheckedCodedException;
 
-public class FilterException extends UncheckedException {
+public class FilterException extends UncheckedCodedException {
 
-	public FilterException() {
-        super();
+	private static final String FilterException_ErrorCode = "errorcode.content.filter";
+	 
+	public FilterException(String fileName) {
+        super(FilterException_ErrorCode, new Object[]{fileName});
     }
-    public FilterException(String message) {
-        super(message);
-    }
-    public FilterException(String message, Throwable cause) {
-        super(message, cause);
-    }
-    public FilterException(Throwable cause) {
-        super(cause);
-    }
+
 }

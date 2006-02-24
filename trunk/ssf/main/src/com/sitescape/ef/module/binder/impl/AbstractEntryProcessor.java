@@ -120,7 +120,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         final Map entryData = (Map) entryDataAll.get("entryData");
         List fileData = (List) entryDataAll.get("fileData");
         
-        FilesErrors filesErrors = addEntry_filterFiles(fileData);
+        FilesErrors filesErrors = addEntry_filterFiles(binder, fileData);
 
         final WorkflowControlledEntry entry = addEntry_create(clazz);
         entry.setEntryDef(def);
@@ -170,8 +170,8 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);        
     }
     
-    protected FilesErrors addEntry_filterFiles(List fileData) throws FilterException {
-    	return getFileModule().filterFiles(fileData);
+    protected FilesErrors addEntry_filterFiles(Binder binder, List fileData) throws FilterException {
+    	return getFileModule().filterFiles(binder, fileData);
     }
 
     protected FilesErrors addEntry_processFiles(Binder binder, 
@@ -285,7 +285,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 	    final Map entryData = (Map) entryDataAll.get("entryData");
 	    List fileData = (List) entryDataAll.get("fileData");
 	    
-        FilesErrors filesErrors = modifyEntry_filterFiles(fileData);
+        FilesErrors filesErrors = modifyEntry_filterFiles(binder, fileData);
 
 	    filesErrors = modifyEntry_processFiles(binder, entry, fileData, filesErrors);
 	    
@@ -318,8 +318,8 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	modifyAccessCheck(binder, entry);
    }
 
-    protected FilesErrors modifyEntry_filterFiles(List fileData) throws FilterException {
-    	return getFileModule().filterFiles(fileData);
+    protected FilesErrors modifyEntry_filterFiles(Binder binder, List fileData) throws FilterException {
+    	return getFileModule().filterFiles(binder, fileData);
     }
 
     protected FilesErrors modifyEntry_processFiles(Binder binder, 

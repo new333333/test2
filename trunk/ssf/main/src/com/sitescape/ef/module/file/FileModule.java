@@ -374,5 +374,5 @@ public interface FileModule {
     public FilesErrors writeFiles(Binder binder, Entry entry, List fileUploadItems, 
     		FilesErrors errors);
     
-    public FilesErrors filterFiles(List fileUploadItems) throws FilterException;
+    public FilesErrors filterFiles(Binder binder, List fileUploadItems) throws FilterException;
 }

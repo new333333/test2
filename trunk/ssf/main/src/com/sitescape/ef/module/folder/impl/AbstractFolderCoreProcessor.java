@@ -220,7 +220,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         
         // Before doing anything else (especially writing anything to the 
         // database), make sure to run the filter on the uploaded files. 
-        FilesErrors filesErrors = addReply_filterFiles(fileData);
+        FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), fileData);
         
         final FolderEntry entry = addReply_create();
         entry.setEntryDef(def);
@@ -274,8 +274,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         return new FolderEntry();
     }
 
-    protected FilesErrors addReply_filterFiles(List fileData) throws FilterException {
-    	return getFileModule().filterFiles(fileData);
+    protected FilesErrors addReply_filterFiles(Binder binder, List fileData) throws FilterException {
+    	return getFileModule().filterFiles(binder, fileData);
     }
 
     protected FilesErrors addReply_processFiles(FolderEntry parent, FolderEntry entry, 
