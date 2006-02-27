@@ -253,7 +253,8 @@ function ss_notLoggedIn() {
 </script>
 </c:if>
 
-<c:if test="<%= !isViewEntry %>">
+<c:if test="<%= !reloadCaller %>">
+  <c:if test="<%= !isViewEntry %>">
 
 <div id="ss_showentryhighwatermark" style="position:absolute; visibility:visible;">
 <img src="<html:imagesPath/>pics/1pix.gif">
@@ -273,15 +274,16 @@ function ss_notLoggedIn() {
 <%
 	}
 %>
+  </c:if>
 </c:if>
-<c:if test="<%= isViewEntry %>">
-  <c:if test="<%= reloadCaller %>">
+<c:if test="<%= reloadCaller %>">
 <script type="text/javascript">
 	//Open the current url in the opener window
 	ss_reloadOpener('<%= ssReloadUrl %>')
 </script>
-  </c:if>
-  <c:if test="<%= !reloadCaller %>">
+</c:if>
+<c:if test="<%= !reloadCaller %>">
+  <c:if test="<%= isViewEntry %>">
 <jsp:useBean id="ssEntry" type="com.sitescape.ef.domain.Entry" scope="request" />
 <script type="text/javascript">
 if (self.parent && self.parent.highlightLineById) {

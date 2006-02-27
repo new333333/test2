@@ -1,6 +1,7 @@
 <% //view a folder forum with the entry at the bottom in an iframe %>
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
+String sliderDivOffset = "-18";
 %>
 <a name="ss_top_of_folder"></a>
 <div id="ss_showfolder" class="ss_style ss_portlet">
@@ -9,17 +10,30 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
     configElement="<%= ssConfigElement %>" 
     configJspStyle="<%= ssConfigJspStyle %>" />
 </div>
-<div id="ss_showfolder_slider" onMousedown="ss_startDragDiv();" width="100%"
- style="position:relative; margin:-1px 0px 3px 0px; padding:0px; top:-18px;">
-  <table class="ss_style ss_bgmedgray" width="100%" cellpadding="0" cellspacing="0"
-    style="border: 1px solid black;">
+<div id="ss_showfolder_slider" onMousedown="ss_startDragDiv();" width="100%" height="20px"
+ style="position:relative; margin:-1px 0px 3px 0px; padding:0px; 
+  top:<%= sliderDivOffset %>px; border: 1px solid black;">
+  <table class="ss_style ss_bgmedgray" width="100%" 
+    cellpadding="0" cellspacing="0">
     <tr>
-      <td align="center">^^^^^^^^^^^^^^^^^^</td>
+      <td align="center">
+        <div style="display:inline; 
+          background-image:url(<html:imagesPath/>pics/sym_s_arrows_northsouth.gif);
+          background-repeat:no-repeat;">
+        &nbsp;&nbsp;&nbsp;
+        </div>
+      </td>
     </tr>
   </table>
 </div>
 
-<div id="ss_showentrydiv" class="ss_style ss_portlet">
+<div id="ss_showentrydiv_place_holder" width="100%"
+ style="position:relative; margin:-1px 0px 3px 0px; padding:0px; 
+ top:<%= sliderDivOffset %>px;">
+</div>
+
+<div id="ss_showentrydiv" class="ss_style ss_portlet" 
+  style="position:absolute; margin:0px 0px 0px 2px; visibility:hidden; display:none;">
   <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
     <ssf:param name="box_title" useBody="true">
@@ -28,35 +42,84 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
       </div>
     </ssf:param>
   <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; display:block;"
-    src="<html:rootPath/>js/forum/null.html" height="200" width="100%" 
+    src="<html:rootPath/>js/forum/null.html" height="400" width="100%" 
     frameBorder="no" >xxx</iframe>
   </ssf:box>
 </div>
 </div>
-<div id="ss_showfolder_bottom" class="ss_style ss_portlet"></div>
+<div id="ss_showfolder_bottom" class="ss_style ss_portlet">&nbsp;</div>
 
 <script type="text/javascript">
 var ss_folderDivHeight = 400;
-var ss_minFolderDivHeight = 150;
+var ss_bottomHeight = 100;
+var ss_minFolderDivHeight = 100;
+var ss_minEntryDivHeight = 100;
 var ss_scrollTopOffset = 4;
-
+var ss_positioningEntryDiv = 0;
 var ss_marginLeft = 2
 var ss_marginRight = 2
 var ss_marginTop = 2
 var ss_marginBottom = 2
 
 function ss_positionEntryDiv() {
+	ss_positioningEntryDiv = 1
+	ss_showEntryDiv()
+
     var wObj = self.document.getElementById('ss_showfolder')
+    var wObjB = self.document.getElementById('ss_showfolder_bottom')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
     var wObj2 = self.document.getElementById('<portlet:namespace/>_iframe_box_div')
     var wObj3 = self.document.getElementById('ss_showentryframe')
-
+    var wObj4 = self.document.getElementById('ss_showentrydiv_place_holder')
+    
     var width = parseInt(parseInt(ss_getObjectWidth(wObj)) - ss_marginLeft - ss_marginRight);
 	ss_setObjectWidth(wObj1, width);
 	ss_setObjectWidth(wObj2, width);
+
+    ss_setObjectTop(wObj1, parseInt(parseInt(ss_getDivTop('ss_showfolder_slider')) + 20))
+    var entryHeight = parseInt(ss_getWindowHeight() - ss_getDivTop('ss_showfolder_slider') - ss_bottomHeight)
+    if (entryHeight < ss_minEntryDivHeight) entryHeight = ss_minEntryDivHeight;
+	ss_setObjectHeight(wObj1, entryHeight);
+	ss_setObjectHeight(wObj3, entryHeight);
+	ss_setObjectHeight(wObj4, entryHeight);
+	
+	ss_positioningEntryDiv = 0
+}
+
+var ss_savedSliderClassName = ""
+var ss_savedSliderBorder = ""
+function ss_showEntryDiv() {
+    var wObj1 = self.document.getElementById('ss_showentrydiv')
+    wObj1.style.visibility = "visible";
+    wObj1.style.display = "block";
+
+    var wObj2 = self.document.getElementById('ss_showfolder_slider')
+    if (ss_savedSliderClassName != "") wObj2.className = ss_savedSliderClassName;
+    if (ss_savedSliderBorder != "") wObj2.style.border = ss_savedSliderBorder;
+}
+
+function ss_hideEntryDiv() {
+	//Mark that we are positioning the entry div so dragging doesn't do layout changes
+	ss_positioningEntryDiv = 1
+	
+    var wObj1 = self.document.getElementById('ss_showentrydiv')
+    wObj1.style.visibility = "hidden";
+    var wObj2 = self.document.getElementById('ss_showfolder_slider')
+    if (ss_savedSliderClassName == "") ss_savedSliderClassName = wObj2.className;
+    wObj2.className = "ss_style ss_bgwhite";
+    if (ss_savedSliderBorder == "") ss_savedSliderBorder = wObj2.style.border;
+    wObj2.style.border = "1px solid white";
+}
+
+var ss_lastLayoutEntryHeight = 0;
+function ss_checkLayoutChange() {
+	//Reposition entry div, but only if not in the process of doing it
+	if (ss_positioningEntryDiv != 1) ss_positionEntryDiv();
 }
 
 ss_createOnLoadObj("ss_positionEntryDiv", ss_positionEntryDiv);
+ss_createOnResizeObj('ss_positionEntryDiv', ss_positionEntryDiv);
+ss_createOnLayoutChangeObj('ss_checkLayoutChange', ss_checkLayoutChange);
 
 function ss_showForumEntryInIframe(url) {
 	ss_positionEntryDiv();
@@ -104,12 +167,18 @@ function ss_startDragDiv() {
     self.document.onmousemove = ss_divDrag
     self.document.onmouseup = ss_divStopDrag
 
+	//Hide the entry divs so dragging doesn't do lots of layout changes
+	ss_hideEntryDiv();
+		
     return false
 }
 
 function ss_divDrag(evt) {
     if (!evt) evt = window.event;
     if (ss_divDragObj) {
+		//Hide the entry div so dragging doesn't do lots of layout changes
+		ss_hideEntryDiv();
+		
         if (ss_startingToDragDiv == 1) {
             if (evt.layerX) {
                 if (isNSN || isNSN6 || isMoz5) {
@@ -156,9 +225,12 @@ function ss_divStopDrag(evt) {
             dObjTop = evt.clientY - ss_divOffsetY;
         }
 		var tableDivObj = document.getElementById('<c:out value="${ss_slidingTableId}"/>')
-	    ss_folderDivHeight = parseInt(parseInt(dObjTop) - parseInt(ss_getDivTop('<c:out value="${ss_slidingTableId}"/>')));
+	    ss_folderDivHeight = parseInt(parseInt(dObjTop) - parseInt("<%= sliderDivOffset %>") - parseInt(ss_getDivTop('<c:out value="${ss_slidingTableId}"/>')));
 	    if (ss_folderDivHeight < ss_minFolderDivHeight) ss_folderDivHeight = ss_minFolderDivHeight;
 	    ss_setObjectHeight(tableDivObj, ss_folderDivHeight);
+
+		//Reposition the entry div to fit in the new space
+		ss_positionEntryDiv()
 
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
