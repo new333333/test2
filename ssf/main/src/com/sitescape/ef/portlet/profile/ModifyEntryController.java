@@ -36,6 +36,10 @@ public class ModifyEntryController extends SAbstractProfileController {
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		if (action.equals(WebKeys.ACTION_DELETE_ENTRY)) {
 			getProfileModule().deleteEntry(binderId, entryId);			
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
+			response.setRenderParameter("ssReloadUrl", "");
 		} else if (formData.containsKey("okBtn")) {
 			//The modify form was submitted. Go process it
 			Map fileMap=null;

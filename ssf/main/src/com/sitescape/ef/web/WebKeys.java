@@ -83,6 +83,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE = "set_cal_display_date";
 	public static final String FORUM_OPERATION_CALENDAR_GOTO_DATE = "cal_goto_date";
 	public static final String FORUM_OPERATION_UNSEEN_COUNTS = "unseen_counts";
+	public static final String FORUM_OPERATION_RELOAD_LISTING = "reload_listing";
 	public static final String FORUM_OPERATION_SAVE_COLUMN_POSITIONS = "save_column_positions";
 	public static final String FORUM_OPERATION_SAVE_ENTRY_WIDTH = "save_entry_width";
 	public static final String FORUM_OPERATION_SAVE_ENTRY_HEIGHT = "save_entry_height";

@@ -33,6 +33,9 @@ public class ModifyEntryController extends SAbstractForumController {
 		if (action.equals(WebKeys.ACTION_DELETE_ENTRY)) {
 			getFolderModule().deleteEntry(folderId, entryId);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
+			response.setRenderParameter("ssReloadUrl", "");
 		} else if (formData.containsKey("okBtn")) {
 
 			//See if the add entry form was submitted
