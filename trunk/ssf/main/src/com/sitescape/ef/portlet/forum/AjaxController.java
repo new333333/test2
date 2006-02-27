@@ -36,9 +36,9 @@ import com.sitescape.ef.domain.User;
 public class AjaxController  extends SAbstractForumController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
-	   	User user = RequestContextHolder.getRequestContext().getUser();
-		Map formData = request.getParameterMap();
-		if(WebHelper.isUserLoggedIn(request)) {
+		if (WebHelper.isUserLoggedIn(request)) {
+		   	User user = RequestContextHolder.getRequestContext().getUser();
+			Map formData = request.getParameterMap();
 			String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 			if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
 				String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
@@ -53,11 +53,10 @@ public class AjaxController  extends SAbstractForumController {
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-	   	User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
-		if(!WebHelper.isUserLoggedIn(request)) {
+		if (!WebHelper.isUserLoggedIn(request)) {
 			Map model = new HashMap();
 			Map unseenCounts = new HashMap();
 			Map statusMap = new HashMap();
@@ -83,6 +82,7 @@ public class AjaxController  extends SAbstractForumController {
 			return new ModelAndView("forum/ajax_return", model);
 		}
 		
+	   	User user = RequestContextHolder.getRequestContext().getUser();
 		Map model = new HashMap();
 		Map statusMap = new HashMap();
 

@@ -2,6 +2,7 @@ package com.sitescape.ef.portlet.forum;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
@@ -107,12 +108,18 @@ public class ViewController  extends SAbstractForumController {
 			PortletSession ps = WebHelper.getRequiredPortletSession(request);
 			Date dt = DateHelper.getDateFromInput(new MapInputData(formData), "ss_goto");
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, dt);
-		
+			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SELECT_FILTER)) {
 			getProfileModule().setUserFolderProperty(user.getId(), folderId, 
 					ObjectKeys.USER_PROPERTY_USER_FILTER, 
 					PortletRequestUtils.getStringParameter(request,
 							WebKeys.FORUM_OPERATION_SELECT_FILTER,""));
+			
+		} else if (op.equals(WebKeys.FORUM_OPERATION_RELOAD_LISTING)) {
+			PortletURL reloadUrl = response.createRenderURL();
+			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			request.setAttribute("ssReloadUrl", reloadUrl.toString());			
 		}
 
 		return returnToViewForum(request, response, formData, folderId);
