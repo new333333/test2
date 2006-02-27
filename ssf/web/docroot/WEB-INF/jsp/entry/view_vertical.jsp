@@ -10,7 +10,8 @@ String sliderDivOffset = "-18";
     configElement="<%= ssConfigElement %>" 
     configJspStyle="<%= ssConfigJspStyle %>" />
 </div>
-<div id="ss_showfolder_slider" onMousedown="ss_startDragDiv();" width="100%" height="20px"
+<div id="ss_showfolder_slider" onMousedown="ss_startDragDiv();" 
+ onMouseover="ss_clearMouseOverInfo(null);" width="100%" height="20px"
  style="position:relative; margin:-1px 0px 3px 0px; padding:0px; 
   top:<%= sliderDivOffset %>px; border: 1px solid black;">
   <table class="ss_style ss_bgmedgray" width="100%" 
@@ -33,6 +34,7 @@ String sliderDivOffset = "-18";
 </div>
 
 <div id="ss_showentrydiv" class="ss_style ss_portlet" 
+  onMouseover="ss_clearMouseOverInfo(null);"
   style="position:absolute; margin:0px 0px 0px 2px; visibility:hidden; display:none;">
   <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
@@ -169,6 +171,7 @@ function ss_startDragDiv() {
 
 	//Hide the entry divs so dragging doesn't do lots of layout changes
 	ss_hideEntryDiv();
+	ss_clearMouseOverInfo(null);
 		
     return false
 }
@@ -196,6 +199,8 @@ function ss_divDrag(evt) {
         } else {
             dObjLeft = evt.clientX - ss_divOffsetX;
             dObjTop = evt.clientY - ss_divOffsetY;
+    		//IE requires fix-up if wndow is scrolled
+    		dObjTop += parseInt(self.document.body.scrollTop)
         }
     	//Move the slider div
     	ss_setObjectTop(ss_divDragObj, dObjTop)
