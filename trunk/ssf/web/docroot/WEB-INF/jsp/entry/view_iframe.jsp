@@ -9,7 +9,8 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
   configJspStyle="<%= ssConfigJspStyle %>" />
 </div>
 
-<div id="ss_showentrydiv" style="position:absolute; visibility:hidden; x:0; y:0;
+<div id="ss_showentrydiv" onMouseover="ss_clearMouseOverInfo(null);"
+  style="position:absolute; visibility:hidden; x:0; y:0;
   width:600; height:80%; display:none; z-index:50;">
   <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
