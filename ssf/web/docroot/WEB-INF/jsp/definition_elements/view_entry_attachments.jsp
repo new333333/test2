@@ -1,6 +1,5 @@
 <% // View entry attachments %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssDefinitionEntry" type="com.sitescape.ef.domain.Entry" scope="request" />
 
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <div class="ss_entryContent">
