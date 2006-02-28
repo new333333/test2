@@ -1,24 +1,13 @@
 <% // User list %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="formName" type="String" scope="request" />
-<jsp:useBean id="property_name" type="String" scope="request" />
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
 <%
-	String elementName = (String) request.getAttribute("property_name");
-	String caption = (String) request.getAttribute("property_caption");
-	String width = (String) request.getAttribute("property_width");
-	if (width == null || width.equals("")) {
-		width = "";
-	} else {
-		width = "width='"+width+"'";
-	}
-	if (caption == null || caption.equals("")) {
-		caption = "";
-	} else {
-		caption = "<b>"+caption+"</b><br>";
-	}
+	List userList = (List) request.getAttribute("user_list");
+	String userListFormName = (String) request.getAttribute("form_name");
+	String userListElementName = (String) request.getAttribute("form_element");
 %>
-<c:set var="prefix" value="${formName}_${property_name}" />
+<c:set var="prefix" value="<%= userListFormName + "_" + userListElementName %>" />
 <c:if test="${empty ss_user_list_support_stuff_loaded}">
 <c:if test="${empty ss_taconite_loaded}">
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
@@ -35,9 +24,31 @@ function ss_userListSetSearchType(type, elementName) {
 		ss_userListSearch(ss_userList_searchText, elementName);
 	}
 }
+var ss_userListSearchInProgress = 0;
+var ss_userListSearchWaiting = 0;
+var ss_userListSearchLastText = "";
+var ss_userListSearchLastElement = "";
 function ss_userListSearch(text, elementName) {
+	//Are we already doing a search?
+	if (ss_userListSearchInProgress == 1) {
+		//Yes, hold this request until the current one finishes
+		ss_userListSearchLastText = text;
+		ss_userListSearchLastElement = elementName;
+		ss_userListSearchWaiting = 1;
+		return;
+	}
+	ss_userListSearchInProgress = 1;
+	ss_userListSearchWaiting = 0;
  	//Save the text in case the user changes the search type
  	ss_userList_searchText = text;
+ 	
+ 	//Build a list of the userIds already added
+ 	var addedObj = document.getElementById('added_<%= userListElementName %>');
+	var addedIds = "";
+	var items = addedObj.getElementsByTagName( "li" );
+	for (var i = 0; i < items.length; i++) {
+		addedIds += items[i].id + " ";
+	}
  	
  	var url = "<ssf:url 
     	adapter="true" 
@@ -51,6 +62,7 @@ function ss_userListSearch(text, elementName) {
 	ajaxRequest.addKeyValue("listDivId", "available_"+elementName)
 	ajaxRequest.addKeyValue("maxEntries", "10")
 	ajaxRequest.addKeyValue("searchType", ss_userList_searchType)
+	ajaxRequest.addKeyValue("idsToSkip", addedIds)
 	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_preUserListRequest);
 	ajaxRequest.setPostRequest(ss_postUserListRequest);
@@ -67,6 +79,12 @@ function ss_postUserListRequest(obj) {
 		ss_DragDrop.initializeListContainer();
 		ss_DragDrop.makeListContainer( document.getElementById('added_'+obj.getData('elementName')));
 		ss_DragDrop.makeListContainer( document.getElementById('available_'+obj.getData('elementName')));
+	}
+	ss_userListSearchInProgress = 0;
+	
+	//See if there is another search request to be done
+	if (ss_userListSearchWaiting == 1) {
+		setTimeout('ss_userListSearch(ss_userListSearchLastText, ss_userListSearchLastElement)', 100)
 	}
 }
 //Routine called when item is double clicked
@@ -102,69 +120,58 @@ function ss_userListInterceptCR(e) {
 <div id="ss_search_status_message"></div>
 <c:set var="ss_user_list_support_stuff_loaded" value="1" scope="request"/>
 </c:if>
-<table class='ss_style'>
-  <tr>
-    <td valign="top">
-		<div><%= caption %>
-		  <div style="border:solid #cecece 1px;">
-		    <ul id="added_<%= elementName %>" class="ss_dragable ss_userlist">
-		      <c:forEach var="item" items="${ssEntry.customAttributes[property_name].valueSet}">
-		        <li id="<c:out value="${item.id}"/>" class="ss_dragable ss_userlist"><c:out value="${item.title}"/></li>
-		      </c:forEach>
-		    </ul>
-		  </div>
-		</div>
-		<input type="hidden" name="<%= elementName %>">
-	</td>
-	<td valign="middle">
-	  <div style="margin:0px; padding:0px;"><img 
-	    src="<html:imagesPath />pics/sym_s_arrow_left.gif" 
-	    alt="<ssf:nlt tag="userlist.dragLeft" text="Drag to the left to add a name."/>"
-	    ></div>
-	  <div style="margin:0px; padding:0px;"><img 
-	    src="<html:imagesPath />pics/sym_s_arrow_right.gif" 
-	    alt="<ssf:nlt tag="userlist.dragRight" text="Drag to the right to delete a name."/>"
-	    ></div>
-	</td>
-	<td valign="top">
-	  <table class='ss_style' cellspacing="0" cellpadding="0">
-	  <tr>
-	    <td colspan="2" valign="top" nowrap>
-	      <b><ssf:nlt tag="userlist.findName" text="Find name"/>:</b>
-	      <input type="text" size="15" name="ss_userList_searchText" 
-	        onKeyUp="ss_userListSearch(this.value, '<%= elementName %>');">
-	    </td>
-	  </tr>
-	  <tr>
-	    <td valign="top">
-		  <div style="border:solid #cecece 1px;">
-		    <ul id="available_<%= elementName %>" class="ss_dragable ss_userlist">
-		    </ul>
-		  </div>
-	    </td>
-	    <td valign="top">
-	      <input type="radio" name="ss_userList_searchType" value="firstName"
-	        onClick="ss_userListSetSearchType(this.value, '<%= elementName %>');">
-	      <ssf:nlt tag="userlist.firstName" text="First name"/><br>
-	      <input type="radio" name="ss_userList_searchType" value="lastName" checked
-	        onClick="ss_userListSetSearchType(this.value, '<%= elementName %>');">
-	      <ssf:nlt tag="userlist.lastName" text="Last name"/><br>
-	      <input type="radio" name="ss_userList_searchType" value="loginName"
-	        onClick="ss_userListSetSearchType(this.value, '<%= elementName %>');">
-	      <ssf:nlt tag="userlist.loginName" text="Login name"/>
-	    </td>
-	  </tr>
-	  </table>
-	</td>
-  </tr>
-</table>
+<div style="display:inline;">
+  <div style="border:solid #cecece 1px;">
+    <ul id="added_<%= userListElementName %>" class="ss_dragable ss_userlist">
+      <c:forEach var="item" items="${userList}">
+        <li id="<c:out value="${item.id}"/>" 
+          class="ss_dragable ss_userlist"><c:out value="${item.title}"/></li>
+      </c:forEach>
+    </ul>
+  </div>
+</div>
+<input type="hidden" name="<%= userListElementName %>">
+
+  <div style="display:inline; margin:0px; padding:0px;"><img 
+    src="<html:imagesPath />pics/sym_s_arrow_left.gif" 
+    alt="<ssf:nlt tag="userlist.dragLeft" text="Drag to the left to add a name."/>"
+    >
+    <br>
+    <img 
+    src="<html:imagesPath />pics/sym_s_arrow_right.gif" 
+    alt="<ssf:nlt tag="userlist.dragRight" 
+      text="Drag to the right to delete a name."/>"
+    >
+  </div>
+
+  <div style="display:inline;">
+	  <b><ssf:nlt tag="userlist.findName" text="Find name"/>:</b>
+	  <input type="text" size="15" name="ss_userList_searchText" 
+	    onKeyUp="ss_userListSearch(this.value, '<%= userListElementName %>');">
+	  <div style="border:solid #cecece 1px;">
+	    <ul id="available_<%= userListElementName %>" class="ss_dragable ss_userlist">
+	    </ul>
+	  </div>
+	
+	  <input type="radio" name="ss_userList_searchType" value="firstName"
+	    onClick="ss_userListSetSearchType(this.value, '<%= userListElementName %>');">
+	  <ssf:nlt tag="userlist.firstName" text="First name"/><br>
+	  <input type="radio" name="ss_userList_searchType" value="lastName" checked
+	    onClick="ss_userListSetSearchType(this.value, '<%= userListElementName %>');">
+	  <ssf:nlt tag="userlist.lastName" text="Last name"/><br>
+	  <input type="radio" name="ss_userList_searchType" value="loginName"
+	    onClick="ss_userListSetSearchType(this.value, '<%= userListElementName %>');">
+	  <ssf:nlt tag="userlist.loginName" text="Login name"/>
+  </div>
+  
+<input type="hidden" name="<%= userListElementName %>" id="<%= userListElementName %>">
 <script type="text/javascript">
-  ss_DragDrop.makeListContainer( document.getElementById('added_<%= elementName %>'));
-  ss_DragDrop.makeListContainer( document.getElementById('available_<%= elementName %>'));
+  ss_DragDrop.makeListContainer( document.getElementById('added_<%= userListElementName %>'));
+  ss_DragDrop.makeListContainer( document.getElementById('available_<%= userListElementName %>'));
 
 function ss_saveUserListData_<portlet:namespace/>_${prefix}() {
-	var elementObj = document.getElementById('<%= elementName %>');
-	var addedObj = document.getElementById('added_<%= elementName %>');
+	var elementObj = document.getElementById('<%= userListElementName %>');
+	var addedObj = document.getElementById('added_<%= userListElementName %>');
 
 	var s = "";
 	var items = addedObj.getElementsByTagName( "li" );
@@ -174,9 +181,6 @@ function ss_saveUserListData_<portlet:namespace/>_${prefix}() {
 	elementObj.value = s;
 	return true;
 }
-ss_createOnSubmitObj('${prefix}onSubmit', '${formName}', ss_saveUserListData_<portlet:namespace/>_${prefix});
+ss_createOnSubmitObj('${prefix}onSubmit', '<%= userListFormName %>', ss_saveUserListData_<portlet:namespace/>_${prefix});
 ss_createEventObj('ss_userListInterceptCR', 'KEYPRESS');
 </script>
-
-<div id="debugLog">
-</div>

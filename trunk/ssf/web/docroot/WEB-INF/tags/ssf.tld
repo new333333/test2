@@ -216,13 +216,18 @@
 		<tag-class>com.sitescape.ef.taglib.FindGroups</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
+			<name>formName</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>formElement</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<name>groupList</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.util.List</type>
 		</attribute>		
@@ -233,13 +238,18 @@
 		<tag-class>com.sitescape.ef.taglib.FindUsers</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
+			<name>formName</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>formElement</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<name>userList</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.util.List</type>
 		</attribute>		

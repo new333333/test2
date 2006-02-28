@@ -1,5 +1,6 @@
 package com.sitescape.ef.taglib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import com.sitescape.util.servlet.StringServletResponse;
  */
 public class FindUsers extends TagSupport {
     private List userList;
+    private String formName;
     private String formElement;
     
 	public int doStartTag() throws JspException {
@@ -30,15 +32,15 @@ public class FindUsers extends TagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 			
+			if (this.userList == null) this.userList = new ArrayList();
 			//Output the start of the area
 			RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/find_users/user_list.jsp");
 
-			Map _params = new HashMap();
-			_params.put("user_list", this.userList);
-			_params.put("form_element", this.formElement);
-
 			ServletRequest req = null;
-			req = new DynamicServletRequest(httpReq, _params);
+			req = new DynamicServletRequest(httpReq);
+			req.setAttribute("user_list", this.userList);
+			req.setAttribute("form_name", this.formName);
+			req.setAttribute("form_element", this.formElement);
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
 			pageContext.getOut().print(res.getString());
@@ -49,6 +51,7 @@ public class FindUsers extends TagSupport {
 	        throw new JspException(e);
 	    }
 		finally {
+			this.userList = null;
 		}
 	}
 
@@ -58,6 +61,10 @@ public class FindUsers extends TagSupport {
 	
 	public void setUserList(List userList) {
 	    this.userList = userList;
+	}
+
+	public void setFormName(String formName) {
+	    this.formName = formName;
 	}
 
 	public void setFormElement(String formElement) {

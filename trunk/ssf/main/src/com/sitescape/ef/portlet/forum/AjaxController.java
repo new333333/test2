@@ -136,6 +136,11 @@ public class AjaxController  extends SAbstractForumController {
 			String searchType = ((String[])formData.get("searchType"))[0];
 			String listDivId = ((String[])formData.get("listDivId"))[0];
 			String maxEntries = ((String[])formData.get("maxEntries"))[0];
+			String[] idsToSkip = ((String[])formData.get("idsToSkip"))[0].split(" ");
+			Map userIdsToSkip = new HashMap();
+			for (int i = 0; i < idsToSkip.length; i++) {
+				if (!idsToSkip[i].equals("")) userIdsToSkip.put(idsToSkip[i], Long.valueOf(idsToSkip[i]));
+			}
 			
 	    	String nameType = IndexUtils.LASTNAME_FIELD;
 	    	if (searchType.equals("firstName")) nameType = IndexUtils.FIRSTNAME_FIELD;
@@ -156,6 +161,7 @@ public class AjaxController  extends SAbstractForumController {
         	Map users = getProfileModule().getUsers(u.getParentBinder().getId(), 
         			Integer.parseInt(maxEntries), searchFilter);
     		model.put(WebKeys.USERS, users.get(ObjectKeys.ENTRIES));
+    		model.put(WebKeys.USER_IDS_TO_SKIP, userIdsToSkip);
     		model.put("listDivId", listDivId);
 			response.setContentType("text/xml");
 			model.put(WebKeys.AJAX_STATUS, statusMap);

@@ -45,8 +45,10 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 			
 		//See if the form was submitted
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("addBtn")) {
 			response.setRenderParameters(formData);
+		} else if (formData.containsKey("modifyBtn")) {
+			setResponseOnClose(response, binderId);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			setResponseOnClose(response, binderId);
 		} else {

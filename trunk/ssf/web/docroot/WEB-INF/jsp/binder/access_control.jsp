@@ -35,7 +35,7 @@
   <c:if test="${!empty function.value.ssUsers || !empty function.value.ssGroups}">
 	<span calss="ss_bold"><c:out value="${function.key.name}"/></span>
 	<br/>
-	<span><ssf:nlt tag="accessControl.users" text="Users"/></span>
+	<span><ssf:nlt tag="binder.configure.access_control.users" text="Users"/></span>
 	<br/>
 	<ul>
 	<c:forEach var="user" items="${function.value.ssUsers}">
@@ -43,7 +43,7 @@
 	</c:forEach>
 	</ul>
 	<br/>
-	<span><ssf:nlt tag="accessControl.users" text="Users"/></span>
+	<span><ssf:nlt tag="binder.configure.access_control.groups" text="Groups"/></span>
 	<br/>
 	<ul>
 	<c:forEach var="user" items="${function.value.ssGroups}">
@@ -64,17 +64,18 @@
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.addRole" 
     text="Add a role"/></legend>
-<form class="ss_style" name="<portlet:namespace/>rolesForm" method="post" 
+<form class="ss_style" name="rolesForm" method="post" 
+  onSubmit="return ssf_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
 		  </portlet:actionURL>">
 <table class="ss_style">
-<th><ssf:nlt tag="role" text="Role"/></th>
-<th><ssf:nlt tag="users" text="Users"/></th>
-<th><ssf:nlt tag="groups" text="Groups"/></th>
+<th><ssf:nlt tag="binder.configure.access_control.role" text="Role"/></th>
+<th><ssf:nlt tag="binder.configure.access_control.users" text="Users"/></th>
+<th><ssf:nlt tag="binder.configure.access_control.groups" text="Groups"/></th>
 <tr>
-<td>
+<td valign="top">
 <select name="roleId" >
   <option value=""><ssf:nlt tag="binder.configure.access_control.selectRole"
     text="--select the role to be added--"/></option>
@@ -85,11 +86,11 @@
 </c:forEach>
 </select>
 </td>
-<td>
-  <ssf:findUsers formElement="users"/>
+<td valign="top">
+  <ssf:findUsers formName="rolesForm" formElement="users"/>
 </td>
-<td>
-  <ssf:findGroups formElement="groups"/>
+<td valign="top">
+  ssf:findGroups formName="rolesForm" formElement="groups"
 </td>
 </tr>
 </table>
@@ -104,7 +105,7 @@
 </c:if>
 <br/>
 
-<form class="ss_style" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
+<form class="ss_style" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_access_control"/>
 			<portlet:param name="binderId" value="${ssBinder.id}"/>
 		</portlet:actionURL>">
