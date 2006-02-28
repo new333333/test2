@@ -58,7 +58,7 @@ public class Function {
         if(name == null)
             throw new IllegalArgumentException("Name must not be null");
         
-        if(!StringUtils.isAlphanumeric(name))
+        if(!StringUtils.isAlphanumericSpace(name))
             throw new IllegalArgumentException("Illegal function name [" + name +
                     "]: It must consist of alphanumeric characters only");
         
