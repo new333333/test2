@@ -31,6 +31,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
+import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
@@ -99,7 +100,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.ENTRY_TYPE_FIELD);
        	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
        	child.setText(EntryIndexUtils.ENTRY_TYPE_ENTRY);
-     	
+ 
+       	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
+
     	//Look only for binderId=binder
     	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
     	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.BINDER_ID_FIELD);
