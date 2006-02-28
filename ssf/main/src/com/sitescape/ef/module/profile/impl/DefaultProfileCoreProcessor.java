@@ -23,6 +23,7 @@ import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
@@ -103,11 +104,17 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 
     	}
       	
-    	//Look only for binderId=binder
-    	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	//Look only for binderId=binder and type = entry
+       	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
     	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.BINDER_ID_FIELD);
     	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
     	child.setText(binder.getId().toString());
+       	
+    	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
+   	
     	return qTree;
  
     }
