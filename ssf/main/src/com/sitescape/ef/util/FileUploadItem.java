@@ -17,6 +17,8 @@ public class FileUploadItem {
 	private static final int THUMBNAIL_MAX_HEIGHT_DEFAULT = 100;
 	
 	private static final String TEMP_FILE_PREFIX = "upload_";
+	private static final String CONVERT_FILE_PREFIX = "convert_";
+	private static final String HTMLCONVERTED_FILE_PREFIX = "htmlconvert_";
 	
 	private int type;
 	
@@ -164,5 +166,12 @@ public class FileUploadItem {
 		this.mf.transferTo(this.tempFile);
 		
 		ready = true;
+	}
+	
+	public File getConvertedTempFile()  throws IOException {
+		File tempDir = SPropsUtil.getFile("temp.dir");
+		if(!tempDir.exists())
+			FileHelper.mkdirs(tempDir);
+		return File.createTempFile(CONVERT_FILE_PREFIX,null,tempDir);
 	}
 }
