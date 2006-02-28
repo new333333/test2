@@ -43,7 +43,7 @@
 		<property name="profileModule"><ref bean="profileModule"/></property>
 		<property name="workflowModule"><ref bean="workflowModule"/></property>
 		<property name="workspaceModule"><ref bean="workspaceModule"/></property>
-		<property name="fileModule"><ref bean="fileModule"/></property>		
+		<property name="fileModule"><ref bean="fileModule"/></property>	
 	</bean>
 
 	<!-- add support for lobhandler to support hibernate UserType to handle different db clob implementations -->
@@ -287,7 +287,8 @@
 	<!-- ============================== Document Converter ============================ -->
 	
     <bean id="docConverter" class="com.sitescape.ef.docconverter.DocConverter">
-        <property name="converterConfiguration"><value>config/docconverter.cfg</value></property>
+        <property name="configFileName"><value>config/docconverter.cfg</value></property>
+        <property name="nullTransform"><value>config/null.xslt</value></property>
     </bean>
 	
 	<!-- ================================ Security Service =============================== -->
@@ -347,6 +348,7 @@
 		<property name="scheduler"><ref local="scheduler"/></property>
 		<property name="processorManager"><ref local="modelProcessorManager"/></property>
 		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
+		<property name="docConverter"><ref local="docConverter"/></property>
 	</bean>
 	
 	<bean id="employeeModule" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.sample.impl.EmployeeModuleImpl">
