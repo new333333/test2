@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.io.File;
 import java.io.IOException;
 import java.lang.Long;
 import java.util.Collection;
@@ -26,6 +27,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.SFQuery;
+import com.sitescape.ef.docconverter.DocConverter;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.HistoryStamp;
@@ -54,6 +56,7 @@ import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.OperationAccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.workflow.WorkflowModule;
@@ -229,21 +232,18 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
         
-        /* The following skeleton is to be completed by Roy 
-        
-        // Create separate documents one for each attached files and index them.
+        //Create separate documents one for each attached file and index them.
         for(int i = 0; i < fileData.size(); i++) {
         	// Get a handle on the uploaded file. 
         	FileUploadItem fui = (FileUploadItem) fileData.get(i);
         	// Create a Lucene document object from the uploaded file.
         	// This involves applying additional processings such as doc
         	// conversion, etc. 
-        	indexDoc = buildIndexDocumentFromFile(binder, entry, fui);
+        	indexDoc = buildIndexDocumentFromAttachmentFile(binder, entry, fui);
             // Register the index document for indexing.
             IndexSynchronizationManager.addDocument(indexDoc);
         }
         
-        */
     }
  
     protected void cleanupFiles(List fileData) {
@@ -352,7 +352,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     
     protected void modifyEntry_indexAdd(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, List fileData) {
     	indexEntry(entry);
-    	// Take care of attached files - to be completed by Roy
+    	// Take care of attached files - TBD - Roy
     }
     
     
@@ -595,12 +595,17 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	if (boolElement == null) return qTree;
     	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
      	
-    	//Look only for binderId=binder
+    	//Look only for binderId=binder and doctype = entry (not attachement)
     	if (binder != null) {
     		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
         	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.BINDER_ID_FIELD);
         	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
         	child.setText(binder.getId().toString());
+        	
+        	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+        	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+        	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
     	}
     	return qTree;
     }
@@ -667,10 +672,8 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 
     protected void deleteEntry_indexDel(WorkflowControlledEntry entry) {
         // Delete the document that's currently in the index.
+    	// Since all matches will be deleted, this will also delete the attachments
         IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
-        
-        // We must delete the index entries for attached files.
-        // To be completed by Roy.
     }
     
     //***********************************************************************************************************
@@ -780,110 +783,77 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         
         return indexDoc;
     }
- 
-    protected void modifyAccessCheck(Binder binder, WorkflowControlledEntry entry) {
-        if (!entry.hasAclSet()) {
-           	try {
-           		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES);
-           	} catch (OperationAccessControlException ex) {
-          		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) 
-       				getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATOR_MODIFY);
-          		else throw ex;
-          	}     
-        } else {         	
-        	//entry has a workflow
-        	//see if owner can modify
-        	if (entry.checkOwner(AccessType.WRITE)) {
-    		   if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) {
-    			   if (binder.isWidenModify()) return;
-    			   if (getAccessControlManager().testOperation(binder, WorkAreaOperation.CREATOR_MODIFY)) return;
-    		   }
-    	   }
-		    //see if folder default is enabled.
-    	   if (entry.checkWorkArea(AccessType.WRITE)) {
-    		   try {
-    	       		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES); 
-    	       		return;
-    		   } catch (OperationAccessControlException ex) {
-    			   //at this point we can stop if workflow cannot widen access
-    			   if (!binder.isWidenModify()) throw ex;
-    		   }
-    	   }
-    	   //if fail this test exception is thrown
-    	   getAccessControlManager().checkAcl(binder, entry, AccessType.WRITE, false, false);
-    	   if (binder.isWidenModify()) return;
-    	   //make sure acl list is sub-set of binder access
-      		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES);     	   
-        }    	
+    
+    protected org.apache.lucene.document.Document buildIndexDocumentFromAttachmentFile(Binder binder, WorkflowControlledEntry entry, FileUploadItem fui) {
+    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
+    	File tempFile = null;
+    	
+        // Add uid
+        BasicIndexUtils.addUid(indexDoc, entry.getIndexDocumentUid());
+        BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ATTACHMENT);
+        // Add the entry type 
+        EntryIndexUtils.addEntryType(indexDoc, entry);
+       
+        EntryIndexUtils.addBinder(indexDoc, entry);
+        
+        // Add creation-date
+        EntryIndexUtils.addCreationDate(indexDoc, entry);
+        
+        // Add modification-date
+        EntryIndexUtils.addModificationDate(indexDoc,entry);
+        
+        // Add creator id
+        EntryIndexUtils.addCreationPrincipalId(indexDoc,entry);
+        
+        // Add Modification Principal Id
+        EntryIndexUtils.addModificationPrincipalId(indexDoc,entry);
+        
+        // Add ReservedBy Principal Id
+        EntryIndexUtils.addModificationPrincipalId(indexDoc,entry);
+        
+        // Add Doc Id
+        EntryIndexUtils.addDocId(indexDoc, entry);
+        
+        // Add Doc title
+        EntryIndexUtils.addTitle(indexDoc, entry);
+        
+        // Add UID of attachment file (FUID)
+        EntryIndexUtils.addFileAttachmentUid(indexDoc, fui, entry.getAttachments());
+        
+        // Add the filename
+        EntryIndexUtils.addFileAttachmentName(indexDoc,fui.getOriginalFilename());        
+        
+        // Add the text of the attachment 
+        try {
+        	tempFile = fui.getConvertedTempFile();
+        } catch (IOException ioe){
+        	// add logging info
+        	return null;
+        }
+        try {
+        	docConverter.convert(fui.getFile(),tempFile,10000);
+        } catch (Exception e) {
+        	// add logging info
+        	return null;
+        }
+        File transformFile = docConverter.getNullTransformFile();
+        
+        EntryIndexUtils.addAttachmentText(indexDoc,tempFile, transformFile);
+
+        // TBD Add the filetype and Extension
+        //EntryIndexUtils.addFileType(indexDoc,tempFile);
+
+        EntryIndexUtils.addFileExtension(indexDoc,fui.getOriginalFilename());
+     
+        getDefinitionModule().addIndexFieldsForEntry(indexDoc, binder, entry);
+        
+        // Add ACL field. We only need to index ACLs for read access.
+        BasicIndexUtils.addReadAcls(indexDoc, binder, entry, getAclManager());
+        
+        // Add the workflows
+        //EntryIndexUtils.addWorkflow(indexDoc, entry);
+        
+        return indexDoc;
     }
-    protected void readAccessCheck(Binder binder, WorkflowControlledEntry entry) {
-        if (!entry.hasAclSet()) {
-           	try {
-           		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
-           	} catch (OperationAccessControlException ex) {
-          		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) 
-       				getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATOR_READ);
-          		else throw ex;
-          	}     
-        } else {         	
-        	//entry has a workflow
-        	//see if owner can read
-        	if (entry.checkOwner(AccessType.READ)) {
-    		   if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) {
-    			   if (binder.isWidenRead()) return;
-    			   if (getAccessControlManager().testOperation(binder, WorkAreaOperation.CREATOR_READ)) return;
-    		   }
-    	   }
-		    //see if folder default is enabled.
-    	   if (entry.checkWorkArea(AccessType.READ)) {
-    		   try {
-    	       		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES); 
-    	       		return;
-    		   } catch (OperationAccessControlException ex) {
-    			   //at this point we can stop if workflow cannot widen access
-    			   if (!binder.isWidenRead()) throw ex;
-    		   }
-    	   }
-    	   //if fails this test exception is thrown
-    	   getAccessControlManager().checkAcl(binder, entry, AccessType.READ, false, false);
-    	   if (binder.isWidenRead()) return;
-    	   //make sure acl list is sub-set of binder access
-      		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);     	   
-        }    	
-    }
-    protected void deleteAccessCheck(Binder binder, WorkflowControlledEntry entry) {
-        if (!entry.hasAclSet()) {
-           	try {
-           		getAccessControlManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES);
-           	} catch (OperationAccessControlException ex) {
-          		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) 
-       				getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATOR_DELETE);
-          		else throw ex;
-          	}     
-        } else {         	
-        	//entry has a workflow
-        	//see if owner can delete
-        	if (entry.checkOwner(AccessType.DELETE)) {
-    		   if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) {
-    			   if (binder.isWidenDelete()) return;
-    			   if (getAccessControlManager().testOperation(binder, WorkAreaOperation.CREATOR_DELETE)) return;
-    		   }
-    	   }
-		    //see if folder default is enabled.
-    	   if (entry.checkWorkArea(AccessType.DELETE)) {
-    		   try {
-    	       		getAccessControlManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES); 
-    	       		return;
-    		   } catch (OperationAccessControlException ex) {
-    			   //at this point we can stop if workflow cannot widen access
-    			   if (!binder.isWidenDelete()) throw ex;
-    		   }
-    	   }
-    	   //if fails this test exception is thrown
-    	   getAccessControlManager().checkAcl(binder, entry, AccessType.DELETE, false, false);
-    	   if (binder.isWidenDelete()) return;
-    	   //make sure acl list is sub-set of binder access
-      		getAccessControlManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES);     	   
-        }    	
-    }
+  
 }
