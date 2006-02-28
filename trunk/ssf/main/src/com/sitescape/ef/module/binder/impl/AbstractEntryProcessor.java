@@ -855,5 +855,74 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         
         return indexDoc;
     }
-  
+    protected void readAccessCheck(Binder binder, WorkflowControlledEntry entry) {
+        if (!entry.hasAclSet()) {
+           	try {
+           		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+           	} catch (OperationAccessControlException ex) {
+          		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) 
+       				getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATOR_READ);
+          		else throw ex;
+          	}     
+        } else {         	
+        	//entry has a workflow
+        	//see if owner can read
+        	if (entry.checkOwner(AccessType.READ)) {
+    		   if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) {
+    			   if (binder.isWidenRead()) return;
+    			   if (getAccessControlManager().testOperation(binder, WorkAreaOperation.CREATOR_READ)) return;
+    		   }
+    	   }
+		    //see if folder default is enabled.
+    	   if (entry.checkWorkArea(AccessType.READ)) {
+    		   try {
+    	       		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES); 
+    	       		return;
+    		   } catch (OperationAccessControlException ex) {
+    			   //at this point we can stop if workflow cannot widen access
+    			   if (!binder.isWidenRead()) throw ex;
+    		   }
+    	   }
+    	   //if fails this test exception is thrown
+    	   getAccessControlManager().checkAcl(binder, entry, AccessType.READ, false, false);
+    	   if (binder.isWidenRead()) return;
+    	   //make sure acl list is sub-set of binder access
+      		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);     	   
+        }    	
+    }
+    protected void deleteAccessCheck(Binder binder, WorkflowControlledEntry entry) {
+        if (!entry.hasAclSet()) {
+           	try {
+           		getAccessControlManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES);
+           	} catch (OperationAccessControlException ex) {
+          		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) 
+       				getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATOR_DELETE);
+          		else throw ex;
+          	}     
+        } else {         	
+        	//entry has a workflow
+        	//see if owner can delete
+        	if (entry.checkOwner(AccessType.DELETE)) {
+    		   if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) {
+    			   if (binder.isWidenDelete()) return;
+    			   if (getAccessControlManager().testOperation(binder, WorkAreaOperation.CREATOR_DELETE)) return;
+    		   }
+    	   }
+		    //see if folder default is enabled.
+    	   if (entry.checkWorkArea(AccessType.DELETE)) {
+    		   try {
+    	       		getAccessControlManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES); 
+    	       		return;
+    		   } catch (OperationAccessControlException ex) {
+    			   //at this point we can stop if workflow cannot widen access
+    			   if (!binder.isWidenDelete()) throw ex;
+    		   }
+    	   }
+    	   //if fails this test exception is thrown
+    	   getAccessControlManager().checkAcl(binder, entry, AccessType.DELETE, false, false);
+    	   if (binder.isWidenDelete()) return;
+    	   //make sure acl list is sub-set of binder access
+      		getAccessControlManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES);     	   
+        }    	
+    }
 }
