@@ -6,6 +6,7 @@ import org.quartz.Scheduler;
 
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
+import com.sitescape.ef.docconverter.DocConverter;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.presence.PresenceService;
 import com.sitescape.ef.search.LuceneSessionFactory;
@@ -37,6 +38,7 @@ public abstract class CommonDependencyInjection {
 	protected Scheduler scheduler;
 	protected LuceneSessionFactory luceneSessionFactory;
 	protected PresenceService presenceService;
+	protected DocConverter docConverter;
 	
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
@@ -65,7 +67,9 @@ public abstract class CommonDependencyInjection {
 	public void setPresenceService(PresenceService presenceService) {
 		this.presenceService = presenceService;
 	}
-	
+	public void setDocConverter(DocConverter docConverter) {
+		this.docConverter = docConverter;
+	}
 	protected LuceneSessionFactory getLuceneSessionFactory() {
 		return luceneSessionFactory;
 	}
@@ -92,5 +96,8 @@ public abstract class CommonDependencyInjection {
 	}
 	protected PresenceService getPresenceSerivce() {
 		return presenceService;
+	}
+	public DocConverter getDocConverter() {
+		return docConverter;
 	}
 }
