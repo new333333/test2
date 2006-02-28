@@ -47,7 +47,6 @@ import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.mail.MailModule;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.util.DirPath;
 import com.sitescape.ef.util.FileUploadItem;
