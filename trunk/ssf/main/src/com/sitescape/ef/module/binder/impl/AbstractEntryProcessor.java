@@ -855,6 +855,41 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         
         return indexDoc;
     }
+    protected void modifyAccessCheck(Binder binder, WorkflowControlledEntry entry) {
+        if (!entry.hasAclSet()) {
+           	try {
+           		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES);
+           	} catch (OperationAccessControlException ex) {
+          		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) 
+       				getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATOR_MODIFY);
+          		else throw ex;
+          	}     
+        } else {         	
+        	//entry has a workflow
+        	//see if owner can modify
+        	if (entry.checkOwner(AccessType.WRITE)) {
+    		   if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) {
+    			   if (binder.isWidenModify()) return;
+    			   if (getAccessControlManager().testOperation(binder, WorkAreaOperation.CREATOR_MODIFY)) return;
+    		   }
+    	   }
+		    //see if folder default is enabled.
+    	   if (entry.checkWorkArea(AccessType.WRITE)) {
+    		   try {
+    	       		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES); 
+    	       		return;
+    		   } catch (OperationAccessControlException ex) {
+    			   //at this point we can stop if workflow cannot widen access
+    			   if (!binder.isWidenModify()) throw ex;
+    		   }
+    	   }
+    	   //if fail this test exception is thrown
+    	   getAccessControlManager().checkAcl(binder, entry, AccessType.WRITE, false, false);
+    	   if (binder.isWidenModify()) return;
+    	   //make sure acl list is sub-set of binder access
+      		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES);     	   
+        }    	
+    }
     protected void readAccessCheck(Binder binder, WorkflowControlledEntry entry) {
         if (!entry.hasAclSet()) {
            	try {
