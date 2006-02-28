@@ -1,28 +1,57 @@
 package com.sitescape.ef.module.shared;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.StringWriter;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import net.sf.ehcache.CacheManager;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.dom4j.io.DocumentSource;
+import org.dom4j.io.SAXReader;
+import org.dom4j.Element;
+import org.dom4j.Node;
+import org.dom4j.DocumentException;
 
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 
+import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.mail.MailModule;
 import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.util.DirPath;
+import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.util.GetterUtil;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
@@ -62,7 +91,14 @@ public class EntryIndexUtils {
     public static final String WORKFLOW_PROCESS_FIELD = "_workflowProcess";
     public static final String WORKFLOW_STATE_FIELD = "_workflowState";
     public static final String BINDER_ID_FIELD = "_binderId";
-    
+    public static final String FILENAME_FIELD = "_fileName";
+    public static final String FILE_EXT_FIELD = "_fileExt";
+    public static final String FILE_TYPE_FIELD = "_fileType";
+    public static final String FILE_ID_FIELD = "_fileID";
+    private static final String NULLXSL = "<?xml version='1.0' ?> \n    <xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0' />"; 
+    // Defines field values
+    public static final String READ_ACL_ALL = "all";
+    private static TransformerFactory transFactory = TransformerFactory.newInstance();
  
     
     public static void addTitle(Document doc, Entry entry) {
@@ -250,5 +286,108 @@ public class EntryIndexUtils {
     	}
         racField = new Field(BasicIndexUtils.READ_ACL_FIELD, pIds.toString(), true, true, true);      
         doc.add(racField);
+    }
+    
+    public static void addFileAttachmentName(Document doc,String filename) {
+      	Field fileNameField = Field.Keyword(FILENAME_FIELD, filename);
+       	doc.add(fileNameField);
+    }
+    
+    public static void addFileExtension(Document doc,String fileName) {
+      	Field fileExtField = Field.Keyword(FILE_EXT_FIELD, getFileExtension(fileName));
+       	doc.add(fileExtField);   	
+    }
+
+    public static void addFileType(Document doc, File textfile) {
+    	org.dom4j.Document document = null;
+       	if ((textfile == null) || textfile.length() <= 0) return;
+    	// open the file with an xml reader
+		SAXReader reader = new SAXReader();
+		try {
+			document = reader.read(textfile);
+			//textfile.delete();
+			if (document == null) return;
+		} catch (Exception e) {e.toString();}
+        //} catch (Exception e) {logger.info("Error with converted file: " + e.toString());}
+		// <document type="Microsoft Word 2002">
+		Element x = (Element)document.selectSingleNode("/searchml");
+		Element y = (Element)x.selectSingleNode("document");
+		java.util.List nodes = document.selectNodes("/searchml");
+		
+      	
+		Field fileTypeField = Field.Keyword(FILE_TYPE_FIELD, x.getText());
+       	doc.add(fileTypeField);   	
+	
+		
+		return;    
+    }
+    
+    public static void addAttachmentText(Document doc, File textfile, File transformFile) {
+    	org.dom4j.Document document = null;
+    	if ((textfile == null) || textfile.length() <= 0) return;
+    	// open the file with an xml reader
+		SAXReader reader = new SAXReader();
+		try {
+			document = reader.read(textfile);
+			//textfile.delete();
+			if (document == null) return;
+		} catch (Exception e) {e.toString();}
+        //} catch (Exception e) {logger.info("Error with converted file: " + e.toString());}
+		// get the text and meta data?
+		String text = getTextFromXML(document, transformFile);
+		
+    	//insert the text into the "alltext" field
+		BasicIndexUtils.addAllText(doc,text);
+		//Field allTextField = BasicIndexUtils.allTextField(text);
+		//doc.add(allTextField);
+    	// add the meta data fields?
+    	return;
+    }	
+    
+    protected static String getTextFromXML(org.dom4j.Document tempfile, File transformFile) {
+    	
+    	Locale l = Locale.getDefault();
+		Templates trans;
+		Transformer tranny = null;
+		Source xsltSource = new StreamSource(NULLXSL);
+        
+        try {
+			Source s = new StreamSource(transformFile);
+			trans = transFactory.newTemplates(s);
+			tranny =  trans.newTransformer();
+		} catch (TransformerConfigurationException tce) {}
+		
+		StreamResult result = new StreamResult(new StringWriter());
+		try {
+			tranny.setParameter("Lang", l);
+			tranny.transform(new DocumentSource(tempfile), result);
+		} catch (Exception ex) {
+			return ex.getMessage();
+		}
+		return result.getWriter().toString();
+	}
+    
+    public static String getFileExtension(String fileName) {
+        int extensionStart = fileName.lastIndexOf('.');
+        String extension = "";
+
+        if (extensionStart >= 0) {
+            extension = fileName.substring(extensionStart + 1);
+        }
+
+        return extension;
+    }
+    
+    public static void addFileAttachmentUid(Document doc, FileUploadItem fui, Set attachments) {
+    
+        Iterator iter=attachments.iterator();
+        while (iter.hasNext()) {
+             FileAttachment f = (FileAttachment)iter.next();
+             if (fui.getOriginalFilename().equals(f.getFileItem().getName())){
+               	Field fileIDField = Field.Keyword(FILE_ID_FIELD, f.getId());
+            	doc.add(fileIDField); 
+            	return;
+             }
+        }
     }
 }
