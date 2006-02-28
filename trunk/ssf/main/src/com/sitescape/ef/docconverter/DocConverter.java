@@ -11,10 +11,12 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 
-import com.sitescape.ef.util.ClassPathConfigFiles;
+import net.sf.ehcache.CacheManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -30,15 +32,72 @@ import org.springframework.core.io.Resource;
  * @see Export Export
  */
 
-public class DocConverter {
+public class DocConverter implements InitializingBean, DisposableBean {
 
 	private static final String INPUTPATHKEY = "inputpath";
 	private static final String OUTPUTPATHKEY = "outputpath";
 	private static final String OUTPUTIDKEY = "outputid";
-	private String[] configFileNames;
-
+	private String configFileName;
+	private String nullTransform;
+	
 	Properties configProps = new Properties();
 	protected final Log logger = LogFactory.getLog(getClass());
+
+	public void afterPropertiesSet() throws Exception {
+		try {
+			setConverterConfiguration(getConfigFileName());
+		} catch (Exception e) {}
+	}	
+	
+	public void destroy() throws Exception {
+		
+		// Close the socket connection that you established in afterPropertiesSet.
+		// Do any other cleanup stuff as necessary. 
+	}
+	
+	/**
+	 * @return Returns the configFileName.
+	 */
+	public String getConfigFileName() {
+		return configFileName;
+	}
+
+	/**
+	 * @param configFileName The configFileName to set.
+	 */
+	public void setConfigFileName(String configFileName) {
+		this.configFileName = configFileName;
+	}
+
+
+	/**
+	 * @return Returns the nullTransform.
+	 */
+	public String getNullTransform() {
+		return nullTransform;
+	}
+
+	/**
+	 * @param nullTransform The nullTransform to set.
+	 */
+	public void setNullTransform(String nullTransform) {
+		this.nullTransform = nullTransform;
+	}
+
+	/**
+	 * @return Returns the nullTransform file.
+	 */
+	public File getNullTransformFile() {
+		try {
+			//load singleton with our config file
+			return new ClassPathResource(nullTransform).getFile();
+		}
+        catch (Exception e) {
+        	Log logger = LogFactory.getLog(getClass());
+        	logger.error("DocConverter, transform file error: " + e.getLocalizedMessage());
+        }
+		return null;
+	}
 	
 	/**
 	 * This is going to be a bean, so, we need a bean style setter.
@@ -58,7 +117,7 @@ public class DocConverter {
 	            InputStream is = resource.getInputStream();
 				configProps.load(is);
 				is.close();
-				System.out.println("Loading " + configFileName);
+				logger.info("DOCCONVERTER: Loading " + configFileName);
 			}
 		}
 		catch (Exception e) {
@@ -76,7 +135,11 @@ public class DocConverter {
         return new ClassPathResource(filePath);
     }
 
-
+	public void convert(File ifp, File ofp, long timeout)
+	{
+		convert(ifp.getAbsolutePath(), ofp.getAbsolutePath(),timeout);
+	}
+	
 	/**
 	 *  Run the conversion using the given input path, output path.
 	 *
@@ -91,17 +154,11 @@ public class DocConverter {
 		//  Remove extra control properties.
 		configProps.remove(INPUTPATHKEY);
 		configProps.remove(OUTPUTPATHKEY);
-
-		//  Create list of input files.
-		File infile = new File(ifp);
-
-        // open the output file
-		File outfile = new File(ofp);
-
+		
 		//  Process the conversion.
 		Export e = new Export(configProps);
 
-		ExportStatusCode result = e.convert(infile.toString(), ofp, oid, timeout);
+		ExportStatusCode result = e.convert(ifp, ofp, oid, timeout);
         if (result.getCode() == ExportStatusCode.SCCERR_OK.getCode())
         {
 			   logger.info("Conversion Successful!" + ifp + ":" + ofp);
