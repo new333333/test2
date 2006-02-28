@@ -21,59 +21,86 @@
 <h3><ssf:nlt tag="binder.configure.access_control" text="Configure access control"/></h3>
 
 <c:if test="${ssBinder.functionMembershipInherited}">
-This folder is inheriting its access control settings from its parent folder.<br>
+<ssf:nlt tag="binder.configure.access_control.inheriting" 
+ text="This folder is inheriting its access control settings from its parent folder."/>
+<br>
 </c:if>
 
 <c:if test="${!ssBinder.functionMembershipInherited}">
 <fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="accessControl.currentMembershipSettings" text="Current membership settings"/></legend>
+  <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.currentMembershipSettings" 
+    text="Current membership settings"/></legend>
+<c:set var="foundOne" value="0"/>
 <c:forEach var="function" items="${ssFunctionMap}">
   <c:if test="${!empty function.value.ssUsers || !empty function.value.ssGroups}">
 	<span calss="ss_bold"><c:out value="${function.key.name}"/></span>
-	<br>
+	<br/>
 	<span><ssf:nlt tag="accessControl.users" text="Users"/></span>
-	<br>
+	<br/>
 	<ul>
 	<c:forEach var="user" items="${function.value.ssUsers}">
 		<li><c:out value="${user.title}"/></li>
 	</c:forEach>
 	</ul>
-	<br>
+	<br/>
 	<span><ssf:nlt tag="accessControl.users" text="Users"/></span>
-	<br>
+	<br/>
 	<ul>
 	<c:forEach var="user" items="${function.value.ssGroups}">
 		<li><c:out value="${user.title}"/></li>
 	</c:forEach>
 	</ul>
+	<c:set var="foundOne" value="1"/>
   </c:if>
 </c:forEach>
+<c:if test="${foundOne == '0'}">
+<span class="ss_italic">[<ssf:nlt tag="binder.configure.access_control.nosettings"
+ text="No access controls have been set."/>]</span>
+</c:if>
 </fieldset>
 
-<c:forEach var="function" items="${ssFunctionMap}">
-<ssf:expandableArea title="${function.key.name}">
-<form class="ss_style" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
-			<portlet:param name="action" value="configure_access_control"/>
-			<portlet:param name="binderId" value="${ssBinder.id}"/>
-		</portlet:actionURL>">
-	<ul>
-	<c:forEach var="user" items="${function.value.ssUsers}">
-		<li><c:out value="${user.title}"/></li>
-	</c:forEach>
-	</ul>
-	<ul>
-	<c:forEach var="user" items="${function.value.ssGroups}">
-		<li><c:out value="${user.title}"/></li>
-	</c:forEach>
-	</ul>
-	<input type="hidden" name="roleId" value="${function.key.id}">
-	<input type="submit" name="modifyBtn"
-	 value="<ssf:nlt tag="button.modify" text="Modify"/>">
-</form>
-<br/>
-</ssf:expandableArea>
+<br>
 
+<fieldset class="ss_fieldset">
+  <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.addRole" 
+    text="Add a role"/></legend>
+<form class="ss_style" name="<portlet:namespace/>rolesForm" method="post" 
+  action="<portlet:actionURL>
+		  <portlet:param name="action" value="configure_access_control"/>
+		  <portlet:param name="binderId" value="${ssBinder.id}"/>
+		  </portlet:actionURL>">
+<table class="ss_style">
+<th><ssf:nlt tag="role" text="Role"/></th>
+<th><ssf:nlt tag="users" text="Users"/></th>
+<th><ssf:nlt tag="groups" text="Groups"/></th>
+<tr>
+<td>
+<select name="roleId" >
+  <option value=""><ssf:nlt tag="binder.configure.access_control.selectRole"
+    text="--select the role to be added--"/></option>
+<c:forEach var="function" items="${ssFunctionMap}">
+  <c:if test="${empty function.value.ssUsers && empty function.value.ssGroups}">
+    <option value="${function.key.id}"><c:out value="${function.key.name}"/></option>
+  </c:if>
 </c:forEach>
+</select>
+</td>
+<td>
+  <ssf:findUsers formElement="users"/>
+</td>
+<td>
+  <ssf:findGroups formElement="groups"/>
+</td>
+</tr>
+</table>
+
+<input type="submit" name="addBtn"
+ value="<ssf:nlt tag="button.add" text="Add"/>">
+<br/>
+
+</form>
+</fieldset>
+
 </c:if>
 <br/>
 

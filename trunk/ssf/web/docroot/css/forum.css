@@ -19,6 +19,10 @@
   font-weight: bold;
   }
   
+.ss_italic {
+  font-style: italic;
+  }
+  
 .ss_gray {
   color: #999999;   
   }
