@@ -61,7 +61,7 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 					String[] ids = userIds[i].split(" ");
 					for(int j = 0; j < ids.length; j++) {
 						if(ids[j].length() > 0)
-							memberIds.add(Long.parseLong(ids[j]));
+							memberIds.add(Long.valueOf(ids[j]));
 					}
 				}
 			}
@@ -70,7 +70,7 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 					String[] ids = groupIds[i].split(" ");
 					for(int j = 0; j < ids.length; j++) {
 						if(ids[j].length() > 0)
-							memberIds.add(Long.parseLong(ids[j]));
+							memberIds.add(Long.valueOf(ids[j]));
 					}
 				}
 			}
