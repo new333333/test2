@@ -46,7 +46,6 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 			
-		User user = RequestContextHolder.getRequestContext().getUser();
 		Map binderConf = getBinderModule().getBinderFunctionMembership(binderId);
 		Binder binder = (Binder)binderConf.get(ObjectKeys.BINDER);
 		List membership = (List)binderConf.get(ObjectKeys.FUNCTION_MEMBERSHIP);
@@ -56,6 +55,17 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 			Long roleId = new Long(request.getParameter("roleId"));
 			String[] userIds = request.getParameterValues("users");
 			String[] groupIds = request.getParameterValues("groups");
+			Set memberIds = new HashSet();
+			if (userIds != null) {
+				for (int i = 0; i < userIds.length; i++) {
+					if (!userIds[i].equals("")) memberIds.add(userIds[i]);
+				}
+			}
+			if (groupIds != null) {
+				for (int i = 0; i < groupIds.length; i++) {
+					if (!groupIds[i].equals("")) memberIds.add(groupIds[i]);
+				}
+			}
 			WorkAreaFunctionMembership wfm = null;
 			for (int i = 0; i < membership.size(); i++) {
 				if (roleId.equals(((WorkAreaFunctionMembership) membership.get(i)).getFunctionId())) {
@@ -64,21 +74,17 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 					break;
 				}
 			}
-			if (wfm == null) wfm = new WorkAreaFunctionMembership();
-			//Build the workarea membership object
-			wfm.setFunctionId(roleId);
-			wfm.setWorkAreaId(binder.getId());
-			wfm.setWorkAreaType(binder.getType());
-			wfm.setZoneName(user.getZonName());
-			Set memberIds = new HashSet();
-			for (int i = 0; i < userIds.length; i++) {
-				if (!userIds[i].equals("")) memberIds.add(userIds[i]);
+			if (wfm == null) {
+				wfm = new WorkAreaFunctionMembership();
+				//Build the workarea membership object
+				wfm.setFunctionId(roleId);
+				wfm.setMemberIds(memberIds);
+				getAdminModule().addWorkAreaFunctionMembership(binder, wfm);
+			} else {
+				//Modify the existing membership
+				wfm.setMemberIds(memberIds);
+				getAdminModule().modifyWorkAreaFunctionMembership(binder, wfm);
 			}
-			for (int i = 0; i < groupIds.length; i++) {
-				if (!groupIds[i].equals("")) memberIds.add(groupIds[i]);
-			}
-			wfm.setMemberIds(memberIds);
-			//getBinderModule().getWorkAreaFunctionMembershipManager().
 			
 		} else if (formData.containsKey("modifyBtn")) {
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
