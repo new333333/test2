@@ -349,6 +349,7 @@
 		<property name="processorManager"><ref local="modelProcessorManager"/></property>
 		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 		<property name="docConverter"><ref local="docConverter"/></property>
+		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
 	</bean>
 	
 	<bean id="employeeModule" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.sample.impl.EmployeeModuleImpl">
@@ -430,9 +431,7 @@
 
 	<bean id="binderModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.binder.impl.BinderModuleImpl">
-				<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
-			</bean>
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.binder.impl.BinderModuleImpl"/>
 		</property>
 	</bean>
 

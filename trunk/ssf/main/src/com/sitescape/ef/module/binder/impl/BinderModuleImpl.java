@@ -23,12 +23,6 @@ import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
  */
 public class BinderModuleImpl extends CommonDependencyInjection implements BinderModule {
 	private WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
-	public void setWorkAreaFunctionMembershipManager(WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager) {
-		this.workAreaFunctionMembershipManager=workAreaFunctionMembershipManager;
-	}
-	public WorkAreaFunctionMembershipManager getWorkAreaFunctionMembershipManager() {
-		return workAreaFunctionMembershipManager;
-	}
 	public Binder getBinderByName(String binderName) 
    			throws NoBinderByTheNameException, AccessControlException {
 		Binder binder = getCoreDao().findBinderByName(binderName, RequestContextHolder.getRequestContext().getZoneName());
