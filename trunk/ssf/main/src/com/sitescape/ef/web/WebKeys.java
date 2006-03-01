@@ -177,6 +177,8 @@ public class WebKeys {
 	public static final String USER_ID = "com.sitescape.userId";
     public static final String USER_PROPERTIES="ssUserProperties";
     public static final String USER_FOLDER_PROPERTIES="ssUserFolderProperties";
+    public static final String USER_SEARCH_USER_GROUP_TYPE_GROUP="group";
+    public static final String USER_SEARCH_USER_GROUP_TYPE_USER="user";
     public static final String WORKSPACE="ssWorkspace";
     public static final String WORKSPACE_DOM_TREE="ssWsDomTree";
 	public static final String ZONE_NAME = "com.sitescape.zonename";
