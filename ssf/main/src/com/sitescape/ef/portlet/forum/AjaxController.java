@@ -134,6 +134,7 @@ public class AjaxController  extends SAbstractForumController {
 		} else if (op.equals(WebKeys.FORUM_OPERATION_USER_LIST_SEARCH)) {
 			String searchText = ((String[])formData.get("searchText"))[0];
 			String searchType = ((String[])formData.get("searchType"))[0];
+			String userGroupType = ((String[])formData.get("userGroupType"))[0];
 			String listDivId = ((String[])formData.get("listDivId"))[0];
 			String maxEntries = ((String[])formData.get("maxEntries"))[0];
 			String[] idsToSkip = ((String[])formData.get("idsToSkip"))[0].split(" ");
@@ -145,6 +146,8 @@ public class AjaxController  extends SAbstractForumController {
 	    	String nameType = IndexUtils.LASTNAME_FIELD;
 	    	if (searchType.equals("firstName")) nameType = IndexUtils.FIRSTNAME_FIELD;
 	    	if (searchType.equals("loginName")) nameType = IndexUtils.USERNAME_FIELD;
+	    	if (searchType.equals("groupName")) nameType = IndexUtils.GROUPNAME_FIELD;
+	    	if (searchType.equals("title")) nameType = EntryIndexUtils.TITLE_FIELD;
 
 	    	//Build the search query
 			Document searchFilter = DocumentHelper.createDocument();
@@ -158,8 +161,14 @@ public class AjaxController  extends SAbstractForumController {
 			
 			//Do a search to find the first few users who match the search text
         	User u = RequestContextHolder.getRequestContext().getUser();
-        	Map users = getProfileModule().getUsers(u.getParentBinder().getId(), 
-        			Integer.parseInt(maxEntries), searchFilter);
+        	Map users = new HashMap();
+        	if (userGroupType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_GROUP)) {
+	    		users = getProfileModule().getGroups(u.getParentBinder().getId(), 
+		    			Integer.parseInt(maxEntries), searchFilter);
+        	} else {
+	    		users = getProfileModule().getUsers(u.getParentBinder().getId(), 
+		    			Integer.parseInt(maxEntries), searchFilter);
+        	}
     		model.put(WebKeys.USERS, users.get(ObjectKeys.ENTRIES));
     		model.put(WebKeys.USER_IDS_TO_SKIP, userIdsToSkip);
     		model.put("listDivId", listDivId);

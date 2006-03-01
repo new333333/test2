@@ -157,6 +157,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	return result;
     }
  
+    public Map getGroups(Long binderId, int maxEntries, Document searchFilter) {
+        ProfileBinder binder = getProfileBinder();
+        ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
+               	binder, ProfileCoreProcessor.PROCESSOR_KEY);
+        return processor.getBinderEntries(binder, groupDocType, maxEntries, searchFilter);
+        
+   }
+ 
     //***********************************************************************************************************	
     public Long addUser(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
