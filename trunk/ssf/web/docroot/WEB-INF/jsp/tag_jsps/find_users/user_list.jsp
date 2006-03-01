@@ -120,7 +120,10 @@ function ss_userListInterceptCR(e) {
 <div id="ss_search_status_message"></div>
 <c:set var="ss_user_list_support_stuff_loaded" value="1" scope="request"/>
 </c:if>
-<div style="display:inline;">
+<table class="ss_style" cellspacing="2px" cellpadding="5px">
+<tr>
+<td valign="top">
+<div>
   <div style="border:solid #cecece 1px;">
     <ul id="added_<%= userListElementName %>" class="ss_dragable ss_userlist">
       <c:forEach var="item" items="${userList}">
@@ -131,28 +134,30 @@ function ss_userListInterceptCR(e) {
   </div>
 </div>
 <input type="hidden" name="<%= userListElementName %>">
-
-  <div style="display:inline; margin:0px; padding:0px;"><img 
+</td>
+<td valign="top">
+  <div style="margin:0px; padding:0px;"><img 
     src="<html:imagesPath />pics/sym_s_arrow_left.gif" 
     alt="<ssf:nlt tag="userlist.dragLeft" text="Drag to the left to add a name."/>"
-    >
-    <br>
-    <img 
+    ><br><img 
     src="<html:imagesPath />pics/sym_s_arrow_right.gif" 
     alt="<ssf:nlt tag="userlist.dragRight" 
       text="Drag to the right to delete a name."/>"
-    >
-  </div>
-
-  <div style="display:inline;">
-	  <b><ssf:nlt tag="userlist.findName" text="Find name"/>:</b>
-	  <input type="text" size="15" name="ss_userList_searchText" 
-	    onKeyUp="ss_userListSearch(this.value, '<%= userListElementName %>');">
-	  <div style="border:solid #cecece 1px;">
-	    <ul id="available_<%= userListElementName %>" class="ss_dragable ss_userlist">
-	    </ul>
-	  </div>
-	
+    ></div>
+</td>
+<td valign="top">
+  <div>
+    <b><ssf:nlt tag="userlist.findName" text="Find name"/>:</b>
+    <input type="text" size="15" name="ss_userList_searchText" 
+      onKeyUp="ss_userListSearch(this.value, '<%= userListElementName %>');">
+    <div style="border:solid #cecece 1px;">
+      <ul id="available_<%= userListElementName %>" class="ss_dragable ss_userlist">
+      </ul>
+    </div>
+  </div>	
+</td>
+<td valign="top">
+  <div>
 	  <input type="radio" name="ss_userList_searchType" value="firstName"
 	    onClick="ss_userListSetSearchType(this.value, '<%= userListElementName %>');">
 	  <ssf:nlt tag="userlist.firstName" text="First name"/><br>
@@ -163,8 +168,11 @@ function ss_userListInterceptCR(e) {
 	    onClick="ss_userListSetSearchType(this.value, '<%= userListElementName %>');">
 	  <ssf:nlt tag="userlist.loginName" text="Login name"/>
   </div>
-  
 <input type="hidden" name="<%= userListElementName %>" id="<%= userListElementName %>">
+</td>
+</tr>
+</table>
+  
 <script type="text/javascript">
   ss_DragDrop.makeListContainer( document.getElementById('added_<%= userListElementName %>'));
   ss_DragDrop.makeListContainer( document.getElementById('available_<%= userListElementName %>'));
@@ -181,6 +189,14 @@ function ss_saveUserListData_<portlet:namespace/>_${prefix}() {
 	elementObj.value = s;
 	return true;
 }
+
+function ss_userListKeyPress_<portlet:namespace/>_${prefix}(e) {
+	//Save the current list of selected user ids
+	ss_saveUserListData_<portlet:namespace/>_${prefix}()
+	//Then call the general keyPress handler
+	ss_userListInterceptCR(e)
+}
+
 ss_createOnSubmitObj('${prefix}onSubmit', '<%= userListFormName %>', ss_saveUserListData_<portlet:namespace/>_${prefix});
-ss_createEventObj('ss_userListInterceptCR', 'KEYPRESS');
+ss_createEventObj('ss_userListKeyPress_<portlet:namespace/>_${prefix}', 'KEYPRESS');
 </script>
