@@ -5,6 +5,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.PortletRequest;
+import javax.servlet.ServletRequest;
 
 import org.springframework.web.servlet.ModelAndView;
 
@@ -31,6 +32,7 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.util.ResolveIds;
+import com.sitescape.util.ParamUtil;
 
 /**
  * @author Peter Hurley
@@ -44,15 +46,43 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 			
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map binderConf = getBinderModule().getBinderFunctionMembership(binderId);
+		Binder binder = (Binder)binderConf.get(ObjectKeys.BINDER);
+		List membership = (List)binderConf.get(ObjectKeys.FUNCTION_MEMBERSHIP);
+
 		//See if the form was submitted
 		if (formData.containsKey("addBtn")) {
-			response.setRenderParameters(formData);
+			Long roleId = new Long(request.getParameter("roleId"));
+			String[] userIds = request.getParameterValues("users");
+			String[] groupIds = request.getParameterValues("groups");
+			WorkAreaFunctionMembership wfm = null;
+			for (int i = 0; i < membership.size(); i++) {
+				if (roleId.equals(((WorkAreaFunctionMembership) membership.get(i)).getFunctionId())) {
+					//The function already is in use for this workarea.
+					wfm = (WorkAreaFunctionMembership) membership.get(i);
+					break;
+				}
+			}
+			if (wfm == null) wfm = new WorkAreaFunctionMembership();
+			//Build the workarea membership object
+			wfm.setFunctionId(roleId);
+			wfm.setWorkAreaId(binder.getId());
+			wfm.setWorkAreaType(binder.getType());
+			wfm.setZoneName(user.getZonName());
+			Set memberIds = new HashSet();
+			for (int i = 0; i < userIds.length; i++) {
+				if (!userIds[i].equals("")) memberIds.add(userIds[i]);
+			}
+			for (int i = 0; i < groupIds.length; i++) {
+				if (!groupIds[i].equals("")) memberIds.add(groupIds[i]);
+			}
+			wfm.setMemberIds(memberIds);
+			//getBinderModule().getWorkAreaFunctionMembershipManager().
+			
 		} else if (formData.containsKey("modifyBtn")) {
-			setResponseOnClose(response, binderId);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			setResponseOnClose(response, binderId);
-		} else {
-			response.setRenderParameters(formData);
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
