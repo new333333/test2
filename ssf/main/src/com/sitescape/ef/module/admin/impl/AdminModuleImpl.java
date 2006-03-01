@@ -33,6 +33,8 @@ import com.sitescape.ef.module.impl.CommonDependencyInjection;
 
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.FunctionExistsException;
+import com.sitescape.ef.security.function.WorkArea;
+import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.ConfigurationException;
@@ -237,5 +239,26 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
         List zoneFunctions = functionManager.findFunctions(user.getZoneName());
 		return zoneFunctions;
     }
+    
+	public void addWorkAreFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		membership.setZoneName(user.getZoneName());
+		membership.setWorkAreaId(workArea.getWorkAreaId());
+		membership.setWorkAreaType(workArea.getWorkAreaType());
 
+        //Check that this user is allowed to do this operation; 
+		// Is it SITE_ADMINISTRATION right operation for this checking?
+        accessControlManager.checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);        
+		
+        getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
+	}
+	public void modifyWorkAreFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership) {
+		// TODO Auto-generated method stub
+		
+	}
+	public List getWorkAreFunctionMemberships(WorkArea workArea) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

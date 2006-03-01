@@ -12,6 +12,8 @@ import java.util.Set;
 
 import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.security.function.Function;
+import com.sitescape.ef.security.function.WorkArea;
+import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 
 /**
  * @author Janet McCann
@@ -39,5 +41,7 @@ public interface AdminModule {
     public void modifyEmailAlias(String aliasId, Map updates);
     public void addEmailAlias(Map updates);
     public void deleteEmailAlias(String aliasId);
-
+    public void addWorkAreFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership);
+    public void modifyWorkAreFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership);
+    public List getWorkAreFunctionMemberships(WorkArea workArea);
 }

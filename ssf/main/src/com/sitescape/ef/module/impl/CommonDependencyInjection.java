@@ -13,6 +13,7 @@ import com.sitescape.ef.search.LuceneSessionFactory;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AclManager;
 import com.sitescape.ef.security.function.FunctionManager;
+import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
 
 /**
  * This abstract class provides a central place where dependent
@@ -39,6 +40,7 @@ public abstract class CommonDependencyInjection {
 	protected LuceneSessionFactory luceneSessionFactory;
 	protected PresenceService presenceService;
 	protected DocConverter docConverter;
+	protected WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
 	
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
@@ -99,5 +101,11 @@ public abstract class CommonDependencyInjection {
 	}
 	public DocConverter getDocConverter() {
 		return docConverter;
+	}
+	public void setWorkAreaFunctionMembershipManager(WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager) {
+		this.workAreaFunctionMembershipManager=workAreaFunctionMembershipManager;
+	}
+	protected WorkAreaFunctionMembershipManager getWorkAreaFunctionMembershipManager() {
+		return workAreaFunctionMembershipManager;
 	}
 }
