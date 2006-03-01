@@ -57,13 +57,21 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 			String[] groupIds = request.getParameterValues("groups");
 			Set memberIds = new HashSet();
 			if (userIds != null) {
-				for (int i = 0; i < userIds.length; i++) {
-					if (!userIds[i].equals("")) memberIds.add(userIds[i]);
+				for(int i = 0; i < userIds.length; i++) {
+					String[] ids = userIds[i].split(" ");
+					for(int j = 0; j < ids.length; j++) {
+						if(ids[j].length() > 0)
+							memberIds.add(Long.parseLong(ids[j]));
+					}
 				}
 			}
 			if (groupIds != null) {
 				for (int i = 0; i < groupIds.length; i++) {
-					if (!groupIds[i].equals("")) memberIds.add(groupIds[i]);
+					String[] ids = groupIds[i].split(" ");
+					for(int j = 0; j < ids.length; j++) {
+						if(ids[j].length() > 0)
+							memberIds.add(Long.parseLong(ids[j]));
+					}
 				}
 			}
 			WorkAreaFunctionMembership wfm = null;
