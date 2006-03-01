@@ -37,6 +37,11 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType());
     }
 
+    public List findWorkAreaFunctionMembership(String zoneName, WorkArea workArea, Long functionId) {
+//        return getSecurityDao().findWorkAreaFunctionMemberships
+//    	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType(), functionId);
+    	return null; // Okja
+    }
     
     /*
     public boolean checkWorkAreaFunctionMembership(Long zoneName, WorkArea workArea, 
@@ -71,4 +76,7 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType(), 
         	        workAreaOperation.getName(), membersToLookup);
     }
+	public WorkAreaFunctionMembership getWorkAreaFunctionMembership(String zoneName, WorkArea workArea, Long functionId) {
+		return null; // Okja
+	}
 }
