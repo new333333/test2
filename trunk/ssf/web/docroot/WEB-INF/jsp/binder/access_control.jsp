@@ -96,14 +96,14 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="binder.configure.access_control.users" 
  text="Users"/></td>
 <td valign="top">
-  <ssf:findUsers formName="rolesForm" formElement="users"/>
+  <ssf:findUsers formName="rolesForm" formElement="users" type="user"/>
 </td>
 </tr>
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="binder.configure.access_control.groups" 
  text="Groups"/></td>
 <td valign="top">
-  ssf:findGroups formName="rolesForm" formElement="groups"
+  <ssf:findUsers formName="rolesForm" formElement="groups" type="group"/>
 </td>
 </tr>
 </table>
