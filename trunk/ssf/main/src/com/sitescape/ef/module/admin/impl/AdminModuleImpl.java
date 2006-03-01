@@ -240,7 +240,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		return zoneFunctions;
     }
     
-	public void addWorkAreFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership) {
+	public void addWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		membership.setZoneName(user.getZoneName());
@@ -253,11 +253,11 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		
         getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
 	}
-	public void modifyWorkAreFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership) {
+	public void modifyWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership) {
 		// TODO Auto-generated method stub
 		
 	}
-	public List getWorkAreFunctionMemberships(WorkArea workArea) {
+	public List getWorkAreaFunctionMemberships(WorkArea workArea) {
 		// TODO Auto-generated method stub
 		return null;
 	}
