@@ -14,6 +14,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
@@ -26,6 +27,7 @@ public class FindUsers extends TagSupport {
     private List userList;
     private String formName;
     private String formElement;
+    private String type;
     
 	public int doStartTag() throws JspException {
 		try {
@@ -33,6 +35,8 @@ public class FindUsers extends TagSupport {
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 			
 			if (this.userList == null) this.userList = new ArrayList();
+			if (this.type == null) this.type = WebKeys.USER_SEARCH_USER_GROUP_TYPE_USER;
+			
 			//Output the start of the area
 			RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/find_users/user_list.jsp");
 
@@ -41,6 +45,7 @@ public class FindUsers extends TagSupport {
 			req.setAttribute("user_list", this.userList);
 			req.setAttribute("form_name", this.formName);
 			req.setAttribute("form_element", this.formElement);
+			req.setAttribute("list_type", this.type);
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
 			pageContext.getOut().print(res.getString());
@@ -69,6 +74,10 @@ public class FindUsers extends TagSupport {
 
 	public void setFormElement(String formElement) {
 	    this.formElement = formElement;
+	}
+
+	public void setType(String type) {
+	    this.type = type;
 	}
 
 }
