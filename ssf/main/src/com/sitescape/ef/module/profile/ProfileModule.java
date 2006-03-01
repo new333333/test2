@@ -41,6 +41,7 @@ public interface ProfileModule {
     public Principal getEntry(Long binderId, Long userId);
 
     public List getGroups(Long binderId);
+    public Map getGroups(Long binderId, int maxEntries, Document searchFilter);
     public Map getUsers(Long binderId);
     public Map getUsers(Long binderId, int maxEntries);
     public Map getUsers(Long binderId, int maxEntries, Document searchFilter);
