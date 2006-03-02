@@ -69,7 +69,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************
     
    	protected SFQuery indexBinder_getQuery(Binder binder) {
-   		return getCoreDao().queryUsers(new FilterControls(), binder.getZoneName());
+   		//$$$return getCoreDao().queryUsers(new FilterControls(), binder.getZoneName());
+   		return getCoreDao().queryAllPrincipals(new FilterControls(), binder.getZoneName());
    	}
 
     //***********************************************************************************************************

@@ -478,6 +478,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	filter.add("zoneName", zoneName);
     	return queryPrincipals(filter, Group.class.getName());
     }  
+    public SFQuery queryAllPrincipals(FilterControls filter, String zoneName) throws DataAccessException { 
+    	filter.add("zoneName", zoneName);
+       	return queryPrincipals(filter, Principal.class.getName());
+    }
+    
     private SFQuery queryPrincipals(final FilterControls filter, final String clazz) throws DataAccessException { 
         Query query = (Query)getHibernateTemplate().execute(
                 new HibernateCallback() {
