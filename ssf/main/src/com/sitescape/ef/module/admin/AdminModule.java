@@ -43,5 +43,6 @@ public interface AdminModule {
     public void deleteEmailAlias(String aliasId);
     public void addWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership);
     public void modifyWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership);
-    public List getWorkAreaFunctionMemberships(WorkArea workArea);
+    public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 
+    public List findWorkAreaFunctionMemberships(WorkArea workArea);
 }

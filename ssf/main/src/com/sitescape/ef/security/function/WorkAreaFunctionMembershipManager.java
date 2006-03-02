@@ -16,6 +16,15 @@ public interface WorkAreaFunctionMembershipManager {
     public void updateWorkAreaFunctionMembership(WorkAreaFunctionMembership functionMembership);
     
     /**
+     * Returns <code>WorkAreaFunctionMembership</code> for
+     * @param zoneName
+     * @param workArea
+     * @param functionId
+     * @return
+     */
+    public WorkAreaFunctionMembership getWorkAreaFunctionMembership(String zoneName, WorkArea workArea, Long functionId);
+    
+    /**
      * Returns a list of <code>WorkAreaFunctionMembership</code>
      * @param zoneName
      * @param workArea

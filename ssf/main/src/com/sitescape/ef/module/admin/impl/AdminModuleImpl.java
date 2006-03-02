@@ -35,6 +35,7 @@ import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.FunctionExistsException;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
+import com.sitescape.ef.security.function.WorkAreaFunctionMembershipExistsException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.ConfigurationException;
@@ -251,14 +252,42 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		// Is it SITE_ADMINISTRATION right operation for this checking?
         accessControlManager.checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);        
 		
+		List memberships = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(user.getZoneName(), workArea);
+		if (memberships.contains(membership)) {
+			throw new WorkAreaFunctionMembershipExistsException(membership);
+		}
         getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
 	}
+	
 	public void modifyWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership) {
-		// TODO Auto-generated method stub
+		User user = RequestContextHolder.getRequestContext().getUser();
 		
+        //Check that this user is allowed to do this operation; 
+		//Is it SITE_ADMINISTRATION right operation for this checking?
+        accessControlManager.checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);   
+        
+        getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(membership);
 	}
-	public List getWorkAreaFunctionMemberships(WorkArea workArea) {
-		// TODO Auto-generated method stub
-		return null;
+	
+    public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
+		User user = RequestContextHolder.getRequestContext().getUser();	
+		
+        //Check that this user is allowed to do this operation; 
+		// Is it SITE_ADMINISTRATION right operation for this checking?
+        accessControlManager.checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);        
+
+        return getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership
+       		(user.getZoneName(), workArea, functionId);
+    }
+    
+	public List findWorkAreaFunctionMemberships(WorkArea workArea) {
+		User user = RequestContextHolder.getRequestContext().getUser();	
+		
+        //Check that this user is allowed to do this operation; 
+		// Is it SITE_ADMINISTRATION right operation for this checking?
+        accessControlManager.checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);        
+
+        return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(user.getZoneName(), workArea);
 	}
+
 }
