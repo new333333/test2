@@ -104,4 +104,33 @@ public class WorkAreaFunctionMembership {
     public void setFunctionId(Long functionId) {
         this.functionId = functionId;
     }
+    
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+
+        //objects can be proxied so don't compare classes.
+        if (obj == null)
+            return false;
+      
+        WorkAreaFunctionMembership o = (WorkAreaFunctionMembership) obj;
+        // Don't bring surrogate key value (id) into consideration.
+        // Use business key only (which is a combination of zone name + 
+        // work area id + work area type + function id). 
+        if (!o.getZoneName().equals(zoneName)) return false;               
+        if (!o.getWorkAreaId().equals(workAreaId)) return false;               
+        if (!o.getWorkAreaType().equals(workAreaType)) return false;               
+        if (!o.getFunctionId().equals(functionId)) return false;               
+        
+        return true;
+    }
+    
+    public int hashCode() {
+       	int hash = 7;
+    	hash = 31*hash + zoneName.hashCode();
+    	hash = 31*hash + workAreaId.hashCode();
+    	hash = 31*hash + workAreaType.hashCode();
+    	hash = 31*hash + functionId.hashCode();
+    	return hash;
+    }
 }

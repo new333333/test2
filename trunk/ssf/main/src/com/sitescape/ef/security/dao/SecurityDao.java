@@ -21,7 +21,20 @@ public interface SecurityDao {
     public WorkAreaFunctionMembership loadWorkAreaFunctionMembership(Long id);
     	    	     
     public List findFunctions(String zoneName);
-    
+
+    /**
+     * Returns specified <code>WorkAreaFunctionMembership</code>.
+     * Returns <code>null</code> if not exists.
+     * 
+     * @param zoneName
+     * @param workAreaId
+     * @param workAreaType
+     * @param functionId
+     * @return
+     */
+    public WorkAreaFunctionMembership getWorkAreaFunctionMembership(String zoneName, 
+    		Long workAreaId, String workAreaType, Long functionId);
+
     public List findWorkAreaFunctionMemberships(String zoneName, Long workAreaId, String workAreaType);
     
     /**

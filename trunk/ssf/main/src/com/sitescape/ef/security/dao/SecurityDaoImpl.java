@@ -27,6 +27,7 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
     private static final String ZONE_ID = "zoneName"; 
     private static final String WORK_AREA_ID = "workAreaId";
     private static final String WORK_AREA_TYPE = "workAreaType";
+    private static final String FUNCTION_ID = "functionId";
     private static final String WORK_AREA_OPERATION_NAME = "operationName";
     private static final String PRINCIPAL_IDS = "principalIds";
     
@@ -64,7 +65,33 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
             );
     }
 
-    public List findWorkAreaFunctionMemberships(final String zoneName, 
+
+	public WorkAreaFunctionMembership getWorkAreaFunctionMembership(final String zoneName, 
+			final Long workAreaId, final String workAreaType, final Long functionId) {
+        return (WorkAreaFunctionMembership) getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                    	List results = session.createCriteria(WorkAreaFunctionMembership.class)
+                                .add(Expression.conjunction() 
+                               			.add(Expression.eq(ZONE_ID, zoneName))
+                               			.add(Expression.eq(WORK_AREA_ID, workAreaId))
+                               			.add(Expression.eq(WORK_AREA_TYPE, workAreaType))
+                               			.add(Expression.eq(FUNCTION_ID, functionId))
+                               		)
+                               	.setFetchMode("memberIds", FetchMode.JOIN)
+                               	.setCacheable(true)
+                               	.list();
+                    	//since we eagerly fetch, results are not unique
+                    	if(results == null || results.size() == 0)
+                    		return null;
+                    	else
+                    		return (WorkAreaFunctionMembership) results.get(0);
+                    	}
+                	}
+            );		
+	}
+	
+	public List findWorkAreaFunctionMemberships(final String zoneName, 
             final Long workAreaId, final String workAreaType) {
         return (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
@@ -123,5 +150,6 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
         else
             return false;
     }
+
     
 }
