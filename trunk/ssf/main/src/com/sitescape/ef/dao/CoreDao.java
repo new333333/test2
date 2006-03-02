@@ -143,5 +143,7 @@ public interface CoreDao {
 	public List loadEmailAliases(String zoneName);
 	public EmailAlias loadEmailAlias(String aliasId, String zoneName);
     public SeenMap loadSeenMap(Long userId);
-    public void bulkLoadCollections(Collection entries);	
+    public void bulkLoadCollections(Collection entries);
+    
+    public SFQuery queryAllPrincipals(FilterControls filter, String zoneName) throws DataAccessException; 
  }
