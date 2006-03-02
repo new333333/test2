@@ -168,10 +168,7 @@ public class FileUploadItem {
 		ready = true;
 	}
 	
-	public File getConvertedTempFile()  throws IOException {
-		File tempDir = SPropsUtil.getFile("temp.dir");
-		if(!tempDir.exists())
-			FileHelper.mkdirs(tempDir);
-		return File.createTempFile(CONVERT_FILE_PREFIX,null,tempDir);
+	public File getTempFile()  throws IOException {
+		return SPropsUtil.getTempFile(CONVERT_FILE_PREFIX);
 	}
 }
