@@ -352,7 +352,8 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     }
     
     protected void modifyEntry_indexAdd(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, List fileData) {
-    	indexEntry(entry, fileData);
+    	//indexEntry(entry, fileData);
+    	indexEntry(entry);
     	// Take care of attached files - TBD - Roy
     }
     
@@ -373,7 +374,8 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 				//It is ok to transition to this state; go do it
 				getWorkflowModule().modifyWorkflowState(ws.getTokenId(), ws.getState(), toState);
 				// JONG - this won't work - getFileAttachments is not FUI
-				indexEntry(entry, entry.getFileAttachments());
+				//indexEntry(entry, entry.getFileAttachments());
+				indexEntry(entry);
 			}
 		}
     }
@@ -467,7 +469,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
    	protected abstract SFQuery indexBinder_getQuery(Binder binder);
  
     //***********************************************************************************************************
-   	public void indexEntry(WorkflowControlledEntry entry, List fileData) {
+   	public void indexEntry(WorkflowControlledEntry entry/*, List fileData*/) {
 		// 	Create an index document from the entry object.
    		org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(entry.getParentBinder(), entry);
         
@@ -478,6 +480,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         IndexSynchronizationManager.addDocument(indexDoc);        
         
         //Create separate documents one for each attached file and index them.
+        /*
         for(int i = 0; i < fileData.size(); i++) {
         	// Get a handle on the uploaded file. 
         	FileUploadItem fui = (FileUploadItem) fileData.get(i);
@@ -487,13 +490,13 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         	indexDoc = buildIndexDocumentFromAttachmentFile(entry.getParentBinder(), entry, fui);
             // Register the index document for indexing.
             IndexSynchronizationManager.addDocument(indexDoc);
-        }
+        }*/
    	}
    	public void indexEntry(Collection entries) {
    		for (Iterator iter=entries.iterator(); iter.hasNext();) {
    			WorkflowControlledEntry entry = (WorkflowControlledEntry)iter.next();
    			// JONG - this won't work - getFileAttachments is not FUI
-   			indexEntry(entry, entry.getFileAttachments());
+   			indexEntry(entry/*, entry.getFileAttachments()*/);
    		}
    	}
    	
