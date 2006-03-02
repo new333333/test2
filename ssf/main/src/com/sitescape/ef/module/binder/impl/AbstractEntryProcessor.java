@@ -28,6 +28,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.docconverter.DocConverter;
+import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.HistoryStamp;
@@ -351,7 +352,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     }
     
     protected void modifyEntry_indexAdd(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, List fileData) {
-    	indexEntry(entry);
+    	indexEntry(entry, fileData);
     	// Take care of attached files - TBD - Roy
     }
     
@@ -371,7 +372,8 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 			if (transitions.containsKey(toState)) {
 				//It is ok to transition to this state; go do it
 				getWorkflowModule().modifyWorkflowState(ws.getTokenId(), ws.getState(), toState);
-	    		indexEntry(entry);
+				// JONG - this won't work - getFileAttachments is not FUI
+				indexEntry(entry, entry.getFileAttachments());
 			}
 		}
     }
@@ -465,10 +467,9 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
    	protected abstract SFQuery indexBinder_getQuery(Binder binder);
  
     //***********************************************************************************************************
-   	public void indexEntry(WorkflowControlledEntry entry) {
+   	public void indexEntry(WorkflowControlledEntry entry, List fileData) {
 		// 	Create an index document from the entry object.
    		org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(entry.getParentBinder(), entry);
-        
         
         // Delete the document that's currently in the index.
         IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
@@ -476,10 +477,23 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
         
+        //Create separate documents one for each attached file and index them.
+        for(int i = 0; i < fileData.size(); i++) {
+        	// Get a handle on the uploaded file. 
+        	FileUploadItem fui = (FileUploadItem) fileData.get(i);
+        	// Create a Lucene document object from the uploaded file.
+        	// This involves applying additional processings such as doc
+        	// conversion, etc. 
+        	indexDoc = buildIndexDocumentFromAttachmentFile(entry.getParentBinder(), entry, fui);
+            // Register the index document for indexing.
+            IndexSynchronizationManager.addDocument(indexDoc);
+        }
    	}
    	public void indexEntry(Collection entries) {
    		for (Iterator iter=entries.iterator(); iter.hasNext();) {
-   			indexEntry((WorkflowControlledEntry)iter.next());
+   			WorkflowControlledEntry entry = (WorkflowControlledEntry)iter.next();
+   			// JONG - this won't work - getFileAttachments is not FUI
+   			indexEntry(entry, entry.getFileAttachments());
    		}
    	}
    	
@@ -787,7 +801,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     protected org.apache.lucene.document.Document buildIndexDocumentFromAttachmentFile(Binder binder, WorkflowControlledEntry entry, FileUploadItem fui) {
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
     	File tempFile = null;
-    	
+
         // Add uid
         BasicIndexUtils.addUid(indexDoc, entry.getIndexDocumentUid());
         BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ATTACHMENT);
@@ -825,7 +839,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         
         // Add the text of the attachment 
         try {
-        	tempFile = fui.getConvertedTempFile();
+        	tempFile = fui.getTempFile();
         } catch (IOException ioe){
         	// add logging info
         	return null;
