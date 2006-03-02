@@ -33,6 +33,8 @@ public class SPropsUtil {
 	public static final String SSF_HOST = "ssf.host";
 	public static final String SSF_PORT = "ssf.port";
 	public static final String SSF_SECURE_PORT = "ssf.secure.port";
+	public static final String TEMP_DIR = "temp.dir";
+	
 	
 	public SPropsUtil() {
 		if(instance != null)
@@ -111,6 +113,13 @@ public class SPropsUtil {
 			throw new ConfigPropertyNotFoundException();
 		else
 			return val;
+	}
+
+	public static File getTempFile(String tempPrefix)  throws IOException {
+		File tempDir = SPropsUtil.getFile(TEMP_DIR);
+		if(!tempDir.exists())
+			FileHelper.mkdirs(tempDir);
+		return File.createTempFile(tempPrefix,null,tempDir);
 	}
 	
     private static SPropsUtil getInstance() {
