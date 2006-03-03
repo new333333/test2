@@ -17,7 +17,11 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<div class="ss_style ss_portlet ss_form">
+<%
+	String roleId = (String) request.getAttribute("roleId");
+%>
+<div class="ss_style ss_form ss_portlet">
+<div class="ss_form">
 <h3><ssf:nlt tag="binder.configure.access_control" text="Configure access control"/></h3>
 
 <c:if test="${ssBinder.functionMembershipInherited}">
@@ -37,11 +41,11 @@
 	</c:if>
   </c:forEach>
   <c:if test="${foundOne == '1'}">
-<table class="ss_style" cellspacing="4px" cellpadding="4px">
+<table class="ss_style" cellspacing="10px" cellpadding="4px" width="100%">
  <tr>
-  <th><ssf:nlt tag="binder.configure.access_control.role" text="Role"/></th>
-  <th><ssf:nlt tag="binder.configure.access_control.users" text="Users"/></th>
-  <th><ssf:nlt tag="binder.configure.access_control.groups" text="Groups"/></th>
+  <th align="left"><ssf:nlt tag="binder.configure.access_control.role" text="Role"/></th>
+  <th align="left"><ssf:nlt tag="binder.configure.access_control.users" text="Users"/></th>
+  <th align="left"><ssf:nlt tag="binder.configure.access_control.groups" text="Groups"/></th>
   <th></th>
  </tr>
 	<c:forEach var="function" items="${ssFunctionMap}">
@@ -50,25 +54,42 @@
   <td valign="top">
 	<span calss="ss_bold"><c:out value="${function.key.name}"/></span>
   </td>
-  <td>
-	<ul>
+  <td valign="top">
+	<c:if test="${!empty function.value.ssUsers}">
+	<ul class="ss_nobullet">
 	  <c:forEach var="user" items="${function.value.ssUsers}">
-		<li><c:out value="${user.title}"/></li>
+		<li class="ss_nobullet"><c:out value="${user.title}"/></li>
 	  </c:forEach>
 	</ul>
+	</c:if>
+	<c:if test="${empty function.value.ssUsers}">
+	  <span class="ss_italic ss_gray ss_smallprint">[<ssf:nlt tag="none"/>]</span>
+	</c:if>
   </td>
-  <td>
-	<ul>
+  <td valign="top">
+	<c:if test="${!empty function.value.ssGroups}">
+	<ul class="ss_nobullet">
 	  <c:forEach var="user" items="${function.value.ssGroups}">
-		<li><c:out value="${user.title}"/></li>
+		<li class="ss_nobullet"><c:out value="${user.title}"/></li>
 	  </c:forEach>
 	</ul>
+	</c:if>
+	<c:if test="${empty function.value.ssGroups}">
+	  <span class="ss_italic ss_gray ss_smallprint">[<ssf:nlt tag="none"/>]</span>
+	</c:if>
   </td>
-  <td>
-    <form class="ss_style" style="display:inline;">
+  <td valign="top">
+    <form class="ss_style" style="display:inline;" method="post"
+	  action="<portlet:actionURL>
+			  <portlet:param name="action" value="configure_access_control"/>
+			  <portlet:param name="binderId" value="${ssBinder.id}"/>
+			  </portlet:actionURL>">
+
       <input type="hidden" name="roleId" value="${function.key.id}">
       <input type="submit" name="modifyBtn" 
-        value="<ssf:nlt tag="button.modify" text="Modify"/>">
+        value="<ssf:nlt tag="button.modify" text="Modify"/>">&nbsp;&nbsp;
+      <input type="submit" name="deleteBtn" 
+        value="<ssf:nlt tag="button.delete" text="Delete"/>">
     </form>
   </td>
  </tr>
@@ -132,8 +153,19 @@
 </tr>
 </table>
 
+<script type="text/javascript">
+function ss_checkRoleIdField(btnObj) {
+	if (btnObj.form.roleId.value == "") {
+		alert("<ssf:nlt tag="binder.configure.access_control.selectRoleWarning" 
+		  text="Please select a role."/>")
+		return false;
+	}
+	return true;
+}
+</script>
 <input type="submit" name="addBtn"
- value="<ssf:nlt tag="button.add" text="Add"/>">
+ value="<ssf:nlt tag="button.add" text="Add"/>"
+ onClick="return ss_checkRoleIdField(this)">
 <br/>
 
 </form>
@@ -150,4 +182,5 @@
 
 	<input type="submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
+</div>
 </div>

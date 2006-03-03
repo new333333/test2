@@ -49,6 +49,7 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 		Map binderConf = getBinderModule().getBinderFunctionMembership(binderId);
 		Binder binder = (Binder)binderConf.get(ObjectKeys.BINDER);
 		List membership = (List)binderConf.get(ObjectKeys.FUNCTION_MEMBERSHIP);
+		request.setAttribute("roleId", "");
 
 		//See if the form was submitted
 		if (formData.containsKey("addBtn")) {
@@ -98,6 +99,23 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 			}
 			
 		} else if (formData.containsKey("modifyBtn")) {
+			String s_roleId = request.getParameter("roleId");
+			if (s_roleId != null && !s_roleId.equals("")) {
+				Long roleId = new Long(request.getParameter("roleId"));
+				//find the function membership
+				WorkAreaFunctionMembership wfm = getAdminModule().getWorkAreaFunctionMembership(binder, roleId);
+				if (wfm != null) {
+					request.setAttribute("roleId", s_roleId);
+				}
+			}
+		} else if (formData.containsKey("deleteBtn")) {
+			String s_roleId = request.getParameter("roleId");
+			if (s_roleId != null && !s_roleId.equals("")) {
+				Long roleId = new Long(request.getParameter("roleId"));
+				//Delete the function membership
+				getAdminModule().deleteWorkAreaFunctionMembership(binder, roleId);
+			}
+			
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			setResponseOnClose(response, binderId);
 		}

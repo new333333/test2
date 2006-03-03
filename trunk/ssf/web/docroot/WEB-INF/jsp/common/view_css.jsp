@@ -57,13 +57,6 @@ if (document.createStyleSheet) {
 	ss_createStyleSheet(niftyCornersCssUrl);
 }
 
-//Round all fieldset styled as rounded
-function ss_roundFieldset() {
-	if(!NiftyCheck()) return;
-	Rounded("fieldset.ss_fieldset","#FFFFFF","#BBD8FF");
-}
-ss_createOnLoadObj('ss_roundFieldset', ss_roundFieldset);
-
 </script>
 
 <style>

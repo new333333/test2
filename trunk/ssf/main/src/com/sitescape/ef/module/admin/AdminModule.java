@@ -43,6 +43,7 @@ public interface AdminModule {
     public void deleteEmailAlias(String aliasId);
     public void addWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership);
     public void modifyWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership);
+    public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 
     public List findWorkAreaFunctionMemberships(WorkArea workArea);
 }
