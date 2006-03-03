@@ -269,6 +269,17 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
         getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(membership);
 	}
 	
+    public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
+        //Check that this user is allowed to do this operation; 
+		// Is it SITE_ADMINISTRATION right operation for this checking?
+        accessControlManager.checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);        
+
+        WorkAreaFunctionMembership wfm = getWorkAreaFunctionMembership(workArea, functionId);
+        if (wfm != null) {
+	        getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);
+        }
+    }
+    
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
 		User user = RequestContextHolder.getRequestContext().getUser();	
 		
