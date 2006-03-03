@@ -17,7 +17,7 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<div class="ss_style ss_portlet">
+<div class="ss_style ss_portlet ss_form">
 <h3><ssf:nlt tag="binder.configure.access_control" text="Configure access control"/></h3>
 
 <c:if test="${ssBinder.functionMembershipInherited}">
@@ -31,28 +31,52 @@
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.currentMembershipSettings" 
     text="Current membership settings"/></legend>
   <c:set var="foundOne" value="0"/>
+  <c:forEach var="function" items="${ssFunctionMap}">
+	<c:if test="${!empty function.value.ssUsers || !empty function.value.ssGroups}">
+	  <c:set var="foundOne" value="1"/>
+	</c:if>
+  </c:forEach>
+  <c:if test="${foundOne == '1'}">
+<table class="ss_style" cellspacing="4px" cellpadding="4px">
+ <tr>
+  <th><ssf:nlt tag="binder.configure.access_control.role" text="Role"/></th>
+  <th><ssf:nlt tag="binder.configure.access_control.users" text="Users"/></th>
+  <th><ssf:nlt tag="binder.configure.access_control.groups" text="Groups"/></th>
+  <th></th>
+ </tr>
 	<c:forEach var="function" items="${ssFunctionMap}">
 	  <c:if test="${!empty function.value.ssUsers || !empty function.value.ssGroups}">
-		<span calss="ss_bold"><c:out value="${function.key.name}"/></span>
-		<br/>
-		<span><ssf:nlt tag="binder.configure.access_control.users" text="Users"/></span>
-		<br/>
-		<ul>
-		<c:forEach var="user" items="${function.value.ssUsers}">
-			<li><c:out value="${user.title}"/></li>
-		</c:forEach>
-		</ul>
-		<br/>
-		<span><ssf:nlt tag="binder.configure.access_control.groups" text="Groups"/></span>
-		<br/>
-		<ul>
-		<c:forEach var="user" items="${function.value.ssGroups}">
-			<li><c:out value="${user.title}"/></li>
-		</c:forEach>
-		</ul>
-		<c:set var="foundOne" value="1"/>
+ <tr>
+  <td valign="top">
+	<span calss="ss_bold"><c:out value="${function.key.name}"/></span>
+  </td>
+  <td>
+	<ul>
+	  <c:forEach var="user" items="${function.value.ssUsers}">
+		<li><c:out value="${user.title}"/></li>
+	  </c:forEach>
+	</ul>
+  </td>
+  <td>
+	<ul>
+	  <c:forEach var="user" items="${function.value.ssGroups}">
+		<li><c:out value="${user.title}"/></li>
+	  </c:forEach>
+	</ul>
+  </td>
+  <td>
+    <form class="ss_style" style="display:inline;">
+      <input type="hidden" name="roleId" value="${function.key.id}">
+      <input type="submit" name="modifyBtn" 
+        value="<ssf:nlt tag="button.modify" text="Modify"/>">
+    </form>
+  </td>
+ </tr>
 	  </c:if>
 	</c:forEach>
+</table>
+  </c:if>
+
   <c:if test="${foundOne == '0'}">
 [<span class="ss_italic"><ssf:nlt tag="binder.configure.access_control.nosettings"
  text="No access controls have been set."/></span>]

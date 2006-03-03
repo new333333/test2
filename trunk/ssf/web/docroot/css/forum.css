@@ -31,24 +31,6 @@
   font-size: 9px; 
   }
 
-.ss_fineprintbold {
-  font-size: 9px; 
-  font-weight: bold;
-  }
-
-.ss_fineprintgray {
-  font-size: 9px; 
-  color: #999999; 
-  }
-  
-span.ss_rightbold {
-  display: inline;
-  text-align: right;
-  float: right;
-  font-weight: bold;
-  color: #999999;
-  }
-  
 span.ss_right {
   display: inline;
   text-align: right;
@@ -248,6 +230,11 @@ div.ss_buttonBarRight {
 /* form-only styles: any form but only forms */
 
 fieldset.ss_fieldset {
+  margin-top: 6px;
+  margin-bottom: 4px;
+  }
+  
+fieldset.ss_fieldset_square {
   border: 1px #666666 solid;
   padding: 5px;
   margin-top: 12px;
@@ -258,11 +245,6 @@ legend.ss_legend {
   color: #666666;;
   }
 
-fieldset.ss_fieldset_rounded {
-  margin-top: 6px;
-  margin-bottom: 4px;
-  }
-  
 legend.ss_legend_bold {
   font: bold 140%/1.6 Arial,sans-serif;
   }
@@ -273,6 +255,10 @@ div.ss_requiredLegend {
   margin-top: 8px;
   margin-bottom: 8px;
   color: #cccccc;
+  }
+
+.ss_form {
+  margin:6px;
   }
 
 .ss_formInstructions { 

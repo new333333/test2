@@ -25,7 +25,7 @@ Views:&nbsp;<a href="${set_day_view}">Day</a><c:out value="${delimiter}" /><a hr
 %>
 
 <tr>
-<td width="1%" class="ss_fineprintgray" align="center">week</td>
+<td width="1%" class="ss_fineprint ss_gray" align="center">week</td>
 <c:forEach var="dayabbrev" items="${ssCalendarViewBean.dayHeaders}">
 <td width="13%" class="ss_bold" align="center">
 ${dayabbrev}</td>
@@ -36,19 +36,19 @@ ${dayabbrev}</td>
 
 <tr>
 
-<td valign="top" align="center" width="5%"><a class="ss_link_nodec" href="${week.weekURL}"><span class="ss_fineprintgray">${week.weekNum}</span></a></td>
+<td valign="top" align="center" width="5%"><a class="ss_link_nodec" href="${week.weekURL}"><span class="ss_fineprint ss_gray">${week.weekNum}</span></a></td>
 
 <c:forEach var="daymap" items="${week.dayList}">
 
 <c:choose>
 <c:when test="${daymap.isToday}">
-<td class="ss_fineprint" bgcolor="#ffffe8" valign="top"><span class="ss_rightbold"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
+<td class="ss_fineprint" bgcolor="#ffffe8" valign="top"><span class="ss_right ss_bold"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
 </c:when>
 <c:when test="${!daymap.inView}">
-<td class="ss_fineprint" bgcolor="#f7f7f7" valign="top"><span class="ss_rightbold"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
+<td class="ss_fineprint" bgcolor="#f7f7f7" valign="top"><span class="ss_right ss_bold"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
 </c:when>
 <c:otherwise>
-<td valign="top" class="ss_fineprint"><span class="ss_rightbold"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
+<td valign="top" class="ss_fineprint"><span class="ss_right ss_bold"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
 </c:otherwise>
 </c:choose>
 

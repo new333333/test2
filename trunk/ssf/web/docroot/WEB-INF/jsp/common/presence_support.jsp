@@ -54,7 +54,7 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
     m += '<td><span>' + userTitle;
     if (status >= 0) {
         m += ostatus;
-        m += '</span><br><span class="ss_fineprintgray">(<ssf:nlt tag="presence.statusAt" text="status at"/> ' + sweepTime + ')</span>';
+        m += '</span><br><span class="ss_fineprint ss_gray">(<ssf:nlt tag="presence.statusAt" text="status at"/> ' + sweepTime + ')</span>';
     }
     m += '</td></tr>';
     if (screenName != '') {
@@ -62,7 +62,7 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
             m += '<tr>';
             m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgimsg"></td>';
             if (status == 0) {
-                m += '<td class="ss_fineprintgray"><ssf:nlt tag="presence.sendIM" text="Send instant message..."/></td>';
+                m += '<td class="ss_fineprint ss_gray"><ssf:nlt tag="presence.sendIM" text="Send instant message..."/></td>';
             } else {
                 m += '<td><a class="ss_graymenu" href="iic:im?screenName=' + screenName + '"><ssf:nlt tag="presence.sendIM" text="Send instant message..."/></a></td>';
             }

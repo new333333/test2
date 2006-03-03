@@ -25,7 +25,7 @@
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
 <c:set var="ss_taconite_loaded" value="1" scope="request"/>
 </c:if>
-<div class="ss_style ss_portlet" style="margin:6px;">
+<div class="ss_style ss_portlet ss_form">
 <script type="text/javascript">
 
 function ss_getFilterTypeSelection(obj, op2) {

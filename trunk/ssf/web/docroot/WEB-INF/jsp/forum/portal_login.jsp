@@ -21,7 +21,7 @@
 <html xmlns:svg="http://www.w3.org/2000/svg-20000303-stylable">
 <head>
 
-<%@ include file="/WEB-INF/jsp/forum/view_css.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/view_css.jsp" %>
 
 <script type="text/javascript">
 

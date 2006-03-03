@@ -52,46 +52,49 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 
 		//See if the form was submitted
 		if (formData.containsKey("addBtn")) {
-			Long roleId = new Long(request.getParameter("roleId"));
-			String[] userIds = request.getParameterValues("users");
-			String[] groupIds = request.getParameterValues("groups");
-			Set memberIds = new HashSet();
-			if (userIds != null) {
-				for(int i = 0; i < userIds.length; i++) {
-					String[] ids = userIds[i].split(" ");
-					for(int j = 0; j < ids.length; j++) {
-						if(ids[j].length() > 0)
-							memberIds.add(Long.valueOf(ids[j]));
+			String s_roleId = request.getParameter("roleId");
+			if (s_roleId != null && !s_roleId.equals("")) {
+				Long roleId = new Long(request.getParameter("roleId"));
+				String[] userIds = request.getParameterValues("users");
+				String[] groupIds = request.getParameterValues("groups");
+				Set memberIds = new HashSet();
+				if (userIds != null) {
+					for(int i = 0; i < userIds.length; i++) {
+						String[] ids = userIds[i].split(" ");
+						for(int j = 0; j < ids.length; j++) {
+							if(ids[j].length() > 0)
+								memberIds.add(Long.valueOf(ids[j]));
+						}
 					}
 				}
-			}
-			if (groupIds != null) {
-				for (int i = 0; i < groupIds.length; i++) {
-					String[] ids = groupIds[i].split(" ");
-					for(int j = 0; j < ids.length; j++) {
-						if(ids[j].length() > 0)
-							memberIds.add(Long.valueOf(ids[j]));
+				if (groupIds != null) {
+					for (int i = 0; i < groupIds.length; i++) {
+						String[] ids = groupIds[i].split(" ");
+						for(int j = 0; j < ids.length; j++) {
+							if(ids[j].length() > 0)
+								memberIds.add(Long.valueOf(ids[j]));
+						}
 					}
 				}
-			}
-			WorkAreaFunctionMembership wfm = null;
-			for (int i = 0; i < membership.size(); i++) {
-				if (roleId.equals(((WorkAreaFunctionMembership) membership.get(i)).getFunctionId())) {
-					//The function already is in use for this workarea.
-					wfm = (WorkAreaFunctionMembership) membership.get(i);
-					break;
+				WorkAreaFunctionMembership wfm = null;
+				for (int i = 0; i < membership.size(); i++) {
+					if (roleId.equals(((WorkAreaFunctionMembership) membership.get(i)).getFunctionId())) {
+						//The function already is in use for this workarea.
+						wfm = (WorkAreaFunctionMembership) membership.get(i);
+						break;
+					}
 				}
-			}
-			if (wfm == null) {
-				wfm = new WorkAreaFunctionMembership();
-				//Build the workarea membership object
-				wfm.setFunctionId(roleId);
-				wfm.setMemberIds(memberIds);
-				getAdminModule().addWorkAreaFunctionMembership(binder, wfm);
-			} else {
-				//Modify the existing membership
-				wfm.setMemberIds(memberIds);
-				getAdminModule().modifyWorkAreaFunctionMembership(binder, wfm);
+				if (wfm == null) {
+					wfm = new WorkAreaFunctionMembership();
+					//Build the workarea membership object
+					wfm.setFunctionId(roleId);
+					wfm.setMemberIds(memberIds);
+					getAdminModule().addWorkAreaFunctionMembership(binder, wfm);
+				} else {
+					//Modify the existing membership
+					wfm.setMemberIds(memberIds);
+					getAdminModule().modifyWorkAreaFunctionMembership(binder, wfm);
+				}
 			}
 			
 		} else if (formData.containsKey("modifyBtn")) {
