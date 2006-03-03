@@ -16,7 +16,7 @@
 </ssf:ifadapter>
 
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
-<%@ include file="/WEB-INF/jsp/forum/view_css.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/view_css.jsp" %>
 <ssf:ifadapter>
 <c:if test="${empty ssf_support_files_loaded}">
 </head>

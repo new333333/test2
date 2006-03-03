@@ -6,15 +6,8 @@
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
 %>
-<script type="text/javascript">
-function ss_roundFieldset() {
-	if(!NiftyCheck()) return;
-	Rounded("fieldset.ss_fieldset_rounded","#FFFFFF","#BBD8FF");
-}
-ss_createOnLoadObj('ss_roundFieldset', ss_roundFieldset);
-</script>
 <div class="formBreak">
-<fieldset class="ss_fieldset_rounded">
+<fieldset class="ss_fieldset">
 <c:if test="${!empty property_legend}">
 <legend class="ss_legend"><c:out value="${property_legend}"/></legend>
 </c:if>

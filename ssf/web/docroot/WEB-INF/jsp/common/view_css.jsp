@@ -20,7 +20,16 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <c:if test="${empty ssf_support_files_loaded}">
 
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/nifty_corners.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_drag.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_dragdrop.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_coordinates.js"></script>
+  <c:if test="0">
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_dragsort.js"></script>
+  </c:if>
 <script type="text/javascript">
+
 function ss_createStyleSheet(url) {
 	var styles = "@import url('" + " " + url + " " + "');";
 	var newSS = document.createElement('link');
@@ -47,6 +56,14 @@ if (document.createStyleSheet) {
 	ss_createStyleSheet(ss_forumCss2Url);
 	ss_createStyleSheet(niftyCornersCssUrl);
 }
+
+//Round all fieldset styled as rounded
+function ss_roundFieldset() {
+	if(!NiftyCheck()) return;
+	Rounded("fieldset.ss_fieldset","#FFFFFF","#BBD8FF");
+}
+ss_createOnLoadObj('ss_roundFieldset', ss_roundFieldset);
+
 </script>
 
 <style>
@@ -169,13 +186,5 @@ ss_box_title {
 }
 
 </style>
-<script type="text/javascript" src="<html:rootPath/>js/forum/forum_common.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/common/nifty_corners.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/common/ss_drag.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/common/ss_dragdrop.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/common/ss_coordinates.js"></script>
-<c:if test="0">
-<script type="text/javascript" src="<html:rootPath/>js/forum/forum_dragsort.js"></script>
-</c:if>
 </c:if>
 
