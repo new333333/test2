@@ -21,16 +21,16 @@
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		<portlet:param name="operation" value="select_filter"/>
 		</portlet:renderURL>" method="post" style="display:inline;">
-<span class="ss_bold"><%= NLT.get("filter.filter") %>:&nbsp;
-<div style='display:inline; border:1px solid black; background:#ffffff;'>
-<ssf:menu title="<%= filterName %>">
+<span class="ss_bold"><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;
+<div id="ss_filterTitle" style='display:inline; border:1px solid black; background:#ffffff;'>
+<ssf:menu title="<%= filterName %>" titleId="ss_filterTitle">
 <ul>
 <li><a href="javascript: ;" 
-  onClick="ss_changeUserFilter('<c:out value=""/>');return false;"
+  onClick="ss_changeUserFilter(this, '<c:out value=""/>');return false;"
 >--<ssf:nlt tag="none" text="none"/>--</a></li>
 <c:forEach var="filter" items="${ss_searchFilters}">
 <li><a href="javascript: ;" 
-  onClick="ss_changeUserFilter('<c:out value="${filter.key}"/>');return false;"
+  onClick="ss_changeUserFilter(this, '<c:out value="${filter.key}"/>');return false;"
 ><c:out value="${filter.key}"/></a></li>
 </c:forEach>
 </ul>
@@ -46,7 +46,9 @@
 <input type="hidden" name="select_filter">
 </form></div>
 <script type="text/javascript">
-function ss_changeUserFilter(filter) {
+function ss_changeUserFilter(obj, filter) {
+	var loading = "&nbsp;(<ssf:nlt tag="loading" text="loading"/>)&nbsp;"
+	document.getElementById('ss_filterTitle').innerHTML = "&nbsp;"+obj.innerHTML+loading;
 	document.forms.ss_filterSelect.select_filter.value = filter;
 	document.forms.ss_filterSelect.submit();
 }

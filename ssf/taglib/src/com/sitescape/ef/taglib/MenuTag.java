@@ -32,6 +32,7 @@ import javax.portlet.PortletURL;
 public class MenuTag extends BodyTagSupport {
 	private String _bodyContent;
 	private String title = "";
+	private String titleId = "";
 	private String _class = "";
     
 	public int doStartTag() {
@@ -54,6 +55,7 @@ public class MenuTag extends BodyTagSupport {
 
 			Map _params = new HashMap();
 			_params.put("title", new String[] {this.title});
+			_params.put("titleId", new String[] {this.titleId});
 			_params.put("class", new String[] {this._class});
 
 			ServletRequest req = null;
@@ -83,6 +85,10 @@ public class MenuTag extends BodyTagSupport {
 
 	public void setTitle(String title) {
 	    this.title = title;
+	}
+
+	public void setTitleId(String titleId) {
+	    this.titleId = titleId;
 	}
 
 	public void setClass(String divClass) {
