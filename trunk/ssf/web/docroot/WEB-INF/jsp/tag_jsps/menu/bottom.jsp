@@ -20,10 +20,11 @@
 Integer nameCount = (Integer) renderRequest.getAttribute("ss_menu_tag_name_count");
 String menuTagDivId = "ss_menuTagDiv" + nameCount.toString();
 String title = ParamUtil.get(request, "title", "");
+String titleId = ParamUtil.get(request, "titleId", "");
 
 %>
 <div id="parent_<%= menuTagDivId %>" style="display:inline;">
-<a class="ss_toolbar_item" href="javascript: ;" 
+<a id="<%= titleId %>" class="ss_toolbar_item" href="javascript: ;" 
 	  onClick="activateMenuLayerClone('<%= menuTagDivId %>', 'parent_<%= menuTagDivId %>');"
 ><%= title %></a>
 </div>

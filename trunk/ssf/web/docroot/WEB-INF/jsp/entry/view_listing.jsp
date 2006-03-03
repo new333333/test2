@@ -223,7 +223,7 @@ function ss_loadEntry(obj,id) {
 	if (id == "") return false;
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
-	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
+	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="Loading" text="Loading..."/>");
 	if (window.highlightLineById) {
 		highlightLineById(folderLine);
 		if (window.swapImages && window.restoreImages) {
@@ -238,7 +238,7 @@ function ss_loadEntryUrl(url,id) {
 	if (id == "") return false;
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
-	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
+	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="Loading" text="Loading..."/>");
 	if (window.highlightLineById) {
 		highlightLineById(folderLine);
 	}

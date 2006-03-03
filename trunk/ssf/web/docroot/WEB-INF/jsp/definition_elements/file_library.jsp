@@ -9,7 +9,7 @@
 %>
 <script type="text/javascript">
 function ss_loadEntry(obj,id) {
-	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="loading" text="Loading..."/>");
+	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="Loading" text="Loading..."/>");
 	highlightLineById(id);
 	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
 	return false;

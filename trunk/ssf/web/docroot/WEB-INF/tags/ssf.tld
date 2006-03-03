@@ -313,6 +313,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<name>titleId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>class</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

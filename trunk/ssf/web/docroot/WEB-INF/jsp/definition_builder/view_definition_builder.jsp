@@ -403,7 +403,7 @@ function setStateMachine(newState) {
 		if (idMapCaption[lastSelectedId]) {infoName = "<span class='ss_bold'>"+idMapCaption[lastSelectedId]+"</span>"}
 		ss_setDivHtml("moveItemSelection", infoName);
 		ss_addToDiv("displaydiv", "move_item_confirm")
-		hideDisplayButtons()
+		showDisplayButtons()
 		showDisplayDiv();
 	} else if (state == "cloneItemConfirm") {
 		ss_addToDiv("displaydiv", "clone_item_confirm")
@@ -502,7 +502,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 	<portlet:param name="definition_type" value="<%= definitionType %>" />
 	</portlet:actionURL>" method="post" name="definitionbuilder" onSubmit="setSubmitData(this)" >
 <div id="definitionbuilder_tree_loading">
-<span><ssf:nlt tag="loading" text="Loading..."/></span><br/>
+<span><ssf:nlt tag="Loading" text="Loading..."/></span><br/>
 </div>
 <table class="ss_style" width="100%">
 	<tr>

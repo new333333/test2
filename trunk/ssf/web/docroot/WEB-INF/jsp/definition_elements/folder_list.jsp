@@ -132,7 +132,7 @@ function highlightLineById(id) {
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn>
-    <c:if test="${!empty entry1._workflowState}">
+    <c:if test="${!empty entry1._workflowStateCaption}">
     <a class="ss_link_nodec" href="<ssf:url     
     adapter="true" 
     portletName="ss_forum" 
@@ -140,7 +140,7 @@ function highlightLineById(id) {
     action="view_entry" 
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
-    ><span class="<%= seenStyle %>"><c:out value="${entry1._workflowState}"/></span></a>
+    ><span class="<%= seenStyle %>"><c:out value="${entry1._workflowStateCaption}"/></span></a>
     </c:if>
   </ssf:slidingTableColumn>
 

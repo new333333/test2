@@ -89,6 +89,7 @@ public class EntryIndexUtils {
     public static final String EVENT_COUNT_FIELD = "_eventCount";
     public static final String WORKFLOW_PROCESS_FIELD = "_workflowProcess";
     public static final String WORKFLOW_STATE_FIELD = "_workflowState";
+    public static final String WORKFLOW_STATE_CAPTION_FIELD = "_workflowStateCaption";
     public static final String BINDER_ID_FIELD = "_binderId";
     public static final String FILENAME_FIELD = "_fileName";
     public static final String FILE_EXT_FIELD = "_fileExt";
@@ -167,8 +168,12 @@ public class EntryIndexUtils {
    				WorkflowState ws = (WorkflowState)iter.next();
    				Field workflowStateField = Field.Keyword(WORKFLOW_STATE_FIELD, 
    						ws.getState());
+   				Field workflowStateCaptionField = Field.Keyword(WORKFLOW_STATE_CAPTION_FIELD, 
+   						ws.getStateCaption());
    				//Index the workflow state
    				doc.add(workflowStateField);
+   				doc.add(workflowStateCaptionField);
+   				
    				Definition def = ws.getDefinition();
    				if (def != null) {
 	   				Field workflowProcessField = Field.Keyword(WORKFLOW_PROCESS_FIELD, 
