@@ -20,7 +20,7 @@
 		methodName = "post";
 	}
 %>
-<form class="ss_style" method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
+<form class="ss_style ss_form" method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
   id="<%= formName %>" action="" onSubmit="return ssf_onSubmit(this);">
 <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= item %>" 

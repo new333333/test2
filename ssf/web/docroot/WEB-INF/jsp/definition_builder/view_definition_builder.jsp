@@ -497,7 +497,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 <br/>
 <br/>
 
-<form class="ss_style" action="<portlet:actionURL windowState="maximized">
+<form class="ss_style ss_form" action="<portlet:actionURL windowState="maximized">
 	<portlet:param name="action" value="definition_builder" />
 	<portlet:param name="definition_type" value="<%= definitionType %>" />
 	</portlet:actionURL>" method="post" name="definitionbuilder" onSubmit="setSubmitData(this)" >
@@ -526,9 +526,9 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 			  <ssf:param name="box_show_close_routine" value="hideDisplayDiv()" />
 			<div id="displaydiv" style="margin:4px;">&nbsp;</div>  
 			<div id="displaydivButtons" style="margin:4px; visibility:hidden;">
-			<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+			<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
 			&nbsp;&nbsp;&nbsp;
-			<input type="submit" name="okBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
+			<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 			</div>
 			</ssf:box>
 			</div>

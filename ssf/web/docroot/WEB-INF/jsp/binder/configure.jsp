@@ -20,13 +20,13 @@
 <div class="ss_style ss_portlet">
 
 <div>
-<form class="ss_style" method="post" action="<portlet:actionURL>
+<form class="ss_style ss_form" method="post" action="<portlet:actionURL>
 					<portlet:param name="action" value="configure_forum"/>
 					<portlet:param name="binderId" value="${ssBinder.id}"/>
 					</portlet:actionURL>" >
 
 <div class="ss_buttonBarRight">
-<input type="submit" name="closeBtn" class="ss_submit" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
 
 <c:if test="${ssBinder.type == 'FOLDER'}">
@@ -48,7 +48,7 @@
       </c:choose>
     </c:forEach>
     <br>
-    <input type="submit" name="okBtn" class="ss_submit" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
+    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
   </fieldset>
   <br>
 
@@ -71,7 +71,7 @@
         </c:if>
       </c:forEach>
       <br>
-      <input type="submit" name="okBtn" class="ss_submit" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
+      <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
     </fieldset>
     <br>
   </c:if>
@@ -92,7 +92,7 @@
 	  </c:choose>
     </c:forEach>
     <br>
-    <input type="submit" name="okBtn" class="ss_submit" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
+    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
   </fieldset>
   <br>
 
@@ -124,7 +124,7 @@
 	</c:forEach>
 	</table>
 	<br>
-	<input type="submit" name="okBtn" class="ss_submit" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
+	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
   </fieldset>
 </c:if>
 
@@ -145,7 +145,7 @@
       </c:choose>
     </c:forEach>
     <br>
-    <input type="submit" name="okBtn" class="ss_submit" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
+    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
   </fieldset>
   <br>
   
@@ -165,7 +165,7 @@
 	  </c:choose>
     </c:forEach>
     <br>
-    <input type="submit" name="okBtn" class="ss_submit" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
+    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
   </fieldset>
   
 </c:if>
@@ -173,7 +173,7 @@
 <div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">
-<input type="submit" name="closeBtn" class="ss_submit" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
 
 </form>
