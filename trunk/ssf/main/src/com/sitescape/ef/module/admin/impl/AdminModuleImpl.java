@@ -39,6 +39,7 @@ import com.sitescape.ef.security.function.WorkAreaFunctionMembershipExistsExcept
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.ConfigurationException;
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.EmailAlias;
 /**
@@ -50,7 +51,7 @@ import com.sitescape.ef.domain.EmailAlias;
 public class AdminModuleImpl extends CommonDependencyInjection implements AdminModule {
 
 	protected MailManager mailManager;
-    public void setmailManager(MailManager mailManager) {
+    public void setMailManager(MailManager mailManager) {
     	this.mailManager = mailManager;
     }
 	/**
@@ -242,9 +243,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     }
     
 	public void addWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership) {
-		User user = RequestContextHolder.getRequestContext().getUser();
+       	String companyId = RequestContextHolder.getRequestContext().getZoneName();
 		
-		membership.setZoneName(user.getZoneName());
+		membership.setZoneName(companyId);
 		membership.setWorkAreaId(workArea.getWorkAreaId());
 		membership.setWorkAreaType(workArea.getWorkAreaType());
 
@@ -252,7 +253,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		// Is it SITE_ADMINISTRATION right operation for this checking?
         accessControlManager.checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);        
 		
-		List memberships = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(user.getZoneName(), workArea);
+		List memberships = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(companyId, workArea);
 		if (memberships.contains(membership)) {
 			throw new WorkAreaFunctionMembershipExistsException(membership);
 		}
@@ -260,7 +261,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	}
 	
 	public void modifyWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership) {
-		User user = RequestContextHolder.getRequestContext().getUser();
 		
         //Check that this user is allowed to do this operation; 
 		//Is it SITE_ADMINISTRATION right operation for this checking?
@@ -281,24 +281,24 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     }
     
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
-		User user = RequestContextHolder.getRequestContext().getUser();	
+       	String companyId = RequestContextHolder.getRequestContext().getZoneName();
 		
         //Check that this user is allowed to do this operation; 
 		// Is it SITE_ADMINISTRATION right operation for this checking?
         accessControlManager.checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);        
 
         return getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership
-       		(user.getZoneName(), workArea, functionId);
+       		(companyId, workArea, functionId);
     }
     
-	public List findWorkAreaFunctionMemberships(WorkArea workArea) {
-		User user = RequestContextHolder.getRequestContext().getUser();	
+	public List getWorkAreaFunctionMemberships(WorkArea workArea) {
+	   	String companyId = RequestContextHolder.getRequestContext().getZoneName();
 		
         //Check that this user is allowed to do this operation; 
 		// Is it SITE_ADMINISTRATION right operation for this checking?
         accessControlManager.checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);        
 
-        return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(user.getZoneName(), workArea);
+        return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(companyId, workArea);
 	}
 
 }

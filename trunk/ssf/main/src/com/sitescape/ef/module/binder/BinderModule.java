@@ -41,7 +41,7 @@ public interface BinderModule {
      * @throws NoBinderByTheIdException
      * @throws AccessControlException
      */	
-    public Map getBinderFunctionMembership(Long binderId) 
+    public Map getFunctionMembership(Long binderId) 
 		throws NoBinderByTheIdException, AccessControlException;
 
     /**
@@ -52,13 +52,15 @@ public interface BinderModule {
      */
     public Binder modifyConfiguration(Long binderId, List definitionIds) throws AccessControlException;
     /**
-      * Modify the list of definitions and workflows assocated with a binder
+     * Modify the list of definitions and workflows assocated with a binder
      * @param binderId
      * @param definitionIds
      * @param workflowAssociations
      * @throws AccessControlException
      */
     public Binder modifyConfiguration(Long binderId, List definitionIds, Map workflowAssociations) throws AccessControlException;
-    
+	public void setFunctionMembershipInherited(Long binderId, boolean inherit) 
+		throws AccessControlException;
+
  
  }

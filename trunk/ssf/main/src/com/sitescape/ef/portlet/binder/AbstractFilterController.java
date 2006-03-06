@@ -4,14 +4,11 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.PortletRequest;
 
 import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.sitescape.ef.ObjectKeys;
@@ -20,19 +17,17 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.portlet.forum.SAbstractForumController;
+import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.util.Validator;
-import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 /**
  * @author Peter Hurley
  *
  */
-public abstract class AbstractFilterController extends SAbstractForumController {
+public abstract class AbstractFilterController extends SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
@@ -76,8 +71,8 @@ public abstract class AbstractFilterController extends SAbstractForumController 
 		} else if (formData.containsKey("closeBtn")) {
 			setResponseOnClose(response, binderId);
 		
-		} else
-			setResponseOnClose(response, binderId);
+		} else {
+		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {

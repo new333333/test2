@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.Date;
 
 import com.sitescape.ef.ConfigurationException;
@@ -812,32 +813,21 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	public void deleteEntryWorkflow(Binder parent, Entry entry) {
 		//Delete all JBPM tokens and process instances associated with this entry
 	    try {
-			List processInstances = new ArrayList();
-			List tokenIds = new ArrayList();
+			Set processInstances = new HashSet();
 	       	JbpmSession session = WorkflowFactory.getSession();
 	  		Set workflowStates = entry.getWorkflowStates();
    			for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
 				WorkflowState ws = (WorkflowState)iter.next();
 				Token t = session.getGraphSession().loadToken(ws.getTokenId().longValue());
-				if (!tokenIds.contains(t)) {
-					//Remember all of the tokenIds that we have to end
-					tokenIds.add(t);
-				}
-				if (!processInstances.contains(t.getProcessInstance())) {
-					//Remember all of the process instances that we have to delete
-					processInstances.add(t.getProcessInstance());
-				}
-			}
-		//Now end the tokenIds used by this entry
-			for (int i = 0; i < tokenIds.size(); i++) {
-				Token t = (Token) tokenIds.get(i);
-				t.end();
+				//Remember all of the unique process instances that we have to delete
+				//tokens may belong to the same PI
+				processInstances.add(t.getProcessInstance());
 			}
 			//Now delete the process instances used by this entry
-			for (int i = 0; i < processInstances.size(); i++) {
-				ProcessInstance pI = (ProcessInstance) processInstances.get(i);
+			for (Iterator iter=processInstances.iterator(); iter.hasNext();) {
+				ProcessInstance pI = (ProcessInstance)iter.next();
 				pI.end();
-				ContextInstance cI = pI.getContextInstance();
+				session.getSchedulerSession().cancelTimersForProcessInstance(pI);
 				session.getGraphSession().deleteProcessInstance(pI);
 			}
 	    } catch (Exception ex) {
