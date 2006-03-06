@@ -15,7 +15,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<form class="ss_style" method="post" enctype="multipart/form-data" 
+<form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
 		  action="<portlet:actionURL>
 		 <portlet:param name="action" value="import_definition"/>
 		 </portlet:actionURL>" name="<portlet:namespace />fm">
@@ -29,11 +29,11 @@
 <br>
 <table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="95%">
 <tr><td>
-<input type="file" name="definition1" ><br>
-<input type="file" name="definition2" ><br>
-<input type="file" name="definition3" ><br>
-<input type="file" name="definition4" ><br>
-<input type="file" name="definition5" ><br>
+<input type="file" class="ss_text" name="definition1" ><br>
+<input type="file" class="ss_text" name="definition2" ><br>
+<input type="file" class="ss_text" name="definition3" ><br>
+<input type="file" class="ss_text" name="definition4" ><br>
+<input type="file" class="ss_text" name="definition5" ><br>
 </td></tr></table>
 <div class="ss_divider"></div>
 
@@ -42,8 +42,8 @@
 
 <div class="ss_buttonBarLeft">
 
-<input class="ss_submit" type="submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
-<input class="ss_submit" type="submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 </div>
 </div>
 </form>

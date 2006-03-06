@@ -21,7 +21,7 @@
 
 <table class="ss_style" width="100%"><tr><td>
 
-<form class="ss_style" action="<portlet:actionURL>
+<form class="ss_style ss_form" action="<portlet:actionURL>
 			  <portlet:param name="action" value="configure_folder_index"/>
 		      </portlet:actionURL>" method="post" name="<portlet:namespace />fm">
 
@@ -44,9 +44,9 @@ function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
   rootOpen="true" multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id_" />
 
 <br>
-<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 </form>
 <br>
 

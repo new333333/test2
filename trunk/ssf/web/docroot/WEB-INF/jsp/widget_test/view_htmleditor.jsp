@@ -57,7 +57,7 @@
 	}
 %>
 
-<form class="ss_style" method="POST" action="" name="htmleditortest">
+<form class="ss_style ss_form" method="POST" action="" name="htmleditortest">
 <span align="center">SiteScape Forum Widget Tester -  HTML Editor widget <p>
 Two HTML Editors on one form. <br>
 First editor has height=150, second one has no size specified, so defaults to 250 (pixels).
@@ -96,5 +96,5 @@ First editor has height=150, second one has no size specified, so defaults to 25
 	</table>
 	<br>
 	<hr>
-	<input type="submit" name="OK" value="OK">
+	<input type="submit" class="ss_submit" name="OK" value="OK">
 </form>

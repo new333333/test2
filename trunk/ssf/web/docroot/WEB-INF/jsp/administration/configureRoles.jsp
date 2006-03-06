@@ -23,19 +23,19 @@
 <div class="ss_style ss_portlet">
 <h3><ssf:nlt tag="administration.configure_roles.configure" text="Configure SiteScape Forum Roles"/></h3>
 <ssf:expandableArea title="<%= NLT.get("administration.configure_roles.add") %>">
-<form class="ss_style" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
+<form class="ss_style ss_form" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_roles"/>
 		</portlet:actionURL>">
 		
 	<span><b><ssf:nlt tag="administration.configure_roles.name" text="Name"/></b></span>
-	<input type="text" size="70" name="roleName"><br>
+	<input type="text" class="ss_text" size="70" name="roleName"><br>
 		
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
 		<input type="checkbox" name="<c:out value="${operation.key}"/>">
 		<c:out value="${operation.value}"/><br>
 	</c:forEach>		
 
-	<input type="submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
+	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
 </ssf:expandableArea>
 
@@ -47,7 +47,7 @@
 <c:forEach var="function" items="${ssFunctions}">
 <jsp:useBean id="function" type="com.sitescape.ef.security.function.Function" />
 <ssf:expandableArea title="<%= function.getName() %>">
-<form class="ss_style" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
+<form class="ss_style ss_form" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_roles"/>
 		</portlet:actionURL>">
 
@@ -62,7 +62,7 @@
 		<c:out value="${operation.value}"/><br>
 	</c:forEach>		
 	<input type="hidden" name="roleId" value="${function.id}">
-	<input type="submit" name="modifyBtn"
+	<input type="submit" class="ss_submit" name="modifyBtn"
 	 value="<ssf:nlt tag="button.modify" text="Modify"/>">
 </form>
 <br/>
@@ -72,10 +72,10 @@
 
 <br/>
 
-<form class="ss_style" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
+<form class="ss_style ss_form" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_roles"/>
 		</portlet:actionURL>">
 
-	<input type="submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
 </div>

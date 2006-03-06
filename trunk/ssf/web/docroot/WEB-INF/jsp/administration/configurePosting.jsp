@@ -38,9 +38,10 @@
 <jsp:useBean id="ssFolderDomTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />
 
-<form class="ss_style" name="<portlet:namespace/>fm" id="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
-			<portlet:param name="action" value="configure_posting"/>
-			<portlet:param name="binderId" value="${ssFolder.id}"/>
+<form class="ss_style ss_form" name="<portlet:namespace/>fm" 
+    id="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
+		<portlet:param name="action" value="configure_posting"/>
+		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		</portlet:actionURL>">
 <script type="text/javascript">
 function <portlet:namespace/>setEnable() {
@@ -195,8 +196,8 @@ var <portlet:namespace/>_folderList = new Array();
 <br/>
 <div class="ss_divider"></div>
 <br/>
-	<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
-	<input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+	<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </form>
 
 </c:otherwise>

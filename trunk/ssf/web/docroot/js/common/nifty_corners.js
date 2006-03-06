@@ -1,3 +1,7 @@
+// Credit for developing Nifty Corners goes to Alessandro Fulciniti
+// Visit "http://pro.html.it/esempio/nifty/" for more details
+// Our thanks to Alessandro for this nifty feature!
+// (Note: some local edits have been made to the original source.)
 function NiftyCheck(){
 	if(!document.getElementById || !document.createElement)
     	return(false);
@@ -51,8 +55,12 @@ function Rounded(selector,wich,bk,color,opt){
 	var l=v.length;
 	for (i=0;i<l;i++) {
 	    if (edges) AddBorder(v[i],ecolor);
-	    if (t) AddTop(v[i],bk,color,ecolor,prefixt);
-	    if (b) AddBottom(v[i],bk,color,ecolor,prefixb);
+	    var bgColor = color
+	    if (v[i].style.backgroundColor && v[i].style.backgroundColor != "") {
+	    	bgColor = v[i].style.backgroundColor;
+	    }
+	    if (t) AddTop(v[i],bk,bgColor,ecolor,prefixt);
+	    if (b) AddBottom(v[i],bk,bgColor,ecolor,prefixb);
 	}
 }
 

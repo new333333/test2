@@ -25,7 +25,7 @@
 %>
 <div >
 <span class="ss_labelAbove"><c:out value="${property_caption}"/></span>
-<input type="text" name="<%= property_name %>" 
+<input type="text" class="ss_text" name="<%= property_name %>" 
  value="<%= value %>">
 </div>
 <%

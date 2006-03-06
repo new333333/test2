@@ -19,7 +19,7 @@
 <div class="ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="ldap.title"/></span><br/><br/>
 
-<form class="ss_style" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
+<form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_ldap"/>
 		</portlet:actionURL>">
 <script type="text/javascript">
@@ -88,7 +88,7 @@ function <portlet:namespace/>setEnable() {
 </table>
 
 	<br/>
-	<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
-	<input type="submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
-<form>
+	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
+</form>
 </div>
