@@ -8,16 +8,6 @@
   font-size: 12px; 
   }
 
-.ss_form {
-  color: red;
-  background-color: #e5e5e5;
-  margin:6px;
-  }
-    
-.ss_form table.ss_style {
-  color: red;
-  }
-    
 /* This style triggers the Nifty Corners rounding effect. 
    Add "ss_rounded" to any element that is to be rounded. */
 .ss_rounded {
