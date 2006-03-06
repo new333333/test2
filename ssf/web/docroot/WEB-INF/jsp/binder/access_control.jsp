@@ -22,7 +22,7 @@
 	if (roleId == null) roleId = "";
 %>
 <c:set var="roleId" value="<%= roleId %>" />
-<div class="ss_style ss_form ss_portlet">
+<div class="ss_style ss_form ss_rounded ss_portlet">
 <div class="ss_form">
 <h3><ssf:nlt tag="binder.configure.access_control" text="Configure access control"/></h3>
 
@@ -43,7 +43,7 @@
 <c:set var="no_checked" value="checked"/>
 </c:if>
 <br><br>
-<form class="ss_style" name="inheritanceForm" method="post" 
+<form class="ss_style ss_form" name="inheritanceForm" method="post" 
   onSubmit="return ssf_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
@@ -56,7 +56,7 @@
 <ssf:nlt tag="yes" text="yes"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="radio" name="inherit" value="no" checked="${no_checked}">
 <ssf:nlt tag="no" text="no"/>&nbsp;&nbsp;&nbsp;
-<input type="submit" name="inheritanceBtn"
+<input type="submit" class="ss_submit" name="inheritanceBtn"
  value="<ssf:nlt tag="button.apply" text="Apply"/>">
 </form>
 </fieldset>
@@ -111,16 +111,16 @@
 	</c:if>
   </td>
   <td valign="top">
-    <form class="ss_style" style="display:inline;" method="post"
+    <form class="ss_style ss_form" style="display:inline;" method="post"
 	  action="<portlet:actionURL>
 			  <portlet:param name="action" value="configure_access_control"/>
 			  <portlet:param name="binderId" value="${ssBinder.id}"/>
 			  </portlet:actionURL>">
 
       <input type="hidden" name="roleId" value="${function.key.id}">
-      <input type="submit" name="modifyBtn" 
+      <input type="submit" class="ss_submit" name="modifyBtn" 
         value="<ssf:nlt tag="button.modify" text="Modify"/>">&nbsp;&nbsp;
-      <input type="submit" name="deleteBtn" 
+      <input type="submit" class="ss_submit" name="deleteBtn" 
         value="<ssf:nlt tag="button.delete" text="Delete"/>">
     </form>
   </td>
@@ -147,7 +147,7 @@
       text="No roles have been defined. Please contact the zone administrator to define "/></span>]
   </c:if>
   <c:if test="${!empty ssFunctionMap}">
-<form class="ss_style" name="rolesForm" method="post" 
+<form class="ss_style ss_form" name="rolesForm" method="post" 
   onSubmit="return ssf_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
@@ -185,7 +185,7 @@
 </tr>
 </table>
 
-<input type="submit" name="addBtn"
+<input type="submit" class="ss_submit" name="addBtn"
  value="<ssf:nlt tag="button.add" text="Add"/>"
  onClick="return ss_checkRoleIdField(this)">
 <br/>
@@ -200,7 +200,7 @@
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.modifyRole" 
     text="Modify role membership"/></legend>
   <c:if test="${!empty ssFunctionMap}">
-<form class="ss_style" name="rolesForm" method="post" 
+<form class="ss_style ss_form" name="rolesForm" method="post" 
   onSubmit="return ssf_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
@@ -238,10 +238,10 @@
   </c:if>
 </c:forEach>
 
-<input type="submit" name="addBtn"
+<input type="submit" class="ss_submit" name="addBtn"
  value="<ssf:nlt tag="button.modify" text="Modify"/>"
  onClick="return ss_checkRoleIdField(this)">&nbsp;&nbsp;
-<input type="submit" name="cancelModifyBtn"
+<input type="submit" class="ss_submit" name="cancelModifyBtn"
  value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 <br/>
 
@@ -265,12 +265,12 @@ function ss_checkRoleIdField(btnObj) {
 
 <c:if test="${empty roleId}">
 <br/>
-<form class="ss_style" method="post" action="<portlet:actionURL>
+<form class="ss_style ss_form" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_access_control"/>
 			<portlet:param name="binderId" value="${ssBinder.id}"/>
 		</portlet:actionURL>">
 
-	<input type="submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
 </c:if>
 </div>
