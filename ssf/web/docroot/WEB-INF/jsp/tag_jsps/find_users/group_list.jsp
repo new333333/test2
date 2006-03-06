@@ -148,7 +148,7 @@ function ss_groupListInterceptCR(e) {
 <td valign="top">
   <div>
     <b><ssf:nlt tag="grouplist.findName" text="Find name"/>:</b>
-    <input type="text" size="15" name="ss_groupList_searchText" 
+    <input type="text" class="ss_text" size="15" name="ss_groupList_searchText" 
       onKeyUp="ss_groupListSearch(this.value, '<%= groupListElementName %>');">
     <div style="border:solid #cecece 1px;">
       <ul id="available_<%= groupListElementName %>" class="ss_dragable ss_grouplist">
