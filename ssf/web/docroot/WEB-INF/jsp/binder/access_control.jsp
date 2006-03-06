@@ -22,8 +22,10 @@
 	if (roleId == null) roleId = "";
 %>
 <c:set var="roleId" value="<%= roleId %>" />
-<div class="ss_style ss_form ss_rounded ss_portlet">
+<div class="ss_style ss_portlet">
 <div class="ss_form">
+<div class="ss_rounded">
+<div style="margin:6px;">
 <h3><ssf:nlt tag="binder.configure.access_control" text="Configure access control"/></h3>
 
 <fieldset class="ss_fieldset">
@@ -52,9 +54,9 @@
 <ssf:nlt tag="binder.configure.access_control.inherit"
  text="Inherit role membership from the parent folder or workspace:"/>
 <br>
-&nbsp;&nbsp;&nbsp;<input type="radio" name="inherit" value="yes" checked="${yes_checked}">
+&nbsp;&nbsp;&nbsp;<input type="radio" name="inherit" value="yes" ${yes_checked}>
 <ssf:nlt tag="yes" text="yes"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="radio" name="inherit" value="no" checked="${no_checked}">
+<input type="radio" name="inherit" value="no" ${no_checked}>
 <ssf:nlt tag="no" text="no"/>&nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="inheritanceBtn"
  value="<ssf:nlt tag="button.apply" text="Apply"/>">
@@ -273,5 +275,7 @@ function ss_checkRoleIdField(btnObj) {
 	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
 </c:if>
+</div>
+</div>
 </div>
 </div>

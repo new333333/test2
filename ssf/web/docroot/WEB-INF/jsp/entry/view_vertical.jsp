@@ -1,7 +1,7 @@
 <% //view a folder forum with the entry at the bottom in an iframe %>
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
-String sliderDivOffset = "-18";
+String sliderDivOffset = "-23";
 %>
 <a name="ss_top_of_folder"></a>
 <div id="ss_showfolder" class="ss_style ss_portlet">
@@ -11,8 +11,8 @@ String sliderDivOffset = "-18";
     configJspStyle="<%= ssConfigJspStyle %>" />
 </div>
 <div id="ss_showfolder_slider" onMousedown="ss_startDragDiv();" 
- onMouseover="ss_clearMouseOverInfo(null);" width="100%" height="20px"
- style="position:relative; margin:-1px 0px 3px 0px; padding:0px; 
+ onMouseover="ss_clearMouseOverInfo(null);" width="100%" height="23px"
+ style="position:relative; margin:0px 0px 3px 0px; padding:0px; 
   top:<%= sliderDivOffset %>px; border: 1px solid black;">
   <table class="ss_style ss_bgmedgray" width="100%" 
     cellpadding="0" cellspacing="0">
@@ -29,7 +29,7 @@ String sliderDivOffset = "-18";
 </div>
 
 <div id="ss_showentrydiv_place_holder" width="100%"
- style="position:relative; margin:-1px 0px 3px 0px; padding:0px; 
+ style="position:relative; margin:0px 0px 3px 0px; padding:0px; 
  top:<%= sliderDivOffset %>px;">
 </div>
 
