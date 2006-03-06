@@ -11,10 +11,12 @@ import com.sitescape.util.StringUtil;
  * This is used to store lists of users.
  */
 public class CommaSeparatedValue {
-	Set values;
+	private Set values=null;
     private static String [] sample = new String[0];
 	
-	public void setValue(String commaSeparatedString) {
+    public CommaSeparatedValue() {
+    }
+    public void setValue(String commaSeparatedString) {
 		String [] value = StringUtil.split(commaSeparatedString);
 		setValue(value);
 	}
@@ -24,7 +26,7 @@ public class CommaSeparatedValue {
 	    	values.add(value[i]);
 	    }	 
 	}
-	public Set getValueSet() {
+ 	public Set getValueSet() {
 		return values;
 	}
 	public String getValueString() {

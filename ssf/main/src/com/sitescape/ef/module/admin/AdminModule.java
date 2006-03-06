@@ -45,5 +45,5 @@ public interface AdminModule {
     public void modifyWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership);
     public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 
-    public List findWorkAreaFunctionMemberships(WorkArea workArea);
+    public List getWorkAreaFunctionMemberships(WorkArea workArea);
 }

@@ -4,7 +4,6 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.PortletRequest;
 
 import org.springframework.web.servlet.ModelAndView;
 
@@ -18,18 +17,17 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.portlet.forum.SAbstractForumController;
+import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
-import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 /**
  * @author Peter Hurley
  *
  */
-public abstract class AbstractConfigureController extends SAbstractForumController {
+public abstract class AbstractConfigureController extends SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();

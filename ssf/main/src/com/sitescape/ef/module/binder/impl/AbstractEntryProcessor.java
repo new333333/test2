@@ -27,8 +27,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.SFQuery;
-import com.sitescape.ef.docconverter.DocConverter;
-import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.HistoryStamp;
@@ -49,6 +47,7 @@ import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
+import com.sitescape.ef.search.SearchFieldResult;
 import com.sitescape.ef.module.binder.EntryProcessor;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.search.IndexSynchronizationManager;
@@ -57,7 +56,6 @@ import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.OperationAccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
-import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.workflow.WorkflowModule;
@@ -523,10 +521,24 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 	            Enumeration flds = doc.fields();
 	            while (flds.hasMoreElements()) {
 	            	fld = (Field)flds.nextElement();
+	            	//This hack needs to go.
 	            	if (fld.name().toLowerCase().indexOf("date") > 0) 
 	            		ent.put(fld.name(),DateField.stringToDate(fld.stringValue()));
-	            	else
-	            		ent.put(fld.name(),fld.stringValue());
+	            	else if (!ent.containsKey(fld.name())) {
+	            		ent.put(fld.name(), fld.stringValue());
+	            	} else {
+	            		Object obj = ent.get(fld.name());
+	            		SearchFieldResult val;
+	            		if (obj instanceof String) {
+	            			val = new SearchFieldResult();
+	            			//replace
+	            			ent.put(fld.name(), val);
+	            			val.addValue((String)obj);
+	            		} else {
+	            			val = (SearchFieldResult)obj;
+	            		}
+	            		val.addValue(fld.stringValue());
+	            	} 
 	            }
 	            childEntries.add(ent);
 	            ++count;
@@ -540,7 +552,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         	Principal p;
         	HashMap child = (HashMap)childEntries.get(i);
         	if (child.get(EntryIndexUtils.CREATORID_FIELD) != null) {
-        		child.put(WebKeys.PRINCIPAL, getPrincipal(users,(String)child.get(EntryIndexUtils.CREATORID_FIELD)));
+        		child.put(WebKeys.PRINCIPAL, getPrincipal(users,child.get(EntryIndexUtils.CREATORID_FIELD).toString()));
         	}        	
         }
        	Map model = new HashMap();
@@ -711,16 +723,6 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
          getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      } 
 
-    protected void loadEntryHistory(HashMap entry) {
-        Set ids = new HashSet();
-        if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
-    	    try {ids.add(new Long((String)entry.get(EntryIndexUtils.CREATORID_FIELD)));
-    	    } catch (Exception ex) {}
-        if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
-    		try {ids.add(new Long((String)entry.get(EntryIndexUtils.MODIFICATIONID_FIELD)));
-    	    } catch (Exception ex) {}
-        getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
-     } 
     protected List loadEntryHistoryLuc(List pList) {
         Set ids = new HashSet();
         Iterator iter=pList.iterator();
@@ -728,10 +730,10 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         while (iter.hasNext()) {
             entry = (HashMap)iter.next();
             if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
-            	try {ids.add(new Long((String)entry.get(EntryIndexUtils.CREATORID_FIELD)));
+            	try {ids.add(new Long(entry.get(EntryIndexUtils.CREATORID_FIELD).toString()));
         	    } catch (Exception ex) {}
             if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
-        		try {ids.add(new Long((String)entry.get(EntryIndexUtils.MODIFICATIONID_FIELD)));
+        		try {ids.add(new Long(entry.get(EntryIndexUtils.MODIFICATIONID_FIELD).toString()));
         		} catch (Exception ex) {}
         }
         return getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());

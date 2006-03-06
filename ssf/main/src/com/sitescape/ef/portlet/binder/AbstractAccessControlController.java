@@ -4,12 +4,9 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.PortletRequest;
-import javax.servlet.ServletRequest;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,30 +22,26 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Group;
-import com.sitescape.ef.portlet.forum.SAbstractForumController;
+import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.util.ResolveIds;
-import com.sitescape.util.ParamUtil;
 
 /**
  * @author Peter Hurley
  *
  */
-public abstract class AbstractAccessControlController extends SAbstractForumController {
+public abstract class AbstractAccessControlController extends SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);
 
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-			
-		Map binderConf = getBinderModule().getBinderFunctionMembership(binderId);
-		Binder binder = (Binder)binderConf.get(ObjectKeys.BINDER);
-		List membership = (List)binderConf.get(ObjectKeys.FUNCTION_MEMBERSHIP);
+		Binder binder = getBinderModule().getBinder(binderId);
 		request.setAttribute("roleId", "");
 
 		//See if the form was submitted
@@ -77,14 +70,7 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 						}
 					}
 				}
-				WorkAreaFunctionMembership wfm = null;
-				for (int i = 0; i < membership.size(); i++) {
-					if (roleId.equals(((WorkAreaFunctionMembership) membership.get(i)).getFunctionId())) {
-						//The function already is in use for this workarea.
-						wfm = (WorkAreaFunctionMembership) membership.get(i);
-						break;
-					}
-				}
+				WorkAreaFunctionMembership wfm = getAdminModule().getWorkAreaFunctionMembership(binder, roleId);
 				if (wfm == null) {
 					wfm = new WorkAreaFunctionMembership();
 					//Build the workarea membership object
@@ -119,9 +105,9 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 		} else if (formData.containsKey("inheritanceBtn")) {
 			String inherit = request.getParameter("inherit");
 			if (inherit != null && inherit.equals("yes")) 
-				binder.setFunctionMembershipInherited(true);
+				getBinderModule().setFunctionMembershipInherited(binderId,true);
 			if (inherit != null && inherit.equals("no")) 
-				binder.setFunctionMembershipInherited(false);
+				getBinderModule().setFunctionMembershipInherited(binderId, false);
 			
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			setResponseOnClose(response, binderId);
@@ -133,7 +119,7 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 		
 		Map model = new HashMap();
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Map binderConf = getBinderModule().getBinderFunctionMembership(binderId);
+		Map binderConf = getBinderModule().getFunctionMembership(binderId);
 		Binder binder = (Binder)binderConf.get(ObjectKeys.BINDER);
 		Map functionMap = new HashMap();
 		List functions = (List)binderConf.get(ObjectKeys.FUNCTIONS);
