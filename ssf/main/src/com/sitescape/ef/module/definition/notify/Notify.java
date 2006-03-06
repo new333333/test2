@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.text.DateFormat;
 import java.util.Date;
+import java.sql.Timestamp;
 import com.sitescape.ef.domain.FileAttachment;
 
 public class Notify {
@@ -14,7 +15,7 @@ public class Notify {
 	protected Locale locale;
 	protected DateFormat dateFormat;
 	protected HashSet files= null;
-	protected Date startDate;
+	protected Timestamp startTs;
 	
 	public Set getAttachments() {
 		if (files == null) files = new HashSet();
@@ -62,10 +63,15 @@ public class Notify {
 	public void setDateFormat(DateFormat dateFormat) {
 		this.dateFormat = dateFormat;
 	}
+	/**
+	 * The dates returned from the database are java.sql.Timestamp
+	 * compareTo doesn't work on a Date that is not a Timestamp
+	 * @return
+	 */
 	public Date getStartDate() {
-		return startDate;
+		return startTs;
 	}
 	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+		this.startTs = new Timestamp(startDate.getTime());
 	}
 }

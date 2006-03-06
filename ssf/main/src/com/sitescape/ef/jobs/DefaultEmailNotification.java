@@ -64,7 +64,7 @@ public class DefaultEmailNotification extends SSStatefulJob implements EmailNoti
     		return getDefaultCleanupListener();
     	}
     	public ScheduleInfo getDefaultScheduleInfo() {
-    		ScheduleInfo info = new ScheduleInfo(zoneName);
+    		ScheduleInfo info = new ScheduleInfo(binder.getZoneName());
     		info.getDetails().put("binder", binder.getId());
     		info.getDetails().put("lastNotification", new Date());
     		return info;
