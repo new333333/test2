@@ -36,6 +36,7 @@ public abstract class AbstractFilterController extends SAbstractForumController 
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
+		response.setRenderParameters(formData);
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		User user = RequestContextHolder.getRequestContext().getUser();
 			
@@ -69,12 +70,14 @@ public abstract class AbstractFilterController extends SAbstractForumController 
 			}
 			setResponseOnClose(response, binderId);
 		
-		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
+		} else if (formData.containsKey("cancelBtn")) {
+			//Go back to the "Add filter" page
+		
+		} else if (formData.containsKey("closeBtn")) {
 			setResponseOnClose(response, binderId);
 		
 		} else
 			setResponseOnClose(response, binderId);
-			response.setRenderParameters(formData);
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
