@@ -171,6 +171,7 @@ public class AjaxController  extends SAbstractForumController {
         	}
     		model.put(WebKeys.USERS, users.get(ObjectKeys.ENTRIES));
     		model.put(WebKeys.USER_IDS_TO_SKIP, userIdsToSkip);
+    		model.put(WebKeys.USER_SEARCH_USER_GROUP_TYPE, userGroupType);
     		model.put("listDivId", listDivId);
 			response.setContentType("text/xml");
 			model.put(WebKeys.AJAX_STATUS, statusMap);

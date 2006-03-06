@@ -19,18 +19,50 @@
 
 <%
 	String roleId = (String) request.getAttribute("roleId");
+	if (roleId == null) roleId = "";
 %>
+<c:set var="roleId" value="<%= roleId %>" />
 <div class="ss_style ss_form ss_portlet">
 <div class="ss_form">
 <h3><ssf:nlt tag="binder.configure.access_control" text="Configure access control"/></h3>
 
-<c:if test="${ssBinder.functionMembershipInherited}">
-<span><ssf:nlt tag="binder.configure.access_control.inheriting" 
- text="This folder is inheriting its access control settings from its parent folder."/></span>
+<fieldset class="ss_fieldset">
+  <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.inheritance" 
+    text="Role membership inheritance"/></legend>
 <br>
+<c:set var="yes_checked" value=""/>
+<c:set var="no_checked" value=""/>
+<c:if test="${ssBinder.functionMembershipInherited}">
+<span class="ss_bold"><ssf:nlt tag="binder.configure.access_control.inheriting" 
+ text="This folder is inheriting its access control settings from its parent folder."/></span>
+<c:set var="yes_checked" value="checked"/>
 </c:if>
-
 <c:if test="${!ssBinder.functionMembershipInherited}">
+<span class="ss_bold"><ssf:nlt tag="binder.configure.access_control.notInheriting" 
+ text="This folder is not inheriting its access control settings from its parent folder."/></span>
+<c:set var="no_checked" value="checked"/>
+</c:if>
+<br><br>
+<form class="ss_style" name="inheritanceForm" method="post" 
+  onSubmit="return ssf_onSubmit(this);"
+  action="<portlet:actionURL>
+		  <portlet:param name="action" value="configure_access_control"/>
+		  <portlet:param name="binderId" value="${ssBinder.id}"/>
+		  </portlet:actionURL>">
+<ssf:nlt tag="binder.configure.access_control.inherit"
+ text="Inherit role membership from the parent folder or workspace:"/>
+<br>
+&nbsp;&nbsp;&nbsp;<input type="radio" name="inherit" value="yes" checked="${yes_checked}">
+<ssf:nlt tag="yes" text="yes"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="radio" name="inherit" value="no" checked="${no_checked}">
+<ssf:nlt tag="no" text="no"/>&nbsp;&nbsp;&nbsp;
+<input type="submit" name="inheritanceBtn"
+ value="<ssf:nlt tag="button.apply" text="Apply"/>">
+</form>
+</fieldset>
+<br>
+<c:if test="${!ssBinder.functionMembershipInherited}">
+<c:if test="${empty roleId}">
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.currentMembershipSettings" 
     text="Current membership settings"/></legend>
@@ -103,16 +135,16 @@
  text="No access controls have been set."/></span>]
   </c:if>
 </fieldset>
-
 <br>
+</c:if>
 
+<c:if test="${empty roleId}">
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.addRole" 
-    text="Add a role"/></legend>
-    
+    text="Define role membership"/></legend>
   <c:if test="${empty ssFunctionMap}">
     [<span class="ss_italic"><ssf:nlt tag="binder.configure.access_control.nofunctions"
- text="No roles have been defined. Please contact the zone administrator to define "/></span>]
+      text="No roles have been defined. Please contact the zone administrator to define "/></span>]
   </c:if>
   <c:if test="${!empty ssFunctionMap}">
 <form class="ss_style" name="rolesForm" method="post" 
@@ -153,6 +185,71 @@
 </tr>
 </table>
 
+<input type="submit" name="addBtn"
+ value="<ssf:nlt tag="button.add" text="Add"/>"
+ onClick="return ss_checkRoleIdField(this)">
+<br/>
+
+</form>
+</c:if>
+</fieldset>
+</c:if>
+
+<c:if test="${!empty roleId}">
+<fieldset class="ss_fieldset">
+  <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.modifyRole" 
+    text="Modify role membership"/></legend>
+  <c:if test="${!empty ssFunctionMap}">
+<form class="ss_style" name="rolesForm" method="post" 
+  onSubmit="return ssf_onSubmit(this);"
+  action="<portlet:actionURL>
+		  <portlet:param name="action" value="configure_access_control"/>
+		  <portlet:param name="binderId" value="${ssBinder.id}"/>
+		  </portlet:actionURL>">
+
+<c:forEach var="function" items="${ssFunctionMap}">
+  <c:if test="${roleId == function.key.id}">
+<table class="ss_style" cellspacing="10px" cellpadding="10px">
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="binder.configure.access_control.role" 
+ text="Role"/></td>
+<td valign="top">
+    <c:out value="${function.key.name}"/>
+    <input type="hidden" name="roleId" value="${function.key.id}">
+</td>
+</tr>
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="binder.configure.access_control.users" 
+ text="Users"/></td>
+<td valign="top">
+  <ssf:findUsers formName="rolesForm" formElement="users" 
+    type="user" userList="${function.value.ssUsers}"/>
+</td>
+</tr>
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="binder.configure.access_control.groups" 
+ text="Groups"/></td>
+<td valign="top">
+  <ssf:findUsers formName="rolesForm" formElement="groups" 
+    type="group" userList="${function.value.ssGroups}"/>
+</td>
+</tr>
+</table>
+  </c:if>
+</c:forEach>
+
+<input type="submit" name="addBtn"
+ value="<ssf:nlt tag="button.modify" text="Modify"/>"
+ onClick="return ss_checkRoleIdField(this)">&nbsp;&nbsp;
+<input type="submit" name="cancelModifyBtn"
+ value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
+<br/>
+
+</form>
+</c:if>
+</fieldset>
+</c:if>
+
 <script type="text/javascript">
 function ss_checkRoleIdField(btnObj) {
 	if (btnObj.form.roleId.value == "") {
@@ -163,18 +260,11 @@ function ss_checkRoleIdField(btnObj) {
 	return true;
 }
 </script>
-<input type="submit" name="addBtn"
- value="<ssf:nlt tag="button.add" text="Add"/>"
- onClick="return ss_checkRoleIdField(this)">
-<br/>
 
-</form>
 </c:if>
-</fieldset>
 
-  </c:if>
+<c:if test="${empty roleId}">
 <br/>
-
 <form class="ss_style" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_access_control"/>
 			<portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -182,5 +272,6 @@ function ss_checkRoleIdField(btnObj) {
 
 	<input type="submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
+</c:if>
 </div>
 </div>

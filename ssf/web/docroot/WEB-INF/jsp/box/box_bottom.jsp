@@ -18,7 +18,7 @@ String ss_boxColor = ParamUtil.get(request, "box_color", "#cecece");
 function ss_roundBox() {
 	if(!NiftyCheck()) return;
 	Rounded("div.ss_box_rounded","top","#FFF","<%= ss_boxColor %>","smooth");
-	Rounded("div.ss_box_bottom_rounded","bottom","#CCC","<%= ss_boxColor %>","small");
+	Rounded("div.ss_box_bottom_rounded","bottom","#FFF","<%= ss_boxColor %>","smooth");
 }
 ss_createOnLoadObj('ss_roundBox', ss_roundBox);
 </script>

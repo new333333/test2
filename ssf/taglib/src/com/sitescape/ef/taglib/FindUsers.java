@@ -2,8 +2,10 @@ package com.sitescape.ef.taglib;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
@@ -24,7 +26,7 @@ import com.sitescape.util.servlet.StringServletResponse;
  *
  */
 public class FindUsers extends TagSupport {
-    private List userList;
+    private Set userList;
     private String formName;
     private String formElement;
     private String type;
@@ -34,7 +36,7 @@ public class FindUsers extends TagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 			
-			if (this.userList == null) this.userList = new ArrayList();
+			if (this.userList == null) this.userList = new HashSet();
 			if (this.type == null) this.type = WebKeys.USER_SEARCH_USER_GROUP_TYPE_USER;
 			
 			//Output the start of the area
@@ -64,7 +66,7 @@ public class FindUsers extends TagSupport {
 		return EVAL_PAGE;
 	}
 	
-	public void setUserList(List userList) {
+	public void setUserList(Set userList) {
 	    this.userList = userList;
 	}
 

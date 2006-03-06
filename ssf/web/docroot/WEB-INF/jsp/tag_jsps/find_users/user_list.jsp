@@ -1,13 +1,14 @@
 <% // User/Group list widget %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="java.util.List" %>
+<%@ page import="java.util.Set" %>
 <%@ page import="java.util.ArrayList" %>
 <%
-	List userList = (List) request.getAttribute("user_list");
+	Set userList = (Set) request.getAttribute("user_list");
 	String userGroupType = (String) request.getAttribute("list_type");
 	String userListFormName = (String) request.getAttribute("form_name");
 	String userListElementName = (String) request.getAttribute("form_element");
 %>
+<c:set var="userList" value="<%= userList %>"/>
 <c:set var="prefix" value="<%= userListFormName + "_" + userListElementName %>" />
 <c:if test="${empty ss_user_list_support_stuff_loaded}">
 <c:if test="${empty ss_taconite_loaded}">
@@ -51,7 +52,7 @@ function ss_userListSearch(text, elementName, userGroupType) {
  	ss_userList_searchText = text;
  	
  	//Build a list of the userIds already added
- 	var addedObj = document.getElementById('added_<%= userListElementName %>');
+ 	var addedObj = document.getElementById('added_'+elementName);
 	var addedIds = "";
 	var items = addedObj.getElementsByTagName( "li" );
 	for (var i = 0; i < items.length; i++) {
@@ -141,6 +142,7 @@ function ss_userListInterceptCR(e) {
     <ul id="added_<%= userListElementName %>" class="ss_dragable ss_userlist">
       <c:forEach var="item" items="${userList}">
         <li id="<c:out value="${item.id}"/>" 
+          onDblClick="ss_userListMoveItem(this);" 
           class="ss_dragable ss_userlist"><c:out value="${item.title}"/></li>
       </c:forEach>
     </ul>
