@@ -536,7 +536,7 @@ function ss_postSlidingTableRequest(obj) {
 	}
 }
 </script>
-<form class="ss_style" name="ss_columnPositionForm" id="ss_columnPositionForm" >
+<form class="ss_style ss_form" name="ss_columnPositionForm" id="ss_columnPositionForm" >
 <input type="hidden" name="column_positions">
 </form>
 <div id="ss_sliding_table_status_message" style="visibility:hidden; display:none;"></div>

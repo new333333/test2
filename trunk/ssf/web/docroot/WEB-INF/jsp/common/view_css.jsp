@@ -9,6 +9,7 @@
 String alphaColor = "#775325";
 String betaColor = "#B89257";
 String gammaColor = "#CCCC99";
+String ss_roundedColor = "#e5e5e5";
 
 //Set up the user object
 if(RequestContextHolder.getRequestContext() != null) {
@@ -29,6 +30,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_dragsort.js"></script>
   </c:if>
 <script type="text/javascript">
+
+//Routine to round the corners of the rounded box tag
+function ss_rounded() {
+	if(!NiftyCheck()) return;
+	Rounded("*.ss_rounded", "all", "#FFF", "<%= ss_roundedColor %>", "smooth");
+}
+ss_createOnLoadObj('ss_rounded', ss_rounded);
 
 function ss_createStyleSheet(url) {
 	var styles = "@import url('" + " " + url + " " + "');";

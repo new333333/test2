@@ -221,7 +221,7 @@ function ss_postEntryWidthRequest(obj) {
 }
 
 </script>
-<form class="ss_style" name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
+<form class="ss_style ss_form" name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
 <input type="hidden" name="entry_width">
 </form>
 <div id="ss_entry_width_status_message" style="visibility:hidden; display:none;"></div>

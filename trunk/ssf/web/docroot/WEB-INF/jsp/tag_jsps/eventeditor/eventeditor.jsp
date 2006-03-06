@@ -231,7 +231,7 @@ function ${prefix}_toggleRecur(name) {
      <c:if test="${freqval == 'day'}"> checked="checked" </c:if>
      >
 
-      <ssf:nlt tag="event.every" /> <input type="text" name="${prefix}_everyNday" size="2" 
+      <ssf:nlt tag="event.every" /> <input type="text" class="ss_text" name="${prefix}_everyNday" size="2" 
        value="${initEvent.interval}"
    > <ssf:nlt tag="event.days" /></td>
     </tr>
@@ -243,7 +243,7 @@ function ${prefix}_toggleRecur(name) {
       checked="checked"
       </c:if>
       value="week" >
-      <ssf:nlt tag="event.every" /> <input type="text" name="${prefix}_everyNweek" size="2" 
+      <ssf:nlt tag="event.every" /> <input type="text" class="ss_text" name="${prefix}_everyNweek" size="2" 
        value="${initEvent.interval}" > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> 
 
    <input type="checkbox" name="${prefix}_day0" id="${prefix}_day0"
@@ -283,7 +283,7 @@ function ${prefix}_toggleRecur(name) {
       checked="checked"
       </c:if>
       value="month" >
-      <ssf:nlt tag="event.every" /> <input type="text"  size="2"
+      <ssf:nlt tag="event.every" /> <input type="text" class="ss_text"  size="2"
       name="${prefix}_everyNmonth" value="${initEvent.interval}"
     > month(s) on the
    <select  name="${prefix}_onDayCard" title="select which week in the month on which this calendar entry will occur" > 
@@ -366,7 +366,7 @@ function ${prefix}_toggleRecur(name) {
    <c:if test="${count > 0}" > checked="checked" </c:if>
    >
    <ssf:nlt tag="event.repeat" />
-   <input type="text" size="2" name="${prefix}_repeatCount"
+   <input type="text" class="ss_text" size="2" name="${prefix}_repeatCount"
    <c:choose>
    <c:when test="${count > 0}" > value="${count}" </c:when>
    <c:otherwise> value="10" </c:otherwise>

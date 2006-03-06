@@ -117,7 +117,7 @@ function checkFilterForm(obj) {
 
 </script>
 
-<form name="filterData" id="filterData" class="ss_style" method="post" 
+<form name="filterData" id="filterData" class="ss_style ss_form" method="post" 
     action="<portlet:actionURL>
 	<portlet:param name="action" value="build_filter"/>
 	<portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -126,9 +126,9 @@ function checkFilterForm(obj) {
 >
 
 <div class="ss_buttonBarRight">
-<input type="submit" name="okBtn" class="ss_submit" onClick="ss_buttonSelect('ok');"
+<input type="submit" class="ss_submit" name="okBtn" onClick="ss_buttonSelect('ok');"
   value="<ssf:nlt tag="button.ok" text="OK"/>">&nbsp;<input 
-  type="submit" name="cancelBtn" class="ss_submit" onClick="ss_buttonSelect('cancel');"
+  type="submit" class="ss_submit" name="cancelBtn" onClick="ss_buttonSelect('cancel');"
   value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 </div>
 
@@ -136,7 +136,7 @@ function checkFilterForm(obj) {
     <legend class="ss_legend"><ssf:nlt tag="filter.filterName" text="Filter name"/></legend>
 
 	  <span class="ss_labelAbove"><ssf:nlt tag="filter.filterName" text="Filter name"/></span>
-	  <input type="text" style="width:400px;" name="filterName" value="<c:out value="${ss_selectedFilter}"/>">
+	  <input type="text" class="ss_text" style="width:400px;" name="filterName" value="<c:out value="${ss_selectedFilter}"/>">
   </fieldset>
 
 <div class="ss_formBreak"/>
@@ -257,7 +257,7 @@ function checkFilterForm(obj) {
 				if (ss_searchFilterData.containsKey("elementValue" + String.valueOf(i))) {
 					String value = (String) ss_searchFilterData.get("elementValue" + String.valueOf(i));
 %>
-				<input type="text" name="elementValue<%= String.valueOf(i) %>" style="width:150px;" 
+				<input type="text" class="ss_text" name="elementValue<%= String.valueOf(i) %>" style="width:150px;" 
 				  value="<%= value.replaceAll("\\\"", "\\\"") %>">
 <%
 				}
@@ -299,9 +299,9 @@ function checkFilterForm(obj) {
 <div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">
-<input type="submit" name="okBtn" class="ss_submit" onClick="ss_buttonSelect('ok');"
+<input type="submit" class="ss_submit" name="okBtn" onClick="ss_buttonSelect('ok');"
   value="<ssf:nlt tag="button.ok" text="OK"/>">&nbsp;<input 
-  type="submit" name="cancelBtn" class="ss_submit" onClick="ss_buttonSelect('cancel');"
+  type="submit" class="ss_submit" name="cancelBtn" onClick="ss_buttonSelect('cancel');"
   value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 </div>
 
