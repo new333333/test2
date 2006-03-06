@@ -27,7 +27,7 @@
 	style="display:inline;">
 	  <c:if test="${ss_filterType == 'text'}">
          <ssf:nlt tag="filter.searchText" text="Search text"/>: <input 
-         type="text" style="width:200px;" 
+         type="text" class="ss_text" style="width:200px;" 
          name="elementValue<c:out value="${ss_filterTermNumber}"/>" />
 	  </c:if>
 	  <c:if test="${ss_filterType == 'entry'}">

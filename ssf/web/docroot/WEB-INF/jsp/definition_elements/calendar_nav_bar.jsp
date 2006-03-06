@@ -5,7 +5,7 @@
   // Expand the nav bar to all calendar nav functions: views -- today, 
   // week, month, year (as appropriate). The datepicker widget is Day View.
 %>
-<form class="ss_style" name="ssCalNavBar" action="${goto_form_url}" 
+<form class="ss_style ss_form" name="ssCalNavBar" action="${goto_form_url}" 
   method="post" style="display:inline;">
 <span>
 	<ssf:datepicker formName="ssCalNavBar" showSelectors="true" 

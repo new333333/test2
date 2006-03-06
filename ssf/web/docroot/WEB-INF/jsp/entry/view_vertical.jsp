@@ -271,7 +271,7 @@ function ss_postEntryHeightRequest(obj) {
 }
 
 </script>
-<form class="ss_style" name="ss_saveEntryHeightForm" id="ss_saveEntryHeightForm" >
+<form class="ss_style ss_form" name="ss_saveEntryHeightForm" id="ss_saveEntryHeightForm" >
 <input type="hidden" name="entry_height">
 </form>
 <div id="ss_entry_height_status_message" style="visibility:hidden; display:none;"></div>

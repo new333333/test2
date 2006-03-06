@@ -30,13 +30,13 @@
 	      <td valign="top" align="right"><b><ssf:nlt tag="workflow.transitionTo" 
 	        text="Transition to:"/></b></td>
 	      <td valign="top">
-		  <form class="ss_style" method="post" action="" style="display:inline;">
+		  <form class="ss_style ss_form" method="post" action="" style="display:inline;">
 		  <input type="hidden" name="tokenId" value="${workflow.tokenId}">
 		  <select name="toState">
 		  <c:forEach var="transition" items="${workflow.manualTransitions}">
 		    <option value="${transition.key}">${transition.value}</option>
 		  </c:forEach>
-		  </select><input type="submit" name="changeStateBtn" 
+		  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
 		   value="<ssf:nlt tag="button.ok" text="OK"/>">
 		  </form>
 		  </td>
@@ -64,13 +64,13 @@
 			      <td valign="top" align="right"><b><ssf:nlt tag="workflow2.transitionTo" 
 			        text="Transition to:"/></b></td>
 			      <td valign="top">
-				  <form class="ss_style" method="post" action="" style="display:inline;">
+				  <form class="ss_style ss_form" method="post" action="" style="display:inline;">
 				  <input type="hidden" name="tokenId" value="${workflow2.tokenId}">
 				  <select name="toState">
 				  <c:forEach var="transition" items="${workflow2.manualTransitions}">
 				    <option value="${transition.key}">${transition.value}</option>
 				  </c:forEach>
-				  </select><input type="submit" name="changeStateBtn" 
+				  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
 				   value="<ssf:nlt tag="button.ok" text="OK"/>">
 				  </form>
 				  </td>

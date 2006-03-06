@@ -26,7 +26,7 @@
 <%
 	for (int i = 1; i <= count; i++) {
 %>
-<input type="file" name="<%= elementName + Integer.toString(i) %>" <%= width %> ><br>
+<input type="file" class="ss_text" name="<%= elementName + Integer.toString(i) %>" <%= width %> ><br>
 <%
 	}
 %>

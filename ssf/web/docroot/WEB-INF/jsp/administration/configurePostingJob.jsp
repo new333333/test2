@@ -16,7 +16,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<form class="ss_style" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
+<form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_posting_job"/>
 		</portlet:actionURL>">
 <script type="text/javascript">
@@ -164,8 +164,8 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 <div class="ss_divider"></div>
 </div>
 <br/>
-<input class="ss_submit" type="submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
-<input class="ss_submit" type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
 
 </form>

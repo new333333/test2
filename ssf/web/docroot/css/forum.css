@@ -7,7 +7,22 @@
   font-weight: inherit;
   font-size: 12px; 
   }
-  
+
+.ss_form {
+  color: red;
+  background-color: #e5e5e5;
+  margin:6px;
+  }
+    
+.ss_form table.ss_style {
+  color: red;
+  }
+    
+/* This style triggers the Nifty Corners rounding effect. 
+   Add "ss_rounded" to any element that is to be rounded. */
+.ss_rounded {
+  }
+    
 .ss_largeprint {
   font-size: 16px; 
   }
@@ -32,6 +47,65 @@
   color: #999999;   
   }
 
+/****** Form styles ******/
+.ss_form {
+  color: red;
+  background-color: #e5e5e5;
+  margin:6px;
+  }
+    
+.ss_form table.ss_style {
+  color: red;
+  }
+    
+.ss_form.ss_gray {
+  }
+
+.ss_form select {
+  background-color: #eee;
+  color: red;
+  }
+  
+.ss_form textarea {
+  background-color: #eee;
+  color: red;
+  }
+
+.ss_form input.ss_text { 
+  background-color: #eee;
+  color: red;
+  }
+    
+.ss_form input.ss_submit { 
+  /*
+  background-color: #e5e5e5;
+  font-size: x-small; 
+  color: #3366cc;
+  font-weight: bold;
+  padding-left, padding-right: 0px;
+  border-top: 2px solid #e6e6e6;
+  border-left: 2px solid #e6e6e6;
+  border-right: 2px solid #8f8f8f;
+  border-bottom: 2px solid #8f8f8f;
+  */
+  }
+
+.ss_form input.ss_submit:hover { 
+  /*
+  background-color: #e5e5e5;
+  font-size: x-small; 
+  color: #3366cc;
+  font-weight: bold;
+  padding-left, padding-right: 0px;
+  border-top: 2px solid #8f8f8f;
+  border-left: 2px solid #8f8f8f;
+  border-right: 2px solid #e6e6e6;
+  border-bottom: 2px solid #e6e6e6;
+  */
+  }
+
+
+/****** Miscellaneous styles ******/
 span.ss_right {
   display: inline;
   text-align: right;
@@ -237,24 +311,11 @@ fieldset.ss_fieldset_square {
   }
 
 legend.ss_legend {
-  font-weight: bold;
-  color: #666666;;
+  color: red;
   }
 
 legend.ss_legend_bold {
   font: bold 140%/1.6 Arial,sans-serif;
-  }
-
-/* legend explaining the required-field indicator */
-div.ss_requiredLegend {
-  text-align: left;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  color: #cccccc;
-  }
-
-.ss_form {
-  margin:6px;
   }
 
 .ss_formInstructions { 
@@ -274,31 +335,6 @@ div.ss_widgetContent {
   margin-top: 4px;
   margin-bottom: 4px;
   padding: 2px;
-  }
-
-/* submit button styles */
-input.ss_submit { 
-  background-color: #e5e5e5;
-  font-size: x-small; 
-  color: #3366cc;
-  font-weight: bold;
-  padding-left, padding-right: 0px;
-  border-top: 2px solid #e6e6e6;
-  border-left: 2px solid #e6e6e6;
-  border-right: 2px solid #8f8f8f;
-  border-bottom: 2px solid #8f8f8f;
-  }
-
-input.ss_submit:hover { 
-  background-color: #e5e5e5;
-  font-size: x-small; 
-  color: #3366cc;
-  font-weight: bold;
-  padding-left, padding-right: 0px;
-  border-top: 2px solid #8f8f8f;
-  border-left: 2px solid #8f8f8f;
-  border-right: 2px solid #e6e6e6;
-  border-bottom: 2px solid #e6e6e6;
   }
 
 /* ------------------------------------------------------------------------ */

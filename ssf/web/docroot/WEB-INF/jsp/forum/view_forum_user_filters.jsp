@@ -15,7 +15,7 @@
 	}
 %>
 <div style="display:inline;" id="<portlet:namespace/>ss_filter_select">
-<form name="ss_filterSelect" class="ss_style" 
+<form name="ss_filterSelect" class="ss_style ss_form" 
 	action="<portlet:renderURL windowState="maximized">
 		<portlet:param name="action" value="view_listing"/>
 		<portlet:param name="binderId" value="${ssFolder.id}"/>

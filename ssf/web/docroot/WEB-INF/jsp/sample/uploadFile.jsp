@@ -4,7 +4,7 @@
 
 <h1><%= request.getAttribute("header") %></h1>
 
-<form class="ss_style" method="post" enctype="multipart/form-data" 
+<form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
 	action="<portletadapter:actionURL>
 			<portletadapter:param name="action" value="uploadFile"/>
 			</portletadapter:actionURL>">
@@ -20,7 +20,7 @@
 		</tr>
 		<tr>
 			<th>File</th>
-			<td><input type="file" name="file"/></td>
+			<td><input type="file" class="ss_text" name="file"/></td>
 		</tr>
 		<tr>
 			<th colspan="2">

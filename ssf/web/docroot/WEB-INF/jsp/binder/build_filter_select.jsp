@@ -41,7 +41,7 @@ function checkFilterForm(obj) {
 
 </script>
 
-<form name="filterData" id="filterData" class="ss_style" method="post" 
+<form name="filterData" id="filterData" class="ss_style ss_form" method="post" 
     action="<portlet:actionURL>
 	<portlet:param name="action" value="build_filter"/>
 	<portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -51,15 +51,15 @@ function checkFilterForm(obj) {
 
 <div class="ss_buttonBarRight">
 <input 
-  type="submit" name="cancelBtn" class="ss_submit" onClick="ss_buttonSelect('cancel');"
-  value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
+  type="submit" class="ss_submit" name="closeBtn" onClick="ss_buttonSelect('close');"
+  value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
 
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="filter.filterAddModDelete" text="Add, modify or delete filters"/></legend>
 
 	<br>
-	<input type="submit" name="addBtn"  onClick="ss_buttonSelect('add');"
+	<input type="submit" class="ss_submit" name="addBtn"  onClick="ss_buttonSelect('add');"
 	  value="<ssf:nlt tag="filter.add" text="Add a new filter"/>">
 	<br>
 	<br>
@@ -76,10 +76,10 @@ function checkFilterForm(obj) {
 	    </select>
 	  </td>
 	  <td valign="top">
-	    <input type="submit" name="modifyBtn"  onClick="ss_buttonSelect('modify');"
+	    <input type="submit" class="ss_submit" name="modifyBtn"  onClick="ss_buttonSelect('modify');"
 	      value="<ssf:nlt tag="button.modify" text="Modify"/>">
 	    <br>
-	    <input type="submit" name="deleteBtn"  onClick="ss_buttonSelect('delete');"
+	    <input type="submit" class="ss_submit" name="deleteBtn"  onClick="ss_buttonSelect('delete');"
 	      value="<ssf:nlt tag="button.delete" text="Delete"/>">
 	  </td>
 	  </tr>
@@ -90,9 +90,9 @@ function checkFilterForm(obj) {
 <div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">
-<input type="submit" name="cancelBtn" class="ss_submit" 
-  onClick="ss_buttonSelect('cancel');"
-  value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
+<input type="submit" class="ss_submit" name="closeBtn" 
+  onClick="ss_buttonSelect('close');"
+  value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
 
 </form>

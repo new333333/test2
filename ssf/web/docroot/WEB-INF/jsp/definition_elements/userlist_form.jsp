@@ -131,7 +131,7 @@ function ss_userListInterceptCR(e) {
 	  <tr>
 	    <td colspan="2" valign="top" nowrap>
 	      <b><ssf:nlt tag="userlist.findName" text="Find name"/>:</b>
-	      <input type="text" size="15" name="ss_userList_searchText" 
+	      <input type="text" class="ss_text" size="15" name="ss_userList_searchText" 
 	        onKeyUp="ss_userListSearch(this.value, '<%= elementName %>');">
 	    </td>
 	  </tr>

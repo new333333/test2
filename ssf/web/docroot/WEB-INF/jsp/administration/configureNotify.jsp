@@ -35,7 +35,8 @@
 </c:when>
 <c:otherwise>
 
-<form class="ss_style" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
+<form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" 
+    action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_notify"/>
 			<portlet:param name="binderId" value="${ssFolder.id}"/>
 		</portlet:actionURL>">
@@ -95,8 +96,8 @@ function <portlet:namespace/>setEnable() {
 <br><br>
 <div class="ss_divider"></div>
 <br/>
-	<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
-	<input type="submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
+	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 </form>
 
 </c:otherwise>

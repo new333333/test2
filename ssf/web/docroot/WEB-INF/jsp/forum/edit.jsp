@@ -32,7 +32,7 @@
 <br>
 </c:if>
 
-<form class="ss_style" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
+<form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
 
 <br>
 <br>
@@ -53,9 +53,9 @@ function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
   rootOpen="true" multiSelect="<%= ssForumIdList %>" multiSelectPrefix="id_" />
 
 <br>
-<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 </form>
 <br>
 

@@ -2,7 +2,7 @@
 
 <h1>${employee.key == null ? 'Add New Employee' : 'Edit Employee Details'}</h1>
 
-<form class="ss_style" method="post" action="<portlet:actionURL>
+<form class="ss_style ss_form" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="editEmployee"/>
 			<portlet:param name="employee" value="${employee.key}"/>
 		</portlet:actionURL>">
