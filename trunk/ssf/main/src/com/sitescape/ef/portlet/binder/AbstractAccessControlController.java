@@ -116,6 +116,13 @@ public abstract class AbstractAccessControlController extends SAbstractForumCont
 				getAdminModule().deleteWorkAreaFunctionMembership(binder, roleId);
 			}
 			
+		} else if (formData.containsKey("inheritanceBtn")) {
+			String inherit = request.getParameter("inherit");
+			if (inherit != null && inherit.equals("yes")) 
+				binder.setFunctionMembershipInherited(true);
+			if (inherit != null && inherit.equals("no")) 
+				binder.setFunctionMembershipInherited(false);
+			
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			setResponseOnClose(response, binderId);
 		}
