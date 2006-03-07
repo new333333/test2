@@ -2,6 +2,7 @@
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 String sliderDivOffset = "-23";
+String sliderDivHeight = "20";
 %>
 <a name="ss_top_of_folder"></a>
 <div id="ss_showfolder" class="ss_style ss_portlet">
@@ -11,7 +12,7 @@ String sliderDivOffset = "-23";
     configJspStyle="<%= ssConfigJspStyle %>" />
 </div>
 <div id="ss_showfolder_slider" onMousedown="ss_startDragDiv();" 
- onMouseover="ss_clearMouseOverInfo(null);" width="100%" height="23px"
+ onMouseover="ss_clearMouseOverInfo(null);" width="100%" height="<%= sliderDivHeight %>px"
  style="position:relative; margin:0px 0px 3px 0px; padding:0px; 
   top:<%= sliderDivOffset %>px; border: 1px solid black;">
   <table class="ss_style ss_bgmedgray" width="100%" 
@@ -60,8 +61,7 @@ var ss_scrollTopOffset = 4;
 var ss_positioningEntryDiv = 0;
 var ss_marginLeft = 2
 var ss_marginRight = 2
-var ss_marginTop = 2
-var ss_marginBottom = 2
+var ss_folderDivMarginOffset = 6
 
 function ss_positionEntryDiv() {
 	ss_positioningEntryDiv = 1
@@ -78,7 +78,7 @@ function ss_positionEntryDiv() {
 	ss_setObjectWidth(wObj1, width);
 	ss_setObjectWidth(wObj2, width);
 
-    ss_setObjectTop(wObj1, parseInt(parseInt(ss_getDivTop('ss_showfolder_slider')) + 20))
+    ss_setObjectTop(wObj1, parseInt(parseInt(ss_getDivTop('ss_showfolder_slider')) + <%= sliderDivHeight %>))
     var entryHeight = parseInt(ss_getWindowHeight() - ss_getDivTop('ss_showfolder_slider') - ss_bottomHeight)
     if (entryHeight < ss_minEntryDivHeight) entryHeight = ss_minEntryDivHeight;
 	ss_setObjectHeight(wObj1, entryHeight);
@@ -230,7 +230,9 @@ function ss_divStopDrag(evt) {
             dObjTop = evt.clientY - ss_divOffsetY;
         }
 		var tableDivObj = document.getElementById('<c:out value="${ss_slidingTableId}"/>')
-	    ss_folderDivHeight = parseInt(parseInt(dObjTop) - parseInt("<%= sliderDivOffset %>") - parseInt(ss_getDivTop('<c:out value="${ss_slidingTableId}"/>')));
+	    ss_folderDivHeight = parseInt(parseInt(dObjTop) - 
+	    		parseInt("<%= sliderDivOffset %>") - ss_folderDivMarginOffset - 
+	    		parseInt(ss_getDivTop('<c:out value="${ss_slidingTableId}"/>')));
 	    if (ss_folderDivHeight < ss_minFolderDivHeight) ss_folderDivHeight = ss_minFolderDivHeight;
 	    ss_setObjectHeight(tableDivObj, ss_folderDivHeight);
 
