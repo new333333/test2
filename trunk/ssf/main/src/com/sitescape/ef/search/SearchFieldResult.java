@@ -3,6 +3,7 @@ package com.sitescape.ef.search;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.sitescape.util.StringPool;
 import com.sitescape.util.StringUtil;
 
 public class SearchFieldResult {
@@ -20,7 +21,8 @@ public class SearchFieldResult {
 	}
     public String toString() {
         if ((values == null) || values.isEmpty()) return null;
-        return StringUtil.merge((String[])values.toArray(sample));
+        return StringUtil.merge((String[])values.toArray(sample), 
+        		StringPool.COMMA+StringPool.SPACE);
      }
     
 }
