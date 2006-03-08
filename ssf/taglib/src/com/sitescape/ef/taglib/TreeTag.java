@@ -230,7 +230,7 @@ public class TreeTag extends TagSupport {
 			//id
 			String s_id = e.attributeValue("id");
 			String titleClass = className;
-			if ((s_id != null) && s_id.equals(this.highlightNode)) titleClass = "ss_highlight_gamma";
+			if ((s_id != null) && s_id.equals(this.highlightNode)) titleClass = "ss_tree_highlight";
 	
 			//Image
 			String s_image = getImage(e.attributeValue("image"));
@@ -434,7 +434,7 @@ public class TreeTag extends TagSupport {
 			//id
 			String s_id = e.attributeValue("id");
 			String titleClass = className;
-			if ((s_id != null) && s_id.equals(this.highlightNode)) titleClass = "ss_style ss_highlight_gamma";
+			if ((s_id != null) && s_id.equals(this.highlightNode)) titleClass = "ss_style ss_tree_highlight";
 	
 			//Image
 			String s_image = getImage(e.attributeValue("image"));
