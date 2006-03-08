@@ -15,13 +15,13 @@
 	}
 %>
 <div style="display:inline;" id="<portlet:namespace/>ss_filter_select">
-<form name="ss_filterSelect" class="ss_style" 
+<span class="ss_bold"><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span>
+<form name="ss_filterSelect"
 	action="<portlet:renderURL windowState="maximized">
 		<portlet:param name="action" value="view_listing"/>
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		<portlet:param name="operation" value="select_filter"/>
 		</portlet:renderURL>" method="post" style="display:inline;">
-<span class="ss_bold"><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;
 <div id="ss_filterTitle" style='display:inline; border:1px solid black; background:#ffffff;'>
 <ssf:menu title="<%= filterName %>" titleId="ss_filterTitle">
 <ul>
@@ -35,16 +35,15 @@
 </c:forEach>
 </ul>
 </ssf:menu>
-</div>&nbsp;&nbsp;&nbsp;
-</span>
-<a href="<portlet:renderURL windowState="maximized">
+</div>
+<input type="hidden" name="select_filter">
+</form>
+&nbsp;&nbsp;&nbsp;<a href="<portlet:renderURL windowState="maximized">
 		<portlet:param name="action" value="build_filter"/>
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		</portlet:renderURL>"
 ><span class="ss_fineprint"><ssf:nlt tag="edit" text="edit"/></span></a>
-
-<input type="hidden" name="select_filter">
-</form></div>
+</div>
 <script type="text/javascript">
 function ss_changeUserFilter(obj, filter) {
 	var loading = "&nbsp;(<ssf:nlt tag="loading" text="loading"/>)&nbsp;"

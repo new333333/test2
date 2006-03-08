@@ -5,11 +5,37 @@
 <%@ page import="com.sitescape.ef.context.request.RequestContextHolder" %>
 <%@ page import="com.sitescape.ef.domain.User" %>
 <%
-//Set some default colors (alpha: med brownish, beta: light brownish, gamma:sand (?)
-String alphaColor = "#775325";
-String betaColor = "#B89257";
-String gammaColor = "#CCCC99";
-String ss_roundedColor = "#e5e5e5";
+
+//Set some color values used in styles, highlighting, borders, and headers
+%>
+<c:set var="ss_style_background_color" value="#FFFFCC" scope="request"/>
+<c:set var="ss_style_text_color" value="#009900" scope="request"/>
+<c:set var="ss_style_gray_color" value="#999999" scope="request"/>
+
+<c:set var="ss_folder_border_color" value="#CC6666" scope="request"/>
+<c:set var="ss_folder_line_highlight_color" value="#dddddd" scope="request"/>
+<c:set var="ss_entry_border_color" value="#CC0000" scope="request"/>
+
+<c:set var="ss_form_background_color" value="#CCFFFF" scope="request"/>
+<c:set var="ss_form_text_color" value="3333FF" scope="request"/>
+<c:set var="ss_form_gray_color" value="CC99CC" scope="request"/>
+<c:set var="ss_form_element_color" value="#FFCCFF" scope="request"/>
+<c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/>
+<c:set var="ss_form_element_border_color" value="#669966" scope="request"/>
+<c:set var="ss_form_element_text_color" value="#0033FF" scope="request"/>
+
+<c:set var="ss_toolbar_color" value="#f7f7f7" scope="request"/>
+<c:set var="ss_toolbar_border_color" value="#3366cc" scope="request"/>
+
+<c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
+
+<c:set var="ss_tree_highlight_line_color" value="#6666FF" scope="request"/>
+
+<c:set var="ss_box_color" value="#CCCCCC" scope="request"/>
+<c:set var="ss_box_canvas_color" value="#FFFFCC" scope="request"/>
+<c:set var="ss_box_title_color" value="#009999" scope="request"/>
+<c:set var="ss_box_title_text_color" value="#993333" scope="request"/>
+<%
 
 //Set up the user object
 if(RequestContextHolder.getRequestContext() != null) {
@@ -34,7 +60,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 //Routine to round the corners of the rounded box tag
 function ss_rounded() {
 	if(!NiftyCheck()) return;
-	Rounded("*.ss_rounded", "all", "#FFF", "<%= ss_roundedColor %>", "smooth");
+	Rounded("*.ss_rounded", "all", "${ss_style_background_color}", "${ss_form_background_color}", "smooth");
 }
 ss_createOnLoadObj('ss_rounded', ss_rounded);
 
@@ -54,73 +80,146 @@ var ss_forumCss2Url = ss_urlBase + "<html:rootPath/>css/forum_ie.css";
 <c:if test="<%= !isIE %>">
 var ss_forumCss2Url = ss_urlBase + "<html:rootPath/>css/forum_nn.css";
 </c:if>
+
+var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
 var niftyCornersCssUrl = ss_urlBase + "<html:rootPath/>css/nifty_corners.css";
+var htmlareaCssUrl = ss_urlBase + "<html:rootPath/>js/htmlarea/htmlarea.css";
 if (document.createStyleSheet) {
 	document.createStyleSheet(ss_forumCssUrl);
 	document.createStyleSheet(ss_forumCss2Url);
 	document.createStyleSheet(niftyCornersCssUrl);
+	document.createStyleSheet(htmlareaCssUrl);
 } else {
 	ss_createStyleSheet(ss_forumCssUrl);
 	ss_createStyleSheet(ss_forumCss2Url);
 	ss_createStyleSheet(niftyCornersCssUrl);
+	ss_createStyleSheet(htmlareaCssUrl);
 }
 
 </script>
 
 <style>
+.ss_style, .ss_style table {
+  font-family: arial, helvetica, sans-serif;
+  background-color: ${ss_style_background_color};
+  color: ${ss_style_text_color};
+  font-weight: inherit;
+  font-size: 12px; 
+  }
+
+.ss_gray {
+  color: ${ss_style_gray_color};   
+  }
+
+.ss_form, .ss_form table, .ss_style form {
+  color: ${ss_form_text_color};
+  background-color: ${ss_form_background_color};
+  margin:6px;
+  }
+    
+.ss_form.ss_gray {
+  color: ${ss_form_gray_color};
+  }
+
+.ss_form select {
+  background-color: ${ss_form_element_color};
+  color: ${ss_form_element_text_color};
+  }
+  
+.ss_form textarea {
+  background-color: ${ss_form_element_color};
+  color: ${ss_form_element_text_color};
+  }
+
+.ss_form input.ss_text { 
+  background-color: ${ss_form_element_color};
+  color: ${ss_form_element_text_color};
+  }
+    
+.ss_form input.ss_submit { 
+  /*
+  background-color: #e5e5e5;
+  font-size: x-small; 
+  color: #3366cc;
+  font-weight: bold;
+  padding-left, padding-right: 0px;
+  border-top: 2px solid #e6e6e6;
+  border-left: 2px solid #e6e6e6;
+  border-right: 2px solid #8f8f8f;
+  border-bottom: 2px solid #8f8f8f;
+  */
+  }
+
+.ss_form input.ss_submit:hover { 
+  /*
+  background-color: #e5e5e5;
+  font-size: x-small; 
+  color: #3366cc;
+  font-weight: bold;
+  padding-left, padding-right: 0px;
+  border-top: 2px solid #8f8f8f;
+  border-left: 2px solid #8f8f8f;
+  border-right: 2px solid #e6e6e6;
+  border-bottom: 2px solid #e6e6e6;
+  */
+  }
+
+/* Folder */
+.ss_folder_border, .ss_folder_border table {
+  background-color: ${ss_folder_border_color} !important;
+  }
+
 /* Forum toolbar */
-div.ss_toolbar {
+.ss_toolbar {
   width: 100%; 
-  border-top: 1px solid #3366cc;
-  border-bottom: 1px solid #3366cc;
-  background-color: #f7f7f7;
+  border-top: 1px solid ${ss_toolbar_border_color};
+  border-bottom: 1px solid ${ss_toolbar_border_color};
+  background-color: ${ss_toolbar_color};
   margin-top: 0px;
   margin-bottom: 8px;
   }
   
-/* Forum historybar */
-div.ss_historybar {
-  width: 100%; 
-  background-color: <%= betaColor %>;
-  margin-top: 8px;
-  margin-bottom: 8px;
+.ss_toolbar_menu {
+  position: absolute;
+  z-index: 100;
+  visibility: hidden;
+  background-color: ${ss_toolbar_color}; 
+  color: ${ss_style_text_color};
+  border: 1px #cfcfcf solid;
+  padding: 0px;
+  width: 300px;
   }
+
   
 /* highlights */
-.ss_highlight_alpha {
-  font-weight: bold;
-  background-color: <%= alphaColor %>;
+.ss_highlightEntry {
+  background-color: ${ss_folder_line_highlight_color};
   }
-  
-.ss_highlight_beta {
+
+.ss_tree_highlight {
   font-weight: bold;
-  background-color: <%= betaColor %>;
-  }
-  
-.ss_highlight_gamma {
-  font-weight: bold;
-  color: <%= betaColor %>;
+  color: ${ss_tree_highlight_line_color};
   }
   
 .ss_titlebold {
   font-size: 16px;
   font-weight: bold;
-  color: <%= alphaColor %>;  
+  color: ${ss_title_line_color};  
   }
 
 /* Box styles */
 div.ss_box_rounded {
-	background-color: #cecece;
+	background-color: ${ss_box_color};
 }
 
 div.ss_box_bottom_rounded {
-	background-color: #cecece;
+	background-color: ${ss_box_color};
 	height: 1px;
 	margin: 0px;
 }
 
 div.ssf_box {
-	background-color: #FFFFFF;
+	background-color: ${ss_style_background_color};
 	height: auto;
 <c:if test="<%= !isIE %>">
 	height: 100%;
@@ -134,7 +233,7 @@ div.ss_box_minimum_height {
 }
 
 ss_box_small_icon_bar {
-	background-color: #cecece;
+	background-color: ${ss_box_color};
 	height: 1em;
 	padding-right: 10px;
 	position:relative;
@@ -149,41 +248,16 @@ ss_box_small_icon {
 }
 
 ss_box_title {
-	background: <%= gammaColor %> url(<html:imagesPath/>box/box_title_bg_gradient.gif) repeat-x;
-	color: #4A517D;
+	background: ${ss_box_title_color} url(<html:imagesPath/>box/box_title_bg_gradient.gif) repeat-x;
+	color: ${ss_box_title_text_color};
 	height: 20px;
+	margin:0px;
 	padding: 0px 3px 0px 3px;
 }
 
-.ssf-box-corner-2-bl {
-	background: #FFFFFF url(<html:imagesPath/>box/shadow_left.gif) no-repeat;
-	height: 6px;
-	left: 0px;
-	overflow: hidden;
-	position: absolute;
-	top: 0px;
-	width: 6px;
-}
-
-.ssf-box-corner-2-br {
-	background: #FFFFFF url(<html:imagesPath/>box/shadow_right.gif) no-repeat;
-	height: 6px;
-	overflow: hidden;
-	position: absolute;
-	right: 0px;
-	top: 0px;
-	width: 6px;
-}
-
-.ssf-box-bottom-decoration-2 {
-	background: url(<html:imagesPath/>box/shadow_middle.gif) repeat-x;
-	height: 6px;
-	position: relative;
-	top: -5px;
-	width: 100%;
-    margin-right:2;
-    margin-left:2;
-	z-index: 2;
+/* htmlarea overrides */
+.htmlarea { 
+    background: ${ss_form_element_color}; 
 }
 
 </style>

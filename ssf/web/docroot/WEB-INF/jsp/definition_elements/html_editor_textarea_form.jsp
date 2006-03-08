@@ -22,7 +22,6 @@
 		required = "";
 	}
 	
-	String background = gammaColor;
 %>
 <c:set var="textValue" value=""/>
 <c:if test="${!empty ssEntry}">
@@ -37,7 +36,7 @@
 <div class="ss_entryContent">
   <span class="ss_labelLeft"><%= caption %><%= required %></span>
     <ssf:htmleditor id="<%= elementName %>" 
-      formName="<%= formName %>" height="<%= height %>" color="<%= background %>"
+      formName="<%= formName %>" height="<%= height %>" color="${ss_form_element_header_color}"
       initText="<%= textValue %>" />
 <script type="text/javascript">
 ss_createEventObj('ss_htmlareaUnload_<%= formName %>_<%= elementName %>', "UNLOAD")

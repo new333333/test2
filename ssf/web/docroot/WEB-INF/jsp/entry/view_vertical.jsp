@@ -15,7 +15,7 @@ String sliderDivHeight = "20";
  onMouseover="ss_clearMouseOverInfo(null);" width="100%" height="<%= sliderDivHeight %>px"
  style="position:relative; margin:0px 0px 3px 0px; padding:0px; 
   top:<%= sliderDivOffset %>px; border: 1px solid black;">
-  <table class="ss_style ss_bgmedgray" width="100%" 
+  <table class="ss_bgmedgray" width="100%" 
     cellpadding="0" cellspacing="0">
     <tr>
       <td align="center">
@@ -40,7 +40,9 @@ String sliderDivHeight = "20";
   <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
     <ssf:param name="box_title" useBody="true">
-      <div style="margin:0px; background-color: #cecece; border:solid #cccccc 1px;">
+    <ssf:param name="box_color" value="${ss_folder_border_color}" />
+    <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
+      <div class="ss_folder_border">
       <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
       </div>
     </ssf:param>
