@@ -23,6 +23,8 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/box/init.jsp" %>
+<jsp:useBean id="ss_box_color" type="String" scope="request" />
+<jsp:useBean id="ss_box_canvas_color" type="String" scope="request" />
 
 <%
 
@@ -31,10 +33,12 @@
 String divId = ParamUtil.get(request, "box_id", "");
 String titleClassName = ParamUtil.get(request, "box_title_class", "ss_style ss_largeprint");
 String bodyClassName = ParamUtil.get(request, "box_body_class", "ss_style");
-String ss_boxColor = ParamUtil.get(request, "box_color", "#cecece");
 
 String title = ParamUtil.get(request, "box_title", "");
-
+%>
+<c:set var="boxColor" value="<%= ParamUtil.get(request, "box_color", ss_box_color) %>" />
+<c:set var="boxBgColor" value="<%= ParamUtil.get(request, "box_canvas_color", ss_box_canvas_color) %>" />
+<%
 int iWidth = (int)ParamUtil.get(request, "box_width", 600);
 String width = Integer.toString(iWidth);
 
@@ -64,20 +68,23 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 }
 %>
 <div class="ss_box_rounded" id="<%= divId %>" 
-  style="width: <%= width %>; background-color:<%= ss_boxColor %>;">
+  style="width: <%= width %>; background-color:${boxColor};">
 <%@ include file="/WEB-INF/jsp/box/box_top-ext.jsp" %>
-	<div class="ss_box_small_icon_bar" id="<%= divId %>_icon_bar"
-	  style="background-color:<%= ss_boxColor %>;">
-	  <table class="ss_style" cellspacing="0" cellpaddng="0" width="100%">
+	<div class="ss_box_small_icon_bar" 
+	  style="margin:0px; background-color:${boxColor};" 
+	  id="<%= divId %>_icon_bar">
+	  <table class="ss_style" cellspacing="0" cellpaddng="0" width="100%" 
+	    style="margin:0px; padding:0px; background-color:${boxColor};">
 	  <tr>
 	  <c:if test="<%= showMoveIcon %>">
-		<td align="left" width="45%"><div style="display:inline;" onMouseDown="<%= showMoveRoutine %>"
+		<td align="left" width="45%"><div style="margin:0px; display:inline;" 
+		  onMouseDown="<%= showMoveRoutine %>"
 		  ><img style="cursor:move;"
 			 border="0" height="14" hspace="0" 
 			 name="p_<portlet:namespace/>_move" 
 			 src="<html:imagesPath/>box/move.gif" 
 			 title="<ssf:nlt tag="icon.move" text="Move" />" 
-			 vspace="0" width="14" ><div></td>
+			 vspace="0" width="14" ></div></td>
 	  </c:if>
 	  <c:if test="<%= showResizeIcon %>">
 		<td align="left" width="45%"><div style="display:inline; width:30px; 
@@ -90,7 +97,8 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 	  </c:if>
 
 	  <c:if test="<%= Validator.isNotNull(title) %>">
-	    <td align="center" width="10%"><div class="ss_box_title"><%= title %></div></td>
+	    <td align="center" width="10%"><div class="ss_box_title"
+	      style="margin:0px; padding:0px;"><%= title %></div></td>
 	  </c:if>
 	
 	  <c:if test="<%= showCloseIcon %>">
@@ -107,7 +115,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 	</div><!-- end ss_box_small_icon_bar -->
 
   <div class="ssf_box">
-     <div class="ss_box_minimum_height">
+     <div class="ss_box_minimum_height" style="background-color:${boxColor};">
 	    <div style="margin-top: 0; margin-bottom: 0;">
 
 

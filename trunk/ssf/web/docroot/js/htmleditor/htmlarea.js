@@ -39,6 +39,7 @@ function HTMLArea(textarea, config) {
 		}
 		this._htmlArea = null;
 		this._textArea = textarea;
+
 		this._editMode = "wysiwyg";
 		this.plugins = {};
 		this._timerToolbar = null;
@@ -96,7 +97,7 @@ HTMLArea.Config = function () {
 	this.fullPage = false;
 
 	// style included in the iframe document
-	this.pageStyle = "";
+	this.pageStyle = "ss_form";
 
 	// set to true if you want Word code to be cleaned upon Paste
 	this.killWordOnPaste = false;
@@ -726,7 +727,8 @@ HTMLArea.prototype.generate = function () {
 			html += "<head>\n";
 			if (editor.config.baseURL)
 				html += '<base href="' + editor.config.baseURL + '" />';
-			html += "<style> html,body { border: 0px; } " +
+			html += "<style> html,body { border: 0px; background-color: " + 
+			    _editor_bgColor + "; color:" + _editor_textColor + ";} " +
 				editor.config.pageStyle + "</style>\n";
 			html += "</head>\n";
 			html += "<body onUnload='parent.document.getElementById(\"" + editor._textArea.name + "\").value = document.body.innerHTML'>\n";
@@ -907,7 +909,7 @@ HTMLArea.loadStyle = function(style, plugin) {
 	url += style;
 	document.write("<style type='text/css'>@import url(" + url + ");</style>");
 };
-HTMLArea.loadStyle("htmlarea.css");
+//HTMLArea.loadStyle("htmlarea.css");
 
 /***************************************************
  *  Category: EDITOR UTILITIES

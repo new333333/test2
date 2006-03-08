@@ -68,10 +68,6 @@ function ss_showMessageInDiv(str) {
 	showEntryInDiv(str)
 }
 
-var historyBack = new Array();
-var historyForward = new Array();
-var historyBackLine = new Array();
-var historyForwardLine = new Array();
 function ss_showForumEntry(url, callbackRoutine) {
 <%
 	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
@@ -81,42 +77,7 @@ function ss_showForumEntry(url, callbackRoutine) {
 <%
 	}
 %>
-	historyBack.push(url)
-	historyBackLine.push(highlightedLine)
-	historyForward = new Array();
-	historyForwardLine = new Array();
 	fetch_url(url, callbackRoutine);
-}
-
-function ss_showForumEntryBack(callbackRoutine) {
-	var currentUrl = historyBack.pop();
-	var currentLine = historyBackLine.pop();
-	if (currentUrl != "") {
-		var lastUrl = historyBack.pop();
-		var lastLine = historyBackLine.pop();
-		if (lastUrl == "") {
-			historyBack.push(currentUrl)
-			historyBackLine.push(currentLine)
-		} else {
-			historyBack.push(lastUrl)
-			historyBackLine.push(lastLine)
-			historyForward.push(currentUrl)
-			historyForwardLine.push(currentLine)
-			highlightLine(lastLine)
-			fetch_url(lastUrl, callbackRoutine)
-		}
-	}
-}
-
-function ss_showForumEntryForward(callbackRoutine) {
-	var nextUrl = historyForward.pop();
-	var nextLine = historyForwardLine.pop();
-	if (nextUrl != "") {
-		historyBack.push(nextUrl)
-		historyBackLine.push(nextLine)
-		highlightLine(nextLine)
-		fetch_url(nextUrl, callbackRoutine)
-	}
 }
 
 function showEntryInDiv(str) {
@@ -181,28 +142,9 @@ function scrollToSavedLocation() {
 	}
 }
 
-// var highlightBgColor = "<%= betaColor %>"
-var highlightBgColor = "#efefef"
+var highlightBgColor = "${ss_folder_line_highlight_color}"
 var highlightedLine = null;
 var savedHighlightedLineBgColor = null;
-function highlightLine(obj) {
-	alert("highlightLine")
-	if (highlightedLine != null) {
-		if (highlightedLine.offsetParent.parentElement) {
-			highlightedLine.offsetParent.parentElement.bgColor = savedHighlightedLineBgColor;
-		} else {
-			highlightedLine.offsetParent.bgColor = savedHighlightedLineBgColor;
-		}
-	}
-	highlightedLine = obj;
-	if (obj.offsetParent.parentElement) {
-		savedHighlightedLineBgColor = highlightedLine.offsetParent.parentElement.bgColor;
-		highlightedLine.offsetParent.parentElement.bgColor = highlightBgColor;
-	} else {
-		savedHighlightedLineBgColor = highlightedLine.offsetParent.bgColor;
-		highlightedLine.offsetParent.bgColor = highlightBgColor;
-	}
-}
 
 function highlightLineById(id) {
     if (id == "") {return;}

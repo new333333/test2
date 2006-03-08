@@ -14,10 +14,11 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
   width:600; height:80%; display:none; z-index:50;">
   <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
-    <ssf:param name="box_color" value="#aeaeae" />
     <ssf:param name="box_width" value="400" />
+    <ssf:param name="box_color" value="${ss_entry_border_color}" />
+    <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
     <ssf:param name="box_title" useBody="true">
-<div style="margin:0px; background-color: #cecece;">
+<div style="margin:0px; background-color:${ss_entry_border_color};">
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
 </div>
     </ssf:param>
