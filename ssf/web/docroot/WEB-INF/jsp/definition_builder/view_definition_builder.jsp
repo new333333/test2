@@ -521,7 +521,6 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 			<ssf:box>
 			  <ssf:param name="box_id" value="displaydivbox" />
 			  <ssf:param name="box_width" value="300" />
-			  <ssf:param name="box_color" value="#aeaeae" />
 			  <ssf:param name="box_show_close_icon" value="true" />
 			  <ssf:param name="box_show_close_routine" value="hideDisplayDiv()" />
 			<div id="displaydiv" style="margin:4px;">&nbsp;</div>  
