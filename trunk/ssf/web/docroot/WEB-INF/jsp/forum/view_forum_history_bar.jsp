@@ -152,7 +152,7 @@ function ss_getLastEntryId() {
 </script>
 </c:if>
 
-<table class='ss_style' cellspacing="0" cellpadding="0" style="display: inline;">
+<table cellspacing="0" cellpadding="0" style="display: inline;">
   <tr>
 
 <%

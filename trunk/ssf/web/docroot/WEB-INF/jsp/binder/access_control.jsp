@@ -45,7 +45,7 @@
 <c:set var="no_checked" value="checked"/>
 </c:if>
 <br><br>
-<form class="ss_style ss_form" name="inheritanceForm" method="post" 
+<form name="inheritanceForm" method="post" 
   onSubmit="return ssf_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
@@ -67,7 +67,7 @@
 <c:if test="${empty roleId}">
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.currentMembershipSettings" 
-    text="Current membership settings"/></legend>
+    text="Current role membership settings"/></legend>
   <c:set var="foundOne" value="0"/>
   <c:forEach var="function" items="${ssFunctionMap}">
 	<c:if test="${!empty function.value.ssUsers || !empty function.value.ssGroups}">
@@ -75,7 +75,7 @@
 	</c:if>
   </c:forEach>
   <c:if test="${foundOne == '1'}">
-<table class="ss_style" cellspacing="10px" cellpadding="4px" width="100%">
+<table cellspacing="10px" cellpadding="4px" width="100%">
  <tr>
   <th align="left"><ssf:nlt tag="binder.configure.access_control.role" text="Role"/></th>
   <th align="left"><ssf:nlt tag="binder.configure.access_control.users" text="Users"/></th>
@@ -113,7 +113,7 @@
 	</c:if>
   </td>
   <td valign="top">
-    <form class="ss_style ss_form" style="display:inline;" method="post"
+    <form style="display:inline;" method="post"
 	  action="<portlet:actionURL>
 			  <portlet:param name="action" value="configure_access_control"/>
 			  <portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -149,13 +149,13 @@
       text="No roles have been defined. Please contact the zone administrator to define "/></span>]
   </c:if>
   <c:if test="${!empty ssFunctionMap}">
-<form class="ss_style ss_form" name="rolesForm" method="post" 
+<form name="rolesForm" method="post" 
   onSubmit="return ssf_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
 		  </portlet:actionURL>">
-<table class="ss_style" cellspacing="10px" cellpadding="10px">
+<table cellspacing="10px" cellpadding="10px">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="binder.configure.access_control.role" 
  text="Role"/></td>
@@ -202,7 +202,7 @@
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.modifyRole" 
     text="Modify role membership"/></legend>
   <c:if test="${!empty ssFunctionMap}">
-<form class="ss_style ss_form" name="rolesForm" method="post" 
+<form name="rolesForm" method="post" 
   onSubmit="return ssf_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
@@ -211,7 +211,7 @@
 
 <c:forEach var="function" items="${ssFunctionMap}">
   <c:if test="${roleId == function.key.id}">
-<table class="ss_style" cellspacing="10px" cellpadding="10px">
+<table cellspacing="10px" cellpadding="10px">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="binder.configure.access_control.role" 
  text="Role"/></td>
@@ -267,7 +267,7 @@ function ss_checkRoleIdField(btnObj) {
 
 <c:if test="${empty roleId}">
 <br/>
-<form class="ss_style ss_form" method="post" action="<portlet:actionURL>
+<form method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_access_control"/>
 			<portlet:param name="binderId" value="${ssBinder.id}"/>
 		</portlet:actionURL>">

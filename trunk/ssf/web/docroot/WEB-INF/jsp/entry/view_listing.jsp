@@ -68,10 +68,6 @@ function ss_showMessageInDiv(str) {
 	ss_showEntryInDiv(str)
 }
 
-var historyBack = new Array();
-var historyForward = new Array();
-var historyBackLine = new Array();
-var historyForwardLine = new Array();
 function ss_showForumEntry(url, callbackRoutine) {
 <%
 	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
@@ -82,42 +78,7 @@ function ss_showForumEntry(url, callbackRoutine) {
 <%
 	}
 %>
-	historyBack.push(url)
-	historyBackLine.push(highlightedLine)
-	historyForward = new Array();
-	historyForwardLine = new Array();
 	fetch_url(url, callbackRoutine);
-}
-
-function ss_showForumEntryBack(callbackRoutine) {
-	var currentUrl = historyBack.pop();
-	var currentLine = historyBackLine.pop();
-	if (currentUrl != "") {
-		var lastUrl = historyBack.pop();
-		var lastLine = historyBackLine.pop();
-		if (lastUrl == "") {
-			historyBack.push(currentUrl)
-			historyBackLine.push(currentLine)
-		} else {
-			historyBack.push(lastUrl)
-			historyBackLine.push(lastLine)
-			historyForward.push(currentUrl)
-			historyForwardLine.push(currentLine)
-			highlightLine(lastLine)
-			fetch_url(lastUrl, callbackRoutine)
-		}
-	}
-}
-
-function ss_showForumEntryForward(callbackRoutine) {
-	var nextUrl = historyForward.pop();
-	var nextLine = historyForwardLine.pop();
-	if (nextUrl != "") {
-		historyBack.push(nextUrl)
-		historyBackLine.push(nextLine)
-		highlightLine(nextLine)
-		fetch_url(nextUrl, callbackRoutine)
-	}
 }
 
 function ss_showEntryInDiv(str) {
@@ -186,31 +147,11 @@ function scrollToSavedLocation(anchor) {
 	}
 }
 
-// var highlightBgColor = "<%= betaColor %>"
-var highlightBgColor = "#efefef"
-highlightBgColor = "#cccccc"
+var highlightBgColor = "${ss_folder_line_highlight_color}"
 var highlightedLine = null;
 var savedHighlightedLineBgColor = null;
 var highlightClassName = "ss_highlightEntry";
 var savedHighlightClassName = null;
-function highlightLine(obj) {
-	alert('highlightLine')
-	if (highlightedLine != null) {
-		if (highlightedLine.offsetParent.parentElement) {
-			highlightedLine.offsetParent.parentElement.className = savedHighlightClassName;
-		} else {
-			highlightedLine.offsetParent.className = savedHighlightClassName;
-		}
-	}
-	highlightedLine = obj;
-	if (obj.offsetParent.parentElement) {
-		savedHighlightClassName = highlightedLine.offsetParent.parentElement.className;
-		highlightedLine.offsetParent.parentElement.className = highlightClassName;
-	} else {
-		savedHighlightClassName = highlightedLine.offsetParent.className;
-		highlightedLine.offsetParent.className = highlightClassName;
-	}
-}
 
 //Called when one of the "Add entry" toolbar menu options is selected
 function ss_addEntry(obj) {
