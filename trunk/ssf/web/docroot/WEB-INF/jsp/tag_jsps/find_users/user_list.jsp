@@ -138,7 +138,7 @@ function ss_userListInterceptCR(e) {
 <tr>
 <td valign="top">
 <div>
-  <div style="border:solid #cecece 1px;">
+  <div style="border:solid ${ss_form_element_border_color} 1px;">
     <ul id="added_<%= userListElementName %>" class="ss_dragable ss_userlist">
       <c:forEach var="item" items="${userList}">
         <li id="<c:out value="${item.id}"/>" 
@@ -165,7 +165,7 @@ function ss_userListInterceptCR(e) {
     <b><ssf:nlt tag="userlist.findName" text="Find name"/>:</b>
     <input type="text" class="ss_text" size="15" name="ss_userList_searchText" 
       onKeyUp="ss_userListSearch(this.value, '<%= userListElementName %>', '<%= userGroupType %>');">
-    <div style="border:solid #cecece 1px;">
+    <div style="border:solid ${ss_form_element_border_color} 1px;">
       <ul id="available_<%= userListElementName %>" class="ss_dragable ss_userlist">
       </ul>
     </div>
