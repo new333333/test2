@@ -59,7 +59,43 @@ import org.springframework.orm.hibernate3.SessionFactoryUtils;
 public class WorkflowModuleImpl extends CommonDependencyInjection implements WorkflowModule {
    static BusinessCalendar businessCalendar = new BusinessCalendar();
 
-
+   /**
+    * Called after bean is initialized.  Use this to make sure
+    * scheduler has workflowtimeout job active
+    *
+    */
+   public void init() {
+	   List companies = getCoreDao().findCompanies();
+	   for (int i=0; i<companies.size(); ++i) {
+		   String zoneName = (String)companies.get(i);
+		   String jobClass = SZoneConfig.getString(zoneName, "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_JOB + "']");
+		   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.ef.jobs.DefaultWorkflowTimeout";
+		   try {
+			   Class processorClass = ReflectHelper.classForName(jobClass);
+			   WorkflowTimeout job = (WorkflowTimeout)processorClass.newInstance();
+			   //make sure a timeout job is scheduled for the zone
+			   String secsString = (String)SZoneConfig.getString(zoneName, "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_SECONDS + "']");
+			   int seconds = 300;
+			   try {
+				   seconds = Integer.parseInt(secsString);
+			   } catch (Exception ex) {};
+			   	job.schedule(zoneName, seconds);
+    	
+		   } catch (ClassNotFoundException e) {
+			   throw new ConfigurationException(
+    				"Invalid WorkflowTimeout class name '" + jobClass + "'",
+    				e);
+		   } catch (InstantiationException e) {
+			   throw new ConfigurationException(
+    				"Cannot instantiate WorkflowTimeout of type '"
+                        	+ jobClass + "'");
+		   } catch (IllegalAccessException e) {
+			   throw new ConfigurationException(
+    				"Cannot instantiate WorkflowTimeout of type '"
+    				+ jobClass + "'");
+		   }
+	   }
+   }
 	public List getAllDefinitions() {
 	    try {
 	       	JbpmSession session = WorkflowFactory.getSession();
@@ -233,28 +269,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	        	//The process definition doesn't exist yet, go create one
 	        	pD = ProcessDefinition.createNewProcessDefinition();
 	    		pD.setName(definitionName);        	
-	    		String jobClass = SZoneConfig.getString(def.getZoneName(), "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_JOB + "']");
-	        	if (Validator.isNull(jobClass)) jobClass = "com.sitescape.ef.jobs.DefaultWorkflowTimeout";
-	        	try {
-	                Class processorClass = ReflectHelper.classForName(jobClass);
-	                WorkflowTimeout job = (WorkflowTimeout)processorClass.newInstance();
-	                //make sure a timeout job is scheduled for the zone
-	                job.schedule(def.getZoneName());
-	        	
-	        	} catch (ClassNotFoundException e) {
-	        		throw new ConfigurationException(
-	        				"Invalid LdapSynchronization class name '" + jobClass + "'",
-	        				e);
-	        	} catch (InstantiationException e) {
-	        		throw new ConfigurationException(
-	        				"Cannot instantiate LdapSynchronization of type '"
-	                            	+ jobClass + "'");
-	        	} catch (IllegalAccessException e) {
-	        		throw new ConfigurationException(
-	        				"Cannot instantiate LdapSynchronization of type '"
-	        				+ jobClass + "'");
-	        	}
-
 	        }
 	        modifyProcessDefinition(pD, def);
 	    	session.getGraphSession().saveProcessDefinition(pD);
@@ -760,6 +774,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	}
 
 	public void modifyWorkflowStateOnTimeout(Long timerId) {
+//TODO: worry about timers from other zones??
 		//Assume RequestContext is set
 		JbpmSession session = WorkflowFactory.getSession();
    		SchedulerSession schedulerSession = new SchedulerSession(session);

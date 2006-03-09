@@ -27,9 +27,8 @@ import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.web.util.WebUrlUtil;
+import com.sitescape.util.Validator;
 /**
  * @author Peter Hurley
  *

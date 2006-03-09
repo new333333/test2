@@ -175,7 +175,10 @@
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
-
+<input type="hidden" id="redirectURL" name="redirectURL" value="<portlet:renderURL>
+			<portlet:param name="action" value="view_listing"/>
+			<portlet:param name="binderId" value="${ssBinder.id}"/>
+		</portlet:renderURL>"/>
 </form>
 </div>
 

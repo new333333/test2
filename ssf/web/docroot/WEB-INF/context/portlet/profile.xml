@@ -5,9 +5,9 @@
 	<!-- Controllers -->
 
 	<bean id="listProfilesController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ListProfilesController" />
-	<bean id="profileAccessControlController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.AccessControlController" />
-	<bean id="profileConfigureController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ConfigureController" />
-	<bean id="profileFilterController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.FilterController" />
+	<bean id="profileAccessControlController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.AccessControlController" />
+	<bean id="profileConfigureController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ConfigureController" />
+	<bean id="profileFilterController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.FilterController" />
 	<bean id="profileController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ViewController" />
 	<bean id="profileViewEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ViewEntryController" />
 	<bean id="profileModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ModifyEntryController" />

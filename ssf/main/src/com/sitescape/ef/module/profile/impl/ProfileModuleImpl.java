@@ -22,7 +22,6 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.file.WriteFilesException;
-import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -180,8 +179,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
 
     public void checkAddEntryAllowed(ProfileBinder binder) {
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(binder, FolderCoreProcessor.PROCESSOR_KEY);
+    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor
+    	(binder, ProfileCoreProcessor.PROCESSOR_KEY);
         processor.addEntry_accessControl(binder);    	
     	
     }
@@ -199,8 +198,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	modifyEntry(binderId, id, inputData, new HashMap());
     }
     public void checkModifyEntryAllowed(Principal entry) {
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(entry.getParentBinder(), FolderCoreProcessor.PROCESSOR_KEY);
+        ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor
+    	(entry.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
         processor.modifyEntry_accessControl(entry.getParentBinder(), entry);    	
     	
     }
@@ -224,8 +223,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
  
     public void checkDeleteEntryAllowed(Principal entry) {
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(entry.getParentBinder(), FolderCoreProcessor.PROCESSOR_KEY);
+    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor
+    	(entry.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
         processor.deleteEntry_accessControl(entry.getParentBinder(), entry);    	
     	
     }

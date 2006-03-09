@@ -27,7 +27,7 @@ import com.sitescape.util.Validator;
  * @author Peter Hurley
  *
  */
-public abstract class AbstractConfigureController extends SAbstractController {
+public class ConfigureController extends SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
@@ -79,7 +79,7 @@ public abstract class AbstractConfigureController extends SAbstractController {
 			getBinderModule().modifyConfiguration(binderId, definitions, workflowAssociations);
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			setResponseOnClose(response, binderId);
+			setResponseOnClose(request, response);
 		} else
 			response.setRenderParameters(formData);
 	}
@@ -88,6 +88,10 @@ public abstract class AbstractConfigureController extends SAbstractController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		
 		Map model = new HashMap();
+		if (!Validator.isNull(request.getParameter("redirect"))) {
+			model.put(WebKeys.BINDER_ID, binderId.toString());
+			return new ModelAndView(WebKeys.VIEW_LISTING_REDIRECT, model);
+		}
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Binder binder = getBinderModule().getBinder(binderId);
 		
@@ -102,7 +106,8 @@ public abstract class AbstractConfigureController extends SAbstractController {
 	
 		return new ModelAndView(WebKeys.VIEW_CONFIGURE, model);
 	}
-	protected abstract void setResponseOnClose(ActionResponse responose, Long binderId);
-
-
+	protected void setResponseOnClose(ActionRequest request, ActionResponse response) {
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, request.getParameter(WebKeys.URL_BINDER_ID));
+		response.setRenderParameter("redirect", "true");
+	}
 }

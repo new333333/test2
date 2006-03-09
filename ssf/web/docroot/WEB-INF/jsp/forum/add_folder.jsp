@@ -38,16 +38,10 @@
     <ssf:htmleditor id="description" 
       formName="<%= renderResponse.getNamespace() + "fm" %>" height="200" color="${ss_form_element_header_color}"
       initText="" />
-
-<script type="text/javascript">
-ss_createEventObj('ss_htmlareaUnload_<%= renderResponse.getNamespace() + "fm" %>_description', "UNLOAD")
-function ss_htmlareaUnload_<%= renderResponse.getNamespace() + "fm" %>_description() {
-	alert('ss_htmlareaUnload_<%= renderResponse.getNamespace() + "fm" %>_description' + document.forms.<%= renderResponse.getNamespace() + "fm" %>_description.value)
-}
-</script>
 <br/>
 	
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
+
 </form>
 </div>

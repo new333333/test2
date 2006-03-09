@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <zoneConfiguration>
 	<property name="adminUser">liferay.com.1</property>
+	<workflowConfiguration>
+<!-- 		<property name="timeout.seconds">300</property>	-->
+	</workflowConfiguration>
 	<ldapConfiguration>	
 		<userMapping>
 			<objectClass>person</objectClass>
