@@ -14,12 +14,13 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Folder;
-
+import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.util.Validator;
 /**
  * @author Janet McCann
  *
  */
-public class AddFolderController extends SAbstractForumController {
+public class AddFolderController extends SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
@@ -31,10 +32,10 @@ public class AddFolderController extends SAbstractForumController {
 			input.put("description", new Description(PortletRequestUtils.getStringParameter(request, "description", ""), Description.FORMAT_HTML));
 			getFolderModule().addFolder(folderId, input);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
-			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			response.setRenderParameter("redirect", "true");
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
-			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			response.setRenderParameter("redirect", "true");
 		} else {
 			response.setRenderParameters(formData);
 		}
@@ -45,7 +46,10 @@ public class AddFolderController extends SAbstractForumController {
 		
 		Map model = new HashMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-			
+		if (!Validator.isNull(request.getParameter("redirect"))) {
+			model.put(WebKeys.BINDER_ID, folderId.toString());
+			return new ModelAndView(WebKeys.VIEW_LISTING_REDIRECT, model);
+		}
 		
 		Folder folder = getFolderModule().getFolder(folderId);
     	model.put(WebKeys.FOLDER, folder); 

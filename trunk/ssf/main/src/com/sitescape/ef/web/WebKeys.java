@@ -100,6 +100,7 @@ public class WebKeys {
 	public static final String ACTION = "action";
 	public static final String ADMIN_TREE="ssAdminDomTree";
 	public static final String BINDER="ssBinder";
+	public static final String BINDER_ID="ssBinderId";
 	public static final String BINDER_ENTRIES="ssBinderEntries";
 	public static final String CONFIG_ELEMENT="ssConfigElement";
     public static final String CONFIG_DEFINITION="ssConfigDefinition";
@@ -194,6 +195,7 @@ public class WebKeys {
     public static final String VIEW_CONFIGURE = "binder/configure";
     public static final String VIEW_NO_DEFINITION="forum/view_default";
     public static final String VIEW_LISTING="entry/view_listing";
+    public static final String VIEW_LISTING_REDIRECT="entry/view_listing_redirect";
     public static final String VIEW_ENTRY="entry/view_entry";
     public static final String VIEW_FORUM="forum/view";
     public static final String VIEW_PROFILE="profile/view";

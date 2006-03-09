@@ -50,7 +50,8 @@ public interface CoreDao {
 	public Object load(Class className, String id);
 	public Object load(Class className, Long id);
 	public List loadObjects(ObjectControls objs, FilterControls filter);
-              
+	public List findCompanies();
+         
 
 	public Workspace findTopWorkspace(String zoneName);
 	/**

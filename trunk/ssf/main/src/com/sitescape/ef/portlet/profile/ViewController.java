@@ -13,9 +13,11 @@ import java.util.HashMap;
 
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.domain.ProfileBinder;
+import com.sitescape.util.Validator;
 
 public class ViewController extends  SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
@@ -41,6 +43,4 @@ public class ViewController extends  SAbstractController {
 		model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
 		return new ModelAndView(WebKeys.VIEW_PROFILE, model);
 	}
-
-
 }

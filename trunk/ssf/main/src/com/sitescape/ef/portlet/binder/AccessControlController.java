@@ -29,12 +29,13 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.util.ResolveIds;
+import com.sitescape.util.Validator;
 
 /**
  * @author Peter Hurley
  *
  */
-public abstract class AbstractAccessControlController extends SAbstractController {
+public class AccessControlController extends SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
@@ -110,7 +111,7 @@ public abstract class AbstractAccessControlController extends SAbstractControlle
 				getBinderModule().setFunctionMembershipInherited(binderId, false);
 			
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			setResponseOnClose(response, binderId);
+			setResponseOnClose(request, response);
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -118,6 +119,10 @@ public abstract class AbstractAccessControlController extends SAbstractControlle
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		
 		Map model = new HashMap();
+		if (!Validator.isNull(request.getParameter("redirect"))) {
+			model.put(WebKeys.BINDER_ID, binderId.toString());
+			return new ModelAndView(WebKeys.VIEW_LISTING_REDIRECT, model);
+		}
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map binderConf = getBinderModule().getFunctionMembership(binderId);
 		Binder binder = (Binder)binderConf.get(ObjectKeys.BINDER);
@@ -158,7 +163,9 @@ public abstract class AbstractAccessControlController extends SAbstractControlle
 	
 		return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
 	}
-	protected abstract void setResponseOnClose(ActionResponse responose, Long binderId);
-
+	protected void setResponseOnClose(ActionRequest request, ActionResponse response) {
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, request.getParameter(WebKeys.URL_BINDER_ID));
+		response.setRenderParameter("redirect", "true");
+	}
 
 }

@@ -232,6 +232,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        if (result==null) return 0;
 	   return result.intValue();	
 	}
+	public List findCompanies() {
+		return (List)getHibernateTemplate().execute(
+		    new HibernateCallback() {
+		        public Object doInHibernate(Session session) throws HibernateException {
+                 	return session.createQuery("select distinct x.zoneName from com.sitescape.ef.domain.Principal x")
+                 	.list();
+               }
+            }
+		);
+	}
 	public Workspace findTopWorkspace(final String zoneName) {
        return (Workspace)getHibernateTemplate().execute(
                new HibernateCallback() {
@@ -251,6 +261,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
             );
 
 	}
+	
 	/**
 	 * Load binder and validate it belongs to the zone
 	 * @param binderId

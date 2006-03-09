@@ -379,34 +379,6 @@ proc doUsers {userList} {
     set map1 ::j2ee_Attachments_class_MAP
     array unset attrs
     array unset attrs1
-	#setup default user
-	set attrs(zoneName) "default"
-	set attrs(name) ${::zoneName}.default
-	set attrs(password) "password"
-	set attrs(firstName) ""
-	set attrs(lastName) ""
-	set attrs(middleName) ""
-	set attrs(title) ""
-	set attrs(signature) ""
-	set attrs(organization) ""
-	set attrs(phone) ""
-	set attrs(webPubDir) ""
-	set attrs(type) "U"	
-	set attrs(id) [new_user_uuid]
-	set attrs(lockVersion) 1
-	set attrs(disabled) 0
-	set attrs(reserved) 1
-	set attrs(defaultIdentity) 1
-	set attrs(description_format) 2
-    set attrs(creation_date) [date_time current] 
-    set attrs(creation_principal) $::userIds(wf_admin)
-    set attrs(modification_date) $attrs(creation_date)
-    set attrs(modification_principal) $::userIds(wf_admin)
-    set attrs(parentBinder) $::_profileId
-    set results [setupColVals $map attrs insert]
-    set cmdList [lindex $results 1]
-    set cmd [lindex $cmdList 0] 
-    wimsql_rw "Insert into SS_Principals $cmd ;" [lindex $cmdList 1]
 				
 	set attrs(zoneName) $::zoneName
 	set attrs(reserved) 0

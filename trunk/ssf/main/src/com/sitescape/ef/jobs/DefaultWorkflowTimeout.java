@@ -55,7 +55,7 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
     }
 
 
-    public void schedule(String zoneName) {
+    public void schedule(String zoneName, int seconds) {
 		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
 		try {
 			JobDetail jobDetail=scheduler.getJobDetail(zoneName, WORKFLOW_TIMER_GROUP);
@@ -73,7 +73,7 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
 			//	see if job exists
 			if (trigger == null) {
 				trigger = new SimpleTrigger(zoneName, WORKFLOW_TIMER_GROUP, zoneName, WORKFLOW_TIMER_GROUP, new Date(), null, 
-						SimpleTrigger.REPEAT_INDEFINITELY, 60000);
+						SimpleTrigger.REPEAT_INDEFINITELY, seconds*1000);
 				trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
 				trigger.setDescription(WORKFLOW_TIMER_DESCRIPTION);
 				trigger.setVolatility(false);
@@ -83,6 +83,10 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
 				int state = scheduler.getTriggerState(zoneName, WORKFLOW_TIMER_GROUP);
 				if ((state == Trigger.STATE_PAUSED) || (state == Trigger.STATE_NONE)) {
 					scheduler.resumeJob(zoneName, WORKFLOW_TIMER_GROUP);
+				}
+				if (trigger.getRepeatInterval() != seconds*1000) {
+					trigger.setRepeatInterval(seconds*1000);
+					scheduler.rescheduleJob(zoneName, WORKFLOW_TIMER_GROUP, trigger);
 				}
 			} 
 		} catch (SchedulerException se) {			
