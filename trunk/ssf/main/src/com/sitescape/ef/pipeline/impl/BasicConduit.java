@@ -27,9 +27,6 @@ public class BasicConduit extends AbstractConduit {
 	
 	private String producerName;
 	private File fileDir; // If non-null, supports backing files
-
-	private BasicDocSink sink;
-	private BasicDocSource source;
 	
 	private OutputStream out;
 	private File file;
@@ -42,16 +39,14 @@ public class BasicConduit extends AbstractConduit {
 		this.fileDir = fileDir;
 	}
 
-	@Override
+	//@Override
 	protected DocSink sinkInternal() {
-		sink = new BasicDocSink();
-		return sink;
+		return new BasicDocSink();
 	}
 
-	@Override
+	//@Override
 	protected DocSource sourceInternal() {
-		source = new BasicDocSource();
-		return source;
+		return new BasicDocSource();
 	}
 	
 	protected class BasicDocSink implements DocSink {
