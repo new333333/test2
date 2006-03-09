@@ -16,6 +16,7 @@ import org.dom4j.Element;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.User;
@@ -34,6 +35,8 @@ import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.util.NLT;
 
 import com.sitescape.ef.domain.Definition;
@@ -51,7 +54,6 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
 	}
-
 	public List getFolders(List folderIds) {
 		List result = new ArrayList();
 		for (int i=0; i<folderIds.size(); ++i) {
@@ -95,7 +97,30 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		}
 		return forumIdList;
 	}
-
+    public Long addFolder(Long parentFolderId, Map input) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        Folder parentFolder = folderDao.loadFolder(parentFolderId, user.getZoneName());
+    	getAccessControlManager().checkOperation(parentFolder, WorkAreaOperation.CREATE_FOLDERS);
+ 
+    	Folder folder = new Folder();
+    	folder.setZoneName(user.getZoneName());
+        folder.setCreation(new HistoryStamp(user));
+        folder.setModification(folder.getCreation());
+        ObjectBuilder.updateObject(folder, input);
+        //refresh parentFolder to ensure we have the latest 
+        getCoreDao().refresh(parentFolder);
+      	parentFolder.addFolder(folder);
+        // The sub-folder inherits the default ACLs of the parent folder.
+        // The default ACLs of the sub-folder can be changed subsequently. 
+        getAclManager().doInherit(folder);
+        getCoreDao().save(folder);
+                  
+        return folder.getId();
+    }
+ 
+    public void checkAddFolderAllowed(Folder parentFolder) {
+    	getAccessControlManager().checkOperation(parentFolder, WorkAreaOperation.CREATE_FOLDERS);    	
+    }
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -109,6 +134,12 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         	(folder, FolderCoreProcessor.PROCESSOR_KEY);
         
         return processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems);
+    }
+    public void checkAddEntryAllowed(Folder folder) {
+        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
+    	(folder, FolderCoreProcessor.PROCESSOR_KEY);
+        processor.addEntry_accessControl(folder);    	
+    	
     }
 
     public Long addReply(Long folderId, Long parentId, String definitionId, 
@@ -125,6 +156,13 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         //load parent entry
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId, CURRENT_ENTRY);
         return processor.addReply(entry, def, inputData, fileItems);
+    }
+    public void checkAddReplyAllowed(FolderEntry entry) throws AccessControlException {
+        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
+    	(entry.getParentFolder(), FolderCoreProcessor.PROCESSOR_KEY);
+        processor.addReply_accessControl(entry.getParentFolder(), entry);
+    	
+    	
     }
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
@@ -144,6 +182,12 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	modifyEntry(binderId, id, inputData, new HashMap());
     }
 
+    public void checkModifyEntryAllowed(FolderEntry entry) {
+        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
+    	(entry.getParentFolder(), FolderCoreProcessor.PROCESSOR_KEY);
+        processor.modifyEntry_accessControl(entry.getParentFolder(), entry);    	
+    	
+    }
     public void modifyWorkflowState(Long folderId, Long entryId, Long tokenId, String toState) throws AccessControlException {
         Folder folder = folderDao.loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneName());
        // This is nothing but a dispatcher to an appropriate processor. 
@@ -336,15 +380,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         }
         return results;
     }
-    public Long addFolder(Long folderId, Folder folder) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        Folder parentFolder = folderDao.loadFolder(folderId, user.getZoneName());
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(parentFolder, FolderCoreProcessor.PROCESSOR_KEY);
 
-        return processor.addFolder(parentFolder, folder);
-    }
- 
            
     public FolderEntry getEntry(Long parentFolderId, Long entryId) {
         return getEntry(parentFolderId, entryId, CURRENT_ENTRY);
@@ -374,6 +410,18 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	(folder, FolderCoreProcessor.PROCESSOR_KEY);
         processor.deleteEntry(folder, entryId);
     }
+    public void checkDeleteEntryAllowed(FolderEntry entry) {
+        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
+    	(entry.getParentFolder(), FolderCoreProcessor.PROCESSOR_KEY);
+        processor.deleteEntry_accessControl(entry.getParentFolder(), entry);    	
+    	
+    }
+    
+    /**
+     * Helper classs to return folder unseen counts as an objects
+     * @author Janet McCann
+     *
+     */
     public class Counter {
     	long count=0;
     	protected Counter() {	

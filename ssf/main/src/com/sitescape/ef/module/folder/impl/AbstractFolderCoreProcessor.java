@@ -218,7 +218,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
         
-        addReply_accessControl(parent);
+        addReply_accessControl(parent.getParentFolder(), parent);
         
         Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems);
         final Map entryData = (Map) entryDataAll.get("entryData");
@@ -262,9 +262,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	}
     }
     
-    protected void addReply_accessControl(FolderEntry parent) throws AccessControlException {
+    public void addReply_accessControl(Folder folder, FolderEntry parent) throws AccessControlException {
     	//TODO : check entry acl?        
-   		getAccessControlManager().checkOperation(parent.getParentFolder(), WorkAreaOperation.ADD_REPLIES);
+   		getAccessControlManager().checkOperation(folder, WorkAreaOperation.ADD_REPLIES);
     }
     
     protected Map addReply_toEntryData(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems) {
@@ -373,38 +373,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  
  
 
-//***********************************************************************************************************
-    public Long addFolder(Folder parentFolder, Folder folder) {
-        addFolder_accessControl(parentFolder);
-        
-        addFolder_preSave(parentFolder, folder);
-        
-        addFolder_save(folder);
-        
-        addFolder_postSave(folder);
-        
-        return folder.getId();
-    }
-    protected void addFolder_accessControl(Folder parentFolder) {
-    	getAccessControlManager().checkOperation(parentFolder, WorkAreaOperation.CREATE_FOLDERS);
-    }
-    protected void addFolder_preSave(Folder parentFolder, Folder folder) {
-        getCoreDao().refresh(parentFolder);
-    	parentFolder.addFolder(folder);
-        // The sub-folder inherits the default ACLs of the parent folder.
-        // The default ACLs of the sub-folder can be changed subsequently. 
-        getAclManager().doInherit(folder);
-        User user = RequestContextHolder.getRequestContext().getUser();
-              
-        folder.setCreation(new HistoryStamp(user));
-        folder.setModification(folder.getCreation());
-    }
-    protected void addFolder_save(Folder folder) {
-        getCoreDao().save(folder);
-    }
-    protected void addFolder_postSave(Folder folder) {        
-    }
- 
+
     //***********************************************************************************************************
           
 

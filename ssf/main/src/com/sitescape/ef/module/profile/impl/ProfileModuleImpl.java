@@ -12,6 +12,8 @@ import org.dom4j.Document;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.SeenMap;
@@ -20,6 +22,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.file.WriteFilesException;
+import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -176,6 +179,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         return processor.addEntry(binder, definition, User.class, inputData, fileItems);
     }
 
+    public void checkAddEntryAllowed(ProfileBinder binder) {
+        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
+    	(binder, FolderCoreProcessor.PROCESSOR_KEY);
+        processor.addEntry_accessControl(binder);    	
+    	
+    }
      
     public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, Map fileItems) 
    		throws AccessControlException, WriteFilesException {
@@ -189,6 +198,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			throws AccessControlException, WriteFilesException {
     	modifyEntry(binderId, id, inputData, new HashMap());
     }
+    public void checkModifyEntryAllowed(Principal entry) {
+        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
+    	(entry.getParentBinder(), FolderCoreProcessor.PROCESSOR_KEY);
+        processor.modifyEntry_accessControl(entry.getParentBinder(), entry);    	
+    	
+    }
+
     public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
@@ -207,7 +223,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         processor.deleteEntry(binder, principalId);    	
     }
  
-     
+    public void checkDeleteEntryAllowed(Principal entry) {
+        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
+    	(entry.getParentBinder(), FolderCoreProcessor.PROCESSOR_KEY);
+        processor.deleteEntry_accessControl(entry.getParentBinder(), entry);    	
+    	
+    }
+    
     public void index(Long binderId) {
         ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
         ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(

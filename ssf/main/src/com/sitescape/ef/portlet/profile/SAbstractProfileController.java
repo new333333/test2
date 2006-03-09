@@ -11,12 +11,11 @@ import javax.portlet.RenderResponse;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
@@ -64,7 +63,7 @@ public class SAbstractProfileController extends SAbstractController {
 		return new ModelAndView(WebKeys.VIEW_LISTING, model);
 	}
 
-	protected Toolbar buildViewToolbar(RenderResponse response, Binder binder) {
+	protected Toolbar buildViewToolbar(RenderResponse response, ProfileBinder binder) {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		//	The "Add" menu
@@ -72,17 +71,20 @@ public class SAbstractProfileController extends SAbstractController {
 		List defaultEntryDefinitions = binder.getEntryDefs();
 		PortletURL url;
 		if (!defaultEntryDefinitions.isEmpty()) {
-			toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
-			for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
-				Definition def = (Definition) defaultEntryDefinitions.get(i);
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
-				url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-				url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-				toolbar.addToolbarMenuItem("1_add", "entries", def.getTitle(), url);
-			}
+			try {
+				getProfileModule().checkAddEntryAllowed(binder);
+				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
+					Definition def = (Definition) defaultEntryDefinitions.get(i);
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
+					url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+					url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+					toolbar.addToolbarMenuItem("1_add", "entries", def.getTitle(), url);
+				}
+			} catch (AccessControlException ac) {};
 		}
-    
+			
 		//The "Administration" menu
 		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
 		//Access control

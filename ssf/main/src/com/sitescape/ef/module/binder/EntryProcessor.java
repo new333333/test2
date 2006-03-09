@@ -32,10 +32,13 @@ public interface EntryProcessor {
 
     public Long addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
+    public void addEntry_accessControl(Binder binder) throws AccessControlException;
     public void deleteEntry(Binder binder, Long entryId) throws AccessControlException;
+    public void deleteEntry_accessControl(Binder binder, WorkflowControlledEntry entry) throws AccessControlException;
     public WorkflowControlledEntry getEntry(Binder binder, Long entryId, int type) throws AccessControlException;
     public Long modifyEntry(Binder binder, Long entryId, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
+    public void modifyEntry_accessControl(Binder binder, WorkflowControlledEntry entry) throws AccessControlException;
     public void modifyWorkflowState(Binder binder, Long entryId, Long tokenId, String toState) 
 		throws AccessControlException;
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries) throws AccessControlException;

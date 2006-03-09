@@ -22,8 +22,6 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.module.folder.FolderModule;
@@ -36,11 +34,10 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.DefinitionUtils;
-import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
+import com.sitescape.ef.security.AccessControlException;
 
-import org.apache.lucene.document.DateField;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
@@ -120,25 +117,35 @@ public class SAbstractForumController extends SAbstractController {
 		List defaultEntryDefinitions = folder.getEntryDefs();
 		PortletURL url;
 		if (!defaultEntryDefinitions.isEmpty()) {
-			int count = 1;
-			toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
-			Map qualifiers = new HashMap();
-			String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
-			qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
-			for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
-				Definition def = (Definition) defaultEntryDefinitions.get(i);
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-				String title = NLT.getDef(def.getTitle());
-				if (toolbar.checkToolbarMenuItem("1_add", "entries", title)) {
-					title = title + " (" + String.valueOf(count++) + ")";
+			try {
+				getFolderModule().checkAddEntryAllowed(folder);
+				int count = 1;
+				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+				Map qualifiers = new HashMap();
+				String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
+				qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
+				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
+					Definition def = (Definition) defaultEntryDefinitions.get(i);
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+					String title = NLT.getDef(def.getTitle());
+					if (toolbar.checkToolbarMenuItem("1_add", "entries", title)) {
+						title = title + " (" + String.valueOf(count++) + ")";
+					}
+					toolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
 				}
-				toolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
-			}
+			} catch (AccessControlException ac) {};
 		}
-    
+		//Add Folder
+		try {
+			getFolderModule().checkAddFolderAllowed(folder);
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), url);
+		} catch (AccessControlException ac) {};
 		//The "Administration" menu
 		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
 		//Access control
