@@ -1,8 +1,10 @@
 <% //view a folder forum with the entry at the bottom in an iframe %>
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
-String sliderDivOffset = "-23";
-String sliderDivHeight = "20";
+int sliderDivHeight = 22;
+int sliderDivArrowHeight = 17;    //This is the height of pics/sym_s_arrows_northsouth.gif
+int sliderDivBlankHeight = sliderDivHeight - sliderDivArrowHeight;
+String sliderDivOffset = "-" + String.valueOf(sliderDivHeight);
 %>
 <a name="ss_top_of_folder"></a>
 <div id="ss_showfolder" class="ss_style ss_portlet">
@@ -12,18 +14,28 @@ String sliderDivHeight = "20";
     configJspStyle="<%= ssConfigJspStyle %>" />
 </div>
 <div id="ss_showfolder_slider" onMousedown="ss_startDragDiv();" 
- onMouseover="ss_clearMouseOverInfo(null);" width="100%" height="<%= sliderDivHeight %>px"
+ onMouseover="ss_clearMouseOverInfo(null);" width="100%" 
+ height="<%= String.valueOf(sliderDivHeight) %>px"
  style="position:relative; margin:0px 0px 3px 0px; padding:0px; 
-  top:<%= sliderDivOffset %>px; border: 1px solid black;">
-  <table class="ss_bgmedgray" width="100%" 
+  top:<%= sliderDivOffset %>px;">
+  <table class="ss_folder_border" width="100%" 
+    style="border: 1px solid black; margin:0px;"
     cellpadding="0" cellspacing="0">
     <tr>
-      <td align="center">
+      <td align="center" width="100%">
         <div style="display:inline; 
           background-image:url(<html:imagesPath/>pics/sym_s_arrows_northsouth.gif);
           background-repeat:no-repeat;">
         &nbsp;&nbsp;&nbsp;
         </div>
+      </td>
+    </tr>
+  </table>
+  <table width="100%" 
+    cellpadding="0" cellspacing="0">
+    <tr>
+      <td width="1"><img src="<html:imagesPath/>pics/1pix.gif" 
+        style="height:<%= String.valueOf(sliderDivBlankHeight) %>px;"></td>
       </td>
     </tr>
   </table>
@@ -157,7 +169,7 @@ function ss_startDragDiv() {
 	ss_divDragObj = document.getElementById('ss_showfolder_slider_abs')
     ss_setObjectTop(ss_divDragObj, ss_getDivTop('ss_showfolder_slider'))
     ss_setObjectLeft(ss_divDragObj, ss_getDivLeft('ss_showfolder_slider'));
-    ss_setObjectWidth(ss_divDragObj, ss_getDivWidth('ss_showfolder_slider'));
+    ss_setObjectWidth(ss_divDragObj, parseInt(ss_getDivWidth('ss_showfolder_slider') - ss_marginRight));
     ss_divDragObj.style.visibility = 'visible';
 	
     if (isNSN || isNSN6 || isMoz5) {

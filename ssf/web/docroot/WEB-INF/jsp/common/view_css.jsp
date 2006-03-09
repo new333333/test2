@@ -10,6 +10,8 @@
 %>
 <c:set var="ss_style_background_color" value="#FFFFCC" scope="request"/>
 <c:set var="ss_style_text_color" value="#009900" scope="request"/>
+<c:set var="ss_style_link_color" value="#009900" scope="request"/>
+<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
 <c:set var="ss_style_gray_color" value="#999999" scope="request"/>
 
 <c:set var="ss_folder_border_color" value="#CC6666" scope="request"/>
@@ -106,6 +108,20 @@ if (document.createStyleSheet) {
   font-weight: inherit;
   font-size: 12px; 
   }
+.ss_style a, .ss_style a:visited {
+  color: ${ss_style_link_color};
+}
+.ss_link_nodec a, .ss_link_nodec a:visited {
+  color: ${ss_style_link_color};
+}
+
+
+.ss_style a:hover {
+  color: ${ss_style_link_hover_color};
+}
+.ss_link_nodec a:hover {
+  color: ${ss_style_link_hover_color};
+}
 
 .ss_gray {
   color: ${ss_style_gray_color};   
@@ -114,7 +130,6 @@ if (document.createStyleSheet) {
 .ss_form, .ss_form table, .ss_style form {
   color: ${ss_form_text_color};
   background-color: ${ss_form_background_color};
-  margin:6px;
   }
     
 .ss_form.ss_gray {

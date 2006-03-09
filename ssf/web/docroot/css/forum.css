@@ -127,7 +127,7 @@ div.ss_entryContent {
 /* toolbar positioning */
 span.ss_toolRight {
   font-weight: bold;
-  font-decoration: none;
+  text-decoration: none;
   text-align: right;
   float: right;
   display:inline;
@@ -144,7 +144,7 @@ span.ss_toolLeft {
   float: left;
   display: inline;
   margin: 2px;
-  font-decoration: none;
+  text-decoration: none;
   padding-right: 2px;
   padding-left: 2px;
   padding-bottom: 2px;
@@ -235,7 +235,6 @@ div.ss_buttonBarRight {
 
 fieldset.ss_fieldset {
   -moz-border-radius: 5px; 
-  border-radius: 5px;
   margin-top: 6px;
   margin-bottom: 4px;
   }
@@ -394,7 +393,6 @@ div.ss_workflow {
   border: 1px #666666 solid;
   padding: 2px;
   background-color: #ffffe8;
-  layer-background-color: #ffffe8;
   }
 
 ul.ss_dragable {
@@ -464,7 +462,7 @@ table.ss_borderTable tr.ss_headerRow th {
 table.ss_ruledTable {
   border-top: 1px #666666 solid;
   border-left: 1px #666666 solid;
-  margin 0px;
+  margin: 0px;
 }
 
 table.ss_ruledTable td {
@@ -516,12 +514,7 @@ a.ss_graymenu:link, a.graymenu:visited {
   text-decoration: none; 
 }
 
-a.ss_graymenu:inactive {
-  font-size: 11px; 
-  text-decoration: none; 
-}
-
-a.ss_graymenu:focus, a.graymenu:hover, a.graymenu:active {
+a.ss_graymenu:focus, a.graymenu:hover {
   font-size: 11px; 
   text-decoration: underline; 
 }
@@ -612,33 +605,6 @@ span.ss_required {
 /* ------------------------------------------------------------------------ */
 /* link styles */
 
-a.ss_link {
-  color: #3366cc;
-  }
-
-a.ss_link:visited, a.ss_link:inactive {
-  color: #3366cc;
-  }
-
-a.ss_link:hover, a.ss_link:active {
-  text-decoration: underline;
-  color: ##3366cc;
-  }
-
-a.ss_link_nodec {
-  text-decoration: none;
-  color: #000000;
-  }
-
-a.ss_link_nodec:visited, a.ss_link_nodec:inactive {
-  text-decoration: none;
-  }
-
-a.ss_link_nodec:hover, a.ss_link_nodec:active {
-  text-decoration: underline;
-  color: ff0000;
-  }
-
 /* Text styled as buttons */
 a.ss_linkButton:link, a.ss_linkButton:visited {
   font-size: 12px;
@@ -653,13 +619,14 @@ a.ss_linkButton:link, a.ss_linkButton:visited {
   padding-right: 3px;
   margin-left: 0px;
   margin-right: 6px;
-  margin-bottom, margin-top: 2px;
+  margin-bottom: 2px;
+  margin-top: 2px;
   line-height: 200%;
   text-decoration: none;
   display: inline;
   }
 
-a.ss_linkButton:focus, a.ss_linkButton:hover, a.ss_linkButton:active {
+a.ss_linkButton:focus, a.ss_linkButton:hover {
   font-size: 12px;
   color: #ff0000;
   font-weight: bold;
@@ -672,7 +639,8 @@ a.ss_linkButton:focus, a.ss_linkButton:hover, a.ss_linkButton:active {
   padding-right: 3px;
   margin-left: 0px;
   margin-right: 6px;
-  margin-bottom, margin-top: 2px;
+  margin-bottom: 2px;
+  margin-top: 2px;
   line-height: 200%;
   text-decoration: none;
   display: inline;
@@ -691,13 +659,14 @@ a.ss_smallLinkButton:link, a.ss_smallLinkButton:visited {
   padding-right: 3px;
   margin-left: 0px;
   margin-right: 6px;
-  margin-bottom, margin-top: 2px;
+  margin-bottom: 2px;
+  margin-top: 2px;
   line-height: 200%;
   text-decoration: none;
   display: inline;
   }
 
-a.ss_smallLinkButton:focus, a.ss_smallLinkButton:hover, a.ss_smallLinkButton:active {
+a.ss_smallLinkButton:focus, a.ss_smallLinkButton:hover {
   font-size: 10px;
   color: #ff0000;
   font-weight: bold;
@@ -710,7 +679,8 @@ a.ss_smallLinkButton:focus, a.ss_smallLinkButton:hover, a.ss_smallLinkButton:act
   padding-right: 3px;
   margin-left: 0px;
   margin-right: 6px;
-  margin-bottom, margin-top: 2px;
+  margin-bottom: 2px;
+  margin-top: 2px;
   line-height: 200%;
   text-decoration: none;
   display: inline;
@@ -722,7 +692,6 @@ div.ss_calPopupDiv {
   position:absolute; 
   visibility:hidden; 
   background-color:#f7f7f7; 
-  layer-background-color:#f7f7f7;
   }
 
 .ss_cpYearNavigation,
@@ -730,7 +699,7 @@ div.ss_calPopupDiv {
 	{
 	background-color:#cecece;
 	text-align:center;
-	vertical-align:center;
+	vertical-align:middle;
 	text-decoration:none;
 	color:#000000;
 	font-weight:bold;
