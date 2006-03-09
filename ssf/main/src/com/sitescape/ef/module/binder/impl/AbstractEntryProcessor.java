@@ -59,6 +59,7 @@ import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.workflow.WorkflowModule;
+import com.sitescape.ef.rss.RssGenerator;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -242,6 +243,8 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
             // Register the index document for indexing.
             IndexSynchronizationManager.addDocument(indexDoc);
         }
+       
+        rssGenerator.updateRssFeed(entry); // Just for testing
         
     }
  
