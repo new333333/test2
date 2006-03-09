@@ -290,6 +290,11 @@
         <property name="configFileName"><value>config/docconverter.cfg</value></property>
         <property name="nullTransform"><value>config/null.xslt</value></property>
     </bean>
+
+	<!-- ============================== RSS Generator ============================ -->
+	
+    <bean id="rssGenerator" class="com.sitescape.ef.rss.RssGenerator">
+    </bean>
 	
 	<!-- ================================ Security Service =============================== -->
 	
@@ -350,6 +355,7 @@
 		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 		<property name="docConverter"><ref local="docConverter"/></property>
 		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
+		<property name="rssGenerator"><ref local="rssGenerator"/></property>
 	</bean>
 	
 	<bean id="employeeModule" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.sample.impl.EmployeeModuleImpl">
