@@ -8,6 +8,10 @@ public class DirPath {
 		return getWebappDirPathHidden("xslt");
 	}
 
+	public static String getRssDirPath() {
+		return getWebappDirPathHidden("rss");
+	}
+	
 	public static String getThumbnailDirPath() {
 		return getImagesDirPath() + File.separator + "thumbnails";
 	}
