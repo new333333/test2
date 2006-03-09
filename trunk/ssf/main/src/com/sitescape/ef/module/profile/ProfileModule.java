@@ -23,16 +23,22 @@ public interface ProfileModule {
 		throws AccessControlException, WriteFilesException;
    public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
+   public void checkAddEntryAllowed(ProfileBinder binder) throws AccessControlException;
+
    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
 		throws AccessControlException, WriteFilesException;
-   public void deleteEntry(Long binderId, Long id)
-		throws AccessControlException, WriteFilesException;
-   public ProfileBinder addProfileBinder();
-   public ProfileBinder getProfileBinder();
    public void modifyWorkflowState(Long binderId, Long entryId, Long tokenId, String toState) 
 	throws AccessControlException;
+   public void checkModifyEntryAllowed(Principal entry) throws AccessControlException;
+  
+   public void deleteEntry(Long binderId, Long id)
+		throws AccessControlException, WriteFilesException;
+   public void checkDeleteEntryAllowed(Principal entry) throws AccessControlException;
+
+   public ProfileBinder addProfileBinder();
+   public ProfileBinder getProfileBinder();
 
     /**
      * @param userId

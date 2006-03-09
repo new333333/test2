@@ -41,12 +41,15 @@ public interface FolderModule {
      */
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException;
+    public void checkAddEntryAllowed(Folder folder) throws AccessControlException;
     public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException;
+    public void checkAddReplyAllowed(FolderEntry entry) throws AccessControlException;
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException;
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData) 
     	throws AccessControlException, WriteFilesException;
+    public void checkModifyEntryAllowed(FolderEntry entry) throws AccessControlException;
     public void modifyWorkflowState(Long folderId, Long entryId, Long tokenId, String toState) throws AccessControlException;
     
     /**
@@ -72,12 +75,14 @@ public interface FolderModule {
     public void indexFolder(Long folderId);
     public Map getCommonEntryElements(Long folderId);
 
-	public Long addFolder(Long folderId, Folder folder) throws AccessControlException;
-    	  
+	public Long addFolder(Long parentFolderId, Map input) throws AccessControlException;
+    public void checkAddFolderAllowed(Folder parentFolder) throws AccessControlException;
+   	  
     public FolderEntry getEntry(Long parentFolderId, Long entryId) throws AccessControlException;
     public FolderEntry getEntry(Long parentFolderId, Long entryId, int type) throws AccessControlException;
     public Map getEntryTree(Long parentFolderId, Long entryId) throws AccessControlException;
     public Map getEntryTree(Long parentFolderId, Long entryId, int type) throws AccessControlException;
     public void deleteEntry(Long parentFolderId, Long entryId) throws AccessControlException;
+    public void checkDeleteEntryAllowed(FolderEntry entry) throws AccessControlException;
 
 }

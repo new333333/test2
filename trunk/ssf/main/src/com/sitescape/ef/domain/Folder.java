@@ -28,11 +28,7 @@ public class Folder extends Binder {
     protected int nextFolderNumber=1;
     protected int nextEntryNumber=1;
 
-    public Folder() {
-        
-    }
-    public Folder(Folder parentFolder) {
-        this.parentFolder = parentFolder;
+    public Folder() {        
     }
     /**
      * @hibernate.many-to-one node="topFolder/@id" embed-xml="false"
@@ -99,11 +95,7 @@ public class Folder extends Binder {
      * @hibernate.component class="com.sitescape.ef.domain.HKey" prefix="folder_"
      */
     public HKey getFolderHKey() {
-       	// This should only be called when adding a child, which requires a write transaction
-    	if (folderHKey.getSortKey() == null) {
-    		folderHKey=new HKey(generateEntryRootSortKey());
-    	}
-        return folderHKey;
+         return folderHKey;
     }
     protected void setFolderHKey(HKey folderHKey) {
         this.folderHKey = folderHKey;
@@ -112,9 +104,7 @@ public class Folder extends Binder {
      * @hibernate.component class="com.sitescape.ef.domain.HKey" prefix="entryRoot_"
      */
     public HKey getEntryRootHKey() {
-    	// This should only be called when adding a child, which requires a write transaction
-    	if (entryRootHKey.getSortKey() == null) entryRootHKey = new HKey(generateEntryRootSortKey());
-        return entryRootHKey;
+         return entryRootHKey;
     }
     protected void setEntryRootHKey(HKey entryRootHKey) {
         this.entryRootHKey = entryRootHKey;
@@ -139,9 +129,13 @@ public class Folder extends Binder {
   		getFolders().add(child);
    		child.setParentFolder(this);
    		child.setTopFolder(topFolder);
+   		child.setOwningWorkspace(this.getOwningWorkspace());
    		//	Set root for subfolders
-   		child.setFolderHKey(new HKey(getFolderHKey(), nextFolderNumber++));
-     }
+   		if (getFolderHKey() == null) {
+  			setFolderHKey(new HKey(generateFolderRootSortKey()));
+   		}
+	   	child.setFolderHKey(new HKey(getFolderHKey(), nextFolderNumber++));   			
+   	}
     public void removeFolder(Folder child) {
         if (!child.getParentFolder().equals(this)) {
             throw new NoFolderByTheIdException(child.getId(),"Subfolder not in this folder");
@@ -180,6 +174,9 @@ public class Folder extends Binder {
       entry.setTopEntry(null);
       entry.setParentFolder((Folder)this);
       entry.setOwningFolderSortKey(getFolderHKey().getSortKey());
+      if (getEntryRootHKey() == null) {
+    	  setEntryRootHKey( new HKey(generateEntryRootSortKey()));
+      } 
       entry.setHKey(new HKey(getEntryRootHKey(), nextEntryNumber++));
       getEntries().add(entry);
 
@@ -262,5 +259,8 @@ public class Folder extends Binder {
         }
         
         return sortKey.toString();
-    }	 
+    }
+    protected String generateFolderRootSortKey(){
+    	return generateEntryRootSortKey() + "00001";
+    }
 }

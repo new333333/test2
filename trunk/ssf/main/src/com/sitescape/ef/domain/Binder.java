@@ -27,6 +27,7 @@ import com.sitescape.ef.security.function.WorkArea;
 public abstract class Binder extends PersistentLongIdTimestampObject implements WorkArea, AclContainer, InstanceLevelProcessorSupport  {
     private String name;
     private String title="";
+    private Description description;
     private HistoryStamp owner;
     private Map properties;
     // Only one workspace can own a forum, although a forum can be
@@ -164,6 +165,36 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     	if (Validator.isNull(name)) throw new IllegalArgumentException("null name");
        this.name = name;
     }
+	/**
+	 * @hibernate.property length="1024" node="title"
+	 * @return String
+	 */
+    public String getTitle() {
+        return title;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    /**
+     * @hibernate.component prefix="description_"
+     */
+    public Description getDescription() {
+        return this.description;
+    }
+    public void setDescription(Description description) {
+        if (this.description != null)
+        	// try to avoid unecessary updates
+        	if (this.description.equals(description)) return;
+    	this.description = description; 
+    }
+  
+    public void setDescription(String descriptionText) {
+		Description tmp = new Description(descriptionText);
+    	if (description != null) {
+    		if (description.equals(tmp)) return;
+    	}
+        this.description = tmp; 
+    }
     /**
      * @hibernate.component prefix="notify_"
      * @return
@@ -242,16 +273,6 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     	return properties.get(name);
     }
 
-	/**
-	 * @hibernate.property length="1024" node="title"
-	 * @return String
-	 */
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     
     /**

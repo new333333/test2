@@ -53,6 +53,7 @@ public class WebKeys {
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String ACTION_ADD_ENTRY = "add_entry";
+    public static final String ACTION_ADD_BINDER = "add_binder";
 	public static final String FORUM_ACTION_ADD_REPLY = "add_reply";
 	public static final String FORUM_ACTION_ACCESS_CONTROL = "configure_access_control";
 	public static final String FORUM_ACTION_CONFIGURE_FORUM = "configure_forum";
@@ -186,6 +187,7 @@ public class WebKeys {
 
     //View names
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
+    public static final String VIEW_ADD_FOLDER = "forum/add_folder";
     public static final String VIEW_BUILD_FILTER = "binder/build_filter";
     public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
     public static final String VIEW_CONFIGURE = "binder/configure";

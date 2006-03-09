@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
@@ -65,20 +66,26 @@ public class ViewEntryController extends SAbstractProfileController {
 		//	Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		PortletURL url;
-		//	The "Modify" menu
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_ENTRY);
-		url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-		toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
+		try {
+			getProfileModule().checkModifyEntryAllowed(entry);
+			//	The "Modify" menu
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_ENTRY);
+			url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+			url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
+		} catch (AccessControlException ac) {};
 	
     
 		//	The "Delete" menu
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DELETE_ENTRY);
-		url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-		toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url);
+		try {
+			getProfileModule().checkDeleteEntryAllowed(entry);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DELETE_ENTRY);
+			url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+			url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+			toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url);
+		} catch (AccessControlException ac) {};
     
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, toolbar.getToolbar());
 			return new ModelAndView(WebKeys.VIEW_LISTING, model);

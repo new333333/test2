@@ -32,6 +32,8 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.util.Validator;
+import com.sitescape.ef.security.AccessControlException;
+
 
 public class ViewEntryController extends SAbstractForumController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
@@ -99,55 +101,65 @@ public class ViewEntryController extends SAbstractForumController {
 	    //The "Reply" menu
 		List replyStyles = entryView.getRootElement().selectNodes("properties/property[@name='replyStyle']");
 		PortletURL url;
+		FolderEntry entry = (FolderEntry)model.get(WebKeys.ENTRY);
 		if (!replyStyles.isEmpty()) {
-			if (replyStyles.size() == 1) {
-				//There is only one reply style, so show it not as a drop down menu
-				String replyStyleId = ((Element)replyStyles.get(0)).attributeValue("value", "");
-				if (!replyStyleId.equals("")) {
-					Map params = new HashMap();
-					params.put(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
-					params.put(WebKeys.URL_BINDER_ID, folderId);
-					params.put(WebKeys.URL_ENTRY_TYPE, replyStyleId);
-					params.put(WebKeys.URL_ENTRY_ID, entryId);
-					Map qualifiers = new HashMap();
-					qualifiers.put("popup", new Boolean(true));
-					toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), params, qualifiers);
-				}
-			} else {
-				toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"));
-				for (int i = 0; i < replyStyles.size(); i++) {
-					String replyStyleId = ((Element)replyStyles.get(i)).attributeValue("value", "");
-			        try {
-			        	Definition replyDef = getDefinitionModule().getDefinition(replyStyleId);
-						url = response.createActionURL();
-						url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
-						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-						url.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
-						url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-						toolbar.addToolbarMenuItem("1_reply", "replies", replyDef.getTitle(), url);
-			        } catch (NoDefinitionByTheIdException e) {
-			        	continue;
-			        }
-				}
-			}
+			try {
+				getFolderModule().checkAddReplyAllowed(entry);
+				if (replyStyles.size() == 1) {
+					//There is only one reply style, so show it not as a drop down menu
+					String replyStyleId = ((Element)replyStyles.get(0)).attributeValue("value", "");
+					if (!replyStyleId.equals("")) {
+						Map params = new HashMap();
+						params.put(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
+						params.put(WebKeys.URL_BINDER_ID, folderId);
+						params.put(WebKeys.URL_ENTRY_TYPE, replyStyleId);
+						params.put(WebKeys.URL_ENTRY_ID, entryId);
+						Map qualifiers = new HashMap();
+						qualifiers.put("popup", new Boolean(true));
+						toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), params, qualifiers);
+					}
+				} else {
+					toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"));
+					for (int i = 0; i < replyStyles.size(); i++) {
+						String replyStyleId = ((Element)replyStyles.get(i)).attributeValue("value", "");
+						try {
+							Definition replyDef = getDefinitionModule().getDefinition(replyStyleId);
+							url = response.createActionURL();
+							url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
+							url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+							url.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
+							url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+							toolbar.addToolbarMenuItem("1_reply", "replies", replyDef.getTitle(), url);
+						} catch (NoDefinitionByTheIdException e) {
+							continue;
+						}
+					}
+				} 
+			} catch (AccessControlException ac) {};
 		}
 	    
-	    //The "Modify" menu
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_ENTRY);
-		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-		url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
-		url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-		toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
+		try {
+			getFolderModule().checkModifyEntryAllowed(entry);
+			//The "Modify" menu
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_ENTRY);
+			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+			url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
+		} catch (AccessControlException ac) {};
 		
 	    
-	    //The "Delete" menu
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DELETE_ENTRY);
-		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-		url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
-		url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-		toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url);
+		try {
+			getFolderModule().checkDeleteEntryAllowed(entry);
+			//The "Delete" menu
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DELETE_ENTRY);
+			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+			url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+			url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+			toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url);
+		} catch (AccessControlException ac) {};
 	    
 		return toolbar;
 	}

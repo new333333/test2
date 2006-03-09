@@ -168,7 +168,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     }
 
      
-    protected void addEntry_accessControl(Binder binder) throws AccessControlException {
+    public void addEntry_accessControl(Binder binder) throws AccessControlException {
         getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);        
     }
     
@@ -313,7 +313,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	return entry_load(binder, entryId);
     	
     }
-    protected void modifyEntry_accessControl(Binder binder, WorkflowControlledEntry entry) throws AccessControlException {
+    public void modifyEntry_accessControl(Binder binder, WorkflowControlledEntry entry) throws AccessControlException {
     	modifyAccessCheck(binder, entry);
    }
 
@@ -361,7 +361,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     public void modifyWorkflowState(Binder binder, Long entryId, Long tokenId, String toState) {
 
     	WorkflowControlledEntry entry = entry_load(binder, entryId);
- 		
+ 		modifyEntry_accessControl(binder, entry);
 		//Find the workflowState
 		WorkflowState ws = entry.getWorkflowState(tokenId);
  		if (ws != null) {
@@ -681,7 +681,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	return entry_loadFull(binder, entryId);
     }
         
-    protected void deleteEntry_accessControl(Binder parentBinder, WorkflowControlledEntry entry) {
+    public void deleteEntry_accessControl(Binder parentBinder, WorkflowControlledEntry entry) {
     	deleteAccessCheck(parentBinder, entry);
     }
     protected void deleteEntry_preDelete(Binder parentBinder, WorkflowControlledEntry entry) {
