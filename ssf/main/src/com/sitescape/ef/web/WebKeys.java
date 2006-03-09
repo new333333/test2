@@ -163,6 +163,7 @@ public class WebKeys {
     public static final String PUBLIC_PROFILE_DEFINITIONS="ssPublicProfileDefinitions";
     public static final String PUBLIC_PROFILE_ENTRY_DEFINITIONS="ssPublicProfileEntryDefinitions";
     public static final String PUBLIC_WORKFLOW_DEFINITIONS="ssPublicWorkflowDefinitions";
+    public static final String RELOAD_URL="ss_reloadUrl";
     public static final String SCHEDULE="ssSchedule";
     public static final String SCHEDULE_INFO="ssScheduleInfo";
     public static final String SEEN_MAP="ssSeenMap";
