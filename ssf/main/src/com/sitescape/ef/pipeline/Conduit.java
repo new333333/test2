@@ -1,11 +1,11 @@
 package com.sitescape.ef.pipeline;
 
-import com.sitescape.ef.UncheckedIOException;
-
 public interface Conduit {
 		
 	/**
 	 * Returns sink associated with the conduit.
+	 * If this method is called multiple times, the same <code>DocSink</code>
+	 * instance is returned. 
 	 * 
 	 * @return
 	 * @throws IllegalStateException thrown if this method is called after 
@@ -15,6 +15,8 @@ public interface Conduit {
 	
 	/**
 	 * Returns source associated with the conduit. 
+	 * If this method is called multiple times, the same <code>DocSource</code>
+	 * instance is returned. 
 	 * 
 	 * @return
 	 * @throws IllegalStateException thrown if this method is called before
