@@ -108,6 +108,12 @@ public class SAbstractForumController extends SAbstractController {
 		}
 		req.setAttribute(WebKeys.URL_BINDER_ID,forumId);
 		model.put(WebKeys.FOLDER_TOOLBAR, buildFolderToolbar(response, folder, forumId).getToolbar());
+		
+		//Build a reload url
+		PortletURL reloadUrl = response.createRenderURL();
+		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 		return model;
 	}  
 	protected Toolbar buildFolderToolbar(RenderResponse response, Folder folder, String forumId) {
