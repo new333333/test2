@@ -87,16 +87,18 @@ function ss_openUrlInPortlet(url, popup) {
 function ss_reloadOpener(fallBackUrl) {
 	//Are we at the top window?
 	if (self.window != self.top) {
-		parent.location.reload();
-		return false
+		if (parent.ss_reloadUrl && parent.ss_reloadUrl != "") {
+			parent.location.replace(parent.ss_reloadUrl);
+		}
 	} else if (self.opener) {
-		self.opener.location.reload(true)
-		setTimeout('self.window.close();', 200)
-		return false
+		if (self.opener.ss_reloadUrl && self.opener.ss_reloadUrl != "") {
+			self.opener.location.replace(self.opener.ss_reloadUrl);
+			setTimeout('self.window.close();', 200)
+		}
 	} else {
 		self.location.href = fallBackUrl;
-		return false
 	}
+	return false;
 }
 
 // Replace an image (e.g. expand/collapse arrows)

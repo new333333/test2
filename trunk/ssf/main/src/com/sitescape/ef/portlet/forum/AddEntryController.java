@@ -32,6 +32,7 @@ public class AddEntryController extends SAbstractForumController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
+		response.setRenderParameters(formData);
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		//See if the add entry form was submitted
@@ -59,13 +60,10 @@ public class AddEntryController extends SAbstractForumController {
 			if (action.equals(WebKeys.ACTION_ADD_ENTRY)) {
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());				
 				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
-				response.setRenderParameter("ssReloadUrl", "");
 			} else if (action.equals(WebKeys.FORUM_ACTION_ADD_REPLY)) {
 				entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 				setupViewEntry(response, folderId, entryId);
 			}
-		} else {
-			response.setRenderParameters(formData);
 		}
 			
 	}
