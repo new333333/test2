@@ -4,6 +4,13 @@ import com.sitescape.ef.pipeline.Conduit;
 import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.pipeline.DocSource;
 
+/**
+ * <code>Conduit</code> wrapper around <code>DocSink</code>.
+ * This is a adapter class.
+ * 
+ * @author jong
+ *
+ */
 public class SinkOnlyConduit implements Conduit {
 
 	private DocSink sink;

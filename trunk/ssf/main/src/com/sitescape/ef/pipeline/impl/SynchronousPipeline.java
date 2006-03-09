@@ -15,12 +15,17 @@ import com.sitescape.ef.pipeline.PipelineInvocation;
 public class SynchronousPipeline extends AbstractPipeline {
 
 	public void invoke(DocSource initialIn, DocSink finalOut) throws Throwable {
-		PipelineInvocation invocation = setupPipelineInvocation(initialIn, finalOut);
+		// Setup invocation instance. 
+		PipelineInvocationImpl invocation = setupPipelineInvocation(initialIn, finalOut);
 		
+		// Invoke the handler chain. 
 		invocation.proceed();
+		
+		// Cleanup
+		invocation.cleanup();
 	}
 
-	private PipelineInvocation setupPipelineInvocation(DocSource initialIn, DocSink finalOut) {
+	private PipelineInvocationImpl setupPipelineInvocation(DocSource initialIn, DocSink finalOut) {
 		Conduit[] conduits = new Conduit[conduitFactories.length+2];
 		conduits[0] = new SourceOnlyConduit(initialIn);
 		for(int i = 0; i < conduitFactories.length; i++) {

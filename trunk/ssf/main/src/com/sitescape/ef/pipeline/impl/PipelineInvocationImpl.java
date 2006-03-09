@@ -23,4 +23,8 @@ public class PipelineInvocationImpl implements PipelineInvocation {
 		docHandlers[curr].doHandle(conduits[curr].getSource(), conduits[curr+1].getSink(), this);
 	}
 
+	public void cleanup() {
+		for(int i = 0; i < conduits.length; i++)
+			conduits[i].close();
+	}
 }
