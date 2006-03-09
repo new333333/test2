@@ -9,6 +9,7 @@ import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.docconverter.DocConverter;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.presence.PresenceService;
+import com.sitescape.ef.rss.RssGenerator;
 import com.sitescape.ef.search.LuceneSessionFactory;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AclManager;
@@ -40,6 +41,7 @@ public abstract class CommonDependencyInjection {
 	protected LuceneSessionFactory luceneSessionFactory;
 	protected PresenceService presenceService;
 	protected DocConverter docConverter;
+	protected RssGenerator rssGenerator;
 	protected WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
 	
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
@@ -72,6 +74,9 @@ public abstract class CommonDependencyInjection {
 	public void setDocConverter(DocConverter docConverter) {
 		this.docConverter = docConverter;
 	}
+	public void setRssGenerator(RssGenerator rssGenerator) {
+		this.rssGenerator = rssGenerator;
+	}
 	protected LuceneSessionFactory getLuceneSessionFactory() {
 		return luceneSessionFactory;
 	}
@@ -101,6 +106,9 @@ public abstract class CommonDependencyInjection {
 	}
 	public DocConverter getDocConverter() {
 		return docConverter;
+	}
+	public RssGenerator getRssGenerator() {
+		return rssGenerator;
 	}
 	public void setWorkAreaFunctionMembershipManager(WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager) {
 		this.workAreaFunctionMembershipManager=workAreaFunctionMembershipManager;
