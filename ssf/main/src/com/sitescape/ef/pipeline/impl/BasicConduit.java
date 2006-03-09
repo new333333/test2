@@ -28,11 +28,9 @@ public class BasicConduit extends AbstractConduit {
 	private String producerName;
 	private File fileDir; // If non-null, supports backing files
 	
-	private OutputStream out;
-	private File file;
-	
-	private byte[] data;
-	private InputStream in;
+	// Only one of the following two is used. 
+	private File file; // on disk data
+	private byte[] data; // in memory data
 	
 	public BasicConduit(String producerName, File fileDir) {
 		this.producerName = producerName;
@@ -51,6 +49,8 @@ public class BasicConduit extends AbstractConduit {
 	
 	protected class BasicDocSink implements DocSink {
 				
+		private OutputStream out;
+
 		public void useFile() throws ConfigurationException, IllegalStateException, UncheckedIOException {
 			if(fileDir == null)
 				throw new ConfigurationException("This conduit does not support backing files");
@@ -94,15 +94,20 @@ public class BasicConduit extends AbstractConduit {
 			return file;
 		}
 		
+		private byte[] toByteArray() {
+			return ((ByteArrayOutputStream) out).toByteArray();
+		}
 	}
 	
 	protected class BasicDocSource implements DocSource {
 		
+		private InputStream in;
+
 		public InputStream getInputStream() throws UncheckedIOException {
 			if(in == null) {
 				if(file == null) { // RAM
 					if(data == null)
-						data = ((ByteArrayOutputStream) out).toByteArray();
+						data = ((BasicDocSink) sink).toByteArray();
 					in = new ByteArrayInputStream(data);
 				}
 				else {	// File

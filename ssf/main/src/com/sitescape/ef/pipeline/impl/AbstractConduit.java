@@ -13,8 +13,9 @@ public abstract class AbstractConduit implements Conduit {
 	
 	private boolean sinkCalled = false;
 	private boolean sourceCalled = false;
-	private DocSink sink;
-	private DocSource source;
+	
+	protected DocSink sink;
+	protected DocSource source;
 	
 	public DocSink getSink() throws IllegalStateException {
 		sinkCalled = true;

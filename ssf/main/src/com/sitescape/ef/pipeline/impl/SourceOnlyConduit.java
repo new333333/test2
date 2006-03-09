@@ -5,6 +5,13 @@ import com.sitescape.ef.pipeline.Conduit;
 import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.pipeline.DocSource;
 
+/**
+ * <code>Conduit</code> wrapper around <code>DocSource</code>.
+ * This is a adapter class.
+ * 
+ * @author jong
+ *
+ */
 public class SourceOnlyConduit implements Conduit {
 
 	private DocSource source;
