@@ -115,8 +115,10 @@ function highlightLineById(id) {
 <%
 	String folderLineId = "folderLine_" + (String) entry1.get("_docId");
 	String seenStyle = "";
+	String seenStyleFine = "class=\"ss_finePrint\"";
 	if (!ssSeenMap.checkIfSeen(entry1)) {
-		seenStyle = "ss_bold";
+		seenStyle = "class=\"ss_bold\"";
+		seenStyleFine = "class=\"ss_bold ss_fineprint\"";
 	}
 %>
 <ssf:slidingTableRow id="<%= folderLineId %>">
@@ -129,7 +131,7 @@ function highlightLineById(id) {
     action="view_entry" 
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
-    ><span class="<%= seenStyle %>"><c:out value="${entry1._docNum}"/>.</span></a>&nbsp;&nbsp;&nbsp;
+    ><span <%= seenStyle %>><c:out value="${entry1._docNum}"/>.</span></a>&nbsp;&nbsp;&nbsp;
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn>
@@ -141,12 +143,12 @@ function highlightLineById(id) {
     action="view_entry" 
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
-    ><span class="<%= seenStyle %>"><c:out value="${entry1._workflowStateCaption}"/></span></a>
+    ><span <%= seenStyle %>><c:out value="${entry1._workflowStateCaption}"/></span></a>
     </c:if>
   </ssf:slidingTableColumn>
 
   <ssf:slidingTableColumn>
-    <a class="ss_link" href="<ssf:url     
+    <a href="<ssf:url     
     adapter="true" 
     portletName="ss_forum" 
     folderId="<%= folderId %>" 
@@ -154,17 +156,17 @@ function highlightLineById(id) {
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
     ><c:if test="${empty entry1.title}"
-    ><span class="<%= seenStyle %> ss_fineprint">--<ssf:nlt tag="entry.noTitle"/>--</span
-    ></c:if><span class="<%= seenStyle %>"><c:out value="${entry1.title}"/></span></a>
+    ><span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
+    ></c:if><span <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn>
 	<ssf:presenceInfo user="<%=(User)entry1.get("_principal")%>"/> 
-	<span class="<%= seenStyle %>"><c:out value="${entry1._principal.title}"/></span>
+	<span <%= seenStyle %>><c:out value="${entry1._principal.title}"/></span>
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn>
-    <span class="<%= seenStyle %>"><fmt:formatDate 
+    <span <%= seenStyle %>><fmt:formatDate 
      value="${entry1._modificationDate}" type="both" 
 	 pattern="dd MMMM yyyy, HH:mm" /><c:out value="${entry1._modificationDate}"/>GMT</span>
   </ssf:slidingTableColumn>
