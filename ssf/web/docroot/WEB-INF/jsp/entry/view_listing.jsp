@@ -22,6 +22,11 @@ if (displayStyle == null || displayStyle.equals("")) {
 	displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
 }
 
+String ssLoadEntryUrl = (String) renderRequest.getAttribute("ssLoadEntryUrl");
+if (ssLoadEntryUrl == null) ssLoadEntryUrl = "";
+String ssLoadEntryId = (String) renderRequest.getAttribute("ssLoadEntryId");
+if (ssLoadEntryId == null) ssLoadEntryId = "";
+
 String ssReloadUrl = (String) renderRequest.getAttribute("ssReloadUrl");
 if (ssReloadUrl == null) ssReloadUrl = "";
 boolean reloadCaller = false;
@@ -50,7 +55,22 @@ renderRequest.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight
 <c:set var="showEntryCallbackRoutine" value="ss_showEntryInDiv" scope="request"/>
 <c:set var="showEntryMessageRoutine" value="ss_showMessageInDiv" scope="request"/>
 <script type="text/javascript">
+
+//Define the url of this page in case the entry needs to reload this page
+var ss_reloadUrl = "${ss_reloadUrl}";
+var ssLoadEntryUrl = "<%= ssLoadEntryUrl %>";
 var autoScroll = "<%= autoScroll %>";
+
+<%
+	if (!ssLoadEntryUrl.equals("")) {
+%>
+function ss_showEntryOnLoad() {
+	ss_loadEntryUrl("<%= ssLoadEntryUrl %>", "<%= ssLoadEntryId %>");
+}
+ss_createOnLoadObj('ss_showEntryOnLoad', ss_showEntryOnLoad);
+<%
+	}
+%>
 
 function ss_showMessageInDiv(str) {
     //Remember the scroll position so we can come back to this exact point

@@ -19,6 +19,7 @@ import java.util.Date;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.shared.MapInputData;
+import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.PortletRequestUtils;
@@ -120,6 +121,17 @@ public class ViewController  extends SAbstractForumController {
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 			request.setAttribute("ssReloadUrl", reloadUrl.toString());			
+
+		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY)) {
+			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+			if (!entryId.equals("")) {
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+				request.setAttribute("ssLoadEntryUrl", adapterUrl.toString());			
+				request.setAttribute("ssLoadEntryId", entryId);			
+			}
 		}
 
 		return returnToViewForum(request, response, formData, folderId);

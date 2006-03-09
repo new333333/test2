@@ -109,9 +109,8 @@ function ss_postRequest(obj) {
 	}
 }
 </script>
-<form class="ss_style ss_form" id="unseenCountForm" >
+<form class="ss_style ss_form" id="unseenCountForm" style="display:none;">
 <input type="hidden" name="forumList" value="<%= folderIdList %>">
 </form>
-<div id="unseenCounts">
-</div>
+
 
