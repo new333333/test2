@@ -336,54 +336,6 @@ div.ss_widgetContent {
   margin: 0px;
   }
 
-div.ss_sliding_table_column0 {
-  display: block; 
-  border: #cccccc 1px solid;
-  background-color: #ffffff !important; 
-  color: #000000;
-  margin: 0px;
-}
-div.ss_sliding_table_column0 table {
-  background-color: #ffffff !important; 
-  color: #000000;
-}
-div.ss_sliding_table_column1 {
-  position: absolute; 
-  visibility: hidden;
-  display: block; 
-  border-left: #ffffff solid 1px;
-  background-color: #ffffff !important; 
-  color: #000000;
-  margin: 0px;
-}
-div.ss_sliding_table_column1 table {
-  background-color: #ffffff !important; 
-  color: #000000;
-}
-div.ss_sliding_table_column {
-  position: absolute; 
-  visibility: hidden;
-  display: block; 
-  border-left: #cccccc solid 1px;
-  background-color: #ffffff !important; 
-  color: #000000;
-  margin: 0px;
-}
-div.ss_sliding_table_column table {
-  background-color: #ffffff !important; 
-  color: #000000;
-}
-div.ss_sliding_table_info_popup {
-  position: absolute; 
-  visibility: hidden;
-  display:block; 
-  border-left: #cccccc solid 1px;
-  background-color: #ffffff; 
-  color: #000000;
-  margin: 0px;
-  z-index: 40;
-}
-
 .ss_portlet {
   width: 100%;
   text-align: left;

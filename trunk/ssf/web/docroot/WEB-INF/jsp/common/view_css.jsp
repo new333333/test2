@@ -37,6 +37,10 @@
 <c:set var="ss_box_canvas_color" value="#FFFFCC" scope="request"/>
 <c:set var="ss_box_title_color" value="#009999" scope="request"/>
 <c:set var="ss_box_title_text_color" value="#993333" scope="request"/>
+
+<c:set var="ss_sliding_table_background_color" value="#FFFFAA" scope="request"/>
+<c:set var="ss_sliding_table_text_color" value="#3333FF" scope="request"/>
+
 <%
 
 //Set up the user object
@@ -178,6 +182,52 @@ if (document.createStyleSheet) {
   border-bottom: 2px solid #e6e6e6;
   */
   }
+  
+/* Sliding tables */
+div.ss_sliding_table_column0 {
+  display: block; 
+  border: #cccccc 1px solid;
+  margin: 0px;
+}
+.ss_sliding_table_column0 * {
+  background-color: ${ss_sliding_table_background_color}; 
+  color: ${ss_sliding_table_text_color};
+}
+div.ss_sliding_table_column1 {
+  position: absolute; 
+  visibility: hidden;
+  display: block; 
+  border-left: #ffffff solid 1px;
+  margin: 0px;
+}
+.ss_sliding_table_column1 * {
+  background-color: ${ss_sliding_table_background_color}; 
+  color: ${ss_sliding_table_text_color};
+}
+div.ss_sliding_table_column {
+  position: absolute; 
+  visibility: hidden;
+  display: block; 
+  border-left: #cccccc solid 1px;
+  margin: 0px;
+}
+.ss_sliding_table_column * {
+  background-color: ${ss_sliding_table_background_color}; 
+  color: ${ss_sliding_table_text_color};
+}
+div.ss_sliding_table_info_popup {
+  position: absolute; 
+  visibility: hidden;
+  display:block; 
+  border-left: #cccccc solid 1px;
+  margin: 0px;
+  z-index: 40;
+}
+.ss_sliding_table_info_popup * {
+  background-color: ${ss_sliding_table_background_color}; 
+  color: ${ss_sliding_table_text_color};
+}
+
 
 /* Folder */
 .ss_folder_border, .ss_folder_border table {

@@ -323,12 +323,12 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 
 <div id="col0" class="ss_style ss_sliding_table_column0">
-<table class="ss_style" cellspacing="0" cellpadding="0">
+<table cellspacing="0" cellpadding="0">
  <tr>
   <td>&nbsp;</td>
  </tr>
 </table>
-<table class="ss_style" cellspacing="0" cellpadding="0">
+<table cellspacing="0" cellpadding="0">
 <%		
 		for (int iRow = 0; iRow < slidingTableRows.size(); iRow++) {
 %>
@@ -388,12 +388,12 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 					}
 %>
 <div id="col<%= String.valueOf(iCol + 1) %>" class="ss_style ss_sliding_table_column1">
-<table class="ss_style" cellspacing="0" cellpadding="0" width="100%">
+<table cellspacing="0" cellpadding="0" width="100%">
 <tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 <td>&nbsp;</td>
 </tr>
 </table>
-<table class="ss_style" cellspacing="0" cellpadding="0" width="100%">
+<table cellspacing="0" cellpadding="0" width="100%">
 <tr class="<%= rowStyle %>" <%= rowIdText %>>
 <%
 					if (headerRow.booleanValue()) {
@@ -421,7 +421,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 					}
 %>
 <div id="col<%= String.valueOf(iCol + 1) %>" class="ss_style ss_sliding_table_column"  style="z-index:<%= String.valueOf(iCol + 11) %>;">
-<table class="ss_style" cellspacing="0" cellpadding="0" width="100%">
+<table cellspacing="0" cellpadding="0" width="100%">
 <tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 <td><div style="position:absolute; left:-9; top:0;"><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
   onMousedown="ss_slidingTableStartDragCol(this, 'col<%= String.valueOf(iCol + 1) %>');"
@@ -431,7 +431,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
   background-repeat:no-repeat;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></a></div>&nbsp;</td>
 </tr>
 </table>
-<table class="ss_style" cellspacing="0" cellpadding="0" width="100%">
+<table cellspacing="0" cellpadding="0" width="100%">
 <tr <%= rowIdText %>>
 <%
 					if (headerRow.booleanValue()) {

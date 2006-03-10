@@ -51,10 +51,11 @@ function highlightLineById(id) {
 <br />
 
 <div style="margin:0px;">
-<div style="position:relative; top:2; margin:2px; 
-  border-top:solid #666666 1px; border-right:solid #666666 1px; border-left:solid #666666 1px; 
-  background-color:#cecece;">
-<table class="ss_style" cellspacing="0" cellpadding="0" width="95%">
+<div class="ss_folder_border" style="position:relative; top:2; margin:2px; 
+  border-top:solid #666666 1px; 
+  border-right:solid #666666 1px; 
+  border-left:solid #666666 1px;">
+<table cellspacing="0" cellpadding="0" width="95%">
 <tr>
 <td align="center">
 <%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
@@ -87,7 +88,7 @@ function highlightLineById(id) {
 
   <ssf:slidingTableColumn>
 	<ssf:presenceInfo user="<%=(User)entry.get("_principal")%>"/> 
-    <a class="ss_link" href="<ssf:url     
+    <a href="<ssf:url     
     adapter="true" 
     portletName="ss_profile" 
     folderId="${ssBinder.id}" 
@@ -97,18 +98,18 @@ function highlightLineById(id) {
     <c:if test="${empty entry.title}">
     <span class="ss_fineprint">--no title--</span>
     </c:if>
-    <c:out value="${entry.title}"/></a>
+    <span><c:out value="${entry.title}"/></span></a>
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn>
     <c:if test="${!empty entry._email}">
-	  <a class="ss_link" href="mailto:${entry._email}">
-      <c:out value="${entry._email}"/></a>
+	  <a href="mailto:${entry._email}">
+      <span><c:out value="${entry._email}"/></span></a>
     </c:if>
   </ssf:slidingTableColumn>
 
   <ssf:slidingTableColumn>
-    <c:out value="${entry._userName}"/>
+    <span><c:out value="${entry._userName}"/></span>
   </ssf:slidingTableColumn>
   
  </ssf:slidingTableRow>
