@@ -420,7 +420,8 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					}
 %>
-<div id="col<%= String.valueOf(iCol + 1) %>" class="ss_style ss_sliding_table_column"  style="z-index:<%= String.valueOf(iCol + 11) %>;">
+<div id="col<%= String.valueOf(iCol + 1) %>" class="ss_style ss_sliding_table_column"  
+  style="z-index:<%= String.valueOf(iCol + 11) %>;">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 <td><div style="position:absolute; left:-9; top:0;"><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
