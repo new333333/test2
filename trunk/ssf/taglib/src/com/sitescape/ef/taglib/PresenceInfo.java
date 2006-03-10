@@ -37,9 +37,7 @@ public class PresenceInfo extends BodyTagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
-			if (this.user != null) {
-				userStatus = PresenceServiceUtils.getPresence(user);
-			}
+			userStatus = PresenceServiceUtils.getPresence(user);
 			if (userStatus != -99) {
 				String dudeGif = "sym_s_white_dude.gif"; 
 				String altText = NLT.get("presence.none");

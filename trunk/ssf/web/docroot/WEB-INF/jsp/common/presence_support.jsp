@@ -29,7 +29,7 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
     var obj
     var m = ''
     var imgid = "ppgpres"
-    var ostatus = ""
+    var ostatus = " <ssf:nlt tag="presence.none"/>"
     obj = self.document.getElementById('presencePopUp')
     m += '<div style="position: relative; background: #666; margin: 4px;">'
     m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1; border: 1px solid #666666; background-color:white">'
@@ -52,8 +52,8 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
     }
     m += '<td class="ss_bglightgray" valign=top><img src="" alt="" id=' +imgid +'></td>';
     m += '<td><span>' + userTitle;
+    m += ostatus;
     if (status >= 0) {
-        m += ostatus;
         m += '</span><br><span class="ss_fineprint ss_gray">(<ssf:nlt tag="presence.statusAt" text="status at"/> ' + sweepTime + ')</span>';
     }
     m += '</td></tr>';
@@ -79,8 +79,8 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
         m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgphone"></td>';
         m += '<td><a class="ss_graymenu" href="javascript:quickMeetingRPC(\'??? addMeeting call\',\'' + userId + '\', \'\', \'\', \'\');"><ssf:nlt tag="presence.call" text="Call..."/></a></td></tr>';
 </c:if>
-     }
-    if (current == '') {
+	}
+	if (userId != '' && current == '') {
         if (email != '') {
             m += '<tr>';
             m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgmail"></td>';

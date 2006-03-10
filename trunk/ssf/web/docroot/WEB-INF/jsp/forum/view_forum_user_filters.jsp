@@ -22,7 +22,7 @@
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		<portlet:param name="operation" value="select_filter"/>
 		</portlet:renderURL>" method="post" style="display:inline;">
-<div id="ss_filterTitle" style='display:inline; border:1px solid black; background:#ffffff;'>
+<div id="ss_filterTitle" style='display:inline; border:1px solid black;'>
 <ssf:menu title="<%= filterName %>" titleId="ss_filterTitle">
 <ul>
 <li><a href="javascript: ;" 
