@@ -407,5 +407,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
          
     //***********************************************************************************************************   
 
-
+    protected String getEntryPrincipalField() {
+    	return EntryIndexUtils.CREATORID_FIELD;
+    }
 }

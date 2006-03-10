@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.Long;
 import java.util.Collection;
 
@@ -36,7 +37,9 @@ import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
+import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.FileModule;
@@ -63,6 +66,9 @@ import com.sitescape.ef.rss.RssGenerator;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.ef.pipeline.DocSource;
+import com.sitescape.ef.pipeline.NoFileException;
+import com.sitescape.ef.pipeline.Pipeline;
 
 /**
  *
@@ -99,6 +105,14 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 		return fileModule;
 	}
 	
+	private Pipeline pipeline;
+	
+	public void setPipeline(Pipeline pipeline) {
+		this.pipeline = pipeline;
+	}
+	protected Pipeline getPipeline() {
+		return pipeline;
+	}
 
 	private TransactionTemplate transactionTemplate;
     protected TransactionTemplate getTransactionTemplate() {
@@ -239,9 +253,11 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         	// Create a Lucene document object from the uploaded file.
         	// This involves applying additional processings such as doc
         	// conversion, etc. 
-        	indexDoc = buildIndexDocumentFromAttachmentFile(binder, entry, fui);
-            // Register the index document for indexing.
-            IndexSynchronizationManager.addDocument(indexDoc);
+        	indexDoc = buildIndexDocumentFromUploadedFile(binder, entry, fui);
+        	if(indexDoc != null) {
+        		// Register the index document for indexing.
+        		IndexSynchronizationManager.addDocument(indexDoc);
+        	}
         }
        
         rssGenerator.updateRssFeed(entry); // Just for testing
@@ -481,7 +497,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         IndexSynchronizationManager.addDocument(indexDoc);        
         
         //Create separate documents one for each attached file and index them.
-        /*
+        /* by Jong
         for(int i = 0; i < fileData.size(); i++) {
         	// Get a handle on the uploaded file. 
         	FileUploadItem fui = (FileUploadItem) fileData.get(i);
@@ -496,7 +512,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
    	public void indexEntry(Collection entries) {
    		for (Iterator iter=entries.iterator(); iter.hasNext();) {
    			WorkflowControlledEntry entry = (WorkflowControlledEntry)iter.next();
-   			// JONG - this won't work - getFileAttachments is not FUI
+   			// by JONG - this won't work - getFileAttachments is not FUI
    			indexEntry(entry/*, entry.getFileAttachments()*/);
    		}
    	}
@@ -554,8 +570,8 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         for (int i = 0; i < childEntries.size(); i++) {
         	Principal p;
         	HashMap child = (HashMap)childEntries.get(i);
-        	if (child.get(EntryIndexUtils.CREATORID_FIELD) != null) {
-        		child.put(WebKeys.PRINCIPAL, getPrincipal(users,child.get(EntryIndexUtils.CREATORID_FIELD).toString()));
+        	if (child.get(getEntryPrincipalField()) != null) {
+        		child.put(WebKeys.PRINCIPAL, getPrincipal(users,child.get(getEntryPrincipalField()).toString()));
         	}        	
         }
        	Map model = new HashMap();
@@ -565,6 +581,8 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         return model;
    }
  
+    protected abstract String getEntryPrincipalField();
+    
     private Principal getPrincipal(List users, String userId) {
     	Principal p;
     	for (int i=0; i<users.size(); i++) {
@@ -806,7 +824,12 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         return indexDoc;
     }
     
-    protected org.apache.lucene.document.Document buildIndexDocumentFromAttachmentFile(Binder binder, WorkflowControlledEntry entry, FileUploadItem fui) {
+    protected org.apache.lucene.document.Document buildIndexDocumentFromUploadedFile
+    	(Binder binder, WorkflowControlledEntry entry, FileUploadItem fui) {
+    	
+    	
+    	
+    	
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
     	File tempFile = null;
 
@@ -982,4 +1005,5 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
       		getAccessControlManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES);     	   
         }    	
     }
+    
 }

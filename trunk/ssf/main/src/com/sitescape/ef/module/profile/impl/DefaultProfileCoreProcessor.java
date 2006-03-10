@@ -271,4 +271,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		
 	}
 
+    protected String getEntryPrincipalField() {
+    	return EntryIndexUtils.NAME_FIELD;
+    }
 }
