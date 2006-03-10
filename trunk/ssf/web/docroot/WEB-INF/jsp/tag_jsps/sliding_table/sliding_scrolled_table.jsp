@@ -300,16 +300,27 @@ function ss_showMouseOverInfo(obj) {
 }
 
 function ss_clearMouseOverInfo(obj) {
-	if (obj != ss_slidingTableMosueOverObj) {
+	if (!obj || obj == null) {
+		ss_slidingTableMosueOverObj = null;
+		ss_showHideObj("ss_info_popup", "hidden", "none")
+	} else if (obj != ss_slidingTableMosueOverObj) {
 		ss_slidingTableMosueOverObj = obj
 		ss_showHideObj("ss_info_popup", "hidden", "none")
 	}
+}
+
+function ss_clearMouseOverInfoOnScroll(e) {
+	//Note, this event is not available on some browsers (e.g., ie)
+	ss_clearMouseOverInfo()
+	return true
 }
 
 ss_createOnLoadObj('ss_showSlidingTableCols', ss_showSlidingTableCols200);
 ss_createOnResizeObj('ss_showSlidingTableCols', ss_showSlidingTableCols);
 ss_createOnLayoutChangeObj('ss_checkSlidingTableLayout', ss_checkSlidingTableLayout);
 ss_createEventObj('ss_slidingTableDrag', 'MOUSEMOVE');
+ss_createEventObj('ss_clearMouseOverInfoOnScroll', 'SCROLL');
+
 -->
 </script>
 
@@ -327,7 +338,8 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
  height:<%= slidingTableFolderHeight %>px; overflow:scroll; 
  margin:2px; border: #666666 1px solid;">
 <div id="<c:out value="${ss_slidingTableId}"/>_2" style="margin:0px;" width="100%"
- onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
+ onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
+ onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 
 <div id="col0" class="ss_style ss_sliding_table_column0">
 <table cellspacing="0" cellpadding="0">
@@ -427,7 +439,8 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					}
 %>
-<div id="col<%= String.valueOf(iCol + 1) %>" class="ss_style ss_sliding_table_column"  style="z-index:<%= String.valueOf(iCol + 11) %>;">
+<div id="col<%= String.valueOf(iCol + 1) %>" class="ss_style ss_sliding_table_column"  
+  style="z-index:<%= String.valueOf(iCol + 11) %>;">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 <td><div style="position:absolute; left:-9; top:0;"><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
