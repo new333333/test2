@@ -10,7 +10,7 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 </div>
 
 <div id="ss_showentrydiv" onMouseover="ss_clearMouseOverInfo(null);"
-  style="position:absolute; visibility:hidden; x:0; y:0;
+  style="position:absolute; visibility:hidden;
   width:600; height:80%; display:none; z-index:50;">
   <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
@@ -18,7 +18,7 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
     <ssf:param name="box_color" value="${ss_entry_border_color}" />
     <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
     <ssf:param name="box_title" useBody="true">
-<div style="margin:0px; background-color:${ss_entry_border_color};">
+<div class="ss_entry_border" style="margin:0px;">
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
 </div>
     </ssf:param>

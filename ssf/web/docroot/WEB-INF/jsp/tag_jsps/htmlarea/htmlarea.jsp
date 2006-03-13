@@ -11,6 +11,18 @@
 	String suffix = "_" + formName + "_" + id;
 %>
 <% //Set the styles needed for the toolbar and buttons %>
+<% // one-time stuff (once per page, not once per tag instance) %>
+<c:if test="${empty ss_htmlarea_initialized}">
+<c:set var="ss_htmlarea_initialized" value="1" scope="request"/>
+
+<% // load support for the html editor %>
+<script type="text/javascript">	
+var _editor_url = "<html:rootPath />js/htmleditor/";
+var _editor_lang = "en";
+var _editor_bgColor = "${ss_form_element_color}";
+var _editor_textColor = "${ss_form_element_text_color}";
+</script>
+
 <style>
 .htmlarea .toolbar {
 cursor: default;
@@ -38,17 +50,6 @@ font: 11px Tahoma,Verdana,sans-serif;
 }
 </style>
 
-<% // load support for the html editor %>
-<script type="text/javascript">	
-var _editor_url = "<html:rootPath />js/htmleditor/";
-var _editor_lang = "en";
-var _editor_bgColor = "${ss_form_element_color}";
-var _editor_textColor = "${ss_form_element_text_color}";
-</script>
-
-<% // one-time stuff (once per page, not once per tag instance) %>
-<c:if test="${empty ss_htmlarea_initialized}">
-<c:set var="ss_htmlarea_initialized" value="1" scope="request"/>
 <script type="text/javascript">
 var editorFormArray = new Array;
 var editorElementArray = new Array;

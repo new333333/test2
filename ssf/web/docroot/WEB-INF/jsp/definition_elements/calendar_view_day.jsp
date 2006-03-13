@@ -69,7 +69,7 @@ if (ssSeenMap.checkIfSeen(e)) {
     <c:if test="${evid.cal_starttimestring != evid.cal_endtimestring}">
     <c:out value="${evid.cal_starttimestring}"/>-<c:out value="${evid.cal_endtimestring}"/>: 
     </c:if>
-    <a class="ss_link" href="<ssf:url 
+    <a href="<ssf:url 
     adapter="true" 
     portletName="ss_forum" 
     folderId="<%= folderId %>" 

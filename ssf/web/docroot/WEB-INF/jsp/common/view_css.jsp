@@ -6,8 +6,12 @@
 <%@ page import="com.sitescape.ef.domain.User" %>
 <%
 
-//Set some color values used in styles, highlighting, borders, and headers
+// Color values used in ss styles, highlighting, borders, and headers
 %>
+<c:set var="ss_portlet_style_background_color" value="#FFFFAA" scope="request"/>
+<c:set var="ss_portlet_style_text_color" value="#000099" scope="request"/>
+<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
+
 <c:set var="ss_style_background_color" value="#FFFFCC" scope="request"/>
 <c:set var="ss_style_text_color" value="#009900" scope="request"/>
 <c:set var="ss_style_link_color" value="#009900" scope="request"/>
@@ -15,19 +19,21 @@
 <c:set var="ss_style_gray_color" value="#999999" scope="request"/>
 
 <c:set var="ss_folder_border_color" value="#CC6666" scope="request"/>
-<c:set var="ss_folder_line_highlight_color" value="#dddddd" scope="request"/>
+<c:set var="ss_folder_line_highlight_color" value="#DDDDDD" scope="request"/>
 <c:set var="ss_entry_border_color" value="#CC0000" scope="request"/>
 
 <c:set var="ss_form_background_color" value="#CCFFFF" scope="request"/>
-<c:set var="ss_form_text_color" value="3333FF" scope="request"/>
-<c:set var="ss_form_gray_color" value="CC99CC" scope="request"/>
+<c:set var="ss_form_text_color" value="#3333FF" scope="request"/>
+<c:set var="ss_form_gray_color" value="#CC99CC" scope="request"/>
 <c:set var="ss_form_element_color" value="#FFCCFF" scope="request"/>
 <c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/>
 <c:set var="ss_form_element_border_color" value="#669966" scope="request"/>
 <c:set var="ss_form_element_text_color" value="#0033FF" scope="request"/>
 
-<c:set var="ss_toolbar_color" value="#f7f7f7" scope="request"/>
-<c:set var="ss_toolbar_border_color" value="#3366cc" scope="request"/>
+<c:set var="ss_toolbar_background_color" value="#CECECE" scope="request"/>
+<c:set var="ss_toolbar_text_color" value="#000000" scope="request"/>
+<c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
+<c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
 
 <c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
 
@@ -39,7 +45,9 @@
 <c:set var="ss_box_title_text_color" value="#993333" scope="request"/>
 
 <c:set var="ss_sliding_table_background_color" value="#FFFFAA" scope="request"/>
+<c:set var="ss_sliding_table_border_color" value="#999999" scope="request"/>
 <c:set var="ss_sliding_table_text_color" value="#3333FF" scope="request"/>
+<c:set var="ss_sliding_table_link_hover_color" value="#3333FF" scope="request"/>
 
 <%
 
@@ -105,6 +113,20 @@ if (document.createStyleSheet) {
 </script>
 
 <style>
+.ss_portlet_style, .ss_portlet_style * {
+<c:if test="${!empty ss_portlet_style_background_color}">
+  background-color: ${ss_portlet_style_background_color};
+</c:if>
+<c:if test="${!empty ss_portlet_style_text_color}">
+  color: ${ss_portlet_style_text_color};
+</c:if>
+<c:if test="${ss_portlet_style_inherit_font_specification}">
+  font-family: arial, helvetica, sans-serif;
+  font-weight: inherit;
+  font-size: 12px; 
+</c:if>
+}
+
 .ss_style, .ss_style table {
   font-family: arial, helvetica, sans-serif;
   background-color: ${ss_style_background_color};
@@ -115,15 +137,7 @@ if (document.createStyleSheet) {
 .ss_style a, .ss_style a:visited {
   color: ${ss_style_link_color};
 }
-.ss_link_nodec a, .ss_link_nodec a:visited {
-  color: ${ss_style_link_color};
-}
-
-
 .ss_style a:hover {
-  color: ${ss_style_link_hover_color};
-}
-.ss_link_nodec a:hover {
   color: ${ss_style_link_hover_color};
 }
 
@@ -186,7 +200,7 @@ if (document.createStyleSheet) {
 /* Sliding tables */
 div.ss_sliding_table_column0 {
   display: block; 
-  border: #cccccc 1px solid;
+  border: ${ss_sliding_table_border_color} 1px solid;
   margin: 0px;
 }
 .ss_sliding_table_column0 * {
@@ -208,7 +222,7 @@ div.ss_sliding_table_column {
   position: absolute; 
   visibility: hidden;
   display: block; 
-  border-left: #cccccc solid 1px;
+  border-left: ${ss_sliding_table_border_color} solid 1px;
   margin: 0px;
 }
 .ss_sliding_table_column * {
@@ -219,13 +233,37 @@ div.ss_sliding_table_info_popup {
   position: absolute; 
   visibility: hidden;
   display:block; 
-  border-left: #cccccc solid 1px;
+  border-left: ${ss_sliding_table_border_color} solid 1px;
   margin: 0px;
   z-index: 40;
 }
 .ss_sliding_table_info_popup * {
   background-color: ${ss_sliding_table_background_color}; 
   color: ${ss_sliding_table_text_color};
+}
+.ss_sliding_table_column a, .ss_sliding_table_column a:visited {
+  color: ${ss_sliding_table_text_color};
+}
+.ss_sliding_table_column a:hover {
+  color: ${ss_sliding_table_link_hover_color};
+}
+.ss_sliding_table_column0 a, .ss_sliding_table_column0 a:visited {
+  color: ${ss_sliding_table_text_color};
+}
+.ss_sliding_table_column0 a:hover {
+  color: ${ss_sliding_table_link_hover_color};
+}
+.ss_sliding_table_column1 a, .ss_sliding_table_column1 a:visited {
+  color: ${ss_sliding_table_text_color};
+}
+.ss_sliding_table_column1 a:hover {
+  color: ${ss_sliding_table_link_hover_color};
+}
+.ss_sliding_table_info_popup a, .ss_sliding_table_info_popup a:visited {
+  color: ${ss_sliding_table_text_color};
+}
+.ss_sliding_table_info_popup a:hover {
+  color: ${ss_sliding_table_link_hover_color} !important;
 }
 
 
@@ -234,26 +272,54 @@ div.ss_sliding_table_info_popup {
   background-color: ${ss_folder_border_color} !important;
   }
 
+/* Entry */
+.ss_entry_border, .ss_entry_border table {
+  background-color: ${ss_entry_border_color} !important;
+  }
+
 /* Forum toolbar */
 .ss_toolbar {
   width: 100%; 
   border-top: 1px solid ${ss_toolbar_border_color};
   border-bottom: 1px solid ${ss_toolbar_border_color};
-  background-color: ${ss_toolbar_color};
+  background-color: ${ss_toolbar_background_color};
+  color: ${ss_toolbar_text_color};
   margin-top: 0px;
   margin-bottom: 8px;
+  }
+.ss_toolbar * {
+  background-color: ${ss_toolbar_background_color};
+  color: ${ss_toolbar_text_color};
   }
   
 .ss_toolbar_menu {
   position: absolute;
   z-index: 100;
   visibility: hidden;
-  background-color: ${ss_toolbar_color}; 
-  color: ${ss_style_text_color};
-  border: 1px #cfcfcf solid;
+  background-color: ${ss_toolbar_background_color}; 
+  color: ${ss_toolbar_text_color};
+  border: 1px ${ss_toolbar_border_color} solid;
   padding: 0px;
   width: 300px;
   }
+.ss_toolbar_menu * {
+  background-color: ${ss_toolbar_background_color}; 
+  color: ${ss_toolbar_text_color};
+  }
+.ss_toolbar_item * {
+  background-color: ${ss_toolbar_background_color}; 
+  color: ${ss_toolbar_text_color};
+  }
+.ss_toolbar_item a {
+  background-color: ${ss_toolbar_background_color}; 
+  color: ${ss_toolbar_text_color};
+  }
+.ss_toolbar a, .ss_toolbar a:visited {
+  color: ${ss_toolbar_text_color};
+}
+.ss_toolbar a:hover {
+  color: ${ss_toolbar_link_hover_color};
+}
 
   
 /* highlights */

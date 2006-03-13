@@ -36,7 +36,7 @@ ${dayabbrev}</td>
 
 <tr>
 
-<td valign="top" align="center" width="5%"><a class="ss_link_nodec" href="${week.weekURL}"><span class="ss_fineprint ss_gray">${week.weekNum}</span></a></td>
+<td valign="top" align="center" width="5%"><a style="text-decoration: none;" href="${week.weekURL}"><span class="ss_fineprint ss_gray">${week.weekNum}</span></a></td>
 
 <c:forEach var="daymap" items="${week.dayList}">
 
@@ -73,7 +73,7 @@ if (ssSeenMap.checkIfSeen(e)) {
 %><span class="ss_bglightpink ss_bold"><%
 	}
 %>
-    <a class="ss_link" href="<ssf:url 
+    <a href="<ssf:url 
     adapter="true" 
     portletName="ss_forum" 
     folderId="<%= folderId %>" 
