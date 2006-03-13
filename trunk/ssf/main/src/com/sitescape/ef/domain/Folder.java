@@ -128,7 +128,7 @@ public class Folder extends Binder {
     public void addFolder(Folder child) {
   		getFolders().add(child);
    		child.setParentFolder(this);
-   		child.setTopFolder(topFolder);
+        if (topFolder == null) child.setTopFolder(this); else child.setTopFolder(topFolder);
    		child.setOwningWorkspace(this.getOwningWorkspace());
    		//	Set root for subfolders
    		if (getFolderHKey() == null) {
