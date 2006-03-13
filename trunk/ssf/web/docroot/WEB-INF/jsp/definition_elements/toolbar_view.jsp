@@ -11,7 +11,7 @@ function ss_toolbarPopupUrl(url) {
 <jsp:useBean id="toolbar" type="java.util.SortedMap" scope="request" />
 <c:forEach var="toolbarMenu" items="${toolbar}">
   <c:if test="${empty toolbarMenu.value.url}">
-	<div class="ss_style ss_toolbar_menu" width="100%" id="toolbar_<c:out value="${toolbarMenu.key}" />">
+	<div class="ss_toolbar_menu" width="100%" id="toolbar_<c:out value="${toolbarMenu.key}" />">
 	  <c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}">
 	    <c:if test="${empty toolbarMenuCategory.key}">
 	      <span class="ss_bold"><c:out value="${toolbarMenuCategory.key}" /></span>
@@ -91,7 +91,6 @@ function ss_toolbarPopupUrl(url) {
 	    </c:when>
 	    <c:when test="${!empty toolbarMenu.value.urlParams}">
 	      <span id=""><a 
-	      	title="here"
 	        class="ss_toolbar_item"
 	        href="<ssf:url>
 	        <c:forEach var="p2" items="${toolbarMenu.value.urlParams}">

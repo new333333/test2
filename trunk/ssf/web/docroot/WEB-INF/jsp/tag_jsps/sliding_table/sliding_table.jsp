@@ -533,4 +533,4 @@ function ss_postSlidingTableRequest(obj) {
 <input type="hidden" name="column_positions">
 </form>
 <div id="ss_sliding_table_status_message" style="visibility:hidden; display:none;"></div>
-<div id="ss_info_popup" class="ss_style ss_sliding_table_info_popup"></div>
+<div id="ss_info_popup" class="ss_sliding_table_info_popup"></div>

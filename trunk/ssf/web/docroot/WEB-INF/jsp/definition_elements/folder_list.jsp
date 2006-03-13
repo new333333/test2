@@ -124,7 +124,7 @@ function highlightLineById(id) {
 <ssf:slidingTableRow id="<%= folderLineId %>">
 
   <ssf:slidingTableColumn>
-    <a class="ss_link_nodec" href="<ssf:url     
+    <a href="<ssf:url     
     adapter="true" 
     portletName="ss_forum" 
     folderId="<%= folderId %>" 
@@ -136,7 +136,7 @@ function highlightLineById(id) {
   
   <ssf:slidingTableColumn>
     <c:if test="${!empty entry1._workflowStateCaption}">
-    <a class="ss_link_nodec" href="<ssf:url     
+    <a href="<ssf:url     
     adapter="true" 
     portletName="ss_forum" 
     folderId="<%= folderId %>" 

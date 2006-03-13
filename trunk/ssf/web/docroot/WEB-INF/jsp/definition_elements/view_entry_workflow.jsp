@@ -5,7 +5,7 @@
 
 <c:if test="${!empty ssDefinitionEntry.workflowStates}">
 <div class="ss_workflow">
-<table class="ss_style">
+<table>
 <%
 	String column1 = "<span><b>" + NLT.get("workflow", "Workflow") + ":</b></span>";
 %>

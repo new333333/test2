@@ -305,7 +305,7 @@ function ss_clearMouseOverInfo(obj) {
 		ss_showHideObj("ss_info_popup", "hidden", "none")
 	} else if (obj != ss_slidingTableMosueOverObj) {
 		ss_slidingTableMosueOverObj = obj
-		ss_showHideObj("ss_info_popup", "hidden", "none")
+ 		ss_showHideObj("ss_info_popup", "hidden", "none")
 	}
 }
 
@@ -553,4 +553,4 @@ function ss_postSlidingTableRequest(obj) {
 <input type="hidden" name="column_positions">
 </form>
 <div id="ss_sliding_table_status_message" style="visibility:hidden; display:none;"></div>
-<div id="ss_info_popup" class="ss_style ss_sliding_table_info_popup"></div>
+<div id="ss_info_popup" class="ss_sliding_table_info_popup"></div>

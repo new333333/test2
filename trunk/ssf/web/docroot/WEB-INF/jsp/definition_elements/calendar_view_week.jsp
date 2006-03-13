@@ -38,7 +38,7 @@ Views:&nbsp;<a href="${set_day_view}">Day</a><c:out value="${delimiter}" /><a hr
 <tr>
 </c:otherwise>
 </c:choose>
-<td align="center" width="1%" valign="top"><a class="ss_link_nodec" href="${daymap.dayURL}"><span>${daymap.cal_dow}</span>
+<td align="center" width="1%" valign="top"><a style="text-decoration: none;" href="${daymap.dayURL}"><span>${daymap.cal_dow}</span>
 <br /><span class="ss_bold">${daymap.cal_dom}</a></td>
 
 <c:choose>
@@ -72,7 +72,7 @@ if (ssSeenMap.checkIfSeen(e)) {
     <c:if test="${eviw.cal_starttimestring != eviw.cal_endtimestring}">
     <c:out value="${eviw.cal_starttimestring}"/>-<c:out value="${eviw.cal_endtimestring}"/>: 
     </c:if>
-    <a class="ss_link" href="<ssf:url 
+    <a href="<ssf:url 
     adapter="true" 
     portletName="ss_forum" 
     folderId="<%= folderId %>" 
