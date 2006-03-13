@@ -17,11 +17,11 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="org.dom4j.Document" %>
 <jsp:useBean id="ssAdminDomTree" type="org.dom4j.Document" scope="request" />
-  <div class="ss_style ss_portlet">
-	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
+  <div class="ss_portlet_style ss_portlet">
+	<table border="0" cellpadding="0" cellspacing="0" width="95%">
 	<tr>
 		<td>
-			<table class="ss_style" border="0" cellpadding="0" cellspacing="0">
+			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					<div>

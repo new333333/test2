@@ -15,11 +15,11 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<div class="ss_style ss_portlet">
-<table class="ss_style" border="0" cellpadding="4" cellspacing="0" width="100%">
+<div class="ss_portlet_style ss_portlet">
+<table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
 	<td>
-		<table class="ss_style" border="0" cellpadding="0" cellspacing="0">
+		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td valign="top">
 			    <span><b>Element tests</b></span>

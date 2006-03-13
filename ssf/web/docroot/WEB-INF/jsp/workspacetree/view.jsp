@@ -18,8 +18,8 @@
 
 
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-<div class="ss_style ss_portlet">
-<table class="ss_style" width="100%">
+<div class="ss_portlet_style ss_portlet">
+<table width="100%">
 	<tr>
 		<td>
 		</td>
