@@ -20,8 +20,8 @@ public class NullDocHandler extends AbstractDocHandler {
 		System.out.println(getName() + " is being executed");
 		byte[] buffer = new byte[BUFFER_SIZE];
 		int count;
-		while((count = source.getInputStream().read(buffer)) > -1) {
-			sink.getOutputStream().write(buffer, 0, count);
+		while((count = source.getDataAsInputStream().read(buffer)) > -1) {
+			sink.getDefaultOutputStream().write(buffer, 0, count);
 			dataSize += count;
 		}
 		System.out.println(getName() + " processed " + dataSize + " number of bytes");

@@ -4,5 +4,5 @@ import com.sitescape.ef.UncheckedIOException;
 
 public interface ConduitFactory {
 
-	public Conduit open(String producerName) throws UncheckedIOException;
+	public Conduit open() throws UncheckedIOException;
 }

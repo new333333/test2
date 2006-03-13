@@ -3,46 +3,72 @@ package com.sitescape.ef.pipeline;
 import java.io.File;
 import java.io.OutputStream;
 
-import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.UncheckedIOException;
 
+/**
+ * Interface for specifying or transfering output data.
+ * Only one mechanism (last specified one) can be be in effect.
+ * Calling one mechanism effectively throws away the state caused by
+ * a previous mechanism used. So, it is highly recommended that the
+ * application utilizes only one mechanism and calls it only once.  
+ * 
+ * @author jong
+ *
+ */
 public interface DocSink {
 
 	/**
-	 * Indicates to the framework that a backing file should be used.
-	 * In order to use a backing file, this method must be called BEFORE
-	 * <code>getOutputStream</code> or <code>getFile</code> is called.  
-	 * If the method is called afterward, it throws IllegalStateException. 
-	 * It is also illegal to call this method more than once. 
-	 *
-	 * @throws ConfigurationException This sink does not support backing files.
-	 * This is caused by misconfiguration of the pipeline 
-	 * @throws IllegalStateException thrown if called after getOutputStream or
-	 * getFile is called or called more than once
-	 * @throws UncheckedIOException if I/O error occurs.
+	 * Use the byte array as output data.
+	 * 
+	 * @param data
+	 * @throws IllegalStateException
 	 */
-	public void useFile() throws ConfigurationException, IllegalStateException, UncheckedIOException;
+	public void setByteArray(byte[] data) throws IllegalStateException;
+	
+	/**
+	 * Provides the name of a supported charset. This also indicates to the
+	 * framework that the output data associated with this sink is character
+	 * based data. The supplied information is used for conversion between
+	 * characters and bytes if necessary.
+	 * <p>
+	 * If charset is not specified, UTF-8 is assumed by default.
+	 * 
+	 * @param charsetName
+	 * @throws IllegalStateException
+	 */
+	public void setCharsetName(String charsetName) throws IllegalStateException;
+	
+	/**
+	 * Use the string as output data.
+	 * 
+	 * @param data
+	 * @throws IllegalStateException
+	 */
+	public void setString(String data) throws IllegalStateException;
+	
+	/**
+	 * Use the file as output data.
+	 * 
+	 * @param data
+	 * @throws IllegalStateException
+	 */
+	public void setFile(File data) throws IllegalStateException;
 	
 	/**
 	 * Returns <code>OutputStream</code> into which to write.
-	 * Multple invocations of this method return the same 
-	 * <code>OutputStream</code> instance.
+	 * It is caller's responsibility to close the stream properly. 
+	 * <p>
+	 * The type of the backing storage (eg. RAM, file, socket, db, etc.) 
+	 * associated with the returned output stream is implementation specific.
+	 * <p>
+	 * Important!: Everytime this method is called, the corresponding backing
+	 * data is reinitialized and new instance of <code>OutputStream</code>
+	 * is returned. In other words, do not expect identical <code>OutputStream</code>
+	 * with state preserved across calls when calling this method multiple times.  
+	 * That's not how it works. 
 	 *  
 	 * @return
 	 * @throws UncheckedIOException
 	 */
-	public OutputStream getOutputStream() throws UncheckedIOException;
-	
-	/**
-	 * Returns the file that backs this sink. 
-	 * 
-	 * @return
-	 * @throws ConfigurationException This sink does not support backing files.
-	 * This is caused by misconfiguration of the pipeline 
-	 * @throws IllegalStateException thrown if this method is called before
-	 * <code>useFile</code> is called. 
-	 * @throws UncheckedIOException
-	 */
-	public File getFile() throws ConfigurationException, IllegalStateException, UncheckedIOException;
-
+	public OutputStream getDefaultOutputStream() throws UncheckedIOException;
 }
