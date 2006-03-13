@@ -3,7 +3,6 @@ package com.sitescape.ef.pipeline.impl;
 import com.sitescape.ef.pipeline.Conduit;
 import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.pipeline.DocSource;
-import com.sitescape.ef.pipeline.PipelineInvocation;
 
 /**
  * This class implements a most basic pipeline that executes each pipeline
@@ -26,14 +25,12 @@ public class SynchronousPipeline extends AbstractPipeline {
 	}
 
 	private PipelineInvocationImpl setupPipelineInvocation(DocSource initialIn, DocSink finalOut) {
-		Conduit[] conduits = new Conduit[conduitFactories.length+2];
-		conduits[0] = new SourceOnlyConduit(initialIn);
+		Conduit[] conduits = new Conduit[conduitFactories.length];
 		for(int i = 0; i < conduitFactories.length; i++) {
-			conduits[i+1] = conduitFactories[i].open(docHandlers[i].getName());
+			conduits[i] = conduitFactories[i].open();
 		}
-		conduits[conduits.length-1] = new SinkOnlyConduit(finalOut);
 		
-		return new PipelineInvocationImpl(conduits, docHandlers);
+		return new PipelineInvocationImpl(initialIn, finalOut, conduits, docHandlers);
 	}
 
 }
