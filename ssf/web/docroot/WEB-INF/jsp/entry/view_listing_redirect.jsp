@@ -16,11 +16,9 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<form name="ssRedirect" method="post" action="<portlet:renderURL>
+<script type="text/javascript">
+self.location.replace("<portlet:renderURL>
 			<portlet:param name="action" value="view_listing"/>
 			<portlet:param name="binderId" value="${ssBinderId}"/>
-		</portlet:renderURL>">
-</form>
-<script type="text/javascript">
-self.document.forms.ssRedirect.submit();
+		</portlet:renderURL>");
 </script>
