@@ -15,11 +15,11 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<div class="ss_style ss_portlet">
+<div class="ss_portlet_style ss_portlet">
 <c:set var="toolbar" value="${ssToolbar}" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 
-<table class="ss_style" width="100%">
+<table width="100%">
 <tr><td><c:out value="${ssUser.title}"/></td></tr>
 </table>
 </div>
