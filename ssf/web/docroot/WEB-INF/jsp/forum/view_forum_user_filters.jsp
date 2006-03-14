@@ -16,13 +16,14 @@
 %>
 <div style="display:inline;" id="<portlet:namespace/>ss_filter_select">
 <span class="ss_bold"><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span>
-<div id="ss_filterTitle" style="display:inline; border:1px solid black;">
+<div style="display:inline; border:1px solid black;">
 <form name="ss_filterSelect"
 	action="<portlet:renderURL windowState="maximized">
 		<portlet:param name="action" value="view_listing"/>
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		<portlet:param name="operation" value="select_filter"/>
 		</portlet:renderURL>" method="post" style="display:inline;">
+<div id="ss_filterTitle" style="display:inline;">
 <ssf:menu title="<%= filterName %>" titleId="ss_filterTitle">
 <ul>
 <li><a href="javascript: ;" 
@@ -35,6 +36,7 @@
 </c:forEach>
 </ul>
 </ssf:menu>
+</div>
 <input type="hidden" name="select_filter">
 </form>
 </div>
