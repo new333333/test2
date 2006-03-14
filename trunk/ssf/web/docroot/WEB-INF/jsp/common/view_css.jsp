@@ -155,7 +155,7 @@ if (document.createStyleSheet) {
   color: ${ss_form_gray_color};
   }
 
-.ss_form select {
+.ss_form select, .ss_form option {
   background-color: ${ss_form_element_color};
   color: ${ss_form_element_text_color};
   }
@@ -170,33 +170,9 @@ if (document.createStyleSheet) {
   color: ${ss_form_element_text_color};
   }
     
-.ss_form input.ss_submit { 
-  /*
-  background-color: #e5e5e5;
-  font-size: x-small; 
-  color: #3366cc;
-  font-weight: bold;
-  padding-left, padding-right: 0px;
-  border-top: 2px solid #e6e6e6;
-  border-left: 2px solid #e6e6e6;
-  border-right: 2px solid #8f8f8f;
-  border-bottom: 2px solid #8f8f8f;
-  */
-  }
+.ss_form input.ss_submit {}
 
-.ss_form input.ss_submit:hover { 
-  /*
-  background-color: #e5e5e5;
-  font-size: x-small; 
-  color: #3366cc;
-  font-weight: bold;
-  padding-left, padding-right: 0px;
-  border-top: 2px solid #8f8f8f;
-  border-left: 2px solid #8f8f8f;
-  border-right: 2px solid #e6e6e6;
-  border-bottom: 2px solid #e6e6e6;
-  */
-  }
+.ss_form input.ss_submit:hover {}
   
 /* Sliding tables */
 div.ss_sliding_table_column0 {
@@ -287,6 +263,8 @@ div.ss_sliding_table_info_popup {
   color: ${ss_toolbar_text_color};
   margin-top: 0px;
   margin-bottom: 8px;
+  padding-top:2px;
+  padding-bottom:2px;
   }
 .ss_toolbar * {
   background-color: ${ss_toolbar_background_color};
@@ -340,17 +318,17 @@ div.ss_sliding_table_info_popup {
   }
 
 /* Box styles */
-div.ss_box_rounded {
+.ss_box_rounded {
 	background-color: ${ss_box_color};
 }
 
-div.ss_box_bottom_rounded {
+.ss_box_bottom_rounded {
 	background-color: ${ss_box_color};
 	height: 1px;
 	margin: 0px;
 }
 
-div.ssf_box {
+.ssf_box {
 	background-color: ${ss_style_background_color};
 	height: auto;
 <c:if test="<%= !isIE %>">
@@ -359,27 +337,26 @@ div.ssf_box {
 	margin: 2px 2px 0px 2px;
 }
 
-div.ss_box_minimum_height {
+.ss_box_minimum_height {
 	height: 1px;
-	margin: 1px;
+	margin: 0px;
 }
 
-ss_box_small_icon_bar {
+.ss_box_small_icon_bar {
 	background-color: ${ss_box_color};
 	height: 1em;
-	padding-right: 10px;
 	position:relative;
 	top: 0px;
 	margin: 0px;
 }
 
-ss_box_small_icon {
+.ss_box_small_icon {
 	height: 14px;
 	margin: 0px;
 	width: 14px;
 }
 
-ss_box_title {
+.ss_box_title {
 	background: ${ss_box_title_color} url(<html:imagesPath/>box/box_title_bg_gradient.gif) repeat-x;
 	color: ${ss_box_title_text_color};
 	height: 20px;

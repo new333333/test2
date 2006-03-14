@@ -168,7 +168,7 @@ function highlightLineById(id) {
   <ssf:slidingTableColumn>
     <span <%= seenStyle %>><fmt:formatDate 
      value="${entry1._modificationDate}" type="both" 
-	 pattern="dd MMMM yyyy, HH:mm" /><c:out value="${entry1._modificationDate}"/>GMT</span>
+	 pattern="dd MMMM yyyy, HH:mm" /> GMT</span>
   </ssf:slidingTableColumn>
   
  </ssf:slidingTableRow>

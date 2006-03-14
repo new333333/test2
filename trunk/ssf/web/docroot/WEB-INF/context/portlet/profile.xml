@@ -9,6 +9,7 @@
 	<bean id="profileConfigureController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ConfigureController" />
 	<bean id="profileFilterController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.FilterController" />
 	<bean id="profileController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ViewController" />
+	<bean id="profileDefinitionController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.definitionBuilder.ViewController" />
 	<bean id="profileViewEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ViewEntryController" />
 	<bean id="profileModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ModifyEntryController" />
 	<!-- Handlers -->
@@ -22,6 +23,7 @@
 						<entry key="build_filter"><ref bean="profileFilterController"/></entry>
 						<entry key="configure_access_control"><ref bean="profileAccessControlController"/></entry>
 						<entry key="configure_forum"><ref bean="profileConfigureController"/></entry>
+						<entry key="definition_builder"><ref bean="profileDefinitionController"/></entry>
 						<entry key="view_entry"><ref bean="profileViewEntryController"/></entry>
 						<entry key="modify_entry"><ref bean="profileModifyEntryController"/></entry>
 						<entry key="delete_entry"><ref bean="profileModifyEntryController"/></entry>

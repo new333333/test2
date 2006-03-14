@@ -27,7 +27,7 @@
 	<taconite-replace contextNodeID="elementList<c:out value="${ss_filterTermNumber}"/>" 
 	parseInBrowser="true"><div 
 	   id="elementList<c:out value="${ss_filterTermNumber}"/>" 
-	   style="visibility:visible; display:inline;"><select 
+	   style="visibility:visible; display:inline;"><select
 	   name="elementName<c:out value="${ss_filterTermNumber}"/>" 
 	   onChange="ss_getFilterSelectionBox(this, 'elementName', 'get_element_values')">
 	     <option value="" selected="selected"><ssf:nlt 

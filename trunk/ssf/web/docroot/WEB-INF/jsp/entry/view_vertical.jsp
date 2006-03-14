@@ -51,9 +51,9 @@ String sliderDivOffset = "-" + String.valueOf(sliderDivHeight);
   style="position:absolute; margin:0px 0px 0px 2px; visibility:hidden; display:none;">
   <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
-    <ssf:param name="box_title" useBody="true">
     <ssf:param name="box_color" value="${ss_folder_border_color}" />
     <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
+    <ssf:param name="box_title" useBody="true">
       <div class="ss_folder_border">
       <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
       </div>
@@ -272,6 +272,7 @@ function ss_saveEntryHeight(entryHeight) {
     	action="__ajax_request" 
     	actionUrl="true" >
 		<ssf:param name="operation" value="save_entry_height" />
+		<ssf:param name="binderId" value="${ssFolder.id}" />
     	</ssf:url>"
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("ss_saveEntryHeightForm")

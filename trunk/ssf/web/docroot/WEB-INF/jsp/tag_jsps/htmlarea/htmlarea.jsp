@@ -72,7 +72,7 @@ editorElementArray[editorIndex++] = '<%= id %>';
 </script>
 
 <div style="width: 500px; height: <%= element_height %>px; ">
-<textarea class="ss_textarea" name="<%= id %>" id="<%= id %>" 
+<textarea name="<%= id %>" id="<%= id %>" 
   style="width: 100%; height: 100%;"><%= initText %></textarea></div>
 
 <script type="text/javascript" defer="1">

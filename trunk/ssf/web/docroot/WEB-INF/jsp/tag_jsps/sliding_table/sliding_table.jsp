@@ -262,6 +262,7 @@ function ss_slidingTableStopDrag(evt) {
     return true
 }
 
+var ss_popUp_sizer_width = 0;
 var ss_slidingTableMosueOverObj = null
 function ss_showMouseOverInfo(obj) {
 	if (obj != ss_slidingTableMosueOverObj) {
@@ -285,6 +286,14 @@ function ss_showMouseOverInfo(obj) {
 					self.document.getElementById("ss_info_popup").style.left = x + "px"
 					self.document.getElementById("ss_info_popup").style.top = y + "px"
 					ss_showHideObj("ss_info_popup", "visible", "block")
+					
+					//See if this is a new maximum width
+					var w = parseInt(x + ss_getDivWidth("ss_info_popup"))
+					if (w > ss_popUp_sizer_width) {
+						ss_popUp_sizer_width = w;
+						ss_setObjectLeft(self.document.getElementById("ss_info_popup_sizer"), "0px")
+						ss_setObjectWidth(self.document.getElementById("ss_info_popup_sizer"), w)
+					}
 				}
 			}
 		} else {
@@ -534,3 +543,4 @@ function ss_postSlidingTableRequest(obj) {
 </form>
 <div id="ss_sliding_table_status_message" style="visibility:hidden; display:none;"></div>
 <div id="ss_info_popup" class="ss_sliding_table_info_popup"></div>
+<div id="ss_info_popup_sizer" style="position:absolute; visibility:hidden;"></div>

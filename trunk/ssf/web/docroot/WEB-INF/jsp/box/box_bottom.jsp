@@ -10,7 +10,7 @@ boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", true);
 <c:if test="<%= brWrapContent %>">
   <br>
 </c:if>
-          </div>
+</div>
 	   </div>
 	</div>
 

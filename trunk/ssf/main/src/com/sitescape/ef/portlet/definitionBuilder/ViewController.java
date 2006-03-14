@@ -200,7 +200,7 @@ public class ViewController extends SAbstractController {
 			idDataCaptions.put(def.getId(), caption.replaceAll("'", "\'"));
 			
 			if (sourceRoot != null) {
-				buildDefinitionTree(sourceRoot, dtRoot);
+				buildDefinitionTree(sourceRoot, dtRoot, idDataNames, idDataCaptions);
 			}
 			selectedItemTitle = title;
 
@@ -287,11 +287,12 @@ public class ViewController extends SAbstractController {
 		
 	}
 
-    private void buildDefinitionTree(Element sourceElement, Element targetElement) {
+    private void buildDefinitionTree(Element sourceElement, Element targetElement, Map idDataNames, Map idDataCaptions) {
 		Iterator items = sourceElement.elementIterator("item");
 		while (items.hasNext()) {
 			Element sourceEle = (Element) items.next();
 			Element properties = sourceEle.element("properties");
+			String name = NLT.getDef(sourceEle.attributeValue("name"));
 			String caption = NLT.getDef(sourceEle.attributeValue("caption"));
 			if (properties != null) {
 				Element captionProp = (Element) properties.selectSingleNode("property[@name='caption']");
@@ -313,9 +314,11 @@ public class ViewController extends SAbstractController {
 			targetEle.addAttribute("type", "item");
 			targetEle.addAttribute("title", caption);
 			targetEle.addAttribute("id", sourceEle.attributeValue("id"));
+			idDataNames.put(sourceEle.attributeValue("id"), NLT.getDef(name));
+			idDataCaptions.put(sourceEle.attributeValue("id"), caption.replaceAll("'", "\'"));
 			
 			//See if this element has children to add
-			buildDefinitionTree(sourceEle, targetEle);
+			buildDefinitionTree(sourceEle, targetEle, idDataNames, idDataCaptions);
 		}
     }
 
