@@ -286,7 +286,7 @@ function ${prefix}_toggleRecur(name) {
       <ssf:nlt tag="event.every" /> <input type="text" class="ss_text"  size="2"
       name="${prefix}_everyNmonth" value="${initEvent.interval}"
     > month(s) on the
-   <select  name="${prefix}_onDayCard" title="select which week in the month on which this calendar entry will occur" > 
+   <select name="${prefix}_onDayCard" title="select which week in the month on which this calendar entry will occur" > 
    <option  value="none"
    <c:if test="${daystring == 'none'}" > selected="selected" </c:if>
    ><ssf:nlt tag="general.please_select" /></option> 
@@ -306,7 +306,7 @@ function ${prefix}_toggleRecur(name) {
    <c:if test="${daystring == 'last'}" > selected="selected" </c:if>
    ><ssf:nlt tag="event.whichweek.last" /></option> 
    </select> 
-   <select  name="${prefix}_dow" title="select the day of the week on which the repeated entry will occur" > 
+   <select name="${prefix}_dow" title="select the day of the week on which the repeated entry will occur" > 
    <option  value="none"
    <c:if test="${dowstring == 'none'}"> selected="selected" </c:if>
    ><ssf:nlt tag="general.please_select" /></option> 

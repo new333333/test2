@@ -42,7 +42,7 @@
 .ss_form select {}
 .ss_form textarea {}
 .ss_form input.ss_text {}
-.ss_form input.ss_submit { }
+.ss_form input.ss_submit {}
 .ss_form input.ss_submit:hover {}
 */
 

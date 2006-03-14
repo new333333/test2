@@ -237,6 +237,8 @@ function addDefinition(id, name, item) {
 function viewDefinition() {
 	operationSelection = "selectId";
 	operationSelectedItem = "selectedId";
+	ss_setDivHtml("displaydiv", "");
+	ss_setDivHtml("displaydiv", ss_getDivHtml("definitionbuilder_tree_loading"));
 	var formObj = self.document.forms['definitionbuilder']
 	setSubmitData(formObj)
 	formObj.submit()
@@ -400,7 +402,7 @@ function setStateMachine(newState) {
 		//ss_addToDiv("displaydiv", "info_"+selectedId)
 		//loadDiv('info', '', selectedId)
 		var infoName = ""
-		if (idMapCaption[lastSelectedId]) {infoName = "<span class='ss_bold'>"+idMapCaption[lastSelectedId]+"</span>"}
+		if (idCaptions[lastSelectedId]) {infoName = "<span class='ss_bold'>"+idCaptions[lastSelectedId]+"</span>"}
 		ss_setDivHtml("moveItemSelection", infoName);
 		ss_addToDiv("displaydiv", "move_item_confirm")
 		showDisplayButtons()
@@ -467,8 +469,9 @@ function ss_postLoadNextDivRequest(obj) {
 ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 
 </script>
-<div id="ss_load_div_status_message"></div>
 <div class="ss_style ss_portlet">
+<div id="ss_load_div_status_message"></div>
+<div>
 
 <c:if test="${!empty ss_configErrorMessage}">
 <div class="ss_labelLeftError">
@@ -497,14 +500,10 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 <br/>
 <br/>
 
-<form class="ss_style ss_form" action="<portlet:actionURL windowState="maximized">
-	<portlet:param name="action" value="definition_builder" />
-	<portlet:param name="definition_type" value="<%= definitionType %>" />
-	</portlet:actionURL>" method="post" name="definitionbuilder" onSubmit="setSubmitData(this)" >
 <div id="definitionbuilder_tree_loading">
 <span><ssf:nlt tag="Loading" text="Loading..."/></span><br/>
 </div>
-<table class="ss_style" width="100%">
+<table width="100%">
 	<tr>
 		<td width="50%" valign="top">
 			<div id="definitionbuilder_tree" style="visibility:hidden;">
@@ -517,32 +516,40 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 		<td width="50%" valign="top">
 			<div id="displaydiv_spacer" style="height:1px;">&nbsp;
 			</div>
-			<div id="displaydiv0" style="visibility:hidden;">
+			<div id="displaydiv0" style="display:inline; visibility:hidden;">
+			<form class="ss_form" action="<portlet:actionURL windowState="maximized">
+				<portlet:param name="action" value="definition_builder" />
+				<portlet:param name="definition_type" value="<%= definitionType %>" />
+				</portlet:actionURL>" method="post" name="definitionbuilder" 
+				onSubmit="setSubmitData(this)" style="display:inline;" >
 			<ssf:box>
 			  <ssf:param name="box_id" value="displaydivbox" />
 			  <ssf:param name="box_width" value="300" />
 			  <ssf:param name="box_show_close_icon" value="true" />
 			  <ssf:param name="box_show_close_routine" value="hideDisplayDiv()" />
-			<div id="displaydiv" style="margin:4px;">&nbsp;</div>  
-			<div id="displaydivButtons" style="margin:4px; visibility:hidden;">
-			<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+			  <ssf:param name="box_color" value="${ss_form_background_color}" />
+			  <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
+			<div class="ss_form" id="displaydiv" 
+			  style="margin:0px; padding:4px;">&nbsp;</div>  
+			<div class="ss_form" id="displaydivButtons" 
+			  style="margin:0; padding:4px; visibility:hidden;">
+			<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
 			&nbsp;&nbsp;&nbsp;
-			<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
+			<input type="submit" name="okBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 			</div>
 			</ssf:box>
+			<input type="hidden" name="selectedId" />
+			<input type="hidden" name="selectedIdMapped" />
+			<input type="hidden" name="operation" />
+			<input type="hidden" name="operationItem" />
+			<input type="hidden" name="operationItemName" />
+			<input type='hidden' name='sourceDefinitionId'>
+			</form>
 			</div>
 			<div id="displaydiv_spacer_bottom"></div>
-			<br>
 		</td>
 	</tr>
 </table>
-
-<input type="hidden" name="selectedId" />
-<input type="hidden" name="selectedIdMapped" />
-<input type="hidden" name="operation" />
-<input type="hidden" name="operationItem" />
-<input type="hidden" name="operationItemName" />
-<input type='hidden' name='sourceDefinitionId'>
 
 </div>
 
@@ -568,8 +575,6 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 	}
 %>
 </div>
-
-</form>
 
 <%
 	//Show the preview area
@@ -606,7 +611,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 </div>
 <br/>
 
-<table class="ss_style" cellpadding="10" width="100%"><tr><td>
+<table cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration 
   configDefinition="<%= ssConfigDefinition %>" 
   configElement="<%= configElement %>" 
@@ -653,6 +658,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 	</applet>
 </div>
 <br/>
+</div>
 </div>
 <%
 			}

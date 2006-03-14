@@ -39,7 +39,7 @@
 	         <ssf:nlt tag="filter.date" text="Date"/>: ...
 	       </c:if>
 	       <c:if test="${element.value.type == 'selectbox' || element.value.type == 'radio'}">
-			 <select 
+			 <select
 		       name="elementValue<c:out value="${ss_filterTermNumber}"/>" multiple="multiple" size="<c:out value="${element.value.length}"/>">
 				     <c:forEach var="option" items="${element.value.values}">
 				       <option value="<c:out value="${option.key}"/>"><c:out value="${option.value}"/></option>

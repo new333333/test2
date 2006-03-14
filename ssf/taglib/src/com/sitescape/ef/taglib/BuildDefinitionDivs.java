@@ -252,7 +252,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("class='ss_definitionBuilder'>\n");
 			sb.append("<span class='ss_titlebold' id='infoDefinitionOptionsDefinitionName'></span>\n");
 			
-			sb.append("<table class='ss_style'>\n");
+			sb.append("<table>\n");
 			
 			sb.append("<tr><td>\n");
 			sb.append("<a href='javascript: ;' "); 
@@ -292,14 +292,14 @@ public class BuildDefinitionDivs extends TagSupport {
 			//String definitionType = 
 			sb.append("<span class='ss_titlebold'>Modify the properties of this definition</span><br/><br/>\n");
 			sb.append("<span>Name</span><br/>\n");
-			sb.append("<input type='text' size='40' value=\"");
+			sb.append("<input type='text' class='ss_text' size='40' value=\"");
 			sb.append(sourceRoot.attributeValue("name", ""));
 			sb.append("\" disabled='true'/>\n");
 			sb.append("<input type='hidden' name='modifyDefinitionName' value=\"");
 			sb.append(sourceRoot.attributeValue("name", "").replaceAll("\"", "&quot;"));
 			sb.append("\" />\n<br/>\n");
 			sb.append("<span>Caption</span><br/>\n");
-			sb.append("<input type='text' name='modifyDefinitionCaption' size='40' value=\"");
+			sb.append("<input type='text' class='ss_text' name='modifyDefinitionCaption' size='40' value=\"");
 			sb.append(sourceRoot.attributeValue("caption", "").replaceAll("\"", "&quot;"));
 			sb.append("\"/><br/>\n");
 
@@ -337,7 +337,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				sb.append("\n<div id='operations_" + rootElementId + "' "); 
 				sb.append("class='ss_definitionBuilder'>\n");
 			}
-			sb.append("<table class='ss_style' cellpadding='0' cellspacing='0'>\n");
+			sb.append("<table cellpadding='0' cellspacing='0'>\n");
 
 			//Add the list of operations
 			Element operations = rootConfigElement.element("operations");
@@ -449,7 +449,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									helpDivCount++;
 									hb.append("<div id='help_div_" + rootElementId);
 									hb.append(Integer.toString(helpDivCount));
-									hb.append("' class='ss_style ss_helpPopUp'>\n");
+									hb.append("' class='ss_helpPopUp'>\n");
 									hb.append("<span>");
 									hb.append(NLT.getDef(help.getText()));
 									hb.append("</span>\n</div>\n");
@@ -503,7 +503,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									helpDivCount++;
 									hb.append("<div id='help_div_" + rootElementId);
 									hb.append(Integer.toString(helpDivCount));
-									hb.append("' class='ss_style ss_helpPopUp'>\n");
+									hb.append("' class='ss_helpPopUp'>\n");
 									hb.append("<span>");
 									hb.append(NLT.getDef(help.getText()));
 									hb.append("</span>\n</div>\n");
@@ -591,7 +591,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						} else if (propertyValue0.equalsIgnoreCase("true")) {
 							checked = "checked";
 						}
-						sb.append("<input type='checkbox' name='propertyId_" + propertyId + "' "+checked+" "+readonly+"/> ");
+						sb.append("<input type='checkbox' class='ss_text' name='propertyId_" + propertyId + "' "+checked+" "+readonly+"/> ");
 						sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 					
 					} else if (type.equals("selectbox") || type.equals("radio")) {
@@ -625,7 +625,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
 								sb.append("</option>\n");
 							} else if (type.equals("radio")) {
-								sb.append("<input type='radio' name='propertyId_" + propertyId + "' value='");
+								sb.append("<input type='radio' class='ss_text' name='propertyId_" + propertyId + "' value='");
 								sb.append(selection.attributeValue("name", ""));
 								sb.append("'").append(checked).append("/>");
 								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
@@ -683,7 +683,7 @@ public class BuildDefinitionDivs extends TagSupport {
 											sb.append(NLT.getDef(entryFormItemCaptionPropertyValue));
 											sb.append("</option>\n");
 										} else if (type.equals("radio")) {
-											sb.append("<input type='radio' name='propertyId_" + propertyId + "' value='");
+											sb.append("<input type='radio' class='ss_text' name='propertyId_" + propertyId + "' value='");
 											sb.append(entryFormItemNamePropertyName);
 											sb.append("'").append(checked).append("/>");
 											sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
@@ -761,7 +761,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 							sb.append("\n<br/>\n");
 						}
-						sb.append("<input type='text' name='propertyId_" + propertyId + "' size='40' ");
+						sb.append("<input type='text' class='ss_text' name='propertyId_" + propertyId + "' size='40' ");
 						sb.append("value=\""+propertyValue0.replaceAll("\"", "&quot;")+"\" "+readonly+"/>\n");
 					}
 					//See if this property has any help
@@ -770,7 +770,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						helpDivCount++;
 						hb.append("<div id='help_div_" + rootElementId);
 						hb.append(Integer.toString(helpDivCount));
-						hb.append("' class='ss_style ss_helpPopUp'>\n");
+						hb.append("' class='ss_helpPopUp'>\n");
 						hb.append("<span>");
 						hb.append(NLT.getDef(help.getText()));
 						hb.append("</span>\n</div>\n");
@@ -828,11 +828,11 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("class='ss_definitionBuilder'>\n");
 			sb.append("<span class='ss_titlebold'>Move: <div id='moveItemSelection' style='display:inline;'></div></span>\n");
 			sb.append("<br/>\n");
-			sb.append("<input type='radio' name='moveTo' value='above'/>");
+			sb.append("<input type='radio' class='ss_text' name='moveTo' value='above'/>");
 			sb.append("<span>Move to above the selected item<br/>");
-			sb.append("<input type='radio' name='moveTo' value='below'/>");
+			sb.append("<input type='radio' class='ss_text' name='moveTo' value='below'/>");
 			sb.append("<span>Move to below the selected item<br/>");
-			sb.append("<input type='radio' name='moveTo' value='into'/>");
+			sb.append("<input type='radio' class='ss_text' name='moveTo' value='into'/>");
 			sb.append("<span>Move into the selected item<br/>");
 			sb.append("</div>\n");
 			//sb.append("<script type='text/javascript'>\n");

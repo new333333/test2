@@ -178,10 +178,10 @@ TableOperations.prototype.dialogTableProperties = function() {
        <table style='width:100%'> \
         <tr> \
           <td class='label'>" + i18n["Caption"] + ":</td> \
-          <td class='value'><input type='text' name='f_caption' value='" + f_caption + "'/></td> \
+          <td class='value'><input type='text' class='ss_text' name='f_caption' value='" + f_caption + "'/></td> \
         </tr><tr> \
           <td class='label'>" + i18n["Summary"] + ":</td> \
-          <td class='value'><input type='text' name='f_summary' value='" + f_summary + "'/></td> \
+          <td class='value'><input type='text' class='ss_text' name='f_summary' value='" + f_summary + "'/></td> \
         </tr> \
        </table> \
       </fieldset> \
@@ -194,7 +194,7 @@ TableOperations.prototype.dialogTableProperties = function() {
        <table style='width:100%'> \
 "+//        <tr> \
 //           <td class='label'>" + i18n["Width"] + ":</td> \
-//           <td><input type='text' name='f_width' value='" + f_width + "' size='5' /> \
+//           <td><input type='text' class='ss_text' name='f_width' value='" + f_width + "' size='5' /> \
 //             <select name='f_unit'> \
 //               <option value='%'" + selected(f_unit == "percent") + ">" + i18n["percent"] + "</option> \
 //               <option value='px'" + selected(f_unit == "pixels") + ">" + i18n["pixels"] + "</option> \
@@ -208,7 +208,7 @@ TableOperations.prototype.dialogTableProperties = function() {
 //         </tr> \
 "        <tr> \
           <td class='label'>" + i18n["Spacing"] + ":</td> \
-          <td><input type='text' name='f_spacing' size='5' value='" + f_spacing + "' /> &nbsp;" + i18n["Padding"] + ":\
+          <td><input type='text' class='ss_text' name='f_spacing' size='5' value='" + f_spacing + "' /> &nbsp;" + i18n["Padding"] + ":\
             <input type='text' name='f_padding' size='5' value='" + f_padding + "' /> &nbsp;&nbsp;" + i18n["pixels"] + "\
           </td> \
         </tr> \
@@ -222,7 +222,7 @@ TableOperations.prototype.dialogTableProperties = function() {
         <table width='100%'> \
           <tr> \
             <td class='label'>" + i18n["Borders"] + ":</td> \
-            <td><input name='f_borders' type='text' size='5' value='" + f_borders + "' /> &nbsp;&nbsp;" + i18n["pixels"] + "</td> \
+            <td><input name='f_borders' type='text' class='ss_text' size='5' value='" + f_borders + "' /> &nbsp;&nbsp;" + i18n["pixels"] + "</td> \
           </tr> \
           <tr> \
             <td class='label'>" + i18n["Frames"] + ":</td> \
@@ -338,7 +338,7 @@ TableOperations.prototype.dialogRowCellProperties = function(cell) {
 //               <option value='char'" + selected(f_align == "char") + ">" + i18n["Char"] + "</option> \
 //             </select> \
 //             &nbsp;&nbsp;" + i18n["Char"] + ": \
-//             <input type='text' style='font-family: monospace; text-align: center' name='f_char' size='1' value='" + f_char + "' /> \
+//             <input type='text' class='ss_text' style='font-family: monospace; text-align: center' name='f_char' size='1' value='" + f_char + "' /> \
 //           </td> \
 //         </tr><tr> \
 //           <td class='label'>" + i18n["Vertical align"] + ":</td> \

@@ -1116,13 +1116,13 @@
 	</item>
 	
 	<item name="profileTitle" caption="__profile_title" type="data" 
-		canBeDeleted="false" multipleAllowed="false" category="profileEntryData">
+		multipleAllowed="false" category="profileEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="title" 
 			  readonly="true" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text" value="__profile_name"/>
+			<property name="caption" caption="__caption" type="text" value="__profile_title"/>
 			<property name="width" caption="__width" type="text"/>
 		</properties>
 		<jsps>

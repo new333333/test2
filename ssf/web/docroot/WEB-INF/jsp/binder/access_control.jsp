@@ -160,7 +160,7 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="binder.configure.access_control.role" 
  text="Role"/></td>
 <td valign="top">
-<select name="roleId" >
+<select name="roleId">
   <option value=""><ssf:nlt tag="binder.configure.access_control.selectRole"
     text="--select the role to be added--"/></option>
 <c:forEach var="function" items="${ssFunctionMap}">

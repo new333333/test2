@@ -31,8 +31,7 @@
 // General variables
 
 String divId = ParamUtil.get(request, "box_id", "");
-String titleClassName = ParamUtil.get(request, "box_title_class", "ss_style ss_largeprint");
-String bodyClassName = ParamUtil.get(request, "box_body_class", "ss_style");
+String titleClassName = ParamUtil.get(request, "box_title_class", "ss_largeprint");
 
 String title = ParamUtil.get(request, "box_title", "");
 %>
@@ -73,7 +72,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 	<div class="ss_box_small_icon_bar" 
 	  style="margin:0px; background-color:${boxColor};" 
 	  id="<%= divId %>_icon_bar">
-	  <table class="ss_style" cellspacing="0" cellpaddng="0" width="100%" 
+	  <table cellspacing="0" cellpaddng="0" width="100%" 
 	    style="margin:0px; padding:0px; background-color:${boxColor};">
 	  <tr>
 	  <c:if test="<%= showMoveIcon %>">
@@ -97,7 +96,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 	  </c:if>
 
 	  <c:if test="<%= Validator.isNotNull(title) %>">
-	    <td align="center" width="10%"><div class="ss_box_title"
+	    <td align="center" width="10%"><div
 	      style="margin:0px; padding:0px;"><%= title %></div></td>
 	  </c:if>
 	
@@ -117,8 +116,6 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
   <div class="ssf_box">
      <div class="ss_box_minimum_height" style="background-color:${boxColor};">
 	    <div style="margin-top: 0; margin-bottom: 0;">
-
-
 <c:if test="<%= brWrapContent %>">
   <br>
 </c:if>

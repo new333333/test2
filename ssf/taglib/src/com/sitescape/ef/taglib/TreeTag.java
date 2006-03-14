@@ -274,7 +274,7 @@ public class TreeTag extends TagSupport {
 				} else {
 					String checked = "";
 					if (this.multiSelect.contains(s_id)) checked = "checked";
-					jspOut.print("<td><input type='checkbox' name='" + this.multiSelectPrefix + s_id + "' " + checked + " style='width:10px;'></td>\n");
+					jspOut.print("<td><input type='checkbox' class='ss_text' name='" + this.multiSelectPrefix + s_id + "' " + checked + " style='width:10px;'></td>\n");
 				}
 			}
 			jspOut.print("<td valign='top' nowrap>");
