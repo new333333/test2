@@ -7,29 +7,31 @@ package com.sitescape.ef.domain;
  * can server as a foreign key for association mapping.
  */
 public class AnyOwner {
-    protected Entry entry;
+    protected DefinableEntity entity;
     protected String ownerType;
     protected Long ownerId;
 	protected FolderEntry folderEntry;
 	protected Principal principal;
+	protected Binder binder;
    //keep as reference for user queries only 
     protected String owningFolderSortKey;
     public final static String PRINCIPAL="principal";
     public final static String FOLDERENTRY="doc";
+    public final static String BINDER="binder";
     
 
     public AnyOwner() {		
 	}
-	public AnyOwner(Entry entry) {
-		setEntry(entry);
+	public AnyOwner(DefinableEntity entity) {
+		setEntity(entity);
 	}
-	public AnyOwner(Entry entry, boolean setForeignKey) {
+	public AnyOwner(DefinableEntity entity, boolean setForeignKey) {
 		if (setForeignKey)
-			setEntry(entry);
+			setEntity(entity);
 		else {
-			setHEntry(entry);
-			if (entry instanceof FolderEntry) {
-				FolderEntry fEntry = (FolderEntry)entry;
+			setHEntry(entity);
+			if (entity instanceof FolderEntry) {
+				FolderEntry fEntry = (FolderEntry)entity;
 				Folder f = fEntry.getParentFolder();
 				if (f != null) {
 					//This value is used to help narrow the results of sql reporting queries
@@ -39,15 +41,7 @@ public class AnyOwner {
 			}
   		}
 	}
-	public static String getType(Entry entry) {
-		if (entry instanceof FolderEntry) {
-			return FOLDERENTRY;
-		} else if (entry instanceof Principal) {
-			return PRINCIPAL;
-		}
-		return null;
-		
-	}
+
    /**
     * These fields are for foreign key mapping.  An <any> field cannot be
     * mapped as a foreign key to multiple tables.  Associations from the owner class,
@@ -71,20 +65,28 @@ public class AnyOwner {
 	protected void setPrincipal(Principal principal) {
 		this.principal = principal;
 	}
+	/**
+	 * @hibernate.many-to-one
+	 */
+	protected Binder getBinder() {
+		return binder;
+	}
+	protected void setBinder(Binder binder) {
+		this.binder = binder;
+	}
    /**
     * @hibernate.any meta-type="string" id-type="java.lang.Long"
     * @hibernate.any-column name="ownerType" length="16"
     * @hibernate.any-column name="ownerId"
     * @hibernate.meta-value value="doc" class="com.sitescape.ef.domain.FolderEntry"		
 	* @hibernate.meta-value value="principal" class="com.sitescape.ef.domain.Principal"
-	* @hibernate.meta-value value="principal" class="com.sitescape.ef.domain.Group"
-	* @hibernate.meta-value value="principal" class="com.sitescape.ef.domain.User"
+	* @hibernate.meta-value value="binder" class="com.sitescape.ef.domain.Binder"
 	*/ 
-   protected Entry getHEntry() {
-       return entry;
+   protected DefinableEntity getHEntry() {
+       return entity;
    }
-   protected void setHEntry(Entry entry) {
-       this.entry = entry;
+   protected void setHEntry(DefinableEntity entity) {
+       this.entity = entity;
    }
    /**
     * @hibernate.property insert="false" update="false"
@@ -106,30 +108,26 @@ public class AnyOwner {
    protected void setOwnerId(Long ownerId) {
    	this.ownerId = ownerId;
    }
-   public Entry getEntry() {
+   public DefinableEntity getEntity() {
    		return getHEntry();
    }
-   public void setEntry(Entry entry) {
-   		setHEntry(entry);
-   		if (entry == null) {
-   			folderEntry = null;
-   			principal = null;
-   			owningFolderSortKey = null;
-   		} else {
-   			if (entry instanceof Principal) {
-   				principal=(Principal)entry;
-   				folderEntry=null;
-   			} else {
-   				principal=null;
-   				folderEntry=(FolderEntry)entry;    	
-   			}
-   			if (entry instanceof FolderEntry) {
-   				FolderEntry fEntry = (FolderEntry)entry;
-   				Folder f = fEntry.getParentFolder();
-   				//This value is used to help narrow the results of sql reporting queries
-   				//You can use this to search a folder of sub-folder heirarchy
-   				owningFolderSortKey = f.getFolderHKey().getSortKey();
-   			}
+   public void setEntity(DefinableEntity entity) {
+   		setHEntry(entity);
+		folderEntry = null;
+		principal = null;
+		owningFolderSortKey = null;
+		binder = null;
+
+		String entryT = entity.getAnyOwnerType();
+		if (FOLDERENTRY.equals(entryT)) {
+   			folderEntry = (FolderEntry)entity;
+   			//This value is used to help narrow the results of sql reporting queries
+   			//You can use this to search a folder of sub-folder heirarchy
+   			owningFolderSortKey = folderEntry.getParentFolder().getFolderHKey().getSortKey();  	
+   		} else if (PRINCIPAL.equals(entryT)) {
+   			principal=(Principal)entity;
+   		} else if (BINDER.equals(entryT)) {
+   			binder = (Binder)entity;
   		}
    }
 
@@ -151,12 +149,12 @@ public class AnyOwner {
    			return false;
     
    		AnyOwner o = (AnyOwner) obj;
-   		if (entry.equals(o.getEntry()))
+   		if (entity.equals(o.getEntity()))
    			return true;
             
    		return false;
    }
    public int hashCode() {
-   		return entry.hashCode();
+   		return 31*entity.hashCode() + ownerType.hashCode();
    }   
 }

@@ -33,7 +33,7 @@ public class Folder extends Binder {
     /**
      * @hibernate.many-to-one node="topFolder/@id" embed-xml="false"
      * @return
-     */
+     */    
     public Folder getTopFolder() {
         return topFolder;
     }
@@ -41,15 +41,12 @@ public class Folder extends Binder {
         this.topFolder = (Folder)topFolder;
     }
     
-    /**
-     * @hibernate.many-to-one node="parentFolder/@id" embed-xml="false"
-      * @return
-     */
     public Folder getParentFolder() {
-        return parentFolder;
+        if (topFolder == null) return null;
+    	return (Folder)getParentBinder();
     }
     public void setParentFolder(Folder parentFolder) {
-        this.parentFolder = parentFolder;
+        setParentBinder(parentFolder);
     }
     /** 
      * @hibernate.property 
@@ -87,8 +84,7 @@ public class Folder extends Binder {
     public Definition getDefaultPostingDef() {
     	Definition def = super.getDefaultPostingDef();
     	if (def != null) return def;
-    	if (parentFolder != null) return parentFolder.getDefaultPostingDef();
-    	return getOwningWorkspace().getDefaultPostingDef();
+    	return getParentBinder().getDefaultPostingDef();
     }
     
     /**
@@ -112,7 +108,7 @@ public class Folder extends Binder {
 
     /**
      * @hibernate.bag  lazy="true" cascade="all" inverse="true" optimistic-lock="false" 
-	 * @hibernate.key column="parentFolder" 
+	 * @hibernate.key column="parentBinder" 
 	 * @hibernate.one-to-many class="com.sitescape.ef.domain.Folder" 
      * @hibernate.cache usage="read-write"
      * Returns a List of Folder.
@@ -129,7 +125,6 @@ public class Folder extends Binder {
   		getFolders().add(child);
    		child.setParentFolder(this);
         if (topFolder == null) child.setTopFolder(this); else child.setTopFolder(topFolder);
-   		child.setOwningWorkspace(this.getOwningWorkspace());
    		//	Set root for subfolders
    		if (getFolderHKey() == null) {
   			setFolderHKey(new HKey(generateFolderRootSortKey()));
@@ -172,7 +167,7 @@ public class Folder extends Binder {
     public void addEntry(FolderEntry entry) {
       entry.setParentEntry(null);
       entry.setTopEntry(null);
-      entry.setParentFolder((Folder)this);
+      entry.setParentBinder((Folder)this);
       entry.setOwningFolderSortKey(getFolderHKey().getSortKey());
       if (getEntryRootHKey() == null) {
     	  setEntryRootHKey( new HKey(generateEntryRootSortKey()));
@@ -213,14 +208,7 @@ public class Folder extends Binder {
 		return getFolders();
 	}
 
-    public AclContainer getParentAclContainer() {
-        AclContainer ac = this.getParentFolder();
-        if(ac == null)
-            ac = this.getTopFolder();
-        if(ac == null)
-        	ac = super.getParentAclContainer();
-        return ac;
-    } 
+
     public Long getCreatorId() {
     	HistoryStamp creation = getCreation();
     	if(creation != null) {

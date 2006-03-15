@@ -15,6 +15,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<div class="ss_style ss_portlet">
 
 <form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_posting_job"/>
@@ -84,7 +85,6 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 </script>
 <input type="hidden" id="enabled" name="enabled" value="${ssScheduleInfo.enabled}"/>
 
-<div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="incoming.job_title" /></span><br/>
 <br/>
 <c:set var="toolbar" value="${ssToolbar}" scope="request" />
@@ -165,8 +165,8 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 </div>
 <br/>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
-</div>
+	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 
 </form>
 
+</div>

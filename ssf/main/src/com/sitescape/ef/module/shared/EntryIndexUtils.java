@@ -160,7 +160,7 @@ public class EntryIndexUtils {
     	}
     }
 
-    public static void addWorkflow(Document doc, Entry entry) {
+    public static void addWorkflow(Document doc, WorkflowControlledEntry entry) {
     	// Add the workflow fields
    		Set workflowStates = entry.getWorkflowStates();
    		if (workflowStates != null) {

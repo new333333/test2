@@ -8,14 +8,80 @@ import java.util.Set;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AclSet;
+import com.sitescape.util.Validator;
 
 /**
  *
  * @author Jong Kim
  */
-public abstract class WorkflowControlledEntry extends Entry implements AclControlled {
+public abstract class WorkflowControlledEntry extends Entry 
+	implements MultipleWorkflowSupport, AclControlled {
 	private Set readMemberIds,writeMemberIds,deleteMemberIds,changeAclMemberIds;
-    /**
+    protected Set workflowStates;   
+	protected Set iWorkflowStates;
+    protected HistoryStamp workflowChange;
+	/**
+     * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="wrk_" 
+     */
+    public HistoryStamp getWorkflowChange() {
+        return this.workflowChange;
+    }
+    public void setWorkflowChange(HistoryStamp workflowChange) {
+        this.workflowChange = workflowChange;
+    }
+
+    public Set getWorkflowStates() {
+    	if (iWorkflowStates != null) return iWorkflowStates;
+    	if (workflowStates == null) workflowStates = new HashSet();
+   	 	return workflowStates;  
+     }
+     public void setWorkflowStates(Set workflowStates) {
+    	 //Since ids are assigned on WorkflowState, don't need to do anything
+    	 //special to reduce updates.
+    	 this.workflowStates = workflowStates;
+     }
+     public WorkflowState getWorkflowState(Long id) {
+     	//Make sure initialized
+     	getWorkflowStates();
+     	
+		WorkflowState ws=null;
+		for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
+			ws = (WorkflowState)iter.next();
+			if (ws.getId().equals(id)) return ws;
+		}
+		return null;
+     }
+     public WorkflowState getWorkflowStateByThread(Definition def, String threadName) {
+      	//Make sure initialized
+      	getWorkflowStates();
+      	
+ 		WorkflowState ws=null;
+ 		for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
+ 			ws = (WorkflowState)iter.next();
+ 			if (!def.equals(ws.getDefinition())) continue;
+ 			if (Validator.isNull(ws.getThreadName())) {
+ 				if (Validator.isNull(threadName)) return ws; 
+ 			} else {
+ 				if (ws.getThreadName().equals(threadName)) return ws;
+ 			}
+ 		}
+ 		return null;
+      }
+     public void addWorkflowState(WorkflowState state) {
+     	if (state == null) return;
+    	//Make sure initialized
+    	getWorkflowStates();
+        workflowStates.add(state);
+ 	   	state.setOwner(this);
+    }
+    public void removeWorkflowState(WorkflowState state) {
+     	if (state == null) return;
+    	//Make sure initialized
+    	getWorkflowStates();
+        workflowStates.remove(state);
+ 	   	state.setOwner((AnyOwner)null);
+    }
+  	/**
      * 
      */
     public boolean getInheritAclFromParent() {
@@ -143,4 +209,14 @@ public abstract class WorkflowControlledEntry extends Entry implements AclContro
 	    }
 
 	}
+    /*
+     * The following methods are used for performance optimization during indexing.
+     * The values of each collection are loaded and built by hand.  
+     * They are not persisted.  This allows us to load greater than the 
+     * hibernate "batch-size" number of collections at once.
+     */
+    public void setIndexWorkflowStates(Set iWorkflowStates) {
+    	this.iWorkflowStates = iWorkflowStates;
+    }
+	
 }

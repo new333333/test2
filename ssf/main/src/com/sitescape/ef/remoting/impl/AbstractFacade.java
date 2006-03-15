@@ -251,7 +251,7 @@ public abstract class AbstractFacade implements Facade {
 		binder.setZoneName(dbinder.getZoneName());
 		binder.setType(dbinder.getType());
 		binder.setTitle(dbinder.getTitle());
-		binder.setOwningWorkspaceId(dbinder.getOwningWorkspace().getId().longValue());
+		binder.setParentBinderId(dbinder.getParentBinder().getId().longValue());
 		
 		List entryDefs = dbinder.getEntryDefs();
 		String[] entryDefinitionIds = new String[entryDefs.size()];

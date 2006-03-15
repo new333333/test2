@@ -10,7 +10,7 @@ public class CustomAttributeListElement extends CustomAttribute {
 	private CustomAttribute parent;
 	protected CustomAttributeListElement() {
 	}
-	protected CustomAttributeListElement(String name, CustomAttribute parent, Entry owner) {
+	protected CustomAttributeListElement(String name, CustomAttribute parent, DefinableEntity owner) {
 		setName(name);
 		setParent(parent);
 		//don't set foreign key, so not read in to map

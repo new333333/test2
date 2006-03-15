@@ -24,6 +24,7 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.util.StringUtil;
+import com.sitescape.util.Validator;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.ScheduleHelper;
 
@@ -57,9 +58,7 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			getAdminModule().modifyNotification(folderId, getNotifyData(request), userList);
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			response.setRenderParameter(WebKeys.ACTION, "");
-			response.setWindowState(WindowState.NORMAL);
-			response.setPortletMode(PortletMode.VIEW);
+			response.setRenderParameter("redirect", "true");
 		} else
 			response.setRenderParameters(formData);
 		
@@ -67,6 +66,9 @@ public class ConfigureNotifyController extends  SAbstractController  {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		if (!Validator.isNull(request.getParameter("redirect"))) {
+			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
+		}
 		try {
 			Map model = new HashMap();
 			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));

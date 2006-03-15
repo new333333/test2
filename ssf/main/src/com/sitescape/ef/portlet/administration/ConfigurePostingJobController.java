@@ -61,9 +61,7 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 			}
 		response.setRenderParameters(formData);
 	} else if (formData.containsKey("cancelBtn")) {
-		response.setRenderParameter(WebKeys.ACTION, "");
-		response.setWindowState(WindowState.NORMAL);
-		response.setPortletMode(PortletMode.VIEW);
+		response.setRenderParameter("redirect", "true");
 	} else
 		response.setRenderParameters(formData);
 		
@@ -71,6 +69,9 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		if (!Validator.isNull(request.getParameter("redirect"))) {
+			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
+		}
 		HashMap model = new HashMap();
 		ScheduleInfo config = getAdminModule().getPostingSchedule();
 		model.put(WebKeys.SCHEDULE_INFO, config);	

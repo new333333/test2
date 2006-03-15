@@ -31,6 +31,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.Event;
@@ -247,7 +248,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                new HibernateCallback() {
                    public Object doInHibernate(Session session) throws HibernateException {
                        Workspace workspace = (Workspace)session.createQuery("from com.sitescape.ef.domain.Workspace w" +
-                       		" where w.zoneName=? and w.name=? and w.owningWorkspace is null")
+                       		" where w.zoneName=? and w.name=? and w.parentBinder is null")
                             .setParameter(0, zoneName)
                             .setParameter(1, zoneName)
                             .setCacheable(true)
@@ -760,28 +761,33 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 		entry.setIndexEvents(new HashSet());
                  		ids.add(entry.getId());
                 	}
-                	String type = entry.getAnyOwnerType();
-                	//Load workflow states
-                	List objs = session.createCriteria(WorkflowState.class)
-                    					.add(Expression.eq("owner.ownerType", type))
-                    					.add(Expression.in("owner.ownerId", ids))
-                    					.addOrder(Order.asc("owner.ownerId"))
-										.list();
+            		String type = entry.getAnyOwnerType();
+            		List objs;
+            		HashSet tSet;
+            		if (entry instanceof WorkflowControlledEntry) {
+                		WorkflowControlledEntry wEntry = (WorkflowControlledEntry)entry;
+                	
+                		//Load workflow states
+                		objs = session.createCriteria(WorkflowState.class)
+                    						.add(Expression.eq("owner.ownerType", type))
+                    						.add(Expression.in("owner.ownerId", ids))
+                    						.addOrder(Order.asc("owner.ownerId"))
+                    						.list();
                    
-                   	readObjs.addAll(objs);
-                	HashSet tSet;
-                   	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
-                   		entry = (Entry)iter.next();
-                   		tSet = new HashSet();
-                   		for (int i=0; i<objs.size(); ++i) {
-                   			WorkflowState obj = (WorkflowState)objs.get(i);
-                   			if (entry.equals(obj.getOwner().getEntry())) {
-                   				tSet.add(obj);
-                   			} else break;
-                   		}
-                   		entry.setIndexWorkflowStates(tSet);
-                   		objs.removeAll(tSet);
-                    }
+                		readObjs.addAll(objs);
+                		for (Iterator iter=sorted.iterator(); iter.hasNext();) {
+                			wEntry = (WorkflowControlledEntry)iter.next();
+                			tSet = new HashSet();
+                			for (int i=0; i<objs.size(); ++i) {
+                				WorkflowState obj = (WorkflowState)objs.get(i);
+                				if (wEntry.equals(obj.getOwner().getEntity())) {
+                					tSet.add(obj);
+                				} else break;
+                			}
+                			wEntry.setIndexWorkflowStates(tSet);
+                			objs.removeAll(tSet);
+                		}
+                	}
                 	//Load attachments
                    	objs = session.createCriteria(Attachment.class)
                      	.add(Expression.eq("owner.ownerType", type))
@@ -794,7 +800,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                    		tSet = new HashSet();
                    		while (objs.size() > 0) {
                    			Attachment obj = (Attachment)objs.get(0);
-                  			if (entry.equals(obj.getOwner().getEntry())) {
+                  			if (entry.equals(obj.getOwner().getEntity())) {
                   				if (!(obj instanceof VersionAttachment)) {
                   					tSet.add(obj);
                   				}
@@ -815,7 +821,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                    		tSet = new HashSet();
                    		for (int i=0; i<objs.size(); ++i) {
                    			Event obj = (Event)objs.get(i);
-                   			if (entry.equals(obj.getOwner().getEntry())) {
+                   			if (entry.equals(obj.getOwner().getEntity())) {
                    				tSet.add(obj);
                    			} else break;
                    		}
@@ -835,7 +841,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                    		tMap = new HashMap();
                    		while (objs.size() > 0) {
                    			CustomAttribute obj = (CustomAttribute)objs.get(0);
-                   			if (entry.equals(obj.getOwner().getEntry())) {
+                   			if (entry.equals(obj.getOwner().getEntity())) {
                    				if (obj instanceof CustomAttributeListElement) {
                    					CustomAttributeListElement lEle = (CustomAttributeListElement)obj;
                    					lEle.getParent().addIndexValue(lEle);

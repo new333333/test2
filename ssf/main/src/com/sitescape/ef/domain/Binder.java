@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
+import java.util.Set;
 
 import com.sitescape.util.Validator;
 import com.sitescape.ef.modelprocessor.InstanceLevelProcessorSupport;
@@ -13,7 +13,7 @@ import com.sitescape.ef.security.acl.AclSet;
 import com.sitescape.ef.security.function.WorkArea;
 
 /**
- * This object represents a forum.
+ * This object represents a container.
  * 
  * @hibernate.class table="SS_Forums" dynamic-update="true" dynamic-insert="false" lazy="false"
  * @hibernate.discriminator type="string" length="16" column="type"
@@ -24,18 +24,13 @@ import com.sitescape.ef.security.function.WorkArea;
  * @author Jong Kim
  *
  */
-public abstract class Binder extends PersistentLongIdTimestampObject implements WorkArea, AclContainer, InstanceLevelProcessorSupport  {
+public abstract class Binder extends DefinableEntity implements WorkArea, AclContainer, InstanceLevelProcessorSupport  {
     private String name;
-    private String title="";
-    private Description description;
     private HistoryStamp owner;
     private Map properties;
-    // Only one workspace can own a forum, although a forum can be
-    // contained in multiple workspaces. 
-    private Workspace owningWorkspace;
+    protected Binder parentBinder;
     private NotificationDef notificationDef;
     private List postings;
-    private List filters;
     private Integer upgradeVersion;   
     private String zoneName; 
     private long featureMask=0;
@@ -63,6 +58,47 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     public void setZoneName(String id) {
     	this.zoneName = id;
     }
+    /**
+     * @hibernate.many-to-one
+     * @return
+     */
+    public Binder getParentBinder() {
+   	 return parentBinder;
+    }
+    public void setParentBinder(Binder parentBinder) {
+   	 this.parentBinder = parentBinder;
+    }
+    public String getAnyOwnerType() {
+    	return AnyOwner.BINDER;
+    }
+	/**
+ 	 * @hibernate.map  lazy="true" inverse="true" cascade="all,delete-orphan"
+	 * @hibernate.key column="binder"
+ 	 * @hibernate.map-key column="name" type="string"
+     * @hibernate.one-to-many class="com.sitescape.ef.domain.CustomAttribute"
+     * @return
+     */
+    private Map getHCustomAttributes() {return customAttributes;}
+    private void setHCustomAttributes(Map customAttributes) {this.customAttributes = customAttributes;}   	
+    
+    /**
+     * @hibernate.set  lazy="true" inverse="true" cascade="all,delete-orphan" batch-size="4" 
+ 	 * @hibernate.key column="binder"
+ 	 * @hibernate.one-to-many class="com.sitescape.ef.domain.Attachment"
+ 	 * We are using a set here, cause any outer-joins to load this attribute
+ 	 * when using a list result in duplicates
+   	 */
+    private Set getHAttachments() {return attachments;}
+    private void setHAttachments(Set attachments) {this.attachments = attachments;}   	
+
+   /**
+	* @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan" batch-size="4" 
+    * @hibernate.key column="binder"
+    * @hibernate.one-to-many class="com.sitescape.ef.domain.Event"
+    * @return
+    */
+    private Set getHEvents() {return events;}
+    private void setHEvents(Set events) {this.events = events;}   	
     /**
      * @hibernate.list table="SS_DefinitionMap" lazy="true" inverse="false" cascade="persist,merge,save-update"
      * @hibernate.key column="forum"
@@ -147,13 +183,7 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     public void setType(String type) {
     	this.type = type;
     }
-    public List getFilters() {
-        return filters;
-    }
-    public void setFilters(List filters) {
-        this.filters = filters;
-    }
- 
+
     /**
      * @hibernate.property length="128" not-null="true" node="name"
      * @return
@@ -165,36 +195,7 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     	if (Validator.isNull(name)) throw new IllegalArgumentException("null name");
        this.name = name;
     }
-	/**
-	 * @hibernate.property length="1024" node="title"
-	 * @return String
-	 */
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    /**
-     * @hibernate.component prefix="description_"
-     */
-    public Description getDescription() {
-        return this.description;
-    }
-    public void setDescription(Description description) {
-        if (this.description != null)
-        	// try to avoid unecessary updates
-        	if (this.description.equals(description)) return;
-    	this.description = description; 
-    }
-  
-    public void setDescription(String descriptionText) {
-		Description tmp = new Description(descriptionText);
-    	if (description != null) {
-    		if (description.equals(tmp)) return;
-    	}
-        this.description = tmp; 
-    }
+
     /**
      * @hibernate.component prefix="notify_"
      * @return
@@ -243,17 +244,6 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     public void setOwner(HistoryStamp owner) {
         this.owner = owner;
     }
-    /**
-     * @hibernate.many-to-one
-     * @return
-     */
-    public Workspace getOwningWorkspace() {
-        return owningWorkspace;
-    }
-    public void setOwningWorkspace(Workspace owningWorkspace) {
-     	this.owningWorkspace = owningWorkspace;
-    }
-    
     /**
      * @hibernate.property type="org.springframework.orm.hibernate3.support.BlobSerializableType"
      * @return
@@ -317,7 +307,7 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
         return getType();
     }
     public WorkArea getParentWorkArea() {
-        return this.getOwningWorkspace();
+        return this.getParentBinder();
     }
 	/**
 	 * @hibernate.property not-null="true" node="functionMembershipInherited"
@@ -331,7 +321,7 @@ public abstract class Binder extends PersistentLongIdTimestampObject implements 
     }
 
     public AclContainer getParentAclContainer() {
-        return this.getOwningWorkspace();
+        return this.getParentBinder();
     }
     
     public Long getAclContainerId() {

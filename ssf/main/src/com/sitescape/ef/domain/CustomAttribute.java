@@ -83,7 +83,7 @@ public class CustomAttribute  {
    }
  
    //only accessible threw entry
-   protected CustomAttribute(Entry parent, String name, Object value) {
+   protected CustomAttribute(DefinableEntity parent, String name, Object value) {
    		setName(name);
    		//do before setValue incase value needs owner
    		setOwner(parent);
@@ -99,8 +99,8 @@ public class CustomAttribute  {
    	protected void setOwner(AnyOwner owner) {
    		this.owner = owner;
    	}
- 	protected void setOwner(Entry entry) {
-   		owner = new AnyOwner(entry); 		
+ 	protected void setOwner(DefinableEntity entity) {
+   		owner = new AnyOwner(entity); 		
   	}   	
     /**
      * @hibernate.property access="field" length="64"
@@ -209,14 +209,14 @@ public class CustomAttribute  {
 
     private void clearVals() {
        if (valueType == EVENT) {
-        	Event e = owner.getEntry().getEvent(stringValue);
+        	Event e = owner.getEntity().getEvent(stringValue);
         	if (e != null) {
-        		owner.getEntry().removeEvent(e);
+        		owner.getEntity().removeEvent(e);
         		e.setName(null);
         	}
        }
        if (valueType == ATTACHMENT) {
-        	Attachment a = owner.getEntry().getAttachment(stringValue);
+        	Attachment a = owner.getEntity().getAttachment(stringValue);
         	if (a != null) a.setName(null);
         }
         stringValue=null;
@@ -281,7 +281,7 @@ public class CustomAttribute  {
             valueType = SET;
          	HashSet newValues =	new HashSet();
          	for (Iterator iter=((Set)value).iterator(); iter.hasNext();) {
-     			CustomAttributeListElement element = new CustomAttributeListElement(getName(), this, getOwner().getEntry());
+     			CustomAttributeListElement element = new CustomAttributeListElement(getName(), this, getOwner().getEntity());
      			//don't allow recursive collections
      			element.setValue(iter.next(), false);
      			newValues.add(element);
@@ -327,14 +327,14 @@ public class CustomAttribute  {
          	valueType = ATTACHMENT;
          	Attachment att = (Attachment)value; 
          	att.setName(name);
-         	owner.getEntry().addAttachment(att);
+         	owner.getEntity().addAttachment(att);
          	stringValue=att.getId();
          } else if (value instanceof Event) {
          	clearVals();
          	valueType = EVENT;  
         	Event e = (Event) value;
          	e.setName(name);
-        	owner.getEntry().addEvent(e);
+        	owner.getEntity().addEvent(e);
          	stringValue = e.getId();
          } else {
             if (valueType != SERIALIZED) clearVals();
@@ -394,9 +394,9 @@ public class CustomAttribute  {
     	    	}
     	    	return v;
        		case EVENT:
-    		    return owner.getEntry().getEvent(stringValue);
+    		    return owner.getEntity().getEvent(stringValue);
     		case ATTACHMENT:
-    			return owner.getEntry().getAttachment(stringValue);
+    			return owner.getEntity().getAttachment(stringValue);
  	    }
 	    return null;
 	}
