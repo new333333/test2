@@ -724,8 +724,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		return action;
 
 	}
-	public void addEntryWorkflow(Entry entry, Definition workflowDef) {
-		String entryType = AnyOwner.getType(entry);
+	public void addEntryWorkflow(WorkflowControlledEntry entry, Definition workflowDef) {
+		String entryType = entry.getAnyOwnerType();
 		String initialState = WorkflowUtils.getInitialState(workflowDef);
 		if (!Validator.isNull(initialState)) {
 			//Now start the workflow at the desired initial state
@@ -785,7 +785,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
       	if (token != null) {
       		//token id is id of workflowState
       		WorkflowState ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
-      		entry = (WorkflowControlledEntry)ws.getOwner().getEntry();
+      		entry = (WorkflowControlledEntry)ws.getOwner().getEntity();
       	}
   
       	// execute
@@ -825,7 +825,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		
 	}
 	
-	public void deleteEntryWorkflow(Binder parent, Entry entry) {
+	public void deleteEntryWorkflow(Binder parent, WorkflowControlledEntry entry) {
 		//Delete all JBPM tokens and process instances associated with this entry
 	    try {
 			Set processInstances = new HashSet();

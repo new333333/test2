@@ -16,6 +16,7 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.ldap.LdapConfig;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.ScheduleHelper;
+import com.sitescape.util.Validator;
 
 public class ConfigureLdapController extends  SAbstractController {
 	
@@ -37,9 +38,7 @@ public class ConfigureLdapController extends  SAbstractController {
 			getLdapModule().setLdapConfig(config);
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			response.setRenderParameter(WebKeys.ACTION, "");
-			response.setWindowState(WindowState.NORMAL);
-			response.setPortletMode(PortletMode.VIEW);
+			response.setRenderParameter("redirect", "true");
 		} else
 			response.setRenderParameters(formData);
 		
@@ -47,6 +46,11 @@ public class ConfigureLdapController extends  SAbstractController {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+
+		if (!Validator.isNull(request.getParameter("redirect"))) {
+			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
+		}
+
 		LdapConfig config = getLdapModule().getLdapConfig();
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, WebKeys.LDAP_CONFIG, config);
 		

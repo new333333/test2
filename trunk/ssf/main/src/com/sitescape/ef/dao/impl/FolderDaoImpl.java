@@ -55,7 +55,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	//but maintain order.  
 	private List removeDuplicates(List entries) {
 		if (entries.isEmpty()) return entries;
-		List result = new ArrayList(entries.size());
+		List<FolderEntry> result = new ArrayList<FolderEntry>(entries.size());
 		FolderEntry entry;
 		Long lastId=null;
 		for (int i=0; i<entries.size(); ++i) {
@@ -245,14 +245,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                             	.add(Expression.disjunction()
                                 	.add(Expression.in("HKey.sortKey", keys))
                                 	.add(Expression.between("HKey.sortKey", entry.getHKey().getSortKey(), next.getSortKey()))
- //                             	.add(Expression.conjunction()  
- //                           				.add(Expression.gt("HKey.sortKey", entry.getHKey().getSortKey()))
- //                            				.add(Expression.lt("HKey.sortKey", next.getSortKey()))
- //                                        	)
                             	)
-//                            	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
-//                            	.setFetchMode("HAttachments", FetchMode.JOIN)
-//                            	.setFetchMode("HWorkflowStates", FetchMode.JOIN)	
                             	.setFetchMode("entryDef", FetchMode.SELECT)	
                             	.setFetchMode("parentBinder", FetchMode.SELECT)	
                             	.setFetchMode("topFolder", FetchMode.SELECT)	
@@ -275,11 +268,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                  public Object doInHibernate(Session session) throws HibernateException {
                      String[] keys = entry.getHKey().getAncestorKeys();  
                      List result = session.createCriteria(entry.getClass())
-//                     	.add(Expression.eq("parentBinder", entry.getParentFolder().getId()))
                      	.add(Expression.in("HKey.sortKey", keys))
- //                    	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
- //                    	.setFetchMode("HAttachments", FetchMode.JOIN)
- //                    	.setFetchMode("HWorkflowStates", FetchMode.JOIN)
                        	.setFetchMode("entryDef", FetchMode.SELECT)	
                        	.setFetchMode("parentBinder", FetchMode.SELECT)	
                        	.setFetchMode("topFolder", FetchMode.SELECT)	
@@ -304,18 +293,12 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                		 	HKey next = new HKey(entry.getParentEntry().getHKey(), nextPos);    
         				crit = session.createCriteria(FolderEntry.class)
                             .add(Expression.between("HKey.sortKey", entry.getHKey().getSortKey(), next.getSortKey())
-//                     		.add(Expression.conjunction()  
-//                     				.add(Expression.gt("HKey.sortKey", entry.getHKey().getSortKey()))
-//                     				.add(Expression.lt("HKey.sortKey", next.getSortKey()))
                      		);
                 	 } else {
                 		 //this works better as an index with the DBs
                 		 crit = session.createCriteria(FolderEntry.class)
                 		 	.add(Expression.eq("topEntry", entry));                 		 
                 	 };
-//                     crit.setFetchMode("HCustomAttributes", FetchMode.JOIN);
-//                     crit.setFetchMode("HAttachments", FetchMode.JOIN);
-//                     crit.setFetchMode("HWorkflowStates", FetchMode.JOIN);
                      crit.setFetchMode("entryDef", FetchMode.SELECT);	
                      crit.setFetchMode("parentBinder", FetchMode.SELECT);	
                      crit.setFetchMode("topFolder", FetchMode.SELECT);	

@@ -22,6 +22,8 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.util.Validator;
+
 public class ConfigureRolesController extends  SAbstractController {
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
@@ -56,15 +58,17 @@ public class ConfigureRolesController extends  SAbstractController {
 			updates.put("operations", operations);
 			getAdminModule().modifyFunction(functionId, updates);
 		
-		} else {
-			response.setRenderParameter(WebKeys.ACTION, "");
-			response.setWindowState(WindowState.NORMAL);
-			response.setPortletMode(PortletMode.VIEW);
-		}
+		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
+			response.setRenderParameter("redirect", "true");
+		} else
+			response.setRenderParameters(formData);
 	}
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		if (!Validator.isNull(request.getParameter("redirect"))) {
+			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
+		}
 		Map model = new HashMap();
 		
 		//Add the list of existing functions for this zone

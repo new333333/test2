@@ -24,7 +24,7 @@ public class Workspace extends Binder  {
     protected List binders;
    /**
      * @hibernate.bag lazy="true"  cascade="all" inverse="true" optimistic-lock="false"
-	 * @hibernate.key column="owningWorkspace" 
+	 * @hibernate.key column="parentBinder" 
 	 * @hibernate.one-to-many class="com.sitescape.ef.domain.Binder"
      * @hibernate.cache usage="read-write"
      * @return
@@ -56,7 +56,7 @@ public class Workspace extends Binder  {
     		folders.add(child);
     	}
 		binders.add(child);
-		child.setOwningWorkspace(this);
+		child.setParentBinder(this);
 	}
     public void removeChild(Binder child) {
      	if (!bindersParsed) parseBinders();
@@ -66,7 +66,7 @@ public class Workspace extends Binder  {
     		folders.remove(child);
     	}
  		binders.remove(child);
-		child.setOwningWorkspace(null);
+		child.setParentBinder(null);
  		
 	}
     protected void parseBinders() {
@@ -76,16 +76,11 @@ public class Workspace extends Binder  {
     	Binder f,w;
     	while (iter.hasNext()) {
     		f = (Binder)iter.next();
-    		if (f==null) continue;
-    		w = f.getOwningWorkspace();
-    		if (w==null) continue;
-    		if (w.getId().equals(getId())) {
-    			if (f instanceof Workspace) {
-    				workspaces.add(f);
-    			} else if (f instanceof Folder){
-    				folders.add(f);
-    			}
-    		}
+   			if (f instanceof Workspace) {
+   				workspaces.add(f);
+   			} else if (f instanceof Folder){
+   				folders.add(f);
+   			}
     	}
     	bindersParsed=true;
     }
@@ -95,7 +90,7 @@ public class Workspace extends Binder  {
     public Definition getDefaultPostingDef() {
     	Definition def = super.getDefaultPostingDef();
     	if (def != null) return def;
-    	if (getOwningWorkspace() != null) return getOwningWorkspace().getDefaultPostingDef();
+    	if (getParentBinder() != null) return getParentBinder().getDefaultPostingDef();
     	return null;
     }
     

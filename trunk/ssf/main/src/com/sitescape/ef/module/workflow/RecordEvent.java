@@ -1,11 +1,12 @@
 package com.sitescape.ef.module.workflow;
+import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
 import org.jbpm.context.exe.ContextInstance;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 
@@ -24,6 +25,11 @@ public class RecordEvent extends AbstractActionHandler {
 		WorkflowControlledEntry entry = loadEntry(ctx);
 		WorkflowState ws = entry.getWorkflowState(id);
 		if (ws != null) {
+			HistoryStamp stamp = (HistoryStamp)ctx.getTransientVariable("historyStamp");
+			if (stamp == null) {
+				stamp = new HistoryStamp(RequestContextHolder.getRequestContext().getUser(), new Date());
+			}
+			entry.setWorkflowChange(stamp);
 			ws.setState(state);
 			if (infoEnabled) logger.info("Workflow event (" + executionContext.getEvent().getEventType() + ") recorded: " + state);
 		}

@@ -213,6 +213,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_CONFIGURE_POSTING_JOB="administration/configurePostingJob";
     public static final String VIEW_ADMIN_CONFIGURE_SEARCH_INDEX="administration/configureSearchIndex";
     public static final String VIEW_ADMIN_IMPORT_DEFINITIONS ="administration/importDefinitions"; 
+    public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
     //servlet paths
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";

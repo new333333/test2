@@ -124,26 +124,12 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		return result.attributeValue(name);
 	}
 
-	public String getMailAttribute(Workspace ws, String node, String name) {
-		String result = getMailAttribute(ws.getZoneName(), "binder[@id='" + ws.getId().toString() +"']/" + node, name);
-		if (result != null) return result;
-		if (ws.getOwningWorkspace() != null) {
-			return getMailAttribute(ws.getOwningWorkspace(), node, name);
-		}
-		return getMailAttribute(ws.getZoneName(), node, name);
-	}
-	public String getMailAttribute(Folder folder, String node, String name) {
-		String result = getMailAttribute(folder.getZoneName(), "binder[@id='" + folder.getId().toString() +"']/" + node, name);
-		if (result != null) return result;
-		if (folder.getParentFolder() != null) {
-			return getMailAttribute(folder.getParentFolder(), node, name);
-		}
-		return getMailAttribute(folder.getOwningWorkspace(), node, name);
-	}
 	public String getMailAttribute(Binder binder, String node, String name) {
 		String result = getMailAttribute(binder.getZoneName(), "binder[@id='" + binder.getId().toString() +"']/" + node, name);
 		if (result != null) return result;
-		return getMailAttribute(binder.getOwningWorkspace(), node, name);
+		if (binder.getParentBinder() != null) return getMailAttribute(binder.getParentBinder(), node, name);
+		return getMailAttribute(binder.getZoneName(), node, name);
+
 	}
 	private synchronized JavaMailSender getSender(String jndiName) {
 		if (mailSenders.containsKey(jndiName)) 
@@ -456,7 +442,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 				FileAttachment fAtt = (FileAttachment)iter.next();
 				RepositoryService service = RepositoryServiceUtil.lookupRepositoryService(fAtt.getRepositoryServiceName());
 				if (service != null) {
-					FolderEntry entry = (FolderEntry)fAtt.getOwner().getEntry();
+					FolderEntry entry = (FolderEntry)fAtt.getOwner().getEntity();
 					DataSource ds = service.getDataSource(service.openRepositorySession(), entry.getParentFolder(), 
 								entry, fAtt.getFileItem().getName(), helper.getFileTypeMap());
 

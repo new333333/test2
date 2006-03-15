@@ -48,7 +48,7 @@ public class ImportDefinitionController extends  SAbstractController {
 			}
 		
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
-			response.setRenderParameter(WebKeys.ACTION, "");
+			response.setRenderParameter("redirect", "true");
 		} else
 			response.setRenderParameters(formData);
 	}
@@ -56,6 +56,9 @@ public class ImportDefinitionController extends  SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
+		if (!Validator.isNull(request.getParameter("redirect"))) {
+			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
+		}
 		return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_DEFINITIONS);
 	}
 

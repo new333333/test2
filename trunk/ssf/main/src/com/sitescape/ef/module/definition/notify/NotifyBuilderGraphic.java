@@ -6,6 +6,7 @@ import java.util.Iterator;
 import org.dom4j.Element;
 
 import com.sitescape.ef.domain.CustomAttribute;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.web.WebKeys;
@@ -19,7 +20,7 @@ import com.sitescape.ef.domain.Entry;
 public class NotifyBuilderGraphic extends AbstractNotifyBuilder {
 
 	   protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
-		   Entry entry = attribute.getOwner().getEntry();
+		   DefinableEntity entry = attribute.getOwner().getEntity();
 		   Set files = attribute.getValueSet();
 		   for (Iterator iter=files.iterator(); iter.hasNext();) {
 		    	Element value = element.addElement("graphic");		    		

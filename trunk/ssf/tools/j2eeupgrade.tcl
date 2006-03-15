@@ -47,14 +47,13 @@ array set ::j2ee_Forum_class_MAP {
    modification_date {modification_date timestamp}
    modification_principal     {modification_principal int32}
    owner_principal     {owner_principal int32}   
-   owningWorkspace {owningWorkspace int32}
    topFolder  {topFolder int32}
    notify_teamOn   {notify_teamOn boolean}
    notify_email    {notify_email clob}
    defaultReplyDef {defaultReplyDef uuid}
    featureMask			{featureMask int32}
    functionMembershipInherited   {functionMembershipInherited boolean}
-   parentFolder 		{parentFolder int32}
+   parentBinder 		{parentBinder int32}
    displayStyle {displayStyle int32}
    folder_sortKey   {folder_sortKey "varchar 512"}
    folder_level		{folder_level int32}
@@ -602,7 +601,7 @@ proc doZone {zoneName {cName {liferay.com}}} {
 
     #get list of forums
     set forumList [lsort -dictionary [glob -nocomplain -type d [avf_filejoin hidden_base $::Wgw_CurrentACA *]]]
-    #generate uuids for all forums and store so we can set owningworkspace ids as foreign keys
+    #generate uuids for all forums and store so we can set parentBinder ids as foreign keys
 	#need id of preferred workspace to finish users
     foreach f $forumList {
         set forum [file tail $f]
@@ -630,8 +629,8 @@ proc doZone {zoneName {cName {liferay.com}}} {
  	} else {
     	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'PROFILES',0,0,0,'[sql_quote_value $::zoneName]');"
     }
-    wimsql_rw "Update SS_Forums set owningWorkspace=$::forumIds(_admin) where not name='_admin';"
-    wimsql_rw "Update SS_Forums set owningWorkspace=null,name='[sql_quote_value $::zoneName]' where name='_admin';"
+    wimsql_rw "Update SS_Forums set parentBinder=$::forumIds(_admin) where not name='_admin';"
+    wimsql_rw "Update SS_Forums set parentBinder=null,name='[sql_quote_value $::zoneName]' where name='_admin';"
     wimsql_rw commit
     if {$::dialect == "mssql"} {
         wimsql_rw "SET IDENTITY_INSERT SS_Forums OFF;"
@@ -697,9 +696,9 @@ proc doZone {zoneName {cName {liferay.com}}} {
             set attrs(owner_principal) $attrs(creation_principal)
             set wsName [string trim [wim property get -aca $zoneName -name $forum parentSummit]]
             if {![isnull $wsName] && [info exists ::forumIds($wsName)] } {
-                set attrs(owningWorkspace) $::forumIds($wsName)
+                set attrs(parentBinder) $::forumIds($wsName)
             } elseif {![strequal $forum "_admin"]} {
-            	set attrs(owningWorkspace) $::forumIds(_admin)
+            	set attrs(parentBinder) $::forumIds(_admin)
             }
 #			array unset workflowIds
 			#generate workflowIds cause referenced in commands
@@ -776,9 +775,6 @@ proc doZone {zoneName {cName {liferay.com}}} {
             set cmdList [lindex $results 1]
             set cmd [lindex $cmdList 0] 
             wimsql_rw "UPDATE SS_Forums $cmd where id=$::forumIds($forum);" [lindex $cmdList 1]
-			if {[info exists attrs(owningWorkspace)]} {
-				wimsql_rw "Update SS_Forums set owningWorkspace=$attrs(owningWorkspace) where topFolder=$::forumIds($forum);"
-			}
 			doAcls $zoneName $forum $RESOURCE_TYPE
 			wim property unload -aca $zoneName -name $forum
         }
@@ -845,7 +841,7 @@ proc doFolders {forum folder level hKey parentID} {
 	    set attrs(modification_date) [aval -name $forum modifiedOn $folder]
 		checkDates attrs(creation_date) attrs(modification_date)
 	    set attrs(title) [aval -name $forum title $folder]
-        set attrs(parentFolder) $parentID
+        set attrs(parentBinder) $parentID
 	    set attrs(topFolder) $::forumIds($forum)
 		set attrs(functionMembershipInherited) 1
 		set attrs(acl_inheritFromParent) 1

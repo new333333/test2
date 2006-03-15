@@ -71,9 +71,7 @@ public class ConfigurePostingController extends  SAbstractController  {
 			}			
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn")) {
-			response.setRenderParameter(WebKeys.ACTION, "");
-			response.setWindowState(WindowState.NORMAL);
-			response.setPortletMode(PortletMode.VIEW);
+			response.setRenderParameter("redirect", "true");
 		} else
 			response.setRenderParameters(formData);
 	
@@ -81,6 +79,9 @@ public class ConfigurePostingController extends  SAbstractController  {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		if (!Validator.isNull(request.getParameter("redirect"))) {
+			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
+		}
 		try {
 			Map model = new HashMap();
 			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));

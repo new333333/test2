@@ -295,8 +295,8 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
   	public void setOwner(AnyOwner owner) {
   		this.owner = owner;
   	}
-  	public void setOwner(Entry entry) {
-  		owner = new AnyOwner(entry);
+  	public void setOwner(DefinableEntity entity) {
+  		owner = new AnyOwner(entity);
   	}
     /**
      * @hibernate.property length="64"

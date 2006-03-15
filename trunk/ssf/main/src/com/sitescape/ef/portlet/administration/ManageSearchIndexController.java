@@ -30,6 +30,7 @@ import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.util.Validator;
 public class ManageSearchIndexController extends  SAbstractController {
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
@@ -55,20 +56,20 @@ public class ManageSearchIndexController extends  SAbstractController {
 				getFolderModule().indexFolderTree(folderId);
 			}
 			
-			response.setRenderParameter(WebKeys.ACTION, "");
-			response.setWindowState(WindowState.NORMAL);
-			response.setPortletMode(PortletMode.VIEW);
+			response.setRenderParameter("redirect", "true");
 			
 		} else if (formData.containsKey("cancelBtn")) {
-			response.setRenderParameter(WebKeys.ACTION, "");
-			response.setWindowState(WindowState.NORMAL);
-			response.setPortletMode(PortletMode.VIEW);
+			response.setRenderParameter("redirect", "true");
 		} else
 			response.setRenderParameters(formData);
 	}
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		if (!Validator.isNull(request.getParameter("redirect"))) {
+			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
+		}
+
 		Map model = new HashMap();
 		
 		Document wsTree = getWorkspaceModule().getDomWorkspaceTree(new WSTreeHelper(response));

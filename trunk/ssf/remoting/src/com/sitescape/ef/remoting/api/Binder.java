@@ -7,7 +7,7 @@ public class Binder {
 	private String zoneName;
 	private String type;
 	private String title;
-	private long owningWorkspaceId;
+	private long parentBinderId;
 	private String[] entryDefinitionIds;
 
 	public long getId() {
@@ -42,12 +42,12 @@ public class Binder {
 		this.name = name;
 	}
 
-	public long getOwningWorkspaceId() {
-		return owningWorkspaceId;
+	public long getParentBinderId() {
+		return parentBinderId;
 	}
 
-	public void setOwningWorkspaceId(long owningWorkspaceId) {
-		this.owningWorkspaceId = owningWorkspaceId;
+	public void setParentBinderId(long parentBinderId) {
+		this.parentBinderId = parentBinderId;
 	}
 
 	public String getType() {
