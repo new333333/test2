@@ -150,7 +150,7 @@
 	        	<include name="**/*.hbm.xml"/>
 			</fileset>
 	    </copy>		
-		<taskdef name="xdoclet2"
+<!--		<taskdef name="xdoclet2"
 		    classname="org.xdoclet.ant.XDocletTask">
 			<classpath>
 				<fileset dir="${project.dir}/lib" includes="*.jar" />
@@ -172,6 +172,7 @@
 		        force="false"
 	    	/>
 	    </xdoclet2>	
+-->
 	</target>	
 
 	  <target name="ss-create-tables" depends="init" description="Creates database tables for sitescape domain">

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_EmailAlias" name="com.sitescape.ef.domain.EmailAlias">
+    <id unsaved-value="null" name="id" node="@id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <property name="aliasName" length="256"/>
+    <property name="zoneName" length="100" not-null="true"/>
+    <bag inverse="true" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" name="postings">
+      <key column="emailAlias"/>
+      <one-to-many class="com.sitescape.ef.domain.PostingDef"/>
+    </bag>
+  </class>
+</hibernate-mapping>
