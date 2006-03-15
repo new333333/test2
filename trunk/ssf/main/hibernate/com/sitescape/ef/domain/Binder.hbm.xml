@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" lazy="false" table="SS_Forums" dynamic-insert="false" name="com.sitescape.ef.domain.Binder">
+    <cache usage="read-write"/>
+    <id unsaved-value="null" name="id" type="long" node="@id">
+      <generator class="native"/>
+    </id>
+    <discriminator type="string" column="type" length="16"/>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <property name="zoneName" length="100" not-null="true"/>
+    <many-to-one name="parentBinder"/>
+    <map inverse="true" cascade="all,delete-orphan" lazy="true" name="HCustomAttributes">
+      <key column="binder"/>
+      <map-key type="string" column="name"/>
+      <one-to-many class="com.sitescape.ef.domain.CustomAttribute"/>
+    </map>
+    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="HAttachments">
+      <key column="binder"/>
+      <one-to-many class="com.sitescape.ef.domain.Attachment"/>
+    </set>
+    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="HEvents">
+      <key column="binder"/>
+      <one-to-many class="com.sitescape.ef.domain.Event"/>
+    </set>
+    <list inverse="false" cascade="persist,merge,save-update" lazy="true" table="SS_DefinitionMap" name="HDefinitions">
+      <cache usage="read-write"/>
+      <key column="forum"/>
+      <index type="integer" column="position"/>
+      <many-to-many fetch="join" class="com.sitescape.ef.domain.Definition">
+        <column name="definition" sql-type="char(32)"/>
+      </many-to-many>
+    </list>
+    <many-to-one access="field" class="com.sitescape.ef.domain.Definition" name="defaultPostingDef">
+      <column name="defaultPostingDef" sql-type="char(32)"/>
+    </many-to-one>
+    <property name="type" length="16" update="false" insert="false"/>
+    <property name="name" length="128" not-null="true"/>
+    <component name="notificationDef">
+      <property name="teamOn" column="notify_teamOn"/>
+      <bag inverse="true" cascade="all,delete-orphan" optimistic-lock="false" node="." lazy="true" name="HDistribution">
+        <key column="binder"/>
+        <one-to-many node="distribution/@id" class="com.sitescape.ef.domain.Notification" embed-xml="false"/>
+      </bag>
+      <property name="HEmailAddress" column="notify_email" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
+      <property name="fromAddress" length="128" column="notify_fromAddress"/>
+      <property name="subject" length="128" column="notify_subject"/>
+    </component>
+    <bag inverse="true" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" name="postings">
+      <key column="binder"/>
+      <one-to-many class="com.sitescape.ef.domain.PostingDef"/>
+    </bag>
+    <component name="owner" node="owner">
+      <property name="date" column="owner_date" type="timestamp"/>
+      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+        <column name="owner_principal"/>
+      </many-to-one>
+    </component>
+    <property name="properties" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
+    <property name="IFeatureMask">
+      <column name="featureMask"/>
+    </property>
+    <property name="functionMembershipInherited" not-null="true"/>
+    <component name="HAclSet">
+      <property name="readMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+        <column name="acl_readMembers"/>
+      </property>
+      <property name="writeMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+        <column name="acl_writeMembers"/>
+      </property>
+      <property name="deleteMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+        <column name="acl_deleteMembers"/>
+      </property>
+      <property name="changeAclMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+        <column name="acl_changeAclMembers"/>
+      </property>
+    </component>
+    <property name="inheritAclFromParent" column="acl_inheritFromParent"/>
+    <property name="widenRead" column="acl_widenRead"/>
+    <property name="widenModify" column="acl_widenModify"/>
+    <property name="widenDelete" column="acl_widenDelete"/>
+    <component name="description">
+      <property name="HDescription" column="description_text" type="com.sitescape.ef.dao.util.SSClobStringType"/>
+      <property name="HFormat" column="description_format"/>
+    </component>
+    <property name="title" length="1024"/>
+    <many-to-one access="field" class="com.sitescape.ef.domain.Definition" name="entryDef">
+      <column name="entryDef" sql-type="char(32)"/>
+    </many-to-one>
+    <component name="creation" node="creation" class="com.sitescape.ef.domain.HistoryStamp">
+      <property name="date" column="creation_date" type="timestamp"/>
+      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+        <column name="creation_principal"/>
+      </many-to-one>
+    </component>
+    <component name="modification" node="modification" class="com.sitescape.ef.domain.HistoryStamp">
+      <property name="date" column="modification_date" type="timestamp"/>
+      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+        <column name="modification_principal"/>
+      </many-to-one>
+    </component>
+    <subclass name="com.sitescape.ef.domain.Folder" node="ss_folder" discriminator-value="FOLDER" dynamic-update="true">
+      <many-to-one embed-xml="false" node="topFolder/@id" name="topFolder"/>
+      <property name="nextEntryNumber"/>
+      <property name="nextFolderNumber"/>
+      <property name="displayStyle"/>
+      <component name="folderHKey" class="com.sitescape.ef.domain.HKey">
+        <property name="level" column="folder_level"/>
+        <property name="sortKey" length="512" column="folder_sortKey"/>
+      </component>
+      <component name="entryRootHKey" class="com.sitescape.ef.domain.HKey">
+        <property name="level" column="entryRoot_level"/>
+        <property name="sortKey" length="512" column="entryRoot_sortKey"/>
+      </component>
+      <bag inverse="true" cascade="all" optimistic-lock="false" lazy="true" name="HFolders">
+        <cache usage="read-write"/>
+        <key column="parentBinder"/>
+        <one-to-many class="com.sitescape.ef.domain.Folder"/>
+      </bag>
+      <bag inverse="true" cascade="all" optimistic-lock="false" lazy="true" name="IEntries">
+        <key column="parentBinder"/>
+        <one-to-many class="com.sitescape.ef.domain.FolderEntry"/>
+      </bag>
+    </subclass>
+    <subclass name="com.sitescape.ef.domain.ProfileBinder" discriminator-value="PROFILES" dynamic-update="true"/>
+    <subclass name="com.sitescape.ef.domain.Workspace" discriminator-value="WORKSPACE" dynamic-update="true">
+      <bag inverse="true" cascade="all" optimistic-lock="false" lazy="true" name="HBinders">
+        <cache usage="read-write"/>
+        <key column="parentBinder"/>
+        <one-to-many class="com.sitescape.ef.domain.Binder"/>
+      </bag>
+    </subclass>
+  </class>
+  <query name="find-Binder-Company"><![CDATA[from com.sitescape.ef.domain.Binder binder where binder.name=:binderName and binder.zoneName=:zoneName]]></query>
+</hibernate-mapping>

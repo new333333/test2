@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class discriminator-value="N" dynamic-update="true" lazy="false" table="SS_Attachments" name="com.sitescape.ef.domain.Attachment">
+    <id unsaved-value="null" name="id" node="@id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <discriminator type="char" column="type"/>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <component name="owner" class="com.sitescape.ef.domain.AnyOwner">
+      <many-to-one name="folderEntry"/>
+      <many-to-one name="principal"/>
+      <many-to-one name="binder"/>
+      <any name="HEntry" id-type="java.lang.Long" meta-type="string">
+        <meta-value class="com.sitescape.ef.domain.FolderEntry" value="doc"/>
+        <meta-value class="com.sitescape.ef.domain.Principal" value="principal"/>
+        <meta-value class="com.sitescape.ef.domain.Binder" value="binder"/>
+        <column name="ownerType" length="16"/>
+        <column name="ownerId"/>
+      </any>
+      <property name="ownerType" update="false" insert="false"/>
+      <property name="ownerId" update="false" insert="false"/>
+      <property name="owningFolderSortKey" length="512"/>
+    </component>
+    <property name="name" length="64"/>
+    <component name="creation" class="com.sitescape.ef.domain.HistoryStamp">
+      <property name="date" column="creation_date" type="timestamp"/>
+      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+        <column name="creation_principal"/>
+      </many-to-one>
+    </component>
+    <component name="modification" class="com.sitescape.ef.domain.HistoryStamp">
+      <property name="date" column="modification_date" type="timestamp"/>
+      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+        <column name="modification_principal"/>
+      </many-to-one>
+    </component>
+    <subclass name="com.sitescape.ef.domain.Bookmark" discriminator-value="B" dynamic-update="true">
+      <property name="active"/>
+      <property name="title" length="256"/>
+      <many-to-one name="bookmarkEntry"/>
+    </subclass>
+    <subclass name="com.sitescape.ef.domain.FileAttachment" discriminator-value="F" dynamic-update="true">
+      <component name="fileItem">
+        <property name="name" length="256" column="fileName"/>
+        <property name="length" column="fileLength"/>
+      </component>
+      <property name="lastVersion"/>
+      <bag inverse="true" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" batch-size="4" name="HFileVersions">
+        <key column="parentAttachment"/>
+        <one-to-many class="com.sitescape.ef.domain.VersionAttachment"/>
+      </bag>
+      <property name="repositoryServiceName" length="128"/>
+      <component name="checkout" class="com.sitescape.ef.domain.HistoryStamp">
+        <property name="date" column="checkout_date" type="timestamp"/>
+        <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+          <column name="checkout_principal"/>
+        </many-to-one>
+      </component>
+      <subclass name="com.sitescape.ef.domain.VersionAttachment" discriminator-value="V" dynamic-update="true">
+        <property name="versionNumber"/>
+        <property name="versionName" length="256"/>
+        <many-to-one class="com.sitescape.ef.domain.FileAttachment" name="parentAttachment">
+          <column name="parentAttachment" sql-type="char(32)"/>
+        </many-to-one>
+      </subclass>
+    </subclass>
+    <subclass name="com.sitescape.ef.domain.URLAttachment" discriminator-value="U" dynamic-update="true">
+      <property name="url" length="256">
+        <column name="title"/>
+      </property>
+    </subclass>
+  </class>
+</hibernate-mapping>

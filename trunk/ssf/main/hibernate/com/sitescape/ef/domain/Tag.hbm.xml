@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_Tags" dynamic-insert="true" name="com.sitescape.ef.domain.Tag">
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <property name="itemId"/>
+    <property name="itemType"/>
+    <property name="ownerType" length="16"/>
+    <property name="ownerId"/>
+    <property name="name" length="64"/>
+    <property name="public">
+      <column name="isPublic"/>
+    </property>
+  </class>
+</hibernate-mapping>

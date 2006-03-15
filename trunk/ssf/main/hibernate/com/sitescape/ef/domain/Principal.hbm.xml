@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" node="Principal" table="SS_Principals" name="com.sitescape.ef.domain.Principal">
+    <cache usage="read-write"/>
+    <id unsaved-value="null" name="id" type="long" node="@id">
+      <generator class="native"/>
+    </id>
+    <discriminator type="string" column="type" length="1"/>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <map inverse="true" cascade="all,delete-orphan" embed-xml="false" lazy="true" name="HCustomAttributes">
+      <key column="principal"/>
+      <map-key type="string" column="name"/>
+      <one-to-many class="com.sitescape.ef.domain.CustomAttribute"/>
+    </map>
+    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="HAttachments">
+      <key column="principal"/>
+      <one-to-many class="com.sitescape.ef.domain.Attachment"/>
+    </set>
+    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="HEvents">
+      <key column="principal"/>
+      <one-to-many class="com.sitescape.ef.domain.Event"/>
+    </set>
+    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="HWorkflowStates">
+      <key column="principal"/>
+      <one-to-many class="com.sitescape.ef.domain.WorkflowState"/>
+    </set>
+    <property name="defaultIdentity"/>
+    <property name="reserved"/>
+    <property name="preferredWorkspaceId">
+      <column name="preferredWorkspace"/>
+    </property>
+    <property name="zoneName" length="100" not-null="true"/>
+    <property name="signature" length="256"/>
+    <property name="disabled"/>
+    <property name="lcName" length="82"/>
+    <property name="name" length="82"/>
+    <property name="foreignName" length="256"/>
+    <bag inverse="true" cascade="persist,merge,save-update" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="HMemberOf">
+      <cache usage="read-write"/>
+      <key column="userId"/>
+      <many-to-many fetch="join" node="Group" class="com.sitescape.ef.domain.Group" column="groupId" embed-xml="false"/>
+    </bag>
+    <component name="workflowChange" class="com.sitescape.ef.domain.HistoryStamp">
+      <property name="date" column="wrk_date" type="timestamp"/>
+      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+        <column name="wrk_principal"/>
+      </many-to-one>
+    </component>
+    <many-to-one name="parentBinder"/>
+    <component name="description">
+      <property name="HDescription" column="description_text" type="com.sitescape.ef.dao.util.SSClobStringType"/>
+      <property name="HFormat" column="description_format"/>
+    </component>
+    <property name="title" length="1024"/>
+    <many-to-one access="field" class="com.sitescape.ef.domain.Definition" name="entryDef">
+      <column name="entryDef" sql-type="char(32)"/>
+    </many-to-one>
+    <component name="creation" node="creation" class="com.sitescape.ef.domain.HistoryStamp">
+      <property name="date" column="creation_date" type="timestamp"/>
+      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+        <column name="creation_principal"/>
+      </many-to-one>
+    </component>
+    <component name="modification" node="modification" class="com.sitescape.ef.domain.HistoryStamp">
+      <property name="date" column="modification_date" type="timestamp"/>
+      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+        <column name="modification_principal"/>
+      </many-to-one>
+    </component>
+    <subclass name="com.sitescape.ef.domain.Group" discriminator-value="G" dynamic-update="true">
+      <bag inverse="false" cascade="persist,merge,save-update" lazy="true" table="SS_PrincipalMembership" name="HMembers">
+        <key column="groupId"/>
+        <many-to-many fetch="join" class="com.sitescape.ef.domain.Principal" column="userId"/>
+      </bag>
+      <property name="HFunctionMembershipInherited" not-null="true">
+        <column name="functionMembershipInherited"/>
+      </property>
+    </subclass>
+    <subclass name="com.sitescape.ef.domain.User" node="User" discriminator-value="U" dynamic-update="true">
+      <property name="displayStyle" length="32"/>
+      <property name="loginDate"/>
+      <property name="timeZoneName" length="10"/>
+      <property name="languageId" length="2"/>
+      <property name="country" length="2"/>
+      <property name="emailAddress" length="256"/>
+      <property name="firstName" length="64"/>
+      <property name="lastName" length="64"/>
+      <property name="middleName" length="64"/>
+      <property name="homepage" length="256"/>
+      <property name="organization" length="256"/>
+      <property name="phone" length="128"/>
+      <property name="webPubDir" length="256"/>
+      <many-to-one class="com.sitescape.ef.domain.Folder" embed-xml="false" node="Calendar" name="calendar">
+        <column name="calender"/>
+      </many-to-one>
+      <property name="zonName" length="100"/>
+      <property name="password" length="64"/>
+    </subclass>
+  </class>
+  <query name="find-User-Company"><![CDATA[from com.sitescape.ef.domain.User user where user.name=:userName and user.zoneName=:zoneName]]></query>
+</hibernate-mapping>

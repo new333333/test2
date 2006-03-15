@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_UserProperties" name="com.sitescape.ef.domain.UserProperties">
+    <composite-id name="id" class="com.sitescape.ef.domain.UserPropertiesPK">
+      <key-property name="principalId"/>
+      <key-property name="folderId"/>
+    </composite-id>
+    <property name="properties" not-null="true" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
+  </class>
+</hibernate-mapping>

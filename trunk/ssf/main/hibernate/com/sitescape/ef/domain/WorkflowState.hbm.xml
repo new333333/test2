@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class dynamic-update="true" table="SS_WorkflowStates" name="com.sitescape.ef.domain.WorkflowState">
+    <id name="tokenId">
+      <generator class="assigned"/>
+    </id>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <component name="owner" class="com.sitescape.ef.domain.AnyOwner">
+      <many-to-one name="folderEntry"/>
+      <many-to-one name="principal"/>
+      <many-to-one name="binder"/>
+      <any name="HEntry" id-type="java.lang.Long" meta-type="string">
+        <meta-value class="com.sitescape.ef.domain.FolderEntry" value="doc"/>
+        <meta-value class="com.sitescape.ef.domain.Principal" value="principal"/>
+        <meta-value class="com.sitescape.ef.domain.Binder" value="binder"/>
+        <column name="ownerType" length="16"/>
+        <column name="ownerId"/>
+      </any>
+      <property name="ownerType" update="false" insert="false"/>
+      <property name="ownerId" update="false" insert="false"/>
+      <property name="owningFolderSortKey" length="512"/>
+    </component>
+    <property name="state" length="64"/>
+    <property name="threadName" length="64"/>
+    <many-to-one name="definition"/>
+  </class>
+</hibernate-mapping>
