@@ -22,4 +22,9 @@ public abstract class Entry extends DefinableEntity  {
     public void setParentBinder(Binder parentBinder) {
    	 this.parentBinder = parentBinder;
     }
+    public Definition getEntryDef() {
+    	if (entryDef != null) return entryDef;
+    	return getParentBinder().getDefaultEntryDef();
+    }
+
 }
