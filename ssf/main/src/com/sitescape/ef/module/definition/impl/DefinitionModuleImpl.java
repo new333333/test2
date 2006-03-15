@@ -820,146 +820,148 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		entryDataAll.put("entryData", entryData);
 		entryDataAll.put("fileData", fileData);
 		
-		Document definitionTree = def.getDefinition();
-		if (definitionTree != null) {
-			//root is the root of the entry's definition
-			Element root = definitionTree.getRootElement();
-			
-			//Get a list of all of the form items in the definition (i.e., from the "form" section of the definition)
-			Element entryFormItem = (Element)root.selectSingleNode("item[@type='form' or @name='entryForm' or @name='profileEntryForm']");
-			if (entryFormItem != null) {
-				//While going through the entry's elements, keep track of the current form name (needed to process date elements)
-				Iterator itItems = entryFormItem.selectNodes(".//item").listIterator();
-				while (itItems.hasNext()) {
-					Element nextItem = (Element) itItems.next();
-					String itemName = (String) nextItem.attributeValue("name", "");
-					
-					//Get the form element name (property name)
-					Element nameProperty = (Element) nextItem.selectSingleNode("./properties/property[@name='name']");
-					if (nameProperty != null) {
-						//Find the item in the base configuration definition to see if it is a data item
-						Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "']");
-						if (configItem != null) {
-							if (configItem.attributeValue("type", "").equals("data")) {
-								String nameValue = nameProperty.attributeValue("value", "");									
-								if (nameValue.equals("")) {nameValue = nextItem.attributeValue("name");}
-								
-								//We have the element name, see if it has a value in the input data
-								if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
-									//Use the helper routine to parse the date into a date object
-									Description description = new Description();
-									if (inputData.exists(nameValue)) {
-										description.setText(inputData.getSingleValue(nameValue));
-										description.setFormat(Description.FORMAT_HTML);
-										entryData.put(nameValue, description);
-									}
-								} else if (itemName.equals("date")) {
-									//Use the helper routine to parse the date into a date object
-									Date date = DateHelper.getDateFromInput(inputData, nameValue);
-									if (date != null) {entryData.put(nameValue, date);}
-								} else if (itemName.equals("event")) {
-								    //Ditto for event helper routine
-								    Element hasDurElem = (Element) nextItem.selectSingleNode("./properties/property[@name='hasDuration']");
-								    Boolean hasDur = new Boolean(true);
-								    if (hasDurElem != null && hasDurElem.attributeValue("value", "").equals("false")) {
-								        hasDur = Boolean.FALSE;
-								    }
-								    Element hasRecurElem = (Element) nextItem.selectSingleNode("./properties/property[@name='hasRecurrence']");
-								    Boolean hasRecur = new Boolean(true);
-								    if (hasRecurElem != null && hasRecurElem.attributeValue("value", "").equals("false")) {
-								        hasRecur = Boolean.FALSE;
-								    }
-								    Event event = EventHelper.getEventFromMap(inputData, nameValue, hasDur, hasRecur);
-								    if (event != null) {
-								        event.setName(nameValue);
-								        entryData.put(nameValue, event);
-								    }
-								} else if (itemName.equals("user_list")) {
-									if (inputData.exists(nameValue)) {
-										String[] userIds = inputData.getSingleValue(nameValue).trim().split(" ");
-										Set users = new HashSet();
-										for (int i = 0; i < userIds.length; i++) {
-											try {
-												Long.parseLong(userIds[i]);
-												users.add(userIds[i]);
-											} catch (NumberFormatException ne) {}
+		if (def != null) {
+			Document definitionTree = def.getDefinition();
+			if (definitionTree != null) {
+				//root is the root of the entry's definition
+				Element root = definitionTree.getRootElement();
+				
+				//Get a list of all of the form items in the definition (i.e., from the "form" section of the definition)
+				Element entryFormItem = (Element)root.selectSingleNode("item[@type='form' or @name='entryForm' or @name='profileEntryForm']");
+				if (entryFormItem != null) {
+					//While going through the entry's elements, keep track of the current form name (needed to process date elements)
+					Iterator itItems = entryFormItem.selectNodes(".//item").listIterator();
+					while (itItems.hasNext()) {
+						Element nextItem = (Element) itItems.next();
+						String itemName = (String) nextItem.attributeValue("name", "");
+						
+						//Get the form element name (property name)
+						Element nameProperty = (Element) nextItem.selectSingleNode("./properties/property[@name='name']");
+						if (nameProperty != null) {
+							//Find the item in the base configuration definition to see if it is a data item
+							Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "']");
+							if (configItem != null) {
+								if (configItem.attributeValue("type", "").equals("data")) {
+									String nameValue = nameProperty.attributeValue("value", "");									
+									if (nameValue.equals("")) {nameValue = nextItem.attributeValue("name");}
+									
+									//We have the element name, see if it has a value in the input data
+									if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
+										//Use the helper routine to parse the date into a date object
+										Description description = new Description();
+										if (inputData.exists(nameValue)) {
+											description.setText(inputData.getSingleValue(nameValue));
+											description.setFormat(Description.FORMAT_HTML);
+											entryData.put(nameValue, description);
 										}
-										if (!users.isEmpty()) {
-											CommaSeparatedValue v = new CommaSeparatedValue();
-											v.setValue((String[])users.toArray(userIds));
-											entryData.put(nameValue, v);
+									} else if (itemName.equals("date")) {
+										//Use the helper routine to parse the date into a date object
+										Date date = DateHelper.getDateFromInput(inputData, nameValue);
+										if (date != null) {entryData.put(nameValue, date);}
+									} else if (itemName.equals("event")) {
+									    //Ditto for event helper routine
+									    Element hasDurElem = (Element) nextItem.selectSingleNode("./properties/property[@name='hasDuration']");
+									    Boolean hasDur = new Boolean(true);
+									    if (hasDurElem != null && hasDurElem.attributeValue("value", "").equals("false")) {
+									        hasDur = Boolean.FALSE;
+									    }
+									    Element hasRecurElem = (Element) nextItem.selectSingleNode("./properties/property[@name='hasRecurrence']");
+									    Boolean hasRecur = new Boolean(true);
+									    if (hasRecurElem != null && hasRecurElem.attributeValue("value", "").equals("false")) {
+									        hasRecur = Boolean.FALSE;
+									    }
+									    Event event = EventHelper.getEventFromMap(inputData, nameValue, hasDur, hasRecur);
+									    if (event != null) {
+									        event.setName(nameValue);
+									        entryData.put(nameValue, event);
+									    }
+									} else if (itemName.equals("user_list")) {
+										if (inputData.exists(nameValue)) {
+											String[] userIds = inputData.getSingleValue(nameValue).trim().split(" ");
+											Set users = new HashSet();
+											for (int i = 0; i < userIds.length; i++) {
+												try {
+													Long.parseLong(userIds[i]);
+													users.add(userIds[i]);
+												} catch (NumberFormatException ne) {}
+											}
+											if (!users.isEmpty()) {
+												CommaSeparatedValue v = new CommaSeparatedValue();
+												v.setValue((String[])users.toArray(userIds));
+												entryData.put(nameValue, v);
+											}
 										}
-									}
-								} else if (itemName.equals("selectbox")) {
-									if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getValues(nameValue));
-								} else if (itemName.equals("checkbox")) {
-									if (inputData.exists(nameValue) && inputData.getSingleValue(nameValue).equals("on")) {
-										entryData.put(nameValue, new Boolean(true));
+									} else if (itemName.equals("selectbox")) {
+										if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getValues(nameValue));
+									} else if (itemName.equals("checkbox")) {
+										if (inputData.exists(nameValue) && inputData.getSingleValue(nameValue).equals("on")) {
+											entryData.put(nameValue, new Boolean(true));
+										} else {
+											entryData.put(nameValue, new Boolean(false));
+										}
+									} else if (itemName.equals("file") || itemName.equals("graphic")) {
+									    if(fileItems != null && fileItems.containsKey(nameValue)) {
+									    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
+									    	String fileName = myFile.getOriginalFilename();
+									    	if (fileName.equals("")) continue;
+	
+									    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
+									    	String repositoryServiceName = storageElem.attributeValue("value",
+									    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
+									    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryServiceName);
+	
+									    	//See if there is a scaling request for this graphic file. If yes, pass along the hieght and width
+									    	Element maxWidthEle = (Element) nextItem.selectSingleNode("./properties/property[@name='maxWidth']");
+									    	if (maxWidthEle != null) {
+									    		String maxWidth = maxWidthEle.attributeValue("value", "");
+									    		if (!maxWidth.equals("")) {
+									    			fui.setMaxWidth(Integer.parseInt(maxWidth));
+									    		}
+									    	}
+									    	Element maxHeightEle = (Element) nextItem.selectSingleNode("./properties/property[@name='maxHeight']");
+									    	if (maxHeightEle != null) {
+									    		String maxHeight = maxHeightEle.attributeValue("value", "");
+									    		if (!maxHeight.equals("")) {
+									    			fui.setMaxHeight(Integer.parseInt(maxHeight));
+									    		}
+									    	}
+									    	// TODO The following piece of code may need a better conditional
+									    	// statement than this, since we probably do not want to generate
+									    	// thumbnails for all graphic-type file uploads. Or do we? 
+									    	if(itemName.equals("graphic")) {
+									    		fui.setGenerateThumbnail(true);
+									    		fui.setThumbnailDirectlyAccessible(true);
+									    	}
+									    	
+									    	fileData.add(fui);
+										}
+									} else if (itemName.equals("attachFiles")) {
+									    if(fileItems != null) {
+											int number = 1;
+											Element attachmentNumber = (Element) nextItem.selectSingleNode("./properties/property[@name='number']");
+											if (attachmentNumber != null) {
+												if (!attachmentNumber.attributeValue("value", "").equals("")) {
+													number = Integer.parseInt(attachmentNumber.attributeValue("value"));
+												}
+											}
+											for (int i=1;i <= number;i++) {
+												String fileEleName = nameValue + Integer.toString(i);
+												if (fileItems.containsKey(fileEleName)) {												
+											    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
+											    	String fileName = myFile.getOriginalFilename();
+											    	if (fileName.equals("")) continue;
+											    	
+											    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
+											    	String repositoryServiceName = storageElem.attributeValue("value",
+											    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
+											    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryServiceName);
+											    	fileData.add(fui);
+												}
+											}
+									    }
 									} else {
-										entryData.put(nameValue, new Boolean(false));
+										if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getSingleValue(nameValue));
 									}
-								} else if (itemName.equals("file") || itemName.equals("graphic")) {
-								    if(fileItems != null && fileItems.containsKey(nameValue)) {
-								    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
-								    	String fileName = myFile.getOriginalFilename();
-								    	if (fileName.equals("")) continue;
-
-								    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
-								    	String repositoryServiceName = storageElem.attributeValue("value",
-								    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
-								    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryServiceName);
-
-								    	//See if there is a scaling request for this graphic file. If yes, pass along the hieght and width
-								    	Element maxWidthEle = (Element) nextItem.selectSingleNode("./properties/property[@name='maxWidth']");
-								    	if (maxWidthEle != null) {
-								    		String maxWidth = maxWidthEle.attributeValue("value", "");
-								    		if (!maxWidth.equals("")) {
-								    			fui.setMaxWidth(Integer.parseInt(maxWidth));
-								    		}
-								    	}
-								    	Element maxHeightEle = (Element) nextItem.selectSingleNode("./properties/property[@name='maxHeight']");
-								    	if (maxHeightEle != null) {
-								    		String maxHeight = maxHeightEle.attributeValue("value", "");
-								    		if (!maxHeight.equals("")) {
-								    			fui.setMaxHeight(Integer.parseInt(maxHeight));
-								    		}
-								    	}
-								    	// TODO The following piece of code may need a better conditional
-								    	// statement than this, since we probably do not want to generate
-								    	// thumbnails for all graphic-type file uploads. Or do we? 
-								    	if(itemName.equals("graphic")) {
-								    		fui.setGenerateThumbnail(true);
-								    		fui.setThumbnailDirectlyAccessible(true);
-								    	}
-								    	
-								    	fileData.add(fui);
-									}
-								} else if (itemName.equals("attachFiles")) {
-								    if(fileItems != null) {
-										int number = 1;
-										Element attachmentNumber = (Element) nextItem.selectSingleNode("./properties/property[@name='number']");
-										if (attachmentNumber != null) {
-											if (!attachmentNumber.attributeValue("value", "").equals("")) {
-												number = Integer.parseInt(attachmentNumber.attributeValue("value"));
-											}
-										}
-										for (int i=1;i <= number;i++) {
-											String fileEleName = nameValue + Integer.toString(i);
-											if (fileItems.containsKey(fileEleName)) {												
-										    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
-										    	String fileName = myFile.getOriginalFilename();
-										    	if (fileName.equals("")) continue;
-										    	
-										    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
-										    	String repositoryServiceName = storageElem.attributeValue("value",
-										    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
-										    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryServiceName);
-										    	fileData.add(fui);
-											}
-										}
-								    }
-								} else {
-									if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getSingleValue(nameValue));
 								}
 							}
 						}
