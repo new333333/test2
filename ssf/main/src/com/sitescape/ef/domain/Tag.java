@@ -127,7 +127,7 @@ public class Tag {
 	public boolean isPublic() {
 		return isPublic;
 	}
-	public void setIsPublic(boolean isPublic) {
+	public void setPublic(boolean isPublic) {
 		this.isPublic = isPublic;
 	}
 }
