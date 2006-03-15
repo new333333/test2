@@ -1,12 +1,10 @@
-<% // 2 column table %>
+<% // 3 column table %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <%
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
 		
-		//Iterate through the child items, putting them into a 2 column table
+		//Iterate through the child items, putting them into a 3 column table
 		Iterator itItems = item.elementIterator("item");
 		if (itItems.hasNext()) {
 %>
@@ -20,8 +18,8 @@
 				Element tdItem1 = (Element) itItems.next();
 %>
 <td>
-<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-  configElement="<%= tdItem1 %>" configJspStyle="<%= ssConfigJspStyle %>" 
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="<%= tdItem1 %>" configJspStyle="${ssConfigJspStyle}" 
   processThisItem="true" />
 </td>
 <%
@@ -30,8 +28,24 @@
 					Element tdItem2 = (Element) itItems.next();
 %>
 <td>
-<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-  configElement="<%= tdItem2 %>" configJspStyle="<%= ssConfigJspStyle %>" 
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="<%= tdItem2 %>" configJspStyle="${ssConfigJspStyle}" 
+  processThisItem="true" />
+</td>
+<%
+				} else {
+%>
+<td>&nbsp;</td>
+<%
+				}
+
+				//Output the third <td>
+				if (itItems.hasNext()) {
+					Element tdItem3 = (Element) itItems.next();
+%>
+<td>
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="<%= tdItem3 %>" configJspStyle="${ssConfigJspStyle}" 
   processThisItem="true" />
 </td>
 <%
