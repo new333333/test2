@@ -549,7 +549,6 @@
 		<properties>
 			<property name="style" caption="__box_style" type="selectbox" default="rounded">
 				<option name="rounded" caption="__box_rounded" />
-				<option name="rounded_shadow" caption="__box_rounded_with_shadow" />
 				<option name="square" caption="__box_square" />
 			</property>
 		</properties>
@@ -1079,7 +1078,8 @@
 		</jsps>
 	</item>
 
-	<item name="profileEntryFormForm" caption="__form" canBeDeleted="false" multipleAllowed="false">
+	<item name="profileEntryFormForm" caption="__form" canBeDeleted="false" 
+		  multipleAllowed="false">
 		<properties>
 			<property name="name" caption="__form_name" type="text" 
 				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName" value="form1"/>
@@ -1115,29 +1115,16 @@
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderProfileName" />
 	</item>
 	
-	<item name="profileTitle" caption="__profile_title" type="data" 
-		multipleAllowed="false" category="profileEntryData">
-		<properties>
-			<property name="name" caption="__data_name" type="text" value="title" 
-			  readonly="true" unique="//item[@type='data']">
-				<help>__help_data_name</help>
-			</property>
-			<property name="caption" caption="__caption" type="text" value="__profile_title"/>
-			<property name="width" caption="__width" type="text"/>
-		</properties>
-		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_title_form.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_title_view.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderProfileTitle" />
-	</item>
-	
 	<item name="profileElements" caption="__profile_elements" type="data" category="profileEntryData">
 		<properties>
 		    <property name="name" caption="__profile_element" type="selectbox">
+				<option name="firstName" caption="__firstName" />
+				<option name="middleName" caption="__middleName" />
+				<option name="lastName" caption="__lastName" />
 				<option name="emailAddress" caption="__emailAddress" />
 				<option name="country" caption="__country" />
 				<option name="organization" caption="__organization" />
+				<option name="homepage" caption="__homepage" />
 				<option name="zonName" caption="__zonName" />
 		    </property>
 			<property name="caption" caption="__caption" type="text" />
@@ -1159,6 +1146,7 @@
 
 		<options>
 			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="profileTitle" caption="__profile_title" />
 			<option name="profileEntryAttachments" caption="__profile_entry_attachments" />
 			<option_select path="//item[@category='profileLayout']" optionCaption="__profile_entry_layout_options" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
@@ -1169,7 +1157,18 @@
 		</jsps>
 	</item>
 	
-	<item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData">
+	<item name="profileTitle" type="dataView" caption="__profile_title" 
+		    multipleAllowed="true" category="profileEntryViewData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__profile_title"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_title_view.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" 
+		    category="profileEntryViewData">
 		<properties>
 			<property name="name" caption="__profile_data_item_name" type="selectbox">
 			    <option_entry_data select_type="data" 

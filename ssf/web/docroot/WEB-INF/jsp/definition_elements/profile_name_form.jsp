@@ -10,4 +10,3 @@
 	<c:if test="${!empty ssEntry.name}"> READONLY style="background-color: infobackground;" </c:if>
 >
 </div>
-<div class="ss_divider"></div>

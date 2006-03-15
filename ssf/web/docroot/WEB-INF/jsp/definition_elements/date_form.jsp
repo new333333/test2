@@ -38,4 +38,3 @@
   initDate="<%= new Date() %>" />
 </c:if>
 </div>
-<div class="ss_divider"></div>

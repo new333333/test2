@@ -45,4 +45,3 @@ function ss_htmlareaUnload_<%= formName %>_<%= elementName %>() {
 }
 </script>
 </div>
-<div class="ss_divider"></div>

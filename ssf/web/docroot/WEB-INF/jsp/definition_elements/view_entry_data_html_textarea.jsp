@@ -4,4 +4,3 @@
 <c:out value="${ssDefinitionEntry.customAttributes[property_name].value.text}" escapeXml="false"/>
  </span>
 </div>
-<div class="ss_divider"></div>

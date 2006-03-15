@@ -7,5 +7,4 @@
 <input type="checkbox" DISABLED>
 <span class="ss_labelRight"><c:out value="${property_caption}" /></span>
 </div>
-<div class="ss_divider"></div>
 </c:if>

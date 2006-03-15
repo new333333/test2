@@ -10,4 +10,3 @@
 </c:forEach>
 </ul>
 </div>
-<div class="ss_divider"></div>
