@@ -20,7 +20,9 @@ import java.util.ArrayList;
 
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
@@ -41,9 +43,10 @@ public class DisplayConfiguration extends TagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
-			Element definitionRoot = this.configDefinition.getRootElement();
-
-			if (this.configElement != null) {
+			if (this.configDefinition == null) {
+					throw new JspException("No configuration definition available for this item.");
+			} else if (this.configElement != null) {
+				Element definitionRoot = this.configDefinition.getRootElement();
 				Iterator itItems = null;
 				if (processThisItem == true) {
 					List itemList = new ArrayList();
@@ -163,11 +166,11 @@ public class DisplayConfiguration extends TagSupport {
 									}
 								} else {
 									pageContext.getOut().print("<br><i>[No jsp for configuration element: "
-											+nextItem.attributeValue("caption", "unknown")+"]</i><br>");
+											+NLT.getDef(nextItem.attributeValue("caption", "unknown"))+"]</i><br>");
 								}
 							} else {
 								pageContext.getOut().print("<br><i>[No jsp for configuration element: "
-										+nextItem.attributeValue("caption", "unknown")+"]</i><br>");
+										+NLT.getDef(nextItem.attributeValue("caption", "unknown"))+"]</i><br>");
 							}
 						}
 					}

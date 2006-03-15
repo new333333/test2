@@ -1,7 +1,5 @@
 <% // View entry replies %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 
 <% // Process the replies only if this is the top level entry being displayed %>
 <c:if test="${ssEntry == ssDefinitionEntry}" >
@@ -11,9 +9,9 @@
 <c:forEach var="reply" items="${ssFolderEntryDescendants}">
 <jsp:useBean id="reply" type="com.sitescape.ef.domain.Entry" />
  <div>
-	  <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
+	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 		configElement="<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']") %>" 
-		configJspStyle="<%= ssConfigJspStyle %>" 
+		configJspStyle="${ssConfigJspStyle}" 
 		processThisItem="false" 
 		entry="<%= reply %>" />
  </div>

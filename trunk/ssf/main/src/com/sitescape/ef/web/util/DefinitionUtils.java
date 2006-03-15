@@ -226,6 +226,7 @@ public class DefinitionUtils {
 			}
 		}
 		model.put(WebKeys.CONFIG_ELEMENT, entryView);
+		model.put(WebKeys.CONFIG_DEFINITION, def);
 	}
 		
 }

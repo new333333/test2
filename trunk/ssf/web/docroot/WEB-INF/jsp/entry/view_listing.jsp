@@ -7,9 +7,6 @@
 
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
-<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
-<jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Binder" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
@@ -252,11 +249,11 @@ if (self.parent && self.parent.highlightLineById) {
 }
 </script>
 
-<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-  configElement="<%= ssConfigElement %>" 
-  configJspStyle="<%= ssConfigJspStyle %>"
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="${ssConfigElement}" 
+  configJspStyle="${ssConfigJspStyle}"
   processThisItem="true" 
-  entry="<%= ssEntry %>" />
+  entry="${ssEntry}" />
 
 <%
 	//See if this is the Popup view

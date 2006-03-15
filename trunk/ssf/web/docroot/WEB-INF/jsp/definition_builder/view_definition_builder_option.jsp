@@ -25,13 +25,11 @@
 <jsp:useBean id="definitionTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="data" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssPublicEntryDefinitions" type="java.util.Map" scope="request" />
-<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <%@ page import="com.sitescape.ef.domain.Entry" %>
 <jsp:useBean id="ss_ajaxStatus" type="java.util.Map" scope="request" />
 		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
 		  sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
-		  configDocument="<%= ssConfigDefinition %>"
+		  configDocument="${ssConfigDefinition}"
 		  entryDefinitions="<%= ssPublicEntryDefinitions %>"
 		  option="<%= (String) data.get("option") %>" 
 		  itemId="<%= (String) data.get("itemId") %>" 
@@ -59,7 +57,7 @@
 	  <div id="displaydiv" style="margin:4px;"> 
 		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
 		  sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
-		  configDocument="<%= ssConfigDefinition %>"
+		  configDocument="${ssConfigDefinition}"
 		  entryDefinitions="<%= ssPublicEntryDefinitions %>"
 		  option="<%= (String) data.get("option") %>" 
 		  itemId="<%= (String) data.get("itemId") %>" 

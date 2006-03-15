@@ -16,16 +16,11 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
-<jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
-<jsp:useBean id="ssEntry" type="com.sitescape.ef.domain.Entry" scope="request" />
-
 <table class="ss_style" cellpadding="10" width="100%"><tr><td>
-<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-  configElement="<%= ssConfigElement %>" 
-  configJspStyle="<%= ssConfigJspStyle %>"
-  entry="<%= ssEntry %>"
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="${ssConfigElement}" 
+  configJspStyle="${ssConfigJspStyle}"
+  entry="${ssEntry}"
   processThisItem="true" />
 </td></tr></table>
 

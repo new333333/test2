@@ -1,6 +1,5 @@
 <% // User list %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="formName" type="String" scope="request" />
 <jsp:useBean id="property_name" type="String" scope="request" />
 <%

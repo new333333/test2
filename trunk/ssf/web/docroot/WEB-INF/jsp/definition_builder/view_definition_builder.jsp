@@ -25,8 +25,6 @@
 <jsp:useBean id="definitionTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="data" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssPublicEntryDefinitions" type="java.util.Map" scope="request" />
-<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <%@ page import="com.sitescape.ef.domain.FolderEntry" %>
 <%@ page import="com.sitescape.ef.domain.User" %>
 <%
@@ -560,7 +558,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 	if (!data.containsKey("selectedItem") || data.get("selectedItem").equals("")) {
 %>
 <ssf:buildDefinitionDivs title="<%= ssSelectItemText %>" 
-  sourceDocument="<%= ssConfigDefinition %>" configDocument="<%= ssConfigDefinition %>"
+  sourceDocument="${ssConfigDefinition}" configDocument="${ssConfigDefinition}"
   entryDefinitions="<%= ssPublicEntryDefinitions %>"/>
 <%
 	
@@ -569,7 +567,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 %>
 <ssf:buildDefinitionDivs title="<%= ssSelectItemText %>" 
   sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
-  configDocument="<%= ssConfigDefinition %>"
+  configDocument="${ssConfigDefinition}"
   entryDefinitions="<%= ssPublicEntryDefinitions %>"/>
 <%
 	}
@@ -613,9 +611,9 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 
 <table cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration 
-  configDefinition="<%= ssConfigDefinition %>" 
+  configDefinition="${ssConfigDefinition}" 
   configElement="<%= configElement %>" 
-  configJspStyle="<%= ssConfigJspStyle %>" 
+  configJspStyle="${ssConfigJspStyle}" 
   processThisItem="true" />
 </td></tr></table>
 </div>

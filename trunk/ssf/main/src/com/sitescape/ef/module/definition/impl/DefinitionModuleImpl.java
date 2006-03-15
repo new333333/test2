@@ -332,6 +332,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					//Process the properties (if any)
 					processProperties(defId, itemEleToAdd, newItem, formData);
 					
+					//Copy the jsps (if any)
+					Element configJsps = itemEleToAdd.element("jsps");
+					if (configJsps != null) {
+						Element newJspsEle = configJsps.createCopy();
+						newItem.add(newJspsEle);
+					}
+					
+					
 					//See if this is a "dataView" type
 					if (newItem.attributeValue("type", "").equals("dataView")) {
 						//This item is shadowing one of the form data items. Capture its form item name
@@ -698,7 +706,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						Element itemProperties = (Element) itemElementList.get(0);
 						item.add(itemProperties.createCopy());
 					}
-					
+
+					//Get the jsps to be copied
+					itemElementList = itemElement.elements("jsps");
+					if (!itemElementList.isEmpty()) {
+						Element itemJsps = (Element) itemElementList.get(0);
+						item.add(itemJsps.createCopy());
+					}
+
 					//Bump up the unique id
 					id++;
 					
@@ -728,6 +743,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (!itemElementList.isEmpty()) {
 							Element itemProperties = (Element) itemElementList.get(0);
 							item.add(itemProperties.createCopy());
+						}
+						
+						//Get the jsps to be copied
+						itemElementList = itemElement.elements("jsps");
+						if (!itemElementList.isEmpty()) {
+							Element itemJsps = (Element) itemElementList.get(0);
+							item.add(itemJsps.createCopy());
 						}
 						
 						//Bump up the unique id
