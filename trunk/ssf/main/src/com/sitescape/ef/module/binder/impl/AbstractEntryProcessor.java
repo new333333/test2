@@ -407,6 +407,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	// the db.  (Early in development, they're not...
    		//iterate through results
    		indexBinder_deleteEntries(binder);
+   		rssGenerator.deleteRssFile(binder);
    		//flush any changes so any exiting changes don't get lost on the evict
    		getCoreDao().flush();
    		SFQuery query = indexBinder_getQuery(binder);
@@ -442,6 +443,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
            				logger.debug("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
       				getCoreDao().evict(entry);
       				docs.add(indexDoc);
+      				rssGenerator.updateRssFeed(entry);
        			}
 	            
        			// Delete the document that's currently in the index.

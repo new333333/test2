@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -18,9 +19,14 @@ import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.ef.security.acl.AclSet;
 import com.sitescape.ef.util.DirPath;
+import com.sitescape.ef.web.util.WebUrlUtil;
 
 
 public class RssGenerator {
@@ -83,6 +89,15 @@ public class RssGenerator {
 	    } catch (IOException ioe) {logger.error("Can't write RSS file for binder:" + binder.getName() + "error is: " + ioe.toString());}
 		
 	}
+	
+	public void deleteRssFile(Binder binder) {
+		
+		// See if the feed exists
+		String rssFileName = getRssFileName(binder);
+		File rf = new File(rssFileName);
+		if (rf.exists()) rf.delete();
+	}
+	
 	public void updateRssFeed(WorkflowControlledEntry entry) {
 		// See if the feed already exists
 		String rssFileName = getRssFileName(entry.getParentBinder());
@@ -107,6 +122,44 @@ public class RssGenerator {
 		writeRssFile(entry.getParentBinder(), doc);
 	}
 
+	public String filterRss(Binder binder, User user) {
+		// See if the feed already exists
+		boolean access = false;
+		String rssFileName = getRssFileName(binder);
+		File rf = new File(rssFileName);
+		if (!rf.exists())
+			this.generateRssFeed(binder);
+	    
+		Document doc = this.parseFile(this.getRssFileName(binder));
+		Element rssRoot = doc.getRootElement();
+		// Get the list of nodes with acls set
+		List aclNodes = rssRoot.selectNodes("/rss/channel/item/sitescapeAcl");
+
+		// get the current users acl set
+		Set userAclSet = user.getAclSet().getMemberIds(AccessType.READ);
+        
+		// Walk thru the nodes with ACL's and find the ones this
+		// user has read access to, and delete the rest.
+		for (Iterator i = aclNodes.iterator(); i.hasNext();) {
+			access = false;
+			Node thisAcl = (Node)i.next();
+ 	       	String[] acls = thisAcl.getStringValue().split(" ");
+ 	       	for (int j = 0; j < acls.length; j++) {
+ 	       		if (userAclSet.contains(acls[j])) access = true;
+ 	       	}
+ 	       	
+ 	       	if (!access) {
+ 	       		thisAcl.getParent().detach();
+ 	       	} else {
+ 	       		// need to delete the acl before we send it to the client
+ 	       		thisAcl.detach();
+ 	       	}
+        }
+
+		// return the doc
+		return doc.asXML();
+	}
+
     public Document parseFile(String rssFileName) {
     	Document document = null;
         SAXReader reader = new SAXReader();
@@ -122,7 +175,7 @@ public class RssGenerator {
     	entryElement.addElement("title")
     		.addText(entry.getTitle());
     	entryElement.addElement("link")
-    		.addText("" /*getRssLink(Entry)*/);//ROY
+    		.addText(WebUrlUtil.getEntryViewURL((FolderEntry)entry));//ROY
     	String description = entry.getDescription() == null ? "" : entry.getDescription().getText();
     	
     	entryElement.addElement("description")
