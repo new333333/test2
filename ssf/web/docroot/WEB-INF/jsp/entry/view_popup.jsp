@@ -1,9 +1,9 @@
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
 
 <div id="ss_showfolder" class="ss_style ss_portlet" style="display:block; margin:2;">
-<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-  configElement="<%= ssConfigElement %>" 
-  configJspStyle="<%= ssConfigJspStyle %>" />
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="${ssConfigElement}" 
+  configJspStyle="${ssConfigJspStyle}" />
 </div>
 
 <script type="text/javascript">

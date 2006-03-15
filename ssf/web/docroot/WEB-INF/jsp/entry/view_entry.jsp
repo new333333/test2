@@ -13,9 +13,6 @@
 
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 
-<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
-<jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Binder" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
@@ -178,11 +175,11 @@ function ss_loadEntry(obj,id) {
 	return false;
 }
 </script>
-	  <ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-	    configElement="<%= ssConfigElement %>" 
-	    configJspStyle="<%= ssConfigJspStyle %>"
+	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	    configElement="${ssConfigElement}" 
+	    configJspStyle="${ssConfigJspStyle}"
 	    processThisItem="true" 
-	    entry="<%= ssEntry %>" />
+	    entry="${ssEntry}" />
   </c:if>
   
   <c:if test="<%= statePopUp %>">
@@ -195,29 +192,29 @@ if (self.parent && self.parent.highlightLineById) {
 	//Iframe view
 	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 %>
-	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-	  configElement="<%= ssConfigElement %>" 
-	  configJspStyle="<%= ssConfigJspStyle %>"
+	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	  configElement="${ssConfigElement}" 
+	  configJspStyle="${ssConfigJspStyle}"
 	  processThisItem="true" 
-	  entry="<%= ssEntry %>" />
+	  entry="${ssEntry}" />
 <%
 	
 	//Popup view
 	} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 %>
-	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-	  configElement="<%= ssConfigElement %>" 
-	  configJspStyle="<%= ssConfigJspStyle %>"
+	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	  configElement="${ssConfigElement}" 
+	  configJspStyle="${ssConfigJspStyle}"
 	  processThisItem="true" 
-	  entry="<%= ssEntry %>" />
+	  entry="${ssEntry}" />
 <%
 	
 	//Vertical view
 	} else {
 %>
-	<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-	  configElement="<%= ssConfigElement %>" 
-	  configJspStyle="<%= ssConfigJspStyle %>"
+	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	  configElement="${ssConfigElement}" 
+	  configJspStyle="${ssConfigJspStyle}"
 	  processThisItem="true" 
 	  entry="<%=  ssEntry %>" />
 <%

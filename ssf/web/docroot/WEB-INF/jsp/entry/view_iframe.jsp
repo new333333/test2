@@ -4,9 +4,9 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 %>
 
 <div id="ss_showfolder" class="ss_style ss_portlet">
-<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-  configElement="<%= ssConfigElement %>" 
-  configJspStyle="<%= ssConfigJspStyle %>" />
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="${ssConfigElement}" 
+  configJspStyle="${ssConfigJspStyle}" />
 </div>
 
 <div id="ss_showentrydiv" onMouseover="ss_clearMouseOverInfo(null);"

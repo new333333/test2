@@ -18,14 +18,12 @@
 <%
 	Element item = (Element) request.getAttribute("item");
 %>
-<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 
 <table class="ss_style">
 <tr>
 <td>
-<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-  configElement="<%= item %>" configJspStyle="<%= ssConfigJspStyle %>" />
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="<%= item %>" configJspStyle="${ssConfigJspStyle}" />
 </td>
 </tr>
 </table>

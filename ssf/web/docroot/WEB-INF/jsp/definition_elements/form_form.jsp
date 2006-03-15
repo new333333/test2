@@ -1,7 +1,5 @@
 <% // Form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ssConfigJspStyle" type="String" scope="request" />
 <%
 	//Get the form item being displayed
 	Element item = (Element) request.getAttribute("item");
@@ -22,7 +20,7 @@
 %>
 <form class="ss_style ss_form" method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
   id="<%= formName %>" action="" onSubmit="return ssf_onSubmit(this);">
-<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
-  configJspStyle="<%= ssConfigJspStyle %>" />
+  configJspStyle="${ssConfigJspStyle}" />
 </form>

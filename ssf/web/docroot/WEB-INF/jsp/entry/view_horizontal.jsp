@@ -7,9 +7,9 @@ String ssfBoxId = renderResponse.getNamespace() + "_ssf_box_div";
 %>
 
 <div id="ss_showfolder" class="ss_style ss_portlet" style="display:block; margin:2;">
-<ssf:displayConfiguration configDefinition="<%= ssConfigDefinition %>" 
-  configElement="<%= ssConfigElement %>" 
-  configJspStyle="<%= ssConfigJspStyle %>" />
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="${ssConfigElement}" 
+  configJspStyle="${ssConfigJspStyle}" />
 </div>
 
 <div id="ss_showentrydiv" style="position:absolute; visibility:hidden; x:0; y:0; z-index:50;
