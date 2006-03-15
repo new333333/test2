@@ -4,7 +4,7 @@
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}"/></span>
-
+<br>
 <span>
 <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
 <a target="_blank" 
