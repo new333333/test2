@@ -8,4 +8,3 @@
 <div class="ss_labelAbove"><%= caption %></div>
 <input type="text" class="ss_text" size="40" name="title" value="<c:out value="${ssEntry.title}"/>">
 </div>
-<div class="ss_divider"></div>

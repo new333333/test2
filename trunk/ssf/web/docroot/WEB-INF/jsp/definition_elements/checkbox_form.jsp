@@ -28,4 +28,3 @@
 <div style="display:<%= inline %>;">
 <input type="checkbox" name="<%= elementName %>" <c:out value="${cb_checked}"/>>&nbsp;<span class="ss_labelRight"><%= caption %><%= required %></span></checkbox>
 </div>
-<div class="ss_divider"></div>

@@ -76,6 +76,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 function ss_rounded() {
 	if(!NiftyCheck()) return;
 	Rounded("*.ss_rounded", "all", "${ss_style_background_color}", "${ss_form_background_color}", "smooth");
+	Rounded("*.ss_rounded_border", "all", "${ss_style_background_color}", "transparent", "border smooth");
+	Rounded("*.ss_rounded_border_form", "all", "${ss_form_background_color}", "transparent", "border smooth");
 }
 ss_createOnLoadObj('ss_rounded', ss_rounded);
 

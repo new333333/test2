@@ -66,7 +66,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 	decorateBox = true;
 }
 %>
-<div class="ss_box_rounded" id="<%= divId %>" 
+<div class="ss_box_top_rounded" id="<%= divId %>" 
   style="width: <%= width %>; background-color:${boxColor};">
 <%@ include file="/WEB-INF/jsp/box/box_top-ext.jsp" %>
 	<div class="ss_box_small_icon_bar" 

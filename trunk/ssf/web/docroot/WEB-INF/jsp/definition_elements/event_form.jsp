@@ -39,4 +39,3 @@
          hasDuration="<%= hasDur %>"
          hasRecurrence="<%= hasRecur %>" />
 </div>
-<div class="ss_divider"></div>

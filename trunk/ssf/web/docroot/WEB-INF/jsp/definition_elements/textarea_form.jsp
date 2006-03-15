@@ -30,4 +30,3 @@
   rows="<%= rows %>" <%= width %> 
 ><c:out value="${ssEntry.customAttributes[property_name].value}"/></textarea>
 </div>
-<div class="ss_divider"></div>

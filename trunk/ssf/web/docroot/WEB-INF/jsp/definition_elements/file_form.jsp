@@ -33,4 +33,3 @@
 <span class="ss_labelAbove"><%= caption %><%= required %></span>
 <input type="file" class="ss_text" name="<%= elementName %>" <%= width %> >
 </div>
-<div class="ss_divider"></div>

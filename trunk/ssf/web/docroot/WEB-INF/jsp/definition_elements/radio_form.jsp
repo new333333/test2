@@ -30,4 +30,3 @@
 	request.setAttribute("radioGroupName", orgRadioGroupName);
 %>
 </div>
-<div class="ss_divider"></div>
