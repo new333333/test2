@@ -12,8 +12,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.Long;
 import java.util.Collection;
 
@@ -41,7 +39,6 @@ import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.UncheckedIOException;
@@ -65,21 +62,17 @@ import com.sitescape.ef.security.function.OperationAccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.ef.util.TempFileUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.workflow.WorkflowModule;
-import com.sitescape.ef.rss.RssGenerator;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.pipeline.Conduit;
-import com.sitescape.ef.pipeline.DocSink;
-import com.sitescape.ef.pipeline.DocSource;
 import com.sitescape.ef.pipeline.Pipeline;
 import com.sitescape.ef.pipeline.PipelineException;
-import com.sitescape.ef.pipeline.impl.AbstractConduit;
-import com.sitescape.ef.pipeline.impl.RAMConduit;
-import com.sitescape.ef.pipeline.util.TempFileUtil;
+import com.sitescape.ef.pipeline.support.RAMConduit;
 
 /**
  *

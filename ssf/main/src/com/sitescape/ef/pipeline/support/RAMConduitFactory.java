@@ -1,4 +1,4 @@
-package com.sitescape.ef.pipeline.impl;
+package com.sitescape.ef.pipeline.support;
 
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.pipeline.Conduit;

@@ -3,6 +3,7 @@ package com.sitescape.ef.pipeline.impl;
 import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.pipeline.DocSource;
 import com.sitescape.ef.pipeline.PipelineInvocation;
+import com.sitescape.ef.pipeline.support.AbstractDocHandler;
 
 /**
  * Simply copy data from source to sink as it is.

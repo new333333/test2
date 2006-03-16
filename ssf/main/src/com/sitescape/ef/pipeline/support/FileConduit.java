@@ -1,4 +1,4 @@
-package com.sitescape.ef.pipeline.impl;
+package com.sitescape.ef.pipeline.support;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,8 +11,11 @@ import java.io.OutputStream;
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.pipeline.DocSource;
-import com.sitescape.ef.pipeline.util.TempFileUtil;
+import com.sitescape.ef.pipeline.impl.AbstractConduit;
+import com.sitescape.ef.pipeline.impl.AbstractConduit.AbstractDocSink;
+import com.sitescape.ef.pipeline.impl.AbstractConduit.AbstractDocSource;
 import com.sitescape.ef.util.FileHelper;
+import com.sitescape.ef.util.TempFileUtil;
 
 public class FileConduit extends AbstractConduit {
 
