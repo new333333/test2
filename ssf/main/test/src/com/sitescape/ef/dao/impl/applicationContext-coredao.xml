@@ -22,15 +22,12 @@
 		<!-- Sitescape mappings only -->
 		<property name="mappingResources">
 			<list>
-			<value>com/sitescape/ef/security/function/Function.hbm.xml</value>
-		    <value>com/sitescape/ef/security/function/WorkAreaFunctionMembership.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/Attachment.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/Binder.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/CustomAttribute.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/Definition.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/EmailAlias.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/Event.hbm.xml</value> 
-		    <value>com/sitescape/ef/domain/FolderCounts.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/FolderEntry.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/HistoryMap.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/Membership.hbm.xml</value>
@@ -38,8 +35,11 @@
 		    <value>com/sitescape/ef/domain/PostingDef.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/Principal.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/SeenMap.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/Tag.hbm.xml</value>
 		    <value>com/sitescape/ef/domain/UserProperties.hbm.xml</value>
-		    <value>com/sitescape/ef/domain/WorkflowStateObject.hbm.xml</value>
+		    <value>com/sitescape/ef/domain/WorkflowState.hbm.xml</value>
+			<value>com/sitescape/ef/security/function/Function.hbm.xml</value>
+		    <value>com/sitescape/ef/security/function/WorkAreaFunctionMembership.hbm.xml</value>
 			</list>
 		</property>
 	</bean>
