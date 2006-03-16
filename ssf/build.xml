@@ -74,7 +74,7 @@
 		<ant dir="liferay" target="compile" />
 		<ant dir="taglib" target="compile" />
 		
-		<!--<ant dir="samples" target="compile" />-->
+		<ant dir="samples" target="compile" />
 	</target>
 
 	<target name="jar">
