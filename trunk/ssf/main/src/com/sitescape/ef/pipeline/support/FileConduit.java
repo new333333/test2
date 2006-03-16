@@ -12,8 +12,6 @@ import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.pipeline.DocSource;
 import com.sitescape.ef.pipeline.impl.AbstractConduit;
-import com.sitescape.ef.pipeline.impl.AbstractConduit.AbstractDocSink;
-import com.sitescape.ef.pipeline.impl.AbstractConduit.AbstractDocSource;
 import com.sitescape.ef.util.FileHelper;
 import com.sitescape.ef.util.TempFileUtil;
 
@@ -54,18 +52,7 @@ public class FileConduit extends AbstractConduit {
 			dataFile = null;
 		}
 	}
-	
-	private String getPrefix() {
-		long currTime = System.currentTimeMillis();
 		
-		if(fileNamePrefix != null) {
-			return new StringBuffer(fileNamePrefix).append("_").append(currTime).append("_").toString();
-		}
-		else {
-			return new StringBuffer().append(currTime).append("_").toString();
-		}
-	}
-	
 	protected class FileDocSink extends AbstractDocSink {
 
 		public OutputStream getBuiltinOutputStream(boolean isTextData, String charsetName) throws UncheckedIOException {
@@ -73,7 +60,7 @@ public class FileConduit extends AbstractConduit {
 			isText = isTextData;
 			if(isText)
 				charset = charsetName;
-			dataFile = TempFileUtil.createTempFile(getPrefix(), fileDir);
+			dataFile = TempFileUtil.createTempFile(fileNamePrefix, fileDir);
 			try {
 				return new FileOutputStream(dataFile);
 			} catch (FileNotFoundException e) {

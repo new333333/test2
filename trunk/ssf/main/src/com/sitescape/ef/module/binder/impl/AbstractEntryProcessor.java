@@ -841,7 +841,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 	    	else {
 	    		// We must retrieve the file content from repository and create a
 	    		// temporary file. 
-	    		File tempFile = TempFileUtil.createTempFile("repository", SPropsUtil.getFile("temp.dir"));
+	    		File tempFile = TempFileUtil.createTempFile("repositoryfile", SPropsUtil.getFile("temp.dir"));
 	    		
 				firstConduit.getSink().setFile(tempFile, true, false, null);    		
 

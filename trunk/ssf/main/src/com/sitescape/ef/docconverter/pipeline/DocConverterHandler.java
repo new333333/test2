@@ -73,14 +73,14 @@ public class DocConverterHandler extends AbstractDocHandler {
 		// can only work with a file, we must create a temporary file and store
 		// the input data in it before invoking the actual doc converter function. 
 		if(inputFile == null) {
-			inputFile = inputTempFile = TempFileUtil.createTempFile("dcinput", SPropsUtil.getFile("temp.dir"));
+			inputFile = inputTempFile = TempFileUtil.createTempFile("docconverinput", SPropsUtil.getFile("temp.dir"));
 			FileCopyUtils.copy(source.getDataAsInputStream(), new BufferedOutputStream(new FileOutputStream(inputFile)));
 		}
 		
 		try {
 			// Create an empty file to be used as output file for the converter.
 			// The output file will contain text data in xml format. 
-			File outputTextFile = TempFileUtil.createTempFile("docconverter", SPropsUtil.getFile("temp.dir"));
+			File outputTextFile = TempFileUtil.createTempFile("docconverteroutput", SPropsUtil.getFile("temp.dir"));
 			
 			try {
 				// Invoke the actual converter function giving it timeout value.
