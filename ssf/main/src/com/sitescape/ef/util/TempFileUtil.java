@@ -12,7 +12,7 @@ public class TempFileUtil {
 		try {
 			if(!fileDir.exists())
 				FileHelper.mkdirs(fileDir);
-			return File.createTempFile(prefix + "_" + System.currentTimeMillis() + "_", null, fileDir);
+			return File.createTempFile(prefix + "_", null, fileDir);
 		}
 		catch(IOException e) {
 			throw new UncheckedIOException(e);
