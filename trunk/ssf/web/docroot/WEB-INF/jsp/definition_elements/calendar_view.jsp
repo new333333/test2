@@ -6,7 +6,18 @@
 <jsp:useBean id="ssFolderDomTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssEventDates" type="java.util.HashMap" scope="request" />
 <jsp:useBean id="ssCalendarViewMode" type="java.lang.String" scope="request" />
-<jsp:useBean id="ssConfigJspStyle" type="java.lang.String" scope="request" />
+<jsp:useBean id="ssUserFolderProperties" type="com.sitescape.ef.domain.UserProperties" scope="request" />
+<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
+
+<%
+	String ssFolderTableHeight = "";
+	Map ssFolderPropertiesMap = ssUserFolderProperties.getProperties();
+	if (ssFolderPropertiesMap != null && ssFolderPropertiesMap.containsKey("folderEntryHeight")) {
+		ssFolderTableHeight = (String) ssFolderPropertiesMap.get("folderEntryHeight");
+	}
+	if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
+			ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
+%>
 
 <script type="text/javascript">
 function highlightLineById(id) {
@@ -54,7 +65,19 @@ function highlightLineById(id) {
 </div>
 
 <c:set var="ss_folderTableId" value="ss_folder_table" scope="request"/>
+<%
+	if (ssUser.getDisplayStyle() != null && 
+	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+%>
+<div id="ss_folder_table" 
+  style="position:relative; overflow:scroll; height:<%= ssFolderTableHeight %>;">
+<%
+	} else {
+%>
 <div id="ss_folder_table">
+<%
+	}
+%>
 
 <c:choose>
 <c:when test="${ssCalendarViewMode == 'day'}">

@@ -468,11 +468,6 @@ a.ss_graymenu:focus, a.graymenu:hover {
   text-decoration: underline; 
 }
 
-/* highlight for selected entry in iframe view*/
-.ss_highlightEntry {
-  background-color: #cecece;
-  }
-
 /* highlight an entire table row/cell (such as today's date in calendar views */
 table.ss_highlightManila {
   background-color: #ffffe8;

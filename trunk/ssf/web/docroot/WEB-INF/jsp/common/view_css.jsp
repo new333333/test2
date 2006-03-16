@@ -19,7 +19,7 @@
 <c:set var="ss_style_gray_color" value="#999999" scope="request"/>
 
 <c:set var="ss_folder_border_color" value="#CC6666" scope="request"/>
-<c:set var="ss_folder_line_highlight_color" value="#DDDDDD" scope="request"/>
+<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
 <c:set var="ss_entry_border_color" value="#CC0000" scope="request"/>
 
 <c:set var="ss_form_background_color" value="#CCFFFF" scope="request"/>

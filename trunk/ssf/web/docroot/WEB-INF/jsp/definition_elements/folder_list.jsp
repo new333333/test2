@@ -33,12 +33,7 @@ var ss_displayStyle = "<%= displayStyle %>";
 function highlightLineById(id) {
 	if (ss_displayStyle == "accessible") {return;}
     if (id == "") {return;}
-    var obj = null
-    if (isNSN || isNSN6 || isMoz5) {
-        obj = self.document.getElementById(id)
-    } else {
-        obj = self.document.all[id]
-    }
+    var obj = self.document.getElementById(id)
     if (obj == null) {
     	//Didn't find it by this name. Look for it by its other names.
     	if (ss_columnCount && ss_columnCount > 0) {
@@ -62,6 +57,7 @@ function highlightLineById(id) {
 						savedHighlightClassName = rowObj.className;
 					}
 					highlightedLine = id;
+					alert("Set "+rowObj.id+" to "+highlightClassName)
 					rowObj.className = highlightClassName;
 			    }
     		}
