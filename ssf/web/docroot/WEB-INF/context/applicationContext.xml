@@ -43,7 +43,8 @@
 		<property name="profileModule"><ref bean="profileModule"/></property>
 		<property name="workflowModule"><ref bean="workflowModule"/></property>
 		<property name="workspaceModule"><ref bean="workspaceModule"/></property>
-		<property name="fileModule"><ref bean="fileModule"/></property>	
+		<property name="fileModule"><ref bean="fileModule"/></property>
+		<property name="rssGenerator"><ref bean="rssGenerator"/></property>	
 	</bean>
 
 	<!-- add support for lobhandler to support hibernate UserType to handle different db clob implementations -->
