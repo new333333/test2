@@ -334,6 +334,39 @@
 			</property>				
 	</bean>	
 	
+	<!-- ============================ Document Pipeline =========================== -->
+	
+	<bean id="docPipeline" class="com.sitescape.ef.pipeline.impl.SynchronousPipeline">
+		<!-- Do not share same instances -->
+		<property name="conduitFactories">
+			<list>
+				<!--<bean class="com.sitescape.ef.pipeline.impl.RAMConduitFactory"/>
+				<bean class="com.sitescape.ef.pipeline.impl.RAMConduitFactory"/>-->
+			</list>
+		</property>
+		<!-- Do not share same instances -->
+		<property name="docHandlers">
+			<list>
+				<!--<bean class="com.sitescape.ef.pipeline.impl.NullDocHandler">
+					<property name="name"><value>First Handler</value></property>
+				</bean>
+				<bean class="com.sitescape.ef.pipeline.impl.NullDocHandler">
+					<property name="name"><value>Second Handler</value></property>
+				</bean>
+				<bean class="com.sitescape.ef.pipeline.impl.NullDocHandler">
+					<property name="name"><value>Third Handler</value></property>
+				</bean>-->
+				<bean class="com.sitescape.ef.docconverter.pipeline.DocConverterHandler">
+					<property name="name"><value>Doc Converter</value></property>
+					<property name="docConverter"><ref local="docConverter"/></property>
+					<property name="timeout"><value>10000</value></property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<!--<bean id="BasicConduitFactory" class="com.sitescape.ef.pipeline.impl.RAMConduitFactory"/>-->
+	
 	<!-- =========================== Business Components =========================== -->
 	
 	<!-- Template for the common dependency injection for modules.
@@ -353,7 +386,6 @@
 		<property name="scheduler"><ref local="scheduler"/></property>
 		<property name="processorManager"><ref local="modelProcessorManager"/></property>
 		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
-		<property name="docConverter"><ref local="docConverter"/></property>
 		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
 		<property name="rssGenerator"><ref local="rssGenerator"/></property>
 	</bean>
@@ -426,6 +458,7 @@
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="workflowModule"><ref local="workflowModule"/></property>
 		<property name="fileModule"><ref local="fileModule"/></property>
+		<property name="pipeline"><ref local="docPipeline"/></property>
 	</bean>
 
 	<bean id="defaultProfileCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.profile.impl.DefaultProfileCoreProcessor">
@@ -433,6 +466,7 @@
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="workflowModule"><ref local="workflowModule"/></property>
 		<property name="fileModule"><ref local="fileModule"/></property>
+		<property name="pipeline"><ref local="docPipeline"/></property>
 	</bean>
 
 	<bean id="binderModule" parent="baseTransactionProxy">

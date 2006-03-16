@@ -3,6 +3,7 @@ package com.sitescape.ef.pipeline.impl;
 import com.sitescape.ef.pipeline.Conduit;
 import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.pipeline.DocSource;
+import com.sitescape.ef.pipeline.PipelineException;
 
 /**
  * This class implements a most basic pipeline that executes each pipeline
@@ -13,15 +14,21 @@ import com.sitescape.ef.pipeline.DocSource;
  */
 public class SynchronousPipeline extends AbstractPipeline {
 
-	public void invoke(DocSource initialIn, DocSink finalOut) throws Throwable {
+	public void invoke(DocSource initialIn, DocSink finalOut) throws PipelineException {
 		// Setup invocation instance. 
 		PipelineInvocationImpl invocation = setupPipelineInvocation(initialIn, finalOut);
 		
 		// Invoke the handler chain. 
-		invocation.proceed();
-		
-		// Cleanup
-		invocation.cleanup();
+		try {
+			invocation.proceed();
+		}
+		catch(Throwable t) {
+			throw new PipelineException(t);
+		}
+		finally {
+			// Cleanup
+			invocation.cleanup();
+		}
 	}
 
 	private PipelineInvocationImpl setupPipelineInvocation(DocSource initialIn, DocSink finalOut) {

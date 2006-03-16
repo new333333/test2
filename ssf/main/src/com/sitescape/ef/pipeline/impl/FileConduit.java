@@ -65,8 +65,11 @@ public class FileConduit extends AbstractConduit {
 	
 	protected class FileDocSink extends AbstractDocSink {
 
-		public OutputStream getDefaultOutputStream() throws UncheckedIOException {
+		public OutputStream getBuiltinOutputStream(boolean isTextData, String charsetName) throws UncheckedIOException {
 			reset(); // important
+			isText = isTextData;
+			if(isText)
+				charset = charsetName;
 			dataFile = TempFileUtil.createTempFile(getPrefix(), fileDir);
 			try {
 				return new FileOutputStream(dataFile);
@@ -78,7 +81,7 @@ public class FileConduit extends AbstractConduit {
 	
 	protected class FileDocSource extends AbstractDocSource {
 
-		public InputStream getDefaultInputStream() throws UncheckedIOException {
+		public InputStream getBuiltinInputStream() throws UncheckedIOException {
 			if(dataFile != null) {
 				try {
 					return new FileInputStream(dataFile);

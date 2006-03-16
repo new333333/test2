@@ -91,7 +91,7 @@ public class FacadeClient {
 		System.out.println("\tZone Name: " + binder.getZoneName());
 		System.out.println("\tType: " + binder.getType());
 		System.out.println("\tTitle: " + binder.getTitle());
-		System.out.println("\tOwning Workspace ID: " + binder.getOwningWorkspaceId());
+		System.out.println("\tOwning Workspace ID: " + binder.getParentBinderId());
 		System.out.println("\tEntry Definition IDs: ");
 		String[] ids = binder.getEntryDefinitionIds();
 		for(int i = 0; i < ids.length; i++)
