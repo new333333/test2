@@ -57,7 +57,6 @@ function highlightLineById(id) {
 						savedHighlightClassName = rowObj.className;
 					}
 					highlightedLine = id;
-					alert("Set "+rowObj.id+" to "+highlightClassName)
 					rowObj.className = highlightClassName;
 			    }
     		}
