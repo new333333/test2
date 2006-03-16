@@ -14,6 +14,7 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
+import com.sitescape.ef.rss.RssGenerator;
 
 public abstract class SAbstractController extends AbstractController {
 	
@@ -29,6 +30,7 @@ public abstract class SAbstractController extends AbstractController {
 	private BinderModule binderModule;
 	private LdapModule ldapModule;
 	private FileModule fileModule;
+	private RssGenerator rssGenerator;
 		
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -105,5 +107,13 @@ public abstract class SAbstractController extends AbstractController {
 	}
 	protected FileModule getFileModule() {
 		return fileModule;
+	}
+
+	public void setRssGenerator(RssGenerator rssGenerator) {
+		this.rssGenerator = rssGenerator;
+	}
+	
+	protected RssGenerator getRssGenerator() {
+		return rssGenerator;
 	}
 }

@@ -14,6 +14,7 @@ import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.binder.BinderModule;
+import com.sitescape.ef.rss.RssGenerator;
 
 public abstract class SAbstractController extends AbstractController {
 
@@ -29,7 +30,22 @@ public abstract class SAbstractController extends AbstractController {
 	private BinderModule binderModule;
 	private LdapModule ldapModule;
 	private FileModule fileModule;
+	private RssGenerator rssGenerator;
 	
+	/**
+	 * @return Returns the rssGenerator.
+	 */
+	protected RssGenerator getRssGenerator() {
+		return rssGenerator;
+	}
+
+	/**
+	 * @param rssGenerator The rssGenerator to set.
+	 */
+	public void setRssGenerator(RssGenerator rssGenerator) {
+		this.rssGenerator = rssGenerator;
+	}
+
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
 	}
