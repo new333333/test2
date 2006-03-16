@@ -340,8 +340,8 @@
 		<!-- Do not share same instances -->
 		<property name="conduitFactories">
 			<list>
-				<!--<bean class="com.sitescape.ef.pipeline.support.RAMConduitFactory"/>
-				<bean class="com.sitescape.ef.pipeline.support.RAMConduitFactory"/>-->
+				<!--<bean class="com.sitescape.ef.pipeline.impl.RAMConduitFactory"/>
+				<bean class="com.sitescape.ef.pipeline.impl.RAMConduitFactory"/>-->
 			</list>
 		</property>
 		<!-- Do not share same instances -->
@@ -365,7 +365,7 @@
 		</property>
 	</bean>
 	
-	<!--<bean id="BasicConduitFactory" class="com.sitescape.ef.pipeline.support.RAMConduitFactory"/>-->
+	<!--<bean id="BasicConduitFactory" class="com.sitescape.ef.pipeline.impl.RAMConduitFactory"/>-->
 	
 	<!-- =========================== Business Components =========================== -->
 	

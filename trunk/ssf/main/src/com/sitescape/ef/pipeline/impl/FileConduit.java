@@ -1,4 +1,4 @@
-package com.sitescape.ef.pipeline.support;
+package com.sitescape.ef.pipeline.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +11,6 @@ import java.io.OutputStream;
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.pipeline.DocSource;
-import com.sitescape.ef.pipeline.impl.AbstractConduit;
 import com.sitescape.ef.util.FileHelper;
 import com.sitescape.ef.util.TempFileUtil;
 
