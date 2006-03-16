@@ -314,6 +314,9 @@ div.ss_sliding_table_info_popup {
 .ss_highlightEntry {
   background-color: ${ss_folder_line_highlight_color};
   }
+tr.ss_highlightEntry {
+  background-color: ${ss_folder_line_highlight_color};
+  }
 
 .ss_tree_highlight {
   font-weight: bold;
