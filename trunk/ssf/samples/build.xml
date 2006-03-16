@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<project name="samples" basedir="." default="compile">
+	<target name="init">
+		<echo message="##### SAMPLES #####" />
+		<property environment="env" />
+	</target>
+
+	<target name="clean">
+		<ant dir="remotingclient" target="clean" />
+	</target>
+
+	<target name="compile">
+		<ant dir="remotingclient" target="compile" />
+	</target>
+</project>
