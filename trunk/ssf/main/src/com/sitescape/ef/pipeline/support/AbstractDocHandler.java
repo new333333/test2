@@ -1,4 +1,4 @@
-package com.sitescape.ef.pipeline.impl;
+package com.sitescape.ef.pipeline.support;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;

@@ -1,10 +1,9 @@
-package com.sitescape.ef.pipeline.util;
+package com.sitescape.ef.util;
 
 import java.io.File;
 import java.io.IOException;
 
 import com.sitescape.ef.UncheckedIOException;
-import com.sitescape.ef.util.FileHelper;
 
 public class TempFileUtil {
 

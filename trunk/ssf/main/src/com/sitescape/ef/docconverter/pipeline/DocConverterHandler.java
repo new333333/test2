@@ -23,13 +23,13 @@ import org.dom4j.io.SAXReader;
 import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.ef.docconverter.DocConverter;
-import com.sitescape.ef.pipeline.impl.AbstractDocHandler;
-import com.sitescape.ef.pipeline.util.TempFileUtil;
+import com.sitescape.ef.pipeline.support.AbstractDocHandler;
 import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.pipeline.DocSource;
 import com.sitescape.ef.pipeline.PipelineInvocation;
 import com.sitescape.ef.util.FileHelper;
 import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.ef.util.TempFileUtil;
 
 /**
  * This is a DocHandler wrapper around DocConverter and allows document
