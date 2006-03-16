@@ -11,6 +11,6 @@
 	</target>
 
 	<target name="compile">
-		<ant dir="remotingclient" target="compile" />
+		<ant dir="remotingclient" target="compileButGenerated" />
 	</target>
 </project>

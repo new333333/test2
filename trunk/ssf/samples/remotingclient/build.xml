@@ -2,7 +2,7 @@
 
 <project name="wsclient" basedir="." default="usage">
 	<target name="init">
-		<echo message="##### WSCLIENT #####" />
+		<echo message="##### SAMPLES: WSCLIENT #####" />
 		<property environment="env" />
   		<property name="project.dir" value="../.." />
   		<property file="${project.dir}/build.${user.name}.properties" />
@@ -75,6 +75,25 @@
 			nowarn="${javac.nowarn}">
 			<src path="${source.dir}" />
 			<src path="${generated.dir}" />
+		</javac>
+	</target>
+	
+	<!-- Similar to "compile" target except that this excludes all generated files
+	     from compilation. Any program that uses generated files is also excluded. -->
+	<target name="compileButGenerated" depends="init">
+		<mkdir dir="${classes.dir}" />
+		<javac
+			sourcepath="" 
+			srcdir="${source.dir}"
+			classpathref="wsclient.project.classpath"
+			compiler="${javac.compiler}"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${classes.dir}"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}">
+			<exclude name="**/jaxrpc/FacadeClient.java"/>
 		</javac>
 	</target>
 	
