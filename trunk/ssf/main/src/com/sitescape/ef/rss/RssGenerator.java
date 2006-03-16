@@ -23,13 +23,14 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclSet;
 import com.sitescape.ef.util.DirPath;
 import com.sitescape.ef.web.util.WebUrlUtil;
 
 
-public class RssGenerator {
+public class RssGenerator extends CommonDependencyInjection {
 
 	protected Log logger = LogFactory.getLog(getClass());
 	
