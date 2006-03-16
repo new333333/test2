@@ -1,6 +1,5 @@
 package com.sitescape.ef.modelprocessor;
 
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 /**
