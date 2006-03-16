@@ -44,7 +44,8 @@
 			<map>
 				<entry key="/downloadFile"><ref local="downloadFile"/></entry>				
 				<entry key="/uploadFile"><ref local="uploadFile"/></entry>				
-				<entry key="/viewFile"><ref local="viewFile"/></entry>				
+				<entry key="/viewFile"><ref local="viewFile"/></entry>
+				<entry key="/rssFeed"><ref local="rssFeed"/></entry>				
 				<entry key="/viewCss"><ref local="viewCss"/></entry>				
 				<entry key="/viewDefinitionXml"><ref local="viewDefinitionXml"/></entry>				
 				<entry key="/viewFragment"><ref local="viewFragment"/></entry>
@@ -79,6 +80,7 @@
 	<bean id="downloadFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.sample.DownloadFileController"/>
 	<bean id="uploadFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.sample.UploadFileController"/>
 	<bean id="viewFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ViewFileController"/>
+	<bean id="rssFeed" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ViewRssController"/>
 	<bean id="viewCss" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ViewCssController"/>
 	<bean id="viewDefinitionXml" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.definition.ViewDefinitionXmlController"/>
 	<bean id="viewFragment" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.widget_test.FragmentController"/>
