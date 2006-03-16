@@ -1,13 +1,16 @@
 package com.sitescape.ef.pipeline.impl;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.pipeline.Conduit;
@@ -16,8 +19,6 @@ import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.util.FileHelper;
 
 public abstract class AbstractConduit implements Conduit {
-
-	private static final String DEFAULT_CHARSET = "UTF-8";
 	
 	protected static final Log logger = LogFactory.getLog(AbstractConduit.class);
 	
@@ -33,10 +34,15 @@ public abstract class AbstractConduit implements Conduit {
 	private byte[] bytes;
 	private String string;
 	private File file;
+	private boolean fileTransferOwnership;
+	private InputStream inputstream;
 	
-	private String charset;
+	protected boolean isText;
+	protected String charset;
 	
-	protected AbstractConduit() {}
+	protected AbstractConduit() {
+		reset();
+	}
 	
 	public DocSink getSink() throws IllegalStateException {
 		sinkCalled = true;
@@ -84,37 +90,69 @@ public abstract class AbstractConduit implements Conduit {
 		bytes = null;
 		string = null;
 		if(file != null) {
-			try {
-				FileHelper.delete(file);
-			} catch (IOException e) {
-				logger.warn(e.getMessage(), e);
+			if(fileTransferOwnership) {
+				try {
+					FileHelper.delete(file);
+				} catch (IOException e) {
+					logger.warn(e.getMessage(), e);
+				}
 			}
 			file = null;
 		}
-		charset = DEFAULT_CHARSET;
+		fileTransferOwnership = false;
+		if(inputstream != null) {
+			try {
+				inputstream.close();
+			}
+			catch(IOException e) {
+				logger.warn(e.getMessage(), e);
+			}
+			inputstream = null;
+		}
+		isText = false;
+		charset = null;
 	}
 	
 	public abstract class AbstractDocSink implements DocSink {
 		
-		public void setByteArray(byte[] data) throws IllegalStateException {
+		public void setByteArray(byte[] data, boolean isTextData, String charsetName) {
 			reset();
 			bytes = data;
+			isText = isTextData;
+			if(isText)
+				charset = charsetName;
 		}
 
+		/*
 		public void setCharsetName(String charsetName) throws IllegalStateException {
 			reset();
 			charset = charsetName;
-		}
+		}*/
 
-		public void setString(String data) throws IllegalStateException {
+		public void setString(String data, String charsetName) {
 			reset();
 			string = data;
+			isText = true;
+			charset = charsetName;
 		}
 
-		public void setFile(File data) throws IllegalStateException {
+		public void setFile(File data, boolean transferOwnership, boolean isTextData, String charsetName) {
 			reset();
 			file = data;
+			fileTransferOwnership = transferOwnership;
+			isText = isTextData;
+			if(isText)
+				charset = charsetName;
 		}
+
+		public void setInputStream(InputStream is, boolean isTextData, String charsetName) {
+			reset();
+			inputstream = is;
+			isText = isTextData;
+			if(isText)
+				charset = charsetName;
+		}
+
 	}
 	
 	public abstract class AbstractDocSource implements DocSource {
@@ -129,6 +167,10 @@ public abstract class AbstractConduit implements Conduit {
 
 		public File getFile() {
 			return file;
+		}
+
+		public InputStream getInputStream() {
+			return inputstream;
 		}
 
 		public long getLength() throws UncheckedIOException {
@@ -152,12 +194,102 @@ public abstract class AbstractConduit implements Conduit {
 					return new FileInputStream(file);
 				}
 				else {
-					return getDefaultInputStream();
+					return getBuiltinInputStream();
 				}
 			}
 			catch(IOException e) {
 				throw new UncheckedIOException(e);
 			}
 		}
+
+		public boolean isTextData() {
+			return isText;
+		}
+
+		public String getCharsetName() {
+			return charset;
+		}
+
+		public byte[] getDataAsByteArray() throws UncheckedIOException {
+			try {
+				if(bytes != null) {
+					return bytes;
+				}
+				else if(string != null) {
+					return string.getBytes(charset);
+				}
+				else if(file != null) {
+					return FileCopyUtils.copyToByteArray(file);
+				}
+				else if(inputstream != null) {
+					return FileCopyUtils.copyToByteArray(inputstream);
+				}
+				else {
+					InputStream is = getBuiltinInputStream();
+					if(is != null) {
+						try {
+							return FileCopyUtils.copyToByteArray(is);
+						}
+						finally {
+							try {
+								is.close();
+							}
+							catch(IOException e1) {
+								logger.warn(e1.getMessage(), e1);
+							}
+						}
+					}
+					else {
+						return null;
+					}
+				}
+			}
+			catch(IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		}
+
+		public String getDataAsString() throws IllegalStateException, UncheckedIOException {
+			if(!isText)
+				throw new IllegalStateException("The data is not known to be text type");
+			
+			try {
+				if(bytes != null) {				
+					return new String(bytes, charset);
+				}
+				else if(string != null) {
+					return string;
+				}
+				else if(file != null) {
+					return FileCopyUtils.copyToString(new InputStreamReader(new BufferedInputStream(new FileInputStream(file)), charset));
+				}
+				else if(inputstream != null) {
+					return FileCopyUtils.copyToString(new InputStreamReader(new BufferedInputStream(inputstream), charset));
+				}
+				else {
+					InputStream is = getBuiltinInputStream();
+					if(is != null) {
+						try {
+							return FileCopyUtils.copyToString(new InputStreamReader(new BufferedInputStream(is), charset));
+						}
+						finally {
+							try {
+								is.close();
+							}
+							catch(IOException e1) {
+								logger.warn(e1.getMessage(), e1);
+							}
+						}
+					}
+					else {
+						return null;
+					}
+				}
+			}
+			catch(IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		}
+
 	}
 }

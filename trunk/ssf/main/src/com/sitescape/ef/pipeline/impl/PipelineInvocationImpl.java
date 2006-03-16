@@ -26,16 +26,23 @@ public class PipelineInvocationImpl implements PipelineInvocation {
 	}
 	
 	public void proceed() throws Throwable {
-		curr++;
-		if(curr == 0) {
-			docHandlers[curr].doHandle(initialIn, conduits[curr].getSink(), this);
-		}
-		else if(curr == docHandlers.length - 1) {
-			docHandlers[curr].doHandle(conduits[curr-1].getSource(), finalOut, this);
-		}
-		else {
-			docHandlers[curr].doHandle(conduits[curr-1].getSource(), conduits[curr].getSink(), this);
-		}
+		if(++curr >= docHandlers.length)
+			return; // No more handler to execute
+		
+		DocSource source = null;
+		DocSink sink = null;
+		
+		if(curr == 0)
+			source = initialIn;
+		else
+			source = conduits[curr-1].getSource();
+		
+		if(curr == docHandlers.length - 1)
+			sink = finalOut;
+		else
+			conduits[curr].getSink();
+		
+		docHandlers[curr].doHandle(source, sink, this);
 	}
 
 	public void cleanup() {

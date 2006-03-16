@@ -44,7 +44,7 @@ public interface EntryProcessor {
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries) throws AccessControlException;
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries, Document searchFilter) throws AccessControlException;
 	public void indexBinder(Binder binder);
-	public void indexEntry(WorkflowControlledEntry entry); 
-  	public void indexEntry(Collection entries);
+	public void reindexEntry(WorkflowControlledEntry entry); 
+  	public void reindexEntries(Collection entries);
 	
 }

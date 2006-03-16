@@ -13,6 +13,10 @@ public class RAMConduit extends AbstractConduit {
 	
 	private ByteArrayOutputStream baos;
 
+	public RAMConduit() {
+		super();
+	}
+	
 	protected void reset() {
 		super.reset();
 		baos = null;
@@ -30,8 +34,11 @@ public class RAMConduit extends AbstractConduit {
 
 	protected class RAMDocSink extends AbstractDocSink {
 		
-		public OutputStream getDefaultOutputStream() throws UncheckedIOException {
+		public OutputStream getBuiltinOutputStream(boolean isTextData, String charsetName) throws UncheckedIOException {
 			reset(); // important
+			isText = isTextData;
+			if(isText)
+				charset = charsetName;
 			baos = new ByteArrayOutputStream();
 			return baos;
 		}
@@ -39,7 +46,7 @@ public class RAMConduit extends AbstractConduit {
 	
 	protected class RAMDocSource extends AbstractDocSource {
 
-		public InputStream getDefaultInputStream() throws UncheckedIOException {
+		public InputStream getBuiltinInputStream() throws UncheckedIOException {
 			if(baos != null)
 				return new ByteArrayInputStream(baos.toByteArray());
 			else

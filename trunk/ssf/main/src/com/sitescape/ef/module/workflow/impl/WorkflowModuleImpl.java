@@ -795,7 +795,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
         	EntryProcessor processor = 
         		(EntryProcessor) getProcessorManager().getProcessor(entry.getParentBinder(), 
         					EntryProcessor.PROCESSOR_KEY);
-        	processor.indexEntry(entry);
+        	processor.reindexEntry(entry);
         }
         // if there was an exception, just save the timer
         if (timer.getException()==null) {

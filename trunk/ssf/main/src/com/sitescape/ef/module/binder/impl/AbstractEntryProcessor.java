@@ -8,9 +8,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.Long;
 import java.util.Collection;
 
@@ -28,6 +31,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.SFQuery;
+import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.HistoryStamp;
@@ -38,6 +42,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.ConfigurationException;
+import com.sitescape.ef.InternalException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.lucene.Hits;
@@ -59,6 +64,7 @@ import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.OperationAccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.workflow.WorkflowModule;
@@ -66,9 +72,14 @@ import com.sitescape.ef.rss.RssGenerator;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.ef.pipeline.Conduit;
+import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.pipeline.DocSource;
-import com.sitescape.ef.pipeline.NoFileException;
 import com.sitescape.ef.pipeline.Pipeline;
+import com.sitescape.ef.pipeline.PipelineException;
+import com.sitescape.ef.pipeline.impl.AbstractConduit;
+import com.sitescape.ef.pipeline.impl.RAMConduit;
+import com.sitescape.ef.pipeline.util.TempFileUtil;
 
 /**
  *
@@ -135,9 +146,9 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         
         Map entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems);
         final Map entryData = (Map) entryDataAll.get("entryData");
-        List fileData = (List) entryDataAll.get("fileData");
+        List fileUploadItems = (List) entryDataAll.get("fileData");
         
-        FilesErrors filesErrors = addEntry_filterFiles(binder, fileData);
+        FilesErrors filesErrors = addEntry_filterFiles(binder, fileUploadItems);
 
         final WorkflowControlledEntry entry = addEntry_create(clazz);
         entry.setEntryDef(def);
@@ -162,16 +173,16 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         
         // We must save the entry before processing files because it makes use
         // of the persistent id of the entry. 
-        filesErrors = addEntry_processFiles(binder, entry, fileData, filesErrors);
+        filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors);
         
         //After the entry is successfully added, start up any associated workflows
         addEntry_startWorkflow(entry);
 
         // This must be done in a separate step after persisting the entry,
         // because we need the entry's persistent ID for indexing. 
-        addEntry_indexAdd(binder, entry, inputData, fileData);
+        addEntry_indexAdd(binder, entry, inputData, fileUploadItems);
         
-        cleanupFiles(fileData);
+        cleanupFiles(fileUploadItems);
         
     	if(filesErrors.getProblems().size() > 0) {
     		// At least one error occured during the operation. 
@@ -187,13 +198,13 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);        
     }
     
-    protected FilesErrors addEntry_filterFiles(Binder binder, List fileData) throws FilterException {
-    	return getFileModule().filterFiles(binder, fileData);
+    protected FilesErrors addEntry_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
+    	return getFileModule().filterFiles(binder, fileUploadItems);
     }
 
     protected FilesErrors addEntry_processFiles(Binder binder, 
-    		WorkflowControlledEntry entry, List fileData, FilesErrors filesErrors) {
-    	return getFileModule().writeFiles(binder, entry, fileData, filesErrors);
+    		WorkflowControlledEntry entry, List fileUploadItems, FilesErrors filesErrors) {
+    	return getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors);
     }
     
     protected Map addEntry_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems) {
@@ -238,36 +249,17 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     }
 
     protected void addEntry_indexAdd(Binder binder, WorkflowControlledEntry entry, 
-    		InputDataAccessor inputData, List fileData) {
+    		InputDataAccessor inputData, List fileUploadItems) {
         
-        // Create an index document from the entry object.
-        org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry);
-        
-        // Register the index document for indexing.
-        IndexSynchronizationManager.addDocument(indexDoc);        
-        
-        //Create separate documents one for each attached file and index them.
-        for(int i = 0; i < fileData.size(); i++) {
-        	// Get a handle on the uploaded file. 
-        	FileUploadItem fui = (FileUploadItem) fileData.get(i);
-        	// Create a Lucene document object from the uploaded file.
-        	// This involves applying additional processings such as doc
-        	// conversion, etc. 
-        	indexDoc = buildIndexDocumentFromUploadedFile(binder, entry, fui);
-        	if(indexDoc != null) {
-        		// Register the index document for indexing.
-        		IndexSynchronizationManager.addDocument(indexDoc);
-        	}
-        }
+    	indexEntry(binder, entry, fileUploadItems, true);
        
         rssGenerator.updateRssFeed(entry); // Just for testing
-        
     }
  
-    protected void cleanupFiles(List fileData) {
-        for(int i = 0; i < fileData.size(); i++) {
+    protected void cleanupFiles(List fileUploadItems) {
+        for(int i = 0; i < fileUploadItems.size(); i++) {
         	// Get a handle on the uploaded file. 
-        	FileUploadItem fui = (FileUploadItem) fileData.get(i);
+        	FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
         	try {
 				fui.delete();
 			} catch (IOException e) {
@@ -301,11 +293,11 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 	
 	    Map entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
 	    final Map entryData = (Map) entryDataAll.get("entryData");
-	    List fileData = (List) entryDataAll.get("fileData");
+	    List fileUploadItems = (List) entryDataAll.get("fileData");
 	    
-        FilesErrors filesErrors = modifyEntry_filterFiles(binder, fileData);
+        FilesErrors filesErrors = modifyEntry_filterFiles(binder, fileUploadItems);
 
-	    filesErrors = modifyEntry_processFiles(binder, entry, fileData, filesErrors);
+	    filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors);
 	    
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
@@ -315,9 +307,9 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         		modifyEntry_postFillIn(binder, entry, inputData, entryData);
         		return null;
         	}});
-	    modifyEntry_indexAdd(binder, entry, inputData, fileData);
+	    modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems);
 	    
-	    cleanupFiles(fileData);
+	    cleanupFiles(fileUploadItems);
 	    
     	if(filesErrors.getProblems().size() > 0) {
     		// At least one error occured during the operation. 
@@ -336,13 +328,13 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	modifyAccessCheck(binder, entry);
    }
 
-    protected FilesErrors modifyEntry_filterFiles(Binder binder, List fileData) throws FilterException {
-    	return getFileModule().filterFiles(binder, fileData);
+    protected FilesErrors modifyEntry_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
+    	return getFileModule().filterFiles(binder, fileUploadItems);
     }
 
     protected FilesErrors modifyEntry_processFiles(Binder binder, 
-    		WorkflowControlledEntry entry, List fileData, FilesErrors filesErrors) {
-    	return getFileModule().writeFiles(binder, entry, fileData, filesErrors);
+    		WorkflowControlledEntry entry, List fileUploadItems, FilesErrors filesErrors) {
+    	return getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors);
     }
     protected Map modifyEntry_toEntryData(WorkflowControlledEntry entry, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
@@ -368,17 +360,15 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     protected void modifyEntry_postFillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
     }
     
-    protected void modifyEntry_indexAdd(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, List fileData) {
-    	//indexEntry(entry, fileData);
-    	indexEntry(entry);
-    	// Take care of attached files - TBD - Roy
+    protected void modifyEntry_indexAdd(Binder binder, WorkflowControlledEntry entry, 
+    		InputDataAccessor inputData, List fileUploadItems) {
+    	indexEntry(binder, entry, fileUploadItems, false);
     }
     
     
     
     //***********************************************************************************************************
     public void modifyWorkflowState(Binder binder, Long entryId, Long tokenId, String toState) {
-
     	WorkflowControlledEntry entry = entry_load(binder, entryId);
  		modifyEntry_accessControl(binder, entry);
 		//Find the workflowState
@@ -390,9 +380,13 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 			if (transitions.containsKey(toState)) {
 				//It is ok to transition to this state; go do it
 				getWorkflowModule().modifyWorkflowState(ws.getTokenId(), ws.getState(), toState);
-				// JONG - this won't work - getFileAttachments is not FUI
-				//indexEntry(entry, entry.getFileAttachments());
-				indexEntry(entry);
+				// Do NOT use reindexEntry(entry) since it reindexes attached
+				// files as well. We want workflow state change to be lightweight
+				// and reindexing all attachments will be unacceptably costly.
+				// TODO (Roy, I believe this was your design idea, so please 
+				// verify that this strategy will indeed work). 
+				
+				indexEntry(binder, entry, new ArrayList(), null, false);
 			}
 		}
     }
@@ -488,34 +482,13 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
    	protected abstract SFQuery indexBinder_getQuery(Binder binder);
  
     //***********************************************************************************************************
-   	public void indexEntry(WorkflowControlledEntry entry/*, List fileData*/) {
-		// 	Create an index document from the entry object.
-   		org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(entry.getParentBinder(), entry);
-        
-        // Delete the document that's currently in the index.
-        IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
-            
-        // Register the index document for indexing.
-        IndexSynchronizationManager.addDocument(indexDoc);        
-        
-        //Create separate documents one for each attached file and index them.
-        /* by Jong
-        for(int i = 0; i < fileData.size(); i++) {
-        	// Get a handle on the uploaded file. 
-        	FileUploadItem fui = (FileUploadItem) fileData.get(i);
-        	// Create a Lucene document object from the uploaded file.
-        	// This involves applying additional processings such as doc
-        	// conversion, etc. 
-        	indexDoc = buildIndexDocumentFromAttachmentFile(entry.getParentBinder(), entry, fui);
-            // Register the index document for indexing.
-            IndexSynchronizationManager.addDocument(indexDoc);
-        }*/
+   	public void reindexEntry(WorkflowControlledEntry entry) {
+   		indexEntry(entry.getParentBinder(), entry, null, false);
    	}
-   	public void indexEntry(Collection entries) {
+   	public void reindexEntries(Collection entries) {
    		for (Iterator iter=entries.iterator(); iter.hasNext();) {
    			WorkflowControlledEntry entry = (WorkflowControlledEntry)iter.next();
-   			// by JONG - this won't work - getFileAttachments is not FUI
-   			indexEntry(entry/*, entry.getFileAttachments()*/);
+   			reindexEntry(entry);
    		}
    	}
    	
@@ -775,12 +748,21 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         }
         getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      }     
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, WorkflowControlledEntry entry) {
-    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
-        
+    
+    /**
+     * Fill in the Lucene document object with information that is common between
+     * entry doc and attachment docs. We duplicate data so that we won't have to
+     * perform multiple queries or run our own filtering in multiple steps. 
+     * 
+     * @param indexDoc
+     * @param binder
+     * @param entry
+     */
+    private void fillInIndexDocWithCommonPartFromEntry(org.apache.lucene.document.Document indexDoc, 
+    		Binder binder, WorkflowControlledEntry entry) {
         // Add uid
         BasicIndexUtils.addUid(indexDoc, entry.getIndexDocumentUid());
-        BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ENTRY);
+
         // Add the entry type 
         EntryIndexUtils.addEntryType(indexDoc, entry);
        
@@ -807,15 +789,23 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         // Add Doc title
         EntryIndexUtils.addTitle(indexDoc, entry);
         
-        // Add command definition
-        EntryIndexUtils.addCommandDefinition(indexDoc, entry); 
-        
-        
         // Add data fields driven by the entry's definition object. 
         getDefinitionModule().addIndexFieldsForEntry(indexDoc, binder, entry);
         
         // Add ACL field. We only need to index ACLs for read access.
         EntryIndexUtils.addReadAcls(indexDoc, binder, entry, getAccessControlManager());
+    }
+    
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, WorkflowControlledEntry entry) {
+    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
+        
+    	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
+    	
+    	// Add document type
+        BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ENTRY);
+        
+        // Add command definition
+        EntryIndexUtils.addCommandDefinition(indexDoc, entry); 
         
         // Add the events
         EntryIndexUtils.addEvents(indexDoc, entry);
@@ -826,82 +816,101 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         return indexDoc;
     }
     
-    protected org.apache.lucene.document.Document buildIndexDocumentFromUploadedFile
-    	(Binder binder, WorkflowControlledEntry entry, FileUploadItem fui) {
+    /**
+     * 
+     * @param binder
+     * @param entry
+     * @param fa This is non-null.
+     * @param fui This may be null. 
+     * @return
+     */
+    protected org.apache.lucene.document.Document buildIndexDocumentFromFile
+    	(Binder binder, WorkflowControlledEntry entry, FileAttachment fa, FileUploadItem fui) {
+    	// Prepare for pipeline execution.
     	
+    	String text = null;
     	
+    	// In this case, initial input into pipeline always comes in the form
+    	// of a local file (this is because "we" know the first handler in the
+    	// pipeline is a converter that expects input as a file... just details).
+    	Conduit firstConduit = new RAMConduit();
     	
-    	
-    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
-    	File tempFile = null;
+    	try {
+	    	if(fui != null) {
+	    		// Use FileUploadItem object for the file content. Potentially this
+	    		// provides more efficient mechanism than fetching from repository.
+		    	try {
+					firstConduit.getSink().setFile(fui.getFile(), false, false, null);
+				} catch (IOException e) {
+					throw new UncheckedIOException(e);
+				}
+	    	}
+	    	else {
+	    		// We must retrieve the file content from repository and create a
+	    		// temporary file. 
+	    		File tempFile = TempFileUtil.createTempFile("repository", SPropsUtil.getFile("temp.dir"));
+	    		
+				firstConduit.getSink().setFile(tempFile, true, false, null);    		
 
-        // Add uid
-        BasicIndexUtils.addUid(indexDoc, entry.getIndexDocumentUid());
+				try {
+	    			getFileModule().readFile(binder, entry, fa, new BufferedOutputStream(new FileOutputStream(tempFile)));
+	    		}
+	    		catch(IOException e) {
+	    			throw new UncheckedIOException(e);
+	    		}
+	    	}
+    	
+	    	Conduit lastConduit = new RAMConduit();
+	    	
+	    	try {
+		    	// Invoke pipeline.
+		    	// TODO For now all pipeline executions are synchronous.
+		    	// Asynchronous execution support to be added later.
+	    		try {
+	    			getPipeline().invoke(firstConduit.getSource(), lastConduit.getSink());
+	    		}
+	    		catch(PipelineException e) {
+	    			// Error during pipeline execution. In this case do not propogate
+	    			// the exception up the stakc. Instead we return null. It allows
+	    			// application to proceed with the remaining files. 
+	    			return null;
+	    		}
+		    	
+		        // Get the resulting data of the pipeline execution as a string.
+		        text = lastConduit.getSource().getDataAsString();
+	    	}
+	    	finally {
+	    		lastConduit.close();
+	    	}
+    	}
+    	finally {
+    		firstConduit.close();
+    	}
+        
+    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
+    	
+    	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
+    	
+    	// Add document type
         BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ATTACHMENT);
-        // Add the entry type 
-        EntryIndexUtils.addEntryType(indexDoc, entry);
-       
-        EntryIndexUtils.addBinder(indexDoc, entry);
-        
-        // Add creation-date
-        EntryIndexUtils.addCreationDate(indexDoc, entry);
-        
-        // Add modification-date
-        EntryIndexUtils.addModificationDate(indexDoc,entry);
-        
-        // Add creator id
-        EntryIndexUtils.addCreationPrincipalId(indexDoc,entry);
-        
-        // Add Modification Principal Id
-        EntryIndexUtils.addModificationPrincipalId(indexDoc,entry);
-        
-        // Add ReservedBy Principal Id
-        EntryIndexUtils.addModificationPrincipalId(indexDoc,entry);
-        
-        // Add Doc Id
-        EntryIndexUtils.addDocId(indexDoc, entry);
-        
-        // Add Doc title
-        EntryIndexUtils.addTitle(indexDoc, entry);
         
         // Add UID of attachment file (FUID)
-        EntryIndexUtils.addFileAttachmentUid(indexDoc, fui, entry.getAttachments());
+        EntryIndexUtils.addFileAttachmentUid(indexDoc, fa);
         
         // Add the filename
         EntryIndexUtils.addFileAttachmentName(indexDoc,fui.getOriginalFilename());        
         
-        // Add the text of the attachment 
-        try {
-        	tempFile = fui.getTempFile();
-        } catch (IOException ioe){
-        	// add logging info
-        	return null;
-        }
-        try {
-        	docConverter.convert(fui.getFile(),tempFile,10000);
-        } catch (Exception e) {
-        	// add logging info
-        	return null;
-        }
-        File transformFile = docConverter.getNullTransformFile();
+        if(text != null)
+        	BasicIndexUtils.addAllText(indexDoc, text);
         
-        EntryIndexUtils.addAttachmentText(indexDoc,tempFile, transformFile);
-
         // TBD Add the filetype and Extension
         //EntryIndexUtils.addFileType(indexDoc,tempFile);
 
         EntryIndexUtils.addFileExtension(indexDoc,fui.getOriginalFilename());
-     
-        getDefinitionModule().addIndexFieldsForEntry(indexDoc, binder, entry);
-        
-        // Add ACL field. We only need to index ACLs for read access.
-        BasicIndexUtils.addReadAcls(indexDoc, binder, entry, getAclManager());
-        
-        // Add the workflows
-        //EntryIndexUtils.addWorkflow(indexDoc, entry);
         
         return indexDoc;
     }
+    
     protected void modifyAccessCheck(Binder binder, WorkflowControlledEntry entry) {
         if (!entry.hasAclSet()) {
            	try {
@@ -1008,4 +1017,79 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         }    	
     }
     
+    /**
+     * Index entry and optionally its attached files.
+     * 
+     * @param biner
+     * @param entry
+     * @param fileUploadItems If this is null, all attached files currently in
+     * the entry are indexed as well. If this is non-null, only those files
+     * in the list are indexed. 
+     * @param newEntry
+     */
+    protected void indexEntry(Binder binder, WorkflowControlledEntry entry,
+    		List fileUploadItems, boolean newEntry) {
+    	if(fileUploadItems != null) {
+    		indexEntry(binder, entry, findCorrespondingFileAttachments(entry, fileUploadItems), fileUploadItems, newEntry);
+    	}
+    	else {
+    		indexEntry(binder, entry, entry.getFileAttachments(), null, newEntry);
+    	}
+    }
+    
+    /**
+     * Index entry along with its file attachments. 
+     * 
+     * @param binder
+     * @param entry
+     * @param fileAttachments list of FileAttachments that need to be (re)indexed.
+     * Only those files explicitly listed in this list are indexed. 
+     * @param fileUploadItems This may be <code>null</code> in which case the 
+     * contents of the files must be obtained from repositories. If non-null,
+     * the files in this list are used for indexing and the elements positionally
+     * correspond to the elements in fileAttachments list. 
+     * @param newEntry
+     */
+	protected void indexEntry(Binder binder, WorkflowControlledEntry entry,
+			List fileAttachments, List fileUploadItems, boolean newEntry) {
+		if(!newEntry) {
+			// This is modification. We must first delete existing document(s) from the index.
+			
+			// Since all matches will be deleted, this will also delete the attachments 
+	        IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
+		}
+		
+        // Create an index document from the entry object.
+        org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry);
+            
+        // Register the index document for indexing.
+        IndexSynchronizationManager.addDocument(indexDoc);        
+        
+        //Create separate documents one for each attached file and index them.
+        for(int i = 0; i < fileAttachments.size(); i++) {
+        	FileAttachment fa = (FileAttachment) fileAttachments.get(i);
+        	FileUploadItem fui = null;
+        	if(fileUploadItems != null)
+        		fui = (FileUploadItem) fileUploadItems.get(i);
+        	indexDoc = buildIndexDocumentFromFile(binder, entry, fa, fui);
+        	if(indexDoc != null) {
+        		// Register the index document for indexing.
+        		IndexSynchronizationManager.addDocument(indexDoc);
+        	}
+        }
+	}
+	
+    protected List findCorrespondingFileAttachments(WorkflowControlledEntry entry, List fileUploadItems) {
+    	List fileAttachments = new ArrayList();
+    	for(int i = 0; i < fileUploadItems.size(); i++) {
+    		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
+    		FileAttachment fa = entry.getFileAttachment(fui.getRepositoryServiceName(), fui.getOriginalFilename());
+    		if(fa == null) 
+    			throw new InternalException("No FileAttachment corresponding to FileUploadItem");
+    		fileAttachments.add(i, fa);
+    	}
+    	return fileAttachments;
+    }
+    
+
 }
