@@ -72,7 +72,7 @@ import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.pipeline.Conduit;
 import com.sitescape.ef.pipeline.Pipeline;
 import com.sitescape.ef.pipeline.PipelineException;
-import com.sitescape.ef.pipeline.support.RAMConduit;
+import com.sitescape.ef.pipeline.impl.RAMConduit;
 
 /**
  *
