@@ -51,9 +51,6 @@ request.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight));
 var autoScroll = "<%= autoScroll %>";
 
 function ss_showMessageInDiv(str) {
-    //Remember the scroll position so we can come back to this exact point
-    savedScrollPositionTop = self.document.body.scrollTop;
-    
 <%
 	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
 		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
@@ -128,15 +125,6 @@ function showEntryInDiv(str) {
 	}
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
-}
-
-var savedScrollPositionTop = null;
-function scrollToSavedLocation() {
-	if (autoScroll == "true") {
-		if (savedScrollPositionTop != null) {
-			smoothScroll(0,savedScrollPositionTop);
-		}
-	}
 }
 
 var highlightBgColor = "${ss_folder_line_highlight_color}"

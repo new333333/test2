@@ -1,5 +1,6 @@
 package com.sitescape.ef.taglib;
 
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.util.servlet.DynamicServletRequest;
@@ -33,6 +34,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 	private String _height;
 	private String _type;
 	private String _jsp;
+	private String displayStyle;
 	
 	private static String defaultTableHeight = "400";
 
@@ -48,6 +50,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 		HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 		HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 		User user = RequestContextHolder.getRequestContext().getUser();
+		displayStyle = user.getDisplayStyle();
 		
 		if (_id == null || _id.equals("")) _id = "ss_sTable";
 		if (_height == null || _height.equals("0")) _height = this.defaultTableHeight;
@@ -65,7 +68,8 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
 				
-			} else if (_type == null || _type.equals("")) {
+			} else if (_type == null || _type.equals("") || (displayStyle != null && 
+					displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE))) {
 				String jspStart = "/WEB-INF/jsp/tag_jsps/sliding_table/table_start.jsp";
 				String jspEnd = "/WEB-INF/jsp/tag_jsps/sliding_table/table_end.jsp";
 				String jspRow = "/WEB-INF/jsp/tag_jsps/sliding_table/table_row.jsp";

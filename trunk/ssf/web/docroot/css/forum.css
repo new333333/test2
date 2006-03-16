@@ -641,6 +641,8 @@ div.ss_calPopupDiv {
   position:absolute; 
   visibility:hidden; 
   background-color:#f7f7f7; 
+  border-right:solid 2px gray;
+  border-bottom:solid 2px gray;
   }
 
 .ss_cpYearNavigation,

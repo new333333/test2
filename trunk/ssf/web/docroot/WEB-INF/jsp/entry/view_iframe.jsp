@@ -9,7 +9,7 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
   configJspStyle="${ssConfigJspStyle}" />
 </div>
 
-<div id="ss_showentrydiv" onMouseover="ss_clearMouseOverInfo(null);"
+<div id="ss_showentrydiv" onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
   style="position:absolute; visibility:hidden;
   width:600; height:80%; display:none; z-index:50;">
   <ssf:box>
@@ -132,7 +132,7 @@ var ss_startingToDragDiv = null;
 var ss_divDragSavedMouseMove = '';
 var ss_divDragSavedMouseUp = '';
 function ss_startDragDiv() {
-	if (ss_clearMouseOverInfo) ss_clearMouseOverInfo(null);
+	if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(null);
 	
 	ss_divDragObj = document.getElementById('ss_showentrydiv')
     if (isNSN || isNSN6 || isMoz5) {

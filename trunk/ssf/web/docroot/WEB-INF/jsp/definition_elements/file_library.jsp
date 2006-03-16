@@ -1,12 +1,4 @@
 <% // File library %>
-<%
-	String folderId = ssFolder.getId().toString();
-	String parentFolderId = "";
-	if (ssFolder instanceof Folder) {
-		Folder parentFolder = ((Folder) ssFolder).getParentFolder();
-		if (parentFolder != null) parentFolderId = parentFolder.getId().toString();
-	}
-%>
 <script type="text/javascript">
 function ss_loadEntry(obj,id) {
 	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="Loading" text="Loading..."/>");
@@ -17,20 +9,8 @@ function ss_loadEntry(obj,id) {
 
 </script>
 <div class="folder">
-<table class="ss_style" width="100%">
-<tr>
-  <th align="left">Folders</th>
-</tr>
-<tr>
-  <td>
-	<div>
-	  <ssf:tree treeName="folderTree" treeDocument="<%= ssFolderDomTree %>" 
-	    rootOpen="false" 
-	    nodeOpen="<%= parentFolderId %>" highlightNode="<%= folderId %>" />
-	</div>
-  </td>
- </tr>
-</table>
+<% // First include the folder tree %>
+<%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
 </div>
 <br>
 <div class="folder">
@@ -54,7 +34,7 @@ function ss_loadEntry(obj,id) {
 %>
   </td>
   <td valign="top" width="40%">
-    <a href="<ssf:url folderId="<%= folderId %>" action="view_entry" 
+    <a href="<ssf:url folderId="${ssFolder.id}" action="view_entry" 
     entryId="<%= fileEntry.getId().toString() %>" />" 
     onClick="ss_loadEntry(this,'folderLine_<c:out value="${fileEntry.id}"/>');return false;" >
     <c:if test="${empty fileEntry.title}">

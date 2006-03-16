@@ -49,6 +49,9 @@
 <c:set var="ss_sliding_table_text_color" value="#3333FF" scope="request"/>
 <c:set var="ss_sliding_table_link_hover_color" value="#3333FF" scope="request"/>
 
+<c:set var="ss_calendar_today_background_color" value="#ffffe8" scope="request"/>
+<c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
+
 <%
 
 //Set up the user object
@@ -269,6 +272,10 @@ div.ss_sliding_table_info_popup {
   padding-bottom:2px;
   }
 .ss_toolbar * {
+  background-color: ${ss_toolbar_background_color};
+  color: ${ss_toolbar_text_color};
+  }
+.ss_toolbar_color {
   background-color: ${ss_toolbar_background_color};
   color: ${ss_toolbar_text_color};
   }

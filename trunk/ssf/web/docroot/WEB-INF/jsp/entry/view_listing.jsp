@@ -57,6 +57,7 @@ renderRequest.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight
 var ss_reloadUrl = "${ss_reloadUrl}";
 var ssLoadEntryUrl = "<%= ssLoadEntryUrl %>";
 var autoScroll = "<%= autoScroll %>";
+var ss_displayStyle = "<%= displayStyle %>";
 
 <%
 	if (!ssLoadEntryUrl.equals("")) {
@@ -70,8 +71,7 @@ ss_createOnLoadObj('ss_showEntryOnLoad', ss_showEntryOnLoad);
 %>
 
 function ss_showMessageInDiv(str) {
-    //Remember the scroll position so we can come back to this exact point
-    savedScrollPositionTop = self.document.body.scrollTop;
+	if (ss_displayStyle == "accessible") {return false;}
     
 <%
 	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
@@ -151,19 +151,6 @@ function ss_showEntryInDiv(str) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-var savedScrollPositionTop = null;
-function scrollToSavedLocation(anchor) {
-	if (anchor != "") {
-		smoothScroll(0, parseInt(ss_getAnchorTop(anchor)));
-	} else {
-		if (autoScroll == "true") {
-			if (savedScrollPositionTop != null) {
-				smoothScroll(0,savedScrollPositionTop);
-			}
-		}
-	}
-}
-
 var highlightBgColor = "${ss_folder_line_highlight_color}"
 var highlightedLine = null;
 var savedHighlightedLineBgColor = null;
@@ -178,6 +165,10 @@ function ss_addEntry(obj) {
 
 var ss_currentEntryId = "";
 function ss_loadEntry(obj,id) {
+	if (ss_displayStyle == "accessible") {
+		self.location.href = obj.href;
+		return false;
+	}
 	if (id == "") return false;
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
@@ -193,6 +184,10 @@ function ss_loadEntry(obj,id) {
 }
 
 function ss_loadEntryUrl(url,id) {
+	if (ss_displayStyle == "accessible") {
+		self.location.href = url;
+		return false;
+	}
 	if (id == "") return false;
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
@@ -225,6 +220,10 @@ function ss_notLoggedIn() {
 	} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 %>
 <%@ include file="/WEB-INF/jsp/entry/view_popup.jsp" %>
+<%
+	} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+%>
+<%@ include file="/WEB-INF/jsp/entry/view_accessible.jsp" %>
 <%
 	} else {
 %>

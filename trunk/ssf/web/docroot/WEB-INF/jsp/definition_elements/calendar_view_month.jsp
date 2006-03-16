@@ -2,21 +2,25 @@
 
 
 <script type="text/javascript">
-var ss_entryList = new Array();
-var ss_entryCount = 0;
-function getFilteredEntries() {
-		ss_entryList[ss_entryCount++] = '<c:out value="${ev.value.entry.id}"/>';
-//alert("cal view entryList "+ss_entryCount)
+ss_entryList = new Array();
+ss_entryCount = 0;
+function setFilteredEntry(id) {
+	ss_entryList[ss_entryCount++] = id;
 }
 </script>
 <c:set var="delimiter" value=" | "/>
-<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_style ss_ruledTable">
-<tr class="ss_bglightgray">
-<td colspan="8"><span class="ss_toolbar_item">
+<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_ruledTable">
+<tr class="ss_toolbar_color">
+<td colspan="8"><span>
    <fmt:formatDate value="${ssCalStartDate}" pattern="MMMM, yyyy" />
 &nbsp;&nbsp;&nbsp;&nbsp;
-Views:&nbsp;<a href="${set_day_view}">Day</a><c:out value="${delimiter}" /><a href="${set_week_view}">Week</a>
-<c:out value="${delimiter}" />
+<ssf:nlt tag="calendar.views" text="Views"/>:&nbsp;
+<a href="${set_day_view}"><ssf:nlt tag="calendar.day" text="Day"/>
+</a><c:out value="${delimiter}" />
+<a href="${set_week_view}"><ssf:nlt tag="calendar.week" text="Week"/></a>
+&nbsp;&nbsp;&nbsp;
+</span>
+<%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %>
 </td>
 </tr>
  
@@ -36,19 +40,28 @@ ${dayabbrev}</td>
 
 <tr>
 
-<td valign="top" align="center" width="5%"><a style="text-decoration: none;" href="${week.weekURL}"><span class="ss_fineprint ss_gray">${week.weekNum}</span></a></td>
+<td valign="top" align="center" width="5%">
+  <a style="text-decoration: none;" href="${week.weekURL}">
+    <span class="ss_fineprint ss_gray">${week.weekNum}</span>
+  </a>
+</td>
 
 <c:forEach var="daymap" items="${week.dayList}">
 
 <c:choose>
 <c:when test="${daymap.isToday}">
-<td class="ss_fineprint" bgcolor="#ffffe8" valign="top"><span class="ss_right ss_bold"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
+<td class="ss_fineprint" bgcolor="${ss_calendar_today_background_color}" 
+  valign="top"><span class="ss_right ss_bold"><a 
+  href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
 </c:when>
 <c:when test="${!daymap.inView}">
-<td class="ss_fineprint" bgcolor="#f7f7f7" valign="top"><span class="ss_right ss_bold"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
+<td class="ss_fineprint" bgcolor="${ss_calendar_notInView_background_color}" 
+  valign="top"><span class="ss_right ss_bold"><a 
+  href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
 </c:when>
 <c:otherwise>
-<td valign="top" class="ss_fineprint"><span class="ss_right ss_bold"><a href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
+<td valign="top" class="ss_fineprint"><span class="ss_right ss_bold"><a 
+  href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
 </c:otherwise>
 </c:choose>
 
@@ -64,7 +77,10 @@ ${dayabbrev}</td>
 <%
     java.util.HashMap e = (java.util.HashMap) evim.get("entry");
 %>
-<div id="folderLine_${evim.entry.id}">	
+<script type="text/javascript">
+	setFilteredEntry('${evim.entry._docId}')
+</script>
+<div id="folderLine_${evim.entry._docId}">	
 ${evim.cal_starttimestring}: 
 <%
 if (ssSeenMap.checkIfSeen(e)) {
@@ -76,7 +92,7 @@ if (ssSeenMap.checkIfSeen(e)) {
     <a href="<ssf:url 
     adapter="true" 
     portletName="ss_forum" 
-    folderId="<%= folderId %>" 
+    folderId="${ssFolder.id}" 
     action="view_entry" 
     entryId="<%= e.get("_docId").toString() %>" actionUrl="false" />"
     onClick="ss_loadEntry(this,'<c:out value="${evim.entry._docId}"/>');return false;" 
