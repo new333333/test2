@@ -41,6 +41,10 @@ public class FacadeClient {
 
 	public static void main(String[] args) {
 
+		// Because this program uses Axis-generated client binding files, it
+		// is important to compile this program AFTER the appropriate artifacts
+		// have been generated. 
+		
 		System.out.println("*** This Facade client uses Axis-generated client bindings");
 
 		if(args.length == 0) {

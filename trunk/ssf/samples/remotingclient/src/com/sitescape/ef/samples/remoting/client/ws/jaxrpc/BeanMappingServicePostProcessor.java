@@ -26,6 +26,9 @@ import com.sitescape.ef.remoting.api.Folder;
  */
 public class BeanMappingServicePostProcessor implements JaxRpcServicePostProcessor {
 
+	// In our samples, this class is used in conjunction with Spring's jaxrpc 
+	// proxy, and defined in clientContext-jaxrpc.xml.
+	
 	public void postProcessJaxRpcService(Service service) {
 		TypeMappingRegistry registry = service.getTypeMappingRegistry();
 		TypeMapping mapping = registry.createTypeMapping();
