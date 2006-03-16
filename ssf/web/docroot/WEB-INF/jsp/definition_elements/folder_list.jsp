@@ -6,16 +6,18 @@
 <jsp:useBean id="ssUserFolderProperties" type="com.sitescape.ef.domain.UserProperties" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
 <%
-	String folderId = ssFolder.getId().toString();
-	String parentFolderId = "";
-	if (ssFolder instanceof Folder) {
-		Folder parentFolder = ((Folder) ssFolder).getParentFolder();
-		if (parentFolder != null) parentFolderId = parentFolder.getId().toString();
-	}
+	String displayStyle = ssUser.getDisplayStyle();
+	if (displayStyle == null) displayStyle = "";
+	
 	String slidingTableStyle = "sliding";
 	if (ssUser.getDisplayStyle() != null && 
 	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 		slidingTableStyle = "sliding_scrolled";
+	}
+	boolean useAdaptor = true;
+	if (ssUser.getDisplayStyle() != null && 
+	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+		useAdaptor = false;
 	}
 	String ssFolderTableHeight = "";
 	Map ssFolderPropertiesMap = ssUserFolderProperties.getProperties();
@@ -27,7 +29,9 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <script type="text/javascript">
+var ss_displayStyle = "<%= displayStyle %>";
 function highlightLineById(id) {
+	if (ss_displayStyle == "accessible") {return;}
     if (id == "") {return;}
     var obj = null
     if (isNSN || isNSN6 || isMoz5) {
@@ -99,13 +103,14 @@ function highlightLineById(id) {
 </table>
 </div>
 </div>
+<c:set var="ss_folderTableId" value="ss_folder_table" scope="request"/>
 <ssf:slidingTable id="ss_folder_table" type="<%= slidingTableStyle %>" 
- height="<%= ssFolderTableHeight %>" folderId="<%= folderId %>">
+ height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}">
 
 <ssf:slidingTableRow headerRow="true">
   <ssf:slidingTableColumn width="10%">Number</ssf:slidingTableColumn>
-  <ssf:slidingTableColumn width="10%">State</ssf:slidingTableColumn>
-  <ssf:slidingTableColumn width="40%">Title</ssf:slidingTableColumn>
+  <ssf:slidingTableColumn width="30%">Title</ssf:slidingTableColumn>
+  <ssf:slidingTableColumn width="20%">State</ssf:slidingTableColumn>
   <ssf:slidingTableColumn width="20%">Author</ssf:slidingTableColumn>
   <ssf:slidingTableColumn width="20%">Date</ssf:slidingTableColumn>
 </ssf:slidingTableRow>
@@ -125,9 +130,9 @@ function highlightLineById(id) {
 
   <ssf:slidingTableColumn>
     <a href="<ssf:url     
-    adapter="true" 
+    adapter="<%= useAdaptor %>" 
     portletName="ss_forum" 
-    folderId="<%= folderId %>" 
+    folderId="${ssFolder.id}" 
     action="view_entry" 
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
@@ -135,23 +140,10 @@ function highlightLineById(id) {
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn>
-    <c:if test="${!empty entry1._workflowStateCaption}">
     <a href="<ssf:url     
-    adapter="true" 
+    adapter="<%= useAdaptor %>" 
     portletName="ss_forum" 
-    folderId="<%= folderId %>" 
-    action="view_entry" 
-    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
-    onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
-    ><span <%= seenStyle %>><c:out value="${entry1._workflowStateCaption}"/></span></a>
-    </c:if>
-  </ssf:slidingTableColumn>
-
-  <ssf:slidingTableColumn>
-    <a href="<ssf:url     
-    adapter="true" 
-    portletName="ss_forum" 
-    folderId="<%= folderId %>" 
+    folderId="${ssFolder.id}" 
     action="view_entry" 
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
@@ -160,6 +152,19 @@ function highlightLineById(id) {
     ></c:if><span <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
   </ssf:slidingTableColumn>
   
+  <ssf:slidingTableColumn>
+    <c:if test="${!empty entry1._workflowStateCaption}">
+    <a href="<ssf:url     
+    adapter="<%= useAdaptor %>" 
+    portletName="ss_forum" 
+    folderId="${ssFolder.id}" 
+    action="view_entry" 
+    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
+    onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
+    ><span <%= seenStyle %>><c:out value="${entry1._workflowStateCaption}"/></span></a>
+    </c:if>
+  </ssf:slidingTableColumn>
+
   <ssf:slidingTableColumn>
 	<ssf:presenceInfo user="<%=(User)entry1.get("_principal")%>"/> 
 	<span <%= seenStyle %>><c:out value="${entry1._principal.title}"/></span>

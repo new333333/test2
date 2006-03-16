@@ -4,21 +4,26 @@
 <script type="text/javascript">
 var ss_entryList = new Array();
 var ss_entryCount = 0;
-function getFilteredEntries() {
-		ss_entryList[ss_entryCount++] = '<c:out value="${ev.value.entry.id}"/>';
-//alert("cal view entryList "+ss_entryCount)
+function setFilteredEntry(id) {
+		ss_entryList[ss_entryCount++] = id;
 }
 </script>
 <c:set var="delimiter" value=" | "/>
 
-<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_style ss_ruledTable">
-<tr class="ss_bglightgray">
-<td colspan="2"><span class="ss_toolbar_item">Week beginning 
+<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_ruledTable">
+<tr class="ss_toolbar_color">
+<td colspan="2">
+<span>
+<ssf:nlt tag="calendar.begining" text="Week beginning"/>
    <fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
 &nbsp;&nbsp;&nbsp;&nbsp;
-Views:&nbsp;<a href="${set_day_view}">Day</a><c:out value="${delimiter}" /><a href="${set_month_view}">Month</a>
+<ssf:nlt tag="calendar.views" text="Views"/>:&nbsp;
+<a href="${set_day_view}"><ssf:nlt tag="calendar.day" text="Day"/></a>
 <c:out value="${delimiter}" />
+<a href="${set_month_view}"><ssf:nlt tag="calendar.month" text="Month"/></a>
+&nbsp;&nbsp;&nbsp;
 </span>
+<%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %>
 </td>
 </tr>
 
@@ -56,9 +61,9 @@ Views:&nbsp;<a href="${set_day_view}">Day</a><c:out value="${delimiter}" /><a hr
     java.util.HashMap e = (java.util.HashMap) eviw.get("entry");
 %>
 <script type="text/javascript">
-//getFilteredEntries()
+	setFilteredEntry('${eviw.entry._docId}')
 </script>
-<div id="folderLine_<c:out value="${eviw.entry._docId}"/>">	
+<div id="folderLine_${eviw.entry._docId}">	
 <%
 if (ssSeenMap.checkIfSeen(e)) {
 %><span><%
@@ -75,7 +80,7 @@ if (ssSeenMap.checkIfSeen(e)) {
     <a href="<ssf:url 
     adapter="true" 
     portletName="ss_forum" 
-    folderId="<%= folderId %>" 
+    folderId="${ssFolder.id}" 
     action="view_entry" 
     entryId="<%= e.get("_docId").toString() %>" actionUrl="false" />"
     onClick="ss_loadEntry(this,'<c:out value="${eviw.entry._docId}"/>');return false;" 

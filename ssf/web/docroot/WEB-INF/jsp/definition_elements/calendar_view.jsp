@@ -29,22 +29,32 @@ function highlightLineById(id) {
 }
 </script>
 
-<%
-	String folderId = ssFolder.getId().toString();
-	String parentFolderId = "";
-	if (ssFolder instanceof Folder) {
-		Folder parentFolder = ((Folder) ssFolder).getParentFolder();
-		if (parentFolder != null) parentFolderId = parentFolder.getId().toString();
-	}
-%>
-<% // get the folder tree %>
 <div class="ss_folder">
+
 <% // First include the folder tree %>
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
-<% // Then include the navigation widgets for this view %>
-<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
 
-<%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %></td>
+<% // Then include the navigation widgets for this view %>
+<div style="margin:0px;">
+<div class="ss_folder_border" style="position:relative; top:2px; margin:0px; 
+  border-top:solid #666666 1px; 
+  border-right:solid #666666 1px; 
+  border-left:solid #666666 1px;">
+<table cellspacing="0" cellpadding="0" width="95%">
+<tr><td align="left">
+<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+</td>
+<td>
+<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
+</td>
+<td align="right">&nbsp;</td>
+</tr>
+</table>
+</div>
+</div>
+
+<c:set var="ss_folderTableId" value="ss_folder_table" scope="request"/>
+<div id="ss_folder_table">
 
 <c:choose>
 <c:when test="${ssCalendarViewMode == 'day'}">
@@ -63,5 +73,5 @@ function highlightLineById(id) {
 Unknown view mode: ${ssCalendarViewMode}
 </c:otherwise>
 </c:choose>
-
+</div>
 </div>

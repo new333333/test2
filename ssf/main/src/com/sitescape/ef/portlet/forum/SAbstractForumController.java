@@ -229,11 +229,12 @@ public class SAbstractForumController extends SAbstractController {
 		Iterator entryIterator = entrylist.listIterator();
 		PortletSession ps = WebHelper.getRequiredPortletSession(req);
 		// view mode is one of day, week, or month
-		Map userFolderProperties = (Map) getProfileModule().getUserFolderProperties(
+		UserProperties userFolderProperties = (UserProperties) getProfileModule().getUserFolderProperties(
 				user.getId(), folder.getId());
-		String viewMode = viewMode = WebKeys.CALENDAR_VIEW_WEEK;
-		if (userFolderProperties.containsKey(ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE)) {
-			viewMode = (String) userFolderProperties.get(ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE);
+		Map userFolderPropertiesMap = userFolderProperties.getProperties();
+		String viewMode = WebKeys.CALENDAR_VIEW_WEEK;
+		if (userFolderPropertiesMap.containsKey(ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE)) {
+			viewMode = (String) userFolderPropertiesMap.get(ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE);
 		}
 		model.put(WebKeys.CALENDAR_VIEWMODE, viewMode);
 		// currentDate is the date selected by the user; we make sure this date is in view 

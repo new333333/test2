@@ -592,8 +592,8 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 				configElement = configElementProfile;
 				request.setAttribute("definitionEntry", new User());
 			}
-			request.setAttribute("configElement", configElement);
-			ssConfigJspStyle = "form";
+			request.setAttribute("ssConfigElement", configElement);
+			String configJspStyle = "form";
 			request.setAttribute("ssConfigJspStyle", "form");
 %>
 
@@ -613,7 +613,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 <ssf:displayConfiguration 
   configDefinition="${ssConfigDefinition}" 
   configElement="<%= configElement %>" 
-  configJspStyle="${ssConfigJspStyle}" 
+  configJspStyle="<%= configJspStyle %>" 
   processThisItem="true" />
 </td></tr></table>
 </div>

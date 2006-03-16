@@ -156,7 +156,7 @@ function <portlet:namespace/>_select(alias) {
   <td>
 	  <ssf:tree treeName="folderTree" treeDocument="<%= ssFolderDomTree %>" 
 	    rootOpen="false" 
-	    nodeOpen="<%= parentFolderId %>" highlightNode="<%= folderId %>" /></td>
+	    nodeOpen="<%= parentFolderId %>" highlightNode="${ssFolder.id}" /></td>
  </tr>
 </table>
 <div class="ss_divider"></div>
