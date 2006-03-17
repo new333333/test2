@@ -40,7 +40,7 @@ public class PipelineInvocationImpl implements PipelineInvocation {
 		if(curr == docHandlers.length - 1)
 			sink = finalOut;
 		else
-			conduits[curr].getSink();
+			sink = conduits[curr].getSink();
 		
 		docHandlers[curr].doHandle(source, sink, this);
 	}
