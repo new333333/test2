@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="pipeline" class="com.sitescape.ef.pipeline.impl.SynchronousPipeline">
+		<property name="conduitFactories">
+			<list>
+				<bean class="com.sitescape.ef.pipeline.impl.RAMConduitFactory"/>
+				<bean class="com.sitescape.ef.pipeline.impl.RAMConduitFactory"/>
+				<bean class="com.sitescape.ef.pipeline.impl.FileConduitFactory">
+					<property name="fileDir"><value>file:/temp2</value></property>
+					<property name="fileNamePrefix"><value>FC34</value></property>
+				</bean>
+				<bean class="com.sitescape.ef.pipeline.impl.RAMConduitFactory"/>
+			</list>
+		</property>
+		<property name="docHandlers">
+			<list>
+				<bean class="com.sitescape.ef.pipeline.StringConcatenatingDocHandler">
+					<property name="name"><value>DH1</value></property>
+					<property name="outputMethod"><value>setFile</value></property>
+					<property name="fileDir"><value>file:/temp2</value></property>
+				</bean>
+				<bean class="com.sitescape.ef.pipeline.StringConcatenatingDocHandler">
+					<property name="name"><value>DH2</value></property>
+					<property name="outputMethod"><value>setByteArray</value></property>
+					<property name="fileDir"><value>file:/temp2</value></property>
+				</bean>
+				<bean class="com.sitescape.ef.pipeline.StringConcatenatingDocHandler">
+					<property name="name"><value>DH3</value></property>
+					<property name="outputMethod"><value>getBuiltinOutputStream</value></property>
+					<property name="fileDir"><value>file:/temp2</value></property>
+				</bean>
+				<bean class="com.sitescape.ef.pipeline.StringConcatenatingDocHandler">
+					<property name="name"><value>DH4</value></property>
+					<property name="outputMethod"><value>setInputStream</value></property>
+					<property name="fileDir"><value>file:/temp2</value></property>
+				</bean>
+				<bean class="com.sitescape.ef.pipeline.StringConcatenatingDocHandler">
+					<property name="name"><value>DH5</value></property>
+					<property name="outputMethod"><value>getBuiltinOutputStream</value></property>
+					<property name="fileDir"><value>file:/temp2</value></property>
+				</bean>				
+			</list>
+		</property>
+	</bean>
+	
+</beans>
