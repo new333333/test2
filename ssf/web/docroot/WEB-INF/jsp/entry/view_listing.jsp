@@ -153,9 +153,12 @@ function ss_showEntryInDiv(str) {
 
 var highlightBgColor = "${ss_folder_line_highlight_color}"
 var highlightedLine = null;
+var highlightedColLine = null;
 var savedHighlightedLineBgColor = null;
 var highlightClassName = "ss_highlightEntry";
 var savedHighlightClassName = null;
+var highlightColClassName = "ss_highlightEntry";
+var savedHighlightColClassName = null;
 
 //Called when one of the "Add entry" toolbar menu options is selected
 function ss_addEntry(obj) {

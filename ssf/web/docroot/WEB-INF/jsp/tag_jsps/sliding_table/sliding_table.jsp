@@ -276,7 +276,8 @@ function ss_showMouseOverInfo(obj) {
 		    } else if (ihtml.length == 3 && ihtml.charCodeAt(0) == 160 && ihtml.charCodeAt(1) == 160 && ihtml.charCodeAt(2) == 160) {
 		    	ss_showHideObj("ss_info_popup", "hidden", "none");
 		    } else {
-				var s = "<table class='ss_style' cellspacing='0' cellpadding='0' style='border: solid black 1px;'><tr><td nowrap>"
+				var s = "<table cellspacing='0' cellpadding='0' style='border: solid black 1px;'>"
+				s += "<tr><td class='" + obj.className + "' nowrap>"
 				s += obj.innerHTML
 				s += "&nbsp;&nbsp;&nbsp;</td></tr></table>"
 				ss_setDivHtml("ss_info_popup", s)
@@ -334,7 +335,7 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 <div id="col0" class="ss_style ss_sliding_table_column0">
 <table cellspacing="0" cellpadding="0">
  <tr>
-  <td>&nbsp;</td>
+  <td >&nbsp;</td>
  </tr>
 </table>
 <table cellspacing="0" cellpadding="0">
@@ -355,7 +356,7 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 		for (int iCol = 0; iCol < colSize; iCol++) {
 
 			int rowCount = 0;
-			String rowStyle = "ss_bgwhite";
+			String rowStyle = "ss_sliding_table_row0";
 			for (int iRow = 0; iRow < slidingTableRows.size(); iRow++) {
 				String rowId = (String)((Map) slidingTableRows.get(iRow)).get("id");
 				if (rowId == null) rowId = "";
@@ -366,14 +367,16 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 				
 				//Get the row id text
 				String rowIdText = "";
+				String colIdText = "";
 				if (rowId != null && !rowId.equals("")) {
 					rowIdText = "id='" + rowId + "_" + String.valueOf(iCol) + "' ";
+					colIdText = "id='" + rowId + "_col_" + String.valueOf(iCol) + "' ";
 				}
 				
 				//Get the row class
 				if (!headerRow.booleanValue()) {
-					rowStyle = "ss_bgwhite";
-					if ((rowCount % 2) == 0) rowStyle = "ss_bglightgray";
+					rowStyle = "ss_sliding_table_row0";
+					if ((rowCount % 2) == 0) rowStyle = "ss_sliding_table_row1";
 					rowCount++;
 				}
 
@@ -399,7 +402,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <div id="col<%= String.valueOf(iCol + 1) %>" class="ss_style ss_sliding_table_column1">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
-<td>&nbsp;</td>
+<td class="<%= rowStyle %>" >&nbsp;</td>
 </tr>
 </table>
 <table cellspacing="0" cellpadding="0" width="100%">
@@ -407,11 +410,12 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="left" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnText %>&nbsp;</th>
+<th class="<%= rowStyle %>" align="left" 
+  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnText %>&nbsp;</th>
 <%
 					} else {
 %>
-<td nowrap width="100%"
+<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="100%"
   onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
   onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
   >&nbsp;<%= columnText %></td>
@@ -433,9 +437,11 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
   style="z-index:<%= String.valueOf(iCol + 11) %>;">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
-<td><div style="position:absolute; left:-9; top:0;"><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
+<td class="<%= rowStyle %>" ><div style="position:absolute; left:-9; top:0;"><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
   onMousedown="ss_slidingTableStartDragCol(this, 'col<%= String.valueOf(iCol + 1) %>');"
-  ><span style="cursor:w-resize; cursor:col-resize; color:darkgreen; font-size:small; text-decoration:none;
+  ><span class="<%= rowStyle %>" 
+  style="cursor:w-resize; cursor:col-resize; color:darkgreen; 
+  font-size:small; text-decoration:none;
   background-position:center left;
   background-image:url(<html:imagesPath/>pics/sym_s_arrows_eastwest.gif);
   background-repeat:no-repeat;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></a></div>&nbsp;</td>
@@ -446,11 +452,12 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="left" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnText %>&nbsp;</th>
+<th class="<%= rowStyle %>" align="left" 
+  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnText %>&nbsp;</th>
 <%
 					} else {
 %>
-<td nowrap width="100%"
+<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="100%"
   onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
   onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
  >&nbsp;<%= columnText %></td>
@@ -472,11 +479,12 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th align="left" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnText %>&nbsp;</th>
+<th class="<%= rowStyle %>" align="left" 
+  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnText %>&nbsp;</th>
 <%
 					} else {
 %>
-<td nowrap width="100%"
+<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="100%"
   onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
   onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
  >&nbsp;<%= columnText %></td>

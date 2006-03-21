@@ -16,14 +16,6 @@
 <%@ page import="java.lang.Boolean" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<c:choose>
-<c:when test="${requestScope.rowClass == 'ss_highlightGray'}">
-  <c:set var="rowClass" value="" scope="request" />
-</c:when>
-<c:otherwise>
-  <c:set var="rowClass" value="ss_highlightGray" scope="request" />
-</c:otherwise>
-</c:choose>
 
 <%
 	String slidingTableRowId = (String) request.getAttribute("ss_slidingTableRowId");
@@ -40,7 +32,7 @@
 <%
 	} else {
 %>
-<tr class="<c:out value="${rowClass}"/>" <%= slidingTableRowIdText %>>
+<tr <%= slidingTableRowIdText %>>
 <%
 	}
 	
