@@ -48,6 +48,8 @@
 <c:set var="ss_sliding_table_border_color" value="#999999" scope="request"/>
 <c:set var="ss_sliding_table_text_color" value="#3333FF" scope="request"/>
 <c:set var="ss_sliding_table_link_hover_color" value="#3333FF" scope="request"/>
+<c:set var="ss_sliding_table_row0_background_color" value="#FFFFCC" scope="request"/>
+<c:set var="ss_sliding_table_row1_background_color" value="#FFFFAA" scope="request"/>
 
 <c:set var="ss_calendar_today_background_color" value="#ffffe8" scope="request"/>
 <c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
@@ -186,7 +188,6 @@ div.ss_sliding_table_column0 {
   margin: 0px;
 }
 .ss_sliding_table_column0 * {
-  background-color: ${ss_sliding_table_background_color}; 
   color: ${ss_sliding_table_text_color};
 }
 div.ss_sliding_table_column1 {
@@ -197,7 +198,6 @@ div.ss_sliding_table_column1 {
   margin: 0px;
 }
 .ss_sliding_table_column1 * {
-  background-color: ${ss_sliding_table_background_color}; 
   color: ${ss_sliding_table_text_color};
 }
 div.ss_sliding_table_column {
@@ -208,7 +208,6 @@ div.ss_sliding_table_column {
   margin: 0px;
 }
 .ss_sliding_table_column * {
-  background-color: ${ss_sliding_table_background_color}; 
   color: ${ss_sliding_table_text_color};
 }
 div.ss_sliding_table_info_popup {
@@ -219,8 +218,13 @@ div.ss_sliding_table_info_popup {
   margin: 0px;
   z-index: 40;
 }
+.ss_sliding_table_row0 {
+  background-color: ${ss_sliding_table_row0_background_color}; 
+}
+.ss_sliding_table_row1 {
+  background-color: ${ss_sliding_table_row1_background_color}; 
+}
 .ss_sliding_table_info_popup * {
-  background-color: ${ss_sliding_table_background_color}; 
   color: ${ss_sliding_table_text_color};
 }
 .ss_sliding_table_column a, .ss_sliding_table_column a:visited {

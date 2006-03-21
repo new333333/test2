@@ -40,7 +40,9 @@ function highlightLineById(id) {
     		//This is a sliding table. Go highlight all of the columns.
     		for (var i = 0; i <= ss_columnCount; i++) {
     			var rowId = id + "_" + i;
+    			var colId = id + "_col_" + i;
 			    var rowObj = self.document.getElementById(rowId)
+			    var colObj = self.document.getElementById(colId)
 			    if (rowObj != null) {
 					//Found a row; go highlight it
 					if (i == 0 && highlightedLine != null) {
@@ -53,11 +55,29 @@ function highlightLineById(id) {
 							}
 						}
 					}
-					if (i == ss_columnCount) {
+					if (i == 1) {
 						savedHighlightClassName = rowObj.className;
 					}
 					highlightedLine = id;
 					rowObj.className = highlightClassName;
+			    }
+			    if (colObj != null) {
+					//Found a col; go highlight it
+					if (i == 0 && highlightedColLine != null) {
+						//Reset the previous line color
+						for (var j = 0; j <= ss_columnCount; j++) {
+			    			var colIdPrev = highlightedColLine + "_col_" + j;
+						    var colObjPrev = self.document.getElementById(colIdPrev)
+						    if (colObjPrev != null) {
+								colObjPrev.className = savedHighlightColClassName;
+							}
+						}
+					}
+					if (i == 1) {
+						savedHighlightColClassName = colObj.className;
+					}
+					highlightedColLine = id;
+					colObj.className = highlightColClassName;
 			    }
     		}
     	}
