@@ -48,7 +48,7 @@ public class AuthenticationManagerImplTests extends TestCase {
 		user.setPassword("testPassword");
 
 		// Execute the method being tested.
-		User authenticatedUser = authMgr.authenticate("testZone", "testUser", "testPassword");
+		User authenticatedUser = authMgr.authenticate("testZone", "testUser", "testPassword", false);
 		assertEquals(user, authenticatedUser);
 		
 		// Verifies that all expectations have been met.
@@ -64,7 +64,7 @@ public class AuthenticationManagerImplTests extends TestCase {
 		
 		// Execute the method being tested.
 		try {
-			authMgr.authenticate("testZone", "testUser", "testPassword");
+			authMgr.authenticate("testZone", "testUser", "testPassword", false);
 			fail("Should throw UserDoesNotExistException");
 		}
 		catch(UserDoesNotExistException e) {

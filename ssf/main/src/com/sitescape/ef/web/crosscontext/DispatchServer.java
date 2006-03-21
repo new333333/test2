@@ -38,7 +38,10 @@ public class DispatchServer extends GenericServlet {
 
 			// Authenticate the user against SSF user database.
 			try {
-				getAuthenticationManager().authenticate(zoneName, userName, password);
+				boolean passwordAutoSynch = 
+					SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
+				
+				getAuthenticationManager().authenticate(zoneName, userName, password, passwordAutoSynch);
 			}
 			catch(UserDoesNotExistException e) {
 				logger.warn(e);

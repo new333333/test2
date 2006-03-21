@@ -13,7 +13,18 @@ import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.sitescape.ef.InternalException;
+import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 
+/**
+ * This class implements functionality effectively identical to 
+ * org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor.
+ * The primary and only difference is that this class is a general AOP 
+ * interceptor while the other is a web handler interceptor specific to web
+ * tier. 
+ * 
+ * @author jong
+ *
+ */
 public class OpenSessionInViewInterceptor extends HibernateAccessor 
 implements MethodInterceptor {
 
@@ -136,6 +147,8 @@ implements MethodInterceptor {
 			// deferred close mode
 			SessionFactoryUtils.processDeferredClose(getSessionFactory());
 		}
+		
+		WorkflowFactory.releaseSession();
 	}
 
 }

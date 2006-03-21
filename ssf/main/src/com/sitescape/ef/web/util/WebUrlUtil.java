@@ -153,6 +153,44 @@ public class WebUrlUtil {
 		return getContextRootURL(req, secure).append("s/").toString();
 	}
 	
+	public static String getRssRootURL() {
+		return getRssRootURL(null, false);
+	}
+
+	/**
+	 * Returns URL up to the SSF's RSS root. The returned URL ends
+	 * with a "/" character (e.g. http://abc.com:8080/ssf/rss/).
+	 * <p>
+	 * If <code>req</code> is null, it uses system config information stored 
+	 * in ssf.properties (which is static) to construct the URL as opposed to 
+	 * the dynamic data available in the <code>HttpServletRequest</code>.   
+	 *  
+	 * @param req may be null
+	 * @return
+	 */
+	public static String getRssRootURL(HttpServletRequest req) {
+		if(req == null)
+			return getRssRootURL(null, false);
+		else
+			return getRssRootURL(req, req.isSecure());
+	}
+	
+	/**
+	 * Returns URL up to the SSF's RSS root. The returned URL ends
+	 * with a "/" character (e.g. http://abc.com:8080/ssf/rss/).
+	 * <p>
+	 * If <code>req</code> is null, it uses system config information stored 
+	 * in ssf.properties (which is static) to construct the URL as opposed to 
+	 * the dynamic data available in the <code>HttpServletRequest</code>.   
+	 * 
+	 * @param req may be null
+	 * @param secure
+	 * @return
+	 */
+	public static String getRssRootURL(HttpServletRequest req, boolean secure) {
+		return getContextRootURL(req, secure).append("rss/").toString();
+	}
+	
 	public static String getEntryViewURL(FolderEntry entry) {
 		String entryUrl="";
 		try {
