@@ -1163,7 +1163,7 @@
 			<property name="caption" caption="__caption" type="text" value="__profile_title"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_title_view.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_profile_data_title.jsp" />
 		</jsps>
 	</item>
 	

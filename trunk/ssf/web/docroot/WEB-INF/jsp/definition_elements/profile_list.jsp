@@ -23,7 +23,7 @@
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
 <% // Toolbar %>
-<c:set var="toolbar" value="${ssFolderToolbar}" scope="request" />
+<c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 
 <script type="text/javascript">

@@ -16,7 +16,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <div class="ss_portlet_style ss_portlet">
-<c:set var="toolbar" value="${ssToolbar}" scope="request" />
+<c:set var="ss_toolbar" value="${ssToolbar}" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 
 <table width="100%">

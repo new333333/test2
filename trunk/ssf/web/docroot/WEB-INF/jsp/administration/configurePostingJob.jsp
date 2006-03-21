@@ -87,7 +87,7 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 
 <span class="ss_titlebold"><ssf:nlt tag="incoming.job_title" /></span><br/>
 <br/>
-<c:set var="toolbar" value="${ssToolbar}" scope="request" />
+<c:set var="ss_toolbar" value="${ssToolbar}" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
