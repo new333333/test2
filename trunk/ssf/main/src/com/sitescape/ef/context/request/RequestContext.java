@@ -7,9 +7,11 @@ import com.sitescape.ef.domain.User;
  *
  */
 public class RequestContext {
-    private User user;
-    private String zoneName;
-    private String userName;
+    private String zoneName; // Always non-null
+    private String userName; // Always non-null
+    private Long userId; // Non-null if user is set. Otherwise may be null
+    private User user;	 // May be null
+    
 
     public RequestContext(String zoneName, String userName) {
     	this.zoneName = zoneName;
@@ -23,9 +25,18 @@ public class RequestContext {
     public String getUserName() {
     	return userName;
     }
+
+    public void setUserId(Long userId) {
+    	this.userId = userId;
+    }
+    
+    public Long getUserId() {
+    	return userId;
+    }
     
     public void setUser(User user) {
     	this.user = user;
+    	this.userId = user.getId(); // In case this wasn't already set.
     }
     
     public User getUser() {

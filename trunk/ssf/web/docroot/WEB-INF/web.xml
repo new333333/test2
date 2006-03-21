@@ -55,6 +55,11 @@
 		<servlet-name>portletAdapter</servlet-name>
 	</filter-mapping>-->
 
+	<filter>
+		<filter-name>rssAuthenticationFilter</filter-name>
+		<filter-class>com.sitescape.ef.rss.servlet.filter.RssAuthenticationFilter</filter-class>
+	</filter>
+
 	<filter-mapping>
 		<filter-name>loginFilter</filter-name>
 		<servlet-name>dispatcher</servlet-name>
@@ -63,6 +68,11 @@
 	<filter-mapping>
 		<filter-name>loginFilter</filter-name>
 		<servlet-name>portletAdapter</servlet-name>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>rssAuthenticationFilter</filter-name>
+		<servlet-name>rssServlet</servlet-name>
 	</filter-mapping>
 
 	<listener>
@@ -110,6 +120,16 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>rssServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>namespace</param-name>
+			<param-value>context/rss-servlet</param-value>
+		</init-param>
+		<load-on-startup>5</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<servlet-name>ccDispatchServer</servlet-name>
 		<servlet-class>com.sitescape.ef.web.crosscontext.DispatchServer</servlet-class>
 	</servlet>
@@ -133,6 +153,11 @@
 		<servlet-name>axis</servlet-name>
 		<url-pattern>/ws/*</url-pattern>		
 	</servlet-mapping>	
+
+	<servlet-mapping>
+		<servlet-name>rssServlet</servlet-name>
+		<url-pattern>/rss/*</url-pattern>
+	</servlet-mapping>
 
 	<!-- Do NOT ever change this timeout value -->
 	<session-config>
