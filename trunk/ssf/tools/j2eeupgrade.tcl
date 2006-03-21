@@ -383,7 +383,6 @@ proc doUsers {userList} {
 	set attrs(reserved) 0
 	set attrs(defaultIdentity) 0
 	
-	unset attrs(id)
 	user_property load -filter defaultSummit
 	while {[llength [set bunchList [lrange $userList $bunchIndex [expr {$bunchIndex + $bunchSize - 1}]]]]} {
         ::profile::select -filter userName $bunchList -hint @
