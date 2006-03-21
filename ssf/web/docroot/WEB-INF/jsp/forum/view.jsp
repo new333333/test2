@@ -22,7 +22,7 @@
 
 <% // Toolbar %>
 <c:if test="${!empty ssForumToolbar}">
-<c:set var="toolbar" value="${ssForumToolbar}" scope="request" />
+<c:set var="ss_toolbar" value="${ssForumToolbar}" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 </c:if>
 <script type="text/javascript">

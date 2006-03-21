@@ -8,10 +8,14 @@ function ss_toolbarPopupUrl(url) {
 	self.window.open(url, "_blank", "resizable=yes,scrollbars=yes,width="+width+",height="+height);
 }
 </script>
-<jsp:useBean id="toolbar" type="java.util.SortedMap" scope="request" />
-<c:forEach var="toolbarMenu" items="${toolbar}">
-  <c:if test="${empty toolbarMenu.value.url}">
-	<div class="ss_toolbar_menu" width="100%" id="toolbar_<c:out value="${toolbarMenu.key}" />">
+
+<div class="ss_toolbar">
+<c:set var="delimiter" value=""/>
+<c:forEach var="toolbarMenu" items="${ss_toolbar}">
+    <span class="ss_toolbar_item"><c:out value="${delimiter}" /></span>
+    <c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}">
+
+     <ssf:menu title="${toolbarMenu.value.title}" titleId="toolbar_${toolbarMenu.key}">
 	  <c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}">
 	    <c:if test="${empty toolbarMenuCategory.key}">
 	      <span class="ss_bold"><c:out value="${toolbarMenuCategory.key}" /></span>
@@ -34,9 +38,7 @@ function ss_toolbarPopupUrl(url) {
 	              <c:forEach var="p" items="${toolbarMenuCategoryItem.value.urlParams}">
 				    <c:set var="key" value="${p.key}"/>
 				    <c:set var="value" value="${p.value}"/>
-			        <jsp:useBean id="key" type="java.lang.String" />
-			        <jsp:useBean id="value" type="java.lang.String" />
-	                <ssf:param name="<%= key %>" value="<%= value %>" />
+	                <ssf:param name="${key}" value="${value}" />
 	              </c:forEach>
 	 	          </ssf:url>"
 	 	        </c:when>
@@ -55,19 +57,8 @@ function ss_toolbarPopupUrl(url) {
 	      </c:forEach>
 	    </ul>
       </c:forEach>
-	</div>
-   </c:if>
- </c:forEach>
+     </ssf:menu>
 
-<div class="ss_toolbar">
-<c:set var="delimiter" value=""/>
-<c:forEach var="toolbarMenu" items="${toolbar}">
-  <jsp:useBean id="toolbarMenu" type="java.util.Map.Entry"/>
-    <span class="ss_toolbar_item"><c:out value="${delimiter}" /></span>
-    <c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}">
-	  <span id="toolbar_parent_${toolbarMenu.key}"><a 
-	  class="ss_toolbar_item" href="javascript: ;" 
-	  onClick="activateMenuLayer('toolbar_${toolbarMenu.key}', 'toolbar_parent_${toolbarMenu.key}');">
     </c:if>
     <c:if test="${!empty toolbarMenu.value.url || !empty toolbarMenu.value.urlParams}">
       <c:set var="popup" value="false"/>
@@ -87,7 +78,7 @@ function ss_toolbarPopupUrl(url) {
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
     	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
-	      >
+	      ><c:out value="${toolbarMenu.value.title}" /></a></span>
 	    </c:when>
 	    <c:when test="${!empty toolbarMenu.value.urlParams}">
 	      <span id=""><a 
@@ -96,9 +87,7 @@ function ss_toolbarPopupUrl(url) {
 	        <c:forEach var="p2" items="${toolbarMenu.value.urlParams}">
 			  <c:set var="key2" value="${p2.key}"/>
 		      <c:set var="value2" value="${p2.value}"/>
-			  <jsp:useBean id="key2" type="java.lang.String" />
-			  <jsp:useBean id="value2" type="java.lang.String" />
-	          <ssf:param name="<%= key2 %>" value="<%= value2 %>" />
+	          <ssf:param name="${key2}" value="${value2}" />
 	        </c:forEach>
 	 	    </ssf:url>"
     	    <c:if test="${empty toolbarMenu.value.qualifiers.onClick}">
@@ -109,14 +98,13 @@ function ss_toolbarPopupUrl(url) {
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
     	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
-	 	  >
+	 	  ><c:out value="${toolbarMenu.value.title}" /></a></span>
 	    </c:when>
 	    <c:otherwise>
-	      <a href="">
+	      <a href=""><c:out value="${toolbarMenu.value.title}" /></a></span>
 	    </c:otherwise>
 	  </c:choose>
     </c:if>
-    <c:out value="${toolbarMenu.value.title}" /></a></span>
   <c:set var="delimiter" value=" | "/>
 </c:forEach>
 </div>
