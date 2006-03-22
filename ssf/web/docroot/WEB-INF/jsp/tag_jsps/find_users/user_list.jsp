@@ -98,6 +98,7 @@ function ss_postUserListRequest(obj) {
 	
 	//See if there is another search request to be done
 	if (ss_userListSearchWaiting == 1) {
+		document.getElementById('available_'+obj.getData('elementName')).innerHTML = "";
 		setTimeout('ss_userListSearch(ss_userListSearchLastText, ss_userListSearchLastElement, ss_userListSearchLastUserGroupType)', 100)
 	}
 }

@@ -34,7 +34,7 @@ public class MenuTag extends BodyTagSupport {
 	private String title = "";
 	private String titleId = "";
 	private String _class = "";
-	private String openStyle = "slide_down";
+	private String openStyle = "slide_down";     //slide_down, slide_right, immediate
 	private String anchor = "";
 	private String offsetTop = "8";
 	private String offsetLeft = "4";

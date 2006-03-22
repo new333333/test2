@@ -789,6 +789,7 @@
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text" />
+			<property name="description" caption="__description" type="textarea" />
 		</properties>
 		<options>
 			<option name="transitions" initial="true" />
