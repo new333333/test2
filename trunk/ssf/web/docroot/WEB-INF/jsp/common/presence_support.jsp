@@ -98,7 +98,7 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
 
     obj.innerHTML = m;
 
-    activateMenuLayer('presencePopUp');
+    ss_activateMenuLayer('presencePopUp');
     if (self.document.images["ppgpres"]) {
         self.document.images["ppgpres"].src = ss_presencePopupGraphics["pres"].src;
     }

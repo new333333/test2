@@ -28,8 +28,7 @@ String offsetTop = ParamUtil.get(request, "offsetTop", "");
 String offsetLeft = ParamUtil.get(request, "offsetLeft", "");
 
 %>
-<div id="parent_<%= menuTagDivId %>" style="display:inline;">
-<a id="<%= titleId %>" class="<%= titleClass %>" href="javascript: ;" 
-	  onClick="activateMenuLayerClone('<%= menuTagDivId %>', 'parent_<%= menuTagDivId %>');"
-><%= title %></a>
-</div>
+<div id="parent_<%= menuTagDivId %>" style="display:inline;"><a 
+id="<%= titleId %>" class="<%= titleClass %>" href="javascript: ;" 
+	  onClick="ss_activateMenuLayerClone('<%= menuTagDivId %>', 'parent_<%= menuTagDivId %>');"
+><%= title %></a></div>

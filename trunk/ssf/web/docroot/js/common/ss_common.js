@@ -772,26 +772,35 @@ function smoothScrollInTime(x, y, steps) {
 
 // Pop-up menu support
 // clicking anywhere will hide the div
-var active_menulayer = '';
-var lastActive_menulayer = '';
-var active_menulayer_form = 0;
-var activateMenuOffset = 10;
-var menuPrefix = "temp_menu_";
+var ss_active_menulayer = '';
+var ss_lastActive_menulayer = '';
+var ss_active_menulayer_form = 0;
+var ss_activateMenuOffsetTop = 6;
+var ss_menuDivClones = new Array();
 
 //Create a clone of the menu before showing it; attach it to the "body" outside of any div
 //  This makes sure that the z-index will be on top of everything else (IE fix)
-function activateMenuLayerClone(divId, parentDivId, delayHide) {
-	var divObj = document.getElementById(divId);
-	if (!document.getElementById(menuPrefix + divId)) {
-		var tempNode = divObj.cloneNode( true );
-		tempNode.id = menuPrefix + divId;
-		document.getElementsByTagName( "body" ).item(0).appendChild( tempNode );
-	}
-	activateMenuLayer(menuPrefix + divId, parentDivId, delayHide);
-}
-function activateMenuLayer(divId, parentDivId, delayHide) {
+function ss_activateMenuLayerClone(divId, parentDivId, offsetLeft, offsetTop, openStyle) {
 	if (!parentDivId || parentDivId == null || parentDivId == 'undefined') {parentDivId=""}
-	if (!delayHide || delayHide == null || delayHide == 'undefined') {delayHide=""}
+	if (!offsetLeft || offsetLeft == null || offsetLeft == 'undefined') {offsetLeft="0"}
+	if (!offsetTop || offsetTop == null || offsetTop == 'undefined') {offsetTop=ss_activateMenuOffsetTop}
+	if (!openStyle || openStyle == null || openStyle == 'undefined') {openStyle=""}
+	var divObj = document.getElementById(divId);
+	if (!ss_menuDivClones[divId]) {
+		ss_menuDivClones[divId] = divId;
+		var tempNode = divObj.cloneNode( true );
+		divObj.parentNode.removeChild(divObj)
+		document.getElementsByTagName( "body" ).item(0).appendChild( tempNode );
+		divObj = document.getElementById(divId);
+	}
+	ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openStyle);
+}
+function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openStyle) {
+	if (!parentDivId || parentDivId == null || parentDivId == 'undefined') {parentDivId=""}
+	if (!offsetLeft || offsetLeft == null || offsetLeft == 'undefined') {offsetLeft="0"}
+	if (!offsetTop || offsetTop == null || offsetTop == 'undefined') {offsetTop=ss_activateMenuOffsetTop}
+	if (!openStyle || openStyle == null || openStyle == 'undefined') {openStyle=""}
+
     // don't do anything if the divs aren't loaded yet
     if (self.document.getElementById(divId) == null) {return}
 
@@ -800,13 +809,15 @@ function activateMenuLayer(divId, parentDivId, delayHide) {
     if (parentDivId != "") {
     	x = ss_getDivLeft(parentDivId)
     	y = ss_getDivTop(parentDivId)
-	    //Add a little to the y position so the div isn't occluding too much
-	    y = parseInt(parseInt(y) + ss_getDivHeight(parentDivId) + 4)
+	    //Add the offset to the x and y positions so the div isn't occluding too much
+	    x = parseInt(parseInt(x) + parseInt(offsetLeft))
+	    y = parseInt(parseInt(y) + ss_getDivHeight(parentDivId) + parseInt(offsetTop))
     } else {
 	    x = ss_getClickPositionX();
 	    y = ss_getClickPositionY();
-	    //Add a little to the y position so the div isn't occluding too much
-	    y = parseInt(y) + activateMenuOffset
+	    //Add a little to the x and y positions so the div isn't occluding too much
+	    x = parseInt(parseInt(x) + parseInt(offsetLeft));
+	    y = parseInt(parseInt(y) + parseInt(offsetTop));
 	}
 
     var maxWidth = 0;
@@ -827,7 +838,7 @@ function activateMenuLayer(divId, parentDivId, delayHide) {
   
     //alert('divId: ' + divId + ', x: ' + x + ', y: ' + y)
     //alert(document.getElementById(divId).innerHTML)
-    ss_ShowHideDivXY(divId, x, y, delayHide);
+    ss_ShowHideDivXY(divId, x, y);
     ss_HideDivOnSecondClick(divId);
 }
 
@@ -839,21 +850,21 @@ function setLayerFlag() {
 }
 
 // Clears (hides) the active menulayer (if any)
-function clearActive_menulayer() {
-    if (active_menulayer_form) {return}
-    active_menulayer_form = 0;
+function ss_clearActive_menulayer() {
+    if (ss_active_menulayer_form) {return}
+    ss_active_menulayer_form = 0;
 
-    lastActive_menulayer = active_menulayer;
-    if (active_menulayer != '') {
-        menulayerId = active_menulayer;
+    ss_lastActive_menulayer = ss_active_menulayer;
+    if (ss_active_menulayer != '') {
+        menulayerId = ss_active_menulayer;
         hideMenu(menulayerId);
-        active_menulayer = '';
+        ss_active_menulayer = '';
     }     
     if (self.clearActiveMenu) {self.clearActiveMenu()}
 }
 
 //Enable the event handler
-ss_createEventObj('clearActive_menulayer', 'MOUSEUP')
+ss_createEventObj('ss_clearActive_menulayer', 'MOUSEUP')
 
 ss_createOnLoadObj('layerFlag', setLayerFlag);
 
@@ -873,7 +884,7 @@ var divToBeDelayHidden = new Array;
 ss_createEventObj('captureXY', 'MOUSEUP')
 
 //General routine to show a div given its name and coordinates
-function ss_ShowHideDivXY(divName, x, y, noHideSpannedAreas) {
+function ss_ShowHideDivXY(divName, x, y) {
     if (divBeingShown == divName) {
         ss_hideDiv(divBeingShown)
         divBeingShown = null;
@@ -890,7 +901,7 @@ function ss_ShowHideDivXY(divName, x, y, noHideSpannedAreas) {
         divBeingShown = divName;
         lastDivBeingShown = divName;
         ss_positionDiv(divBeingShown, x, y)
-        ss_showDiv(divBeingShown, noHideSpannedAreas)
+        ss_showDiv(divBeingShown)
     }
 }
 
@@ -913,11 +924,10 @@ function ss_NoHideDivOnNextClick(divName) {
     divToBeDelayHidden[divName] = true;
 }
 
-function ss_showDiv(divName, noHideSpannedAreas) {
+function ss_showDiv(divName) {
     //Hide any area that has elements that might bleed through
-    if (noHideSpannedAreas == null || noHideSpannedAreas == "") {
-        ss_hideSpannedAreas()
-    }
+    ss_hideSpannedAreas()
+    
     document.getElementById(divName).style.visibility = "visible";
     if (!document.getElementById(divName).style.display || document.getElementById(divName).style.display != 'inline') {
     	document.getElementById(divName).style.display = "block";
