@@ -80,8 +80,8 @@ function initializeStateMachine() {
 
 function loadDiv(option, itemId, itemName) {
 	//alert("Load div: " + option + ", " + itemId + ", " + itemName)
-	//ss_loadNextDiv(option, itemId, itemName)
-	//return
+	ss_loadNextDiv(option, itemId, itemName)
+	return
 	
 	
 	hideDisplayDiv();
@@ -124,6 +124,7 @@ function showDisplayDiv() {
 	var displaydivButtonsObj = document.getElementById('displaydivButtons');
     var spacerObj = self.document.getElementById('displaydiv_spacer')
 	displaydivObj.style.visibility = "visible";
+	displaydivObj.style.display = "block";
 	displaydiv0Obj.style.visibility = "visible";
 	displaydiv0Obj.style.display = "block";
 
@@ -450,7 +451,7 @@ function ss_loadNextDiv(option, itemId, itemName) {
 	//alert(url)
 	
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postLoadNextDivRequest);
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request

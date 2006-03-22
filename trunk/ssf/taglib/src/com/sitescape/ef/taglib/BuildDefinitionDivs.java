@@ -61,10 +61,10 @@ public class BuildDefinitionDivs extends TagSupport {
 			//See if we are just building a single option, or the whole page
 			if (this.option.equals("")) {
 				//Build the selection instructions div (only do this if building the whole page)
-				sb.append("\n<div id='info_select' class='ss_definitionBuilder'>\n");
-				sb.append("<span class='ss_titlebold'>" + this.title + "</span>\n");
+				sb.append("\n<div id=\"info_select\" class=\"ss_definitionBuilder\">\n");
+				sb.append("<span class=\"ss_titlebold\">" + this.title + "</span>\n");
 				sb.append("</div>\n");
-				sb.append("<script type='text/javascript'>\n");
+				sb.append("<script type=\"text/javascript\">\n");
 				//sb.append("    self.ss_setDeclaredDiv('info_select')\n");
 				sb.append("    var idMap;\n");
 				sb.append("    if (!idMap) {idMap = new Array();}\n");
@@ -128,7 +128,7 @@ public class BuildDefinitionDivs extends TagSupport {
 
 		if (this.option.equals("") && filter.equals("")) {
 			//Only do this routine once
-			sb.append("<script type='text/javascript'>\n");
+			sb.append("<script type=\"text/javascript\">\n");
 			while (itRootElements2.hasNext()) {
 				rootElement = (Element) itRootElements2.next();
 				rootElementId = rootElement.attributeValue("id", rootElement.attributeValue("name"));
@@ -193,6 +193,9 @@ public class BuildDefinitionDivs extends TagSupport {
 			//Build the properties divs
 			buildPropertiesDivs(root, sourceRoot, sb, hb, filter);
 			
+			//Build the help divs
+			buildHelpDivs(root, sourceRoot, sb, hb, filter);
+
 			//See if this element has any sub elements to do
 			if (this.option.equals("")) {
 				buildDivs(rootElement, sourceRoot, sb, hb, "item");
@@ -222,10 +225,10 @@ public class BuildDefinitionDivs extends TagSupport {
 		if (this.option.equals("info") && !this.divNames.containsKey("info_"+rootElementId)) {
 			this.divNames.put("info_"+rootElementId, "1");
 			if (this.option.equals("")) {
-				sb.append("\n<div id='info_" + rootElementId + "' ");
-				sb.append("class='ss_definitionBuilder'>\n");
+				sb.append("\n<div id=\"info_" + rootElementId + "\" ");
+				sb.append("class=\"ss_definitionBuilder\">\n");
 			}
-			sb.append("<span class='ss_bold'>" + NLT.getDef(rootElement.attributeValue("caption")));
+			sb.append("<span class=\"ss_bold\">" + NLT.getDef(rootElement.attributeValue("caption")));
 			Element property = (Element) rootElement.selectSingleNode("./properties/property[@name='caption']");
 			String propertyCaptionValue = "";
 			if (property != null) {
@@ -248,37 +251,37 @@ public class BuildDefinitionDivs extends TagSupport {
 	private void buildInfoOptionsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		if (this.option.equals("") && !this.divNames.containsKey("infoDefinitionOptions")) {
 			this.divNames.put("infoDefinitionOptions", "1");
-			sb.append("\n<div id='infoDefinitionOptions' ");
-			sb.append("class='ss_definitionBuilder'>\n");
-			sb.append("<span class='ss_titlebold' id='infoDefinitionOptionsDefinitionName'></span>\n");
+			sb.append("\n<div id=\"infoDefinitionOptions\" ");
+			sb.append("class=\"ss_definitionBuilder\">\n");
+			sb.append("<span class=\"ss_titlebold\" id=\"infoDefinitionOptionsDefinitionName\"></span>\n");
 			
-			sb.append("<table>\n");
+			sb.append("<table><tbody>\n");
 			
 			sb.append("<tr><td>\n");
-			sb.append("<a href='javascript: ;' "); 
+			sb.append("<a href=\"javascript: ;\" "); 
 			sb.append("onClick=\"return viewDefinition();\">");
 			sb.append("View this definition");
 			sb.append("</a>\n");
 			sb.append("</td></tr>\n");
 			
 			sb.append("<tr><td>\n");
-			sb.append("<a href='javascript: ;' "); 
+			sb.append("<a href=\"javascript: ;\" "); 
 			sb.append("onClick=\"return modifyDefinition();\">");
 			sb.append("Modify the properties of this definition");
 			sb.append("</a>\n");
 			sb.append("</td></tr>\n");
 
 			sb.append("<tr><td>\n");
-			sb.append("<a href='javascript: ;' "); 
+			sb.append("<a href=\"javascript: ;\" "); 
 			sb.append("onClick=\"return deleteDefinition();\">");
 			sb.append("Delete this definition");
 			sb.append("</a>\n");
 			sb.append("</td></tr>\n");
 
-			sb.append("</table>\n");
+			sb.append("</tbody></table>\n");
 
 			sb.append("</div>\n");
-			//sb.append("<script type='text/javascript'>\n");
+			//sb.append("<script type=\"text/javascript\">\n");
 			//sb.append("    self.ss_setDeclaredDiv('infoDefinitionOptions')\n");
 			//sb.append("</script>\n");
 		}
@@ -290,16 +293,16 @@ public class BuildDefinitionDivs extends TagSupport {
 			this.divNames.put("modify_definition", "1");
 			
 			//String definitionType = 
-			sb.append("<span class='ss_titlebold'>Modify the properties of this definition</span><br/><br/>\n");
+			sb.append("<span class=\"ss_titlebold\">Modify the properties of this definition</span><br/><br/>\n");
 			sb.append("<span>Name</span><br/>\n");
-			sb.append("<input type='text' class='ss_text' size='40' value=\"");
+			sb.append("<input type=\"text\" class=\"ss_text\" size=\"40\" value=\"");
 			sb.append(sourceRoot.attributeValue("name", ""));
-			sb.append("\" disabled='true'/>\n");
-			sb.append("<input type='hidden' name='modifyDefinitionName' value=\"");
+			sb.append("\" disabled=\"true\"/>\n");
+			sb.append("<input type=\"hidden\" name=\"modifyDefinitionName\" value=\"");
 			sb.append(sourceRoot.attributeValue("name", "").replaceAll("\"", "&quot;"));
 			sb.append("\" />\n<br/>\n");
 			sb.append("<span>Caption</span><br/>\n");
-			sb.append("<input type='text' class='ss_text' name='modifyDefinitionCaption' size='40' value=\"");
+			sb.append("<input type=\"text\" class=\"ss_text\" name=\"modifyDefinitionCaption\" size=\"40\" value=\"");
 			sb.append(sourceRoot.attributeValue("caption", "").replaceAll("\"", "&quot;"));
 			sb.append("\"/><br/>\n");
 
@@ -312,19 +315,19 @@ public class BuildDefinitionDivs extends TagSupport {
 	private void buildDeleteDefinitionDiv(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		if (this.option.equals("") && !this.divNames.containsKey("delete_definition")) {
 			this.divNames.put("delete_definition", "1");
-			sb.append("\n<div id='delete_definition' ");
-			sb.append("class='ss_definitionBuilder'>\n");
-			sb.append("<span class='ss_titlebold'>Select the definition to be deleted</span>\n");
+			sb.append("\n<div id=\"delete_definition\" ");
+			sb.append("class=\"ss_definitionBuilder\">\n");
+			sb.append("<span class=\"ss_titlebold\">Select the definition to be deleted</span>\n");
 			sb.append("</div>\n");
-			//sb.append("<script type='text/javascript'>\n");
+			//sb.append("<script type=\"text/javascript\">\n");
 			//sb.append("    self.ss_setDeclaredDiv('delete_definition')\n");
 			//sb.append("</script>\n");
-			sb.append("\n<div id='delete_definition_confirm' ");
-			sb.append("class='ss_definitionBuilder'>\n");
-			sb.append("<span class='ss_titlebold'>Delete: <span id='deleteDefinitionSelection'></span></span>\n");
+			sb.append("\n<div id=\"delete_definition_confirm\" ");
+			sb.append("class=\"ss_definitionBuilder\">\n");
+			sb.append("<span class=\"ss_titlebold\">Delete: <span id=\"deleteDefinitionSelection\"></span></span>\n");
 			sb.append("<br/>\n");
 			sb.append("</div>\n");
-			//sb.append("<script type='text/javascript'>\n");
+			//sb.append("<script type=\"text/javascript\">\n");
 			//sb.append("    self.ss_setDeclaredDiv('delete_definition_confirm')\n");
 			//sb.append("</script>\n");
 		}
@@ -334,10 +337,10 @@ public class BuildDefinitionDivs extends TagSupport {
 		if (this.option.equals("operations") && !this.divNames.containsKey("operations_"+rootElementId)) {
 			this.divNames.put("operations_"+rootElementId, "1");
 			if (this.option.equals("")) {
-				sb.append("\n<div id='operations_" + rootElementId + "' "); 
-				sb.append("class='ss_definitionBuilder'>\n");
+				sb.append("\n<div id=\"operations_" + rootElementId + "\" "); 
+				sb.append("class=\"ss_definitionBuilder\">\n");
 			}
-			sb.append("<table cellpadding='0' cellspacing='0'>\n");
+			sb.append("<table cellpadding=\"0\" cellspacing=\"0\"><tbody>\n");
 
 			//Add the list of operations
 			Element operations = rootConfigElement.element("operations");
@@ -383,21 +386,21 @@ public class BuildDefinitionDivs extends TagSupport {
 				String operationElementId = operationElement.attributeValue("id", operationElement.attributeValue("name"));
 				String operationElementName = operationElement.attributeValue("name");
 				
-				sb.append("<a href='javascript: ;' "); 
+				sb.append("<a href=\"javascript: ;\" "); 
 				if (operationElement.attributeValue("item", "").equals("")) {
-					sb.append("onClick=\""+operationElementId+"('" + operationElementId + "', '" + operationElementName + "', '')\">");
+					sb.append("onClick=\"self."+operationElementId+"('" + operationElementId + "', '" + operationElementName + "', ''); return false;\">");
 				} else {
-					sb.append("onClick=\""+operationElementId+"('" + operationElementId + "', '" + operationElementName + "', '"+operationElement.attributeValue("item")+"')\">");
+					sb.append("onClick=\"self."+operationElementId+"('" + operationElementId + "', '" + operationElementName + "', ''); return false;\">");
 				}
 				sb.append(NLT.getDef(operationElement.attributeValue("caption")));
 				sb.append("</a>\n");
 				sb.append("</td></tr>\n");
 			}
 
-			sb.append("</table>\n");
+			sb.append("</tbody></table>\n");
 			if (this.option.equals("")) {
 				sb.append("</div>\n");
-				//sb.append("<script type='text/javascript'>\n");
+				//sb.append("<script type=\"text/javascript\">\n");
 				//sb.append("    self.ss_setDeclaredDiv('operations_" + rootElementId + "')\n");
 				//sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
 				//sb.append("</script>\n");
@@ -409,8 +412,8 @@ public class BuildDefinitionDivs extends TagSupport {
 		if (this.option.equals("options") && !this.divNames.containsKey("options_"+rootElementId)) {
 			this.divNames.put("options_"+rootElementId, "1");
 			if (this.option.equals("")) {
-				sb.append("\n<div id='options_" + rootElementId + "' "); 
-				sb.append("class='ss_definitionBuilder'>\n");
+				sb.append("\n<div id=\"options_" + rootElementId + "\" "); 
+				sb.append("class=\"ss_definitionBuilder\">\n");
 			}
 
 			//Add the list of options
@@ -440,24 +443,24 @@ public class BuildDefinitionDivs extends TagSupport {
 								sourceRoot.selectSingleNode("//item[@name='"+optionName+"']") == null) {
 							if (!optionsSeen.containsKey(optionName)) {
 								sb.append("<li>");
-								sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+optionId+"', '"+optionName+"')\">");
+								sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+optionId+"', '"+optionName+"');return false;\">");
 								sb.append(NLT.getDef(optionItem.attributeValue("caption", optionName)));
 								sb.append("</a>");
 								//See if this item has any help
 								Element help = (Element) optionItem.selectSingleNode("./help");
 								if (help != null) {
 									helpDivCount++;
-									hb.append("<div id='help_div_" + rootElementId);
+									hb.append("<div id=\"help_div_" + rootElementId);
 									hb.append(Integer.toString(helpDivCount));
-									hb.append("' class='ss_helpPopUp'>\n");
+									hb.append("\" class=\"ss_helpPopUp\">\n");
 									hb.append("<span>");
 									hb.append(NLT.getDef(help.getText()));
 									hb.append("</span>\n</div>\n");
-									sb.append("&nbsp;<a name='help_div_" + rootElementId);
+									sb.append("&nbsp;<a name=\"help_div_" + rootElementId);
 									sb.append(Integer.toString(helpDivCount));
-									sb.append("_a' onClick=\"activateMenuLayer('help_div_ + rootElementId");
+									sb.append("_a\" onClick=\"activateMenuLayer('help_div_ + rootElementId");
 									sb.append(Integer.toString(helpDivCount));
-									sb.append("');return false;\"><img src='"+helpImgUrl+"'></a>\n");
+									sb.append("');return false;\"><img src=\""+helpImgUrl+"\"/></a>\n");
 								}
 								sb.append("</li>\n");
 								optionsSeen.put(optionName, optionName);
@@ -494,24 +497,24 @@ public class BuildDefinitionDivs extends TagSupport {
 								sourceRoot.selectSingleNode("//item[@name='"+optionSelectName+"']") == null) {
 							if (!optionsSeen.containsKey(optionSelectName)) {
 								sb.append("<li>");
-								sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+optionSelectId+"', '"+optionSelectName+"')\">");
+								sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+optionSelectId+"', '"+optionSelectName+"');return false;\">");
 								sb.append(NLT.getDef(optionSelect.attributeValue("caption", optionSelectName)));
 								sb.append("</a>");
 								//See if this item has any help
 								Element help = (Element) optionSelect.selectSingleNode("./help");
 								if (help != null) {
 									helpDivCount++;
-									hb.append("<div id='help_div_" + rootElementId);
+									hb.append("<div id=\"help_div_" + rootElementId);
 									hb.append(Integer.toString(helpDivCount));
-									hb.append("' class='ss_helpPopUp'>\n");
+									hb.append("\" class=\"ss_helpPopUp\">\n");
 									hb.append("<span>");
 									hb.append(NLT.getDef(help.getText()));
 									hb.append("</span>\n</div>\n");
-									sb.append("&nbsp;<a name='help_div_" + rootElementId);
+									sb.append("&nbsp;<a name=\"help_div_" + rootElementId);
 									sb.append(Integer.toString(helpDivCount));
-									sb.append("_a' onClick=\"activateMenuLayer('help_div_" + rootElementId);
+									sb.append("_a\" onClick=\"activateMenuLayer('help_div_" + rootElementId);
 									sb.append(Integer.toString(helpDivCount));
-									sb.append("');return false;\"><img src='"+helpImgUrl+"'></a>\n");
+									sb.append("');return false;\"><img src=\""+helpImgUrl+"\"/></a>\n");
 								}
 								sb.append("</li>\n");
 								optionsSeen.put(optionSelectName, optionSelectName);
@@ -524,7 +527,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("<br/>\n");
 			if (this.option.equals("")) {
 				sb.append("</div>\n");
-				//sb.append("<script type='text/javascript'>\n");
+				//sb.append("<script type=\"text/javascript\">\n");
 				//sb.append("    self.ss_setDeclaredDiv('options_" + rootElementId + "')\n");
 				//sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
 				//sb.append("</script>\n");
@@ -537,8 +540,8 @@ public class BuildDefinitionDivs extends TagSupport {
 				!this.divNames.containsKey("properties_"+rootElementId)) {
 			this.divNames.put("properties_"+rootElementId, "1");
 			if (this.option.equals("")) {
-				sb.append("\n<div id='properties_" + rootElementId + "' "); 
-				sb.append("class='ss_definitionBuilder'>\n");
+				sb.append("\n<div id=\"properties_" + rootElementId + "\" "); 
+				sb.append("class=\"ss_definitionBuilder\">\n");
 			}
 
 			//Add the list of properties
@@ -555,7 +558,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					String propertyName = propertyConfig.attributeValue("name", "");
 					String readonly = "";
 					if (propertyConfig.attributeValue("readonly", "false").equalsIgnoreCase("true")) {
-						readonly = "readonly='readonly'";
+						readonly = "readonly=\"readonly\"";
 					}
 					List propertyValues = new ArrayList();
 					if (properties != null) {
@@ -580,18 +583,18 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 							sb.append("\n<br/>\n");
 						}
-						sb.append("<textarea name='propertyId_" + propertyId + "' rows='6' cols='45' "+readonly+">"+propertyValue0+"</textarea>\n");
+						sb.append("<textarea name=\"propertyId_" + propertyId + "\" rows=\"6\" cols=\"45\" "+readonly+">"+propertyValue0+"</textarea>\n");
 					
 					} else if (type.equals("boolean") || type.equals("checkbox")) {
 						String checked = "";
 						if (propertyValue0.equals("")) {
 							if (propertyConfig.attributeValue("default", "false").equalsIgnoreCase("true")) {
-								checked = "checked";
+								checked = "checked=\"checked\"";
 							}
 						} else if (propertyValue0.equalsIgnoreCase("true")) {
-							checked = "checked";
+							checked = "checked=\"checked\"";
 						}
-						sb.append("<input type='checkbox' class='ss_text' name='propertyId_" + propertyId + "' "+checked+" "+readonly+"/> ");
+						sb.append("<input type=\"checkbox\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" "+checked+" "+readonly+"/> ");
 						sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 					
 					} else if (type.equals("selectbox") || type.equals("radio")) {
@@ -602,8 +605,8 @@ public class BuildDefinitionDivs extends TagSupport {
 						if (type.equals("selectbox")) {
 							//See if multiple selections are allowed
 							String multipleText = "";
-							if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple";
-							sb.append("<select name='propertyId_" + propertyId + "' " + multipleText + ">\n");
+							if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
+							sb.append("<select name=\"propertyId_" + propertyId + "\" " + multipleText + ">\n");
 						}
 						//See if there are any built-in options
 						Iterator  itSelections = propertyConfig.elementIterator("option");
@@ -612,22 +615,22 @@ public class BuildDefinitionDivs extends TagSupport {
 							String checked = "";
 							for (int i = 0; i < propertyValues.size(); i++) {
 								if (((String)propertyValues.get(i)).equals(selection.attributeValue("name", ""))) {
-									checked = " selected";
+									checked = " selected=\"selected\"";
 									break;
 								}
 							}
 							if ((propertyValues.size() == 0 && !propertyValueDefault.equals("") && 
 									propertyValueDefault.equals(selection.attributeValue("name", "")))) {
-								checked = " selected";
+								checked = " selected=\"selected\"";
 							}
 							if (type.equals("selectbox")) {
-								sb.append("<option value='").append(selection.attributeValue("name", "")).append("'").append(checked).append(">");
+								sb.append("<option value=\"").append(selection.attributeValue("name", "")).append("\"").append(checked).append(">");
 								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
 								sb.append("</option>\n");
 							} else if (type.equals("radio")) {
-								sb.append("<input type='radio' class='ss_text' name='propertyId_" + propertyId + "' value='");
+								sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 								sb.append(selection.attributeValue("name", ""));
-								sb.append("'").append(checked).append("/>");
+								sb.append("\"").append(checked).append("/>");
 								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
 								sb.append("</input><br/>\n");
 							}
@@ -669,23 +672,23 @@ public class BuildDefinitionDivs extends TagSupport {
 										String checked = "";
 										for (int i = 0; i < propertyValues.size(); i++) {
 											if (((String)propertyValues.get(i)).equals(entryFormItemNamePropertyName)) {
-												checked = " selected";
+												checked = " selected=\"selected\"";
 												break;
 											}
 										}
 										if ((propertyValues.size() == 0 && !propertyValueDefault.equals("") && 
 												propertyValueDefault.equals(entryFormItemNamePropertyName))) {
-											checked = " selected";
+											checked = " selected=\"selected\"";
 										}
 
 										if (type.equals("selectbox")) {
-											sb.append("<option value='").append(entryFormItemNamePropertyName).append("'").append(checked).append(">");
+											sb.append("<option value=\"").append(entryFormItemNamePropertyName).append("\"").append(checked).append(">");
 											sb.append(NLT.getDef(entryFormItemCaptionPropertyValue));
 											sb.append("</option>\n");
 										} else if (type.equals("radio")) {
-											sb.append("<input type='radio' class='ss_text' name='propertyId_" + propertyId + "' value='");
+											sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 											sb.append(entryFormItemNamePropertyName);
-											sb.append("'").append(checked).append("/>");
+											sb.append("\"").append(checked).append("/>");
 											sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
 											sb.append("</input><br/>\n");
 										}
@@ -704,9 +707,9 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("\n<br/>\n");
 						}
 						String multiple = "";
-						if (propertyConfig.attributeValue("multipleAllowed", "").equalsIgnoreCase("true")) multiple = "multiple";
-						sb.append("<select name='propertyId_" + propertyId + "' " + multiple + ">\n");
-						sb.append("<option value=''>").append(NLT.get("definition.select_item_select")).append("</option>\n");
+						if (propertyConfig.attributeValue("multipleAllowed", "").equalsIgnoreCase("true")) multiple = "multiple=\"multiple\"";
+						sb.append("<select name=\"propertyId_" + propertyId + "\" " + multiple + ">\n");
+						sb.append("<option value=\"\">").append(NLT.get("definition.select_item_select")).append("</option>\n");
 						
 						//Get the list of items in this definition
 						String itemSelectPath = propertyConfig.attributeValue("path", "");
@@ -721,10 +724,10 @@ public class BuildDefinitionDivs extends TagSupport {
 								if (selectedItemCaptionEle == null) {continue;}
 								String selectedItemName = selectedItemNameEle.attributeValue("value", "");
 								String selectedItemCaption = selectedItemCaptionEle.attributeValue("value", "");
-								sb.append("<option value='").append(selectedItemName).append("'");
+								sb.append("<option value=\"").append(selectedItemName).append("\"");
 								for (int i = 0; i < propertyValues.size(); i++) {
 									if (((String)propertyValues.get(i)).equals(selectedItemName)) {
-										sb.append(" selected");
+										sb.append(" selected=\"selected\"");
 										break;
 									}
 								}
@@ -738,17 +741,17 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 							sb.append("\n<br/>\n");
 						}
-						sb.append("<select multiple name='propertyId_" + propertyId + "'>\n");
-						sb.append("<option value=''>").append(NLT.get("definition.select_reply_styles")).append("</option>\n");
+						sb.append("<select multiple=\"multiple\" name=\"propertyId_" + propertyId + "\">\n");
+						sb.append("<option value=\"\">").append(NLT.get("definition.select_reply_styles")).append("</option>\n");
 						Iterator itEntryDefinitions = this.entryDefinitions.keySet().iterator();
 						while (itEntryDefinitions.hasNext()) {
 							//Build a list of the entry definitions
 							Definition entryDef = (Definition) this.entryDefinitions.get((String) itEntryDefinitions.next());
-							sb.append("<option value='").append(entryDef.getId()).append("'");
+							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
 							Iterator itReplyStyles = sourceRoot.selectNodes("properties/property[@name='replyStyle']").iterator();
 							while (itReplyStyles.hasNext()) {
 								if (entryDef.getId().equals(((Element)itReplyStyles.next()).attributeValue("value", ""))) {
-									sb.append(" selected");
+									sb.append(" selected=\"selected\"");
 									break;
 								}
 							}
@@ -761,37 +764,37 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 							sb.append("\n<br/>\n");
 						}
-						sb.append("<input type='text' class='ss_text' name='propertyId_" + propertyId + "' size='40' ");
+						sb.append("<input type=\"text\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" size=\"40\" ");
 						sb.append("value=\""+propertyValue0.replaceAll("\"", "&quot;")+"\" "+readonly+"/>\n");
 					}
 					//See if this property has any help
 					Element help = (Element) propertyConfig.selectSingleNode("./help");
 					if (help != null) {
 						helpDivCount++;
-						hb.append("<div id='help_div_" + rootElementId);
+						hb.append("<div id=\"help_div_" + rootElementId);
 						hb.append(Integer.toString(helpDivCount));
-						hb.append("' class='ss_helpPopUp'>\n");
+						hb.append("\" class=\"ss_helpPopUp\">\n");
 						hb.append("<span>");
 						hb.append(NLT.getDef(help.getText()));
 						hb.append("</span>\n</div>\n");
-						sb.append("&nbsp;<a name='help_div_" + rootElementId);
+						sb.append("<a name=\"help_div_" + rootElementId);
 						sb.append(Integer.toString(helpDivCount));
-						sb.append("_a' onClick=\"activateMenuLayer('help_div_" + rootElementId);
+						sb.append("_a\" onClick=\"activateMenuLayer('help_div_" + rootElementId);
 						sb.append(Integer.toString(helpDivCount));
-						sb.append("');return false;\"><img src='"+helpImgUrl+"'></a>\n");
+						sb.append("');return false;\"><img src=\""+helpImgUrl+"\"/></a>\n");
 					}
 					
-					sb.append("<input type='hidden' name='propertyName_" + propertyId + "' ");
+					sb.append("<input type=\"hidden\" name=\"propertyName_" + propertyId + "\" ");
 					sb.append("value=\""+propertyName.replaceAll("\"", "&quot;")+"\"/>\n");
 					sb.append("<br/>\n");
 				}
 			}
 			sb.append("<br/>");
-			sb.append("<input type='hidden' name='definitionType_"+rootElementId+"' value='"+ rootElement.attributeValue("definitionType", "") +"'/>\n");
+			sb.append("<input type=\"hidden\" name=\"definitionType_"+rootElementId+"\" value=\""+ rootElement.attributeValue("definitionType", "") +"\"/>\n");
 
 			if (this.option.equals("")) {
 				sb.append("</div>\n");
-				//sb.append("<script type='text/javascript'>\n");
+				//sb.append("<script type=\"text/javascript\">\n");
 				//sb.append("    self.ss_setDeclaredDiv('properties_" + rootElementId + "')\n");
 				//sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
 				//sb.append("</script>\n");
@@ -802,14 +805,14 @@ public class BuildDefinitionDivs extends TagSupport {
 	private void buildDefaultDivs(StringBuffer sb, StringBuffer hb) {
 		if (!this.divNames.containsKey("delete_item")) {
 			this.divNames.put("delete_item", "1");
-			sb.append("\n<div id='delete_item' ");
-			sb.append("class='ss_definitionBuilder'>\n");
+			sb.append("\n<div id=\"delete_item\" ");
+			sb.append("class=\"ss_definitionBuilder\">\n");
 			sb.append("<span>This will delete the selected item and all of its children (if any).</span>\n");
 			sb.append("<br/>\n");
 			sb.append("<span>Do you really want to delete the selected item?</span>\n");
 			sb.append("<br/>\n");
 			sb.append("</div>\n");
-			//sb.append("<script type='text/javascript'>\n");
+			//sb.append("<script type=\"text/javascript\">\n");
 			//sb.append("    self.ss_setDeclaredDiv('delete_item')\n");
 			//sb.append("</script>\n");
 		}
@@ -817,31 +820,144 @@ public class BuildDefinitionDivs extends TagSupport {
 		//Build the move_item divs
 		if (!this.divNames.containsKey("move_item")) {
 			this.divNames.put("move_item", "1");
-			sb.append("\n<div id='move_item' ");
-			sb.append("class='ss_definitionBuilder'>\n");
-			sb.append("<span class='ss_titlebold'>Select the new location of the item to be moved</span><br/>\n");
+			sb.append("\n<div id=\"move_item\" ");
+			sb.append("class=\"ss_definitionBuilder\">\n");
+			sb.append("<span class=\"ss_titlebold\">Select the new location of the item to be moved</span><br/>\n");
 			sb.append("</div>\n");
-			//sb.append("<script type='text/javascript'>\n");
+			//sb.append("<script type=\"text/javascript\">\n");
 			//sb.append("    self.ss_setDeclaredDiv('move_item')\n");
 			//sb.append("</script>\n");
-			sb.append("\n<div id='move_item_confirm' ");
-			sb.append("class='ss_definitionBuilder'>\n");
-			sb.append("<span class='ss_titlebold'>Move: <div id='moveItemSelection' style='display:inline;'></div></span>\n");
+			sb.append("\n<div id=\"move_item_confirm\" ");
+			sb.append("class=\"ss_definitionBuilder\">\n");
+			sb.append("<span class=\"ss_titlebold\">Move: <div id=\"moveItemSelection\" style=\"display:inline;\"></div></span>\n");
 			sb.append("<br/>\n");
-			sb.append("<input type='radio' class='ss_text' name='moveTo' value='above'/>");
+			sb.append("<input type=\"radio\" class=\"ss_text\" name=\"moveTo\" value=\"above\"/>");
 			sb.append("<span>Move to above the selected item<br/>");
-			sb.append("<input type='radio' class='ss_text' name='moveTo' value='below'/>");
+			sb.append("<input type=\"radio\" class=\"ss_text\" name=\"moveTo\" value=\"below\"/>");
 			sb.append("<span>Move to below the selected item<br/>");
-			sb.append("<input type='radio' class='ss_text' name='moveTo' value='into'/>");
+			sb.append("<input type=\"radio\" class=\"ss_text\" name=\"moveTo\" value=\"into\"/>");
 			sb.append("<span>Move into the selected item<br/>");
 			sb.append("</div>\n");
-			//sb.append("<script type='text/javascript'>\n");
+			//sb.append("<script type=\"text/javascript\">\n");
 			//sb.append("    self.ss_setDeclaredDiv('move_item_confirm')\n");
 			//sb.append("</script>\n");
 		}
 
 	}
 	
+	private void buildHelpDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
+		if (this.option.equals("") && !this.divNames.containsKey("helpOptionsDivs_"+rootElementId)) {
+			this.divNames.put("helpOptionsDivs_"+rootElementId, "1");
+
+			//Add the list of options
+			Element e_options = rootConfigElement.element("options");
+			Element e_option;
+			Map optionsSeen = new HashMap();
+			
+			if (e_options != null) {
+				Iterator itOptions = e_options.elementIterator("option");
+				while (itOptions.hasNext()) {
+					e_option = (Element) itOptions.next();
+					String optionName = e_option.attributeValue("name");
+					//See if this search is limited to a particular definition type (e.g., COMMAND or PROFILE_ENTRY_VIEW)
+					String optionDefinitionType = e_option.attributeValue("definitionType", "");
+					if (!optionDefinitionType.equals("")) {
+						//This request is for a specific definition type.
+						//Check that the definition type from the actual definition matches the desired type.
+						if (!optionDefinitionType.equals(sourceRoot.attributeValue("type", ""))) continue;
+					}
+					//Find this item in the definition config
+					Element optionItem = (Element) this.configDocument.getRootElement().selectSingleNode("item[@name='"+optionName+"']");
+					if (optionItem != null) {
+						//See if multiple are allowed
+						if (!optionItem.attributeValue("multipleAllowed", "").equalsIgnoreCase("false") || 
+								sourceRoot.selectSingleNode("//item[@name='"+optionName+"']") == null) {
+							if (!optionsSeen.containsKey(optionName)) {
+								//See if this item has any help
+								Element help = (Element) optionItem.selectSingleNode("./help");
+								if (help != null) {
+									helpDivCount++;
+									hb.append("<div id=\"help_div_" + rootElementId);
+									hb.append(Integer.toString(helpDivCount));
+									hb.append("\" class=\"ss_helpPopUp\">\n");
+									hb.append("<span>");
+									hb.append(NLT.getDef(help.getText()));
+									hb.append("</span>\n</div>\n");
+								}
+								optionsSeen.put(optionName, optionName);
+							}
+						}
+					}
+				}
+				
+				itOptions = e_options.elementIterator("option_select");
+				while (itOptions.hasNext()) {
+					e_option = (Element) itOptions.next();
+					
+					//See if this search is limited to a particular definition type (e.g., COMMAND or PROFILE_ENTRY_VIEW)
+					String optionDefinitionType = e_option.attributeValue("definitionType", "");
+					if (!optionDefinitionType.equals("")) {
+						//This request is for a specific definition type.
+						//Check that the definition type from the actual definition matches the desired type.
+						if (!optionDefinitionType.equals(sourceRoot.attributeValue("type", ""))) continue;
+					}
+					String optionPath = e_option.attributeValue("path", "");
+					Iterator itOptionsSelect = rootConfigElement.selectNodes(optionPath).iterator();
+					if (!itOptionsSelect.hasNext()) continue;
+					
+					while (itOptionsSelect.hasNext()) {
+						Element optionSelect = (Element) itOptionsSelect.next();
+						String optionSelectName = optionSelect.attributeValue("name");
+						//See if multiple are allowed
+						if (!optionSelect.attributeValue("multipleAllowed", "").equalsIgnoreCase("false") ||
+								sourceRoot.selectSingleNode("//item[@name='"+optionSelectName+"']") == null) {
+							if (!optionsSeen.containsKey(optionSelectName)) {
+								//See if this item has any help
+								Element help = (Element) optionSelect.selectSingleNode("./help");
+								if (help != null) {
+									helpDivCount++;
+									hb.append("<div id=\"help_div_" + rootElementId);
+									hb.append(Integer.toString(helpDivCount));
+									hb.append("\" class=\"ss_helpPopUp\">\n");
+									hb.append("<span>");
+									hb.append(NLT.getDef(help.getText()));
+									hb.append("</span>\n</div>\n");
+								}
+								optionsSeen.put(optionSelectName, optionSelectName);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		//Build the properties div
+		if ((this.option.equals("")) && !this.divNames.containsKey("helpPropertiesDivs_"+rootElementId)) {
+			this.divNames.put("helpPropertiesDivs_"+rootElementId, "1");
+			//Get the list of properties
+			Element propertiesConfig = rootConfigElement.element("properties");
+			if (propertiesConfig != null) {
+				Iterator itProperties = propertiesConfig.elementIterator("property");
+				while (itProperties.hasNext()) {
+					//Get the next property from the base config file
+					Element propertyConfig = (Element) itProperties.next();
+					//Get the name and id (if any) from the config file
+					//See if this property has any help
+					Element help = (Element) propertyConfig.selectSingleNode("./help");
+					if (help != null) {
+						helpDivCount++;
+						hb.append("<div id=\"help_div_" + rootElementId);
+						hb.append(Integer.toString(helpDivCount));
+						hb.append("\" class=\"ss_helpPopUp\">\n");
+						hb.append("<span>");
+						hb.append(NLT.getDef(help.getText()));
+						hb.append("</span>\n</div>\n");
+					}
+				}
+			}
+		}
+	}
+
 	public int doEndTag() throws JspException {
 		return EVAL_PAGE;
 	}
