@@ -639,7 +639,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
   </span>
 
 <br/>
-	<applet archive="workflow-viewer/workflow-viewer.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.0.jar,lib/dom4j.jar,lib/jaxen.jar" 
+	<applet archive="workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.0.jar,lib/dom4j.jar,lib/jaxen.jar" 
 	  code="com.sitescape.ef.applets.workflowviewer.WorkflowViewer" 
 	  codebase="<html:rootPath/>applets" height="600" width="100%" >
 	  <param name="xmlGetUrl" value="<ssf:url 

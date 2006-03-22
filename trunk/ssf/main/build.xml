@@ -1,34 +1,13 @@
 <?xml version="1.0"?>
 
 <project name="main" basedir="." default="compile">
+	<import file="../build-common.xml" />
 	<import file="../deploy-support.xml" />
-	<target name="init">
-		<echo message="##### MAIN #####" />
-		<property environment="env" />
-  		<property name="project.dir" value=".." />
-  		<property file="${project.dir}/app.server.${user.name}.properties" />
-  		<property file="${project.dir}/app.server.properties" />
-  		<property file="${project.dir}/build.${user.name}.properties" />
-  		<property file="${project.dir}/build.properties" />
-  		<property file="${project.dir}/release.${user.name}.properties" />
-  		<property file="${project.dir}/release.properties" />
-		<path id="project.classpath">
-			<pathelement path="${classpath}" />
-			<fileset dir="${project.dir}/lib" includes="*.jar" />
-		</path>
-		<taskdef classpathref="project.classpath" resource="axis-tasks.properties" />
-		<property name="jar.file" value="ssf-main.jar" />
-		<property name="java2html.dir" value="${api.dir}/main" />
-		<property name="javadoc.dir" value="${api.dir}/main" />
-  		<property name="hibernate.dir" value="${basedir}/hibernate" />
-		<taskdef resource="net/sf/antcontrib/antcontrib.properties">
-			<classpath>
-				<pathelement location="${project.dir}/lib/ant-contrib.jar" />
-			</classpath>
-		</taskdef>
-	</target>
+	
+	<property name="jar.file" value="ssf-main.jar" />
+	<property name="hibernate.dir" value="${basedir}/hibernate" />
 
-	<target name="clean" depends="init,ss-hib-clean">
+	<target name="clean" depends="ss-hib-clean">
 		<delete file="${jar.file}" failonerror="false" />
 		<delete dir="${java2html.dir}" />
 		<delete dir="${javadoc.dir}" />
@@ -52,7 +31,7 @@
 		/>
 	</target>
 
-	<target name="compile-common" depends="init">
+	<target name="compile-common">
 		<mkdir dir="${classes.dir}" />
 		<javac
 			classpathref="project.classpath"
@@ -90,7 +69,7 @@
 		</jar>
 	</target>
 
-	<target name="java2html" depends="init">
+	<target name="java2html">
 		<java
 			classname="com.sitescape.util.Java2Html"
 			classpathref="project.classpath"
@@ -110,7 +89,7 @@
 		</replace>
 	</target>
 
-	<target name="javadoc" depends="init">
+	<target name="javadoc">
 		<mkdir dir="${javadoc.dir}" />
 		<javadoc
 			additionalparam="-J-Xmx128m"
@@ -134,13 +113,13 @@
 		</antcall>
 	</target>
 
-	<target name="ss-hib-clean" depends="init" description="Delete Hibernate mapping files">
+	<target name="ss-hib-clean" description="Delete Hibernate mapping files">
 		<delete failonerror="false">
 			<fileset dir="${classes.dir}" includes="**/*.hbm.xml"/>
 		</delete>		
 	</target>
 
-	<target name="ss-hib-gen" depends="init"
+	<target name="ss-hib-gen"
         description="Generate Hibernate mapping files from XDoclet in source">
         			
 		<echo message="Building Hibernate mappings..."/>
@@ -175,17 +154,17 @@
 -->
 	</target>	
 
-	  <target name="ss-create-tables" depends="init" description="Creates database tables for sitescape domain">
+	  <target name="ss-create-tables" description="Creates database tables for sitescape domain">
 			<property name="schemaexport.text.value" value="false" />
 	  		<antcall target="ss-create-tables-internal" />
 	  </target>
 	
-	  <target name="ss-create-tables-script-only" depends="init" description="Creates datbase creation script for sitescape domain">
+	  <target name="ss-create-tables-script-only" description="Creates datbase creation script for sitescape domain">
 		<property name="schemaexport.text.value" value="true" />
   		<antcall target="ss-create-tables-internal" />
 	  </target>
 	
-	  <target name="ss-create-tables-internal" depends="init">
+	  <target name="ss-create-tables-internal">
 			<path id="initpath">
 	  			<pathelement location="${classes.dir}"/>
 				<fileset dir="${project.dir}/util" includes="*.jar"/>
@@ -205,7 +184,7 @@
 		     </schemaexport>
 	    </target>
 	
-	  <target name="ss-create-tables-jbpm-internal" depends="init">
+	  <target name="ss-create-tables-jbpm-internal">
 			<path id="initpath">
 	  			<pathelement location="${classes.dir}"/>
 				<fileset dir="${project.dir}/util" includes="*.jar"/>
@@ -227,7 +206,7 @@
 		     </schemaexport>
 	    </target>
 
-	<target name="ss-update-tables" depends="init" description="Update database tables for sitescape domain">
+	<target name="ss-update-tables" description="Update database tables for sitescape domain">
 				<path id="initpath">
 		  			<pathelement location="${classes.dir}"/>
 					<fileset dir="${project.dir}/util" includes="*.jar"/>
@@ -286,7 +265,7 @@
 		</junit>
 	</target>
 	
-	<target name="unit-test-report" depends="init">
+	<target name="unit-test-report">
 		<mkdir dir="${test.report.dir}/html"/>
 		<junitreport todir="${test.report.dir}">
 			<fileset dir="${test.report.dir}">

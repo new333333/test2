@@ -1,25 +1,11 @@
 <?xml version="1.0"?>
 
 <project name="war" basedir="." default="war">
-	<target name="init">
-		<echo message="##### WAR #####" />
-		<property environment="env" />
-  		<property name="project.dir" value=".." />
-  		<property file="${project.dir}/app.server.${user.name}.properties" />
-  		<property file="${project.dir}/app.server.properties" />
-  		<property file="${project.dir}/build.${user.name}.properties" />
-  		<property file="${project.dir}/build.properties" />
-  		<property file="${project.dir}/release.${user.name}.properties" />
-  		<property file="${project.dir}/release.properties" />
-		<path id="project.classpath">
-			<pathelement path="${classpath}" />
-			<fileset dir="${project.dir}/lib" includes="*.jar" />
-		</path>
-		<taskdef classpathref="project.classpath" resource="axis-tasks.properties" />
-		<property name="war.file" value="ssf.war" />
-	</target>
+	<import file="../build-common.xml" />
+	
+	<property name="war.file" value="ssf.war" />
 
-	<target name="clean" depends="init">
+	<target name="clean">
 		<delete>
 			<fileset dir="." includes="${war.file}" />
 		</delete>
@@ -28,7 +14,7 @@
 		</delete>
 	</target>
 		
-	<target name="war" depends="init">
+	<target name="war">
 		
 		<copy todir="pro-war/WEB-INF/lib">
 			<fileset dir="${project.dir}/main" includes="ssf-main.jar" />

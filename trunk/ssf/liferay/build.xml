@@ -1,30 +1,12 @@
 <?xml version="1.0"?>
 
 <project name="liferay" basedir="." default="compile">
+	<import file="../build-common.xml" />
 	<import file="../deploy-support.xml" />
-	<target name="init">
-		<echo message="##### LIFERAY #####" />
-		<property environment="env" />
-  		<property name="project.dir" value=".." />
-  		<property file="${project.dir}/app.server.${user.name}.properties" />
-  		<property file="${project.dir}/app.server.properties" />
-  		<property file="${project.dir}/build.${user.name}.properties" />
-  		<property file="${project.dir}/build.properties" />
-		<path id="project.classpath">
-			<pathelement path="${classpath}" />
-			<fileset dir="${project.dir}/lib" includes="*.jar" />
-		</path>
-		<property name="jar.file" value="ssf-liferay.jar" />
-		<property name="java2html.dir" value="${api.dir}/util" />
-		<property name="javadoc.dir" value="${api.dir}/util" />
-		<taskdef resource="net/sf/antcontrib/antcontrib.properties">
-			<classpath>
-				<pathelement location="${project.dir}/lib/ant-contrib.jar" />
-			</classpath>
-		</taskdef>
-	</target>
+	
+	<property name="jar.file" value="ssf-liferay.jar" />
 
-	<target name="clean" depends="init">
+	<target name="clean">
 		<delete file="${jar.file}" failonerror="false" />
 		<delete dir="${java2html.dir}" />
 		<delete dir="${javadoc.dir}" />
@@ -33,7 +15,7 @@
 		</delete>
 	</target>
 
-	<target name="compile" depends="init">
+	<target name="compile">
 		<mkdir dir="${classes.dir}" />
 		<javac
 			classpathref="project.classpath"
@@ -55,7 +37,7 @@
 		/>
 	</target>
 
-	<target name="java2html" depends="init">
+	<target name="java2html">
 		<java
 			classname="com.sitescape.util.Java2Html"
 			classpathref="project.classpath"
@@ -75,7 +57,7 @@
 		</replace>
 	</target>
 
-	<target name="javadoc" depends="init">
+	<target name="javadoc">
 		<mkdir dir="${javadoc.dir}" />
 		<javadoc
 			classpathref="project.classpath"

@@ -1,37 +1,20 @@
 <?xml version="1.0"?>
 
 <project name="web" basedir="." default="war">
-	<target name="init">
-		<echo message="##### WEB #####" />
-		<property environment="env" />
-  		<property name="project.dir" value=".." />
-  		<property file="${project.dir}/app.server.${user.name}.properties" />
-  		<property file="${project.dir}/app.server.properties" />
-  		<property file="${project.dir}/build.${user.name}.properties" />
-  		<property file="${project.dir}/build.properties" />
-		<path id="project.classpath">
-			<pathelement path="${classpath}" />
-			<fileset dir="${project.dir}/lib" includes="*.jar" />
-		</path>
-		<property name="war.file" value="ssf-web.war" />
-		<taskdef resource="net/sf/antcontrib/antcontrib.properties">
-			<classpath>
-				<pathelement location="${project.dir}/lib/ant-contrib.jar" />
-			</classpath>
-		</taskdef>
-		<propertycopy name="app.server.dir" from="app.server.${app.server.type}.dir" />
-		<propertycopy name="app.server.lib.dir" from="app.server.${app.server.type}.lib.dir" />
-		<propertycopy name="app.server.deploy.dir" from="app.server.${app.server.type}.deploy.dir" />
-		<propertycopy name="app.server.ssf.dir" from="app.server.${app.server.type}.ssf.dir" />
-		<property name="jsp.artifacts.dir" value="${basedir}/${jspclasses.dir}/${app.server.type}" />
-	</target>
+	<import file="../build-common.xml" />
+	
+	<property name="war.file" value="ssf-web.war" />
+		
+	<propertycopy name="app.server.dir" from="app.server.${app.server.type}.dir" />
+	<propertycopy name="app.server.ssf.dir" from="app.server.${app.server.type}.ssf.dir" />
+	<property name="jsp.artifacts.dir" value="${basedir}/${jspclasses.dir}/${app.server.type}" />
 
-	<target name="clean" depends="init">
+	<target name="clean">
 		<delete dir="{jspclasses.dir}" />
 		<delete file="${war.file}" failonerror="false" />
 	</target>
 
-	<target name="war" depends="init">
+	<target name="war">
 		<war
 			basedir="${web.dir}"
 			destfile="${war.file}"
@@ -44,13 +27,13 @@
 		</war>
 	</target>
 
-	<target name="deploy" depends="init">
+	<target name="deploy">
 		<copy todir="${app.server.ssf.dir}">
 			<fileset dir="${web.dir}" />
 		</copy>
 	</target>
 	
-	<target name="precompile-jsp" depends="init">
+	<target name="precompile-jsp">
 		<if>
 			<equals arg1="${app.server.type}" arg2="tomcat" />
 			<then>
@@ -101,7 +84,7 @@
 	</target>
 	-->
 	
-	<target name="precompile-jsp-init-tomcat" depends="init">
+	<target name="precompile-jsp-init-tomcat">
 		<path id="jspc.classpath">        
 			<pathelement location="${env.JAVA_HOME}/jre/lib/rt.jar" />
 			<pathelement location="${env.JAVA_HOME}/lib/tools.jar" />

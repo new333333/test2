@@ -1,11 +1,7 @@
 <?xml version="1.0"?>
 
 <project name="stellent" basedir="." default="zip">
-	<target name="init">
-		<echo message="##### STELLENT #####" />
-	</target>
-		
-	<target name="init-release" depends="init">
+	<target name="init-release">
         <property environment="env" />
     	<property name="zip.name" value="sitescape-docconverter" />
   		<property file="../release.${user.name}.properties" />
