@@ -1,26 +1,12 @@
 <?xml version="1.0"?>
 
 <project name="ssf" basedir="." default="compile">
-	<target name="init-app-server">
-		<property environment="env" />
-  		<property file="app.server.${user.name}.properties" />
-  		<property file="app.server.properties" />
-		<taskdef resource="net/sf/antcontrib/antcontrib.properties">
-			<classpath>
-				<pathelement location="lib/ant-contrib.jar" />
-			</classpath>
-		</taskdef>
-		<propertycopy name="app.server.dir" from="app.server.${app.server.type}.dir" />
-		<propertycopy name="app.server.lib.dir" from="app.server.${app.server.type}.lib.dir" />
-		<propertycopy name="app.server.deploy.dir" from="app.server.${app.server.type}.deploy.dir" />
-		<propertycopy name="app.server.ssf.dir" from="app.server.${app.server.type}.ssf.dir" />
-	</target>
 
-	<target name="init-build">
+	<!--<target name="init-build">
 		<property environment="env" />
   		<property file="build.${user.name}.properties" />
   		<property file="build.properties" />
-	</target>
+	</target>-->
 
 	<target name="init-release">
 		<property environment="env" />
@@ -28,10 +14,14 @@
   		<property file="release.properties" />
 	</target>
 
-	<target name="all" depends="clean,build,deploy-liferay" />
+	<target name="all" depends="clean,build,deploy" />
 
-	<target name="all-without-clean" depends="build,deploy-liferay" />
+	<target name="all-without-clean" depends="build,deploy" />
 
+	<target name="deploy">
+		<ant antfile="build-deploy.xml" target="deploy-liferay" />
+	</target>
+	
 	<target name="build">
 		<antcall target="compile" />
 		<antcall target="jar" />
@@ -129,163 +119,7 @@
 		<ant dir="taglib" target="javadoc" />
 	</target>
 
-	<target name="clean-app-server" depends="init-app-server">
-		<delete>
-			<fileset dir="${app.server.lib.dir}" includes="ssf-*.jar" />
-		</delete>		
-		
-		<delete dir="${app.server.deploy.dir}/ssf"/>
-	</target>
 	
-	<target name="init-liferay" depends="init-app-server,init-build">
-		<if>
-			<equals arg1="${app.server.type}" arg2="tomcat" />
-			<then>
-				<path id="deploy.liferay.classpath">
-					<pathelement location="${env.ANT_HOME}/lib/ant.jar" />
-					<fileset dir="${app.server.lib.dir}" />
-					<pathelement location="${app.server.dir}/common/lib/servlet-api.jar" />
-				</path>
-				<property name="deploy.liferay.webinf" value="${app.server.dir}/liferay/WEB-INF" />
-				<property name="deploy.liferay.lib.dir" value="${app.server.lib.dir}" />
-			</then>
-			<elseif>
-				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
-				<then>
-					<path id="deploy.liferay.classpath">
-						<pathelement location="${app.server.deploy.dir}/ext.ear/portal-ejb.jar" />
-						<pathelement location="${env.ANT_HOME}/lib/ant.jar" />
-						<fileset dir="${app.server.deploy.dir}/ext.ear/lib" />
-						<pathelement location="${app.server.deploy.dir}/../lib/javax.servlet.jar" />
-					</path>
-					<property name="deploy.liferay.webinf" value="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/WEB-INF" />
-					<property name="deploy.liferay.lib.dir" value="${app.server.deploy.dir}/ext.ear/lib" />
-				</then>
-			</elseif>
-		</if>	
-		<property name="deploy.liferay.portlet.tld" value="${deploy.liferay.webinf}/tld/liferay-portlet.tld" />
-		<property name="deploy.liferay.taglib.jar" value="${deploy.liferay.webinf}/lib/util-taglib.jar" />
-		<property name="deploy.liferay.util.jar" value="${deploy.liferay.lib.dir}/util-java.jar" />
-	</target>
-	
-	<target name="deploy-liferay" depends="init-app-server,init-build">
-		<if>
-			<equals arg1="${app.server.type}" arg2="tomcat" />
-			<then>
-				<antcall target="deploy-liferay-tomcat" />
-			</then>
-			<elseif>
-				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
-				<then>
-					<antcall target="deploy-liferay-jboss-tomcat" />
-				</then>
-			</elseif>
-		</if>
-	</target>
-	
-	<target name="deploy-liferay-pre">
-		<delete>
-			<fileset dir="${app.server.lib.dir}" includes="ssf-*.jar" />
-		</delete>		
-		
-		<delete dir="liferay/temp" />
-
-		<copy file="war/ssf.war" todir="liferay/temp" />		
-	</target>
-	
-	<target name="deploy-liferay-post">
-		<ant dir="portal-module" target="deploy" />
-		<ant dir="liferay" target="deploy" />
-	</target>
-		
-	<target name="deploy-liferay-tomcat" depends="init-liferay">
-		<antcall target="deploy-liferay-pre" />
-		
-		<java
-			classname="com.liferay.portal.tools.PortletDeployer"
-			classpathref="deploy.liferay.classpath"
-			fork="true"
-			newenvironment="true">
-
-				<!-- Required Arguments -->
-
-				<jvmarg value="-Ddeployer.base.dir=liferay/temp/" />
-				<jvmarg value="-Ddeployer.dest.dir=${app.server.deploy.dir}" />
-				<jvmarg value="-Ddeployer.app.server.type=${app.server.type}" />
-				<jvmarg value="-Ddeployer.portlet.taglib.dtd=${deploy.liferay.portlet.tld}" />
-
-				<!-- Optional Arguments -->
-
-				<jvmarg value="-Ddeployer.jboss.prefix=1" />
-				<jvmarg value="-Ddeployer.tomcat.lib.dir=${app.server.dir}/common/lib/ext" />
-
-				<!-- Dependent Libraries -->
-
-				<arg value="${deploy.liferay.taglib.jar}" />
-				<arg value="${deploy.liferay.util.jar}" />
-				<!--<arg value="${app.server.deploy.dir}/ext.ear/lib/util-jsf.jar" />-->
-		</java>
-
-		<antcall target="deploy-liferay-post" />
-		<ant dir="slide" target="deploy" />
-		
-		<copy file="tomcat/resources/ssf.xml" todir="${app.server.dir}/conf/Catalina/localhost" />		
-		<copy file="tomcat/resources/server.slide.xml" tofile="${app.server.dir}/conf/server.xml" />		
-		<copy file="liferay/resources/web.tomcat.ssf.xml" tofile="${deploy.liferay.webinf}/web.xml" />
-		<copy file="tomcat/resources/jaas.liferay.slide.config" tofile="${app.server.dir}/conf/jaas.config" />
-		<copy file="lib/portal-ejb.jar" todir="${deploy.liferay.lib.dir}" />
-		<!-- Copy jdom.jar file into our lib directory because jakarta Slide 
-		     requires jdom 1.0 while the version of the Liferay we deploy
-		     onto contains earlier version (beta 8?) of jdom. We should remove
-		     this line once we upgarde to a later version of Liferay that contains
-		     v1.0 of jdom. -->
-		<copy file="lib/jdom.jar" todir="${app.server.ssf.dir}/WEB-INF/lib" />
-		<copy file="lib/xalan.jar" todir="${app.server.dir}/common/endorsed" />
-	</target>
-		
-	<target name="deploy-liferay-jboss-tomcat" depends="init-liferay">	
-		<antcall target="deploy-liferay-pre" />
-		
-		<java
-			classname="com.liferay.portal.tools.PortletDeployer"
-			classpathref="deploy.liferay.classpath"
-			fork="true"
-			newenvironment="true">
-
-				<!-- Required Arguments -->
-
-				<jvmarg value="-Ddeployer.base.dir=liferay/temp/" />
-				<jvmarg value="-Ddeployer.dest.dir=${app.server.deploy.dir}" />
-				<jvmarg value="-Ddeployer.app.server.type=${app.server.type}" />
-				<jvmarg value="-Ddeployer.portlet.taglib.dtd=${deploy.liferay.portlet.tld}" />
-
-				<!-- Optional Arguments -->
-
-				<jvmarg value="-Ddeployer.jboss.prefix=1" />
-				<!--<jvmarg value="-Ddeployer.tomcat.lib.dir=${app.server.dir}/common/lib/ext" />-->
-
-				<!-- Dependent Libraries -->
-
-				<arg value="${deploy.liferay.taglib.jar}" />
-				<arg value="${deploy.liferay.util.jar}" />
-				<!--<arg value="${app.server.deploy.dir}/ext.ear/lib/util-jsf.jar" />-->
-		</java>
-		
-		<antcall target="deploy-liferay-post" />
-		
-		<!-- For SSF -->
-		<copy file="jboss/resources/ssf-ds.xml" todir="${app.server.deploy.dir}" />		
-		<copy file="jboss/resources/mail-service.liferay.ssf.xml" tofile="${app.server.deploy.dir}/mail-service.xml" />		
-		<!-- For Slide -->
-		<!--<copy file="jboss/resources/server.slide.xml" tofile="${app.server.deploy.dir}/jbossweb-tomcat55.sar/server.xml" />-->
-		<!--<copy file="jboss/resources/login-config.slide.xml" tofile="${app.server.dir}/server/default/conf/login-config.xml" />-->
-		<!--<move file="${app.server.deploy.dir}/slide.war/WEB-INF/lib/slide-jaas-2.1.jar" todir="${app.server.dir}/server/default/lib" failonerror="false" />-->
-		<!-- For Liferay -->
-		<copy file="liferay/resources/web.jboss.ssf.xml" tofile="${deploy.liferay.webinf}/web.xml" />
-		<copy file="liferay/resources/portal.jboss.ssf.properties" tofile="${app.server.deploy.dir}/ext.ear/portal-ejb.jar/portal.properties" />
-		<copy file="liferay/resources/MANIFEST.jboss.ssf.MF" tofile="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/META-INF/MANIFEST.MF" />
-	</target>
-		
 	<target name="precompile-jsp">
   		<ant dir="web" target="precompile-jsp" />
 	</target>
@@ -341,6 +175,7 @@
 		<antcall target="clean" />
 		<antcall target="build" />
 		<antcall target="unit-test" />
+		<antcall target="precompile-jsp" />
 		<!--<antcall target="java2html" />-->
 		<antcall target="javadoc" />
 		<antcall target="zip" />

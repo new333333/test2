@@ -1,40 +1,33 @@
 <?xml version="1.0"?>
 
 <project name="wsclient" basedir="." default="usage">
-	<target name="init">
-		<echo message="##### SAMPLES: WSCLIENT #####" />
-		<property environment="env" />
-  		<property name="project.dir" value="../.." />
-  		<property file="${project.dir}/build.${user.name}.properties" />
-  		<property file="${project.dir}/build.properties" />
-		<property name="generated.dir" value="${basedir}/generated" />
-		<!-- Use explicit path elements rather than picking up every jar file
-		     in the system so that we can clearly document what subset of
-		     archives (both our own and 3rd party) we need to have on the
-		     client side -->
-		<path id="wsclient.project.classpath">
-			<pathelement path="${classes.dir};${project.dir}/remoting/classes" />
-			<pathelement location="${project.dir}/lib/activation.jar" />
-			<pathelement location="${project.dir}/lib/mail.jar" />
-			<pathelement location="${project.dir}/lib/dom4j.jar" />
-			<pathelement location="${project.dir}/lib/spring.jar" />
-			<pathelement location="${project.dir}/lib/axis.jar" />
-			<pathelement location="${project.dir}/lib/axis-ant.jar" />
-			<pathelement location="${project.dir}/lib/jaxrpc.jar" />
-			<pathelement location="${project.dir}/lib/commons-logging.jar" />
-			<pathelement location="${project.dir}/lib/commons-discovery.jar" />
-			<pathelement location="${project.dir}/lib/saaj.jar" />
-			<pathelement location="${project.dir}/lib/wsdl4j.jar" />
-			<pathelement location="${project.dir}/lib/wss4j.jar" />
-			<pathelement location="${project.dir}/lib/addressing.jar" />
-			<pathelement location="${project.dir}/lib/bcprov-jdk13-128.jar.jar" />
-			<pathelement location="${project.dir}/lib/commons-codec.jar" />
-			<pathelement location="${project.dir}/lib/opensaml.jar" />
-			<pathelement location="${project.dir}/lib/xalan.jar" />
-			<pathelement location="${project.dir}/lib/xmlsec.jar" />
-		</path>
-		<taskdef resource="axis-tasks.properties" classpathref="wsclient.project.classpath"/>
-	</target>
+	<property name="project.dir" value="../.." />
+	<property name="generated.dir" value="${basedir}/generated" />
+
+	<import file="${project.dir}/build-common.xml"/>
+
+	<!-- This overrides the imported definition -->
+	<path id="project.classpath">
+		<pathelement path="${classes.dir};${project.dir}/remoting/classes" />
+		<pathelement location="${project.dir}/lib/activation.jar" />
+		<pathelement location="${project.dir}/lib/mail.jar" />
+		<pathelement location="${project.dir}/lib/dom4j.jar" />
+		<pathelement location="${project.dir}/lib/spring.jar" />
+		<pathelement location="${project.dir}/lib/axis.jar" />
+		<pathelement location="${project.dir}/lib/axis-ant.jar" />
+		<pathelement location="${project.dir}/lib/jaxrpc.jar" />
+		<pathelement location="${project.dir}/lib/commons-logging.jar" />
+		<pathelement location="${project.dir}/lib/commons-discovery.jar" />
+		<pathelement location="${project.dir}/lib/saaj.jar" />
+		<pathelement location="${project.dir}/lib/wsdl4j.jar" />
+		<pathelement location="${project.dir}/lib/wss4j.jar" />
+		<pathelement location="${project.dir}/lib/addressing.jar" />
+		<pathelement location="${project.dir}/lib/bcprov-jdk13-128.jar.jar" />
+		<pathelement location="${project.dir}/lib/commons-codec.jar" />
+		<pathelement location="${project.dir}/lib/opensaml.jar" />
+		<pathelement location="${project.dir}/lib/xalan.jar" />
+		<pathelement location="${project.dir}/lib/xmlsec.jar" />
+	</path>
 
 	<target name="usage">
 		<echo message="readDefinitionGenerated" />
@@ -50,22 +43,22 @@
 		<echo message="addEntrySpring" />
 	</target>
 	
-	<target name="clean" depends="init">
+	<target name="clean">
 		<delete includeEmptyDirs="true" failonerror="false">
 			<fileset dir="${classes.dir}" excludes="${classes.dir.excludes}" />
 		</delete>
 	</target>
 	
-	<target name="cleanGenerated" depends="init">
+	<target name="cleanGenerated">
 		<delete includeEmptyDirs="true" failonerror="false">
 			<fileset dir="${generated.dir}" />
 		</delete>
 	</target>
 	
-	<target name="compile" depends="init">
+	<target name="compile">
 		<mkdir dir="${classes.dir}" />
 		<javac
-			classpathref="wsclient.project.classpath"
+			classpathref="project.classpath"
 			compiler="${javac.compiler}"
 			debug="${javac.debug}"
 			deprecation="${javac.deprecation}"
@@ -80,12 +73,12 @@
 	
 	<!-- Similar to "compile" target except that this excludes all generated files
 	     from compilation. Any program that uses generated files is also excluded. -->
-	<target name="compileButGenerated" depends="init">
+	<target name="compileButGenerated">
 		<mkdir dir="${classes.dir}" />
 		<javac
 			sourcepath="" 
 			srcdir="${source.dir}"
-			classpathref="wsclient.project.classpath"
+			classpathref="project.classpath"
 			compiler="${javac.compiler}"
 			debug="${javac.debug}"
 			deprecation="${javac.deprecation}"
@@ -101,7 +94,7 @@
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
 			classpath="${classes.dir}"
-			classpathref="wsclient.project.classpath"
+			classpathref="project.classpath"
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">
@@ -116,7 +109,7 @@
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
 			classpath="${classes.dir}"
-			classpathref="wsclient.project.classpath"
+			classpathref="project.classpath"
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">
@@ -129,7 +122,7 @@
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
 			classpath="${classes.dir}"
-			classpathref="wsclient.project.classpath"
+			classpathref="project.classpath"
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">
@@ -143,7 +136,7 @@
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
 			classpath="${classes.dir}"
-			classpathref="wsclient.project.classpath"
+			classpathref="project.classpath"
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">
@@ -158,7 +151,7 @@
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
 			classpath="${classes.dir}"
-			classpathref="wsclient.project.classpath"
+			classpathref="project.classpath"
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">
@@ -174,7 +167,7 @@
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
-			classpathref="wsclient.project.classpath"
+			classpathref="project.classpath"
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">
@@ -189,7 +182,7 @@
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
-			classpathref="wsclient.project.classpath"
+			classpathref="project.classpath"
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">
@@ -202,7 +195,7 @@
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
-			classpathref="wsclient.project.classpath"
+			classpathref="project.classpath"
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">
@@ -216,7 +209,7 @@
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
-			classpathref="wsclient.project.classpath"
+			classpathref="project.classpath"
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">
@@ -231,7 +224,7 @@
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
-			classpathref="wsclient.project.classpath"
+			classpathref="project.classpath"
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">
@@ -247,7 +240,7 @@
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
-			classpathref="wsclient.project.classpath"
+			classpathref="project.classpath"
 			fork="true"
 			dir="${basedir}"
 			failonerror="true">

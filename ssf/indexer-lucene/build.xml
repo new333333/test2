@@ -1,31 +1,13 @@
 <?xml version="1.0"?>
 
 <project name="indexer-lucene" basedir="." default="deploy">
+	<import file="../build-common.xml" />	
     <import file="../deploy-support.xml" />
-    <target name="init">
-        <echo message="##### INDEXER-LUCENE #####" />
-        <property environment="env" />
-        <property name="project.dir" value=".." />
-        <property file="${project.dir}/app.server.${user.name}.properties" />
-        <property file="${project.dir}/app.server.properties" />
-        <property file="${project.dir}/build.${user.name}.properties" />
-        <property file="${project.dir}/build.properties" />
-        <path id="project.classpath">
-            <pathelement path="${classpath}" />
-            <fileset dir="${project.dir}/lib" includes="*.jar" />
-        </path>
-        <property name="jar.file" value="ssf-luceneserver.jar" />
-    	<property name="client.jar.file" value="ssf-luceneapi.jar" />
-        <property name="java2html.dir" value="${api.dir}/luceneserver" />
-        <property name="javadoc.dir" value="${api.dir}/luceneserver" />
-        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-            <classpath>
-                <pathelement location="${project.dir}/lib/ant-contrib.jar" />
-            </classpath>
-        </taskdef>
-    </target>
+    	
+    <property name="jar.file" value="ssf-luceneserver.jar" />
+    <property name="client.jar.file" value="ssf-luceneapi.jar" />
 
-    <target name="clean" depends="init">
+    <target name="clean">
         <delete file="${jar.file}" failonerror="false" />
     	<delete file="${client.jar.file}" failonerror="false" />
         <delete dir="${java2html.dir}" />
@@ -38,7 +20,7 @@
 	<target name="compile" depends="javabuild,rmibuild">
 	</target>
 	
-	<target name="javabuild" depends="init">
+	<target name="javabuild">
         <mkdir dir="${classes.dir}" />
         <javac
             classpathref="project.classpath"
@@ -87,7 +69,7 @@
 		</jar>
 	</target>
 	
-    <target name="java2html" depends="init">
+    <target name="java2html">
         <java
             classname="com.sitescape.util.Java2Html"
             classpathref="project.classpath"
@@ -107,7 +89,7 @@
         </replace>
     </target>
 
-    <target name="javadoc" depends="init">
+    <target name="javadoc">
         <mkdir dir="${javadoc.dir}" />
         <javadoc
             classpathref="project.classpath"

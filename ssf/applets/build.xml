@@ -1,11 +1,6 @@
 <?xml version="1.0"?>
 
 <project name="applets" basedir="." default="compile">
-	<target name="init">
-		<echo message="##### APPLETS #####" />
-		<property environment="env" />
-	</target>
-
 	<target name="clean">
 		<ant dir="sample" target="clean" />
 		<ant dir="workflow-viewer" target="clean" />

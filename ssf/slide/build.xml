@@ -1,26 +1,14 @@
 <?xml version="1.0"?>
 
 <project name="slide" basedir="." default="war">
+	<import file="../build-common.xml" />
     <import file="../deploy-support.xml" />
-	<target name="init">
-		<echo message="##### SLIDE #####" />
-        <property environment="env" />
-        <property name="project.dir" value=".." />
-        <property file="${project.dir}/app.server.${user.name}.properties" />
-        <property file="${project.dir}/app.server.properties" />
-        <property file="${project.dir}/build.${user.name}.properties" />
-        <property file="${project.dir}/build.properties" />
-		<property name="input.war.file" value="slide.war" />
-		<property name="output.war.file" value="slide.war" />
-		<property name="temp.dir" value="temp" />
-        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-            <classpath>
-                <pathelement location="${project.dir}/lib/ant-contrib.jar" />
-            </classpath>
-        </taskdef>
-	</target>
+	
+	<property name="input.war.file" value="slide.war" />
+	<property name="output.war.file" value="slide.war" />
+	<property name="temp.dir" value="temp" />
 
-	<target name="clean" depends="init">
+	<target name="clean">
 		<delete>
 			<fileset dir="." includes="${output.war.file}" />
 		</delete>
@@ -29,7 +17,7 @@
 		</delete>
 	</target>
 		
-	<target name="unwar-original" depends="init">
+	<target name="unwar-original">
 		<unwar src="original-kit/${input.war.file}" dest="${temp.dir}"/>
 	</target>
 	
