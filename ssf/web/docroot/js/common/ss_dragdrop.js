@@ -36,8 +36,10 @@ var ss_DragDrop = {
 		// a container or out of a container bounds.  onDragOut
 		// is also called when the drag ends with an item having
 		// been added to the container
+		// onDragDrop is called when the item is dropped
 		list.onDragOver = new Function();
 		list.onDragOut = new Function();
+		list.onDragDrop = new Function();
 		
     	var items = list.getElementsByTagName( "li" );
     	
@@ -202,6 +204,7 @@ var ss_DragDrop = {
 		//Restore the cursor
 		this.style.cursor = ss_DragDrop.dragStartCursor;
 		this.parentNode.onDragOut();
+		this.parentNode.onDragDrop();
 		this.style["top"] = "0px";
 		this.style["left"] = "0px";
 	}

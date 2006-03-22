@@ -1,3 +1,5 @@
+<c:if test="${empty ssf_support_files_loaded}">
+<c:set var="ssf_support_files_loaded" value="1" scope="request"/>
 
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.ef.ObjectKeys" %>
@@ -64,8 +66,6 @@ if(RequestContextHolder.getRequestContext() != null) {
 
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
-<c:if test="${empty ssf_support_files_loaded}">
-<c:set var="ssf_support_files_loaded" value="1" scope="request"/>
 
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/nifty_corners.js"></script>
