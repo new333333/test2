@@ -63,7 +63,7 @@ function XhtmlToDOMParser(xml){
                         case 1:  //ELEMENT_NODE
                            return handleElement(xmlNode);
                         case 3:  //TEXT_NODE
-			case 4:  //CDATA_SECTION_NODE
+						case 4:  //CDATA_SECTION_NODE
                            return document.createTextNode(xmlNode.nodeValue);
                 }      
                 return null;

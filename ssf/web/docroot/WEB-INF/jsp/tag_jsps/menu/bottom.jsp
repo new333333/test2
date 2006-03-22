@@ -21,10 +21,15 @@ Integer nameCount = (Integer) renderRequest.getAttribute("ss_menu_tag_name_count
 String menuTagDivId = "ss_menuTagDiv" + nameCount.toString();
 String title = ParamUtil.get(request, "title", "");
 String titleId = ParamUtil.get(request, "titleId", "");
+String titleClass = ParamUtil.get(request, "class", "ss_toolbar_item");
+String openStyle = ParamUtil.get(request, "openStyle", "");
+String anchor = ParamUtil.get(request, "anchor", "");
+String offsetTop = ParamUtil.get(request, "offsetTop", "");
+String offsetLeft = ParamUtil.get(request, "offsetLeft", "");
 
 %>
 <div id="parent_<%= menuTagDivId %>" style="display:inline;">
-<a id="<%= titleId %>" class="ss_toolbar_item" href="javascript: ;" 
+<a id="<%= titleId %>" class="<%= titleClass %>" href="javascript: ;" 
 	  onClick="activateMenuLayerClone('<%= menuTagDivId %>', 'parent_<%= menuTagDivId %>');"
 ><%= title %></a>
 </div>

@@ -273,7 +273,7 @@ public class ViewController extends SAbstractController {
 		}
 		model.put("data", data);
 		if (!option.equals("")) {
-			//response.setContentType("text/xml");			
+			response.setContentType("text/xml");			
 			Map statusMap = new HashMap();
 			if(!WebHelper.isUserLoggedIn(request)) {
 				//Signal that the user is not logged in. 

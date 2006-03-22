@@ -34,6 +34,10 @@ public class MenuTag extends BodyTagSupport {
 	private String title = "";
 	private String titleId = "";
 	private String _class = "";
+	private String openStyle = "slide_down";
+	private String anchor = "";
+	private String offsetTop = "8";
+	private String offsetLeft = "4";
     
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -57,6 +61,10 @@ public class MenuTag extends BodyTagSupport {
 			_params.put("title", new String[] {this.title});
 			_params.put("titleId", new String[] {this.titleId});
 			_params.put("class", new String[] {this._class});
+			_params.put("openStyle", new String[] {this.openStyle});
+			_params.put("anchor", new String[] {this.anchor});
+			_params.put("offsetTop", new String[] {this.offsetTop});
+			_params.put("offsetLeft", new String[] {this.offsetLeft});
 
 			ServletRequest req = null;
 			req = new DynamicServletRequest(httpReq, _params);
@@ -93,6 +101,22 @@ public class MenuTag extends BodyTagSupport {
 
 	public void setClass(String divClass) {
 	    this._class = divClass;
+	}
+
+	public void setOpenStyle(String openStyle) {
+	    this.openStyle = openStyle;
+	}
+
+	public void setAnchor(String anchor) {
+	    this.anchor = anchor;
+	}
+
+	public void setOffsetTop(String offsetTop) {
+	    this.offsetTop = offsetTop;
+	}
+
+	public void setOffsetLeft(String offsetLeft) {
+	    this.offsetLeft = offsetLeft;
 	}
 
 }

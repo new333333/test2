@@ -27,6 +27,9 @@
 <jsp:useBean id="ssPublicEntryDefinitions" type="java.util.Map" scope="request" />
 <%@ page import="com.sitescape.ef.domain.Entry" %>
 <jsp:useBean id="ss_ajaxStatus" type="java.util.Map" scope="request" />
+<%
+	if (1 == 0) {
+%>
 		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
 		  sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
 		  configDocument="${ssConfigDefinition}"
@@ -36,7 +39,7 @@
 		  itemName="<%= (String) data.get("itemName") %>" 
 		/>
 <%
-	if (1 == 0) {
+	} else {
 %>
 <taconite-root xml:space="preserve">
 <%
