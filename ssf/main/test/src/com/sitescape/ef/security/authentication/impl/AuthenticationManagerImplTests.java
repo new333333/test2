@@ -41,7 +41,7 @@ public class AuthenticationManagerImplTests extends TestCase {
 	public void testAuthenticateOk() {
 		// Define expected behavior of the mock object.
 		coreDaoControl.reset();
-		coreDao.findUserByName("testUser", "testZone");
+		coreDao.findUserByNameOnlyIfEnabled("testUser", "testZone");
 		coreDaoControl.setReturnValue(user);
 		coreDaoControl.replay();
 		
@@ -58,7 +58,7 @@ public class AuthenticationManagerImplTests extends TestCase {
 	public void testAuthenticateUserDoesNotExistException() {
 		// Define expected behavior of the mock object. 
 		coreDaoControl.reset();
-		coreDao.findUserByName("testUser", "testZone");
+		coreDao.findUserByNameOnlyIfEnabled("testUser", "testZone");
 		coreDaoControl.setThrowable(new NoUserByTheNameException(""));
 		coreDaoControl.replay();
 		

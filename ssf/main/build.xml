@@ -267,7 +267,7 @@
 	     at the command line. For example, 
 	     ant test -Dtest.includes=**/CoreDaoImplTests.class
 	     will run only CoreDaoImplTests and nothing else. -->
-	<target name="unit-test-only" depends="compile-test">
+	<target name="unit-test" depends="compile-test">
 		<mkdir dir="${test.report.dir}"/>
 		<property name="tests" value="Test*"/>
 
@@ -295,7 +295,5 @@
 			<report todir="${test.report.dir}/html"/>
 		</junitreport>
 	</target>
-	
-	<target name="unit-test" depends="unit-test-only, unit-test-report"/>
 	
 </project>

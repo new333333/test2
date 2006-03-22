@@ -133,12 +133,12 @@
 	</target>
 
 	<target name="zip" depends="jar,init-release">
-		<delete file="../${zip.name}-${indexserver.version}.zip" failonerror="false" />
+		<delete file="../${dist.dir}/${zip.name}-${indexserver.version}.zip" failonerror="false" />
         <delete failonerror="false">
             <fileset dir="${root.dir}/lib" includes="**/*.jar" />
         </delete>
 		<copy file="${jar.file}" todir="${root.dir}/lib" />
-		<zip destfile="../${zip.name}-${indexserver.version}.zip"
+		<zip destfile="../${dist.dir}/${zip.name}-${indexserver.version}.zip"
 			basedir="."
 			includes="sitescape/**/*"
 		/>
