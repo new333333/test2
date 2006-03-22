@@ -38,7 +38,7 @@
 	</target>
 
 	<target name="clean">
-		<delete dir="${tmp.dir}" />
+		<delete dir="dist" />
 		<delete dir="liferay/temp" />
 		
 		<ant dir="util" target="clean" />
@@ -98,7 +98,7 @@
 	</target>
 
 	<target name="java2html">
-		<delete dir="${api.dir}" />
+		<delete dir="docs/api" />
 
 		<ant dir="util" target="java2html" />
 		<ant dir="indexer-lucene" target="java2html" />
@@ -114,7 +114,7 @@
 	</target>
 
 	<target name="javadoc">
-		<delete dir="${api.dir}" />
+		<delete dir="docs/api" />
 
 		<ant dir="util" target="javadoc" />
 		<ant dir="indexer-lucene" target="javadoc" />
@@ -299,35 +299,37 @@
 	</target>
 
 	<target name="zip-api" depends="init-release">
-		<delete file="sitescape-forum-${ssf.version}-doc.zip" failonerror="false" />
-		<zip zipfile="sitescape-forum-${ssf.version}-doc.zip"
+		<mkdir dir="${dist.dir}" />
+		<delete file="${dist.dir}/sitescape-forum-${ssf.version}-doc.zip" failonerror="false" />
+		<zip zipfile="${dist.dir}/sitescape-forum-${ssf.version}-doc.zip"
 			basedir="."
 			includes="api/**/*.css,api/**/*.gif,api/**/*.html"
 		/>
 	</target>
 
-	<target name="zip-src" depends="init-release">
-		<delete file="sitescape-forum-${ssf.version}-src.zip" failonerror="false" />
-		<zip zipfile="sitescape-forum-${ssf.version}-src.zip"
+	<!--<target name="zip-src" depends="init-release">
+		<delete file="${dist.dir}/sitescape-forum-${ssf.version}-src.zip" failonerror="false" />
+		<zip zipfile="${dist.dir}/sitescape-forum-${ssf.version}-src.zip"
 			basedir="${ssf.source.dir}"
 			excludes="**/CVS/**,**/*.scc"
 		/>
-	</target>
+	</target>-->
 
 	<target name="zip-war" depends="init-release">
-		<delete file="sitescape-forum-${ssf.version}-war.zip" failonerror="false" />
-		<zip zipfile="sitescape-forum-${ssf.version}-war.zip"
+		<mkdir dir="${dist.dir}" />
+		<delete file="${dist.dir}/sitescape-forum-${ssf.version}-war.zip" failonerror="false" />
+		<zip zipfile="${dist.dir}/sitescape-forum-${ssf.version}-war.zip"
 			basedir="war"
 			includes="ssf.war"
 		/>
-		<zip zipfile="sitescape-forum-${ssf.version}-war.zip"
+		<zip zipfile="${dist.dir}/sitescape-forum-${ssf.version}-war.zip"
 			basedir="slide"
 			includes="slide.war"
 			update="true"
 		/>
 	</target>
 
-	<target name="release" depends="init-release">
+	<target name="release">
 		<!--
 		<delete>
 			<fileset dir="${ssf.source.dir}" defaultexcludes="no">
@@ -338,6 +340,7 @@
 
 		<antcall target="clean" />
 		<antcall target="build" />
+		<antcall target="unit-test" />
 		<!--<antcall target="java2html" />-->
 		<antcall target="javadoc" />
 		<antcall target="zip" />
@@ -355,8 +358,8 @@
 		</java>
 	</target>
 
-	<target name="test" description="Run unit tests">
-  		<ant dir="main" target="test" />
+	<target name="unit-test" description="Run unit tests">
+  		<ant dir="main" target="unit-test" />
 	</target>
 	
 </project>
