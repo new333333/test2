@@ -2,12 +2,22 @@
 
 <project name="ssf" basedir="." default="compile">
 
-	<!--<target name="init-build">
+	<property name="docs.api.dir" value="docs/api" />
+
+	<target name="init-build">
 		<property environment="env" />
+		<property name="project.dir" value="." />
   		<property file="build.${user.name}.properties" />
   		<property file="build.properties" />
-	</target>-->
-
+		<path id="project.classpath">
+			<pathelement path="${classpath}" />
+			<fileset dir="${project.dir}/lib" includes="*.jar" />
+		</path>
+		<path id="project.sourcepath">
+			<pathelement path="${sourcepath}" />
+		</path>
+	</target>
+	
 	<target name="init-release">
 		<property environment="env" />
   		<property file="release.${user.name}.properties" />
@@ -30,6 +40,7 @@
 	<target name="clean">
 		<delete dir="dist" />
 		<delete dir="liferay/temp" />
+		<delete dir="${docs.api.dir}" />
 		
 		<ant dir="util" target="clean" />
 		<ant dir="indexer-lucene" target="clean" />
@@ -88,7 +99,7 @@
 	</target>
 
 	<target name="java2html">
-		<delete dir="docs/api" />
+		<delete dir="${docs.api.dir}" />
 
 		<ant dir="util" target="java2html" />
 		<ant dir="indexer-lucene" target="java2html" />
@@ -97,14 +108,13 @@
 		<ant dir="applets" target="java2html" />
 
 		<ant dir="main" target="java2html" />
-		<ant dir="indexer-lucene" target="java2html" />
 		<ant dir="portal-module" target="java2html" />
 		<ant dir="liferay" target="java2html" />
 		<ant dir="taglib" target="java2html" />
 	</target>
 
 	<target name="javadoc">
-		<delete dir="docs/api" />
+		<delete dir="${javadoc.combined.dir}" />
 
 		<ant dir="util" target="javadoc" />
 		<ant dir="indexer-lucene" target="javadoc" />
@@ -113,31 +123,42 @@
 		<ant dir="applets" target="javadoc" />
 
 		<ant dir="main" target="javadoc" />
-		<ant dir="indexer-lucene" target="javadoc" />
 		<ant dir="portal-module" target="javadoc" />
 		<ant dir="liferay" target="javadoc" />
 		<ant dir="taglib" target="javadoc" />
 	</target>
 
+
+	<target name="javadoc-combined" depends="init-build">
+		<delete dir="${docs.api.dir}" />
+		<mkdir dir="${docs.api.dir}" />
+		<javadoc
+			additionalparam="-J-Xmx128m"
+			classpathref="project.classpath"
+			destdir="${docs.api.dir}"
+			packagenames="*.*"
+			sourcepathref="project.sourcepath"
+			stylesheetfile="${project.dir}/tools/javadoc.css"
+		/>	</target>
 	
 	<target name="precompile-jsp">
   		<ant dir="web" target="precompile-jsp" />
 	</target>
 		
 	<target name="zip">
-		<antcall target="zip-api" />
+		<antcall target="zip-docs" />
 		<!--<antcall target="zip-src" />-->
 		<antcall target="zip-war" />
   		<ant dir="indexer-lucene" target="zip" />
   		<ant dir="stellent" target="zip" />
 	</target>
 
-	<target name="zip-api" depends="init-release">
+	<target name="zip-docs" depends="init-release">
 		<mkdir dir="${dist.dir}" />
 		<delete file="${dist.dir}/sitescape-forum-${ssf.version}-doc.zip" failonerror="false" />
 		<zip zipfile="${dist.dir}/sitescape-forum-${ssf.version}-doc.zip"
 			basedir="."
-			includes="api/**/*.css,api/**/*.gif,api/**/*.html"
+			includes="docs/**/*.*"
 		/>
 	</target>
 
@@ -176,7 +197,7 @@
 		<antcall target="build" />
 		<antcall target="unit-test" />
 		<!--<antcall target="java2html" />-->
-		<antcall target="javadoc" />
+		<antcall target="javadoc-combined" />
 		<antcall target="zip" />
 	</target>
 
