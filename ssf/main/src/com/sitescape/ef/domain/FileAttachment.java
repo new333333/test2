@@ -19,7 +19,7 @@ import com.sitescape.ef.util.CollectionUtil;
  * @author janet
  */
 public class FileAttachment extends Attachment {
-    private List fileVersions;
+    private List fileVersions; //set by hibernate access="field"
     private Integer lastVersion;
     private String repositoryServiceName;
 
@@ -54,13 +54,6 @@ public class FileAttachment extends Attachment {
         this.lastVersion = lastVersion;
     }
     
-    /**
-     * @hibernate.bag  lazy="true" cascade="all,delete-orphan" inverse="true" batch-size="4" optimistic-lock="false"
- 	 * @hibernate.key column="parentAttachment" 
-     * @hibernate.one-to-many class="com.sitescape.ef.domain.VersionAttachment"
-     */
-    private List getHFileVersions() {return fileVersions;}
-    private void setHFileVersions(List fileVersions) {this.fileVersions = fileVersions;}
     
     public List getFileVersions() {
     	if (fileVersions == null) fileVersions=new ArrayList();

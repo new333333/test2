@@ -27,6 +27,7 @@ public class WorkflowUtils {
     // Defines variable names
     public final static String ENTRY_TYPE = "__entryType";
     public final static String ENTRY_ID = "__entryId";
+    public final static String BINDER_ID = "__binderId";
        
     public static Map getManualTransitions(Definition wfDef, String stateName) {
 		Map transitionData = new LinkedHashMap();

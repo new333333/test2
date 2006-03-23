@@ -13,11 +13,11 @@ import java.util.Date;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.domain.AnyOwner;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.ef.module.workflow.WorkflowModule;
@@ -26,7 +26,6 @@ import com.sitescape.ef.util.SZoneConfig;
 import com.sitescape.ef.domain.WfWaits;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.jobs.WorkflowTimeout;
-import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.module.binder.EntryProcessor;
 
 
@@ -724,8 +723,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		return action;
 
 	}
-	public void addEntryWorkflow(WorkflowControlledEntry entry, Definition workflowDef) {
-		String entryType = entry.getAnyOwnerType();
+	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef) {
 		String initialState = WorkflowUtils.getInitialState(workflowDef);
 		if (!Validator.isNull(initialState)) {
 			//Now start the workflow at the desired initial state
@@ -739,8 +737,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		        	ProcessInstance pI = new ProcessInstance(pD);
 					Token token = pI.getRootToken();
 					ContextInstance cI = (ContextInstance) pI.getInstance(ContextInstance.class);
-					cI.setVariable(WorkflowUtils.ENTRY_ID, entry.getId(), token);
-					cI.setVariable(WorkflowUtils.ENTRY_TYPE, entryType, token);
+					cI.setVariable(WorkflowUtils.ENTRY_ID, id.getEntityId(), token);
+					cI.setVariable(WorkflowUtils.ENTRY_TYPE, id.getEntityType().name(), token);
 					//doesn't exist, add a new one
 					WorkflowState ws = new WorkflowState();
 					ws.setTokenId(new Long(token.getId()));
@@ -781,11 +779,11 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
       	Timer timer = (Timer)session.getSession().load(Timer.class, timerId);
       	if (timer == null) return;
       	Token token = timer.getToken();
-      	WorkflowControlledEntry entry = null;
+      	Entry entry = null;
       	if (token != null) {
       		//token id is id of workflowState
       		WorkflowState ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
-      		entry = (WorkflowControlledEntry)ws.getOwner().getEntity();
+      		entry = (Entry)ws.getOwner().getEntity();
       	}
   
       	// execute
@@ -825,7 +823,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		
 	}
 	
-	public void deleteEntryWorkflow(Binder parent, WorkflowControlledEntry entry) {
+	public void deleteEntryWorkflow(WorkflowSupport entry) {
 		//Delete all JBPM tokens and process instances associated with this entry
 	    try {
 			Set processInstances = new HashSet();

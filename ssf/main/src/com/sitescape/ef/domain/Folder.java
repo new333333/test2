@@ -224,7 +224,10 @@ public class Folder extends Binder {
     public List getBinderViewDefs() {
    		return getDefs(Definition.FORUM_VIEW);
     }	    
-
+    public EntityIdentifier getEntityIdentifier() {
+    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.folder);
+    }
+    
     /*
      * Each folder has a unique root sort key that it uses to
      * generate sortkeys for its child docshareentries.

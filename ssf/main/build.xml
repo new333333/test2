@@ -38,7 +38,7 @@
 		</jar>
 	</target>
 
-	<target name="jar-skip-hibernate" depends="compile">
+<!--	<target name="jar-skip-hibernate" depends="compile">
 		<jar
 			basedir="${classes.dir}"
 			jarfile="${jar.file}"
@@ -48,19 +48,19 @@
 			</manifest>
 		</jar>
 	</target>
-
+-->
 	<target name="deploy" depends="jar">
 		<antcall target="deploy-jar">
 			<param name="deploy-support.jar.file" value="${jar.file}" />
 		</antcall>
 	</target>
 
-	<target name="deploy-skip-hibernate" depends="jar-skip-hibernate">
+<!--	<target name="deploy-skip-hibernate" depends="jar-skip-hibernate">
 		<antcall target="deploy-jar">
 			<param name="deploy-support.jar.file" value="${jar.file}" />
 		</antcall>
 	</target>
-
+-->
 	<target name="ss-hib-clean" description="Delete Hibernate mapping files">
 		<delete failonerror="false">
 			<fileset dir="${classes.dir}" includes="**/*.hbm.xml"/>

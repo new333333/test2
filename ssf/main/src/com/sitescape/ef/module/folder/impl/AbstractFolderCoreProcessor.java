@@ -19,7 +19,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.SFQuery;
-import com.sitescape.ef.domain.WorkflowControlledEntry;
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FolderHierarchyException;
 import com.sitescape.ef.domain.FolderEntry;
@@ -54,19 +54,20 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	implements FolderCoreProcessor {
     
     //***********************************************************************************************************	
-    protected void addEntry_fillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
+    protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
     	Folder folder = (Folder)binder;
     	getCoreDao().refresh(folder);
     	folder.addEntry((FolderEntry)entry);         
     	super.addEntry_fillIn(folder, entry, inputData, entryData);
    }
  
-    protected void addEntry_postSave(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
+    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
 		getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).
 							setSeen(entry);
-    }
+        getRssGenerator().updateRssFeed(entry, getReadAclIds(entry)); // Just for testing
+   }
 
-	 protected void modifyEntry_postFillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
+	 protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
 		   getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
      }
 
@@ -75,7 +76,15 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	FilterControls filter = new FilterControls("parentBinder", binder);
         return (SFQuery)getFolderDao().queryEntries(filter);
    	}
-    protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, 
+ 	protected void indexBinder_preIndex(Binder binder) {
+ 		super.indexBinder_preIndex(binder);
+ 		getRssGenerator().deleteRssFile(binder); 		
+ 	}
+ 	protected void indexBinder_postIndex(Binder binder, Entry entry) {
+ 		super.indexBinder_postIndex(binder, entry);
+ 		getRssGenerator().updateRssFeed(entry, getReadAclIds(entry));
+ 	}
+ 	protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, 
     		String [] entryTypes, org.dom4j.Document searchFilter) {
     	  
     	if (searchFilter == null) {
@@ -115,16 +124,16 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  
     }
           
-    protected  WorkflowControlledEntry entry_load(Binder parentBinder, Long entryId) {
+    protected  Entry entry_load(Binder parentBinder, Long entryId) {
         User user = RequestContextHolder.getRequestContext().getUser();
         return folderDao.loadFolderEntry(parentBinder.getId(), entryId, user.getZoneName()); 
     }
          
-    protected  WorkflowControlledEntry entry_loadFull(Binder parentBinder, Long entryId) {
+    protected  Entry entry_loadFull(Binder parentBinder, Long entryId) {
         User user = RequestContextHolder.getRequestContext().getUser();
         return folderDao.loadFullFolderEntry(parentBinder.getId(), entryId, user.getZoneName()); 
    }
-    protected void deleteEntry_preDelete(Binder parentBinder, WorkflowControlledEntry entry) {
+    protected void deleteEntry_preDelete(Binder parentBinder, Entry entry) {
     	FolderEntry fEntry = (FolderEntry)entry;
     	List replies = new ArrayList(fEntry.getReplies());
     	for (int i=0; i<replies.size(); ++i) {
@@ -138,11 +147,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         }
     }
   
-     protected void deleteEntry_delete(Binder parentBinder, WorkflowControlledEntry entry) {
+     protected void deleteEntry_delete(Binder parentBinder, Entry entry) {
     	//use the optimized deleteEntry or hibernate deletes each collection entry one at a time
     	folderDao.deleteEntry((FolderEntry)entry);   
     }
-    protected void loadEntryHistory(WorkflowControlledEntry entry) {
+    protected void loadEntryHistory(Entry entry) {
     	FolderEntry fEntry = (FolderEntry)entry;
         Set ids = new HashSet();
         if (fEntry.getCreation() != null)
@@ -201,7 +210,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         }
         getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      }     
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, WorkflowControlledEntry entry) {
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry);
     	               
         // Add Doc number
@@ -371,7 +380,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************
           
 
-    public Map getEntryTree(Folder parentFolder, Long entryId, int type) {
+    public Map getEntryTree(Folder parentFolder, Long entryId) {
     	int entryLevel;
     	List lineage;
     	Map model = new HashMap();

@@ -11,20 +11,20 @@
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="zoneName" length="100" not-null="true"/>
     <many-to-one name="parentBinder"/>
-    <map inverse="true" cascade="all,delete-orphan" lazy="true" name="HCustomAttributes">
+    <map inverse="true" access="field" cascade="all,delete-orphan" lazy="true" name="customAttributes">
       <key column="binder"/>
       <map-key type="string" column="name"/>
       <one-to-many class="com.sitescape.ef.domain.CustomAttribute"/>
     </map>
-    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="HAttachments">
+    <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
       <key column="binder"/>
       <one-to-many class="com.sitescape.ef.domain.Attachment"/>
     </set>
-    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="HEvents">
+    <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="events">
       <key column="binder"/>
       <one-to-many class="com.sitescape.ef.domain.Event"/>
     </set>
-    <list inverse="false" cascade="persist,merge,save-update" lazy="true" table="SS_DefinitionMap" name="HDefinitions">
+    <list inverse="false" access="field" cascade="persist,merge,save-update" lazy="true" table="SS_DefinitionMap" name="definitions">
       <cache usage="read-write"/>
       <key column="forum"/>
       <index type="integer" column="position"/>
@@ -39,11 +39,11 @@
     <property name="name" length="128" not-null="true"/>
     <component name="notificationDef">
       <property name="teamOn" column="notify_teamOn"/>
-      <bag inverse="true" cascade="all,delete-orphan" optimistic-lock="false" node="." lazy="true" name="HDistribution">
+      <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" name="distribution">
         <key column="binder"/>
-        <one-to-many node="distribution/@id" class="com.sitescape.ef.domain.Notification" embed-xml="false"/>
+        <one-to-many class="com.sitescape.ef.domain.Notification"/>
       </bag>
-      <property name="HEmailAddress" column="notify_email" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
+      <property name="emailAddress" access="field" column="notify_email" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
       <property name="fromAddress" length="128" column="notify_fromAddress"/>
       <property name="subject" length="128" column="notify_subject"/>
     </component>
@@ -58,11 +58,8 @@
       </many-to-one>
     </component>
     <property name="properties" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
-    <property name="IFeatureMask">
-      <column name="featureMask"/>
-    </property>
     <property name="functionMembershipInherited" not-null="true"/>
-    <component name="HAclSet">
+    <component name="aclSet" class="com.sitescape.ef.domain.PersistentAclSet">
       <property name="readMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
         <column name="acl_readMembers"/>
       </property>
@@ -125,7 +122,7 @@
     </subclass>
     <subclass name="com.sitescape.ef.domain.ProfileBinder" discriminator-value="PROFILES" dynamic-update="true"/>
     <subclass name="com.sitescape.ef.domain.Workspace" discriminator-value="WORKSPACE" dynamic-update="true">
-      <bag inverse="true" cascade="all" optimistic-lock="false" lazy="true" name="HBinders">
+      <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="binders">
         <cache usage="read-write"/>
         <key column="parentBinder"/>
         <one-to-many class="com.sitescape.ef.domain.Binder"/>

@@ -1,15 +1,12 @@
 package com.sitescape.ef.domain;
 
-import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 
-import com.sitescape.util.GetterUtil;
 import com.sitescape.util.StringUtil;
 import java.util.Collection;
 
-import com.sitescape.ef.jobs.Schedule;
 import com.sitescape.ef.util.CollectionUtil;
 
 /**
@@ -17,10 +14,10 @@ import com.sitescape.ef.util.CollectionUtil;
  */
 public class NotificationDef  {
    
-    private List distribution;
-    private String email;
-    private boolean teamOn=false;
-     private String from,subject;
+	protected List distribution;
+    protected String emailAddress;//initialized by hibernate access=field
+    protected boolean teamOn=false;
+    protected String from,subject;
     public NotificationDef() {
     }
  
@@ -39,16 +36,10 @@ public class NotificationDef  {
 
 
     /**
-     * @hibernate.bag  lazy="true" cascade="all,delete-orphan" inverse="true"  optimistic-lock="false" node="."
-     * @hibernate.key column="binder"
-     * @hibernate.one-to-many class="com.sitescape.ef.domain.Notification" embed-xml="false" node="distribution/@id"
      * 
      * This represents the entire set of entries including managed lists and individual user requests.
      * @return
      */
-    private List getHDistribution() {return distribution;}	
-    private void setHDistribution(List distribution) {this.distribution = distribution;}
-    
     public List getDistribution() {
     	if (distribution == null) distribution = new ArrayList();
     	return distribution;
@@ -82,29 +73,20 @@ public class NotificationDef  {
 		distribution.removeAll(remM);
     }
 
-    /**
-     * @hibernate.property type="org.springframework.orm.hibernate3.support.ClobStringType" column="email"
-     * @return
-     */
-    private String getHEmailAddress() {
-        return email;
-    }
-    private void setHEmailAddress(String email) {
-        this.email = email;
-    }
+
     /**
      * Callers deal with emailAddress as a comma separated list
      * @return
      */
     public String[] getEmailAddress() {
-    	if (email == null) return new String[0];
-    	return StringUtil.split(email);
+    	if (emailAddress == null) return new String[0];
+    	return StringUtil.split(emailAddress);
     }
     public void setEmailAddress(String []address) {
     	if ((address == null) || (address.length == 0)) {
-    		email = null;
+    		emailAddress = null;
     	} else {
-    		email = StringUtil.merge(address);
+    		emailAddress = StringUtil.merge(address);
     	}
     }
     /**

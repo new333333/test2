@@ -22,10 +22,7 @@ import com.sitescape.ef.domain.Definition;
  * @author Jong Kim
  */
 public interface FolderModule {
-	public static int NEXT_ENTRY=1;
-	public static int PREVIOUS_ENTRY=2;
-    public static int CURRENT_ENTRY=3;
- 
+
     public Folder getFolder(Long folderId);
 	public List getFolders(List folderIds);
 	public List getSortedFolderList(List folderIds);
@@ -79,9 +76,7 @@ public interface FolderModule {
     public void checkAddFolderAllowed(Folder parentFolder) throws AccessControlException;
    	  
     public FolderEntry getEntry(Long parentFolderId, Long entryId) throws AccessControlException;
-    public FolderEntry getEntry(Long parentFolderId, Long entryId, int type) throws AccessControlException;
     public Map getEntryTree(Long parentFolderId, Long entryId) throws AccessControlException;
-    public Map getEntryTree(Long parentFolderId, Long entryId, int type) throws AccessControlException;
     public void deleteEntry(Long parentFolderId, Long entryId) throws AccessControlException;
     public void checkDeleteEntryAllowed(FolderEntry entry) throws AccessControlException;
 

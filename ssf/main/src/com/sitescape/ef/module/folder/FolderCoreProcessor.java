@@ -25,5 +25,5 @@ public interface FolderCoreProcessor extends EntryProcessor {
     	throws AccessControlException, WriteFilesException;
     public void addReply_accessControl(Folder folder, FolderEntry parent) throws AccessControlException;
     public Document getDomFolderTree(Folder folder, DomTreeBuilder domTreeHelper);
-    public Map getEntryTree(Folder parentFolderId, Long entryId, int type) throws AccessControlException;
+    public Map getEntryTree(Folder parentFolderId, Long entryId) throws AccessControlException;
 }

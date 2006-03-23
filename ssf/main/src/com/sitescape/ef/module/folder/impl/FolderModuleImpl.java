@@ -14,11 +14,14 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.SeenMap;
+import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.definition.DefinitionModule;
@@ -41,6 +44,7 @@ import com.sitescape.ef.util.NLT;
 
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.util.Validator;
 /**
  *
  * @author Jong Kim
@@ -51,9 +55,26 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
+	/**
+	 * Setup by spring
+	 * @param definitionModule
+	 */
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
 	}
+	private Folder loadFolder(Long folderId)  {
+        String companyId = RequestContextHolder.getRequestContext().getZoneName();
+        return  getFolderDao().loadFolder(folderId, companyId);
+		
+	}
+	private FolderCoreProcessor loadProcessor(Folder folder) {
+        // This is nothing but a dispatcher to an appropriate processor. 
+        // Shared logic, if exists, must be put into the corresponding method in 
+        // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
+        // in this method.
+		return (FolderCoreProcessor)getProcessorManager().getProcessor(folder, FolderCoreProcessor.PROCESSOR_KEY);
+	}
+
 	public List getFolders(List folderIds) {
 		List result = new ArrayList();
 		for (int i=0; i<folderIds.size(); ++i) {
@@ -69,11 +90,10 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	}
 	public Folder getFolder(Long folderId)
 		throws NoFolderByTheIdException, AccessControlException {
-		Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneName());
+		Folder folder = loadFolder(folderId);
 		
 		// Check if the user has "read" access to the folder.
-        getAccessControlManager().checkAcl(folder, AccessType.READ);
-		
+        getAccessControlManager().checkAcl(folder, AccessType.READ);		
         return folder;        
 	}    
 	public List getSortedFolderList(List folderIds) {
@@ -123,81 +143,49 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     }
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        Folder folder = folderDao.loadFolder(folderId, user.getZoneName());
-        Definition def = getCoreDao().loadDefinition(definitionId, user.getZoneName());
-        // This is nothing but a dispatcher to an appropriate processor. 
-        // Shared logic, if exists, must be put into the corresponding method in 
-        // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
-        // in this method.
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-        	(folder, FolderCoreProcessor.PROCESSOR_KEY);
+        Folder folder = loadFolder(folderId);
+        Definition def = null;
+        if (!Validator.isNull(definitionId)) { 
+        	def = getCoreDao().loadDefinition(definitionId, folder.getZoneName());
+        } else {
+        	def = folder.getDefaultEntryDef();
+        }
         
-        return processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems);
+        return loadProcessor(folder).addEntry(folder, def, FolderEntry.class, inputData, fileItems);
     }
     public void checkAddEntryAllowed(Folder folder) {
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(folder, FolderCoreProcessor.PROCESSOR_KEY);
-        processor.addEntry_accessControl(folder);    	
-    	
+         loadProcessor(folder).addEntry_accessControl(folder);    	    	
     }
 
     public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        Folder folder = folderDao.loadFolder(folderId, user.getZoneName());
-        Definition def = getCoreDao().loadDefinition(definitionId, user.getZoneName());
-        // This is nothing but a dispatcher to an appropriate processor. 
-        // Shared logic, if exists, must be put into the corresponding method in 
-        // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
-        // in this method.
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(folder, FolderCoreProcessor.PROCESSOR_KEY);
+        Folder folder = loadFolder(folderId);
+        Definition def = getCoreDao().loadDefinition(definitionId, folder.getZoneName());
+        FolderCoreProcessor processor = loadProcessor(folder);
         //load parent entry
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId, CURRENT_ENTRY);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId, EntityType.folderEntry);
         return processor.addReply(entry, def, inputData, fileItems);
     }
     public void checkAddReplyAllowed(FolderEntry entry) throws AccessControlException {
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(entry.getParentFolder(), FolderCoreProcessor.PROCESSOR_KEY);
-        processor.addReply_accessControl(entry.getParentFolder(), entry);
-    	
-    	
+         loadProcessor(entry.getParentFolder()).addReply_accessControl(entry.getParentFolder(), entry);    	
+    }
+    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
+			throws AccessControlException, WriteFilesException {
+    	modifyEntry(binderId, id, inputData, new HashMap());
     }
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        Folder folder = folderDao.loadFolder(folderId, user.getZoneName());
-       // This is nothing but a dispatcher to an appropriate processor. 
-        // Shared logic, if exists, must be put into the corresponding method in 
-        // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
-        // in this method.
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(folder, FolderCoreProcessor.PROCESSOR_KEY);
-        
-        processor.modifyEntry(folder, entryId, inputData, fileItems);
-    }
-    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
-	throws AccessControlException, WriteFilesException {
-    	modifyEntry(binderId, id, inputData, new HashMap());
+        Folder folder = loadFolder(folderId);
+        loadProcessor(folder).modifyEntry(folder, entryId, inputData, fileItems);
     }
 
     public void checkModifyEntryAllowed(FolderEntry entry) {
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(entry.getParentFolder(), FolderCoreProcessor.PROCESSOR_KEY);
-        processor.modifyEntry_accessControl(entry.getParentFolder(), entry);    	
-    	
+        loadProcessor(entry.getParentFolder()).modifyEntry_accessControl(entry.getParentFolder(), entry);    	    	
     }
+    
     public void modifyWorkflowState(Long folderId, Long entryId, Long tokenId, String toState) throws AccessControlException {
-        Folder folder = folderDao.loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneName());
-       // This is nothing but a dispatcher to an appropriate processor. 
-        // Shared logic, if exists, must be put into the corresponding method in 
-        // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
-        // in this method.
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(folder, FolderCoreProcessor.PROCESSOR_KEY);
-        
-        processor.modifyWorkflowState(folder, entryId, tokenId, toState);
+        Folder folder = loadFolder(folderId);       
+        loadProcessor(folder).modifyWorkflowState(folder, entryId, tokenId, toState);
     }
 
     public List applyEntryFilter(Definition entryFilter) {
@@ -208,7 +196,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     
     
     public void indexFolderTree(Long folderId) {
-		Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneName());
+		Folder folder = loadFolder(folderId);
 
     	//get sub-folders and index them all
 		List folders = getFolderDao().loadFolderTree(folder);
@@ -216,9 +204,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		for (int i=0; i<folders.size(); ++i) {
 	    	folder = (Folder) folders.get(i);
 	    	try {
-	    		FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-	        	(folder, FolderCoreProcessor.PROCESSOR_KEY);
-		    	processor.indexBinder(folder);
+		    	loadProcessor(folder).indexBinder(folder);
 	    	}
 	    	catch(AccessControlException e) {
 	    		//Skip folders to which access is denied
@@ -228,11 +214,8 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     }
     
     public void indexFolder(Long folderId) {
-		Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneName());
-
-		FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(folder, FolderCoreProcessor.PROCESSOR_KEY);
-        processor.indexBinder(folder);
+		Folder folder = loadFolder(folderId);
+        loadProcessor(folder).indexBinder(folder);
     }
 
     public Map getCommonEntryElements(Long folderId) {
@@ -269,12 +252,8 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     }
     
     public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        Folder folder = folderDao.loadFolder(folderId, user.getZoneName());
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(folder, FolderCoreProcessor.PROCESSOR_KEY);
-    
-        return processor.getDomFolderTree(folder, domTreeHelper);
+        Folder folder = loadFolder(folderId);
+        return loadProcessor(folder).getDomFolderTree(folder, domTreeHelper);
     }
     
     public Map getFolderEntries(Long folderId) {
@@ -286,12 +265,8 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     }
     
     public Map getFolderEntries(Long folderId, int maxChildEntries, Document searchFilter) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        Folder folder = folderDao.loadFolder(folderId, user.getZoneName());
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(folder, FolderCoreProcessor.PROCESSOR_KEY);
-    
-        return processor.getBinderEntries(folder, entryTypes, maxChildEntries, searchFilter);
+        Folder folder = loadFolder(folderId);
+         return loadProcessor(folder).getBinderEntries(folder, entryTypes, maxChildEntries, searchFilter);
     }
     
 
@@ -303,7 +278,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         List folders = new ArrayList();
         for (int i=0; i<folderIds.size(); ++i) {
         	try {
-        		folders.add(folderDao.loadFolder((Long)folderIds.get(i), user.getZoneName()));
+        		folders.add(loadFolder((Long)folderIds.get(i)));
         	} catch (NoFolderByTheIdException nf) {} 
         }
         if (folders.size() > 0) {
@@ -383,39 +358,48 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 
            
     public FolderEntry getEntry(Long parentFolderId, Long entryId) {
-        return getEntry(parentFolderId, entryId, CURRENT_ENTRY);
+        return getEntry(parentFolderId, entryId, EntityType.folderEntry);
     }
-    public FolderEntry getEntry(Long parentFolderId, Long entryId, int type) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        Folder folder = folderDao.loadFolder(parentFolderId, user.getZoneName());
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(folder, FolderCoreProcessor.PROCESSOR_KEY);
-        return (FolderEntry)processor.getEntry(folder, entryId, type);
+    public FolderEntry getEntry(Long parentFolderId, Long entryId, EntityType type) {
+        Folder folder = loadFolder(parentFolderId);
+        return (FolderEntry)loadProcessor(folder).getEntry(folder, entryId, type);
     }
-     public Map getEntryTree(Long parentFolderId, Long entryId) {
-    	return getEntryTree(parentFolderId, entryId, CURRENT_ENTRY);
-    }
-    public Map getEntryTree(Long parentFolderId, Long entryId, int type) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        Folder parentFolder = folderDao.loadFolder(parentFolderId, user.getZoneName());
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(parentFolder, FolderCoreProcessor.PROCESSOR_KEY);
-        return processor.getEntryTree(parentFolder, entryId, type);   	
+    public Map getEntryTree(Long parentFolderId, Long entryId) {
+        Folder folder = loadFolder(parentFolderId);
+        return loadProcessor(folder).getEntryTree(folder, entryId);   	
     }
     
     public void deleteEntry(Long parentFolderId, Long entryId) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        Folder folder = folderDao.loadFolder(parentFolderId, user.getZoneName());
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(folder, FolderCoreProcessor.PROCESSOR_KEY);
-        processor.deleteEntry(folder, entryId);
+        Folder folder = loadFolder(parentFolderId);
+        loadProcessor(folder).deleteEntry(folder, entryId);
     }
     public void checkDeleteEntryAllowed(FolderEntry entry) {
-        FolderCoreProcessor processor = (FolderCoreProcessor) getProcessorManager().getProcessor
-    	(entry.getParentFolder(), FolderCoreProcessor.PROCESSOR_KEY);
-        processor.deleteEntry_accessControl(entry.getParentFolder(), entry);    	
+        loadProcessor(entry.getParentFolder()).deleteEntry_accessControl(entry.getParentFolder(), entry);    	
     	
     }
+	public List getTags(Long binderId, Long entryId) {
+		FolderEntry entry = getEntry(binderId, entryId);
+		List tags = new ArrayList<Tag>();
+		getCoreDao().loadTagsByOwner(entry.getEntityIdentifier());
+		return tags;		
+	}
+	public void modifyTag(Long binderId, Long entryId, String tagId, Map updates) {
+		FolderEntry entry = getEntry(binderId, entryId);
+	   	Tag tag = coreDao.loadTagByOwner(tagId, entry.getEntityIdentifier());
+	   	ObjectBuilder.updateObject(tag, updates);
+	}
+	public void addTag(Long binderId, Long entryId, Map updates) {
+		FolderEntry entry = getEntry(binderId, entryId);
+	   	Tag tag = new Tag();
+	   	tag.setOwnerIdentifier(entry.getEntityIdentifier());
+	  	ObjectBuilder.updateObject(tag, updates);
+	  	coreDao.save(tag);   	
+	}
+	public void deleteTag(Long binderId, Long entryId, String tagId) {
+		FolderEntry entry = getEntry(binderId, entryId);
+	   	Tag tag = coreDao.loadTagByOwner(tagId, entry.getEntityIdentifier());
+	   	getCoreDao().delete(tag);
+	}
     
     /**
      * Helper classs to return folder unseen counts as an objects

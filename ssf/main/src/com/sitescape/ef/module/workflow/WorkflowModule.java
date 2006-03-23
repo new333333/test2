@@ -3,11 +3,10 @@ import java.util.List;
 
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
-import org.jbpm.graph.exe.Token;
 
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.WorkflowControlledEntry;
-import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.EntityIdentifier;
+import com.sitescape.ef.domain.WorkflowSupport;
 
 public interface WorkflowModule {
 	public List getAllDefinitions();
@@ -26,8 +25,8 @@ public interface WorkflowModule {
 	public ProcessInstance setNode(Long processInstanceId, String nodeId);
 	public void modifyProcessDefinition(String definitionName, Definition def);
 	public void modifyProcessDefinition(ProcessDefinition pD, Definition def);
-	public void addEntryWorkflow(WorkflowControlledEntry entry, Definition workflowDef);
-	public void deleteEntryWorkflow(Binder parent, WorkflowControlledEntry entry);
+	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef);
+	public void deleteEntryWorkflow(WorkflowSupport entry);
 	public void modifyWorkflowState(Long tokenId, String fromState, String toState);
 	public void modifyWorkflowStateOnTimeout(Long timerId);
 }

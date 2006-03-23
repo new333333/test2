@@ -7,20 +7,20 @@
       <generator class="native"/>
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
-    <map inverse="true" cascade="all,delete-orphan" lazy="true" name="HCustomAttributes">
+    <map inverse="true" access="field" cascade="all,delete-orphan" lazy="true" name="customAttributes">
       <key column="folderEntry"/>
       <map-key type="string" column="name"/>
       <one-to-many class="com.sitescape.ef.domain.CustomAttribute"/>
     </map>
-    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="HAttachments">
+    <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
       <key column="folderEntry"/>
       <one-to-many class="com.sitescape.ef.domain.Attachment"/>
     </set>
-    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="HEvents">
+    <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="events">
       <key column="folderEntry"/>
       <one-to-many class="com.sitescape.ef.domain.Event"/>
     </set>
-    <bag inverse="true" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" name="HReplies">
+    <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" name="replies">
       <key column="parentEntry"/>
       <one-to-many class="com.sitescape.ef.domain.FolderEntry"/>
     </bag>
@@ -33,7 +33,7 @@
       </many-to-one>
     </component>
     <property name="sendMail"/>
-    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="HWorkflowStates">
+    <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="workflowStates">
       <key column="folderEntry"/>
       <one-to-many class="com.sitescape.ef.domain.WorkflowState"/>
     </set>

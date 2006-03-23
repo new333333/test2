@@ -99,7 +99,7 @@ public class RssGenerator extends CommonDependencyInjection {
 		if (rf.exists()) rf.delete();
 	}
 	
-	public void updateRssFeed(WorkflowControlledEntry entry) {
+	public void updateRssFeed(Entry entry, Set ids) {
 		// See if the feed already exists
 		String rssFileName = getRssFileName(entry.getParentBinder());
 		File rf = new File(rssFileName);
@@ -118,7 +118,7 @@ public class RssGenerator extends CommonDependencyInjection {
 		if (entryNode != null)
 			entryNode.detach();
 		
-		channelNode.add(this.createElementFromEntry(entry));
+		channelNode.add(this.createElementFromEntry(entry, ids));
 		
 		writeRssFile(entry.getParentBinder(), doc);
 	}
@@ -170,7 +170,7 @@ public class RssGenerator extends CommonDependencyInjection {
         return document;
     }
     
-    public Element createElementFromEntry(WorkflowControlledEntry entry) 
+    public Element createElementFromEntry(Entry entry, Set ids) 
     {
     	Element entryElement = DocumentHelper.createElement("item");
     	entryElement.addElement("title")
@@ -188,9 +188,7 @@ public class RssGenerator extends CommonDependencyInjection {
     	entryElement.addElement("guid")
     		.addAttribute("isPermaLink", "false")
     		.addText(entry.getId().toString());
-    	if (entry.hasAclSet()) {
-    		Set ids = new HashSet();
-    		ids.addAll(entry.getAclSet().getMemberIds(AccessType.READ));
+    	if (ids != null) {
     		//enumerate the acls
     		StringBuffer pIds = new StringBuffer();
        		for (Iterator i = ids.iterator(); i.hasNext();) {

@@ -13,7 +13,7 @@
       <many-to-one name="folderEntry"/>
       <many-to-one name="principal"/>
       <many-to-one name="binder"/>
-      <any name="HEntry" id-type="java.lang.Long" meta-type="string">
+      <any name="entity" id-type="java.lang.Long" meta-type="string">
         <meta-value class="com.sitescape.ef.domain.FolderEntry" value="doc"/>
         <meta-value class="com.sitescape.ef.domain.Principal" value="principal"/>
         <meta-value class="com.sitescape.ef.domain.Binder" value="binder"/>
@@ -40,7 +40,6 @@
     <subclass name="com.sitescape.ef.domain.Bookmark" discriminator-value="B" dynamic-update="true">
       <property name="active"/>
       <property name="title" length="256"/>
-      <many-to-one name="bookmarkEntry"/>
     </subclass>
     <subclass name="com.sitescape.ef.domain.FileAttachment" discriminator-value="F" dynamic-update="true">
       <component name="fileItem">
@@ -48,7 +47,7 @@
         <property name="length" column="fileLength"/>
       </component>
       <property name="lastVersion"/>
-      <bag inverse="true" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" batch-size="4" name="HFileVersions">
+      <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" batch-size="4" name="fileVersions">
         <key column="parentAttachment"/>
         <one-to-many class="com.sitescape.ef.domain.VersionAttachment"/>
       </bag>
@@ -66,11 +65,6 @@
           <column name="parentAttachment" sql-type="char(32)"/>
         </many-to-one>
       </subclass>
-    </subclass>
-    <subclass name="com.sitescape.ef.domain.URLAttachment" discriminator-value="U" dynamic-update="true">
-      <property name="url" length="256">
-        <column name="title"/>
-      </property>
     </subclass>
   </class>
 </hibernate-mapping>

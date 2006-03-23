@@ -14,7 +14,7 @@ import org.jbpm.db.JbpmSession;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.WorkflowControlledEntry;
+import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 
@@ -32,7 +32,7 @@ public class StartThreads extends AbstractActionHandler {
 		Long id = new Long(token.getId());
 		Node current = token.getNode();
 		String stateName = current.getName();
-		WorkflowControlledEntry entry = loadEntry(ctx);
+		WorkflowSupport entry = loadEntry(ctx);
 		WorkflowState ws = entry.getWorkflowState(id);
 		 //record event may not have happened yet
 		ws.setState(stateName);
@@ -52,7 +52,7 @@ public class StartThreads extends AbstractActionHandler {
 		if (infoEnabled) logger.info("Start threads end at: " + stateName);
 	}
 	  
-	protected void startParallelWorkflowThread(WorkflowControlledEntry entry, String threadName, String startState, 
+	protected void startParallelWorkflowThread(WorkflowSupport entry, String threadName, String startState, 
 			WorkflowState currentWs, Token currentToken) {
 		
 		JbpmSession session = WorkflowFactory.getSession();

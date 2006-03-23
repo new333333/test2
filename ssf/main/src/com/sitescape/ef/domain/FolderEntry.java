@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * <code>FolderEntry</code> represents a entry or a reply.
  *
  */
-public class FolderEntry extends WorkflowControlledEntry implements MultipleWorkflowSupport {
+public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupport {
 
     protected boolean allowEdits = false;
     protected HistoryStamp reservedDoc;
@@ -27,7 +27,7 @@ public class FolderEntry extends WorkflowControlledEntry implements MultipleWork
     public static final int URL=3;
     public static final int WEBFILE=4;
     protected int docContent=ABSTRACT;
-    protected List replies;
+    protected List replies;//initialized by hibernate access=field
     protected HKey docHKey;
     protected int replyCount=0;
     protected int nextDescendant=1;
@@ -42,43 +42,11 @@ public class FolderEntry extends WorkflowControlledEntry implements MultipleWork
     public FolderEntry() {
         super();
     }
-	/**
- 	 * @hibernate.map  lazy="true" inverse="true" cascade="all,delete-orphan"
-	 * @hibernate.key column="folderEntry"
- 	 * @hibernate.map-key column="name" type="string"
-     * @hibernate.one-to-many class="com.sitescape.ef.domain.CustomAttribute"
-     * @return
-     */
-    private Map getHCustomAttributes() {return customAttributes;}
-    private void setHCustomAttributes(Map customAttributes) {this.customAttributes = customAttributes;}   	
-    
-    /**
-     * @hibernate.set  lazy="true" inverse="true" cascade="all,delete-orphan" batch-size="4" 
- 	 * @hibernate.key column="folderEntry"
- 	 * @hibernate.one-to-many class="com.sitescape.ef.domain.Attachment"
- 	 * We are using a set here, cause any outer-joins to load this attribute
- 	 * when using a list result in duplicates
-   	 */
-    private Set getHAttachments() {return attachments;}
-    private void setHAttachments(Set attachments) {this.attachments = attachments;}   	
-
-   /**
-	* @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan" batch-size="4" 
-    * @hibernate.key column="folderEntry"
-    * @hibernate.one-to-many class="com.sitescape.ef.domain.Event"
-    * @return
-    */
-    private Set getHEvents() {return events;}
-    private void setHEvents(Set events) {this.events = events;}   	
-    /**
-     * @hibernate.bag lazy="true" cascade="all,delete-orphan" inverse="true" optimistic-lock="false"
-     * @hibernate.key column="parentEntry"
-     * @hibernate.one-to-many class="com.sitescape.ef.domain.FolderEntry"
-     */
-    private List getHReplies() {return replies;}
-    private void setHReplies(List replies) {this.replies = replies;}   	
     public String getAnyOwnerType() {
     	return AnyOwner.FOLDERENTRY;
+    }
+    public EntityIdentifier getEntityIdentifier() {
+    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.folderEntry);
     }
     /**
      * @hibernate.property
@@ -143,22 +111,7 @@ public class FolderEntry extends WorkflowControlledEntry implements MultipleWork
     }
     
     /**
-	 * @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan" batch-size="4"
-     * @hibernate.key column="folderEntry"
-     * @hibernate.one-to-many class="com.sitescape.ef.domain.WorkflowState"
-     * @return
-     */
-     public Set getHWorkflowStates() {
-        return workflowStates;
-        
-     }
-     public void setHWorkflowStates(Set workflowStates) {
-        this.workflowStates = workflowStates;
-     }
-
-
-    /**
-     * @hibernate.component class="com.sitescape.ef.domain.HKey" prefix="entry_"
+     * @hibernate.component
      */
     public HKey getHKey() {
         return docHKey;

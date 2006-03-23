@@ -37,8 +37,10 @@ public class ScheduleInfo {
 		this.zoneName = zoneName;
 	}
 	public String getZoneName() {
-		if (zoneName == null) getDetails();
-		zoneName = (String)details.get("zoneName");
+		if (zoneName == null) {
+			getDetails();
+			zoneName = (String)details.get("zoneName");
+		}
 		return zoneName;
 	}
 	public Map getDetails() {

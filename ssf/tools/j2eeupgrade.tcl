@@ -624,9 +624,9 @@ proc doZone {zoneName {cName {liferay.com}}} {
      }
 	set ::_profileId [new_forum_uuid]
     if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {    
- 	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'PROFILES',0,B'0',B'0','[sql_quote_value $::zoneName]');"
+ 	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'PROFILES', 'Users/Groups',0,B'0',B'0','[sql_quote_value $::zoneName]');"
  	} else {
-    	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'PROFILES',0,0,0,'[sql_quote_value $::zoneName]');"
+    	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'PROFILES','Users/Groups',0,0,0,'[sql_quote_value $::zoneName]');"
     }
     wimsql_rw "Update SS_Forums set parentBinder=$::forumIds(_admin) where not name='_admin';"
     wimsql_rw "Update SS_Forums set parentBinder=null,name='[sql_quote_value $::zoneName]' where name='_admin';"
@@ -937,7 +937,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
             switch -- [lindex $content 0] {
                 text/x-wgw-see-abstract {set attrs(docContent) 1}
                 multipart/x-wgw-fileset {set attrs(docContent) 2}
-                none/x-is-url {set attrs(docContent) 3}
+                none/x-is-url {set attrs(docContent) 1}
                 webDirFile {set attrs(docContent) 4}
                 default {
                     puts "Unknown docContent $entry: $content"
@@ -980,28 +980,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set cmdList [lindex $results 1]
                 set cmd [lindex $cmdList 0] 
                 wimsql_rw "INSERT INTO SS_Attachments $cmd ;" [lindex $cmdList 1]
-            } elseif {$attrs(docContent) == 3} {
-                array unset attaches
-                set attaches(id) [newuuid]
-                set attaches(lockVersion) 1
-                set attaches(ownerId) $entryId
-                set attaches(ownerType) "doc"
-                set attaches(folderEntry) $entryId
-				set attaches(owningFolderSortKey) $folderSortKey
-                set attaches(creation_date) $attrs(creation_date)
-                set attaches(creation_principal) $attrs(creation_principal)
-                set attaches(modification_date) $attrs(creation_date)
-                set attaches(modification_principal) $attrs(creation_principal)
-                set attaches(title) [lindex $content 1]
-                set savedName [lindex $content 1]
-                set attaches(type) "U"
-                set attaches(name) "primary"
-                set attaches(lastVersion) 0
-                set results [setupColVals j2ee_Attachments_class_MAP attaches insert]
-                set cmdList [lindex $results 1]
-                set cmd [lindex $cmdList 0] 
-                wimsql_rw "INSERT INTO SS_Attachments $cmd ;" [lindex $cmdList 1]
-            } elseif {$attrs(docContent) == 4} {
+             } elseif {$attrs(docContent) == 4} {
                 array unset attaches
                 set attaches(id) [newuuid]
                 set attaches(lockVersion) 1
@@ -1292,7 +1271,20 @@ proc doDocCustomAttributes {forum entry entryId folderSortKey} {
         wimsql_rw "INSERT INTO SS_CustomAttributes $cmd ;" [lindex $cmdList 1]
         unset attrs(stringValue)
 	}
-	array unset kvps
+	#store old urls as custom attribute
+    set content [aval -name $forum docContent $entry]
+    if {[strequal[none/x-is-url [lindex $content 0]]} {
+		set attrs(id) [newuuid]
+		set attrs(valueType) 1
+		set attrs(stringValue) [lindex $content 1]
+		set attrs(name)  "primaryUrl"
+        set results [setupColVals ::j2ee_CustomAttributes_class_MAP attrs insert]
+        set cmdList [lindex $results 1]
+        set cmd [lindex $cmdList 0] 
+        wimsql_rw "INSERT INTO SS_CustomAttributes $cmd ;" [lindex $cmdList 1]
+        unset attrs(stringValue) 		
+ 	}
+  	array unset kvps
  	array set kvps [aval -name $forum attributes $entry]
 	foreach n [array names kvps] {
 		set val $kvps($n)

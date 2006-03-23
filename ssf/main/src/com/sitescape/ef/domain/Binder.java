@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.sitescape.util.Validator;
 import com.sitescape.ef.modelprocessor.InstanceLevelProcessorSupport;
@@ -25,27 +24,26 @@ import com.sitescape.ef.security.function.WorkArea;
  *
  */
 public abstract class Binder extends DefinableEntity implements WorkArea, AclContainer, InstanceLevelProcessorSupport  {
-    private String name;
-    private HistoryStamp owner;
-    private Map properties;
+	protected String name;
+    protected HistoryStamp owner;
+    protected Map properties;
     protected Binder parentBinder;
-    private NotificationDef notificationDef;
-    private List postings;
-    private Integer upgradeVersion;   
-    private String zoneName; 
-    private long featureMask=0;
-    private String type;
-    private List definitions;
-    private Definition defaultPostingDef;
+    protected NotificationDef notificationDef;
+    protected List postings;
+    protected Integer upgradeVersion;   
+    protected String zoneName; 
+    protected String type;
+    protected List definitions;	//initialized by hiberate access=field
+    protected Definition defaultPostingDef;//initialized by hiberate access=field
 
-    private boolean functionMembershipInherited = true;
-    private PersistentAclSet aclSet;
-    private boolean inheritAclFromParent = true;
+    protected boolean functionMembershipInherited = true;
+    protected PersistentAclSet aclSet; 
+    protected boolean inheritAclFromParent = true;
     // these bits signify whether entries of a binder can allow wider access
     // than the binder's .  This does not apply to sub-binders.
-    private boolean widenRead=false;
-    private boolean widenModify=false;
-    private boolean widenDelete=false;
+    protected boolean widenRead=false;
+    protected boolean widenModify=false;
+    protected boolean widenDelete=false;
     
     public abstract List getEntryDefs();
     public abstract List getBinderViewDefs();
@@ -71,46 +69,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, AclCon
     public String getAnyOwnerType() {
     	return AnyOwner.BINDER;
     }
-	/**
- 	 * @hibernate.map  lazy="true" inverse="true" cascade="all,delete-orphan"
-	 * @hibernate.key column="binder"
- 	 * @hibernate.map-key column="name" type="string"
-     * @hibernate.one-to-many class="com.sitescape.ef.domain.CustomAttribute"
-     * @return
-     */
-    private Map getHCustomAttributes() {return customAttributes;}
-    private void setHCustomAttributes(Map customAttributes) {this.customAttributes = customAttributes;}   	
-    
-    /**
-     * @hibernate.set  lazy="true" inverse="true" cascade="all,delete-orphan" batch-size="4" 
- 	 * @hibernate.key column="binder"
- 	 * @hibernate.one-to-many class="com.sitescape.ef.domain.Attachment"
- 	 * We are using a set here, cause any outer-joins to load this attribute
- 	 * when using a list result in duplicates
-   	 */
-    private Set getHAttachments() {return attachments;}
-    private void setHAttachments(Set attachments) {this.attachments = attachments;}   	
-
-   /**
-	* @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan" batch-size="4" 
-    * @hibernate.key column="binder"
-    * @hibernate.one-to-many class="com.sitescape.ef.domain.Event"
-    * @return
-    */
-    private Set getHEvents() {return events;}
-    private void setHEvents(Set events) {this.events = events;}   	
-    /**
-     * @hibernate.list table="SS_DefinitionMap" lazy="true" inverse="false" cascade="persist,merge,save-update"
-     * @hibernate.key column="forum"
-     * @hibernate.index column="position" type="integer"
-     * @hibernate.many-to-many fetch="join" class="com.sitescape.ef.domain.Definition"
-     * @hibernate.column name="definition" sql-type="char(32)"
-     * @hibernate.cache usage="read-write"
-	 * @return Returns a Set of Commands
-     */
-    private List getHDefinitions() {return definitions;}
-    private void setHDefinitions(List definitions) {this.definitions = definitions;}
-     public List getDefinitions() {
+    public List getDefinitions() {
      	if (definitions == null) definitions = new ArrayList();
      	return definitions;
      }
@@ -195,7 +154,10 @@ public abstract class Binder extends DefinableEntity implements WorkArea, AclCon
     	if (Validator.isNull(name)) throw new IllegalArgumentException("null name");
        this.name = name;
     }
-
+    public String getFullName() {
+    	if (parentBinder == null) return name;
+    	return parentBinder.getFullName() + "." + name;
+    }
     /**
      * @hibernate.component prefix="notify_"
      * @return
@@ -263,7 +225,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, AclCon
     	return properties.get(name);
     }
 
-
     
     /**
      * hibernate.property node="upgradeVersion"
@@ -275,26 +236,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, AclCon
         this.upgradeVersion = upgradeVersion;
     }
     
-    /**
-     * @hibernate.property node="featureMask"
-     * @hibernate.column name="featureMask" 
-     * @return
-     */
-    protected long getIFeatureMask() {
-        return this.featureMask;
-    }
-    protected void setIFeatureMask(long featureMask) {
-        this.featureMask = featureMask;
-    }
-    /*
-     * each forum application will determine the meaning of the bits
-     */
-    public String getFeatureMask() {
-        return Long.toBinaryString(featureMask);
-    }
-    public void setFeatureMask(String featureMask) {
-        setIFeatureMask(Long.parseLong(featureMask, 2));
-    }
 
     public String toString() {
     	return getZoneName() + ":" + name; 
@@ -329,17 +270,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, AclCon
     }
     
     /**
-     * Hiberate interfaces to load actual class vs interface needed for AclControlled
-     *  
-     * @hibernate.component prefix="acl_" 
-     */
-    private PersistentAclSet getHAclSet() {
-        return aclSet;
-    }
-     private void setHAclSet(PersistentAclSet aclSet) {
-        this.aclSet = aclSet;
-    }
-     /**
      * Used by security manager only. Application should NEVER invoke this
      * method directly.  
      * @hibernate.component prefix="acl_" class="com.sitescape.ef.domain.PersistentAclSet" 

@@ -9,20 +9,20 @@
     </id>
     <discriminator type="string" column="type" length="1"/>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
-    <map inverse="true" cascade="all,delete-orphan" embed-xml="false" lazy="true" name="HCustomAttributes">
+    <map inverse="true" access="field" cascade="all,delete-orphan" embed-xml="false" lazy="true" name="customAttributes">
       <key column="principal"/>
       <map-key type="string" column="name"/>
       <one-to-many class="com.sitescape.ef.domain.CustomAttribute"/>
     </map>
-    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="HAttachments">
+    <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
       <key column="principal"/>
       <one-to-many class="com.sitescape.ef.domain.Attachment"/>
     </set>
-    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="HEvents">
+    <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="events">
       <key column="principal"/>
       <one-to-many class="com.sitescape.ef.domain.Event"/>
     </set>
-    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="HWorkflowStates">
+    <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="workflowStates">
       <key column="principal"/>
       <one-to-many class="com.sitescape.ef.domain.WorkflowState"/>
     </set>
@@ -37,7 +37,7 @@
     <property name="lcName" length="82"/>
     <property name="name" length="82"/>
     <property name="foreignName" length="256"/>
-    <bag inverse="true" cascade="persist,merge,save-update" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="HMemberOf">
+    <bag inverse="true" access="field" cascade="persist,merge,save-update" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
       <cache usage="read-write"/>
       <key column="userId"/>
       <many-to-many fetch="join" node="Group" class="com.sitescape.ef.domain.Group" column="groupId" embed-xml="false"/>
@@ -70,12 +70,11 @@
       </many-to-one>
     </component>
     <subclass name="com.sitescape.ef.domain.Group" discriminator-value="G" dynamic-update="true">
-      <bag inverse="false" cascade="persist,merge,save-update" lazy="true" table="SS_PrincipalMembership" name="HMembers">
+      <bag inverse="false" access="field" cascade="persist,merge,save-update" lazy="true" table="SS_PrincipalMembership" name="members">
         <key column="groupId"/>
         <many-to-many fetch="join" class="com.sitescape.ef.domain.Principal" column="userId"/>
       </bag>
-      <property name="HFunctionMembershipInherited" not-null="true">
-        <column name="functionMembershipInherited"/>
+      <property name="functionMembershipInherited" access="field" not-null="true">
       </property>
     </subclass>
     <subclass name="com.sitescape.ef.domain.User" node="User" discriminator-value="U" dynamic-update="true">
@@ -85,9 +84,9 @@
       <property name="languageId" length="2"/>
       <property name="country" length="2"/>
       <property name="emailAddress" length="256"/>
-      <property name="firstName" length="64"/>
-      <property name="lastName" length="64"/>
-      <property name="middleName" length="64"/>
+      <property name="firstName" access="field" length="64"/>
+      <property name="lastName" access="field" length="64"/>
+      <property name="middleName" access="field" length="64"/>
       <property name="homepage" length="256"/>
       <property name="organization" length="256"/>
       <property name="phone" length="128"/>
