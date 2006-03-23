@@ -120,7 +120,6 @@
 		    	<include name="**/collection_005fview_jsp.java"/>
 		    	<include name="**/file_005flibrary_jsp.java"/>
 		    	<include name="**/folder_005flist_005ffolders_jsp.java"/>
-		    	<include name="**/view_005fentry_005fdata_005ftitle_jsp.java"/>
 		    	<include name="**/view_005fprofile_005fdata_005felement_jsp.java"/>
 		    	<include name="**/view_005fiframe_jsp.java"/>
 		    	<include name="**/view_005fpopup_jsp.java"/>
@@ -130,6 +129,8 @@
 		    	<include name="**/view_005fforum_005fhistory_005fbar_jsp*.java"/>
 		    	<include name="**/view_005feventtester_jsp*.java"/>
 		    	<include name="**/view_005ftimepicker_jsp.java"/>
+				<include name="**/view_005fentry_005fdata_005fuser_005flist_jsp.java"/>
+				<include name="**/view_005fentry_005fdata_005flist_jsp.java"/>
 		    	<include name="**/view_005fentry_005fdata_005ftitle_*.java"/>
 			</fileset>
 		</delete>
