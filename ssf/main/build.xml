@@ -7,29 +7,9 @@
 	<property name="jar.file" value="ssf-main.jar" />
 	<property name="hibernate.dir" value="${basedir}/hibernate" />
 
-	<target name="clean" depends="ss-hib-clean">
-		<delete file="${jar.file}" failonerror="false" />
-		<delete dir="${java2html.dir}" />
-		<delete dir="${javadoc.dir}" />
-		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${classes.dir}" excludes="${classes.dir.excludes}" />
-		</delete>
-	</target>
+	<target name="clean" depends="ss-hib-clean,build-common.clean" />
 
-	<target name="compile" depends="compile-common">
-		<mkdir dir="${classes.dir}" />
-		<javac
-			classpathref="project.classpath"
-			compiler="${javac.compiler}"
-			debug="${javac.debug}"
-			deprecation="${javac.deprecation}"
-			destdir="${classes.dir}"
-			fork="${javac.fork}"
-			memoryMaximumSize="${javac.memoryMaximumSize}"
-			nowarn="${javac.nowarn}"
-			srcdir="${source.dir}"
-		/>
-	</target>
+	<target name="compile" depends="compile-common,build-common.compile" />
 
 	<target name="compile-common">
 		<mkdir dir="${classes.dir}" />
@@ -67,38 +47,6 @@
 				<attribute name="Class-Path" value="${classpath.manifest.ss} ${classpath.manifest.3rd}" />
 			</manifest>
 		</jar>
-	</target>
-
-	<target name="java2html">
-		<java
-			classname="com.sitescape.util.Java2Html"
-			classpathref="project.classpath"
-			fork="true">
-				<arg value="${java2html.bat}" />
-				<arg value="${source.dir}" />
-				<arg value="${java2html.dir}" />
-		</java>
-		<move file="${java2html.dir}/stylesheet.css" tofile="${java2html.dir}/java2html.css" />
-		<antcall target="javadoc" />
-		<replace dir="${java2html.dir}">
-			<include name="**/package-summary.html" />
-			<replacefilter
-				token="/\"
-				value="/"
-			/>
-		</replace>
-	</target>
-
-	<target name="javadoc">
-		<mkdir dir="${javadoc.dir}" />
-		<javadoc
-			additionalparam="-J-Xmx128m"
-			classpathref="project.classpath"
-			destdir="${javadoc.dir}"
-			packagenames="*.*"
-			sourcepath="${source.dir}"
-			stylesheetfile="${project.dir}/tools/javadoc.css"
-		/>
 	</target>
 
 	<target name="deploy" depends="jar">
@@ -207,72 +155,23 @@
 	    </target>
 
 	<target name="ss-update-tables" description="Update database tables for sitescape domain">
-				<path id="initpath">
-		  			<pathelement location="${classes.dir}"/>
-					<fileset dir="${project.dir}/util" includes="*.jar"/>
-					<fileset dir="${project.dir}/lib" includes="*.jar" />
-				</path>
-		        <taskdef classname="org.hibernate.tool.hbm2ddl.SchemaUpdateTask"
-			             classpathref="initpath" name="schemaupdate">
-		 		</taskdef> 
+		<path id="initpath">
+  			<pathelement location="${classes.dir}"/>
+			<fileset dir="${project.dir}/util" includes="*.jar"/>
+			<fileset dir="${project.dir}/lib" includes="*.jar" />
+		</path>
+        <taskdef classname="org.hibernate.tool.hbm2ddl.SchemaUpdateTask"
+	             classpathref="initpath" name="schemaupdate">
+ 		</taskdef> 
 
-			    <schemaupdate 
-	  					properties="${hibernate.dir}/ss-create-tables-hibernate.properties" 
-			          	quiet="no" text="no">
-			    	<fileset dir="${classes.dir}" >
-			    		<include name="com/sitescape/ef/**/*hbm.xml"/>
-			            <include name="com/sitescape/ef/security/**/*hbm.xml"/>
-			        </fileset>
-			     </schemaupdate>
-		    </target>
+	    <schemaupdate 
+				properties="${hibernate.dir}/ss-create-tables-hibernate.properties" 
+	          	quiet="no" text="no">
+	    	<fileset dir="${classes.dir}" >
+	    		<include name="com/sitescape/ef/**/*hbm.xml"/>
+	            <include name="com/sitescape/ef/security/**/*hbm.xml"/>
+	        </fileset>
+	     </schemaupdate>
+	</target>
 			
-	<target name="compile-test" depends="compile">
-		<mkdir dir="${test.classes.dir}"/>
-		<javac
-			compiler="${javac.compiler}"
-			debug="${javac.debug}"
-			deprecation="${javac.deprecation}"
-			destdir="${test.classes.dir}"
-			fork="${javac.fork}"
-			memoryMaximumSize="${javac.memoryMaximumSize}"
-			nowarn="${javac.nowarn}"
-			srcdir="${test.source.dir}">
-			<classpath location="${test.classes.dir}"/>
-			<classpath refid="project.classpath"/>
-		</javac>
-	</target>
-	
-	<!-- Note: You can run an individual test by setting test.includes property
-	     at the command line. For example, 
-	     ant test -Dtest.includes=**/CoreDaoImplTests.class
-	     will run only CoreDaoImplTests and nothing else. -->
-	<target name="unit-test" depends="compile-test">
-		<mkdir dir="${test.report.dir}"/>
-		<property name="tests" value="Test*"/>
-
-		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
-			<classpath location="${test.classes.dir}"/>
-			<classpath location="${test.source.dir}"/>
-			<classpath refid="project.classpath"/>
-
-			<formatter type="plain" usefile="false"/>
-			<!--<formatter type="brief" usefile="false"/>-->
-			<formatter type="xml"/>
-
-			<batchtest todir="${test.report.dir}">
-				<fileset dir="${test.classes.dir}" includes="${test.includes}" excludes="${test.excludes}"/>
-			</batchtest>
-		</junit>
-	</target>
-	
-	<target name="unit-test-report">
-		<mkdir dir="${test.report.dir}/html"/>
-		<junitreport todir="${test.report.dir}">
-			<fileset dir="${test.report.dir}">
-				<include name="TEST-*.xml"/>
-			</fileset>
-			<report todir="${test.report.dir}/html"/>
-		</junitreport>
-	</target>
-	
 </project>

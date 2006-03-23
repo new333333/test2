@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="common">
+<project name="build-common">
 	<property environment="env" />
 	<property name="project.dir" value=".." />
 	<property file="${project.dir}/app.server.${user.name}.properties" />
@@ -21,4 +21,119 @@
 	<propertycopy name="app.server.deploy.dir" from="app.server.${app.server.type}.deploy.dir" />
 	<propertycopy name="app.server.lib.dir" from="app.server.${app.server.type}.lib.dir" />
 	<propertycopy name="app.server.ssf.dir" from="app.server.${app.server.type}.ssf.dir" />
+
+	<target name="clean">
+		<delete file="${jar.file}" failonerror="false" />
+		<delete dir="${java2html.dir}" />
+		<delete dir="${javadoc.dir}" />
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${classes.dir}" excludes="${classes.dir.excludes}" />
+		</delete>
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${classes.dir}" />
+		<javac
+			classpathref="project.classpath"
+			compiler="${javac.compiler}"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${classes.dir}"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}"
+			srcdir="${source.dir}"
+		/>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar
+			basedir="${classes.dir}"
+			jarfile="${jar.file}"
+		/>
+	</target>
+
+	<target name="java2html">
+		<java
+			classname="com.liferay.util.Java2Html"
+			classpathref="project.classpath"
+			fork="true">
+				<arg value="${java2html.bat}" />
+				<arg value="${source.dir}" />
+				<arg value="${java2html.dir}" />
+		</java>
+		<move file="${java2html.dir}/stylesheet.css" tofile="${java2html.dir}/java2html.css" />
+		<antcall target="javadoc" />
+		<replace dir="${java2html.dir}">
+			<include name="**/package-summary.html" />
+			<replacefilter
+				token="/\"
+				value="/"
+			/>
+		</replace>
+	</target>
+
+	<target name="javadoc">
+		<mkdir dir="${javadoc.dir}" />
+		<javadoc
+			additionalparam="-J-Xmx128m"
+			classpathref="project.classpath"
+			destdir="${javadoc.dir}"
+			packagenames="*.*"
+			sourcepath="${source.dir}"
+			stylesheetfile="${project.dir}/tools/javadoc.css"
+		/>
+	</target>
+	
+	<target name="compile-test" depends="compile">
+		<mkdir dir="${test.classes.dir}"/>
+		<javac
+			compiler="${javac.compiler}"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${test.classes.dir}"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}"
+			srcdir="${test.source.dir}">
+			<classpath location="${test.classes.dir}"/>
+			<classpath refid="project.classpath"/>
+		</javac>
+	</target>
+	
+	<!-- Note: You can run an individual test by setting test.includes property
+	     at the command line. For example, 
+	     ant unit-test -Dtest.includes=**/CoreDaoImplTests.class
+	     will only run CoreDaoImplTests and nothing else. -->
+	<target name="unit-test" depends="compile-test">
+		<mkdir dir="${test.report.dir}"/>
+		<property name="tests" value="Test*"/>
+
+		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
+			<classpath location="${test.classes.dir}"/>
+			<classpath location="${test.source.dir}"/>
+			<classpath refid="project.classpath"/>
+
+			<formatter type="plain" usefile="false"/>
+			<!--<formatter type="brief" usefile="false"/>-->
+			<formatter type="xml"/>
+
+			<batchtest todir="${test.report.dir}">
+				<fileset dir="${test.classes.dir}" 
+					includes="${test.includes}" 
+					excludes="${test.excludes}"/>
+			</batchtest>
+		</junit>
+	</target>
+	
+	<target name="unit-test-report">
+		<mkdir dir="${test.report.dir}/html"/>
+		<junitreport todir="${test.report.dir}">
+			<fileset dir="${test.report.dir}">
+				<include name="TEST-*.xml"/>
+			</fileset>
+			<report todir="${test.report.dir}/html"/>
+		</junitreport>
+	</target>
+	
 </project>

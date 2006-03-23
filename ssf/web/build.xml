@@ -140,7 +140,7 @@
 	           destdir="${jsp.artifacts.dir}"
 	           debug="true"
 	           optimize="false"
-	           source="1.4">
+	           source="1.5">
 	            <classpath>
 	                <path refid="jspc.classpath"/>
 	    	        <fileset dir="${app.server.ssf.dir}/WEB-INF/lib">

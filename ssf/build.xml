@@ -175,7 +175,6 @@
 		<antcall target="clean" />
 		<antcall target="build" />
 		<antcall target="unit-test" />
-		<antcall target="precompile-jsp" />
 		<!--<antcall target="java2html" />-->
 		<antcall target="javadoc" />
 		<antcall target="zip" />
