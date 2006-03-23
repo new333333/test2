@@ -41,56 +41,51 @@ public class ViewController  extends SAbstractForumController {
 			RenderResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
-		Long folderId = null;
-		Map model = new HashMap();
+		Map<String,Object> model = new HashMap<String,Object>();
+		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 
-		if (request.getWindowState().equals(WindowState.NORMAL)) {
+		if ((binderId == null) || (request.getWindowState().equals(WindowState.NORMAL))) {
 			//Build the toolbar and add it to the model
 			buildForumToolbar(model);
 			
 			//This is the portlet view; get the configured list of folders to show
-			String[] preferredFolderIds = request.getPreferences().getValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
+			String[] preferredBinderIds = request.getPreferences().getValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
 
 			//Build the jsp bean (sorted by folder title)
-			List folderIds = new ArrayList();
-			for (int i = 0; i < preferredFolderIds.length; i++) {
-				folderIds.add(new Long(preferredFolderIds[i]));
+			List<Long> binderIds = new ArrayList<Long>();
+			for (int i = 0; i < preferredBinderIds.length; i++) {
+				binderIds.add(new Long(preferredBinderIds[i]));
 			}
-			if (folderIds.size() > 0) {
-				model.put(WebKeys.FOLDER_LIST, getFolderModule().getSortedFolderList(folderIds));
+			if (binderIds.size() > 0) {
+				model.put(WebKeys.FOLDER_LIST, getFolderModule().getFolders(binderIds));
 				return new ModelAndView(WebKeys.VIEW_FORUM, model);
 			}
 			try {
-				folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+				binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 			} catch (Exception ex) {
 				return new ModelAndView(WebKeys.VIEW_FORUM);
 			}
 			
-			folderIds.add(folderId);
-			model.put(WebKeys.FOLDER_LIST, getFolderModule().getSortedFolderList(folderIds));
+			binderIds.add(binderId);
+			model.put(WebKeys.FOLDER_LIST, getFolderModule().getFolders(binderIds));
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
 			return new ModelAndView(WebKeys.VIEW_FORUM, model);
 		}
 
-		try {
-			folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		} catch (Exception nf) {
-			return new ModelAndView(WebKeys.VIEW_FORUM);
-		}
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
-			Map updates = new HashMap();
+			Map<String,Object> updates = new HashMap<String,Object>();
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
 		
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_DEFINITION)) {
-			getProfileModule().setUserFolderProperty(user.getId(), folderId, 
+			getProfileModule().setUserFolderProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 		
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE)) {
-			getProfileModule().setUserFolderProperty(user.getId(), folderId, 
+			getProfileModule().setUserFolderProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 		
@@ -101,7 +96,7 @@ public class ViewController  extends SAbstractForumController {
 			Date newdate = sdf.parse(urldate);
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, newdate);
 			String viewMode = PortletRequestUtils.getStringParameter(request,WebKeys.CALENDAR_URL_VIEWMODE, "");
-			getProfileModule().setUserFolderProperty(user.getId(), folderId, 
+			getProfileModule().setUserFolderProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE, viewMode);
 		
 		} else if (op.equals(WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE)) {
@@ -110,14 +105,14 @@ public class ViewController  extends SAbstractForumController {
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, dt);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SELECT_FILTER)) {
-			getProfileModule().setUserFolderProperty(user.getId(), folderId, 
+			getProfileModule().setUserFolderProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_USER_FILTER, 
 					PortletRequestUtils.getStringParameter(request,
 							WebKeys.FORUM_OPERATION_SELECT_FILTER,""));
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_RELOAD_LISTING)) {
 			PortletURL reloadUrl = response.createRenderURL();
-			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 			request.setAttribute("ssReloadUrl", reloadUrl.toString());			
 
@@ -126,23 +121,23 @@ public class ViewController  extends SAbstractForumController {
 			if (!entryId.equals("")) {
 				AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 				request.setAttribute("ssLoadEntryUrl", adapterUrl.toString());			
 				request.setAttribute("ssLoadEntryId", entryId);			
 			}
 		}
 
-		return returnToViewForum(request, response, formData, folderId);
+		return returnToViewForum(request, response, formData, binderId);
 	} 
 	
-	protected void buildForumToolbar(Map model) {
+	protected void buildForumToolbar(Map<String,Object> model) {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 
 		//The "Show unseen" menu
 		String url = "javascript: ;";
-		Map qualifiers = new HashMap();
+		Map<String,Object> qualifiers = new HashMap<String,Object>();
 		qualifiers.put("onClick", "if (ss_getUnseenCounts) {ss_getUnseenCounts()};return false;");
 		toolbar.addToolbarMenu("1_showunseen", NLT.get("toolbar.showUnseen"), url, qualifiers);
 

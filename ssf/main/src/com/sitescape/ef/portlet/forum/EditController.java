@@ -15,12 +15,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Collection;
 
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Workspace;
@@ -72,7 +70,7 @@ public class EditController extends SAbstractController implements DomTreeBuilde
 			forumIdList.add(forumPrefIdList[i]);
 			folderIds.add(new Long(forumPrefIdList[i]));
 		}
-		List folders = getFolderModule().getSortedFolderList(folderIds);
+		Collection folders = getFolderModule().getFolders(folderIds);
 		
 		model.put(WebKeys.FOLDER_LIST, folders);
 		model.put(WebKeys.FOLDER_ID_LIST, folderIds);
