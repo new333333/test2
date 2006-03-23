@@ -1,31 +1,22 @@
 package com.sitescape.ef.web.util;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.SingletonViolationException;
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinitionInvalidException;
-import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.repository.RepositoryServiceUtil;
-import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.util.Validator;
 
 public class DefinitionUtils {
 	private static DefinitionUtils instance; // A singleton instance
@@ -138,15 +129,14 @@ public class DefinitionUtils {
 	}
 
 	public static void getDefinitions(Binder binder, Map model) {
-		String userSelectedDefinition = "";
-		getDefinitions(binder, model, userSelectedDefinition);
+		getDefinitions(binder, model, null);
 	}
 	public static void getDefinitions(Binder binder, Map model, String userSelectedDefinition) {
 		List folderViewDefs = binder.getBinderViewDefs();
 		if (!folderViewDefs.isEmpty()) {
 			//Get the default definition for this binder
 			Definition defaultForumDefinition = (Definition)folderViewDefs.get(0);
-			if (userSelectedDefinition != null && !userSelectedDefinition.equals("")) {
+			if (!Validator.isNull(userSelectedDefinition)) {
 				//The user has selected a default definition for this binder; check it out.
 				for (int i = 0; i < folderViewDefs.size(); i++) {
 					Definition def = (Definition)folderViewDefs.get(i);

@@ -11,20 +11,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Collection;
+
 
 import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-
+import com.sitescape.ef.InternalException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
@@ -48,9 +52,43 @@ import org.springframework.web.servlet.ModelAndView;
  *
  */
 public class SAbstractForumController extends SAbstractController {
-	public ModelAndView returnToViewForum(RenderRequest request, RenderResponse response, Map formData, Long folderId) throws Exception {
+	public ModelAndView returnToViewForum(RenderRequest request, RenderResponse response, Map formData, Long binderId) throws Exception {
+
 		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
-		Map model = getShowFolder(formData, request, response, folderId);
+		Binder binder = getBinderModule().getBinder(binderId);
+		Map<String,Object> model = new HashMap<String,Object>();
+		model.put(WebKeys.BINDER, binder);
+		//Build a reload url
+		PortletURL reloadUrl = response.createRenderURL();
+		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+	
+		User user = RequestContextHolder.getRequestContext().getUser();
+		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
+		UserProperties userFolderProperties = getProfileModule().getUserFolderProperties(user.getId(), binderId);
+		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+
+		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
+		Document searchFilter = null;
+		if (searchFilterName != null && !searchFilterName.equals("")) {
+			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+			searchFilter = (Document)searchFilters.get(searchFilterName);
+		}
+		//See if the user has selected a specific view to use
+        UserProperties uProps = getProfileModule().getUserFolderProperties(user.getId(), binderId);
+		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+		DefinitionUtils.getDefinitions(binder, model, userDefaultDef);
+		String view;
+		if (binder instanceof Folder)
+			view = getShowFolder(formData, request, response, (Folder)binder, searchFilter, model);
+		else if (binder instanceof Workspace)
+			view = getShowWorkspace(formData, request, response, (Workspace)binder, searchFilter, model);
+		else if (binder instanceof ProfileBinder)
+			throw new InternalException("Not here yet");
+		else 
+			throw new InternalException("Not here yet");
+			
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
@@ -62,28 +100,38 @@ public class SAbstractForumController extends SAbstractController {
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
 		} catch (UnsupportedOperationException us) {}
 		
-		return new ModelAndView(WebKeys.VIEW_LISTING, model);
+		return new ModelAndView(view, model);
 	}
-	protected Map getShowFolder(Map formData, RenderRequest req, RenderResponse response,Long folderId) throws PortletRequestBindingException {
+	protected String getShowWorkspace(Map formData, RenderRequest req, RenderResponse response, Workspace ws, Document searchFilter, Map<String,Object>model) throws PortletRequestBindingException {
+		Collection wsEntries;
+
+//		if (searchFilter != null) {
+//			wsEntries = getWorkspaceModule().getWorkspaceTree(wsId, searchFilter);
+//		} else {
+			wsEntries = getWorkspaceModule().getWorkspaceTree(ws.getId());
+//		}
+		//Build the beans depending on the operation being done
+		List workspaces = new ArrayList();
+		List folders = new ArrayList();
+		for (Object b : wsEntries) {
+			if (b instanceof Workspace) workspaces.add(b);
+			else if (b instanceof Folder) folders.add(b);
+		}
+		model.put(WebKeys.WORKSPACES, workspaces);
+		model.put(WebKeys.FOLDERS, folders);
+		return WebKeys.VIEW_WORKSPACE;
+	}  
+	protected String getShowFolder(Map formData, RenderRequest req, RenderResponse response, Folder folder, Document searchFilter, Map<String,Object>model) throws PortletRequestBindingException {
 		Map folderEntries;
-		Map model = new HashMap();
-	   	User user = RequestContextHolder.getRequestContext().getUser();
-		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
-		UserProperties userFolderProperties = getProfileModule().getUserFolderProperties(user.getId(), folderId);
-		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+		Long folderId = folder.getId();
 
 		String forumId = folderId.toString();
-		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
-		if (searchFilterName != null && !searchFilterName.equals("")) {
-			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
-			Document searchFilter = (Document)searchFilters.get(searchFilterName);
+		if (searchFilter != null) {
 			folderEntries = getFolderModule().getFolderEntries(folderId, ObjectKeys.LISTING_MAX_PAGE_SIZE, searchFilter);
 		} else {
 			folderEntries = getFolderModule().getFolderEntries(folderId, ObjectKeys.LISTING_MAX_PAGE_SIZE);
 		}
-		Folder folder = (Folder)folderEntries.get(ObjectKeys.BINDER);
 		//Build the beans depending on the operation being done
-		model.put(WebKeys.USER_PRINCIPAL, user);
 		model.put(WebKeys.FOLDER, folder);
 		Folder topFolder = folder.getTopFolder();
 		if (topFolder == null) {
@@ -91,30 +139,19 @@ public class SAbstractForumController extends SAbstractController {
 		} else {
 			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder()));			
 		}
-		model.put(WebKeys.FOLDER_ENTRIES, folderEntries.get(ObjectKeys.ENTRIES));
-		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
-		
-		//See if the user has selected a specific view to use
-        UserProperties uProps = getProfileModule().getUserFolderProperties(user.getId(), folder.getId());
-		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
-		DefinitionUtils.getDefinitions(folder, model, userDefaultDef);
-		
 		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.ENTRIES);
+		model.put(WebKeys.FOLDER_ENTRIES, entries);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
+				
 		Element view = (Element)model.get(WebKeys.CONFIG_ELEMENT);
 		if (view != null) {
 			if ((view.selectSingleNode("./item[@name='calendarView']") != null)) {
 				getEvents(folder, entries, model, req, response);
 			}
 		}
-		req.setAttribute(WebKeys.URL_BINDER_ID,forumId);
 		model.put(WebKeys.FOLDER_TOOLBAR, buildFolderToolbar(response, folder, forumId).getToolbar());
-		
-		//Build a reload url
-		PortletURL reloadUrl = response.createRenderURL();
-		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
-		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
-		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
-		return model;
+		return WebKeys.VIEW_LISTING;
 	}  
 	protected Toolbar buildFolderToolbar(RenderResponse response, Folder folder, String forumId) {
 		//Build the toolbar array

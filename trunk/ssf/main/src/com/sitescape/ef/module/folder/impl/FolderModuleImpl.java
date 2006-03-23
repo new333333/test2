@@ -1,5 +1,6 @@
 package com.sitescape.ef.module.folder.impl;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,8 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.Collection;
 
 import org.apache.lucene.document.DateField;
 import org.dom4j.Document;
@@ -24,6 +27,7 @@ import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.lucene.Hits;
+import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
@@ -75,12 +79,13 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		return (FolderCoreProcessor)getProcessorManager().getProcessor(folder, FolderCoreProcessor.PROCESSOR_KEY);
 	}
 
-	public List getFolders(List folderIds) {
-		List result = new ArrayList();
+	public Collection getFolders(List folderIds) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        Comparator c = new BinderComparator(user.getLocale());
+       	TreeSet<Binder> result = new TreeSet<Binder>(c);
 		for (int i=0; i<folderIds.size(); ++i) {
 			try {
-				Folder f = getFolder((Long)folderIds.get(i));
-				result.add(f);
+				result.add(getFolder((Long)folderIds.get(i)));
 			} catch (NoFolderByTheIdException ex) {
 			} catch (AccessControlException ax) {
 			}
@@ -96,27 +101,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         getAccessControlManager().checkAcl(folder, AccessType.READ);		
         return folder;        
 	}    
-	public List getSortedFolderList(List folderIds) {
-		Map forumIdMap = new TreeMap();
-		List foldersUnsorted = getFolders(folderIds);
-		for (int i = 0; i < foldersUnsorted.size(); i++) {
-			if (!forumIdMap.containsKey(((Folder)foldersUnsorted.get(i)).getTitle())) {
-				forumIdMap.put(((Folder)foldersUnsorted.get(i)).getTitle(), new ArrayList());
-			}
-			List vl = (List) forumIdMap.get(((Folder)foldersUnsorted.get(i)).getTitle());
-			vl.add(((Folder)foldersUnsorted.get(i)));
-		}
-		List forumIdList = new ArrayList();
-		Iterator itForums = forumIdMap.entrySet().iterator();
-		while (itForums.hasNext()) {
-			Map.Entry me = (Map.Entry) itForums.next();
-			List meValue = (List)me.getValue();
-			for (int i = 0; i < meValue.size(); i++) {
-				forumIdList.add(meValue.get(i));
-			}
-		}
-		return forumIdList;
-	}
+
     public Long addFolder(Long parentFolderId, Map input) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Folder parentFolder = folderDao.loadFolder(parentFolderId, user.getZoneName());

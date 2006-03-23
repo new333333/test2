@@ -4,18 +4,17 @@ package com.sitescape.ef.module.workspace.impl;
 import java.util.Iterator;
 import java.util.Comparator;
 import java.util.TreeSet;
+import java.util.Collection;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.NoWorkspaceByTheIdException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AccessType;
-import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
@@ -52,18 +51,33 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
  
        return workspace;
     }
-    public org.dom4j.Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper, boolean recurse) throws AccessControlException {
-    	return getDomWorkspaceTree(null, domTreeHelper, recurse);
+   	public Collection getWorkspaceTree(Long id) throws AccessControlException {
+    	Workspace top;
+        User user = RequestContextHolder.getRequestContext().getUser();
+        if (id == null) top =  getCoreDao().findTopWorkspace(user.getZoneName());
+        else top = (Workspace)getCoreDao().loadBinder(id, user.getZoneName());
+		// Check if the user has "read" access to the workspace
+        getAccessControlManager().checkAcl(top, AccessType.READ);
+       	//order result
+        Comparator c = new BinderComparator(user.getLocale());
+       	TreeSet<Binder> tree = new TreeSet<Binder>(c);
+     	for (Iterator iter=top.getBinders().iterator(); iter.hasNext();) {
+    		Binder b = (Binder)iter.next();
+       	    // Check if the user has the privilege to view the folder 
+            try {
+        		// Check if the user has "read" access to the folder.
+                getAccessControlManager().checkAcl(b, AccessType.READ);
+                tree.add(b);
+            } catch (AccessControlException ac) {
+               	continue;
+            }
+          }
+     	return tree;
     }
-    public org.dom4j.Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper) throws AccessControlException {
-    	return getDomWorkspaceTree(id, domTreeHelper, true);
+    	    	     	    	 
+    public org.dom4j.Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper) throws AccessControlException {
+       	return getDomWorkspaceTree(null, domTreeHelper, true);
     }
- 
-   	public org.dom4j.Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper) throws AccessControlException {
-    	return getDomWorkspaceTree(null, domTreeHelper, true);
-    }
-    	 
-    	 
     public org.dom4j.Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper, boolean recurse) throws AccessControlException {
     	Workspace top;
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -87,7 +101,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	
     	//callback to setup tree
     	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_WORKSPACE, top, current);
-  
+    	//order result
        	TreeSet ws = new TreeSet(c);
     	ws.addAll(top.getFolders());
       	for (Iterator iter=ws.iterator(); iter.hasNext();) {

@@ -185,28 +185,13 @@ public class WebKeys {
     public static final String USER_SEARCH_USER_GROUP_TYPE_USER="user";
     public static final String WORKSPACE="ssWorkspace";
     public static final String WORKSPACE_DOM_TREE="ssWsDomTree";
-	public static final String ZONE_NAME = "com.sitescape.zonename";
+    public static final String WORKSPACES="ssWorkspaces";
+    public static final String ZONE_NAME = "com.sitescape.zonename";
 
     //View names
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
-    public static final String VIEW_ADD_FOLDER = "forum/add_folder";
-    public static final String VIEW_BUILD_FILTER = "binder/build_filter";
-    public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
-    public static final String VIEW_CONFIGURE = "binder/configure";
-    public static final String VIEW_NO_DEFINITION="forum/view_default";
-    public static final String VIEW_LISTING="entry/view_listing";
-    public static final String VIEW_LISTING_REDIRECT="entry/view_listing_redirect";
-    public static final String VIEW_ENTRY="entry/view_entry";
-    public static final String VIEW_FORUM="forum/view";
-    public static final String VIEW_PROFILE="profile/view";
-    public static final String VIEW_NO_ENTRY="entry/view_no_entry";
-    public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
-    public static final String VIEW_DELETE_ENTRY="entry/delete_entry";
-    public static final String VIEW_EDIT="forum/edit";
     public static final String VIEW_ADD_ENTRY = "entry/add_entry";
-    public static final String VIEW_DEFINITION="definition_builder/view_definition_builder";
-    public static final String VIEW_DEFINITION_OPTION="definition_builder/view_definition_builder_option";
-    public static final String VIEW_DEFINITION_XML="definition_builder/view_definition_xml";
+    public static final String VIEW_ADD_FOLDER = "forum/add_folder";
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
     public static final String VIEW_ADMIN_CONFIGURE_NOTIFICATION="administration/configureNotify";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING="administration/configurePosting";
@@ -214,6 +199,23 @@ public class WebKeys {
     public static final String VIEW_ADMIN_CONFIGURE_SEARCH_INDEX="administration/configureSearchIndex";
     public static final String VIEW_ADMIN_IMPORT_DEFINITIONS ="administration/importDefinitions"; 
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
+    public static final String VIEW_BUILD_FILTER = "binder/build_filter";
+    public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
+    public static final String VIEW_CONFIGURE = "binder/configure";
+    public static final String VIEW_DEFINITION="definition_builder/view_definition_builder";
+    public static final String VIEW_DEFINITION_OPTION="definition_builder/view_definition_builder_option";
+    public static final String VIEW_DEFINITION_XML="definition_builder/view_definition_xml";
+    public static final String VIEW_DELETE_ENTRY="entry/delete_entry";
+    public static final String VIEW_EDIT="forum/edit";
+    public static final String VIEW_ENTRY="entry/view_entry";
+    public static final String VIEW_FORUM="forum/view";
+    public static final String VIEW_LISTING="entry/view_listing";
+    public static final String VIEW_LISTING_REDIRECT="entry/view_listing_redirect";
+    public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
+    public static final String VIEW_NO_DEFINITION="forum/view_default";
+    public static final String VIEW_NO_ENTRY="entry/view_no_entry";
+    public static final String VIEW_PROFILE="profile/view";
+    public static final String VIEW_WORKSPACE="forum/view_workspace";
     //servlet paths
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";
