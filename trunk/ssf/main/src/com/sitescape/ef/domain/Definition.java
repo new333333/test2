@@ -26,7 +26,7 @@ public class Definition extends PersistentTimestampObject implements AclControll
     private byte[] xmlencoding;
     private Document doc;
     private String zoneName;
-    private PersistentAclSet aclSet;
+    private PersistentAclSet aclSet; //initialized by hiberate access=field
     private boolean inheritAclFromParent = false;
     private String title="";
 
@@ -47,17 +47,7 @@ public class Definition extends PersistentTimestampObject implements AclControll
 	public Definition() {
 		
 	}    
-   /**
-     * Hiberate interfaces to load actual class vs interface needed for AclControlled
-     *  
-     * @hibernate.component prefix="acl_" 
-     */
-    private PersistentAclSet getHAclSet() {
-        return aclSet;
-    }
-     private void setHAclSet(PersistentAclSet aclSet) {
-        this.aclSet = aclSet;
-    }
+
      /**
      * Used by security manager only. Application should NEVER invoke this
      * method directly.  

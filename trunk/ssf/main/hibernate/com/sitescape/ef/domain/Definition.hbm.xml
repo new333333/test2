@@ -9,7 +9,7 @@
       <generator class="uuid.hex"/>
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
-    <component name="HAclSet">
+    <component name="aclSet" class="com.sitescape.ef.domain.PersistentAclSet">
       <property name="readMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
         <column name="acl_readMembers"/>
       </property>

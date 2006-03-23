@@ -454,6 +454,9 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		Map inputData = new HashMap();
 		Definition definition = pDef.getDefinition();
 		if (definition == null) definition = folder.getDefaultPostingDef();
+		if (definition == null) definition = folder.getDefaultEntryDef();
+		String defId=null;
+		if (definition != null) defId = definition.getId();
 		String [] from = new String[1];
 		String [] title = new String[1];
 		for (int i=0; i<msgs.length; ++i) {
@@ -473,7 +476,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 					processMime((MimeMultipart)content, inputData, fileItems);
 				}
 				//msgs[i].setFlag(Flags.Flag.DELETED, true); // set the DELETED flag
-				folderModule.addEntry(folder.getId(), definition.getId(), new MapInputData(inputData), fileItems);
+				folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems);
 				fileItems.clear();
 				inputData.clear();
 			} catch (MessagingException me) {			

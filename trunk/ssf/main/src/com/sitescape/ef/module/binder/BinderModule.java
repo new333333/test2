@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.WorkflowControlledEntry;
+import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.security.AccessControlException;
@@ -61,6 +61,10 @@ public interface BinderModule {
     public Binder modifyConfiguration(Long binderId, List definitionIds, Map workflowAssociations) throws AccessControlException;
 	public void setFunctionMembershipInherited(Long binderId, boolean inherit) 
 		throws AccessControlException;
+	public List getTags(Long binderId) throws AccessControlException;
+	public void modifyTag(Long binderId, String tagId, Map updates) throws AccessControlException; 
+	public void addTag(Long binderId, Map updates) throws AccessControlException;
+	public void deleteTag(Long binderId, String tagId) throws AccessControlException;
 
  
  }

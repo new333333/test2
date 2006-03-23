@@ -34,7 +34,7 @@ public abstract class Principal extends WorkflowControlledEntry  {
     protected String name;
     protected String lcName;
     protected String foreignName="";
-    protected List memberOf;
+    protected List memberOf;//initialized by hiberate access=field
     protected String signature="";    
     protected String zoneName;
     protected Long preferredWorkspaceId;
@@ -43,47 +43,6 @@ public abstract class Principal extends WorkflowControlledEntry  {
     public String getAnyOwnerType() {
     	return AnyOwner.PRINCIPAL;
     }
-	/**
- 	 * @hibernate.map  lazy="true" inverse="true" cascade="all,delete-orphan" embed-xml="false"
- 	 * @hibernate.key column="principal"
-     * @hibernate.map-key column="name" type="string"
-	 * @hibernate.one-to-many class="com.sitescape.ef.domain.CustomAttribute"
-     * @return
-     */
-    private Map getHCustomAttributes() {return customAttributes;}
-    private void setHCustomAttributes(Map customAttributes) {this.customAttributes = customAttributes;}   	
-   
-    /**
-     * @hibernate.set  lazy="true" inverse="true" cascade="all,delete-orphan" batch-size="4" 
- 	 * @hibernate.key column="principal"
- 	 * @hibernate.one-to-many class="com.sitescape.ef.domain.Attachment"
- 	 * We are using a set here, cause any outer-joins to load this attribute
- 	 * when using a list result in duplicates
-   	 */
-    private Set getHAttachments() {return attachments;}
-    private void setHAttachments(Set attachments) {this.attachments = attachments;}   	
- 
-    /**
-	* @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan" batch-size="4" 
-    * @hibernate.key column="principal"
-    * @hibernate.one-to-many class="com.sitescape.ef.domain.Event"
-    * @return
-    */
-    private Set getHEvents() {return events;}
-    private void setHEvents(Set events) {this.events = events;}   	
-    /**
-	 * @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan" batch-size="4"
-     * @hibernate.key column="principal"
-     * @hibernate.one-to-many class="com.sitescape.ef.domain.WorkflowState"
-     * @return
-     */
-     public Set getHWorkflowStates() {
-        return workflowStates;
-        
-     }
-     public void setHWorkflowStates(Set workflowStates) {
-        this.workflowStates = workflowStates;
-     }
     /**
      * @hibernate.property
      * @return
@@ -191,16 +150,7 @@ public abstract class Principal extends WorkflowControlledEntry  {
     public void setForeignName(String foreignName) {
     	this.foreignName = foreignName;
     }
-    /**
-     * Group membership is managed by the Group
-     * @hibernate.bag table="SS_PrincipalMembership" lazy="true" inverse="true" cascade="persist,merge,save-update" optimistic-lock="false"  node="."
-	 * @hibernate.key column="userId" 
-	 * @hibernate.many-to-many column="groupId" fetch="join" class="com.sitescape.ef.domain.Group" node="Group" embed-xml="false"
-	 * @hibernate.cache usage="read-write"
-     */
-    private List getHMemberOf() {return memberOf;}
-    private void setHMemberOf(List memberOf) {this.memberOf = memberOf;}
-    
+     
     public List getMemberOf() {
     	if (memberOf == null) memberOf = new ArrayList();
     	return memberOf;

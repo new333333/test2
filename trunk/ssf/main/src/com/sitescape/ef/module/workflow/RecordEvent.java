@@ -7,8 +7,8 @@ import org.jbpm.context.exe.ContextInstance;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.WorkflowControlledEntry;
 
 
 public class RecordEvent extends AbstractActionHandler {
@@ -22,7 +22,7 @@ public class RecordEvent extends AbstractActionHandler {
 		Token token = executionContext.getToken();
 		Long id = new Long(token.getId());
 		String state = token.getNode().getName();
-		WorkflowControlledEntry entry = loadEntry(ctx);
+		WorkflowSupport entry = loadEntry(ctx);
 		WorkflowState ws = entry.getWorkflowState(id);
 		if (ws != null) {
 			HistoryStamp stamp = (HistoryStamp)ctx.getTransientVariable("historyStamp");

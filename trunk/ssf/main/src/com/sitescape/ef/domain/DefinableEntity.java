@@ -11,21 +11,26 @@ import java.util.Set;
 
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.util.CollectionUtil;
+import com.sitescape.ef.InternalException;
 
 public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
-    private String title="";
-    private Description description;
+    protected String title="";
+    protected Description description;
     protected boolean attachmentsParsed = false;
-    protected Set attachments;
-    protected Map customAttributes;
-    protected Definition entryDef;
-    protected Set events;
+    protected Set attachments;	//initialized by hiberate access=field
+    protected Map customAttributes;	//initialized by hiberate access=field
+    protected Definition entryDef; //initialized by hiberate access=field
+    protected Set events;	//initialized by hiberate access=field
     // these collections are loaded for quicker indexing, hibernate will not persist them
     protected Set iEvents,iAttachments;
     protected Map iCustomAttributes;
  
     public DefinableEntity() {
     }
+	public EntityIdentifier getEntityIdentifier() {
+		throw new InternalException("Method not supported");
+    }
+   	
     /**
      * @hibernate.component prefix="description_"
      */

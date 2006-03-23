@@ -11,7 +11,7 @@
       <many-to-one name="folderEntry"/>
       <many-to-one name="principal"/>
       <many-to-one name="binder"/>
-      <any name="HEntry" id-type="java.lang.Long" meta-type="string">
+      <any name="entity" id-type="java.lang.Long" meta-type="string">
         <meta-value class="com.sitescape.ef.domain.FolderEntry" value="doc"/>
         <meta-value class="com.sitescape.ef.domain.Principal" value="principal"/>
         <meta-value class="com.sitescape.ef.domain.Binder" value="binder"/>
@@ -24,6 +24,8 @@
     </component>
     <property name="state" length="64"/>
     <property name="threadName" length="64"/>
-    <many-to-one name="definition"/>
+    <many-to-one name="definition">
+    	<column name="definition" sql-type="char(32)"/>
+    </many-to-one>
   </class>
 </hibernate-mapping>

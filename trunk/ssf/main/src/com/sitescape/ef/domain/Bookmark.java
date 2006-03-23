@@ -15,7 +15,6 @@ package com.sitescape.ef.domain;
 public class Bookmark extends Attachment {
     private boolean active=true;
     private String title="";
-    private FolderEntry bookmarkEntry;
     public Bookmark () {
     }
     /**
@@ -36,16 +35,6 @@ public class Bookmark extends Attachment {
     }
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    /**
-     * @hibernate.many-to-one	
-	 */ 
-    public FolderEntry getBookmarkEntry() {
-        return bookmarkEntry;
-    }
-    public void setBookmarkEntry(FolderEntry bookmarkEntry) {
-        this.bookmarkEntry = bookmarkEntry;
     }
 
     public boolean update(Object newVal) {

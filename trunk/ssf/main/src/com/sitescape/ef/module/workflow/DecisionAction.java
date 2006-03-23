@@ -1,6 +1,5 @@
 package com.sitescape.ef.module.workflow;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Iterator;
 	
@@ -10,7 +9,7 @@ import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
 
-import com.sitescape.ef.domain.WorkflowControlledEntry;
+import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.domain.WfWaits;
@@ -22,7 +21,7 @@ public class DecisionAction extends AbstractActionHandler {
 	public void execute(ExecutionContext executionContext) throws Exception {
 		ContextInstance ctx = executionContext.getContextInstance();
 		Token current = executionContext.getToken();
-		WorkflowControlledEntry entry = loadEntry(ctx);
+		WorkflowSupport entry = loadEntry(ctx);
 		WorkflowState ws = entry.getWorkflowState(new Long(current.getId()));
 		if (ws != null) {
 			if (infoEnabled) logger.info("Decision begin: at state " + ws.getState() + " thread " + ws.getThreadName());

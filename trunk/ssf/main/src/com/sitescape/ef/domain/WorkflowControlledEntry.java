@@ -15,13 +15,13 @@ import com.sitescape.util.Validator;
  * @author Jong Kim
  */
 public abstract class WorkflowControlledEntry extends Entry 
-	implements MultipleWorkflowSupport, AclControlled {
+	implements WorkflowSupport, AclControlled {
 	private Set readMemberIds,writeMemberIds,deleteMemberIds,changeAclMemberIds;
-    protected Set workflowStates;   
+    protected Set workflowStates; //initialized by hiberate access=field  
 	protected Set iWorkflowStates;
     protected HistoryStamp workflowChange;
 	/**
-     * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="wrk_" 
+      * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="wrk_" 
      */
     public HistoryStamp getWorkflowChange() {
         return this.workflowChange;
@@ -107,7 +107,7 @@ public abstract class WorkflowControlledEntry extends Entry
 	public boolean hasAclSet() {
 		Set states = getWorkflowStates();
 	    if ((states == null) || states.isEmpty()) return false;
-	    	return true;
+	    return true;
 	}
 	public void setAclSet(AclSet aclSet) {
 		throw new InternalError("Method not supported");

@@ -18,7 +18,7 @@ import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.WorkflowControlledEntry;
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
@@ -41,13 +41,13 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     
     //***********************************************************************************************************	
             
-    protected void addEntry_fillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
+    protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
         doFillin(entry, inputData, entryData);
         super.addEntry_fillIn(binder, entry, inputData, entryData);
         ((Principal)entry).setZoneName(binder.getZoneName());
      }
        
-    protected void modifyEntry_fillIn(Binder binder, WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
+    protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
     	//see if we have updates to fields not covered by definition build
     	doFillin(entry, inputData, entryData);
     	super.modifyEntry_fillIn(binder, entry, inputData, entryData);
@@ -58,7 +58,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
      * @param inputData
      * @param entryData
      */
-    protected void doFillin( WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {  
+    protected void doFillin(Entry entry, InputDataAccessor inputData, Map entryData) {  
     	if (inputData.exists("foreignName") && !entryData.containsKey("foreignName")) {
     		entryData.put("foreignName", inputData.getSingleValue("foreignName"));
     	}
@@ -124,20 +124,20 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 
     //***********************************************************************************************************
            
-    protected  WorkflowControlledEntry entry_load(Binder parentBinder, Long entryId) {
+    protected  Entry entry_load(Binder parentBinder, Long entryId) {
         return getCoreDao().loadPrincipal(entryId, parentBinder.getZoneName());        
     }
          
-    protected  WorkflowControlledEntry entry_loadFull(Binder parentBinder, Long entryId) {
+    protected  Entry entry_loadFull(Binder parentBinder, Long entryId) {
         return getCoreDao().loadFullPrincipal(entryId, parentBinder.getZoneName());        
     }
  
-    protected void deleteEntry_delete(Binder parentBinder, WorkflowControlledEntry entry) {
+    protected void deleteEntry_delete(Binder parentBinder, Entry entry) {
     	Principal p = (Principal)entry;
     	//we just disable principals, cause their ids are used all over
     	p.setDisabled(true);
     }
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, WorkflowControlledEntry entry) {
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry);
     	
 		// Add doc type
@@ -177,7 +177,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	    if (changed.booleanValue() == true) modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null);		
 		
 	}
-	public boolean syncEntry_fillIn(WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
+	public boolean syncEntry_fillIn(Entry entry, InputDataAccessor inputData, Map entryData) {
 	        for (Iterator iter=entryData.entrySet().iterator(); iter.hasNext();) {
 	        	Map.Entry mEntry = (Map.Entry)iter.next();
 	        	//need to generate id for the event so its id can be saved in customAttr
@@ -197,7 +197,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		
 	}
 
-	public boolean syncEntry_postFillIn(WorkflowControlledEntry entry, InputDataAccessor inputData, Map entryData) {
+	public boolean syncEntry_postFillIn(Entry entry, InputDataAccessor inputData, Map entryData) {
 		return false;		
 	}
 	/**
@@ -212,7 +212,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         		Map changes = new HashMap();
         	    for (Iterator i=entries.entrySet().iterator(); i.hasNext();) {
         	    	Map.Entry mEntry = (Map.Entry)i.next();
-        	    	WorkflowControlledEntry entry = (WorkflowControlledEntry)mEntry.getKey();
+        	    	Entry entry = (Entry)mEntry.getKey();
         	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
         	    	
         	    	Map entryDataAll = modifyEntry_toEntryData(entry, inputData, null);
@@ -227,7 +227,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         
 	    for (Iterator i=changedEntries.entrySet().iterator(); i.hasNext();) {
 	    	Map.Entry mEntry = (Map.Entry)i.next();
-	    	WorkflowControlledEntry entry = (WorkflowControlledEntry)mEntry.getKey();
+	    	Entry entry = (Entry)mEntry.getKey();
 	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
 	    	modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null);	
 	    }
@@ -244,7 +244,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        			Map entryDataAll = addEntry_toEntryData(binder, definition, inputData, null);
 	        			Map entryData = (Map) entryDataAll.get("entryData");
 	   	        
-	        			WorkflowControlledEntry entry = addEntry_create(clazz);
+	        			Entry entry = addEntry_create(clazz);
 	        			entry.setEntryDef(definition);
 	        			//	need to set entry/binder information before generating file attachments
 	        			//	Attachments/Events need binder info for AnyOwner
@@ -263,7 +263,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        });
 	    for (Iterator i=newEntries.entrySet().iterator(); i.hasNext();) {
 	    	Map.Entry mEntry = (Map.Entry)i.next();
-	    	WorkflowControlledEntry entry = (WorkflowControlledEntry)mEntry.getKey();
+	    	Entry entry = (Entry)mEntry.getKey();
 	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
 	    	addEntry_indexAdd(entry.getParentBinder(), entry, inputData, null);	
 	    }

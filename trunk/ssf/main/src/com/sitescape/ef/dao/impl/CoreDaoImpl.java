@@ -29,7 +29,9 @@ import java.util.HashMap;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Group;
+import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Attachment;
@@ -54,6 +56,7 @@ import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
+import com.sitescape.ef.domain.NoTagByTheIdException;
 import com.sitescape.ef.domain.NoEmailAliasByTheIdException;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.EmailAlias;
@@ -861,4 +864,40 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
            }
         );  
 	}
- }
+	public Tag loadTagByOwner(String id, EntityIdentifier owner) {
+		Tag tag =(Tag)load(Tag.class, id);
+		if (tag == null) throw new NoTagByTheIdException(id);
+	   	if (!tag.isOwner(owner)) 
+	   		throw new NoTagByTheIdException(id);
+	   	return tag;
+
+	}
+	public List loadTagsByOwner(final EntityIdentifier ownerId) {
+		return (List)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                 	return session.createCriteria(Tag.class)
+                 		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
+       					.add(Expression.eq("ownerIdentifier.dbType", ownerId.getEntityType().getValue()))
+                 		.addOrder(Order.asc("name"))
+                  		.list();
+	                }
+	            }
+	        );
+		
+	}
+	public List loadTagsByEntity(final EntityIdentifier entityId) {
+		return (List)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                 	return session.createCriteria(Tag.class)
+                 		.add(Expression.eq("entityIdentifier.entityId", entityId.getEntityId()))
+       					.add(Expression.eq("entityIdentifier.dbType", entityId.getEntityType().getValue()))
+                 		.addOrder(Order.asc("name"))
+                  		.list();
+	                }
+	            }
+	        );
+		
+	}
+}

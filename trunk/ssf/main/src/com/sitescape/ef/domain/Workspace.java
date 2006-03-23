@@ -21,16 +21,11 @@ public class Workspace extends Binder  {
 	protected Set workspaces; 
     protected Set folders;
     protected boolean bindersParsed;
-    protected List binders;
-   /**
-     * @hibernate.bag lazy="true"  cascade="all" inverse="true" optimistic-lock="false"
-	 * @hibernate.key column="parentBinder" 
-	 * @hibernate.one-to-many class="com.sitescape.ef.domain.Binder"
-     * @hibernate.cache usage="read-write"
-     * @return
-     */
-    private List getHBinders() {return binders;}
-    private void setHBinders(List binders) {this.binders = binders;} 
+    protected List binders;//set by hibernate access="field"
+
+	public EntityIdentifier getEntityIdentifier() {
+    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.workspace);
+    }
     public List getBinders() {
     	if (binders == null) binders = new ArrayList();
     	return binders;

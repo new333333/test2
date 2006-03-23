@@ -60,7 +60,7 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 				updates.clear();
 			}
 		response.setRenderParameters(formData);
-	} else if (formData.containsKey("cancelBtn")) {
+	} else if (formData.containsKey("closeBtn") || (formData.containsKey("cancelBtn"))) {
 		response.setRenderParameter("redirect", "true");
 	} else
 		response.setRenderParameters(formData);

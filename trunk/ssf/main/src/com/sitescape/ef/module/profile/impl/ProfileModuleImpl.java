@@ -22,6 +22,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.file.WriteFilesException;
+import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -38,7 +39,19 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	private String[] userDocType = {EntryIndexUtils.ENTRY_TYPE_USER};
 	private String[] groupDocType = {EntryIndexUtils.ENTRY_TYPE_GROUP};
 	
- 
+	private ProfileCoreProcessor loadProcessor(ProfileBinder binder) {
+        // This is nothing but a dispatcher to an appropriate processor. 
+        // Shared logic, if exists, must be put into the corresponding method in 
+        // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
+        // in this method.
+	    return (ProfileCoreProcessor) getProcessorManager().getProcessor(binder, ProfileCoreProcessor.PROCESSOR_KEY);
+	}
+	private ProfileBinder loadBinder(Long binderId) {
+		return (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
+	}
+	private ProfileBinder loadBinder() {
+	   return (ProfileBinder)getCoreDao().getProfileBinder(RequestContextHolder.getRequestContext().getZoneName());
+	}
 	public ProfileBinder addProfileBinder() {
 		ProfileBinder pf;
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
@@ -66,15 +79,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
 	}
 	public ProfileBinder getProfileBinder() {
-	   ProfileBinder pf = (ProfileBinder)getCoreDao().getProfileBinder(RequestContextHolder.getRequestContext().getZoneName());
-	   return pf;
+	   ProfileBinder binder = loadBinder();
+	   //todo: access check
+	   return binder;
     }
-    public Principal getEntry(Long binderId, Long principaId) {
-        Principal entry;
-            
-        User user = RequestContextHolder.getRequestContext().getUser();
-        entry = getCoreDao().loadPrincipal(principaId, user.getZoneName());        
-        return entry;
+
+	public Principal getEntry(Long binderId, Long principaId) {
+        ProfileBinder binder = loadBinder(binderId);
+        return getCoreDao().loadPrincipal(principaId, binder.getZoneName());        
     }
    public UserProperties setUserFolderProperty(Long userId, Long folderId, String property, Object value) {
    		UserProperties uProps=null;
@@ -150,8 +162,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    		}
    }  	
   
- 
     public List getGroups(Long binderId) {
+        ProfileBinder binder = loadBinder(binderId);
   		FilterControls filter = new FilterControls();
     	filter.setOrderBy(new OrderBy("title"));
     	List result = coreDao.loadGroups(filter, RequestContextHolder.getRequestContext().getZoneName());
@@ -160,37 +172,27 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
  
     public Map getGroups(Long binderId, int maxEntries, Document searchFilter) {
-        ProfileBinder binder = getProfileBinder();
-        ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
-               	binder, ProfileCoreProcessor.PROCESSOR_KEY);
-        return processor.getBinderEntries(binder, groupDocType, maxEntries, searchFilter);
-        
+        ProfileBinder binder = loadBinder(binderId);
+        return loadProcessor(binder).getBinderEntries(binder, groupDocType, maxEntries, searchFilter);        
    }
  
     //***********************************************************************************************************	
     public Long addUser(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
-        ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
+        ProfileBinder binder = loadBinder(binderId);
         Definition definition = getCoreDao().loadDefinition(definitionId, binder.getZoneName());
-        ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
-            	binder, ProfileCoreProcessor.PROCESSOR_KEY);
-        return processor.addEntry(binder, definition, User.class, inputData, fileItems);
+        return loadProcessor(binder).addEntry(binder, definition, User.class, inputData, fileItems);
     }
 
     public void checkAddEntryAllowed(ProfileBinder binder) {
-    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor
-    	(binder, ProfileCoreProcessor.PROCESSOR_KEY);
-        processor.addEntry_accessControl(binder);    	
-    	
+     	loadProcessor(binder).addEntry_accessControl(binder);    	   	
     }
      
     public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, Map fileItems) 
    		throws AccessControlException, WriteFilesException {
-        ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-        ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
-               	binder, ProfileCoreProcessor.PROCESSOR_KEY);
-        processor.modifyEntry(binder, id, inputData, fileItems);
+        ProfileBinder binder = loadBinder(binderId);
+        loadProcessor(binder).modifyEntry(binder, id, inputData, fileItems);
      }
 
     public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
@@ -198,71 +200,49 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	modifyEntry(binderId, id, inputData, new HashMap());
     }
     public void checkModifyEntryAllowed(Principal entry) {
-        ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor
-    	(entry.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
-        processor.modifyEntry_accessControl(entry.getParentBinder(), entry);    	
+        loadProcessor((ProfileBinder)entry.getParentBinder()).modifyEntry_accessControl(entry.getParentBinder(), entry);    	
     	
     }
 
     public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
-        ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
+        ProfileBinder binder = loadBinder(binderId);
         Definition definition = getCoreDao().loadDefinition(definitionId, binder.getZoneName());
-        ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
-               	binder, ProfileCoreProcessor.PROCESSOR_KEY);
-        return processor.addEntry(binder, definition, Group.class, inputData, fileItems);
+        return loadProcessor(binder).addEntry(binder, definition, Group.class, inputData, fileItems);
     }
 
 
     public void deleteEntry(Long binderId, Long principalId) {
-        ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-            
-        ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
-               	binder, ProfileCoreProcessor.PROCESSOR_KEY);
-        processor.deleteEntry(binder, principalId);    	
+        ProfileBinder binder = loadBinder(binderId);
+       loadProcessor(binder).deleteEntry(binder, principalId);    	
     }
  
     public void checkDeleteEntryAllowed(Principal entry) {
-    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor
-    	(entry.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
-        processor.deleteEntry_accessControl(entry.getParentBinder(), entry);    	
+    	loadProcessor((ProfileBinder)entry.getParentBinder()).deleteEntry_accessControl(entry.getParentBinder(), entry);    	
     	
     }
     
     public void index(Long binderId) {
-        ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-        ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
-               	binder, ProfileCoreProcessor.PROCESSOR_KEY);
-        processor.indexBinder(binder);
-
+        ProfileBinder binder = loadBinder(binderId);
+        loadProcessor(binder).indexBinder(binder);
     }
 
     public Map getUsers(Long binderId) {
     	return getUsers(binderId, DEFAULT_MAX_ENTRIES);
     }
     public Map getUsers(Long binderId, int maxEntries) {
-        return getUsers(binderId, maxEntries, null);
-        
+        return getUsers(binderId, maxEntries, null);        
    }
  
     public Map getUsers(Long binderId, int maxEntries, Document searchFilter) {
-        ProfileBinder binder = getProfileBinder();
-        ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
-               	binder, ProfileCoreProcessor.PROCESSOR_KEY);
-        return processor.getBinderEntries(binder, userDocType, maxEntries, searchFilter);
+        ProfileBinder binder = loadBinder(binderId);
+        return loadProcessor(binder).getBinderEntries(binder, userDocType, maxEntries, searchFilter);
         
    }
  
     public void modifyWorkflowState(Long binderId, Long entryId, Long tokenId, String toState) throws AccessControlException {
-        ProfileBinder binder = (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-       // This is nothing but a dispatcher to an appropriate processor. 
-        // Shared logic, if exists, must be put into the corresponding method in 
-        // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
-        // in this method.
-        ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
-               	binder, ProfileCoreProcessor.PROCESSOR_KEY);
-       
-        processor.modifyWorkflowState(binder, entryId, tokenId, toState);
+        ProfileBinder binder = loadBinder(binderId);
+        loadProcessor(binder).modifyWorkflowState(binder, entryId, tokenId, toState);
     }
 
 

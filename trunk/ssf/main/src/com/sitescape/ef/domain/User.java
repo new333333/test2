@@ -28,9 +28,9 @@ import com.sitescape.util.Validator;
 public class User extends Principal {
     protected String languageId="en";
     protected String country="US";
-    protected String firstName="";
-    protected String middleName="";
-    protected String lastName="";
+    protected String firstName="";//set by hibernate access="field"
+    protected String middleName="";//set by hibernate access="field"
+    protected String lastName="";//set by hibernate access="field"
     protected String emailAddress="";
     protected String homepage="";
     protected String webPubDir="";
@@ -49,6 +49,9 @@ public class User extends Principal {
     
 	public User() {
     }
+	public EntityIdentifier getEntityIdentifier() {
+    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.user);
+    }
 	public TimeZone getTimeZone() {
 		if (timeZone != null) return timeZone;
 		if ((timeZoneName == null) || timeZoneName.length() ==0) {
@@ -58,9 +61,8 @@ public class User extends Principal {
 		}
 		return timeZone;
 	}
-    public String getTitle() {
-    	String title = super.getTitle();
-    	if (!Validator.isNull(title)) return title;
+
+    private void setupTitle() {
     	StringBuffer tBuf = new StringBuffer();
     	title = getFirstName();
     	if (!Validator.isNull(title)) tBuf.append(title + " ");
@@ -69,8 +71,7 @@ public class User extends Principal {
     	title = getLastName();
     	if (!Validator.isNull(title)) tBuf.append(title + " ");
     	title = tBuf.toString().trim();
-    	if (!Validator.isNull(title)) return title;
-    	return getName();
+    	
     }
 	/**
 	 * @hibernate.property length="32" 
@@ -145,7 +146,6 @@ public class User extends Principal {
         this.emailAddress = emailAddress;
     }
     /**
-     * @hibernate.property length="64"
      * @return Returns the firstName.
      */
     public String getFirstName() {
@@ -156,11 +156,11 @@ public class User extends Principal {
      */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+        setupTitle();
     }
 
     
     /**
-     * @hibernate.property length="64"
      * @return Returns the lastName.
      */
     public String getLastName() {
@@ -171,10 +171,10 @@ public class User extends Principal {
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
+        setupTitle();
     }
  
     /**
-     * @hibernate.property length="64"
      * @return Returns the middleName.
      */
     public String getMiddleName() {
@@ -185,6 +185,7 @@ public class User extends Principal {
      */
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
+        setupTitle();
     }
     
     /**

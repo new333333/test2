@@ -13,6 +13,8 @@ import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Group;
+import com.sitescape.ef.domain.Tag;
+import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.EmailAlias;
@@ -146,5 +148,9 @@ public interface CoreDao {
     public SeenMap loadSeenMap(Long userId);
     public void bulkLoadCollections(Collection entries);
     
-    public SFQuery queryAllPrincipals(FilterControls filter, String zoneName) throws DataAccessException; 
+    public SFQuery queryAllPrincipals(FilterControls filter, String zoneName) throws DataAccessException;
+	public List loadTagsByEntity(EntityIdentifier entityId);
+	public List loadTagsByOwner(EntityIdentifier ownerId);
+	public Tag loadTagByOwner(String id, EntityIdentifier owner);
+
  }

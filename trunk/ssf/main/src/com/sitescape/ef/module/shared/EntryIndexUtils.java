@@ -4,32 +4,28 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.List;
+
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.dom4j.io.SAXReader;
 import org.dom4j.Element;
 
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
-
 import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.WorkflowControlledEntry;
+import com.sitescape.ef.domain.Group;
+import com.sitescape.ef.domain.WorkflowSupport;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.search.BasicIndexUtils;
-import com.sitescape.ef.security.acl.AccessType;
-import com.sitescape.ef.security.AccessControlManager;
-import com.sitescape.ef.security.function.WorkAreaOperation;
 
 /**
  * Index the fields common to all Entry types.
@@ -133,26 +129,29 @@ public class EntryIndexUtils {
     	}
     }
 
-    public static void addWorkflow(Document doc, WorkflowControlledEntry entry) {
+    public static void addWorkflow(Document doc, Entry entry) {
     	// Add the workflow fields
-   		Set workflowStates = entry.getWorkflowStates();
-   		if (workflowStates != null) {
-   			for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
-   				WorkflowState ws = (WorkflowState)iter.next();
-   				Field workflowStateField = Field.Keyword(WORKFLOW_STATE_FIELD, 
+    	if (entry instanceof WorkflowSupport) {
+    		WorkflowSupport wEntry = (WorkflowSupport)entry;
+    		Set workflowStates = wEntry.getWorkflowStates();
+    		if (workflowStates != null) {
+    			for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
+    				WorkflowState ws = (WorkflowState)iter.next();
+    				Field workflowStateField = Field.Keyword(WORKFLOW_STATE_FIELD, 
    						ws.getState());
-   				Field workflowStateCaptionField = Field.Keyword(WORKFLOW_STATE_CAPTION_FIELD, 
+    				Field workflowStateCaptionField = Field.Keyword(WORKFLOW_STATE_CAPTION_FIELD, 
    						ws.getStateCaption());
-   				//Index the workflow state
-   				doc.add(workflowStateField);
-   				doc.add(workflowStateCaptionField);
+    				//Index the workflow state
+    				doc.add(workflowStateField);
+    				doc.add(workflowStateCaptionField);
    				
-   				Definition def = ws.getDefinition();
-   				if (def != null) {
-	   				Field workflowProcessField = Field.Keyword(WORKFLOW_PROCESS_FIELD, 
-	   						def.getId());
-	   				//Index the workflow title (which is always the id of the workflow definition)
-	   				doc.add(workflowProcessField);
+    				Definition def = ws.getDefinition();
+    				if (def != null) {
+    					Field workflowProcessField = Field.Keyword(WORKFLOW_PROCESS_FIELD, 
+    							def.getId());
+    					//	Index the workflow title (which is always the id of the workflow definition)
+    					doc.add(workflowProcessField);
+    				}
    				}
    			}
    		}
@@ -231,30 +230,10 @@ public class EntryIndexUtils {
     	sf.applyPattern("yyyyMMdd");
     	return(df.format(date));
     }
-    public static void addReadAcls(Document doc, Binder binder, WorkflowControlledEntry entry, AccessControlManager accessManager) {
-        // Add ACL field. We only need to index ACLs for read access. 
+    public static void addReadAcls(Document doc, Binder binder, Entry entry, Set ids) {
+    	if (ids == null) return;
+    	// Add ACL field. We only need to index ACLs for read access. 
         Field racField;
-    	List readMemberIds = accessManager.getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES);
-		Set ids = new HashSet();
-        if (entry.hasAclSet()) {
-        	//index binders access
-        	if (entry.checkWorkArea(AccessType.READ)) {
-        		ids.addAll(readMemberIds);
- 	        }
-        	//index workflow access - ignore widen for search engine - prune results later
-           	ids.addAll(entry.getAclSet().getMemberIds(AccessType.READ));
-        	if (entry.checkOwner(AccessType.READ)) {
-        		ids.add(entry.getCreatorId());
-        	}
-        	//no access specified, add binder default
-        	if (ids.isEmpty())
-        		ids.addAll(readMemberIds);
-        		
-       } else {
-            ids.addAll(readMemberIds);
-            if (accessManager.testOperation(binder, WorkAreaOperation.CREATOR_READ))
-            	ids.add(entry.getCreatorId());
-        }
         // I'm not sure if putting together a long string value is more
         // efficient than processing multiple short strings... We will see.
         StringBuffer pIds = new StringBuffer();
@@ -289,7 +268,7 @@ public class EntryIndexUtils {
 		// <document type="Microsoft Word 2002">
 		Element x = (Element)document.selectSingleNode("/searchml");
 		Element y = (Element)x.selectSingleNode("document");
-		java.util.List nodes = document.selectNodes("/searchml");
+		List nodes = document.selectNodes("/searchml");
 		
       	
 		Field fileTypeField = Field.Keyword(FILE_TYPE_FIELD, x.getText());

@@ -14,12 +14,10 @@ import org.jbpm.graph.def.Node;
 
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.util.Validator;
-
-import com.sitescape.ef.domain.WorkflowControlledEntry;
+import com.sitescape.ef.domain.WorkflowSupport;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.AnyOwner;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.module.shared.WorkflowUtils;
@@ -37,23 +35,22 @@ public abstract class AbstractActionHandler implements ActionHandler {
 		return (MailManager)SpringContextUtil.getBean("mailManager");
 	};
 
-	protected WorkflowControlledEntry loadEntry(String type, Long id) {
-		if (Validator.isNull(type)) return null;
-		if (id == null) return null;
-		WorkflowControlledEntry entry = null;
-		if (type.equals(AnyOwner.PRINCIPAL)) {
-			entry = (WorkflowControlledEntry)getCoreDao().load(Principal.class, id);
-		} else if (type.equals(AnyOwner.FOLDERENTRY)) {
-			entry = (WorkflowControlledEntry)getCoreDao().load(FolderEntry.class, id);
+	protected WorkflowSupport loadEntry(String type, Long id) {
+		if ((id == null) || (type == null)) return null;
+		WorkflowSupport entry = null;
+		if (type.equals(EntityType.user.name()) || type.equals(EntityType.group.name())) {
+			entry = (WorkflowSupport)getCoreDao().load(Principal.class, id);
+		} else if (type.equals(EntityType.folderEntry.name())) {
+			entry = (WorkflowSupport)getCoreDao().load(FolderEntry.class, id);
 		}
 		return entry;
 	}
-	protected WorkflowControlledEntry loadEntry(ContextInstance ctx) {
+	protected WorkflowSupport loadEntry(ContextInstance ctx) {
 		return loadEntry((String)ctx.getVariable(WorkflowUtils.ENTRY_TYPE),
 				(Long)ctx.getVariable(WorkflowUtils.ENTRY_ID));
 	}
 
-	protected void checkForWaits(Token current, WorkflowControlledEntry entry) {
+	protected void checkForWaits(Token current, WorkflowSupport entry) {
 		JbpmSession session = WorkflowFactory.getSession();
 		HashMap oldStates = new HashMap();
 		//save states to see if any change

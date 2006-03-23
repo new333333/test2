@@ -20,25 +20,21 @@ import com.sitescape.util.Validator;
  *
  */
 public class Group extends Principal implements WorkArea {
-    private List members;    
+    private List members;  //initialized by hibernate access=field  
     
-    private Boolean functionMembershipInherited = Boolean.TRUE;
+    private Boolean functionMembershipInherited = Boolean.TRUE;//initialized by hibernate access=field
     
     private static final String WORK_AREA_TYPE = "GROUP";
     
+    public EntityIdentifier getEntityIdentifier() {
+    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.group);
+    }
     public String getTitle() {
     	String title = super.getTitle();
     	if (Validator.isNull(title)) return getName();
     	return title;
     }
-    /**
-     * @hibernate.bag table="SS_PrincipalMembership" lazy="true" inverse="false" cascade="persist,merge,save-update" 
-	 * @hibernate.key column="groupId" 
-	 * @hibernate.many-to-many fetch="join" column="userId" class="com.sitescape.ef.domain.Principal"
-     **/
-    private List getHMembers() {return members;}
-    private void setHMembers(List members) {this.members = members;}
-    
+   
     public List getMembers() {
     	if (members == null) members = new ArrayList();
     	return members;
@@ -144,16 +140,5 @@ public class Group extends Principal implements WorkArea {
         this.functionMembershipInherited = Boolean.valueOf(functionMembershipInherited);
     }
 	
-	/**
-	 * @hibernate.property not-null="true"
-     * @hibernate.column name="functionMembershipInherited"
-     * 
-	 * @return
-	 */
-    private Boolean getHFunctionMembershipInherited() {
-    	return functionMembershipInherited;
-    }
-    private void setHFunctionMembershipInherited(Boolean functionMembershipInherited) {
-        this.functionMembershipInherited = functionMembershipInherited;
-    }
+
 }

@@ -195,6 +195,10 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 			Session session = (Session)posters.get(i);
 			storeProtocol = session.getProperty("mail.store.protocol");
 			prefix = "mail." + storeProtocol + ".";
+			String hostName = session.getProperty(prefix + "host");
+			if (Validator.isNull(hostName)) {
+				hostName = session.getProperty("mail.host");
+			}
 			auth = session.getProperty(prefix + "auth");
 			if (Validator.isNull(auth)) 
 				auth = session.getProperty("mail.auth");
@@ -237,7 +241,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 				mFolder.close(true);
 				store.close();
 			} catch (Exception ex) {
-				logger.error("Error posting mail from " + session.getProperty(prefix + "host") + session.getProperty("mail.host") + " " + ex.getLocalizedMessage());
+				logger.error("Error posting mail from " + hostName + " " + ex.getLocalizedMessage());
 				
 			}						
 		}
