@@ -7,32 +7,14 @@
     <property name="jar.file" value="ssf-luceneserver.jar" />
     <property name="client.jar.file" value="ssf-luceneapi.jar" />
 
-    <target name="clean">
-        <delete file="${jar.file}" failonerror="false" />
+    <target name="clean" depends="build-common.clean">
     	<delete file="${client.jar.file}" failonerror="false" />
-        <delete dir="${java2html.dir}" />
-        <delete dir="${javadoc.dir}" />
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${classes.dir}" excludes="${classes.dir.excludes}" />
-        </delete>
     </target>
 	
 	<target name="compile" depends="javabuild,rmibuild">
 	</target>
 	
-	<target name="javabuild">
-        <mkdir dir="${classes.dir}" />
-        <javac
-            classpathref="project.classpath"
-            compiler="${javac.compiler}"
-            debug="${javac.debug}"
-            deprecation="${javac.deprecation}"
-            destdir="${classes.dir}"
-            fork="${javac.fork}"
-            memoryMaximumSize="${javac.memoryMaximumSize}"
-            nowarn="${javac.nowarn}"
-            srcdir="${source.dir}"
-        />
+	<target name="javabuild" depends="build-common.compile">
 		<copy 
 			file="${source.dir}/com/sitescape/ef/lucene/server/policy.all" 
 			todir="${classes.dir}"
@@ -68,37 +50,6 @@
 			<manifest/>
 		</jar>
 	</target>
-	
-    <target name="java2html">
-        <java
-            classname="com.sitescape.util.Java2Html"
-            classpathref="project.classpath"
-            fork="true">
-                <arg value="${java2html.bat}" />
-                <arg value="${source.dir}" />
-                <arg value="${java2html.dir}" />
-        </java>
-        <move file="${java2html.dir}/stylesheet.css" tofile="${java2html.dir}/java2html.css" />
-        <antcall target="javadoc" />
-        <replace dir="${java2html.dir}">
-            <include name="**/package-summary.html" />
-            <replacefilter
-                token="/\"
-                value="/"
-            />
-        </replace>
-    </target>
-
-    <target name="javadoc">
-        <mkdir dir="${javadoc.dir}" />
-        <javadoc
-            classpathref="project.classpath"
-            destdir="${javadoc.dir}"
-            packagenames="*.*"
-            sourcepath="${source.dir}"
-            stylesheetfile="${project.dir}/tools/javadoc.css"
-        />
-    </target>
     
     <target name="deploy" depends="jar,jar2">
         <antcall target="deploy-jar">
@@ -110,8 +61,6 @@
         <property environment="env" />
     	<property name="root.dir" value="sitescape/indexserver" />
     	<property name="zip.name" value="sitescape-indexserver" />
-  		<property file="../release.${user.name}.properties" />
-  		<property file="../release.properties" />
 	</target>
 
 	<target name="zip" depends="jar,init-release">
