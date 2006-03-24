@@ -42,6 +42,12 @@
 		</operations>
 	</definition>
 	
+	<definition name="workspaceViewDefinition" definitionType="8" caption="__workspace_view" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="workspaceViewType" caption="__add_a_new_workspace_view" />
+		</operations>
+	</definition>
+	
 <!-- Items -->
 
 <!-- Entry items -->
@@ -1192,5 +1198,49 @@
 		</jsps>
 	</item>
 		
+<!-- Workspace items -->
+	<item name="workspaceViewType" definitionType="8" caption="__workspace_view">
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+		</properties>
+		
+		<options>
+			<option name="workspaceView" initial="true" />
+		</options>
+	</item>
+	
+	<item name="workspaceView" definitionType="8" caption="__workspace_view" canBeDeleted="false" multipleAllowed="false" >		
+		<properties>
+			<property name="type" caption="__type" type="selectbox" default="standard">
+				<option name="standard" caption="__workspace_standard" />
+				<option name="team" caption="__workspace_team" />
+				<option name="dashboard" caption="__workspace_dashboard" />
+				<help>__help_workspace_view_type</help>
+			</property>
+		</properties>
+		<options>
+			<option_select path="//item[@category='workspaceView']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+	</item>
+	
+	<item name="workspaceNavBar" caption="__navigation_bar" category="workspaceView">
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="workspaceBinderList" caption="__workspace_binder_list" category="workspaceView">
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/workspace_binder_list.jsp" />
+		</jsps>
+	</item>
+
+	<item name="defaultWorkspaceView" caption="__default_workspace_view">
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_workspace_default.jsp" />
+		</jsps>
+	</item>
 		
 </definitions>
