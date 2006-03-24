@@ -32,6 +32,7 @@ import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
+import com.sitescape.ef.rss.util.UrlUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
@@ -250,6 +251,9 @@ public class SAbstractForumController extends SAbstractController {
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
 		toolbar.addToolbarMenuItem("3_display_styles", "styles", NLT.get("toolbar.menu.display_style_popup"), url);
+		
+		//Testing RSS link - the UI designer (Peter) will want to move this to someplace more appropriate.
+		toolbar.addToolbarMenu("RSS", "RSS", UrlUtil.getFeedURL(forumId));
 		return toolbar;
 	}
 	
