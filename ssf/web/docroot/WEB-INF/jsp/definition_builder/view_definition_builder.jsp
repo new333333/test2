@@ -228,7 +228,7 @@ function addOption(id, name, item) {
 }
 
 function addDefinition(id, name, item) {
-	//alert("addDefinition: " + id + ", " + name + ", " + item)
+	alert("addDefinition: " + id + ", " + name + ", " + item)
 	showOptions(id, name, item)
 	return false;
 }
@@ -291,7 +291,7 @@ function cloneItem(id, name, item) {
 }
 
 function showOptions(id, name, item) {
-	//alert('showOptions: ' + id + ', ' + name + ', ' + item)
+	alert('showOptions: ' + id + ', ' + name + ', ' + item)
 	//User selected an operation, show the operation options
 	operationSelection = id;
 	operationSelectedItem = item;
@@ -324,7 +324,7 @@ function setStateMachine(newState) {
 		loadDiv('operations', selectedIdMapped, "")
 		//ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
 	} else if (state == "operation_selected") {
-		//alert("operation_selected: " + operationSelection + ", info_"+selectedIdMapped)
+		alert("operation_selected: " + operationSelection + ", info_"+selectedIdMapped+ ", operationSelectedItem: "+operationSelectedItem)
 		if (operationSelection == "addDefinition" && operationSelectedItem != "") {
 			ss_setDivHtml("displaydiv", "")
 			ss_addToDiv("displaydiv", "info_"+selectedIdMapped)

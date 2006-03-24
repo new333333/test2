@@ -38,6 +38,7 @@ public class Definition extends PersistentTimestampObject implements AclControll
 	public static int FORUM_VIEW=5;
 	public static int PROFILE_VIEW=6;
 	public static int PROFILE_ENTRY_VIEW=7;
+	public static int WORKSPACE_VIEW=8;
 	
 	//visibility values
 	public static int PUBLIC=1;
