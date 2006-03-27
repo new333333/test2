@@ -87,12 +87,13 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 <div class="ss_style" id="ss_navbar_favorites_pane" 
   style="position:absolute; visibility:hidden; z-index:200;
   border:solid 1px black; height:200px;">
-<table >
+<table cellspacing="0" cellpadding="0">
 <tr>
 <td><b>Favorites</b></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td align="right">
   <a onClick="ss_hideDiv('ss_navbar_favorites_pane');return false;"><b>X</b></td>
 </tr>
-</table>
+<tr>
+<td colspan="3">
 <ul id="ss_favorites_1" class="ss_dragable ss_userlist">
 <li id="li_1_0" class="ss_dragable ss_userlist">yada yada</li>
 <li id="li_1_1" class="ss_dragable ss_userlist">yada yada</li>
@@ -102,6 +103,10 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 <li id="li_1_5" class="ss_dragable ss_userlist">yada yada</li>
 <li id="li_1_6" class="ss_dragable ss_userlist">yada yada</li>
 </ul>
+</td>
+</tr>
+<tr>
+<td colspan="3">
 <ul id="ss_favorites_2" class="ss_dragable ss_userlist">
 <li id="li_2_0" class="ss_dragable ss_userlist">yada yada</li>
 <li id="li_2_1" class="ss_dragable ss_userlist">yada yada</li>
@@ -111,6 +116,35 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 <li id="li_2_5" class="ss_dragable ss_userlist">yada yada</li>
 <li id="li_2_6" class="ss_dragable ss_userlist">yada yada</li>
 </ul>
+</td>
+</tr>
+<tr><td colspan="3">&nbsp;</td></tr>
+<tr>
+<td colspan="3">
+<a href="javascript: ;" 
+ onClick="ss_addForumToFavorites('<c:out value="ssFolder.id"/>');return false;"
+><span class="ss_bold">Add the current page to the favorites list...</span></a>
+</td>
+</tr>
+<tr><td colspan="3">&nbsp;</td></tr>
+<tr>
+<td colspan="3">
+<form class="ss_style" method="post" action="<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="true" >
+		<ssf:param name="operation" value="add_favorites_category" />
+    	</ssf:url>">
+<span class="ss_bold">Add a new favorites category:</span><br>
+<input type="text" size="20" name="new_favorites_category">
+<input type="submit" name="add_favorites_category" 
+ value="<ssf:nlt tag="button.ok" text="OK"/>">
+</form>
+</td>
+</tr>
+
+</table>
 </div>
 
 <script type="text/javascript">
