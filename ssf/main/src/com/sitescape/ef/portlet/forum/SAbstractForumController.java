@@ -120,6 +120,8 @@ public class SAbstractForumController extends SAbstractController {
 		}
 		model.put(WebKeys.WORKSPACES, workspaces);
 		model.put(WebKeys.FOLDERS, folders);
+		model.put(WebKeys.FOLDER_TOOLBAR, buildWorkspaceToolbar(response, ws, ws.getId().toString()).getToolbar());
+
 		return WebKeys.VIEW_WORKSPACE;
 	}  
 	protected String getShowFolder(Map formData, RenderRequest req, RenderResponse response, Folder folder, Document searchFilter, Map<String,Object>model) throws PortletRequestBindingException {
@@ -256,6 +258,65 @@ public class SAbstractForumController extends SAbstractController {
 		toolbar.addToolbarMenu("RSS", "RSS", UrlUtil.getFeedURL(forumId));
 		return toolbar;
 	}
+	
+	protected Toolbar buildWorkspaceToolbar(RenderResponse response, Workspace workspace, String forumId) {
+		//Build the toolbar array
+		Toolbar toolbar = new Toolbar();
+		//	The "Add" menu
+		List defaultWorkspaceDefinitions = workspace.getEntryDefs();
+		PortletURL url;
+		if (!defaultWorkspaceDefinitions.isEmpty()) {
+			try {
+				//getFolderModule().checkAddWorkspaceAllowed(workspace);
+				int count = 1;
+				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+				Map qualifiers = new HashMap();
+				String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
+				qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
+				for (int i=0; i<defaultWorkspaceDefinitions.size(); ++i) {
+					Definition def = (Definition) defaultWorkspaceDefinitions.get(i);
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+					String title = NLT.getDef(def.getTitle());
+					if (toolbar.checkToolbarMenuItem("1_add", "entries", title)) {
+						title = title + " (" + String.valueOf(count++) + ")";
+					}
+					toolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
+				}
+			} catch (AccessControlException ac) {};
+		}
+		//Add Folder
+		try {
+			//getFolderModule().checkAddFolderAllowed(workspace);
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), url);
+		} catch (AccessControlException ac) {};
+		
+		//The "Administration" menu
+		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
+		//Access control
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ACCESS_CONTROL);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url);
+		//Configuration
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_CONFIGURE_FORUM);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);
+		//Definition builder
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
+		
+		return toolbar;
+	}
+		
 	
 	/* 
 	 * getEvents ripples through all the entries in the current entry list, finds their
