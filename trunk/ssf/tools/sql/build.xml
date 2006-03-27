@@ -132,7 +132,7 @@
 		</antcall>
 	</target>
 	
-	<!-- Called by other targets -->
+	<!-- Called by other targets (like subroutines) -->
 	<target name="execute-script" description="Execute a sql script.">
   		<property file="${jdbc.properties}" />
 		<sql driver="${jdbc.driver}"
@@ -153,7 +153,7 @@
 		</antcall>
 	</target>
 	
-	<!-- Called by other targets -->
+	<!-- Called by other targets (like subroutines) -->
 	<target name="load-data">
   		<property file="${jdbc.properties}" />
 		<!-- This performs clean-insert meaning that it empties the table
@@ -180,7 +180,7 @@
 		description="Load minimum development data into sitescape SQLSERVER database">
 		<antcall target="load-data">
 			<param name="jdbc.properties" value="${basedir}/jdbc-sqlserver.properties"/>
-			<param name="data.input.file" value="${basedir}/data/development-minimum-flat.xml"/>
+			<param name="data.input.file" value="${basedir}/data/development-minimum-data-flat.xml"/>
 		</antcall>
 	</target>
 	
@@ -188,7 +188,7 @@
 		description="Load development data into sitescape SQLSERVER database">
 		<antcall target="load-data">
 			<param name="jdbc.properties" value="${basedir}/jdbc-sqlserver.properties"/>
-			<param name="data.input.file" value="${basedir}/data/development-export-flat.xml"/>
+			<param name="data.input.file" value="${basedir}/data/development-data-flat.xml"/>
 		</antcall>
 	</target>
 	
@@ -199,8 +199,18 @@
 			url="${jdbc.url}"
 			userid="${jdbc.username}"
 			password="${jdbc.password}">
-			<export dest="${basedir}/test/test-export-flat.xml"
-				doctype="test-export-dtd.xml"
+			<export dest="${basedir}/test/test-data-dtd.xml"
+				doctype="test-data-dtd.xml"
+				format="dtd">
+				<table name="Employees"/>
+			</export>
+		</dbunit>
+		<dbunit driver="${jdbc.driver}"
+			url="${jdbc.url}"
+			userid="${jdbc.username}"
+			password="${jdbc.password}">
+			<export dest="${basedir}/test/test-data-flat.xml"
+				doctype="test-data-dtd.xml"
 				format="flat">
 				<table name="Employees"/>
 			</export>
@@ -214,8 +224,37 @@
 			url="${jdbc.url}"
 			userid="${jdbc.username}"
 			password="${jdbc.password}">
-			<export dest="${basedir}/data/development-export-flat.xml"
-				doctype="development-export-dtd.xml"
+			<export dest="${basedir}/data/development-data-dtd.xml"
+				format="dtd">
+				<table name="SS_Attachments"/>
+				<table name="SS_CustomAttributes"/>
+				<table name="SS_DefinitionMap"/>
+				<table name="SS_Definitions"/>
+				<table name="SS_EmailAlias"/>
+				<table name="SS_Events"/>
+				<table name="SS_FolderEntries"/>
+				<table name="SS_Forums"/>
+				<table name="SS_FunctionOperations"/>
+				<table name="SS_Functions"/>
+				<table name="SS_HistoryMap"/>
+				<table name="SS_Notifications"/>
+				<table name="SS_Postings"/>
+				<table name="SS_PrincipalMembership"/>
+				<table name="SS_Principals"/>
+				<table name="SS_SeenMap"/>
+				<table name="SS_Tags"/>
+				<table name="SS_UserProperties"/>
+				<table name="SS_WorkareaFunctionMembers"/>
+				<table name="SS_WorkAreaFunctionMemberships"/>
+				<table name="SS_WorkflowStates"/>
+			</export>
+		</dbunit>
+		<dbunit driver="${jdbc.driver}"
+			url="${jdbc.url}"
+			userid="${jdbc.username}"
+			password="${jdbc.password}">
+			<export dest="${basedir}/data/development-data-flat.xml"
+				doctype="development-data-dtd.xml"
 				format="flat">
 				<table name="SS_Attachments"/>
 				<table name="SS_CustomAttributes"/>
