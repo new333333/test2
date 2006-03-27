@@ -1,0 +1,11 @@
+<!ELEMENT dataset (
+    Employees*)>
+
+<!ELEMENT Employees EMPTY>
+<!ATTLIST Employees
+    id CDATA #REQUIRED
+    firstName CDATA #REQUIRED
+    lastName CDATA #REQUIRED
+    age CDATA #IMPLIED
+>
+
