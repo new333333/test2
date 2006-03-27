@@ -19,6 +19,7 @@ import com.sitescape.ef.module.binder.EntryProcessor;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
 /**
@@ -41,23 +42,27 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public Binder getBinderByName(String binderName) 
    			throws NoBinderByTheNameException, AccessControlException {
 		Binder binder = getCoreDao().findBinderByName(binderName, RequestContextHolder.getRequestContext().getZoneName());
-	    
-		// Check if the user has "read" access to the binder.
-        getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
- 
+	    // Check if the user has "read" access to the binder.
+		getAccessControlManager().checkAcl(binder, AccessType.READ);		
 		return binder;
 	}
    
-	
 	public Binder getBinder(Long binderId)
 			throws NoBinderByTheIdException, AccessControlException {
 		Binder binder = loadBinder(binderId);
-
 		// Check if the user has "read" access to the binder.
-        getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+		getAccessControlManager().checkAcl(binder, AccessType.READ);		
 
         return binder;        
 	}
+    public boolean hasBinders(Binder binder) {
+    	List binders = binder.getBinders();
+    	for (int i=0; i<binders.size(); ++i) {
+    		Binder b = (Binder)binders.get(i);
+            if (getAccessControlManager().testAcl(b, AccessType.READ)) return true;    	       		
+    	}
+    	return false;
+    }	
 
 	public Map getFunctionMembership(Long binderId) {
 		Map result = new HashMap();

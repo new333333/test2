@@ -1,10 +1,15 @@
 
 package com.sitescape.ef.domain;
 
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
+
 /**
  * @author Janet McCann
  * Implement the hooks for the any key.  For each any type, there needs to be a field that
  * can serve as a foreign key for association mapping.
+ * 
+ * This class is closely related to EntityIdentifier.  New types
+ * must be accounted for here and in any hibernate mapping files that user this.
  */
 public class AnyOwner {
     protected DefinableEntity entity;
@@ -14,11 +19,7 @@ public class AnyOwner {
 	protected Principal principal;
 	protected Binder binder;
    //keep as reference for user queries only 
-    protected String owningFolderSortKey;
-    public final static String PRINCIPAL="principal";
-    public final static String FOLDERENTRY="doc";
-    public final static String BINDER="binder";
-    
+    protected String owningFolderSortKey;    
 
     /**
      * This should be used only by hibernate
@@ -52,15 +53,14 @@ public class AnyOwner {
 	}
 	private void setup(DefinableEntity entity) {
 		setEntity(entity);
-		String entryT = entity.getAnyOwnerType();
-		if (FOLDERENTRY.equals(entryT)) {
+		if (entity instanceof FolderEntry) {
    			folderEntry = (FolderEntry)entity;
    			//This value is used to help narrow the results of sql reporting queries
    			//You can use this to search a folder of sub-folder heirarchy
    			owningFolderSortKey = folderEntry.getParentFolder().getFolderHKey().getSortKey();  	
-   		} else if (PRINCIPAL.equals(entryT)) {
+   		} else if (entity instanceof Principal) {
    			principal=(Principal)entity;
-   		} else if (BINDER.equals(entryT)) {
+   		} else if (entity instanceof Binder) {
    			binder = (Binder)entity;
   		}
 	}
@@ -109,9 +109,12 @@ public class AnyOwner {
     * @hibernate.any meta-type="string" id-type="java.lang.Long"
     * @hibernate.any-column name="ownerType" length="16"
     * @hibernate.any-column name="ownerId"
-    * @hibernate.meta-value value="doc" class="com.sitescape.ef.domain.FolderEntry"		
-	* @hibernate.meta-value value="principal" class="com.sitescape.ef.domain.Principal"
-	* @hibernate.meta-value value="binder" class="com.sitescape.ef.domain.Binder"
+    * @hibernate.meta-value value="folderEntry" class="com.sitescape.ef.domain.FolderEntry"		
+	* @hibernate.meta-value value="user" class="com.sitescape.ef.domain.User"
+	* @hibernate.meta-value value="group" class="com.sitescape.ef.domain.Group"
+	* @hibernate.meta-value value="profileBinder" class="com.sitescape.ef.domain.ProfileBinder"
+	* @hibernate.meta-value value="workspace" class="com.sitescape.ef.domain.ProfileBinder"
+	* @hibernate.meta-value value="folder" class="com.sitescape.ef.domain.Folder"
 	*/ 
    public DefinableEntity getEntity() {
        return entity;

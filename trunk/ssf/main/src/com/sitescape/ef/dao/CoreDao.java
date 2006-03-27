@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Collection;
 import org.springframework.dao.DataAccessException;
 
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Principal;
@@ -48,7 +49,7 @@ public interface CoreDao {
 	 * @param obj
 	 */
 	public void delete(Object obj);
-	public void delete(Collection objs);
+    public void delete(DefinableEntity entity);
 	public Object load(Class className, String id);
 	public Object load(Class className, Long id);
 	public List loadObjects(ObjectControls objs, FilterControls filter);

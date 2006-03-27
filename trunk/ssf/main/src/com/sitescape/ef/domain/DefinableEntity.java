@@ -27,9 +27,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
  
     public DefinableEntity() {
     }
-	public EntityIdentifier getEntityIdentifier() {
-		throw new InternalException("Method not supported");
-    }
+	public abstract EntityIdentifier getEntityIdentifier();
    	
     /**
      * @hibernate.component prefix="description_"
@@ -245,23 +243,6 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     	return null;
     }
     
-    /**
-     * Return list of bookmark Attachments
-     * @return
-     */
- 
-    public List getBookmarks() {
-        Set atts = getAttachments();
-       	List result = new ArrayList();
-    	Attachment att;
-    	for (Iterator iter=atts.iterator(); iter.hasNext();) {
-   		att = (Attachment)iter.next();
-     		if (att instanceof Bookmark) {
-    			result.add(att);
-    		}
-    	}
-    	return result;
-    }
 
     /**
      * Return list of custom attributes. 
@@ -359,7 +340,6 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     public String getIndexDocumentUid() {
         return BasicIndexUtils.makeUid(this.getClass().getName(), this.getId());
     }
-    public abstract String getAnyOwnerType();
     /*
      * The following methods are used for performance optimization during indexing.
      * The values of each collection are loaded and built by hand.  

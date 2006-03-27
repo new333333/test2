@@ -23,7 +23,6 @@ import java.util.List;
 public interface FolderDao {
 	public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, String zoneName) throws DataAccessException;
 	public FolderEntry loadFullFolderEntry(Long parentFolderId, Long entryId, String zoneName) throws DataAccessException;
-    public void deleteEntry(FolderEntry entry);
    /**
      * Return iterator of child entries
      * @param filter

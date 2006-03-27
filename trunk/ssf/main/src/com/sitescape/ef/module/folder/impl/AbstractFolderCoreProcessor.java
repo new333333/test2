@@ -149,7 +149,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
   
      protected void deleteEntry_delete(Binder parentBinder, Entry entry) {
     	//use the optimized deleteEntry or hibernate deletes each collection entry one at a time
-    	folderDao.deleteEntry((FolderEntry)entry);   
+    	getCoreDao().delete((FolderEntry)entry);   
     }
     protected void loadEntryHistory(Entry entry) {
     	FolderEntry fEntry = (FolderEntry)entry;

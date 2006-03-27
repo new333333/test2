@@ -30,7 +30,7 @@
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
 
-<c:if test="${ssBinder.type == 'WORKSPACE'}">
+<c:if test="${ssBinder.type == 'workspace'}">
     <fieldset class="ss_fieldset">
       <legend class="ss_legend"><ssf:nlt tag="forum.configure.defaultView" text="Default folder view"/></legend>
 
@@ -52,7 +52,7 @@
     <br>
  </c:if>
 
-<c:if test="${ssBinder.type == 'FOLDER'}">
+<c:if test="${ssBinder.type == 'folder'}">
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="forum.configure.allowedViews" text="Allowed folder views"/></legend>
 
@@ -151,7 +151,7 @@
   </fieldset>
 </c:if>
 
-<c:if test="${ssBinder.type == 'PROFILES'}">
+<c:if test="${ssBinder.type == 'profiles'}">
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="forum.configure.profileView" text="Profile listing"/></legend>
 

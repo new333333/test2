@@ -8,6 +8,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
+import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.security.AccessControlException;
 
 /**
@@ -66,5 +67,6 @@ public interface BinderModule {
 	public void addTag(Long binderId, Map updates) throws AccessControlException;
 	public void deleteTag(Long binderId, String tagId) throws AccessControlException;
 
- 
+    public boolean hasBinders(Binder binder);
+
  }

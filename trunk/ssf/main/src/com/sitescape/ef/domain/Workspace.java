@@ -21,8 +21,7 @@ public class Workspace extends Binder  {
 	protected Set workspaces; 
     protected Set folders;
     protected boolean bindersParsed;
-    protected List binders;//set by hibernate access="field"
-
+ 
 	public EntityIdentifier getEntityIdentifier() {
     	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.workspace);
     }
@@ -50,8 +49,7 @@ public class Workspace extends Binder  {
     	} else if (child instanceof Folder){
     		folders.add(child);
     	}
-		binders.add(child);
-		child.setParentBinder(this);
+		super.addBinder(child);
 	}
     public void removeChild(Binder child) {
      	if (!bindersParsed) parseBinders();
@@ -60,8 +58,7 @@ public class Workspace extends Binder  {
     	} else {
     		folders.remove(child);
     	}
- 		binders.remove(child);
-		child.setParentBinder(null);
+ 		super.removeBinder(child);
  		
 	}
     protected void parseBinders() {

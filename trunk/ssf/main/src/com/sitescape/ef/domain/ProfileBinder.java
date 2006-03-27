@@ -7,6 +7,11 @@ import java.util.ArrayList;
  */
 public class ProfileBinder extends Binder {
 	private List emptyList = new ArrayList();
+
+    public EntityIdentifier getEntityIdentifier() {
+    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.profiles);
+    }
+	
 	public List getChildAclContainers() {
 		// TODO Auto-generated method stub
 		return emptyList;

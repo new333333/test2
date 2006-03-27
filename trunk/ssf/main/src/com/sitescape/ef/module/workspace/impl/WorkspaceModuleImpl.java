@@ -3,10 +3,13 @@ package com.sitescape.ef.module.workspace.impl;
 
 import java.util.Iterator;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.Collection;
+import java.util.List;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.NoWorkspaceByTheIdException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
@@ -15,9 +18,12 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.module.shared.ObjectBuilder;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -63,9 +69,9 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
        	TreeSet<Binder> tree = new TreeSet<Binder>(c);
      	for (Iterator iter=top.getBinders().iterator(); iter.hasNext();) {
     		Binder b = (Binder)iter.next();
-       	    // Check if the user has the privilege to view the folder 
+       	    // Check if the user has the privilege to view the binder 
             try {
-        		// Check if the user has "read" access to the folder.
+        		// Check if the user has "read" access to the binder.
                 getAccessControlManager().checkAcl(b, AccessType.READ);
                 tree.add(b);
             } catch (AccessControlException ac) {
@@ -76,9 +82,9 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     }
     	    	     	    	 
     public org.dom4j.Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper) throws AccessControlException {
-       	return getDomWorkspaceTree(null, domTreeHelper, true);
+       	return getDomWorkspaceTree(null, domTreeHelper, -1);
     }
-    public org.dom4j.Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper, boolean recurse) throws AccessControlException {
+    public org.dom4j.Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper, int levels) throws AccessControlException {
     	Workspace top;
         User user = RequestContextHolder.getRequestContext().getUser();
         if (id == null) top =  getCoreDao().findTopWorkspace(user.getZoneName());
@@ -90,11 +96,11 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         Comparator c = new BinderComparator(user.getLocale());
     	Document wsTree = DocumentHelper.createDocument();
     	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
-    	buildWorkspaceDomTree(rootElement, top, c, domTreeHelper, recurse);
+    	buildWorkspaceDomTree(rootElement, top, c, domTreeHelper, levels);
     	return wsTree;
     }
     
-    protected void buildWorkspaceDomTree(Element current, Workspace top, Comparator c, DomTreeBuilder domTreeHelper, boolean recurse) {
+    protected void buildWorkspaceDomTree(Element current, Workspace top, Comparator c, DomTreeBuilder domTreeHelper, int levels) {
     	Element next; 
     	Folder f;
     	Workspace w;
@@ -129,9 +135,54 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
                 	continue;
             }
      		next = current.addElement(DomTreeBuilder.NODE_CHILD);
-     		if (recurse)
-     			buildWorkspaceDomTree(next, w, c, domTreeHelper, recurse);
+     		if (--levels != 0)
+     			buildWorkspaceDomTree(next, w, c, domTreeHelper, levels);
      	}    	
+    }
+
+    public Long addFolder(Long parentWorkspaceId, Map input) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        Workspace parentWorkspace = (Workspace)getCoreDao().loadBinder(parentWorkspaceId, user.getZoneName());
+    	getAccessControlManager().checkOperation(parentWorkspace, WorkAreaOperation.CREATE_FOLDERS);
+ 
+    	Folder folder = new Folder();
+    	folder.setZoneName(user.getZoneName());
+        folder.setCreation(new HistoryStamp(user));
+        folder.setModification(folder.getCreation());
+        ObjectBuilder.updateObject(folder, input);
+        parentWorkspace.addChild(folder);
+        // The sub-folder inherits the default ACLs of the parent folder.
+        // The default ACLs of the sub-folder can be changed subsequently. 
+        getAclManager().doInherit(folder);
+        getCoreDao().save(folder);
+                  
+        return folder.getId();
+    }
+ 
+    public void checkAddFolderAllowed(Workspace parentWorkspace) {
+    	getAccessControlManager().checkOperation(parentWorkspace, WorkAreaOperation.CREATE_FOLDERS);    	
+    }
+    public Long addWorkspace(Long parentWorkspaceId, Map input) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        Workspace parentWorkspace = (Workspace)getCoreDao().loadBinder(parentWorkspaceId, user.getZoneName());
+    	getAccessControlManager().checkOperation(parentWorkspace, WorkAreaOperation.CREATE_FOLDERS);
+ 
+    	Workspace ws = new Workspace();
+    	ws.setZoneName(user.getZoneName());
+    	ws.setCreation(new HistoryStamp(user));
+    	ws.setModification(ws.getCreation());
+        ObjectBuilder.updateObject(ws, input);
+        parentWorkspace.addChild(ws);
+        // The sub-folder inherits the default ACLs of the parent folder.
+        // The default ACLs of the sub-folder can be changed subsequently. 
+        getAclManager().doInherit(ws);
+        getCoreDao().save(ws);
+                  
+        return ws.getId();
+    }
+ 
+    public void checkAddWorkspaceAllowed(Workspace parentWorkspace) {
+    	getAccessControlManager().checkOperation(parentWorkspace, WorkAreaOperation.CREATE_FOLDERS);    	
     }
 
 }

@@ -28,10 +28,12 @@ import java.util.HashMap;
 
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Tag;
+import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Attachment;
@@ -40,6 +42,7 @@ import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.CustomAttributeListElement;
 import com.sitescape.ef.util.LongIdComparator;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.UserProperties;
@@ -126,20 +129,66 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	public void delete(Object obj) {
         getHibernateTemplate().delete(obj);
     }
-    public void delete(final Collection objs) {
-        getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                    	 Iterator iter = objs.iterator();
-                     	 while (iter.hasNext()) {
-                     	 	session.delete(iter.next());                     	 	
-                     	 }
-                     	 return null;
-                    }
-                }
-            );
-    }	
 
+    /**
+     * Delete an object and its assocations more efficiently then letting hibernate do it.
+      * @param entry
+     */
+    public void delete(final DefinableEntity entity) {
+    	getHibernateTemplate().execute(
+    	   	new HibernateCallback() {
+    	   		public Object doInHibernate(Session session) throws HibernateException {
+     	   		EntityIdentifier id = entity.getEntityIdentifier();
+    	   		session.createQuery("DELETE com.sitescape.ef.domain.Attachment where ownerId=:owner and ownerType=:type")
+       	   			.setLong("owner", id.getEntityId().longValue())
+       	   			.setString("type", id.getEntityType().name())
+    	   			.executeUpdate();
+       	   		//need to remove event assignments
+ /*      	   		List eventIds = session.createQuery("select id from com.sitescape.ef.domain.Event where ownerId=:owner and ownerType=:type")
+           	   			.setLong("owner", entry.getId().longValue())
+           	   			.setString("type", AnyOwner.FOLDERENTRY)
+           	   			.list();
+       	   		if (!eventIds.isEmpty()) {
+       	   			StringBuffer ids = new StringBuffer();
+       	   			ids.append("(");
+       	   			for (int i=0; i<eventIds.size(); ++i) {
+       	   				ids.append("'" + eventIds.get(i) + "',");
+       	   			}
+       	   			ids.replace(ids.length()-1, ids.length(), ")");
+       	   			Connection connect = session.connection();
+       	   			try {
+       	   				Statement s = connect.createStatement();
+       	   				s.executeUpdate("delete from SS_AssignmentsMap where event in " + ids);
+       	   			} catch (SQLException sq) {
+       	   				throw new HibernateException(sq);
+       	   			}
+       	   		}
+*/
+       	   		session.createQuery("DELETE com.sitescape.ef.domain.Event where ownerId=:owner and ownerType=:type")
+       	   			.setLong("owner", id.getEntityId().longValue())
+       	   			.setString("type", id.getEntityType().name())
+       	   			.executeUpdate();
+       	   		session.createQuery("DELETE com.sitescape.ef.domain.CustomAttribute where ownerId=:owner and ownerType=:type")
+        	   			.setLong("owner", id.getEntityId().longValue())
+       	   			.setString("type", id.getEntityType().name())
+  	   				.executeUpdate();
+       	   		if (entity instanceof WorkflowSupport) {
+       	   			session.createQuery("DELETE com.sitescape.ef.domain.WorkflowState where ownerId=:owner and ownerType=:type")
+       	   				.setLong("owner", id.getEntityId().longValue())
+       	   					.setString("type", id.getEntityType().name())
+       	   						.executeUpdate();
+       	   		}
+       	   		//will this be a problem if the entry is proxied??
+    	   		session.createQuery("DELETE  " + entity.getClass().getName() +   " where id=:id")
+    	   			.setLong("id", id.getEntityId().longValue())
+    	   			.executeUpdate();
+    	   		session.getSessionFactory().evict(entity.getClass(), id.getEntityId());
+       	   		return null;
+    	   		}
+    	   	}
+    	 );    	
+    	
+    } 
     public Object load(Class clazz, String id) {
         return getHibernateTemplate().get(clazz, id);
     }
@@ -764,15 +813,15 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 		entry.setIndexEvents(new HashSet());
                  		ids.add(entry.getId());
                 	}
-            		String type = entry.getAnyOwnerType();
-            		List objs;
+         	   		EntityIdentifier id = entry.getEntityIdentifier();
+         	   	 	List objs;
             		HashSet tSet;
             		if (entry instanceof WorkflowControlledEntry) {
                 		WorkflowControlledEntry wEntry = (WorkflowControlledEntry)entry;
                 	
                 		//Load workflow states
                 		objs = session.createCriteria(WorkflowState.class)
-                    						.add(Expression.eq("owner.ownerType", type))
+                    						.add(Expression.eq("owner.ownerType", id.getEntityType().name()))
                     						.add(Expression.in("owner.ownerId", ids))
                     						.addOrder(Order.asc("owner.ownerId"))
                     						.list();
@@ -793,7 +842,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 	}
                 	//Load attachments
                    	objs = session.createCriteria(Attachment.class)
-                     	.add(Expression.eq("owner.ownerType", type))
+   						.add(Expression.eq("owner.ownerType", id.getEntityType().name()))
                     	.add(Expression.in("owner.ownerId", ids))
                   		.addOrder(Order.asc("owner.ownerId"))
                   		.list();
@@ -814,7 +863,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                      }
                 	//Load Events states
                   	objs = session.createCriteria(Event.class)
-                     	.add(Expression.eq("owner.ownerType", type))
+                    	.add(Expression.eq("owner.ownerType", id.getEntityType().name()))
                     	.add(Expression.in("owner.ownerId", ids))
                  		.addOrder(Order.asc("owner.ownerId"))
                   		.list();
@@ -833,7 +882,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                     }
                 	//Load customAttributes
                  	objs = session.createCriteria(CustomAttribute.class)
-                 		.add(Expression.eq("owner.ownerType", type))
+                    	.add(Expression.eq("owner.ownerType", id.getEntityType().name()))
        					.add(Expression.in("owner.ownerId", ids))
                  		.addOrder(Order.asc("owner.ownerId"))
                   		.list();
@@ -878,7 +927,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	                public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(Tag.class)
                  		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
-       					.add(Expression.eq("ownerIdentifier.dbType", ownerId.getEntityType().getValue()))
+       					.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
                  		.addOrder(Order.asc("name"))
                   		.list();
 	                }
@@ -892,7 +941,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	                public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(Tag.class)
                  		.add(Expression.eq("entityIdentifier.entityId", entityId.getEntityId()))
-       					.add(Expression.eq("entityIdentifier.dbType", entityId.getEntityType().getValue()))
+       					.add(Expression.eq("entityIdentifier.type", entityId.getEntityType().getValue()))
                  		.addOrder(Order.asc("name"))
                   		.list();
 	                }

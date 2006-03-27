@@ -1,6 +1,7 @@
 package com.sitescape.ef.module.workspace;
 
 import java.util.Collection;
+import java.util.Map;
 
 import com.sitescape.ef.domain.NoWorkspaceByTheIdException;
 import com.sitescape.ef.domain.Workspace;
@@ -30,5 +31,20 @@ public interface WorkspaceModule {
   	 */
 	public Collection getWorkspaceTree(Long id) throws AccessControlException; 
   	public Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper) throws AccessControlException;
-    public Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper, boolean recurse) throws AccessControlException;
+    /**
+     * Traverse the workspace tree  returing a DOM structure containing workspaces and
+     * folders
+     * @param id
+     * @param domTreeHelper
+     * @param levels = depth to return.  -1 means all
+     * @return
+     * @throws AccessControlException
+     */
+  	public Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper, int levels) throws AccessControlException;
+
+  	public Long addWorkspace(Long parentId, Map input) throws AccessControlException;
+ 	public void checkAddWorkspaceAllowed(Workspace parent) throws AccessControlException;
+ 	public Long addFolder(Long parentId, Map input) throws AccessControlException;
+  	public void checkAddFolderAllowed(Workspace parent) throws AccessControlException;
 }
+

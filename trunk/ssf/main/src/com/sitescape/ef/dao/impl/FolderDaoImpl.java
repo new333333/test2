@@ -25,6 +25,7 @@ import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.AnyOwner;
+import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoFolderEntryByTheIdException;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
@@ -139,63 +140,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
              );
 */
     }
-    /**
-     * Delete an object and its assocations more efficiently then letting hibernate do it.
-      * @param entry
-     */
-    public void deleteEntry(final FolderEntry entry) {
-    	getHibernateTemplate().execute(
-    	   	new HibernateCallback() {
-    	   		public Object doInHibernate(Session session) throws HibernateException {
-     	   		
-    	   		session.createQuery("DELETE com.sitescape.ef.domain.Attachment where ownerId=:owner and ownerType=:type")
-       	   			.setLong("owner", entry.getId().longValue())
-       	   			.setString("type", AnyOwner.FOLDERENTRY)
-    	   			.executeUpdate();
-       	   		session.createQuery("DELETE com.sitescape.ef.domain.WorkflowState where ownerId=:owner and ownerType=:type")
-	   				.setLong("owner", entry.getId().longValue())
-	   				.setString("type", AnyOwner.FOLDERENTRY)
-	   				.executeUpdate();
-       	   		//need to remove event assignments
- /*      	   		List eventIds = session.createQuery("select id from com.sitescape.ef.domain.Event where ownerId=:owner and ownerType=:type")
-           	   			.setLong("owner", entry.getId().longValue())
-           	   			.setString("type", AnyOwner.FOLDERENTRY)
-           	   			.list();
-       	   		if (!eventIds.isEmpty()) {
-       	   			StringBuffer ids = new StringBuffer();
-       	   			ids.append("(");
-       	   			for (int i=0; i<eventIds.size(); ++i) {
-       	   				ids.append("'" + eventIds.get(i) + "',");
-       	   			}
-       	   			ids.replace(ids.length()-1, ids.length(), ")");
-       	   			Connection connect = session.connection();
-       	   			try {
-       	   				Statement s = connect.createStatement();
-       	   				s.executeUpdate("delete from SS_AssignmentsMap where event in " + ids);
-       	   			} catch (SQLException sq) {
-       	   				throw new HibernateException(sq);
-       	   			}
-       	   		}
-*/
-       	   		session.createQuery("DELETE com.sitescape.ef.domain.Event where ownerId=:owner and ownerType=:type")
-       	   			.setLong("owner", entry.getId().longValue())
-       	   			.setString("type", AnyOwner.FOLDERENTRY)
-       	   			.executeUpdate();
-       	   		session.createQuery("DELETE com.sitescape.ef.domain.CustomAttribute where ownerId=:owner and ownerType=:type")
-   	   				.setLong("owner", entry.getId().longValue())
-   	   				.setString("type", AnyOwner.FOLDERENTRY)
-   	   				.executeUpdate();
-
-    	   		session.createQuery("DELETE  com.sitescape.ef.domain.FolderEntry  where id=:id")
-       	   			.setLong("id", entry.getId().longValue())
-       	   			.executeUpdate();
-       	   		session.getSessionFactory().evict(com.sitescape.ef.domain.FolderEntry.class, entry.getId());
-       	   		return null;
-    	   		}
-    	   	}
-    	 );    	
-    	
-    }        
+      
      /**
      * Query for a collection of FolderEntries.  An iterator is returned.  The entries are 
      * not pre-loaded.

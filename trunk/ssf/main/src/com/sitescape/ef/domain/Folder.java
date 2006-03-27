@@ -19,7 +19,6 @@ public class Folder extends Binder {
     public static final int DISPLAY_STYLE_DOCUMENT_LIBRARY = 4;
     
     protected int displayStyle = DISPLAY_STYLE_DEFAULT;
-    protected List folders;
     protected List entries;
     protected Folder parentFolder;
     protected HKey folderHKey;
@@ -105,25 +104,12 @@ public class Folder extends Binder {
     protected void setEntryRootHKey(HKey entryRootHKey) {
         this.entryRootHKey = entryRootHKey;
     }
-
-    /**
-     * @hibernate.bag  lazy="true" cascade="all" inverse="true" optimistic-lock="false" 
-	 * @hibernate.key column="parentBinder" 
-	 * @hibernate.one-to-many class="com.sitescape.ef.domain.Folder" 
-     * @hibernate.cache usage="read-write"
-     * Returns a List of Folder.
-     * @return
-     */
-    private List getHFolders() {return folders;}
-    private void setHFolders(List folders) {this.folders = folders;}
-    
+   
     public List getFolders() {
-    	if (folders == null) folders = new ArrayList();
-        return folders;
+    	return getBinders();
     }
     public void addFolder(Folder child) {
-  		getFolders().add(child);
-   		child.setParentFolder(this);
+  		super.addBinder(child);
         if (topFolder == null) child.setTopFolder(this); else child.setTopFolder(topFolder);
    		//	Set root for subfolders
    		if (getFolderHKey() == null) {
@@ -135,7 +121,7 @@ public class Folder extends Binder {
         if (!child.getParentFolder().equals(this)) {
             throw new NoFolderByTheIdException(child.getId(),"Subfolder not in this folder");
         }
-        getFolders().remove(child);
+        super.removeBinder(child);
         child.setTopFolder(null);
         child.setParentFolder(null);
         child.setFolderHKey(null);

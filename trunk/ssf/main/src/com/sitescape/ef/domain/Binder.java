@@ -35,6 +35,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, AclCon
     protected String type;
     protected List definitions;	//initialized by hiberate access=field
     protected Definition defaultPostingDef;//initialized by hiberate access=field
+    protected List binders;//set by hibernate access="field"
 
     protected boolean functionMembershipInherited = true;
     protected PersistentAclSet aclSet; 
@@ -66,10 +67,28 @@ public abstract class Binder extends DefinableEntity implements WorkArea, AclCon
     public void setParentBinder(Binder parentBinder) {
    	 this.parentBinder = parentBinder;
     }
-    public String getAnyOwnerType() {
-    	return AnyOwner.BINDER;
+    /**
+     * @hibernate.bag access="field" lazy="true" cascade="all" inverse="true" optimistic-lock="false" 
+	 * @hibernate.key column="parentBinder" 
+	 * @hibernate.one-to-many class="com.sitescape.ef.domain.Binder" 
+     * @hibernate.cache usage="read-write"
+     * Returns a List of binders.
+     * @return
+     */
+    public List getBinders() {
+    	if (binders == null) binders = new ArrayList();
+    	return binders;
     }
-    public List getDefinitions() {
+    public void addBinder(Binder binder) {
+ 		binders.add(binder);
+ 		binder.setParentBinder(this);
+	}
+    public void removeBinder(Binder binder) {
+ 		binders.remove(binder);
+ 		binder.setParentBinder(null);
+ 		
+	}
+     public List getDefinitions() {
      	if (definitions == null) definitions = new ArrayList();
      	return definitions;
      }
