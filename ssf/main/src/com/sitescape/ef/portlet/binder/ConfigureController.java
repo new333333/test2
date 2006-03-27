@@ -42,13 +42,7 @@ public class ConfigureController extends SAbstractController {
 			if (!Validator.isNull(defBinderId)) {
 				//The default binder view is always the first one in the list
 				if (defBinderIds != null) {
-					for (int i = 0; i < defBinderIds.length; i++) {
-						String defId = defBinderIds[i];
-						if (!Validator.isNull(defId) && defId.toString().equals(defBinderId.toString())) {
-							definitions.add(defBinderId);
-							break;
-						}
-					}
+					definitions.add(defBinderId);
 				}
 			}
 				
@@ -57,7 +51,7 @@ public class ConfigureController extends SAbstractController {
 				for (int i = 0; i < defBinderIds.length; i++) {
 					String defId = defBinderIds[i];
 					if (!Validator.isNull(defId) && !defId.toString().equals(defBinderId.toString())) {
-						definitions.add(defId);
+							definitions.add(defId);
 					}
 				}
 			}

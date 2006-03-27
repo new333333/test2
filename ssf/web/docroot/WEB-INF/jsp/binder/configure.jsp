@@ -30,6 +30,28 @@
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
 
+<c:if test="${ssBinder.type == 'WORKSPACE'}">
+    <fieldset class="ss_fieldset">
+      <legend class="ss_legend"><ssf:nlt tag="forum.configure.defaultView" text="Default folder view"/></legend>
+
+      <c:forEach var="item" items="${ssPublicWorkspaceDefinitions}">
+          <c:choose>
+	        <c:when test="${ssDefaultFolderDefinitionId == item.value.id}">
+	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" checked>
+	          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
+	        </c:when>
+	        <c:otherwise>
+	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>">
+	          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
+	        </c:otherwise>
+          </c:choose>
+      </c:forEach>
+      <br>
+      <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
+    </fieldset>
+    <br>
+ </c:if>
+
 <c:if test="${ssBinder.type == 'FOLDER'}">
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="forum.configure.allowedViews" text="Allowed folder views"/></legend>

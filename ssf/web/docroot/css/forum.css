@@ -314,6 +314,20 @@ div.ss_widgetContent {
 .ss_treeWidget {
   background: url("/html/pics/1pix.gif") fixed no-repeat;
   }
+.ss_treeWidget img {
+  border:none;
+  margin:0px;
+  padding:0px;
+  vertical-align:middle;
+  }
+.ss_treeWidget a {
+  text-decoration: none;
+  border:none;
+  }
+.ss_treeWidget a:hover {
+  text-decoration: underline;
+  border:none;
+  }
 .ss_treeWidget_ul {
   display: inline;
   padding: 0px 0px 0px 0px;

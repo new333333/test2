@@ -42,6 +42,7 @@ public class DefinitionUtils {
 		Iterator itPublicDefinitions = defs.listIterator();
 		Map publicEntryDefinitions = new HashMap();
 		Map publicForumDefinitions = new HashMap();
+		Map publicWorkspaceDefinitions = new HashMap();
 		Map publicProfileDefinitions = new HashMap();
 		Map publicProfileEntryDefinitions = new HashMap();
 		while (itPublicDefinitions.hasNext()) {
@@ -54,12 +55,15 @@ public class DefinitionUtils {
 				publicProfileDefinitions.put(def.getId(), def);
 			} else if (def.getType() == Definition.PROFILE_ENTRY_VIEW) {
 				publicProfileEntryDefinitions.put(def.getId(), def);
+			} else if (def.getType() == Definition.WORKSPACE_VIEW) {
+				publicWorkspaceDefinitions.put(def.getId(), def);
 			}
 		}
 		model.put(WebKeys.PUBLIC_ENTRY_DEFINITIONS, publicEntryDefinitions);
 		model.put(WebKeys.PUBLIC_FOLDER_DEFINITIONS, publicForumDefinitions);
 		model.put(WebKeys.PUBLIC_PROFILE_DEFINITIONS, publicProfileDefinitions);
 		model.put(WebKeys.PUBLIC_PROFILE_ENTRY_DEFINITIONS, publicProfileEntryDefinitions);
+		model.put(WebKeys.PUBLIC_WORKSPACE_DEFINITIONS, publicWorkspaceDefinitions);
 
 	}
 	
@@ -155,7 +159,7 @@ public class DefinitionUtils {
 			if (forumViewDoc != null) {
 				Element forumViewElement ;
 				forumViewElement = forumViewDoc.getRootElement();
-				forumViewElement = (Element) forumViewElement.selectSingleNode("//item[@name='forumView' or @name='profileView']");
+				forumViewElement = (Element) forumViewElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView']");
 				model.put(WebKeys.CONFIG_ELEMENT, forumViewElement);
 			} else {
 				model.put(WebKeys.CONFIG_ELEMENT, null);

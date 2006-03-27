@@ -30,6 +30,11 @@ var ss_onResizeRoutineLoaded;
 
 //SiteScape's array function (use this instead of "new Array()" to avoid problems with extending the js Array)
 function ssArray() {}
+function ssArrayLength(obj) {
+	var length = 0
+	for (var i in obj) length++;
+	return length;
+}
 
 //Routine called by the body's onLoad event
 var ss_savedOnLoadRoutine = null;

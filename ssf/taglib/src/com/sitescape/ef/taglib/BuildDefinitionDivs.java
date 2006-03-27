@@ -387,11 +387,9 @@ public class BuildDefinitionDivs extends TagSupport {
 				String operationElementName = operationElement.attributeValue("name");
 				
 				sb.append("<a href=\"javascript: ;\" "); 
-				if (operationElement.attributeValue("item", "").equals("")) {
-					sb.append("onClick=\"self."+operationElementId+"('" + operationElementId + "', '" + operationElementName + "', ''); return false;\">");
-				} else {
-					sb.append("onClick=\"self."+operationElementId+"('" + operationElementId + "', '" + operationElementName + "', ''); return false;\">");
-				}
+				sb.append("onClick=\"self."+operationElementId+"('" + operationElementId + "', '" + 
+						operationElementName + "', '" + 
+						operationElement.attributeValue("item", "") + "'); return false;\">");
 				sb.append(NLT.getDef(operationElement.attributeValue("caption")));
 				sb.append("</a>\n");
 				sb.append("</td></tr>\n");
