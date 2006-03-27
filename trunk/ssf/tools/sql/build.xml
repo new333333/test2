@@ -132,7 +132,7 @@
 		</antcall>
 	</target>
 	
-	<!-- Called by other targets (like subroutines) -->
+	<!-- Only called by other targets (like subroutines) -->
 	<target name="execute-script" description="Execute a sql script.">
   		<property file="${jdbc.properties}" />
 		<sql driver="${jdbc.driver}"
@@ -153,7 +153,7 @@
 		</antcall>
 	</target>
 	
-	<!-- Called by other targets (like subroutines) -->
+	<!-- Only called by other targets (like subroutines) -->
 	<target name="load-data">
   		<property file="${jdbc.properties}" />
 		<!-- This performs clean-insert meaning that it empties the table
@@ -217,15 +217,16 @@
 		</dbunit>
 	</target>
 	
-	<target name="export-development-data"
-		description="Export sitescape SQLSERVER database (SS_* tables only) into a file">
+	<!-- Only called by other targets (like subroutines) -->
+	<target name="export-sitescape-data">
   		<property file="${basedir}/jdbc-sqlserver.properties" />
 		<dbunit driver="${jdbc.driver}"
 			url="${jdbc.url}"
 			userid="${jdbc.username}"
 			password="${jdbc.password}">
-			<export dest="${basedir}/data/development-data-dtd.xml"
-				format="dtd">
+			<export dest="${basedir}/data/${type}-data-${format}.xml"
+				doctype="${type}-data-dtd.xml"
+				format="${format}">
 				<table name="SS_Attachments"/>
 				<table name="SS_CustomAttributes"/>
 				<table name="SS_DefinitionMap"/>
@@ -249,36 +250,18 @@
 				<table name="SS_WorkflowStates"/>
 			</export>
 		</dbunit>
-		<dbunit driver="${jdbc.driver}"
-			url="${jdbc.url}"
-			userid="${jdbc.username}"
-			password="${jdbc.password}">
-			<export dest="${basedir}/data/development-data-flat.xml"
-				doctype="development-data-dtd.xml"
-				format="flat">
-				<table name="SS_Attachments"/>
-				<table name="SS_CustomAttributes"/>
-				<table name="SS_DefinitionMap"/>
-				<table name="SS_Definitions"/>
-				<table name="SS_EmailAlias"/>
-				<table name="SS_Events"/>
-				<table name="SS_FolderEntries"/>
-				<table name="SS_Forums"/>
-				<table name="SS_FunctionOperations"/>
-				<table name="SS_Functions"/>
-				<table name="SS_HistoryMap"/>
-				<table name="SS_Notifications"/>
-				<table name="SS_Postings"/>
-				<table name="SS_PrincipalMembership"/>
-				<table name="SS_Principals"/>
-				<table name="SS_SeenMap"/>
-				<table name="SS_Tags"/>
-				<table name="SS_UserProperties"/>
-				<table name="SS_WorkareaFunctionMembers"/>
-				<table name="SS_WorkAreaFunctionMemberships"/>
-				<table name="SS_WorkflowStates"/>
-			</export>
-		</dbunit>
+	</target>
+	
+	<target name="export-development-data"
+		description="Export sitescape SQLSERVER database (SS_* tables only) into a file">
+		<antcall target="export-sitescape-data">
+			<param name="type" value="development" />
+			<param name="format" value="dtd" />
+		</antcall>
+		<antcall target="export-sitescape-data">
+			<param name="type" value="development" />
+			<param name="format" value="flat" />
+		</antcall>
 	</target>
 	
 </project>
