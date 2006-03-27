@@ -274,10 +274,12 @@ public class TreeTag extends TagSupport {
 			if (this.multiSelect != null) {
 				if (s_id.equals("")) {
 					//jspOut.print("<td><img src='" + this.commonImg + "/pics/1pix.gif' width='10px'></td>\n");
+					jspOut.print("<img src='" + this.commonImg + "/pics/1pix.gif' width='10px'>");
 				} else {
 					String checked = "";
 					if (this.multiSelect.contains(s_id)) checked = "checked";
 					//jspOut.print("<td><input type='checkbox' class='ss_text' name='" + this.multiSelectPrefix + s_id + "' " + checked + " style='width:10px;'></td>\n");
+					jspOut.print("<input type='checkbox' class='ss_text' name='" + this.multiSelectPrefix + s_id + "' " + checked + " style='width:10px;'>");
 				}
 			}
 			//jspOut.print("<td valign='top' nowrap>");
