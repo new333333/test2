@@ -1,13 +1,9 @@
 <?xml version="1.0"?>
-
 <project name="sql" basedir="." default="">
 	<property name="project.dir" value="../.." />
 
 	<import file="${project.dir}/build-common.xml"/>
 	
-	<property file="${basedir}/database.${user.name}.properties" />
-	<property file="${basedir}/database.properties" />
-
 	<property name="main.project.dir" value="${project.dir}/main" />
 	<property name="main.classes.dir" value="${main.project.dir}/${classes.dir}" />
 	<property name="create.dir" value="${basedir}/create" />
@@ -19,7 +15,17 @@
 		</classpath>
 	</taskdef>
 
-  	<target name="generate-create-script" 
+	<!--<target name="init-build">
+		<property file="${basedir}/build.${user.name}.properties" />
+		<property file="${basedir}/build.properties" />
+	</target>-->
+	
+	<target name="init-database-type">
+		<property file="${basedir}/database.${user.name}.properties" />
+		<property file="${basedir}/database.properties" />
+	</target>
+	
+  	<target name="generate-create-tables-script" depends="init-database-type"
   		description="Generate sql script used for creating tables in sitescape database.">
 		<path id="initpath">
   			<pathelement location="${main.classes.dir}"/>
@@ -30,6 +36,8 @@
 	             classpathref="initpath" name="schemaexport">
  		</taskdef> 
 
+  		<mkdir dir="${create.dir}"/>
+  		
 	    <schemaexport delimiter=";" output="${create.dir}/create-tables-${database.type}.sql"
 	    	properties="${basedir}/hibernate-${database.type}.properties" 
 	          	quiet="false" text="true">
@@ -38,57 +46,69 @@
 	            <include name="com/sitescape/ef/security/**/*hbm.xml"/>
 	        </fileset>
 	     </schemaexport>
+  		
+  		<!-- Make sure to compile the Java code we're about to run. -->
+  		<ant dir=".." target="compile" inheritAll="false" />
+  		
+  		<java
+  			classname="com.sitescape.ef.tools.sql.GenerateCreateTablesUnconstrained"
+  			classpathref="project.classpath"
+  			fork="true"
+  			dir="${basedir}"
+  			failonerror="true">
+  			<arg value="${create.dir}/create-tables-${database.type}.sql" />
+  		</java>
     </target>
 
 	<target name="generate-all-create-scripts">
-		<antcall target="generate-create-script-db2" inheritAll="false"/>
-		<antcall target="generate-create-script-mysql" inheritAll="false"/>
-		<antcall target="generate-create-script-oracle" inheritAll="false"/>
-		<antcall target="generate-create-script-postgresql" inheritAll="false"/>
-		<antcall target="generate-create-script-sql-server" inheritAll="false"/>
+		<antcall target="generate-create-tables-script-db2" inheritAll="false"/>
+		<antcall target="generate-create-tables-script-mysql" inheritAll="false"/>
+		<antcall target="generate-create-tables-script-oracle" inheritAll="false"/>
+		<antcall target="generate-create-tables-script-postgresql" inheritAll="false"/>
+		<antcall target="generate-create-tables-script-sqlserver" inheritAll="false"/>
 	</target>
 	
-	<target name="generate-create-script-db2">
+	<target name="generate-create-tables-script-db2">
 		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
 		<echo file="${basedir}/database.${user.name}.properties">database.type=db2</echo>
-		<antcall target="generate-create-script"/>
+		<antcall target="generate-create-tables-script"/>
 		<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
 		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
 	</target>
 	
-	<target name="generate-create-script-mysql">
+	<target name="generate-create-tables-script-mysql">
 		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
 		<echo file="${basedir}/database.${user.name}.properties">database.type=mysql</echo>
-		<antcall target="generate-create-script"/>
+		<antcall target="generate-create-tables-script"/>
 		<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
 		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
 	</target>
 	
-	<target name="generate-create-script-oracle">
+	<target name="generate-create-tables-script-oracle">
 		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
 		<echo file="${basedir}/database.${user.name}.properties">database.type=oracle</echo>
-		<antcall target="generate-create-script"/>
+		<antcall target="generate-create-tables-script"/>
 		<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
 		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
 	</target>
 	
-	<target name="generate-create-script-postgresql">
+	<target name="generate-create-tables-script-postgresql">
 		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
 		<echo file="${basedir}/database.${user.name}.properties">database.type=postgresql</echo>
-		<antcall target="generate-create-script"/>
+		<antcall target="generate-create-tables-script"/>
 		<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
 		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
 	</target>
 			
-	<target name="generate-create-script-sql-server">
+	<target name="generate-create-tables-script-sqlserver">
 		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
-		<echo file="${basedir}/database.${user.name}.properties">database.type=sql-server</echo>
-		<antcall target="generate-create-script"/>
+		<echo file="${basedir}/database.${user.name}.properties">database.type=sqlserver</echo>
+		<antcall target="generate-create-tables-script"/>
 		<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
 		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
 	</target>
 	
-	<target name="execute-create-script"  
+	<target name="execute-create-tables-script" depends="init-database-type"
 		description="Execute sql script that creates tables in sitescape database.">
 		<antcall target="execute-script">
 			<param name="jdbc.properties" value="${basedir}/jdbc-${database.type}.properties"/>
@@ -96,6 +116,23 @@
 		</antcall>
 	</target>
 	
+	<target name="execute-create-unconstrained-script" depends="init-database-type"
+		description="Execute sql script that creates unconstrained tables in sitescape database.">
+		<antcall target="execute-script">
+			<param name="jdbc.properties" value="${basedir}/jdbc-${database.type}.properties"/>
+			<param name="sql.script" value="${basedir}/create/create-unconstrained-tables-${database.type}.sql"/>
+		</antcall>
+	</target>
+	
+	<target name="execute-add-constraints-script" depends="init-database-type"
+		description="Execute sql script that adds constraints to tables in sitescape database.">
+		<antcall target="execute-script">
+			<param name="jdbc.properties" value="${basedir}/jdbc-${database.type}.properties"/>
+			<param name="sql.script" value="${basedir}/create/add-constraints-${database.type}.sql"/>
+		</antcall>
+	</target>
+	
+	<!-- Called by other targets -->
 	<target name="execute-script" description="Execute a sql script.">
   		<property file="${jdbc.properties}" />
 		<sql driver="${jdbc.driver}"
@@ -108,17 +145,18 @@
 		</sql>
 	</target>
 	
-	<target name="execute-test-script"  
+	<target name="execute-test-create-tables-script"  
 		description="Execute test script that creates tables in test SQLSERVER database">
 		<antcall target="execute-script">
-			<param name="jdbc.properties" value="${basedir}/test/test-jdbc-sql-server.properties"/>
-			<param name="sql.script" value="${basedir}/test/test-create-tables-sql-server.sql"/>
+			<param name="jdbc.properties" value="${basedir}/test/test-jdbc-sqlserver.properties"/>
+			<param name="sql.script" value="${basedir}/test/test-create-tables-sqlserver.sql"/>
 		</antcall>
 	</target>
 	
+	<!-- Called by other targets -->
 	<target name="load-data">
   		<property file="${jdbc.properties}" />
-		<!-- This performs clean-insert metning that it empties the table
+		<!-- This performs clean-insert meaning that it empties the table
 		     before inserting the records. -->
 		<dbunit driver="${jdbc.driver}"
 			url="${jdbc.url}"
@@ -133,70 +171,58 @@
 	<target name="load-test-data"
 		description="Load test data into test SQLSERVER database">
 		<antcall target="load-data">
-			<param name="jdbc.properties" value="${basedir}/test/test-jdbc-sql-server.properties"/>
-			<param name="data.input.file" value="${basedir}/test/test-data.xml"/>
+			<param name="jdbc.properties" value="${basedir}/test/test-jdbc-sqlserver.properties"/>
+			<param name="data.input.file" value="${basedir}/test/test-data-flat.xml"/>
 		</antcall>
 	</target>
 	
 	<target name="load-development-minimum-data"
-		description="Load minimum development data into SITESCAPE database">
+		description="Load minimum development data into sitescape SQLSERVER database">
 		<antcall target="load-data">
-			<param name="jdbc.properties" value="${basedir}/jdbc-sql-server.properties"/>
-			<param name="data.input.file" value="${basedir}/data/development-minimum.xml"/>
+			<param name="jdbc.properties" value="${basedir}/jdbc-sqlserver.properties"/>
+			<param name="data.input.file" value="${basedir}/data/development-minimum-flat.xml"/>
 		</antcall>
 	</target>
 	
 	<target name="load-development-data"
-		description="Load development data into SITESCAPE database">
+		description="Load development data into sitescape SQLSERVER database">
 		<antcall target="load-data">
-			<param name="jdbc.properties" value="${basedir}/jdbc-sql-server.properties"/>
-			<param name="data.input.file" value="${basedir}/data/development-export.xml"/>
+			<param name="jdbc.properties" value="${basedir}/jdbc-sqlserver.properties"/>
+			<param name="data.input.file" value="${basedir}/data/development-export-flat.xml"/>
 		</antcall>
-	</target>
-	
-	<target name="export-data">
-  		<property file="${jdbc.properties}" />
-		<dbunit driver="${jdbc.driver}"
-			url="${jdbc.url}"
-			userid="${jdbc.username}"
-			password="${jdbc.password}">
-			<export dest="${data.output.file}"
-				format="flat">
-				<table class="ss_style" name="Employees"/>
-			</export>
-		</dbunit>
 	</target>
 	
 	<target name="export-test-data"
 		description="Export test SQLSERVER database into a file">
-  		<property file="${basedir}/test/test-jdbc-sql-server.properties" />
+  		<property file="${basedir}/test/test-jdbc-sqlserver.properties" />
 		<dbunit driver="${jdbc.driver}"
 			url="${jdbc.url}"
 			userid="${jdbc.username}"
 			password="${jdbc.password}">
-			<export dest="${basedir}/test/test-export.xml"
+			<export dest="${basedir}/test/test-export-flat.xml"
+				doctype="test-export-dtd.xml"
 				format="flat">
-				<table class="ss_style" name="Employees"/>
+				<table name="Employees"/>
 			</export>
 		</dbunit>
 	</target>
 	
 	<target name="export-development-data"
-		description="Export SITESCAPE database (SS_* tables only) into a file">
-  		<property file="${basedir}/jdbc-sql-server.properties" />
+		description="Export sitescape SQLSERVER database (SS_* tables only) into a file">
+  		<property file="${basedir}/jdbc-sqlserver.properties" />
 		<dbunit driver="${jdbc.driver}"
 			url="${jdbc.url}"
 			userid="${jdbc.username}"
 			password="${jdbc.password}">
-			<export dest="${basedir}/data/development-export.xml"
+			<export dest="${basedir}/data/development-export-flat.xml"
+				doctype="development-export-dtd.xml"
 				format="flat">
-				<table name="SS_AssignmentsMap"/>
 				<table name="SS_Attachments"/>
 				<table name="SS_CustomAttributes"/>
 				<table name="SS_DefinitionMap"/>
+				<table name="SS_Definitions"/>
 				<table name="SS_EmailAlias"/>
 				<table name="SS_Events"/>
-				<table name="SS_FolderCounts"/>
 				<table name="SS_FolderEntries"/>
 				<table name="SS_Forums"/>
 				<table name="SS_FunctionOperations"/>
@@ -207,6 +233,7 @@
 				<table name="SS_PrincipalMembership"/>
 				<table name="SS_Principals"/>
 				<table name="SS_SeenMap"/>
+				<table name="SS_Tags"/>
 				<table name="SS_UserProperties"/>
 				<table name="SS_WorkareaFunctionMembers"/>
 				<table name="SS_WorkAreaFunctionMemberships"/>
