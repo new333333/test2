@@ -23,9 +23,7 @@ public class Group extends Principal implements WorkArea {
     private List members;  //initialized by hibernate access=field  
     
     private Boolean functionMembershipInherited = Boolean.TRUE;//initialized by hibernate access=field
-    
-    private static final String WORK_AREA_TYPE = "GROUP";
-    
+      
     public EntityIdentifier getEntityIdentifier() {
     	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.group);
     }
@@ -115,7 +113,7 @@ public class Group extends Principal implements WorkArea {
 		return getId();
 	}
 	public String getWorkAreaType() {
-		return WORK_AREA_TYPE;
+		return EntityIdentifier.EntityType.group.name();
 	}
 	public WorkArea getParentWorkArea() {
 		// Group can be a child of many other groups. No single parent.

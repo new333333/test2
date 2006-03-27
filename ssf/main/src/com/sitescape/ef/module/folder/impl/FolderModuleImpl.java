@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.ArrayList;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Collection;
 
@@ -79,6 +78,14 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		return (FolderCoreProcessor)getProcessorManager().getProcessor(folder, FolderCoreProcessor.PROCESSOR_KEY);
 	}
 
+	public Folder getFolder(Long folderId)
+		throws NoFolderByTheIdException, AccessControlException {
+		Folder folder = loadFolder(folderId);
+	
+		// Check if the user has "read" access to the folder.
+		getAccessControlManager().checkAcl(folder, AccessType.READ);		
+    return folder;        
+} 
 	public Collection getFolders(List folderIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new BinderComparator(user.getLocale());
@@ -93,14 +100,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		}
 		return result;
 	}
-	public Folder getFolder(Long folderId)
-		throws NoFolderByTheIdException, AccessControlException {
-		Folder folder = loadFolder(folderId);
-		
-		// Check if the user has "read" access to the folder.
-        getAccessControlManager().checkAcl(folder, AccessType.READ);		
-        return folder;        
-	}    
+   
 
     public Long addFolder(Long parentFolderId, Map input) {
         User user = RequestContextHolder.getRequestContext().getUser();

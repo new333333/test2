@@ -11,6 +11,11 @@
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="zoneName" length="100" not-null="true"/>
     <many-to-one name="parentBinder"/>
+      <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="binders">
+        <cache usage="read-write"/>
+        <key column="parentBinder"/>
+        <one-to-many class="com.sitescape.ef.domain.Binder"/>
+      </bag>
     <map inverse="true" access="field" cascade="all,delete-orphan" lazy="true" name="customAttributes">
       <key column="binder"/>
       <map-key type="string" column="name"/>
@@ -97,7 +102,7 @@
         <column name="modification_principal"/>
       </many-to-one>
     </component>
-    <subclass name="com.sitescape.ef.domain.Folder" node="ss_folder" discriminator-value="FOLDER" dynamic-update="true">
+    <subclass name="com.sitescape.ef.domain.Folder" node="ss_folder" discriminator-value="folder" dynamic-update="true">
       <many-to-one embed-xml="false" node="topFolder/@id" name="topFolder"/>
       <property name="nextEntryNumber"/>
       <property name="nextFolderNumber"/>
@@ -110,23 +115,13 @@
         <property name="level" column="entryRoot_level"/>
         <property name="sortKey" length="512" column="entryRoot_sortKey"/>
       </component>
-      <bag inverse="true" cascade="all" optimistic-lock="false" lazy="true" name="HFolders">
-        <cache usage="read-write"/>
-        <key column="parentBinder"/>
-        <one-to-many class="com.sitescape.ef.domain.Folder"/>
-      </bag>
       <bag inverse="true" cascade="all" optimistic-lock="false" lazy="true" name="IEntries">
         <key column="parentBinder"/>
         <one-to-many class="com.sitescape.ef.domain.FolderEntry"/>
       </bag>
     </subclass>
-    <subclass name="com.sitescape.ef.domain.ProfileBinder" discriminator-value="PROFILES" dynamic-update="true"/>
-    <subclass name="com.sitescape.ef.domain.Workspace" discriminator-value="WORKSPACE" dynamic-update="true">
-      <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="binders">
-        <cache usage="read-write"/>
-        <key column="parentBinder"/>
-        <one-to-many class="com.sitescape.ef.domain.Binder"/>
-      </bag>
+    <subclass name="com.sitescape.ef.domain.ProfileBinder" discriminator-value="profiles" dynamic-update="true"/>
+    <subclass name="com.sitescape.ef.domain.Workspace" discriminator-value="workspace" dynamic-update="true">
     </subclass>
   </class>
   <query name="find-Binder-Company"><![CDATA[from com.sitescape.ef.domain.Binder binder where binder.name=:binderName and binder.zoneName=:zoneName]]></query>

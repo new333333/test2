@@ -40,9 +40,6 @@ public abstract class Principal extends WorkflowControlledEntry  {
     protected Long preferredWorkspaceId;
     protected boolean reserved;
     protected boolean defaultIdentity;
-    public String getAnyOwnerType() {
-    	return AnyOwner.PRINCIPAL;
-    }
     /**
      * @hibernate.property
      * @return

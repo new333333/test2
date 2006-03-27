@@ -23,10 +23,16 @@ public class BinderComparator implements Comparator {
 		f2 = (Binder)obj2;
 				
 		if (f1 == f2) return 0;
-		if (f1==null) return 1;
-		if (f2 == null) return -1;
-		int result = c.compare(f1.getTitle(), f2.getTitle());
-		if (result != 0) return result;
+		if (f1==null) return -1;
+		if (f2 == null) return 1;
+		String t1 = f1.getTitle();
+		String t2 = f2.getTitle();
+		int result=0;
+		if ((t1!=null) && (t2 != null)) {
+			result = c.compare(f1.getTitle(), f2.getTitle());
+			if (result != 0) return result;
+		} else if ((t1==null) && (t2 != null)) return -1;
+		else if ((t1 != null) && (t2 == null)) return 1;
 		//if titles match - compare type
 		result = f1.getType().compareTo(f2.getType());
 		if (result != 0) return result;

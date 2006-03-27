@@ -31,6 +31,7 @@ import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.rss.util.UrlUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
@@ -104,22 +105,14 @@ public class SAbstractForumController extends SAbstractController {
 		return new ModelAndView(view, model);
 	}
 	protected String getShowWorkspace(Map formData, RenderRequest req, RenderResponse response, Workspace ws, Document searchFilter, Map<String,Object>model) throws PortletRequestBindingException {
-		Collection wsEntries;
+		Document wsTree;
 
 //		if (searchFilter != null) {
 //			wsEntries = getWorkspaceModule().getWorkspaceTree(wsId, searchFilter);
 //		} else {
-			wsEntries = getWorkspaceModule().getWorkspaceTree(ws.getId());
+			wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsTreeBuilder(),1);
 //		}
-		//Build the beans depending on the operation being done
-		List workspaces = new ArrayList();
-		List folders = new ArrayList();
-		for (Object b : wsEntries) {
-			if (b instanceof Workspace) workspaces.add(b);
-			else if (b instanceof Folder) folders.add(b);
-		}
-		model.put(WebKeys.WORKSPACES, workspaces);
-		model.put(WebKeys.FOLDERS, folders);
+		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 		model.put(WebKeys.FOLDER_TOOLBAR, buildWorkspaceToolbar(response, ws, ws.getId().toString()).getToolbar());
 
 		return WebKeys.VIEW_WORKSPACE;
@@ -267,7 +260,7 @@ public class SAbstractForumController extends SAbstractController {
 		PortletURL url;
 		if (!defaultWorkspaceDefinitions.isEmpty()) {
 			try {
-				//getFolderModule().checkAddWorkspaceAllowed(workspace);
+				getWorkspaceModule().checkAddWorkspaceAllowed(workspace);
 				int count = 1;
 				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 				Map qualifiers = new HashMap();
@@ -289,7 +282,7 @@ public class SAbstractForumController extends SAbstractController {
 		}
 		//Add Folder
 		try {
-			//getFolderModule().checkAddFolderAllowed(workspace);
+			getWorkspaceModule().checkAddFolderAllowed(workspace);
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -713,6 +706,41 @@ public class SAbstractForumController extends SAbstractController {
 				Element url = element.addElement("url");
 				url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 				url.addAttribute(WebKeys.URL_BINDER_ID, f.getId().toString());
+			} else return null;
+			return element;
+		}
+	}
+	protected class WsTreeBuilder implements DomTreeBuilder {
+		public Element setupDomElement(String type, Object source, Element element) {
+			Element url;
+			if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {
+				Workspace ws = (Workspace)source;
+				element.addAttribute("type", "workspace");
+				element.addAttribute("title", ws.getTitle());
+				element.addAttribute("id", ws.getId().toString());
+				element.addAttribute("image", "workspace");
+				url = element.addElement("url");
+				url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+				url.addAttribute(WebKeys.URL_BINDER_ID, ws.getId().toString());
+				if (getBinderModule().hasBinders(ws)) {
+					element.addAttribute("hasChildren", "true");
+				} else {
+					element.addAttribute("hasChildren", "false");					
+				}
+			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
+				Folder f = (Folder)source;
+				element.addAttribute("type", "forum");
+				element.addAttribute("title", f.getTitle());
+				element.addAttribute("id", f.getId().toString());
+				element.addAttribute("image", "forum");
+				url = element.addElement("url");
+				url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+				url.addAttribute(WebKeys.URL_BINDER_ID, f.getId().toString());
+				if (getBinderModule().hasBinders(f)) {
+					element.addAttribute("hasChildren", "true");
+				} else {
+					element.addAttribute("hasChildren", "false");					
+				}
 			} else return null;
 			return element;
 		}

@@ -13,9 +13,12 @@
       <many-to-one name="principal"/>
       <many-to-one name="binder"/>
       <any name="entity" id-type="java.lang.Long" meta-type="string">
-        <meta-value class="com.sitescape.ef.domain.FolderEntry" value="doc"/>
-        <meta-value class="com.sitescape.ef.domain.Principal" value="principal"/>
-        <meta-value class="com.sitescape.ef.domain.Binder" value="binder"/>
+        <meta-value class="com.sitescape.ef.domain.FolderEntry" value="folderEntry"/>
+        <meta-value class="com.sitescape.ef.domain.User" value="user"/>
+        <meta-value class="com.sitescape.ef.domain.Group" value="group"/>
+        <meta-value class="com.sitescape.ef.domain.Folder" value="folder"/>
+        <meta-value class="com.sitescape.ef.domain.Workspace" value="workspace"/>
+        <meta-value class="com.sitescape.ef.domain.ProfileBinder" value="profileBinder"/>
         <column name="ownerType" length="16"/>
         <column name="ownerId"/>
       </any>

@@ -6,11 +6,12 @@ public class EntityIdentifier {
 	protected Long entityId;
 	public enum EntityType {
 		none (0),
-		folder (1), 
-		workspace (2), 
-		user (3), 
-		group (4), 
-		folderEntry (5);
+		profiles (1),
+		folder (2), 
+		workspace (3), 
+		user (4), 
+		group (5), 
+		folderEntry (6);
 		int dbValue;
 		EntityType(int dbValue) {
 			this.dbValue = dbValue;
@@ -19,11 +20,12 @@ public class EntityIdentifier {
 		public static EntityType valueOf(int type) {
 			switch (type) {
 			case 0: return EntityType.none;
-			case 1: return EntityType.folder;
-			case 2: return EntityType.workspace;
-			case 3: return EntityType.user;
-			case 4: return EntityType.group;
-			case 5: return EntityType.folderEntry;
+			case 1: return EntityType.profiles;
+			case 2: return EntityType.folder;
+			case 3: return EntityType.workspace;
+			case 4: return EntityType.user;
+			case 5: return EntityType.group;
+			case 6: return EntityType.folderEntry;
 			default: return EntityType.none;
 			}
 		}
@@ -49,13 +51,13 @@ public class EntityIdentifier {
 	 * @hibernate.property
 	 * @return
 	 */
-	protected int getDbType() {
+	protected int getType() {
 		return entityType.getValue();
 	}
-	protected void setDbType(int dbType) {
-		for (EntityType type : EntityType.values()) {
-			if (dbType == type.getValue()) {
-				entityType=type;
+	protected void setType(int type) {
+		for (EntityType eT : EntityType.values()) {
+			if (type == eT.getValue()) {
+				entityType=eT;
 				break;
 			}
 		}

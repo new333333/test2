@@ -2,7 +2,7 @@
 array set ::j2ee_Principals_class_MAP {
    id           {id int32}
    lockVersion  {lockVersion int32}
-   type         {type "fixchar 1"}
+   type         {type "fixchar 16"}
    disabled     {disabled boolean}
    lcName       {lcName "varchar 82"}
    name         {name "varchar 82"}
@@ -51,7 +51,6 @@ array set ::j2ee_Forum_class_MAP {
    notify_teamOn   {notify_teamOn boolean}
    notify_email    {notify_email clob}
    defaultReplyDef {defaultReplyDef uuid}
-   featureMask			{featureMask int32}
    functionMembershipInherited   {functionMembershipInherited boolean}
    parentBinder 		{parentBinder int32}
    displayStyle {displayStyle int32}
@@ -225,6 +224,12 @@ if {$::dialect == "mssql"} {
     set :l [lindex [wimsql "SELECT MAX(IDENTITYCOL) FROM SS_FolderEntries;"] 0]
     set ::lastDocshareId [lindex $l 0]
     if {[isnull $::lastDocshareId]} {set ::lastDocshareId 0}
+    set :l [lindex [wimsql "SELECT MAX(IDENTITYCOL) FROM SS_Functions;"] 0]
+    set ::lastFunctionId [lindex $l 0]
+    if {[isnull $::lastFunctionId]} {set ::lastFunctionId 0}
+    set :l [lindex [wimsql "SELECT MAX(IDENTITYCOL) FROM SS_WorkAreaFunctionMemberships;"] 0]
+    set ::lastMembershipId [lindex $l 0]
+    if {[isnull $::lastMembershipId]} {set ::lastMembershipId 0}
 } elseif {$dialect == "oracle"} {
     set startIdCount [lindex [wimsql "select hibernate_sequence.nextval from dual;"] 0]
     set idCount $::startIdCount
@@ -287,6 +292,24 @@ proc new_docshare_uuid {} {
         incr ::lastDocshareId
         return $::lastDocshareId
     }
+}
+proc new_function_uuid {} {
+    if {$::dialect != "mssql"} {
+        return [incr ::idCount]
+    } else {
+        incr ::lastFunctionId
+        return $::lastFunctionId
+    }
+
+}
+proc new_membership_uuid {} {
+    if {$::dialect != "mssql"} {
+        return [incr ::idCount]
+    } else {
+        incr ::lastMembershipId
+        return $::lastMembershipId
+    }
+
 }
 proc doClob {value} {
     if {$::dialect == "oracle"} {
@@ -382,6 +405,7 @@ proc doUsers {userList} {
 	set attrs(zoneName) $::zoneName
 	set attrs(reserved) 0
 	set attrs(defaultIdentity) 0
+    set attrs(parentBinder) $::_profileId
 	
 	user_property load -filter defaultSummit
 	while {[llength [set bunchList [lrange $userList $bunchIndex [expr {$bunchIndex + $bunchSize - 1}]]]]} {
@@ -451,7 +475,7 @@ proc doUsers {userList} {
                 set attrs1(modification_date) $attrs(creation_date)
                 set attrs1(fileName) $photos
                 set attrs1(fileLength) 0
-                set attrs1(ownerType) "principal"
+                set attrs1(ownerType) "user"
                 set attrs1(ownerId) $::userIds($user)
                 set attrs1(principal) $::userIds($user)
                 set results [setupColVals $map1 attrs1 insert]
@@ -475,7 +499,7 @@ proc doUsers {userList} {
                 try {
                 	set attrs1(fileLength) [file size $attrs1(fileName)]
                 } else {continue}
-                set attrs1(ownerType) "principal"
+                set attrs1(ownerType) "user"
                 set attrs1(ownerId) $::userIds($user)           
                 set attrs1(principal) $::userIds($user)
                 set results [setupColVals $map1 attrs1 insert]
@@ -501,7 +525,7 @@ proc doGroups {groupList} {
     set map ::j2ee_Principals_class_MAP
     array unset attrs
 	set attrs(zoneName) $::zoneName
-	set attrs(type) "G"
+	set attrs(type) "group"
 	set attrs(lockVersion) 1
 	set attrs(disabled) 0
 	set attrs(defaultIdentity) 0
@@ -516,7 +540,6 @@ proc doGroups {groupList} {
             set attrs(lockVersion) 1
             #save id for latter mappings
             set ::groupIds($group) $attrs(id)
-            set attrs(type) "G"
             set attrs(disabled) [::profile::aval -type group disabled $group]
             set attrs(lcName) [::profile::aval -type group lcName $group]
             set attrs(name) $group
@@ -612,21 +635,21 @@ proc doZone {zoneName {cName {liferay.com}}} {
         
         set ::forumIds($forum) [new_forum_uuid]
         if {[strequal $class _admin] || [strequal $class summit]} {
-            set type "WORKSPACE"
+            set type "workspace"
         } else {
             set type "BINDER"
         }
 	    if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {    
-        	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',0,B'0',B'0','[sql_quote_value $::zoneName]');"
+        	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',B'0',B'0','[sql_quote_value $::zoneName]');"
 		} else {
-    	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',0,0,0,'[sql_quote_value $::zoneName]');"
+    	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',0,0,'[sql_quote_value $::zoneName]');"
 		}
      }
 	set ::_profileId [new_forum_uuid]
     if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {    
- 	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'PROFILES', 'Users/Groups',0,B'0',B'0','[sql_quote_value $::zoneName]');"
+ 	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'profiles', 'Users/Groups',B'0',B'0','[sql_quote_value $::zoneName]');"
  	} else {
-    	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, featureMask, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'PROFILES','Users/Groups',0,0,0,'[sql_quote_value $::zoneName]');"
+    	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'profiles','Users/Groups',0,0,'[sql_quote_value $::zoneName]');"
     }
     wimsql_rw "Update SS_Forums set parentBinder=$::forumIds(_admin) where not name='_admin';"
     wimsql_rw "Update SS_Forums set parentBinder=null,name='[sql_quote_value $::zoneName]' where name='_admin';"
@@ -650,7 +673,7 @@ proc doZone {zoneName {cName {liferay.com}}} {
         set ::userIds($user) [new_user_uuid]
 
         #need to save so foreign key constraings are met.
-        wimsql_rw "INSERT INTO SS_Principals (id,lockVersion,type,zoneName) VALUES ($::userIds($user),1,'U','[sql_quote_value $::zoneName]');"
+        wimsql_rw "INSERT INTO SS_Principals (id,lockVersion,type,zoneName) VALUES ($::userIds($user),1,'user','[sql_quote_value $::zoneName]');"
     }
     wimsql_rw commit
 	doUsers $personList 
@@ -743,7 +766,7 @@ proc doZone {zoneName {cName {liferay.com}}} {
                 _chatrooms - 
                 attr
                 {
-                    set attrs(type) FOLDER
+                    set attrs(type) folder
                     set RESOURCE_TYPE 3         
 
                     set PRINCIPAL_TYPE 3
@@ -754,11 +777,11 @@ proc doZone {zoneName {cName {liferay.com}}} {
                 _admin -
                 _summit97 -
                 summit {
-                    set attrs(type) WORKSPACE
+                    set attrs(type) workspace
                     set RESOURCE_TYPE 2
                 }
                  default {
-                    set attrs(type) FOLDER  
+                    set attrs(type) folder  
 					set attrs(displayStyle) 1
 					set attrs(entryRoot_level) 0
 					set attrs(entryRoot_sortKey) $eRoot
@@ -781,6 +804,9 @@ proc doZone {zoneName {cName {liferay.com}}} {
         
         error "$eMsg $::errorInfo"
     }
+    
+    #setup default workspace access
+    setupAccess
    if {$::dialect == "oracle"} {
         set val [expr $::idCount - $::startIdCount]
         if {$val > 0} {
@@ -804,6 +830,36 @@ proc doZone {zoneName {cName {liferay.com}}} {
  	}
     wimsql_rw commit
 }
+proc setupAccess {} {
+    if {$::dialect == "mssql"} {
+        wimsql_rw "SET IDENTITY_INSERT SS_Functions ON;"
+        wimsql_rw commit
+    }
+    set fId [new_function_uuid]
+	wimsql_rw "insert into SS_Functions (id, lockVersion, zoneName, name) values ($fId,1, '[sql_quote_value $::zoneName]', 'Site Administration');"
+	foreach op [list addReplies changeAccessControl createEntries createFolders creatorDeleteEntries creatorModifyEntries creatorReadEntries \
+	 				deleteEntries generateReports mangeEntryDefinitions manageWorkflowDefinitions modifyEntries readEntries siteAdministration] {
+	 	wimsql_rw "insert into SS_FunctionOperations (functionId,operationName) values ($fId, '$op');"				
+	 }
+    if {$::dialect == "mssql"} {
+        wimsql_rw "SET IDENTITY_INSERT SS_Functions OFF;"
+        wimsql_rw "SET IDENTITY_INSERT SS_WorkAreaFunctionMemberships ON;"
+        wimsql_rw commit
+    }
+	 set wId [new_membership_uuid]
+	 wimsql_rw "insert into SS_WorkAreaFunctionMemberships (id, lockVersion, workAreaId, workAreaType, zoneName, functionId) VALUES \
+	 				($wId, 1, $::forumIds(_admin), 'workspace', '[sql_quote_value $::zoneName]', $fId);"
+	 
+	 foreach {g i} [array get ::groupIds] {
+		wimsql_rw "insert into SS_WorkAreaFunctionMembers (workAreaFunctionMembershipId, memberId) values ($wId, $i);"
+	 }
+	 wimsql_rw commit
+   if {$::dialect == "mssql"} {
+         wimsql_rw "SET IDENTITY_INSERT SS_WorkAreaFunctionMemberships OFF;"
+        wimsql_rw commit
+    }
+	
+}
 
 proc doFolders {forum folder level hKey parentID} {
     #get folder list
@@ -817,7 +873,6 @@ proc doFolders {forum folder level hKey parentID} {
 	set attrs(entryRoot_level) 0
 	set attrs(folder_sortKey) $hKey
 	set attrs(folder_level) $level
-	set attrs(featureMask) 0
 	set attrs(nextEntryNumber) [expr [aval -name $forum topLeafNumber $entryBranch]+1]
  	set attrs(nextFolderNumber) [expr [llength $subFolders]+1]
    	
@@ -844,7 +899,7 @@ proc doFolders {forum folder level hKey parentID} {
 	    set attrs(topFolder) $::forumIds($forum)
 		set attrs(functionMembershipInherited) 1
 		set attrs(acl_inheritFromParent) 1
-		set attrs(type) "FOLDER"
+		set attrs(type) "folder"
 		set attrs(zoneName) $::zoneName
 		set attrs(name) [namify -targetlength 128 ${forum}_$attrs(title)]
 	    set results [setupColVals $map attrs insert]
@@ -962,7 +1017,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set topAttachment $attaches(id)
                 set attaches(lockVersion) 1
                 set attaches(ownerId) $entryId
-                set attaches(ownerType) "doc"
+                set attaches(ownerType) "folderEntry"
                 set attaches(folderEntry) $entryId
 				set attaches(owningFolderSortKey) $folderSortKey
                 set attaches(creation_date) [lindex $upLoad 3]
@@ -985,7 +1040,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set attaches(id) [newuuid]
                 set attaches(lockVersion) 1
                 set attaches(ownerId) $entryId
-                set attaches(ownerType) "doc"
+                set attaches(ownerType) "folderEntry"
                 set attaches(folderEntry) $entryId
 				set attaches(owningFolderSortKey) $folderSortKey
                 set attaches(name) "primary"
@@ -1007,7 +1062,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 array unset attaches
                 set attaches(lockVersion) 1
                 set attaches(ownerId) $entryId
-                set attaches(ownerType) "doc"
+                set attaches(ownerType) "folderEntry"
                 set attaches(folderEntry) $entryId
 				set attaches(owningFolderSortKey) $folderSortKey
                 set attaches(parentAttachment) $topAttachment
@@ -1107,7 +1162,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
 					if {[llength $af] == 0} {continue}
 	                array unset attaches
 		            set attaches(lockVersion) 1
-			        set attaches(ownerType) "doc"
+			        set attaches(ownerType) "folderEntry"
 				    set attaches(ownerId) $entryId
 	                set attaches(folderEntry) $entryId
 					set attaches(owningFolderSortKey) $folderSortKey
@@ -1150,30 +1205,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 }
             }
 
-            set aFiles [aval -name $forum attachmentUrls $entry]
-            if {![isnull $aFiles]} {
-                array unset attaches
-                set attaches(lockVersion) 1
-                set attaches(ownerType) "doc"
-                set attaches(ownerId) $entryId
-                set attaches(folderEntry) $entryId
-    			set attaches(owningFolderSortKey) $folderSortKey
-                set attaches(type) "U"
-                foreach af $aFiles {
-                    if {[strequal $af $savedName]} {continue}
-                    set attaches(id) [newuuid]
-                    set attaches(creation_date) $attrs(creation_date)
-                    set attaches(creation_principal) $attrs(creation_principal)
-                    set attaches(modification_date) $attrs(creation_date)
-                    set attaches(modification_principal) $attrs(creation_principal)
-                    set attaches(title) $af
-                     set results [setupColVals ::j2ee_Attachments_class_MAP attaches insert]
-                    set cmdList [lindex $results 1]
-                    set cmd [lindex $cmdList 0] 
-                    wimsql_rw "INSERT INTO SS_Attachments $cmd ;" [lindex $cmdList 1]
-                }
-            }
-
+ 
             doEntries $forum $entry $eRoot $folderSortKey $parentFolderID $nextTop $entryId
 
         }
@@ -1183,7 +1215,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
 }
 proc doDocCustomAttributes {forum entry entryId folderSortKey} {
 	set attrs(type) "A"
-	set attrs(ownerType) "doc"
+	set attrs(ownerType) "folderEntry"
 	set attrs(ownerId) $entryId
 	set attrs(folderEntry) $entryId
 	set attrs(owningFolderSortKey) $folderSortKey
@@ -1273,7 +1305,7 @@ proc doDocCustomAttributes {forum entry entryId folderSortKey} {
 	}
 	#store old urls as custom attribute
     set content [aval -name $forum docContent $entry]
-    if {[strequal[none/x-is-url [lindex $content 0]]} {
+    if {[strequal "none/x-is-url" [lindex $content 0]]} {
 		set attrs(id) [newuuid]
 		set attrs(valueType) 1
 		set attrs(stringValue) [lindex $content 1]
@@ -1284,6 +1316,41 @@ proc doDocCustomAttributes {forum entry entryId folderSortKey} {
         wimsql_rw "INSERT INTO SS_CustomAttributes $cmd ;" [lindex $cmdList 1]
         unset attrs(stringValue) 		
  	}
+    set aFiles [aval -name $forum attachmentUrls $entry]
+    if {![isnull $aFiles]} {
+   		 set attrs(id) [newuuid]
+		 set attrs(name)  attachmentUrls
+		 if {[llength $aFiles] == 1} {
+				set attrs(valueType) 1
+				set attrs(stringValue) $aFiles
+	        	set results [setupColVals ::j2ee_CustomAttributes_class_MAP attrs insert]
+    	    	set cmdList [lindex $results 1]
+        		set cmd [lindex $cmdList 0] 
+        		wimsql_rw "INSERT INTO SS_CustomAttributes $cmd ;" [lindex $cmdList 1]
+        		unset attrs(stringValue)
+       	} else {
+				set attrs(valueType) 5
+		        set results [setupColVals ::j2ee_CustomAttributes_class_MAP attrs insert]
+        		set cmdList [lindex $results 1]
+		        set cmd [lindex $cmdList 0] 
+		        wimsql_rw "INSERT INTO SS_CustomAttributes $cmd ;" [lindex $cmdList 1]
+		        array unset multi
+				array set multi [array get attrs]
+				set multi(type) "L"
+				set multi(valueType) 1
+				set multi(parent) $attrs(id)
+				foreach v $aFiles {
+					if {![isnull $v]} {
+						set multi(id) [newuuid]
+						set multi(stringValue) $v
+				        set results [setupColVals ::j2ee_CustomAttributes_class_MAP multi insert]
+			    	    set cmdList [lindex $results 1]
+			        	set cmd [lindex $cmdList 0] 
+		    	    	wimsql_rw "INSERT INTO SS_CustomAttributes $cmd ;" [lindex $cmdList 1]
+		    	    }
+				}
+	 	}	
+    }
   	array unset kvps
  	array set kvps [aval -name $forum attributes $entry]
 	foreach n [array names kvps] {
