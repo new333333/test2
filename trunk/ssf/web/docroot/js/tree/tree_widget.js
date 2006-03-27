@@ -1,14 +1,14 @@
 //Routines to display an expandable/contractable tree
 //
-//Start by defining a new tree object - new Tree(treeId, className)
-//Next, define the nodes in the tree - Tree.defineNode(nodeId, parentId, text, image, url)
-//Finally, create the tree - Tree.create(openNodes)
+//Start by defining a new tree object - new ssTree(treeId, className)
+//Next, define the nodes in the tree - ssTree.defineNode(nodeId, parentId, text, image, url)
+//Finally, create the tree - ssTree.create(openNodes)
 
-if (!Tree_widget_treeList) var Tree_widget_treeList = new ssArray();
+if (!ssTree_widget_treeList) var ssTree_widget_treeList = new ssArray();
 
-function Tree(treeId, className, imageBase) {
-	if (!Tree_widget_treeList[treeId] || Tree_widget_treeList[treeId] == null) {
-        Tree_widget_treeList[treeId] = this;
+function ssTree(treeId, className, imageBase) {
+	if (!ssTree_widget_treeList[treeId] || ssTree_widget_treeList[treeId] == null) {
+        ssTree_widget_treeList[treeId] = this;
     }
     this.treeId = treeId;
 	this.className = className;
@@ -18,25 +18,25 @@ function Tree(treeId, className, imageBase) {
 	this.orderedNodeList = new ssArray();
 	this.orderedNodeListCount = 0;
 
-    this.defineNode = Tree_defineNode;
-    this.create = Tree_create;
-    this.hasChildNode = Tree_hasChildNode;
-    this.isNodeOpen = Tree_isNodeOpen;
-    this.setOpenNodes = Tree_setOpenNodes;
-    this.toggle = Tree_toggle;
-    this.toggleAll = Tree_toggleAll;
-    this.openNode = Tree_openNode;
-    this.openAll = Tree_openAll;
-    this.closeNode = Tree_closeNode;
-    this.closeAll = Tree_closeAll;
-    this.defineIcons = Tree_defineIcons;
-    this.getNode = Tree_getNode;
-    this.getDescendantsWithChildren = Tree_getDescendantsWithChildren;
-    this.divWrite = Tree_divWrite;
-    Tree_defineBasicIcons(this);
+    this.defineNode = ssTree_defineNode;
+    this.create = ssTree_create;
+    this.hasChildNode = ssTree_hasChildNode;
+    this.isNodeOpen = ssTree_isNodeOpen;
+    this.setOpenNodes = ssTree_setOpenNodes;
+    this.toggle = ssTree_toggle;
+    this.toggleAll = ssTree_toggleAll;
+    this.openNode = ssTree_openNode;
+    this.openAll = ssTree_openAll;
+    this.closeNode = ssTree_closeNode;
+    this.closeAll = ssTree_closeAll;
+    this.defineIcons = ssTree_defineIcons;
+    this.getNode = ssTree_getNode;
+    this.getDescendantsWithChildren = ssTree_getDescendantsWithChildren;
+    this.divWrite = ssTree_divWrite;
+    ssTree_defineBasicIcons(this);
 }
 
-function Tree_defineNode(nodeId, parentId, image, imageOpen) {
+function ssTree_defineNode(nodeId, parentId, image, imageOpen) {
 	if (!this.nodeList[nodeId] || this.nodeList[nodeId] == null) {
         this.nodeList[nodeId] = new ssArray();
     }
@@ -55,29 +55,29 @@ function Tree_defineNode(nodeId, parentId, image, imageOpen) {
 	n.imageOpen = this.imageBase + imageOpen;
 }
 
-function Tree_getNode(nodeId) {
+function ssTree_getNode(nodeId) {
 	return this.nodeList[nodeId];
 }
 
-function Tree_defineIcons(icons, iconsClosed, iconsOpen) {
+function ssTree_defineIcons(icons, iconsClosed, iconsOpen) {
 	this.icons = icons
 	this.iconsClosed = iconsClosed
 	this.iconsOpen = iconsOpen
 }
 
-function Tree_create(openNode) {
-	if (this.nodeList.length > 0) {
+function ssTree_create(openNode) {
+	if (ssArrayLength(this.nodeList) > 0) {
 		if (openNode != 0 || openNode != null) {
 			this.setOpenNodes(openNode);
 		}
 	}
 }
 
-function Tree_divWrite(text) {
+function ssTree_divWrite(text) {
 	//document.write(text);
 }
 
-function Tree_hasChildNode(parentNode) {
+function ssTree_hasChildNode(parentNode) {
 	if (parentNode == "" || this.nodeList[parentNode] == null) {return false}
 	var pn = this.nodeList[parentNode];
 	if (pn.childCount > 0) {
@@ -87,8 +87,8 @@ function Tree_hasChildNode(parentNode) {
 	}
 }
 
-function Tree_isNodeOpen(node) {
-	for (i = 0; i < this.openNodes.length; i++) {
+function ssTree_isNodeOpen(node) {
+	for (i = 0; i < ssArrayLength(this.openNodes); i++) {
 		if (this.openNodes[i] == node) {
 			return true;
 		}
@@ -97,7 +97,7 @@ function Tree_isNodeOpen(node) {
 	return false;
 }
 
-function Tree_setOpenNodes(openNode) {
+function ssTree_setOpenNodes(openNode) {
 	for (var i in this.nodeList) {
 		var n = this.nodeList[i];
 
@@ -108,11 +108,11 @@ function Tree_setOpenNodes(openNode) {
 	}
 }
 
-function Tree_toggle(treeId, node, bottom) {
+function ssTree_toggle(treeId, node, bottom) {
 	var divEl = document.getElementById(treeId + "div" + node);
 	var joinEl	= document.getElementById(treeId + "join" + node);
 	var iconEl = document.getElementById(treeId + "icon" + node);
-	var tree = Tree_widget_treeList[treeId];
+	var tree = ssTree_widget_treeList[treeId];
 	var n = tree.getNode(node);
 
 	if (divEl.style.display == "none") {
@@ -141,13 +141,12 @@ function Tree_toggle(treeId, node, bottom) {
 }
 
 var dblClickOpenAll = 1;
-function Tree_toggleAll(treeId, node, bottom) {
-	var tree = Tree_widget_treeList[treeId];
+function ssTree_toggleAll(treeId, node, bottom) {
+	var tree = ssTree_widget_treeList[treeId];
 	var n = tree.getNode(node);
 	var divEl = document.getElementById(treeId + "div" + node);
 
 	//Build a list of nodes
-	tree.orderedNodeListCount = tree.orderedNodeList.length;
 	tree.orderedNodeList = new ssArray();
 	tree.orderedNodeList = tree.getDescendantsWithChildren(treeId, node, tree.orderedNodeList)
 	tree.orderedNodeListCount = 0;
@@ -156,7 +155,7 @@ function Tree_toggleAll(treeId, node, bottom) {
 	if (dblClickOpenAll) {
 		//Open all nodes
 		divEl.style.display = "none";
-		Tree_openNode(treeId, node);
+		ssTree_openNode(treeId, node);
 		setTimeout('delayedOpenNodes("'+treeId+'")', 50);
 	} else {
 		//Toggle the nodes
@@ -169,42 +168,42 @@ function Tree_toggleAll(treeId, node, bottom) {
 }
 
 function delayedOpenNodes(treeId) {
-	var tree = Tree_widget_treeList[treeId];
+	var tree = ssTree_widget_treeList[treeId];
 	for (var i = 0; i < 5; i++) {
-		if (tree.orderedNodeListCount < tree.orderedNodeList.length) {
+		if (tree.orderedNodeListCount < ssArrayLength(tree.orderedNodeList)) {
 			tree.openNode(treeId, tree.orderedNodeList[tree.orderedNodeListCount])
 			tree.orderedNodeListCount++
 		} else {
 			break
 		}
 	}
-	if (tree.orderedNodeListCount < tree.orderedNodeList.length) {
+	if (tree.orderedNodeListCount < ssArrayLength(tree.orderedNodeList)) {
 		setTimeout('delayedOpenNodes("'+treeId+'")', 1);
 	}
 }
 
 function delayedCloseNodes(treeId) {
-	var tree = Tree_widget_treeList[treeId];
+	var tree = ssTree_widget_treeList[treeId];
 	for (var i = 0; i < 5; i++) {
-		if (tree.orderedNodeListCount < tree.orderedNodeList.length) {
+		if (tree.orderedNodeListCount < ssArrayLength(tree.orderedNodeList)) {
 			tree.closeNode(treeId, tree.orderedNodeList[tree.orderedNodeListCount])
 			tree.orderedNodeListCount++
 		} else {
 			break
 		}
 	}
-	if (tree.orderedNodeListCount < tree.orderedNodeList.length) {
+	if (tree.orderedNodeListCount < ssArrayLength(tree.orderedNodeList)) {
 		setTimeout('delayedCloseNodes("'+treeId+'")', 1);
 	}
 }
 
-function Tree_getDescendantsWithChildren(treeId, node, orderedNodeList) {
-	var tree = Tree_widget_treeList[treeId];
+function ssTree_getDescendantsWithChildren(treeId, node, orderedNodeList) {
+	var tree = ssTree_widget_treeList[treeId];
 	var n = tree.getNode(node);
 	if (tree.hasChildNode(node)) {
-		for (var i=0; i < n.children.length; i++) {
+		for (var i=0; i < ssArrayLength(n.children); i++) {
 			if (tree.hasChildNode(n.children[i])) {
-				orderedNodeList[orderedNodeList.length] = n.children[i];
+				orderedNodeList[ssArrayLength(orderedNodeList)] = n.children[i];
 				orderedNodeList = tree.getDescendantsWithChildren(treeId, n.children[i], orderedNodeList)
 			}
 		}
@@ -212,8 +211,8 @@ function Tree_getDescendantsWithChildren(treeId, node, orderedNodeList) {
 	return orderedNodeList
 }
 
-function Tree_openNode(treeId, node) {
-	var tree = Tree_widget_treeList[treeId];
+function ssTree_openNode(treeId, node) {
+	var tree = ssTree_widget_treeList[treeId];
 	var n = tree.getNode(node);
 	if (tree.hasChildNode(node)) {
 		var divEl = document.getElementById(treeId + "div" + node);
@@ -234,8 +233,8 @@ function Tree_openNode(treeId, node) {
 	}
 }
 
-function Tree_closeNode(treeId, node) {
-	var tree = Tree_widget_treeList[treeId];
+function ssTree_closeNode(treeId, node) {
+	var tree = ssTree_widget_treeList[treeId];
 	var n = tree.getNode(node);
 	if (tree.hasChildNode(node)) {
 		var divEl = document.getElementById(treeId + "div" + node);
@@ -257,11 +256,11 @@ function Tree_closeNode(treeId, node) {
 	}
 }
 
-function Tree_openAll(treeId, node) {
+function ssTree_openAll(treeId, node) {
 	var divEl = document.getElementById(treeId + "div" + node);
 	var joinEl	= document.getElementById(treeId + "join" + node);
 	var iconEl = document.getElementById(treeId + "icon" + node);
-	var tree = Tree_widget_treeList[treeId];
+	var tree = ssTree_widget_treeList[treeId];
 	var n = tree.getNode(node);
 	if (!divEl.style || !divEl.style.display || divEl.style.display == "none") {
 		if (tree.hasChildNode(node)) {
@@ -282,7 +281,7 @@ function Tree_openAll(treeId, node) {
 }
 
 function delayedOpenAllNode(treeId, node) {
-	var tree = Tree_widget_treeList[treeId];
+	var tree = ssTree_widget_treeList[treeId];
 	for (var i in tree.nodeList[node].children) {
 		var cn = tree.nodeList[node].children[i];
 		if (tree.hasChildNode(cn)) {
@@ -291,11 +290,11 @@ function delayedOpenAllNode(treeId, node) {
 	}
 }
 
-function Tree_closeAll(treeId, node) {
+function ssTree_closeAll(treeId, node) {
 	var divEl = document.getElementById(treeId + "div" + node);
 	var joinEl	= document.getElementById(treeId + "join" + node);
 	var iconEl = document.getElementById(treeId + "icon" + node);
-	var tree = Tree_widget_treeList[treeId];
+	var tree = ssTree_widget_treeList[treeId];
 	var n = tree.getNode(node);
 
 	if (divEl.style.display != "none") {
@@ -315,14 +314,14 @@ function Tree_closeAll(treeId, node) {
 		for (var i = 0; i < tree.nodeList[node].childCount; i++) {
 			var cn = tree.nodeList[node].children[i];
 			if (tree.hasChildNode(cn)) {
-				setTimeout('Tree_widget_treeList\["'+treeId+'"\].closeAll("'+treeId+'", "'+ cn+'")', 1);
+				setTimeout('ssTree_widget_treeList\["'+treeId+'"\].closeAll("'+treeId+'", "'+ cn+'")', 1);
 				//tree.closeAll(treeId, cn);
 			}
 		}
 	}
 }
 
-function Tree_defineBasicIcons(tree) {
+function ssTree_defineBasicIcons(tree) {
 	var treeIcons = new ssArray();
 	var treeIconsClosed = new ssArray();
 	var treeIconsOpen = new ssArray();

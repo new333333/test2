@@ -97,6 +97,7 @@ public class Workspace extends Binder  {
         return new ArrayList(); // empty
     }
     public List getEntryDefs() {return new ArrayList();}
-    public List getBinderViewDefs() {return new ArrayList();}
-
+    public List getBinderViewDefs() {
+    	return getDefs(Definition.WORKSPACE_VIEW);
+    }
 }
