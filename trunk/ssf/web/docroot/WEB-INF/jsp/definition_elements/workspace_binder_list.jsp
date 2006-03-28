@@ -12,3 +12,5 @@
 </c:if>
 
 <h2><c:out value="${ssBinder.title}"/></h2>
+
+<ssf:tree treeName="wsTree" treeDocument="${ssWsDomTree}"  rootOpen="true" />
