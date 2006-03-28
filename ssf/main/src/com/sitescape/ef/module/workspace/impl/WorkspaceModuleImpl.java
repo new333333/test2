@@ -105,7 +105,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	Folder f;
     	Workspace w;
     	
-    	//callback to setup tree
+  		--levels;
+		//callback to setup tree
     	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_WORKSPACE, top, current);
     	//order result
        	TreeSet ws = new TreeSet(c);
@@ -135,9 +136,11 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
                 	continue;
             }
      		next = current.addElement(DomTreeBuilder.NODE_CHILD);
-     		if (--levels != 0)
+     		if (levels != 0)
      			buildWorkspaceDomTree(next, w, c, domTreeHelper, levels);
-     	}    	
+     		else
+     		   	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_WORKSPACE, w, next);
+       	}    	
     }
 
     public Long addFolder(Long parentWorkspaceId, Map input) {
