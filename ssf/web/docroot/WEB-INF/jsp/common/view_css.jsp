@@ -377,6 +377,62 @@ div.ss_sliding_table_info_popup {
 	padding: 0px 3px 0px 3px;
 }
 
+.ss_twDiv {
+  }
+.ss_twImg {
+  width:19px;
+  height:20px;
+  border:none;
+  }
+.ss_twPlus {
+  width:19px;
+  height:20px;
+  background-image: url(<html:imagesPath/>trees/plus.gif);
+  border:none;
+  }
+.ss_twMinus {
+  width:19px;
+  height:20px;
+  background-image: url(<html:imagesPath/>trees/minus.gif);
+  border:none;
+  }
+.ss_twPlusBottom {
+  width:19px;
+  height:20px;
+  background-image: url(<html:imagesPath/>trees/plus_bottom.gif);
+  border:none;
+  }
+.ss_twMinusBottom {
+  width:19px;
+  height:20px;
+  background-image: url(<html:imagesPath/>trees/minus_bottom.gif);
+  border:none;
+  }
+.ss_twJoin {
+  width:19px;
+  height:20px;
+  background-image: url(<html:imagesPath/>trees/join.gif);
+  border:none;
+  }
+.ss_twJoinBottom {
+  width:19px;
+  height:20px;
+  background-image: url(<html:imagesPath/>trees/join_bottom.gif);
+  border:none;
+  }
+.ss_twFolder {
+  width:19px;
+  height:20px;
+  background-image: url(<html:imagesPath/>trees/folder.gif);
+  border:none;
+  }
+.ss_twFolderOpen {
+  width:19px;
+  height:20px;
+  background-image: url(<html:imagesPath/>trees/folder_open.gif);
+  border:none;
+  }
+
 /* htmlarea overrides */
 .htmlarea { 
     background: ${ss_form_element_color}; 
