@@ -72,7 +72,7 @@
 
 	<filter-mapping>
 		<filter-name>rssAuthenticationFilter</filter-name>
-		<servlet-name>rssServlet</servlet-name>
+		<servlet-name>rss</servlet-name>
 	</filter-mapping>
 
 	<listener>
@@ -120,7 +120,7 @@
 	</servlet>
 
 	<servlet>
-		<servlet-name>rssServlet</servlet-name>
+		<servlet-name>rss</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>namespace</param-name>
@@ -155,7 +155,7 @@
 	</servlet-mapping>	
 
 	<servlet-mapping>
-		<servlet-name>rssServlet</servlet-name>
+		<servlet-name>rss</servlet-name>
 		<url-pattern>/rss/*</url-pattern>
 	</servlet-mapping>
 
