@@ -295,6 +295,8 @@
 	<!-- ============================== RSS Generator ============================ -->
 	
     <bean id="rssGenerator" class="com.sitescape.ef.rss.RssGenerator">
+	    <property name="dataRootDirProperty"><value>data.root.dir</value></property>
+	    <property name="subDirName"><value>rss</value></property>
     </bean>
 	
 	<!-- ================================ Security Service =============================== -->
