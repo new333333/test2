@@ -137,8 +137,7 @@ public class RssGenerator extends CommonDependencyInjection {
 		List aclNodes = rssRoot.selectNodes("/rss/channel/item/sitescapeAcl");
 
 		// get the current users acl set
-		Set userAclSet = user.getAclSet().getMemberIds(AccessType.READ);
-        
+		Set userAclSet = user.computePrincipalIds();
 		// Walk thru the nodes with ACL's and find the ones this
 		// user has read access to, and delete the rest.
 		for (Iterator i = aclNodes.iterator(); i.hasNext();) {
@@ -146,7 +145,10 @@ public class RssGenerator extends CommonDependencyInjection {
 			Node thisAcl = (Node)i.next();
  	       	String[] acls = thisAcl.getStringValue().split(" ");
  	       	for (int j = 0; j < acls.length; j++) {
- 	       		if (userAclSet.contains(acls[j])) access = true;
+ 	       		if (userAclSet.contains(new Long(acls[j]))) {
+ 	       			access = true;
+ 	       			break;
+ 	       		}
  	       	}
  	       	
  	       	if (!access) {
@@ -194,7 +196,7 @@ public class RssGenerator extends CommonDependencyInjection {
        		for (Iterator i = ids.iterator(); i.hasNext();) {
         		pIds.append(i.next()).append(" ");
         	}
-    		entryElement.addElement("sitesscapeAcl")
+    		entryElement.addElement("sitescapeAcl")
     			.addText(pIds.toString());
     	}
     	return entryElement;
