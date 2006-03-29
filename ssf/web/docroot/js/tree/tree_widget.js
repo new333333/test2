@@ -12,7 +12,9 @@ function ss_treeToggle(treeName, node, bottom, type) {
     var tObj = self.document.getElementById(treeName + "div" + node);
     var jObj = self.document.getElementById(treeName + "join" + node);
     var iObj = self.document.getElementById(treeName + "icon" + node);
-    if (tObj == null) {alert('no tree div: ' + treeName + "div" + node);}
+    if (tObj == null) {
+        alert('no tree div: ' + treeName + "div" + node);
+    }
     if (tObj.style.display == "none" || tObj.style.visibility == 'hidden') {
         tObj.style.display = "block";
         tObj.style.visibility = 'visible';
