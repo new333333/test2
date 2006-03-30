@@ -20,6 +20,7 @@ import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
 /**
@@ -64,29 +65,38 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	return false;
     }	
 
-	public Map getFunctionMembership(Long binderId) {
-		Map result = new HashMap();
+	public Binder setConfiguration(Long binderId, boolean inheritFromParent) {
 		Binder binder = loadBinder(binderId);
-        getAccessControlManager().checkOperation(binder, WorkAreaOperation.CHANGE_ACCESS_CONTROL);
-        result.put(ObjectKeys.BINDER, binder);
-        result.put(ObjectKeys.FUNCTIONS, getFunctionManager().findFunctions(binder.getZoneName())); 
-        result.put(ObjectKeys.FUNCTION_MEMBERSHIP, getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(binder.getZoneName(), binder));
-        return result;
+		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS); 
+		boolean oldInherit = binder.isDefinitionsInherited();
+		if (inheritFromParent != oldInherit) {
+			if (inheritFromParent) {
+				//remove old mappings
+				Map m = binder.getWorkflowAssociations();
+				m.clear();
+				binder.setWorkflowAssociations(m);
+				List l = binder.getDefinitions();
+				l.clear();
+				binder.setDefinitions(l);
+			} else {
+				//copy parents definitions to this binder before changing setting
+				binder.setWorkflowAssociations(binder.getWorkflowAssociations());
+				binder.setDefinitions(binder.getDefinitions());
+			}
+			binder.setDefinitionsInherited(inheritFromParent);
+		}
+		return binder;
+		
 	}
-	public void setFunctionMembershipInherited(Long binderId, boolean inherit) 
-    throws AccessControlException {
-    	Binder binder = loadBinder(binderId);
-    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.CHANGE_ACCESS_CONTROL);    	
-    	binder.setFunctionMembershipInherited(inherit);
-    } 
-    public Binder modifyConfiguration(Long binderId, List definitionIds, Map workflowAssociations) 
+    public Binder setConfiguration(Long binderId, List definitionIds, Map workflowAssociations) 
 	throws AccessControlException {
-		Binder binder = modifyConfiguration(binderId, definitionIds);
+		Binder binder = setConfiguration(binderId, definitionIds);
 		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS);    	
-		binder.setProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS, workflowAssociations);
+		binder.setWorkflowAssociations(workflowAssociations);
+		binder.setDefinitionsInherited(false);
 		return binder;
 	}
-	public Binder modifyConfiguration(Long binderId, List definitionIds) throws AccessControlException {
+	public Binder setConfiguration(Long binderId, List definitionIds) throws AccessControlException {
 		Binder binder = loadBinder(binderId);
 		String companyId = binder.getZoneName();
 		List definitions = new ArrayList(); 
@@ -102,6 +112,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		}
 	
 		binder.setDefinitions(definitions);
+		binder.setDefinitionsInherited(false);
+		
 		return binder;
 	}
 	/**

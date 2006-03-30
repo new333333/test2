@@ -41,6 +41,7 @@ public interface WorkspaceModule {
      * @throws AccessControlException
      */
   	public Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper, int levels) throws AccessControlException;
+ 	public Document getDomWorkspaceTree(Long topId, Long bottonId, DomTreeBuilder domTreeHelper) throws AccessControlException;
 
   	public Long addWorkspace(Long parentId, Map input) throws AccessControlException;
  	public void checkAddWorkspaceAllowed(Workspace parent) throws AccessControlException;

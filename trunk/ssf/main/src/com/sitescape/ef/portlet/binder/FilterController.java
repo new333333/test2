@@ -93,7 +93,6 @@ public class FilterController extends SAbstractController {
 		String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilter", "");
 		model.put(WebKeys.FILTER_SELECTED_FILTER_NAME, selectedSearchFilter);
 		model.put(WebKeys.BINDER, binder);
-		model.put(WebKeys.FOLDER_WORKFLOW_ASSOCIATIONS, binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS));
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
 			
 		DefinitionUtils.getDefinitions(model);

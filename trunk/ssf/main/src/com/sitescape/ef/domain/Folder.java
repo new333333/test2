@@ -7,7 +7,7 @@ import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.InternalException;
 
 /**
- * @hibernate.subclass discriminator-value="FOLDER" dynamic-update="true" node="ss_folder"
+ * @hibernate.subclass discriminator-value="folder" dynamic-update="true" node="ss_folder"
  * 
  * @author Jong Kim
  *
@@ -19,7 +19,7 @@ public class Folder extends Binder {
     public static final int DISPLAY_STYLE_DOCUMENT_LIBRARY = 4;
     
     protected int displayStyle = DISPLAY_STYLE_DEFAULT;
-    protected List entries;
+    protected List entries; //set by hibernate acccess="field"
     protected Folder parentFolder;
     protected HKey folderHKey;
     protected HKey entryRootHKey;
@@ -27,8 +27,13 @@ public class Folder extends Binder {
     protected int nextFolderNumber=1;
     protected int nextEntryNumber=1;
 
-    public Folder() {        
+    public Folder() {
+    	setType(EntityIdentifier.EntityType.folder.name());
     }
+    public EntityIdentifier getEntityIdentifier() {
+    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.folder);
+    }
+ 
     /**
      * @hibernate.many-to-one node="topFolder/@id" embed-xml="false"
      * @return
@@ -47,6 +52,14 @@ public class Folder extends Binder {
     public void setParentFolder(Folder parentFolder) {
         setParentBinder(parentFolder);
     }
+    /**
+     * Top folder always returns false.  Overloaded method
+     */
+    public boolean isDefinitionInheritanceSupported() {
+    	if (topFolder != null) return true;
+    	return false;
+    }
+   
     /** 
      * @hibernate.property 
      * @return
@@ -90,7 +103,10 @@ public class Folder extends Binder {
      * @hibernate.component class="com.sitescape.ef.domain.HKey" prefix="folder_"
      */
     public HKey getFolderHKey() {
-         return folderHKey;
+       	if (folderHKey != null) return folderHKey;
+    	if (getId() == null) return null;
+    	folderHKey = new HKey(generateFolderRootSortKey());
+    	return folderHKey;
     }
     protected void setFolderHKey(HKey folderHKey) {
         this.folderHKey = folderHKey;
@@ -99,7 +115,10 @@ public class Folder extends Binder {
      * @hibernate.component class="com.sitescape.ef.domain.HKey" prefix="entryRoot_"
      */
     public HKey getEntryRootHKey() {
-         return entryRootHKey;
+    	if (entryRootHKey != null) return entryRootHKey;
+    	if (getId() == null) return null;
+    	entryRootHKey = new HKey(generateEntryRootSortKey());
+    	return entryRootHKey;
     }
     protected void setEntryRootHKey(HKey entryRootHKey) {
         this.entryRootHKey = entryRootHKey;
@@ -112,10 +131,7 @@ public class Folder extends Binder {
   		super.addBinder(child);
         if (topFolder == null) child.setTopFolder(this); else child.setTopFolder(topFolder);
    		//	Set root for subfolders
-   		if (getFolderHKey() == null) {
-  			setFolderHKey(new HKey(generateFolderRootSortKey()));
-   		}
-	   	child.setFolderHKey(new HKey(getFolderHKey(), nextFolderNumber++));   			
+ 	   	child.setFolderHKey(new HKey(getFolderHKey(), nextFolderNumber++));   			
    	}
     public void removeFolder(Folder child) {
         if (!child.getParentFolder().equals(this)) {
@@ -128,19 +144,6 @@ public class Folder extends Binder {
         child.setEntryRootHKey(null);
     }    
 
-    /**
-     * @hibernate.bag lazy="true" cascade="all" inverse="true" optimistic-lock="false"
- 	 * @hibernate.key column="parentBinder" 
-	 * @hibernate.one-to-many class="com.sitescape.ef.domain.FolderEntry"
-     * Returns a Set of Folder entries.
-     * @return
-     */
-    private List getIEntries() {
-    	return entries;
-    }
-    private void setIEntries(List entries) {
-    	this.entries = entries;
-    }
     public List getEntries() {
     	if (entries == null) entries = new ArrayList();
     	return entries;
@@ -155,9 +158,6 @@ public class Folder extends Binder {
       entry.setTopEntry(null);
       entry.setParentBinder((Folder)this);
       entry.setOwningFolderSortKey(getFolderHKey().getSortKey());
-      if (getEntryRootHKey() == null) {
-    	  setEntryRootHKey( new HKey(generateEntryRootSortKey()));
-      } 
       entry.setHKey(new HKey(getEntryRootHKey(), nextEntryNumber++));
       getEntries().add(entry);
 
@@ -210,9 +210,6 @@ public class Folder extends Binder {
     public List getBinderViewDefs() {
    		return getDefs(Definition.FORUM_VIEW);
     }	    
-    public EntityIdentifier getEntityIdentifier() {
-    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.folder);
-    }
     
     /*
      * Each folder has a unique root sort key that it uses to

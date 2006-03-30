@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.sitescape.ef.jobs.ScheduleInfo;
+import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
@@ -46,4 +47,6 @@ public interface AdminModule {
     public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 
     public List getWorkAreaFunctionMemberships(WorkArea workArea);
+	public List getWorkAreaFunctionMembershipsInherited(WorkArea workArea);
+    public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
 }

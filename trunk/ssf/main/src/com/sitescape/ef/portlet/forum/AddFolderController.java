@@ -13,7 +13,7 @@ import java.util.Map;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.domain.Description;
-import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.util.Validator;
 /**
@@ -24,17 +24,24 @@ public class AddFolderController extends SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
-		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (formData.containsKey("okBtn")) {
 			Map input = new HashMap();
 			input.put("title",PortletRequestUtils.getStringParameter(request, "title", ""));
 			input.put("name",PortletRequestUtils.getStringParameter(request, "name", ""));
 			input.put("description", new Description(PortletRequestUtils.getStringParameter(request, "description", ""), Description.FORMAT_HTML));
-			getFolderModule().addFolder(folderId, input);
-			response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+			if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
+				getFolderModule().addFolder(binderId, input);
+			} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
+				getWorkspaceModule().addFolder(binderId, input);				
+			} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
+				getWorkspaceModule().addWorkspace(binderId, input);				
+			}
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			response.setRenderParameter("redirect", "true");
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			response.setRenderParameter("redirect", "true");
 		} else {
 			response.setRenderParameters(formData);
@@ -45,14 +52,23 @@ public class AddFolderController extends SAbstractController {
 			RenderResponse response) throws Exception {
 		
 		Map model = new HashMap();
-		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		if (!Validator.isNull(request.getParameter("redirect"))) {
-			model.put(WebKeys.BINDER_ID, folderId.toString());
+			model.put(WebKeys.BINDER_ID, binderId.toString());
 			return new ModelAndView(WebKeys.VIEW_LISTING_REDIRECT, model);
 		}
+		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		Binder binder=null;
+		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
+			binder = getFolderModule().getFolder(binderId);
+		} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
+			binder = getWorkspaceModule().getWorkspace(binderId);				
+		} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
+			binder = getWorkspaceModule().getWorkspace(binderId);				
+		}
 		
-		Folder folder = getFolderModule().getFolder(folderId);
-    	model.put(WebKeys.FOLDER, folder); 
+    	model.put(WebKeys.URL_OPERATION, operation);
+		model.put(WebKeys.BINDER, binder); 
 
 		return new ModelAndView(WebKeys.VIEW_ADD_FOLDER, model);
 	}

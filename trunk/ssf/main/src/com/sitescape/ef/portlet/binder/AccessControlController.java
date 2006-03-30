@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
 
-import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Binder;
@@ -26,6 +25,7 @@ import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.util.ResolveIds;
@@ -39,19 +39,19 @@ public class AccessControlController extends SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
-		response.setRenderParameters(formData);
 
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
 		request.setAttribute("roleId", "");
-
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		
 		//See if the form was submitted
 		if (formData.containsKey("addBtn")) {
 			String s_roleId = request.getParameter("roleId");
-			if (s_roleId != null && !s_roleId.equals("")) {
-				Long roleId = new Long(request.getParameter("roleId"));
-				String[] userIds = request.getParameterValues("users");
-				String[] groupIds = request.getParameterValues("groups");
+			if (!Validator.isNull(s_roleId)) {
+				Long roleId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "roleId"));
+				String[] userIds = PortletRequestUtils.getStringParameters(request, "users");
+				String[] groupIds = PortletRequestUtils.getStringParameters(request, "groups");
 				Set memberIds = new HashSet();
 				if (userIds != null) {
 					for(int i = 0; i < userIds.length; i++) {
@@ -87,8 +87,8 @@ public class AccessControlController extends SAbstractController {
 			
 		} else if (formData.containsKey("modifyBtn")) {
 			String s_roleId = request.getParameter("roleId");
-			if (s_roleId != null && !s_roleId.equals("")) {
-				Long roleId = new Long(request.getParameter("roleId"));
+			if (!Validator.isNull(s_roleId)) {
+				Long roleId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "roleId"));
 				//find the function membership
 				WorkAreaFunctionMembership wfm = getAdminModule().getWorkAreaFunctionMembership(binder, roleId);
 				if (wfm != null) {
@@ -97,19 +97,15 @@ public class AccessControlController extends SAbstractController {
 			}
 		} else if (formData.containsKey("deleteBtn")) {
 			String s_roleId = request.getParameter("roleId");
-			if (s_roleId != null && !s_roleId.equals("")) {
-				Long roleId = new Long(request.getParameter("roleId"));
+			if (!Validator.isNull(s_roleId)) {
+				Long roleId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "roleId"));
 				//Delete the function membership
 				getAdminModule().deleteWorkAreaFunctionMembership(binder, roleId);
 			}
 			
 		} else if (formData.containsKey("inheritanceBtn")) {
-			String inherit = request.getParameter("inherit");
-			if (inherit != null && inherit.equals("yes")) 
-				getBinderModule().setFunctionMembershipInherited(binderId,true);
-			if (inherit != null && inherit.equals("no")) 
-				getBinderModule().setFunctionMembershipInherited(binderId, false);
-			
+			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
+			getAdminModule().setWorkAreaFunctionMembershipInherited(binder,inherit);			
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			setResponseOnClose(request, response);
 		}
@@ -123,12 +119,17 @@ public class AccessControlController extends SAbstractController {
 			model.put(WebKeys.BINDER_ID, binderId.toString());
 			return new ModelAndView(WebKeys.VIEW_LISTING_REDIRECT, model);
 		}
+		Binder binder = getBinderModule().getBinder(binderId);
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Map binderConf = getBinderModule().getFunctionMembership(binderId);
-		Binder binder = (Binder)binderConf.get(ObjectKeys.BINDER);
+		
 		Map functionMap = new HashMap();
-		List functions = (List)binderConf.get(ObjectKeys.FUNCTIONS);
-		List membership = (List)binderConf.get(ObjectKeys.FUNCTION_MEMBERSHIP);
+		List functions = getAdminModule().getFunctions();
+		List membership;
+		if (binder.isFunctionMembershipInherited()) 
+			membership = getAdminModule().getWorkAreaFunctionMembershipsInherited(binder);
+		else
+			membership = getAdminModule().getWorkAreaFunctionMemberships(binder);
+		
 		for (int i=0; i<functions.size(); ++i) {
 			Function f = (Function)functions.get(i);
 			Map pMap = new HashMap();
@@ -153,13 +154,12 @@ public class AccessControlController extends SAbstractController {
 		}
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FUNCTION_MAP, functionMap);
-		model.put(WebKeys.FOLDER_WORKFLOW_ASSOCIATIONS, binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS));
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
 			
-		DefinitionUtils.getDefinitions(model);
-		DefinitionUtils.getDefinitions(binder, model);
-		DefinitionUtils.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
+//		DefinitionUtils.getDefinitions(model);
+//		DefinitionUtils.getDefinitions(binder, model);
+//		DefinitionUtils.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 	
 		return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
 	}

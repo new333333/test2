@@ -8,6 +8,9 @@ import java.util.ArrayList;
 public class ProfileBinder extends Binder {
 	private List emptyList = new ArrayList();
 
+    public ProfileBinder() {
+    	setType(EntityIdentifier.EntityType.profiles.name());
+    }
     public EntityIdentifier getEntityIdentifier() {
     	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.profiles);
     }
@@ -27,5 +30,11 @@ public class ProfileBinder extends Binder {
     public List getBinderViewDefs() {
    		return getDefs(Definition.PROFILE_VIEW);
     }	
+    /**
+     * Always returns false.  Overloaded method
+     */
+    public boolean isDefinitionInheritanceSupported() {
+    	return false;
+    }
 
 }

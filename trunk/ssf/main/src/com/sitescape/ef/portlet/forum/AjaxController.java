@@ -186,7 +186,6 @@ public class AjaxController  extends SAbstractForumController {
 			Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
-			model.put(WebKeys.FOLDER_WORKFLOW_ASSOCIATIONS, binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS));
 				
 			String filterTermNumber = ((String[])formData.get(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER))[0];
 			model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, filterTermNumber);
@@ -217,7 +216,6 @@ public class AjaxController  extends SAbstractForumController {
 			DefinitionUtils.getDefinitions(model);
 			DefinitionUtils.getDefinitions(binder, model);
 	    	DefinitionUtils.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
-	    	Map workflowAssociations = (Map) binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS);
 			
 	    	model.put(WebKeys.AJAX_STATUS, statusMap);
 			response.setContentType("text/xml");

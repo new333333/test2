@@ -7,8 +7,10 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.Collection;
 import java.util.List;
+import java.util.ArrayList;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.InternalException;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.NoWorkspaceByTheIdException;
 import com.sitescape.ef.domain.User;
@@ -100,6 +102,35 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	return wsTree;
     }
     
+    public org.dom4j.Document getDomWorkspaceTree(Long topId, Long bottomId, DomTreeBuilder domTreeHelper) throws AccessControlException {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        Workspace top = (Workspace)getCoreDao().loadBinder(topId, user.getZoneName());
+		Workspace bottom = (Workspace)getCoreDao().loadBinder(bottomId, user.getZoneName());
+		// Check if the user has "read" access to the top folder.
+        getAccessControlManager().checkAcl(top, AccessType.READ);
+        
+        List<Workspace> ancestors = new ArrayList<Workspace>();
+        Workspace parent = bottom;
+        //build inverted list of parents
+        while ((parent != null) && !parent.equals(top)) {
+        	ancestors.add(parent);
+        	parent = (Workspace)parent.getParentBinder();
+        }
+        if (parent == null) throw new InternalException("Top is not a parent"); 
+        ancestors.add(parent);
+        Comparator c = new BinderComparator(user.getLocale());
+    	Document wsTree = DocumentHelper.createDocument();
+    	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
+    	for (int i=ancestors.size()-1; i>0; --i) {
+    		buildWorkspaceDomTree(rootElement, (Workspace)ancestors.get(i), c, domTreeHelper, 1);
+    		if (i != 0) {
+    			parent = ancestors.get(i-1);
+    			rootElement = (Element)rootElement.selectSingleNode("./" + DomTreeBuilder.NODE_CHILD + "[@id='" + parent.getId() + "']");
+    		}
+    	}
+    	return wsTree;
+    }
+ 
     protected void buildWorkspaceDomTree(Element current, Workspace top, Comparator c, DomTreeBuilder domTreeHelper, int levels) {
     	Element next; 
     	Folder f;
@@ -152,13 +183,14 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	folder.setZoneName(user.getZoneName());
         folder.setCreation(new HistoryStamp(user));
         folder.setModification(folder.getCreation());
+        folder.setDefinitionsInherited(false);
         ObjectBuilder.updateObject(folder, input);
-        parentWorkspace.addChild(folder);
+        getCoreDao().save(folder);	//need to generate id before adding to collections
+        parentWorkspace.addFolder(folder);
         // The sub-folder inherits the default ACLs of the parent folder.
         // The default ACLs of the sub-folder can be changed subsequently. 
         getAclManager().doInherit(folder);
-        getCoreDao().save(folder);
-                  
+                   
         return folder.getId();
     }
  
@@ -175,11 +207,11 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	ws.setCreation(new HistoryStamp(user));
     	ws.setModification(ws.getCreation());
         ObjectBuilder.updateObject(ws, input);
-        parentWorkspace.addChild(ws);
+        getCoreDao().save(ws);//need to generate id before adding to collections
+        parentWorkspace.addWorkspace(ws);
         // The sub-folder inherits the default ACLs of the parent folder.
         // The default ACLs of the sub-folder can be changed subsequently. 
         getAclManager().doInherit(ws);
-        getCoreDao().save(ws);
                   
         return ws.getId();
     }

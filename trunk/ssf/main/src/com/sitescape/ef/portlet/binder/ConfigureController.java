@@ -35,12 +35,12 @@ public class ConfigureController extends SAbstractController {
 			
 		//See if the form was submitted
 		if (formData.containsKey("okBtn")) {
-	    	List definitions = new ArrayList();
-	    	//Get the default binder view
-	    	String defBinderId = PortletRequestUtils.getStringParameter(request, "binderDefinition", "");
+			List definitions = new ArrayList();
+			//	Get the default binder view
+			String defBinderId = PortletRequestUtils.getStringParameter(request, "binderDefinition", "");
 			String[] defBinderIds = PortletRequestUtils.getStringParameters(request, "binderDefinitions");
 			if (!Validator.isNull(defBinderId)) {
-				//The default binder view is always the first one in the list
+				//	The default binder view is always the first one in the list
 				if (defBinderIds != null) {
 					definitions.add(defBinderId);
 				}
@@ -51,7 +51,7 @@ public class ConfigureController extends SAbstractController {
 				for (int i = 0; i < defBinderIds.length; i++) {
 					String defId = defBinderIds[i];
 					if (!Validator.isNull(defId) && !defId.toString().equals(defBinderId.toString())) {
-							definitions.add(defId);
+						definitions.add(defId);
 					}
 				}
 			}
@@ -70,8 +70,12 @@ public class ConfigureController extends SAbstractController {
 					}
 				}
 			}
-			getBinderModule().modifyConfiguration(binderId, definitions, workflowAssociations);
-			response.setRenderParameters(formData);
+			getBinderModule().setConfiguration(binderId, definitions, workflowAssociations);
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		} else if (formData.containsKey("inheritanceBtn")) {
+			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
+			getBinderModule().setConfiguration(binderId, inherit);
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			setResponseOnClose(request, response);
 		} else
@@ -90,7 +94,6 @@ public class ConfigureController extends SAbstractController {
 		Binder binder = getBinderModule().getBinder(binderId);
 		
 		model.put(WebKeys.BINDER, binder);
-		model.put(WebKeys.FOLDER_WORKFLOW_ASSOCIATIONS, binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS));
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
 			

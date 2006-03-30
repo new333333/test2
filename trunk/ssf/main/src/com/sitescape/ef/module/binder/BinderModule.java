@@ -35,23 +35,15 @@ public interface BinderModule {
      */
     public Binder getBinder(Long binderId)
 		throws NoBinderByTheIdException, AccessControlException;
-    /**
-     * 
-     * @param binderId
-     * @return
-     * @throws NoBinderByTheIdException
-     * @throws AccessControlException
-     */	
-    public Map getFunctionMembership(Long binderId) 
-		throws NoBinderByTheIdException, AccessControlException;
 
+	public Binder setConfiguration(Long binderId, boolean inheritFromParent)  throws AccessControlException;
     /**
      * Modify the list of definitions assocated with a binder
      * @param binderId
      * @param definitionIds
      * @throws AccessControlException
      */
-    public Binder modifyConfiguration(Long binderId, List definitionIds) throws AccessControlException;
+    public Binder setConfiguration(Long binderId, List definitionIds) throws AccessControlException;
     /**
      * Modify the list of definitions and workflows assocated with a binder
      * @param binderId
@@ -59,9 +51,7 @@ public interface BinderModule {
      * @param workflowAssociations
      * @throws AccessControlException
      */
-    public Binder modifyConfiguration(Long binderId, List definitionIds, Map workflowAssociations) throws AccessControlException;
-	public void setFunctionMembershipInherited(Long binderId, boolean inherit) 
-		throws AccessControlException;
+    public Binder setConfiguration(Long binderId, List definitionIds, Map workflowAssociations) throws AccessControlException;
 	public List getTags(Long binderId) throws AccessControlException;
 	public void modifyTag(Long binderId, String tagId, Map updates) throws AccessControlException; 
 	public void addTag(Long binderId, Map updates) throws AccessControlException;
