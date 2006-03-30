@@ -60,7 +60,8 @@ public class TreeTag extends TagSupport {
 	public int doStartTag() throws JspException {
 	    if(treeName == null)
 	        throw new JspException("Tree name must be specified");
-	    
+	    finished=false;
+	    startingIdSeen=false;
 		try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 
