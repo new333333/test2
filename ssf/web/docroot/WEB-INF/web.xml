@@ -29,31 +29,10 @@
 		</param-value>
 	</context-param>
 
-	<!-- TODO This will NOT work...
-	<filter>
-		<filter-name>Open Session In View Filter</filter-name>
-		<filter-class>com.sitescape.ef.web.servlet.filter.OpenSessionInViewFilter</filter-class>
-	</filter>-->
-
 	<filter>
 		<filter-name>loginFilter</filter-name>
 		<filter-class>com.sitescape.ef.web.servlet.filter.LoginFilter</filter-class>
 	</filter>
-	
-	<!--<filter>
-		<filter-name>principalInjectionFilter</filter-name>
-		<filter-class>com.sitescape.ef.web.servlet.filter.PrincipalInjectionFilter</filter-class>
-	</filter>
-
-	<filter-mapping>
-		<filter-name>principalInjectionFilter</filter-name>
-		<servlet-name>dispatcher</servlet-name>
-	</filter-mapping>
-
-	<filter-mapping>
-		<filter-name>principalInjectionFilter</filter-name>
-		<servlet-name>portletAdapter</servlet-name>
-	</filter-mapping>-->
 
 	<filter>
 		<filter-name>rssAuthenticationFilter</filter-name>
@@ -130,6 +109,12 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>webdav</servlet-name>
+		<servlet-class>com.sitescape.ef.webdav.WebdavServlet</servlet-class>
+		<load-on-startup>6</load-on-startup>
+	</servlet>
+	
+	<servlet>
 		<servlet-name>ccDispatchServer</servlet-name>
 		<servlet-class>com.sitescape.ef.web.crosscontext.DispatchServer</servlet-class>
 	</servlet>
@@ -157,6 +142,11 @@
 	<servlet-mapping>
 		<servlet-name>rss</servlet-name>
 		<url-pattern>/rss/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>webdav</servlet-name>
+		<url-pattern>/webdav/*</url-pattern>
 	</servlet-mapping>
 
 	<!-- Do NOT ever change this timeout value -->
