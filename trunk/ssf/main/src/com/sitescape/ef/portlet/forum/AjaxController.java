@@ -234,7 +234,8 @@ public class AjaxController  extends SAbstractForumController {
 				model.put("ss_tree_binderId", ((String[])formData.get("binderId"))[0]);
 				Long binderId = Long.valueOf(((String[])formData.get("binderId"))[0]);
 				Binder binder = getBinderModule().getBinder(binderId);
-				String view = getShowWorkspace(formData, request, response, (Workspace)binder, null, model);
+				Document searchFilter = null;
+				String view = getShowWorkspace(formData, request, response, (Workspace)binder, searchFilter, model);
 			}
 			response.setContentType("text/xml");
 			model.put(WebKeys.AJAX_STATUS, statusMap);
