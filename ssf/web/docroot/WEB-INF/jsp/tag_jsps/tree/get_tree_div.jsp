@@ -10,6 +10,7 @@
 <jsp:useBean id="ss_ajaxStatus" type="java.util.Map" scope="request" />
 <jsp:useBean id="ss_tree_treeName" type="java.lang.String" scope="request" />
 <jsp:useBean id="ss_tree_binderId" type="java.lang.String" scope="request" />
+<jsp:useBean id="ss_tree_topId" type="java.lang.String" scope="request" />
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 <taconite-root xml:space="preserve">
 <%
@@ -28,6 +29,7 @@
 		<ssf:tree treeName="<%= ss_tree_treeName %>" 
 		  treeDocument="<%= ssWsDomTree %>"  
 		  startingId="<%= ss_tree_binderId %>"
+		  topId="<%= ss_tree_topId %>"
 		  rootOpen="true" />
 	</taconite-insert-after>
 <%
