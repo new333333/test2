@@ -52,6 +52,7 @@ array set ::j2ee_Forum_class_MAP {
    notify_email    {notify_email clob}
    defaultReplyDef {defaultReplyDef uuid}
    functionMembershipInherited   {functionMembershipInherited boolean}
+   definitionsInherited   {definitionsInherited boolean}
    parentBinder 		{parentBinder int32}
    displayStyle {displayStyle int32}
    folder_sortKey   {folder_sortKey "varchar 512"}
@@ -640,19 +641,21 @@ proc doZone {zoneName {cName {liferay.com}}} {
             set type "BINDER"
         }
 	    if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {    
-        	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',B'0',B'0','[sql_quote_value $::zoneName]');"
+        	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, functionMembershipInherited, acl_inheritFromParent, definitionsInherited, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',B'1',B'1',B'1','[sql_quote_value $::zoneName]');"
 		} else {
-    	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',0,0,'[sql_quote_value $::zoneName]');"
+    	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, functionMembershipInherited, acl_inheritFromParent, definitionsInherited, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',1,1,1,'[sql_quote_value $::zoneName]');"
 		}
      }
 	set ::_profileId [new_forum_uuid]
     if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {    
- 	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'profiles', 'Users/Groups',B'0',B'0','[sql_quote_value $::zoneName]');"
+  	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, functionMembershipInherited, acl_inheritFromParent,definitionsInherited, zoneName) VALUES ($::_profileId, 1, '_profiles', 'profiles', 'Users/Groups',B'1',B'1',B'0','[sql_quote_value $::zoneName]');"
+	    wimsql_rw "Update SS_Forums set parentBinder=$::forumIds(_admin) where not name='_admin';"
+   		wimsql_rw "Update SS_Forums set parentBinder=null,name='[sql_quote_value $::zoneName]',functionMembershipInherited=B'0',acl_inheritFromParent=B'0',definitionsInherited=B'0' where name='_admin';"
  	} else {
-    	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, functionMembershipInherited, acl_inheritFromParent, zoneName) VALUES ($::_profileId, 1, '_profiles', 'profiles','Users/Groups',0,0,'[sql_quote_value $::zoneName]');"
+    	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, functionMembershipInherited, acl_inheritFromParent, definitionsInherited, zoneName) VALUES ($::_profileId, 1, '_profiles', 'profiles','Users/Groups',1,1,0,'[sql_quote_value $::zoneName]');"
+	    wimsql_rw "Update SS_Forums set parentBinder=$::forumIds(_admin) where not name='_admin';"
+ 	    wimsql_rw "Update SS_Forums set parentBinder=null,name='[sql_quote_value $::zoneName]',functionMembershipInherited=0,acl_inheritFromParent=0,definitionsInherited=0 where name='_admin';"
     }
-    wimsql_rw "Update SS_Forums set parentBinder=$::forumIds(_admin) where not name='_admin';"
-    wimsql_rw "Update SS_Forums set parentBinder=null,name='[sql_quote_value $::zoneName]' where name='_admin';"
     wimsql_rw commit
     if {$::dialect == "mssql"} {
         wimsql_rw "SET IDENTITY_INSERT SS_Forums OFF;"
@@ -767,6 +770,7 @@ proc doZone {zoneName {cName {liferay.com}}} {
                 attr
                 {
                     set attrs(type) folder
+                    set attrs(definitionsInherited) 0
                     set RESOURCE_TYPE 3         
 
                     set PRINCIPAL_TYPE 3
@@ -782,6 +786,7 @@ proc doZone {zoneName {cName {liferay.com}}} {
                 }
                  default {
                     set attrs(type) folder  
+                    set attrs(definitionsInherited) 0
 					set attrs(displayStyle) 1
 					set attrs(entryRoot_level) 0
 					set attrs(entryRoot_sortKey) $eRoot

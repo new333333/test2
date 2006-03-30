@@ -17,11 +17,12 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <div class="ss_portlet">
-<span class="ss_titlebold"><c:out value="${ssFolder.title}"/>&nbsp;-&nbsp;<ssf:nlt tag="folder.add.title"/></span><br/><br/>
+<span class="ss_titlebold"><c:out value="${ssBinder.title}"/>&nbsp;-&nbsp;<ssf:nlt tag="folder.add.title"/></span><br/><br/>
 
 <form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="add_binder"/>
-			<portlet:param name="binderId" value="${ssFolder.id}"/>
+			<portlet:param name="binderId" value="${ssBinder.id}"/>
+			<portlet:param name="operation" value="${operation}"/>
 		</portlet:actionURL>">
 
 <span class="ss_labelLeft"><ssf:nlt tag="folder.label.name"/></span>
@@ -33,7 +34,7 @@
 <br/><input type="text" class="ss_text" name="title">
 <br/>
 
-<span class="ss_labelLeft"><ssf:nlt tag="folder.label.description"/></span>
+<span class="ss_labelLeft"><ssf:nlt tag=".label.description"/></span>
 <br/>
     <ssf:htmleditor id="description" 
       formName="<%= renderResponse.getNamespace() + "fm" %>" height="200" color="${ss_form_element_header_color}"

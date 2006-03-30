@@ -73,6 +73,9 @@ public class WebKeys {
 	public static final String DEFINITION_ACTION_IMPORT="import_definition";
 	//oerations
  	public static final String FORUM_OPERATION_ADMINISTRATION = "administration";
+    public static final String OPERATION_ADD_FOLDER = "add_folder";
+    public static final String OPERATION_ADD_SUB_FOLDER = "add_subFolder";
+    public static final String OPERATION_ADD_WORKSPACE = "add_workspace";
 	public static final String FORUM_OPERATION_GET_ENTRY_ELEMENTS = "get_entry_elements";
 	public static final String FORUM_OPERATION_GET_ELEMENT_VALUES = "get_element_values";
 	public static final String FORUM_OPERATION_GET_FILTER_TYPE = "get_filter_type";
@@ -140,7 +143,6 @@ public class WebKeys {
     public static final String FOLDER_ENTRY_ANCESTORS="ssFolderEntryAncestors";
     public static final String FOLDER_ENTRY_TOOLBAR="ssFolderEntryToolbar";
     public static final String FOLDER_TOOLBAR="ssFolderToolbar";
-    public static final String FOLDER_WORKFLOW_ASSOCIATIONS="ssFolderWorkflowAssociations";
     public static final String FORUM_ID_LIST = "ssForumIdList";
     public static final String FORUM_TOOLBAR="ssForumToolbar";
     public static final String FUNCTIONS="ssFunctions";

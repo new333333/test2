@@ -27,7 +27,7 @@
 <div class="ss_rounded">
 <div style="margin:6px;">
 <h3><ssf:nlt tag="binder.configure.access_control" text="Configure access control"/></h3>
-
+<c:if test="${!empty ssBinder.parentWorkArea}">
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.inheritance" 
     text="Role membership inheritance"/></legend>
@@ -63,7 +63,7 @@
 </form>
 </fieldset>
 <br>
-<c:if test="${!ssBinder.functionMembershipInherited}">
+</c:if>
 <c:if test="${empty roleId}">
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.currentMembershipSettings" 
@@ -113,6 +113,7 @@
 	</c:if>
   </td>
   <td valign="top">
+<c:if test="${!ssBinder.functionMembershipInherited}">
     <form style="display:inline;" method="post"
 	  action="<portlet:actionURL>
 			  <portlet:param name="action" value="configure_access_control"/>
@@ -125,6 +126,7 @@
       <input type="submit" class="ss_submit" name="deleteBtn" 
         value="<ssf:nlt tag="button.delete" text="Delete"/>">
     </form>
+</c:if>
   </td>
  </tr>
 	  </c:if>
@@ -139,7 +141,7 @@
 </fieldset>
 <br>
 </c:if>
-
+<c:if test="${!ssBinder.functionMembershipInherited}">
 <c:if test="${empty roleId}">
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.addRole" 

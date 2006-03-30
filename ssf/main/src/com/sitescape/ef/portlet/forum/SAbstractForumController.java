@@ -33,6 +33,8 @@ import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
+import com.sitescape.ef.web.util.PortletRequestUtils;
+
 import com.sitescape.ef.rss.util.UrlUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.util.NLT;
@@ -110,7 +112,12 @@ public class SAbstractForumController extends SAbstractController {
 //		if (searchFilter != null) {
 //			wsEntries = getWorkspaceModule().getWorkspaceTree(wsId, searchFilter);
 //		} else {
-			wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsTreeBuilder(),1);
+			Long top = PortletRequestUtils.getLongParameter(req, WebKeys.URL_OPERATION2);
+			if ((top != null) && (ws.getParentBinder() != null)) {
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(top, ws.getId(), new WsTreeBuilder(ws));
+			} else {
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsTreeBuilder(ws),1);
+			}
 //		}
 		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 		model.put(WebKeys.FOLDER_TOOLBAR, buildWorkspaceToolbar(response, ws, ws.getId().toString()).getToolbar());
@@ -183,6 +190,7 @@ public class SAbstractForumController extends SAbstractController {
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_SUB_FOLDER);
 			toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), url);
 		} catch (AccessControlException ac) {};
 		//The "Administration" menu
@@ -258,11 +266,13 @@ public class SAbstractForumController extends SAbstractController {
 		//	The "Add" menu
 		List defaultWorkspaceDefinitions = workspace.getEntryDefs();
 		PortletURL url;
+		boolean addMenuCreated=false;
 		if (!defaultWorkspaceDefinitions.isEmpty()) {
 			try {
 				getWorkspaceModule().checkAddWorkspaceAllowed(workspace);
 				int count = 1;
 				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+				addMenuCreated=true;
 				Map qualifiers = new HashMap();
 				String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
 				qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
@@ -283,12 +293,32 @@ public class SAbstractForumController extends SAbstractController {
 		//Add Folder
 		try {
 			getWorkspaceModule().checkAddFolderAllowed(workspace);
+			if (addMenuCreated == false) {
+				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+				addMenuCreated=true;
+			}
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_OPERATION, "addWorkspace");
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
 			toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), url);
 		} catch (AccessControlException ac) {};
 		
+		//Add Workspace
+		try {
+			getWorkspaceModule().checkAddWorkspaceAllowed(workspace);
+			if (addMenuCreated == false) {
+				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+				addMenuCreated=true;
+			}
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
+			toolbar.addToolbarMenuItem("1_add", "workspace", NLT.get("toolbar.menu.addWorkspace"), url);
+		} catch (AccessControlException ac) {};
+
 		//The "Administration" menu
 		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
 		//Access control
@@ -711,6 +741,10 @@ public class SAbstractForumController extends SAbstractController {
 		}
 	}
 	protected class WsTreeBuilder implements DomTreeBuilder {
+		Workspace bottom;
+		public WsTreeBuilder(Workspace ws) {
+			this.bottom = ws;
+		}
 		public Element setupDomElement(String type, Object source, Element element) {
 			Element url;
 			if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {
@@ -719,13 +753,16 @@ public class SAbstractForumController extends SAbstractController {
 				element.addAttribute("title", ws.getTitle());
 				element.addAttribute("id", ws.getId().toString());
 				element.addAttribute("image", "workspace");
+				//only need this information if this is the bottom of the tree
 				url = element.addElement("url");
 				url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 				url.addAttribute(WebKeys.URL_BINDER_ID, ws.getId().toString());
-				if (getBinderModule().hasBinders(ws)) {
-					element.addAttribute("hasChildren", "true");
-				} else {
-					element.addAttribute("hasChildren", "false");					
+				if (ws.equals(bottom) || bottom.equals(ws.getParentBinder())) {
+					if (getBinderModule().hasBinders(ws)) {
+						element.addAttribute("hasChildren", "true");
+					} else {	
+						element.addAttribute("hasChildren", "false");
+					}
 				}
 			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
 				Folder f = (Folder)source;
@@ -736,6 +773,8 @@ public class SAbstractForumController extends SAbstractController {
 				url = element.addElement("url");
 				url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 				url.addAttribute(WebKeys.URL_BINDER_ID, f.getId().toString());
+				//only need this information if this is the bottom of the tree
+				if (f.getParentBinder().equals(bottom))
 				if (getBinderModule().hasBinders(f)) {
 					element.addAttribute("hasChildren", "true");
 				} else {
@@ -745,4 +784,5 @@ public class SAbstractForumController extends SAbstractController {
 			return element;
 		}
 	}
+
 }

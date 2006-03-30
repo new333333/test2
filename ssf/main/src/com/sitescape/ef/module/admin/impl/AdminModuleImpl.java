@@ -9,11 +9,9 @@ package com.sitescape.ef.module.admin.impl;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
-import java.util.Date;
-import java.util.Collection;
 import java.text.ParseException;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -31,6 +29,7 @@ import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 
+import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.FunctionExistsException;
 import com.sitescape.ef.security.function.WorkArea;
@@ -251,7 +250,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 
         //Check that this user is allowed to do this operation; 
 		// Is it SITE_ADMINISTRATION right operation for this checking?
-        accessControlManager.checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);        
+        accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 		
 		List memberships = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(companyId, workArea);
 		if (memberships.contains(membership)) {
@@ -264,7 +263,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		
         //Check that this user is allowed to do this operation; 
 		//Is it SITE_ADMINISTRATION right operation for this checking?
-        accessControlManager.checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);   
+        accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);   
         
         getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(membership);
 	}
@@ -272,7 +271,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
         //Check that this user is allowed to do this operation; 
 		// Is it SITE_ADMINISTRATION right operation for this checking?
-        accessControlManager.checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);        
+        accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 
         WorkAreaFunctionMembership wfm = getWorkAreaFunctionMembership(workArea, functionId);
         if (wfm != null) {
@@ -285,7 +284,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		
         //Check that this user is allowed to do this operation; 
 		// Is it SITE_ADMINISTRATION right operation for this checking?
-        accessControlManager.checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);        
+        accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 
         return getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership
        		(companyId, workArea, functionId);
@@ -293,12 +292,37 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     
 	public List getWorkAreaFunctionMemberships(WorkArea workArea) {
 	   	String companyId = RequestContextHolder.getRequestContext().getZoneName();
-		
+	    WorkArea source = workArea;
+	    while (source.isFunctionMembershipInherited()) {
+	    	source = source.getParentWorkArea();
+	    }
+	  	
         //Check that this user is allowed to do this operation; 
 		// Is it SITE_ADMINISTRATION right operation for this checking?
-        accessControlManager.checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);        
+        accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 
         return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(companyId, workArea);
 	}
+
+	public List getWorkAreaFunctionMembershipsInherited(WorkArea workArea) {
+	   	String companyId = RequestContextHolder.getRequestContext().getZoneName();
+	    WorkArea source = workArea;
+	    if (!workArea.isFunctionMembershipInherited()) return new ArrayList();
+	    while (source.isFunctionMembershipInherited()) {
+	    	source = source.getParentWorkArea();
+	    }
+	  	
+        //Check that this user is allowed to do this operation; 
+		// Is it SITE_ADMINISTRATION right operation for this checking?
+        accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
+
+        return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(companyId, workArea);
+	}
+
+	public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) 
+    throws AccessControlException {
+    	getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);    	
+    	workArea.setFunctionMembershipInherited(inherit);
+    } 
 
 }

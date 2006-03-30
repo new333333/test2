@@ -21,6 +21,11 @@
       <map-key type="string" column="name"/>
       <one-to-many class="com.sitescape.ef.domain.CustomAttribute"/>
     </map>
+    <map inverse="false" table="SS_WorkflowMap" access="field" cascade="all,delete-orphan" lazy="true" name="workflowAssociations">
+      <key column="binder"/>
+      <map-key type="string" column="entryDefinition" length="32"/>
+      <element type="string" column="workflowDefinition" length="32"/>
+    </map>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
       <key column="binder"/>
       <one-to-many class="com.sitescape.ef.domain.Attachment"/>
@@ -78,6 +83,7 @@
         <column name="acl_changeAclMembers"/>
       </property>
     </component>
+    <property name="definitionsInherited"/>
     <property name="inheritAclFromParent" column="acl_inheritFromParent"/>
     <property name="widenRead" column="acl_widenRead"/>
     <property name="widenModify" column="acl_widenModify"/>
@@ -115,7 +121,7 @@
         <property name="level" column="entryRoot_level"/>
         <property name="sortKey" length="512" column="entryRoot_sortKey"/>
       </component>
-      <bag inverse="true" cascade="all" optimistic-lock="false" lazy="true" name="IEntries">
+      <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="entries">
         <key column="parentBinder"/>
         <one-to-many class="com.sitescape.ef.domain.FolderEntry"/>
       </bag>

@@ -266,7 +266,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     protected void addEntry_startWorkflow(Entry entry) {
     	if (!(entry instanceof WorkflowSupport)) return;
     	Binder binder = entry.getParentBinder();
-    	Map workflowAssociations = (Map) binder.getProperty(ObjectKeys.BINDER_WORKFLOW_ASSOCIATIONS);
+    	Map workflowAssociations = (Map) binder.getWorkflowAssociations();
     	if (workflowAssociations != null) {
     		//See if the entry definition type has an associated workflow
     		Definition entryDef = entry.getEntryDef();

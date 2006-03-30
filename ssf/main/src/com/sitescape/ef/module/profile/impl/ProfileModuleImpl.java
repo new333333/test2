@@ -63,7 +63,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			pf.setName("_profiles");
 			pf.setZoneName(zoneName);
 			getCoreDao().save(pf);
-			getCoreDao().findTopWorkspace(zoneName).addChild(pf);
+			getCoreDao().findTopWorkspace(zoneName).addBinder(pf);
 			List users = getCoreDao().loadUsers(new FilterControls(), zoneName);
 			for (int i=0; i<users.size(); ++i) {
 				User u = (User)users.get(i);

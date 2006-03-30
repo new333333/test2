@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @hibernate.subclass discriminator-value="WORKSPACE" dynamic-update="true"
+ * @hibernate.subclass discriminator-value="workspace" dynamic-update="true"
  * 
  * Manage child forums/workspaces ourselves.  The zone already contains all the
  * forums and each forum contains the information necessary to build the workspace
@@ -21,7 +21,9 @@ public class Workspace extends Binder  {
 	protected Set workspaces; 
     protected Set folders;
     protected boolean bindersParsed;
- 
+    public Workspace() {
+    	setType(EntityIdentifier.EntityType.workspace.name());
+    }
 	public EntityIdentifier getEntityIdentifier() {
     	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.workspace);
     }
@@ -42,23 +44,26 @@ public class Workspace extends Binder  {
     	}
       	return workspaces;
     }
-    public void addChild(Binder child) {
+    public void addFolder(Folder folder) {
      	if (!bindersParsed) parseBinders();
-		if (child instanceof Workspace) {
-    		workspaces.add(child);
-    	} else if (child instanceof Folder){
-    		folders.add(child);
-    	}
-		super.addBinder(child);
+    	folders.add(folder);
+		super.addBinder(folder);
 	}
-    public void removeChild(Binder child) {
+    public void removeFolder(Folder folder) {
      	if (!bindersParsed) parseBinders();
- 		if (child instanceof Workspace) {
-    		workspaces.remove(child);
-    	} else {
-    		folders.remove(child);
-    	}
- 		super.removeBinder(child);
+   		folders.remove(folder);
+ 		super.removeBinder(folder);
+ 		
+	}
+    public void addWorkspace(Workspace workspace) {
+     	if (!bindersParsed) parseBinders();
+   		workspaces.add(workspace);
+		super.addBinder(workspace);
+	}
+    public void removeWorkspace(Workspace workspace) {
+     	if (!bindersParsed) parseBinders();
+   		workspaces.remove(workspace);
+ 		super.removeBinder(workspace);
  		
 	}
     protected void parseBinders() {
