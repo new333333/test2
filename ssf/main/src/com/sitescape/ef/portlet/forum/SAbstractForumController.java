@@ -114,9 +114,9 @@ public class SAbstractForumController extends SAbstractController {
 //		} else {
 			Long top = PortletRequestUtils.getLongParameter(req, WebKeys.URL_OPERATION2);
 			if ((top != null) && (ws.getParentBinder() != null)) {
-				wsTree = getWorkspaceModule().getDomWorkspaceTree(top, ws.getId(), new WsTreeBuilder(ws));
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(top, ws.getId(), new WsTreeBuilder(ws, true));
 			} else {
-				wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsTreeBuilder(ws),1);
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsTreeBuilder(ws, true),1);
 			}
 //		}
 		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
@@ -742,44 +742,35 @@ public class SAbstractForumController extends SAbstractController {
 	}
 	protected class WsTreeBuilder implements DomTreeBuilder {
 		Workspace bottom;
-		public WsTreeBuilder(Workspace ws) {
+		boolean check;
+		public WsTreeBuilder(Workspace ws, boolean checkChildren) {
 			this.bottom = ws;
+			this.check = checkChildren;
 		}
 		public Element setupDomElement(String type, Object source, Element element) {
 			Element url;
+			Binder binder = (Binder) source;
+			element.addAttribute("title", binder.getTitle());
+			element.addAttribute("id", binder.getId().toString());
+			url = element.addElement("url");
+			url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			url.addAttribute(WebKeys.URL_BINDER_ID, binder.getId().toString());
+			//only need this information if this is the bottom of the tree
+			if (check && bottom.equals(binder.getParentBinder())) {
+				if (getBinderModule().hasBinders(binder)) {
+					element.addAttribute("hasChildren", "true");
+				} else {	
+					element.addAttribute("hasChildren", "false");
+				}
+			}
 			if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {
 				Workspace ws = (Workspace)source;
 				element.addAttribute("type", "workspace");
-				element.addAttribute("title", ws.getTitle());
-				element.addAttribute("id", ws.getId().toString());
 				element.addAttribute("image", "workspace");
-				//only need this information if this is the bottom of the tree
-				url = element.addElement("url");
-				url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
-				url.addAttribute(WebKeys.URL_BINDER_ID, ws.getId().toString());
-				if (ws.equals(bottom) || bottom.equals(ws.getParentBinder())) {
-					if (getBinderModule().hasBinders(ws)) {
-						element.addAttribute("hasChildren", "true");
-					} else {	
-						element.addAttribute("hasChildren", "false");
-					}
-				}
 			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
 				Folder f = (Folder)source;
 				element.addAttribute("type", "forum");
-				element.addAttribute("title", f.getTitle());
-				element.addAttribute("id", f.getId().toString());
 				element.addAttribute("image", "forum");
-				url = element.addElement("url");
-				url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
-				url.addAttribute(WebKeys.URL_BINDER_ID, f.getId().toString());
-				//only need this information if this is the bottom of the tree
-				if (f.getParentBinder().equals(bottom))
-				if (getBinderModule().hasBinders(f)) {
-					element.addAttribute("hasChildren", "true");
-				} else {
-					element.addAttribute("hasChildren", "false");					
-				}
 			} else return null;
 			return element;
 		}

@@ -237,10 +237,44 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     }
     
     public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper) {
-        Folder folder = loadFolder(folderId);
-        return loadProcessor(folder).getDomFolderTree(folder, domTreeHelper);
-    }
+        Folder top = loadFolder(folderId);
+        getAccessControlManager().checkAcl(top, AccessType.READ);
+        
+        User user = RequestContextHolder.getRequestContext().getUser();
+    	Comparator c = new BinderComparator(user.getLocale());
+    	    	
+    	org.dom4j.Document wsTree = DocumentHelper.createDocument();
+    	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
+    	      	
+  	    buildFolderDomTree(rootElement, top, c, domTreeHelper);
+  	    return wsTree;
+  	}
     
+    protected void buildFolderDomTree(Element current, Folder top, Comparator c, DomTreeBuilder domTreeHelper) {
+       	Element next; 
+       	Folder f;
+    	   	
+       	//callback to setup tree
+    	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, top, current);
+     	TreeSet folders = new TreeSet(c);
+    	folders.addAll(top.getFolders());
+       	for (Iterator iter=folders.iterator(); iter.hasNext();) {
+       		f = (Folder)iter.next();
+      	    // Check if the user has the privilege to view the folder 
+            try {
+                getAccessControlManager().checkAcl(f, AccessType.READ);
+            } catch (AccessControlException ac) {
+               	continue;
+            }
+       		next = current.addElement(DomTreeBuilder.NODE_CHILD);
+       		buildFolderDomTree(next, f, c, domTreeHelper);
+       	}
+    }
+ 
+ 
+ 
+
+   
     public Map getFolderEntries(Long folderId) {
         return getFolderEntries(folderId, 0);
     }

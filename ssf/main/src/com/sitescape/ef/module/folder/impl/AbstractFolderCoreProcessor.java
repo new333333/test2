@@ -338,45 +338,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     
  
- 
-    //***********************************************************************************************************
-    public org.dom4j.Document getDomFolderTree(Folder top, DomTreeBuilder domTreeHelper) {
-    	getBinder_accessControl(top);
-        User user = RequestContextHolder.getRequestContext().getUser();
-    	Comparator c = new BinderComparator(user.getLocale());
-    	    	
-    	org.dom4j.Document wsTree = DocumentHelper.createDocument();
-    	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
-    	      	
-  	    buildFolderDomTree(rootElement, (Folder)top, c, domTreeHelper);
-  	    return wsTree;
-  	}
-    
-    protected void buildFolderDomTree(Element current, Folder top, Comparator c, DomTreeBuilder domTreeHelper) {
-       	Element next; 
-       	Folder f;
-    	   	
-       	//callback to setup tree
-    	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, top, current);
-     	TreeSet folders = new TreeSet(c);
-    	folders.addAll(top.getFolders());
-       	for (Iterator iter=folders.iterator(); iter.hasNext();) {
-       		f = (Folder)iter.next();
-      	    // Check if the user has the privilege to view the folder 
-            try {
-            	getBinder_accessControl(f);
-            } catch (AccessControlException ac) {
-               	continue;
-            }
-       		next = current.addElement(DomTreeBuilder.NODE_CHILD);
-       		buildFolderDomTree(next, f, c, domTreeHelper);
-       	}
-    }
- 
- 
- 
-
-
     //***********************************************************************************************************
           
 
