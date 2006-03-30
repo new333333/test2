@@ -121,7 +121,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         Comparator c = new BinderComparator(user.getLocale());
     	Document wsTree = DocumentHelper.createDocument();
     	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
-    	for (int i=ancestors.size()-1; i>0; --i) {
+    	for (int i=ancestors.size()-1; i>=0; --i) {
     		buildWorkspaceDomTree(rootElement, (Workspace)ancestors.get(i), c, domTreeHelper, 1);
     		if (i != 0) {
     			parent = ancestors.get(i-1);

@@ -18,6 +18,7 @@ import java.util.Map;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.profile.index.IndexUtils;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.portlet.forum.SAbstractForumController.WsTreeBuilder;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
@@ -27,8 +28,10 @@ import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.module.shared.DomTreeBuilder;
 
 /**
  * @author Peter Hurley
@@ -232,11 +235,40 @@ public class AjaxController  extends SAbstractForumController {
 			if (formData.containsKey("binderId")) {
 				model.put("ss_tree_treeName", ((String[])formData.get("treeName"))[0]);
 				model.put("ss_tree_binderId", ((String[])formData.get("binderId"))[0]);
+				Long binderId = PortletRequestUtils.getRequiredLongParameter(request, "binderId");
 				model.put("ss_tree_topId", op2);
-				Long binderId = Long.valueOf(((String[])formData.get("binderId"))[0]);
 				Binder binder = getBinderModule().getBinder(binderId);
-				Document searchFilter = null;
-				String view = getShowWorkspace(formData, request, response, (Workspace)binder, searchFilter, model);
+				Long topId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_OPERATION2);
+				Document tree;
+				if (binder instanceof Workspace) {
+					if ((topId != null) && (binder.getParentBinder() != null)) {
+						//top must be a workspace
+						tree = getWorkspaceModule().getDomWorkspaceTree(topId, binder.getId(), new WsTreeBuilder((Workspace)binder, true));
+					} else {
+						tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsTreeBuilder((Workspace)binder, true),1);
+					}
+				} else {
+					Folder topFolder = ((Folder)binder).getTopFolder();
+					if (topFolder == null) topFolder = (Folder)binder;
+					
+					//must be a folder
+					if (topId == null) {
+						tree = getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder());
+					} else {
+						Binder top = getBinderModule().getBinder(topId);
+						if (top instanceof Folder)
+							//just load the whole thing
+							tree = getFolderModule().getDomFolderTree(top.getId(), new TreeBuilder());
+						else {
+							tree = getWorkspaceModule().getDomWorkspaceTree(topId, topFolder.getParentBinder().getId(), new WsTreeBuilder((Workspace)top, false));
+							Element topBinderElement = (Element)tree.selectSingleNode("//" + DomTreeBuilder.NODE_CHILD + "[@id='" + topFolder.getId() + "']");
+							Document folderTree = getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder());
+							topBinderElement.setContent(folderTree.getRootElement().content());
+						}
+							
+					}
+				}
+				model.put(WebKeys.WORKSPACE_DOM_TREE, tree);
 			}
 			response.setContentType("text/xml");
 			model.put(WebKeys.AJAX_STATUS, statusMap);
