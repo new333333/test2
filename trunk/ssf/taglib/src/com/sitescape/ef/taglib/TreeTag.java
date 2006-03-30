@@ -53,6 +53,8 @@ public class TreeTag extends TagSupport {
     private Map images;
     private Map imagesOpen;
 	private String displayStyle;
+	private boolean startingIdSeen = false;
+	private boolean finished = false;
     
     
 	public int doStartTag() throws JspException {
@@ -190,6 +192,9 @@ public class TreeTag extends TagSupport {
 	}
 	
 	private void outputTreeNodes(Element e, List recursedNodes) throws JspException {
+		//If processing is finished, just exit.
+		if (this.finished) return;
+		
 		try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 
@@ -243,7 +248,7 @@ public class TreeTag extends TagSupport {
 			boolean hhcn = (e.attributeValue("treeHasHiddenChildren") == "1") ? true : false;
 			boolean ino = (e.attributeValue("treeOpen") == "1") ? true : false;
 	
-			if (this.startingId == null || this.startingId.equals("") || !this.startingId.equals(s_id)) {
+			if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
 				if (this.multiSelect != null) {
 					if (s_id.equals("")) {
 						jspOut.print("<img src=\"" + this.commonImg + "/pics/1pix.gif\" width=\"15px\"/>");
@@ -260,14 +265,16 @@ public class TreeTag extends TagSupport {
 						jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("line") + "\"/>");
 					}
 				}
+			}
 		
-				// Line and empty icons
-				if (ls) {
-					recursedNodes.add(0, "0");
-				} else {
-					recursedNodes.add(0, "1");
-				}
+			// Line and empty icons
+			if (ls) {
+				recursedNodes.add(0, "0");
+			} else {
+				recursedNodes.add(0, "1");
+			}
 		
+			if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
 				// Write out join icons
 				if (hcn || hhcn) {
 					if (ls) {
@@ -355,32 +362,41 @@ public class TreeTag extends TagSupport {
 				jspOut.print("<br/>\n");
 			}
 			
+			//See if this is the starting id
+			if (this.startingId != null && this.startingId.equals(s_id)) this.startingIdSeen = true;
+			
 			// Recurse if node has children
-	
 			if (hcn) {
-				jspOut.print("\n<div class=\"ss_twDiv\" id=\"" + this.treeName + "div" + s_id + "\"");
-	
-				if (!ino) {
-					jspOut.print(" style=\"display: none;\"");
+				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+					jspOut.print("\n<div class=\"ss_twDiv\" id=\"" + this.treeName + "div" + s_id + "\"");
+		
+					if (!ino) {
+						jspOut.print(" style=\"display: none;\"");
+					}
+		
+					jspOut.print(">\n");
 				}
-	
-				jspOut.print(">\n");
 	
 				ListIterator it2 = e.elements("child").listIterator();
 				while (it2.hasNext()) {
 					outputTreeNodes((Element) it2.next(), recursedNodes);
 				}
 	
-				jspOut.print("</div>\n");
+				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+					jspOut.print("</div>\n");
+				}
 			} else if (hhcn) {
-				if (this.startingId == null || this.startingId.equals("") || !this.startingId.equals(s_id)) {
+				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
 					jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
 				}
 			}
 	
 			// Pop last line or empty icon
-			if (this.startingId == null || this.startingId.equals("") || !this.startingId.equals(s_id)) {
-				recursedNodes.remove(0);
+			recursedNodes.remove(0);
+
+			// See if it is time to stop
+			if (this.startingId != null && this.startingId.equals(s_id)) {
+				this.finished = true;
 			}
 		}
 	    catch(Exception ex) {

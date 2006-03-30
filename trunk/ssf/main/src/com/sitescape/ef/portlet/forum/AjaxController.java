@@ -232,6 +232,7 @@ public class AjaxController  extends SAbstractForumController {
 			if (formData.containsKey("binderId")) {
 				model.put("ss_tree_treeName", ((String[])formData.get("treeName"))[0]);
 				model.put("ss_tree_binderId", ((String[])formData.get("binderId"))[0]);
+				model.put("ss_tree_topId", op2);
 				Long binderId = Long.valueOf(((String[])formData.get("binderId"))[0]);
 				Binder binder = getBinderModule().getBinder(binderId);
 				Document searchFilter = null;
