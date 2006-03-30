@@ -13,5 +13,6 @@
 
 <h2><c:out value="${ssBinder.title}"/></h2>
 
-<ssf:tree treeName="wsTree" treeDocument="${ssWsDomTree}"  rootOpen="true" />
+<ssf:tree treeName="wsTree" treeDocument="${ssWsDomTree}" 
+  topId="${ssBinder.id}" rootOpen="true" />
 <div id="ss_tree_div_status_message" style="visibility:hidden; display:none;"></div>
