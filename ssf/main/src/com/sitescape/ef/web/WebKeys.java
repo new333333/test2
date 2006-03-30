@@ -92,6 +92,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_USER_FILTER = "user_filter";
 	public static final String FORUM_OPERATION_UNSEEN_LIST = "unseen_list";
 	public static final String FORUM_OPERATION_USER_LIST_SEARCH = "user_list_search";
+	public static final String FORUM_OPERATION_WORKSPACE_TREE = "workspace_tree";
 	public static final String OPERATION_POSTING_ALIASES="alias";
 	public static final String OPERATION_ADD_POSTING_ALIASES="addAlias";
 	public static final String OPERATION_MODIFY_POSTING_ALIASES="modifyAlias";

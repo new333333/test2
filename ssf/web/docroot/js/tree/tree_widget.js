@@ -1,21 +1,77 @@
 //Routines to display an expandable/contractable tree
 //
-//Start by defining a new tree object - new ssTree(treeId, className)
-//Next, define the nodes in the tree - ssTree.defineNode(nodeId, parentId, text, image, url)
-//Finally, create the tree - ssTree.create(openNodes)
-
-if (!ssTree_widget_treeList) {
-	var ssTree_widget_treeList = new ssArray();
+function ss_treeToggle(treeName, id, bottom, type) {
+    var tObj = self.document.getElementById(treeName + "div" + id);
+    var jObj = self.document.getElementById(treeName + "join" + id);
+    var iObj = self.document.getElementById(treeName + "icon" + id);
+    if (tObj == null) {
+    	//alert("ss_treeToggle div obj = null: " + treeName + "div" + id)
+    } else {
+    	//alert("ss_treeToggle id: " + tObj.id)
+    }
+    if (tObj == null) {
+        //The div hasn't been loaded yet. Go get the div via ajax
+		eval("var url = ss_treeAjaxUrl_" + treeName);
+		var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+		ajaxRequest.addKeyValue("binderId", id)
+		ajaxRequest.addKeyValue("treeName", treeName)
+		ajaxRequest.setData("treeName", treeName)
+		ajaxRequest.setData("id", id)
+		ajaxRequest.setData("bottom", bottom)
+		ajaxRequest.setData("type", type)
+		ajaxRequest.setEchoDebugInfo();
+		//ajaxRequest.setPreRequest(ss_preRequest);
+		ajaxRequest.setPostRequest(ss_postTreeDivRequest);
+		ajaxRequest.setUsePOST();
+		ajaxRequest.sendRequest();  //Send the request
+    } else {
+	    if (tObj.style.display == "none" || tObj.style.visibility == 'hidden') {
+	        tObj.style.display = "block";
+	        tObj.style.visibility = 'visible';
+			if (bottom == 1) {
+				jObj.className = "ss_twMinusBottom";	 // minus_bottom.gif
+			} else {
+				jObj.className = "ss_twMinus";           // minus.gif
+			}
+			if (ss_treeIconsOpen[type]) iObj.src = ss_treeIconsOpen[type];
+	    } else {
+	        tObj.style.display = "none";
+	        tObj.style.visibility = 'hidden';
+			if (bottom == 1) {
+				jObj.className = "ss_twPlusBottom";	    // plus_bottom.gif
+			} else {
+				jObj.className = "ss_twPlus";           // plus.gif
+			}
+			if (ss_treeIconsClosed[type]) iObj.src = ss_treeIconsClosed[type];
+	    }
+		//Signal that the layout changed
+		if (ssf_onLayoutChange) ssf_onLayoutChange();
+		
+		self.focus();
+	}
 }
 
-function ss_treeToggle(treeName, node, bottom, type) {
-    var tObj = self.document.getElementById(treeName + "div" + node);
-    var jObj = self.document.getElementById(treeName + "join" + node);
-    var iObj = self.document.getElementById(treeName + "icon" + node);
+function ss_postTreeDivRequest(obj) {
+	//See if there was an error
+	if (self.document.getElementById("ss_tree_div_status_message").innerHTML == "error") {
+		alert(ss_treeNotLoggedInMsg);
+	} else {
+		ss_treeOpen(obj.getData('treeName'), obj.getData('id'), obj.getData('bottom'), obj.getData('type'));
+	}
+}
+
+function ss_treeOpen(treeName, id, bottom, type) {
+    var tObj = self.document.getElementById(treeName + "div" + id);
+    var jObj = self.document.getElementById(treeName + "join" + id);
+    var iObj = self.document.getElementById(treeName + "icon" + id);
     if (tObj == null) {
-        alert('no tree div: ' + treeName + "div" + node);
+    	//alert("ss_treeOpen div obj = null: " + treeName + "div" + id)
+    } else {
+    	//alert("ss_treeOpen id: " + tObj.id)
     }
-    if (tObj.style.display == "none" || tObj.style.visibility == 'hidden') {
+    if (tObj == null) {
+    	return;
+    } else {
         tObj.style.display = "block";
         tObj.style.visibility = 'visible';
 		if (bottom == 1) {
@@ -24,26 +80,18 @@ function ss_treeToggle(treeName, node, bottom, type) {
 			jObj.className = "ss_twMinus";           // minus.gif
 		}
 		if (ss_treeIconsOpen[type]) iObj.src = ss_treeIconsOpen[type];
-    } else {
-        tObj.style.display = "none";
-        tObj.style.visibility = 'hidden';
-		if (bottom == 1) {
-			jObj.className = "ss_twPlusBottom";	    // plus_bottom.gif
-		} else {
-			jObj.className = "ss_twPlus";           // plus.gif
-		}
-		if (ss_treeIconsClosed[type]) iObj.src = ss_treeIconsClosed[type];
-    }
-	//Signal that the layout changed
-	if (ssf_onLayoutChange) ssf_onLayoutChange();
-	
-	self.focus();
+
+		//Signal that the layout changed
+		if (ssf_onLayoutChange) ssf_onLayoutChange();
+		
+		self.focus();
+	}
 }
 
-function ss_treeToggleAll(treeName, node, bottom, type) {
-    var tObj = self.document.getElementById(treeName + "div" + node);
+function ss_treeToggleAll(treeName, id, bottom, type) {
+    var tObj = self.document.getElementById(treeName + "div" + id);
 	if (tObj.style.display == "none") {
-		ss_treeToggle(treeName, node, bottom, type)
+		ss_treeToggle(treeName, id, bottom, type)
 	}
     var children = tObj.childNodes;
     for (var i = 0; i < children.length; i++) {

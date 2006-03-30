@@ -459,7 +459,7 @@ function ss_loadNextDiv(option, itemId, itemName) {
 function ss_postLoadNextDivRequest(obj) {
 	//See if there was an error
 	if (self.document.getElementById("ss_load_div_status_message").innerHTML == "error") {
-		alert("<ssf:nlt tag="forum.unseenCounts.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 	} else {
 		showDisplayDiv()
 	}

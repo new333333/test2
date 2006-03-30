@@ -66,14 +66,14 @@ public class ViewController extends SAbstractController {
 				} else if (operation.equals("modifyDefinition")) {
 					//Modify the name of the selected item
 					selectedItem = PortletRequestUtils.getStringParameter(request, "selectedId", "");
-					if (!selectedItem.equals("") ) {
+					if (!selectedItem.equals("")) {
 						getDefinitionModule().modifyDefinitionProperties(selectedItem, formData);
 					}
 					
 				} else if (operation.equals("deleteDefinition")) {
 					//Delete the selected item
 					selectedItem = PortletRequestUtils.getStringParameter(request, "selectedId", "");
-					if (!selectedItem.equals("") ) {
+					if (!selectedItem.equals("")) {
 						try {
 							getDefinitionModule().deleteDefinition(selectedItem);
 						} catch(NoDefinitionByTheIdException e) {
@@ -84,7 +84,7 @@ public class ViewController extends SAbstractController {
 					
 				} else if (operation.equals("addItem")) {
 					selectedItem = PortletRequestUtils.getStringParameter(request, "sourceDefinitionId", "");
-					if (!selectedItem.equals("") ) {
+					if (!selectedItem.equals("")) {
 						//Add the new item
 						String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
 						String itemToAdd = PortletRequestUtils.getStringParameter(request, "operationItem", "");
@@ -93,7 +93,7 @@ public class ViewController extends SAbstractController {
 						
 				} else if (operation.equals("modifyItem")) {
 					selectedItem = PortletRequestUtils.getStringParameter(request, "sourceDefinitionId", "");
-					if (!selectedItem.equals("") ) {
+					if (!selectedItem.equals("")) {
 						//Modify the item
 						String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
 						getDefinitionModule().modifyItem(selectedItem, itemId, formData);
@@ -101,7 +101,7 @@ public class ViewController extends SAbstractController {
 					
 				} else if (operation.equals("deleteItem")) {
 					selectedItem = PortletRequestUtils.getStringParameter(request, "sourceDefinitionId", "");
-					if (!selectedItem.equals("") ) {
+					if (!selectedItem.equals("")) {
 						//Delete the item
 						String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
 						getDefinitionModule().deleteItem(selectedItem, itemId);
@@ -109,7 +109,7 @@ public class ViewController extends SAbstractController {
 					
 				} else if (operation.equals("moveItem")) {
 					selectedItem = PortletRequestUtils.getStringParameter(request, "sourceDefinitionId", "");
-					if (!selectedItem.equals("") ) {
+					if (!selectedItem.equals("")) {
 						//Delete the item
 						String itemId = PortletRequestUtils.getStringParameter(request, "operationItem", "");
 						String targetItemId = PortletRequestUtils.getStringParameter(request, "selectedId", "");
@@ -144,6 +144,7 @@ public class ViewController extends SAbstractController {
 		Map formData = request.getParameterMap();
 
 		String selectedItem = PortletRequestUtils.getStringParameter(request, "selectedItem", "");
+		if (selectedItem.equals("0")) selectedItem = "";
 		String selectedItemTitle = "";
 
 		//See if there is a definition type requested
@@ -174,7 +175,7 @@ public class ViewController extends SAbstractController {
 		idData.put("captions",idDataCaptions);
 		
 		Document definitionTree;
-		if (!Validator.isNull(selectedItem) ) {
+		if (!Validator.isNull(selectedItem)) {
 			//A definition was selected, go view it
 			Definition def = (Definition)model.get(WebKeys.DEFINITION);
 			idDataNames.put(def.getId(), NLT.getDef(def.getName()));
@@ -213,7 +214,7 @@ public class ViewController extends SAbstractController {
 			definitionTree = DocumentHelper.createDocument();
 			Element dtRoot = definitionTree.addElement("root");
 			dtRoot.addAttribute("title", NLT.getDef("__definitions"));
-			dtRoot.addAttribute("id", "");
+			dtRoot.addAttribute("id", "0");
 			Element root = definitionConfig.getRootElement();
 			
 			Iterator definitions = root.elementIterator("definition");

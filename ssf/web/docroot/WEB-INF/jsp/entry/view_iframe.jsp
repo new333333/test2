@@ -217,7 +217,7 @@ function ss_preRequest(obj) {
 function ss_postEntryWidthRequest(obj) {
 	//See if there was an error
 	if (self.document.getElementById("ss_entry_width_status_message").innerHTML == "error") {
-		alert("<ssf:nlt tag="forum.unseenCounts.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 	}
 }
 

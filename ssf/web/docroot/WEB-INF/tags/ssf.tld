@@ -510,9 +510,9 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 		<attribute>
-			<name>sortable</name>
+			<name>startingId</name>
 			<required>false</required>
-			<type>boolean</type>
+			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 		<attribute>
 			<name>multiSelect</name>

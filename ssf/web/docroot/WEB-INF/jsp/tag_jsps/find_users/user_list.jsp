@@ -87,7 +87,7 @@ function ss_userListSearch(text, elementName, userGroupType) {
 function ss_postUserListRequest(obj) {
 	//See if there was an error
 	if (self.document.getElementById("ss_search_status_message").innerHTML == "error") {
-		alert("<ssf:nlt tag="forum.unseenCounts.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 	} else {
 		//Re-enable the dragable lists
 		ss_DragDrop.initializeListContainer();

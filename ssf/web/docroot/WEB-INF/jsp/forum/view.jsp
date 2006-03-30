@@ -27,7 +27,7 @@
 </c:if>
 <script type="text/javascript">
 function ss_showNotLoggedInMsg() {
-	alert("<ssf:nlt tag="forum.unseenCounts.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+	alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 }
 </script>
 <div id="ss_status_message" class="ss_portlet_style" style="visibility:hidden; display:none;"></div>
