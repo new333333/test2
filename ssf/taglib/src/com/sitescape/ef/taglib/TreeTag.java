@@ -38,6 +38,7 @@ import com.sitescape.util.GetterUtil;
  */
 public class TreeTag extends TagSupport {
     private String treeName;
+    private String topId;
     private String startingId;
     private Document tree;
     private String contextPath;
@@ -69,6 +70,9 @@ public class TreeTag extends TagSupport {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, "ss_forum", Boolean.parseBoolean("true"));
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.FORUM_AJAX_REQUEST);
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_WORKSPACE_TREE);
+			if (this.topId != null && !this.topId.equals("")) {
+				adapterUrl.setParameter(WebKeys.URL_OPERATION2, this.topId);
+			}
 		    
 			JspWriter jspOut = pageContext.getOut();
 			StringBuffer sb = new StringBuffer();
@@ -515,6 +519,10 @@ public class TreeTag extends TagSupport {
 	
 	public void setTreeName(String treeName) {
 	    this.treeName = treeName;
+	}
+	
+	public void setTopId(String topId) {
+	    this.topId = topId;
 	}
 	
 	public void setStartingId(String startingId) {
