@@ -16,6 +16,9 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
+<%
+String wsTreeName = renderResponse.getNamespace() + "_wsTree";
+%>
 
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 <div class="ss_portlet_style ss_portlet">
@@ -29,10 +32,10 @@
 			<div>
 			<c:choose>
 			<c:when test="${renderRequest.windowState == 'normal'}">
-				<ssf:tree treeName="wsTree" treeDocument="<%= ssWsDomTree %>"  rootOpen="false" />
+				<ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  rootOpen="false" />
 			</c:when>
 			<c:when test="${renderRequest.windowState == 'maximized'}">
-				<ssf:tree treeName="wsTree" treeDocument="<%= ssWsDomTree %>"  rootOpen="true" />
+				<ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  rootOpen="true" />
 			</c:when>
 			</c:choose>			
 

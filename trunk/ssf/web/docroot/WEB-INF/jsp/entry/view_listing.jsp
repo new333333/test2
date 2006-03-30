@@ -203,7 +203,7 @@ function ss_loadEntryUrl(url,id) {
 }
 
 function ss_notLoggedIn() {
-	alert("<ssf:nlt tag="forum.unseenCounts.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+	alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 }
 
 </script>

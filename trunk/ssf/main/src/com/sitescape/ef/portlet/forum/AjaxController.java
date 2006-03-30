@@ -28,6 +28,7 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.Workspace;
 
 /**
  * @author Peter Hurley
@@ -78,6 +79,8 @@ public class AjaxController  extends SAbstractForumController {
 				return new ModelAndView("forum/save_entry_height_return", model);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS)) {
 				return new ModelAndView("binder/get_entry_elements", model);
+			} else if (op.equals(WebKeys.FORUM_OPERATION_WORKSPACE_TREE)) {
+				return new ModelAndView("tag_jsps/tree/get_tree_div", model);
 			}
 			return new ModelAndView("forum/ajax_return", model);
 		}
@@ -226,6 +229,19 @@ public class AjaxController  extends SAbstractForumController {
 			} else {
 				return new ModelAndView("binder/get_element_value", model);
 			}
+
+		} else if (op.equals(WebKeys.FORUM_OPERATION_WORKSPACE_TREE)) {
+			if (formData.containsKey("binderId")) {
+				model.put("ss_tree_treeName", ((String[])formData.get("treeName"))[0]);
+				model.put("ss_tree_binderId", ((String[])formData.get("binderId"))[0]);
+				Long binderId = Long.valueOf(((String[])formData.get("binderId"))[0]);
+				Binder binder = getBinderModule().getBinder(binderId);
+				String view = getShowWorkspace(formData, request, response, (Workspace)binder, null, model);
+			}
+			response.setContentType("text/xml");
+			model.put(WebKeys.AJAX_STATUS, statusMap);
+			return new ModelAndView("tag_jsps/tree/get_tree_div", model);
+		
 		}
 		
 		return new ModelAndView(WebKeys.VIEW_FORUM, model);
