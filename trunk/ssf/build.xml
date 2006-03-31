@@ -149,6 +149,7 @@
 			stylesheetfile="${project.dir}/tools/javadoc.css"
 		/>	</target>
 	
+	<!-- This will not run properly unless you've already deployed -->
 	<target name="precompile-jsp">
   		<ant dir="web" target="precompile-jsp" />
 	</target>
@@ -181,15 +182,14 @@
 	<target name="zip-war" depends="init-release">
 		<mkdir dir="${dist.dir}" />
 		<delete file="${dist.dir}/sitescape-forum-${ssf.version}-war.zip" failonerror="false" />
-		<zip zipfile="${dist.dir}/sitescape-forum-${ssf.version}-war.zip"
-			basedir="war"
-			includes="ssf.war"
-		/>
-		<zip zipfile="${dist.dir}/sitescape-forum-${ssf.version}-war.zip"
-			basedir="slide"
-			includes="slide.war"
-			update="true"
-		/>
+		<zip destfile="${dist.dir}/sitescape-forum-${ssf.version}-war.zip">
+			<zipfileset dir="war">
+				<include name="ssf.war" />
+			</zipfileset>
+			<zipfileset dir="slide">
+				<include name="slide.war" />
+			</zipfileset>
+		</zip>
 	</target>
 
 	<target name="release">
