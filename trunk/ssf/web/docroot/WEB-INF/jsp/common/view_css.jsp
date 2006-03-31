@@ -72,6 +72,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_drag.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_dragdrop.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_coordinates.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
   <c:if test="0">
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_dragsort.js"></script>
   </c:if>

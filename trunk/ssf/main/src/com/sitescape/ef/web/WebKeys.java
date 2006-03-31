@@ -189,6 +189,7 @@ public class WebKeys {
     public static final String USER_SEARCH_USER_GROUP_TYPE_USER="user";
     public static final String WORKSPACE="ssWorkspace";
     public static final String WORKSPACE_DOM_TREE="ssWsDomTree";
+    public static final String WORKSPACE_DOM_TREE_BINDER_ID="ssWsDomTreeBinderId";
     public static final String WORKSPACES="ssWorkspaces";
     public static final String ZONE_NAME = "com.sitescape.zonename";
 

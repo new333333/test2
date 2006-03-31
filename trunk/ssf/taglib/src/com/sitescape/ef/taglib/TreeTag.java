@@ -60,13 +60,13 @@ public class TreeTag extends TagSupport {
 	public int doStartTag() throws JspException {
 	    if(treeName == null)
 	        throw new JspException("Tree name must be specified");
-	    finished=false;
-	    startingIdSeen=false;
+	    this.finished = false;
+	    this.startingIdSeen = false;
 		try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 
 			User user = RequestContextHolder.getRequestContext().getUser();
-			displayStyle = user.getDisplayStyle();
+			this.displayStyle = user.getDisplayStyle();
 			this.contextPath = req.getContextPath();
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 		    setCommonImg(contextPath + "/images");
@@ -368,6 +368,7 @@ public class TreeTag extends TagSupport {
 			
 			// Recurse if node has children
 			if (hcn) {
+				boolean divHasBeenOutput = false;
 				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
 					jspOut.print("\n<div class=\"ss_twDiv\" id=\"" + this.treeName + "div" + s_id + "\"");
 		
@@ -376,6 +377,7 @@ public class TreeTag extends TagSupport {
 					}
 		
 					jspOut.print(">\n");
+					divHasBeenOutput = true;
 				}
 	
 				ListIterator it2 = e.elements("child").listIterator();
@@ -383,7 +385,7 @@ public class TreeTag extends TagSupport {
 					outputTreeNodes((Element) it2.next(), recursedNodes);
 				}
 	
-				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+				if (divHasBeenOutput) {
 					jspOut.print("</div>\n");
 				}
 			} else if (hhcn) {

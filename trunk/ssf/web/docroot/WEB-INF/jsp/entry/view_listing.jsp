@@ -5,8 +5,6 @@
 <body>
 </ssf:ifadapter>
 
-<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Binder" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
