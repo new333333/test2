@@ -19,6 +19,19 @@
 <%
 String wsTreeName = renderResponse.getNamespace() + "_wsTree";
 %>
+<script type="text/javascript">
+function <%= wsTreeName %>_showId(id, obj) {
+	//Build a url to go to
+	var url = "<portlet:renderURL windowState="maximized">
+				<portlet:param name="action" value="view_listing"/>
+				<portlet:param name="binderId" value="ssBinderIdPlaceHolder"/>
+				</portlet:renderURL>"
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
+	self.location.href = url;
+	return false;
+}
+
+</script>
 
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 <div class="ss_portlet_style ss_portlet">

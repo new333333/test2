@@ -1299,3 +1299,29 @@ function fetch_url_debug(str) {
 	Array.prototype.pop = array_pop;
 //}
 
+//Routines to replace substrings in a string
+function ss_replaceSubStr(str, subStr, newSubStrVal) {
+    var newStr = str;
+	var i = str.indexOf(subStr);
+    var lenS = str.length;
+    var lenSS = subStr.length;
+    if (i >= 0) {
+        newStr = str.substring(0, i) + newSubStrVal + str.substring(i+lenSS, lenS);
+    }
+	return newStr;
+}
+function ss_replaceSubStrAll(str, subStr, newSubStrVal) {
+    var newStr = str;
+    while (1) {
+        var i = newStr.indexOf(subStr);
+        var lenS = newStr.length;
+        var lenSS = subStr.length;
+        if (i >= 0) {
+            newStr = newStr.substring(0, i) + newSubStrVal + newStr.substring(i+lenSS, lenS);
+        } else {
+            break;
+        }
+    }
+    return newStr;
+}
+

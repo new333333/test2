@@ -10,6 +10,19 @@
 <c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 </c:if>
+<script type="text/javascript">
+function wsTree_showId(id, obj) {
+	//Build a url to go to
+	var url = "<portlet:renderURL windowState="maximized">
+				<portlet:param name="action" value="view_listing"/>
+				<portlet:param name="binderId" value="ssBinderIdPlaceHolder"/>
+				</portlet:renderURL>"
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
+	self.location.href = url;
+	return false;
+}
+
+</script>
 
 <h2><c:out value="${ssBinder.title}"/></h2>
 

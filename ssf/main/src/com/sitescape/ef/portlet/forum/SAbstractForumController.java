@@ -752,9 +752,7 @@ public class SAbstractForumController extends SAbstractController {
 			Binder binder = (Binder) source;
 			element.addAttribute("title", binder.getTitle());
 			element.addAttribute("id", binder.getId().toString());
-			url = element.addElement("url");
-			url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
-			url.addAttribute(WebKeys.URL_BINDER_ID, binder.getId().toString());
+
 			//only need this information if this is the bottom of the tree
 			if (check && bottom.equals(binder.getParentBinder())) {
 				if (getBinderModule().hasBinders(binder)) {
