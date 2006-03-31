@@ -20,11 +20,6 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <jsp:useBean id="ss_searchFilterData" type="java.util.Map" scope="request" />
 
-<c:if test="${empty ss_taconite_loaded}">
-<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
-<c:set var="ss_taconite_loaded" value="1" scope="request"/>
-</c:if>
 <div class="ss_style ss_portlet ss_form">
 <script type="text/javascript">
 

@@ -17,11 +17,6 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<c:if test="${empty ss_taconite_loaded}">
-<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
-<c:set var="ss_taconite_loaded" value="1" scope="request"/>
-</c:if>
 <div class="ss_style ss_portlet" style="margin:6px;">
 <script type="text/javascript">
 

@@ -32,10 +32,10 @@ String wsTreeName = renderResponse.getNamespace() + "_wsTree";
 			<div>
 			<c:choose>
 			<c:when test="${renderRequest.windowState == 'normal'}">
-				<ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  rootOpen="false" />
+				<ssf:tree treeName="<%= wsTreeName %>" topId="${ssWsDomTreeBinderId}" treeDocument="<%= ssWsDomTree %>"  rootOpen="false" />
 			</c:when>
 			<c:when test="${renderRequest.windowState == 'maximized'}">
-				<ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  rootOpen="true" />
+				<ssf:tree treeName="<%= wsTreeName %>" topId="${ssWsDomTreeBinderId}" treeDocument="<%= ssWsDomTree %>"  rootOpen="true" />
 			</c:when>
 			</c:choose>			
 
@@ -44,3 +44,4 @@ String wsTreeName = renderResponse.getNamespace() + "_wsTree";
 	</tr>
 </table>
 </div>
+<div id="ss_tree_div_status_message"></div>
