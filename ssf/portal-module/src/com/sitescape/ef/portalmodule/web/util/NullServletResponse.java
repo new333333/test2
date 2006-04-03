@@ -8,6 +8,12 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * An implementation of HttpServletResponse that doesn't do anything useful.
+ * 
+ * @author jong
+ *
+ */
 public class NullServletResponse implements HttpServletResponse {
 
 	public void addCookie(Cookie cookie) {

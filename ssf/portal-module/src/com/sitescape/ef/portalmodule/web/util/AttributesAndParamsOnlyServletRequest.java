@@ -4,11 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -18,6 +16,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+/**
+ * An implementation of HttpServletRequest that only handles attributes and
+ * parameters. 
+ * 
+ * @author jong
+ *
+ */
 public class AttributesAndParamsOnlyServletRequest implements HttpServletRequest {
 
 	private Map params = new HashMap();
