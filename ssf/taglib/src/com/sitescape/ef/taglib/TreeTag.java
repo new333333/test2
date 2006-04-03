@@ -593,14 +593,18 @@ public class TreeTag extends TagSupport {
 	    images.put("plus_bottom", "/trees/plus_bottom.gif");
 	    
 	    //Container icons
+	    images.put("admin_tools", "/trees/admin_tools.gif");
+	    images.put("calendar", "/trees/calendar.gif");
+	    images.put("discussion", "/trees/discussion.gif");
 	    images.put("folder", "/trees/folder.gif");
 	    imagesOpen.put("folder", "/trees/folder_open.gif");
-	    images.put("page", "/trees/page.gif");
-	    images.put("workspace", "/trees/workspace.gif");
-	    images.put("forum", "/trees/forum.gif");
-	    images.put("discussion", "/trees/discussion.gif");
-	    images.put("calendar", "/trees/calendar.gif");
+	    images.put("people", "/trees/people.gif");
 	    images.put("tasks", "/trees/tasks.gif");
+	    images.put("workspace", "/trees/workspace.gif");
+	    
+	    images.put("bullet", "/trees/bullet.gif");
+	    images.put("contact", "/trees/contact.gif");
+	    images.put("page", "/trees/page.gif");
 		
 		// File icons		
 	    images.put("doc", "/document_library/doc.gif");

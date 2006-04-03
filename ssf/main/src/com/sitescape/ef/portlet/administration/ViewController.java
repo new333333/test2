@@ -34,13 +34,13 @@ public class ViewController extends  SAbstractController {
 		Document adminTree = DocumentHelper.createDocument();
 		Element rootElement = adminTree.addElement("root");
 		rootElement.addAttribute("title", NLT.get("administration.title"));
-		rootElement.addAttribute("image", "root");
+		rootElement.addAttribute("image", "admin_tools");
 		rootElement.addAttribute("displayOnly", "true");
 		
 		//Definition builder - Entry form designer
 		Element element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder_entry_form_designer"));
-		element.addAttribute("image", "page");
+		element.addAttribute("image", "bullet");
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.COMMAND));
@@ -51,7 +51,7 @@ public class ViewController extends  SAbstractController {
 		//Definition builder - Folder view designer
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder_folder_view_designer"));
-		element.addAttribute("image", "page");
+		element.addAttribute("image", "bullet");
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FORUM_VIEW));
@@ -62,7 +62,7 @@ public class ViewController extends  SAbstractController {
 		//Definition builder - Workflow designer
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder_workflow_designer"));
-		element.addAttribute("image", "page");
+		element.addAttribute("image", "bullet");
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKFLOW));
@@ -73,7 +73,7 @@ public class ViewController extends  SAbstractController {
 		//Definition builder - Profile listing designer
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder_profile_listing_designer"));
-		element.addAttribute("image", "page");
+		element.addAttribute("image", "bullet");
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.PROFILE_VIEW));
@@ -84,7 +84,7 @@ public class ViewController extends  SAbstractController {
 		//Definition builder - Profile designer
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder_profile_designer"));
-		element.addAttribute("image", "page");
+		element.addAttribute("image", "bullet");
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.PROFILE_ENTRY_VIEW));
@@ -95,7 +95,7 @@ public class ViewController extends  SAbstractController {
 		//Definition builder - Workspace designer
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder_workspace_designer"));
-		element.addAttribute("image", "page");
+		element.addAttribute("image", "bullet");
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKSPACE_VIEW));
@@ -106,7 +106,7 @@ public class ViewController extends  SAbstractController {
 		//Ldap configuration
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_ldap"));
-		element.addAttribute("image", "page");
+		element.addAttribute("image", "bullet");
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.LDAP_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
@@ -116,7 +116,7 @@ public class ViewController extends  SAbstractController {
 		//Roles configuration
 		element = rootElement.addElement("child");
 		element.addAttribute("title", NLT.get("administration.configure_roles"));
-		element.addAttribute("image", "page");
+		element.addAttribute("image", "bullet");
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ADMIN_ACTION_CONFIGURE_ROLES);
 		url.setWindowState(WindowState.MAXIMIZED);
@@ -126,7 +126,7 @@ public class ViewController extends  SAbstractController {
 		//Notification configuration
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_notify"));
-		element.addAttribute("image", "page");
+		element.addAttribute("image", "bullet");
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.NOTIFY_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
@@ -136,7 +136,7 @@ public class ViewController extends  SAbstractController {
 		//Posting schedule
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_posting"));
-		element.addAttribute("image", "page");
+		element.addAttribute("image", "bullet");
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.POSTING_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
@@ -146,7 +146,7 @@ public class ViewController extends  SAbstractController {
 		//Posting schedule
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_posting_job"));
-		element.addAttribute("image", "page");
+		element.addAttribute("image", "bullet");
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.POSTINGJOB_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
@@ -156,7 +156,7 @@ public class ViewController extends  SAbstractController {
 		//Search index
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_search_index"));
-		element.addAttribute("image", "page");
+		element.addAttribute("image", "bullet");
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FOLDER_INDEX_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
@@ -166,7 +166,7 @@ public class ViewController extends  SAbstractController {
 		//User index
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_profile_index"));
-		element.addAttribute("image", "page");
+		element.addAttribute("image", "bullet");
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.PROFILE_INDEX_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.NORMAL);
@@ -176,7 +176,7 @@ public class ViewController extends  SAbstractController {
 		//Definition import
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.importDefinitions"));
-		element.addAttribute("image", "page");
+		element.addAttribute("image", "bullet");
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.DEFINITION_ACTION_IMPORT);
 		url.setPortletMode(PortletMode.VIEW);
