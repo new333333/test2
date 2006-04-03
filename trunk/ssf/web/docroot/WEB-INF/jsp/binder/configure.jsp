@@ -46,7 +46,7 @@
 <br><br>
 
 <form name="inheritanceForm" method="post" 
-  onSubmit="return ssf_onSubmit(this);"
+  onSubmit="return ss_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_forum"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>

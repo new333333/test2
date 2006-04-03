@@ -265,32 +265,21 @@ public class SAbstractForumController extends SAbstractController {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		//	The "Add" menu
-		List defaultWorkspaceDefinitions = workspace.getEntryDefs();
 		PortletURL url;
 		boolean addMenuCreated=false;
-		if (!defaultWorkspaceDefinitions.isEmpty()) {
-			try {
-				getWorkspaceModule().checkAddWorkspaceAllowed(workspace);
-				int count = 1;
-				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
-				addMenuCreated=true;
-				Map qualifiers = new HashMap();
-				String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
-				qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
-				for (int i=0; i<defaultWorkspaceDefinitions.size(); ++i) {
-					Definition def = (Definition) defaultWorkspaceDefinitions.get(i);
-					AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
-					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
-					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-					String title = NLT.getDef(def.getTitle());
-					if (toolbar.checkToolbarMenuItem("1_add", "entries", title)) {
-						title = title + " (" + String.valueOf(count++) + ")";
-					}
-					toolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
-				}
-			} catch (AccessControlException ac) {};
-		}
+		
+		//Add Workspace
+		try {
+			getWorkspaceModule().checkAddWorkspaceAllowed(workspace);
+			toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+			addMenuCreated=true;
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
+			toolbar.addToolbarMenuItem("1_add", "workspace", NLT.get("toolbar.menu.addWorkspace"), url);
+		} catch (AccessControlException ac) {};
+
 		//Add Folder
 		try {
 			getWorkspaceModule().checkAddFolderAllowed(workspace);
@@ -298,45 +287,39 @@ public class SAbstractForumController extends SAbstractController {
 				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 				addMenuCreated=true;
 			}
-			url = response.createRenderURL();
+			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_OPERATION, "addWorkspace");
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
 			toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), url);
 		} catch (AccessControlException ac) {};
 		
-		//Add Workspace
 		try {
-			getWorkspaceModule().checkAddWorkspaceAllowed(workspace);
-			if (addMenuCreated == false) {
-				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
-				addMenuCreated=true;
-			}
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+			getWorkspaceModule().checkModifyWorkspaceAllowed(workspace);
+			//The "Modify" menu
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_ENTRY);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
-			toolbar.addToolbarMenuItem("1_add", "workspace", NLT.get("toolbar.menu.addWorkspace"), url);
+			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
 		} catch (AccessControlException ac) {};
-
+		
 		//The "Administration" menu
-		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
+		toolbar.addToolbarMenu("3_administration", NLT.get("toolbar.administration"));
 		//Access control
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ACCESS_CONTROL);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url);
+		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.accessControl"), url);
 		//Configuration
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_CONFIGURE_FORUM);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);
+		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.configuration"), url);
 		//Definition builder
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
+		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
 		
 		return toolbar;
 	}

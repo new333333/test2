@@ -454,7 +454,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									hb.append("<span>");
 									hb.append(NLT.getDef(help.getText()));
 									hb.append("</span>\n</div>\n");
-									sb.append("&nbsp;<a name=\"help_div_" + rootElementId);
+									sb.append(" <a name=\"help_div_" + rootElementId);
 									sb.append(Integer.toString(helpDivCount));
 									sb.append("_a\" onClick=\"ss_activateMenuLayer('help_div_ + rootElementId");
 									sb.append(Integer.toString(helpDivCount));
@@ -508,7 +508,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									hb.append("<span>");
 									hb.append(NLT.getDef(help.getText()));
 									hb.append("</span>\n</div>\n");
-									sb.append("&nbsp;<a name=\"help_div_" + rootElementId);
+									sb.append(" <a name=\"help_div_" + rootElementId);
 									sb.append(Integer.toString(helpDivCount));
 									sb.append("_a\" onClick=\"ss_activateMenuLayer('help_div_" + rootElementId);
 									sb.append(Integer.toString(helpDivCount));

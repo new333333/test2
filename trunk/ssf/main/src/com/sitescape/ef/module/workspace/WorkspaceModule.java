@@ -45,6 +45,7 @@ public interface WorkspaceModule {
 
   	public Long addWorkspace(Long parentId, Map input) throws AccessControlException;
  	public void checkAddWorkspaceAllowed(Workspace parent) throws AccessControlException;
+ 	public void checkModifyWorkspaceAllowed(Workspace workspace) throws AccessControlException;
  	public Long addFolder(Long parentId, Map input) throws AccessControlException;
   	public void checkAddFolderAllowed(Workspace parent) throws AccessControlException;
 }

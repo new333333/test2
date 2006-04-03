@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Binder;
@@ -69,6 +70,9 @@ public class AddFolderController extends SAbstractController {
 		
     	model.put(WebKeys.URL_OPERATION, operation);
 		model.put(WebKeys.BINDER, binder); 
+
+		DefinitionUtils.getDefinitions(binder, model);
+		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 
 		return new ModelAndView(WebKeys.VIEW_ADD_FOLDER, model);
 	}

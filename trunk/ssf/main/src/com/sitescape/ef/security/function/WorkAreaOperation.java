@@ -25,6 +25,7 @@ public class WorkAreaOperation {
     //  Important: do not create operations that control the viewing of an entry of folder.
     //  Such "view" operations should be controlled by the ACL.
     public final static WorkAreaOperation CREATE_ENTRIES = new WorkAreaOperation("createEntries");
+    public final static WorkAreaOperation BINDER_ADMIN = new WorkAreaOperation("binderAdmin");    
     public final static WorkAreaOperation MODIFY_ENTRIES = new WorkAreaOperation("modifyEntries");    
     public final static WorkAreaOperation DELETE_ENTRIES = new WorkAreaOperation("deleteEntries");    
     public final static WorkAreaOperation READ_ENTRIES = new WorkAreaOperation("readEntries");

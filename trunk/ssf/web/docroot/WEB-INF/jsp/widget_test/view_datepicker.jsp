@@ -75,7 +75,7 @@
    }
 %>
 
-<form class="ss_style ss_form" method="POST" action="" name="datepickertest" onSubmit="return ssf_onSubmit(this);">
+<form class="ss_style ss_form" method="POST" action="" name="datepickertest" onSubmit="return ss_onSubmit(this);">
 <span align="center">SiteScape Forum Widget Tester -  Datepicker Widget
 <br />
 This test page shows datepickers for the current date and an unspecified date. 
