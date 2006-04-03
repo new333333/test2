@@ -27,7 +27,7 @@ import com.sitescape.ef.util.SpringContextUtil;
  */
 public class PWCallback implements CallbackHandler {
 
-	private static final String DELIM = "##";
+	private static final String DELIM = ":";
 	
 	public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
         for (int i = 0; i < callbacks.length; i++) {
