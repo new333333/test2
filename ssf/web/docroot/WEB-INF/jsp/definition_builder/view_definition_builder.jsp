@@ -27,6 +27,8 @@
 <jsp:useBean id="ssPublicEntryDefinitions" type="java.util.Map" scope="request" />
 <%@ page import="com.sitescape.ef.domain.FolderEntry" %>
 <%@ page import="com.sitescape.ef.domain.User" %>
+<%@ page import="com.sitescape.ef.domain.Folder" %>
+<%@ page import="com.sitescape.ef.domain.Workspace" %>
 <%
 	String nodeOpen = " ";
 	if (data.containsKey("nodeOpen")) {
@@ -147,11 +149,11 @@ function loadDivCallback(s) {
 	showDisplayDiv();
 }
 
-function t_<portlet:namespace/>_definitionTree_showId(id, obj) {
+function definitionTree_showId(id, obj) {
 	//User selected an item from the tree
 	//See if this id has any info associated with it
 	var mappedId = id;
-	//alert('t_<portlet:namespace/>_definitionTree_showId: ' + id + '--> '+mappedId+', state: '+state+ ', sourceDefinitionId: '+sourceDefinitionId)
+	//alert('definitionTree_showId: ' + id + '--> '+mappedId+', state: '+state+ ', sourceDefinitionId: '+sourceDefinitionId)
 	lastSelectedId = selectedId;
 	selectedId = id;
 	selectedIdMapped = mappedId;
@@ -446,7 +448,7 @@ function ss_loadNextDiv(option, itemId, itemName) {
 	//alert(url)
 	
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
-	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postLoadNextDivRequest);
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
@@ -577,16 +579,25 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 		//See if this is an entry definition
 		Element configElementEntry = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='entryForm']");
 		Element configElementProfile = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='profileEntryForm']");
+		Element configElementFolder = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='folderForm']");
+		Element configElementWorkspace = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='workspaceForm']");
 		Element configElement = null;
-		if (configElementEntry != null || configElementProfile != null) {
-			//This is an entry or profile definition; so show the preview of the form
+		if (configElementEntry != null || configElementProfile != null || 
+				configElementFolder != null || configElementWorkspace != null) {
+			//This definition has a form definition; so show the form preview
 			String definitionName = (String) ((Document) data.get("sourceDefinition")).getRootElement().attributeValue("caption","");
 			if (configElementEntry != null) {
 				configElement = configElementEntry;
 				request.setAttribute("definitionEntry", new FolderEntry());
-			} else {
+			} else if (configElementProfile != null) {
 				configElement = configElementProfile;
 				request.setAttribute("definitionEntry", new User());
+			} else if (configElementFolder != null) {
+				configElement = configElementFolder;
+				request.setAttribute("definitionEntry", new Folder());
+			} else if (configElementWorkspace != null) {
+				configElement = configElementWorkspace;
+				request.setAttribute("definitionEntry", new Workspace());
 			}
 			request.setAttribute("ssConfigElement", configElement);
 			String configJspStyle = "form";

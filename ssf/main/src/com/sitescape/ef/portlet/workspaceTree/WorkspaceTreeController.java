@@ -18,9 +18,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
@@ -119,7 +121,11 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
 				Folder f = (Folder)source;
 				element.addAttribute("type", "forum");
-				element.addAttribute("image", "forum");
+				if (binder.getParentBinder().getType().equals(EntityIdentifier.EntityType.workspace.name())) {
+					element.addAttribute("image", "forum");
+				} else {
+					element.addAttribute("image", "folder");
+				}
 			} else return null;
 			return element;
 		}

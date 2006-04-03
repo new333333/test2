@@ -463,7 +463,7 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderGraphic" />
 	</item>
 
-	<item name="attachFiles" caption="__attach_files" type="data" 
+	<item name="attachFiles" caption="__attach_files" 
 			multipleAllowed="false" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="ss_attachFile" readonly="true"/>
@@ -705,7 +705,8 @@
 		</options>
 	</item>
 	
-	<item name="forumView" definitionType="5" caption="__forum_view" canBeDeleted="false" multipleAllowed="false" >		
+	<item name="forumView" definitionType="5" caption="__forum_view" 
+		canBeDeleted="false" multipleAllowed="false" >		
 		<properties>
 			<property name="type" caption="__type" type="selectbox" default="folder">
 				<option name="folder" caption="__folder_folder" />
@@ -1206,31 +1207,77 @@
 		</properties>
 		
 		<options>
+			<option name="workspaceForm" initial="true" />
 			<option name="workspaceView" initial="true" />
 		</options>
 	</item>
 	
-	<item name="workspaceView" definitionType="8" caption="__workspace_view" canBeDeleted="false" multipleAllowed="false" >		
-		<properties>
-			<property name="type" caption="__type" type="selectbox" default="standard">
-				<option name="standard" caption="__workspace_standard" />
-				<option name="team" caption="__workspace_team" />
-				<option name="dashboard" caption="__workspace_dashboard" />
-				<help>__help_workspace_view_type</help>
-			</property>
-		</properties>
+	<item name="workspaceForm" caption="__workspace_form" type="form" canBeDeleted="false" 
+		multipleAllowed="false" >		
 		<options>
-			<option_select path="//item[@category='workspaceView']" />
+			<option name="title" initial="true" />
+			<option name="description" initial="true" />
+			<option name="htmlEditorTextarea" />
+			<option name="textarea" />
+			<option name="graphic" />
+			<option name="file" />
+			<option name="attachFiles" />
+			<option_select path="//item[@category='workspaceForm']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 	</item>
 	
-	<item name="workspaceBinderList" caption="__workspace_binder_list" category="workspaceView">
+	<item name="workspaceView" caption="__workspace_view" canBeDeleted="false" 
+		multipleAllowed="false" >		
+		<options>
+			<option name="workspaceDataItem" caption="__workspace_data_item" 
+				definitionType="8" />
+			<option_select path="//item[@category='workspaceView']" />
+			<option_select path="//item[@category='generalLayout']" 
+				optionCaption="__layout_options" />
+		</options>
+	</item>
+	
+	<item name="workspaceDataItem" type="dataView" 
+		caption="__workspace_data_item" category="workspaceViewData">
+		<properties>
+			<property name="name" caption="__workspace_data_item_name" 
+				type="selectbox">
+			    <option_entry_data select_type="data" 
+					path="//item[@name='workspaceForm']/.//item" 
+					optionCaption="__workspace_form_data_items" />
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="workspaceBinderList" caption="__workspace_binder_list" 
+		category="workspaceView">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/workspace_binder_list.jsp" />
 		</jsps>
 	</item>
 
+	<item name="workspaceDashboard" caption="__workspace_dashboard" 
+		category="workspaceView">
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/workspace_dashboard.jsp" />
+		</jsps>
+	</item>
+
+	<item name="workspaceAttachments" type="dataView" 
+		caption="__workspace_attachments" category="workspaceView">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__workspace_attachments"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
+		</jsps>
+	</item>
+		
 	<item name="defaultWorkspaceView" caption="__default_workspace_view">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_workspace_default.jsp" />

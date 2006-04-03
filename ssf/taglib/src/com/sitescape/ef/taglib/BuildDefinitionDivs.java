@@ -556,7 +556,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					String propertyName = propertyConfig.attributeValue("name", "");
 					String readonly = "";
 					if (propertyConfig.attributeValue("readonly", "false").equalsIgnoreCase("true")) {
-						readonly = "readonly=\"readonly\"";
+						readonly = "readonly=\"true\"";
 					}
 					List propertyValues = new ArrayList();
 					if (properties != null) {
