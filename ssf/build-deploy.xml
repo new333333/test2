@@ -12,6 +12,7 @@
 		</delete>		
 		
 		<delete dir="${app.server.ssf.dir}"/>
+		<delete dir="${app.server.slide.dir}"/>
 	</target>
 	
 	<target name="init-liferay">
@@ -45,7 +46,7 @@
 		<property name="deploy.liferay.util.jar" value="${deploy.liferay.lib.dir}/util-java.jar" />
 	</target>
 	
-	<target name="deploy-liferay">
+	<target name="deploy-liferay" depends="clean-app-server">
 		<if>
 			<equals arg1="${app.server.type}" arg2="tomcat" />
 			<then>
@@ -104,7 +105,7 @@
 		</java>
 
 		<antcall target="deploy-liferay-post" />
-		<ant dir="slide" target="deploy" inheritAll="false" />
+		<ant dir="ssfs" target="deploy" inheritAll="false" />
 		
 		<copy file="tomcat/resources/ssf.xml" todir="${app.server.dir}/conf/Catalina/localhost" />		
 		<copy file="tomcat/resources/server.slide.xml" tofile="${app.server.dir}/conf/server.xml" />		

@@ -1,4 +1,4 @@
-package com.sitescape.ef.web.crosscontext;
+package com.sitescape.ef.web.crosscontext.portal;
 
 import java.io.IOException;
 import java.util.Collections;

@@ -59,7 +59,7 @@
 
 		<ant dir="war" target="clean" />
 		
-		<ant dir="slide" target="clean" />
+		<ant dir="ssfs" target="clean" />
 	</target>
 
 	<target name="compile">
@@ -101,7 +101,7 @@
 
 		<ant dir="war" target="war" />
 		
-		<ant dir="slide" target="war" />
+		<ant dir="ssfs" target="war" />
 	</target>
 
 	<target name="java2html">
@@ -186,8 +186,8 @@
 			<zipfileset dir="war">
 				<include name="ssf.war" />
 			</zipfileset>
-			<zipfileset dir="slide">
-				<include name="slide.war" />
+			<zipfileset dir="ssfs">
+				<include name="ssfs.war" />
 			</zipfileset>
 		</zip>
 	</target>

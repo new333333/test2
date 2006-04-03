@@ -21,6 +21,7 @@
 	<propertycopy name="app.server.deploy.dir" from="app.server.${app.server.type}.deploy.dir" />
 	<propertycopy name="app.server.lib.dir" from="app.server.${app.server.type}.lib.dir" />
 	<propertycopy name="app.server.ssf.dir" from="app.server.${app.server.type}.ssf.dir" />
+	<propertycopy name="app.server.slide.dir" from="app.server.${app.server.type}.slide.dir" />
 
 	<target name="clean">
 		<delete file="${jar.file}" failonerror="false" />

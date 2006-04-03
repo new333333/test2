@@ -1,4 +1,4 @@
-package com.sitescape.ef.web.crosscontext;
+package com.sitescape.ef.web.crosscontext.portal;
 
 public abstract class CrossContextConstants {
 	

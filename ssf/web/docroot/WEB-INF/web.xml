@@ -115,8 +115,13 @@
 	</servlet>
 	
 	<servlet>
-		<servlet-name>ccDispatchServer</servlet-name>
-		<servlet-class>com.sitescape.ef.web.crosscontext.DispatchServer</servlet-class>
+		<servlet-name>portalCCDispatcher</servlet-name>
+		<servlet-class>com.sitescape.ef.web.crosscontext.portal.DispatchServer</servlet-class>
+	</servlet>
+	
+	<servlet>
+		<servlet-name>ssfsCCDispatcher</servlet-name>
+		<servlet-class>com.sitescape.ef.web.crosscontext.ssfs.DispatchServer</servlet-class>
 	</servlet>
 	
 	<servlet-mapping>

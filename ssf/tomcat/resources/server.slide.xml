@@ -215,7 +215,7 @@
        unpackWARs="true" autoDeploy="true"
        xmlValidation="false" xmlNamespaceAware="false">
 
-        <Context path="/slide" debug="0" privileged="true" useNaming="true">
+        <Context path="/ssfs" debug="0" privileged="true" useNaming="true">
           <Realm className="org.apache.catalina.realm.JAASRealm"
             appName="slide_login"
             userClassNames="org.apache.slide.jaas.spi.SlidePrincipal"

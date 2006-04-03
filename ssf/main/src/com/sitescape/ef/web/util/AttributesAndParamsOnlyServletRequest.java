@@ -1,4 +1,4 @@
-package com.sitescape.ef.portalmodule.web.util;
+package com.sitescape.ef.web.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

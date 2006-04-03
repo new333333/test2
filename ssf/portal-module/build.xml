@@ -8,18 +8,19 @@
 
 
 	<target name="jar" depends="compile,build-common.jar">
-		<jar
-			basedir="${basedir}/../util/classes"
+		<jar 
 			jarfile="${jar.file}"
 			update="true"
-			includes="com/sitescape/util/servlet/DynamicServletRequest.class"
-		/>
-		<jar
-			basedir="${basedir}/../main/classes"
-			jarfile="${jar.file}"
-			update="true"
-			includes="com/sitescape/ef/web/crosscontext/CrossContextConstants.class"
-		/>
+		>
+			<fileset dir="${basedir}/../util/classes"
+				includes="com/sitescape/util/servlet/DynamicServletRequest.class"
+			/>
+			<fileset dir="${basedir}/../main/classes">
+	        	<include name="com/sitescape/ef/web/crosscontext/portal/CrossContextConstants.class"/>
+	        	<include name="com/sitescape/ef/web/util/AttributesAndParamsOnlyServletRequest.class"/>
+	        	<include name="com/sitescape/ef/web/util/NullServletResponse.class"/>
+			</fileset>
+		</jar>
 	</target>
 	
 	<target name="deploy" depends="jar">
