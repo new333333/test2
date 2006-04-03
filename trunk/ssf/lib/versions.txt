@@ -17,6 +17,7 @@ Commans Jexl 1.0
 Commons HttpClient 2.0.2
 Commons Lang 2.0
 Commons Logging 1.0.3
+Commons Transaction 1.1.1pre1
 Concurrent Library
 DbUnit 2.1
 dom4j 1.5.2
@@ -45,6 +46,8 @@ Qdox 1.6-snapshot
 Quartz 1.4.5
 SAAJ 1.2
 Servlet 2.3.1/JSP 1.2.1
+Slide Kernel 2.2pre1
+Slide WCK 1.0
 Slide WebDAV client library 2.1
 Spring 1.2.2
 Spring mock 1.2.2 (comes with Spring)

@@ -11,6 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 
 public class DispatchClient {
 	
+	private static final String SSF_CONTEXT_PATH_DEFAULT = "/ssf";
+	
+	private static final String PORTAL_CC_DISPATCHER = "portalCCDispatcher";
+	
 	private static ServletConfig portalServletConfig;
 	private static ServletContext ssfContext;
 	
@@ -21,14 +25,15 @@ public class DispatchClient {
 	public static void fini() {	
 	}
 	
-	public static void doDispatch(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public static void doDispatch(HttpServletRequest request, HttpServletResponse response) 
+		throws ServletException, IOException {
 		// We use just-in-time initialization, rather than doing it fully at the 
 		// system startup time, because the SSF web app may have not been loaded
 		// at the time the portal is initialized. So we defer completion of this
-		// initialization until very first user attempts to log into the system.
+		// initialization until very first time user attempts to log into the system.
 		initInternal();
 		
-		RequestDispatcher dispatcher = ssfContext.getNamedDispatcher("ccDispatchServer");
+		RequestDispatcher dispatcher = ssfContext.getNamedDispatcher(PORTAL_CC_DISPATCHER);
 		
 		if(dispatcher != null) {
 			dispatcher.include(request, response);
@@ -46,7 +51,8 @@ public class DispatchClient {
 			// executed. Therefore, we will simply log something to the console
 			// for the informational purpose only. Since the app server is
 			// shutting down anyway, this shouldn't be a big deal. 
-			System.out.println("Unable to obtain request dispatcher for ccDispatchServer from SSF context");
+			System.out.println("Unable to obtain request dispatcher for " +
+					PORTAL_CC_DISPATCHER + " from SSF context");
 		}
 	}
 	
@@ -54,6 +60,8 @@ public class DispatchClient {
 		synchronized(DispatchClient.class) {
 			if(ssfContext == null) {
 				String ssfContextPath = portalServletConfig.getInitParameter("contextPath");
+				if(ssfContextPath == null || ssfContextPath.length() == 0)
+					ssfContextPath = SSF_CONTEXT_PATH_DEFAULT;					
 				ssfContext = portalServletConfig.getServletContext().getContext(ssfContextPath);
 			}
 		}

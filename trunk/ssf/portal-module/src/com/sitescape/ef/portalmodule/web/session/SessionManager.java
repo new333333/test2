@@ -9,9 +9,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.sitescape.ef.portalmodule.web.crosscontext.DispatchClient;
-import com.sitescape.ef.portalmodule.web.util.NullServletResponse;
-import com.sitescape.ef.portalmodule.web.util.AttributesAndParamsOnlyServletRequest;
-import com.sitescape.ef.web.crosscontext.CrossContextConstants;
+import com.sitescape.ef.web.crosscontext.portal.CrossContextConstants;
+import com.sitescape.ef.web.util.AttributesAndParamsOnlyServletRequest;
+import com.sitescape.ef.web.util.NullServletResponse;
 import com.sitescape.util.servlet.DynamicServletRequest;
 
 /**
