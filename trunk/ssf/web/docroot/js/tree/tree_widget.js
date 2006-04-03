@@ -19,7 +19,7 @@ function ss_treeToggle(treeName, id, bottom, type) {
 		ajaxRequest.setData("id", id)
 		ajaxRequest.setData("bottom", bottom)
 		ajaxRequest.setData("type", type)
-		ajaxRequest.setEchoDebugInfo();
+		//ajaxRequest.setEchoDebugInfo();
 		//ajaxRequest.setPreRequest(ss_preRequest);
 		ajaxRequest.setPostRequest(ss_postTreeDivRequest);
 		ajaxRequest.setUsePOST();

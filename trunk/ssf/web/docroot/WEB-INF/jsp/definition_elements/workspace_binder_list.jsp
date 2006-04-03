@@ -2,14 +2,6 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
-<% // Navigation bar %>
-<%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
-
-<% // Toolbar %>
-<c:if test="${!empty ssFolderToolbar}">
-<c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
-</c:if>
 <script type="text/javascript">
 function wsTree_showId(id, obj) {
 	//Build a url to go to
@@ -24,8 +16,6 @@ function wsTree_showId(id, obj) {
 
 </script>
 
-<h2><c:out value="${ssBinder.title}"/></h2>
-
 <ssf:tree treeName="wsTree" treeDocument="${ssWsDomTree}" 
-  topId="${ssBinder.id}" rootOpen="true" />
+  topId="${ssBinder.id}" highlightNode="${ssBinder.id}" rootOpen="true" />
 <div id="ss_tree_div_status_message" style="visibility:hidden; display:none;"></div>
