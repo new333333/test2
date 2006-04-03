@@ -51,12 +51,10 @@ public class DispatchClient {
 	}
 	
 	private static void initInternal() {
-		if(ssfContext == null) {
-			synchronized(DispatchClient.class) {
-				if(ssfContext == null) {
-					String ssfContextPath = portalServletConfig.getInitParameter("contextPath");
-					ssfContext = portalServletConfig.getServletContext().getContext(ssfContextPath);
-				}
+		synchronized(DispatchClient.class) {
+			if(ssfContext == null) {
+				String ssfContextPath = portalServletConfig.getInitParameter("contextPath");
+				ssfContext = portalServletConfig.getServletContext().getContext(ssfContextPath);
 			}
 		}
 	}
