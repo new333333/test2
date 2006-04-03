@@ -25,20 +25,11 @@
 			<portlet:param name="operation" value="${operation}"/>
 		</portlet:actionURL>">
 
-<span class="ss_labelLeft"><ssf:nlt tag="folder.label.name"/></span>
-<br/>
-<input type="text" class="ss_text" name="name">
-<br/>
+<% // Show the workspace according to its definition %>
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="${ssConfigElement}" 
+  configJspStyle="${ssConfigJspStyle}" />
 
-<span class="ss_labelLeft"><ssf:nlt tag="folder.label.title"/></span>
-<br/><input type="text" class="ss_text" name="title">
-<br/>
-
-<span class="ss_labelLeft"><ssf:nlt tag=".label.description"/></span>
-<br/>
-    <ssf:htmleditor id="description" 
-      formName="<%= renderResponse.getNamespace() + "fm" %>" height="200" color="${ss_form_element_header_color}"
-      initText="" />
 <br/>
 	
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">

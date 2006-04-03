@@ -75,7 +75,7 @@
    }
 %>
 
-<form class="ss_style ss_form" method="POST" action="" name="timepickertest" onSubmit="return ssf_onSubmit(this);">
+<form class="ss_style ss_form" method="POST" action="" name="timepickertest" onSubmit="return ss_onSubmit(this);">
 <span align="center">SiteScape Forum Widget Tester -  Timepicker Widget
 <br />
 This test page shows timepickers for the current date and an unspecified date. 

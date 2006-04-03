@@ -701,8 +701,39 @@
 		</properties>
 		
 		<options>
+			<option name="folderForm" caption="__forum_form" initial="true" multipleAllowed="false" />
 			<option name="forumView" caption="__forum_view" initial="true" multipleAllowed="false" />
 		</options>
+	</item>
+	
+	<item name="folderForm" caption="__forum_form" type="form" canBeDeleted="false" 
+		multipleAllowed="false" >		
+		<options>
+			<option name="binderName" initial="true" />
+			<option name="title" initial="true" />
+			<option name="description" initial="true" />
+			<option name="htmlEditorTextarea" />
+			<option name="textarea" />
+			<option name="graphic" />
+			<option_select path="//item[@category='folderForm']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/folder_form.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="binderName" caption="__binder_name" canBeDeleted="false" 
+		multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__binder_name" type="text"
+				characterMask="^[a-z][a-z0-9]*$">
+				<help>__help_binder_name</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/binder_name_form.jsp" />
+		</jsps>
 	</item>
 	
 	<item name="forumView" definitionType="5" caption="__forum_view" 
@@ -716,9 +747,27 @@
 			</property>
 		</properties>
 		<options>
+			<option name="folderDataItem" caption="__folder_data_item" 
+				definitionType="5" />
 			<option_select path="//item[@category='forumView']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
+	</item>
+	
+	<item name="folderDataItem" type="dataView" 
+		caption="__folder_data_item" category="folderViewData">
+		<properties>
+			<property name="name" caption="__folder_data_item_name" 
+				type="selectbox">
+			    <option_entry_data select_type="data" 
+					path="//item[@name='folderForm']/.//item" 
+					optionCaption="__folder_form_data_items" />
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_folder_data.jsp" />
+		</jsps>
 	</item>
 	
 	<item name="toolBar" caption="__tool_bar" category="forumView">
@@ -1215,6 +1264,7 @@
 	<item name="workspaceForm" caption="__workspace_form" type="form" canBeDeleted="false" 
 		multipleAllowed="false" >		
 		<options>
+			<option name="binderName" initial="true" />
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
 			<option name="htmlEditorTextarea" />
@@ -1225,6 +1275,9 @@
 			<option_select path="//item[@category='workspaceForm']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/workspace_form.jsp" />
+		</jsps>
 	</item>
 	
 	<item name="workspaceView" caption="__workspace_view" canBeDeleted="false" 
@@ -1236,6 +1289,9 @@
 			<option_select path="//item[@category='generalLayout']" 
 				optionCaption="__layout_options" />
 		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/workspace_view.jsp" />
+		</jsps>
 	</item>
 	
 	<item name="workspaceDataItem" type="dataView" 

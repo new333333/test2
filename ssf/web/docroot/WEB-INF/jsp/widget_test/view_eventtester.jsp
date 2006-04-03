@@ -105,7 +105,7 @@ Nothing selected
     }
 %>
 
-<form class="ss_style ss_form" method="POST" action="" name="eventtestertest" onSubmit="return ssf_onSubmit(this);">
+<form class="ss_style ss_form" method="POST" action="" name="eventtestertest" onSubmit="return ss_onSubmit(this);">
 <span align="center">SiteScape Forum Event tester
 <br />
 </span>

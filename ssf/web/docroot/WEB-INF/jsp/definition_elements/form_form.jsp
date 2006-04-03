@@ -5,6 +5,7 @@
 	Element item = (Element) request.getAttribute("item");
 	String enctype = "application/x-www-form-urlencoded";
 	if (item.selectSingleNode(".//item[@name='file']") != null || 
+			item.selectSingleNode(".//item[@name='graphic']") != null || 
 			item.selectSingleNode(".//item[@name='attachFiles']") != null) {
 		enctype = "multipart/form-data";
 	}
@@ -18,8 +19,8 @@
 		methodName = "post";
 	}
 %>
-<form class="ss_style ss_form" method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
-  id="<%= formName %>" action="" onSubmit="return ssf_onSubmit(this);">
+<form method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
+  id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this);">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" />

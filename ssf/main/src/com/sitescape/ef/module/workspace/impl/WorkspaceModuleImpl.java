@@ -220,4 +220,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	getAccessControlManager().checkOperation(parentWorkspace, WorkAreaOperation.CREATE_FOLDERS);    	
     }
 
+    public void checkModifyWorkspaceAllowed(Workspace workspace) {
+    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.BINDER_ADMIN);    	
+    }
+
 }

@@ -334,7 +334,7 @@ function m_setSubmitRoutine(submitRoutine) {
 //Common onSubmit handler
 //  This function will call the desired routines at form submit time
 //  If any routine returns "false", then this routine returns false.
-function ssf_onSubmit(obj) {
+function ss_onSubmit(obj) {
     for (var i in ss_onSubmitList) {
         if (ss_onSubmitList[i].formName == obj.name) {
             if (!ss_onSubmitList[i].submitRoutine()) {return false;}
