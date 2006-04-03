@@ -730,10 +730,10 @@ public class SAbstractForumController extends SAbstractController {
 	
 			if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
 				Folder f = (Folder)source;
-				element.addAttribute("type", "forum");
+				element.addAttribute("type", "folder");
 				element.addAttribute("title", f.getTitle());
 				element.addAttribute("id", f.getId().toString());
-				element.addAttribute("image", "forum");
+				element.addAttribute("image", "folder");
 				Element url = element.addElement("url");
 				url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 				url.addAttribute(WebKeys.URL_BINDER_ID, f.getId().toString());
@@ -768,12 +768,8 @@ public class SAbstractForumController extends SAbstractController {
 				element.addAttribute("image", "workspace");
 			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
 				Folder f = (Folder)source;
-				element.addAttribute("type", "forum");
-				if (binder.getParentBinder().getType().equals(EntityIdentifier.EntityType.workspace.name())) {
-					element.addAttribute("image", "forum");
-				} else {
-					element.addAttribute("image", "folder");
-				}
+				element.addAttribute("type", "folder");
+				element.addAttribute("image", "folder");
 			} else return null;
 			return element;
 		}
