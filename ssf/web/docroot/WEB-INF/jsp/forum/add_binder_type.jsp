@@ -37,7 +37,7 @@
   <span class="ss_bold"><ssf:nlt tag="workspace.selectWorkspace" 
   text="Select the type of workspace:"/></span>
   <br/>
-  <c:forEach var="item" items="${ssPublicWorkspaceDefinitions}">
+  <c:forEach var="item" items="${ssPublicBinderDefinitions}">
       <c:choose>
         <c:when test="${ssDefaultWorkspaceDefinitionId == item.value.id}">
           <input type="radio" name="binderDefinition" value="${item.value.id}" checked>

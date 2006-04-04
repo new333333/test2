@@ -91,6 +91,7 @@ public class AddFolderController extends SAbstractController {
 		
     	model.put(WebKeys.URL_OPERATION, operation);
 		model.put(WebKeys.BINDER, binder); 
+		model.put(WebKeys.PUBLIC_BINDER_DEFINITIONS, publicBinderDefs);
 
 		DefinitionUtils.getDefinitions(binder, model);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
