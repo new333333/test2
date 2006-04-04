@@ -4,11 +4,14 @@
 	<import file="../build-common.xml" />
     <import file="../deploy-support.xml" />
 	
+	<property name="jar.file" value="ssf-ssfs.jar" />
+
 	<property name="input.war.file" value="slide.war" />
-	<property name="output.war.file" value="ssfs.war" />
+	<property name="output.war.name" value="ssfs" />
+	<property name="output.war.file" value="${output.war.name}.war" />
 	<property name="temp.dir" value="temp" />
 
-	<target name="clean">
+	<target name="clean" depends="build-common.clean">
 		<delete>
 			<fileset dir="." includes="${output.war.file}" />
 		</delete>
@@ -17,14 +20,31 @@
 		</delete>
 	</target>
 		
+	<target name="jar" depends="compile,build-common.jar">
+		<jar 
+			jarfile="${jar.file}"
+			update="true"
+		>
+			<fileset dir="${basedir}/../main/classes">
+	        	<include name="com/sitescape/ef/web/crosscontext/ssfs/CrossContextConstants.class"/>
+	        	<include name="com/sitescape/ef/web/util/AttributesAndParamsOnlyServletRequest.class"/>
+	        	<include name="com/sitescape/ef/web/util/NullServletResponse.class"/>
+			</fileset>
+		</jar>
+	</target>
+
 	<target name="unwar-original">
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${temp.dir}" />
+		</delete>		
 		<unwar src="original-kit/${input.war.file}" dest="${temp.dir}"/>
 	</target>
 	
-	<target name="apply-changes" depends="unwar-original">
+	<target name="apply-changes" depends="jar,unwar-original">
 		<copy todir="${temp.dir}">
 			<fileset dir="changes" includes="**/*" />
 		</copy>
+		<copy file="${jar.file}" todir="${temp.dir}/WEB-INF/lib" />
 	</target>
 	
 	<target name="war" depends="apply-changes">		
@@ -38,7 +58,7 @@
 	
     <target name="deploy" depends="war">
         <antcall target="deploy-war">
-        	<param name="deploy-support.war.file" value="${output.war.file}" />
+        	<param name="deploy-support.war.name" value="${output.war.name}" />
         </antcall>
     </target>
 	

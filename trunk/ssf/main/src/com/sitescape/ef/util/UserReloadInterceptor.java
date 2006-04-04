@@ -51,6 +51,10 @@ public class UserReloadInterceptor implements MethodInterceptor {
 	
 	private void reloadUser() {
 		RequestContext requestContext = RequestContextHolder.getRequestContext();
+		// If the interceptor was triggered by failed authentication request
+		// itself, request context could be null. Simply return in that case. 
+		if(requestContext == null)
+			return; 
 		String userName = requestContext.getUserName();
 		String zoneName = requestContext.getZoneName();
 		

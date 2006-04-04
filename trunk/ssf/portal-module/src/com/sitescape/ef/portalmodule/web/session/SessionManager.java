@@ -43,7 +43,7 @@ public class SessionManager {
 		//System.out.println("\tuser name: " + userName);
 		
 		DynamicServletRequest req = new DynamicServletRequest(request);
-		req.setParameter(CrossContextConstants.OPERATION, "createSession");
+		req.setParameter(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_CREATE_SESSION);
 		req.setParameter(CrossContextConstants.ZONE_NAME, zoneName);
 		req.setParameter(CrossContextConstants.USER_NAME, userName);
 		req.setParameter(CrossContextConstants.PORTAL_SESSION_ID, portalSessionId);
@@ -64,7 +64,7 @@ public class SessionManager {
 		}
 		
 		AttributesAndParamsOnlyServletRequest req = new AttributesAndParamsOnlyServletRequest((String) sessionMap.get(portalSessionId));
-		req.setParameter(CrossContextConstants.OPERATION, "destroySession");
+		req.setParameter(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_DESTROY_SESSION);
 		req.setParameter(CrossContextConstants.PORTAL_SESSION_ID, portalSessionId);
 		NullServletResponse res = new NullServletResponse();
 		

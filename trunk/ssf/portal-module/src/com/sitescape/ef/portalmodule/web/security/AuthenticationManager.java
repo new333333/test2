@@ -16,7 +16,7 @@ public class AuthenticationManager {
 			String zoneName, String userName, String password) 
 		throws ServletException, IOException {		
 		DynamicServletRequest req = new DynamicServletRequest(request);
-		req.setParameter(CrossContextConstants.OPERATION, "authenticate");
+		req.setParameter(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_AUTHENTICATE);
 		req.setParameter(CrossContextConstants.ZONE_NAME, zoneName);
 		req.setParameter(CrossContextConstants.USER_NAME, userName);
 		req.setParameter(CrossContextConstants.PASSWORD, password);

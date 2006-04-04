@@ -34,10 +34,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 /**
- * <a href="DynamicServletRequest.java.html"><b><i>View Source</i></b></a>
- *
- * @author  Brian Wing Shun Chan
- * @version $Revision: 1.12 $
+ * IMPORTANT: Do NOT make this class dependent upon any other class in the
+ * system. In other word, do NOT import any class other than java or
+ * javax classes.
  *
  */
 public class DynamicServletRequest extends HttpServletRequestWrapper {

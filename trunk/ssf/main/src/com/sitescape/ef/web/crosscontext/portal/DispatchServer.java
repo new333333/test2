@@ -31,7 +31,7 @@ public class DispatchServer extends GenericServlet {
 	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
 		String operation = req.getParameter(CrossContextConstants.OPERATION);
 		
-		if(operation.equals("authenticate")) {
+		if(operation.equals(CrossContextConstants.OPERATION_AUTHENTICATE)) {
 			String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
 			String userName = req.getParameter(CrossContextConstants.USER_NAME);
 			String password = req.getParameter(CrossContextConstants.PASSWORD);
@@ -45,14 +45,18 @@ public class DispatchServer extends GenericServlet {
 			}
 			catch(UserDoesNotExistException e) {
 				logger.warn(e);
-				throw new ServletException(e);
+				// Throw ServletException with cause's error message rather
+				// then the cause itself. This is because the class loader
+			    // of the calling app does not have access to the class of 
+				// the cause exception. 
+				throw new ServletException(e.getMessage());
 			}
 			catch(PasswordDoesNotMatchException e) {
 				logger.warn(e);
-				throw new ServletException(e);
+				throw new ServletException(e.getMessage());
 			}			
 		}
-		else if(operation.equals("createSession")) {
+		else if(operation.equals(CrossContextConstants.OPERATION_CREATE_SESSION)) {
 			HttpServletRequest request = (HttpServletRequest) req;
 			
 			String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
@@ -67,7 +71,7 @@ public class DispatchServer extends GenericServlet {
 			sessionMap.put(portalSessionId, ses);	
 			logger.debug("The session with id = [" + ses.getId() + "] is associated with portal key = [" + portalSessionId + "]");
 		}
-		else if(operation.equals("destroySession")) {
+		else if(operation.equals(CrossContextConstants.OPERATION_DESTROY_SESSION)) {
 			HttpServletRequest request = (HttpServletRequest) req;
 			
 			String portalSessionId = req.getParameter(CrossContextConstants.PORTAL_SESSION_ID);
@@ -86,6 +90,9 @@ public class DispatchServer extends GenericServlet {
 				logger.error(errorMessage);
 				throw new ServletException(errorMessage);
 			}
+		}
+		else {
+			logger.warn("Unrecognized operation [" + operation + "]");
 		}
 	}
 	
