@@ -5,9 +5,8 @@ import java.util.List;
 
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.util.FileUploadItem;
 
 /**
  * Provides uniform interface and integrated management for various file 
@@ -22,7 +21,7 @@ import com.sitescape.ef.util.FileUploadItem;
 public interface FileModule {
 	
 	/**
-	 * Delete all files attached to the entry. If applicable, also delete 
+	 * Delete all files attached to the entity. If applicable, also delete 
 	 * generated files (scaled files and thumbnail files) associated with 
 	 * the primary files. 
 	 * <p>
@@ -30,10 +29,10 @@ public interface FileModule {
 	 * it before deleting it.
 	 * 
 	 * @param binder
-	 * @param entry
-	 * metadata on the <code>entry</code>. 
+	 * @param entity
+	 * metadata on the <code>entity</code>. 
 	 */
-	public void deleteFiles(Binder binder, Entry entry) throws FileException;
+	public void deleteFiles(Binder binder, DefinableEntity entity) throws FileException;
 	
 	/**
 	 * Deletes the specified file. If applicable, also delete generated files
@@ -44,12 +43,12 @@ public interface FileModule {
 	 * 
 	 * @param repositoryServiceName
 	 * @param binder
-	 * @param entry
+	 * @param entity
 	 * @param fileName
 	 * @throws NoSuchFileException
 	 * @throws FileException
 	 */
-	public void deleteFile(Binder binder, Entry entry, 
+	public void deleteFile(Binder binder, DefinableEntity entity, 
 			String repositoryServiceName, String fileName) 
 		throws NoSuchFileException, FileException;
 	
@@ -74,12 +73,12 @@ public interface FileModule {
 	 * <code>CheckedOutByOtherException</code>.
 	 * 
 	 * @param binder
-	 * @param entry
+	 * @param entity
 	 * @param fui
 	 * @throws CheckedOutByOtherException
 	 * @throws FileException
 	 */
-    //public void writeFile(Binder binder, Entry entry, FileUploadItem fui) 
+    //public void writeFile(Binder binder, DefinableEntity entity, FileUploadItem fui) 
     //	throws CheckedOutByOtherException, FileException;
     
     /**
@@ -87,13 +86,13 @@ public interface FileModule {
      * 
      * @param repositoryServiceName
      * @param binder
-     * @param entry
+     * @param entity
      * @param fileName
      * @param out
      * @throws NoSuchFileException
      * @throws FileException
      */
-    public void readFile(Binder binder, Entry entry, 
+    public void readFile(Binder binder, DefinableEntity entity, 
     		String repositoryServiceName, String fileName, OutputStream out) 
     	throws NoSuchFileException, FileException;
     
@@ -102,12 +101,12 @@ public interface FileModule {
      * 
      * @param fa
      * @param binder
-     * @param entry
+     * @param entity
      * @param out
 	 * @throws NoSuchFileException
      * @throws FileException
      */
-	public void readFile(Binder binder, Entry entry, FileAttachment fa, 
+	public void readFile(Binder binder, DefinableEntity entity, FileAttachment fa, 
 			OutputStream out) throws NoSuchFileException, FileException;
 	
     /**
@@ -115,14 +114,14 @@ public interface FileModule {
      * 
      * @param repositoryServiceName
      * @param binder
-     * @param entry
+     * @param entity
      * @param primaryFileName
      * @param out
      * @throws NoSuchFileException
      * @throws FileException
      */
     public void readScaledFile(Binder binder, 
-    		Entry entry, String repositoryServiceName, String primaryFileName, 
+    		DefinableEntity entity, String repositoryServiceName, String primaryFileName, 
     		OutputStream out) 
     	throws NoSuchFileException, FileException;
     
@@ -131,12 +130,12 @@ public interface FileModule {
      * 
      * @param fa
      * @param binder
-     * @param entry
+     * @param entity
      * @param out
 	 * @throws NoSuchFileException
      * @throws FileException
      */
-	public void readScaledFile(Binder binder, Entry entry, FileAttachment fa, 
+	public void readScaledFile(Binder binder, DefinableEntity entity, FileAttachment fa, 
 			OutputStream out) throws NoSuchFileException, FileException;
 	
 	/**
@@ -151,11 +150,11 @@ public interface FileModule {
 	 * of the file.
 	 * 
 	 * @param binder
-	 * @param entry
+	 * @param entity
 	 * @param fileName
 	 * @return
 	 */
-	//public File getDirectlyAccessibleThumbnailFile(Binder binder, Entry entry, 
+	//public File getDirectlyAccessibleThumbnailFile(Binder binder, DefinableEntity entity, 
 	//		String fileName);
 	
     /**
@@ -165,7 +164,7 @@ public interface FileModule {
      * 
      * @param repositoryServiceName
      * @param binder
-     * @param entry
+     * @param entity
      * @param primaryFileName
      * @param out
      * @throws NoSuchFileException
@@ -173,7 +172,7 @@ public interface FileModule {
      */
     public void readIndirectlyAccessibleThumbnailFile
     	(Binder binder, 
-    		Entry entry, String repositoryServiceName, String primaryFileName, OutputStream out) 
+    		DefinableEntity entity, String repositoryServiceName, String primaryFileName, OutputStream out) 
     	throws NoSuchFileException, FileException;
     
     /**
@@ -183,13 +182,13 @@ public interface FileModule {
      * 
      * @param fa
      * @param binder
-     * @param entry
+     * @param entity
      * @param out
 	 * @throws NoSuchFileException
      * @throws FileException
      */
 	public void readIndirectlyAccessibleThumbnailFile(
-			Binder binder, Entry entry, FileAttachment fa, OutputStream out) 
+			Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out) 
 		throws NoSuchFileException, FileException;
 	
 	/**
@@ -199,7 +198,7 @@ public interface FileModule {
 	 * 
 	 * @param repositoryServiceName
 	 * @param binder
-	 * @param entry
+	 * @param entity
 	 * @param primaryFileName
 	 * @param maxWidth
 	 * @param maxHeight
@@ -207,7 +206,7 @@ public interface FileModule {
 	 * @throws FileException
 	 */
 	public void generateScaledFile(Binder binder, 
-    		Entry entry, String repositoryServiceName, String primaryFileName, int maxWidth, int maxHeight) 
+    		DefinableEntity entity, String repositoryServiceName, String primaryFileName, int maxWidth, int maxHeight) 
 		throws NoSuchFileException, FileException;
 	
 	/**
@@ -217,14 +216,14 @@ public interface FileModule {
 	 * 
 	 * @param repositoryServiceName
 	 * @param binder
-	 * @param entry
+	 * @param entity
 	 * @param primaryFileName
 	 * @param thumbnailDirectlyAccessible
 	 * @throws NoSuchFileException
 	 * @throws FileException
 	 */
 	public void generateThumbnailFile(Binder binder, 
-    		Entry entry, String repositoryServiceName, String primaryFileName, int maxWidth, int maxHeight,
+    		DefinableEntity entity, String repositoryServiceName, String primaryFileName, int maxWidth, int maxHeight,
     		boolean thumbnailDirectlyAccessible) 
 		throws NoSuchFileException, FileException;
 
@@ -235,14 +234,14 @@ public interface FileModule {
 	 * 
 	 * @param repositoryServiceName
 	 * @param binder
-	 * @param entry
+	 * @param entity
 	 * @param primaryFileName
 	 * @param thumbnailDirectlyAccessible
 	 * @throws NoSuchFileException
 	 * @throws FileException
 	 */
 	public void generateFiles(Binder binder, 
-    		Entry entry, String repositoryServiceName, String primaryFileName, int maxWidth, int maxHeight,
+    		DefinableEntity entity, String repositoryServiceName, String primaryFileName, int maxWidth, int maxHeight,
     		int thumbnailMaxWidth, int thumbnailMaxHeight, 
     		boolean thumbnailDirectlyAccessible) 
 		throws NoSuchFileException, FileException;
@@ -252,17 +251,17 @@ public interface FileModule {
 	 * 
 	 * @param repositoryServiceName
 	 * @param binder
-	 * @param entry
+	 * @param entity
 	 * @param primaryFileName
 	 * @return
 	 * @throws NoSuchFileException raised if unrecognized primary file
 	 * @throws FileException
 	 */
-	public boolean scaledFileExists(Binder binder, Entry entry, 
+	public boolean scaledFileExists(Binder binder, DefinableEntity entity, 
 			String repositoryServiceName, String primaryFileName) 
 		throws NoSuchFileException, FileException;
 	
-	public boolean scaledFileExists(Binder binder, Entry entry, 
+	public boolean scaledFileExists(Binder binder, DefinableEntity entity, 
 			FileAttachment fAtt) 
 		throws NoSuchFileException, FileException;
 	
@@ -271,13 +270,13 @@ public interface FileModule {
 	 * 
 	 * @param repositoryServiceName
 	 * @param binder
-	 * @param entry
+	 * @param entity
 	 * @param primaryFileName
 	 * @return
 	 * @throws NoSuchFileException raised if unrecognized primary file
 	 * @throws FileException
 	 */
-	public boolean thumbnailFileExists(Binder binder, Entry entry, 
+	public boolean thumbnailFileExists(Binder binder, DefinableEntity entity, 
 			String repositoryServiceName, String primaryFileName) 
 	throws NoSuchFileException, FileException;
 	
@@ -287,11 +286,11 @@ public interface FileModule {
 	 * checked out, it returns <code>null</code>.
 	 * 
 	 * @param binder
-	 * @param entry
+	 * @param entity
 	 * @param fileName
 	 * @return
 	 */
-	public HistoryStamp getCheckoutInfo(Binder binder, Entry entry, 
+	public HistoryStamp getCheckoutInfo(Binder binder, DefinableEntity entity, 
 			String repositoryServiceName, String fileName);
 	
 	/**
@@ -302,18 +301,18 @@ public interface FileModule {
 	 * throws <code>CheckedOutByOtherException</code>.
 	 * 
 	 * @param binder
-	 * @param entry
+	 * @param entity
 	 * @param fileName
 	 */
 	/**
 	 * @param binder
-	 * @param entry
+	 * @param entity
 	 * @param fileName
 	 * @throws NoSuchFileException
 	 * @throws CheckedOutByOtherException
 	 */
 	public void checkout(Binder binder, 
-			Entry entry, String repositoryServiceName, String fileName) throws CheckedOutByOtherException, 
+			DefinableEntity entity, String repositoryServiceName, String fileName) throws CheckedOutByOtherException, 
 			NoSuchFileException, FileException;
 	
 	/**
@@ -328,14 +327,14 @@ public interface FileModule {
 	 * <code>CheckedOutByOtherException</code>.
 	 * 
 	 * @param binder
-	 * @param entry
+	 * @param entity
 	 * @param fileName
 	 * @throws CheckedOutByOtherException
 	 * @throws NoSuchFileException
 	 * @throws FileException
 	 */
 	public void uncheckout(Binder binder, 
-			Entry entry, String repositoryServiceName, String fileName) throws CheckedOutByOtherException, 
+			DefinableEntity entity, String repositoryServiceName, String fileName) throws CheckedOutByOtherException, 
 			NoSuchFileException, FileException;
 
 	/**
@@ -351,27 +350,27 @@ public interface FileModule {
 	 * <code>CheckedOutByOtherException</code>.
 	 * 
 	 * @param binder
-	 * @param entry
+	 * @param entity
 	 * @param fileName
 	 * @throws CheckedOutByOtherException
 	 * @throws NoSuchFileException
 	 * @throws FileException
 	 */
 	public void checkin(Binder binder, 
-			Entry entry, String repositoryServiceName, String fileName) throws CheckedOutByOtherException, 
+			DefinableEntity entity, String repositoryServiceName, String fileName) throws CheckedOutByOtherException, 
 			NoSuchFileException, FileException;
 	/*
 	public void createThumbnail(String repositoryServiceName, Binder binder,
-			Entry entry, String fileName, String thumbFileName,
+			DefinableEntity entity, String fileName, String thumbFileName,
 			int maxWidth, int maxHeight) 
 		throws NoSuchFileException, FileException;
 	
-	public void createThumbnail(FileAttachment fa, Binder binder, Entry entry,
+	public void createThumbnail(FileAttachment fa, Binder binder, DefinableEntity entity,
 			String thumbFileName,int maxWidth, int maxHeight) 
 		throws FileException;
 		*/
 	
-    public FilesErrors writeFiles(Binder binder, Entry entry, List fileUploadItems, 
+    public FilesErrors writeFiles(Binder binder, DefinableEntity entity, List fileUploadItems, 
     		FilesErrors errors);
     
     public FilesErrors filterFiles(Binder binder, List fileUploadItems) throws FilterException;

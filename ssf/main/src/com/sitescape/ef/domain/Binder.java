@@ -130,7 +130,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, AclCon
      	if (this.definitions == null) this.definitions = new ArrayList();
  		//order matters.
  		this.definitions.clear();
-     	this.definitions.addAll(definitions); 
+ 		if (definitions != null) this.definitions.addAll(definitions); 
     }
      public Definition getDefaultEntryDef() {
     	
@@ -148,8 +148,8 @@ public abstract class Binder extends DefinableEntity implements WorkArea, AclCon
     }
     public void setWorkflowAssociations(Map workflowAssociations) {
        	if (this.workflowAssociations == null) this.workflowAssociations = new HashMap();
-       	else this.workflowAssociations.clear();      	
-        this.workflowAssociations.putAll(workflowAssociations);
+       	else this.workflowAssociations.clear(); 
+       	if (workflowAssociations != null) this.workflowAssociations.putAll(workflowAssociations);
     }
     /**
      * @hibernate.many-to-one access="field" class="com.sitescape.ef.domain.Definition"
@@ -211,17 +211,19 @@ public abstract class Binder extends DefinableEntity implements WorkArea, AclCon
     	return postings;
     }
     public void setPostings(List postings) {
-        this.postings = postings;
+    	this.postings = postings;
     }
     public void addPosting(PostingDef post) {
     	post.setBinder(this);
-    	postings.add(post);
+    	getPostings().add(post);
     }
     public void removePosting(PostingDef post) {
-    	postings.remove(post);
+    	getPostings().remove(post);
     }
     public PostingDef getPosting(String postingId) {
-       	for (int i=0; i<postings.size(); ++i) {
+       	//initialize them first
+    	getPostings();
+    	for (int i=0; i<postings.size(); ++i) {
     		PostingDef post = (PostingDef)postings.get(i);
     		if (post.getId().equals(postingId)) 
     			return post;

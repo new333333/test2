@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.module.file.WriteFilesException;
+import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.security.AccessControlException;
 
 /**
@@ -58,5 +61,13 @@ public interface BinderModule {
 	public void deleteTag(Long binderId, String tagId) throws AccessControlException;
 
     public boolean hasBinders(Binder binder);
+    
+    public void modifyBinder(Long binderId, InputDataAccessor inputData, 
+    		Map fileItems) throws AccessControlException, WriteFilesException;
+    public void modifyBinder(Long binderId, InputDataAccessor inputData) 
+    	throws AccessControlException, WriteFilesException;
+    public void checkModifyBinderAllowed(Binder binder) throws AccessControlException;
+    public void deleteBinder(Long binderId) throws AccessControlException;
+    public void checkDeleteBinderAllowed(Binder binder) throws AccessControlException;
 
  }

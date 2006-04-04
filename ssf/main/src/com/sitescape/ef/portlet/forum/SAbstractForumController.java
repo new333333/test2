@@ -295,7 +295,7 @@ public class SAbstractForumController extends SAbstractController {
 		} catch (AccessControlException ac) {};
 		
 		try {
-			getWorkspaceModule().checkModifyWorkspaceAllowed(workspace);
+			getBinderModule().checkModifyBinderAllowed(workspace);
 			//The "Modify" menu
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_ENTRY);

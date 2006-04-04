@@ -18,7 +18,7 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.util.Constants;
-import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Binder;
 
 public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactory implements RepositoryService {
@@ -51,7 +51,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public String createVersioned(Object session, Binder binder, Entry entry, 
+	public String createVersioned(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, MultipartFile mf) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
@@ -66,7 +66,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	}
 
 
-	public String createVersioned(Object session, Binder binder, Entry entry, 
+	public String createVersioned(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, InputStream in) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -78,7 +78,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}	
 	}
 
-	public void createUnversioned(Object session, Binder binder, Entry entry, 
+	public void createUnversioned(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, InputStream in) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -90,7 +90,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}	
 	}
 
-	public void update(Object session, Binder binder, Entry entry, 
+	public void update(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, MultipartFile mf) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
@@ -103,7 +103,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public void update(Object session, Binder binder, Entry entry, 
+	public void update(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, InputStream in) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -115,7 +115,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}	
 	}
 	
-	public void delete(Object session, Binder binder, Entry entry, 
+	public void delete(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -127,7 +127,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}		
 	}
 	
-	public void read(Object session, Binder binder, Entry entry, String relativeFilePath, 
+	public void read(Object session, Binder binder, DefinableEntity entry, String relativeFilePath, 
 			OutputStream out) throws RepositoryServiceException {	
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -151,7 +151,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public void readVersion(Object session, Binder binder, Entry entry, String relativeFilePath, 
+	public void readVersion(Object session, Binder binder, DefinableEntity entry, String relativeFilePath, 
 			String versionName, OutputStream out) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -166,7 +166,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public List getVersionNames(Object session, Binder binder, Entry entry, String relativeFilePath) 
+	public List getVersionNames(Object session, Binder binder, DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -178,13 +178,13 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public DataSource getDataSource(Object session, Binder binder, Entry entry, 
+	public DataSource getDataSource(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, FileTypeMap fileTypeMap)		
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;		
 		return new WebDavDataSource(wdr, getResourcePath(binder, entry, relativeFilePath), relativeFilePath, fileTypeMap);
 	}
-	public DataSource getDataSourceVersion(Object session, Binder binder, Entry entry, 
+	public DataSource getDataSourceVersion(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName, FileTypeMap fileTypeMap)		
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
@@ -200,7 +200,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}	
 	// obsolete
-	public List fileVersionsURIs(Object session, Binder binder, Entry entry, 
+	public List fileVersionsURIs(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -221,7 +221,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public void checkout(Object session, Binder binder, Entry entry, String relativeFilePath) 
+	public void checkout(Object session, Binder binder, DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -248,7 +248,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public void uncheckout(Object session, Binder binder, Entry entry, String relativeFilePath) throws RepositoryServiceException {
+	public void uncheckout(Object session, Binder binder, DefinableEntity entry, String relativeFilePath) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -264,7 +264,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
-	public String checkin(Object session, Binder binder, Entry entry, String relativeFilePath) 
+	public String checkin(Object session, Binder binder, DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -300,7 +300,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 	
-	public boolean isCheckedOut(Object session, Binder binder, Entry entry, String relativeFilePath) 
+	public boolean isCheckedOut(Object session, Binder binder, DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -315,7 +315,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	}
 	
 	/*
-	public boolean exists(Object session, Binder binder, Entry entry, String relativeFilePath) throws RepositoryServiceException {
+	public boolean exists(Object session, Binder binder, DefinableEntity entry, String relativeFilePath) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -329,7 +329,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	}*/
 
 	public long getContentLength(Object session, Binder binder, 
-			Entry entry, String relativeFilePath) 
+			DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -346,7 +346,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	}
 	
 	public long getContentLength(Object session, Binder binder, 
-			Entry entry, String relativeFilePath, String versionName) 
+			DefinableEntity entry, String relativeFilePath, String versionName) 
 		throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -364,7 +364,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	}
 	
 	/*
-	public boolean isVersioned(Object session, Binder binder, Entry entry, 
+	public boolean isVersioned(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -385,7 +385,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	}*/
 	
 
-	public int fileInfo(Object session, Binder binder, Entry entry, 
+	public int fileInfo(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
@@ -457,7 +457,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	}
 	
 	protected String getVersionResourcePath(SWebdavResource wdr, Binder binder, 
-			Entry entry, String relativeFilePath, String versionName) 
+			DefinableEntity entry, String relativeFilePath, String versionName) 
 		throws RepositoryServiceException, HttpException, IOException {
 		return getVersionResourcePath(wdr, getResourcePath(binder, entry, relativeFilePath),
 				versionName);
@@ -524,13 +524,13 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	}
 
 	private String createResource(SWebdavResource wdr, Binder binder,
-			Entry entry, String relativeFilePath, InputStream is,
+			DefinableEntity entry, String relativeFilePath, InputStream is,
 			boolean versioned)
 			throws IOException {
 		boolean result = false;
 
 		// Get the path for the entry containing the file.
-		String entryDirPath = getEntryDirPath(binder, entry);
+		String entryDirPath = getEntityDirPath(binder, entry);
 
 		/*
 		 * boolean b = wdr.headMethod("/slide/files");
@@ -563,7 +563,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	}
 	
 	private void updateResource(SWebdavResource wdr, Binder binder,
-			Entry entry, String relativeFilePath, InputStream in)
+			DefinableEntity entry, String relativeFilePath, InputStream in)
 			throws IOException {
 		boolean result = false;
 
@@ -584,7 +584,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	}
 
 	private void deleteResource(SWebdavResource wdr, Binder binder,
-			Entry entry, String relativeFilePath)
+			DefinableEntity entry, String relativeFilePath)
 			throws IOException {
 		// Get the path for the file resource.
 		String resourcePath = getResourcePath(binder, entry, relativeFilePath);
@@ -637,7 +637,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		// The exception object associated with the error will be logged higher up.		
 	}
 
-	private String getEntryDirPath(Binder binder, Entry entry) {
+	private String getEntityDirPath(Binder binder, DefinableEntity entry) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		
 		return new StringBuffer(getDocRootDir()).
@@ -645,7 +645,8 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			append(Constants.SLASH).
 			append(binder.getId()).
 			append(Constants.SLASH).
-			append(entry.getId()).
+			append(entry.getEntityIdentifier().getEntityType().name() + "_" +
+					entry.getEntityIdentifier().getEntityId()).
 			append(Constants.SLASH).
 			toString();
 	}
@@ -654,9 +655,9 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		return entryDirPath + relativeFilePath;
 	}
 	
-	private String getResourcePath(Binder binder, Entry entry, 
+	private String getResourcePath(Binder binder, DefinableEntity entry, 
 			String relativeFilePath) {
-		return getResourcePath(getEntryDirPath(binder, entry), relativeFilePath);
+		return getResourcePath(getEntityDirPath(binder, entry), relativeFilePath);
 	}
 	
 	public class WebDavDataSource implements DataSource {

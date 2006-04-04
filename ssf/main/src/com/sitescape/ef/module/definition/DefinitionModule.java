@@ -9,7 +9,7 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.domain.DefinitionInvalidException;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -60,7 +60,7 @@ public interface DefinitionModule {
 	public Map getEntryData(Definition def, InputDataAccessor inputData, Map fileItems);
 	public List getDefinitions();
 	
-	public void addIndexFieldsForEntry(org.apache.lucene.document.Document indexDoc, Binder binder, Entry entry);
-	public void addNotifyElementForEntry(Element element, Notify notifyDef, Entry entry, String[] categories);
+	public void addIndexFieldsForEntity(org.apache.lucene.document.Document indexDoc, DefinableEntity entity);
+	public void addNotifyElementForEntity(Element element, Notify notifyDef, DefinableEntity entity, String[] categories);
 	public Map getEntryDefinitionElements(String id);
 }

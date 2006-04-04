@@ -20,7 +20,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
@@ -65,7 +65,7 @@ public class FileRepositoryService implements RepositoryService {
 	public void closeRepositorySession(Object session) throws RepositoryServiceException {
 	}
 	
-	public String createVersioned(Object session, Binder binder, Entry entry, 
+	public String createVersioned(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
@@ -87,7 +87,7 @@ public class FileRepositoryService implements RepositoryService {
 		}
 	}
 
-	public String createVersioned(Object session, Binder binder, Entry entry, 
+	public String createVersioned(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, InputStream in) throws RepositoryServiceException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
@@ -107,7 +107,7 @@ public class FileRepositoryService implements RepositoryService {
 		}
 	}
 
-	public void createUnversioned(Object session, Binder binder, Entry entry, 
+	public void createUnversioned(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, InputStream in) throws RepositoryServiceException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
@@ -134,7 +134,7 @@ public class FileRepositoryService implements RepositoryService {
 		}
 	}
 
-	public void update(Object session, Binder binder, Entry entry, 
+	public void update(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
 		
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
@@ -168,7 +168,7 @@ public class FileRepositoryService implements RepositoryService {
 		}			
 	}
 
-	public void update(Object session, Binder binder, Entry entry, 
+	public void update(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, InputStream in) throws RepositoryServiceException {
 		
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
@@ -199,7 +199,7 @@ public class FileRepositoryService implements RepositoryService {
 		}			
 	}
 	
-	public void delete(Object session, Binder binder, Entry entry, 
+	public void delete(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		// Since this operation may involve deleting multiple files, it is 
 		// tricky to deal with error conditions precisely. For now, I'll 
@@ -262,7 +262,7 @@ public class FileRepositoryService implements RepositoryService {
 		}			
 	}
 
-	public void read(Object session, Binder binder, Entry entry, 
+	public void read(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, OutputStream out) throws RepositoryServiceException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
@@ -282,7 +282,7 @@ public class FileRepositoryService implements RepositoryService {
 		}			
 	}
 
-	public void readVersion(Object session, Binder binder, Entry entry, 
+	public void readVersion(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName, OutputStream out) throws RepositoryServiceException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
@@ -301,7 +301,7 @@ public class FileRepositoryService implements RepositoryService {
 		}
 	}
 
-	public int fileInfo(Object session, Binder binder, Entry entry, 
+	public int fileInfo(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
 		
@@ -321,7 +321,7 @@ public class FileRepositoryService implements RepositoryService {
 		return true;
 	}
 	
-	public DataSource getDataSource(Object session, Binder binder, Entry entry, 
+	public DataSource getDataSource(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, FileTypeMap fileTypeMap)		
 		throws RepositoryServiceException {
 		File latestFile = getLatestFile(binder, entry, relativeFilePath);
@@ -329,7 +329,7 @@ public class FileRepositoryService implements RepositoryService {
 		fSource.setFileTypeMap(fileTypeMap);
 		return fSource;
 	}
-	public DataSource getDataSourceVersion(Object session, Binder binder, Entry entry, 
+	public DataSource getDataSourceVersion(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName, FileTypeMap fileTypeMap)		
 		throws RepositoryServiceException {
 		File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
@@ -338,7 +338,7 @@ public class FileRepositoryService implements RepositoryService {
 		return fSource;
 	}	
 	
-	public void checkout(Object session, Binder binder, Entry entry, 
+	public void checkout(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
@@ -372,7 +372,7 @@ public class FileRepositoryService implements RepositoryService {
 		}
 	}
 
-	public void uncheckout(Object session, Binder binder, Entry entry, 
+	public void uncheckout(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
@@ -398,7 +398,7 @@ public class FileRepositoryService implements RepositoryService {
 		}
 	}
 
-	public String checkin(Object session, Binder binder, Entry entry, 
+	public String checkin(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
@@ -432,7 +432,7 @@ public class FileRepositoryService implements RepositoryService {
 		}		
 	}
 
-	public boolean isCheckedOut(Object session, Binder binder, Entry entry, 
+	public boolean isCheckedOut(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		File tempFile = getTempFile(binder, entry, relativeFilePath);
 		
@@ -445,7 +445,7 @@ public class FileRepositoryService implements RepositoryService {
 	}
 
 	/*
-	public boolean exists(Object session, Binder binder, Entry entry, 
+	public boolean exists(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		String[] versionFileNames = getVersionFileNames(binder, entry, relativeFilePath);
 		if(versionFileNames == null || versionFileNames.length == 0)
@@ -454,7 +454,7 @@ public class FileRepositoryService implements RepositoryService {
 			return true;
 	}*/
 
-	public long getContentLength(Object session, Binder binder, Entry entry, 
+	public long getContentLength(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
@@ -474,7 +474,7 @@ public class FileRepositoryService implements RepositoryService {
 		}
 	}
 	
-	public long getContentLength(Object session, Binder binder, Entry entry, 
+	public long getContentLength(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName) throws RepositoryServiceException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
@@ -503,7 +503,7 @@ public class FileRepositoryService implements RepositoryService {
 	 * @param relativeFilePath
 	 * @return
 	 */
-	private File getLatestFile(Binder binder, Entry entry, String relativeFilePath) {
+	private File getLatestFile(Binder binder, DefinableEntity entry, String relativeFilePath) {
 		File tempFile = getTempFile(binder, entry, relativeFilePath);
 		
 		if(tempFile.exists()) {
@@ -526,7 +526,7 @@ public class FileRepositoryService implements RepositoryService {
 	 * @param relativeFilePath
 	 * @return
 	 */
-	private String[] getVersionFileNames(Binder binder, Entry entry, String relativeFilePath) {
+	private String[] getVersionFileNames(Binder binder, DefinableEntity entry, String relativeFilePath) {
 		File file = getFile(binder, entry, relativeFilePath);
 		File fileDir = file.getParentFile();
 		String fileName = file.getName();
@@ -565,7 +565,7 @@ public class FileRepositoryService implements RepositoryService {
 	 * @param relativeFilePath
 	 * @return
 	 */
-	private String getLatestVersionName(Binder binder, Entry entry, String relativeFilePath) {
+	private String getLatestVersionName(Binder binder, DefinableEntity entry, String relativeFilePath) {
 		String[] versionFileNames = getVersionFileNames(binder, entry, relativeFilePath);
 		String latestVersionName = null;
 		if(versionFileNames != null) {
@@ -623,7 +623,7 @@ public class FileRepositoryService implements RepositoryService {
 	 * @param relativeFilePath
 	 * @return
 	 */
-	private File getLatestVersionFile(Binder binder, Entry entry, String relativeFilePath) {
+	private File getLatestVersionFile(Binder binder, DefinableEntity entry, String relativeFilePath) {
 		String latestVersionName = getLatestVersionName(binder, entry, relativeFilePath);
 		if(latestVersionName != null)
 			return getVersionFile(binder, entry, relativeFilePath, latestVersionName);
@@ -631,33 +631,33 @@ public class FileRepositoryService implements RepositoryService {
 			return null;
 	}
 
-	private File getFileDir(Binder binder, Entry entry, String relativeFilePath) {
+	private File getFileDir(Binder binder, DefinableEntity entry, String relativeFilePath) {
 		File file = getFile(binder, entry, relativeFilePath);
 		
 		return file.getParentFile();
 	}
 	
-	private String getEntryDirPath(Binder binder, Entry entry) {
+	private String getEntityDirPath(Binder binder, DefinableEntity entry) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		
-		return new StringBuffer(dataRootDir).append(zoneName).append(File.separator).append(subDirName).append(File.separator).append(binder.getId()).append(File.separator).append(entry.getId()).append(File.separator).toString();
+		return new StringBuffer(dataRootDir).append(zoneName).append(File.separator).append(subDirName).append(File.separator).append(binder.getId()).append(File.separator).append(entry.getEntityIdentifier().getEntityType().name() + "_" + entry.getEntityIdentifier().getEntityId()).append(File.separator).toString();
 	}
 	
-	private File getFile(Binder binder, Entry entry, String relativeFilePath) {
-		return new File(getEntryDirPath(binder, entry), relativeFilePath);
+	private File getFile(Binder binder, DefinableEntity entry, String relativeFilePath) {
+		return new File(getEntityDirPath(binder, entry), relativeFilePath);
 	}
 	
 	private String newVersionName() {
 		return String.valueOf(new Date().getTime());
 	}
 	
-	private File getVersionFileFromVersionFileName(Binder binder, Entry entry, String relativeFilePath, String versionFileName) {
+	private File getVersionFileFromVersionFileName(Binder binder, DefinableEntity entry, String relativeFilePath, String versionFileName) {
 		File file = getFile(binder, entry, relativeFilePath);
 		
 		return new File(file.getParent(), versionFileName);
 	}
 	
-	private File getVersionFile(Binder binder, Entry entry, 
+	private File getVersionFile(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName) {
 		File file = getFile(binder, entry, relativeFilePath);
 		
@@ -676,11 +676,11 @@ public class FileRepositoryService implements RepositoryService {
 		return new File(file.getParent(), versionFileName);		
 	}
 	
-	private File getUnversionedFile(Binder binder, Entry entry, String relativeFilePath) {
+	private File getUnversionedFile(Binder binder, DefinableEntity entry, String relativeFilePath) {
 		return getFile(binder, entry, relativeFilePath);
 	}
 	
-	private File getTempFile(Binder binder, Entry entry, String relativeFilePath) {
+	private File getTempFile(Binder binder, DefinableEntity entry, String relativeFilePath) {
 		File file = getFile(binder, entry, relativeFilePath);
 		
 		String fileName = file.getName();

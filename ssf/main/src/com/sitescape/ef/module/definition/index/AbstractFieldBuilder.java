@@ -8,7 +8,7 @@ import java.util.Set;
 import org.apache.lucene.document.Field;
 
 import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.util.InvokeUtil;
 import com.sitescape.ef.util.ObjectPropertyNotFoundException;
 
@@ -19,8 +19,8 @@ import com.sitescape.ef.util.ObjectPropertyNotFoundException;
 public abstract class AbstractFieldBuilder implements FieldBuilder {
 
     
-    public Field[] buildField(Entry entry, String dataElemName, Map args) {
-        Set dataElemValue = getEntryElementValue(entry, dataElemName);
+    public Field[] buildField(DefinableEntity entity, String dataElemName, Map args) {
+        Set dataElemValue = getEntryElementValue(entity, dataElemName);
         
         if(dataElemValue != null)
             return build(dataElemName, dataElemValue, args);
@@ -28,14 +28,14 @@ public abstract class AbstractFieldBuilder implements FieldBuilder {
             return null;
     }
 
-    protected Set getEntryElementValue(Entry entry, String dataElemName) {
+    protected Set getEntryElementValue(DefinableEntity entity, String dataElemName) {
 	    Object dataElemValue = null;
 	    Set result = null;
 	    try {
-	        dataElemValue = InvokeUtil.invokeGetter(entry, dataElemName);
+	        dataElemValue = InvokeUtil.invokeGetter(entity, dataElemName);
 	    }
 	    catch (ObjectPropertyNotFoundException pe) {
-	        CustomAttribute cAttr = entry.getCustomAttribute(dataElemName);
+	        CustomAttribute cAttr = entity.getCustomAttribute(dataElemName);
 	        if(cAttr != null)
 	        	//let customAttribute do set conversion to handle comman separated values
 	            result = cAttr.getValueSet();

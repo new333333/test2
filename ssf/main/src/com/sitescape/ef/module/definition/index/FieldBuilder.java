@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.apache.lucene.document.Field;
 
-import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.DefinableEntity;
 
 /**
  *
@@ -21,5 +21,5 @@ public interface FieldBuilder {
     public static final String INDEXING_TYPE_DATE			= "date";
     public static final String INDEXING_TYPE_USERLIST		= "userlist";
     public static final String INDEXING_TYPE_NUMBER	 		= "number";
-    public Field[] buildField(Entry entry, String dataElemName, Map args);
+    public Field[] buildField(DefinableEntity entity, String dataElemName, Map args);
 }

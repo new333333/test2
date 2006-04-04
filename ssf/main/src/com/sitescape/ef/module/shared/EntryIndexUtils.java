@@ -18,7 +18,7 @@ import org.dom4j.Element;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Group;
@@ -70,7 +70,7 @@ public class EntryIndexUtils {
     // Defines field values
     public static final String READ_ACL_ALL = "all";
     
-    public static void addTitle(Document doc, Entry entry) {
+    public static void addTitle(Document doc, DefinableEntity entry) {
         // Add the title field
     	if (entry.getTitle() != null) {
     		String title = entry.getTitle();
@@ -87,7 +87,7 @@ public class EntryIndexUtils {
     	}
     }
     
-    public static void addEntryType(Document doc, Entry entry) {
+    public static void addEntryType(Document doc, DefinableEntity entry) {
         // Add the entry type (entry or reply)
     	if (entry instanceof FolderEntry) {
 	        if (((FolderEntry)entry).getTopEntry() == null || ((FolderEntry)entry).getTopEntry() == entry) {
@@ -104,9 +104,9 @@ public class EntryIndexUtils {
     		Field entryTypeField = Field.Keyword(EntryIndexUtils.ENTRY_TYPE_FIELD, EntryIndexUtils.ENTRY_TYPE_GROUP);
     		doc.add(entryTypeField);
     	} 
-    }
+   }
     
-    public static void addCreationDate(Document doc, Entry entry) {
+    public static void addCreationDate(Document doc, DefinableEntity entry) {
         // Add creation-date field
     	if (entry.getCreation() != null) {
     		Date creationDate = entry.getCreation().getDate();
@@ -118,7 +118,7 @@ public class EntryIndexUtils {
         
     }
     
-    public static void addModificationDate(Document doc, Entry entry) {
+    public static void addModificationDate(Document doc, DefinableEntity entry) {
     	// Add modification-date field
     	if (entry.getModification() != null ) {
     		Date modDate = entry.getModification().getDate();
@@ -129,7 +129,7 @@ public class EntryIndexUtils {
     	}
     }
 
-    public static void addWorkflow(Document doc, Entry entry) {
+    public static void addWorkflow(Document doc, DefinableEntity entry) {
     	// Add the workflow fields
     	if (entry instanceof WorkflowSupport) {
     		WorkflowSupport wEntry = (WorkflowSupport)entry;
@@ -166,7 +166,7 @@ public class EntryIndexUtils {
 	 * @param doc
 	 * @param entry
 	 */
-    public static void addEvents(Document doc, Entry entry) {
+    public static void addEvents(Document doc, DefinableEntity entry) {
     	int count = 0;
     	Field eventName;
 		Map customAttrs = entry.getCustomAttributes();
@@ -190,14 +190,14 @@ public class EntryIndexUtils {
   
     }
     
-    public static void addCommandDefinition(Document doc, Entry entry) {
+    public static void addCommandDefinition(Document doc, DefinableEntity entry) {
         if (entry.getEntryDef() != null) {
         	Field cdefField = Field.Keyword(COMMAND_DEFINITION_FIELD, entry.getEntryDef().getId());
             doc.add(cdefField);
         }
     }
         
-    public static void addCreationPrincipalId(Document doc, Entry entry) {
+    public static void addCreationPrincipalId(Document doc, DefinableEntity entry) {
     	//Add the id of the creator (no, not that one...)
         if (entry.getCreation() != null && entry.getCreation().getPrincipal() != null) {
         	Field creationIdField = Field.Keyword(CREATORID_FIELD, entry.getCreation().getPrincipal().getId().toString());
@@ -205,7 +205,7 @@ public class EntryIndexUtils {
         }
     }   
 
-    public static void addModificationPrincipalId(Document doc, Entry entry) {
+    public static void addModificationPrincipalId(Document doc, DefinableEntity entry) {
     	//Add the id of the creator (no, not that one...)
         if (entry.getModification() != null && entry.getModification().getPrincipal() != null) {
         	Field modificationIdField = Field.Keyword(MODIFICATIONID_FIELD, entry.getModification().getPrincipal().getId().toString());
@@ -213,14 +213,14 @@ public class EntryIndexUtils {
         }
     }   
 
-     public static void addDocId(Document doc, Entry entry) {
+     public static void addDocId(Document doc, DefinableEntity entry) {
     	//Add the id of the creator (no, not that one...)
         Field docIdField = Field.Keyword(DOCID_FIELD, entry.getId().toString());
         doc.add(docIdField);
     }
 
-    public static void addBinder(Document doc, Entry entry) {
-       	Field binderIdField = Field.Keyword(BINDER_ID_FIELD, entry.getParentBinder().getId().toString());
+    public static void addBinder(Document doc, Binder binder) {
+       	Field binderIdField = Field.Keyword(BINDER_ID_FIELD, binder.getId().toString());
        	doc.add(binderIdField);
     }   
     
@@ -230,7 +230,7 @@ public class EntryIndexUtils {
     	sf.applyPattern("yyyyMMdd");
     	return(df.format(date));
     }
-    public static void addReadAcls(Document doc, Binder binder, Entry entry, Set ids) {
+    public static void addReadAcls(Document doc, Set ids) {
     	if (ids == null) return;
     	// Add ACL field. We only need to index ACLs for read access. 
         Field racField;

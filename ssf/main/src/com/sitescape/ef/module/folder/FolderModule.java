@@ -26,6 +26,9 @@ public interface FolderModule {
 
     public Folder getFolder(Long folderId);
 	public Collection getFolders(List folderIds);
+    public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
+       		Map fileItems) throws AccessControlException, WriteFilesException;
+    public void checkAddFolderAllowed(Folder parentFolder) throws AccessControlException;
 
    /**
      * Create an entry object from the input data and add it to the specified
@@ -69,11 +72,10 @@ public interface FolderModule {
 	public Map getFolderEntries(Long folderId, int maxNumEntries, Document searchFilter) throws AccessControlException;
     public Map getUnseenCounts(List folderIds);
     public void indexFolderTree(Long folderId);
-    public void indexFolder(Long folderId);
+    public void indexEntries(Long folderId);
+
     public Map getCommonEntryElements(Long folderId);
 
-	public Long addFolder(Long parentFolderId, Map input) throws AccessControlException;
-    public void checkAddFolderAllowed(Folder parentFolder) throws AccessControlException;
    	  
     public FolderEntry getEntry(Long parentFolderId, Long entryId) throws AccessControlException;
     public Map getEntryTree(Long parentFolderId, Long entryId) throws AccessControlException;

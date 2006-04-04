@@ -10,6 +10,8 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitescape.ef.module.shared.MapInputData;
+import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
@@ -28,16 +30,21 @@ public class AddFolderController extends SAbstractController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (formData.containsKey("okBtn")) {
-			Map input = new HashMap();
-			input.put("title",PortletRequestUtils.getStringParameter(request, "title", ""));
-			input.put("name",PortletRequestUtils.getStringParameter(request, "name", ""));
-			input.put("description", new Description(PortletRequestUtils.getStringParameter(request, "description", ""), Description.FORMAT_HTML));
+			//The form was submitted. Go process it
+			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
+			Map fileMap=null;
+			if (request instanceof MultipartFileSupport) {
+				fileMap = ((MultipartFileSupport) request).getFileMap();
+			} else {
+				fileMap = new HashMap();
+			}
+			MapInputData inputData = new MapInputData(formData);
 			if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
-				getFolderModule().addFolder(binderId, input);
+				getFolderModule().addFolder(binderId, entryType, inputData, fileMap);
 			} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
-				getWorkspaceModule().addFolder(binderId, input);				
+				getWorkspaceModule().addFolder(binderId, entryType, inputData, fileMap);				
 			} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
-				getWorkspaceModule().addWorkspace(binderId, input);				
+				getWorkspaceModule().addWorkspace(binderId, entryType, inputData, fileMap);				
 			}
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			response.setRenderParameter("redirect", "true");

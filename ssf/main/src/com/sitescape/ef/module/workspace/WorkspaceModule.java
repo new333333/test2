@@ -3,11 +3,15 @@ package com.sitescape.ef.module.workspace;
 import java.util.Collection;
 import java.util.Map;
 
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.NoWorkspaceByTheIdException;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.security.AccessControlException;
 import org.dom4j.Document;
+
+import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.module.shared.InputDataAccessor;
 /**
  * @author Jong Kim
  *
@@ -43,10 +47,11 @@ public interface WorkspaceModule {
   	public Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper, int levels) throws AccessControlException;
  	public Document getDomWorkspaceTree(Long topId, Long bottonId, DomTreeBuilder domTreeHelper) throws AccessControlException;
 
-  	public Long addWorkspace(Long parentId, Map input) throws AccessControlException;
+    public Long addWorkspace(Long folderId, String definitionId, InputDataAccessor inputData,
+       		Map fileItems) throws AccessControlException, WriteFilesException;
  	public void checkAddWorkspaceAllowed(Workspace parent) throws AccessControlException;
- 	public void checkModifyWorkspaceAllowed(Workspace workspace) throws AccessControlException;
- 	public Long addFolder(Long parentId, Map input) throws AccessControlException;
-  	public void checkAddFolderAllowed(Workspace parent) throws AccessControlException;
+    public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
+       		Map fileItems) throws AccessControlException, WriteFilesException;
+ 	public void checkAddFolderAllowed(Workspace parent) throws AccessControlException;
 }
 

@@ -6,8 +6,7 @@ import java.util.Set;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclManager;
 import com.sitescape.ef.security.acl.AclControlled;
@@ -34,6 +33,7 @@ public class BasicIndexUtils {
 
     // The following fields represent valid values for DOC_TYPE_FIELD.
     
+    public final static String DOC_TYPE_BINDER 		= "binder";
     public final static String DOC_TYPE_ENTRY 		= "entry";
     public final static String DOC_TYPE_ATTACHMENT	= "attachment"; 
     
@@ -122,14 +122,14 @@ public class BasicIndexUtils {
     public static  Field allTextField(String text) {
         return new Field(ALL_TEXT_FIELD, text, false, true, true);
     }   
-    public static void addReadAcls(Document doc, Binder binder, Entry entry, AclManager aclManager) {
+    public static void addReadAcls(Document doc, AclContainer container, Object entry, AclManager aclManager) {
         // Add ACL field. We only need to index ACLs for read access. 
         Field racField;
         if (entry instanceof AclControlled) {
 	        StringBuffer pIds = new StringBuffer();
 	        //only want to index acls on the entry itself.  Otherwise we use READ_DEF_ACL
 	        if (((AclControlled)entry).getInheritAclFromParent() == false) {
-	        	Set readMemberIds = aclManager.getMembers(binder, (AclControlled) entry, AccessType.READ);
+	        	Set readMemberIds = aclManager.getMembers(container, (AclControlled) entry, AccessType.READ);
 	        	for(Iterator i = readMemberIds.iterator(); i.hasNext();) {
 	        		pIds.append(i.next()).append(" ");
 	        	}

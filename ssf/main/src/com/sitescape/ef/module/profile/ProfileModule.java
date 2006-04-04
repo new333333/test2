@@ -52,7 +52,7 @@ public interface ProfileModule {
     public Map getUsers(Long binderId, int maxEntries);
     public Map getUsers(Long binderId, int maxEntries, Document searchFilter);
     	   
-    public void index(Long binderId);
+    public void indexEntries(Long binderId);
     public UserProperties setUserFolderProperty(Long userId, Long folderId, String property, Object value);
     public UserProperties getUserFolderProperties(Long userId, Long folderId);
     public UserProperties setUserProperty(Long userId, String property, Object value);

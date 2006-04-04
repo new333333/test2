@@ -11,12 +11,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.DefinableEntity;
 
 import com.sitescape.ef.domain.UpdateAttributeSupport;
-import com.sitescape.ef.module.file.FileModule;
-import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.InvokeUtil;
 import com.sitescape.ef.util.ObjectPropertyNotFoundException;
 import com.sitescape.ef.ConfigurationException;
@@ -33,23 +30,23 @@ public class EntryBuilder {
 		try {
 			List results = new ArrayList();
 	    	for (Iterator iter=data.iterator();iter.hasNext();) {
-				Entry target = (Entry)clazz.newInstance();
+	    		DefinableEntity target = (DefinableEntity)clazz.newInstance();
 	     		EntryBuilder.buildEntry(target,(Map)iter.next());
 	     		results.add(target);
 	    	}
 	    	return results;
 		} catch (InstantiationException e) {
 			throw new ConfigurationException(
-                "Cannot instantiate entry of type '"
+                "Cannot instantiate entity of type '"
                         + clazz.getName() + "'");
 		} catch (IllegalAccessException e) {
 			throw new ConfigurationException(
-					"Cannot instantiate entry of type '"
+					"Cannot instantiate entity of type '"
                         	+ clazz.getName() + "'");
 		}
 		
 	}
-	public static void buildEntry(Entry target, Map data) {
+	public static void buildEntry(DefinableEntity target, Map data) {
 		Set kvps = data.entrySet();
 		Map.Entry entry;
 		for (Iterator iter=kvps.iterator(); iter.hasNext();) {
@@ -72,7 +69,7 @@ public class EntryBuilder {
 	 */
 	public static void updateEntries(Collection entries, Map data) {
     	for (Iterator iter=entries.iterator();iter.hasNext();) {
-     		Entry target = (Entry)iter.next();
+    		DefinableEntity target = (DefinableEntity)iter.next();
     		updateEntry(target,(Map)data.get(target.getId()));
     	}
 
@@ -84,12 +81,12 @@ public class EntryBuilder {
 	 */
 	public static void applyUpdate(Collection entries, Map data) {
 	   	for (Iterator iter=entries.iterator();iter.hasNext();) {
-     		Entry target = (Entry)iter.next();
+	   		DefinableEntity target = (DefinableEntity)iter.next();
     		updateEntry(target,data);
     	}		
 	}
 
-	public static boolean updateEntry(Entry target, Map data) {
+	public static boolean updateEntry(DefinableEntity target, Map data) {
 		Set kvps = data.entrySet();
 		Map.Entry entry;
 		boolean changed=false;
