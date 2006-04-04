@@ -23,3 +23,4 @@
 		
 	}
 %>
+<br><%= property_name %>, <%= property_caption %> <br>

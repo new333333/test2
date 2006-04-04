@@ -112,6 +112,7 @@ public class WebKeys {
     public static final String DEFAULT_FOLDER_DEFINITION="ssDefaultFolderDefinition";
     public static final String DEFAULT_FOLDER_DEFINITION_ID="ssDefaultFolderDefinitionId";
     public static final String DEFINITION="ssDefinition";
+    public static final String DEFINITION_ID="ssDefinitionId";
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
     public static final String EMAIL_ALIASES="ssEmailAliases";
     public static final String ENTRY="ssEntry";
@@ -196,7 +197,8 @@ public class WebKeys {
     //View names
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
     public static final String VIEW_ADD_ENTRY = "entry/add_entry";
-    public static final String VIEW_ADD_FOLDER = "forum/add_folder";
+    public static final String VIEW_ADD_BINDER = "forum/add_binder";
+    public static final String VIEW_ADD_BINDER_TYPE = "forum/add_binder_type";
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
     public static final String VIEW_ADMIN_CONFIGURE_NOTIFICATION="administration/configureNotify";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING="administration/configurePosting";
