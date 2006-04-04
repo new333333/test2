@@ -1,4 +1,4 @@
-<jboss-web> 
+<jboss-web>
 <!-- Slide security -->
 <security-domain>java:/jaas/slide</security-domain>
 <!-- To run slide -->
