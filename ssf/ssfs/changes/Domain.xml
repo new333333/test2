@@ -12,7 +12,8 @@
                 <nodestore classname="org.apache.slide.simple.store.WebdavStoreAdapter">
                 <!-- replace the above line with this one if your Slide version and your store supports macro operations on the store level -->  
                 <!--nodestore classname="org.apache.slide.simple.store.WebdavStoreMacroAdapter"-->
-                    <parameter name="callback-store">org.apache.slide.simple.reference.WebdavFileStore</parameter>
+                    <!--<parameter name="callback-store">org.apache.slide.simple.reference.WebdavFileStore</parameter>-->
+                    <parameter name="callback-store">com.sitescape.ef.ssfs.wck.WebdavSiteScape</parameter>
                     <!-- this is where all the resources in the /files collection go to -->
                     <!-- adapt to your needs -->
                     <parameter name="rootpath">store</parameter>

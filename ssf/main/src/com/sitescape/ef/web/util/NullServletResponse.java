@@ -11,6 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * An implementation of HttpServletResponse that doesn't do anything useful.
  * 
+ * IMPORTANT: Do NOT make this class dependent upon any other class in the
+ * system. In other word, do NOT import any class other than java or
+ * javax classes.
+ * 
  * @author jong
  *
  */

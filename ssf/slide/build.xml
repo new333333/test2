@@ -5,7 +5,8 @@
     <import file="../deploy-support.xml" />
 	
 	<property name="input.war.file" value="slide.war" />
-	<property name="output.war.file" value="slide.war" />
+	<property name="output.war.name" value="slide" />
+	<property name="output.war.file" value="${output.war.name}.war" />
 	<property name="temp.dir" value="temp" />
 
 	<target name="clean">
@@ -38,7 +39,7 @@
 	
     <target name="deploy" depends="war">
         <antcall target="deploy-war">
-        	<param name="deploy-support.war.file" value="${output.war.file}" />
+        	<param name="deploy-support.war.name" value="${output.war.name}" />
         </antcall>
     </target>
 	

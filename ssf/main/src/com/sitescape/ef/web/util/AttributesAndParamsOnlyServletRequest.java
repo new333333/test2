@@ -20,6 +20,10 @@ import javax.servlet.http.HttpSession;
  * An implementation of HttpServletRequest that only handles attributes and
  * parameters. 
  * 
+ * IMPORTANT: Do NOT make this class dependent upon any other class in the
+ * system. In other word, do NOT import any class other than java or
+ * javax classes.
+ * 
  * @author jong
  *
  */
