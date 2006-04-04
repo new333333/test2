@@ -24,29 +24,6 @@
   enctype="<%= enctype %>" name="<%= formName %>" 
   id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this);">
 
-<fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="workspace.type" 
-    text="Workspace type"/></legend>
-  <span class="ss_bold"><ssf:nlt tag="workspace.selectWorkspace" 
-  text="Select the type of workspace:"/></span>
-  <br/>
-  <c:forEach var="item" items="${ssPublicWorkspaceDefinitions}">
-      <c:choose>
-        <c:when test="${ssDefaultWorkspaceDefinitionId == item.value.id}">
-          <input type="radio" name="binderDefinition" value="${item.value.id}" checked>
-          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
-        </c:when>
-        <c:otherwise>
-          <input type="radio" name="binderDefinition" value="${item.value.id}">
-          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
-        </c:otherwise>
-      </c:choose>
-  </c:forEach>
-
-</fieldset>
-
-<br/>
-
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" />

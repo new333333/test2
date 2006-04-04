@@ -73,7 +73,7 @@ public class SAbstractProfileController extends SAbstractController {
 		if (!defaultEntryDefinitions.isEmpty()) {
 			try {
 				getProfileModule().checkAddEntryAllowed(binder);
-				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.addProfile"));
 				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
 					Definition def = (Definition) defaultEntryDefinitions.get(i);
 					url = response.createActionURL();
