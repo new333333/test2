@@ -187,6 +187,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();
+        binder.setZoneName(parent.getZoneName());
         binder.setCreation(new HistoryStamp(user));
         binder.setModification(binder.getCreation());
     	//Since parent collection is a list we can add the binder without an id

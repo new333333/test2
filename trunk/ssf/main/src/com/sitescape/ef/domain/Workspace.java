@@ -18,9 +18,6 @@ import java.util.Set;
  *
  */
 public class Workspace extends Binder  {
-	protected Set workspaces; 
-    protected Set folders;
-    protected boolean bindersParsed;
     public Workspace() {
     	setType(EntityIdentifier.EntityType.workspace.name());
     }
@@ -32,15 +29,25 @@ public class Workspace extends Binder  {
     	return binders;
     }
     public Set getFolders() {
-      	if (!bindersParsed) {
-    		parseBinders();
+     	Set folders = new HashSet();
+    	Binder f;
+    	for (Iterator iter=getBinders().iterator(); iter.hasNext();) {
+    		f = (Binder)iter.next();
+   			if (f instanceof Folder) {
+   				folders.add(f);
+   			} 
     	}
-         return folders;
+      	return folders;
     }
  
     public Set getWorkspaces() {
-      	if (!bindersParsed) {
-      		parseBinders();
+     	Set workspaces = new HashSet();
+    	Binder w;
+    	for (Iterator iter=getBinders().iterator(); iter.hasNext();) {
+    		w = (Binder)iter.next();
+   			if (w instanceof Workspace) {
+   				workspaces.add(w);
+   			} 
     	}
       	return workspaces;
     }
@@ -54,42 +61,20 @@ public class Workspace extends Binder  {
     	
     }
     public void addFolder(Folder folder) {
-     	if (!bindersParsed) parseBinders();
-    	folders.add(folder);
 		super.addBinder(folder);
 	}
     public void removeFolder(Folder folder) {
-     	if (!bindersParsed) parseBinders();
-   		folders.remove(folder);
  		super.removeBinder(folder);
  		
 	}
     public void addWorkspace(Workspace workspace) {
-     	if (!bindersParsed) parseBinders();
-   		workspaces.add(workspace);
 		super.addBinder(workspace);
 	}
     public void removeWorkspace(Workspace workspace) {
-     	if (!bindersParsed) parseBinders();
-   		workspaces.remove(workspace);
  		super.removeBinder(workspace);
  		
 	}
-    protected void parseBinders() {
-     	folders = new HashSet();
-    	workspaces = new HashSet();
-    	Iterator iter = getBinders().iterator();
-    	Binder f,w;
-    	while (iter.hasNext()) {
-    		f = (Binder)iter.next();
-   			if (f instanceof Workspace) {
-   				workspaces.add(f);
-   			} else if (f instanceof Folder){
-   				folders.add(f);
-   			}
-    	}
-    	bindersParsed=true;
-    }
+ 
     /**
      * Overload so we can return parents definition if not set for this folder
      */

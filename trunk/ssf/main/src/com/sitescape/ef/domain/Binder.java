@@ -24,7 +24,7 @@ import com.sitescape.ef.security.function.WorkArea;
  *
  */
 public abstract class Binder extends DefinableEntity implements WorkArea, AclContainer, InstanceLevelProcessorSupport  {
-	protected String name;
+	protected String name="";
     protected HistoryStamp owner;
     protected Map properties;
     protected Binder parentBinder;
@@ -175,14 +175,13 @@ public abstract class Binder extends DefinableEntity implements WorkArea, AclCon
     }
 
     /**
-     * @hibernate.property length="128" not-null="true" node="name"
+     * @hibernate.property length="128" 
      * @return
      */
     public String getName() {
         return this.name;
     }
     public void setName(String name) {
-    	if (Validator.isNull(name)) throw new IllegalArgumentException("null name");
        this.name = name;
     }
     public String getFullName() {
