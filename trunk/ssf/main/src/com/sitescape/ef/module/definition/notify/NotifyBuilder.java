@@ -2,7 +2,7 @@ package com.sitescape.ef.module.definition.notify;
 
 import java.util.Map;
 import org.dom4j.Element;
-import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.DefinableEntity;
 
 /**
  *
@@ -10,5 +10,5 @@ import com.sitescape.ef.domain.Entry;
  */
 public interface NotifyBuilder {
     
-    public boolean buildElement(Element element, Entry entry, Notify notifyDef, String dataElemName, Map args);
+    public boolean buildElement(Element element, DefinableEntity entity, Notify notifyDef, String dataElemName, Map args);
 }

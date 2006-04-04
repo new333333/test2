@@ -368,7 +368,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		element.addAttribute("docLevel", String.valueOf(entry.getDocLevel()));
 		String entryUrl = WebUrlUtil.getEntryViewURL(entry);
 		element.addAttribute("href", entryUrl);
-		definitionModule.addNotifyElementForEntry(element, notifyDef, entry, new String[] {"entryData"});	
+		definitionModule.addNotifyElementForEntity(element, notifyDef, entry, new String[] {"entryData"});	
 	}
 	// get cached template.  If not cached yet,load it
 	protected Transformer getTransformer(String zoneName, String type) throws TransformerConfigurationException {
@@ -660,6 +660,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		protected void checkEntries(Collection entries) {
 			for (Iterator iter=entries.iterator(); iter.hasNext(); ) {
 				WorkflowControlledEntry e = (WorkflowControlledEntry)iter.next();
+//TODO: this isn't accounting for the binder override
 				if (getAccessControlManager().testAcl(user, e.getParentBinder(), e, AccessType.READ))
 					this.entries.add(e);
 			}

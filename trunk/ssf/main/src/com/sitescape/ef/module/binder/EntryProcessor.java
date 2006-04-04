@@ -19,10 +19,21 @@ import com.sitescape.ef.security.AccessControlException;
   * 
  * @author Jong Kim
  */
-public interface EntryProcessor {
-    public static final String PROCESSOR_KEY = "processorKey_binderCoreProcessor";
-
+public interface EntryProcessor extends BinderProcessor {
  
+    public Long addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
+	throws AccessControlException, WriteFilesException;
+    public void addBinder_accessControl(Binder binder) throws AccessControlException;
+  	public void deleteBinder(Binder binder) throws AccessControlException;
+    public void deleteBinder_accessControl(Binder binder) throws AccessControlException;
+	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries) throws AccessControlException;
+	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries, Document searchFilter) throws AccessControlException;
+	public void indexEntries(Binder binder);
+    public Long modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems) 
+		throws AccessControlException, WriteFilesException;
+    public void modifyBinder_accessControl(Binder binder) throws AccessControlException;
+	
+    
     public Long addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
     public void addEntry_accessControl(Binder binder) throws AccessControlException;
@@ -34,10 +45,8 @@ public interface EntryProcessor {
     public void modifyEntry_accessControl(Binder binder, Entry entry) throws AccessControlException;
     public void modifyWorkflowState(Binder binder, Long entryId, Long tokenId, String toState) 
 		throws AccessControlException;
-	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries) throws AccessControlException;
-	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries, Document searchFilter) throws AccessControlException;
-	public void indexBinder(Binder binder);
 	public void reindexEntry(Entry entry); 
   	public void reindexEntries(Collection entries);
-	
+
+
 }

@@ -11,6 +11,7 @@
 		<processor class="com.sitescape.ef.jobs.DefaultSendEmail" spring-bean-type="none"/>
 		<processor class="com.sitescape.ef.module.folder.impl.DefaultFolderCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultFolderCoreProcessor"/>
 		<processor class="com.sitescape.ef.module.profile.impl.DefaultProfileCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultProfileCoreProcessor"/>
+		<processor class="com.sitescape.ef.module.workspace.impl.DefaultWorkspaceCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultWorkspaceCoreProcessor"/>
 	</processors>
 	
 	<default-mappings>
@@ -27,6 +28,7 @@
 		<model-class name="com.sitescape.ef.domain.Workspace">
 			<mapping processor-key="processorKey_wsLdapSynchronizationJob" processor-class="com.sitescape.ef.jobs.DefaultLdapSynchronization"/>
 			<mapping processor-key="processorKey_wsLdapNameMapper" processor-class="com.sitescape.ef.ldap.DefaultLdapNameMapper"/>
+			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.ef.module.workspace.impl.DefaultWorkspaceCoreProcessor"/>
 		</model-class>
 	</default-mappings>
 </model-processor-mapping>

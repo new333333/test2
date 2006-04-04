@@ -127,12 +127,18 @@ public class Folder extends Binder {
     public List getFolders() {
     	return getBinders();
     }
+    public void addBinder(Binder binder) {
+    	addFolder((Folder)binder);
+    }
     public void addFolder(Folder child) {
   		super.addBinder(child);
         if (topFolder == null) child.setTopFolder(this); else child.setTopFolder(topFolder);
    		//	Set root for subfolders
  	   	child.setFolderHKey(new HKey(getFolderHKey(), nextFolderNumber++));   			
    	}
+    public void removeBinder(Binder binder) {
+    	removeFolder((Folder)binder);
+    }
     public void removeFolder(Folder child) {
         if (!child.getParentFolder().equals(this)) {
             throw new NoFolderByTheIdException(child.getId(),"Subfolder not in this folder");

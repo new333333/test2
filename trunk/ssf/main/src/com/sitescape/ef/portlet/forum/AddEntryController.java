@@ -37,7 +37,6 @@ public class AddEntryController extends SAbstractForumController {
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		//See if the add entry form was submitted
 		Long entryId=null;
-		MapInputData inputData = new MapInputData(formData);
 		if (formData.containsKey("okBtn")) {
 			//The form was submitted. Go process it
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
@@ -47,6 +46,7 @@ public class AddEntryController extends SAbstractForumController {
 			} else {
 				fileMap = new HashMap();
 			}
+			MapInputData inputData = new MapInputData(formData);
 			if (action.equals(WebKeys.ACTION_ADD_ENTRY)) {
 				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap);
 			} else if (action.equals(WebKeys.FORUM_ACTION_ADD_REPLY)) {

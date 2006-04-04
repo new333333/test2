@@ -222,9 +222,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	
     }
     
-    public void index(Long binderId) {
+    public void indexEntries(Long binderId) {
         ProfileBinder binder = loadBinder(binderId);
-        loadProcessor(binder).indexBinder(binder);
+        loadProcessor(binder).indexEntries(binder);
     }
 
     public Map getUsers(Long binderId) {

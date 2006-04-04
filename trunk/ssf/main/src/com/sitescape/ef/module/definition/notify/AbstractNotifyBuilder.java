@@ -3,7 +3,7 @@ import java.util.Map;
 import org.dom4j.Element;
 
 import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.util.InvokeUtil;
 import com.sitescape.ef.util.ObjectPropertyNotFoundException;
 import com.sitescape.ef.util.NLT;
@@ -13,16 +13,16 @@ import com.sitescape.ef.util.NLT;
  */
 public abstract class AbstractNotifyBuilder implements NotifyBuilder {
     
-    public boolean buildElement(Element element, Entry entry, Notify notifyDef, String dataElemName, Map args) {
+    public boolean buildElement(Element element, DefinableEntity entity, Notify notifyDef, String dataElemName, Map args) {
     	element.addAttribute("name", dataElemName);
     	element.addAttribute("caption", (String)args.get("_caption"));
         element.addAttribute("type", (String)args.get("_itemName"));
-        CustomAttribute attribute = entry.getCustomAttribute(dataElemName);
+        CustomAttribute attribute = entity.getCustomAttribute(dataElemName);
 		try {
 			if (attribute != null) 
     			return build(element, notifyDef, attribute, args);
 			else 
-    			return build(element, notifyDef, entry, dataElemName, args);
+    			return build(element, notifyDef, entity, dataElemName, args);
 		} catch (Exception e) {
 			element.setText(NLT.get("notify.error.attribute", notifyDef.getLocale()));
 			return true;
@@ -35,9 +35,9 @@ public abstract class AbstractNotifyBuilder implements NotifyBuilder {
 	   	}
 	   	return true;
 	}   
-    protected boolean build(Element element, Notify notifyDef, Entry entry, String dataElemName, Map args) {
+    protected boolean build(Element element, Notify notifyDef, DefinableEntity entity, String dataElemName, Map args) {
 	   	try {
-	   		Object obj = InvokeUtil.invokeGetter(entry, dataElemName);
+	   		Object obj = InvokeUtil.invokeGetter(entity, dataElemName);
 		   	if (obj != null) {
 		   		element.setText(obj.toString());
 		   	}

@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.util.FileUploadItem;
 
@@ -30,7 +30,7 @@ public class RepositoryServiceUtil {
 	private static final Log logger = LogFactory.getLog(RepositoryServiceUtil.class);
 	
 	public static int fileInfo(String repositoryServiceName,
-			Binder binder, Entry entry, String fileName)
+			Binder binder, DefinableEntity entry, String fileName)
 		throws RepositoryServiceException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 
@@ -44,7 +44,7 @@ public class RepositoryServiceUtil {
 		}		
 	}
 	
-	public static String createVersioned(Binder binder, Entry entry,
+	public static String createVersioned(Binder binder, DefinableEntity entry,
 			FileUploadItem fui) throws RepositoryServiceException {
 		String repositoryServiceName = fui.getRepositoryServiceName();
 
@@ -74,7 +74,7 @@ public class RepositoryServiceUtil {
 	}
 
 	public static void createUnversioned(String repositoryServiceName,
-			Binder binder, Entry entry, String fileName, InputStream in) 
+			Binder binder, DefinableEntity entry, String fileName, InputStream in) 
 		throws RepositoryServiceException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 
@@ -88,7 +88,7 @@ public class RepositoryServiceUtil {
 		}
 	}
 
-	public static void update(Binder binder, Entry entry,
+	public static void update(Binder binder, DefinableEntity entry,
 			FileUploadItem fui) throws RepositoryServiceException {
 		String repositoryServiceName = fui.getRepositoryServiceName();
 
@@ -116,7 +116,7 @@ public class RepositoryServiceUtil {
 	}
 	
 	public static void delete(String repositoryServiceName, Binder binder,
-			Entry entry, String fileName) throws RepositoryServiceException {
+			DefinableEntity entry, String fileName) throws RepositoryServiceException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 		Object session = service.openRepositorySession();
 		try {
@@ -127,7 +127,7 @@ public class RepositoryServiceUtil {
 	}
 
 	public static void read(String repositoryServiceName, Binder binder, 
-			Entry entry, String fileName, OutputStream out)
+			DefinableEntity entry, String fileName, OutputStream out)
 			throws RepositoryServiceException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 		Object session = service.openRepositorySession();
@@ -139,7 +139,7 @@ public class RepositoryServiceUtil {
 	}
 
 	public static void checkout(String repositoryServiceName, Binder binder, 
-			Entry entry, String fileName)
+			DefinableEntity entry, String fileName)
 			throws RepositoryServiceException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 		Object session = service.openRepositorySession();
@@ -151,7 +151,7 @@ public class RepositoryServiceUtil {
 	}
 
 	public static void uncheckout(String repositoryServiceName, Binder binder, 
-			Entry entry,String fileName)
+			DefinableEntity entry,String fileName)
 			throws RepositoryServiceException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 		Object session = service.openRepositorySession();

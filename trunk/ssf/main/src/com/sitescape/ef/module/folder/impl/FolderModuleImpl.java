@@ -17,10 +17,10 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.Tag;
@@ -45,7 +45,6 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.util.NLT;
 
-import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.util.Validator;
 /**
@@ -83,9 +82,9 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		Folder folder = loadFolder(folderId);
 	
 		// Check if the user has "read" access to the folder.
-		getAccessControlManager().checkAcl(folder, AccessType.READ);		
-    return folder;        
-} 
+		getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);		
+		return folder;        
+	} 
 	public Collection getFolders(List folderIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new BinderComparator(user.getLocale());
@@ -102,29 +101,22 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	}
    
 
-    public Long addFolder(Long parentFolderId, Map input) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        Folder parentFolder = folderDao.loadFolder(parentFolderId, user.getZoneName());
-    	getAccessControlManager().checkOperation(parentFolder, WorkAreaOperation.CREATE_FOLDERS);
- 
-    	Folder folder = new Folder();
-    	folder.setZoneName(user.getZoneName());
-        folder.setCreation(new HistoryStamp(user));
-        folder.setModification(folder.getCreation());
-        ObjectBuilder.updateObject(folder, input);
-        //refresh parentFolder to ensure we have the latest 
-        getCoreDao().refresh(parentFolder);
-      	parentFolder.addFolder(folder);
-        // The sub-folder inherits the default ACLs of the parent folder.
-        // The default ACLs of the sub-folder can be changed subsequently. 
-        getAclManager().doInherit(folder);
-        getCoreDao().save(folder);
-                  
-        return folder.getId();
+    public Long addFolder(Long parentFolderId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems) throws AccessControlException, WriteFilesException {
+        Folder parentFolder = loadFolder(parentFolderId);
+        Definition def = null;
+        if (!Validator.isNull(definitionId)) { 
+        	def = getCoreDao().loadDefinition(definitionId, parentFolder.getZoneName());
+        } else {
+        	def = parentFolder.getEntryDef();
+        }
+        
+        return loadProcessor(parentFolder).addBinder(parentFolder, def, Folder.class, inputData, fileItems);
+
     }
  
     public void checkAddFolderAllowed(Folder parentFolder) {
-    	getAccessControlManager().checkOperation(parentFolder, WorkAreaOperation.CREATE_FOLDERS);    	
+        loadProcessor(parentFolder).addBinder_accessControl(parentFolder);    	    	
     }
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
@@ -189,7 +181,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		for (int i=0; i<folders.size(); ++i) {
 	    	folder = (Folder) folders.get(i);
 	    	try {
-		    	loadProcessor(folder).indexBinder(folder);
+		    	loadProcessor(folder).indexEntries(folder);
 	    	}
 	    	catch(AccessControlException e) {
 	    		//Skip folders to which access is denied
@@ -198,9 +190,9 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		}
     }
     
-    public void indexFolder(Long folderId) {
+    public void indexEntries(Long folderId) {
 		Folder folder = loadFolder(folderId);
-        loadProcessor(folder).indexBinder(folder);
+        loadProcessor(folder).indexEntries(folder);
     }
 
     public Map getCommonEntryElements(Long folderId) {
@@ -238,7 +230,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     
     public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper) {
         Folder top = loadFolder(folderId);
-        getAccessControlManager().checkAcl(top, AccessType.READ);
+        getAccessControlManager().checkOperation(top, WorkAreaOperation.READ_ENTRIES);
         
         User user = RequestContextHolder.getRequestContext().getUser();
     	Comparator c = new BinderComparator(user.getLocale());
@@ -262,7 +254,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
        		f = (Folder)iter.next();
       	    // Check if the user has the privilege to view the folder 
             try {
-                getAccessControlManager().checkAcl(f, AccessType.READ);
+                getAccessControlManager().checkOperation(f, WorkAreaOperation.READ_ENTRIES);
             } catch (AccessControlException ac) {
                	continue;
             }
@@ -285,7 +277,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     
     public Map getFolderEntries(Long folderId, int maxChildEntries, Document searchFilter) {
         Folder folder = loadFolder(folderId);
-         return loadProcessor(folder).getBinderEntries(folder, entryTypes, maxChildEntries, searchFilter);
+        return loadProcessor(folder).getBinderEntries(folder, entryTypes, maxChildEntries, searchFilter);
     }
     
 

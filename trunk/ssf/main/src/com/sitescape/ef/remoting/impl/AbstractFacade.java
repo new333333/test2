@@ -306,7 +306,7 @@ public abstract class AbstractFacade implements Facade {
 		notify.setLocale(locale);
 		notify.setDateFormat(DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, locale));
 		
-		getDefinitionModule().addNotifyElementForEntry(entryElem, notify, entry, 
+		getDefinitionModule().addNotifyElementForEntity(entryElem, notify, entry, 
 				new String[] {"entryData", "commonEntryData"});
 		
 	}

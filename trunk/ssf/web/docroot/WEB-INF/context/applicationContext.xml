@@ -399,6 +399,7 @@
 	<bean id="workspaceModule" parent="baseTransactionProxy">
 		<property name="target">
 			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.workspace.impl.WorkspaceModuleImpl">
+				<property name="definitionModule"><ref local="definitionModule"/></property>
 			</bean>
 		</property>
 	</bean>
@@ -455,7 +456,14 @@
 		</property>
 	</bean>
 
-	
+	<bean id="defaultWorkspaceCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.workspace.impl.DefaultWorkspaceCoreProcessor">
+		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+		<property name="definitionModule"><ref local="definitionModule"/></property>
+		<property name="workflowModule"><ref local="workflowModule"/></property>
+		<property name="fileModule"><ref local="fileModule"/></property>
+		<property name="pipeline"><ref local="docPipeline"/></property>
+	</bean>
+
 	<bean id="defaultFolderCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.DefaultFolderCoreProcessor">
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 		<property name="definitionModule"><ref local="definitionModule"/></property>
@@ -474,7 +482,20 @@
 
 	<bean id="binderModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.binder.impl.BinderModuleImpl"/>
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.binder.impl.BinderModuleImpl">
+				<property name="definitionModule"><ref local="definitionModule"/></property>
+			</bean>
+		</property>
+		<!-- modifyBinder provide transaction semantics at a finer
+		granularity then the method. Handled by processor through transactionTemplate-->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="deleteBinder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="show*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="index*">PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
 		</property>
 	</bean>
 

@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.lucene.document.Field;
 
 import com.sitescape.ef.InternalException;
-import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.util.ReflectHelper;
 
 /**
@@ -14,11 +14,11 @@ import com.sitescape.ef.util.ReflectHelper;
  */
 public class FieldBuilderUtil {
     
-    public static Field[] buildField(Entry entry, String dataElemName, String fieldBuilderClassName, Map args) {
+    public static Field[] buildField(DefinableEntity entity, String dataElemName, String fieldBuilderClassName, Map args) {
         try {
             Class fieldBuilderClass = ReflectHelper.classForName(fieldBuilderClassName);
             FieldBuilder fieldBuilder = (FieldBuilder) fieldBuilderClass.newInstance();
-            return fieldBuilder.buildField(entry, dataElemName, args);
+            return fieldBuilder.buildField(entity, dataElemName, args);
         } catch (ClassNotFoundException e) {
             throw new InternalException (e);
         } catch (InstantiationException e) {

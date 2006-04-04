@@ -8,10 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.Long;
 import java.util.Collection;
 
@@ -25,7 +21,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.SFQuery;
@@ -36,17 +31,14 @@ import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.InternalException;
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.lucene.Hits;
-import com.sitescape.ef.module.definition.DefinitionModule;
-import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.WriteFilesException;
@@ -56,81 +48,28 @@ import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.search.SearchFieldResult;
 import com.sitescape.ef.module.binder.EntryProcessor;
-import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.OperationAccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
-import com.sitescape.ef.util.SPropsUtil;
-import com.sitescape.ef.util.TempFileUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
-import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
-import com.sitescape.ef.pipeline.Conduit;
-import com.sitescape.ef.pipeline.Pipeline;
-import com.sitescape.ef.pipeline.PipelineException;
-import com.sitescape.ef.pipeline.impl.RAMConduit;
 
 /**
  *
+ * Add entries to the binder
  * @author Jong Kim
  */
-public abstract class AbstractEntryProcessor extends CommonDependencyInjection 
+public abstract class AbstractEntryProcessor extends AbstractBinderProcessor 
 	implements EntryProcessor {
     
 	private static final int DEFAULT_MAX_CHILD_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
-    protected DefinitionModule definitionModule;
- 
-	protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
-	}
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule = definitionModule;
-	}
 
-	private WorkflowModule workflowModule;
-    
-	public void setWorkflowModule(WorkflowModule workflowModule) {
-		this.workflowModule = workflowModule;
-	}
-	protected WorkflowModule getWorkflowModule() {
-		return workflowModule;
-	}
-	
-	private FileModule fileModule;
-	
-	public void setFileModule(FileModule fileModule) {
-		this.fileModule = fileModule;
-	}
-	protected FileModule getFileModule() {
-		return fileModule;
-	}
-	
-	private Pipeline pipeline;
-	
-	public void setPipeline(Pipeline pipeline) {
-		this.pipeline = pipeline;
-	}
-	protected Pipeline getPipeline() {
-		return pipeline;
-	}
-
-	private TransactionTemplate transactionTemplate;
-    protected TransactionTemplate getTransactionTemplate() {
-		return transactionTemplate;
-	}
-	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
-		this.transactionTemplate = transactionTemplate;
-	}
-	
-	protected void getBinder_accessControl(Binder binder) {
-		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
-	}
 	//***********************************************************************************************************	
     public Long addEntry(final Binder binder, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems) 
@@ -251,18 +190,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	indexEntry(binder, entry, fileUploadItems, true);
     }
  
-    protected void cleanupFiles(List fileUploadItems) {
-        for(int i = 0; i < fileUploadItems.size(); i++) {
-        	// Get a handle on the uploaded file. 
-        	FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
-        	try {
-				fui.delete();
-			} catch (IOException e) {
-				logger.error(e.getMessage(), e);
-			}
-        }
-    }
-
+ 
     protected void addEntry_startWorkflow(Entry entry) {
     	if (!(entry instanceof WorkflowSupport)) return;
     	Binder binder = entry.getParentBinder();
@@ -280,7 +208,6 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	}
     }
  	
-
    //***********************************************************************************************************
     public Long modifyEntry(final Binder binder, Long entryId, final InputDataAccessor inputData, Map fileItems) 
     		throws AccessControlException, WriteFilesException {
@@ -364,7 +291,54 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     		InputDataAccessor inputData, List fileUploadItems) {
     	indexEntry(binder, entry, fileUploadItems, false);
     }
+
+    //***********************************************************************************************************   
+    public void deleteEntry(Binder parentBinder, Long entryId) {
+    	Entry entry = deleteEntry_load(parentBinder, entryId);
+        deleteEntry_accessControl(parentBinder, entry);
+        deleteEntry_preDelete(parentBinder, entry);
+        deleteEntry_workflow(parentBinder, entry);
+        deleteEntry_processFiles(parentBinder, entry);
+        deleteEntry_delete(parentBinder, entry);
+        deleteEntry_postDelete(parentBinder, entry);
+        deleteEntry_indexDel(entry);
+   	
+    }
+    protected Entry deleteEntry_load(Binder binder, Long entryId) {
+    	//load entry and all its collections - will need them to clean up
+    	return entry_loadFull(binder, entryId);
+    }
+        
+    public void deleteEntry_accessControl(Binder binder, Entry entry) {
+      	if (entry instanceof WorkflowSupport)
+      		deleteAccessCheck(binder, (WorkflowSupport)entry);
+    	else if (entry instanceof AclControlled)
+    		deleteAccessCheck(binder, (AclControlled)entry);
+    }
+    protected void deleteEntry_preDelete(Binder parentBinder, Entry entry) {
+    }
+        
+    protected void deleteEntry_workflow(Binder parentBinder, Entry entry) {
+    	if (entry instanceof WorkflowSupport)
+    	getWorkflowModule().deleteEntryWorkflow((WorkflowSupport)entry);
+    }
     
+    protected void deleteEntry_processFiles(Binder parentBinder, Entry entry) {
+    	getFileModule().deleteFiles(parentBinder, entry);
+    }
+    
+    protected void deleteEntry_delete(Binder parentBinder, Entry entry) {
+    	//use the optimized deleteEntry or hibernate deletes each collection entry one at a time
+    	getCoreDao().delete(entry);   
+    }
+    protected void deleteEntry_postDelete(Binder parentBinder, Entry entry) {
+    }
+
+    protected void deleteEntry_indexDel(Entry entry) {
+        // Delete the document that's currently in the index.
+    	// Since all matches will be deleted, this will also delete the attachments
+        IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
+    }
     
     
     //***********************************************************************************************************
@@ -396,8 +370,10 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
  
 
     //***********************************************************************************************************
-    
-    public void indexBinder(Binder binder) {
+    /**
+     * Index binder and its entries
+     */
+    public void indexEntries(Binder binder) {
     	
     	indexBinder_accessControl(binder);
      	// this is just here until we get our indexes in sync with
@@ -460,7 +436,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
  
     }
     protected void indexBinder_accessControl(Binder binder) {
-    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
     }
     protected void indexBinder_preIndex(Binder binder) {
     	
@@ -565,14 +541,7 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
  
     protected abstract String getEntryPrincipalField();
     
-    private Principal getPrincipal(List users, String userId) {
-    	Principal p;
-    	for (int i=0; i<users.size(); i++) {
-    		p = (Principal)users.get(i);
-    		if (p.getId().toString().equalsIgnoreCase(userId)) return p;
-    	}
-    	return null;
-    }
+
     protected int getBinderEntries_maxEntries(int maxChildEntries) {
         if (maxChildEntries == 0) maxChildEntries = DEFAULT_MAX_CHILD_ENTRIES;
         return maxChildEntries;
@@ -670,50 +639,6 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
     	else if (entry instanceof AclControlled)
     		readAccessCheck(binder, (AclControlled)entry);
      }
-   //***********************************************************************************************************   
-    public void deleteEntry(Binder parentBinder, Long entryId) {
-    	Entry entry = deleteEntry_load(parentBinder, entryId);
-        deleteEntry_accessControl(parentBinder, entry);
-        deleteEntry_preDelete(parentBinder, entry);
-        deleteEntry_workflow(parentBinder, entry);
-        deleteEntry_processFiles(parentBinder, entry);
-        deleteEntry_delete(parentBinder, entry);
-        deleteEntry_postDelete(parentBinder, entry);
-        deleteEntry_indexDel(entry);
-   	
-    }
-    protected Entry deleteEntry_load(Binder binder, Long entryId) {
-    	//load entry and all its collections - will need them to clean up
-    	return entry_loadFull(binder, entryId);
-    }
-        
-    public void deleteEntry_accessControl(Binder binder, Entry entry) {
-      	if (entry instanceof WorkflowSupport)
-      		deleteAccessCheck(binder, (WorkflowSupport)entry);
-    	else if (entry instanceof AclControlled)
-    		deleteAccessCheck(binder, (AclControlled)entry);
-    }
-    protected void deleteEntry_preDelete(Binder parentBinder, Entry entry) {
-    }
-        
-    protected void deleteEntry_workflow(Binder parentBinder, Entry entry) {
-    	if (entry instanceof WorkflowSupport)
-    	getWorkflowModule().deleteEntryWorkflow((WorkflowSupport)entry);
-    }
-    
-    protected void deleteEntry_processFiles(Binder parentBinder, Entry entry) {
-    	getFileModule().deleteFiles(parentBinder, entry);
-    }
-    
-    protected abstract void deleteEntry_delete(Binder parentBinder, Entry entry); 
-    protected void deleteEntry_postDelete(Binder parentBinder, Entry entry) {
-    }
-
-    protected void deleteEntry_indexDel(Entry entry) {
-        // Delete the document that's currently in the index.
-    	// Since all matches will be deleted, this will also delete the attachments
-        IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
-    }
     
     //***********************************************************************************************************
     /*
@@ -763,168 +688,8 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      }     
     
-    /**
-     * Fill in the Lucene document object with information that is common between
-     * entry doc and attachment docs. We duplicate data so that we won't have to
-     * perform multiple queries or run our own filtering in multiple steps. 
-     * 
-     * @param indexDoc
-     * @param binder
-     * @param entry
-     */
-    private void fillInIndexDocWithCommonPartFromEntry(org.apache.lucene.document.Document indexDoc, 
-    		Binder binder, Entry entry) {
-        // Add uid
-        BasicIndexUtils.addUid(indexDoc, entry.getIndexDocumentUid());
 
-        // Add the entry type 
-        EntryIndexUtils.addEntryType(indexDoc, entry);
-       
-        EntryIndexUtils.addBinder(indexDoc, entry);
-        
-        // Add creation-date
-        EntryIndexUtils.addCreationDate(indexDoc, entry);
-        
-        // Add modification-date
-        EntryIndexUtils.addModificationDate(indexDoc,entry);
-        
-        // Add creator id
-        EntryIndexUtils.addCreationPrincipalId(indexDoc,entry);
-        
-        // Add Modification Principal Id
-        EntryIndexUtils.addModificationPrincipalId(indexDoc,entry);
-        
-        // Add ReservedBy Principal Id
-        EntryIndexUtils.addModificationPrincipalId(indexDoc,entry);
-        
-        // Add Doc Id
-        EntryIndexUtils.addDocId(indexDoc, entry);
-        
-        // Add Doc title
-        EntryIndexUtils.addTitle(indexDoc, entry);
-        
-        // Add data fields driven by the entry's definition object. 
-        getDefinitionModule().addIndexFieldsForEntry(indexDoc, binder, entry);
-        
-        // Add ACL field. We only need to index ACLs for read access.
-        EntryIndexUtils.addReadAcls(indexDoc, binder, entry, getReadAclIds(entry));
-    }
-    
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry) {
-    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
-        
-    	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
-    	
-    	// Add document type
-        BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ENTRY);
-        
-        // Add command definition
-        EntryIndexUtils.addCommandDefinition(indexDoc, entry); 
-        
-        // Add the events
-        EntryIndexUtils.addEvents(indexDoc, entry);
-        
-        // Add the workflows
-        EntryIndexUtils.addWorkflow(indexDoc, entry);
-        
-        return indexDoc;
-    }
-    
-    /**
-     * 
-     * @param binder
-     * @param entry
-     * @param fa This is non-null.
-     * @param fui This may be null. 
-     * @return
-     */
-    protected org.apache.lucene.document.Document buildIndexDocumentFromFile
-    	(Binder binder, Entry entry, FileAttachment fa, FileUploadItem fui) {
-    	// Prepare for pipeline execution.
-    	
-    	String text = null;
-    	
-    	// In this case, initial input into pipeline always comes in the form
-    	// of a local file (this is because "we" know the first handler in the
-    	// pipeline is a converter that expects input as a file... just details).
-    	Conduit firstConduit = new RAMConduit();
-    	
-    	try {
-	    	if(fui != null) {
-	    		// Use FileUploadItem object for the file content. Potentially this
-	    		// provides more efficient mechanism than fetching from repository.
-		    	try {
-					firstConduit.getSink().setFile(fui.getFile(), false, false, null);
-				} catch (IOException e) {
-					throw new UncheckedIOException(e);
-				}
-	    	}
-	    	else {
-	    		// We must retrieve the file content from repository and create a
-	    		// temporary file. 
-	    		File tempFile = TempFileUtil.createTempFile("repositoryfile", SPropsUtil.getFile("temp.dir"));
-	    		
-				firstConduit.getSink().setFile(tempFile, true, false, null);    		
-
-				try {
-	    			getFileModule().readFile(binder, entry, fa, new BufferedOutputStream(new FileOutputStream(tempFile)));
-	    		}
-	    		catch(IOException e) {
-	    			throw new UncheckedIOException(e);
-	    		}
-	    	}
-    	
-	    	Conduit lastConduit = new RAMConduit();
-	    	
-	    	try {
-		    	// Invoke pipeline.
-		    	// TODO For now all pipeline executions are synchronous.
-		    	// Asynchronous execution support to be added later.
-	    		try {
-	    			getPipeline().invoke(firstConduit.getSource(), lastConduit.getSink());
-	    		}
-	    		catch(PipelineException e) {
-	    			// Error during pipeline execution. In this case do not propogate
-	    			// the exception up the stakc. Instead we return null. It allows
-	    			// application to proceed with the remaining files. 
-	    			return null;
-	    		}
-		    	
-		        // Get the resulting data of the pipeline execution as a string.
-		        text = lastConduit.getSource().getDataAsString();
-	    	}
-	    	finally {
-	    		lastConduit.close();
-	    	}
-    	}
-    	finally {
-    		firstConduit.close();
-    	}
-        
-    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
-    	
-    	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
-    	
-    	// Add document type
-        BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ATTACHMENT);
-        
-        // Add UID of attachment file (FUID)
-        EntryIndexUtils.addFileAttachmentUid(indexDoc, fa);
-        
-        // Add the filename
-        EntryIndexUtils.addFileAttachmentName(indexDoc,fui.getOriginalFilename());        
-        
-        if(text != null)
-        	BasicIndexUtils.addAllText(indexDoc, text);
-        
-        // TBD Add the filetype and Extension
-        //EntryIndexUtils.addFileType(indexDoc,tempFile);
-
-        EntryIndexUtils.addFileExtension(indexDoc,fui.getOriginalFilename());
-                
-        return indexDoc;
-    }
-    protected void modifyAccessCheck(Binder binder, AclControlled entry) {
+  protected void modifyAccessCheck(Binder binder, AclControlled entry) {
        	try {
        		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES);
        	} catch (OperationAccessControlException ex) {
@@ -997,6 +762,16 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 		return ids;
     	 
      }
+     protected Set getReadAclIds(Binder binder) {
+         List readMemberIds = getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES);
+ 		Set<Long> ids = new HashSet<Long>();
+ 		ids.addAll(readMemberIds);
+ 		//TODO: this doesn't make sense on an index-need to get creator
+ 		if (getAccessControlManager().testOperation(binder, WorkAreaOperation.CREATOR_READ))
+ 			ids.add(binder.getCreatorId());			
+ 		return ids;
+     	 
+      }     
      protected void readAccessCheck(Binder binder, AclControlled entry) {
        	try {
        		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
@@ -1117,9 +892,9 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
 		}
 		
         // Create an index document from the entry object.
-        org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry);
-            
-        // Register the index document for indexing.
+		org.apache.lucene.document.Document indexDoc;
+		indexDoc = buildIndexDocumentFromEntry(entry.getParentBinder(), entry);
+       // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
         
         //Create separate documents one for each attached file and index them.
@@ -1128,25 +903,58 @@ public abstract class AbstractEntryProcessor extends CommonDependencyInjection
         	FileUploadItem fui = null;
         	if(fileUploadItems != null)
         		fui = (FileUploadItem) fileUploadItems.get(i);
-        	indexDoc = buildIndexDocumentFromFile(binder, entry, fa, fui);
+        	indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, fui);
         	if(indexDoc != null) {
         		// Register the index document for indexing.
         		IndexSynchronizationManager.addDocument(indexDoc);
         	}
         }
 	}
-	
-    protected List findCorrespondingFileAttachments(Entry entry, List fileUploadItems) {
-    	List fileAttachments = new ArrayList();
-    	for(int i = 0; i < fileUploadItems.size(); i++) {
-    		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
-    		FileAttachment fa = entry.getFileAttachment(fui.getRepositoryServiceName(), fui.getOriginalFilename());
-    		if(fa == null) 
-    			throw new InternalException("No FileAttachment corresponding to FileUploadItem");
-    		fileAttachments.add(i, fa);
-    	}
-    	return fileAttachments;
-    }
-    
 
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry) {
+    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
+        
+    	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
+    	
+    	// Add document type
+        BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ENTRY);
+        
+        // Add command definition
+        EntryIndexUtils.addCommandDefinition(indexDoc, entry); 
+        
+        // Add the events
+        EntryIndexUtils.addEvents(indexDoc, entry);
+        
+        // Add the workflows
+        EntryIndexUtils.addWorkflow(indexDoc, entry);
+        
+        return indexDoc;
+    }
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
+	(Binder binder, Entry entry, FileAttachment fa, FileUploadItem fui) {
+	org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromFile(binder, entry, fa, fui);
+	if (indexDoc != null)
+	    fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
+	return indexDoc;
+
+}
+
+    /**
+     * Fill in the Lucene document object with information that is common between
+     * entry doc and attachment docs. We duplicate data so that we won't have to
+     * perform multiple queries or run our own filtering in multiple steps. 
+     * 
+     * @param indexDoc
+     * @param binder
+     * @param entry
+     */
+    protected void fillInIndexDocWithCommonPartFromEntry(org.apache.lucene.document.Document indexDoc, 
+    		Binder binder, Entry entry) {
+      	EntryIndexUtils.addEntryType(indexDoc, entry);       
+        // Add ACL field. We only need to index ACLs for read access.
+        EntryIndexUtils.addReadAcls(indexDoc,getReadAclIds(entry));
+
+        fillInIndexDocWithCommonPart(indexDoc, binder, entry);
+    }
+    	
 }

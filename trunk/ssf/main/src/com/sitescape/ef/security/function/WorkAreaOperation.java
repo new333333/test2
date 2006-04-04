@@ -25,15 +25,15 @@ public class WorkAreaOperation {
     //  Important: do not create operations that control the viewing of an entry of folder.
     //  Such "view" operations should be controlled by the ACL.
     public final static WorkAreaOperation CREATE_ENTRIES = new WorkAreaOperation("createEntries");
-    public final static WorkAreaOperation BINDER_ADMIN = new WorkAreaOperation("binderAdmin");    
     public final static WorkAreaOperation MODIFY_ENTRIES = new WorkAreaOperation("modifyEntries");    
     public final static WorkAreaOperation DELETE_ENTRIES = new WorkAreaOperation("deleteEntries");    
     public final static WorkAreaOperation READ_ENTRIES = new WorkAreaOperation("readEntries");
     public final static WorkAreaOperation ADD_REPLIES = new WorkAreaOperation("addReplies");
     public final static WorkAreaOperation GENERATE_REPORTS = new WorkAreaOperation("generateReports");
     public final static WorkAreaOperation SITE_ADMINISTRATION = new WorkAreaOperation("siteAdministration");
+    public final static WorkAreaOperation BINDER_ADMINISTRATION = new WorkAreaOperation("binderAdministration");
     public final static WorkAreaOperation CHANGE_ACCESS_CONTROL = new WorkAreaOperation("changeAccessControl");
-    public final static WorkAreaOperation CREATE_FOLDERS = new WorkAreaOperation("createFolders");
+    public final static WorkAreaOperation CREATE_BINDERS = new WorkAreaOperation("createBinders");
     public final static WorkAreaOperation MANAGE_ENTRY_DEFINITIONS = new WorkAreaOperation("manageEntryDefinitions");
     public final static WorkAreaOperation MANAGE_WORKFLOW_DEFINITIONS = new WorkAreaOperation("manageWorkflowDefinitions");
     public final static WorkAreaOperation CREATOR_MODIFY = new WorkAreaOperation("creatorModifyEntries");

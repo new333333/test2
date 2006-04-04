@@ -14,14 +14,13 @@ import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Description;
-import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.CommaSeparatedValue;
 import com.sitescape.util.Validator;
 
-import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.EventHelper;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -978,9 +977,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	return defs;
     }
     
-	public void addIndexFieldsForEntry(
-            org.apache.lucene.document.Document indexDoc, Binder binder,
-            Entry entry) {
+	public void addIndexFieldsForEntity(
+            org.apache.lucene.document.Document indexDoc,
+            DefinableEntity entry) {
 
         Element configRoot = getDefinitionConfig().getRootElement();
         Definition def = entry.getEntryDef();
@@ -1107,7 +1106,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
         }
         return map;
     }
-	public void addNotifyElementForEntry(Element element, Notify notifyDef, Entry entry,
+	public void addNotifyElementForEntity(Element element, Notify notifyDef, DefinableEntity entry,
 			String[] categories) {
 
         Element configRoot = getDefinitionConfig().getRootElement();
