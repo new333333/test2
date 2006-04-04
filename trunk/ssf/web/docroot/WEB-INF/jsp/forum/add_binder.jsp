@@ -20,13 +20,13 @@
 <span class="ss_titlebold"><c:out value="${ssBinder.title}"/></span>
 <br/>
 <br/>
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 <form class="ss_style ss_form" 
   name="<portlet:namespace/>fm" 
   action="<portlet:actionURL>
 			<portlet:param name="action" value="add_binder"/>
 			<portlet:param name="binderId" value="${ssBinder.id}"/>
 			<portlet:param name="operation" value="${operation}"/>
+			<portlet:param name="entryType" value="${ssDefinitionId}"/>
 		  </portlet:actionURL>"
   method="post" >
 <input type="hidden" name="_definitionId" value="${ssDefinitionId}">
