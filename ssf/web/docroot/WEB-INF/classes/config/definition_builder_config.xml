@@ -24,9 +24,9 @@
 		</operations>
 	</definition>
 	
-	<definition name="forumViewDefinition" definitionType="5" caption="__forum_views" canBeDeleted="false">
+	<definition name="forumViewDefinition" definitionType="5" caption="__folder_views" canBeDeleted="false">
 		<operations>
-			<operation name="addDefinition" item="forumViewType" caption="__add_a_new_forum_view" />
+			<operation name="addDefinition" item="forumViewType" caption="__add_a_new_folder_view" />
 		</operations>
 	</definition>
 	
@@ -694,19 +694,19 @@
 	</item>
 		
 <!-- Folder items -->
-	<item name="forumViewType" definitionType="5" caption="__forum_view_definition">		
+	<item name="forumViewType" definitionType="5" caption="__folder_view_definition">		
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
 		</properties>
 		
 		<options>
-			<option name="folderForm" caption="__forum_form" initial="true" multipleAllowed="false" />
-			<option name="forumView" caption="__forum_view" initial="true" multipleAllowed="false" />
+			<option name="folderForm" caption="__folder_form" initial="true" multipleAllowed="false" />
+			<option name="forumView" caption="__folder_view" initial="true" multipleAllowed="false" />
 		</options>
 	</item>
 	
-	<item name="folderForm" caption="__forum_form" type="form" canBeDeleted="false" 
+	<item name="folderForm" caption="__folder_form" type="form" canBeDeleted="false" 
 		multipleAllowed="false" >		
 		<options>
 			<option name="binderName" initial="true" />
@@ -736,14 +736,14 @@
 		</jsps>
 	</item>
 	
-	<item name="forumView" definitionType="5" caption="__forum_view" 
+	<item name="forumView" definitionType="5" caption="__folder_view" 
 		canBeDeleted="false" multipleAllowed="false" >		
 		<properties>
 			<property name="type" caption="__type" type="selectbox" default="folder">
 				<option name="folder" caption="__folder_folder" />
 				<option name="file" caption="__folder_file" />
 				<option name="event" caption="__folder_event" />
-				<help>__help_forum_view_type</help>
+				<help>__help_folder_view_type</help>
 			</property>
 		</properties>
 		<options>
@@ -754,6 +754,12 @@
 		</options>
 	</item>
 	
+	<item name="defaultFolderView" caption="__default_folder_view">
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_folder_default.jsp" />
+		</jsps>
+	</item>
+
 	<item name="folderDataItem" type="dataView" 
 		caption="__folder_data_item" category="folderViewData">
 		<properties>
@@ -1104,6 +1110,12 @@
 	<item name="profileList" caption="__profile_listing" category="profileView">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_list.jsp" />
+		</jsps>
+	</item>
+
+	<item name="defaultProfileView" caption="__default_profile_view">
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_profile_default.jsp" />
 		</jsps>
 	</item>
 

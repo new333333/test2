@@ -13,7 +13,9 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinitionInvalidException;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.util.Validator;
@@ -49,7 +51,7 @@ public class DefinitionUtils {
 			Definition def = (Definition) itPublicDefinitions.next();
 			if (def.getType() == Definition.COMMAND) {
 				publicEntryDefinitions.put(def.getId(), def);
-			} else if (def.getType() == Definition.FORUM_VIEW) {
+			} else if (def.getType() == Definition.FOLDER_VIEW) {
 				publicForumDefinitions.put(def.getId(), def);
 			} else if (def.getType() == Definition.PROFILE_VIEW) {
 				publicProfileDefinitions.put(def.getId(), def);
@@ -213,6 +215,40 @@ public class DefinitionUtils {
 			String itemId = entryView.attributeValue("id", "");
 			try {
 				Element newItem = getInstance().getDefinitionModule().addItemToDefinitionDocument("default", def, itemId, "defaultEntryView", formData);
+			}
+			catch (DefinitionInvalidException e) {
+				//An error occurred while processing the operation; pass the error message back to the jsp
+				//SessionErrors.add(req, e.getClass().getName(),e.getMessage());
+			}
+		}
+		model.put(WebKeys.CONFIG_ELEMENT, entryView);
+		model.put(WebKeys.CONFIG_DEFINITION, def);
+	}
+		
+	//Routine to build a definition file on the fly for viewing binders with no definition
+	public static void getDefaultBinderView(Binder binder, Map model) {
+		//Create an empty binder definition
+		Map formData = new HashMap();
+		int definitionType = Definition.WORKSPACE_VIEW;
+		String definitionTitle = "__definition_default_workspace_view";
+		String itemDefaultView = "defaultWorkspaceView";
+		if (binder instanceof Folder) {
+			definitionType = Definition.FOLDER_VIEW;
+			definitionTitle = "__definition_default_folder_view";
+			itemDefaultView = "defaultFolderView";
+		} else if (binder instanceof ProfileBinder) {
+			definitionType = Definition.PROFILE_VIEW;
+			definitionTitle = "__definition_default_profile_view";
+			itemDefaultView = "defaultProfileView";
+		}
+		Document def = getInstance().getDefinitionModule().getDefaultDefinition("ss_default_binder_view", definitionTitle, definitionType, formData);
+		
+		//Add the "default viewer" item
+		Element entryView = (Element) def.getRootElement().selectSingleNode("//item[@name='folderView' or @name='profileView' or @name='workspaceView']");
+		if (entryView != null) {
+			String itemId = entryView.attributeValue("id", "");
+			try {
+				Element newItem = getInstance().getDefinitionModule().addItemToDefinitionDocument("default", def, itemId, itemDefaultView, formData);
 			}
 			catch (DefinitionInvalidException e) {
 				//An error occurred while processing the operation; pass the error message back to the jsp
