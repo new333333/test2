@@ -214,7 +214,7 @@ public class Folder extends Binder {
    		return getDefs(Definition.COMMAND);
     }
     public List getBinderViewDefs() {
-   		return getDefs(Definition.FORUM_VIEW);
+   		return getDefs(Definition.FOLDER_VIEW);
     }	    
     
     /*

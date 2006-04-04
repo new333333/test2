@@ -298,7 +298,7 @@ public class SAbstractForumController extends SAbstractController {
 			getBinderModule().checkModifyBinderAllowed(workspace);
 			//The "Modify" menu
 			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_ENTRY);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
 		} catch (AccessControlException ac) {};

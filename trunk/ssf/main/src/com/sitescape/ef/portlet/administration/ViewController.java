@@ -54,7 +54,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("image", "bullet");
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FORUM_VIEW));
+		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FOLDER_VIEW));
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());

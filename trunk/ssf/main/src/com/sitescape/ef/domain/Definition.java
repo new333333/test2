@@ -35,7 +35,7 @@ public class Definition extends PersistentTimestampObject implements AclControll
 	public static int WORKFLOW=2;
 	public static int REPORT=3;
 	public static int ENTRY_FILTER=4;
-	public static int FORUM_VIEW=5;
+	public static int FOLDER_VIEW=5;
 	public static int PROFILE_VIEW=6;
 	public static int PROFILE_ENTRY_VIEW=7;
 	public static int WORKSPACE_VIEW=8;
