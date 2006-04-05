@@ -355,4 +355,8 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     public void setIndexCustomAttributes(Map iCustomAttributes) {
     	this.iCustomAttributes = iCustomAttributes;
     }
+    
+    public String getTypedId() {
+    	return getEntityIdentifier().getEntityType().name() + "_" + getEntityIdentifier().getEntityId();
+    }
 }
