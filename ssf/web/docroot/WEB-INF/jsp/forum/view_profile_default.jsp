@@ -9,7 +9,16 @@
 <jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
 
 <div class="ss_style ss_portlet">
-xxxxxx view_profile_default  xxxxxxxxxxxxx
+
+<% // Navigation bar %>
+<%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
+
+<% // Toolbar %>
+<c:if test="${!empty ssFolderToolbar}">
+<c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
+<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+</c:if>
+
 <% // List of users %>
 <%@ include file="/WEB-INF/jsp/definition_elements/profile_list.jsp" %>
 

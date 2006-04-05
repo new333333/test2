@@ -9,7 +9,6 @@
 <jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
 
 <div class="ss_style ss_portlet">
-xxxxxx view_folder_default  xxxxxxxxxxxxx<br>
 
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
