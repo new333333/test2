@@ -645,8 +645,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			append(Constants.SLASH).
 			append(binder.getId()).
 			append(Constants.SLASH).
-			append(entry.getEntityIdentifier().getEntityType().name() + "_" +
-					entry.getEntityIdentifier().getEntityId()).
+			append(entry.getTypedId()).
 			append(Constants.SLASH).
 			toString();
 	}
