@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
-	<classpathentry kind="src" path="samples/wsclient/src"/>
+	<classpathentry kind="src" path="tools/src"/>
+	<classpathentry kind="src" path="ssfs/src"/>
+	<classpathentry kind="src" path="remoting/src"/>
 	<classpathentry kind="src" path="main/test/src"/>
 	<classpathentry kind="src" path="portal-module/src"/>
 	<classpathentry kind="src" path="liferay/src"/>
@@ -68,5 +70,17 @@
 	<classpathentry kind="lib" path="lib/saaj.jar"/>
 	<classpathentry kind="lib" path="lib/wsdl4j.jar"/>
 	<classpathentry kind="lib" path="lib/spring.jar"/>
+	<classpathentry kind="lib" path="lib/wss4j.jar"/>
+	<classpathentry kind="lib" path="lib/xmlrpc.jar"/>
+	<classpathentry kind="lib" path="lib/addressing.jar"/>
+	<classpathentry kind="lib" path="lib/bcprov-jdk13-128.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec.jar"/>
+	<classpathentry kind="lib" path="lib/opensaml.jar"/>
+	<classpathentry kind="lib" path="lib/xalan.jar"/>
+	<classpathentry kind="lib" path="lib/xmlrpc-2.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/xmlsec.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta-slide-wck-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/slide-kernel-2.2pre1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-transaction-1.1.1pre1.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
