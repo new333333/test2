@@ -1,6 +1,7 @@
 package com.sitescape.ef.module.binder.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +12,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.Long;
+
+import org.dom4j.Document;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -41,6 +44,7 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.TempFileUtil;
+import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
@@ -174,7 +178,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     protected Map addBinder_toEntryData(Binder parent, Definition def, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
-        return getDefinitionModule().getEntryData(def, inputData, fileItems);
+    	if (def != null) {
+    		return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
+    	} else {
+    		return new HashMap();
+    	}
     }
     
     protected Binder addBinder_create(Class clazz)  {
@@ -270,7 +278,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     protected Map modifyBinder_toEntryData(Binder binder, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
-        return getDefinitionModule().getEntryData(binder.getEntryDef(), inputData, fileItems);
+    	Definition def = binder.getEntryDef();
+    	Document defDoc = null;
+    	if (def == null) {
+    		//There is no definition for this binder. Get the default definition.
+    		Map model = new HashMap();
+    		defDoc = DefinitionUtils.getDefaultBinderDefinition(binder, model, "//item[@type='form']");
+    	} else {
+    		defDoc = def.getDefinition();
+    	}
+        return getDefinitionModule().getEntryData(defDoc, inputData, fileItems);
     }
     protected void modifyBinder_fillIn(Binder binder, InputDataAccessor inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();

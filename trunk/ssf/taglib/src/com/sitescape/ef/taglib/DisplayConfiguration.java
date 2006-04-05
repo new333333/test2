@@ -180,6 +180,13 @@ public class DisplayConfiguration extends TagSupport {
 	    catch(Exception e) {
 	        throw new JspException(e);
 	    }
+	    finally {
+	    	this.configDefinition = null;
+	    	this.configElement = null;
+	    	this.configJspStyle = null;
+	    	this.processThisItem = false;
+	    	this.entry = null;
+	    }
 	    
 		return SKIP_BODY;
 	}

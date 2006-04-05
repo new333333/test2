@@ -274,7 +274,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     
     protected Map addReply_toEntryData(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
-        return getDefinitionModule().getEntryData(def, inputData, fileItems);
+        if (def != null) {
+        	return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
+        } else {
+        	return new HashMap();
+        }
     }
     
     /**
