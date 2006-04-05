@@ -57,7 +57,7 @@ public interface DefinitionModule {
 	 * @param inputData
 	 * @return
 	 */
-	public Map getEntryData(Definition def, InputDataAccessor inputData, Map fileItems);
+	public Map getEntryData(Document def, InputDataAccessor inputData, Map fileItems);
 	public List getDefinitions();
 	
 	public void addIndexFieldsForEntity(org.apache.lucene.document.Document indexDoc, DefinableEntity entity);

@@ -168,9 +168,10 @@ public class DefinitionUtils {
 			}
 			
 		} else {
-			model.put(WebKeys.DEFAULT_FOLDER_DEFINITION, null);
-			model.put(WebKeys.DEFAULT_FOLDER_DEFINITION_ID, "");
-			model.put(WebKeys.CONFIG_ELEMENT, null);
+			//model.put(WebKeys.DEFAULT_FOLDER_DEFINITION, null);
+			//model.put(WebKeys.DEFAULT_FOLDER_DEFINITION_ID, "");
+			//model.put(WebKeys.CONFIG_ELEMENT, null);
+			getDefaultBinderDefinition(binder, model, "//item[@name='forumView' or @name='profileView' or @name='workspaceView']");
 		
 		}
 		Map defaultFolderDefinitions = getBinderDefsAsMap(binder);
@@ -226,37 +227,27 @@ public class DefinitionUtils {
 	}
 		
 	//Routine to build a definition file on the fly for viewing binders with no definition
-	public static void getDefaultBinderView(Binder binder, Map model) {
+	public static Document getDefaultBinderDefinition(Binder binder, Map model, String viewPath) {
 		//Create an empty binder definition
 		Map formData = new HashMap();
 		int definitionType = Definition.WORKSPACE_VIEW;
-		String definitionTitle = "__definition_default_workspace_view";
-		String itemDefaultView = "defaultWorkspaceView";
+		String definitionTitle = "__definition_default_workspace";
 		if (binder instanceof Folder) {
 			definitionType = Definition.FOLDER_VIEW;
-			definitionTitle = "__definition_default_folder_view";
-			itemDefaultView = "defaultFolderView";
+			definitionTitle = "__definition_default_folder";
 		} else if (binder instanceof ProfileBinder) {
 			definitionType = Definition.PROFILE_VIEW;
-			definitionTitle = "__definition_default_profile_view";
-			itemDefaultView = "defaultProfileView";
+			definitionTitle = "__definition_default_profile";
 		}
-		Document def = getInstance().getDefinitionModule().getDefaultDefinition("ss_default_binder_view", definitionTitle, definitionType, formData);
+		Document defDoc = getInstance().getDefinitionModule().getDefaultDefinition("ss_default_binder_def", definitionTitle, definitionType, formData);
 		
 		//Add the "default viewer" item
-		Element entryView = (Element) def.getRootElement().selectSingleNode("//item[@name='folderView' or @name='profileView' or @name='workspaceView']");
-		if (entryView != null) {
-			String itemId = entryView.attributeValue("id", "");
-			try {
-				Element newItem = getInstance().getDefinitionModule().addItemToDefinitionDocument("default", def, itemId, itemDefaultView, formData);
-			}
-			catch (DefinitionInvalidException e) {
-				//An error occurred while processing the operation; pass the error message back to the jsp
-				//SessionErrors.add(req, e.getClass().getName(),e.getMessage());
-			}
-		}
+		Element entryView = (Element) defDoc.getRootElement().selectSingleNode(viewPath);
 		model.put(WebKeys.CONFIG_ELEMENT, entryView);
-		model.put(WebKeys.CONFIG_DEFINITION, def);
+		model.put(WebKeys.CONFIG_DEFINITION, defDoc);
+		//defDoc.asXML();
+		
+		return defDoc;
 	}
 		
 }

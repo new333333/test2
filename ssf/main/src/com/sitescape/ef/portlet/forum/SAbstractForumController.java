@@ -63,6 +63,8 @@ public class SAbstractForumController extends SAbstractController {
 		Binder binder = getBinderModule().getBinder(binderId);
 		Map<String,Object> model = new HashMap<String,Object>();
 		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.DEFINITION_ENTRY, binder);
+		model.put(WebKeys.ENTRY, binder);
 		//Build a reload url
 		PortletURL reloadUrl = response.createRenderURL();
 		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());

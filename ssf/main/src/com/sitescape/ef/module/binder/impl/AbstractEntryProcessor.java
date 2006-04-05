@@ -143,7 +143,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
     protected Map addEntry_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
-        return getDefinitionModule().getEntryData(def, inputData, fileItems);
+        if (def != null) {
+        	return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
+        } else {
+        	return new HashMap();
+        }
     }
     
     protected Entry addEntry_create(Class clazz)  {
@@ -265,7 +269,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     protected Map modifyEntry_toEntryData(Entry entry, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
-        return getDefinitionModule().getEntryData(entry.getEntryDef(), inputData, fileItems);
+        Definition def = entry.getEntryDef();
+        if (def != null) {
+            return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
+        } else {
+        	return new HashMap();
+        }
     }
     protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();

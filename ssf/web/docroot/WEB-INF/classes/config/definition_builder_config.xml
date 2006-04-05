@@ -86,9 +86,9 @@
 
 		<options>
 			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
-			<option name="entryWorkflow" caption="__entry_Workflow" />
-			<option name="entryAttachments" caption="__entry_attachments" />
-			<option name="entryReplies" caption="__entry_replies" />
+			<option name="entryWorkflow" caption="__entry_Workflow" initial="true" />
+			<option name="entryAttachments" caption="__entry_attachments" initial="true" />
+			<option name="entryReplies" caption="__entry_replies" initial="true" />
 			<option_select path="//item[@category='entryLayout']" optionCaption="__entry_layout_options" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
 		</options>
@@ -145,6 +145,8 @@
 		</properties>
 		<options>
 			<option name="title" initial="true" />
+			<option name="description" initial="true" />
+			<option name="attachFiles" default="true" />
 			<option name="entryFormButtons" initial="true" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
 			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
@@ -158,7 +160,7 @@
 	</item>
 		
 	<item name="title" caption="__title" type="data" canBeDeleted="false" 
-		multipleAllowed="false" category="entryData">
+		multipleAllowed="false">
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="title" 
 			  readonly="true" unique="//item[@type='data']">
@@ -198,7 +200,7 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderEvent" />
 	</item>
 	
-	<item name="description" caption="__description" type="data" multipleAllowed="false" category="entryData">
+	<item name="description" caption="__description" type="data" multipleAllowed="false">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  value="description" readonly="true" unique="//item[@type='data']">
@@ -212,6 +214,7 @@
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
 		<notify summary="true" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderDescription" />
@@ -736,7 +739,7 @@
 		</jsps>
 	</item>
 	
-	<item name="forumView" definitionType="5" caption="__folder_view" 
+	<item name="forumView" caption="__folder_view" 
 		canBeDeleted="false" multipleAllowed="false" >		
 		<properties>
 			<property name="type" caption="__type" type="selectbox" default="folder">
@@ -747,9 +750,13 @@
 			</property>
 		</properties>
 		<options>
+			<option name="title" />
+			<option name="description" initial="true" />
 			<option name="folderDataItem" caption="__folder_data_item" 
 				definitionType="5" />
-			<option_select path="//item[@category='forumView']" />
+			<option name="folderList" default="true" />
+			<option name="calendarList" />
+			<option name="viewEntry" default="true" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 	</item>
@@ -776,38 +783,20 @@
 		</jsps>
 	</item>
 	
-	<item name="toolBar" caption="__tool_bar" category="forumView">
-		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/toolbar.jsp" />
-		</jsps>
-	</item>
-		
-	<item name="navBar" caption="__navigation_bar" category="forumView">
-		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-		</jsps>
-	</item>
-		
-	<item name="filterBar" caption="__filter_bar" category="forumView">
-		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/filterbar.jsp" />
-		</jsps>
-	</item>
-		
-	<item name="folderList" caption="__folder_listing" category="forumView">
+	<item name="folderList" caption="__folder_listing">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
 		</jsps>
 	</item>
 
-	<item name="calendarView" caption="__calendar_view" category="forumView">
+	<item name="calendarView" caption="__calendar_view">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/calendar_view.jsp" />
 		</jsps>
 	</item>
 		
 
-	<item name="viewEntry" caption="__view_entry_selectbox" category="forumView">
+	<item name="viewEntry" caption="__view_entry_selectbox">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_selectbox.jsp" />
 		</jsps>
@@ -1092,22 +1081,40 @@
 		</properties>
 		
 		<options>
+			<option name="profileForm" caption="__profile_view" initial="true" multipleAllowed="false" />
 			<option name="profileView" caption="__profile_view" initial="true" multipleAllowed="false" />
 		</options>
 	</item>
 	
-	<item name="profileView" definitionType="6" caption="__profile_view" canBeDeleted="false" multipleAllowed="false" >		
+	<item name="profileForm" caption="__profile_Form" canBeDeleted="false" multipleAllowed="false" >		
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
 		
 		<options>
-			<option_select path="//item[@category='profileView']" />
+			<option name="title" />
+			<option name="description" initial="true" />
+			<option name="htmlEditorTextarea" />
+			<option name="textarea" />
+			<option name="graphic" />
+			<option_select path="//item[@category='profileForm']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 	</item>
 	
-	<item name="profileList" caption="__profile_listing" category="profileView">
+	<item name="profileView" caption="__profile_view" canBeDeleted="false" multipleAllowed="false" >		
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+		
+		<options>
+			<option name="description" initial="true" />
+			<option name="profileList" initial="true" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+	</item>
+	
+	<item name="profileList" caption="__profile_listing">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_list.jsp" />
 		</jsps>
@@ -1214,8 +1221,8 @@
 		</operations>
 
 		<options>
+			<option name="profileTitle" caption="__profile_title" initial="true" />
 			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
-			<option name="profileTitle" caption="__profile_title" />
 			<option name="profileEntryAttachments" caption="__profile_entry_attachments" />
 			<option_select path="//item[@category='profileLayout']" optionCaption="__profile_entry_layout_options" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
@@ -1295,8 +1302,11 @@
 	<item name="workspaceView" caption="__workspace_view" canBeDeleted="false" 
 		multipleAllowed="false" >		
 		<options>
+			<option name="workspaceTitle" initial="true" />
+			<option name="description" initial="true" />
 			<option name="workspaceDataItem" caption="__workspace_data_item" 
 				definitionType="8" />
+			<option name="workspaceBinderList" initial="true" />
 			<option_select path="//item[@category='workspaceView']" />
 			<option_select path="//item[@category='generalLayout']" 
 				optionCaption="__layout_options" />
@@ -1304,6 +1314,24 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/workspace_view.jsp" />
 		</jsps>
+	</item>
+	
+	<item name="workspaceTitle" caption="__title" type="data" canBeDeleted="false" 
+		multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="title" 
+			  readonly="true" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__title"/>
+			<property name="width" caption="__width" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/title_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_workspace_title.jsp" />
+		</jsps>
+		<help>__help_title_field</help>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderTitle" />
 	</item>
 	
 	<item name="workspaceDataItem" type="dataView" 
@@ -1322,8 +1350,7 @@
 		</jsps>
 	</item>
 	
-	<item name="workspaceBinderList" caption="__workspace_binder_list" 
-		category="workspaceView">
+	<item name="workspaceBinderList" caption="__workspace_binder_list" >
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/workspace_binder_list.jsp" />
 		</jsps>

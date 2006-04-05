@@ -258,7 +258,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		ntRoot.addAttribute("caption", title);
 		ntRoot.addAttribute("type", String.valueOf(type));
 		int id = 1;
-		id = populateNewDefinitionTree(definition, ntRoot, configRoot, id);
+		id = populateNewDefinitionTree(definition, ntRoot, configRoot, id, true);
 		ntRoot.addAttribute("nextId", Integer.toString(id));
 		
 		//Add the properties
@@ -372,7 +372,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						}
 					}
 					int nextItemId = Integer.valueOf(root.attributeValue("nextId")).intValue();;
-					nextItemId = populateNewDefinitionTree(itemEleToAdd, newItem, configRoot, nextItemId);
+					nextItemId = populateNewDefinitionTree(itemEleToAdd, newItem, configRoot, nextItemId, false);
 					root.addAttribute("nextId", Integer.toString(nextItemId));
 				}
 			}
@@ -679,24 +679,66 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return false;
 	}
 
-	private int populateNewDefinitionTree(Element source, Element target, Element configRoot, int id) {
+	private int populateNewDefinitionTree(Element source, Element target, Element configRoot, int id, boolean includeDefault) {
 		//See if the source has any options that are required
-		try {
-			Element options = source.element("options");
-			Iterator iOptions = options.selectNodes("option").iterator();
-			while (iOptions.hasNext()) {
-				Element nextOption = (Element)iOptions.next();
-				if (nextOption.attributeValue("initial", "").equals("true")) {
-					//This option is required. Copy it to the target
+		Element options = source.element("options");
+		if (options == null) return id;
+		List lOptions = options.selectNodes("option");
+		if (lOptions == null) return id;
+		Iterator iOptions = lOptions.iterator();
+		while (iOptions.hasNext()) {
+			Element nextOption = (Element)iOptions.next();
+			if (nextOption.attributeValue("initial", "").equals("true") || 
+					(includeDefault && nextOption.attributeValue("default", "").equals("true"))) {
+				//This option is required. Copy it to the target
+				Element item = target.addElement("item");
+				item.addAttribute("name", (String)nextOption.attributeValue("name"));
+				Element itemElement = (Element) configRoot.selectSingleNode("item[@name='"+nextOption.attributeValue("name")+"']");
+				if (itemElement == null) {continue;}
+				//Copy all of the attributes that should be in the definition
+				String caption = itemElement.attributeValue("caption", nextOption.attributeValue("name"));
+				item.addAttribute("caption", caption);
+				String itemType = itemElement.attributeValue("type", "");
+				if (!itemType.equals("")) item.addAttribute("type", itemType);
+				item.addAttribute("id", Integer.toString(id));
+				
+				//Get the properties to be copied
+				List itemElementList = itemElement.elements("properties");
+				if (!itemElementList.isEmpty()) {
+					Element itemProperties = (Element) itemElementList.get(0);
+					item.add(itemProperties.createCopy());
+				}
+
+				//Get the jsps to be copied
+				itemElementList = itemElement.elements("jsps");
+				if (!itemElementList.isEmpty()) {
+					Element itemJsps = (Element) itemElementList.get(0);
+					item.add(itemJsps.createCopy());
+				}
+
+				//Bump up the unique id
+				id++;
+				
+				//Now see if this item has some required options of its own
+				id = populateNewDefinitionTree(itemElement, item, configRoot, id, includeDefault);
+			}
+		}
+		Iterator iOptionSelects = options.selectNodes("option_select").iterator();
+		while (iOptionSelects.hasNext()) {
+			Element nextOptionSelect = (Element)iOptionSelects.next();
+			if (nextOptionSelect.attributeValue("initial", "").equals("true") || 
+					(includeDefault && nextOptionSelect.attributeValue("default", "").equals("true"))) {
+				//This option_select is required. Process it and copy its items to the target
+				String optionPath = nextOptionSelect.attributeValue("path", "");
+				Iterator itOptionSelectItems = configRoot.selectNodes(optionPath).iterator();
+				while (itOptionSelectItems.hasNext()) {
+					nextOptionSelect = (Element)itOptionSelectItems.next();
 					Element item = target.addElement("item");
-					item.addAttribute("name", (String)nextOption.attributeValue("name"));
-					Element itemElement = (Element) configRoot.selectSingleNode("item[@name='"+nextOption.attributeValue("name")+"']");
+					item.addAttribute("name", (String)nextOptionSelect.attributeValue("name"));
+					Element itemElement = (Element) configRoot.selectSingleNode("item[@name='"+nextOptionSelect.attributeValue("name")+"']");
 					if (itemElement == null) {continue;}
-					//Copy all of the attributes that should be in the definition
-					String caption = itemElement.attributeValue("caption", nextOption.attributeValue("name"));
+					String caption = itemElement.attributeValue("caption", nextOptionSelect.attributeValue("name"));
 					item.addAttribute("caption", caption);
-					String itemType = itemElement.attributeValue("type", "");
-					if (!itemType.equals("")) item.addAttribute("type", itemType);
 					item.addAttribute("id", Integer.toString(id));
 					
 					//Get the properties to be copied
@@ -705,64 +747,21 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						Element itemProperties = (Element) itemElementList.get(0);
 						item.add(itemProperties.createCopy());
 					}
-
+					
 					//Get the jsps to be copied
 					itemElementList = itemElement.elements("jsps");
 					if (!itemElementList.isEmpty()) {
 						Element itemJsps = (Element) itemElementList.get(0);
 						item.add(itemJsps.createCopy());
 					}
-
+					
 					//Bump up the unique id
 					id++;
 					
 					//Now see if this item has some required options of its own
-					id = populateNewDefinitionTree(itemElement, item, configRoot, id);
+					id = populateNewDefinitionTree(itemElement, item, configRoot, id, includeDefault);
 				}
 			}
-			Iterator iOptionSelects = options.selectNodes("option_select").iterator();
-			while (iOptionSelects.hasNext()) {
-				Element nextOptionSelect = (Element)iOptionSelects.next();
-				if (nextOptionSelect.attributeValue("initial", "").equals("true")) {
-					//This option_select is required. Process it and copy its items to the target
-					String optionPath = nextOptionSelect.attributeValue("path", "");
-					Iterator itOptionSelectItems = configRoot.selectNodes(optionPath).iterator();
-					while (itOptionSelectItems.hasNext()) {
-						nextOptionSelect = (Element)itOptionSelectItems.next();
-						Element item = target.addElement("item");
-						item.addAttribute("name", (String)nextOptionSelect.attributeValue("name"));
-						Element itemElement = (Element) configRoot.selectSingleNode("item[@name='"+nextOptionSelect.attributeValue("name")+"']");
-						if (itemElement == null) {continue;}
-						String caption = itemElement.attributeValue("caption", nextOptionSelect.attributeValue("name"));
-						item.addAttribute("caption", caption);
-						item.addAttribute("id", Integer.toString(id));
-						
-						//Get the properties to be copied
-						List itemElementList = itemElement.elements("properties");
-						if (!itemElementList.isEmpty()) {
-							Element itemProperties = (Element) itemElementList.get(0);
-							item.add(itemProperties.createCopy());
-						}
-						
-						//Get the jsps to be copied
-						itemElementList = itemElement.elements("jsps");
-						if (!itemElementList.isEmpty()) {
-							Element itemJsps = (Element) itemElementList.get(0);
-							item.add(itemJsps.createCopy());
-						}
-						
-						//Bump up the unique id
-						id++;
-						
-						//Now see if this item has some required options of its own
-						id = populateNewDefinitionTree(itemElement, item, configRoot, id);
-					}
-				}
-			}
-		}
-		catch (Exception e) {
-			//If there are no options, just return
-			return id;
 		}
 		return id;
 	}
@@ -807,7 +806,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	return this.definitionConfig;
     }
     
-    public Map getEntryData(Definition def, InputDataAccessor inputData, Map fileItems) {
+    public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems) {
 		this.getDefinitionConfig();
 		//Get the base configuration definition file root (i.e., not the entry's definition file)
 		Element configRoot = this.definitionConfig.getRootElement();
@@ -819,8 +818,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		entryDataAll.put("entryData", entryData);
 		entryDataAll.put("fileData", fileData);
 		
-		if (def != null) {
-			Document definitionTree = def.getDefinition();
+		if (definitionTree != null) {
 			if (definitionTree != null) {
 				//root is the root of the entry's definition
 				Element root = definitionTree.getRootElement();
