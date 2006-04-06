@@ -6,7 +6,12 @@
 %>
 <div class="ss_entryContent">
 <div class="ss_labelAbove"><%= caption %></div>
-<input type="text" class="ss_text" size="40" name="name" value="<c:out value="${ssEntry.name}"/>"
-	<c:if test="${!empty ssEntry.name}"> READONLY style="background-color: infobackground;" </c:if>
+<input type="text" size="40" name="name" value="<c:out value="${ssEntry.name}"/>"
+	<c:if test="${empty ssEntry.name}">
+	  class="ss_text"
+	</c:if>
+	<c:if test="${!empty ssEntry.name}">
+	  class="ss_text ss_readonly" READONLY="true" 
+	</c:if>
 >
 </div>

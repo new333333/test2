@@ -31,6 +31,7 @@
 <c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/>
 <c:set var="ss_form_element_border_color" value="#669966" scope="request"/>
 <c:set var="ss_form_element_text_color" value="#0033FF" scope="request"/>
+<c:set var="ss_form_element_readonly_color" value="InfoBackground" scope="request"/>
 
 <c:set var="ss_toolbar_background_color" value="#CECECE" scope="request"/>
 <c:set var="ss_toolbar_text_color" value="#000000" scope="request"/>
@@ -177,6 +178,9 @@ if (document.createStyleSheet) {
 .ss_form input.ss_text { 
   background-color: ${ss_form_element_color};
   color: ${ss_form_element_text_color};
+  }
+.ss_readonly {
+  background-color: ${ss_form_element_readonly_color};
   }
     
 .ss_form input.ss_submit {}

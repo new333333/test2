@@ -128,12 +128,19 @@
   </xsd:complexType>
 
   <xsd:complexType name="option_select_dataType">
-     <xsd:sequence/>
+    <xsd:sequence>
+      <xsd:element name="exclude" type="excludeType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
     <xsd:attribute name="select_type" type="xsd:string"/>
     <xsd:attribute name="path" type="xsd:string"/>
     <xsd:attribute name="optionCaption" type="xsd:string"/>
     <xsd:attribute name="initial" type="xsd:boolean"/>
     <xsd:attribute name="default" type="xsd:boolean"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="excludeType">
+     <xsd:sequence/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
   </xsd:complexType>
 
   <xsd:complexType name="jspsType">
