@@ -375,7 +375,17 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     		return (Definition)eDefinitions.get(0);
     	return null;
 	}
-     // Setup by hibernate
+     public Definition getDefaultViewDef() {
+     	
+     	List eDefinitions = getViewDefinitions();
+     	if (eDefinitions.size() > 0)
+     		return (Definition)eDefinitions.get(0);
+     	return null;
+ 	}
+     public Definition getEntryDef() {
+     	return getDefaultViewDef();
+     }
+       // Setup by hibernate
      public Map getWorkflowAssociations() {
      	if (definitionsInherited && parentBinder != null)
     		return new HashMap(parentBinder.getWorkflowAssociations());
