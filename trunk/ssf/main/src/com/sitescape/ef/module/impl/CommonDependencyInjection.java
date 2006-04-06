@@ -6,6 +6,7 @@ import org.quartz.Scheduler;
 
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.docconverter.DocConverter;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.presence.PresenceService;
@@ -32,6 +33,7 @@ public abstract class CommonDependencyInjection {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	protected CoreDao coreDao;
+	protected ProfileDao profileDao;
 	protected FolderDao folderDao;
 	protected FunctionManager functionManager;
 	protected AccessControlManager accessControlManager;
@@ -55,6 +57,9 @@ public abstract class CommonDependencyInjection {
 	}
 	public void setFolderDao(FolderDao folderDao) {
 		this.folderDao = folderDao;
+	}
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
 	}
 	public void setFunctionManager(FunctionManager functionManager) {
 		this.functionManager = functionManager;
@@ -91,6 +96,9 @@ public abstract class CommonDependencyInjection {
 	}
 	protected FolderDao getFolderDao() {
 		return folderDao;
+	}
+	protected ProfileDao getProfileDao() {
+		return profileDao;
 	}
 	protected FunctionManager getFunctionManager() {
 		return functionManager;

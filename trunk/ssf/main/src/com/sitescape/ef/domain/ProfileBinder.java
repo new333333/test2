@@ -10,6 +10,7 @@ public class ProfileBinder extends Binder {
 
     public ProfileBinder() {
     	setType(EntityIdentifier.EntityType.profiles.name());
+    	setDefinitionsInherited(false);
     }
     public EntityIdentifier getEntityIdentifier() {
     	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.profiles);
@@ -33,7 +34,14 @@ public class ProfileBinder extends Binder {
     /**
      * Always returns false.  Overloaded method
      */
-    public boolean setConfigurationInherited() {
+    public boolean isDefinitionsInherited() {
+    	return false;
+    }
+    
+    public void setDefinitionsInherited(boolean definitionsInherited) {
+    	this.definitionsInherited=false;
+    }
+    public boolean isDefinitionInheritanceSupported() {
     	return false;
     }
 

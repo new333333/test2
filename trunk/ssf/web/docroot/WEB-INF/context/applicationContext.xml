@@ -154,7 +154,7 @@
 	</bean>
 
 	<bean id="userReloadInterceptor" class="com.sitescape.ef.util.UserReloadInterceptor">
-		<property name="coreDao"><ref local="coreDao"/></property>
+		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
 	
 	<bean id="modelProcessorManager" class="com.sitescape.ef.modelprocessor.ProcessorManager">
@@ -260,7 +260,7 @@
 	<bean id="portletInitRequestContextInterceptor" class="com.sitescape.ef.web.portlet.handler.InitRequestContextInterceptor"/>
 		
 	<bean id="portletUserPreloadInterceptor" class="com.sitescape.ef.web.portlet.handler.UserPreloadInterceptor">
-		<property name="coreDao"><ref local="coreDao"/></property>
+		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>	
 
 	<!-- ============================ Indexing/Search Service =========================== -->
@@ -332,7 +332,7 @@
 		</property>
 			<property name="target">
 				<bean class="com.sitescape.ef.security.authentication.impl.AuthenticationManagerImpl">
-					<property name="coreDao"><ref local="coreDao"/></property>						
+					<property name="profileDao"><ref local="profileDao"/></property>						
 				</bean>
 			</property>				
 	</bean>	
@@ -383,6 +383,7 @@
 	<bean id="moduleDependencyTemplate" abstract="true">
 		<property name="coreDao"><ref local="coreDao"/></property>
 		<property name="folderDao"><ref local="folderDao"/></property>
+		<property name="profileDao"><ref local="profileDao"/></property>
 		<property name="functionManager"><ref bean="functionManager"/></property>	
 		<property name="accessControlManager"><ref local="accessControlManager"/></property>
 		<property name="aclManager"><ref local="aclManager"/></property>
@@ -499,6 +500,9 @@
 		</property>
 	</bean>
 
+	<bean id="binderAccessUtils" class="com.sitescape.ef.module.binder.AccessUtils">
+		<property name="accessControlManager"><ref bean="accessControlManager"/> </property>
+	</bean>
 
 	<bean id="definitionModule" parent="baseTransactionProxy">
 		<property name="target">
@@ -590,7 +594,7 @@
 	</bean>
 	
 	<bean id="remoteUserPreloadInterceptor" class="com.sitescape.ef.remoting.interceptor.UserPreloadInterceptor">
-		<property name="coreDao"><ref local="coreDao"/></property>
+		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
 	
 	<bean id="fileModule" class="com.sitescape.ef.module.file.impl.FileModuleImpl">
@@ -616,6 +620,10 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	<bean id="folderDao" class="com.sitescape.ef.dao.impl.FolderDaoImpl">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="coreDao"><ref local="coreDao"/></property>
+	</bean>
+	<bean id="profileDao" class="com.sitescape.ef.dao.impl.ProfileDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>

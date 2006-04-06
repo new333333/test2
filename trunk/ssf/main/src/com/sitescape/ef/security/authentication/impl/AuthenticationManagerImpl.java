@@ -1,6 +1,6 @@
 package com.sitescape.ef.security.authentication.impl;
 
-import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.domain.User;
@@ -10,14 +10,14 @@ import com.sitescape.ef.security.authentication.UserDoesNotExistException;
 
 public class AuthenticationManagerImpl implements AuthenticationManager {
 	
-	private CoreDao coreDao;
+	private ProfileDao profileDao;
 	
-	protected CoreDao getCoreDao() {
-		return coreDao;
+	protected ProfileDao getProfileDao() {
+		return profileDao;
 	}
 
-	public void setCoreDao(CoreDao coreDao) {
-		this.coreDao = coreDao;
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
 	}
 
 	public User authenticate(String zoneName, String username, String password,
@@ -25,7 +25,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user = null;
 		try {
-			user = getCoreDao().findUserByNameOnlyIfEnabled(username, zoneName);
+			user = getProfileDao().findUserByNameOnlyIfEnabled(username, zoneName);
 		}
     	catch(NoUserByTheNameException e) {
     		throw new UserDoesNotExistException("Authentication failed: Unrecognized user [" 
@@ -50,7 +50,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user = null;
 		try {
-			user = getCoreDao().loadUserOnlyIfEnabled(userId, zoneName);
+			user = getProfileDao().loadUserOnlyIfEnabled(userId, zoneName);
 		}
 		catch(NoUserByTheIdException e) {
 			throw new UserDoesNotExistException("Authentication failed: Unrecognized user ["

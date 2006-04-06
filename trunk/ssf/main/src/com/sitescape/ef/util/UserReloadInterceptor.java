@@ -7,21 +7,22 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.CoreDao;
+
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.User;
 
 public class UserReloadInterceptor implements MethodInterceptor {
 	
 	protected final Log logger = LogFactory.getLog(getClass());
 	
-	private CoreDao coreDao;
+	private ProfileDao profileDao;
 	
-	protected CoreDao getCoreDao() {
-		return coreDao;
+	protected ProfileDao getProfileDao() {
+		return profileDao;
 	}
 
-	public void setCoreDao(CoreDao coreDao) {
-		this.coreDao = coreDao;
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
 	}
 
 	public Object invoke(MethodInvocation invocation) throws Throwable {
@@ -59,7 +60,7 @@ public class UserReloadInterceptor implements MethodInterceptor {
 		String zoneName = requestContext.getZoneName();
 		
 		try {
-			User user = getCoreDao().findUserByNameOnlyIfEnabled
+			User user = getProfileDao().findUserByNameOnlyIfEnabled
 			(userName, zoneName);
 			
 			requestContext.setUser(user);

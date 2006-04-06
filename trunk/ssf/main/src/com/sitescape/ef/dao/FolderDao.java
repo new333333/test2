@@ -22,7 +22,6 @@ import java.util.List;
  */
 public interface FolderDao {
 	public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, String zoneName) throws DataAccessException;
-	public FolderEntry loadFullFolderEntry(Long parentFolderId, Long entryId, String zoneName) throws DataAccessException;
    /**
      * Return iterator of child entries
      * @param filter
@@ -66,6 +65,7 @@ public interface FolderDao {
  
     public UserProperties loadUserFolderProperties(Long userId, Long folderId);
     public HistoryMap loadHistoryMap(Long userId, Long folderId);
+    public void delete(Folder folder);
     public void deleteEntries(Folder folder);
     public void deleteEntries(List entries);
     public void deleteEntryWorkflows(Folder folder);

@@ -98,10 +98,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
     	Binder binder = loadBinder(binderId);
+    	checkModifyBinderAllowed(binder);
     	loadBinderProcessor(binder).modifyBinder(binder, inputData, fileItems);
     }
     public void checkModifyBinderAllowed(Binder binder) {
-       	loadBinderProcessor(binder).modifyBinder_accessControl(binder);		
+    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
     }
     public void deleteBinder(Long binderId) {
     	Binder binder = loadBinder(binderId);
@@ -122,7 +123,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	
     }
     public void checkDeleteBinderAllowed(Binder binder) {
-    	loadBinderProcessor(binder).deleteBinder_accessControl(binder);    	    	
+    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
     }
 	public Binder setConfiguration(Long binderId, boolean inheritFromParent) {
 		Binder binder = loadBinder(binderId);
@@ -223,7 +224,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 */
 	public List getTags(Long binderId, Long entryId) {
 		Binder binder = loadBinder(binderId);
-		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId, null);
+		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
 		List tags = new ArrayList<Tag>();
 		getCoreDao().loadTagsByOwner(entry.getEntityIdentifier());
 		return tags;		
@@ -237,7 +238,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 */
 	public void modifyTag(Long binderId, Long entryId, String tagId, Map updates) {
 		Binder binder = loadBinder(binderId);
-		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId, null);
+		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
 	   	Tag tag = coreDao.loadTagByOwner(tagId, entry.getEntityIdentifier());
 	   	ObjectBuilder.updateObject(tag, updates);
 	}
@@ -249,7 +250,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 */
 	public void addTag(Long binderId, Long entryId, Map updates) {
 		Binder binder = loadBinder(binderId);
-		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId, null);
+		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
 	   	Tag tag = new Tag();
 	   	tag.setOwnerIdentifier(entry.getEntityIdentifier());
 	  	ObjectBuilder.updateObject(tag, updates);
@@ -263,7 +264,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 */
 	public void deleteTag(Long binderId, Long entryId, String tagId) {
 		Binder binder = loadBinder(binderId);
-		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId, null);
+		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
 	   	Tag tag = coreDao.loadTagByOwner(tagId, entry.getEntityIdentifier());
 	   	getCoreDao().delete(tag);
 	}

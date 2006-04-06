@@ -13,7 +13,7 @@ import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.dao.util.FilterControls;
 /**
@@ -28,8 +28,8 @@ public class NullAccessControlManager implements AccessControlManager {
 		if (groups == null) {
 			synchronized (lock) {
 				if (groups == null) {
-					CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
-					List result = coreDao.loadGroups(new FilterControls(), RequestContextHolder.getRequestContext().getZoneName());
+					ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+					List result = profileDao.loadGroups(new FilterControls(), RequestContextHolder.getRequestContext().getZoneName());
 					groups = new ArrayList();
 					for (int i=0; i<result.size(); ++i) {
 						groups.add(((Group)result.get(i)).getId());

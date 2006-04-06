@@ -277,7 +277,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 				userIds.add(notify.getSendTo().getId());
 		}
 		//turn list of users and groups into list of only users
-		userIds = coreDao.explodeGroups(userIds);
+		userIds = getProfileDao().explodeGroups(userIds);
 		
 		//now alter list to handle users that made request themselves
 		for (int i=0; i<notifications.size();++i) {
@@ -295,7 +295,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		}
 		
 		
- 		return coreDao.loadEnabledUsers(userIds, folder.getZoneName());
+ 		return getProfileDao().loadEnabledUsers(userIds, folder.getZoneName());
  		
 	}
 	private List getMessageUsers(Folder folder) {
@@ -313,7 +313,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			}
 		}
 		
- 		return coreDao.loadEnabledUsers(userIds, folder.getZoneName());
+ 		return getProfileDao().loadEnabledUsers(userIds, folder.getZoneName());
 	}
 	private int checkDate(HistoryStamp dt1, Date dt2) {
 		if (dt1 == null) return -1;

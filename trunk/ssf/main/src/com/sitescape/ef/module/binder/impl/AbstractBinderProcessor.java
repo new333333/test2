@@ -37,10 +37,10 @@ import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.module.binder.BinderProcessor;
+import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.TempFileUtil;
@@ -105,17 +105,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		this.transactionTemplate = transactionTemplate;
 	}
 	
-	protected void getBinder_accessControl(Binder binder) {
-		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
-	}
 	//***********************************************************************************************************	
     public Long addBinder(final Binder parent, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
-        
-        addBinder_accessControl(parent);
-        
+                
         Map entryDataAll = addBinder_toEntryData(parent, def, inputData, fileItems);
         final Map entryData = (Map) entryDataAll.get("entryData");
         List fileUploadItems = (List) entryDataAll.get("fileData");
@@ -162,11 +157,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     }
 
-     
-    public void addBinder_accessControl(Binder parent) throws AccessControlException {
-        getAccessControlManager().checkOperation(parent, WorkAreaOperation.CREATE_BINDERS);        
-    }
-    
+        
     protected FilesErrors addBinder_filterFiles(Binder parent, List fileUploadItems) throws FilterException {
     	return getFileModule().filterFiles(parent, fileUploadItems);
     }
@@ -233,7 +224,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //***********************************************************************************************************
     public Long modifyBinder(final Binder binder, final InputDataAccessor inputData, Map fileItems) 
     		throws AccessControlException, WriteFilesException {
-	    modifyBinder_accessControl(binder);
 	
 	    Map entryDataAll = modifyBinder_toEntryData(binder, inputData, fileItems);
 	    final Map entryData = (Map) entryDataAll.get("entryData");
@@ -263,10 +253,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		return binder.getId();
     	}
 	}
-
-     public void modifyBinder_accessControl(Binder binder) throws AccessControlException {
-    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
-   }
 
     protected FilesErrors modifyBinder_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
     	return getFileModule().filterFiles(binder, fileUploadItems);
@@ -315,37 +301,41 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
  
     //***********************************************************************************************************
-    
+    /**
+     * The default behavior is to delete the binder and all its entries
+     * There shouldn't be any sub-folders
+     */
     public void deleteBinder(Binder binder) {
-        deleteBinder_accessControl(binder);
-        deleteBinder_preDelete(binder);
-        deleteBinder_processFiles(binder);
-        deleteBinder_delete(binder);
-        deleteBinder_postDelete(binder);
-        deleteBinder_indexDel(binder);   	
+        Object ctx = deleteBinder_preDelete(binder);
+        ctx = deleteBinder_processFiles(binder, ctx);
+        ctx = deleteBinder_delete(binder, ctx);
+        ctx = deleteBinder_postDelete(binder, ctx);
+        deleteBinder_indexDel(binder, ctx);   	
     }
     
-    public void deleteBinder_accessControl(Binder binder) {
-    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
-     }
-    protected void deleteBinder_preDelete(Binder binder) {    	
+    protected Object deleteBinder_preDelete(Binder binder) {   
+    	return null;
     }
   
     //TODO: delete all files under binder
-    protected void deleteBinder_processFiles(Binder binder) {
+    protected Object deleteBinder_processFiles(Binder binder, Object ctx) {
     	getFileModule().deleteFiles(binder.getParentBinder(), binder);
+    	return ctx;
     }
     
-    protected void deleteBinder_delete(Binder binder) {
+    protected Object deleteBinder_delete(Binder binder, Object ctx) {
     	getCoreDao().delete(binder);
+       	return ctx;
     }
-    protected void deleteBinder_postDelete(Binder binder) {
+    protected Object deleteBinder_postDelete(Binder binder, Object ctx) {
+       	return ctx;
     }
 
-    protected void deleteBinder_indexDel(Binder binder) {
+    protected Object deleteBinder_indexDel(Binder binder, Object ctx) {
         // Delete the document that's currently in the index.
     	// Since all matches will be deleted, this will also delete the attachments
         IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
+       	return ctx;
     }
     
     //***********************************************************************************************************
@@ -359,18 +349,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     	return null;
     }
-
- 
-    protected Set getReadAclIds(Binder binder) {
-         List readMemberIds = getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES);
- 		Set<Long> ids = new HashSet<Long>();
- 		ids.addAll(readMemberIds);
- 		//TODO: this doesn't make sense on an index-need to get creator
- 		if (getAccessControlManager().testOperation(binder, WorkAreaOperation.CREATOR_READ))
- 			ids.add(binder.getCreatorId());			
- 		return ids;
-     	 
-      }     
 
     /**
      * Index binder and optionally its attached files.
@@ -553,7 +531,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     protected void fillInIndexDocWithCommonPartFromBinder(org.apache.lucene.document.Document indexDoc, 
     		Binder binder) {
-    	EntryIndexUtils.addReadAcls(indexDoc,getReadAclIds(binder));
+    	EntryIndexUtils.addReadAcls(indexDoc,AccessUtils.getReadAclIds(binder));
     	fillInIndexDocWithCommonPart(indexDoc, binder.getParentBinder(), binder);
     }
 

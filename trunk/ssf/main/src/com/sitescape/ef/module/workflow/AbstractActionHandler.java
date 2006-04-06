@@ -13,6 +13,7 @@ import org.jbpm.graph.exe.Token;
 import org.jbpm.graph.def.Node;
 
 import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
@@ -29,6 +30,10 @@ public abstract class AbstractActionHandler implements ActionHandler {
 
 	protected CoreDao getCoreDao() {
 		return (CoreDao)SpringContextUtil.getBean("coreDao");
+	};
+
+	protected ProfileDao getProfileDao() {
+		return (ProfileDao)SpringContextUtil.getBean("profileDao");
 	};
 
 	protected MailManager getMailManager() {

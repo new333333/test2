@@ -40,7 +40,7 @@
 	</bean>
 	
 	<bean id="userPreloadInterceptor" class="com.sitescape.ef.rss.servlet.handler.UserPreloadInterceptor">
-		<property name="coreDao"><ref bean="coreDao"/></property>
+		<property name="profileDao"><ref bean="profileDao"/></property>
 	</bean>	
 
 	<!-- Controllers -->

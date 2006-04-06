@@ -903,6 +903,7 @@ proc doFolders {forum folder level hKey parentID} {
         set attrs(parentBinder) $parentID
 	    set attrs(topFolder) $::forumIds($forum)
 		set attrs(functionMembershipInherited) 1
+        set attrs(definitionsInherited) 1
 		set attrs(acl_inheritFromParent) 1
 		set attrs(type) "folder"
 		set attrs(zoneName) $::zoneName

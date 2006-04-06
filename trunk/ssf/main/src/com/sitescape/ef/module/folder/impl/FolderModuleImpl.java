@@ -18,7 +18,6 @@ import org.dom4j.Element;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
@@ -26,6 +25,7 @@ import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.lucene.Hits;
+import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.WriteFilesException;
@@ -40,7 +40,6 @@ import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.util.NLT;
@@ -104,6 +103,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     public Long addFolder(Long parentFolderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
         Folder parentFolder = loadFolder(parentFolderId);
+        checkAddFolderAllowed(parentFolder);
         Definition def = null;
         if (!Validator.isNull(definitionId)) { 
         	def = getCoreDao().loadDefinition(definitionId, parentFolder.getZoneName());
@@ -116,7 +116,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     }
  
     public void checkAddFolderAllowed(Folder parentFolder) {
-        loadProcessor(parentFolder).addBinder_accessControl(parentFolder);    	    	
+        getAccessControlManager().checkOperation(parentFolder, WorkAreaOperation.CREATE_BINDERS);        
     }
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
@@ -131,7 +131,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         return loadProcessor(folder).addEntry(folder, def, FolderEntry.class, inputData, fileItems);
     }
     public void checkAddEntryAllowed(Folder folder) {
-         loadProcessor(folder).addEntry_accessControl(folder);    	    	
+        getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);        
     }
 
     public Long addReply(Long folderId, Long parentId, String definitionId, 
@@ -140,11 +140,13 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         Definition def = getCoreDao().loadDefinition(definitionId, folder.getZoneName());
         FolderCoreProcessor processor = loadProcessor(folder);
         //load parent entry
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId, EntityType.folderEntry);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId);
+        checkAddReplyAllowed(entry);
         return processor.addReply(entry, def, inputData, fileItems);
     }
     public void checkAddReplyAllowed(FolderEntry entry) throws AccessControlException {
-         loadProcessor(entry.getParentFolder()).addReply_accessControl(entry.getParentFolder(), entry);    	
+    	//TODO: this check is missing workflow checks??
+    	getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.ADD_REPLIES);
     }
     public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
 			throws AccessControlException, WriteFilesException {
@@ -153,16 +155,22 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
         Folder folder = loadFolder(folderId);
-        loadProcessor(folder).modifyEntry(folder, entryId, inputData, fileItems);
+        FolderCoreProcessor processor=loadProcessor(folder);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+        checkModifyEntryAllowed(entry);
+        processor.modifyEntry(folder, entry, inputData, fileItems);
     }
 
     public void checkModifyEntryAllowed(FolderEntry entry) {
-        loadProcessor(entry.getParentFolder()).modifyEntry_accessControl(entry.getParentFolder(), entry);    	    	
+		AccessUtils.modifyCheck(entry);   		
     }
     
     public void modifyWorkflowState(Long folderId, Long entryId, Long tokenId, String toState) throws AccessControlException {
         Folder folder = loadFolder(folderId);       
-        loadProcessor(folder).modifyWorkflowState(folder, entryId, tokenId, toState);
+        FolderCoreProcessor processor=loadProcessor(folder);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+        checkModifyEntryAllowed(entry);
+        processor.modifyWorkflowState(folder, entry, tokenId, toState);
     }
 
     public List applyEntryFilter(Definition entryFilter) {
@@ -174,7 +182,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     
     public void indexFolderTree(Long folderId) {
 		Folder folder = loadFolder(folderId);
-
+		getAccessControlManager().checkOperation(folder,  WorkAreaOperation.BINDER_ADMINISTRATION);
     	//get sub-folders and index them all
 		List folders = getFolderDao().loadFolderTree(folder);
 		folders.add(folder);
@@ -192,6 +200,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     
     public void indexEntries(Long folderId) {
 		Folder folder = loadFolder(folderId);
+		getAccessControlManager().checkOperation(folder,  WorkAreaOperation.BINDER_ADMINISTRATION);
         loadProcessor(folder).indexEntries(folder);
     }
 
@@ -284,7 +293,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     public Map getUnseenCounts(List folderIds) {
     	//search engine will do acl checks
         User user = RequestContextHolder.getRequestContext().getUser();
-        SeenMap seenMap = coreDao.loadSeenMap(user.getId());
+        SeenMap seenMap = getProfileDao().loadSeenMap(user.getId());
         Map results = new HashMap();
         List folders = new ArrayList();
         for (int i=0; i<folderIds.size(); ++i) {
@@ -368,25 +377,30 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     }
 
            
-    public FolderEntry getEntry(Long parentFolderId, Long entryId) {
-        return getEntry(parentFolderId, entryId, EntityType.folderEntry);
-    }
-    public FolderEntry getEntry(Long parentFolderId, Long entryId, EntityType type) {
+     public FolderEntry getEntry(Long parentFolderId, Long entryId) {
         Folder folder = loadFolder(parentFolderId);
-        return (FolderEntry)loadProcessor(folder).getEntry(folder, entryId, type);
+        FolderCoreProcessor processor=loadProcessor(folder);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+        AccessUtils.readCheck(folder, entry);
+        return (FolderEntry)processor.getEntry(folder, entryId);
     }
     public Map getEntryTree(Long parentFolderId, Long entryId) {
         Folder folder = loadFolder(parentFolderId);
-        return loadProcessor(folder).getEntryTree(folder, entryId);   	
+        FolderCoreProcessor processor=loadProcessor(folder);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+        AccessUtils.readCheck(folder, entry);
+        return processor.getEntryTree(folder, entry);   	
     }
     
     public void deleteEntry(Long parentFolderId, Long entryId) {
         Folder folder = loadFolder(parentFolderId);
-        loadProcessor(folder).deleteEntry(folder, entryId);
+        FolderCoreProcessor processor=loadProcessor(folder);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+        checkDeleteEntryAllowed(entry);
+        processor.deleteEntry(folder, entry);
     }
     public void checkDeleteEntryAllowed(FolderEntry entry) {
-        loadProcessor(entry.getParentFolder()).deleteEntry_accessControl(entry.getParentFolder(), entry);    	
-    	
+        AccessUtils.deleteCheck(entry.getParentBinder(), entry);    	
     }
 	public List getTags(Long binderId, Long entryId) {
 		FolderEntry entry = getEntry(binderId, entryId);

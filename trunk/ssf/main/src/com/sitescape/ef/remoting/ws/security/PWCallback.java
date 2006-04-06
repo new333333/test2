@@ -9,11 +9,9 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import org.apache.ws.security.WSPasswordCallback;
 
 import com.sitescape.ef.context.request.RequestContextUtil;
-import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.security.authentication.AuthenticationManager;
-import com.sitescape.ef.security.authentication.UserDoesNotExistException;
 import com.sitescape.ef.util.SpringContextUtil;
 
 /**
@@ -39,7 +37,7 @@ public class PWCallback implements CallbackHandler {
                 String userName = parseUsername(pc.getIdentifer());
                 
         		try {
-        			User user = getCoreDao().findUserByName(userName, zoneName);
+        			User user = getProfileDao().findUserByName(userName, zoneName);
         			
         			// If you're still here, the user exists. Return the password.
         			pc.setPassword(user.getPassword());
@@ -70,8 +68,8 @@ public class PWCallback implements CallbackHandler {
 		return wssId.substring(index+2);
 	}
 	
-	private CoreDao getCoreDao() {
-		return (CoreDao) SpringContextUtil.getBean("coreDao");
+	private ProfileDao getProfileDao() {
+		return (ProfileDao) SpringContextUtil.getBean("profileDao");
 	}
 
 }

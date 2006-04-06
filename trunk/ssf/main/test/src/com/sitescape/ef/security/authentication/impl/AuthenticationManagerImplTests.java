@@ -2,7 +2,7 @@ package com.sitescape.ef.security.authentication.impl;
 
 import org.easymock.MockControl;
 
-import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
@@ -16,8 +16,8 @@ import junit.framework.TestCase;
  */
 public class AuthenticationManagerImplTests extends TestCase {
 
-	MockControl coreDaoControl;
-	CoreDao coreDao;
+	MockControl profileDaoControl;
+	ProfileDao profileDao;
 	User user;
 	AuthenticationManagerImpl authMgr;
 	
@@ -27,23 +27,23 @@ public class AuthenticationManagerImplTests extends TestCase {
 	// you should use TestSetup in conjunction with TestSuite. 
 	protected void setUp() {
 		// Set up mock object and control
-		coreDaoControl = MockControl.createControl(CoreDao.class);
-		coreDao = (CoreDao) coreDaoControl.getMock();
+		profileDaoControl = MockControl.createControl(ProfileDao.class);
+		profileDao = (ProfileDao) profileDaoControl.getMock();
 		user = new User();
 		user.setZoneName("testZone");
 		user.setName("testUser");
 		
 		// Set up the actual object that we are testing.
 		authMgr = new AuthenticationManagerImpl();
-		authMgr.setCoreDao(coreDao);
+		authMgr.setProfileDao(profileDao);
 	}
 	
 	public void testAuthenticateOk() {
 		// Define expected behavior of the mock object.
-		coreDaoControl.reset();
-		coreDao.findUserByNameOnlyIfEnabled("testUser", "testZone");
-		coreDaoControl.setReturnValue(user);
-		coreDaoControl.replay();
+		profileDaoControl.reset();
+		profileDao.findUserByNameOnlyIfEnabled("testUser", "testZone");
+		profileDaoControl.setReturnValue(user);
+		profileDaoControl.replay();
 		
 		user.setPassword("testPassword");
 
@@ -52,15 +52,15 @@ public class AuthenticationManagerImplTests extends TestCase {
 		assertEquals(user, authenticatedUser);
 		
 		// Verifies that all expectations have been met.
-		coreDaoControl.verify();
+		profileDaoControl.verify();
 	}
 	
 	public void testAuthenticateUserDoesNotExistException() {
 		// Define expected behavior of the mock object. 
-		coreDaoControl.reset();
-		coreDao.findUserByNameOnlyIfEnabled("testUser", "testZone");
-		coreDaoControl.setThrowable(new NoUserByTheNameException(""));
-		coreDaoControl.replay();
+		profileDaoControl.reset();
+		profileDao.findUserByNameOnlyIfEnabled("testUser", "testZone");
+		profileDaoControl.setThrowable(new NoUserByTheNameException(""));
+		profileDaoControl.replay();
 		
 		// Execute the method being tested.
 		try {
@@ -72,6 +72,6 @@ public class AuthenticationManagerImplTests extends TestCase {
 		}
 		
 		// Verifies that all expectations have been met.
-		coreDaoControl.verify();
+		profileDaoControl.verify();
 	}
 }

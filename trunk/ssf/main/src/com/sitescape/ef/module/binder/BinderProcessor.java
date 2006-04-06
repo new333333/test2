@@ -19,11 +19,8 @@ public interface BinderProcessor {
 
     public Long addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
-    public void addBinder_accessControl(Binder binder) throws AccessControlException;
   	public void deleteBinder(Binder binder) throws AccessControlException;
-    public void deleteBinder_accessControl(Binder binder) throws AccessControlException;
     public Long modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
-    public void modifyBinder_accessControl(Binder binder) throws AccessControlException;
-	
+ 	
 }

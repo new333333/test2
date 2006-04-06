@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.dao.ProfileDao;
 public class ResolveIds {
 	public static Collection getPrincipals(CustomAttribute attribute) {
 		if ((attribute != null) && (attribute.getValueType() == CustomAttribute.COMMASEPARATEDSTRING)) {
@@ -18,14 +18,14 @@ public class ResolveIds {
 				} catch (NumberFormatException ne) {};
 			}
 			
-			CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
-			return coreDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+			ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+			return profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
 
 		}
 		return null;
 	}
 	public static Collection getPrincipals(Collection ids) {
-		CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
-		return coreDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+		ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+		return profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
 	}
 }
