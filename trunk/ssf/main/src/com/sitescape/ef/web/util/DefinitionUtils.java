@@ -189,22 +189,12 @@ public class DefinitionUtils {
 		if (entry instanceof Principal) {
 			definitionType = Definition.PROFILE_ENTRY_VIEW;
 		}
-		Document def = getInstance().getDefinitionModule().getDefaultDefinition("ss_default_entry_view","__definition_default_entry_view", definitionType, formData);
+		Document defDoc = getInstance().getDefinitionModule().getDefaultDefinition("ss_default_entry_view","__definition_default_entry_view", definitionType, formData);
 		
 		//Add the "default viewer" item
-		Element entryView = (Element) def.getRootElement().selectSingleNode("//item[@name='entryView' or @name='profileEntryView']");
-		if (entryView != null) {
-			String itemId = entryView.attributeValue("id", "");
-			try {
-				Element newItem = getInstance().getDefinitionModule().addItemToDefinitionDocument("default", def, itemId, "defaultEntryView", formData);
-			}
-			catch (DefinitionInvalidException e) {
-				//An error occurred while processing the operation; pass the error message back to the jsp
-				//SessionErrors.add(req, e.getClass().getName(),e.getMessage());
-			}
-		}
+		Element entryView = (Element) defDoc.getRootElement().selectSingleNode("//item[@name='entryView' or @name='profileEntryView']");
 		model.put(WebKeys.CONFIG_ELEMENT, entryView);
-		model.put(WebKeys.CONFIG_DEFINITION, def);
+		model.put(WebKeys.CONFIG_DEFINITION, defDoc);
 	}
 		
 	//Routine to build a definition file on the fly for viewing binders with no definition

@@ -596,6 +596,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 					
 					} else if (type.equals("selectbox") || type.equals("radio")) {
+						int optionCount = 0;
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 							sb.append("\n<br/>\n");
@@ -639,6 +640,13 @@ public class BuildDefinitionDivs extends TagSupport {
 							Element selection = (Element) itSelections.next();
 							String selectionSelectType = selection.attributeValue("select_type", "");
 							String selectionPath = selection.attributeValue("path", "");
+							//Build a list of items to not include in the select box
+							List excludeList = new ArrayList();
+							Iterator itExcludes = selection.selectNodes("./exclude").iterator();
+							while (itExcludes.hasNext()) {
+								String excludeName = ((Element)itExcludes.next()).attributeValue("name", "");
+								if (!excludeName.equals("")) excludeList.add(excludeName);
+							}
 							//Select the data items from the actual definition, not from the base configuration definition
 							Iterator itEntryFormElements = sourceRoot.selectNodes(selectionPath).iterator();
 							while (itEntryFormElements.hasNext()) {
@@ -655,6 +663,9 @@ public class BuildDefinitionDivs extends TagSupport {
 								if (entryFormItemNamePropertyName.equals("")) {
 									entryFormItemNamePropertyName = entryFormItem.attributeValue("name", "");
 								}
+								//Is this item to be excluded?
+								if (excludeList.contains(entryFormItemNamePropertyName)) continue;
+								
 								Element entryFormItemCaptionProperty = (Element) entryFormItem.selectSingleNode("./properties/property[@name='caption']");
 								String entryFormItemCaptionPropertyValue = "";
 								if (entryFormItemCaptionProperty != null) {
@@ -683,6 +694,7 @@ public class BuildDefinitionDivs extends TagSupport {
 											sb.append("<option value=\"").append(entryFormItemNamePropertyName).append("\"").append(checked).append(">");
 											sb.append(NLT.getDef(entryFormItemCaptionPropertyValue));
 											sb.append("</option>\n");
+											optionCount++;
 										} else if (type.equals("radio")) {
 											sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 											sb.append(entryFormItemNamePropertyName);
@@ -696,6 +708,10 @@ public class BuildDefinitionDivs extends TagSupport {
 						}
 						
 						if (type.equals("selectbox")) {
+							if (optionCount == 0) {
+								//No options were output, show something to avoid having an empty select box
+								sb.append("<option value=\"\">"+NLT.get("definition.noOptions")+"</option>\n");
+							}
 							sb.append("</select>\n");
 						}
 					
