@@ -14,14 +14,23 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
+<%
+	//Get the form item being displayed
+	String enctype = "application/x-www-form-urlencoded";
+	if (ssConfigElement.selectSingleNode(".//item[@name='file']") != null || 
+			ssConfigElement.selectSingleNode(".//item[@name='graphic']") != null || 
+			ssConfigElement.selectSingleNode(".//item[@name='attachFiles']") != null) {
+		enctype = "multipart/form-data";
+	}
+%>
 <div class="ss_portlet"> 
 <span class="ss_titlebold"><c:out value="${ssBinder.title}"/></span>
 <br/>
 <br/>
 <form class="ss_style ss_form" 
-  name="<portlet:namespace/>fm" 
+  name="<portlet:namespace/>fm" enctype="<%= enctype %>"
   action="<portlet:actionURL>
 			<portlet:param name="action" value="modify_binder"/>
 			<portlet:param name="binderId" value="${ssBinder.id}"/>
