@@ -49,12 +49,14 @@ public interface CoreDao {
 	 * @param obj
 	 */
 	public void delete(Object obj);
+	public void delete(Binder binder);
     public void delete(DefinableEntity entity);
 	public Object load(Class className, String id);
 	public Object load(Class className, Long id);
 	public List loadObjects(ObjectControls objs, FilterControls filter);
 	public List findCompanies();
-         
+	public int countObjects(Class clazz, FilterControls filter);
+    public List loadObjects(Collection ids, Class className, String zoneName);
 
 	public Workspace findTopWorkspace(String zoneName);
 	/**
@@ -67,77 +69,6 @@ public interface CoreDao {
      */
     public Binder loadBinder(Long binderId, String zoneName);
     public Binder findBinderByName(String binderName, String zoneName);
-    public ProfileBinder getProfileBinder(String zoneName);
-      
-    /**
-     * 
-     * @param id
-     * @return
-     */
-    public Principal loadPrincipal(Long prinId, String zoneName);
-    public Principal loadFullPrincipal(Long prinId, String zoneName);
-    /**
-     * 
-     * @param ids
-     * @return
-     */
-    public List loadPrincipals(Collection ids, String zoneName);
-    public void disablePrincipals(Collection ids, String zoneName);
-   /**
-     * Check that user is in zone
-     * @param userId
-     * @param zoneName
-     * @return
-     * @throws DataAccessException
-     * @throws NoUserByTheIdException
-     */
-    public User loadUser(Long userId, String zoneName);
-    /**
-     * Same as <code>loadUser</code> except that this throws
-     * NoUserByTheIdException if the user object is disabled.
-     * @param userId
-     * @param zoneName
-     * @return
-     */
-    public User loadUserOnlyIfEnabled(Long userId, String zoneName);
-    /**
-     * @param userName
-     * @param zoneName
-     * @return User
-     * @throws DataAccessException
-     * @throws NoUserByTheNameException
-     * @throws NoZoneByTheIdException
-     */
-    public User findUserByName(String principalName, String zoneName);
-    
-    /**
-     * Same as <code>findUserByName</code> except that this throws 
-     * NoUserByTheNameException if the user object is disabled. 
-     * @param userName
-     * @param zoneName
-     * @return
-     * @throws DataAccessException
-     * @throws NoUserByTheNameException
-     * @throws NoZoneByTheIdException
-     */
-    public User findUserByNameOnlyIfEnabled(final String userName, final String zoneName);
-
-    public List loadUsers(Collection usersIds, String zoneName);
-    public List loadEnabledUsers (Collection usersIds, String zoneName);
-    public SFQuery queryUsers(FilterControls filter, String zoneName) throws DataAccessException; 
-    public List loadUsers(FilterControls filter, String zoneName) throws DataAccessException; 
-
-    public int countUsers(FilterControls filter);
-    public UserProperties loadUserProperties(Long userId);
-    
-    public Group loadGroup(Long groupId, String zoneName);
-    public List loadGroups(Collection groupsIds, String zoneName);
-    public int countGroups(FilterControls filter);
-    public SFQuery queryGroups(FilterControls filter, String zoneName) throws DataAccessException; 
-    public List loadGroups(FilterControls filter, String zoneName) throws DataAccessException; 
- 	public Set explodeGroups(Set ids); 
-	public List getMembership(Long groupId);
-	public Set getAllGroupMembership(Long principalId);
 
 	public Definition loadDefinition(String defId, String zoneName);   
     public List loadDefinitions(Binder binder, ObjectControls objectDesc, FilterControls filter);       
@@ -146,10 +77,8 @@ public interface CoreDao {
 	public List loadPostings(String zoneName);
 	public List loadEmailAliases(String zoneName);
 	public EmailAlias loadEmailAlias(String aliasId, String zoneName);
-    public SeenMap loadSeenMap(Long userId);
     public void bulkLoadCollections(Collection entries);
     
-    public SFQuery queryAllPrincipals(FilterControls filter, String zoneName) throws DataAccessException;
 	public List loadTagsByEntity(EntityIdentifier entityId);
 	public List loadTagsByOwner(EntityIdentifier ownerId);
 	public Tag loadTagByOwner(String id, EntityIdentifier owner);

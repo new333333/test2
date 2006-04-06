@@ -1,18 +1,15 @@
 package com.sitescape.ef.module.folder.impl;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 //import org.dom4j.Document;
@@ -29,22 +26,20 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.module.binder.BinderComparator;
+import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
 import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.index.IndexUtils;
-import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.web.util.FilterHelper;
-import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -64,13 +59,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    }
  
     protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
-		getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).
+    	getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).
 							setSeen(entry);
-        getRssGenerator().updateRssFeed(entry, getReadAclIds(entry)); // Just for testing
+        getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
    }
 
 	 protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
-		   getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
+		 getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
      }
 
  	protected SFQuery indexEntries_getQuery(Binder binder) {
@@ -84,7 +79,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  	}
  	protected void indexEntries_postIndex(Binder binder, Entry entry) {
  		super.indexEntries_postIndex(binder, entry);
- 		getRssGenerator().updateRssFeed(entry, getReadAclIds(entry));
+ 		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry));
  	}
  	protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, 
     		String [] entryTypes, org.dom4j.Document searchFilter) {
@@ -126,17 +121,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  
     }
           
-    protected  Entry entry_load(Binder parentBinder, Long entryId) {
+    protected Entry entry_load(Binder parentBinder, Long entryId) {
         User user = RequestContextHolder.getRequestContext().getUser();
         return folderDao.loadFolderEntry(parentBinder.getId(), entryId, user.getZoneName()); 
     }
          
-    protected  Entry entry_loadFull(Binder parentBinder, Long entryId) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        return folderDao.loadFullFolderEntry(parentBinder.getId(), entryId, user.getZoneName()); 
-   }
      protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry) {
-       	//pass replies along as context
+       	//pass replies along as context so we can delete them all at once
        	return getFolderDao().loadEntryDescendants((FolderEntry)entry); 
     }
         
@@ -173,11 +164,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    }
 
        
-    protected void deleteBinder_deleteEntriesWorkflow(Binder binder) {
+    protected void deleteBinder_delete(Binder binder) {
 		getFolderDao().deleteEntryWorkflows((Folder)binder);
-	}
-	protected void deleteBinder_deleteEntries(Binder binder) {
 		getFolderDao().deleteEntries((Folder)binder);
+		//finally delete the binder and its associations
+		getFolderDao().delete((Folder)binder);
 	}
 	
     protected void loadEntryHistory(Entry entry) {
@@ -189,7 +180,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
             ids.add(fEntry.getModification().getPrincipal().getId());
         if (fEntry.getReservedDoc() != null) 
             ids.add(fEntry.getReservedDoc().getPrincipal().getId());
-        getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      } 
 
     protected void loadEntryHistory(HashMap entry) {
@@ -203,7 +194,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         if (entry.get(IndexUtils.RESERVEDBYID_FIELD) != null) 
     		try {ids.add(new Long((String)entry.get(IndexUtils.RESERVEDBYID_FIELD)));
     	    } catch (Exception ex) {};
-        getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      } 
     protected List loadEntryHistoryLuc(List pList) {
         Set ids = new HashSet();
@@ -221,7 +212,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         		try {ids.add(new Long((String)entry.get(IndexUtils.RESERVEDBYID_FIELD)));
 	    	} catch (Exception ex) {};
         }
-        return getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+        return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      }   
 
     protected void loadEntryHistory(List pList) {
@@ -237,7 +228,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
             if (entry.getReservedDoc() != null) 
                 ids.add(entry.getReservedDoc().getPrincipal().getId());
         }
-        getCoreDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      }     
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry);
@@ -255,9 +246,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    public Long addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems) 
    	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
-        
-        addReply_accessControl(parent.getParentFolder(), parent);
-        
+               
         Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems);
         final Map entryData = (Map) entryDataAll.get("entryData");
         List fileData = (List) entryDataAll.get("fileData");
@@ -299,12 +288,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		return entry.getId();
     	}
     }
-    
-    public void addReply_accessControl(Folder folder, FolderEntry parent) throws AccessControlException {
-    	//TODO : check entry acl?        
-   		getAccessControlManager().checkOperation(folder, WorkAreaOperation.ADD_REPLIES);
-    }
-    
+        
     protected Map addReply_toEntryData(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
         if (def != null) {
@@ -357,7 +341,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     
     protected void addReply_postSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
-        getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
+    	getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
     }
     
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 
@@ -374,16 +358,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************
           
 
-    public Map getEntryTree(Folder parentFolder, Long entryId) {
+    public Map getEntryTree(Folder parentFolder, FolderEntry entry) {
     	int entryLevel;
     	List lineage;
     	Map model = new HashMap();
     	
-    	//get the entry
-        FolderEntry entry = (FolderEntry)entry_loadFull(parentFolder, entryId);
-        //check access
-        getEntry_accessControl(parentFolder, entry);
- 
         //load tree including parent chain and all replies
         lineage = getFolderDao().loadEntryTree(entry);
         //TODO: what about access control here?

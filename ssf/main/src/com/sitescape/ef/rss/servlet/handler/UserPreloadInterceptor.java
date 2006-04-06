@@ -8,18 +8,18 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.User;
 
 public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
-	private CoreDao coreDao;
+	private ProfileDao profileDao;
 	
-	protected CoreDao getCoreDao() {
-		return coreDao;
+	protected ProfileDao getProfileDao() {
+		return profileDao;
 	}
 
-	public void setCoreDao(CoreDao coreDao) {
-		this.coreDao = coreDao;
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
 	}
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -36,7 +36,7 @@ public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
 		if(rc.getUserId() == null)
 			throw new InternalException("User ID must be present in request context");
 		
-		User user = getCoreDao().loadUserOnlyIfEnabled(rc.getUserId(), rc.getZoneName());
+		User user = getProfileDao().loadUserOnlyIfEnabled(rc.getUserId(), rc.getZoneName());
 		rc.setUser(user);
 	}
 

@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.web.WebKeys;
@@ -20,14 +21,14 @@ import com.sitescape.util.Validator;
 
 public class UserPreloadInterceptor implements HandlerInterceptor {
 
-	private CoreDao coreDao;
+	private ProfileDao profileDao;
 	
-	protected CoreDao getCoreDao() {
-		return coreDao;
+	protected ProfileDao getProfileDao() {
+		return profileDao;
 	}
 
-	public void setCoreDao(CoreDao coreDao) {
-		this.coreDao = coreDao;
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
 	}
 
 	public boolean preHandle(PortletRequest request, PortletResponse response, Object handler)
@@ -65,11 +66,11 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 		PortletSession ses = WebHelper.getRequiredPortletSession(request);
     	Long userId = (Long)ses.getAttribute(WebKeys.USER_ID, PortletSession.APPLICATION_SCOPE);
 		if (userId == null) { 
-			user = getCoreDao().findUserByNameOnlyIfEnabled(
+			user = getProfileDao().findUserByNameOnlyIfEnabled(
 					reqCxt.getUserName(), reqCxt.getZoneName());
 			ses.setAttribute(WebKeys.USER_ID, user.getId(), PortletSession.APPLICATION_SCOPE);
 		} else {
-			user = getCoreDao().loadUser(userId, reqCxt.getZoneName());
+			user = getProfileDao().loadUser(userId, reqCxt.getZoneName());
 			if (user.isDisabled()) throw new NoUserByTheIdException(userId);
 		}
 		reqCxt.setUser(user);

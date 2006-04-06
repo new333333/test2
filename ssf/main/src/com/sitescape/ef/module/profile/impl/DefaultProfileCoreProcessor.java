@@ -71,7 +71,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     
    	protected SFQuery indexEntries_getQuery(Binder binder) {
    		//$$$return getCoreDao().queryUsers(new FilterControls(), binder.getZoneName());
-   		return getCoreDao().queryAllPrincipals(new FilterControls(), binder.getZoneName());
+   		return getProfileDao().queryAllPrincipals(new FilterControls(), binder.getZoneName());
    	}
 
     //***********************************************************************************************************
@@ -122,17 +122,12 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     }
 
 
-
     //***********************************************************************************************************
            
     protected  Entry entry_load(Binder parentBinder, Long entryId) {
-        return getCoreDao().loadPrincipal(entryId, parentBinder.getZoneName());        
+        return getProfileDao().loadPrincipal(entryId, parentBinder.getZoneName());        
     }
-         
-    protected  Entry entry_loadFull(Binder parentBinder, Long entryId) {
-        return getCoreDao().loadFullPrincipal(entryId, parentBinder.getZoneName());        
-    }
- 
+          
     protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
     	Principal p = (Principal)entry;
     	//we just disable principals, cause their ids are used all over

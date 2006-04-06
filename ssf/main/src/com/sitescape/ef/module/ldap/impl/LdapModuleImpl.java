@@ -743,7 +743,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 */
 	protected void updateUser(String zoneName, String loginName, Map mods) throws NoUserByTheNameException {
 
-		User profile = coreDao.findUserByName(loginName, zoneName); 
+		User profile = getProfileDao().findUserByName(loginName, zoneName); 
  		IndexSynchronizationManager.begin();
 		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	            	profile.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
@@ -755,8 +755,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @param users - Map indexed by user id, value is map of updates for a user
 	 */
 	protected void updateUsers(String zoneName, final Map users) {
-		ProfileBinder pf = getCoreDao().getProfileBinder(zoneName);
-	   	List foundEntries = coreDao.loadUsers(users.keySet(), zoneName);
+		ProfileBinder pf = getProfileDao().getProfileBinder(zoneName);
+	   	List foundEntries = getProfileDao().loadUsers(users.keySet(), zoneName);
 	   	Map entries = new HashMap();
 	   	for (int i=0; i<foundEntries.size(); ++i) {
 	   		User u = (User)foundEntries.get(i);
@@ -774,8 +774,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * @param groups - Map keyed by group id, value is map of updates for a group
      */    
 	protected void updateGroups(String zoneName, final Map groups) {
-		ProfileBinder pf = getCoreDao().getProfileBinder(zoneName);
-		List foundEntries = coreDao.loadGroups(groups.keySet(), RequestContextHolder.getRequestContext().getZoneName());
+		ProfileBinder pf = getProfileDao().getProfileBinder(zoneName);
+		List foundEntries = getProfileDao().loadGroups(groups.keySet(), RequestContextHolder.getRequestContext().getZoneName());
 	   	Map entries = new HashMap();
 	   	for (int i=0; i<foundEntries.size(); ++i) {
 	   		Group g = (Group)foundEntries.get(i);
@@ -789,7 +789,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     }
     protected void updateMembership(Long groupId, Collection newMembers, final Collection reservedIds) {
 		//have a list of users, now compare with what exists already
-		List oldMembers = getCoreDao().getMembership(groupId);
+		List oldMembers = getProfileDao().getMembership(groupId);
 		final Set newM = CollectionUtil.differences(newMembers, oldMembers);
 		final Set remM = CollectionUtil.differences(oldMembers, newMembers);
 
@@ -818,7 +818,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * @return
      */
     protected List createUsers(String zoneName, Map users) {
-		ProfileBinder pf = getCoreDao().getProfileBinder(zoneName);
+		ProfileBinder pf = getProfileDao().getProfileBinder(zoneName);
 		List newUsers = new ArrayList();
 		for (Iterator i=users.values().iterator(); i.hasNext();) {
 			newUsers.add(new MapInputData((Map)i.next()));
@@ -839,7 +839,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * @return
      */
     protected List createGroups(String zoneName, Map groups) {
-		ProfileBinder pf = getCoreDao().getProfileBinder(zoneName);
+		ProfileBinder pf = getProfileDao().getProfileBinder(zoneName);
 		List newGroups = new ArrayList();
 		for (Iterator i=groups.values().iterator(); i.hasNext();) {
 			newGroups.add(new MapInputData((Map)i.next()));
@@ -855,7 +855,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     protected void disableUsers(final String zoneName, final Collection ids) {
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
-        		coreDao.disablePrincipals(ids, zoneName);
+        		getProfileDao().disablePrincipals(ids, zoneName);
         		return null;
         	}});
         //remove from index
@@ -869,7 +869,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     protected void disableGroups(final String zoneName, final Collection ids) {
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
-        		coreDao.disablePrincipals(ids, zoneName);
+        		getProfileDao().disablePrincipals(ids, zoneName);
         		return null;
         	}});
         //remove from index

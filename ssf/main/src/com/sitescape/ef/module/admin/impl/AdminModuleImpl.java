@@ -98,10 +98,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	}
     	ObjectBuilder.updateObject(current, updates);
   		//	Pre-load for performance
-   		coreDao.loadPrincipals(principals,companyId);
+    	getProfileDao().loadPrincipals(principals,companyId);
    		for (Iterator iter=principals.iterator(); iter.hasNext();) {
    			//	make sure user exists and is in this zone
-   			p = coreDao.loadPrincipal((Long)iter.next(),companyId);
+   			p = getProfileDao().loadPrincipal((Long)iter.next(),companyId);
    			notifyUsers.add(new Notification(binder, p));   			
    		}
 

@@ -198,6 +198,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     public Long addFolder(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
     	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
+        checkAddFolderAllowed(parentWorkspace);
         Definition def = null;
         if (!Validator.isNull(definitionId)) { 
         	def = getCoreDao().loadDefinition(definitionId, parentWorkspace.getZoneName());
@@ -210,12 +211,13 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     }
  
     public void checkAddFolderAllowed(Workspace parentWorkspace) {
-    	loadProcessor(parentWorkspace).addBinder_accessControl(parentWorkspace);    	
+        getAccessControlManager().checkOperation(parentWorkspace, WorkAreaOperation.CREATE_BINDERS);        
     }
     public Long addWorkspace(Long parentWorkspaceId,String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException {
     	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
-        Definition def = null;
+    	checkAddWorkspaceAllowed(parentWorkspace);
+    	Definition def = null;
         if (!Validator.isNull(definitionId)) { 
         	def = getCoreDao().loadDefinition(definitionId, parentWorkspace.getZoneName());
 //        } else {
@@ -226,7 +228,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     }
  
     public void checkAddWorkspaceAllowed(Workspace parentWorkspace) {
-       	loadProcessor(parentWorkspace).addBinder_accessControl(parentWorkspace);    	
+        getAccessControlManager().checkOperation(parentWorkspace, WorkAreaOperation.CREATE_BINDERS);        
     }
 
  

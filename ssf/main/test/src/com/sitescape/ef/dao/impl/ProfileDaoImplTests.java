@@ -16,9 +16,10 @@ import com.sitescape.ef.domain.User;
  * 
  * @author Jong Kim
  */
-public class CoreDaoImplTests extends AbstractTransactionalDataSourceSpringContextTests {
+public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringContextTests {
 
 	protected CoreDaoImpl cdi;
+	protected ProfileDaoImpl pdi;
 	
 	protected String[] getConfigLocations() {
 		return new String[] {"/com/sitescape/ef/dao/impl/applicationContext-coredao.xml"};
@@ -33,8 +34,11 @@ public class CoreDaoImplTests extends AbstractTransactionalDataSourceSpringConte
 		this.cdi = cdi;
 	}
 	
+	public void setProfileDaoImpl(ProfileDaoImpl pdi) {
+		this.pdi = pdi;
+	}
 	public void testFindUserByName() {
-		User user = cdi.findUserByName("liferay.com.1", "liferay.com");
+		User user = pdi.findUserByName("liferay.com.1", "liferay.com");
 		assertNotNull(user);
 	}
 	
@@ -45,7 +49,7 @@ public class CoreDaoImplTests extends AbstractTransactionalDataSourceSpringConte
 		
 		// Test the situation where zone exists but username does not. 
 		try {
-			cdi.findUserByName("nonExistingUser", "liferay.com");			
+			pdi.findUserByName("nonExistingUser", "liferay.com");			
 			fail("Should throw NoUserByTheNameException");
 		}
 		catch(NoUserByTheNameException e) {
@@ -54,7 +58,7 @@ public class CoreDaoImplTests extends AbstractTransactionalDataSourceSpringConte
 		
 		// Test the situation where username exists but zone doesn't.
 		try {
-			cdi.findUserByName("liferay.com.1", "nonExistingZone");			
+			pdi.findUserByName("liferay.com.1", "nonExistingZone");			
 			fail("Should throw NoUserByTheNameException");
 		}
 		catch(NoUserByTheNameException e) {
@@ -63,7 +67,7 @@ public class CoreDaoImplTests extends AbstractTransactionalDataSourceSpringConte
 		
 		// Test the situation where username exists but zone doesn't.
 		try {
-			cdi.findUserByName("nonExistingUser", "nonExistingZone");			
+			pdi.findUserByName("nonExistingUser", "nonExistingZone");			
 			fail("Should throw NoUserByTheNameException");
 		}
 		catch(NoUserByTheNameException e) {
@@ -73,7 +77,7 @@ public class CoreDaoImplTests extends AbstractTransactionalDataSourceSpringConte
 	
 	public void testLoadUserAndLazyLoading() {
 		// phase1: Load it. 
-		User user = cdi.loadUser(new Long(68), "liferay.com");
+		User user = pdi.loadUser(new Long(68), "liferay.com");
 		assertNotNull(user);
 		
 		// phase2: Test lazy loading, by ending the transation (it rolls back).
@@ -98,7 +102,7 @@ public class CoreDaoImplTests extends AbstractTransactionalDataSourceSpringConte
 	
 	public void testAddGroup() {
 		FilterControls filter = new FilterControls();
-		int count = cdi.countGroups(filter);
+		int count = pdi.countGroups(filter);
 		
 		Group newGroup = new Group();
 		newGroup.setName("brandNewGroup");
@@ -106,7 +110,7 @@ public class CoreDaoImplTests extends AbstractTransactionalDataSourceSpringConte
 		
 		cdi.save(newGroup);
 		
-		int newCount = cdi.countGroups(filter);
+		int newCount = pdi.countGroups(filter);
 		
 		assertEquals(count + 1, newCount);
 	}

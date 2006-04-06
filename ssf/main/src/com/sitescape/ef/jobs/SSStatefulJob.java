@@ -20,6 +20,7 @@ import com.sitescape.ef.util.SZoneConfig;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -37,7 +38,7 @@ import com.sitescape.ef.domain.NoUserByTheNameException;
 public abstract class SSStatefulJob implements StatefulJob {
 	protected Log logger = LogFactory.getLog(getClass());
 	protected JobDataMap jobDataMap;
-	protected CoreDao coreDao;
+	protected ProfileDao profileDao;
 	protected User user;
 	protected String zoneName;
 	public static int JOBNAME_MAX = 120; 
@@ -54,7 +55,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 	}
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
 		setupSession();
-    	coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
+    	profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
     	jobDataMap = context.getJobDetail().getJobDataMap();
 		context.setResult("Success");
 		try {  
@@ -66,11 +67,11 @@ public abstract class SSStatefulJob implements StatefulJob {
            	//Validate user and zone are compatible
            	if (jobDataMap.containsKey("user")) {
            		Long id = new Long(jobDataMap.getLong("user"));
-           		user = coreDao.loadUser(id, zoneName);
+           		user = profileDao.loadUser(id, zoneName);
            		if (user.isDisabled()) throw new NoUserByTheIdException(id);
            	} else {
         		String name = SZoneConfig.getString(zoneName, "property[@name='adminUser']");
-           		user = coreDao.findUserByNameOnlyIfEnabled(name, zoneName);
+           		user = profileDao.findUserByNameOnlyIfEnabled(name, zoneName);
            	}
     	
            	//Setup thread context expected by business logic

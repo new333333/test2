@@ -23,6 +23,5 @@ public interface FolderCoreProcessor extends EntryProcessor {
 
     public Long addReply(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
-    public void addReply_accessControl(Folder folder, FolderEntry parent) throws AccessControlException;
-    public Map getEntryTree(Folder parentFolderId, Long entryId) throws AccessControlException;
+    public Map getEntryTree(Folder parentFolderId, FolderEntry entry) throws AccessControlException;
 }

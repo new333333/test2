@@ -5,24 +5,24 @@ import org.aopalliance.intercept.MethodInvocation;
 
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.User;
 
 public class UserPreloadInterceptor implements MethodInterceptor {
 	
-	private CoreDao coreDao;
+	private ProfileDao profileDao;
 	
-	protected CoreDao getCoreDao() {
-		return coreDao;
+	protected ProfileDao getProfileDao() {
+		return profileDao;
 	}
 
-	public void setCoreDao(CoreDao coreDao) {
-		this.coreDao = coreDao;
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
 	}
 
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		RequestContext requestContext = RequestContextHolder.getRequestContext();
-		User user = getCoreDao().findUserByNameOnlyIfEnabled
+		User user = getProfileDao().findUserByNameOnlyIfEnabled
 			(requestContext.getUserName(), requestContext.getZoneName());
 		requestContext.setUser(user);
 		

@@ -21,6 +21,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
+import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
@@ -31,7 +32,9 @@ import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 
 
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
@@ -50,7 +53,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return (ProfileBinder)getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
 	}
 	private ProfileBinder loadBinder() {
-	   return (ProfileBinder)getCoreDao().getProfileBinder(RequestContextHolder.getRequestContext().getZoneName());
+	   return (ProfileBinder)getProfileDao().getProfileBinder(RequestContextHolder.getRequestContext().getZoneName());
 	}
 	public ProfileBinder addProfileBinder() {
 		ProfileBinder pf;
@@ -64,13 +67,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			pf.setZoneName(zoneName);
 			getCoreDao().save(pf);
 			getCoreDao().findTopWorkspace(zoneName).addBinder(pf);
-			List users = getCoreDao().loadUsers(new FilterControls(), zoneName);
+			List users = getProfileDao().loadUsers(new FilterControls(), zoneName);
 			for (int i=0; i<users.size(); ++i) {
 				User u = (User)users.get(i);
 				u.setParentBinder(pf);
 			}
 			
-			List groups = getCoreDao().loadGroups(new FilterControls(), zoneName);
+			List groups = getProfileDao().loadGroups(new FilterControls(), zoneName);
 			for (int i=0; i<groups.size(); ++i) {
 				Group g = (Group)groups.get(i);
 				g.setParentBinder(pf);
@@ -86,7 +89,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
 	public Principal getEntry(Long binderId, Long principaId) {
         ProfileBinder binder = loadBinder(binderId);
-        return getCoreDao().loadPrincipal(principaId, binder.getZoneName());        
+        return getProfileDao().loadPrincipal(principaId, binder.getZoneName());        
     }
    public UserProperties setUserFolderProperty(Long userId, Long folderId, String property, Object value) {
    		UserProperties uProps=null;
@@ -116,7 +119,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  		//TODO: probably need access checks, but how?
   		if (userId == null) userId = user.getId();
   		if (user.getId().equals(userId)) {
- 			uProps = getCoreDao().loadUserProperties(user.getId());
+ 			uProps = getProfileDao().loadUserProperties(user.getId());
 			uProps.setProperty(property, value);			
   		}
 		return uProps;
@@ -127,7 +130,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  		if (userId == null) userId = user.getId();
  		  		//TODO: probably need access checks, but how?
   		if (user.getId().equals(userId)) {
-    		uProps = getCoreDao().loadUserProperties(userId);
+    		uProps = getProfileDao().loadUserProperties(userId);
   		}
   		return uProps;
    }
@@ -136,7 +139,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		SeenMap seen = null;
 		if (userId == null) userId = user.getId();
   		if (user.getId().equals(userId)) {
- 			 seen = getCoreDao().loadSeenMap(user.getId());
+ 			 seen = getProfileDao().loadSeenMap(user.getId());
  		}
    		return seen;
    }
@@ -145,7 +148,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    		SeenMap seen;
    		if (userId == null) userId = user.getId();
   		if (user.getId().equals(userId)) {
-			 seen = getCoreDao().loadSeenMap(user.getId());
+			 seen = getProfileDao().loadSeenMap(user.getId());
 			 seen.setSeen(entry);
 		}
    }
@@ -154,7 +157,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    		SeenMap seen;
    		if (userId == null) userId = user.getId();
   		if (user.getId().equals(userId)) {
-			seen = getCoreDao().loadSeenMap(user.getId());
+			seen = getProfileDao().loadSeenMap(user.getId());
    			for (int i=0; i<entries.size(); i++) {
    				Entry reply = (Entry)entries.get(i);
    				seen.setSeen(reply);
@@ -166,7 +169,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         ProfileBinder binder = loadBinder(binderId);
   		FilterControls filter = new FilterControls();
     	filter.setOrderBy(new OrderBy("title"));
-    	List result = coreDao.loadGroups(filter, RequestContextHolder.getRequestContext().getZoneName());
+    	List result = getProfileDao().loadGroups(filter, RequestContextHolder.getRequestContext().getZoneName());
     	//TODO: check access
     	return result;
     }
@@ -181,32 +184,43 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
         ProfileBinder binder = loadBinder(binderId);
+        checkAddEntryAllowed(binder);
         Definition definition = getCoreDao().loadDefinition(definitionId, binder.getZoneName());
         return loadProcessor(binder).addEntry(binder, definition, User.class, inputData, fileItems);
     }
 
     public void checkAddEntryAllowed(ProfileBinder binder) {
-     	loadProcessor(binder).addEntry_accessControl(binder);    	   	
+        getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);        
     }
      
-    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, Map fileItems) 
-   		throws AccessControlException, WriteFilesException {
-        ProfileBinder binder = loadBinder(binderId);
-        loadProcessor(binder).modifyEntry(binder, id, inputData, fileItems);
-     }
-
     public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
-			throws AccessControlException, WriteFilesException {
+	throws AccessControlException, WriteFilesException {
     	modifyEntry(binderId, id, inputData, new HashMap());
     }
+   public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, Map fileItems) 
+   		throws AccessControlException, WriteFilesException {
+        ProfileBinder binder = loadBinder(binderId);
+        ProfileCoreProcessor processor=loadProcessor(binder);
+        Principal entry = (Principal)processor.getEntry(binder, id);
+        checkModifyEntryAllowed(entry);
+        processor.modifyEntry(binder, entry, inputData, fileItems);
+     }
+
     public void checkModifyEntryAllowed(Principal entry) {
-        loadProcessor((ProfileBinder)entry.getParentBinder()).modifyEntry_accessControl(entry.getParentBinder(), entry);    	
-    	
+		AccessUtils.modifyCheck(entry);   		
     }
 
+    public void modifyWorkflowState(Long binderId, Long entryId, Long tokenId, String toState) throws AccessControlException {
+        ProfileBinder binder = loadBinder(binderId);
+        ProfileCoreProcessor processor=loadProcessor(binder);
+        Principal entry = (Principal)processor.getEntry(binder, entryId);
+        checkModifyEntryAllowed(entry);
+        processor.modifyWorkflowState(binder, entry, tokenId, toState);
+    }
     public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         ProfileBinder binder = loadBinder(binderId);
+        checkAddEntryAllowed(binder);
         Definition definition = getCoreDao().loadDefinition(definitionId, binder.getZoneName());
         return loadProcessor(binder).addEntry(binder, definition, Group.class, inputData, fileItems);
     }
@@ -214,12 +228,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
     public void deleteEntry(Long binderId, Long principalId) {
         ProfileBinder binder = loadBinder(binderId);
-       loadProcessor(binder).deleteEntry(binder, principalId);    	
+        ProfileCoreProcessor processor=loadProcessor(binder);
+        Principal entry = (Principal)processor.getEntry(binder, principalId);
+        checkDeleteEntryAllowed(entry);
+        processor.deleteEntry(binder, entry);    	
     }
  
     public void checkDeleteEntryAllowed(Principal entry) {
-    	loadProcessor((ProfileBinder)entry.getParentBinder()).deleteEntry_accessControl(entry.getParentBinder(), entry);    	
-    	
+    	AccessUtils.deleteCheck(entry);    	
     }
     
     public void indexEntries(Long binderId) {
@@ -240,11 +256,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         
    }
  
-    public void modifyWorkflowState(Long binderId, Long entryId, Long tokenId, String toState) throws AccessControlException {
-        ProfileBinder binder = loadBinder(binderId);
-        loadProcessor(binder).modifyWorkflowState(binder, entryId, tokenId, toState);
-    }
-
+ 
 
 }
 

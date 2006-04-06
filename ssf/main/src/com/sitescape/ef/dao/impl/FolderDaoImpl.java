@@ -101,45 +101,6 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                 }
              );
     }
-    /**
-     * Load 1 FolderEntry and all its collections
-     * @param parentFolderId
-     * @param entryId
-     * @param zoneName
-     * @return
-     * @throws DataAccessException
-     */
-    public FolderEntry loadFullFolderEntry(final Long parentFolderId, final Long entryId, final String zoneName) throws DataAccessException {
-    	return loadFolderEntry(parentFolderId, entryId, zoneName);
-    	/*
-  	not sure if this makes sense
-    	return (FolderEntry)getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        List results = session.createCriteria(FolderEntry.class)
-                        	.add(Expression.eq("id", entryId))
-                        	.setFetchMode("HCustomAttributes", FetchMode.JOIN)
-                        	.setFetchMode("HAttachments", FetchMode.JOIN)
-                        	.setFetchMode("HWorkflowStates", FetchMode.JOIN)	
-                        	.setFetchMode("entryDef", FetchMode.SELECT)	
-                        	.setFetchMode("parentBinder", FetchMode.SELECT)	
-                        	.setFetchMode("topFolder", FetchMode.SELECT)	
-                            .list();
-                        if (results.size() == 0)  throw new NoFolderEntryByTheIdException(entryId);
-                        //because of join may get non-distinct results (wierd)
-                        FolderEntry entry = (FolderEntry)results.get(0);
-                        if ((zoneName != null ) && !entry.getParentFolder().getZoneName().equals(zoneName)) {
-                           	throw new NoFolderEntryByTheIdException(entryId);
-                        }
-                        if (!parentFolderId.equals(entry.getParentFolder().getId())) {
-                           	throw new NoFolderEntryByTheIdException(entryId);        	
-                        }
-                        return entry;
-                    }
-                }
-             );
-*/
-    }
       
      /**
      * Query for a collection of FolderEntries.  An iterator is returned.  The entries are 
@@ -406,7 +367,15 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
    		return history;
 	}	
 
-    public void deleteEntries(final Folder folder) {
+	/**
+	 * Delete the folder object and its assocations.
+	 * Folder entries and child binders should already have been deleted
+	 */
+   public void delete(Folder folder) {
+	   //core handles everything for the folder 
+	   getCoreDao().delete(folder);
+   }
+   public void deleteEntries(final Folder folder) {
        	getHibernateTemplate().execute(
         	   	new HibernateCallback() {
         	   		public Object doInHibernate(Session session) throws HibernateException {
@@ -493,7 +462,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
        	   			session.createQuery("DELETE com.sitescape.ef.domain.WorkflowState where folderEntry in (:pList)")
             			.setParameterList("pList", ids)
        	   						.executeUpdate();
-       	   			session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where folderEntry in (:pList)")
+       	   			session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where id in (:pList)")
             			.setParameterList("pList", ids)
        	   				.executeUpdate();
        	   				

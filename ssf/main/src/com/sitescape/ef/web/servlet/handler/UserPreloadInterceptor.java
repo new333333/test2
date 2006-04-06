@@ -9,19 +9,21 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.web.WebKeys;
 
 public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
-	private CoreDao coreDao;
+	private ProfileDao profileDao;
 	
-	protected CoreDao getCoreDao() {
-		return coreDao;
+	protected ProfileDao getProfileDao() {
+		return profileDao;
 	}
 
-	public void setCoreDao(CoreDao coreDao) {
-		this.coreDao = coreDao;
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
 	}
+
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		RequestContext requestContext = RequestContextHolder.getRequestContext();
@@ -38,11 +40,11 @@ public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
 		HttpSession ses = request.getSession(false);
 	   	Long userId = (Long)ses.getAttribute(WebKeys.USER_ID);
 		if (userId == null) { 
-			user = getCoreDao().findUserByNameOnlyIfEnabled(
+			user = getProfileDao().findUserByNameOnlyIfEnabled(
 					reqCxt.getUserName(), reqCxt.getZoneName());
 			ses.setAttribute(WebKeys.USER_ID, user.getId());
 		} else {
-			user = getCoreDao().loadUserOnlyIfEnabled(userId, reqCxt.getZoneName());
+			user = getProfileDao().loadUserOnlyIfEnabled(userId, reqCxt.getZoneName());
 		}
 
 		reqCxt.setUser(user);
