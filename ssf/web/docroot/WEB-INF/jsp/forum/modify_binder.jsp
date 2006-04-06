@@ -26,7 +26,7 @@
 			<portlet:param name="action" value="modify_binder"/>
 			<portlet:param name="binderId" value="${ssBinder.id}"/>
 		  </portlet:actionURL>"
-  method="post" >
+  method="post" onSubmit="return ss_onSubmit(this);" >
 
 <% // Show the workspace according to its definition %>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

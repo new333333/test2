@@ -28,7 +28,7 @@
 			<portlet:param name="operation" value="${operation}"/>
 			<portlet:param name="entryType" value="${ssDefinitionId}"/>
 		  </portlet:actionURL>"
-  method="post" >
+  method="post" onSubmit="return ss_onSubmit(this);" >
 <input type="hidden" name="_definitionId" value="${ssDefinitionId}">
 
 <% // Show the workspace according to its definition %>
