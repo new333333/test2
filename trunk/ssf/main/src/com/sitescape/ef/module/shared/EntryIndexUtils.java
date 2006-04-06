@@ -220,7 +220,12 @@ public class EntryIndexUtils {
     }
 
     public static void addBinder(Document doc, Binder binder) {
-       	Field binderIdField = Field.Keyword(BINDER_ID_FIELD, binder.getId().toString());
+    	Field binderIdField;
+    	if (binder != null)
+    		binderIdField = Field.Keyword(BINDER_ID_FIELD, binder.getId().toString());
+    	else
+    		binderIdField = Field.Keyword(BINDER_ID_FIELD, "");
+    		
        	doc.add(binderIdField);
     }   
     

@@ -23,7 +23,7 @@ import com.sitescape.ef.security.function.WorkArea;
  * @author Jong Kim
  *
  */
-public abstract class Binder extends DefinableEntity implements WorkArea, AclContainer, InstanceLevelProcessorSupport  {
+public abstract class Binder extends DefinableEntity implements DefinitionArea, WorkArea, AclContainer, InstanceLevelProcessorSupport  {
 	protected String name="";
     protected HistoryStamp owner;
     protected Map properties;
@@ -47,8 +47,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, AclCon
     protected boolean widenModify=false;
     protected boolean widenDelete=false;
     
-    public abstract List getEntryDefs();
-    public abstract List getBinderViewDefs();
     /**
      * @hibernate.property length="100" not-null="true" node="zoneName"
      */
@@ -89,68 +87,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, AclCon
  		binder.setParentBinder(null);
  		
 	}
-    /**
-     * @hibernate.property
-     * @return
-     */
-    public boolean isDefinitionsInherited() {
-    	if (!isDefinitionInheritanceSupported()) return false;
-    	return definitionsInherited;
-    }
-    public void setDefinitionsInherited(boolean definitionsInherited) {
-    	this.definitionsInherited = definitionsInherited;
-    }
-    public boolean isDefinitionInheritanceSupported() {
-    	if (parentBinder != null) return true;
-    	return false;
-    }
-    protected List getDefs(int type) {
-       	if (definitionsInherited && parentBinder != null)
-    		return new ArrayList(parentBinder.getDefs(type));
-      	Definition def;
-    	List result = new ArrayList(); 
-     	if (definitions == null) definitions = new ArrayList();
-    	for (int i=0; i<definitions.size(); ++i) {
-    		def = (Definition)definitions.get(i);
-    		if (def.getType() == type) {
-    			result.add(def);
-    		}
-       	}
-       	return result;
-    }
-    // Setup by hibernate
-    public List getDefinitions() {
-    	if (definitionsInherited && parentBinder != null)
-    		return new ArrayList(parentBinder.getDefinitions());
-     	if (definitions == null) definitions = new ArrayList();
-     	return definitions;
-     }
-    //definitions doesn't keep an inverse collection so just update here
-    public void setDefinitions(List definitions) {
-     	if (this.definitions == null) this.definitions = new ArrayList();
- 		//order matters.
- 		this.definitions.clear();
- 		if (definitions != null) this.definitions.addAll(definitions); 
-    }
-     public Definition getDefaultEntryDef() {
-    	
-    	List profileDefinitions = getEntryDefs();
-    	if (profileDefinitions.size() > 0)
-    		return (Definition)profileDefinitions.get(0);
-    	return null;
-	}
-     // Setup by hibernate
-     public Map getWorkflowAssociations() {
-     	if (definitionsInherited && parentBinder != null)
-    		return new HashMap(parentBinder.getWorkflowAssociations());
-    	if (workflowAssociations == null) workflowAssociations = new HashMap();
-    	return workflowAssociations;
-    }
-    public void setWorkflowAssociations(Map workflowAssociations) {
-       	if (this.workflowAssociations == null) this.workflowAssociations = new HashMap();
-       	else this.workflowAssociations.clear(); 
-       	if (workflowAssociations != null) this.workflowAssociations.putAll(workflowAssociations);
-    }
     /**
      * @hibernate.many-to-one access="field" class="com.sitescape.ef.domain.Definition"
      * @hibernate.column name="defaultPostingDef" sql-type="char(32)"
@@ -375,4 +311,83 @@ public abstract class Binder extends DefinableEntity implements WorkArea, AclCon
     public void setProcessorClassName(String processorKey, String processorClassName) {
         setProperty(processorKey, processorClassName);
     }
+    //Support for DefinitionArea interface
+    public Long getDefinitionAreaId() {
+    	return getId();
+    }
+    
+    public String getDefinitionAreaType() {
+    	return getEntityIdentifier().getEntityType().name();
+    }
+    
+    public DefinitionArea getParentDefinitionArea() {
+    	return getParentBinder();
+    }
+    
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public boolean isDefinitionsInherited() {
+    	return definitionsInherited;
+    }
+    
+    public void setDefinitionsInherited(boolean definitionsInherited) {
+    	this.definitionsInherited = definitionsInherited;
+    }
+    public boolean isDefinitionInheritanceSupported() {
+    	if (parentBinder != null) return true;
+    	return false;
+    }
+    protected List getDefs(int type) {
+       	if (definitionsInherited && parentBinder != null)
+    		return new ArrayList(parentBinder.getDefs(type));
+      	Definition def;
+    	List result = new ArrayList(); 
+     	if (definitions == null) definitions = new ArrayList();
+    	for (int i=0; i<definitions.size(); ++i) {
+    		def = (Definition)definitions.get(i);
+    		if (def.getType() == type) {
+    			result.add(def);
+    		}
+       	}
+       	return result;
+    }
+
+    // Setup by hibernate
+    public List getDefinitions() {
+    	if (definitionsInherited && parentBinder != null)
+    		return new ArrayList(parentBinder.getDefinitions());
+     	if (definitions == null) definitions = new ArrayList();
+     	return definitions;
+     }
+    //definitions doesn't keep an inverse collection so just update here
+    public void setDefinitions(List definitions) {
+     	if (this.definitions == null) this.definitions = new ArrayList();
+ 		//order matters.
+ 		this.definitions.clear();
+ 		if (definitions != null) this.definitions.addAll(definitions); 
+    }
+     public Definition getDefaultEntryDef() {
+    	
+    	List eDefinitions = getEntryDefinitions();
+    	if (eDefinitions.size() > 0)
+    		return (Definition)eDefinitions.get(0);
+    	return null;
+	}
+     // Setup by hibernate
+     public Map getWorkflowAssociations() {
+     	if (definitionsInherited && parentBinder != null)
+    		return new HashMap(parentBinder.getWorkflowAssociations());
+    	if (workflowAssociations == null) workflowAssociations = new HashMap();
+    	return workflowAssociations;
+    }
+    public void setWorkflowAssociations(Map workflowAssociations) {
+       	if (this.workflowAssociations == null) this.workflowAssociations = new HashMap();
+       	else this.workflowAssociations.clear(); 
+       	if (workflowAssociations != null) this.workflowAssociations.putAll(workflowAssociations);
+    }
+    public abstract List getEntryDefinitions();
+    public abstract List getViewDefinitions();
+  
 }

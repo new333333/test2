@@ -12,6 +12,7 @@ import java.util.TreeSet;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 //import org.dom4j.Document;
@@ -28,6 +29,7 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
@@ -71,17 +73,17 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		   getCoreDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
      }
 
- 	protected SFQuery indexBinder_getQuery(Binder binder) {
+ 	protected SFQuery indexEntries_getQuery(Binder binder) {
         //do actual db query 
     	FilterControls filter = new FilterControls("parentBinder", binder);
         return (SFQuery)getFolderDao().queryEntries(filter);
    	}
- 	protected void indexBinder_preIndex(Binder binder) {
- 		super.indexBinder_preIndex(binder);
+ 	protected void indexEntries_preIndex(Binder binder) {
+ 		super.indexEntries_preIndex(binder);
  		getRssGenerator().deleteRssFile(binder); 		
  	}
- 	protected void indexBinder_postIndex(Binder binder, Entry entry) {
- 		super.indexBinder_postIndex(binder, entry);
+ 	protected void indexEntries_postIndex(Binder binder, Entry entry) {
+ 		super.indexEntries_postIndex(binder, entry);
  		getRssGenerator().updateRssFeed(entry, getReadAclIds(entry));
  	}
  	protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, 
@@ -133,20 +135,51 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         User user = RequestContextHolder.getRequestContext().getUser();
         return folderDao.loadFullFolderEntry(parentBinder.getId(), entryId, user.getZoneName()); 
    }
-    protected void deleteEntry_preDelete(Binder parentBinder, Entry entry) {
-    	FolderEntry fEntry = (FolderEntry)entry;
-    	List replies = new ArrayList(fEntry.getReplies());
-    	for (int i=0; i<replies.size(); ++i) {
-    		deleteEntry(parentBinder, ((FolderEntry)replies.get(i)).getId());
-    	}
-        FolderEntry parent= fEntry.getParentEntry();
-        if (parent != null) {
-            parent.removeReply(fEntry);
-        } else {
-            ((Folder)parentBinder).removeEntry(fEntry);
-        }
+     protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry) {
+       	//pass replies along as context
+       	return getFolderDao().loadEntryDescendants((FolderEntry)entry); 
     }
-  
+        
+    protected Object deleteEntry_workflow(Binder parentBinder, Entry entry, Object ctx) {
+    	List entries = new ArrayList((List)ctx);
+    	entries.add(entry);
+       	getFolderDao().deleteEntryWorkflows(entries);
+        return ctx;
+    }
+    
+    protected Object deleteEntry_processFiles(Binder parentBinder, Entry entry, Object ctx) {
+    	List replies = (List)ctx;
+       	for (int i=0; i<replies.size(); ++i) {
+    		super.deleteEntry_processFiles(parentBinder, (FolderEntry)replies.get(i), null);
+    	}
+       	super.deleteEntry_processFiles(parentBinder, entry, null);
+        return ctx;
+    }
+    
+    protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
+    	//use the optimized deleteEntry or hibernate deletes each collection entry one at a time
+    	List entries = new ArrayList((List)ctx);
+    	entries.add(entry);
+    	getFolderDao().deleteEntries(entries);   
+      	return ctx;
+    }
+    protected Object deleteEntry_indexDel(Entry entry, Object ctx) {
+    	List replies = (List)ctx;
+      	for (int i=0; i<replies.size(); ++i) {
+    		super.deleteEntry_indexDel((FolderEntry)replies.get(i), null);
+    	}
+		super.deleteEntry_indexDel(entry, null);
+		return ctx;
+   }
+
+       
+    protected void deleteBinder_deleteEntriesWorkflow(Binder binder) {
+		getFolderDao().deleteEntryWorkflows((Folder)binder);
+	}
+	protected void deleteBinder_deleteEntries(Binder binder) {
+		getFolderDao().deleteEntries((Folder)binder);
+	}
+	
     protected void loadEntryHistory(Entry entry) {
     	FolderEntry fEntry = (FolderEntry)entry;
         Set ids = new HashSet();

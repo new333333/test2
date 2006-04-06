@@ -105,7 +105,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     }
     public void deleteBinder(Long binderId) {
     	Binder binder = loadBinder(binderId);
-    	loadBinderProcessor(binder).deleteBinder(binder);
+    	//if can delete this binder, can delete everything under it??
+    	checkDeleteBinderAllowed(binder);
+   		deleteChildBinders(binder);
+     	loadBinderProcessor(binder).deleteBinder(binder);
+    }
+    protected void deleteChildBinders(Binder binder) {
+    	//First process all child folders
+    	List binders = new ArrayList(binder.getBinders());
+    	for (int i=0; i<binders.size(); ++i) {
+    		Binder b = (Binder)binders.get(i);
+   			deleteChildBinders(b);
+    		loadBinderProcessor(b).deleteBinder(b);
+    	}
+    	return;
+    	
     }
     public void checkDeleteBinderAllowed(Binder binder) {
     	loadBinderProcessor(binder).deleteBinder_accessControl(binder);    	    	

@@ -24,16 +24,16 @@ public class ProfileBinder extends Binder {
 		// TODO Auto-generated method stub
 		return emptyList;
 	}
-    public List getEntryDefs() {
+    public List getEntryDefinitions() {
    		return getDefs(Definition.PROFILE_ENTRY_VIEW);
     }
-    public List getBinderViewDefs() {
+    public List getViewDefinitions() {
    		return getDefs(Definition.PROFILE_VIEW);
     }	
     /**
      * Always returns false.  Overloaded method
      */
-    public boolean isDefinitionInheritanceSupported() {
+    public boolean setConfigurationInherited() {
     	return false;
     }
 

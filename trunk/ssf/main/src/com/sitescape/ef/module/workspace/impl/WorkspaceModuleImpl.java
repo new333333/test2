@@ -73,11 +73,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
          
         User user = RequestContextHolder.getRequestContext().getUser();
         if (workspaceId == null) {
-        	workspaceId  = user.getPreferredWorkspaceId();
-        	if (workspaceId != null) {
-            	workspace = (Workspace)getCoreDao().loadBinder(workspaceId, user.getZoneName());          		
-        	} 
-        	if (workspace == null) workspace = getCoreDao().findTopWorkspace(user.getZoneName());
+        	workspace = getCoreDao().findTopWorkspace(user.getZoneName());
         } else {
         	workspace = (Workspace)getCoreDao().loadBinder(workspaceId, user.getZoneName());  
         }
@@ -163,10 +159,11 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	Folder f;
     	Workspace w;
     	
-  		--levels;
-		//callback to setup tree
+ 		//callback to setup tree
     	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_WORKSPACE, top, current);
-    	//order result
+ 		if (levels == 0) return;
+    	--levels;
+ 		//order result
        	TreeSet ws = new TreeSet(c);
     	ws.addAll(top.getFolders());
       	for (Iterator iter=ws.iterator(); iter.hasNext();) {
@@ -194,10 +191,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
                 	continue;
             }
      		next = current.addElement(DomTreeBuilder.NODE_CHILD);
-     		if (levels != 0)
-     			buildWorkspaceDomTree(next, w, c, domTreeHelper, levels);
-     		else
-     		   	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_WORKSPACE, w, next);
+   			buildWorkspaceDomTree(next, w, c, domTreeHelper, levels);
        	}    	
     }
  

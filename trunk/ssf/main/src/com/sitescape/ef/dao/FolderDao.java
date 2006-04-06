@@ -66,5 +66,9 @@ public interface FolderDao {
  
     public UserProperties loadUserFolderProperties(Long userId, Long folderId);
     public HistoryMap loadHistoryMap(Long userId, Long folderId);
-
+    public void deleteEntries(Folder folder);
+    public void deleteEntries(List entries);
+    public void deleteEntryWorkflows(Folder folder);
+    public void deleteEntryWorkflows(List entries);
+    
 }

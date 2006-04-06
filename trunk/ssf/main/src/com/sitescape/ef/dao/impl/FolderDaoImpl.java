@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -24,8 +26,6 @@ import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.SFQuery;
-import com.sitescape.ef.domain.AnyOwner;
-import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoFolderEntryByTheIdException;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
@@ -406,5 +406,108 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
    		return history;
 	}	
 
- 
+    public void deleteEntries(final Folder folder) {
+       	getHibernateTemplate().execute(
+        	   	new HibernateCallback() {
+        	   		public Object doInHibernate(Session session) throws HibernateException {
+        	   		session.createQuery("DELETE com.sitescape.ef.domain.Attachment where owningFolderSortKey=:key")
+            	   			.setString("key", folder.getFolderHKey().getSortKey())
+        	   			.executeUpdate();
+           	   		//need to remove event assignments
+     /*      	   		List eventIds = session.createQuery("select id from com.sitescape.ef.domain.Event where  owningFolderSortKey=:key")
+            	   			.setString("key", folder.getFolderHKey().getSortKey())
+               	   			.list();
+           	   		if (!eventIds.isEmpty()) {
+           	   			StringBuffer ids = new StringBuffer();
+           	   			ids.append("(");
+           	   			for (int i=0; i<eventIds.size(); ++i) {
+           	   				ids.append("'" + eventIds.get(i) + "',");
+           	   			}
+           	   			ids.replace(ids.length()-1, ids.length(), ")");
+           	   			Connection connect = session.connection();
+           	   			try {
+           	   				Statement s = connect.createStatement();
+           	   				s.executeUpdate("delete from SS_AssignmentsMap where event in " + ids);
+           	   			} catch (SQLException sq) {
+           	   				throw new HibernateException(sq);
+           	   			}
+           	   		}
+    */
+           	   		session.createQuery("DELETE com.sitescape.ef.domain.Event where owningFolderSortKey=:key")
+           	   			.setString("key", folder.getFolderHKey().getSortKey())
+           	   			.executeUpdate();
+           	   		session.createQuery("DELETE com.sitescape.ef.domain.CustomAttribute where owningFolderSortKey=:key")
+            	   			.setString("key", folder.getFolderHKey().getSortKey())
+      	   				.executeUpdate();
+       	   			session.createQuery("DELETE com.sitescape.ef.domain.WorkflowState where owningFolderSortKey=:key")
+           	   			.setString("key", folder.getFolderHKey().getSortKey())
+       	   						.executeUpdate();
+       	   			session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where parentBinder=:parent")
+       	   				.setLong("parent", folder.getId().longValue())
+       	   				.executeUpdate();
+       	   				
+           	   		return null;
+        	   		}
+        	   	}
+        	 );    	
+    	
+    }
+    public void deleteEntries(List entries) {
+    	Set idList = new HashSet();
+    	for (int i=0; i<entries.size(); ++i) {
+    		idList.add(((FolderEntry)entries.get(i)).getId());   		
+    	}
+    	final Set ids = idList;
+      	getHibernateTemplate().execute(
+        	   	new HibernateCallback() {
+        	   		public Object doInHibernate(Session session) throws HibernateException {
+        	   		session.createQuery("DELETE com.sitescape.ef.domain.Attachment where folderEntry in (:pList)")
+            			.setParameterList("pList", ids)
+        	   			.executeUpdate();
+           	   		//need to remove event assignments
+     /*      	   		List eventIds = session.createQuery("select id from com.sitescape.ef.domain.Event where  owningFolderSortKey=:key")
+            	   			.setString("key", folder.getFolderHKey().getSortKey())
+               	   			.list();
+           	   		if (!eventIds.isEmpty()) {
+           	   			StringBuffer ids = new StringBuffer();
+           	   			ids.append("(");
+           	   			for (int i=0; i<eventIds.size(); ++i) {
+           	   				ids.append("'" + eventIds.get(i) + "',");
+           	   			}
+           	   			ids.replace(ids.length()-1, ids.length(), ")");
+           	   			Connection connect = session.connection();
+           	   			try {
+           	   				Statement s = connect.createStatement();
+           	   				s.executeUpdate("delete from SS_AssignmentsMap where event in " + ids);
+           	   			} catch (SQLException sq) {
+           	   				throw new HibernateException(sq);
+           	   			}
+           	   		}
+    */
+           	   		session.createQuery("DELETE com.sitescape.ef.domain.Event where folderEntry in (:pList)")
+            			.setParameterList("pList", ids)
+           	   			.executeUpdate();
+           	   		session.createQuery("DELETE com.sitescape.ef.domain.CustomAttribute where folderEntry in (:pList)")
+            			.setParameterList("pList", ids)
+      	   				.executeUpdate();
+       	   			session.createQuery("DELETE com.sitescape.ef.domain.WorkflowState where folderEntry in (:pList)")
+            			.setParameterList("pList", ids)
+       	   						.executeUpdate();
+       	   			session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where folderEntry in (:pList)")
+            			.setParameterList("pList", ids)
+       	   				.executeUpdate();
+       	   				
+           	   		return null;
+        	   		}
+        	   	}
+        	 );    	
+       	
+    }
+        
+    public void deleteEntryWorkflows(Folder folder) {
+    	//brute force delete of jbpm data structures
+    }
+    public void deleteEntryWorkflows(List entries) {
+    	
+    }
 }

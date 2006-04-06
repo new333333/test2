@@ -115,30 +115,11 @@ public class DefinitionUtils {
 		
 	}
 
-	public static Definition getEntryDefinition(Binder binder, Principal entry) {
-		//Get the definition used to view this entry
-		Definition entryDef = entry.getEntryDef();
-		if (entryDef == null) {
-			//There is no definition for this entry; get the default for the binder
-			List profileDefinitions = binder.getEntryDefs();
-			for (int i = 0; i < profileDefinitions.size(); i++) {
-				//Look for the first profile entry definition
-				Definition def = (Definition) profileDefinitions.get(i);
-				if (def.getType() == Definition.PROFILE_ENTRY_VIEW) {
-					//Found the first profile entry definition
-					entryDef = def;
-					break;
-				}
-			}
-		}
-		return entryDef;
-	}
-
 	public static void getDefinitions(Binder binder, Map model) {
 		getDefinitions(binder, model, null);
 	}
 	public static void getDefinitions(Binder binder, Map model, String userSelectedDefinition) {
-		List folderViewDefs = binder.getBinderViewDefs();
+		List folderViewDefs = binder.getViewDefinitions();
 		if (!folderViewDefs.isEmpty()) {
 			//Get the default definition for this binder
 			Definition defaultForumDefinition = (Definition)folderViewDefs.get(0);
@@ -183,7 +164,7 @@ public class DefinitionUtils {
 	}
 	public static Map getBinderDefsAsMap(Binder binder) {
 		Map defaultFolderDefinitions = new HashMap();
-		Iterator itDefaultFolderDefinitions = binder.getBinderViewDefs().listIterator();
+		Iterator itDefaultFolderDefinitions = binder.getViewDefinitions().listIterator();
 		while (itDefaultFolderDefinitions.hasNext()) {
 			Definition entryDef = (Definition) itDefaultFolderDefinitions.next();
 			defaultFolderDefinitions.put(entryDef.getId(), entryDef);
@@ -193,7 +174,7 @@ public class DefinitionUtils {
 
 	public static Map getEntryDefsAsMap(Binder binder) {
 		Map defaultEntryDefinitions = new HashMap();
-		Iterator itDefaultEntryDefinitions = binder.getEntryDefs().listIterator();
+		Iterator itDefaultEntryDefinitions = binder.getEntryDefinitions().listIterator();
 		while (itDefaultEntryDefinitions.hasNext()) {
 			Definition entryDef = (Definition) itDefaultEntryDefinitions.next();
 			defaultEntryDefinitions.put(entryDef.getId(), entryDef);

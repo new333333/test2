@@ -31,6 +31,7 @@ import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Principal;
@@ -305,12 +306,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     public void deleteEntry(Binder parentBinder, Long entryId) {
     	Entry entry = deleteEntry_load(parentBinder, entryId);
         deleteEntry_accessControl(parentBinder, entry);
-        deleteEntry_preDelete(parentBinder, entry);
-        deleteEntry_workflow(parentBinder, entry);
-        deleteEntry_processFiles(parentBinder, entry);
-        deleteEntry_delete(parentBinder, entry);
-        deleteEntry_postDelete(parentBinder, entry);
-        deleteEntry_indexDel(entry);
+        Object ctx  = deleteEntry_preDelete(parentBinder, entry);
+        ctx = deleteEntry_workflow(parentBinder, entry, ctx);
+        ctx = deleteEntry_processFiles(parentBinder, entry, ctx);
+        ctx = deleteEntry_delete(parentBinder, entry, ctx);
+        ctx = deleteEntry_postDelete(parentBinder, entry, ctx);
+        ctx = deleteEntry_indexDel(entry, ctx);
    	
     }
     protected Entry deleteEntry_load(Binder binder, Long entryId) {
@@ -324,32 +325,61 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	else if (entry instanceof AclControlled)
     		deleteAccessCheck(binder, (AclControlled)entry);
     }
-    protected void deleteEntry_preDelete(Binder parentBinder, Entry entry) {
+    protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry) {
+      	return null;
     }
         
-    protected void deleteEntry_workflow(Binder parentBinder, Entry entry) {
+    protected Object deleteEntry_workflow(Binder parentBinder, Entry entry, Object ctx) {
     	if (entry instanceof WorkflowSupport)
-    	getWorkflowModule().deleteEntryWorkflow((WorkflowSupport)entry);
+    		getWorkflowModule().deleteEntryWorkflow((WorkflowSupport)entry);
+      	return ctx;
     }
     
-    protected void deleteEntry_processFiles(Binder parentBinder, Entry entry) {
+    protected Object deleteEntry_processFiles(Binder parentBinder, Entry entry, Object ctx) {
     	getFileModule().deleteFiles(parentBinder, entry);
+      	return ctx;
     }
     
-    protected void deleteEntry_delete(Binder parentBinder, Entry entry) {
+    protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
     	//use the optimized deleteEntry or hibernate deletes each collection entry one at a time
     	getCoreDao().delete(entry);   
+      	return ctx;
     }
-    protected void deleteEntry_postDelete(Binder parentBinder, Entry entry) {
-    }
+    protected Object deleteEntry_postDelete(Binder parentBinder, Entry entry, Object ctx) {
+      	return ctx;
+   }
 
-    protected void deleteEntry_indexDel(Entry entry) {
+    protected Object deleteEntry_indexDel(Entry entry, Object ctx) {
         // Delete the document that's currently in the index.
     	// Since all matches will be deleted, this will also delete the attachments
         IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
+      	return ctx;
+   }
+    //***********************************************************************************************************
+    
+    protected void deleteBinder_preDelete(Binder binder) {  
+    	//delete all entries in the folder 
+    	//file attachments will be handled by the binder delete
+    	deleteBinder_preDeleteEntries(binder);
+    	deleteBinder_deleteEntriesWorkflow(binder);
+    	deleteBinder_deleteEntries(binder);
+    	deleteBinder_postDeleteEntries(binder);
+    	deleteBinder_deleteEntriesIndex(binder);
     }
-    
-    
+  
+	protected void deleteBinder_preDeleteEntries(Binder binder) {
+	}
+	protected void deleteBinder_deleteEntriesWorkflow(Binder binder) {
+	}
+	protected void deleteBinder_deleteEntries(Binder binder) {
+	}
+	protected void deleteBinder_postDeleteEntries(Binder binder) {
+		
+	}
+	protected void deleteBinder_deleteEntriesIndex(Binder binder) {
+		indexEntries_deleteEntries(binder);
+	}
+	    
     //***********************************************************************************************************
     public void modifyWorkflowState(Binder binder, Long entryId, Long tokenId, String toState) {
 
@@ -384,15 +414,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      */
     public void indexEntries(Binder binder) {
     	
-    	indexBinder_accessControl(binder);
+    	indexEntries_accessControl(binder);
      	// this is just here until we get our indexes in sync with
     	// the db.  (Early in development, they're not...
    		//iterate through results
-   		indexBinder_deleteEntries(binder);
-   		indexBinder_preIndex(binder);
+    	indexEntries_deleteEntries(binder);
+    	indexEntries_preIndex(binder);
    		//flush any changes so any exiting changes don't get lost on the evict
    		getCoreDao().flush();
-   		SFQuery query = indexBinder_getQuery(binder);
+   		//index just the binder first
+   		indexBinder(binder, null, false);
+   		SFQuery query = indexEntries_getQuery(binder);
 	   	
 	   	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
        	try {       
@@ -425,7 +457,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
            				logger.debug("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
       				getCoreDao().evict(entry);
       				docs.add(indexDoc);
-      				indexBinder_postIndex(binder, entry);
+      				indexEntries_postIndex(binder, entry);
        			}
 	            
        			// Delete the document that's currently in the index.
@@ -444,20 +476,20 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
  
     }
-    protected void indexBinder_accessControl(Binder binder) {
+    protected void indexEntries_accessControl(Binder binder) {
     	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
     }
-    protected void indexBinder_preIndex(Binder binder) {
+    protected void indexEntries_preIndex(Binder binder) {
     	
     }
-    protected void indexBinder_deleteEntries(Binder binder) {
+    protected void indexEntries_deleteEntries(Binder binder) {
         //iterate through results
        	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         try {	            
 	        logger.info("Indexing (" + binder.getId().toString() + ") ");
 	        
 	        // Delete the document that's currently in the index.
-	        Term delTerm = indexBinder_getDeleteEntriesTerm(binder);
+	        Term delTerm = indexEntries_getDeleteEntriesTerm(binder);
 	        luceneSession.deleteDocuments(delTerm);
 	            
         } finally {
@@ -466,11 +498,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  
     }
     
-    protected Term indexBinder_getDeleteEntriesTerm(Binder binder) {
+    protected Term indexEntries_getDeleteEntriesTerm(Binder binder) {
         return new Term(EntryIndexUtils.BINDER_ID_FIELD, binder.getId().toString());
     }
-   	protected abstract SFQuery indexBinder_getQuery(Binder binder);
-   	protected void indexBinder_postIndex(Binder binder, Entry entry) {
+   	protected abstract SFQuery indexEntries_getQuery(Binder binder);
+   	protected void indexEntries_postIndex(Binder binder, Entry entry) {
    	}
  
     //***********************************************************************************************************

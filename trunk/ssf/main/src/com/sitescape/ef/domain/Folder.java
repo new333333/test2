@@ -210,10 +210,10 @@ public class Folder extends Binder {
     	}
     	return null;
     }
-    public List getEntryDefs() {
+    public List getEntryDefinitions() {
    		return getDefs(Definition.COMMAND);
     }
-    public List getBinderViewDefs() {
+    public List getViewDefinitions() {
    		return getDefs(Definition.FOLDER_VIEW);
     }	    
     

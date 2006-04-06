@@ -92,8 +92,8 @@ public class Workspace extends Binder  {
     public List getChildAclControlled() {
         return new ArrayList(); // empty
     }
-    public List getEntryDefs() {return new ArrayList();}
-    public List getBinderViewDefs() {
+    public List getEntryDefinitions() {return new ArrayList();}
+    public List getViewDefinitions() {
     	return getDefs(Definition.WORKSPACE_VIEW);
     }
 }
