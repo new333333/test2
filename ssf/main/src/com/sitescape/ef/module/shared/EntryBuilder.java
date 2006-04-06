@@ -101,7 +101,7 @@ public class EntryBuilder {
 						changed=true;
 						InvokeUtil.invokeSetter(target, attr, val);
 					}
-				} if (val != null) {
+				} else if (val != null) {
 					changed=true;
 					InvokeUtil.invokeSetter(target, attr, val);
 				}

@@ -163,7 +163,7 @@ public class SAbstractForumController extends SAbstractController {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		//	The "Add" menu
-		List defaultEntryDefinitions = folder.getEntryDefs();
+		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		PortletURL url;
 		if (!defaultEntryDefinitions.isEmpty()) {
 			try {
@@ -217,7 +217,7 @@ public class SAbstractForumController extends SAbstractController {
 		//	The "Display styles" menu
 		toolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.display_styles"));
 		//Get the definitions available for use in this folder
-		List folderViewDefs = folder.getBinderViewDefs();
+		List folderViewDefs = folder.getViewDefinitions();
 		for (int i = 0; i < folderViewDefs.size(); i++) {
 			Definition def = (Definition)folderViewDefs.get(i);
 			//Build a url to switch to this view

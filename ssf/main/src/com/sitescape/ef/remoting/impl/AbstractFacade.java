@@ -253,7 +253,7 @@ public abstract class AbstractFacade implements Facade {
 		binder.setTitle(dbinder.getTitle());
 		binder.setParentBinderId(dbinder.getParentBinder().getId().longValue());
 		
-		List entryDefs = dbinder.getEntryDefs();
+		List entryDefs = dbinder.getEntryDefinitions();
 		String[] entryDefinitionIds = new String[entryDefs.size()];
 		for(int i = 0; i < entryDefinitionIds.length; i++) {
 			entryDefinitionIds[i] = ((Definition) entryDefs.get(i)).getId();

@@ -68,7 +68,7 @@ public class SAbstractProfileController extends SAbstractController {
 		Toolbar toolbar = new Toolbar();
 		//	The "Add" menu
 		String binderId = binder.getId().toString();
-		List defaultEntryDefinitions = binder.getEntryDefs();
+		List defaultEntryDefinitions = binder.getEntryDefinitions();
 		PortletURL url;
 		if (!defaultEntryDefinitions.isEmpty()) {
 			try {

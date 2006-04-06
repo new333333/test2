@@ -49,16 +49,19 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 		
 		Map<String,Object> model = new HashMap<String,Object>();
 		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
-		if ((binderId == null)) {
-			binderId = getWorkspaceModule().getWorkspace().getId();
-		}
-		Binder binder = getBinderModule().getBinder(binderId);
 
 		PortletSession ses = WebHelper.getRequiredPortletSession(request);
 		Document wsTree = (Document)ses.getAttribute(WebKeys.WORKSPACE_DOM_TREE);
 		Long wsTreeId = (Long)ses.getAttribute(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID);
-		if (wsTree == null || wsTreeId == null || !binderId.equals(wsTreeId)) {
-			wsTree = getWorkspaceModule().getDomWorkspaceTree(binderId, new WsTreeBuilder((Workspace)binder, true), 1);
+		if (wsTree == null || wsTreeId == null || binderId == null || !binderId.equals(wsTreeId)) {
+			Workspace binder = getWorkspaceModule().getWorkspace(binderId);
+			if (binderId == null) {
+				//when at the top, don't expand
+				binderId = binder.getId();
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(binderId, new WsTopOnly(), 0);					
+			} else {
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(binderId, new WsTreeBuilder((Workspace)binder, true), 1);				
+			}
 			//Save the tree for the session as a performance improvement
 			ses.setAttribute(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			ses.setAttribute(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binderId);
@@ -93,6 +96,21 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 		return element;
 	}
 
+	protected class WsTopOnly implements DomTreeBuilder {
+		public Element setupDomElement(String type, Object source, Element element) {
+			Element url;
+			Binder binder = (Binder) source;
+			element.addAttribute("title", binder.getTitle());
+			element.addAttribute("id", binder.getId().toString());
+
+			if (getBinderModule().hasBinders(binder)) {
+				element.addAttribute("hasChildren", "true");
+			} else {	
+				element.addAttribute("hasChildren", "false");
+			}
+			return element;
+		}
+	}
 	protected class WsTreeBuilder implements DomTreeBuilder {
 		Workspace bottom;
 		boolean check;

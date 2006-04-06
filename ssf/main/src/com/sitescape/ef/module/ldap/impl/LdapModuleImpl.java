@@ -823,12 +823,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		for (Iterator i=users.values().iterator(); i.hasNext();) {
 			newUsers.add(new MapInputData((Map)i.next()));
 		}
-		Definition userDef = null;
-		List defs = pf.getEntryDefs();
-		if ((defs !=null) && !defs.isEmpty()) {
-			userDef = (Definition)defs.get(0);
-		}
-		
+		Definition userDef = pf.getDefaultEntryDef();		
 		
 	   	IndexSynchronizationManager.begin();
 	    ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
@@ -849,11 +844,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		for (Iterator i=groups.values().iterator(); i.hasNext();) {
 			newGroups.add(new MapInputData((Map)i.next()));
 		}
-		Definition groupDef = null;
-		List defs = pf.getEntryDefs();
-		if ((defs !=null) && !defs.isEmpty()) {
-		groupDef = (Definition)defs.get(0);
-		}
+		Definition groupDef = pf.getDefaultEntryDef();
 	   	IndexSynchronizationManager.begin();
 	    ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
             	pf, ProfileCoreProcessor.PROCESSOR_KEY);

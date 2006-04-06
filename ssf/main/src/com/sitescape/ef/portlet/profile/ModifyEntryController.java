@@ -79,10 +79,6 @@ public class ModifyEntryController extends SAbstractProfileController {
 		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 		Definition entryDef = entry.getEntryDef();
 		if (entryDef == null) {
-			//There is no definition associated with this entry. Get the default definition from the binder.
-			entryDef = DefinitionUtils.getEntryDefinition(entry.getParentBinder(), entry);
-		}
-		if (entryDef == null) {
 			DefinitionUtils.getDefaultEntryView(entry, model);
 		} else {
 			DefinitionUtils.getDefinition(entryDef, model, "//item[@type='form']");

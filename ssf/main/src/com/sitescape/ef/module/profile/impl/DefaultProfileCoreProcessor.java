@@ -32,6 +32,7 @@ import com.sitescape.ef.module.profile.index.IndexUtils;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.ef.InternalException;
 /**
  *
  * @author Jong Kim
@@ -68,7 +69,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     }
     //***********************************************************************************************************
     
-   	protected SFQuery indexBinder_getQuery(Binder binder) {
+   	protected SFQuery indexEntries_getQuery(Binder binder) {
    		//$$$return getCoreDao().queryUsers(new FilterControls(), binder.getZoneName());
    		return getCoreDao().queryAllPrincipals(new FilterControls(), binder.getZoneName());
    	}
@@ -132,11 +133,16 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         return getCoreDao().loadFullPrincipal(entryId, parentBinder.getZoneName());        
     }
  
-    protected void deleteEntry_delete(Binder parentBinder, Entry entry) {
+    protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
     	Principal p = (Principal)entry;
     	//we just disable principals, cause their ids are used all over
     	p.setDisabled(true);
+    	return ctx;
     }
+    public void deleteBinder(Binder binder) {
+    	throw new InternalException("Cannot delete profile binder");
+    }
+    
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry);
     	
