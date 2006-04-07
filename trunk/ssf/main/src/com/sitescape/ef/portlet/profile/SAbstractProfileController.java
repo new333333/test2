@@ -64,26 +64,28 @@ public class SAbstractProfileController extends SAbstractController {
 	}
 
 	protected Toolbar buildViewToolbar(RenderResponse response, ProfileBinder binder) {
+		PortletURL url;
+		String binderId = binder.getId().toString();
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
-		//	The "Add" menu
-		String binderId = binder.getId().toString();
-		List defaultEntryDefinitions = binder.getEntryDefinitions();
-		PortletURL url;
-		if (!defaultEntryDefinitions.isEmpty()) {
-			try {
-				getProfileModule().checkAddEntryAllowed(binder);
-				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.addProfile"));
-				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
-					Definition def = (Definition) defaultEntryDefinitions.get(i);
-					url = response.createActionURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
-					url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-					url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-					toolbar.addToolbarMenuItem("1_add", "entries", def.getTitle(), url);
-				}
-			} catch (AccessControlException ac) {};
-		}
+		//	The "Add" menu (Turned off because adding users must be done in the portal)
+		/*
+			List defaultEntryDefinitions = binder.getEntryDefinitions();
+			if (!defaultEntryDefinitions.isEmpty()) {
+				try {
+					getProfileModule().checkAddEntryAllowed(binder);
+					toolbar.addToolbarMenu("1_add", NLT.get("toolbar.addProfile"));
+					for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
+						Definition def = (Definition) defaultEntryDefinitions.get(i);
+						url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
+						url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+						url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+						toolbar.addToolbarMenuItem("1_add", "entries", def.getTitle(), url);
+					}
+				} catch (AccessControlException ac) {};
+			}
+		*/
 			
 		//The "Administration" menu
 		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
