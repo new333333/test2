@@ -13,3 +13,4 @@
 <%@ page import="com.sitescape.ef.domain.CustomAttribute" %>
 <%@ page import="com.sitescape.ef.domain.User" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/forum/init.jsp" %>

@@ -34,6 +34,8 @@
   value="<ssf:nlt tag="button.ok" text="  OK  "/>" >&nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="cancelBtn" 
   value="<ssf:nlt tag="button.cancel" text="Cancel"/>" >
+<br>
+<br>
 </div>
 </form>
 </div>
