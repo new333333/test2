@@ -48,6 +48,7 @@ public class ModifyBinderController extends SAbstractForumController {
 			}
 			getBinderModule().modifyBinder(binderId, new MapInputData(formData), fileMap);
 			setupViewBinder(response, binderId);
+			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			setupViewBinder(response, binderId);
