@@ -418,6 +418,10 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		// It doesn't appear to me to be a restriction by the DeltaV spec
 		// itself, but some Slide specific misbehavior (or mis-configuration).
 		// It requires more investigation...
+		// Addendum (4/6/06) - It is observed that WebDAV based SCM tool
+		// called Subversion does not support version deletion either,
+		// which sort of indicates that now allowing version deletion 
+		// is a general practice in WebDAV world. Just observation...
 		return false; // for now
 	}
 	

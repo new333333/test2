@@ -45,6 +45,10 @@ public class DispatchServer extends GenericServlet {
 				logger.warn(e);
 				throw new ServletException(e.getMessage());
 			}			
+			catch(Exception e) {
+				logger.warn(e);
+				throw new ServletException(e.getMessage());
+			}			
 		}
 		else {
 			logger.warn("Unrecognized operation [" + operation + "]");

@@ -54,7 +54,11 @@ public class DispatchServer extends GenericServlet {
 			catch(PasswordDoesNotMatchException e) {
 				logger.warn(e);
 				throw new ServletException(e.getMessage());
-			}			
+			}	
+			catch(Exception e) {
+				logger.warn(e);
+				throw new ServletException(e.getMessage());
+			}
 		}
 		else if(operation.equals(CrossContextConstants.OPERATION_CREATE_SESSION)) {
 			HttpServletRequest request = (HttpServletRequest) req;
