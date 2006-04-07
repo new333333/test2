@@ -16,7 +16,6 @@
 	}
 %>
 <div class="ss_entryContent" >
-xxxxxxxxxxxxxxxxxxxxx
 <span class="ss_labelAbove"><%= caption %></span>
 <input type="file" class="ss_text" name="<%= elementName %>" <%= width %> >
 </div>

@@ -1324,7 +1324,7 @@
 				optionCaption="__layout_options" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/workspace_view.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/workspace_view.jsp" />
 		</jsps>
 	</item>
 	

@@ -20,7 +20,11 @@
 String adminTreeName = renderResponse.getNamespace() + "_adminDomTree";
 %>
   <div class="ss_portlet_style ss_portlet">
-	<table border="0" cellpadding="0" cellspacing="0" width="95%">
+	<table border="0" width="95%">
+	<tr>
+		<td>
+		</td>
+	</tr>
 	<tr>
 		<td>
 			<table border="0" cellpadding="0" cellspacing="0">
@@ -35,5 +39,4 @@ String adminTreeName = renderResponse.getNamespace() + "_adminDomTree";
 		</td>
 	</tr>
 	</table>
-	<br/>
   </div>
