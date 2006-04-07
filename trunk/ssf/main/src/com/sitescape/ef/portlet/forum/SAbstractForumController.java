@@ -165,11 +165,13 @@ public class SAbstractForumController extends SAbstractController {
 		//	The "Add" menu
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		PortletURL url;
+		boolean addMenuAdded = false;
 		if (!defaultEntryDefinitions.isEmpty()) {
 			try {
 				getFolderModule().checkAddEntryAllowed(folder);
 				int count = 1;
 				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+				addMenuAdded = true;
 				Map qualifiers = new HashMap();
 				String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
 				qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
@@ -190,12 +192,19 @@ public class SAbstractForumController extends SAbstractController {
 		//Add Folder
 		try {
 			getFolderModule().checkAddFolderAllowed(folder);
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_SUB_FOLDER);
-			toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), url);
+
+			if (!addMenuAdded) {
+				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+			}
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_SUB_FOLDER);
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), adapterUrl.toString(), qualifiers);
 		} catch (AccessControlException ac) {};
+		
 		//The "Administration" menu
 		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
 		//Access control
@@ -275,11 +284,13 @@ public class SAbstractForumController extends SAbstractController {
 			getWorkspaceModule().checkAddWorkspaceAllowed(workspace);
 			toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 			addMenuCreated=true;
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
-			toolbar.addToolbarMenuItem("1_add", "workspace", NLT.get("toolbar.menu.addWorkspace"), url);
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			toolbar.addToolbarMenuItem("1_add", "workspace", NLT.get("toolbar.menu.addWorkspace"), adapterUrl.toString(), qualifiers);
 		} catch (AccessControlException ac) {};
 
 		//Add Folder
@@ -289,20 +300,24 @@ public class SAbstractForumController extends SAbstractController {
 				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 				addMenuCreated=true;
 			}
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
-			toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), url);
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), adapterUrl.toString(), qualifiers);
 		} catch (AccessControlException ac) {};
 		
 		try {
 			getBinderModule().checkModifyBinderAllowed(workspace);
 			//The "Modify" menu
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
 		} catch (AccessControlException ac) {};
 		
 		//The "Administration" menu
