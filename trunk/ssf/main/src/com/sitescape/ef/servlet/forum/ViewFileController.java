@@ -14,7 +14,10 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.servlet.SAbstractController;
 import com.sitescape.util.FileUtil;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.ef.module.file.FileException;
+import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositoryServiceUtil;
 import org.springframework.web.bind.RequestUtils;
 
@@ -53,11 +56,31 @@ public class ViewFileController extends SAbstractController {
 						"Content-Disposition",
 						attachment + "filename=\"" + shortFileName + "\"");
 			
-			if (viewType.equals(WebKeys.FILE_VIEW_TYPE_SCALED) && 
-					getFileModule().scaledFileExists(entry.getParentBinder(), entry, fa)) {
-				getFileModule().readScaledFile(entry.getParentBinder(), entry, fa, response.getOutputStream());
+			if (viewType.equals(WebKeys.FILE_VIEW_TYPE_SCALED)) {
+				boolean scaledFileExists = false;
+				try {
+					if (getFileModule().scaledFileExists(entry.getParentBinder(), entry, fa)) {
+						scaledFileExists = true;
+					}
+				}
+				catch(FileException e1) {}
+				if (scaledFileExists) {
+					getFileModule().readScaledFile(entry.getParentBinder(), entry, fa, response.getOutputStream());
+				} else {
+					try {
+						getFileModule().readFile(entry.getParentBinder(), entry, fa, response.getOutputStream());				
+					}
+					catch(FileException e) {
+						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
+					}
+				}
 			} else {
-				getFileModule().readFile(entry.getParentBinder(), entry, fa, response.getOutputStream());				
+				try {
+					getFileModule().readFile(entry.getParentBinder(), entry, fa, response.getOutputStream());				
+				}
+				catch(FileException e) {
+					response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
+				}
 			}
 
 			response.getOutputStream().flush();
