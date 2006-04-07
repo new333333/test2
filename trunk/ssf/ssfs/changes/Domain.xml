@@ -16,7 +16,7 @@
                     <parameter name="callback-store">com.sitescape.ef.ssfs.wck.WebdavSiteScape</parameter>
                     <!-- this is where all the resources in the /files collection go to -->
                     <!-- adapt to your needs -->
-                    <parameter name="rootpath">store</parameter>
+                    <!--<parameter name="rootpath">store</parameter>-->
                 </nodestore>
                 <contentstore>
                     <reference store="nodestore"/>

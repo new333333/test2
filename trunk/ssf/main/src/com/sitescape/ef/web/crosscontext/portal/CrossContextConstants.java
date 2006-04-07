@@ -10,7 +10,9 @@ package com.sitescape.ef.web.crosscontext.portal;
  */
 public abstract class CrossContextConstants {
 	
-	// Key names
+	// Key names - We need to qualify each name with something unique 
+	// (i.e., com.sitescape.crosscontext.portal) so that the name will 
+	// not collide with other names already in the request object.
 	public static final String OPERATION = "com.sitescape.crosscontext.portal.operation";
 	public static final String PORTAL_SESSION_ID = "com.sitescape.crosscontext.portal.portalsessionid";
 	public static final String USER_NAME = "com.sitescape.crosscontext.portal.username";

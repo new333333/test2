@@ -18,13 +18,16 @@ public class AuthenticationManager implements SessionAuthenticationManager {
 		// Split user name into two parts - zonename:username
 		String[] credential = user.split(DELIM);
 		if(credential.length != 2)
-			throw new IllegalArgumentException("User name must be prefixed with zone name followed by semicolon");
+			throw new IllegalArgumentException("Enter user name in the format <zonename>;<username>");
+		
+		String zoneName = credential[0].trim();
+		String userName = credential[1].trim();
 		
 		AttributesAndParamsOnlyServletRequest req = 
 			new AttributesAndParamsOnlyServletRequest(CONTEXT_PATH);
 		req.setParameter(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_AUTHENTICATE);
-		req.setParameter(CrossContextConstants.ZONE_NAME, credential[0]);
-		req.setParameter(CrossContextConstants.USER_NAME, credential[1]);
+		req.setParameter(CrossContextConstants.ZONE_NAME, zoneName);
+		req.setParameter(CrossContextConstants.USER_NAME, userName);
 		req.setParameter(CrossContextConstants.PASSWORD, password);
 		NullServletResponse res = new NullServletResponse();
 		
