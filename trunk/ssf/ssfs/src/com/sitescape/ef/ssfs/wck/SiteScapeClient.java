@@ -50,6 +50,6 @@ public class SiteScapeClient {
 	public static String[] getChildrenNames(Map uri) throws SiteScapeClientException,
 	NoAccessException, NoSuchObjectException {
 		// TODO
-		return null;
+		return new String[0];
 	}
 }
