@@ -34,8 +34,8 @@ public abstract class CrossContextConstants {
 	public static final String URI_ITEM_TYPE = "uri.itemType";
 	public static final String URI_ELEMNAME = "uri.elemname";
 	
-	// If the following key exists, it indicates that the URI refers to a
-	// folder. Otherwise a file. The value of this key isn't important.
+	// The following key can have either Boolean.TRUE or Boolean.FALSE
+	// as its value. 
 	public static final String URI_IS_FOLDER = "uri.isFolder"; 
 	
 	// URI type values

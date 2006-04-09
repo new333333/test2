@@ -37,9 +37,11 @@ public class WebdavSiteScape implements BasicWebdavStore {
 	ServiceParameterMissingException {
 		this.service = service;
 		this.logger = logger;
-		String[] v = ((String) connection).split(USERNAME_DELIM);
-		this.zoneName = v[0].trim();
-		this.userName = v[1].trim();
+		if(connection != null) {
+			String[] v = ((String) connection).split(USERNAME_DELIM);
+			this.zoneName = v[0].trim();
+			this.userName = v[1].trim();
+		}
 	}
 
 	public void checkAuthentication() throws UnauthenticatedException {		
@@ -76,7 +78,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		try {
 			Map m = parseUri(uri);
 		
-			return (m.containsKey(URI_IS_FOLDER) && objectExists(m));
+			return (representsFolder(m) && objectExists(m));
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
@@ -94,7 +96,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		try {
 			Map m = parseUri(uri);
 		
-			return (!m.containsKey(URI_IS_FOLDER) && objectExists(m));
+			return (!representsFolder(m) && objectExists(m));
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
@@ -117,7 +119,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		try {
 			Map m = parseUri(resourceUri);
 		
-			if(m.containsKey(URI_IS_FOLDER))
+			if(representsFolder(m))
 				throw new ServiceAccessException(service, "The position refers to a folder");
 			else
 				SiteScapeClient.createResource(m);
@@ -142,7 +144,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		try {
 			Map m = parseUri(resourceUri);
 		
-			if(m.containsKey(URI_IS_FOLDER))
+			if(representsFolder(m))
 				throw new ObjectNotFoundException(resourceUri);
 			else
 				SiteScapeClient.setResource(m, content); // we don't use contentType and characterEncoding
@@ -166,7 +168,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		try {
 			Map m = parseUri(uri);
 
-			if(m.size() <=2)
+			if(representsAbstractFolder(m))
 				return new Date(0); // There's no good answer for this - Will this work?
 			else
 				return SiteScapeClient.getLastModified(m);
@@ -190,7 +192,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		try {
 			Map m = parseUri(uri);
 
-			if(m.size() <=2)
+			if(representsAbstractFolder(m))
 				return new Date(0); // There's no good answer for this - Will this work?
 			else
 				return SiteScapeClient.getCreationDate(m);
@@ -214,7 +216,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		try {
 			Map m = parseUri(folderUri);
 
-			if(m.containsKey(URI_IS_FOLDER)) {
+			if(!representsFolder(m)) {
 				return null; 
 				// Not very consistent with the way we handled this condition. 
 			    // In other places we throw ObjectNotFoundException when a
@@ -222,10 +224,13 @@ public class WebdavSiteScape implements BasicWebdavStore {
 				// we return null. This is simply to follow the convention
 				// shown in the WebdavFileStore reference implementation.
 			}
-			else if(m.size() == 0) { // /files
-				return new String[] {zoneName};
+			else if(filesOnly(m)) { // /files
+				if(zoneName != null)
+					return new String[] {zoneName};
+				else
+					return new String[0];
 			}
-			else if(m.size() == 1) { // /files/<zonename>
+			else if(uptoZoneOnly(m)) { // /files/<zonename>
 				return new String[] {URI_TYPE_INTERNAL, URI_TYPE_LIBRARY};
 			}
 			else {
@@ -250,7 +255,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		try {
 			Map m = parseUri(resourceUri);
 		
-			if(m.containsKey(URI_IS_FOLDER))
+			if(representsFolder(m))
 				throw new ObjectNotFoundException(resourceUri);
 			else
 				return SiteScapeClient.getResource(m); 
@@ -274,7 +279,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		try {
 			Map m = parseUri(resourceUri);
 		
-			if(m.containsKey(URI_IS_FOLDER))
+			if(representsFolder(m))
 				throw new ObjectNotFoundException(resourceUri);
 			else
 				return SiteScapeClient.getResourceLength(m); 
@@ -298,7 +303,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		try {
 			Map m = parseUri(uri);
 		
-			if(m.containsKey(URI_IS_FOLDER))
+			if(representsFolder(m))
 				throw new AccessDeniedException(uri, "Removing folder is not supported", "create");
 			else
 				SiteScapeClient.removeResource(m); 
@@ -319,7 +324,9 @@ public class WebdavSiteScape implements BasicWebdavStore {
 	
 	private Map returnMap(Map map, boolean isFolder) {
 		if(isFolder)
-			map.put(URI_IS_FOLDER, "");
+			map.put(URI_IS_FOLDER, Boolean.TRUE);
+		else
+			map.put(URI_IS_FOLDER, Boolean.FALSE);
 		return map;
 	}
 	
@@ -333,6 +340,9 @@ public class WebdavSiteScape implements BasicWebdavStore {
 	 * @return
 	 */
 	private Map parseUri(String uri) throws ZoneMismatchException {
+		if(uri.startsWith(URI_DELIM))
+			uri = uri.substring(1);
+		
 		// Break uri into pieces
 		String[] u = uri.split(URI_DELIM);
 		
@@ -439,10 +449,39 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		// 3. /files/<zonename>/internal always exist AS LONG AS the zonename matches that of the user
 		// 4. /files/<zonename>/library always exist AS LONG AS the zonename matches that of the user
 		
-		if(m.size() <= 2)
+		if(representsAbstractFolder(m))
 			return true;  // /files/<zonename>/<internal or library>
 		else
 			return SiteScapeClient.objectExists(m);		
 	}
+
+	/**
+	 * Returns whether the URI represents an abstract folder or not.
+	 * Abstract folder is one of the following:
+	 * <p>
+	 *	/files
+	 *  /files/<zonename>
+	 *  /files/<zonename>/internal
+	 *  /files/<zonename>/library  
+	 * 
+	 * @param m
+	 * @return
+	 */
+	private boolean representsAbstractFolder(Map m) {
+		// Map does not contain 'files'. So including URI_IS_FOLDER
+		// entry, maximum of three entries indicates an abstract folder.
+		return (m.size() <= 3);
+	}
 	
+	private boolean filesOnly(Map m) {
+		return (m.size() == 1); // contains URI_IS_FOLDER only
+	}
+	
+	private boolean uptoZoneOnly(Map m) {
+		return (m.size() == 2); // contains URI_IS_FOLDER and <zonename>
+	}
+	
+	private boolean representsFolder(Map m) {
+		return ((Boolean) m.get(URI_IS_FOLDER)).booleanValue();
+	}
 }
