@@ -8,8 +8,8 @@ import javax.activation.FileTypeMap;
 
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.servlet.SAbstractController;
@@ -17,8 +17,6 @@ import com.sitescape.util.FileUtil;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.module.file.FileException;
-import com.sitescape.ef.repository.RepositoryServiceException;
-import com.sitescape.ef.repository.RepositoryServiceUtil;
 import org.springframework.web.bind.RequestUtils;
 
 public class ViewFileController extends SAbstractController {
@@ -27,21 +25,28 @@ public class ViewFileController extends SAbstractController {
             HttpServletResponse response) throws Exception {		
 
 		Long binderId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
-		Long entryId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
+		Long entryId = RequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
 		String downloadFile = RequestUtils.getStringParameter(request, WebKeys.URL_DOWNLOAD_FILE, "");
 		Binder binder = getBinderModule().getBinder(binderId);
-		Entry entry=null;
-		if (binder instanceof Folder) {
-			entry = getFolderModule().getEntry(binderId, entryId);
+		DefinableEntity entity=null;
+		Binder parent;
+		if (entryId != null) {
+			if (binder instanceof Folder) {
+				entity = getFolderModule().getEntry(binderId, entryId);
+			} else {
+				entity = getProfileModule().getEntry(binderId, entryId);
+				
+			}
+			parent = ((Entry)entity).getParentBinder();
 		} else {
-			entry = getProfileModule().getEntry(binderId, entryId);
-			
+			entity = binder;
+			parent = binder;
 		}
 		//Set up the beans needed by the jsps
 		String fileId = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE_ID); 
 		String viewType = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE, ""); 
 		
-		FileAttachment fa = (FileAttachment)entry.getAttachment(fileId);
+		FileAttachment fa = (FileAttachment)entity.getAttachment(fileId);
 		
 		if (fa != null) {
 			
@@ -59,16 +64,16 @@ public class ViewFileController extends SAbstractController {
 			if (viewType.equals(WebKeys.FILE_VIEW_TYPE_SCALED)) {
 				boolean scaledFileExists = false;
 				try {
-					if (getFileModule().scaledFileExists(entry.getParentBinder(), entry, fa)) {
+					if (getFileModule().scaledFileExists(parent, entity, fa)) {
 						scaledFileExists = true;
 					}
 				}
 				catch(FileException e1) {}
 				if (scaledFileExists) {
-					getFileModule().readScaledFile(entry.getParentBinder(), entry, fa, response.getOutputStream());
+					getFileModule().readScaledFile(parent, entity, fa, response.getOutputStream());
 				} else {
 					try {
-						getFileModule().readFile(entry.getParentBinder(), entry, fa, response.getOutputStream());				
+						getFileModule().readFile(parent, entity, fa, response.getOutputStream());				
 					}
 					catch(FileException e) {
 						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
@@ -76,7 +81,7 @@ public class ViewFileController extends SAbstractController {
 				}
 			} else {
 				try {
-					getFileModule().readFile(entry.getParentBinder(), entry, fa, response.getOutputStream());				
+					getFileModule().readFile(parent, entity, fa, response.getOutputStream());				
 				}
 				catch(FileException e) {
 					response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());

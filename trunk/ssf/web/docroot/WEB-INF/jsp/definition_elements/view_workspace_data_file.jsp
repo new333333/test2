@@ -10,8 +10,7 @@
 <a target="_blank" 
   href="<ssf:url 
     webPath="viewFile"
-    folderId="${ssDefinitionEntry.parentBinder.id}"
-    entryId="${ssDefinitionEntry.id}" >
+    folderId="${ssDefinitionEntry.id}"
     <ssf:param name="fileId" value="${selection.id}"/>
     </ssf:url>"><c:out value="${selection.fileItem.name}"/></a><br>
 

@@ -2,11 +2,9 @@ package com.sitescape.ef.module.binder.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -115,7 +113,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         final Map entryData = (Map) entryDataAll.get("entryData");
         List fileUploadItems = (List) entryDataAll.get("fileData");
         
-        FilesErrors filesErrors = addBinder_filterFiles(parent, fileUploadItems);
 
         final Binder binder = addBinder_create(clazz);
         binder.setEntryDef(def);
@@ -138,9 +135,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         });
         
         
+        //Need to do filter here after binder is saved or don't have id on binder
+        FilesErrors filesErrors = addBinder_filterFiles(binder, fileUploadItems);
         // We must save the entry before processing files because it makes use
         // of the persistent id of the entry. 
-        filesErrors = addBinder_processFiles(parent, binder, fileUploadItems, filesErrors);
+        filesErrors = addBinder_processFiles(binder, fileUploadItems, filesErrors);
         
        // This must be done in a separate step after persisting the entry,
         // because we need the entry's persistent ID for indexing. 
@@ -158,13 +157,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
 
         
-    protected FilesErrors addBinder_filterFiles(Binder parent, List fileUploadItems) throws FilterException {
-    	return getFileModule().filterFiles(parent, fileUploadItems);
+    protected FilesErrors addBinder_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
+    	return getFileModule().filterFiles(binder, fileUploadItems);
     }
 
-    protected FilesErrors addBinder_processFiles(Binder parent, 
-    		Binder binder, List fileUploadItems, FilesErrors filesErrors) {
-    	return getFileModule().writeFiles(parent, binder, fileUploadItems, filesErrors);
+    protected FilesErrors addBinder_processFiles(Binder binder, List fileUploadItems, FilesErrors filesErrors) {
+    	return getFileModule().writeFiles(binder, binder, fileUploadItems, filesErrors);
     }
     
     protected Map addBinder_toEntryData(Binder parent, Definition def, InputDataAccessor inputData, Map fileItems) {
@@ -260,7 +258,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     protected FilesErrors modifyBinder_processFiles(Binder binder, 
     		List fileUploadItems, FilesErrors filesErrors) {
-    	return getFileModule().writeFiles(binder.getParentBinder(), binder, fileUploadItems, filesErrors);
+    	return getFileModule().writeFiles(binder, binder, fileUploadItems, filesErrors);
     }
     protected Map modifyBinder_toEntryData(Binder binder, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
@@ -319,7 +317,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
   
     //TODO: delete all files under binder
     protected Object deleteBinder_processFiles(Binder binder, Object ctx) {
-    	getFileModule().deleteFiles(binder.getParentBinder(), binder);
+    	getFileModule().deleteFiles(binder, binder);
     	return ctx;
     }
     
@@ -430,7 +428,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }   
     protected org.apache.lucene.document.Document buildIndexDocumentFromBinderFile
 		(Binder binder, FileAttachment fa, FileUploadItem fui) {
-    	org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromFile(binder.getParentBinder(), binder, fa, fui);
+    	org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromFile(binder, binder, fa, fui);
     	if (indexDoc != null)
     	    fillInIndexDocWithCommonPartFromBinder(indexDoc, binder);
     	return indexDoc;
