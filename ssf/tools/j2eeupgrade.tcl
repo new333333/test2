@@ -129,6 +129,7 @@ array set ::j2ee_Attachments_class_MAP {
 	principal 	{principal int32}
     ownerType 	{ownerType "varchar 16"}
     ownerId 		{ownerId int32}
+    owningBinderId {owningBinderId int32}
     owningFolderSortKey {owningFolderSortKey "varchar 512"}
   name			{name "varchar 64"}
    fileName         {fileName "varchar 256"}
@@ -148,6 +149,7 @@ array set ::j2ee_CustomAttributes_class_MAP {
 	principal 	{principal int32}
     ownerType 	{ownerType "varchar 16"}
     ownerId 		{ownerId int32}
+    owningBinderId {owningBinderId int32}
     owningFolderSortKey {owningFolderSortKey "varchar 512"}
     name 		{name "varchar 255"}
     stringValue {stringValue "varchar 4000"}
@@ -479,6 +481,7 @@ proc doUsers {userList} {
                 set attrs1(ownerType) "user"
                 set attrs1(ownerId) $::userIds($user)
                 set attrs1(principal) $::userIds($user)
+                set attrs1(owningBinderId) $::_profileId
                 set results [setupColVals $map1 attrs1 insert]
                 set cmdList [lindex $results 1]
                 set cmd [lindex $cmdList 0] 
@@ -503,6 +506,8 @@ proc doUsers {userList} {
                 set attrs1(ownerType) "user"
                 set attrs1(ownerId) $::userIds($user)           
                 set attrs1(principal) $::userIds($user)
+                set attrs1(owningBinderId) $::_profileId
+                
                 set results [setupColVals $map1 attrs1 insert]
                 set cmdList [lindex $results 1]
                 set cmd [lindex $cmdList 0] 
@@ -1013,7 +1018,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set rowid [lindex [wimsql_rw "select rowid from SS_FolderEntries where id=$entryId;" ] 0]
                 wimsql_rw clob SS_FolderEntries description_text $rowid $abstract
 			}
-			doDocCustomAttributes $forum $entry $entryId  $folderSortKey
+			doDocCustomAttributes $forum $entry $entryId  $folderSortKey $parentFolderID
             set savedName {}
             set upLoad [aval -name $forum uploadFileInfo $entry]
             try {unset topAttachment}
@@ -1025,6 +1030,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set attaches(ownerId) $entryId
                 set attaches(ownerType) "folderEntry"
                 set attaches(folderEntry) $entryId
+                set attaches(owningBinderId) $parentFolderID
 				set attaches(owningFolderSortKey) $folderSortKey
                 set attaches(creation_date) [lindex $upLoad 3]
                 set attaches(creation_principal) [mapName [lindex $upLoad 2]]
@@ -1049,6 +1055,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set attaches(ownerType) "folderEntry"
                 set attaches(folderEntry) $entryId
 				set attaches(owningFolderSortKey) $folderSortKey
+                set attaches(owningBinderId) $parentFolderID
                 set attaches(name) "primary"
                 set attaches(creation_date) $attrs(creation_date)
                 set attaches(creation_principal) $attrs(creation_principal)
@@ -1071,6 +1078,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set attaches(ownerType) "folderEntry"
                 set attaches(folderEntry) $entryId
 				set attaches(owningFolderSortKey) $folderSortKey
+                set attaches(owningBinderId) $parentFolderID
                 set attaches(parentAttachment) $topAttachment
                 set attaches(type) "V"
                 set attaches(lastVersion) 0
@@ -1172,6 +1180,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
 				    set attaches(ownerId) $entryId
 	                set attaches(folderEntry) $entryId
 					set attaches(owningFolderSortKey) $folderSortKey
+           		    set attaches(owningBinderId) $parentFolderID
 					set attaches(lastVersion) [expr [llength $af] -1]
                     set attaches(id) [newuuid]
                     set attaches(creation_date) $attrs(creation_date)
@@ -1219,12 +1228,13 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
         aval_unload -name $forum $subList
     }
 }
-proc doDocCustomAttributes {forum entry entryId folderSortKey} {
+proc doDocCustomAttributes {forum entry entryId folderSortKey parentFolderID} {
 	set attrs(type) "A"
 	set attrs(ownerType) "folderEntry"
 	set attrs(ownerId) $entryId
 	set attrs(folderEntry) $entryId
 	set attrs(owningFolderSortKey) $folderSortKey
+	set attrs(owningBinderId) $parentFolderID
 	#frontbase doesn't like nulls
 	set attrs(booleanValue) 0
 	set val [aval -name $forum expiration $entry]
