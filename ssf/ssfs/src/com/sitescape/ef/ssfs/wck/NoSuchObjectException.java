@@ -1,6 +1,6 @@
 package com.sitescape.ef.ssfs.wck;
 
-public class NoSuchObjectException extends Exception {
+public class NoSuchObjectException extends RuntimeException {
 
 	public NoSuchObjectException() {
 	}

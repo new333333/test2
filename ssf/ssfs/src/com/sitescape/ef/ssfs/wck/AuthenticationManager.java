@@ -11,12 +11,9 @@ import com.sitescape.ef.web.util.NullServletResponse;
 
 public class AuthenticationManager implements SessionAuthenticationManager {
 
-	private static final String CONTEXT_PATH = "/ssfs"; // hard-coded...
-	private static final String DELIM = ";";
-	
 	public Object getAuthenticationSession(String user, String password) throws Exception {
 		// Split user name into two parts - zonename:username
-		String[] credential = user.split(DELIM);
+		String[] credential = user.split(Constants.USERNAME_DELIM);
 		if(credential.length != 2)
 			throw new IllegalArgumentException("Enter user name in the format <zonename>;<username>");
 		
@@ -24,11 +21,11 @@ public class AuthenticationManager implements SessionAuthenticationManager {
 		String userName = credential[1].trim();
 		
 		AttributesAndParamsOnlyServletRequest req = 
-			new AttributesAndParamsOnlyServletRequest(CONTEXT_PATH);
-		req.setParameter(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_AUTHENTICATE);
-		req.setParameter(CrossContextConstants.ZONE_NAME, zoneName);
-		req.setParameter(CrossContextConstants.USER_NAME, userName);
-		req.setParameter(CrossContextConstants.PASSWORD, password);
+			new AttributesAndParamsOnlyServletRequest(Constants.CONTEXT_PATH);
+		req.setAttribute(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_AUTHENTICATE);
+		req.setAttribute(CrossContextConstants.ARG_ZONE_NAME, zoneName);
+		req.setAttribute(CrossContextConstants.ARG_USER_NAME, userName);
+		req.setAttribute(CrossContextConstants.ARG_PASSWORD, password);
 		NullServletResponse res = new NullServletResponse();
 		
 		try {

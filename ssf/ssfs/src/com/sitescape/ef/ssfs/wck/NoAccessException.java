@@ -1,6 +1,6 @@
 package com.sitescape.ef.ssfs.wck;
 
-public class NoAccessException extends Exception {
+public class NoAccessException extends RuntimeException {
 
 	public NoAccessException() {
 	}
