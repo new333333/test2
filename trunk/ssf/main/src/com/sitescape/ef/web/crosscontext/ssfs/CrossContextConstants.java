@@ -29,11 +29,10 @@ public abstract class CrossContextConstants {
 	public static final String OPERATION_GET_CREATION_DATE = "getCreationDate";
 	public static final String OPERATION_GET_CHILDREN_NAMES = "getChildrenNames";
 
-	// User credential or authentication related key names. - These are
-	// arguments for OPERATION_AUTHENTICATE operation.
-	public static final String ARG_USER_NAME = "username";
-	public static final String ARG_PASSWORD = "password";
-	public static final String ARG_ZONE_NAME = "zonename";
+	// User credential or authentication related key names.
+	public static final String USER_NAME = "username";
+	public static final String PASSWORD = "password";
+	public static final String ZONE_NAME = "zonename";
 	
 	// Argument key for OPERATION_SET_RESOURCE operation.
 	public static final String ARG_INPUTSTREAM = "inputStream";

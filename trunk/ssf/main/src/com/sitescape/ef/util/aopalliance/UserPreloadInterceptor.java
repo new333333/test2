@@ -1,4 +1,4 @@
-package com.sitescape.ef.remoting.interceptor;
+package com.sitescape.ef.util.aopalliance;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;

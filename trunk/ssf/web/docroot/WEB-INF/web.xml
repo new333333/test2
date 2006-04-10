@@ -110,7 +110,7 @@
 
 	<servlet>
 		<servlet-name>webdav</servlet-name>
-		<servlet-class>com.sitescape.ef.webdav.WebdavServlet</servlet-class>
+		<servlet-class>com.sitescape.ef.module.ssfs.servlet.WebdavServlet</servlet-class>
 		<load-on-startup>6</load-on-startup>
 	</servlet>
 	
