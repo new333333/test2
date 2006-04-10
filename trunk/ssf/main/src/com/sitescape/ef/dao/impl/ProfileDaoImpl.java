@@ -63,48 +63,83 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	 * Delete the binder object and its assocations.
 	 * Entries and child binders should already have been deleted
 	 */	
-	public void delete(final ProfileBinder binder) {
-	   	getHibernateTemplate().execute(
-	    	new HibernateCallback() {
-	    		public Object doInHibernate(Session session) throws HibernateException {
-	    		session.createQuery("DELETE com.sitescape.ef.domain.PostingDef where binder=:owner")
-	       			.setLong("owner", binder.getId().longValue())
-    	   			.executeUpdate();
-  	   			Connection connect = session.connection();
-   	   			try {
-   	   				Statement s = connect.createStatement();
-   	   				s.executeUpdate("delete from SS_DefinitionMap where forum=" + binder.getId());
-   	   				s.executeUpdate("delete from SS_WorkflowMap where binder=" + binder.getId());
-   	   			} catch (SQLException sq) {
-   	   				throw new HibernateException(sq);
-   	   			}
- 	       	   		return null;
-    	   		}
-    	   	}
-    	 );    	
-	    			
+	public void delete(ProfileBinder binder) {
+		   //core handles everything for the profiles 
+		getCoreDao().delete((Binder)binder);			
 	}
-    /**
+	/**
+	 * Delete all the entries in the folder.
+	 * Don't delete the folder
+	 */
+    public void deleteEntries(final ProfileBinder profiles) {
+	    getHibernateTemplate().execute(
+	    	new HibernateCallback() {
+	       		public Object doInHibernate(Session session) throws HibernateException {
+	       			getCoreDao().deleteEntityAssociations("owningBinderId=" + profiles.getId(), Principal.class);
+	       			session.createQuery("Delete com.sitescape.ef.domain.Principal where parentBinder=:parent")
+	       				.setLong("parent", profiles.getId().longValue())
+	       				.executeUpdate();
+	       			session.getSessionFactory().evict(Principal.class);		
+	       	   		return null;
+	       		}
+	       	}
+	    );    	
+	    	
+	 }
+	 /**
      * Delete an object and its assocations 
      * @param entry
      */
-    public void delete(final Principal entry) {
-        new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException {
- 	   			Connection connect = session.connection();
-   	   			try {
-   	   				Statement s = connect.createStatement();
-   	   				s.executeUpdate("delete from SS_UserProperties where principalId=" + entry.getId());
-   	   			} catch (SQLException sq) {
-   	   				throw new HibernateException(sq);
-   	   			}
+    public void delete(Principal entry) {
+    	List entries = new ArrayList();
+    	entries.add(entry);
+    	deleteEntries(entries);
              	
-            	return null;
-            }
-        };
-    	getCoreDao().delete(entry);
-    } 
+     } 
     /**
+     * Delete a list of entries
+     */
+    public void deleteEntries(final List entries) {
+    	if (entries == null || entries.size() == 0) return;
+      	getHibernateTemplate().execute(
+        	   	new HibernateCallback() {
+        	   		public Object doInHibernate(Session session) throws HibernateException {
+        	   	   	Set ids = new HashSet();
+           			StringBuffer inList = new StringBuffer();
+        			Principal p;
+        			for (int i=0; i<entries.size(); ++i) {
+        				p = (Principal)entries.get(i); 
+        	    		ids.add(p.getId());
+        	    		inList.append(p.getId().toString() + ",");
+        	    	}
+        			inList.deleteCharAt(inList.length()-1);
+    	   			Connection connect = session.connection();
+       	   			try {
+       	   				Statement s = connect.createStatement();
+       	   				
+       	   				s.executeUpdate("delete from SS_UserProperties where principalId in (" + inList.toString() + ")");
+       	   			} catch (SQLException sq) {
+       	   				throw new HibernateException(sq);
+       	   			}
+       	   			getCoreDao().deleteEntityAssociations("principal in (" + inList.toString() + ")", Principal.class);
+       	   			session.createQuery("Delete com.sitescape.ef.domain.Principal where id in (:pList)")
+            			.setParameterList("pList", ids)
+       	   				.executeUpdate();
+	       			session.getSessionFactory().evict(Principal.class);		
+       	   				
+           	   		return null;
+        	   		}
+        	   	}
+        	 );    	
+       	
+    }
+        
+    public void deleteEntryWorkflows(ProfileBinder profile) {
+    	//brute force delete of jbpm data structures
+    }
+    public void deleteEntryWorkflows(List entries) {
+    	
+    }    /**
      * Lookup binder and cache result.  Profile binder is a fixed name
      */
     public ProfileBinder getProfileBinder(final String zoneName) {

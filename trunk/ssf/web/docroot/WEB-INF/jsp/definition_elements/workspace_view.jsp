@@ -8,5 +8,5 @@
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}"
-  binder="${ssBinder}" />
+  entry="${ssDefinitionEntry}" />
 </div>

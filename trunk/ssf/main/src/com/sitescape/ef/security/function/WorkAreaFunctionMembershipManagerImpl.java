@@ -24,6 +24,9 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         getSecurityDao().save(functionMembership);
     }
 
+    public void deleteWorkAreaFunctionMemberships(String zoneName, WorkArea workArea) {
+    	getSecurityDao().deleteWorkAreaFunctionMemberships(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType());
+    }
     public void deleteWorkAreaFunctionMembership(WorkAreaFunctionMembership functionMembership) {
         getSecurityDao().delete(functionMembership);
     }

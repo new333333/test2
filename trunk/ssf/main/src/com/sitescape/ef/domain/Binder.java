@@ -383,6 +383,8 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
      	return null;
  	}
      public Definition getEntryDef() {
+    	 //Peter wants the currently configured default for binders.
+    	 //doesn't care what it was created with
      	return getDefaultViewDef();
      }
        // Setup by hibernate

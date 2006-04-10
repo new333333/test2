@@ -140,6 +140,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	   	getHibernateTemplate().execute(
 	    	new HibernateCallback() {
 	    		public Object doInHibernate(Session session) throws HibernateException {
+    	  		deleteEntityAssociations("binder=" + binder.getId(), Binder.class);
 	    		session.createQuery("DELETE com.sitescape.ef.domain.PostingDef where binder=:owner")
 	       			.setLong("owner", binder.getId().longValue())
     	   			.executeUpdate();
@@ -152,11 +153,41 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
    	   			} catch (SQLException sq) {
    	   				throw new HibernateException(sq);
    	   			}
- 	       	   		return null;
+   		   		//will this be a problem if the entry is proxied??
+   	   			session.createQuery("DELETE  com.sitescape.ef.domain.Binder where id=" + binder.getId())
+   	   				.executeUpdate();
+   	   			session.getSessionFactory().evictCollection("com.sitescape.ef.domain.Binder.binders", binder.getParentBinder().getId());
+   	    		session.getSessionFactory().evict(Binder.class, binder.getId());
+   	    		session.evict(binder);
+       	   		return null;
     	   		}
     	   	}
     	 );    	
+ 
 	    			
+	}
+	public void deleteEntityAssociations(final String whereClause, final Class clazz) {
+	   	getHibernateTemplate().execute(
+	    	   	new HibernateCallback() {
+	    	   		public Object doInHibernate(Session session) throws HibernateException {
+	    	   		session.createQuery("DELETE com.sitescape.ef.domain.Attachment where " + whereClause)
+	    	   			.executeUpdate();
+	    	   		session.createQuery("DELETE com.sitescape.ef.domain.Event where " + whereClause)
+	       	   			.executeUpdate();
+	       	   		session.createQuery("DELETE com.sitescape.ef.domain.CustomAttribute where " + whereClause)
+	  	   				.executeUpdate();
+	       	   		try {
+	       	   			if (clazz.newInstance() instanceof WorkflowSupport) {
+	       	   			session.createQuery("DELETE com.sitescape.ef.domain.WorkflowState where " + whereClause)
+	       	   				.executeUpdate();
+	       	   			}
+	       	   		} catch (Exception ex) {};
+	       	   		return null;
+	    	   		}
+	    	   	}
+	    	 );    	
+	    	
+		
 	}
     /**
      * Delete an object and its assocations more efficiently then letting hibernate do it.
@@ -167,46 +198,10 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	   	new HibernateCallback() {
     	   		public Object doInHibernate(Session session) throws HibernateException {
      	   		EntityIdentifier id = entity.getEntityIdentifier();
-    	   		session.createQuery("DELETE com.sitescape.ef.domain.Attachment where ownerId=:owner and ownerType=:type")
-       	   			.setLong("owner", id.getEntityId().longValue())
-       	   			.setString("type", id.getEntityType().name())
-    	   			.executeUpdate();
-       	   		//need to remove event assignments
- /*      	   		List eventIds = session.createQuery("select id from com.sitescape.ef.domain.Event where ownerId=:owner and ownerType=:type")
-           	   			.setLong("owner", entry.getId().longValue())
-           	   			.setString("type", AnyOwner.FOLDERENTRY)
-           	   			.list();
-       	   		if (!eventIds.isEmpty()) {
-       	   			StringBuffer ids = new StringBuffer();
-       	   			ids.append("(");
-       	   			for (int i=0; i<eventIds.size(); ++i) {
-       	   				ids.append("'" + eventIds.get(i) + "',");
-       	   			}
-       	   			ids.replace(ids.length()-1, ids.length(), ")");
-       	   			Connection connect = session.connection();
-       	   			try {
-       	   				Statement s = connect.createStatement();
-       	   				s.executeUpdate("delete from SS_AssignmentsMap where event in " + ids);
-       	   			} catch (SQLException sq) {
-       	   				throw new HibernateException(sq);
-       	   			}
-       	   		}
-*/
-       	   		session.createQuery("DELETE com.sitescape.ef.domain.Event where ownerId=:owner and ownerType=:type")
-       	   			.setLong("owner", id.getEntityId().longValue())
-       	   			.setString("type", id.getEntityType().name())
-       	   			.executeUpdate();
-       	   		session.createQuery("DELETE com.sitescape.ef.domain.CustomAttribute where ownerId=:owner and ownerType=:type")
-        	   			.setLong("owner", id.getEntityId().longValue())
-       	   			.setString("type", id.getEntityType().name())
-  	   				.executeUpdate();
-       	   		if (entity instanceof WorkflowSupport) {
-       	   			session.createQuery("DELETE com.sitescape.ef.domain.WorkflowState where ownerId=:owner and ownerType=:type")
-       	   				.setLong("owner", id.getEntityId().longValue())
-       	   					.setString("type", id.getEntityType().name())
-       	   						.executeUpdate();
-       	   		}
-       	   		//will this be a problem if the entry is proxied??
+     	   		String whereClause = "ownerId=" + id.getEntityId() + " and ownerType=" + id.getEntityType().name();
+     	   		deleteEntityAssociations(whereClause, entity.getClass());
+
+     	   		//will this be a problem if the entry is proxied??
     	   		session.createQuery("DELETE  " + entity.getClass().getName() +   " where id=:id")
     	   			.setLong("id", id.getEntityId().longValue())
     	   			.executeUpdate();

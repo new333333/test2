@@ -142,16 +142,10 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 		<attribute>
-			<name>binder</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.Binder</type>
-		</attribute>		
-		<attribute>
 			<name>entry</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.Entry</type>
+			<type>com.sitescape.ef.domain.DefinableEntity</type>
 		</attribute>		
 		<attribute>
 			<name>processThisItem</name>

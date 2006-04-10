@@ -32,8 +32,9 @@ public class ModifyBinderController extends SAbstractForumController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		if (action.equals(WebKeys.ACTION_DELETE_BINDER)) {
-			//getFolderModule().deleteBinder(binderId);
-			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
+			Binder binder = getBinderModule().getBinder(binderId);
+			getBinderModule().deleteBinder(binderId);
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, binder.getParentBinder().getId().toString());		
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
 			response.setRenderParameter("ssReloadUrl", "");

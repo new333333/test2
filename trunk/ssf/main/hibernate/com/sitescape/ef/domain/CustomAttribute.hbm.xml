@@ -25,6 +25,7 @@
       <property name="ownerType" update="false" insert="false"/>
       <property name="ownerId" update="false" insert="false"/>
       <property name="owningFolderSortKey" length="512"/>
+      <property name="owningBinderId"/>
     </component>
     <property name="name" length="64"/>
     <property name="stringValue" length="4000"/>

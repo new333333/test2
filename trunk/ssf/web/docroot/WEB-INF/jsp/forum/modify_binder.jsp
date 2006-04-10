@@ -22,6 +22,7 @@
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   processThisItem="true"
   configElement="${ssConfigElement}" 
-  configJspStyle="${ssConfigJspStyle}" />
+  configJspStyle="${ssConfigJspStyle}" 
+  entry="${ssBinder}"/>
 
 </div>

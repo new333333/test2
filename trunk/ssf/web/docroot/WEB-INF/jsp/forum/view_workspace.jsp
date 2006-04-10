@@ -34,7 +34,7 @@ var ss_reloadUrl = "${ss_reloadUrl}";
   processThisItem="true"
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}"
-  binder="${ssBinder}" />
+  entry="${ssBinder}" />
 </div>
 </c:if>
 

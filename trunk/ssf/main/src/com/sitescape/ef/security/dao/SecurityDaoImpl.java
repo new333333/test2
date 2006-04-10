@@ -1,5 +1,8 @@
 package com.sitescape.ef.security.dao;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
@@ -79,7 +82,6 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
                                			.add(Expression.eq(FUNCTION_ID, functionId))
                                		)
                                	.setFetchMode("memberIds", FetchMode.JOIN)
-                               	.setCacheable(true)
                                	.list();
                     	//since we eagerly fetch, results are not unique
                     	if(results == null || results.size() == 0)
@@ -93,25 +95,48 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
 	
 	public List findWorkAreaFunctionMemberships(final String zoneName, 
             final Long workAreaId, final String workAreaType) {
-        return (List)getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                    	List results = session.createCriteria(WorkAreaFunctionMembership.class)
-                                .add(Expression.conjunction() 
-                               			.add(Expression.eq(ZONE_ID, zoneName))
-                               			.add(Expression.eq(WORK_AREA_ID, workAreaId))
-                               			.add(Expression.eq(WORK_AREA_TYPE, workAreaType))
-                               		)
-                               	.setFetchMode("memberIds", FetchMode.JOIN)
-                               	.setCacheable(true)
-                               	.list();
-                    	//since we eagerly fetch, results are not unique
-                    	return new ArrayList(new HashSet(results));
-                    	}
-                	}
-            );
+		
+	       return (List)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    	List results = session.createCriteria(WorkAreaFunctionMembership.class)
+	                                .add(Expression.conjunction() 
+	                               			.add(Expression.eq(ZONE_ID, zoneName))
+	                               			.add(Expression.eq(WORK_AREA_ID, workAreaId))
+	                               			.add(Expression.eq(WORK_AREA_TYPE, workAreaType))
+	                               		)
+	                               	.setFetchMode("memberIds", FetchMode.JOIN)
+	                               	.list();
+	                    	//since we eagerly fetch, results are not unique
+	                    	return new ArrayList(new HashSet(results));
+	                    	}
+	                	}
+	            );
+	 	}
+    public void deleteWorkAreaFunctionMemberships(final String zoneName, final Long workAreaId, final String workAreaType) {
+	   	getHibernateTemplate().execute(
+		    new HibernateCallback() {
+		    	public Object doInHibernate(Session session) throws HibernateException {
+		    		String delString = "zoneName='" + zoneName + "' and " +
+  						"workAreaId=" + workAreaId + " and workAreaType='" + workAreaType + "'";
+	  	   			Connection connect = session.connection();
+	   	   			try {
+	   	   				Statement s = connect.createStatement();
+	   	   				s.executeUpdate("delete from SS_WorkAreaFunctionMembers where workAreaFunctionMembershipId in " +
+	   	   						"(select id from SS_WorkAreaFunctionMemberships where " + delString + ")");
+	   	   			} catch (SQLException sq) {
+	   	   				throw new HibernateException(sq);
+	   	   			}
+	   		   		//will this be a problem if the entry is proxied??
+	   	   			session.createQuery("DELETE  com.sitescape.ef.security.function.WorkAreaFunctionMembership where " + delString)
+	   	   				.executeUpdate();
+	   	   			return null;
+	       		}
+	       	}
+	     );    	
+	    	
     }
-    
+   
     private Criterion functionCriterion(List functions) {
         Disjunction disjunction = Expression.disjunction();
         for(Iterator i = functions.iterator(); i.hasNext();) {

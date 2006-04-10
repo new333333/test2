@@ -230,6 +230,11 @@ public class SAbstractForumController extends SAbstractController {
 		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
+		//Delete
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DELETE_BINDER);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.delete_folder"), url);
 		
 		//	The "Display styles" menu
 		toolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.display_styles"));
@@ -346,6 +351,11 @@ public class SAbstractForumController extends SAbstractController {
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
 		
+		//Delete
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DELETE_BINDER);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.delete_workspace"), url);
 		return toolbar;
 	}
 		

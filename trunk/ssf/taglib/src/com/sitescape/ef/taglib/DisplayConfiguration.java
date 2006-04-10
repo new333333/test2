@@ -20,10 +20,7 @@ import java.util.ArrayList;
 
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
@@ -37,8 +34,7 @@ public class DisplayConfiguration extends TagSupport {
     private Element configElement;
     private String configJspStyle;
     private boolean processThisItem = false;
-    private Binder binder;
-    private Entry entry;
+    private DefinableEntity entry;
     
 	public int doStartTag() throws JspException {
 		try {
@@ -151,10 +147,7 @@ public class DisplayConfiguration extends TagSupport {
 									if (this.entry != null) {
 										req.setAttribute(WebKeys.DEFINITION_ENTRY, this.entry);
 									}
-									if (this.binder != null) {
-										req.setAttribute(WebKeys.DEFINITION_BINDER, this.binder);
-									}
-				
+									
 									StringServletResponse res = new StringServletResponse(httpRes);
 									rd.include(req, res);
 									pageContext.getOut().print(res.getString());
@@ -190,7 +183,6 @@ public class DisplayConfiguration extends TagSupport {
 	    	this.configElement = null;
 	    	this.configJspStyle = null;
 	    	this.processThisItem = false;
-	    	this.binder = null;
 	    	this.entry = null;
 	    }
 	    
@@ -217,11 +209,8 @@ public class DisplayConfiguration extends TagSupport {
 	    this.processThisItem = flag;
 	}
 
-	public void setBinder(Binder binder) {
-	    this.binder = binder;
-	}
 
-	public void setEntry(Entry entry) {
+	public void setEntry(DefinableEntity entry) {
 	    this.entry = entry;
 	}
 

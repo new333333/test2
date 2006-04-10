@@ -17,5 +17,5 @@ function wsTree_showId(id, obj) {
 </script>
 
 <ssf:tree treeName="wsTree" treeDocument="${ssWsDomTree}" 
-  topId="${ssBinder.id}" highlightNode="${ssBinder.id}" rootOpen="true" />
+  topId="${ssDefinitionEntry.id}" highlightNode="${ssDefinitionEntry.id}" rootOpen="true" />
 <div id="ss_tree_div_status_message" style="visibility:hidden; display:none;"></div>

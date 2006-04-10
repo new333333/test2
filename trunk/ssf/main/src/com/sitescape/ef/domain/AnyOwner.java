@@ -20,7 +20,7 @@ public class AnyOwner {
 	protected Binder binder;
    //keep as reference for user queries only 
     protected String owningFolderSortKey;    
-
+    protected Long owningBinderId;
     /**
      * This should be used only by hibernate
      *
@@ -36,6 +36,7 @@ public class AnyOwner {
 	 * @param setForeignKey
 	 */
 	public AnyOwner(DefinableEntity entity, boolean setForeignKey) {
+		setBinderDeleteKey(entity);
 		if (setForeignKey)
 			setup(entity);
 		else {
@@ -51,6 +52,10 @@ public class AnyOwner {
 			}
   		}
 	}
+	/**
+	 * Setup foreign key mappings for lookups by respective classes
+	 * @param entity
+	 */
 	private void setup(DefinableEntity entity) {
 		setEntity(entity);
 		if (entity instanceof FolderEntry) {
@@ -64,7 +69,26 @@ public class AnyOwner {
    			binder = (Binder)entity;
   		}
 	}
-   /*
+	private void setBinderDeleteKey(DefinableEntity entity) {
+		if (entity instanceof Binder)
+			setOwningBinderId(null);
+		else 
+			setOwningBinderId(((Entry)entity).getParentBinder().getId());
+	}
+	/**
+	 * This field servers as a key into the database for quick bulk deletes.
+	 * @hibernate.property
+	 */
+	protected Long getOwningBinderId() {
+		return owningBinderId;
+	}
+	/**
+	 * Hibernate accessor
+	 */
+	protected void setOwningBinderId(Long owningBinderId) {
+		this.owningBinderId = owningBinderId;
+	}
+    /*
     * These fields are for foreign key mapping.  An <any> field cannot be
     * mapped as a foreign key to multiple tables.  Associations from the owner class,
     * attempt to do this.

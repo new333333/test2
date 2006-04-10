@@ -17,6 +17,8 @@ public interface SecurityDao {
     public void update(Object obj);
     
     public void delete(Object obj);
+    public void deleteWorkAreaFunctionMemberships(String zoneName, Long workAreaId, String workAreaType);
+    
     public Function loadFunction(Long id);
     public WorkAreaFunctionMembership loadWorkAreaFunctionMembership(Long id);
     	    	     
