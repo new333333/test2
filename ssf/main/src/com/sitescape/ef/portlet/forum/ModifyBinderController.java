@@ -48,7 +48,6 @@ public class ModifyBinderController extends SAbstractForumController {
 			}
 			getBinderModule().modifyBinder(binderId, new MapInputData(formData), fileMap);
 			setupViewBinder(response, binderId);
-			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			setupViewBinder(response, binderId);
@@ -56,11 +55,7 @@ public class ModifyBinderController extends SAbstractForumController {
 			response.setRenderParameters(formData);		
 		}
 	}
-	private void setupViewBinder(ActionResponse response, Long folderId) {
-		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
-		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
-	}
-		
+
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 		RenderResponse response) throws Exception {
 		Map formData = request.getParameterMap();

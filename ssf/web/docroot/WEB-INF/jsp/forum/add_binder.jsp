@@ -15,6 +15,11 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<ssf:ifadapter>
+<body>
+</ssf:ifadapter>
 
 <div class="ss_portlet"> 
 <span class="ss_titlebold"><c:out value="${ssBinder.title}"/></span>
@@ -22,13 +27,8 @@
 <br/>
 <form class="ss_style ss_form" 
   name="<portlet:namespace/>fm" 
-  action="<portlet:actionURL>
-			<portlet:param name="action" value="add_binder"/>
-			<portlet:param name="binderId" value="${ssBinder.id}"/>
-			<portlet:param name="operation" value="${operation}"/>
-			<portlet:param name="entryType" value="${ssDefinitionId}"/>
-		  </portlet:actionURL>"
   method="post" onSubmit="return ss_onSubmit(this);" >
+<input type="hidden" name="_operation" value="${operation}"/>
 <input type="hidden" name="_definitionId" value="${ssDefinitionId}">
 
 <% // Show the workspace according to its definition %>
@@ -43,3 +43,8 @@
 
 </form>
 </div>
+
+<ssf:ifadapter>
+</body>
+</html>
+</ssf:ifadapter>

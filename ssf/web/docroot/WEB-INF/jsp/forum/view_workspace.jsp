@@ -24,6 +24,10 @@ if (!ssReloadUrl.equals("")) reloadCaller = true;
 </c:if>
 
 <c:if test="<%= !reloadCaller %>">
+<script type="text/javascript">
+var ss_reloadUrl = "${ss_reloadUrl}";
+</script>
+
 <div class="ss_style ss_portlet">
 <% // Show the workspace according to its definition %>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

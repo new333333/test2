@@ -74,7 +74,7 @@ function ss_openUrlInPortlet(url, popup) {
 	//Is this a request to pop up?
 	if (popup) {
 		self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no");
-		return;
+		return false;
 	}
 	//Are we at the top window?
 	if (self.window != self.top) {
