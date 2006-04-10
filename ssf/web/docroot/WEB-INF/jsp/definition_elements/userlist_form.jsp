@@ -102,7 +102,7 @@ function ss_userListInterceptCR(e) {
 		<div><%= caption %>
 		  <div style="border:solid #cecece 1px;">
 		    <ul id="added_<%= elementName %>" class="ss_dragable ss_userlist">
-		      <c:forEach var="item" items="${ssEntry.customAttributes[property_name].valueSet}">
+		      <c:forEach var="item" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}">
 		        <li id="<c:out value="${item.id}"/>" class="ss_dragable ss_userlist"><c:out value="${item.title}"/></li>
 		      </c:forEach>
 		    </ul>

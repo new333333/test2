@@ -14,5 +14,5 @@
 <div class="ss_entryContent">
 <div class="ss_labelAbove"><%= caption %></div>
 <input type="text" class="ss_text" name="title" <%= width %>
- value="<c:out value="${ssEntry.title}"/>" />
+ value="<c:out value="${ssDefinitionEntry.title}"/>" />
 </div>

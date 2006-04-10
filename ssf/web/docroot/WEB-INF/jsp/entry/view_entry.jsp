@@ -155,7 +155,6 @@ function highlightLineById(id) {
 </c:if>
 
 <c:if test="<%= op.equals(WebKeys.ACTION_VIEW_ENTRY) %>">
-<jsp:useBean id="ssEntry" type="com.sitescape.ef.domain.Entry" scope="request" />
   <c:if test="<%= !statePopUp %>">
 <script type="text/javascript">
 function ss_loadEntry(obj,id) {

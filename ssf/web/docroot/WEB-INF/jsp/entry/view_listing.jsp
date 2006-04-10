@@ -242,7 +242,6 @@ function ss_notLoggedIn() {
 </c:if>
 <c:if test="<%= !reloadCaller %>">
   <c:if test="<%= isViewEntry %>">
-<jsp:useBean id="ssEntry" type="com.sitescape.ef.domain.Entry" scope="request" />
 <script type="text/javascript">
 if (self.parent && self.parent.highlightLineById) {
 	self.parent.highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
