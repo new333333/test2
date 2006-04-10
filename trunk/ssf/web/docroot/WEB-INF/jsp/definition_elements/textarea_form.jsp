@@ -28,5 +28,5 @@
 <span class="ss_labelAbove"><%= caption %><%= required %></span>
 <textarea name="<%= elementName %>" wrap="virtual"
   rows="<%= rows %>" <%= width %> 
-><c:out value="${ssEntry.customAttributes[property_name].value}"/></textarea>
+><c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/></textarea>
 </div>

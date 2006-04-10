@@ -12,7 +12,7 @@
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_name.jsp" %><%
 	
 	} else if (itemType.equals("profileElements")) {
-		User entry = (User) request.getAttribute("ssEntry");
+		User entry = (User) request.getAttribute("ssDefinitionEntry");
 		String value = "";
 		if (entry != null) {
 		    String prop = Character.toUpperCase(property_name.charAt(0)) + 

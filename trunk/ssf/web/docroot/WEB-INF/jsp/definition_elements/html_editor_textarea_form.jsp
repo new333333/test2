@@ -24,12 +24,12 @@
 	
 %>
 <c:set var="textValue" value=""/>
-<c:if test="${!empty ssEntry}">
+<c:if test="${!empty ssDefinitionEntry}">
   <c:if test="${property_name == 'description'}" >
-    <c:set var="textValue" value="${ssEntry.description.text}"/>
+    <c:set var="textValue" value="${ssDefinitionEntry.description.text}"/>
   </c:if>
   <c:if test="${property_name != 'description'}" >
-    <c:set var="textValue" value="${ssEntry.customAttributes[property_name].value.text}"/>
+    <c:set var="textValue" value="${ssDefinitionEntry.customAttributes[property_name].value.text}"/>
   </c:if>
 </c:if>
 <jsp:useBean id="textValue" type="java.lang.String" />

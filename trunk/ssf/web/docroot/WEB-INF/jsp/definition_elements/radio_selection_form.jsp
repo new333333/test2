@@ -1,7 +1,7 @@
 <% // radio selection %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="checked" value=""/>
-<c:if test="${ssEntry.customAttributes[radioGroupName].value == property_name}">
+<c:if test="${ssDefinitionEntry.customAttributes[radioGroupName].value == property_name}">
   <c:set var="checked" value="checked"/>
 </c:if>
 <input type="radio" name="<c:out value="${radioGroupName}"/>" 

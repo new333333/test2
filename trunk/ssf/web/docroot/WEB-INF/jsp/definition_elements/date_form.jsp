@@ -25,14 +25,14 @@
 %>
 <div class="ss_entryContent">
 <span class="ss_labelAbove"><%= caption %><%= required %></span>
-<c:if test="${!empty ssEntry.customAttributes[property_name].value}">
-<c:set var="initDate" value="${ssEntry.customAttributes[property_name].value}"/>
+<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
+<c:set var="initDate" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
 <jsp:useBean id="initDate" type="java.util.Date" />
 <ssf:datepicker id="<%= elementName %>" 
   formName="<%= formName %>" 
   initDate="<%= initDate %>" />
 </c:if>
-<c:if test="${empty ssEntry.customAttributes[property_name].value}">
+<c:if test="${empty ssDefinitionEntry.customAttributes[property_name].value}">
 <ssf:datepicker id="<%= elementName %>" 
   formName="<%= formName %>" 
   initDate="<%= new Date() %>" />

@@ -138,12 +138,12 @@ public class AjaxController  extends SAbstractForumController {
 			return new ModelAndView("forum/save_entry_height_return", model);
 		
 		} else if (op.equals(WebKeys.FORUM_OPERATION_USER_LIST_SEARCH)) {
-			String searchText = ((String[])formData.get("searchText"))[0];
-			String searchType = ((String[])formData.get("searchType"))[0];
-			String userGroupType = ((String[])formData.get("userGroupType"))[0];
-			String listDivId = ((String[])formData.get("listDivId"))[0];
-			String maxEntries = ((String[])formData.get("maxEntries"))[0];
-			String[] idsToSkip = ((String[])formData.get("idsToSkip"))[0].split(" ");
+			String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+			String searchType = PortletRequestUtils.getStringParameter(request, "searchType", "");
+			String userGroupType = PortletRequestUtils.getStringParameter(request, "userGroupType", "");
+			String listDivId = PortletRequestUtils.getStringParameter(request, "listDivId", "");
+			String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "");
+			String[] idsToSkip = PortletRequestUtils.getStringParameter(request, "idsToSkip", "").split(" ");
 			Map userIdsToSkip = new HashMap();
 			for (int i = 0; i < idsToSkip.length; i++) {
 				if (!idsToSkip[i].equals("")) userIdsToSkip.put(idsToSkip[i], Long.valueOf(idsToSkip[i]));

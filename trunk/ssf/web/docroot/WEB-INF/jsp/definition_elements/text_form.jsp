@@ -24,5 +24,5 @@
 %>
 <div style="display:<%= inline %>;"><%= caption %>
 <input type="text" class="ss_text" name="<%= elementName %>" <%= width %> 
- value="<c:out value="${ssEntry.customAttributes[property_name].value}"/>">
+ value="<c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/>">
 </div>
