@@ -23,9 +23,6 @@ import static com.sitescape.ef.web.crosscontext.ssfs.CrossContextConstants.*;
 
 public class WebdavSiteScape implements BasicWebdavStore {
 
-	private static final String URI_DELIM = "/";
-	private static final String USERNAME_DELIM = ";";
-	
 	private Service service;
 	private LoggerFacade logger;
 	private String zoneName;
@@ -38,7 +35,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		this.service = service;
 		this.logger = logger;
 		if(connection != null) {
-			String[] v = ((String) connection).split(USERNAME_DELIM);
+			String[] v = ((String) connection).split(Constants.USERNAME_DELIM);
 			this.zoneName = v[0].trim();
 			this.userName = v[1].trim();
 		}
@@ -68,7 +65,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		catch (NoAccessException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
 		} 
-		catch (SiteScapeClientException e) {
+		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		}
 	}
@@ -86,7 +83,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		catch (NoAccessException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
 		} 
-		catch (SiteScapeClientException e) {
+		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		}
 	}
@@ -104,7 +101,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		catch (NoAccessException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
 		}
-		catch (SiteScapeClientException e) {
+		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		}
 	}
@@ -122,7 +119,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 			if(representsFolder(m))
 				throw new ServiceAccessException(service, "The position refers to a folder");
 			else
-				SiteScapeClient.createResource(m);
+				CCClient.createResource(m);
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(resourceUri, e.getMessage(), "create");
@@ -130,7 +127,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		catch (NoAccessException e) {
 			throw new AccessDeniedException(resourceUri, e.getMessage(), "create");
 		}
-		catch (SiteScapeClientException e) {
+		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		} 
 		catch (AlreadyExistsException e) {
@@ -147,7 +144,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 			if(representsFolder(m))
 				throw new ObjectNotFoundException(resourceUri);
 			else
-				SiteScapeClient.setResource(m, content); // we don't use contentType and characterEncoding
+				CCClient.setResource(m, content); // we don't use contentType and characterEncoding
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(resourceUri, e.getMessage(), "store");
@@ -155,7 +152,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		catch (NoAccessException e) {
 			throw new AccessDeniedException(resourceUri, e.getMessage(), "store");
 		}
-		catch (SiteScapeClientException e) {
+		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		} 
 		catch (NoSuchObjectException e) {
@@ -171,12 +168,12 @@ public class WebdavSiteScape implements BasicWebdavStore {
 			if(representsAbstractFolder(m))
 				return new Date(0); // There's no good answer for this - Will this work?
 			else
-				return SiteScapeClient.getLastModified(m);
+				return CCClient.getLastModified(m);
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
 		} 
-		catch (SiteScapeClientException e) {
+		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		} 
 		catch (NoAccessException e) {
@@ -195,12 +192,12 @@ public class WebdavSiteScape implements BasicWebdavStore {
 			if(representsAbstractFolder(m))
 				return new Date(0); // There's no good answer for this - Will this work?
 			else
-				return SiteScapeClient.getCreationDate(m);
+				return CCClient.getCreationDate(m);
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
 		} 
-		catch (SiteScapeClientException e) {
+		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		} 
 		catch (NoAccessException e) {
@@ -234,7 +231,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 				return new String[] {URI_TYPE_INTERNAL, URI_TYPE_LIBRARY};
 			}
 			else {
-				return SiteScapeClient.getChildrenNames(m);
+				return CCClient.getChildrenNames(m);
 			}
 		}
 		catch(ZoneMismatchException e) {
@@ -243,7 +240,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		catch (NoAccessException e) {
 			throw new AccessDeniedException(folderUri, e.getMessage(), "read");
 		}
-		catch (SiteScapeClientException e) {
+		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		} 
 		catch (NoSuchObjectException e) {
@@ -258,7 +255,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 			if(representsFolder(m))
 				throw new ObjectNotFoundException(resourceUri);
 			else
-				return SiteScapeClient.getResource(m); 
+				return CCClient.getResource(m); 
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(resourceUri, e.getMessage(), "read");
@@ -266,7 +263,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		catch (NoAccessException e) {
 			throw new AccessDeniedException(resourceUri, e.getMessage(), "read");
 		}
-		catch (SiteScapeClientException e) {
+		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		} 
 		catch (NoSuchObjectException e) {
@@ -282,7 +279,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 			if(representsFolder(m))
 				throw new ObjectNotFoundException(resourceUri);
 			else
-				return SiteScapeClient.getResourceLength(m); 
+				return CCClient.getResourceLength(m); 
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(resourceUri, e.getMessage(), "read");
@@ -290,7 +287,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		catch (NoAccessException e) {
 			throw new AccessDeniedException(resourceUri, e.getMessage(), "read");
 		}
-		catch (SiteScapeClientException e) {
+		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		} 
 		catch (NoSuchObjectException e) {
@@ -306,7 +303,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 			if(representsFolder(m))
 				throw new AccessDeniedException(uri, "Removing folder is not supported", "create");
 			else
-				SiteScapeClient.removeResource(m); 
+				CCClient.removeResource(m); 
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "delete");
@@ -314,7 +311,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		catch (NoAccessException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "delete");
 		}
-		catch (SiteScapeClientException e) {
+		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		} 
 		catch (NoSuchObjectException e) {
@@ -340,11 +337,11 @@ public class WebdavSiteScape implements BasicWebdavStore {
 	 * @return
 	 */
 	private Map parseUri(String uri) throws ZoneMismatchException {
-		if(uri.startsWith(URI_DELIM))
+		if(uri.startsWith(Constants.URI_DELIM))
 			uri = uri.substring(1);
 		
 		// Break uri into pieces
-		String[] u = uri.split(URI_DELIM);
+		String[] u = uri.split(Constants.URI_DELIM);
 		
 		if(!u[0].equals("files"))
 			return null;
@@ -443,7 +440,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		}
 	}
 	
-	private boolean objectExists(Map m) throws NoAccessException, SiteScapeClientException {
+	private boolean objectExists(Map m) throws NoAccessException, CCClientException {
 		// 1. /files always exist
 		// 2. /files/<zonename> always exist AS LONG AS the zonename matches that of the user
 		// 3. /files/<zonename>/internal always exist AS LONG AS the zonename matches that of the user
@@ -452,7 +449,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		if(representsAbstractFolder(m))
 			return true;  // /files/<zonename>/<internal or library>
 		else
-			return SiteScapeClient.objectExists(m);		
+			return CCClient.objectExists(m);		
 	}
 
 	/**

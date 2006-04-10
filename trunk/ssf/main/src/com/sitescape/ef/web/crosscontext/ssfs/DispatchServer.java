@@ -22,12 +22,12 @@ public class DispatchServer extends GenericServlet {
 
 	@Override
 	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
-		String operation = req.getParameter(CrossContextConstants.OPERATION);
+		String operation = (String) req.getAttribute(CrossContextConstants.OPERATION);
 		
 		if(operation.equals(CrossContextConstants.OPERATION_AUTHENTICATE)) {
-			String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
-			String userName = req.getParameter(CrossContextConstants.USER_NAME);
-			String password = req.getParameter(CrossContextConstants.PASSWORD);
+			String zoneName = (String) req.getAttribute(CrossContextConstants.ARG_ZONE_NAME);
+			String userName = (String) req.getAttribute(CrossContextConstants.ARG_USER_NAME);
+			String password = (String) req.getAttribute(CrossContextConstants.ARG_PASSWORD);
 
 			// Authenticate the user against SSF user database.
 			try {
