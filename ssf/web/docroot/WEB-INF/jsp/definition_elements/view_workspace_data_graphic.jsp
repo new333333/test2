@@ -5,8 +5,7 @@
 <c:forEach var="selection" items="${selections}">
 <img border="0" src="<ssf:url 
     webPath="viewFile"
-    folderId="${ssEntry.parentBinder.id}"
-    entryId="${ssEntry.id}" >
+    folderId="${ssEntry.id}"
     <ssf:param name="fileId" value="${selection.id}"/>
     <ssf:param name="viewType" value="scaled"/>
     </ssf:url>" alt="${property_caption}" />
