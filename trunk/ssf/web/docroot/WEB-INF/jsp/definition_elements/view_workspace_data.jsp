@@ -1,4 +1,4 @@
-<% // View entry data dispatcher %>
+<% // View workspace data dispatcher %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="property_name" type="String" scope="request" />
 <jsp:useBean id="property_caption" type="String" scope="request" />

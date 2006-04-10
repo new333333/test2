@@ -144,8 +144,10 @@ public class DefinitionUtils {
 				forumViewElement = forumViewDoc.getRootElement();
 				forumViewElement = (Element) forumViewElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView']");
 				model.put(WebKeys.CONFIG_ELEMENT, forumViewElement);
+				model.put(WebKeys.CONFIG_DEFINITION, forumViewDoc);
 			} else {
 				model.put(WebKeys.CONFIG_ELEMENT, null);
+				model.put(WebKeys.CONFIG_DEFINITION, getInstance().getDefinitionModule().getDefinitionConfig());
 			}
 			
 		} else {
@@ -160,7 +162,6 @@ public class DefinitionUtils {
 		Map defaultEntryDefinitions = getEntryDefsAsMap(binder);
 		model.put(WebKeys.ENTRY_DEFINTION_MAP, defaultEntryDefinitions);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
-		model.put(WebKeys.CONFIG_DEFINITION, getInstance().getDefinitionModule().getDefinitionConfig());
 	}
 	public static Map getBinderDefsAsMap(Binder binder) {
 		Map defaultFolderDefinitions = new HashMap();

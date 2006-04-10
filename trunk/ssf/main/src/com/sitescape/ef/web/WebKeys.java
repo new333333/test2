@@ -115,6 +115,7 @@ public class WebKeys {
     public static final String DEFAULT_FOLDER_DEFINITION_ID="ssDefaultFolderDefinitionId";
     public static final String DEFINITION="ssDefinition";
     public static final String DEFINITION_ID="ssDefinitionId";
+    public static final String DEFINITION_BINDER="ssDefinitionBinder";
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
     public static final String EMAIL_ALIASES="ssEmailAliases";
     public static final String ENTRY="ssEntry";
