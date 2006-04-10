@@ -22,15 +22,21 @@ import com.sitescape.util.Validator;
  * @author Janet McCann
  *
  */
-public class AddFolderController extends SAbstractController {
+public class AddFolderController extends SAbstractForumController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if (operation.equals("") && formData.containsKey("_operation")) {
+			operation = ((String[])formData.get("_operation"))[0];
+		}
 		if (formData.containsKey("okBtn")) {
 			//The form was submitted. Go process it
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
+			if (entryType.equals("") && formData.containsKey("_definitionId")) {
+				entryType = ((String[])formData.get("_definitionId"))[0];
+			}
 			Map fileMap=null;
 			if (request instanceof MultipartFileSupport) {
 				fileMap = ((MultipartFileSupport) request).getFileMap();
@@ -46,11 +52,9 @@ public class AddFolderController extends SAbstractController {
 			} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
 				getWorkspaceModule().addWorkspace(binderId, entryType, inputData, fileMap);				
 			}
-			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-			response.setRenderParameter("redirect", "true");
+			setupViewBinder(response, binderId);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-			response.setRenderParameter("redirect", "true");
+			setupViewBinder(response, binderId);
 		} else {
 			response.setRenderParameters(formData);
 		}
@@ -67,6 +71,9 @@ public class AddFolderController extends SAbstractController {
 			return new ModelAndView(WebKeys.VIEW_LISTING_REDIRECT, model);
 		}
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if (operation.equals("") && formData.containsKey("operation")) {
+			operation = ((String[])formData.get("operation"))[0];
+		}
 		String defId = "";
 		if (formData.containsKey("binderDefinition")) {
 			defId = ((String[])formData.get("binderDefinition"))[0];

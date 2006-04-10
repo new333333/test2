@@ -14,6 +14,7 @@ import java.util.TreeMap;
 import java.util.Collection;
 
 
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
@@ -109,6 +110,13 @@ public class SAbstractForumController extends SAbstractController {
 		
 		return new ModelAndView(view, model);
 	}
+
+	protected void setupViewBinder(ActionResponse response, Long binderId) {
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
+	}
+		
 	protected String getShowWorkspace(Map formData, RenderRequest req, RenderResponse response, Workspace ws, Document searchFilter, Map<String,Object>model) throws PortletRequestBindingException {
 		Document wsTree;
 
