@@ -2,9 +2,9 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <h3>
  <a style="text-decoration: none;" href="<ssf:url 
-    folderId="${ssBinder.id}" 
+    folderId="${ssDefinitionEntry.id}" 
     action="view_workspace"/>">
-<c:if test="${empty ssBinder.title}">
+<c:if test="${empty ssDefinitionEntry.title}">
     <span class="ss_gray">--no title--</span>
-    </c:if><c:out value="${ssBinder.title}"/></a>
+    </c:if><c:out value="${ssDefinitionEntry.title}"/></a>
 </h3>

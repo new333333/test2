@@ -164,12 +164,18 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    }
 
        
-    protected void deleteBinder_delete(Binder binder) {
-		getFolderDao().deleteEntryWorkflows((Folder)binder);
+    protected Object deleteBinder_delete(Binder binder, Object ctx) {
+    	//remove folder contents
+    	getFolderDao().deleteEntryWorkflows((Folder)binder);
 		getFolderDao().deleteEntries((Folder)binder);
 		//finally delete the binder and its associations
-		getFolderDao().delete((Folder)binder);
-	}
+		return super.deleteBinder_delete(binder, ctx);
+    }
+
+    protected Object deleteBinder_indexDel(Binder binder, Object ctx) {
+    	indexEntries_deleteEntries(binder);
+    	return super.deleteBinder_indexDel(binder, ctx);
+    }
 	
     protected void loadEntryHistory(Entry entry) {
     	FolderEntry fEntry = (FolderEntry)entry;

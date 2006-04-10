@@ -12,12 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebUrlUtil;
 
 import javax.portlet.PortletURL;
+import com.sitescape.util.Validator;
 
 
 /**
@@ -25,18 +25,42 @@ import javax.portlet.PortletURL;
  *
  */
 public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
-	private String url = "";
-	private String action = "";
-    private String folderId = "";
-    private String entryId = "";
-    private String operation = "";
-    private String webPath = "";
-    private boolean adapter = false;
+	private String url;
+	private String action;
+    private String binderId;
+    private String entryId;
+    private String operation;
+    private String webPath;
+    private boolean adapter=false;
     private String portletName = "";
     private boolean actionUrl = true;
     private boolean stayInFrame = false;
 	private Map _params;
-    
+	
+	public UrlTag() {
+		setup();
+	}
+	/** 
+	 * Initalize params at end of call and creation
+	 * 
+	 *
+	 */
+	private void setup() {
+		if (_params != null) {
+			_params.clear();
+		}
+		//need to reinitialize - class must be cached
+		binderId=null;
+		entryId=null;
+		url = null;
+		action = null;
+		operation=null;
+		webPath = null;
+		adapter=false;
+		actionUrl = true;
+		stayInFrame=false;
+		portletName="";
+	}
 	public int doEndTag() throws JspException {
 		try {
 			HttpServletRequest req =
@@ -48,7 +72,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			
 			//See if a url was specified
 			String ctxPath = req.getContextPath();
-			if (!this.url.equals("")) {
+			if (!Validator.isNull(url)) {
 				//Yes, a url was explicitly specified. Just add the portal context and return
 				String fullUrl = ctxPath + "/" + this.url;
 				pageContext.getOut().print(fullUrl);
@@ -60,30 +84,21 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			//Get the SiteScape url parameters
 			Map params = new HashMap();
 			
-			if (!this.action.equals("")) {
+			if (!Validator.isNull(action)) {
 				params.put("action", new String[] {this.action});
 			}
 			
-			if (this.folderId.equals("")) folderId = (String) req.getAttribute(WebKeys.URL_BINDER_ID);
-			if (this.folderId != null && !this.folderId.equals("")) {
-				params.put(WebKeys.URL_BINDER_ID, new String[] {folderId});
-			} else {
-				this.folderId = "";
-			}
-			if (this.entryId.equals("")) entryId = (String) req.getAttribute(WebKeys.URL_ENTRY_ID);
-			if (this.entryId != null && !this.entryId.equals("")) {
+			if (!Validator.isNull(binderId)) {
+				params.put(WebKeys.URL_BINDER_ID, new String[] {binderId});
+			} 
+			if (!Validator.isNull(entryId)) {
 				params.put(WebKeys.URL_ENTRY_ID, new String[] {entryId});
-			} else {
-				this.entryId = "";
-			}
-			if (this.operation.equals("")) operation = (String) req.getAttribute(WebKeys.URL_OPERATION);
-			if (this.operation != null && !this.operation.equals("")) {
+			} 
+			if (!Validator.isNull(operation)) {
 				params.put(WebKeys.URL_OPERATION, new String[] {operation});
-			} else {
-				this.operation = "";
-			}
+			} 
 
-			if (!this.webPath.equals("")) {
+			if (!Validator.isNull(webPath)) {
 				String webUrl = WebUrlUtil.getServletRootURL(req) + webPath + "?";
 				Iterator it = params.entrySet().iterator();
 				while (it.hasNext()) {
@@ -139,9 +154,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 	        throw new JspException(e);
 	    }
 		finally {
-			if (_params != null) {
-				_params.clear();
-			}
+			setup();
 		}
 	}
 
@@ -153,8 +166,8 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 	    this.action = action;
 	}
 
-	public void setFolderId(String folderId) {
-	    this.folderId = folderId;
+	public void setFolderId(String binderId) {
+	    this.binderId = binderId;
 	}
 
 	public void setEntryId(String entryId) {

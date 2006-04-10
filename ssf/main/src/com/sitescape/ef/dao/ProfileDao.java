@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
@@ -28,9 +29,13 @@ import com.sitescape.ef.dao.util.SFQuery;
  *
  */
 public interface ProfileDao {
-	public void delete(ProfileBinder binder);
+	public void delete(ProfileBinder profile);
     public void delete(Principal entry);
-    public ProfileBinder getProfileBinder(String zoneName);
+    public void deleteEntries(ProfileBinder profile);
+    public void deleteEntries(List entries);
+    public void deleteEntryWorkflows(ProfileBinder profile);
+    public void deleteEntryWorkflows(List entries);
+     public ProfileBinder getProfileBinder(String zoneName);
       
     /**
      * 

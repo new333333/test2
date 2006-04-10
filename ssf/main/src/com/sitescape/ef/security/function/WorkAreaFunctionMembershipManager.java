@@ -11,6 +11,7 @@ public interface WorkAreaFunctionMembershipManager {
     
     public void addWorkAreaFunctionMembership(WorkAreaFunctionMembership functionMembership);
     
+    public void deleteWorkAreaFunctionMemberships(String zoneName, WorkArea workArea);
     public void deleteWorkAreaFunctionMembership(WorkAreaFunctionMembership functionMembership);
     
     public void updateWorkAreaFunctionMembership(WorkAreaFunctionMembership functionMembership);

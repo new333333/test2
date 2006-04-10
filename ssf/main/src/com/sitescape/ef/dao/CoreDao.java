@@ -51,6 +51,7 @@ public interface CoreDao {
 	public void delete(Object obj);
 	public void delete(Binder binder);
     public void delete(DefinableEntity entity);
+	public void deleteEntityAssociations(String whereClause, Class clazz);
 	public Object load(Class className, String id);
 	public Object load(Class className, Long id);
 	public List loadObjects(ObjectControls objs, FilterControls filter);

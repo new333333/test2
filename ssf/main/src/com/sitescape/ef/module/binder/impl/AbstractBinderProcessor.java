@@ -135,7 +135,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         });
         
         
-        //Need to do filter here after binder is saved or don't have id on binder
+        //Need to do filter here after binder is saved cause it makes use of
+        // the id of binder
         FilesErrors filesErrors = addBinder_filterFiles(binder, fileUploadItems);
         // We must save the entry before processing files because it makes use
         // of the persistent id of the entry. 
@@ -322,6 +323,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
     protected Object deleteBinder_delete(Binder binder, Object ctx) {
+    	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(binder.getZoneName(), binder);
     	getCoreDao().delete(binder);
        	return ctx;
     }
