@@ -44,7 +44,7 @@ public class DispatchServer extends GenericServlet {
 				getAuthenticationManager().authenticate(zoneName, userName, password, passwordAutoSynch);
 			}
 			catch(UserDoesNotExistException e) {
-				logger.warn(e);
+				logger.warn(e.getMessage(), e);
 				// Throw ServletException with cause's error message rather
 				// then the cause itself. This is because the class loader
 			    // of the calling app does not have access to the class of 
@@ -52,11 +52,11 @@ public class DispatchServer extends GenericServlet {
 				throw new ServletException(e.getMessage());
 			}
 			catch(PasswordDoesNotMatchException e) {
-				logger.warn(e);
+				logger.warn(e.getMessage(), e);
 				throw new ServletException(e.getMessage());
 			}	
 			catch(Exception e) {
-				logger.warn(e);
+				logger.warn(e.getMessage(), e);
 				throw new ServletException(e.getMessage());
 			}
 		}

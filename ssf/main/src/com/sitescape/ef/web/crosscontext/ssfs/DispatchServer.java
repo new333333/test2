@@ -25,16 +25,16 @@ public class DispatchServer extends GenericServlet {
 		String operation = (String) req.getAttribute(CrossContextConstants.OPERATION);
 		
 		if(operation.equals(CrossContextConstants.OPERATION_AUTHENTICATE)) {
-			String zoneName = (String) req.getAttribute(CrossContextConstants.ARG_ZONE_NAME);
-			String userName = (String) req.getAttribute(CrossContextConstants.ARG_USER_NAME);
-			String password = (String) req.getAttribute(CrossContextConstants.ARG_PASSWORD);
+			String zoneName = (String) req.getAttribute(CrossContextConstants.ZONE_NAME);
+			String userName = (String) req.getAttribute(CrossContextConstants.USER_NAME);
+			String password = (String) req.getAttribute(CrossContextConstants.PASSWORD);
 
 			// Authenticate the user against SSF user database.
 			try {
 				getAuthenticationManager().authenticate(zoneName, userName, password, false);
 			}
 			catch(UserDoesNotExistException e) {
-				logger.warn(e);
+				logger.warn(e.getMessage(), e);
 				// Throw ServletException with cause's error message rather
 				// then the cause itself. This is because the class loader
 			    // of the calling app does not have access to the class of 
@@ -42,16 +42,20 @@ public class DispatchServer extends GenericServlet {
 				throw new ServletException(e.getMessage());
 			}
 			catch(PasswordDoesNotMatchException e) {
-				logger.warn(e);
+				logger.warn(e.getMessage(), e);
 				throw new ServletException(e.getMessage());
 			}			
 			catch(Exception e) {
-				logger.warn(e);
+				logger.warn(e.getMessage(), e);
 				throw new ServletException(e.getMessage());
 			}			
 		}
+		else if(operation.equals(CrossContextConstants.OPERATION_OBJECT_EXISTS)) {
+			
+		}
 		else {
-			logger.warn("Unrecognized operation [" + operation + "]");
+			logger.error("Unrecognized operation [" + operation + "]");
+			throw new ServletException("");
 		}
 	}
 

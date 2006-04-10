@@ -23,9 +23,9 @@ public class AuthenticationManager implements SessionAuthenticationManager {
 		AttributesAndParamsOnlyServletRequest req = 
 			new AttributesAndParamsOnlyServletRequest(Constants.CONTEXT_PATH);
 		req.setAttribute(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_AUTHENTICATE);
-		req.setAttribute(CrossContextConstants.ARG_ZONE_NAME, zoneName);
-		req.setAttribute(CrossContextConstants.ARG_USER_NAME, userName);
-		req.setAttribute(CrossContextConstants.ARG_PASSWORD, password);
+		req.setAttribute(CrossContextConstants.ZONE_NAME, zoneName);
+		req.setAttribute(CrossContextConstants.USER_NAME, userName);
+		req.setAttribute(CrossContextConstants.PASSWORD, password);
 		NullServletResponse res = new NullServletResponse();
 		
 		try {

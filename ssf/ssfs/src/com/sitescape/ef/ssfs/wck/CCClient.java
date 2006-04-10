@@ -10,24 +10,27 @@ public class CCClient {
 
 	private static final CCClientCallback defaultCallback = new DefaultCCClientCallback();
 	
-	public static boolean objectExists(Map uri) throws CCClientException,
+	public static boolean objectExists(String zoneName, String userName, Map uri) throws CCClientException,
 	NoAccessException {
 		Boolean returnObj = (Boolean) CCExecutionTemplate.execute(
-				uri, CrossContextConstants.OPERATION_OBJECT_EXISTS, 
+				zoneName, userName, uri, 
+				CrossContextConstants.OPERATION_OBJECT_EXISTS, 
 				defaultCallback);
 		return returnObj.booleanValue();
 	}
 	
-	public static void createResource(Map uri) throws CCClientException,
+	public static void createResource(String zoneName, String userName, Map uri) throws CCClientException,
 	NoAccessException, AlreadyExistsException {
 		CCExecutionTemplate.execute(
-				uri, CrossContextConstants.OPERATION_CREATE_RESOURCE, 
+				zoneName, userName, uri, 
+				CrossContextConstants.OPERATION_CREATE_RESOURCE, 
 				defaultCallback);
 	}
 	
-	public static void setResource(Map uri, final InputStream content) 
+	public static void setResource(String zoneName, String userName, Map uri, final InputStream content) 
 	throws CCClientException, NoAccessException, NoSuchObjectException {	
-		CCExecutionTemplate.execute(uri, CrossContextConstants.OPERATION_SET_RESOURCE, 
+		CCExecutionTemplate.execute(zoneName, userName, uri, 
+				CrossContextConstants.OPERATION_SET_RESOURCE, 
 			new CCClientCallback() {
 				public void additionalInput(Map m) {
 					m.put(CrossContextConstants.ARG_INPUTSTREAM, content);
@@ -36,49 +39,54 @@ public class CCClient {
 		);
 	}
 	
-	public static InputStream getResource(Map uri) throws CCClientException,
+	public static InputStream getResource(String zoneName, String userName, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
 		InputStream returnObj = (InputStream) CCExecutionTemplate.execute(
-				uri, CrossContextConstants.OPERATION_GET_RESOURCE, 
+				zoneName, userName, uri, 
+				CrossContextConstants.OPERATION_GET_RESOURCE, 
 				defaultCallback);
 		return returnObj;
 	}
 	
-	public static long getResourceLength(Map uri) throws CCClientException,
+	public static long getResourceLength(String zoneName, String userName, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
 		Long returnObj = (Long) CCExecutionTemplate.execute(
-				uri, CrossContextConstants.OPERATION_GET_RESOURCE_LENGTH, 
+				zoneName, userName, uri, 
+				CrossContextConstants.OPERATION_GET_RESOURCE_LENGTH, 
 				defaultCallback);
 		return returnObj.longValue();
 	}
 	
-	public static void removeResource(Map uri) throws CCClientException,
+	public static void removeResource(String zoneName, String userName, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
 		CCExecutionTemplate.execute(
-				uri, CrossContextConstants.OPERATION_REMOVE_RESOURCE, 
+				zoneName, userName, uri, CrossContextConstants.OPERATION_REMOVE_RESOURCE, 
 				defaultCallback);		
 	}
 	
-	public static Date getLastModified(Map uri) throws CCClientException,
+	public static Date getLastModified(String zoneName, String userName, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
 		Date returnObj = (Date) CCExecutionTemplate.execute(
-				uri, CrossContextConstants.OPERATION_GET_LAST_MODIFIED, 
+				zoneName, userName, uri, 
+				CrossContextConstants.OPERATION_GET_LAST_MODIFIED, 
 				defaultCallback);
 		return returnObj;
 	}
 	
-	public static Date getCreationDate(Map uri) throws CCClientException,
+	public static Date getCreationDate(String zoneName, String userName, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
 		Date returnObj = (Date) CCExecutionTemplate.execute(
-				uri, CrossContextConstants.OPERATION_GET_CREATION_DATE, 
+				zoneName, userName, uri, 
+				CrossContextConstants.OPERATION_GET_CREATION_DATE, 
 				defaultCallback);
 		return returnObj;
 	}
 	
-	public static String[] getChildrenNames(Map uri) throws CCClientException,
+	public static String[] getChildrenNames(String zoneName, String userName, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
 		String[] returnObj = (String[]) CCExecutionTemplate.execute(
-				uri, CrossContextConstants.OPERATION_GET_CHILDREN_NAMES, 
+				zoneName, userName, uri, 
+				CrossContextConstants.OPERATION_GET_CHILDREN_NAMES, 
 				defaultCallback);
 		return returnObj;
 	}

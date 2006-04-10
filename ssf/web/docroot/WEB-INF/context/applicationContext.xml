@@ -153,7 +153,7 @@
 		<property name="propagationBehaviorName"><value>PROPAGATION_REQUIRED</value></property>
 	</bean>
 
-	<bean id="userReloadInterceptor" class="com.sitescape.ef.util.UserReloadInterceptor">
+	<bean id="userReloadInterceptor" class="com.sitescape.ef.util.aopalliance.UserReloadInterceptor">
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
 	
@@ -587,13 +587,13 @@
 		</property>
 	</bean>
 	
-	<bean id="loggingInterceptor" class="com.sitescape.ef.remoting.interceptor.LoggingInterceptor"/>
+	<bean id="loggingInterceptor" class="com.sitescape.ef.util.aopalliance.LoggingInterceptor"/>
 	
-	<bean id="remoteOpenSessionInViewInterceptor" class="com.sitescape.ef.remoting.interceptor.OpenSessionInViewInterceptor">
+	<bean id="remoteOpenSessionInViewInterceptor" class="com.sitescape.ef.util.aopalliance.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref local="sessionFactory"/></property>
 	</bean>
 	
-	<bean id="remoteUserPreloadInterceptor" class="com.sitescape.ef.remoting.interceptor.UserPreloadInterceptor">
+	<bean id="remoteUserPreloadInterceptor" class="com.sitescape.ef.util.aopalliance.UserPreloadInterceptor">
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
 	
@@ -608,6 +608,9 @@
 		<!-- valid values are CONTINUE and ABORT -->
 		<property name="failedFilterTransaction"><value>CONTINUE</value></property>
 	</bean>
+
+	<!--<bean id="ssfsModule" class="com.sitescape.ef.module.ssfs.impl.SsfsModuleImpl">
+	</bean>-->
 
 	<!-- referenced internally when viewing files and sending mail -->
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap"/>

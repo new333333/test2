@@ -12,12 +12,15 @@ import com.sitescape.ef.web.util.NullServletResponse;
 
 public class CCExecutionTemplate {
 
-	public static Object execute(Map uri, String operationName, CCClientCallback action) 
+	public static Object execute(String zoneName, String userName, Map uri, 
+			String operationName, CCClientCallback action) 
 	throws AlreadyExistsException, CCClientException, NoAccessException, 
 	NoSuchObjectException {
 		AttributesAndParamsOnlyServletRequest req = 
 			new AttributesAndParamsOnlyServletRequest(Constants.CONTEXT_PATH);
 
+		req.setAttribute(CrossContextConstants.ZONE_NAME, zoneName);
+		req.setAttribute(CrossContextConstants.USER_NAME, userName);
 		req.setAttribute(CrossContextConstants.URI, uri);
 		req.setAttribute(CrossContextConstants.OPERATION, operationName);
 
