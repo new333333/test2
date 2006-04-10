@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Principal;
@@ -36,6 +37,7 @@ public class DisplayConfiguration extends TagSupport {
     private Element configElement;
     private String configJspStyle;
     private boolean processThisItem = false;
+    private Binder binder;
     private Entry entry;
     
 	public int doStartTag() throws JspException {
@@ -149,6 +151,9 @@ public class DisplayConfiguration extends TagSupport {
 									if (this.entry != null) {
 										req.setAttribute(WebKeys.DEFINITION_ENTRY, this.entry);
 									}
+									if (this.binder != null) {
+										req.setAttribute(WebKeys.DEFINITION_BINDER, this.binder);
+									}
 				
 									StringServletResponse res = new StringServletResponse(httpRes);
 									rd.include(req, res);
@@ -185,6 +190,7 @@ public class DisplayConfiguration extends TagSupport {
 	    	this.configElement = null;
 	    	this.configJspStyle = null;
 	    	this.processThisItem = false;
+	    	this.binder = null;
 	    	this.entry = null;
 	    }
 	    
@@ -209,6 +215,10 @@ public class DisplayConfiguration extends TagSupport {
 
 	public void setProcessThisItem(boolean flag) {
 	    this.processThisItem = flag;
+	}
+
+	public void setBinder(Binder binder) {
+	    this.binder = binder;
 	}
 
 	public void setEntry(Entry entry) {

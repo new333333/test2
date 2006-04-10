@@ -33,7 +33,8 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   processThisItem="true"
   configElement="${ssConfigElement}" 
-  configJspStyle="${ssConfigJspStyle}" />
+  configJspStyle="${ssConfigJspStyle}"
+  binder="${ssBinder}" />
 </div>
 </c:if>
 

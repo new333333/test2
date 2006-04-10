@@ -7,5 +7,6 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
-  configJspStyle="${ssConfigJspStyle}" />
+  configJspStyle="${ssConfigJspStyle}"
+  binder="${ssBinder}" />
 </div>
