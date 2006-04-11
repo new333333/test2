@@ -116,7 +116,7 @@
 	
 	<servlet>
 		<servlet-name>portalCCDispatcher</servlet-name>
-		<servlet-class>com.sitescape.ef.web.crosscontext.portal.DispatchServer</servlet-class>
+		<servlet-class>com.sitescape.ef.portalmodule.web.crosscontext.server.DispatchServer</servlet-class>
 	</servlet>
 	
 	<servlet>
