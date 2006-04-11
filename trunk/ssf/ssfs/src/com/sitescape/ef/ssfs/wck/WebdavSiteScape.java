@@ -23,7 +23,7 @@ import com.sitescape.ef.ssfs.AlreadyExistsException;
 import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
 
-import static com.sitescape.ef.web.crosscontext.ssfs.CrossContextConstants.*;
+import static com.sitescape.ef.ssfs.CrossContextConstants.*;
 
 public class WebdavSiteScape implements BasicWebdavStore {
 

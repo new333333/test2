@@ -1,4 +1,4 @@
-package com.sitescape.ef.web.crosscontext.ssfs;
+package com.sitescape.ef.ssfs.web.crosscontext.server;
 
 import java.io.IOException;
 import java.util.Map;
@@ -14,9 +14,9 @@ import org.apache.commons.logging.LogFactory;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
-import com.sitescape.ef.ssfs.SsfsFacade;
+import com.sitescape.ef.ssfs.CrossContextConstants;
+import com.sitescape.ef.ssfs.server.SiteScapeFileSystem;
 import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.ef.web.crosscontext.ssfs.CrossContextConstants;
 
 public class DispatchServer extends GenericServlet {
 
@@ -76,7 +76,7 @@ public class DispatchServer extends GenericServlet {
 		return (AuthenticationManager) SpringContextUtil.getBean("authenticationManager");
 	}
 	
-	private SsfsFacade getSsfsFacade() {
-		return (SsfsFacade) SpringContextUtil.getBean("ssfsFacade");
+	private SiteScapeFileSystem getSsfsFacade() {
+		return (SiteScapeFileSystem) SpringContextUtil.getBean("ssfsFacade");
 	}
 }

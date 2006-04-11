@@ -6,10 +6,10 @@ import java.util.Map;
 import javax.servlet.ServletException;
 
 import com.sitescape.ef.ssfs.AlreadyExistsException;
+import com.sitescape.ef.ssfs.CrossContextConstants;
 import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
 import com.sitescape.ef.ssfs.web.crosscontext.DispatchClient;
-import com.sitescape.ef.web.crosscontext.ssfs.CrossContextConstants;
 import com.sitescape.ef.web.util.AttributesAndParamsOnlyServletRequest;
 import com.sitescape.ef.web.util.NullServletResponse;
 

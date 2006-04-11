@@ -564,9 +564,9 @@
 		<property name="failedFilterTransaction"><value>CONTINUE</value></property>
 	</bean>
 
-	<bean id="ssfsFacade" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean id="ssfs" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target">
-			<bean class="com.sitescape.ef.ssfs.impl.SsfsFacadeImpl">
+			<bean class="com.sitescape.ef.ssfs.server.impl.SiteScapeFileSystemImpl">
 				<property name="folderModule"><ref local="folderModule"/></property>
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 				<property name="binderModule"><ref local="binderModule"/></property>
@@ -575,7 +575,7 @@
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.ef.ssfs.SsfsFacade</value>
+			<value>com.sitescape.ef.ssfs.server.SiteScapeFileSystem</value>
 		</property>
 		<property name="interceptorNames">
 			<list>

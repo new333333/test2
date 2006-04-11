@@ -4,8 +4,8 @@ import javax.servlet.ServletException;
 
 import org.apache.slide.simple.authentication.SessionAuthenticationManager;
 
+import com.sitescape.ef.ssfs.CrossContextConstants;
 import com.sitescape.ef.ssfs.web.crosscontext.DispatchClient;
-import com.sitescape.ef.web.crosscontext.ssfs.CrossContextConstants;
 import com.sitescape.ef.web.util.AttributesAndParamsOnlyServletRequest;
 import com.sitescape.ef.web.util.NullServletResponse;
 
