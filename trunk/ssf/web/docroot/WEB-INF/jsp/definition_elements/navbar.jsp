@@ -38,6 +38,40 @@ function ss_enableFavoritesList(id) {
 	document.getElementById(id).onDragDrop = function() {ss_saveFavorites();};
 }
 
+function ss_addForumToFavorites() {
+	var binderId = '${ssBinder.id}';
+	var url = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="true" >
+		<ssf:param name="operation" value="add_favorite_binder" />
+    	</ssf:url>"
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addKeyValue("binderId", binderId)
+	ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+}
+
+function ss_addFavoriteCategory() {
+	var s = self.document.forms.ss_favorites_form.new_favorites_category.value;
+	var url = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="true" >
+		<ssf:param name="operation" value="add_favorites_category" />
+    	</ssf:url>"
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addKeyValue("category", s)
+	ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+}
+
 function ss_saveFavorites() {
 	var s = "";
 	for (var i = 0; i < ss_favoritesListCount; i++) {
@@ -48,18 +82,69 @@ function ss_saveFavorites() {
 		}
 	}
 	alert(s)
+	var url = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="true" >
+		<ssf:param name="operation" value="save_favorites" />
+    	</ssf:url>"
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addKeyValue("favorites", s)
+	ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
 }
 
 var ss_favoritesPaneTopOffset = 10;
 var ss_favoritesPaneLeftOffset = 4;
+var ss_favoritesMarginW = 4;
+var ss_favoritesMarginH = 6;
 function ss_showFavoritesPane() {
-	var fObj = self.document.getElementById("ss_navbar_favorites_pane")
+	var fObj = self.document.getElementById("ss_favorites_pane")
+	var fObj2 = self.document.getElementById("ss_favorites_table")
+	ss_setObjectWidth(fObj, parseInt(ss_getObjectWidth(fObj2) + ss_favoritesMarginW));
+	ss_setObjectHeight(fObj, parseInt(ss_getObjectHeight(fObj2) + ss_favoritesMarginH));
 	var w = ss_getObjectWidth(fObj)
 	ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_bottom") + ss_favoritesPaneTopOffset))
 	ss_setObjectLeft(fObj, parseInt(ss_favoritesPaneLeftOffset - w))
 	fObj.style.visibility = "visible";
 	var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom") + ss_favoritesPaneLeftOffset);
-	ss_slideOpenDivHorizontal("ss_navbar_favorites_pane", leftEnd, 6);
+	ss_slideOpenDivHorizontal("ss_favorites_pane", leftEnd, 6);
+
+	var url = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="true" >
+		<ssf:param name="operation" value="get_favorites_tree" />
+    	</ssf:url>"
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+}
+function ss_postFavoritesRequest(obj) {
+	//See if there was an error
+	if (self.document.getElementById("ss_favorites_status_message").innerHTML == "error") {
+		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+	}
+
+	var fObj = self.document.getElementById("ss_favorites_pane")
+	var fObj2 = self.document.getElementById("ss_favorites_table")
+	ss_setObjectWidth(fObj, parseInt(ss_getObjectWidth(fObj2) + ss_favoritesMarginW));
+	ss_setObjectHeight(fObj, parseInt(ss_getObjectHeight(fObj2) + ss_favoritesMarginH));
+
+	ss_favoritesListArray = new Array();
+	ss_favoritesListCount = 0;
+	var uls = self.document.getElementsByTagName("ul");
+	for (var i = 0; i < uls.length; i++) {
+		if (uls[i].id.indexOf("ss_favorites") == 0) {
+			ss_enableFavoritesList(uls[i].id)
+		}
+	}
 }
 
 var ss_slideOpenDivHorizontalTimer = null;
@@ -84,73 +169,26 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 </script>
 
 <div id="ss_navbar_bottom"></div>
-<div class="ss_style" id="ss_navbar_favorites_pane" 
-  style="position:absolute; visibility:hidden; z-index:200;
-  border:solid 1px black; height:200px;">
-<table cellspacing="0" cellpadding="0">
-<tr>
-<td><b>Favorites</b></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td align="right">
-  <a onClick="ss_hideDiv('ss_navbar_favorites_pane');return false;"><b>X</b></td>
-</tr>
-<tr>
-<td colspan="3">
-<ul id="ss_favorites_1" class="ss_dragable ss_userlist">
-<li id="li_1_0" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_1_1" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_1_2" class="ss_dragable ss_userlist">yada yada yada yada</li>
-<li id="li_1_3" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_1_4" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_1_5" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_1_6" class="ss_dragable ss_userlist">yada yada</li>
-</ul>
-</td>
-</tr>
-<tr>
-<td colspan="3">
-<ul id="ss_favorites_2" class="ss_dragable ss_userlist">
-<li id="li_2_0" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_2_1" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_2_2" class="ss_dragable ss_userlist">yada yada yada yada</li>
-<li id="li_2_3" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_2_4" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_2_5" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_2_6" class="ss_dragable ss_userlist">yada yada</li>
-</ul>
-</td>
-</tr>
-<tr><td colspan="3">&nbsp;</td></tr>
-<tr>
-<td colspan="3">
-<a href="javascript: ;" 
- onClick="ss_addForumToFavorites('<c:out value="ssFolder.id"/>');return false;"
-><span class="ss_bold">Add the current page to the favorites list...</span></a>
-</td>
-</tr>
-<tr><td colspan="3">&nbsp;</td></tr>
-<tr>
-<td colspan="3">
-<form class="ss_style" method="post" action="<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true" >
-		<ssf:param name="operation" value="add_favorites_category" />
-    	</ssf:url>">
-<span class="ss_bold">Add a new favorites category:</span><br>
-<input type="text" size="20" name="new_favorites_category">
-<input type="submit" name="add_favorites_category" 
- value="<ssf:nlt tag="button.ok" text="OK"/>">
-</form>
-</td>
-</tr>
-
-</table>
-</div>
-
-<script type="text/javascript">
-ss_enableFavoritesList('ss_favorites_1')
-ss_enableFavoritesList('ss_favorites_2')
-</script>
 
 </c:if>
+</div>
+<div id="ss_favorites_status_message"></div>
+<div class="ss_style" id="ss_favorites_pane" 
+  style="position:absolute; visibility:hidden; z-index:200;
+  border:solid 1px black; width:200px; height:200px;">
+  <div class="ss_style" id="ss_favorites">
+	<table id="ss_favorites_table" cellspacing="0" cellpadding="0" width="100%">
+	<tbody>
+	<tr>
+	  <td colspan="2" class="ss_bold"><ssf:nlt tag="favorites" text="Favorites"/></td>
+	  <td align="right"><a onClick="ss_hideDiv('ss_favorites_pane');return false;"
+        ><img border="0" src="<html:imagesPath/>box/close_off.gif"/></a></td>
+	</tr>
+	<tr><td colspan="2"></td></tr>
+	<tr>
+	  <td colspan="2"><ssf:nlt tag="Loading"/></td>
+	</tr>
+	</tbody>
+	</table>
+  </div>
 </div>
