@@ -552,8 +552,43 @@
 		</property>
 	</bean>	
 
+	<bean id="fileModule" class="com.sitescape.ef.module.file.impl.FileModuleImpl">
+		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+		<property name="coreDao"><ref local="coreDao"/></property>		
+		<property name="contentFilter">
+			<bean class="com.sitescape.ef.module.file.impl.VirusScanningFilter"/>
+		</property>			
+		<!-- valid values are DELETE and MOVE -->
+		<property name="failedFilterFile"><value>DELETE</value></property>
+		<!-- valid values are CONTINUE and ABORT -->
+		<property name="failedFilterTransaction"><value>CONTINUE</value></property>
+	</bean>
+
+	<bean id="ssfsFacade" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="target">
+			<bean class="com.sitescape.ef.ssfs.impl.SsfsFacadeImpl">
+				<property name="folderModule"><ref local="folderModule"/></property>
+				<property name="definitionModule"><ref local="definitionModule"/></property>
+				<property name="binderModule"><ref local="binderModule"/></property>
+				<property name="profileModule"><ref local="profileModule"/></property>
+				<property name="fileModule"><ref local="fileModule"/></property>
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>com.sitescape.ef.ssfs.SsfsFacade</value>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<!-- Setting up of request context is done by the cross-context
+				     dispatcher server/servlet. The same servlet also takes care
+				     of logging. -->
+				<value>aopallianceOpenSessionInViewInterceptor</value>
+				<value>aopallianceUserPreloadInterceptor</value>
+			</list>
+		</property>
+	</bean>
 	
-	<bean id="facadeWS" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean id="wsFacade" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target">
 			<bean class="com.sitescape.ef.remoting.ws.FacadeImpl">
 				<property name="folderModule"><ref local="folderModule"/></property>
@@ -581,37 +616,22 @@
 				     that the framework invokes to obtain password information for
 				     the user making the request. That's where we set up our request 
 				     context as well. -->
-				<value>remoteOpenSessionInViewInterceptor</value>
-				<value>remoteUserPreloadInterceptor</value>
+				<value>aopallianceOpenSessionInViewInterceptor</value>
+				<value>aopallianceUserPreloadInterceptor</value>
 			</list>
 		</property>
 	</bean>
 	
 	<bean id="loggingInterceptor" class="com.sitescape.ef.util.aopalliance.LoggingInterceptor"/>
 	
-	<bean id="remoteOpenSessionInViewInterceptor" class="com.sitescape.ef.util.aopalliance.OpenSessionInViewInterceptor">
+	<bean id="aopallianceOpenSessionInViewInterceptor" class="com.sitescape.ef.util.aopalliance.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref local="sessionFactory"/></property>
 	</bean>
 	
-	<bean id="remoteUserPreloadInterceptor" class="com.sitescape.ef.util.aopalliance.UserPreloadInterceptor">
+	<bean id="aopallianceUserPreloadInterceptor" class="com.sitescape.ef.util.aopalliance.UserPreloadInterceptor">
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
 	
-	<bean id="fileModule" class="com.sitescape.ef.module.file.impl.FileModuleImpl">
-		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
-		<property name="coreDao"><ref local="coreDao"/></property>		
-		<property name="contentFilter">
-			<bean class="com.sitescape.ef.module.file.impl.VirusScanningFilter"/>
-		</property>			
-		<!-- valid values are DELETE and MOVE -->
-		<property name="failedFilterFile"><value>DELETE</value></property>
-		<!-- valid values are CONTINUE and ABORT -->
-		<property name="failedFilterTransaction"><value>CONTINUE</value></property>
-	</bean>
-
-	<!--<bean id="ssfsModule" class="com.sitescape.ef.module.ssfs.impl.SsfsModuleImpl">
-	</bean>-->
-
 	<!-- referenced internally when viewing files and sending mail -->
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap"/>
 		

@@ -19,6 +19,10 @@ import org.apache.slide.simple.store.BasicWebdavStore;
 import org.apache.slide.structure.ObjectAlreadyExistsException;
 import org.apache.slide.structure.ObjectNotFoundException;
 
+import com.sitescape.ef.ssfs.AlreadyExistsException;
+import com.sitescape.ef.ssfs.NoAccessException;
+import com.sitescape.ef.ssfs.NoSuchObjectException;
+
 import static com.sitescape.ef.web.crosscontext.ssfs.CrossContextConstants.*;
 
 public class WebdavSiteScape implements BasicWebdavStore {

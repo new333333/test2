@@ -1,6 +1,7 @@
 package com.sitescape.ef.web.crosscontext.ssfs;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.GenericServlet;
 import javax.servlet.ServletException;
@@ -13,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
+import com.sitescape.ef.ssfs.SsfsFacade;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.crosscontext.ssfs.CrossContextConstants;
 
@@ -24,7 +26,8 @@ public class DispatchServer extends GenericServlet {
 	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
 		String operation = (String) req.getAttribute(CrossContextConstants.OPERATION);
 		
-		if(operation.equals(CrossContextConstants.OPERATION_AUTHENTICATE)) {
+		if(operation.equals(CrossContextConstants.OPERATION_AUTHENTICATE)) { 
+			// Authentication request: This is treated as a special case.
 			String zoneName = (String) req.getAttribute(CrossContextConstants.ZONE_NAME);
 			String userName = (String) req.getAttribute(CrossContextConstants.USER_NAME);
 			String password = (String) req.getAttribute(CrossContextConstants.PASSWORD);
@@ -50,16 +53,30 @@ public class DispatchServer extends GenericServlet {
 				throw new ServletException(e.getMessage());
 			}			
 		}
-		else if(operation.equals(CrossContextConstants.OPERATION_OBJECT_EXISTS)) {
+		else { 
+			// Must be a SSFS request: This operation requires normal context
+			// set up. 
+			String zoneName = (String) req.getAttribute(CrossContextConstants.ZONE_NAME);
+			String userName = (String) req.getAttribute(CrossContextConstants.USER_NAME);
+			Map uri = (Map) req.getAttribute(CrossContextConstants.URI);
+			
 			
 		}
+		
+		
+
+		/*
 		else {
 			logger.error("Unrecognized operation [" + operation + "]");
 			throw new ServletException("");
-		}
+		}*/
 	}
 
 	private AuthenticationManager getAuthenticationManager() {
 		return (AuthenticationManager) SpringContextUtil.getBean("authenticationManager");
+	}
+	
+	private SsfsFacade getSsfsFacade() {
+		return (SsfsFacade) SpringContextUtil.getBean("ssfsFacade");
 	}
 }
