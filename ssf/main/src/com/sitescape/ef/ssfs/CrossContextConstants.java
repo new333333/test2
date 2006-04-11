@@ -1,4 +1,4 @@
-package com.sitescape.ef.web.crosscontext.ssfs;
+package com.sitescape.ef.ssfs;
 
 /**
  * IMPORTANT: Do NOT make this class dependent upon any other class in the

@@ -121,7 +121,7 @@
 	
 	<servlet>
 		<servlet-name>ssfsCCDispatcher</servlet-name>
-		<servlet-class>com.sitescape.ef.web.crosscontext.ssfs.DispatchServer</servlet-class>
+		<servlet-class>com.sitescape.ef.ssfs.web.crosscontext.server.DispatchServer</servlet-class>
 	</servlet>
 	
 	<servlet-mapping>

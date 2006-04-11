@@ -26,7 +26,7 @@
 			update="true"
 		>
 			<fileset dir="${basedir}/../main/classes">
-	        	<include name="com/sitescape/ef/web/crosscontext/ssfs/CrossContextConstants.class"/>
+	        	<include name="com/sitescape/ef/ssfs/CrossContextConstants.class"/>
 	        	<include name="com/sitescape/ef/web/util/AttributesAndParamsOnlyServletRequest.class"/>
 	        	<include name="com/sitescape/ef/web/util/NullServletResponse.class"/>
 				<include name="com/sitescape/ef/ssfs/AlreadyExistsException.class"/>
