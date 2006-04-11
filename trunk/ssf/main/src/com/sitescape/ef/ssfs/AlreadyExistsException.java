@@ -1,4 +1,4 @@
-package com.sitescape.ef.ssfs.wck;
+package com.sitescape.ef.ssfs;
 
 public class AlreadyExistsException extends RuntimeException {
 

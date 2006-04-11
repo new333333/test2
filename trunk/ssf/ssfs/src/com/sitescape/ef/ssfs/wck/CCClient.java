@@ -4,6 +4,9 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Map;
 
+import com.sitescape.ef.ssfs.AlreadyExistsException;
+import com.sitescape.ef.ssfs.NoAccessException;
+import com.sitescape.ef.ssfs.NoSuchObjectException;
 import com.sitescape.ef.web.crosscontext.ssfs.CrossContextConstants;
 
 public class CCClient {
