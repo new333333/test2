@@ -27,11 +27,11 @@
 		>
 			<fileset dir="${basedir}/../main/classes">
 	        	<include name="com/sitescape/ef/ssfs/CrossContextConstants.class"/>
-	        	<include name="com/sitescape/ef/web/util/AttributesAndParamsOnlyServletRequest.class"/>
-	        	<include name="com/sitescape/ef/web/util/NullServletResponse.class"/>
 				<include name="com/sitescape/ef/ssfs/AlreadyExistsException.class"/>
 				<include name="com/sitescape/ef/ssfs/NoAccessException.class"/>
 				<include name="com/sitescape/ef/ssfs/NoSuchObjectException.class"/>
+	        	<include name="com/sitescape/ef/web/util/AttributesAndParamsOnlyServletRequest.class"/>
+	        	<include name="com/sitescape/ef/web/util/NullServletResponse.class"/>
 			</fileset>
 		</jar>
 	</target>
