@@ -18,6 +18,19 @@ public abstract class CrossContextConstants {
 	public static final String OPERATION = "operation";
 	
 	// Operation values - value of OPERATION key
+	// Note: For better efficiency in comparison expressions, we use Integer
+	// rather than usual String as the values of these symbols. 
+	public static final Integer OPERATION_AUTHENTICATE = new Integer(1);
+	public static final Integer OPERATION_OBJECT_EXISTS = new Integer(2);
+	public static final Integer OPERATION_CREATE_RESOURCE = new Integer(3);
+	public static final Integer OPERATION_SET_RESOURCE = new Integer(4);
+	public static final Integer OPERATION_GET_RESOURCE = new Integer(5);
+	public static final Integer OPERATION_GET_RESOURCE_LENGTH = new Integer(6);
+	public static final Integer OPERATION_REMOVE_RESOURCE = new Integer(7);
+	public static final Integer OPERATION_GET_LAST_MODIFIED = new Integer(8);
+	public static final Integer OPERATION_GET_CREATION_DATE = new Integer(9);
+	public static final Integer OPERATION_GET_CHILDREN_NAMES = new Integer(10);
+	/*
 	public static final String OPERATION_AUTHENTICATE = "authenticate";
 	public static final String OPERATION_OBJECT_EXISTS = "objectExists";
 	public static final String OPERATION_CREATE_RESOURCE = "createResource";
@@ -28,6 +41,7 @@ public abstract class CrossContextConstants {
 	public static final String OPERATION_GET_LAST_MODIFIED = "getLastModified";
 	public static final String OPERATION_GET_CREATION_DATE = "getCreationDate";
 	public static final String OPERATION_GET_CHILDREN_NAMES = "getChildrenNames";
+	*/
 
 	// User credential or authentication related key names.
 	public static final String USER_NAME = "username";

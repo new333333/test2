@@ -15,7 +15,7 @@ public interface SiteScapeFileSystem {
 	public void createResource(Map uri) throws NoAccessException, AlreadyExistsException;
 	
 	public void setResource(Map uri, InputStream content) 
-	throws NoAccessException, NoSuchObjectException;
+	throws NoAccessException, AlreadyExistsException;
 	
 	public InputStream getResource(Map uri) throws NoAccessException,
 	NoSuchObjectException;

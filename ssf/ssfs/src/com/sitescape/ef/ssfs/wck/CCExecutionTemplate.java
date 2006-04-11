@@ -16,7 +16,7 @@ import com.sitescape.ef.web.util.NullServletResponse;
 public class CCExecutionTemplate {
 
 	public static Object execute(String zoneName, String userName, Map uri, 
-			String operationName, CCClientCallback action) 
+			Integer operationName, CCClientCallback action) 
 	throws AlreadyExistsException, CCClientException, NoAccessException, 
 	NoSuchObjectException {
 		AttributesAndParamsOnlyServletRequest req = 
