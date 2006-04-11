@@ -1,4 +1,4 @@
-package com.sitescape.ef.web.crosscontext.portal;
+package com.sitescape.ef.portalmodule.web.crosscontext.server;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitescape.ef.portalmodule.CrossContextConstants;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;

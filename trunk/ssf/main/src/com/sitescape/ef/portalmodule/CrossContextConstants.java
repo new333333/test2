@@ -1,4 +1,4 @@
-package com.sitescape.ef.web.crosscontext.portal;
+package com.sitescape.ef.portalmodule;
 
 /**
  * IMPORTANT: Do NOT make this class dependent upon any other class in the
