@@ -454,6 +454,7 @@ public class TreeTag extends TagSupport {
 			boolean ls = (s_ls == "1") ? true : false;
 			boolean hcn = (e.attributeValue("treeHasChildren") == "1") ? true : false;
 			boolean hhcn = (e.attributeValue("treeHasHiddenChildren") == "1") ? true : false;
+			boolean ino = (e.attributeValue("treeOpen") == "1") ? true : false;
 	
 			for (int j = recursedNodes.size() - 1; j >= 0; j--) {
 				if ((String) recursedNodes.get(j) != "1") {
@@ -471,14 +472,39 @@ public class TreeTag extends TagSupport {
 			}
 	
 			// Write out join icons
-			if (ls) {
-				jspOut.print("<img class=\"ss_twJoinBottom\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
+			if (hcn || hhcn) {
+				if (ls) {
+					jspOut.print("<img id=\"" + this.treeName + "join" + s_id + "\" class=\"");
+	
+					if (ino) {
+						jspOut.print("ss_twMinusBottom");	// minus_bottom.gif
+					} else {
+						jspOut.print("ss_twPlusBottom");    // plus_bottom.gif
+					}
+	
+					jspOut.print("\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
+				}
+				else {
+					jspOut.print("<img id=\"" + this.treeName + "join" + s_id + "\" class=\"");
+	
+					if (ino) {
+						jspOut.print("ss_twMinus");	// minus.gif
+					} else {
+						jspOut.print("ss_twPlus");	// plus.gif
+					}
+	
+					jspOut.print("\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
+				}
 			} else {
-				jspOut.print("<img class=\"ss_twJoin\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
+				if (ls) {
+					jspOut.print("<img class=\"ss_twJoinBottom\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
+				} else {
+					jspOut.print("<img class=\"ss_twJoin\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
+				}
 			}
 	
 			// Link
-			if (hcn || hhcn) {
+			if (hcn) {
 				jspOut.print("<img class=\"ss_twImg\" id=\"");
 				jspOut.print(this.treeName);
 				jspOut.print("icon" + s_id + "\" src=\"");
@@ -508,8 +534,6 @@ public class TreeTag extends TagSupport {
 			if (!displayOnly) jspOut.print("</a>");
 			jspOut.print("<br/>\n");
 			
-			jspOut.print("</div>\n");
-	
 			// Recurse if node has children
 	
 			if (hcn) {

@@ -57,6 +57,58 @@
 <c:set var="ss_calendar_today_background_color" value="#ffffe8" scope="request"/>
 <c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
 
+<% //**********************************************************************// %>
+
+<c:set var="ss_color_style" value="black and white" scope="request"/>
+<c:set var="ss_color_style" value="debug" scope="request"/>
+<c:if test="${ss_color_style == 'black and white'}">
+	<c:set var="ss_portlet_style_background_color" value="#FFFFAA" scope="request"/>
+	<c:set var="ss_portlet_style_text_color" value="#000099" scope="request"/>
+	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
+	
+	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_style_text_color" value="#000000" scope="request"/>
+	<c:set var="ss_style_link_color" value="#000000" scope="request"/>
+	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
+	<c:set var="ss_style_gray_color" value="#999999" scope="request"/>
+	
+	<c:set var="ss_folder_border_color" value="#CC6666" scope="request"/>
+	<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
+	<c:set var="ss_entry_border_color" value="#CC0000" scope="request"/>
+	
+	<c:set var="ss_form_background_color" value="#CCFFFF" scope="request"/>
+	<c:set var="ss_form_text_color" value="#3333FF" scope="request"/>
+	<c:set var="ss_form_gray_color" value="#CC99CC" scope="request"/>
+	<c:set var="ss_form_element_color" value="#FFCCFF" scope="request"/>
+	<c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/>
+	<c:set var="ss_form_element_border_color" value="#669966" scope="request"/>
+	<c:set var="ss_form_element_text_color" value="#0033FF" scope="request"/>
+	<c:set var="ss_form_element_readonly_color" value="InfoBackground" scope="request"/>
+	
+	<c:set var="ss_toolbar_background_color" value="#CECECE" scope="request"/>
+	<c:set var="ss_toolbar_text_color" value="#000000" scope="request"/>
+	<c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
+	<c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
+	
+	<c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
+	
+	<c:set var="ss_tree_highlight_line_color" value="#6666FF" scope="request"/>
+	
+	<c:set var="ss_box_color" value="#CCCCCC" scope="request"/>
+	<c:set var="ss_box_canvas_color" value="#FFFFCC" scope="request"/>
+	<c:set var="ss_box_title_color" value="#009999" scope="request"/>
+	<c:set var="ss_box_title_text_color" value="#993333" scope="request"/>
+	
+	<c:set var="ss_sliding_table_background_color" value="#FFFFAA" scope="request"/>
+	<c:set var="ss_sliding_table_border_color" value="#999999" scope="request"/>
+	<c:set var="ss_sliding_table_text_color" value="#3333FF" scope="request"/>
+	<c:set var="ss_sliding_table_link_hover_color" value="#3333FF" scope="request"/>
+	<c:set var="ss_sliding_table_row0_background_color" value="#FFFFCC" scope="request"/>
+	<c:set var="ss_sliding_table_row1_background_color" value="#FFFFAA" scope="request"/>
+	
+	<c:set var="ss_calendar_today_background_color" value="#ffffe8" scope="request"/>
+	<c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
+</c:if>
 <%
 
 //Set up the user object

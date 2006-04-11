@@ -74,12 +74,16 @@ public class WebKeys {
 	public static final String PROFILE_INDEX_ACTION_CONFIGURE="configure_profile_index";
 	public static final String DEFINITION_ACTION_IMPORT="import_definition";
 	//oerations
+ 	public static final String FORUM_OPERATION_ADD_FAVORITE_BINDER = "add_favorite_binder";
+ 	public static final String FORUM_OPERATION_ADD_FAVORITES_CATEGORY = "add_favorites_category";
+ 	public static final String FORUM_OPERATION_SAVE_FAVORITES = "save_favorites";
  	public static final String FORUM_OPERATION_ADMINISTRATION = "administration";
     public static final String OPERATION_ADD_FOLDER = "add_folder";
     public static final String OPERATION_ADD_SUB_FOLDER = "add_subFolder";
     public static final String OPERATION_ADD_WORKSPACE = "add_workspace";
 	public static final String FORUM_OPERATION_GET_ENTRY_ELEMENTS = "get_entry_elements";
 	public static final String FORUM_OPERATION_GET_ELEMENT_VALUES = "get_element_values";
+	public static final String FORUM_OPERATION_GET_FAVORITES_TREE = "get_favorites_tree";
 	public static final String FORUM_OPERATION_GET_FILTER_TYPE = "get_filter_type";
 	public static final String FORUM_OPERATION_SET_DISPLAY_STYLE = "set_display_style";
 	public static final String FORUM_OPERATION_SET_DISPLAY_DEFINITION = "set_display_definition";
