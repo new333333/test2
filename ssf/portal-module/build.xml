@@ -16,7 +16,7 @@
 				includes="com/sitescape/util/servlet/DynamicServletRequest.class"
 			/>
 			<fileset dir="${basedir}/../main/classes">
-	        	<include name="com/sitescape/ef/web/crosscontext/portal/CrossContextConstants.class"/>
+	        	<include name="com/sitescape/ef/portalmodule/CrossContextConstants.class"/>
 	        	<include name="com/sitescape/ef/web/util/AttributesAndParamsOnlyServletRequest.class"/>
 	        	<include name="com/sitescape/ef/web/util/NullServletResponse.class"/>
 			</fileset>
