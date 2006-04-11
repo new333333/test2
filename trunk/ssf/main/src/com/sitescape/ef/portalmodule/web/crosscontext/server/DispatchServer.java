@@ -58,7 +58,10 @@ public class DispatchServer extends GenericServlet {
 			}	
 			catch(Exception e) {
 				logger.warn(e.getMessage(), e);
-				throw new ServletException(e.getMessage());
+				if(e instanceof IOException)
+					throw (IOException) e;
+				else
+					throw new ServletException(e.getMessage());
 			}
 		}
 		else if(operation.equals(CrossContextConstants.OPERATION_CREATE_SESSION)) {
@@ -97,7 +100,7 @@ public class DispatchServer extends GenericServlet {
 			}
 		}
 		else {
-			logger.warn("Unrecognized operation [" + operation + "]");
+			logger.error("Unrecognized operation [" + operation + "]");
 		}
 	}
 	
