@@ -384,7 +384,7 @@ public class WebdavSiteScape implements BasicWebdavStore {
 			if(u.length == 4)
 				return returnMap(map, true);
 			
-			map.put(URI_ENTITY_TYPED_ID, u[4]);
+			map.put(URI_ENTRY_ID, Long.valueOf(u[4]));
 			
 			if(u.length == 5)
 				return returnMap(map, true);
@@ -410,7 +410,20 @@ public class WebdavSiteScape implements BasicWebdavStore {
 				else
 					return null;
 			}
-			else {
+			else if(itemType.equals(URI_ITEM_TYPE_ATTACH)) {
+				map.put(URI_REPOS_NAME, u[6]);
+				
+				if(u.length == 7)
+					return returnMap(map, true);
+				
+				map.put(URI_FILENAME, u[7]);
+				
+				if(u.length == 8)
+					return returnMap(map, false);
+				else
+					return null;				
+			}
+			else { // file or graphic
 				map.put(URI_ELEMNAME, u[6]);
 				
 				if(u.length == 7)
