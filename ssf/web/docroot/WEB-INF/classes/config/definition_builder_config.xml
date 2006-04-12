@@ -497,6 +497,15 @@
 			<property name="width" caption="__browseboxWidth" type="text"/>
 			<property name="number" caption="__number_of_file_select_boxes_to_be_shown" type="integer"/>
 			<property name="storage" caption="__storage_media" type="selectbox" default="fileRepositoryService">
+				<!-- 
+					IMPORTANT: Make sure that the following option list contains
+				    union of all repository names appearing in this definition. 
+				    Any file uploaded through one of the named element becomes
+				    visible through "attachFiles" type element. Therefore it is 
+				    illogical to display a list other than the full union. In
+				    the current version, the software is not capable of computing
+				    this master list dynamically. So it must be listed explicitly.
+				-->   
 				<option name="fileRepositoryService" caption="__file_system" />
 				<option name="internalWebdavRepositoryService" caption="__internal_webdav" />
 				<help>__help_storage_media</help>
