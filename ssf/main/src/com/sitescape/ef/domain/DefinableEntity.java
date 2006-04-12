@@ -220,6 +220,29 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     }
     
     /**
+     * Returns a list of <code>FileAttachment</code> whose repository name
+     * matches the argument. 
+     * 
+     * @param repositoryServiceName
+     * @return
+     */
+    public List getFileAttachments(String repositoryServiceName) {
+    	Set atts = getAttachments();
+    	Attachment att;
+    	FileAttachment fatt;
+    	List result = new ArrayList();
+    	for (Iterator iter=atts.iterator(); iter.hasNext();) {
+    		att = (Attachment)iter.next();
+    		if (att instanceof FileAttachment) {
+    			fatt = (FileAttachment) att;
+    			if(fatt.getRepositoryServiceName().equals(repositoryServiceName))
+    				result.add(att);
+    		}
+    	}
+    	return result;
+    }
+
+    /**
      * Return FileAttachment corresponding to the specified combination of 
      * repository service name and file name. In other words, file namespace
      * is not based on the file name alone. 

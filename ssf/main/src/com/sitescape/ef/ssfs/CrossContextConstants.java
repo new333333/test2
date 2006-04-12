@@ -60,9 +60,10 @@ public abstract class CrossContextConstants {
 	public static final String URI_TYPE = "type";	// value = String
 	public static final String URI_BINDER_ID = "binderId";	// value = Long
 	public static final String URI_FILENAME = "filename";	// value = String
-	public static final String URI_ENTITY_TYPED_ID = "entityTypedId";	// value = String
+	public static final String URI_ENTRY_ID = "entryId";	// value = Long
 	public static final String URI_ITEM_TYPE = "itemType";	// value = String
 	public static final String URI_ELEMNAME = "elemname";	// value = String
+	public static final String URI_REPOS_NAME = "reposname"; // value = String
 	 
 	public static final String URI_IS_FOLDER = "isFolder"; // value = Boolean
 	
@@ -72,7 +73,8 @@ public abstract class CrossContextConstants {
 	public static final String URI_TYPE_LIBRARY = "library";
 	
 	// URI item type values (values for URI_ITEM_TYPE) - Do NOT abbreviate 
-	// the string value since it is actually used as part of the WebDAV URI.
+	// or alter the string value since it is actually used as part of the 
+	// WebDAV URI.
 	public static final String URI_ITEM_TYPE_PRIMARY = "primary";
 	public static final String URI_ITEM_TYPE_FILE	 = "file";
 	public static final String URI_ITEM_TYPE_GRAPHIC = "graphic";
