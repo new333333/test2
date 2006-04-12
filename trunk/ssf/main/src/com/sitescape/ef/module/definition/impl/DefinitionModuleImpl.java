@@ -947,10 +947,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 											    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
 											    	String fileName = myFile.getOriginalFilename();
 											    	if (fileName.equals("")) continue;
-											    	
-											    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
-											    	String repositoryServiceName = storageElem.attributeValue("value",
-											    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
+											    	// Different repository can be specified for each file uploaded.
+											    	// If not specified, use the statically selected one.  
+											    	String repositoryServiceName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(i));
+											    	if(repositoryServiceName == null) {
+												    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
+												    	repositoryServiceName = storageElem.attributeValue("value",
+												    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
+											    	}
 											    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryServiceName);
 											    	fileData.add(fui);
 												}
