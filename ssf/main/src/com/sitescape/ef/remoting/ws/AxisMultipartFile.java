@@ -52,7 +52,7 @@ public class AxisMultipartFile implements MultipartFile {
 	}
 
 	public String getContentType() {
-		throw new UnsupportedOperationException();
+		return null;
 	}
 
 	public long getSize() {

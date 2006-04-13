@@ -13,4 +13,8 @@ public class WriteFilesException extends CheckedException {
 	public FilesErrors getErrors() {
 		return errors;
 	}
+	
+	public String getMessage() {
+		return getErrors().toString();
+	}
 }
