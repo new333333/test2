@@ -37,7 +37,7 @@
     <property name="lcName" length="82"/>
     <property name="name" length="82"/>
     <property name="foreignName" length="256"/>
-    <bag inverse="true" access="field" cascade="persist,merge,save-update" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
+    <bag inverse="true" access="field" cascade="persist,merge,save-update,refresh,evict" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
       <cache usage="read-write"/>
       <key column="userId"/>
       <many-to-many fetch="join" node="Group" class="com.sitescape.ef.domain.Group" column="groupId" embed-xml="false"/>

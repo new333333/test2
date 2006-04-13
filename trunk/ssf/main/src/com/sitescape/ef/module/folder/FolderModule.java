@@ -81,5 +81,5 @@ public interface FolderModule {
     public Map getEntryTree(Long parentFolderId, Long entryId) throws AccessControlException;
     public void deleteEntry(Long parentFolderId, Long entryId) throws AccessControlException;
     public void checkDeleteEntryAllowed(FolderEntry entry) throws AccessControlException;
-
+    public void moveEntry(Long folderId, Long entryId, Long destinationId);
 }

@@ -147,6 +147,12 @@ public class ViewEntryController extends SAbstractForumController {
 			url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
+			//The "Move" menu
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOVE_ENTRY);
+			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			toolbar.addToolbarMenu("3_move", NLT.get("toolbar.move"), url);
 		} catch (AccessControlException ac) {};
 		
 	    
@@ -158,7 +164,7 @@ public class ViewEntryController extends SAbstractForumController {
 			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 			url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-			toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url);
+			toolbar.addToolbarMenu("4_delete", NLT.get("toolbar.delete"), url);
 		} catch (AccessControlException ac) {};
 	    
 		return toolbar;

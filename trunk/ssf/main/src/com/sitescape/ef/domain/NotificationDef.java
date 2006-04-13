@@ -14,7 +14,7 @@ import com.sitescape.ef.util.CollectionUtil;
  */
 public class NotificationDef  {
    
-	protected List distribution;
+	protected List distribution;//initialized by hibernate access=field
     protected String emailAddress;//initialized by hibernate access=field
     protected boolean teamOn=false;
     protected String from,subject;

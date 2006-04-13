@@ -131,13 +131,18 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
     	Principal p = (Principal)entry;
     	//we just disable principals, cause their ids are used all over
-    	p.setDisabled(true);
+    	getProfileDao().delete(p);
+    	//   	p.setDisabled(true);
     	return ctx;
     }
     public void deleteBinder(Binder binder) {
     	throw new InternalException("Cannot delete profile binder");
     }
     
+    public void moveBinder(Binder source, Binder destination) {
+    	throw new InternalException("Cannot move profile binder");
+    }
+
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry);
     	

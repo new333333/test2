@@ -29,6 +29,7 @@
 						<entry key="add_reply"><ref bean="forumAddEntryController"/></entry>
 						<entry key="add_binder"><ref bean="forumAddFolderController"/></entry>
 						<entry key="modify_binder"><ref bean="forumModifyBinderController"/></entry>
+						<entry key="move_binder"><ref bean="forumModifyBinderController"/></entry>
 						<entry key="delete_binder"><ref bean="forumModifyBinderController"/></entry>
 						<entry key="build_filter"><ref bean="forumFilterController"/></entry>
 						<entry key="configure_access_control"><ref bean="forumAccessControlController"/></entry>

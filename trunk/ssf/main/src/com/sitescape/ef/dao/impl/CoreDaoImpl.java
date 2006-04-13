@@ -67,6 +67,7 @@ import com.sitescape.ef.domain.NoEmailAliasByTheIdException;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.EmailAlias;
 import com.sitescape.ef.domain.PostingDef;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
@@ -135,31 +136,40 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	/**
 	 * Delete the binder object and its assocations.
 	 * Entries and child binders should already have been deleted
+	 * This is an optimizedd delete.  Deletes associations directly without waiting for hibernate
+	 * to query.
 	 */	
 	public void delete(final Binder binder) {
 	   	getHibernateTemplate().execute(
 	    	new HibernateCallback() {
 	    		public Object doInHibernate(Session session) throws HibernateException {
-    	  		deleteEntityAssociations("binder=" + binder.getId(), Binder.class);
-	    		session.createQuery("DELETE com.sitescape.ef.domain.PostingDef where binder=:owner")
-	       			.setLong("owner", binder.getId().longValue())
-    	   			.executeUpdate();
-  	   			Connection connect = session.connection();
-   	   			try {
-   	   				Statement s = connect.createStatement();
-   	   				s.executeUpdate("delete from SS_DefinitionMap where forum=" + binder.getId());
-   	   				s.executeUpdate("delete from SS_WorkflowMap where binder=" + binder.getId());
-   	   				s.executeUpdate("delete from SS_UserProperties where folderId=" + binder.getId());
-   	   			} catch (SQLException sq) {
-   	   				throw new HibernateException(sq);
-   	   			}
-   		   		//will this be a problem if the entry is proxied??
-   	   			session.createQuery("DELETE  com.sitescape.ef.domain.Binder where id=" + binder.getId())
-   	   				.executeUpdate();
-   	   			session.getSessionFactory().evictCollection("com.sitescape.ef.domain.Binder.binders", binder.getParentBinder().getId());
-   	    		session.getSessionFactory().evict(Binder.class, binder.getId());
-   	    		session.evict(binder);
-       	   		return null;
+        			//need to use ownerId, cause attachments/custom sets not indexed by binder
+		   			deleteEntityAssociations("ownerId=" + binder.getId() + " and ownerType='" +
+		   					binder.getEntityIdentifier().getEntityType().name() + "'", Binder.class);
+		   			session.createQuery("DELETE com.sitescape.ef.domain.PostingDef where binder=:owner")
+	       				.setLong("owner", binder.getId().longValue())
+	       				.executeUpdate();
+		   			session.createQuery("DELETE com.sitescape.ef.domain.Notification where binder=:owner")
+		   				.setLong("owner", binder.getId().longValue())
+		   				.executeUpdate();
+		   			session.createQuery("DELETE com.sitescape.ef.domain.UserProperties where folderId=:owner")
+		   				.setLong("owner", binder.getId().longValue())
+		   				.executeUpdate();
+		   			Connection connect = session.connection();
+		   			try {
+		   				Statement s = connect.createStatement();
+		   				s.executeUpdate("delete from SS_DefinitionMap where forum=" + binder.getId());
+		   				s.executeUpdate("delete from SS_WorkflowMap where binder=" + binder.getId());
+		   			} catch (SQLException sq) {
+		   				throw new HibernateException(sq);
+		   			}
+		   			//will this be a problem if the entry is proxied??
+		   			session.createQuery("DELETE com.sitescape.ef.domain.Binder where id=" + binder.getId())
+		   				.executeUpdate();
+		   			session.getSessionFactory().evictCollection("com.sitescape.ef.domain.Binder.binders", binder.getParentBinder().getId());
+		   			session.getSessionFactory().evict(Binder.class, binder.getId());
+		   			session.evict(binder);
+		   			return null;
     	   		}
     	   	}
     	 );    	

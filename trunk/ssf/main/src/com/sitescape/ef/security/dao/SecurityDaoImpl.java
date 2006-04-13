@@ -114,27 +114,13 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
 	            );
 	 	}
     public void deleteWorkAreaFunctionMemberships(final String zoneName, final Long workAreaId, final String workAreaType) {
-	   	getHibernateTemplate().execute(
-		    new HibernateCallback() {
-		    	public Object doInHibernate(Session session) throws HibernateException {
-		    		String delString = "zoneName='" + zoneName + "' and " +
-  						"workAreaId=" + workAreaId + " and workAreaType='" + workAreaType + "'";
-	  	   			Connection connect = session.connection();
-	   	   			try {
-	   	   				Statement s = connect.createStatement();
-	   	   				s.executeUpdate("delete from SS_WorkAreaFunctionMembers where workAreaFunctionMembershipId in " +
-	   	   						"(select id from SS_WorkAreaFunctionMemberships where " + delString + ")");
-	   	   			} catch (SQLException sq) {
-	   	   				throw new HibernateException(sq);
-	   	   			}
-	   		   		//will this be a problem if the entry is proxied??
-	   	   			session.createQuery("DELETE  com.sitescape.ef.security.function.WorkAreaFunctionMembership where " + delString)
-	   	   				.executeUpdate();
-	   	   			return null;
-	       		}
-	       	}
-	     );    	
-	    	
+    	List members = findWorkAreaFunctionMemberships(zoneName, workAreaId, workAreaType);
+    	for (int i=0; i<members.size(); ++i) {
+    		WorkAreaFunctionMembership m = (WorkAreaFunctionMembership)members.get(i);
+    		//hibernate will delete memberids
+    		delete(m);
+    	}
+     	
     }
    
     private Criterion functionCriterion(List functions) {

@@ -1,10 +1,9 @@
 package com.sitescape.ef.dao;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
-import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.SeenMap;
+import com.sitescape.ef.domain.HKey;
 import com.sitescape.ef.domain.HistoryMap;
 import com.sitescape.ef.domain.UserProperties;
 
@@ -70,5 +69,7 @@ public interface FolderDao {
     public void deleteEntries(List entries);
     public void deleteEntryWorkflows(Folder folder);
     public void deleteEntryWorkflows(List entries);
-    
+    public void moveEntries(Folder folder);
+    public void moveEntries(Folder folder, List ids);
+
 }

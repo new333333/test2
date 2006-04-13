@@ -10,7 +10,7 @@ import com.sitescape.ef.InternalException;
  * @hibernate.subclass discriminator-value="folder" dynamic-update="true" node="ss_folder"
  * 
  * @author Jong Kim
- *
+ * 
  */
 public class Folder extends Binder {
     public static final int DISPLAY_STYLE_DEFAULT = 1;
@@ -19,14 +19,14 @@ public class Folder extends Binder {
     public static final int DISPLAY_STYLE_DOCUMENT_LIBRARY = 4;
     
     protected int displayStyle = DISPLAY_STYLE_DEFAULT;
-    protected List entries; //set by hibernate acccess="field"
     protected Folder parentFolder;
     protected HKey folderHKey;
     protected HKey entryRootHKey;
     protected Folder topFolder;
     protected int nextFolderNumber=1;
     protected int nextEntryNumber=1;
-
+    //We don't maintain a list of entries because it is to big and expensive to 
+    //maintain.
     public Folder() {
     	setType(EntityIdentifier.EntityType.folder.name());
     }
@@ -44,7 +44,9 @@ public class Folder extends Binder {
     public void setTopFolder(Folder topFolder) {
         this.topFolder = (Folder)topFolder;
     }
-    
+    public boolean isTop() {
+    	return topFolder == null;
+    }
     public Folder getParentFolder() {
         if (topFolder == null) return null;
     	return (Folder)getParentBinder();
@@ -108,7 +110,7 @@ public class Folder extends Binder {
     	folderHKey = new HKey(generateFolderRootSortKey());
     	return folderHKey;
     }
-    protected void setFolderHKey(HKey folderHKey) {
+    public void setFolderHKey(HKey folderHKey) {
         this.folderHKey = folderHKey;
     }
     /**
@@ -147,14 +149,8 @@ public class Folder extends Binder {
         child.setTopFolder(null);
         child.setParentFolder(null);
         child.setFolderHKey(null);
-        child.setEntryRootHKey(null);
     }    
-
-    public List getEntries() {
-    	if (entries == null) entries = new ArrayList();
-    	return entries;
-     }
-     
+    
     /**
      * Add entry to this folder.  Setup parent/child connections.
      * @param entry
@@ -165,7 +161,6 @@ public class Folder extends Binder {
       entry.setParentBinder((Folder)this);
       entry.setOwningFolderSortKey(getFolderHKey().getSortKey());
       entry.setHKey(new HKey(getEntryRootHKey(), nextEntryNumber++));
-      getEntries().add(entry);
 
     }
     /**
@@ -185,13 +180,13 @@ public class Folder extends Binder {
       entry.setParentFolder(null);
       entry.setHKey(null);
       entry.setOwningFolderSortKey(null);
-      getEntries().remove(entry);
 
     }    
 
  
+    //entries don't support acls except for workflow
     public List getChildAclControlled() {
-        return getEntries();
+        return new ArrayList();
     }
 	/* (non-Javadoc)
 	 * @see com.sitescape.ef.security.acl.AclContainer#getChildAclContainers()

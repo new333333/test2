@@ -29,6 +29,7 @@ import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Group;
 
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.UserProperties;
@@ -41,6 +42,7 @@ import com.sitescape.ef.domain.NoPrincipalByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.NoUserByTheNameException;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.SFQuery;
@@ -75,9 +77,35 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	    getHibernateTemplate().execute(
 	    	new HibernateCallback() {
 	       		public Object doInHibernate(Session session) throws HibernateException {
+    	   			Connection connect = session.connection();
+       	   			try {
+       	   				Statement s = connect.createStatement();
+      	   				s.executeUpdate("delete from SS_WorkAreaFunctionMembers where memberId in " + 
+      	   						"(select p.id from SS_Principals p where  p.parentBinder=" + profiles.getId() + ")");
+      	   			} catch (SQLException sq) {
+       	   				throw new HibernateException(sq);
+       	   			}
 	       			getCoreDao().deleteEntityAssociations("owningBinderId=" + profiles.getId(), Principal.class);
-	       			session.createQuery("Delete com.sitescape.ef.domain.Principal where parentBinder=:parent")
-	       				.setLong("parent", profiles.getId().longValue())
+
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.SeenMap where principalId in " + 
+ 			   				"(select p.id from com.sitescape.ef.domain.Principals p where " +
+		   			  			" p.parentBinder=" + profiles.getId() + ")")
+		   				.executeUpdate();
+		   			session.createQuery("Delete com.sitescape.ef.domain.Membership where groupId in " +
+ 			   				"(select p.id from com.sitescape.ef.domain.Principals p where " +
+ 			   			  			" p.parentBinder=" + profiles.getId() + ")")
+ 	 		   				.executeUpdate();
+		   			session.createQuery("Delete com.sitescape.ef.domain.Membership where userId in " +
+ 			   				"(select p.id from com.sitescape.ef.domain.Principals p where " +
+ 			   			  			" p.parentBinder=" + profiles.getId() + ")")
+ 	 		   				.executeUpdate();
+
+		   			session.createQuery("Delete com.sitescape.ef.domain.UserProperties where principalId in " +
+			   				"(select p.id from com.sitescape.ef.domain.Principals p where " +
+		   			  			" p.parentBinder=" + profiles.getId() + ")")
+  				         	.executeUpdate();
+
+	       			session.createQuery("Delete com.sitescape.ef.domain.Principal where parentBinder=" + profiles.getId())
 	       				.executeUpdate();
 	       			session.getSessionFactory().evict(Principal.class);		
 	       	   		return null;
@@ -116,13 +144,25 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	   			Connection connect = session.connection();
        	   			try {
        	   				Statement s = connect.createStatement();
-       	   				
-       	   				s.executeUpdate("delete from SS_UserProperties where principalId in (" + inList.toString() + ")");
+      	   				s.executeUpdate("delete from SS_WorkAreaFunctionMembers where memberId in (" + inList.toString() + ")");
        	   			} catch (SQLException sq) {
        	   				throw new HibernateException(sq);
        	   			}
-       	   			getCoreDao().deleteEntityAssociations("principal in (" + inList.toString() + ")", Principal.class);
-       	   			session.createQuery("Delete com.sitescape.ef.domain.Principal where id in (:pList)")
+        			//need to use ownerId, cause attachments/custom sets not indexed by principal
+		   			getCoreDao().deleteEntityAssociations("ownerId in (" + inList.toString() + ") and (ownerType='" +
+		   					EntityType.user.name() + "' or ownerType='" + EntityType.group.name() + "')", Principal.class);
+		   			session.createQuery("Delete com.sitescape.ef.domain.SeenMap where principalId in (:pList)")
+		   				.setParameterList("pList", ids)
+       	   				.executeUpdate();
+		   			session.createQuery("Delete com.sitescape.ef.domain.Membership where userId in (:uList) or groupId in (:gList)")
+		   				.setParameterList("uList", ids)
+		   				.setParameterList("gList", ids)
+       	   				.executeUpdate();
+		   			session.createQuery("Delete com.sitescape.ef.domain.UserProperties where principalId in (:pList)")
+	   					.setParameterList("pList", ids)
+	   					.executeUpdate();
+
+		   			session.createQuery("Delete com.sitescape.ef.domain.Principal where id in (:pList)")
             			.setParameterList("pList", ids)
        	   				.executeUpdate();
 	       			session.getSessionFactory().evict(Principal.class);		

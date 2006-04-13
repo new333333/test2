@@ -231,5 +231,4 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         getAccessControlManager().checkOperation(parentWorkspace, WorkAreaOperation.CREATE_BINDERS);        
     }
 
- 
 }

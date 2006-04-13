@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.module.shared.MapInputData;
@@ -37,17 +38,28 @@ public class ModifyEntryController extends SAbstractForumController {
 			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
 			response.setRenderParameter("ssReloadUrl", "");
 		} else if (formData.containsKey("okBtn")) {
+			if (action.equals(WebKeys.ACTION_MODIFY_ENTRY)) {
 
-			//See if the add entry form was submitted
-			//The form was submitted. Go process it
-			Map fileMap=null;
-			if (request instanceof MultipartFileSupport) {
-				fileMap = ((MultipartFileSupport) request).getFileMap();
-			} else {
-				fileMap = new HashMap();
+				//See if the add entry form was submitted
+				//The form was submitted. Go process it
+				Map fileMap=null;
+				if (request instanceof MultipartFileSupport) {
+					fileMap = ((MultipartFileSupport) request).getFileMap();
+				} else {
+					fileMap = new HashMap();
+				}
+			
+				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap);
+				setupViewEntry(response, folderId, entryId);
+			} else if (action.equals(WebKeys.ACTION_MOVE_ENTRY)) {
+				//must be move entry
+				Long destinationId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "destination"));
+				getFolderModule().moveEntry(folderId, entryId, destinationId);
+				response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
+				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
+				response.setRenderParameter("ssReloadUrl", "");
 			}
-			getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap);
-			setupViewEntry(response, folderId, entryId);
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			setupViewEntry(response, folderId, entryId);
@@ -69,9 +81,9 @@ public class ModifyEntryController extends SAbstractForumController {
 		Map model = new HashMap();	
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		String path;
+		FolderEntry entry=null;
 		if (action.equals(WebKeys.ACTION_MODIFY_ENTRY)) {
 			try {
-				FolderEntry entry=null;
 				Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 				entry  = getFolderModule().getEntry(folderId, entryId);
 				
@@ -83,6 +95,13 @@ public class ModifyEntryController extends SAbstractForumController {
 			} catch (NoDefinitionByTheIdException nd) {
 				return returnToViewForum(request, response, formData, folderId);
 			}
+		} else if (action.equals(WebKeys.ACTION_MOVE_ENTRY)) {
+			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
+			entry  = getFolderModule().getEntry(folderId, entryId);
+			model.put(WebKeys.ENTRY, entry);
+			model.put(WebKeys.BINDER, entry.getParentFolder());
+			path = WebKeys.VIEW_MOVE_ENTRY;
+			
 		} else
 			return returnToViewForum(request, response, formData, folderId);
 			
