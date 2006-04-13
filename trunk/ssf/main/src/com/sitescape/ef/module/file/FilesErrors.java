@@ -3,6 +3,8 @@ package com.sitescape.ef.module.file;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitescape.ef.util.NLT;
+
 public class FilesErrors {
 
 	private List problems;
@@ -17,6 +19,16 @@ public class FilesErrors {
 	
 	public List getProblems() {
 		return problems;
+	}
+	
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		for(int i = 0; i < problems.size(); i++) {
+			if(i > 0)
+				sb.append("\n");
+			sb.append(((Problem) problems.get(i)).toString());
+		}
+		return sb.toString();
 	}
 	
 	public static class Problem {
@@ -69,6 +81,19 @@ public class FilesErrors {
 		
 		public String getRepositoryServiceName() {
 			return repositoryServiceName;
+		}
+		
+		public String toString() {
+			StringBuffer sb = new StringBuffer();
+			sb.append(NLT.get(getTypeCode()))
+				.append(": ")
+				.append(getFileName())
+				.append(" (")
+				.append(getRepositoryServiceName())
+				.append(")")
+				.append(": ")
+				.append(getException().getLocalizedMessage());
+			return sb.toString();
 		}
 	}
 
