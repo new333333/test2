@@ -95,6 +95,8 @@ public class AjaxController  extends SAbstractForumController {
 					op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITES_CATEGORY) || 
 					op.equals(WebKeys.FORUM_OPERATION_SAVE_FAVORITES)) {
 				return new ModelAndView("forum/favorites_return", model);
+			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FAVORITES_TREE)) {
+				return new ModelAndView("forum/favorites_tree", model);
 			}
 			return new ModelAndView("forum/ajax_return", model);
 		}
