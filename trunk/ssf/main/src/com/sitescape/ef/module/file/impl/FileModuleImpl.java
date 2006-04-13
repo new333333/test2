@@ -191,6 +191,22 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 
+	public InputStream readFile(Binder binder,
+			DefinableEntity entry, String repositoryServiceName, String fileName) {
+		try {
+			FileAttachment fAtt = entry.getFileAttachment(
+					repositoryServiceName, fileName);
+
+			if (fAtt == null)
+				throw new NoSuchFileException(entry, fileName);
+
+			return RepositoryServiceUtil.read(repositoryServiceName, binder, entry,
+					fileName);
+		} catch (RepositoryServiceException e) {
+			throw new FileException(e);
+		}
+	}
+
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
 		try {
@@ -200,6 +216,20 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			
 	    	RepositoryServiceUtil.read(repositoryServiceName, binder, entry, 
 					fa.getFileItem().getName(), out);
+		}
+		catch(RepositoryServiceException e) {
+			throw new FileException(e);
+		}
+	}
+	
+	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
+		try {
+			String repositoryServiceName = fa.getRepositoryServiceName();
+			if(repositoryServiceName == null)
+				repositoryServiceName = RepositoryServiceUtil.getDefaultRepositoryServiceName();
+			
+	    	return RepositoryServiceUtil.read(repositoryServiceName, binder, entry, 
+					fa.getFileItem().getName());
 		}
 		catch(RepositoryServiceException e) {
 			throw new FileException(e);
