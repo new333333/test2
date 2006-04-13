@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,8 +13,10 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
@@ -102,6 +105,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 				if(def == null) // No definition - Is this actually possible?
 					return false; // No item type can be recognized
 				
+				// The following call validates the item type (as a side effect).
 				String defItemType = toDefItemType(itemType);
 				if(defItemType == null)
 					return false; // Unrecognized item type
@@ -111,12 +115,17 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 				if(items.size() == 0)
 					return false; // The item does not exist in the definition.
 				
-				// If relevent, check folder representing definition element.
+				String defElemName = null;
+				String reposName = null;
+				
+				// Check definition.
 				if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_FILE) ||
 						itemType.equals(CrossContextConstants.URI_ITEM_TYPE_GRAPHIC)) {
-					// File or graphic type items allows multiples. 
-					String elemName = getElemName(uri);
-					if(elemName == null)
+					// Check folder representing definition element - File or 
+					// graphic type items allows multiples.
+					
+					defElemName = getElemName(uri);
+					if(defElemName == null)
 						return true; // no more checking to do
 					
 					boolean matchFound = false;
@@ -126,7 +135,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 						Element nameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
 						if(nameProperty != null) {
 							String nameValue = nameProperty.attributeValue("value");
-							if(nameValue != null && nameValue.equals(elemName)) {
+							if(nameValue != null && nameValue.equals(defElemName)) {
 								// Match found
 								matchFound = true;
 							}
@@ -135,32 +144,59 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 					if(!matchFound)
 						return false;
 				}
-				
-				// Check file and repository
-				if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_ATTACH)) {
-					// Use file attachment objects directly
-					
-					// Check repository - If there exists at least one file attachment
-					// with the specified repository name, the repository is considered
-					// existing. This behavior is different from what we saw above
-					// regarding definition items/elements. That is, we allow definition
-					// items/elements to exist on their own even when there is no data
-					// file associated with them (yet). 
-					String reposName = getReposName(uri);
+				else if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_ATTACH)) {
+					// Check repository name.
+					 
+					reposName = getReposName(uri);
 					if(reposName == null)
 						return true; // no more checking to do
 					
-					List fatts = entry.getFileAttachments(reposName);
-					if(fatts.size() == 0)
-						return false; // No file attachment with the repository name
-					
-					// 
+					Element attachFilesItem = (Element) items.get(0); // only one item in there
+					Element optionElem = (Element) attachFilesItem.selectSingleNode("./properties/property[@name='storage']/option[@name='" + reposName + "']");
+					if(optionElem == null)
+						return false; // The repository name does not appear in the definition.
+				}
+				else { // primary
+					Element primaryItem = (Element) items.get(0); // only one item in there
+					Element nameProperty = (Element) primaryItem.selectSingleNode("./properties/property[@name='name']");
+					defElemName = nameProperty.attributeValue("value");
+				}
+				
+				// Finally check file itself. 
+				String fileName = getFileName(uri);
+				if(fileName == null)
+					return true; // no more checking to do
+				
+				if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_ATTACH)) {
+					// Use FileAttachment directly
+					FileAttachment fa = entry.getFileAttachment(reposName, fileName);
+					if(fa == null)
+						return false; // No matching file
+					else
+						return true; // Match found
 				}
 				else {
-					// Use custom attribute object
-				
+					// Use CustomAttribute
+					CustomAttribute ca = entry.getCustomAttribute(defElemName);
+					if(ca == null) {
+						// This means that no file has ever been uploaded through
+						// this element yet (that is, definition exists, but 
+						// data/file doesn't yet). 
+						return false; // No file exists for the element. 
+					}
+					else {
+						// Since all file attachments in this custom attribute
+						// have the same value for repository name, we only
+						// need to use file name for comparison. 
+						Iterator it = ((Set) ca.getValue()).iterator();
+						while(it.hasNext()) {
+							FileAttachment fa = (FileAttachment) it.next();
+							if(fa.getFileItem().getName().equals(fileName))
+								return true; // File name matches
+						}
+						return false; // File name didn't match
+					}
 				}
-				return false; // TBR
 			}
 			catch(NoBinderByTheIdException e) {
 				return false;
