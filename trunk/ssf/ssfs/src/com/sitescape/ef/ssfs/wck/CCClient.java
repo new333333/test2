@@ -36,7 +36,7 @@ public class CCClient {
 				CrossContextConstants.OPERATION_SET_RESOURCE, 
 			new CCClientCallback() {
 				public void additionalInput(Map m) {
-					m.put(CrossContextConstants.ARG_INPUTSTREAM, content);
+					m.put(CrossContextConstants.INPUT_STREAM, content);
 				}
 			}
 		);
