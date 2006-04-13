@@ -138,6 +138,18 @@ public class RepositoryServiceUtil {
 		}
 	}
 
+	public static InputStream read(String repositoryServiceName, Binder binder, 
+			DefinableEntity entry, String fileName)
+			throws RepositoryServiceException {
+		RepositoryService service = lookupRepositoryService(repositoryServiceName);
+		Object session = service.openRepositorySession();
+		try {
+			return service.read(session, binder, entry, fileName);
+		} finally {
+			service.closeRepositorySession(session);
+		}
+	}
+
 	public static void checkout(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry, String fileName)
 			throws RepositoryServiceException {
