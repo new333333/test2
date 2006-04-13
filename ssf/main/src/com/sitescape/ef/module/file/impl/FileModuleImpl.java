@@ -930,7 +930,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			else {
 				throw new InternalException();
 			}
-			updateFileAttachment(fAtt, user, versionName, fui.getSize());
+			try {
+				updateFileAttachment(fAtt, user, versionName, fui.getSize());
+			} catch (IOException e) {
+				throw new FileException(e);
+			}
 		}
 		else {
 	   		if(user.equals(co.getPrincipal())) {
@@ -1061,7 +1065,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	fAtt.setName(fui.getName());
     	FileItem fItem = new FileItem();
     	fItem.setName(fileName);
-    	fItem.setLength(fui.getSize());
+    	try {
+			fItem.setLength(fui.getSize());
+		} catch (IOException e) {
+			throw new FileException(e);
+		}
     	fAtt.setFileItem(fItem);
 	
     	return fAtt;
