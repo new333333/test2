@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
@@ -93,13 +96,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 
     public void modifyBinder(Long binderId, final InputDataAccessor inputData) 
 	throws AccessControlException, WriteFilesException {
-    	modifyBinder(binderId, inputData, new HashMap());
+    	modifyBinder(binderId, inputData, new HashMap(),  null);
 }
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
-    		Map fileItems) throws AccessControlException, WriteFilesException {
+    		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException {
     	Binder binder = loadBinder(binderId);
     	checkModifyBinderAllowed(binder);
-    	loadBinderProcessor(binder).modifyBinder(binder, inputData, fileItems);
+    	List atts = new ArrayList();
+    	for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
+    		String id = (String)iter.next();
+    		Attachment a = binder.getAttachment(id);
+    		if (a != null) atts.add(a);
+    	}
+    	loadBinderProcessor(binder).modifyBinder(binder, inputData, fileItems, atts);
     }
     public void checkModifyBinderAllowed(Binder binder) {
     	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);

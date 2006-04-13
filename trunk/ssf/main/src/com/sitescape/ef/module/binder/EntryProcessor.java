@@ -22,13 +22,9 @@ public interface EntryProcessor extends BinderProcessor {
  
     public Long addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
 	throws AccessControlException, WriteFilesException;
-  	public void deleteBinder(Binder binder) throws AccessControlException;
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries) throws AccessControlException;
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries, Document searchFilter) throws AccessControlException;
-	public void indexEntries(Binder binder);
-    public Long modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems) 
-		throws AccessControlException, WriteFilesException;
- 	
+	public void indexEntries(Binder binder);	
     
     public Long addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
