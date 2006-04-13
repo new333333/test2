@@ -10,6 +10,9 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
@@ -32,6 +35,7 @@ public class ModifyBinderController extends SAbstractForumController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		if (action.equals(WebKeys.ACTION_DELETE_BINDER)) {
+			//retrieve binder so we can return to parent
 			Binder binder = getBinderModule().getBinder(binderId);
 			getBinderModule().deleteBinder(binderId);
 			setupViewBinder(response, binder.getParentBinder().getId());		
@@ -46,7 +50,16 @@ public class ModifyBinderController extends SAbstractForumController {
 				} else {
 					fileMap = new HashMap();
 				}
-				getBinderModule().modifyBinder(binderId, new MapInputData(formData), fileMap);
+				Set deleteAtts = new HashSet();
+				for (Iterator iter=formData.entrySet().iterator(); iter.hasNext();) {
+					Map.Entry e = (Map.Entry)iter.next();
+					String key = (String)e.getKey();
+					if (key.startsWith("_delete_")) {
+						deleteAtts.add(key.substring(8));
+					}
+					
+				}
+				getBinderModule().modifyBinder(binderId, new MapInputData(formData), fileMap, deleteAtts);
 			} else if (action.equals(WebKeys.ACTION_MOVE_BINDER)) {
 				//must be a move
 				Long destinationId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "destination"));

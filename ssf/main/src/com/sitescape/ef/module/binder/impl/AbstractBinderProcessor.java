@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.Long;
+import java.util.Collection;
 
+import org.apache.lucene.index.Term;
 import org.dom4j.Document;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -18,7 +20,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.security.acl.AclControlled;
+import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Event;
@@ -221,7 +225,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  	
  	
     //***********************************************************************************************************
-    public Long modifyBinder(final Binder binder, final InputDataAccessor inputData, Map fileItems) 
+    public Long modifyBinder(final Binder binder, final InputDataAccessor inputData, 
+    		Map fileItems, final Collection deleteAttachments) 
     		throws AccessControlException, WriteFilesException {
 	
 	    Map entryDataAll = modifyBinder_toEntryData(binder, inputData, fileItems);
@@ -236,10 +241,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
         		modifyBinder_fillIn(binder, inputData, entryData);
-	                
+	            modifyBinder_removeAttachments(binder, deleteAttachments);    
         		modifyBinder_postFillIn(binder, inputData, entryData);
         		return null;
         	}});
+        modifyBinder_indexRemoveFiles(binder, deleteAttachments);
 	    modifyBinder_indexAdd(binder, inputData, fileUploadItems);
 	    
 	    cleanupFiles(fileUploadItems);
@@ -290,6 +296,18 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         EntryBuilder.updateEntry(binder, entryData);
 
     }
+    protected void modifyBinder_removeAttachments(Binder binder, Collection deleteAttachments) {
+    	for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
+    		Attachment a = (Attachment)iter.next();
+    		//see if associated with a customAttribute
+    		if (a instanceof FileAttachment) {
+    			FileAttachment fa = (FileAttachment)a;
+    			getFileModule().deleteFile(binder, binder, fa.getRepositoryServiceName(), fa.getFileItem().getName());
+    		} else {
+    			binder.removeAttachment(a);
+    		}
+    	}    	
+    }
 
     protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData) {
     }
@@ -298,7 +316,19 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		InputDataAccessor inputData, List fileUploadItems) {
     	indexBinder(binder, fileUploadItems, false);
     }
+    protected void modifyBinder_indexRemoveFiles(Binder binder, Collection attachments) {
+    	removeFiles(binder, binder, attachments);
+    }
  
+    protected void removeFiles(Binder binder, DefinableEntity entity, Collection attachments) {
+		//remove index entry
+    	for (Iterator iter=attachments.iterator(); iter.hasNext();) {
+    		Attachment a = (Attachment)iter.next();
+    		if (a instanceof FileAttachment) {
+    			removeFileFromIndex((FileAttachment)a);
+    		}
+    	}    	
+    }
     //***********************************************************************************************************
     /**
      * The default behavior is to delete the binder and all its entries
@@ -607,5 +637,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			}
         }
     }
-
+    protected void removeFileFromIndex(FileAttachment fa) {
+    	IndexSynchronizationManager.deleteDocuments(new Term(
+    			EntryIndexUtils.FILE_ID_FIELD, fa.getId()));  	
+    }
 }

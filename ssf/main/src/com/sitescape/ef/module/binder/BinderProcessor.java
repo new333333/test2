@@ -1,6 +1,7 @@
 package com.sitescape.ef.module.binder;
 
 import java.util.Map;
+import java.util.Collection;
 
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
@@ -20,7 +21,7 @@ public interface BinderProcessor {
     public Long addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
   	public void deleteBinder(Binder binder) throws AccessControlException;
-    public Long modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems) 
+    public Long modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
 		throws AccessControlException, WriteFilesException;
     public void moveBinder(Binder source, Binder destination);
 }

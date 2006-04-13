@@ -3,7 +3,7 @@ package com.sitescape.ef.module.binder;
 
 import java.util.List;
 import java.util.Map;
-
+import java.util.Collection;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Tag;
@@ -63,7 +63,7 @@ public interface BinderModule {
     public boolean hasBinders(Binder binder);
     
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
-    		Map fileItems) throws AccessControlException, WriteFilesException;
+    		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException;
     public void modifyBinder(Long binderId, InputDataAccessor inputData) 
     	throws AccessControlException, WriteFilesException;
     public void checkModifyBinderAllowed(Binder binder) throws AccessControlException;
