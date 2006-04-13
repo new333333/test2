@@ -14,8 +14,8 @@ import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.attachments.Attachments;
 
 import com.sitescape.ef.module.file.WriteFilesException;
+import com.sitescape.ef.module.shared.EmptyInputData;
 import com.sitescape.ef.remoting.impl.AbstractFacade;
-import com.sitescape.ef.remoting.impl.EmptyInputData;
 import com.sitescape.ef.remoting.impl.RemotingException;
 
 public class FacadeImpl extends AbstractFacade {
