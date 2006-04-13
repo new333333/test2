@@ -4,6 +4,7 @@
  */
 package com.sitescape.ef.module.profile;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public interface ProfileModule {
 		throws AccessControlException, WriteFilesException;
    public void checkAddEntryAllowed(ProfileBinder binder) throws AccessControlException;
 
-   public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, Map fileItems) 
+   public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
 		throws AccessControlException, WriteFilesException;
    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
 		throws AccessControlException, WriteFilesException;

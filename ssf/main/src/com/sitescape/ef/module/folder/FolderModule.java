@@ -46,7 +46,7 @@ public interface FolderModule {
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException;
     public void checkAddReplyAllowed(FolderEntry entry) throws AccessControlException;
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
-    		Map fileItems) throws AccessControlException, WriteFilesException;
+    		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException;
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData) 
     	throws AccessControlException, WriteFilesException;
     public void checkModifyEntryAllowed(FolderEntry entry) throws AccessControlException;

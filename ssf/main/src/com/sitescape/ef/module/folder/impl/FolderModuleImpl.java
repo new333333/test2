@@ -16,6 +16,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Folder;
@@ -150,15 +151,23 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     }
     public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
 			throws AccessControlException, WriteFilesException {
-    	modifyEntry(binderId, id, inputData, new HashMap());
+    	modifyEntry(binderId, id, inputData, new HashMap(), null);
     }
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
-    		Map fileItems) throws AccessControlException, WriteFilesException {
+    		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException {
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
         checkModifyEntryAllowed(entry);
-        processor.modifyEntry(folder, entry, inputData, fileItems);
+    	List atts = new ArrayList();
+    	if (deleteAttachments != null) {
+    		for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
+    			String id = (String)iter.next();
+    			Attachment a = entry.getAttachment(id);
+    			if (a != null) atts.add(a);
+    		}
+    	}
+        processor.modifyEntry(folder, entry, inputData, fileItems, atts);
     }
 
     public void checkModifyEntryAllowed(FolderEntry entry) {

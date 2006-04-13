@@ -49,7 +49,7 @@ public class FacadeImpl extends AbstractFacade {
 		try {
 			// Finally invoke the business method. 
 			getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
-				new EmptyInputData(), fileItems);
+				new EmptyInputData(), fileItems, null);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);

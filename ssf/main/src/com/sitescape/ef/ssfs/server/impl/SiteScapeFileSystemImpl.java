@@ -281,7 +281,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		}
 
 		try {
-			getFolderModule().modifyEntry(getBinderId(uri), getEntryId(uri), inputData, fileItems);
+			getFolderModule().modifyEntry(getBinderId(uri), getEntryId(uri), inputData, fileItems, null);
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} catch (WriteFilesException e) {

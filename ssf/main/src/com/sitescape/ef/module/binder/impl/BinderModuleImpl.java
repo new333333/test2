@@ -103,10 +103,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	Binder binder = loadBinder(binderId);
     	checkModifyBinderAllowed(binder);
     	List atts = new ArrayList();
-    	for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
-    		String id = (String)iter.next();
-    		Attachment a = binder.getAttachment(id);
-    		if (a != null) atts.add(a);
+    	if (deleteAttachments != null) {
+    		for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
+    			String id = (String)iter.next();
+    			Attachment a = binder.getAttachment(id);
+    			if (a != null) atts.add(a);
+    		}
     	}
     	loadBinderProcessor(binder).modifyBinder(binder, inputData, fileItems, atts);
     }

@@ -9,7 +9,10 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.module.shared.MapInputData;
@@ -48,7 +51,16 @@ public class ModifyEntryController extends SAbstractProfileController {
 			} else {
 				fileMap = new HashMap();
 			}
-			getProfileModule().modifyEntry(binderId, entryId, new MapInputData(formData), fileMap);
+			Set deleteAtts = new HashSet();
+			for (Iterator iter=formData.entrySet().iterator(); iter.hasNext();) {
+				Map.Entry e = (Map.Entry)iter.next();
+				String key = (String)e.getKey();
+				if (key.startsWith("_delete_")) {
+					deleteAtts.add(key.substring(8));
+				}
+				
+			}
+			getProfileModule().modifyEntry(binderId, entryId, new MapInputData(formData), fileMap, deleteAtts);
 			setupViewEntry(response, binderId, entryId);
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button

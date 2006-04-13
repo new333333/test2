@@ -25,7 +25,7 @@ public class ListProfilesController extends  SAbstractProfileController {
 		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
 			Map updates = new HashMap();
 			updates.put("displayStyle", PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates), new HashMap());
+			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SELECT_FILTER)) {
 			getProfileModule().setUserFolderProperty(user.getId(), binderId, 

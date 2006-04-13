@@ -30,7 +30,7 @@ public interface EntryProcessor extends BinderProcessor {
     	throws AccessControlException, WriteFilesException;
      public void deleteEntry(Binder binder, Entry entry) throws AccessControlException;
     public Entry getEntry(Binder binder, Long entryId) throws AccessControlException;
-    public Long modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems) 
+    public Long modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
 		throws AccessControlException, WriteFilesException;
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) 
 		throws AccessControlException;
