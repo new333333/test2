@@ -31,7 +31,7 @@
 // General variables
 
 String divId = ParamUtil.get(request, "box_id", "");
-String titleClassName = ParamUtil.get(request, "box_title_class", "ss_largeprint");
+String titleClassName = ParamUtil.get(request, "box_title_class", "ss_largestprint");
 
 String title = ParamUtil.get(request, "box_title", "");
 %>
