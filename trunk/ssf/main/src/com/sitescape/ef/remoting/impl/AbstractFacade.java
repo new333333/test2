@@ -146,7 +146,7 @@ public abstract class AbstractFacade implements Facade {
 		
 		try {
 			getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
-				new DomInputData(doc), null);
+				new DomInputData(doc));
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -225,7 +225,7 @@ public abstract class AbstractFacade implements Facade {
 		Document doc = getDocument(inputDataAsXML);
 		
 		try {
-			getProfileModule().modifyEntry(new Long(binderId), new Long(principalId), new DomInputData(doc), null);
+			getProfileModule().modifyEntry(new Long(binderId), new Long(principalId), new DomInputData(doc));
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);

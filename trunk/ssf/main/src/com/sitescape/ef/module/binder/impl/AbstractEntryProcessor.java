@@ -26,6 +26,7 @@ import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.security.acl.AclControlled;
+import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
@@ -202,7 +203,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
  	
    //***********************************************************************************************************
-    public Long modifyEntry(final Binder binder, final Entry entry, final InputDataAccessor inputData, Map fileItems) 
+    public Long modifyEntry(final Binder binder, final Entry entry, 
+    		final InputDataAccessor inputData, Map fileItems, final Collection deleteAttachments)  
     		throws AccessControlException, WriteFilesException {
 	
 	    Map entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
@@ -217,10 +219,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
         		modifyEntry_fillIn(binder, entry, inputData, entryData);
+	            modifyEntry_removeAttachments(binder, entry, deleteAttachments);    
 	                
         		modifyEntry_postFillIn(binder, entry, inputData, entryData);
         		return null;
         	}});
+        modifyEntry_indexRemoveFiles(binder, entry, deleteAttachments);
 	    modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems);
 	    
 	    cleanupFiles(fileUploadItems);
@@ -241,6 +245,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected FilesErrors modifyEntry_processFiles(Binder binder, 
     		Entry entry, List fileUploadItems, FilesErrors filesErrors) {
     	return getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors);
+    }
+    protected void modifyEntry_removeAttachments(Binder binder, Entry entry, Collection deleteAttachments) {
+    	removeAttachments(binder, entry, deleteAttachments);
+    }
+    protected void modifyEntry_indexRemoveFiles(Binder binder, Entry entry, Collection attachments) {
+    	removeFilesIndex(entry, attachments);
     }
     protected Map modifyEntry_toEntryData(Entry entry, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
@@ -765,6 +775,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
       	EntryIndexUtils.addEntryType(indexDoc, entry);       
         // Add ACL field. We only need to index ACLs for read access.
         EntryIndexUtils.addReadAcls(indexDoc,AccessUtils.getReadAclIds(entry));
+        //add parent binder - this isn't added for binders because it is used
+        //in delete terms for entries in a binder. 
+        //
+        EntryIndexUtils.addBinder(indexDoc, binder);
 
         fillInIndexDocWithCommonPart(indexDoc, binder, entry);
     }

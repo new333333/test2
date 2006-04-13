@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,7 +21,6 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Event;
@@ -297,16 +295,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     }
     protected void modifyBinder_removeAttachments(Binder binder, Collection deleteAttachments) {
-    	for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
-    		Attachment a = (Attachment)iter.next();
-    		//see if associated with a customAttribute
-    		if (a instanceof FileAttachment) {
-    			FileAttachment fa = (FileAttachment)a;
-    			getFileModule().deleteFile(binder, binder, fa.getRepositoryServiceName(), fa.getFileItem().getName());
-    		} else {
-    			binder.removeAttachment(a);
-    		}
-    	}    	
+    	removeAttachments(binder, binder, deleteAttachments);
     }
 
     protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData) {
@@ -317,15 +306,27 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	indexBinder(binder, fileUploadItems, false);
     }
     protected void modifyBinder_indexRemoveFiles(Binder binder, Collection attachments) {
-    	removeFiles(binder, binder, attachments);
+    	removeFilesIndex(binder, attachments);
     }
  
-    protected void removeFiles(Binder binder, DefinableEntity entity, Collection attachments) {
+    protected void removeFilesIndex(DefinableEntity entity, Collection attachments) {
 		//remove index entry
     	for (Iterator iter=attachments.iterator(); iter.hasNext();) {
     		Attachment a = (Attachment)iter.next();
     		if (a instanceof FileAttachment) {
     			removeFileFromIndex((FileAttachment)a);
+    		}
+    	}    	
+    }
+    protected void removeAttachments(Binder binder, DefinableEntity entity, Collection deleteAttachments) {
+    	for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
+    		Attachment a = (Attachment)iter.next();
+    		//see if associated with a customAttribute
+    		if (a instanceof FileAttachment) {
+    			FileAttachment fa = (FileAttachment)a;
+    			getFileModule().deleteFile(binder, entity, fa.getRepositoryServiceName(), fa.getFileItem().getName());
+    		} else {
+    			entity.removeAttachment(a);
     		}
     	}    	
     }
@@ -348,7 +349,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
   
     //TODO: delete all files under binder
     protected Object deleteBinder_processFiles(Binder binder, Object ctx) {
-    	getFileModule().deleteFiles(binder, binder);
+//    	getFileModule().deleteFiles(binder);
     	return ctx;
     }
     
@@ -586,8 +587,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // Add uid
         BasicIndexUtils.addUid(indexDoc, entity.getIndexDocumentUid());
 
-        //add parent binder
-        EntryIndexUtils.addBinder(indexDoc, binder);
         // Add creation-date
         EntryIndexUtils.addCreationDate(indexDoc, entity);
         

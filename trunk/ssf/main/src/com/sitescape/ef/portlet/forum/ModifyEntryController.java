@@ -8,7 +8,10 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.FolderEntry;
@@ -48,8 +51,17 @@ public class ModifyEntryController extends SAbstractForumController {
 				} else {
 					fileMap = new HashMap();
 				}
+				Set deleteAtts = new HashSet();
+				for (Iterator iter=formData.entrySet().iterator(); iter.hasNext();) {
+					Map.Entry e = (Map.Entry)iter.next();
+					String key = (String)e.getKey();
+					if (key.startsWith("_delete_")) {
+						deleteAtts.add(key.substring(8));
+					}
+					
+				}
 			
-				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap);
+				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts);
 				setupViewEntry(response, folderId, entryId);
 			} else if (action.equals(WebKeys.ACTION_MOVE_ENTRY)) {
 				//must be move entry
