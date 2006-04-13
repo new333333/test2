@@ -49,7 +49,7 @@ public abstract class CrossContextConstants {
 	public static final String ZONE_NAME = "zonename";
 	
 	// Argument key for OPERATION_SET_RESOURCE operation.
-	public static final String ARG_INPUTSTREAM = "inputStream";
+	public static final String INPUT_STREAM = "inputStream";
 	
 	// Argument key for URI (whose value is a map). - This argument is used for
 	// all operations.

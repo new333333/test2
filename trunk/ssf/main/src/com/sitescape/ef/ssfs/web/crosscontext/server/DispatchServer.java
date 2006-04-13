@@ -138,7 +138,7 @@ public class DispatchServer extends GenericServlet {
 			ssfs.createResource(uri);
 		}
 		else if(operation.equals(CrossContextConstants.OPERATION_SET_RESOURCE)) {
-			InputStream content = (InputStream) req.getAttribute(CrossContextConstants.ARG_INPUTSTREAM);
+			InputStream content = (InputStream) req.getAttribute(CrossContextConstants.INPUT_STREAM);
 			ssfs.setResource(uri, content);
 		}
 		else if(operation.equals(CrossContextConstants.OPERATION_GET_RESOURCE)) {
