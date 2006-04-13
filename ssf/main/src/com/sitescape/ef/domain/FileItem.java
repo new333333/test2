@@ -47,7 +47,7 @@ public class FileItem  {
     	if (obj == null) return false;
     	if (obj instanceof FileItem) {
     		FileItem o = (FileItem) obj;
-    		if (name.equals(o.getName()) && length == o.getLength())  return true;
+    		if (name.equals(o.getName()))  return true;
     	}
     	return false;
     }
