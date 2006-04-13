@@ -100,15 +100,21 @@ public class FileAttachment extends Attachment {
     	}
     }   
    public boolean equals(Object obj) {
-	   if (obj == null) return false;
-        FileAttachment o = (FileAttachment) obj;
-        //Don't use id - may not be saved yet
-        if (fileItem.equals(o.getFileItem()))  return true;
-
-        return false;
-    }
+		if (obj == null)
+			return false;
+		FileAttachment o = (FileAttachment) obj;
+		// Don't use id - may not be saved yet
+		if (repositoryServiceName.equals(o.getRepositoryServiceName())
+				&& fileItem.equals(o.getFileItem()))
+			return true;
+		else 
+			return false;
+	}
     public int hashCode() {
-    	return  fileItem.hashCode();
+       	int hash = 7;
+    	hash = 31*hash + repositoryServiceName.hashCode();
+    	hash = 31*hash + fileItem.hashCode();
+    	return hash;
     }
     public boolean update(Object newVal) {
     	boolean changed = super.update(newVal);
