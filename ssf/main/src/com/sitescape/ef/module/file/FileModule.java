@@ -1,5 +1,6 @@
 package com.sitescape.ef.module.file;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -97,6 +98,23 @@ public interface FileModule {
     	throws NoSuchFileException, FileException;
     
     /**
+     * Returns <code>InputStream</code> from which to read the content
+     * of the specified file. The caller is responsible for closing
+     * the stream after use. 
+     * 
+     * @param binder
+     * @param entity
+     * @param repositoryServiceName
+     * @param fileName
+     * @return
+     * @throws NoSuchFileException
+     * @throws FileException
+     */
+    public InputStream readFile(Binder binder, DefinableEntity entity, 
+    		String repositoryServiceName, String fileName) 
+    	throws NoSuchFileException, FileException;
+    
+    /**
      * Reads the specified file into the output stream.
      * 
      * @param fa
@@ -108,6 +126,22 @@ public interface FileModule {
      */
 	public void readFile(Binder binder, DefinableEntity entity, FileAttachment fa, 
 			OutputStream out) throws NoSuchFileException, FileException;
+	
+	/**
+     * Returns <code>InputStream</code> from which to read the content
+     * of the specified file. The caller is responsible for closing
+     * the stream after use. 
+     * 
+	 * @param binder
+	 * @param entity
+	 * @param fa
+	 * @return
+	 * @throws NoSuchFileException
+	 * @throws FileException
+	 */
+	public InputStream readFile(Binder binder, DefinableEntity entity, 
+			FileAttachment fa) throws NoSuchFileException, FileException;
+	
 	
     /**
      * Reads the specified scaled file into the output stream.
