@@ -117,8 +117,17 @@ public class FileUploadItem {
 		return mf.getOriginalFilename();
 	}
 	
-	public long getSize() {
-		return mf.getSize();
+	public long getSize() throws IOException {
+		long size = mf.getSize();
+		if(size < 0) {
+			// This indicates that the underlying MultipartFile is not capable
+			// of computing the size of the data without actually reading it
+			// first. 
+			if(!ready)
+				setup();
+			size = tempFile.length();
+		}
+		return size;
 	}
 	
 	/*
