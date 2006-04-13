@@ -129,7 +129,7 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     public String getOwningFolderSortKey() {
         return owningFolderSortKey;
     }
-    protected void setOwningFolderSortKey(String owningFolderSortKey) {
+    public void setOwningFolderSortKey(String owningFolderSortKey) {
         this.owningFolderSortKey = owningFolderSortKey;
     } 
     /**

@@ -9,11 +9,21 @@
 <c:forEach var="reply" items="${ssFolderEntryDescendants}">
 <jsp:useBean id="reply" type="com.sitescape.ef.domain.Entry" />
  <div>
-	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+<c:if test="${!empty reply.entryDef}">
+ 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 		configElement="<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']") %>" 
 		configJspStyle="${ssConfigJspStyle}" 
 		processThisItem="false" 
 		entry="<%= reply %>" />
+</c:if>
+<c:if test="${empty reply.entryDef}">
+ 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+		configElement="${ssConfigElement}" 
+		configJspStyle="${ssConfigJspStyle}" 
+		processThisItem="false" 
+		entry="<%= reply %>" />
+</c:if>
+ 
  </div>
  <div class="ss_divider"></div>
 </c:forEach>

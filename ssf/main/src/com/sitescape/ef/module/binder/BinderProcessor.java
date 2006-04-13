@@ -22,5 +22,5 @@ public interface BinderProcessor {
   	public void deleteBinder(Binder binder) throws AccessControlException;
     public Long modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
- 	
+    public void moveBinder(Binder source, Binder destination);
 }

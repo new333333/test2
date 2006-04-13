@@ -15,7 +15,6 @@ import com.sitescape.util.StringUtil;
 public class HKey {
     public static final  String B10_TO_36 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    private int lastDescendantNumber=0;
     private String sortKey;
     private String position;
     private int level=1;
@@ -37,30 +36,7 @@ public class HKey {
         
     }
     
-    public HKey(HKey parent) {
-        level = parent.level+1;
-        
-        StringBuffer key = new StringBuffer(100);
-        int start = ++parent.lastDescendantNumber;
-
-        // Base 36 conversion 
-        while (start > 0) {
-            key.insert(0,B10_TO_36.charAt(start%36));
-            start = start/36;
-        }
-        int length = key.length();
-        int fillLength=5;
-        if (level>1) {
-            fillLength=4;
-        } 
-        for (int i=length; i<fillLength; ++i) {
-            key.insert(0,"0");            
-        }
-        key.insert(0, parent.sortKey);
-        sortKey = key.toString();
-        
-        
-    }
+ 
     public HKey(HKey parent, int eNum) {
         level = parent.level+1;
         

@@ -429,6 +429,7 @@
 				<prop key="addFolder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modifyWorkflowState">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="moveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="show*">PROPAGATION_REQUIRED,readOnly</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
@@ -492,6 +493,7 @@
 		<property name="transactionAttributes">
 			<props>
 				<prop key="deleteBinder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="moveBinder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="show*">PROPAGATION_REQUIRED,readOnly</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>

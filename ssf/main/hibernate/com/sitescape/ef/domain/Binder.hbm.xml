@@ -34,7 +34,7 @@
       <key column="binder"/>
       <one-to-many class="com.sitescape.ef.domain.Event"/>
     </set>
-    <list inverse="false" access="field" cascade="persist,merge,save-update" lazy="true" table="SS_DefinitionMap" name="definitions">
+    <list inverse="false" access="field" cascade="persist,merge,save-update,refresh,evict" lazy="true" table="SS_DefinitionMap" name="definitions">
       <cache usage="read-write"/>
       <key column="forum"/>
       <index type="integer" column="position"/>
@@ -121,10 +121,6 @@
         <property name="level" column="entryRoot_level"/>
         <property name="sortKey" length="512" column="entryRoot_sortKey"/>
       </component>
-      <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="entries">
-        <key column="parentBinder"/>
-        <one-to-many class="com.sitescape.ef.domain.FolderEntry"/>
-      </bag>
     </subclass>
     <subclass name="com.sitescape.ef.domain.ProfileBinder" discriminator-value="profiles" dynamic-update="true"/>
     <subclass name="com.sitescape.ef.domain.Workspace" discriminator-value="workspace" dynamic-update="true">

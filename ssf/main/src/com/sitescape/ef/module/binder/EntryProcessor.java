@@ -40,6 +40,7 @@ public interface EntryProcessor extends BinderProcessor {
 		throws AccessControlException;
 	public void reindexEntry(Entry entry); 
   	public void reindexEntries(Collection entries);
+    public void moveEntry(Binder binder, Entry entry, Binder destination);
 
 
 }

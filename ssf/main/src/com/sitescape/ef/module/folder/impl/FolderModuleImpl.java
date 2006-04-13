@@ -402,6 +402,15 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     public void checkDeleteEntryAllowed(FolderEntry entry) {
         AccessUtils.deleteCheck(entry.getParentBinder(), entry);    	
     }
+    public void moveEntry(Long folderId, Long entryId, Long destinationId) {
+        Folder folder = loadFolder(folderId);
+        FolderCoreProcessor processor=loadProcessor(folder);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+        checkModifyEntryAllowed(entry);
+        Folder destination =  loadFolder(destinationId);
+        checkAddEntryAllowed(destination);
+        processor.moveEntry(folder, entry, destination);
+    }
 	public List getTags(Long binderId, Long entryId) {
 		FolderEntry entry = getEntry(binderId, entryId);
 		List tags = new ArrayList<Tag>();

@@ -34,21 +34,26 @@ public class ModifyBinderController extends SAbstractForumController {
 		if (action.equals(WebKeys.ACTION_DELETE_BINDER)) {
 			Binder binder = getBinderModule().getBinder(binderId);
 			getBinderModule().deleteBinder(binderId);
-			response.setRenderParameter(WebKeys.URL_BINDER_ID, binder.getParentBinder().getId().toString());		
-			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
-			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
+			setupViewBinder(response, binder.getParentBinder().getId());		
 			response.setRenderParameter("ssReloadUrl", "");
 			
 		} else if (formData.containsKey("okBtn")) {
-			//The modify form was submitted. Go process it
-			Map fileMap = null;
-			if (request instanceof MultipartFileSupport) {
-				fileMap = ((MultipartFileSupport) request).getFileMap();
-			} else {
-				fileMap = new HashMap();
+			if (action.equals(WebKeys.ACTION_MODIFY_BINDER)) { 			
+				//	The modify form was submitted. Go process it
+				Map fileMap = null;
+				if (request instanceof MultipartFileSupport) {
+					fileMap = ((MultipartFileSupport) request).getFileMap();
+				} else {
+					fileMap = new HashMap();
+				}
+				getBinderModule().modifyBinder(binderId, new MapInputData(formData), fileMap);
+			} else if (action.equals(WebKeys.ACTION_MOVE_BINDER)) {
+				//must be a move
+				Long destinationId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "destination"));
+				getBinderModule().moveBinder(binderId, destinationId);
 			}
-			getBinderModule().modifyBinder(binderId, new MapInputData(formData), fileMap);
 			setupViewBinder(response, binderId);
+			
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			setupViewBinder(response, binderId);
@@ -81,6 +86,10 @@ public class ModifyBinderController extends SAbstractForumController {
 			} catch (NoDefinitionByTheIdException nd) {
 				return returnToViewForum(request, response, formData, binderId);
 			}
+		} else if (action.equals(WebKeys.ACTION_MOVE_BINDER)) {
+			Binder binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
+			path = WebKeys.VIEW_MOVE_BINDER;
 		} else
 			return returnToViewForum(request, response, formData, binderId);
 			

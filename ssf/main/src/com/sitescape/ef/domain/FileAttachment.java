@@ -21,7 +21,7 @@ import com.sitescape.ef.util.CollectionUtil;
 public class FileAttachment extends Attachment {
     private List fileVersions; //set by hibernate access="field"
     private Integer lastVersion;
-    private String repositoryServiceName;
+    private String repositoryServiceName="fileRepositoryService";
 
     private FileItem fileItem;
     

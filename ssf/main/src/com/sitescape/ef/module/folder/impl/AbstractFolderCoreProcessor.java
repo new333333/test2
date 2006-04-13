@@ -26,6 +26,10 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.HKey;
+import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.InternalException;
+import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
@@ -176,7 +180,93 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	indexEntries_deleteEntries(binder);
     	return super.deleteBinder_indexDel(binder, ctx);
     }
-	
+    public void moveBinder(Binder source, Binder destination) {
+    	if (destination instanceof Folder) 
+    		moveFolderToFolder((Folder)source, (Folder)destination);
+    	else if (destination instanceof Workspace) 
+    		moveFolderToWorkspace((Folder)source, (Workspace)destination);
+    	else throw new InternalException("Cannot move folder");
+    	 
+      }
+    public void moveFolderToFolder(Folder source, Folder destination) {
+    	HKey oldKey = source.getFolderHKey();
+    	source.getParentBinder().removeBinder(source);
+    	destination.addFolder(source);
+    	HKey newKey = source.getFolderHKey();
+    	getFolderDao().moveEntries(source);
+    	//fixup all children
+    	List binders = source.getBinders();
+    	for (int i=0; i<binders.size(); ++i) {
+    		Folder child = (Folder)binders.get(i);
+    		child.setTopFolder(source.getTopFolder());
+    		fixupMovedChild(child, oldKey, newKey);
+    	}
+    	//TODO: need to reindex binder only??  its parent will be different.
+    	
+    }
+    protected void fixupMovedChild(Folder child, HKey oldParent, HKey newParent) {
+    	HKey oldKey = child.getFolderHKey();
+    	String childSort = oldKey.getSortKey();
+    	HKey newKey = new HKey(childSort.replaceFirst(oldParent.getSortKey(), newParent.getSortKey()));
+    	child.setFolderHKey(newKey);
+    	getFolderDao().moveEntries(child);
+    	List binders = child.getBinders();
+    	for (int i=0; i<binders.size(); ++i) {
+    		Folder c = (Folder)binders.get(i);
+    		c.setTopFolder(child.getTopFolder());
+    		fixupMovedChild(c, oldKey, newKey);
+    	}
+   	
+    }
+    public void moveFolderToWorkspace(Folder source, Workspace destination) {
+       	HKey oldKey = source.getFolderHKey();
+    	source.getParentBinder().removeBinder(source);
+    	destination.addFolder(source);
+    	source.setTopFolder(null);
+    	HKey newKey = source.getFolderHKey();
+    	getFolderDao().moveEntries(source);
+    	//fixup all children
+    	List binders = source.getBinders();
+    	for (int i=0; i<binders.size(); ++i) {
+    		Folder child = (Folder)binders.get(i);
+    		child.setTopFolder(source);
+    		fixupMovedChild(child, oldKey, newKey);
+    	}
+    	//TODO: need to reindex binder only??  its parent will be different.
+   	
+    }
+    //***********************************************************************************************************
+    public void moveEntry(Binder binder, Entry entry, Binder destination) {
+    	Folder from = (Folder)binder;
+    	if (!(destination instanceof Folder))
+    		throw new NotSupportedException("Must move folderEntry to another folder");
+    	Folder to = (Folder)destination;
+    	FolderEntry fEntry = (FolderEntry)entry;
+    	if (fEntry.getTopEntry() != null)
+    		throw new NotSupportedException("Cannot move a reply");
+    	HKey oldKey = fEntry.getHKey();
+    	//get Children
+    	List entries = getFolderDao().loadEntryDescendants(fEntry);
+    	from.removeEntry(fEntry);
+    	to.addEntry(fEntry);
+    	//TODO: need to remove entries from index. add to new index for parentBinder changes
+    	List ids = new ArrayList();
+    	for (int i=0; i<entries.size(); ++i) {
+    		FolderEntry e = (FolderEntry)entries.get(i);
+     	   	String childSort = e.getHKey().getSortKey();
+          	e.setHKey(new HKey(childSort.replaceFirst(oldKey.getSortKey(), fEntry.getHKey().getSortKey())));
+        	ids.add(e.getId());
+    	}
+    	//add top entry to list of entries
+    	ids.add(fEntry.getId());
+    	//write out changes before bulk updates
+    	getCoreDao().flush();
+    	getFolderDao().moveEntries(to,ids);
+    	//finally remove from index
+    	entries.add(fEntry);
+    	reindexEntries(entries);
+    }
+
     protected void loadEntryHistory(Entry entry) {
     	FolderEntry fEntry = (FolderEntry)entry;
         Set ids = new HashSet();
@@ -369,15 +459,17 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	List lineage;
     	Map model = new HashMap();
     	
-        //load tree including parent chain and all replies
+        //load tree including parent chain and all replies and entry
         lineage = getFolderDao().loadEntryTree(entry);
         //TODO: what about access control here?
         //split the tree
         entryLevel = entry.getDocLevel();
-        if (entryLevel-1 > lineage.size()) {
+        if (entryLevel > lineage.size()) {
             throw new FolderHierarchyException(entry.getId(), "Parent entries are missing");
         }
         model.put(ObjectKeys.FOLDER_ENTRY, entry);
+        //remove self from list
+        lineage.remove(entry);
         model.put(ObjectKeys.FOLDER_ENTRY_ANCESTORS, lineage.subList(0,entryLevel-1));
         model.put(ObjectKeys.FOLDER_ENTRY_DESCENDANTS, lineage.subList(entryLevel-1,lineage.size()));
         //Initialize users

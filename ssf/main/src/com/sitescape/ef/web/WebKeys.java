@@ -55,6 +55,7 @@ public class WebKeys {
     public static final String ACTION_ADD_ENTRY = "add_entry";
     public static final String ACTION_ADD_BINDER = "add_binder";
     public static final String ACTION_MODIFY_BINDER = "modify_binder";
+    public static final String ACTION_MOVE_BINDER = "move_binder";
     public static final String ACTION_DELETE_BINDER = "delete_binder";
 	public static final String FORUM_ACTION_ADD_REPLY = "add_reply";
 	public static final String FORUM_ACTION_ACCESS_CONTROL = "configure_access_control";
@@ -63,6 +64,7 @@ public class WebKeys {
 	public static final String FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
 	public static final String ACTION_DELETE_ENTRY = "delete_entry";
 	public static final String ACTION_MODIFY_ENTRY = "modify_entry";
+	public static final String ACTION_MOVE_ENTRY = "move_entry";
 	public static final String ACTION_VIEW_LISTING = "view_listing";
 	public static final String ACTION_VIEW_ENTRY = "view_entry";
 	public static final String FORUM_AJAX_REQUEST = "__ajax_request";
@@ -227,7 +229,9 @@ public class WebKeys {
     public static final String VIEW_LISTING="entry/view_listing";
     public static final String VIEW_LISTING_REDIRECT="entry/view_listing_redirect";
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
+    public static final String VIEW_MOVE_ENTRY="entry/move_entry";
     public static final String VIEW_MODIFY_BINDER="forum/modify_binder";
+    public static final String VIEW_MOVE_BINDER="binder/move_binder";
     public static final String VIEW_NO_DEFINITION="forum/view_default";
     public static final String VIEW_NO_ENTRY="entry/view_no_entry";
     public static final String VIEW_PROFILE="profile/view";

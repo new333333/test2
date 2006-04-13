@@ -22,6 +22,7 @@ import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.security.acl.AclControlled;
@@ -316,7 +317,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
       	return ctx;
    }
     //***********************************************************************************************************
+    public void moveEntry(Binder binder, Entry entry, Binder destination) {
+    	throw new NotSupportedException("Move entry not supported on this binder");
+    }
     
+    //***********************************************************************************************************
     protected Object deleteBinder_indexDel(Binder binder, Object ctx) {
         // Delete the document that's currently in the index.
     	// Since all matches will be deleted, this will also delete the attachments

@@ -134,6 +134,7 @@ array set ::j2ee_Attachments_class_MAP {
   name			{name "varchar 64"}
    fileName         {fileName "varchar 256"}
    fileLength         {fileLength int32}
+   repositoryServiceName {repositoryServiceName "varchar 128"}
    lastVersion  {lastVersion int32}
    versionNumber {versionNumber int32}
    versionName  {versionName "varchar 256"}
@@ -478,6 +479,7 @@ proc doUsers {userList} {
                 set attrs1(modification_date) $attrs(creation_date)
                 set attrs1(fileName) $photos
                 set attrs1(fileLength) 0
+ 				set attrs1(repositoryServiceName) "fileRepositoryService"
                 set attrs1(ownerType) "user"
                 set attrs1(ownerId) $::userIds($user)
                 set attrs1(principal) $::userIds($user)
@@ -503,6 +505,7 @@ proc doUsers {userList} {
                 try {
                 	set attrs1(fileLength) [file size $attrs1(fileName)]
                 } else {continue}
+  				set attrs1(repositoryServiceName) "fileRepositoryService"
                 set attrs1(ownerType) "user"
                 set attrs1(ownerId) $::userIds($user)           
                 set attrs1(principal) $::userIds($user)
@@ -1036,6 +1039,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set attaches(creation_principal) [mapName [lindex $upLoad 2]]
                 set attaches(modification_date) [lindex $upLoad 3]
                 set attaches(modification_principal) $attaches(creation_principal)
+  				set attaches(repositoryServiceName) "fileRepositoryService"
  				checkDates attaches(creation_date) attaches(modification_date)
                 set attaches(fileName) [lindex $upLoad 0]
                 set savedName [lindex $upLoad 0]
@@ -1057,6 +1061,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
 				set attaches(owningFolderSortKey) $folderSortKey
                 set attaches(owningBinderId) $parentFolderID
                 set attaches(name) "primary"
+  				set attaches(repositoryServiceName) "fileRepositoryService"
                 set attaches(creation_date) $attrs(creation_date)
                 set attaches(creation_principal) $attrs(creation_principal)
                 set attaches(modification_date) $attrs(creation_date)
@@ -1080,6 +1085,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
 				set attaches(owningFolderSortKey) $folderSortKey
                 set attaches(owningBinderId) $parentFolderID
                 set attaches(parentAttachment) $topAttachment
+   				set attaches(repositoryServiceName) "fileRepositoryService"
                 set attaches(type) "V"
                 set attaches(lastVersion) 0
                 
@@ -1181,6 +1187,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
 	                set attaches(folderEntry) $entryId
 					set attaches(owningFolderSortKey) $folderSortKey
            		    set attaches(owningBinderId) $parentFolderID
+	  				set attaches(repositoryServiceName) "fileRepositoryService"
 					set attaches(lastVersion) [expr [llength $af] -1]
                     set attaches(id) [newuuid]
                     set attaches(creation_date) $attrs(creation_date)

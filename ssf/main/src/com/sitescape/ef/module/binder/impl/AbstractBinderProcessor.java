@@ -339,6 +339,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
     //***********************************************************************************************************
+    public void moveBinder(Binder source, Binder destination) {
+    	source.getParentBinder().removeBinder(source);
+    	destination.addBinder(source);
+    }
+
+    
+    //***********************************************************************************************************
 
  
     protected Principal getPrincipal(List users, String userId) {

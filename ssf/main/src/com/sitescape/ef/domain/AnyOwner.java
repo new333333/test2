@@ -28,6 +28,7 @@ public class AnyOwner {
     public AnyOwner() {		
 	}
 	public AnyOwner(DefinableEntity entity) {
+		setBinderDeleteKey(entity);
 		setup(entity);
  	}
 	/**
