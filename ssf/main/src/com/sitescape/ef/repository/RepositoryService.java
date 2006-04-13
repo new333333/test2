@@ -199,6 +199,25 @@ public interface RepositoryService {
 		throws RepositoryServiceException;
 	
 	/**
+	 * Returns an <code>InputStream</code> from which to read the content of
+	 * the specified file resource from the repository. The caller is responsible
+	 * for closing the stream after use. 
+	 * <p>
+	 * If the resource is versioned, it reads the latest snapshot of the file,
+	 * which may be either the latest checked-in version of the file or the 
+	 * working copy in progress if the file is currently checked out. 
+	 * 
+	 * @param session
+	 * @param binder
+	 * @param entity
+	 * @param relativeFilePath
+	 * @return
+	 * @throws RepositoryServiceException
+	 */
+	public InputStream read(Object session, Binder binder, DefinableEntity entity,
+			String relativeFilePath) throws RepositoryServiceException;
+	
+	/**
 	 * Reads from the repository system the content of the specified version 
 	 * of the file resource. 
 	 * 

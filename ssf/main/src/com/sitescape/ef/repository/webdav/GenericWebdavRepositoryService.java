@@ -139,6 +139,18 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		}
 	}
 
+	public InputStream read(Object session, Binder binder, DefinableEntity entry, 
+			String relativeFilePath) throws RepositoryServiceException {	
+		SWebdavResource wdr = (SWebdavResource) session;
+		
+		try {
+			return wdr.getMethodData(getResourcePath(binder, entry, relativeFilePath));
+		} catch (IOException e) {
+			logError(wdr);
+			throw new RepositoryServiceException(e);
+		}
+	}
+
 	// obsolete
 	public void readVersion(Object session, String fileVersionURI, OutputStream out) throws RepositoryServiceException {
 		SWebdavResource wdr = (SWebdavResource) session;
