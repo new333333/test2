@@ -271,23 +271,6 @@ public class FileRepositoryService implements RepositoryService {
 		readFile(file, out);
 	}
 
-	private File getFileForRead(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
-		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
-		
-		if(fileInfo == VERSIONED_FILE) {
-			return getLatestFile(binder, entry, relativeFilePath);
-		}
-		else if(fileInfo == UNVERSIONED_FILE) {
-			return getUnversionedFile(binder, entry, relativeFilePath);
-		}
-		else {
-			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It does not exist"); 
-		}					
-	}
-	
-	
 	public InputStream read(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException {
 		File file = getFileForRead(session, binder, entry, relativeFilePath);
@@ -737,5 +720,21 @@ public class FileRepositoryService implements RepositoryService {
 				logger.warn(e); // Log and return normally.
 			}
 		}
+	}
+	
+	private File getFileForRead(Object session, Binder binder, DefinableEntity entry, 
+			String relativeFilePath) throws RepositoryServiceException {
+		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
+		
+		if(fileInfo == VERSIONED_FILE) {
+			return getLatestFile(binder, entry, relativeFilePath);
+		}
+		else if(fileInfo == UNVERSIONED_FILE) {
+			return getUnversionedFile(binder, entry, relativeFilePath);
+		}
+		else {
+			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
+					" for entry " + entry.getTypedId() + ": It does not exist"); 
+		}					
 	}
 }
