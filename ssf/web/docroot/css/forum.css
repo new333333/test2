@@ -10,8 +10,12 @@
    Add "ss_rounded" to any element that is to be rounded. */
 .ss_rounded {}
     
-.ss_largeprint {
+.ss_largestprint {
   font-size: 16px; 
+  }
+  
+.ss_largerprint {
+  font-size: 14px; 
   }
   
 .ss_smallprint {
@@ -73,6 +77,43 @@ ul.ss_nobullet li {
 ul.ss_square li {
   list-style-type: square;
 } 
+
+.ss_sortableList, .ss_sortableListCircle {
+  list-style-position: inside;
+  display:inline;
+  margin-left: 0px;
+  padding-left: 0px;
+  margin-top: 10px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  text-align: left;
+  }
+  
+table.ss_sortableList {
+  display: block;
+  margin: 0px;
+  padding: 0px;
+  }
+
+.ss_sortableList li {
+  margin-left: 0px;
+  padding-left: 5px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  }
+
+.ss_sortableListCircle li {
+  list-style-type: circle;
+  margin-left: 0px;
+  padding-left: 5px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  }
 
 /* ------------------------------------------------------------------------ */
 /* entry styles: common to entry views and entry forms */
@@ -357,15 +398,17 @@ div.ss_workflow {
   padding: 2px;
   }
 
-ul.ss_dragable {
+.ss_dragable, .ss_dragableLink {
   position: relative;
-  width: 100px;
-  margin: 4px;
 }
-ul.ss_dragable li {
+.ss_dragable li {
   position: relative;
   cursor: move;
-  margin: 0px;
+  text-align: left;
+}
+.ss_dragableLink li {
+  position: relative;
+  cursor: pointer;
   text-align: left;
 }
 ul.ss_userlist {
