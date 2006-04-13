@@ -639,6 +639,26 @@ function ss_getObjectTop(obj) {
     }
 }
 
+function ss_getObjectLeftAbs(obj) {
+    var left = 0
+    var parentObj = obj
+    while (parentObj.offsetParent && parentObj.offsetParent != '') {
+        left += parentObj.offsetParent.offsetLeft
+        parentObj = parentObj.offsetParent
+    }
+    return left
+}
+
+function ss_getObjectTopAbs(obj) {
+    var top = 0
+    var parentObj = obj
+    while (parentObj.offsetParent && parentObj.offsetParent != '') {
+        top += parentObj.offsetParent.offsetTop
+        parentObj = parentObj.offsetParent
+    }
+    return top
+}
+
 function ss_setObjectWidth(obj, width) {
 	obj.style.width = width;
 
