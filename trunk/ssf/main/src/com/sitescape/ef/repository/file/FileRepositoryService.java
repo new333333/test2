@@ -1,8 +1,10 @@
 package com.sitescape.ef.repository.file;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -264,22 +266,38 @@ public class FileRepositoryService implements RepositoryService {
 
 	public void read(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, OutputStream out) throws RepositoryServiceException {
+		File file = getFileForRead(session, binder, entry, relativeFilePath);
+		
+		readFile(file, out);
+	}
+
+	private File getFileForRead(Object session, Binder binder, DefinableEntity entry, 
+			String relativeFilePath) throws RepositoryServiceException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
 		if(fileInfo == VERSIONED_FILE) {
-			File latestFile = getLatestFile(binder, entry, relativeFilePath);
-			
-			readFile(latestFile, out);
+			return getLatestFile(binder, entry, relativeFilePath);
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
-			File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
-			
-			readFile(unversionedFile, out);
+			return getUnversionedFile(binder, entry, relativeFilePath);
 		}
 		else {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
 					" for entry " + entry.getTypedId() + ": It does not exist"); 
-		}			
+		}					
+	}
+	
+	
+	public InputStream read(Object session, Binder binder, DefinableEntity entry, 
+			String relativeFilePath) throws RepositoryServiceException {
+		File file = getFileForRead(session, binder, entry, relativeFilePath);
+		
+		try {
+			return new FileInputStream(file);
+		}
+		catch(IOException e) {
+			throw new RepositoryServiceException(e);
+		}	
 	}
 
 	public void readVersion(Object session, Binder binder, DefinableEntity entry, 
@@ -698,24 +716,12 @@ public class FileRepositoryService implements RepositoryService {
 	}
 
 	private void readFile(File file, OutputStream out) throws RepositoryServiceException {
-		FileInputStream in = null;
-		
 		try {
-			in = new FileInputStream(file);
-		
-			FileCopyUtils.copy(in, out);
-		}
-		catch(IOException e) {
+			FileCopyUtils.copy(new BufferedInputStream(new FileInputStream(file)), out);
+		} 
+		catch (IOException e) {
 			throw new RepositoryServiceException(e);
 		}
-		finally {
-			if(in != null) {
-				try {
-					in.close();
-				} 
-				catch (IOException e) {}
-			}
-		}			
 	}
 
 	private void copyData(InputStream in, File outFile) throws IOException {
