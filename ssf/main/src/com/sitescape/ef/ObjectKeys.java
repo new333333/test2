@@ -32,6 +32,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_DISPLAY_DEFINITION = "displayDefinition";
     public static final String USER_PROPERTY_SEARCH_FILTERS = "searchFilters";
     public static final String USER_PROPERTY_USER_FILTER = "userFilter";
+    public static final String USER_PROPERTY_FAVORITES = "userFavorites";
 
     public static final String WORKAREA_OPERATION = "workarea_operation";
     
