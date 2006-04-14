@@ -22,7 +22,6 @@
 	<taconite-replace-children contextNodeID="ss_favorites" parseInBrowser="true">
 
 <div style="margin:2px;">
-<form name="ss_favorites_form" class="ss_style" method="post" onSubmit="return false;" >
 <table id="ss_favorites_table" cellspacing="0" cellpadding="0" >
 <tbody>
 <tr>
@@ -32,6 +31,14 @@
 </tr>
 <tr>
 <td colspan="3">
+
+<c:if test="${!empty ss_favoritesTree}">
+<ssf:tree treeName="favTree" treeDocument="${ss_favoritesTree}"
+  rootOpen="true" style="sortable" />
+<br/>
+<br/>
+</c:if>
+
 
 <table class="ss_sortableList">
 <tbody>
@@ -99,61 +106,6 @@ src="<html:imagesPath/>trees/spacer.gif" /></td>
 </tbody>
 </table>
 
-<table cellspacing="0" cellpadding="0"><tbody><tr>
-<td><img src="<html:imagesPath/>trees/spacer.gif" 
-/><img src="<html:imagesPath/>trees/spacer.gif" /></td>
-<td>
-<ul id="ss_favorites_1" class="ss_dragableLink ss_sortableList">
-<li id="li_1_0"><a>yada yada</a></li>
-<li id="li_1_1">yada yada</li>
-<li id="li_1_2">yada yada yada yada</li>
-<li id="li_1_3">foo</li>
-<li id="li_1_4">yada yada</li>
-<li id="li_1_5">yada yada</li>
-<li id="li_1_6">yada yada</li>
-</ul>
-</td>
-</tr></tbody></table>
-
-<table cellspacing="0" cellpadding="0"><tbody><tr>
-<td>
-<img src="<html:imagesPath/>trees/spacer.gif" />
-<img src="<html:imagesPath/>trees/spacer.gif" />
-<img src="<html:imagesPath/>trees/spacer.gif" /></td>
-<td>
-	<ul id="ss_favorites_2" class="ss_dragableLink ss_sortableList">
-	<li id="li_2_0">yada yada</li>
-	<li id="li_2_1">yada yada</li>
-	<li id="li_2_2">yada yada yada yada</li>
-	<li id="li_2_3">yada yada</li>
-	<li id="li_2_4">yada yada</li>
-	<li id="li_2_5">yada yada</li>
-	<li id="li_2_6">yada yada</li>
-	</ul>
-</td>
-</tr></tbody></table>
-
-<table cellspacing="0" cellpadding="0"><tbody><tr>
-<td nowrap="nowrap">
-<img src="<html:imagesPath/>trees/spacer.gif" />
-<img src="<html:imagesPath/>trees/spacer.gif" />
-<img src="<html:imagesPath/>trees/spacer.gif" />
-<img src="<html:imagesPath/>trees/spacer.gif" />
-<img src="<html:imagesPath/>trees/spacer.gif" />
-<img src="<html:imagesPath/>trees/spacer.gif" />
-<img src="<html:imagesPath/>trees/spacer.gif" /></td>
-<td nowrap="nowrap">
-<ul id="ss_favorites_3" class="ss_dragableLink ss_sortableList">
-<li id="li_3_0">yada yada</li>
-<li id="li_3_1">yada yada</li>
-<li id="li_3_2">yada yada yada yada</li>
-<li id="li_32_3">yada yada</li>
-<li id="li_3_4">yada yada</li>
-<li id="li_3_5">yada yada</li>
-<li id="li_3_6">yada yada</li>
-</ul>
-</td>
-</tr></tbody></table>
 </td>
 </tr>
 <tr><td colspan="3"> </td></tr>
@@ -167,17 +119,11 @@ src="<html:imagesPath/>trees/spacer.gif" /></td>
 <tr><td colspan="3"> </td></tr>
 <tr>
 <td colspan="3">
-<span class="ss_bold">Add a new favorites category:</span><br />
-<input type="text" size="20" name="new_favorites_category" />
-<input type="submit" name="add_favorites_category" 
- value="<ssf:nlt tag="button.ok" text="OK"/>" 
- onClick="ss_addFavoriteCategory();return false;" />
 </td>
 </tr>
 
 </tbody>
 </table>
-</form>
 </div>
 
 	</taconite-replace-children>

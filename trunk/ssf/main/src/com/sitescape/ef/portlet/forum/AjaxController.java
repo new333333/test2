@@ -20,6 +20,7 @@ import com.sitescape.ef.module.profile.index.IndexUtils;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.Favorites;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.WebHelper;
@@ -28,6 +29,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 
@@ -150,11 +152,22 @@ public class AjaxController  extends SAbstractForumController {
 	private void ajaxAddFavoriteBinder(ActionRequest request, ActionResponse response) {
 		//Add a binder to the favorites list
 		String binderId = ((String[])formData.get("binderId"))[0];
+		Binder binder = getBinderModule().getBinder(Long.valueOf(binderId));
+		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
+		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
+		Favorites f = new Favorites(favorites);
+		favorites = f.addFavorite(binder.getTitle(), Favorites.FAVORITE_BINDER, binderId, "");
+		userProperties.setProperty(ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
 	}
 	
 	private void ajaxAddFavoritesCategory(ActionRequest request, ActionResponse response) {
 		//Add a category to the favorites list
 		String category = ((String[])formData.get("category"))[0];
+		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
+		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
+		Favorites f = new Favorites(favorites);
+		favorites = f.addCategory(category, "");
+		userProperties.setProperty(ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
 	}
 	
 	private void ajaxSaveFavorites(ActionRequest request, ActionResponse response) {
@@ -164,6 +177,12 @@ public class AjaxController  extends SAbstractForumController {
 	
 	private ModelAndView ajaxGetFavoritesTree(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
+		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
+		Favorites f = new Favorites(favorites);
+		Document favTree = f.getFavoritesTree();
+		model.put(WebKeys.FAVORITES_TREE, favTree);
+
 		response.setContentType("text/xml");
 		model.put(WebKeys.AJAX_STATUS, statusMap);
 		return new ModelAndView("forum/favorites_tree", model);
@@ -370,4 +389,5 @@ public class AjaxController  extends SAbstractForumController {
 		model.put(WebKeys.AJAX_STATUS, statusMap);
 		return new ModelAndView("tag_jsps/tree/get_tree_div", model);
 	}
+	
 }

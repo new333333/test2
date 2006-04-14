@@ -368,15 +368,6 @@ div.ss_widgetContent {
   text-decoration: underline;
   border:none;
   }
-.ss_treeWidget_ul {
-  display: inline;
-  padding: 0px 0px 0px 0px;
-  margin: 0px 0px 0px 0px;
-  list-style-type: none;
-  }
-.ss_treeWidget_li {
-  display: inline;
-  }
 .ss_expandable_area_title {
   width: 100%;
   }

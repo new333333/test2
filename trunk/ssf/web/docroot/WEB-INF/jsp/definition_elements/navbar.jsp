@@ -76,7 +76,8 @@ function ss_addForumToFavorites() {
 }
 
 function ss_addFavoriteCategory() {
-	var s = self.document.forms.ss_favorites_form.new_favorites_category.value;
+	var formObj = self.document.getElementById('ss_favorites_form');
+	var s = formObj.new_favorites_category.value;
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
@@ -200,6 +201,7 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 <div class="ss_style" id="ss_favorites_pane" 
   style="position:absolute; visibility:hidden; z-index:200;
   border:solid 1px black; height:200px;">
+<form name="ss_favorites_form" method="post" onSubmit="return false;" >
   <div class="ss_style" id="ss_favorites">
 	<table id="ss_favorites_table" cellspacing="0" cellpadding="0">
 	<tbody>
@@ -215,4 +217,18 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 	</tbody>
 	</table>
   </div>
+<br/>
+<br/>
+
+<table class="ss_sortableList">
+<tbody>
+<tr>
+<td nowrap="nowrap">
+<span class="ss_bold">Add a new favorites category:</span><br />
+<input type="text" size="20" name="new_favorites_category" />
+<input type="submit" name="add_favorites_category" 
+ value="<ssf:nlt tag="button.ok" text="OK"/>" 
+ onClick="ss_addFavoriteCategory();return false;" />
+</td></tr></table>
+</form>
 </div>

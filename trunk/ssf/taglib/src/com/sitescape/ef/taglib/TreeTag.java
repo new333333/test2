@@ -48,6 +48,7 @@ public class TreeTag extends TagSupport {
     private String highlightNode = "";
     private List multiSelect;
     private String multiSelectPrefix;
+    private String style;
     private String commonImg;
     private String className = "";
     private Map images;
@@ -62,6 +63,7 @@ public class TreeTag extends TagSupport {
 	        throw new JspException("Tree name must be specified");
 	    this.finished = false;
 	    this.startingIdSeen = false;
+	    if (this.style == null) this.style = "";
 		try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 
@@ -76,6 +78,7 @@ public class TreeTag extends TagSupport {
 			if (this.topId != null && !this.topId.equals("")) {
 				adapterUrl.setParameter(WebKeys.URL_OPERATION2, this.topId);
 			}
+			String aUrl = adapterUrl.toString().replaceAll("&", "&amp;");
 		    
 			JspWriter jspOut = pageContext.getOut();
 			StringBuffer sb = new StringBuffer();
@@ -83,7 +86,7 @@ public class TreeTag extends TagSupport {
 				sb.append("<script type=\"text/javascript\" src=\"").append(contextPath).append("/js/tree/tree_widget.js\"></script>\n");
 				sb.append("<script type=\"text/javascript\">\n");
 				sb.append("ssTree_defineBasicIcons('"+contextPath+"/images');\n");
-				sb.append("var ss_treeAjaxUrl_" + this.treeName + " = '" + adapterUrl.toString() + "';\n");
+				sb.append("var ss_treeAjaxUrl_" + this.treeName + " = '" + aUrl + "';\n");
 				sb.append("var ss_treeNotLoggedInMsg = '" + NLT.get("general.notLoggedIn") + "';\n");
 			}
 			
@@ -181,9 +184,8 @@ public class TreeTag extends TagSupport {
 				outputTreeNodes(treeRoot, recursedNodes);
 			}
 			if (this.startingId == null || this.startingId.equals("")) {
-				sb.append("</div>\n");
+				jspOut.print("</div>\n");
 			}
-			
 		}
 	    catch(Exception e) {
 	        throw new JspException(e);
@@ -224,9 +226,10 @@ public class TreeTag extends TagSupport {
 			String s_imageOpen = getImageOpen(e.attributeValue("image"));
 			boolean displayOnly = GetterUtil.getBoolean((String)e.attributeValue("displayOnly"));
 			
-			//Url = null value means 
+			//Url (if any)
 			String s_url = (String) e.attributeValue("url");
 			if (s_url == null) {
+				//Look to see if there are url attributes to build the url
 				Element url = e.element("url");
 				s_url = "";
 				if (url != null && url.attributes().size() > 0) {
@@ -598,6 +601,10 @@ public class TreeTag extends TagSupport {
 	
 	public void setMultiSelectPrefix(String multiSelectPrefix) {
 	    this.multiSelectPrefix = multiSelectPrefix;
+	}
+	
+	public void setStyle(String style) {
+	    this.style = style;
 	}
 	
 	public void setCommonImg(String commonImg) {
