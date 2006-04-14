@@ -130,6 +130,7 @@ public class WebKeys {
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
     public static final String ENTRY_ID = "ssEntryId";
+    public static final String FAVORITES_TREE = "ss_favoritesTree";
     public static final String FILE_VIEW_TYPE_SCALED = "scaled";
     public static final String FILE_VIEW_TYPE_THUMBNAIL = "thumbnail";
     public static final String FILTER_ENTRY_DEF_ID = "ss_filter_entry_def_id";
