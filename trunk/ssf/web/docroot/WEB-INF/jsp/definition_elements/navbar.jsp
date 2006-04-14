@@ -1,5 +1,7 @@
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<div id="debugLog">
+</div>
 
 <div class="ss_toolbar">
 <table cellspacing="0" cellpadding="0" width="100%">
@@ -38,6 +40,24 @@ function ss_enableFavoritesList(id) {
 	document.getElementById(id).onDragDrop = function() {ss_saveFavorites();};
 }
 
+var ss_pauseFavoriteClick = 0;
+var ss_pauseFavoriteClickTimer = null;
+function ss_noClickFavorite() {
+	ss_pauseFavoriteClick = 1;
+	if (ss_pauseFavoriteClickTimer != null) clearTimeout(ss_pauseFavoriteClickTimer);
+	ss_pauseFavoriteClickTimer = setTimeout("ss_clickFavorite();", 200)
+}
+function ss_clickFavorite() {
+	ss_pauseFavoriteClick = 0;
+	if (ss_pauseFavoriteClickTimer != null) clearTimeout(ss_pauseFavoriteClickTimer);
+	ss_pauseFavoriteClickTimer = null;
+}
+
+function ss_favorite_clicked(obj) {
+	if (ss_pauseFavoriteClick == 1) return;
+	alert('Clicked '+obj.parentNode.id)
+}
+
 function ss_addForumToFavorites() {
 	var binderId = '${ssBinder.id}';
 	var url = "<ssf:url 
@@ -73,6 +93,9 @@ function ss_addFavoriteCategory() {
 }
 
 function ss_saveFavorites() {
+	//The list was sorted, so turn off the click
+	ss_noClickFavorite();
+	
 	var s = "";
 	for (var i = 0; i < ss_favoritesListCount; i++) {
 		var ulObj = self.document.getElementById(ss_favoritesListArray[i]);
@@ -81,7 +104,6 @@ function ss_saveFavorites() {
 			s += items[j].id + " "
 		}
 	}
-	alert(s)
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
@@ -102,14 +124,16 @@ var ss_favoritesPaneLeftOffset = 4;
 var ss_favoritesMarginW = 4;
 var ss_favoritesMarginH = 6;
 function ss_showFavoritesPane() {
-	var fObj = self.document.getElementById("ss_favorites_pane")
+	var fObj = self.document.getElementById("ss_favorites_pane");
+	fObj.style.visibility = "visible";
+	fObj.style.display = "none";
+	fObj.style.display = "block";
 	var fObj2 = self.document.getElementById("ss_favorites_table")
-	ss_setObjectWidth(fObj, parseInt(ss_getObjectWidth(fObj2) + ss_favoritesMarginW));
-	ss_setObjectHeight(fObj, parseInt(ss_getObjectHeight(fObj2) + ss_favoritesMarginH));
+	//ss_setObjectWidth(fObj, parseInt(ss_getObjectWidth(fObj2) + ss_favoritesMarginW));
+	//ss_setObjectHeight(fObj, parseInt(ss_getObjectHeight(fObj2) + ss_favoritesMarginH));
 	var w = ss_getObjectWidth(fObj)
 	ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_bottom") + ss_favoritesPaneTopOffset))
 	ss_setObjectLeft(fObj, parseInt(ss_favoritesPaneLeftOffset - w))
-	fObj.style.visibility = "visible";
 	var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom") + ss_favoritesPaneLeftOffset);
 	ss_slideOpenDivHorizontal("ss_favorites_pane", leftEnd, 6);
 
@@ -133,7 +157,7 @@ function ss_postFavoritesRequest(obj) {
 	}
 
 	var fObj = self.document.getElementById("ss_favorites_pane")
-	var fObj2 = self.document.getElementById("ss_favorites_table")
+	var fObj2 = self.document.getElementById("ss_favorites")
 	ss_setObjectWidth(fObj, parseInt(ss_getObjectWidth(fObj2) + ss_favoritesMarginW));
 	ss_setObjectHeight(fObj, parseInt(ss_getObjectHeight(fObj2) + ss_favoritesMarginH));
 
@@ -175,12 +199,12 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 <div id="ss_favorites_status_message"></div>
 <div class="ss_style" id="ss_favorites_pane" 
   style="position:absolute; visibility:hidden; z-index:200;
-  border:solid 1px black; width:200px; height:200px;">
+  border:solid 1px black; height:200px;">
   <div class="ss_style" id="ss_favorites">
-	<table id="ss_favorites_table" cellspacing="0" cellpadding="0" width="100%">
+	<table id="ss_favorites_table" cellspacing="0" cellpadding="0">
 	<tbody>
 	<tr>
-	  <td colspan="2" class="ss_bold"><ssf:nlt tag="favorites" text="Favorites"/></td>
+	  <td colspan="2" class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
 	  <td align="right"><a onClick="ss_hideDiv('ss_favorites_pane');return false;"
         ><img border="0" src="<html:imagesPath/>box/close_off.gif"/></a></td>
 	</tr>

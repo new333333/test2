@@ -11,12 +11,15 @@ var ss_DragDrop = {
 	lastContainer : null,
     dragStartParent : null,
     dragStartCursor : null,
+    dragThresholdExceeded : null,
     	
 	initializeListContainer : function() {
 		this.firstContainer = null;
 		this.lastContainer = null;
 		this.dragStartParent = null;
-	    this.dragStartCursor = null
+	    this.dragStartCursor = null;
+	    this.dragThresholdExceeded = false;
+	    this.isOutside = false
 	},
 	
 	makeListContainer : function(list) {
@@ -61,6 +64,11 @@ var ss_DragDrop = {
 	},
 
 	onDragStart : function(nwPosition, sePosition, nwOffset, seOffset) {
+        // remember the original parent
+        ss_DragDrop.dragStartParent = this.parentNode;
+        ss_DragDrop.dragStartCursor = this.style.cursor;
+        //document.getElementById('debugLog').innerHTML = 'Remember parent: ' + ss_DragDrop.dragStartParent.id;
+        	
 		// update all container bounds, since they may have changed
 		// on a previous drag
 		//
@@ -69,20 +77,19 @@ var ss_DragDrop = {
 		while (container != null) {
 			container.northwest = ss_Coordinates.northwestOffset( container, true );
 			container.southeast = ss_Coordinates.southeastOffset( container, true );
+			//document.getElementById('debugLog').innerHTML += ' northwest('+container.id+'): '+container.northwest;
+			//document.getElementById('debugLog').innerHTML += ' southeast('+container.id+'): '+container.southeast;
 			container = container.nextContainer;
 		}
 	
-        // remember the original parent
-        ss_DragDrop.dragStartParent = this.parentNode;
-        ss_DragDrop.dragStartCursor = this.style.cursor;
-        //document.getElementById('debugLog').innerHTML = 'Remember parent: ' + ss_DragDrop.dragStartParent.id;
-        	
 		// item starts out over current parent
 		this.parentNode.onDragOver();
 	},
 
 	onDrag : function(nwPosition, sePosition, nwOffset, seOffset) {
+		//document.getElementById('debugLog').innerHTML += ' Ondrag this:'+this.style.top+", "+this.style.left;
 		// check if we were nowhere
+		//document.getElementById('debugLog').innerHTML += ' Ondrag parentNode ('+this.parentNode.id+'):'+this.parentNode.northwest+", "+this.parentNode.southeast;
 		if (this.isOutside) {
 			// check each container to see if in its bounds
 			var container = ss_DragDrop.firstContainer;
@@ -92,7 +99,7 @@ var ss_DragDrop = {
 					// we're inside this one
 					container.onDragOver();
 					this.isOutside = false;
-					//document.getElementById('debugLog').innerHTML = 'Over '+container.id;
+					//document.getElementById('debugLog').innerHTML += ' Over '+container.id;
 					this.style.cursor = "move";
 					
 					// since isOutside was true, the current parent is a
@@ -113,10 +120,12 @@ var ss_DragDrop = {
 		// check if we're outside our parent's bounds
 		} else if (!(nwOffset.inside( this.parentNode.northwest, this.parentNode.southeast ) ||
 			seOffset.inside( this.parentNode.northwest, this.parentNode.southeast ))) {
+			//document.getElementById('debugLog').innerHTML += ' Ondrag set outside true:'+this.parentNode.northwest+", "+this.parentNode.southeast;
 			
 			this.parentNode.onDragOut();
 			this.isOutside = true;
-			//document.getElementById('debugLog').innerHTML = 'Outside all containters';
+			this.dragThresholdExceeded = true;
+			//document.getElementById('debugLog').innerHTML += ' Outside all containters';
 			//Set the cursor to indicate "no drop". 
 			this.style.cursor = "text";		//Do it first to something guaranteed to be understood by all browsers
 			this.style.cursor = "not-allowed";
@@ -129,7 +138,7 @@ var ss_DragDrop = {
 					// we're inside this one
 					container.onDragOver();
 					this.isOutside = false;
-					//document.getElementById('debugLog').innerHTML = 'Over '+container.id;
+					//document.getElementById('debugLog').innerHTML += 'Over '+container.id;
 					this.style.cursor = "move";
 					this.parentNode.removeChild( this );
 					container.appendChild( this );
@@ -141,9 +150,12 @@ var ss_DragDrop = {
 			// the previous container node and add it to the document
 			if (this.isOutside) {
 				var tempParent = this.parentNode.cloneNode( false );
+				if (this.style.zIndex) tempParent.style.zIndex = parseInt(parseInt(this.style.zIndex) + 1);
 				this.parentNode.removeChild( this );
 				tempParent.appendChild( this );
 				document.getElementsByTagName( "body" ).item(0).appendChild( tempParent );
+				//document.getElementById('debugLog').innerHTML += 'Cloned node '+this.id;
+				//document.getElementById('debugLog').innerHTML += 'x,y: '+this.style.left+", "+this.style.top;
 				return;
 			}
 		}
@@ -163,6 +175,7 @@ var ss_DragDrop = {
 		}
 		if (this != item) {
 			ss_DragUtils.swap(this, next);
+			this.dragThresholdExceeded = true;
 			return;
 		}
 
@@ -174,6 +187,7 @@ var ss_DragDrop = {
 		}
 		if (this != item) {
 			ss_DragUtils.swap(this, item);
+			this.dragThresholdExceeded = true;
 			return;
 		}
 	},
@@ -183,7 +197,7 @@ var ss_DragDrop = {
 		// it's time to remove ourselves from the document
 		if (this.isOutside) {
 			var tempParent = this.parentNode;
-            //document.getElementById('debugLog').innerHTML = 'Restoring to: ' + ss_DragDrop.dragStartParent.id;
+            //document.getElementById('debugLog').innerHTML += ' Restoring to: ' + ss_DragDrop.dragStartParent.id;
 			this.parentNode.removeChild( this );
             ss_DragDrop.dragStartParent.appendChild(this);
             this.isOutside = false;
@@ -204,7 +218,7 @@ var ss_DragDrop = {
 		//Restore the cursor
 		this.style.cursor = ss_DragDrop.dragStartCursor;
 		this.parentNode.onDragOut();
-		this.parentNode.onDragDrop();
+		if (this.dragThresholdExceeded) this.parentNode.onDragDrop();
 		this.style["top"] = "0px";
 		this.style["left"] = "0px";
 	}

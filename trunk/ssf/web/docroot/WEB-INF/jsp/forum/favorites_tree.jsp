@@ -19,43 +19,141 @@
 	}
 
 %>
-	<taconite-replace contextNodeID="ss_favorites" parseInBrowser="true">
+	<taconite-replace-children contextNodeID="ss_favorites" parseInBrowser="true">
 
-<div class="ss_style" id="ss_favorites" 
-  style="border:solid 1px black;">
 <div style="margin:2px;">
 <form name="ss_favorites_form" class="ss_style" method="post" onSubmit="return false;" >
 <table id="ss_favorites_table" cellspacing="0" cellpadding="0" >
 <tbody>
 <tr>
-  <td colspan="2" class="ss_bold"><ssf:nlt tag="favorites" text="Favorites"/></td>
+  <td colspan="2" class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
   <td align="right"><a onClick="ss_hideDiv('ss_favorites_pane');return false;"
     ><img border="0" src="<html:imagesPath/>box/close_off.gif"/></a></td>
 </tr>
 <tr>
 <td colspan="3">
-<ul id="ss_favorites_1" class="ss_dragable ss_userlist">
-<li id="li_1_0" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_1_1" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_1_2" class="ss_dragable ss_userlist">yada yada yada yada</li>
-<li id="li_1_3" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_1_4" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_1_5" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_1_6" class="ss_dragable ss_userlist">yada yada</li>
+
+<table class="ss_sortableList">
+<tbody>
+<tr>
+<td nowrap="nowrap">
+</td><td>
+<ul id="ss_favorites_1aa" class="ss_dragableLink ss_sortableListCircle">
+<li id="li_1aa_0" ><a href="#" onClick="ss_favorite_clicked(this);return false;">
+<span class="ss_bold">Category 1</span></a></li>
 </ul>
 </td>
 </tr>
+</tbody>
+</table>
+<table class="ss_sortableList">
+<tbody>
 <tr>
-<td colspan="3">
-<ul id="ss_favorites_2" class="ss_dragable ss_userlist">
-<li id="li_2_0" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_2_1" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_2_2" class="ss_dragable ss_userlist">yada yada yada yada</li>
-<li id="li_2_3" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_2_4" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_2_5" class="ss_dragable ss_userlist">yada yada</li>
-<li id="li_2_6" class="ss_dragable ss_userlist">yada yada</li>
+<td nowrap="nowrap"><img src="<html:imagesPath/>trees/spacer.gif" /></td><td>
+<ul id="ss_favorites_1a" class="ss_dragableLink ss_sortableList"> 
+<li 
+id="li_1a_0" ><a href="#" onClick="ss_favorite_clicked(this);return false;">yada yada link</a></li>
+<li id="li_1a_1" >yada yada</li>
+<li id="li_1a_2" nowrap="nowrap">yada yada yada yada</li>
+<li id="li_1a_3">foo</li>
+<li id="li_1a_4">yada yada</li>
+<li id="li_1a_5">yada yada</li>
+<li id="li_1a_6">yada yada</li>
 </ul>
+</td>
+</tr>
+</tbody>
+</table>
+
+<table class="ss_sortableList">
+<tbody>
+<tr>
+<td nowrap="nowrap"><img src="<html:imagesPath/>trees/spacer.gif" /><img 
+src="<html:imagesPath/>trees/spacer.gif" /></td><td>
+<ul id="ss_favorites_1b" class="ss_dragableLink ss_sortableListCircle">
+<li id="li_1b_0" ><a href="#" onClick="alert('click');return false;">
+<span class="ss_bold">Category 2</span></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="ss_sortableList">
+<tbody>
+<tr>
+<td nowrap="nowrap"><img src="<html:imagesPath/>trees/spacer.gif" /><img 
+src="<html:imagesPath/>trees/spacer.gif" /><img 
+src="<html:imagesPath/>trees/spacer.gif" /></td>
+<td>
+<ul id="ss_favorites_1b2" class="ss_dragableLink ss_sortableList">
+<li id="li_1b_0" ><a href="#" onClick="alert('click');return false;">yada yada link</a></li>
+<li id="li_1b_1" >yada yada</li>
+<li id="li_1b_2" >yada yada yada yada</li>
+<li id="li_1b_3">foo</li>
+<li id="li_1b_4">yada yada</li>
+<li id="li_1b_5">yada yada</li>
+<li id="li_1b_6">yada yada</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+
+<table cellspacing="0" cellpadding="0"><tbody><tr>
+<td><img src="<html:imagesPath/>trees/spacer.gif" 
+/><img src="<html:imagesPath/>trees/spacer.gif" /></td>
+<td>
+<ul id="ss_favorites_1" class="ss_dragableLink ss_sortableList">
+<li id="li_1_0"><a>yada yada</a></li>
+<li id="li_1_1">yada yada</li>
+<li id="li_1_2">yada yada yada yada</li>
+<li id="li_1_3">foo</li>
+<li id="li_1_4">yada yada</li>
+<li id="li_1_5">yada yada</li>
+<li id="li_1_6">yada yada</li>
+</ul>
+</td>
+</tr></tbody></table>
+
+<table cellspacing="0" cellpadding="0"><tbody><tr>
+<td>
+<img src="<html:imagesPath/>trees/spacer.gif" />
+<img src="<html:imagesPath/>trees/spacer.gif" />
+<img src="<html:imagesPath/>trees/spacer.gif" /></td>
+<td>
+	<ul id="ss_favorites_2" class="ss_dragableLink ss_sortableList">
+	<li id="li_2_0">yada yada</li>
+	<li id="li_2_1">yada yada</li>
+	<li id="li_2_2">yada yada yada yada</li>
+	<li id="li_2_3">yada yada</li>
+	<li id="li_2_4">yada yada</li>
+	<li id="li_2_5">yada yada</li>
+	<li id="li_2_6">yada yada</li>
+	</ul>
+</td>
+</tr></tbody></table>
+
+<table cellspacing="0" cellpadding="0"><tbody><tr>
+<td nowrap="nowrap">
+<img src="<html:imagesPath/>trees/spacer.gif" />
+<img src="<html:imagesPath/>trees/spacer.gif" />
+<img src="<html:imagesPath/>trees/spacer.gif" />
+<img src="<html:imagesPath/>trees/spacer.gif" />
+<img src="<html:imagesPath/>trees/spacer.gif" />
+<img src="<html:imagesPath/>trees/spacer.gif" />
+<img src="<html:imagesPath/>trees/spacer.gif" /></td>
+<td nowrap="nowrap">
+<ul id="ss_favorites_3" class="ss_dragableLink ss_sortableList">
+<li id="li_3_0">yada yada</li>
+<li id="li_3_1">yada yada</li>
+<li id="li_3_2">yada yada yada yada</li>
+<li id="li_32_3">yada yada</li>
+<li id="li_3_4">yada yada</li>
+<li id="li_3_5">yada yada</li>
+<li id="li_3_6">yada yada</li>
+</ul>
+</td>
+</tr></tbody></table>
 </td>
 </tr>
 <tr><td colspan="3"> </td></tr>
@@ -81,8 +179,7 @@
 </table>
 </form>
 </div>
-</div>
 
-	</taconite-replace>
+	</taconite-replace-children>
 
 </taconite-root>

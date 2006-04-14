@@ -80,10 +80,9 @@ ul.ss_square li {
 
 .ss_sortableList, .ss_sortableListCircle {
   list-style-position: inside;
-  display:inline;
   margin-left: 0px;
   padding-left: 0px;
-  margin-top: 10px;
+  margin-top: 0px;
   margin-bottom: 0px;
   padding-top: 0px;
   padding-bottom: 0px;
