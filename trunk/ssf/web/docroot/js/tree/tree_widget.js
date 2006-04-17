@@ -12,6 +12,7 @@ function ss_treeToggle(treeName, id, bottom, type) {
     if (tObj == null) {
         //The div hasn't been loaded yet. Go get the div via ajax
 		eval("var url = ss_treeAjaxUrl_" + treeName);
+		url = ss_replaceSubStrAll(url, "&amp;", "&");
 		var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.addKeyValue("binderId", id)
 		ajaxRequest.addKeyValue("treeName", treeName)
@@ -19,7 +20,7 @@ function ss_treeToggle(treeName, id, bottom, type) {
 		ajaxRequest.setData("id", id)
 		ajaxRequest.setData("bottom", bottom)
 		ajaxRequest.setData("type", type)
-		//ajaxRequest.setEchoDebugInfo();
+		ajaxRequest.setEchoDebugInfo();
 		//ajaxRequest.setPreRequest(ss_preRequest);
 		ajaxRequest.setPostRequest(ss_postTreeDivRequest);
 		ajaxRequest.setUsePOST();
