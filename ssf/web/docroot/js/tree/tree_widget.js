@@ -29,21 +29,25 @@ function ss_treeToggle(treeName, id, bottom, type) {
 	    if (tObj.style.display == "none" || tObj.style.visibility == 'hidden') {
 	        tObj.style.display = "block";
 	        tObj.style.visibility = 'visible';
-			if (bottom == 1) {
-				jObj.className = "ss_twMinusBottom";	 // minus_bottom.gif
+			if (bottom == 0) {
+				jObj.className = "ss_twMinus";	       // minus.gif
+			} else if (bottom == 1) {
+				jObj.className = "ss_twMinusBottom";   // minus_bottom.gif
 			} else {
-				jObj.className = "ss_twMinus";           // minus.gif
+				jObj.className = "ss_minus";           // minus.gif (no join lines)
 			}
-			if (ss_treeIconsOpen[type]) iObj.src = ss_treeIconsOpen[type];
+			if (iObj != null && ss_treeIconsOpen[type]) iObj.src = ss_treeIconsOpen[type];
 	    } else {
 	        tObj.style.display = "none";
 	        tObj.style.visibility = 'hidden';
-			if (bottom == 1) {
-				jObj.className = "ss_twPlusBottom";	    // plus_bottom.gif
+			if (bottom == 0) {
+				jObj.className = "ss_twPlus";	      // plus.gif
+			} else if (bottom == 1) {
+				jObj.className = "ss_twPlusBottom";	  // plus_bottom.gif
 			} else {
-				jObj.className = "ss_twPlus";           // plus.gif
+				jObj.className = "ss_plus";           // plus.gif (no join lines)
 			}
-			if (ss_treeIconsClosed[type]) iObj.src = ss_treeIconsClosed[type];
+			if (iObj != null && ss_treeIconsClosed[type]) iObj.src = ss_treeIconsClosed[type];
 	    }
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
@@ -75,12 +79,14 @@ function ss_treeOpen(treeName, id, bottom, type) {
     } else {
         tObj.style.display = "block";
         tObj.style.visibility = 'visible';
-		if (bottom == 1) {
+		if (bottom == 0) {
+			jObj.className = "ss_twMinus";	         // minus.gif
+		} else if (bottom == 1) {
 			jObj.className = "ss_twMinusBottom";	 // minus_bottom.gif
 		} else {
-			jObj.className = "ss_twMinus";           // minus.gif
+			jObj.className = "ss_minus";             // minus.gif (no join lines)
 		}
-		if (ss_treeIconsOpen[type]) iObj.src = ss_treeIconsOpen[type];
+		if (iObj != null && ss_treeIconsOpen[type]) iObj.src = ss_treeIconsOpen[type];
 
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();

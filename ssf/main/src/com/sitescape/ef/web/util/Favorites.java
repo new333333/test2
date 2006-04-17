@@ -54,7 +54,7 @@ public class Favorites {
 	public Document addCategory(String name, String parentCategoryId) {
 		getFavorites();
 		Element root = this.favorites.getRootElement();
-		int categoryId = Integer.parseInt((String)root.attributeValue("nextCategoryId"));
+		int categoryId = Integer.parseInt((String)root.attributeValue("nextId"));
 		Element newCategory = null;
 		if (parentCategoryId.equals("")) {
 			newCategory = root.addElement("category");
@@ -66,7 +66,9 @@ public class Favorites {
 		newCategory.addAttribute("id", String.valueOf(categoryId));
 		newCategory.addAttribute("name", name);
 		newCategory.addAttribute("image", "folder");
-		root.addAttribute("nextCategoryId", String.valueOf(++categoryId));
+		newCategory.addAttribute("displayOnly", "true");
+		newCategory.addAttribute("listStyle", "ss_sortableListCircle");
+		root.addAttribute("nextId", String.valueOf(++categoryId));
 		
 		return this.favorites;
 	}
@@ -134,9 +136,11 @@ public class Favorites {
 			this.favorites = DocumentHelper.createDocument();
 			Element root = this.favorites.addElement("favorites");
 			root.addAttribute("nextId", "1");
-			root.addAttribute("nextCategoryId", "1");
 			root.addAttribute("name", NLT.get("favorites"));
+			root.addAttribute("id", "0");
 			root.addAttribute("image", "folder");
+			root.addAttribute("displayOnly", "true");
+			root.addAttribute("listStyle", "ss_sortableListCircle");
 		}
 		return this.favorites;
 	}
@@ -158,18 +162,18 @@ public class Favorites {
 	
 	private void buildFavoritesDomTree(Element srcElement, Element destElement, 
 			DomTreeBuilder treeHelper) {
+       	Iterator itFavorites = srcElement.selectNodes("favorite").iterator();
+       	while (itFavorites.hasNext()) {
+       		Element srcFavorite = (Element) itFavorites.next();
+       		Element destFavorite = destElement.addElement(DomTreeBuilder.NODE_CHILD);
+       		treeHelper.setupDomElement(DomTreeBuilder.TYPE_FAVORITES, srcFavorite, destFavorite);
+       	}
        	Iterator itCategories = srcElement.selectNodes("category").iterator();
        	while (itCategories.hasNext()) {
        		Element srcCategory = (Element) itCategories.next();
        		Element destCategory = destElement.addElement(DomTreeBuilder.NODE_CHILD);
        		treeHelper.setupDomElement(DomTreeBuilder.TYPE_FAVORITES, srcCategory, destCategory);
        		buildFavoritesDomTree(srcCategory, destCategory, treeHelper);
-       	}
-       	Iterator itFavorites = srcElement.selectNodes("favorite").iterator();
-       	while (itFavorites.hasNext()) {
-       		Element srcFavorite = (Element) itFavorites.next();
-       		Element destFavorite = destElement.addElement(DomTreeBuilder.NODE_CHILD);
-       		treeHelper.setupDomElement(DomTreeBuilder.TYPE_FAVORITES, srcFavorite, destFavorite);
        	}
 	}
 
@@ -180,6 +184,10 @@ public class Favorites {
 				element.addAttribute("title", e.attributeValue("name", "???"));
 				element.addAttribute("image", e.attributeValue("image", "page"));
 				element.addAttribute("id", e.attributeValue("id"));
+				if (!e.attributeValue("displayOnly", "").equals("")) 
+					element.addAttribute("displayOnly", e.attributeValue("displayOnly"));
+				if (!e.attributeValue("listStyle", "").equals("")) 
+					element.addAttribute("listStyle", e.attributeValue("listStyle"));
 			} else return null;
 			return element;
 		}
