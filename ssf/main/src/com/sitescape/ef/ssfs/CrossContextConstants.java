@@ -56,6 +56,7 @@ public abstract class CrossContextConstants {
 	public static final String URI = "uri";
 	
 	// Key names for URI parts - These are keys for the entries in the URI map.
+	public static final String URI_ORIGINAL = "original"; // value = String
 	public static final String URI_ZONENAME = "zonename"; // value = String
 	public static final String URI_TYPE = "type";	// value = String
 	public static final String URI_BINDER_ID = "binderId";	// value = Long
