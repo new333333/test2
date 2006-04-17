@@ -42,6 +42,12 @@
 		    <value>com/sitescape/ef/security/function/WorkAreaFunctionMembership.hbm.xml</value>
 			</list>
 		</property>
+<!--  		<property name="hibernateProperties">
+ 		   <props>
+  		    <prop key="hibernate.show_sql">true</prop>
+		    </props>
+		</property>
+-->
 	</bean>
 
 	<bean id="coreDaoImpl" class="com.sitescape.ef.dao.impl.CoreDaoImpl">

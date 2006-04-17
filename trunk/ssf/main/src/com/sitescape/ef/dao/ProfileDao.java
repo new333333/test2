@@ -94,12 +94,12 @@ public interface ProfileDao {
     public SFQuery queryUsers(FilterControls filter, String zoneName) throws DataAccessException; 
     public List loadUsers(FilterControls filter, String zoneName) throws DataAccessException; 
 
-    public int countUsers(FilterControls filter);
+    public int countUsers(FilterControls filter, String zoneName);
     public UserProperties loadUserProperties(Long userId);
     
     public Group loadGroup(Long groupId, String zoneName);
     public List loadGroups(Collection groupsIds, String zoneName);
-    public int countGroups(FilterControls filter);
+    public int countGroups(FilterControls filter, String zoneName);
     public SFQuery queryGroups(FilterControls filter, String zoneName) throws DataAccessException; 
     public List loadGroups(FilterControls filter, String zoneName) throws DataAccessException; 
  	public Set explodeGroups(Set ids); 

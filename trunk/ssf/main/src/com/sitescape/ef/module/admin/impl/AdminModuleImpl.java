@@ -18,6 +18,7 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.NotificationDef;
+import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
@@ -38,9 +39,9 @@ import com.sitescape.ef.security.function.WorkAreaFunctionMembershipExistsExcept
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.EmailAlias;
+import com.sitescape.ef.util.SZoneConfig;
 /**
  * @author Janet McCann
  *
@@ -325,4 +326,35 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	workArea.setFunctionMembershipInherited(inherit);
     } 
 
+	public void createZone(String name) {
+		Workspace top = new Workspace();
+		top.setName(name);
+		ProfileBinder profiles = new ProfileBinder();
+		profiles.setName("_profiles");
+		profiles.setZoneName(name);
+		top.addBinder(profiles);
+		User user = new User();
+		user.setName(SZoneConfig.getString(name, "adminUser", "admin"));
+		//generate id for top
+		getCoreDao().save(top);
+		
+		Function function = new Function();
+		function.setZoneName(name);
+		function.setName("Site Administration");
+		Set ops = new HashSet();
+		for (Iterator iter = WorkAreaOperation.getWorkAreaOperations(); iter.hasNext();) {
+			ops.add(((WorkAreaOperation)iter.next()).getName());
+		}	
+		//generate functionId
+		functionManager.addFunction(function);
+		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
+		ms.setWorkAreaId(top.getWorkAreaId());
+		ms.setWorkAreaType(top.getWorkAreaType());
+		ms.setZoneName(name);
+		ms.setFunctionId(function.getId());
+		Set members = new HashSet();
+		members.add(user.getId());
+		ms.setMemberIds(members);		
+
+	}
 }
