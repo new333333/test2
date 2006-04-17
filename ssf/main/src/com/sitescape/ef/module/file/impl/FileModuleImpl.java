@@ -1072,11 +1072,62 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		throws RepositoryServiceException {
 		forceUncheckoutIfNecessary(binder, entry, fAtt);
 		
-		RepositoryServiceUtil.delete(fAtt.getRepositoryServiceName(), binder,
-				entry, fAtt.getFileItem().getName());
-
+		String fileName = fAtt.getFileItem().getName();
+		String repositoryServiceName = fAtt.getRepositoryServiceName();
+		
+		RepositoryService service = RepositoryServiceUtil.lookupRepositoryService(repositoryServiceName);
+			
+		Object session = service.openRepositorySession();
+		
+		try {
+			// Delete primary file
+			service.delete(session, binder, entry, fileName);
+	
+			// Currently we do not store metadata about "generated" files (should
+			// we?). Unfortunately this results in clumsy and less efficient
+			// attempt at deleting those files. 
+			
+			// Try deleting scaled file if exists
+			String scaledFileName = makeScaledFileName(fileName);
+			if(service.fileInfo(session, binder, entry, scaledFileName) != RepositoryService.NON_EXISTING_FILE) {
+				try {
+					service.delete(session, binder, entry, scaledFileName);
+				}
+				catch(RepositoryServiceException e) {
+					// Don't let the failure to delete generated file abort the
+					// entire operation. Log and proceed.
+					logger.warn(e.getMessage(), e);
+				}
+			}
+			
+			// Try deleting thumbnail file if exists
+			
+			// Directly-accessible thumbnail file?
+			File directlyAccessibleThumbnailFile = getDirectlyAccessibleThumbnailFile(entry, fileName);
+			try {
+				FileHelper.delete(directlyAccessibleThumbnailFile);
+			}
+			catch(IOException e) {
+				logger.warn(e.getMessage(), e);
+			}
+			
+			// thumbnail file stored in repository?
+			String thumbnailFileName = makeThumbnailFileName(fileName);
+			if(service.fileInfo(session, binder, entry, thumbnailFileName) != RepositoryService.NON_EXISTING_FILE) {
+				try {
+					service.delete(session, binder, entry, thumbnailFileName);
+				}
+				catch(RepositoryServiceException e) {
+					logger.warn(e.getMessage(), e);
+				}
+			}
+		}
+		finally {
+			service.closeRepositorySession(session);
+		}
+		
+		// Remove metadata
 		removeAttachmentMetadata(entry, fAtt);
-
 	}
 	
 	private FileAttachment createFileAttachment(DefinableEntity entry, FileUploadItem fui) {
