@@ -157,7 +157,7 @@ public class AjaxController  extends SAbstractForumController {
 		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
 		Favorites f = new Favorites(favorites);
 		favorites = f.addFavorite(binder.getTitle(), Favorites.FAVORITE_BINDER, binderId, "");
-		userProperties.setProperty(ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
+		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
 	}
 	
 	private void ajaxAddFavoritesCategory(ActionRequest request, ActionResponse response) {
@@ -167,7 +167,7 @@ public class AjaxController  extends SAbstractForumController {
 		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
 		Favorites f = new Favorites(favorites);
 		favorites = f.addCategory(category, "");
-		userProperties.setProperty(ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
+		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
 	}
 	
 	private void ajaxSaveFavorites(ActionRequest request, ActionResponse response) {

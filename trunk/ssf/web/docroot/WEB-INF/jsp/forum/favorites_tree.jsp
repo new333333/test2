@@ -22,7 +22,7 @@
 	<taconite-replace-children contextNodeID="ss_favorites" parseInBrowser="true">
 
 <div style="margin:2px;">
-<table id="ss_favorites_table" cellspacing="0" cellpadding="0" >
+<table class="ss_form_no_color" id="ss_favorites_table" cellspacing="0" cellpadding="0" >
 <tbody>
 <tr>
   <td colspan="2" class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
@@ -34,13 +34,13 @@
 
 <c:if test="${!empty ss_favoritesTree}">
 <ssf:tree treeName="favTree" treeDocument="${ss_favoritesTree}"
-  rootOpen="true" style="sortable" />
+  rootOpen="true" style="sortable" nowrap="true" />
 <br/>
 <br/>
 </c:if>
 
 
-<table class="ss_sortableList">
+<table class="ss_form_no_color ss_sortableList">
 <tbody>
 <tr>
 <td nowrap="nowrap">
@@ -61,7 +61,7 @@
 <li 
 id="li_1a_0" ><a href="#" onClick="ss_favorite_clicked(this);return false;">yada yada link</a></li>
 <li id="li_1a_1" >yada yada</li>
-<li id="li_1a_2" nowrap="nowrap">yada yada yada yada</li>
+<li id="li_1a_2">yada yada yada yada</li>
 <li id="li_1a_3">foo</li>
 <li id="li_1a_4">yada yada</li>
 <li id="li_1a_5">yada yada</li>
@@ -95,7 +95,7 @@ src="<html:imagesPath/>trees/spacer.gif" /></td>
 <ul id="ss_favorites_1b2" class="ss_dragableLink ss_sortableList">
 <li id="li_1b_0" ><a href="#" onClick="alert('click');return false;">yada yada link</a></li>
 <li id="li_1b_1" >yada yada</li>
-<li id="li_1b_2" >yada yada yada yada</li>
+<li id="li_1b_2" ><nobr>yada yada yada yada</nobr></li>
 <li id="li_1b_3">foo</li>
 <li id="li_1b_4">yada yada</li>
 <li id="li_1b_5">yada yada</li>
