@@ -352,6 +352,8 @@ public class WebdavSiteScape implements BasicWebdavStore {
 		
 		Map map = new HashMap();
 		
+		map.put(URI_ORIGINAL, uri);
+		
 		if(u.length == 1)
 			return returnMap(map, true);
 		
