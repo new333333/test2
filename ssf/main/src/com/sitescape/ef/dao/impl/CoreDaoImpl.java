@@ -259,30 +259,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         List result = (List)getHibernateTemplate().execute(
             new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
-                        //Hibernate doesn't like the ? in the in clause
-                        //List list = session.createCriteria(Principal.class)
-                        //     		.add(Expression.in(Constants.ID, ids))
-                        //    		.list();
-                        //return list;
-                        Criteria crit = session.createCriteria(className);
-                        Disjunction dis = Expression.disjunction();
-                        Iterator iter = ids.iterator();
-                        Object id;
-                        while (iter.hasNext()) {
-                            id = iter.next();
-                            if (id != null) {
-                                dis.add(Expression.eq(Constants.ID, id));
-                            }
-                        }
-                        if (Validator.isNull(zoneName))
-                        	crit.add(dis);
-                        else {
-                        	Conjunction con = Expression.conjunction();
-                        	con.add(Expression.eq("zoneName", zoneName));
-                        	con.add(dis);
-                        	crit.add(con);
-                        	
-                        }
+                         Criteria crit = session.createCriteria(className)
+                        	.add(Expression.in(Constants.ID, ids));
+ 
+                        if (!Validator.isNull(zoneName))
+                        	crit.add(Expression.eq("zoneName", zoneName));
                         return crit.list();
                         
                     }

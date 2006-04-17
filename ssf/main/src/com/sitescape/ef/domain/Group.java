@@ -59,16 +59,19 @@ public class Group extends Principal implements WorkArea {
   	} 	
     
     public void addMember(Principal member) {
+		if (members == null) members = new ArrayList();
     	if (members.contains(member)) return;
     	members.add(member);
     	member.getMemberOf().add(this);
     }
     public void removeMember(Principal member) {
+		if (members == null) members = new ArrayList();
     	members.remove(member);
     	member.getMemberOf().remove(this);
     }
     public void setUserMembers(Collection newMembers) {
-   		if (newMembers == null) newMembers = new ArrayList();
+		if (members == null) members = new ArrayList();
+  		if (newMembers == null) newMembers = new ArrayList();
    		//Remove users that are in the existing set, but not the new one
   		for (Iterator iter=members.iterator();iter.hasNext();) {
    			Principal p = (Principal)iter.next();
@@ -89,7 +92,8 @@ public class Group extends Principal implements WorkArea {
    	} 	
 
     public void setGroupMembers(Collection newMembers) {
-   		if (newMembers == null) newMembers = new ArrayList();
+		if (members == null) members = new ArrayList();
+  		if (newMembers == null) newMembers = new ArrayList();
    		//Remove groups that are in the existing set, but not the new one
   		for (Iterator iter=members.iterator();iter.hasNext();) {
    			Principal p = (Principal)iter.next();

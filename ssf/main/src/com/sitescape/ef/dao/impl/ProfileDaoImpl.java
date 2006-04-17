@@ -74,6 +74,9 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	 * Don't delete the folder
 	 */
     public void deleteEntries(final ProfileBinder profiles) {
+    	//TODO: because groups own the membership association, this will require
+    	//all groups to be flushed from the session. Since we are disabling users, won't worry about it
+    	//for now
 	    getHibernateTemplate().execute(
 	    	new HibernateCallback() {
 	       		public Object doInHibernate(Session session) throws HibernateException {
@@ -88,20 +91,20 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	       			getCoreDao().deleteEntityAssociations("owningBinderId=" + profiles.getId(), Principal.class);
 
  		   			session.createQuery("Delete com.sitescape.ef.domain.SeenMap where principalId in " + 
- 			   				"(select p.id from com.sitescape.ef.domain.Principals p where " +
+ 			   				"(select p.id from com.sitescape.ef.domain.Principal p where " +
 		   			  			" p.parentBinder=" + profiles.getId() + ")")
 		   				.executeUpdate();
 		   			session.createQuery("Delete com.sitescape.ef.domain.Membership where groupId in " +
- 			   				"(select p.id from com.sitescape.ef.domain.Principals p where " +
+ 			   				"(select p.id from com.sitescape.ef.domain.Principal p where " +
  			   			  			" p.parentBinder=" + profiles.getId() + ")")
  	 		   				.executeUpdate();
 		   			session.createQuery("Delete com.sitescape.ef.domain.Membership where userId in " +
- 			   				"(select p.id from com.sitescape.ef.domain.Principals p where " +
+ 			   				"(select p.id from com.sitescape.ef.domain.Principal p where " +
  			   			  			" p.parentBinder=" + profiles.getId() + ")")
  	 		   				.executeUpdate();
 
 		   			session.createQuery("Delete com.sitescape.ef.domain.UserProperties where principalId in " +
-			   				"(select p.id from com.sitescape.ef.domain.Principals p where " +
+			   				"(select p.id from com.sitescape.ef.domain.Principal p where " +
 		   			  			" p.parentBinder=" + profiles.getId() + ")")
   				         	.executeUpdate();
 
@@ -128,6 +131,10 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
      * Delete a list of entries
      */
     public void deleteEntries(final List entries) {
+    	//TODO: because groups own the membership association, this will require
+    	//all groups to be flushed from the session or the memberhips to be fixed up
+    	//prior to this call.  Since we are disabling users, won't worry about it
+    	//for now
     	if (entries == null || entries.size() == 0) return;
       	getHibernateTemplate().execute(
         	   	new HibernateCallback() {
@@ -388,7 +395,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                 }
             );  
     }    
-    public int countUsers(FilterControls filter) {
+    public int countUsers(FilterControls filter,  String zoneName) {
+    	filter.add("zoneName", zoneName);
     	return getCoreDao().countObjects(User.class, filter);
     }    
 
@@ -418,7 +426,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     /**
      * Return count of users matching filter
      */
-    public int countGroups(FilterControls filter) {
+    public int countGroups(FilterControls filter, String zoneName) {
+    	filter.add("zoneName", zoneName);
        	return getCoreDao().countObjects(Group.class, filter);
     }   
  

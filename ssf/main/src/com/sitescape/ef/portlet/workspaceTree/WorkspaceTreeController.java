@@ -58,13 +58,17 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 			if (binderId == null) {
 				//when at the top, don't expand
 				binderId = binder.getId();
-				wsTree = getWorkspaceModule().getDomWorkspaceTree(binderId, new WsTopOnly(), 0);					
+				if (request.getWindowState().equals(WindowState.NORMAL)) {
+					wsTree = getWorkspaceModule().getDomWorkspaceTree(binderId, new WsTopOnly(), 0);
+				} else {
+					wsTree = getWorkspaceModule().getDomWorkspaceTree(binderId, new WsTreeBuilder((Workspace)binder, true), 1);									
+				}
 			} else {
 				wsTree = getWorkspaceModule().getDomWorkspaceTree(binderId, new WsTreeBuilder((Workspace)binder, true), 1);				
+				//Save the tree for the session as a performance improvement
+				ses.setAttribute(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+				ses.setAttribute(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binderId);
 			}
-			//Save the tree for the session as a performance improvement
-			ses.setAttribute(WebKeys.WORKSPACE_DOM_TREE, wsTree);
-			ses.setAttribute(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binderId);
 		}
 		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binderId.toString());

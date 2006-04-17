@@ -131,8 +131,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
     	Principal p = (Principal)entry;
     	//we just disable principals, cause their ids are used all over
-    	getProfileDao().delete(p);
-    	//   	p.setDisabled(true);
+    	p.setDisabled(true);
     	return ctx;
     }
     public void deleteBinder(Binder binder) {
