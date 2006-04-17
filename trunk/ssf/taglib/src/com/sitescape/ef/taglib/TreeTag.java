@@ -48,28 +48,32 @@ public class TreeTag extends TagSupport {
     private String highlightNode = "";
     private List multiSelect;
     private String multiSelectPrefix;
-    private String style;
+    private String displayStyle;
     private boolean nowrap = false;
     private String commonImg;
     private String className = "";
     private Map images;
     private Map imagesOpen;
-	private String displayStyle;
+	private String userDisplayStyle;
+	private boolean tableOpened = false;
 	private boolean startingIdSeen = false;
 	private boolean finished = false;
+	private String lastListStyle = "";
     
     
 	public int doStartTag() throws JspException {
 	    if(treeName == null)
 	        throw new JspException("Tree name must be specified");
 	    this.finished = false;
+	    this.tableOpened = false;
 	    this.startingIdSeen = false;
-	    if (this.style == null) this.style = "";
+	    this.lastListStyle = "";
+	    if (this.displayStyle == null) this.displayStyle = "";
 		try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 
 			User user = RequestContextHolder.getRequestContext().getUser();
-			this.displayStyle = user.getDisplayStyle();
+			this.userDisplayStyle = user.getDisplayStyle();
 			this.contextPath = req.getContextPath();
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 		    setCommonImg(contextPath + "/images");
@@ -174,7 +178,7 @@ public class TreeTag extends TagSupport {
 			if (this.startingId == null || this.startingId.equals("")) {
 				sb.append("<div class=\"ss_treeWidget\">\n");
 			}
-			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			if (userDisplayStyle != null && userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 				//This user is in accessibility mode, output a flat version of the tree
 				outputTreeNodesFlat(treeRoot, recursedNodes);
 				
@@ -183,6 +187,12 @@ public class TreeTag extends TagSupport {
 				
 				//Output the tree
 				outputTreeNodes(treeRoot, recursedNodes);
+				
+				//Close the sortable table if needed
+				if (this.tableOpened) {
+					jspOut.print("</ul>\n</td>\n</tr>\n</tbody>\n</table>\n");
+					this.tableOpened = false;
+				}
 			}
 			if (this.startingId == null || this.startingId.equals("")) {
 				jspOut.print("</div>\n");
@@ -256,104 +266,59 @@ public class TreeTag extends TagSupport {
 			boolean hcn = (e.attributeValue("treeHasChildren") == "1") ? true : false;
 			boolean hhcn = (e.attributeValue("treeHasHiddenChildren") == "1") ? true : false;
 			boolean ino = (e.attributeValue("treeOpen") == "1") ? true : false;
-	
-			if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
-				if (this.multiSelect != null) {
-					if (s_id.equals("")) {
-						jspOut.print("<img src=\"" + this.commonImg + "/pics/1pix.gif\" width=\"15px\"/>");
-					} else {
-						String checked = "";
-						if (this.multiSelect.contains(s_id)) checked = "checked=\"checked\"";
-						jspOut.print("<input type=\"checkbox\" class=\"ss_text\" style=\"margin:0px; padding:0px; width:15px;\" name=\"" + this.multiSelectPrefix + s_id + "\" " + checked + "/>");
-					}
+
+			//Show the tree in the requested style (sortable or normal)
+			if (this.displayStyle.equals("sortable")) {
+				//"sortable" style shows the tree in a series of lists
+				String listStyle = e.attributeValue("listStyle", "ss_sortableList");
+				if (this.tableOpened && !this.lastListStyle.equals("") && !this.lastListStyle.equals(listStyle)) {
+					//Switching styles, so close the table
+					jspOut.print("</ul>\n</td>\n</tr>\n</tbody>\n</table>\n");
+					this.tableOpened = false;
 				}
-				for (int j = recursedNodes.size() - 1; j >= 0; j--) {
-					if ((String) recursedNodes.get(j) != "1") {
-						jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
-					} else {
-						jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("line") + "\"/>");
+
+				if (!this.tableOpened) {
+					jspOut.print("<table class=\"ss_sortableList\">\n<tbody>\n<tr>\n<td>\n");
+					this.tableOpened = true;
+				
+					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+						for (int j = recursedNodes.size() - 1; j >= 0; j--) {
+							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
+						}
+						jspOut.print("</td>\n");
+						jspOut.print("<td>\n");
 					}
+					
+					// Link
+					jspOut.print("<ul id=\"ss_favorites_ul_"+s_id+"\"");
+					jspOut.print(" class=\"ss_dragableLink "+listStyle+"\">\n");
 				}
-			}
-		
-			// Line and empty icons
-			if (ls) {
 				recursedNodes.add(0, "0");
-			} else {
-				recursedNodes.add(0, "1");
-			}
-		
-			if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
-				// Write out join icons
-				if (hcn || hhcn) {
-					if (ls) {
+				
+				jspOut.print("<li id=\"ss_favorites_li_"+s_id+"\">");
+				
+				// Write out plus/minus icons
+				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+					if (hcn || hhcn) {
 						String classField = "";
 						if (!className.equals("")) classField = "class=\""+className+"\"";
 						jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
 						jspOut.print("onClick=\"");
-						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', 1, '"+e.attributeValue("image")+"');\" ");
+						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', 2, '"+e.attributeValue("image")+"');\" ");
 						jspOut.print("onDblClick=\"");
-						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', 1, '"+e.attributeValue("image")+"');\" ");
+						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', 2, '"+e.attributeValue("image")+"');\" ");
 						jspOut.print("style=\"text-decoration: none;\">");
 						jspOut.print("<img id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 		
 						if (ino) {
-							jspOut.print("ss_twMinusBottom");	// minus_bottom.gif
+							jspOut.print("ss_minus");	// minus.gif
 						} else {
-							jspOut.print("ss_twPlusBottom");    // plus_bottom.gif
-						}
-		
-						jspOut.print("\" src=\"" + this.commonImg + "/pics/1pix.gif\"/></a>");
-					}
-					else {
-						String classField = "";
-						if (!className.equals("")) classField = "class=\""+className+"\"";
-						jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
-						jspOut.print("onClick=\"");
-						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', 0, '"+e.attributeValue("image")+"');\" ");
-						jspOut.print("onDblClick=\"");
-						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', 0, '"+e.attributeValue("image")+"');\" ");
-						jspOut.print("style=\"text-decoration: none;\">");
-						jspOut.print("<img id=\"" + this.treeName + "join" + s_id + "\" class=\"");
-		
-						if (ino) {
-							jspOut.print("ss_twMinus");	// minus.gif
-						} else {
-							jspOut.print("ss_twPlus");	// plus.gif
+							jspOut.print("ss_plus");	// plus.gif
 						}
 		
 						jspOut.print("\" src=\"" + this.commonImg + "/pics/1pix.gif\"/></a>");
 					}
 				}
-				else {
-					if (ls) {
-						jspOut.print("<img class=\"ss_twJoinBottom\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
-					} else {
-						jspOut.print("<img class=\"ss_twJoin\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
-					}
-				}
-		
-				// Link
-				if (hcn || hhcn) {
-					jspOut.print("<img class=\"ss_twImg\" id=\"");
-					jspOut.print(this.treeName);
-					jspOut.print("icon" + s_id + "\" src=\"");
-		
-					if (ino) {
-						jspOut.print(s_imageOpen); // e.g., folder_open.gif
-					} else {
-						jspOut.print(s_image);	// e.g., folder.gif
-					}
-		
-					jspOut.print("\"/>");
-				}
-				else {
-					jspOut.print("<img class=\"ss_twImg\" id=\"");
-					jspOut.print(this.treeName);
-					jspOut.print("icon" + s_id + "\" src=\"" + s_image + "\"/>");
-				}
-		
-				//jspOut.print("&nbsp;");
 				if (!displayOnly) {
 					String classField = "";
 					if (!className.equals("")) classField = "class=\""+className+"\"";
@@ -368,46 +333,218 @@ public class TreeTag extends TagSupport {
 				jspOut.print("</span>");
 				
 				if (!displayOnly) jspOut.print("</a>");
-				jspOut.print("<br/>\n");
-			}
+				jspOut.print("</li>\n");
+				
+				//See if this is the starting id
+				if (this.startingId != null && this.startingId.equals(s_id)) this.startingIdSeen = true;
+				
+				// Recurse if node has children
+				if (hcn || hhcn || 
+						(!this.lastListStyle.equals("") && !this.lastListStyle.equals(listStyle))) {
+					//Close this table and reset listStyle so the next item is in its own table
+					if (this.tableOpened) {
+						jspOut.print("</ul>\n</td>\n</tr>\n</tbody>\n</table>\n");
+						this.tableOpened = false;
+					}
+					listStyle = "";
+				}
+				this.lastListStyle = listStyle;
+				if (hcn) {
+					boolean divHasBeenOutput = false;
+					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+						jspOut.print("\n<div class=\"ss_twDiv\" id=\"" + this.treeName + "div" + s_id + "\"");
 			
-			//See if this is the starting id
-			if (this.startingId != null && this.startingId.equals(s_id)) this.startingIdSeen = true;
+						if (!ino) {
+							jspOut.print(" style=\"display: none;\"");
+						}
 			
-			// Recurse if node has children
-			if (hcn) {
-				boolean divHasBeenOutput = false;
-				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
-					jspOut.print("\n<div class=\"ss_twDiv\" id=\"" + this.treeName + "div" + s_id + "\"");
-		
-					if (!ino) {
-						jspOut.print(" style=\"display: none;\"");
+						jspOut.print(">\n");
+						divHasBeenOutput = true;
 					}
 		
-					jspOut.print(">\n");
-					divHasBeenOutput = true;
+					ListIterator it2 = e.elements("child").listIterator();
+					while (it2.hasNext()) {
+						outputTreeNodes((Element) it2.next(), recursedNodes);
+					}
+		
+					if (this.tableOpened) {
+						jspOut.print("</ul>\n</td>\n</tr>\n</tbody>\n</table>\n");
+						this.tableOpened = false;
+					}
+					if (divHasBeenOutput) {
+						jspOut.print("</div>\n");
+					}
+				} else if (hhcn) {
+					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+						jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
+					}
 				}
-	
-				ListIterator it2 = e.elements("child").listIterator();
-				while (it2.hasNext()) {
-					outputTreeNodes((Element) it2.next(), recursedNodes);
-				}
-	
-				if (divHasBeenOutput) {
-					jspOut.print("</div>\n");
-				}
-			} else if (hhcn) {
-				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
-					jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
-				}
-			}
-	
-			// Pop last line or empty icon
-			recursedNodes.remove(0);
+		
+				// Pop last line or empty icon
+				recursedNodes.remove(0);
 
-			// See if it is time to stop
-			if (this.startingId != null && this.startingId.equals(s_id)) {
-				this.finished = true;
+				// See if it is time to stop
+				if (this.startingId != null && this.startingId.equals(s_id)) {
+					this.finished = true;
+				}
+			
+			
+			} else {
+				//The normal tree view
+				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+					if (this.multiSelect != null) {
+						if (s_id.equals("")) {
+							jspOut.print("<img src=\"" + this.commonImg + "/pics/1pix.gif\" width=\"15px\"/>");
+						} else {
+							String checked = "";
+							if (this.multiSelect.contains(s_id)) checked = "checked=\"checked\"";
+							jspOut.print("<input type=\"checkbox\" class=\"ss_text\"");
+							jspOut.print(" style=\"margin:0px; padding:0px; width:15px;\" name=\"");
+							jspOut.print(this.multiSelectPrefix + s_id + "\" " + checked + "/>");
+						}
+					}
+					for (int j = recursedNodes.size() - 1; j >= 0; j--) {
+						if ((String) recursedNodes.get(j) != "1") {
+							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
+						} else {
+							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("line") + "\"/>");
+						}
+					}
+				}
+			
+				// Line and empty icons
+				if (ls) {
+					recursedNodes.add(0, "0");
+				} else {
+					recursedNodes.add(0, "1");
+				}
+			
+				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+					// Write out join icons
+					if (hcn || hhcn) {
+						if (ls) {
+							String classField = "";
+							if (!className.equals("")) classField = "class=\""+className+"\"";
+							jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
+							jspOut.print("onClick=\"");
+							jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', 1, '"+e.attributeValue("image")+"');\" ");
+							jspOut.print("onDblClick=\"");
+							jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', 1, '"+e.attributeValue("image")+"');\" ");
+							jspOut.print("style=\"text-decoration: none;\">");
+							jspOut.print("<img id=\"" + this.treeName + "join" + s_id + "\" class=\"");
+			
+							if (ino) {
+								jspOut.print("ss_twMinusBottom");	// minus_bottom.gif
+							} else {
+								jspOut.print("ss_twPlusBottom");    // plus_bottom.gif
+							}
+			
+							jspOut.print("\" src=\"" + this.commonImg + "/pics/1pix.gif\"/></a>");
+						}
+						else {
+							String classField = "";
+							if (!className.equals("")) classField = "class=\""+className+"\"";
+							jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
+							jspOut.print("onClick=\"");
+							jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', 0, '"+e.attributeValue("image")+"');\" ");
+							jspOut.print("onDblClick=\"");
+							jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', 0, '"+e.attributeValue("image")+"');\" ");
+							jspOut.print("style=\"text-decoration: none;\">");
+							jspOut.print("<img id=\"" + this.treeName + "join" + s_id + "\" class=\"");
+			
+							if (ino) {
+								jspOut.print("ss_twMinus");	// minus.gif
+							} else {
+								jspOut.print("ss_twPlus");	// plus.gif
+							}
+			
+							jspOut.print("\" src=\"" + this.commonImg + "/pics/1pix.gif\"/></a>");
+						}
+					}
+					else {
+						if (ls) {
+							jspOut.print("<img class=\"ss_twJoinBottom\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
+						} else {
+							jspOut.print("<img class=\"ss_twJoin\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
+						}
+					}
+			
+					// Link
+					if (hcn || hhcn) {
+						jspOut.print("<img class=\"ss_twImg\" id=\"");
+						jspOut.print(this.treeName);
+						jspOut.print("icon" + s_id + "\" src=\"");
+			
+						if (ino) {
+							jspOut.print(s_imageOpen); // e.g., folder_open.gif
+						} else {
+							jspOut.print(s_image);	// e.g., folder.gif
+						}
+			
+						jspOut.print("\"/>");
+					}
+					else {
+						jspOut.print("<img class=\"ss_twImg\" id=\"");
+						jspOut.print(this.treeName);
+						jspOut.print("icon" + s_id + "\" src=\"" + s_image + "\"/>");
+					}
+			
+					if (!displayOnly) {
+						String classField = "";
+						if (!className.equals("")) classField = "class=\""+className+"\"";
+						jspOut.print("<a "+classField+" href=\"" + s_url + "\" ");
+						if (s_id != null && !s_id.equals("")) {
+							jspOut.print("onClick=\"if (self."+this.treeName+"_showId) {return "+this.treeName+"_showId('"+s_id+"', this);}\" ");
+						}
+						jspOut.print(">");
+					}
+					jspOut.print("<span " + titleClass + ">");
+					jspOut.print(s_text);
+					jspOut.print("</span>");
+					
+					if (!displayOnly) jspOut.print("</a>");
+
+					jspOut.print("<br/>\n");
+				}
+				
+				//See if this is the starting id
+				if (this.startingId != null && this.startingId.equals(s_id)) this.startingIdSeen = true;
+				
+				// Recurse if node has children
+				if (hcn) {
+					boolean divHasBeenOutput = false;
+					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+						jspOut.print("\n<div class=\"ss_twDiv\" id=\"" + this.treeName + "div" + s_id + "\"");
+			
+						if (!ino) {
+							jspOut.print(" style=\"display: none;\"");
+						}
+			
+						jspOut.print(">\n");
+						divHasBeenOutput = true;
+					}
+		
+					ListIterator it2 = e.elements("child").listIterator();
+					while (it2.hasNext()) {
+						outputTreeNodes((Element) it2.next(), recursedNodes);
+					}
+		
+					if (divHasBeenOutput) {
+						jspOut.print("</div>\n");
+					}
+				} else if (hhcn) {
+					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+						jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
+					}
+				}
+		
+				// Pop last line or empty icon
+				recursedNodes.remove(0);
+
+				// See if it is time to stop
+				if (this.startingId != null && this.startingId.equals(s_id)) {
+					this.finished = true;
+				}
 			}
 		}
 	    catch(Exception ex) {
@@ -609,8 +746,8 @@ public class TreeTag extends TagSupport {
 	    this.multiSelectPrefix = multiSelectPrefix;
 	}
 	
-	public void setStyle(String style) {
-	    this.style = style;
+	public void setDisplayStyle(String displayStyle) {
+	    this.displayStyle = displayStyle;
 	}
 	
 	public void setNowrap(boolean nowrap) {

@@ -107,6 +107,7 @@ function ss_saveFavorites() {
 			s += items[j].parentNode.id + "/" + items[j].id + " "
 		}
 	}
+	alert(s)
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
@@ -132,8 +133,6 @@ function ss_showFavoritesPane() {
 	fObj.style.display = "none";
 	fObj.style.display = "block";
 	var fObj2 = self.document.getElementById("ss_favorites_table")
-	//ss_setObjectWidth(fObj, parseInt(ss_getObjectWidth(fObj2) + ss_favoritesMarginW));
-	//ss_setObjectHeight(fObj, parseInt(ss_getObjectHeight(fObj2) + ss_favoritesMarginH));
 	var w = ss_getObjectWidth(fObj)
 	ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_bottom") + ss_favoritesPaneTopOffset))
 	ss_setObjectLeft(fObj, parseInt(ss_favoritesPaneLeftOffset - w))
@@ -163,6 +162,9 @@ function ss_postFavoritesRequest(obj) {
 	var fObj2 = self.document.getElementById("ss_favorites")
 	ss_setObjectWidth(fObj, parseInt(ss_getObjectWidth(fObj2) + ss_favoritesMarginW));
 	ss_setObjectHeight(fObj, parseInt(ss_getObjectHeight(fObj2) + ss_favoritesMarginH));
+	var fObj3 = self.document.getElementById("ss_favorites_table")
+	var fObj4 = self.document.getElementById("ss_favorites_table2")
+	ss_setObjectWidth(fObj4, parseInt(ss_getObjectWidth(fObj3) + ss_favoritesMarginW));
 
 	ss_favoritesListArray = new Array();
 	ss_favoritesListCount = 0;
@@ -208,7 +210,7 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 	<table class="ss_form_no_color" id="ss_favorites_table" cellspacing="0" cellpadding="0">
 	<tbody>
 	<tr>
-	  <td colspan="2" class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
+	  <td class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
 	  <td align="right"><a onClick="ss_hideDiv('ss_favorites_pane');return false;"
         ><img border="0" src="<html:imagesPath/>box/close_off.gif"/></a></td>
 	</tr>
@@ -216,21 +218,34 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 	<tr>
 	  <td colspan="2"><ssf:nlt tag="Loading"/></td>
 	</tr>
+
 	</tbody>
 	</table>
   </div>
-<br/>
-<br/>
-
-<table class="ss_form_no_color ss_sortableList">
-<tbody>
-<tr>
-<td nowrap="nowrap">
-<span class="ss_bold">Add a new favorites category:</span><br />
-<input type="text" size="20" name="new_favorites_category" />
-<input type="submit" name="add_favorites_category" 
- value="<ssf:nlt tag="button.ok" text="OK"/>" 
- onClick="ss_addFavoriteCategory();return false;" />
-</td></tr></table>
+  
+  <div class="ss_style" id="ss_favorites2">
+	<table class="ss_form_no_color" id="ss_favorites_table2" cellspacing="0" cellpadding="0">
+	<tbody>
+	<tr><td><hr/></td></tr>
+	<tr>
+	<td>
+	<a href="javascript: ;" 
+	 onClick="ss_addForumToFavorites();return false;"
+	><span class="ss_bold">Add the current page to the favorites list...</span></a>
+	</td>
+	</tr>
+	<tr><td> </td></tr>
+	<tr>
+	<td nowrap="nowrap">
+	<span class="ss_bold">Add a new favorites category:</span><br />
+	<input type="text" size="20" name="new_favorites_category" />
+	<input type="submit" name="add_favorites_category" 
+	 value="<ssf:nlt tag="button.ok" text="OK"/>" 
+	 onClick="ss_addFavoriteCategory();return false;" />
+	</td>
+	</tr>
+	</tbody>
+	</table>
+  </div>
 </form>
 </div>

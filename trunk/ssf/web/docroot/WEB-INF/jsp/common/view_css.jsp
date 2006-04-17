@@ -440,6 +440,18 @@ div.ss_sliding_table_info_popup {
 	padding: 0px 3px 0px 3px;
 }
 
+.ss_plus {
+  width:16px;
+  height:16px;
+  background-image: url(<html:imagesPath/>pics/sym_s_plus.gif);
+  border:none;
+  }
+.ss_minus {
+  width:16px;
+  height:16px;
+  background-image: url(<html:imagesPath/>pics/sym_s_minus.gif);
+  border:none;
+  }
 .ss_twDiv {
   }
 .ss_twImg {
