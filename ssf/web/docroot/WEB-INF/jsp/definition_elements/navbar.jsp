@@ -78,6 +78,8 @@ function ss_addForumToFavorites() {
 function ss_addFavoriteCategory() {
 	var formObj = self.document.getElementById('ss_favorites_form');
 	var s = formObj.new_favorites_category.value;
+	if (s == "") return;
+	formObj.new_favorites_category.value = "";
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
@@ -102,7 +104,7 @@ function ss_saveFavorites() {
 		var ulObj = self.document.getElementById(ss_favoritesListArray[i]);
     	var items = ulObj.getElementsByTagName( "li" );
 		for (var j = 0; j < items.length; j++) {
-			s += items[j].id + " "
+			s += items[j].parentNode.id + "/" + items[j].id + " "
 		}
 	}
 	var url = "<ssf:url 
@@ -201,9 +203,9 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 <div class="ss_style" id="ss_favorites_pane" 
   style="position:absolute; visibility:hidden; z-index:200;
   border:solid 1px black; height:200px;">
-<form name="ss_favorites_form" method="post" onSubmit="return false;" >
+<form class="ss_form_no_color" name="ss_favorites_form" method="post" onSubmit="return false;" >
   <div class="ss_style" id="ss_favorites">
-	<table id="ss_favorites_table" cellspacing="0" cellpadding="0">
+	<table class="ss_form_no_color" id="ss_favorites_table" cellspacing="0" cellpadding="0">
 	<tbody>
 	<tr>
 	  <td colspan="2" class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
@@ -220,7 +222,7 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 <br/>
 <br/>
 
-<table class="ss_sortableList">
+<table class="ss_form_no_color ss_sortableList">
 <tbody>
 <tr>
 <td nowrap="nowrap">

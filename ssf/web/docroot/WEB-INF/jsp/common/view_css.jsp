@@ -213,6 +213,11 @@ if (document.createStyleSheet) {
   background-color: ${ss_form_background_color};
   }
     
+.ss_form_no_color, .ss_form_no_color table {
+  color: ${ss_style_text_color};
+  background-color: ${ss_style_background_color};
+  }
+    
 .ss_form.ss_gray {
   color: ${ss_form_gray_color};
   }

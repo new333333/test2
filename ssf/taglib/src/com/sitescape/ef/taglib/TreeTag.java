@@ -49,6 +49,7 @@ public class TreeTag extends TagSupport {
     private List multiSelect;
     private String multiSelectPrefix;
     private String style;
+    private boolean nowrap = false;
     private String commonImg;
     private String className = "";
     private Map images;
@@ -190,6 +191,9 @@ public class TreeTag extends TagSupport {
 	    catch(Exception e) {
 	        throw new JspException(e);
 	    }
+	    finally {
+	    	this.nowrap = false;
+	    }
 	    
 		return SKIP_BODY;
 	}
@@ -211,6 +215,7 @@ public class TreeTag extends TagSupport {
 	
 			//Text
 			String s_text = e.attributeValue("title");
+			if (this.nowrap) s_text = "<nobr>" + s_text + "</nobr>";
 	
 			//id
 			String s_id = e.attributeValue("id", "");
@@ -423,6 +428,7 @@ public class TreeTag extends TagSupport {
 	
 			//Text
 			String s_text = e.attributeValue("title");
+			if (this.nowrap) s_text = "<nobr>" + s_text + "</nobr>";
 	
 			//id
 			String s_id = e.attributeValue("id", "");
@@ -605,6 +611,10 @@ public class TreeTag extends TagSupport {
 	
 	public void setStyle(String style) {
 	    this.style = style;
+	}
+	
+	public void setNowrap(boolean nowrap) {
+	    this.nowrap = nowrap;
 	}
 	
 	public void setCommonImg(String commonImg) {

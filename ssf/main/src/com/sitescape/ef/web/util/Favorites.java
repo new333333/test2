@@ -45,6 +45,7 @@ public class Favorites {
 		newFavorite.addAttribute("name", name);
 		newFavorite.addAttribute("type", type);
 		newFavorite.addAttribute("value", value);
+		newFavorite.addAttribute("image", "page");
 		root.addAttribute("nextId", String.valueOf(++id));
 		
 		return this.favorites;
@@ -64,6 +65,7 @@ public class Favorites {
 		}
 		newCategory.addAttribute("id", String.valueOf(categoryId));
 		newCategory.addAttribute("name", name);
+		newCategory.addAttribute("image", "folder");
 		root.addAttribute("nextCategoryId", String.valueOf(++categoryId));
 		
 		return this.favorites;
@@ -133,6 +135,8 @@ public class Favorites {
 			Element root = this.favorites.addElement("favorites");
 			root.addAttribute("nextId", "1");
 			root.addAttribute("nextCategoryId", "1");
+			root.addAttribute("name", NLT.get("favorites"));
+			root.addAttribute("image", "folder");
 		}
 		return this.favorites;
 	}
@@ -141,7 +145,9 @@ public class Favorites {
 		getFavorites();
 		Document favTree = DocumentHelper.createDocument();
     	Element destRoot = favTree.addElement(DomTreeBuilder.NODE_ROOT);
-    	destRoot.addAttribute("name", NLT.get("favorites"));
+    	destRoot.addAttribute("title", NLT.get("favorites"));
+    	destRoot.addAttribute("image", "folder");
+    	destRoot.addAttribute("id", "0");
     	Element srcRoot = this.favorites.getRootElement();
     	FavoritesTreeHelper treeHelper = new FavoritesTreeHelper();
     	treeHelper.setupDomElement(DomTreeBuilder.TYPE_FAVORITES, srcRoot, destRoot);
@@ -171,8 +177,8 @@ public class Favorites {
 		public Element setupDomElement(String type, Object source, Element element) {
 			if (type.equals(DomTreeBuilder.TYPE_FAVORITES)) {
 				Element e = (Element)source;
-				element.addAttribute("type", "folder");
 				element.addAttribute("title", e.attributeValue("name", "???"));
+				element.addAttribute("image", e.attributeValue("image", "page"));
 				element.addAttribute("id", e.attributeValue("id"));
 			} else return null;
 			return element;
