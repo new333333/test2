@@ -14,9 +14,6 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="ssFolderList" type="java.util.List" scope="request" />
-<jsp:useBean id="ssForumIdList" type="java.util.List" scope="request" />
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
@@ -25,7 +22,7 @@
 <table class="ss_style" cellspacing="0" cellpadding="0">
 <tr><th align="left"><ssf:nlt tag="forum.selectedForums" text="Currently selected forums:"/></th></tr>
 <tr><td>&nbsp;</td></tr>
-<c:forEach var="folder" items="<%= ssFolderList %>">
+<c:forEach var="folder" items="${ssFolderList}">
 <tr><td><c:out value="${folder.title}" /></td></tr>
 </c:forEach>
 </table>
@@ -49,8 +46,8 @@ function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
 	return false
 }
 </script>
-<ssf:tree treeName="wsTree" treeDocument="<%= ssWsDomTree %>"  
-  rootOpen="true" multiSelect="<%= ssForumIdList %>" multiSelectPrefix="id_" />
+<ssf:tree treeName="wsTree" treeDocument="${ssWsDomTree}"  
+  rootOpen="true" multiSelect="${ssForumIdList}" multiSelectPrefix="id_" />
 
 <br>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
