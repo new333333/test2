@@ -136,7 +136,7 @@ function ss_userListInterceptCR(e) {
 <div>
   <div style="border:solid ${ss_form_element_border_color} 1px;">
     <ul id="added_<%= userListElementName %>" class="ss_dragable ss_userlist">
-      <c:forEach var="item" items="${userList}">
+      <c:forEach var="item" items="<%= com.sitescape.ef.util.ResolveIds.getPrincipals(userList) %>">
         <li id="<c:out value="${item.id}"/>" 
           onDblClick="ss_userListMoveItem(this);" 
           class="ss_dragable ss_userlist"><c:out value="${item.title}"/></li>
