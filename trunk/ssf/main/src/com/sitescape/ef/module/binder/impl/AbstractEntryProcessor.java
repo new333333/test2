@@ -562,8 +562,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	so.setSortBy(fields);
     	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
-    	logger.info("Query is: " + queryTree.asXML());
-    	logger.info("Query is: " + soQuery.toString());
+    	if(logger.isInfoEnabled()) {
+    		logger.info("Query is: " + queryTree.asXML());
+    		logger.info("Query is: " + soQuery.toString());
+    	}
     	
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         
