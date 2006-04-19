@@ -82,4 +82,11 @@ public interface FolderModule {
     public void deleteEntry(Long parentFolderId, Long entryId) throws AccessControlException;
     public void checkDeleteEntryAllowed(FolderEntry entry) throws AccessControlException;
     public void moveEntry(Long folderId, Long entryId, Long destinationId);
+    
+    /**
+     * Returns a list of ids of all folders that the user has read access to. 
+     * 
+     * @return
+     */
+    public List<String> getFolderIds();
 }
