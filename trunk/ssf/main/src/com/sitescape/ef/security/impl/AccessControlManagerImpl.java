@@ -107,8 +107,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
     }
 	
 	public boolean testOperation(User user,
-			WorkArea workArea, WorkAreaOperation workAreaOperation) 
-		throws AccessControlException {
+			WorkArea workArea, WorkAreaOperation workAreaOperation) {
 		if (workArea.isFunctionMembershipInherited()) {
 			WorkArea parentWorkArea = workArea.getParentWorkArea();
 			if (parentWorkArea == null)
