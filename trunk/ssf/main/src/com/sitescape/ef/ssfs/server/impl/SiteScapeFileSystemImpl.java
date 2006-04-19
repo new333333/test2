@@ -165,17 +165,19 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		if(!objectExists(uri, objMap))
 			throw new NoSuchObjectException("The resource does not exist");
 		
-		List<String> children = new ArrayList<String>();
-
 		Binder binder = (Binder) objMap.get(BINDER);
 		if(binder == null) {
 			// Get a list binders
+			List<String> folderIds = getFolderModule().getFolderIds();
+			return (String[]) folderIds.toArray();
 		}
 		
+		List<String> children = new ArrayList<String>();
+
 		Entry entry = (Entry) objMap.get(ENTRY);
 		if(entry == null) {
 			// Get a list of entries
-			Map folderEntries = getFolderModule().getFolderEntries(binder.getId());
+			Map folderEntries = getFolderModule().getFolderEntries(binder.getId(), Integer.MAX_VALUE);
 			List entries = (ArrayList) folderEntries.get(ObjectKeys.ENTRIES);
 			for(int i = 0; i < entries.size(); i++) {
 				Map ent = (Map) entries.get(i);

@@ -16,6 +16,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
@@ -444,6 +446,38 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	   	getCoreDao().delete(tag);
 	}
     
+    public List<String> getFolderIds() {
+    	// TODO 
+    	// NOTE: This implementation utilizes database lookup to fetch the
+    	// entire list of folders in the system and then test each one against
+    	// access control. This is unacceptably inefficient especially when
+    	// there are large number of folders in the system. This MUST be
+    	// re-implemented to use search engine index in the same way that
+    	// the index is used for querying for a list of entries. When this
+    	// reimplementation is done, the type of the return object will need
+    	// to change from the simple List<String> to something more involving
+    	// (eg. Map) to accomodate the various pieces of information returned 
+    	// from the search index lookup (similar to getBinderEntries method
+    	// in AbstractEntryProcessor class).  
+    	
+    	String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+    	
+    	List folders = getCoreDao().loadObjects(new ObjectControls(Folder.class),
+    			new FilterControls("zoneName", zoneName));
+    	
+    	List<String> result = new ArrayList<String>(folders.size());
+    	for(int i = 0; i < folders.size(); i++) {
+    		Folder folder = (Folder) folders.get(i);
+    		// Check if the user has "read" access to the folder.
+    		if(getAccessControlManager().testOperation(folder, WorkAreaOperation.READ_ENTRIES))
+    			result.add(folder.getId().toString());
+    		else
+    			continue;
+    	}
+    	
+    	return result;
+    }
+
     /**
      * Helper classs to return folder unseen counts as an objects
      * @author Janet McCann
