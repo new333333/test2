@@ -60,7 +60,7 @@ String sliderDivOffset = "-" + String.valueOf(sliderDivHeight);
     </ssf:param>
   <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; display:block;"
     src="<html:rootPath/>js/forum/null.html" height="400" width="100%" 
-    frameBorder="no" >xxx</iframe>
+    onLoad="ss_setEntryDivHeight()" frameBorder="no" >xxx</iframe>
   </ssf:box>
 </div>
 </div>
@@ -77,6 +77,20 @@ var ss_marginLeft = 2
 var ss_marginRight = 2
 var ss_folderDivMarginOffset = 6
 
+function ss_setEntryDivHeight() {
+    var wObj3 = self.document.getElementById('ss_showentryframe')
+    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
+    var entryHeightPlus2 = parseInt(entryHeight + 2)
+	ss_setObjectHeight(wObj3, ss_minEntryDivHeight);
+	setTimeout("ss_setEntryDivHeight2();", 100);
+}
+function ss_setEntryDivHeight2() {
+    var wObj3 = self.document.getElementById('ss_showentryframe')
+    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
+    var entryHeightPlus2 = parseInt(entryHeight + 2)
+	ss_setObjectHeight(wObj3, entryHeightPlus2);
+	setTimeout("ss_positionEntryDiv();", 100);
+}
 function ss_positionEntryDiv() {
 	ss_positioningEntryDiv = 1
 	ss_showEntryDiv()
@@ -87,13 +101,19 @@ function ss_positionEntryDiv() {
     var wObj2 = self.document.getElementById('<portlet:namespace/>_iframe_box_div')
     var wObj3 = self.document.getElementById('ss_showentryframe')
     var wObj4 = self.document.getElementById('ss_showentrydiv_place_holder')
-    
+        
     var width = parseInt(parseInt(ss_getObjectWidth(wObj)) - ss_marginLeft - ss_marginRight);
 	ss_setObjectWidth(wObj1, width);
 	ss_setObjectWidth(wObj2, width);
 
     ss_setObjectTop(wObj1, parseInt(parseInt(ss_getDivTop('ss_showfolder_slider')) + <%= sliderDivHeight %>))
-    var entryHeight = parseInt(ss_getWindowHeight() - ss_getDivTop('ss_showfolder_slider') - ss_bottomHeight)
+    
+    //Keep the entry within the confines of the main window
+    //var entryHeight = parseInt(ss_getWindowHeight() - ss_getDivTop('ss_showfolder_slider') - ss_bottomHeight)
+    
+    //Allow the entry section to grow to as large as needed to show the entry
+    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
+    
     if (entryHeight < ss_minEntryDivHeight) entryHeight = ss_minEntryDivHeight;
 	ss_setObjectHeight(wObj1, entryHeight);
 	ss_setObjectHeight(wObj3, entryHeight);
@@ -140,6 +160,8 @@ ss_createOnLayoutChangeObj('ss_checkLayoutChange', ss_checkLayoutChange);
 function ss_showForumEntryInIframe(url) {
 	ss_positionEntryDiv();
     var wObj = self.document.getElementById('ss_showentryframe')
+
+ 	ss_setObjectHeight(wObj, ss_minEntryDivHeight);
 
     if (wObj.src && wObj.src == url) {
     	wObj.src = "_blank";

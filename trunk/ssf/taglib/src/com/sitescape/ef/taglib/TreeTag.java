@@ -229,6 +229,7 @@ public class TreeTag extends TagSupport {
 	
 			//id
 			String s_id = e.attributeValue("id", "");
+			String s_parentId = e.attributeValue("parentId", "");
 			String titleClass = "";
 			if (!s_id.equals("") && s_id.equals(this.highlightNode)) {
 				titleClass = "class=\"ss_tree_highlight\"";
@@ -290,12 +291,13 @@ public class TreeTag extends TagSupport {
 					}
 					
 					// Link
-					jspOut.print("<ul id=\"ss_favorites_ul_"+s_id+"\"");
+					jspOut.print("<ul id=\"ul_"+s_id+"\"");
+					jspOut.print(" name=\""+s_parentId+"\"");
 					jspOut.print(" class=\"ss_dragableLink "+listStyle+"\">\n");
 				}
 				recursedNodes.add(0, "0");
 				
-				jspOut.print("<li id=\"ss_favorites_li_"+s_id+"\">");
+				jspOut.print("<li id=\""+s_id+"\">");
 				
 				// Write out plus/minus icons
 				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {

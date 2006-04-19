@@ -104,10 +104,9 @@ function ss_saveFavorites() {
 		var ulObj = self.document.getElementById(ss_favoritesListArray[i]);
     	var items = ulObj.getElementsByTagName( "li" );
 		for (var j = 0; j < items.length; j++) {
-			s += items[j].parentNode.id + "/" + items[j].id + " "
+			s += ulObj.name + "/" + items[j].id + " "
 		}
 	}
-	alert(s)
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
@@ -170,7 +169,7 @@ function ss_postFavoritesRequest(obj) {
 	ss_favoritesListCount = 0;
 	var uls = self.document.getElementsByTagName("ul");
 	for (var i = 0; i < uls.length; i++) {
-		if (uls[i].id.indexOf("ss_favorites") == 0) {
+		if (uls[i].id.indexOf("ul_ss_favorites") == 0) {
 			ss_enableFavoritesList(uls[i].id)
 		}
 	}
@@ -205,7 +204,6 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 <div class="ss_style" id="ss_favorites_pane" 
   style="position:absolute; visibility:hidden; z-index:200;
   border:solid 1px black; height:200px;">
-<form class="ss_form_no_color" name="ss_favorites_form" method="post" onSubmit="return false;" >
   <div class="ss_style" id="ss_favorites">
 	<table class="ss_form_no_color" id="ss_favorites_table" cellspacing="0" cellpadding="0">
 	<tbody>
@@ -237,15 +235,16 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 	<tr><td> </td></tr>
 	<tr>
 	<td nowrap="nowrap">
-	<span class="ss_bold">Add a new favorites category:</span><br />
-	<input type="text" size="20" name="new_favorites_category" />
-	<input type="submit" name="add_favorites_category" 
-	 value="<ssf:nlt tag="button.ok" text="OK"/>" 
-	 onClick="ss_addFavoriteCategory();return false;" />
+	<form class="ss_form_no_color" name="ss_favorites_form" method="post" onSubmit="return false;" >
+	  <span class="ss_bold">Add a new favorites category:</span><br />
+	  <input type="text" size="20" name="new_favorites_category" />
+	  <input type="submit" name="add_favorites_category" 
+	   value="<ssf:nlt tag="button.ok" text="OK"/>" 
+	   onClick="ss_addFavoriteCategory();return false;" />
+	</form>
 	</td>
 	</tr>
 	</tbody>
 	</table>
   </div>
-</form>
 </div>
