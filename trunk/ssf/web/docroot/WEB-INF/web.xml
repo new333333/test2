@@ -107,12 +107,6 @@
 		</init-param>
 		<load-on-startup>5</load-on-startup>
 	</servlet>
-
-	<servlet>
-		<servlet-name>webdav</servlet-name>
-		<servlet-class>com.sitescape.ef.module.ssfs.servlet.WebdavServlet</servlet-class>
-		<load-on-startup>6</load-on-startup>
-	</servlet>
 	
 	<servlet>
 		<servlet-name>portalCCDispatcher</servlet-name>
@@ -147,11 +141,6 @@
 	<servlet-mapping>
 		<servlet-name>rss</servlet-name>
 		<url-pattern>/rss/*</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>webdav</servlet-name>
-		<url-pattern>/webdav/*</url-pattern>
 	</servlet-mapping>
 
 	<!-- Do NOT ever change this timeout value -->
