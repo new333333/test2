@@ -195,18 +195,15 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		Folder folder = loadFolder(folderId);
 		getAccessControlManager().checkOperation(folder,  WorkAreaOperation.BINDER_ADMINISTRATION);
     	//get sub-folders and index them all
-		List folders = getFolderDao().loadFolderTree(folder);
-		folders.add(folder);
+		indexFolder(folder);
+    }
+    private void indexFolder(Folder folder) {
+    	List folders = folder.getFolders();
 		for (int i=0; i<folders.size(); ++i) {
-	    	folder = (Folder) folders.get(i);
-	    	try {
-		    	loadProcessor(folder).indexEntries(folder);
-	    	}
-	    	catch(AccessControlException e) {
-	    		//Skip folders to which access is denied
-	    		continue;
-	    	}
+	    	Folder f = (Folder)folders.get(i);
+	    	indexFolder(f);
 		}
+	    loadProcessor(folder).indexEntries(folder);
     }
     
     public void indexEntries(Long folderId) {

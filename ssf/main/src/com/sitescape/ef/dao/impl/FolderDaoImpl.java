@@ -3,7 +3,6 @@ package com.sitescape.ef.dao.impl;
 import java.util.Date;
 import java.util.List;
 import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -12,7 +11,6 @@ import org.hibernate.Query;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.Disjunction;
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.Order;
 
@@ -33,11 +31,10 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.domain.HKey;
 import com.sitescape.ef.domain.HistoryMap;
-import com.sitescape.ef.domain.Principal;
+
 import com.sitescape.ef.domain.UserPerFolderPK;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.UserPropertiesPK;
-import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.util.Constants;
 /**
  * @author Jong Kim
@@ -55,22 +52,6 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	    return coreDao;
 	}
 	 	
-	//hibernate will sometimes return duplicates when doing joins.  Filter them out
-	//but maintain order.  
-	private List removeDuplicates(List entries) {
-		if (entries.isEmpty()) return entries;
-		List<FolderEntry> result = new ArrayList<FolderEntry>(entries.size());
-		FolderEntry entry;
-		Long lastId=null;
-		for (int i=0; i<entries.size(); ++i) {
-			entry = (FolderEntry)(entries.get(i));
-			if (!entry.getId().equals(lastId)) {
-				result.add(entry);
-				lastId=entry.getId();
-			}
-		}
-		return result;
-	}
 	/**
     * Load 1 FolderEntry and its customAttributes collection
      * @param parentFolderId
@@ -85,7 +66,6 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                     public Object doInHibernate(Session session) throws HibernateException {
                         List results = session.createCriteria(FolderEntry.class)
                     		.add(Expression.eq("id", entryId))
-                    		.setFetchMode("customAttributes", FetchMode.JOIN)
                          	.setFetchMode("entryDef", FetchMode.SELECT)	
                         	.setFetchMode("parentBinder", FetchMode.SELECT)	
                         	.setFetchMode("topFolder", FetchMode.SELECT)	
@@ -151,7 +131,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                        public Object doInHibernate(Session session) throws HibernateException {
                    		int nextPos = Integer.parseInt(entry.getHKey().getRelativeNumber(entry.getDocLevel())) + 1;
                		 	HKey next = new HKey(entry.getParentEntry().getHKey(), nextPos);    
-                            List result = session.createCriteria(FolderEntry.class)
+                            return session.createCriteria(FolderEntry.class)
                             	.add(Expression.disjunction()
                                 	.add(Expression.in("HKey.sortKey", keys))
                                 	.add(Expression.between("HKey.sortKey", entry.getHKey().getSortKey(), next.getSortKey()))
@@ -159,10 +139,8 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                             	.setFetchMode("entryDef", FetchMode.SELECT)	
                             	.setFetchMode("parentBinder", FetchMode.SELECT)	
                             	.setFetchMode("topFolder", FetchMode.SELECT)	
-                            	.setFetchMode("customAttributes", FetchMode.JOIN)
                             	.addOrder(Order.asc("HKey.sortKey"))
                             	.list();
-                             return removeDuplicates(result);
                         }
                   }
                   
@@ -178,14 +156,13 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
              new HibernateCallback() {
                  public Object doInHibernate(Session session) throws HibernateException {
                      String[] keys = entry.getHKey().getAncestorKeys();  
-                     List result = session.createCriteria(entry.getClass())
+                     return  session.createCriteria(entry.getClass())
                      	.add(Expression.in("HKey.sortKey", keys))
                        	.setFetchMode("entryDef", FetchMode.SELECT)	
                        	.setFetchMode("parentBinder", FetchMode.SELECT)	
                        	.setFetchMode("topFolder", FetchMode.SELECT)	
                      	.addOrder(Order.asc("HKey.sortKey"))
                      	.list();
-                     return removeDuplicates(result);
                  }
              }
          );  
@@ -214,8 +191,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                      crit.setFetchMode("parentBinder", FetchMode.SELECT);	
                      crit.setFetchMode("topFolder", FetchMode.SELECT);	
                      crit.addOrder(Order.asc("HKey.sortKey"));
-                     List result = crit.list();
-                     return removeDuplicates(result);
+                     return crit.list();
                  }
              }
          );  
@@ -300,55 +276,6 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
         }
         return folder;
     }
-    /**
-     * Load all the child folders of a folder.  Not restricted to 1 level.
-     */
-    public List loadFolderTree(final Folder folder) throws DataAccessException {
-        
-        //Load folder and sub-folders. 
-        return (List)getHibernateTemplate().execute(
-            new HibernateCallback() {
-                public Object doInHibernate(Session session) throws HibernateException {
-                	 return session.createCriteria(Folder.class)
-                     			.add(Expression.conjunction()  
-                                   	.add(Expression.like("folderHKey.sortKey", folder.getFolderHKey().getSortKey() + "%"))
-                                    .add(Expression.gt("folderHKey.level", new Integer(folder.getFolderHKey().getLevel())))
-                                   )
-                    	.list();
-					 
-               }
-            }
-        );
-    }
-    
-    /**
-     * Load a folder and all its sub-folders.  Contains entire tree.
-     */
-    public List loadFolderAncestors(final Folder folder) throws DataAccessException { 
-        final String[] keys = folder.getFolderHKey().getAncestorKeys();  
-        if (keys == null) return new ArrayList();
-         List result = (List)getHibernateTemplate().execute(
-             new HibernateCallback() {
-                 public Object doInHibernate(Session session) throws HibernateException {
-                     //Hibernate doesn't like the ? in the in clause
-                     Criteria crit = session.createCriteria(FolderEntry.class);
-                      Disjunction dis = Expression.disjunction();
-                      for (int i=0; i<keys.length; ++i) {
-                          dis.add(Expression.eq("folderHKey.sortKey", keys[i]));
-                      };
-                     crit.add(dis);
-                     crit.setFetchMode("topEntry", FetchMode.SELECT);
-                     crit.setFetchMode("parentEntry", FetchMode.SELECT);
-                     crit.setFetchMode("entryDef", FetchMode.SELECT);
-                     
-                     crit.addOrder(Order.asc("HKey.sortKey"));
-                     return crit.list();
-                 }
-             }
-         );  
-         return result;
-     }  
-
 
      public UserProperties loadUserFolderProperties(Long userId, Long folderId) {
     	UserPropertiesPK id = new UserPropertiesPK(userId, folderId);
@@ -434,7 +361,11 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     	
     }
     /** 
-     * Update the owningFolderSortkeys for all entries and their associations
+     * Update the owningFolderSortkeys for all entries and their associations.
+     * Moving all of the folderEntries with the folder.  The folder has been updated.
+     * The owningFolderSortKey of the entries must change, 
+     * but the owningBinderId remains the same.   
+     * Sub folder and their entries should must be handled separetly
      */
     public void moveEntries(final Folder folder) {
 	   	getHibernateTemplate().execute(
@@ -469,6 +400,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 
     /** 
      * Update the owningFolderSortkeys/owingingBinder for all entry associations
+     * Moving entries to new folder. 
      * 
      */
     public void moveEntries(final Folder folder, final List ids) {

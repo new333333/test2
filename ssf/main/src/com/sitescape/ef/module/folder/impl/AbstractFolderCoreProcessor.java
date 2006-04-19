@@ -137,8 +137,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         
     protected Object deleteEntry_workflow(Binder parentBinder, Entry entry, Object ctx) {
     	List entries = new ArrayList((List)ctx);
-    	entries.add(entry);
-       	getFolderDao().deleteEntryWorkflows(entries);
+      	for (int i=0; i<entries.size(); ++i) {
+    		super.deleteEntry_workflow(parentBinder, (FolderEntry)entries.get(i), null);
+    	}
+   		super.deleteEntry_workflow(parentBinder, entry, null);
         return ctx;
     }
     

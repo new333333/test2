@@ -79,11 +79,11 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     	return binders;
     }
     public void addBinder(Binder binder) {
- 		binders.add(binder);
+    	getBinders().add(binder);
  		binder.setParentBinder(this);
 	}
     public void removeBinder(Binder binder) {
- 		binders.remove(binder);
+ 		getBinders().remove(binder);
  		binder.setParentBinder(null);
  		
 	}
