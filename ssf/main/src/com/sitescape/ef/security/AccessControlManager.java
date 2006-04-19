@@ -35,7 +35,7 @@ public interface AccessControlManager {
      * @return
      */
     public boolean testOperation(WorkArea workArea,
-            WorkAreaOperation workAreaOperation) throws AccessControlException;
+            WorkAreaOperation workAreaOperation);
         
     /**
      * Same as {@link #checkOperation(User, WorkArea, WorkAreaOperation)} except
@@ -48,7 +48,7 @@ public interface AccessControlManager {
      * @return
      */
     public boolean testOperation(User user, WorkArea workArea,
-            WorkAreaOperation workAreaOperation) throws AccessControlException;
+            WorkAreaOperation workAreaOperation);
 
     /**
      * Check if the user associated with the current request context has the 
