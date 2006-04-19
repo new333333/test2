@@ -54,14 +54,7 @@ public interface FolderDao {
 	public List loadFolderTreeUpdates(Folder folder, Date since, Date before, OrderBy order);
 	
 	public Folder loadFolder(Long folderId, String zoneName) throws DataAccessException,NoFolderByTheIdException;
-    /**
-     * Load a folder and subFolders 
-     * @param folder
-     * @return List
-     */
-    public List loadFolderTree(Folder folder) throws DataAccessException; 
-    public List loadFolderAncestors(Folder folder) throws DataAccessException;
- 
+  
     public UserProperties loadUserFolderProperties(Long userId, Long folderId);
     public HistoryMap loadHistoryMap(Long userId, Long folderId);
     public void delete(Folder folder);

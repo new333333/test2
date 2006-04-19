@@ -121,6 +121,11 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     	return null;
     	
     }
+    public Set getEvents() {
+    	if (iEvents !=null) return iEvents;
+    	if (events == null) events = new HashSet();
+    	return events;
+    }
     /**
      * Return all attachments 
      * 

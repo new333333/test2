@@ -51,15 +51,6 @@ public class Workspace extends Binder  {
     	}
       	return workspaces;
     }
-    public void addBinder(Binder binder) {
-    	if (binder instanceof Folder) addFolder((Folder)binder);
-    	else addWorkspace((Workspace)binder);
-    }
-    public void removeBinder(Binder binder) {
-    	if (binder instanceof Folder) removeFolder((Folder)binder);
-    	else removeWorkspace((Workspace)binder);
-    	
-    }
     public void addFolder(Folder folder) {
 		super.addBinder(folder);
 	}
