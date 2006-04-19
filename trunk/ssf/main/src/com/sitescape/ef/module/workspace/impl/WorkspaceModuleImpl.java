@@ -94,15 +94,12 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
        	TreeSet<Binder> tree = new TreeSet<Binder>(c);
      	for (Iterator iter=top.getBinders().iterator(); iter.hasNext();) {
     		Binder b = (Binder)iter.next();
-       	    // Check if the user has the privilege to view the binder 
-            try {
-        		// Check if the user has "read" access to the binder.
-            	   getAccessControlManager().checkOperation(b, WorkAreaOperation.READ_ENTRIES);
+        	// Check if the user has "read" access to the binder.
+            if(getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES))
                 tree.add(b);
-            } catch (AccessControlException ac) {
+            else
                	continue;
-            }
-          }
+        }
      	return tree;
     }
     	    	     	    	 
@@ -169,13 +166,9 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
       	for (Iterator iter=ws.iterator(); iter.hasNext();) {
     		f = (Folder)iter.next();
     		if (f.getTopFolder() != null) continue;
-      	    // Check if the user has the privilege to view the folder 
-            try {
-        		// Check if the user has "read" access to the folder.
-                getAccessControlManager().checkOperation(f, WorkAreaOperation.READ_ENTRIES);
-            } catch (AccessControlException ac) {
-               	continue;
-            }
+        	// Check if the user has "read" access to the folder.
+            if(!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
+            	continue;
             next = current.addElement(DomTreeBuilder.NODE_CHILD);
            	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, f, next);
          }
@@ -183,13 +176,9 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	ws.addAll(top.getWorkspaces());
      	for (Iterator iter=ws.iterator(); iter.hasNext();) {
      		w = (Workspace)iter.next();
-       	    // Check if the user has the privilege to view the folder 
-            try {
-        		// Check if the user has "read" access to the folder.
-                getAccessControlManager().checkOperation(w, WorkAreaOperation.READ_ENTRIES);
-            } catch (AccessControlException ac) {
-                	continue;
-            }
+        	// Check if the user has "read" access to the folder.
+            if(!getAccessControlManager().testOperation(w, WorkAreaOperation.READ_ENTRIES))
+            	continue;
      		next = current.addElement(DomTreeBuilder.NODE_CHILD);
    			buildWorkspaceDomTree(next, w, c, domTreeHelper, levels);
        	}    	
