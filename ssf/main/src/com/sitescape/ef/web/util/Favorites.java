@@ -2,6 +2,7 @@ package com.sitescape.ef.web.util;
 
 import java.util.Iterator;
 
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -73,6 +74,60 @@ public class Favorites {
 		return this.favorites;
 	}
 	
+	public Document saveOrder(String orderPairs) {
+		String[] pairs = orderPairs.split(" ");
+		getFavorites();
+		Element root = this.favorites.getRootElement();
+		//Check for moves between categories
+		for (int i = 0; i < pairs.length; i++) {
+			String[] ids = pairs[i].split("/");
+			//Get the parent nodes id
+			String parentId = ids[0];
+			//Nodes start with "ss_favorites_"
+			String nodeId = ids[1].substring(13);
+			Element node = (Element) root.selectSingleNode("//*[@id='"+nodeId+"']");
+			if (node != null && node.getParent() != null) {
+				if (node.getName().equals("favorite") && 
+						!((String)node.getParent().attributeValue("id")).equals(parentId)) {
+					//This favorite was moved to a different parent
+					return moveFavorite(nodeId, parentId);
+				}
+				if (node.getName().equals("category") && !nodeId.equals(parentId)) {
+					//This category was moved
+					return moveCategory(nodeId, parentId);
+				}
+			}
+		}
+		
+		//No changes between categories occurred, save the favorite order
+		Document newDoc = createFavoritesRootDocument();
+		Element newRoot = newDoc.getRootElement();
+		for (int i = 0; i < pairs.length; i++) {
+			String[] ids = pairs[i].split("/");
+			//Get the parent id
+			String parentId = ids[0];
+			//Nodes start with "ss_favorites_"
+			String nodeId = ids[1].substring(13);
+
+			Element node = (Element) root.selectSingleNode("//*[@id='"+nodeId+"']");
+			if (node.getName().equals("category")) parentId = node.getParent().attributeValue("id", "0");
+			Element parentNode = (Element) newRoot.selectSingleNode("//*[@id='"+parentId+"']");
+			if (!nodeId.equals("0") && node != null && parentNode != null) {
+				if (newRoot.selectSingleNode("//*[@id='"+nodeId+"']") == null) {
+					//This node has not been seen yet, so copy it to the new doc
+					Element newNode = parentNode.addElement(node.getQName());
+					//Copy over all of the attributes
+					for (int j = 0; j < node.attributes().size(); j++) {
+						newNode.addAttribute(((Attribute)node.attributes().get(j)).getName(), 
+								((Attribute)node.attributes().get(j)).getValue());
+					}
+				}
+			}
+		}
+		this.favorites = newDoc;
+		return this.favorites;
+	}
+
 	public Document moveFavorite(String id, String targetCategoryId) {
 		getFavorites();
 		Element root = this.favorites.getRootElement();
@@ -100,9 +155,14 @@ public class Favorites {
 		Element category = (Element)root.selectSingleNode("//category[@id='"+id+"']");
 		if (category != null) {
 			Element categoryParent = category.getParent();
-			Element newParentCategory = (Element)root.selectSingleNode("//category[@id='"+targetCategoryId+"']");
+			Element newParentCategory = null;
+			if (targetCategoryId.equals("0")) {
+				newParentCategory = root;
+			} else {
+				newParentCategory = (Element)root.selectSingleNode("//category[@id='"+targetCategoryId+"']");
+			}
 			if (newParentCategory != null && newParentCategory != category && 
-					category.selectSingleNode("//category[@id='"+targetCategoryId+"']") == null) {
+					category.selectSingleNode("./category[@id='"+targetCategoryId+"']") == null) {
 				if (categoryParent.remove(category)) {
 					newParentCategory.add(category);
 				}
@@ -133,16 +193,21 @@ public class Favorites {
 
 	public Document getFavorites() {
 		if (this.favorites == null) {
-			this.favorites = DocumentHelper.createDocument();
-			Element root = this.favorites.addElement("favorites");
-			root.addAttribute("nextId", "1");
-			root.addAttribute("name", NLT.get("favorites"));
-			root.addAttribute("id", "0");
-			root.addAttribute("image", "folder");
-			root.addAttribute("displayOnly", "true");
-			root.addAttribute("listStyle", "ss_sortableListCircle");
+			this.favorites = createFavoritesRootDocument();
 		}
 		return this.favorites;
+	}
+	
+	private Document createFavoritesRootDocument() {
+		Document doc = DocumentHelper.createDocument();
+		Element root = doc.addElement("favorites");
+		root.addAttribute("nextId", "1");
+		root.addAttribute("name", NLT.get("favorites"));
+		root.addAttribute("id", "0");
+		root.addAttribute("image", "folder");
+		root.addAttribute("displayOnly", "true");
+		root.addAttribute("listStyle", "ss_sortableListCircle");
+		return doc;
 	}
 	
 	public Document getFavoritesTree() {
@@ -183,7 +248,17 @@ public class Favorites {
 				Element e = (Element)source;
 				element.addAttribute("title", e.attributeValue("name", "???"));
 				element.addAttribute("image", e.attributeValue("image", "page"));
-				element.addAttribute("id", e.attributeValue("id"));
+				String id = "ss_favorites_" + e.attributeValue("id");
+				element.addAttribute("id", id);
+				String parentId = "";
+				Element parentNode = e.getParent();
+				if (parentNode == null) {
+					parentId = "0";
+				} else {
+					parentId = parentNode.attributeValue("id", "0");
+				}
+				if (e.getName().equals("category")) parentId = e.attributeValue("id");
+				element.addAttribute("parentId", parentId);
 				if (!e.attributeValue("displayOnly", "").equals("")) 
 					element.addAttribute("displayOnly", e.attributeValue("displayOnly"));
 				if (!e.attributeValue("listStyle", "").equals("")) 
