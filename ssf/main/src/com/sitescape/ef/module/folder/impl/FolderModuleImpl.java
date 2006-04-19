@@ -273,11 +273,8 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
        	for (Iterator iter=folders.iterator(); iter.hasNext();) {
        		f = (Folder)iter.next();
       	    // Check if the user has the privilege to view the folder 
-            try {
-                getAccessControlManager().checkOperation(f, WorkAreaOperation.READ_ENTRIES);
-            } catch (AccessControlException ac) {
-               	continue;
-            }
+       		if(!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
+       			continue;
        		next = current.addElement(DomTreeBuilder.NODE_CHILD);
        		buildFolderDomTree(next, f, c, domTreeHelper);
        	}
