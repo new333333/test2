@@ -232,7 +232,9 @@ public class WebdavSiteScape implements BasicWebdavStore {
 					return new String[0];
 			}
 			else if(uptoZoneOnly(m)) { // /files/<zonename>
-				return new String[] {URI_TYPE_INTERNAL, URI_TYPE_LIBRARY};
+				// TODO For now the implementation only supports INTERNAL
+				//return new String[] {URI_TYPE_INTERNAL, URI_TYPE_LIBRARY};
+				return new String[] {URI_TYPE_INTERNAL};
 			}
 			else {
 				return CCClient.getChildrenNames(zoneName, userName, m);
@@ -484,17 +486,18 @@ public class WebdavSiteScape implements BasicWebdavStore {
 	 * @return
 	 */
 	private boolean representsAbstractFolder(Map m) {
-		// Map does not contain 'files'. So including URI_IS_FOLDER
-		// entry, maximum of three entries indicates an abstract folder.
-		return (m.size() <= 3);
+		// Map does not contain 'files'. So including URI_IS_FOLDER and
+		// URI_ORIGINAL entries, maximum of four entries indicates an 
+		// abstract folder.
+		return (m.size() <= 4);
 	}
 	
 	private boolean filesOnly(Map m) {
-		return (m.size() == 1); // contains URI_IS_FOLDER only
+		return (m.size() == 2); // contains URI_IS_FOLDER and URI_ORIGINAL only
 	}
 	
 	private boolean uptoZoneOnly(Map m) {
-		return (m.size() == 2); // contains URI_IS_FOLDER and <zonename>
+		return (m.size() == 3); // contains URI_IS_FOLDER, URI_ORIGINAL and <zonename>
 	}
 	
 	private boolean representsFolder(Map m) {

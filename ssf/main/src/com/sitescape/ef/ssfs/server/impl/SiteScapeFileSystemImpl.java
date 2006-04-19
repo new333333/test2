@@ -144,10 +144,22 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		Map objMap = new HashMap();
 		if(!objectExists(uri, objMap))
 			throw new NoSuchObjectException("The resource does not exist");
-
-		FileAttachment fa = (FileAttachment) objMap.get(FILE_ATTACHMENT);
 		
-		return fa.getModification().getDate();
+		// This algorithm is not accurate, but I don't think it really matters.
+		
+		FileAttachment fa = (FileAttachment) objMap.get(FILE_ATTACHMENT);
+		if(fa != null)
+			return fa.getModification().getDate();
+		
+		Entry entry = (Entry) objMap.get(ENTRY);
+		if(entry != null)
+			return entry.getModification().getDate();
+		
+		Binder binder = (Binder) objMap.get(BINDER);
+		if(binder != null)
+			return binder.getModification().getDate();
+		
+		return new Date(0); // ?
 	}
 
 	public Date getCreationDate(Map uri) throws NoAccessException, NoSuchObjectException {
@@ -155,9 +167,21 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		if(!objectExists(uri, objMap))
 			throw new NoSuchObjectException("The resource does not exist");
 
-		FileAttachment fa = (FileAttachment) objMap.get(FILE_ATTACHMENT);
+		// This algorithm is not accurate, but I don't think it really matters.
 		
-		return fa.getCreation().getDate();
+		FileAttachment fa = (FileAttachment) objMap.get(FILE_ATTACHMENT);
+		if(fa != null)
+			return fa.getCreation().getDate();
+		
+		Entry entry = (Entry) objMap.get(ENTRY);
+		if(entry != null)
+			return entry.getCreation().getDate();
+		
+		Binder binder = (Binder) objMap.get(BINDER);
+		if(binder != null)
+			return binder.getCreation().getDate();
+		
+		return new Date(0); // ?
 	}
 
 	public String[] getChildrenNames(Map uri) throws NoAccessException, NoSuchObjectException {
@@ -169,7 +193,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		if(binder == null) {
 			// Get a list binders
 			List<String> folderIds = getFolderModule().getFolderIds();
-			return (String[]) folderIds.toArray();
+			return folderIds.toArray(new String[folderIds.size()]);
 		}
 		
 		List<String> children = new ArrayList<String>();
@@ -185,7 +209,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 				if(entryIdString != null && !entryIdString.equals(""))
 					children.add(entryIdString);
 			}
-			return (String[]) children.toArray();
+			return children.toArray(new String[children.size()]);
 		}
 		
 		String itemType = getItemType(uri);
@@ -203,7 +227,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 				if(root.selectNodes("//item[@name='attachFiles' and @type='data']").size() > 0)
 					children.add("attachFiles");				
 			}
-			return (String[]) children.toArray();
+			return children.toArray(new String[children.size()]);
 		}
 		
 		if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_PRIMARY)) {
@@ -254,7 +278,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 					}
 					
 				}
-				return (String[]) children.toArray();
+				return children.toArray(new String[children.size()]);
 			}
 			
 			if(getFileName(uri) == null) {
@@ -264,7 +288,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 					FileAttachment fa = (FileAttachment) it.next();
 					children.add(fa.getFileItem().getName());
 				}
-				return (String[]) children.toArray();
+				return children.toArray(new String[children.size()]);
 			}
 			else {
 				return null; // Non-folder resource!
@@ -283,7 +307,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 					if(optionName != null && !optionName.equals(""))
 						children.add(optionName);
 				}
-				return (String[]) children.toArray();
+				return children.toArray(new String[children.size()]);
 			}
 			
 			if(getFileName(uri) == null) {
@@ -292,7 +316,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 					FileAttachment fa = (FileAttachment) it.next();
 					children.add(fa.getFileItem().getName());
 				}
-				return (String[]) children.toArray();
+				return children.toArray(new String[children.size()]);
 			}
 			else {
 				return null; // Non-folder resource!
