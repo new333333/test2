@@ -16,16 +16,13 @@ import java.util.HashSet;
 import java.util.Collection;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.util.ResolveIds;
@@ -50,19 +47,25 @@ public class AccessControlController extends SAbstractController {
 			String s_roleId = request.getParameter("roleId");
 			if (!Validator.isNull(s_roleId)) {
 				Long roleId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "roleId"));
-				String userIds[] = PortletRequestUtils.getStringParameter(request, "users", "").trim().split(" ");
-				String groupIds[] = PortletRequestUtils.getStringParameter(request, "groups", "").trim().split(" ");
+				String userIds[] = PortletRequestUtils.getStringParameters(request, "users");
+				String groupIds[] = PortletRequestUtils.getStringParameters(request, "groups");
 				Set memberIds = new HashSet();
 				if (userIds != null) {
 					for(int i = 0; i < userIds.length; i++) {
-						if (userIds[i].length() > 0)
-							memberIds.add(Long.valueOf(userIds[i]));
+						String[] ids = userIds[i].split(" ");
+						for(int j = 0; j < ids.length; j++) {
+							if(ids[j].length() > 0)
+								memberIds.add(Long.valueOf(ids[j]));
+						}
 					}
 				}
 				if (groupIds != null) {
 					for (int i = 0; i < groupIds.length; i++) {
-						if(groupIds[i].length() > 0)
-							memberIds.add(Long.valueOf(groupIds[i]));
+						String[] ids = groupIds[i].split(" ");
+						for(int j = 0; j < ids.length; j++) {
+							if(ids[j].length() > 0)
+								memberIds.add(Long.valueOf(ids[j]));
+						}
 					}
 				}
 				WorkAreaFunctionMembership wfm = getAdminModule().getWorkAreaFunctionMembership(binder, roleId);
