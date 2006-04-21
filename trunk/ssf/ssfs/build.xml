@@ -44,6 +44,10 @@
 	</target>
 	
 	<target name="apply-changes" depends="jar,unwar-original">
+		<!-- Since it is possible for the web.xml in the original slide.war
+		     to have a later timestamp than the one in changes directory,
+		     we must delete the original web.xml before copying it -->
+		<delete file="${temp.dir}/WEB-INF/web.xml" />
 		<copy todir="${temp.dir}">
 			<fileset dir="changes" includes="**/*" />
 		</copy>

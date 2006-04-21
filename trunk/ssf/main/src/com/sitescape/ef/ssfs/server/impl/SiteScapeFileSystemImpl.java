@@ -46,7 +46,6 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 	private static final String BINDER = "b";
 	private static final String ENTRY = "e";
 	private static final String DEFINITION = "d";
-	private static final String CUSTOM_ATTRIBUTE = "ca";
 	private static final String FILE_ATTACHMENT = "fa";
 	private static final String ELEMENT_NAME = "en";
 
@@ -117,8 +116,10 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		if(!objectExists(uri, objMap))
 			throw new NoSuchObjectException("The resource does not exist");
 
+		FileAttachment fa = (FileAttachment) objMap.get(FILE_ATTACHMENT);
+
 		return getFileModule().readFile((Binder) objMap.get(BINDER), 
-				(Entry) objMap.get(ENTRY), getReposName(uri), getFileName(uri));
+				(Entry) objMap.get(ENTRY), fa);
 	}
 
 	public long getResourceLength(Map uri) throws NoAccessException, NoSuchObjectException {
@@ -214,42 +215,48 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		
 		String itemType = getItemType(uri);
 		if(itemType == null) {
-			// Get a list of relevent item types from the definition		
-			Document def = (Document) objMap.get(DEFINITION);
+			// Get a list of relevent item types from the definition
+			Document def = entry.getEntryDef().getDefinition();
 			if(def != null) {
 				Element root = def.getRootElement();
 				if(root.selectNodes("//item[@name='primary' and @type='data']").size() > 0)
-					children.add("primary");
+					children.add(CrossContextConstants.URI_ITEM_TYPE_PRIMARY);
 				if(root.selectNodes("//item[@name='file' and @type='data']").size() > 0)
-					children.add("file");
+					children.add(CrossContextConstants.URI_ITEM_TYPE_FILE);
 				if(root.selectNodes("//item[@name='graphic' and @type='data']").size() > 0)
-					children.add("graphic");
+					children.add(CrossContextConstants.URI_ITEM_TYPE_GRAPHIC);
 				if(root.selectNodes("//item[@name='attachFiles' and @type='data']").size() > 0)
-					children.add("attachFiles");				
+					children.add(CrossContextConstants.URI_ITEM_TYPE_ATTACH);				
 			}
 			return children.toArray(new String[children.size()]);
 		}
 		
 		if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_PRIMARY)) {
 			if(getFileName(uri) == null) {
-				CustomAttribute ca = (CustomAttribute) objMap.get(CUSTOM_ATTRIBUTE);
-				Iterator it = ((Set) ca.getValue()).iterator();
-				if(it.hasNext()) {
-					FileAttachment fa = (FileAttachment) it.next(); // Get the first one
+				CustomAttribute ca = entry.getCustomAttribute((String) objMap.get(ELEMENT_NAME));
+				if(ca != null) {
+					Iterator it = ((Set) ca.getValue()).iterator();
 					if(it.hasNext()) {
-						// Still has more, meaning that the primary element has
-						// more than one file associated with it. This should 
-						// never occur since the system is supposed to never allow
-						// it. However, instead of throwing an exception we log
-						// the error and return the first file so that SSFS client
-						// can still operate (the idea is that we should not
-						// penalize our customers more than necessary simply
-						// because we have a bug in our system). 
-						logger.error("Detected more than one file under primary element for uri [" + getOriginal(uri));
+						FileAttachment fa = (FileAttachment) it.next(); // Get the first one
+						if(it.hasNext()) {
+							// Still has more, meaning that the primary element has
+							// more than one file associated with it. This should 
+							// never occur since the system is supposed to never allow
+							// it. However, instead of throwing an exception we log
+							// the error and return the first file so that SSFS client
+							// can still operate (the idea is that we should not
+							// penalize our customers more than necessary simply
+							// because we have a bug in our system). 
+							logger.error("Detected more than one file under primary element for uri [" + getOriginal(uri));
+						}
+						return new String[] { fa.getFileItem().getName() };
 					}
-					return new String[] { fa.getFileItem().getName() };
+					else {
+						return new String[0];
+					}
 				}
 				else {
+					// File was never uploaded through this element yet. 
 					return new String[0];
 				}
 			}
@@ -282,13 +289,19 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			}
 			
 			if(getFileName(uri) == null) {
-				CustomAttribute ca = (CustomAttribute) objMap.get(CUSTOM_ATTRIBUTE);
-				Iterator it = ((Set) ca.getValue()).iterator();
-				while(it.hasNext()) {
-					FileAttachment fa = (FileAttachment) it.next();
-					children.add(fa.getFileItem().getName());
+				CustomAttribute ca = entry.getCustomAttribute((String) objMap.get(ELEMENT_NAME));
+				if(ca != null) {
+					Iterator it = ((Set) ca.getValue()).iterator();
+					while(it.hasNext()) {
+						FileAttachment fa = (FileAttachment) it.next();
+						children.add(fa.getFileItem().getName());
+					}
+					return children.toArray(new String[children.size()]);
 				}
-				return children.toArray(new String[children.size()]);
+				else {
+					// File was never uploaded through this element yet. 
+					return new String[0];					
+				}
 			}
 			else {
 				return null; // Non-folder resource!
@@ -555,7 +568,6 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 						return false; // No file exists for the element. 
 					}
 					else {
-						objMap.put(CUSTOM_ATTRIBUTE, ca);
 						// Since all file attachments in this custom attribute
 						// have the same value for repository name, we only
 						// need to use file name for comparison. 

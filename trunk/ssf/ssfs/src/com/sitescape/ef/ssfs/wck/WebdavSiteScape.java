@@ -462,6 +462,9 @@ public class WebdavSiteScape implements BasicWebdavStore {
 	}
 	
 	private boolean objectExists(Map m) throws NoAccessException, CCClientException {
+		if(m == null)
+			return false;
+		
 		// 1. /files always exist
 		// 2. /files/<zonename> always exist AS LONG AS the zonename matches that of the user
 		// 3. /files/<zonename>/internal always exist AS LONG AS the zonename matches that of the user
