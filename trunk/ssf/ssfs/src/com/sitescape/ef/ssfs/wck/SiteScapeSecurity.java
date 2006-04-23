@@ -1,4 +1,4 @@
-package com.sitescape.ef.ssfs.slide;
+package com.sitescape.ef.ssfs.wck;
 
 import org.apache.slide.common.ServiceAccessException;
 import org.apache.slide.common.SlideToken;

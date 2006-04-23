@@ -81,7 +81,7 @@
             <parameter name="dav">true</parameter>
             <parameter name="standalone">true</parameter>
             <parameter name="acl_inheritance_type">path</parameter>
-            <parameter name="acl_semantics">com.sitescape.ef.ssfs.slide.SiteScapeSecurity</parameter>
+            <parameter name="acl_semantics">com.sitescape.ef.ssfs.wck.SiteScapeSecurity</parameter>
             <!-- Nested roles: 0 means no nesting (default), 1 means one sublevel, etc. -->
             <parameter name="nested_roles_maxdepth">0</parameter>
             <!-- Can be "off", "write" and "full" -->
