@@ -2,7 +2,9 @@ package com.sitescape.ef.ssfs.wck;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface CCClientCallback {
 
-	void additionalInput(Map m);
+	void additionalInput(HttpServletRequest req, Map uri);
 }
