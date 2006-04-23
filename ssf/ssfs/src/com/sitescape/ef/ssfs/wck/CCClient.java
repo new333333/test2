@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.sitescape.ef.ssfs.AlreadyExistsException;
 import com.sitescape.ef.ssfs.CrossContextConstants;
 import com.sitescape.ef.ssfs.NoAccessException;
@@ -35,8 +37,8 @@ public class CCClient {
 		CCExecutionTemplate.execute(zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_SET_RESOURCE, 
 			new CCClientCallback() {
-				public void additionalInput(Map m) {
-					m.put(CrossContextConstants.INPUT_STREAM, content);
+				public void additionalInput(HttpServletRequest req, Map m) {
+					req.setAttribute(CrossContextConstants.INPUT_STREAM, content);
 				}
 			}
 		);
@@ -95,7 +97,7 @@ public class CCClient {
 	}
 	
 	static class DefaultCCClientCallback implements CCClientCallback {
-		public void additionalInput(Map m) {
+		public void additionalInput(HttpServletRequest req, Map m) {
 		}
 	}
 }

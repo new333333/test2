@@ -383,7 +383,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 	
 	private String toDefItemType(String itemType) {
 		if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_PRIMARY)) {
-			return "primary";
+			return "primaryFile";
 		}
 		else if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_FILE)) {
 			return "file";
@@ -415,10 +415,6 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		Map fileItems = new HashMap(); // Map of names to file items
 		InputDataAccessor inputData;   // Input data other than file
 		if(getItemType(uri).equals(CrossContextConstants.URI_ITEM_TYPE_ATTACH)) {
-			fileItems.put(objMap.get(ELEMENT_NAME), mf); // single file item
-			inputData = new EmptyInputData(); // no non-file input data
-		}
-		else {
 			// Since attachment element allows uploading multiple files at the 
 			// same time, each file is identified uniquely by appending numeric
 			// number (1-based) to the element name. 
@@ -434,6 +430,10 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			Map source = new HashMap();
 			source.put((String) objMap.get(ELEMENT_NAME) + "_repos1", getReposName(uri));
 			inputData = new MapInputData(source);
+		}
+		else {
+			fileItems.put(objMap.get(ELEMENT_NAME), mf); // single file item
+			inputData = new EmptyInputData(); // no non-file input data
 		}
 
 		try {

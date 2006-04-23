@@ -43,7 +43,7 @@ public class DispatchServer extends GenericServlet {
 				getAuthenticationManager().authenticate(zoneName, userName, password, false);
 			}
 			catch(UserDoesNotExistException e) {
-				logger.warn(e.getMessage(), e);
+				logger.warn(e);
 				// Throw ServletException with cause's error message rather
 				// then the cause itself. This is because the class loader
 			    // of the calling app does not have access to the class of 
@@ -51,11 +51,11 @@ public class DispatchServer extends GenericServlet {
 				throw new ServletException(e.getMessage());
 			}
 			catch(PasswordDoesNotMatchException e) {
-				logger.warn(e.getMessage(), e);
+				logger.warn(e);
 				throw new ServletException(e.getMessage());
 			}			
 			catch(Exception e) {
-				logger.warn(e.getMessage(), e);
+				logger.warn(e);
 				if(e instanceof IOException)
 					throw (IOException) e;
 				else
@@ -91,7 +91,7 @@ public class DispatchServer extends GenericServlet {
 				// Once we return from this method, we have no access to our 
 				// logger. Therefore this is our last chance to log the error
 				// on the SSF side. 
-				logger.warn(e.getMessage(), e);
+				logger.warn(e);
 				// Again, do not store the exception object as a cause into
 				// the ServletException for the same reason explained above.
 				// Instead, simply get the message text and return it. 
@@ -99,12 +99,12 @@ public class DispatchServer extends GenericServlet {
 			}
 			catch(AlreadyExistsException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_ALREADY_EXISTS);				
-				logger.warn(e.getMessage(), e);
+				logger.warn(e);
 				throw new ServletException(e.getMessage());
 			}
 			catch(NoSuchObjectException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_NO_SUCH_OBJECT);
-				logger.warn(e.getMessage(), e);
+				logger.warn(e);
 				throw new ServletException(e.getMessage());
 			}
 			catch(IOException e) {

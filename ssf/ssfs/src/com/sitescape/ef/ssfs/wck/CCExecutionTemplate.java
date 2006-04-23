@@ -27,7 +27,7 @@ public class CCExecutionTemplate {
 		req.setAttribute(CrossContextConstants.URI, uri);
 		req.setAttribute(CrossContextConstants.OPERATION, operationName);
 
-		action.additionalInput(uri);
+		action.additionalInput(req, uri);
 		
 		NullServletResponse res = new NullServletResponse();
 		
