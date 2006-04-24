@@ -49,6 +49,11 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 	private static final String FILE_ATTACHMENT = "fa";
 	private static final String ELEMENT_NAME = "en";
 
+	// This ThreadLocal datastructure is used to keep track of some portion
+	// of the request sequences made by a particular thread to avoid creating
+	// a version of empty file unnecessarily. 
+	private static ThreadLocal createRequested = new ThreadLocal();
+	
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	private FolderModule folderModule;
@@ -97,15 +102,55 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		Map objMap = new HashMap();
 		if(objectExists(uri, objMap))
 			throw new AlreadyExistsException("The resource already exists");
+
+		// Instead of actually creating an empty file, simply flag the thread
+		// local variable indicating that createResource method was invoked
+		// for the specified uri. This is to avoid creating an initial version
+		// of the file with empty content. If we do so, subsequent call to 
+		// setResource method will end up creating second version of the file
+		// while logically speaking it should really be the first version. 
+		// Here ThreadLocal variable is used to implement (sort of) client-side
+		// session tracking to a very limited extent. It is a hacking but works.   
+		createRequested.set(getOriginal(uri));
+
+		// Write the file with empty content.
 		
-		// Write the file with empty content. 
-		writeResource(uri, objMap, new ByteArrayInputStream(new byte[0]));
+		// Do NOT write it out. 
+		//writeResource(uri, objMap, new ByteArrayInputStream(new byte[0]));
 	}
 
 	public void setResource(Map uri, InputStream content) throws NoAccessException, NoSuchObjectException {
+		String createResourceUri = (String) createRequested.get();
+		
 		Map objMap = new HashMap();
-		if(!objectExists(uri, objMap))
-			throw new NoSuchObjectException("The resource does not exist");
+		if(createResourceUri == null) {
+			// No pending request exists for creating a new resource with
+			// the given uri. This is typical "modification" situation for
+			// already-existing resource.
+			if(!objectExists(uri, objMap))
+				throw new NoSuchObjectException("The resource does not exist");			
+		}
+		else if(!createResourceUri.equals(getOriginal(uri))) {
+			// A request was made previously by the same thread for creating
+			// a new resource. BUT the uri does not match! Given the call
+			// sequences made by the WCK framework, this is just not possible
+			// to occur. However, if it ever happens for whatever reason,
+			// we need to know about that. So log the error and let the user
+			// proceed. 
+			logger.error("createResource previously called with uri [" + createResourceUri
+					+ "] while subsequent call to setResource is with uri [" + getOriginal(uri) + "]");
+			if(!objectExists(uri, objMap))
+				throw new NoSuchObjectException("The resource does not exist");			
+		}
+		else {
+			// A request was made preriously to create a new empty resource
+			// with the given uri. This invocation is merely to fill the
+			// new resource with the initial content. Therefore, this should
+			// create very first version of the resource, not second one. 
+			// Clear the thread local variable. 
+			createRequested.set(null);
+			objectExists(uri, objMap); // just to populate objMap			
+		}
 		
 		// Write the file with the specified content. 
 		writeResource(uri, objMap, content);
@@ -137,8 +182,19 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		if(!objectExists(uri, objMap))
 			throw new NoSuchObjectException("The resource does not exist");
 
-		// TODO To be completed
-		throw new UnsupportedOperationException();
+		FileAttachment fa = (FileAttachment) objMap.get(FILE_ATTACHMENT);
+		
+		List faId = new ArrayList();
+		faId.add(fa.getId());
+		
+		try {
+			getFolderModule().modifyEntry(getBinderId(uri), getEntryId(uri), new EmptyInputData(), null, faId);
+		} catch (AccessControlException e) {
+			throw new NoAccessException(e.getLocalizedMessage());						
+		} catch (WriteFilesException e) {
+			// I don't feel like creating another exception class just for this...
+			throw new RuntimeException(e.getMessage());
+		}
 	}
 
 	public Date getLastModified(Map uri) throws NoAccessException, NoSuchObjectException {
@@ -442,6 +498,8 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} catch (WriteFilesException e) {
 			// I don't feel like creating another exception class just for this...
+			// especially given that the exception object itself will not be 
+			// passed back to the client side of SSFS. 
 			throw new RuntimeException(e.getMessage());
 		}		
 	}
