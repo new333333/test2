@@ -40,7 +40,7 @@
 <script type="text/javascript">
 ss_createEventObj('ss_htmlareaUnload_${formName}_${property_name}', "UNLOAD")
 function ss_htmlareaUnload_${formName}_${property_name}() {
-	alert('ss_htmlareaUnload_${formName}_${property_name}' + document.forms.${formName}.${property_name}.value)
+	//alert('ss_htmlareaUnload_${formName}_${property_name}' + document.forms.${formName}.${property_name}.value)
 }
 </script>
 </div>
