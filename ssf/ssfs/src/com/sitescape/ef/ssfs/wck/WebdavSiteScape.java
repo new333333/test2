@@ -33,6 +33,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 	private LoggerFacade logger;
 	private String zoneName;
 	private String userName;
+	private CCClient client;
 	
 	public void begin(Service service, Principal principal, Object connection, 
 			LoggerFacade logger, Hashtable parameters) 
@@ -45,6 +46,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 			this.zoneName = v[0].trim();
 			this.userName = v[1].trim();
 		}
+		this.client = new CCClient(zoneName, userName);
 	}
 
 	public void checkAuthentication() throws UnauthenticatedException {		
@@ -125,7 +127,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 			if(representsFolder(m))
 				throw new ServiceAccessException(service, "The position refers to a folder");
 			else
-				CCClient.createResource(zoneName, userName, m);
+				client.createResource(m);
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(resourceUri, e.getMessage(), "create");
@@ -150,7 +152,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 			if(representsFolder(m))
 				throw new ObjectNotFoundException(resourceUri);
 			else
-				CCClient.setResource(zoneName, userName, m, content); // we don't use contentType and characterEncoding
+				client.setResource(m, content); // we don't use contentType and characterEncoding
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(resourceUri, e.getMessage(), "store");
@@ -174,7 +176,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 			if(representsAbstractFolder(m))
 				return new Date(0); // There's no good answer for this - Will this work?
 			else
-				return CCClient.getLastModified(zoneName, userName, m);
+				return client.getLastModified(m);
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
@@ -198,7 +200,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 			if(representsAbstractFolder(m))
 				return new Date(0); // There's no good answer for this - Will this work?
 			else
-				return CCClient.getCreationDate(zoneName, userName, m);
+				return client.getCreationDate(m);
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
@@ -239,7 +241,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 				return new String[] {URI_TYPE_INTERNAL};
 			}
 			else {
-				return CCClient.getChildrenNames(zoneName, userName, m);
+				return client.getChildrenNames(m);
 			}
 		}
 		catch(ZoneMismatchException e) {
@@ -263,7 +265,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 			if(representsFolder(m))
 				throw new ObjectNotFoundException(resourceUri);
 			else
-				return CCClient.getResource(zoneName, userName, m); 
+				return client.getResource(m); 
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(resourceUri, e.getMessage(), "read");
@@ -287,7 +289,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 			if(representsFolder(m))
 				throw new ObjectNotFoundException(resourceUri);
 			else
-				return CCClient.getResourceLength(zoneName, userName, m); 
+				return client.getResourceLength(m); 
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(resourceUri, e.getMessage(), "read");
@@ -311,7 +313,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 			if(representsFolder(m))
 				throw new AccessDeniedException(uri, "Removing folder is not supported", "create");
 			else
-				CCClient.removeResource(zoneName, userName, m); 
+				client.removeResource(m); 
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "delete");
@@ -339,7 +341,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 				return props;
 			}
 			else {
-				return CCClient.getProperties(zoneName, userName, m);
+				return client.getProperties(m);
 			}
 		}
 		catch(ZoneMismatchException e) {
@@ -519,7 +521,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 		if(representsAbstractFolder(m))
 			return true;  // /files/<zonename>/<internal or library>
 		else
-			return CCClient.objectExists(zoneName, userName, m);		
+			return client.objectExists(m);		
 	}
 
 	/**
