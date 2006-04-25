@@ -12,11 +12,15 @@ public interface SiteScapeFileSystem {
 
 	public boolean objectExists(Map uri) throws NoAccessException;
 	
-	public void createResource(Map uri) throws NoAccessException, AlreadyExistsException;
+	public void createResource(Map uri) throws NoAccessException, 
+	AlreadyExistsException;
 	
 	public void setResource(Map uri, InputStream content) 
 	throws NoAccessException, AlreadyExistsException;
 	
+	public void createAndSetResource(Map uri, InputStream content) 
+	throws NoAccessException, AlreadyExistsException;
+
 	public InputStream getResource(Map uri) throws NoAccessException,
 	NoSuchObjectException;
 	
