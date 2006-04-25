@@ -1,6 +1,5 @@
 package com.sitescape.ef.ssfs.server.impl;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.activation.FileTypeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,6 +62,8 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 	private BinderModule binderModule;
 	private ProfileModule profileModule;
 	private FileModule fileModule;
+	
+	private FileTypeMap mimeTypes;
 
 	protected FolderModule getFolderModule() {
 		return folderModule;
@@ -91,6 +94,12 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 	}
 	public void setFileModule(FileModule fileModule) {
 		this.fileModule = fileModule;
+	}
+	protected FileTypeMap getMimeTypes() {
+		return this.mimeTypes;
+	}
+	public void setMimeTypes(FileTypeMap mimeTypes) {
+		this.mimeTypes = mimeTypes;
 	}
 
 	public boolean objectExists(Map uri) throws NoAccessException {
@@ -398,6 +407,60 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		}
 	}
 
+	public Map getProperties(Map uri) throws NoAccessException,
+	NoSuchObjectException {
+		Map objMap = new HashMap();
+		if(!objectExists(uri, objMap))
+			throw new NoSuchObjectException("The resource does not exist");
+		
+		FileAttachment fa = (FileAttachment) objMap.get(FILE_ATTACHMENT);
+		
+		// The algorithm for computing creation and modification times may
+		// not be correct or accurate for folders. Instead we simply use
+		// some approximation. But I don't think it will really matter. 
+		// We shall see. 
+		
+		Map<String,Object> props = new HashMap<String,Object>();
+		
+		if(fa != null) { // This is a file. 
+			props.put(CrossContextConstants.DAV_PROPERTIES_CREATION_DATE,
+					fa.getCreation().getDate());
+			props.put(CrossContextConstants.DAV_PROPERTIES_GET_LAST_MODIFIED,
+					fa.getModification().getDate());
+			props.put(CrossContextConstants.DAV_PROPERTIES_GET_CONTENT_LENGTH,
+					fa.getFileItem().getLength());
+			props.put(CrossContextConstants.DAV_PROPERTIES_GET_CONTENT_TYPE,
+					getMimeTypes().getContentType(fa.getFileItem().getName()));
+			return props;
+		}
+
+		Entry entry = (Entry) objMap.get(ENTRY);
+		if(entry != null) {
+			props.put(CrossContextConstants.DAV_PROPERTIES_CREATION_DATE,
+					entry.getCreation().getDate());
+			props.put(CrossContextConstants.DAV_PROPERTIES_GET_LAST_MODIFIED,
+					entry.getModification().getDate());
+			return props;
+		}
+		
+		Binder binder = (Binder) objMap.get(BINDER);
+		if(binder != null) {
+			props.put(CrossContextConstants.DAV_PROPERTIES_CREATION_DATE,
+					binder.getCreation().getDate());
+			props.put(CrossContextConstants.DAV_PROPERTIES_GET_LAST_MODIFIED,
+					binder.getModification().getDate());
+			return props;
+		}
+		
+		// Can we reach here?
+		
+		props.put(CrossContextConstants.DAV_PROPERTIES_CREATION_DATE,
+				new Date(0));
+		props.put(CrossContextConstants.DAV_PROPERTIES_GET_LAST_MODIFIED,
+				new Date());		
+		return props;
+	}
+	
 	private String getOriginal(Map uri) {
 		return (String) uri.get(CrossContextConstants.URI_ORIGINAL);		
 	}

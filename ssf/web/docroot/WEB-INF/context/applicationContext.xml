@@ -574,6 +574,7 @@
 				<property name="binderModule"><ref local="binderModule"/></property>
 				<property name="profileModule"><ref local="profileModule"/></property>
 				<property name="fileModule"><ref local="fileModule"/></property>
+				<property name="mimeTypes"><ref local="mimeTypes"/></property>
 			</bean>
 		</property>
 		<property name="proxyInterfaces">

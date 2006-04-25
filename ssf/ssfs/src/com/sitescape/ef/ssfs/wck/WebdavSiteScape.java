@@ -16,16 +16,18 @@ import org.apache.slide.lock.ObjectLockedException;
 import org.apache.slide.security.AccessDeniedException;
 import org.apache.slide.security.UnauthenticatedException;
 import org.apache.slide.simple.store.BasicWebdavStore;
+import org.apache.slide.simple.store.WebdavStoreBulkPropertyExtension;
 import org.apache.slide.structure.ObjectAlreadyExistsException;
 import org.apache.slide.structure.ObjectNotFoundException;
 
 import com.sitescape.ef.ssfs.AlreadyExistsException;
+import com.sitescape.ef.ssfs.CrossContextConstants;
 import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
 
 import static com.sitescape.ef.ssfs.CrossContextConstants.*;
 
-public class WebdavSiteScape implements BasicWebdavStore {
+public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropertyExtension {
 
 	private Service service;
 	private LoggerFacade logger;
@@ -324,6 +326,50 @@ public class WebdavSiteScape implements BasicWebdavStore {
 			throw new ObjectNotFoundException(uri);
 		}				
 	}
+
+	public Map getProperties(String uri) throws ServiceAccessException, 
+	AccessDeniedException, ObjectNotFoundException, ObjectLockedException {
+		try {
+			Map m = parseUri(uri);
+					
+			if(representsAbstractFolder(m)) {
+				Map<String,Object> props = new HashMap<String,Object>();
+				props.put(CrossContextConstants.DAV_PROPERTIES_CREATION_DATE, new Date(0));
+				props.put(CrossContextConstants.DAV_PROPERTIES_GET_LAST_MODIFIED, new Date(0));
+				return props;
+			}
+			else {
+				return CCClient.getProperties(zoneName, userName, m);
+			}
+		}
+		catch(ZoneMismatchException e) {
+			throw new AccessDeniedException(uri, e.getMessage(), "read");
+		}		
+		catch (NoAccessException e) {
+			throw new AccessDeniedException(uri, e.getMessage(), "read");
+		} 
+		catch (CCClientException e) {
+			throw new ServiceAccessException(service, e.getMessage());
+		}	
+	}
+
+	public void setProperties(String uri, Map properties) 
+	throws ServiceAccessException, AccessDeniedException, 
+	ObjectNotFoundException, ObjectLockedException {
+		// We do not allow write access to the properties of any resource.
+		// All properties are generated or computed internally as side
+		// effect of some other operation such as creating or modifying
+		// a resource. The properties can be read via getProperties, but
+		// can not be modifed through WebDAV. This may not be consistent
+		// with the typical manner in which "pure" WebDAV repository
+		// operates. However, since our system needs to allow for both
+		// WebDAV-based and web-based accesses to the same core, we can
+		// not rely on the properties values handed over by the WebDAV
+		// framework. If we did, it would cause inconsistency. Practically
+		// most of the information in the input map are already available
+		// in the core system, so ditching the map shouldn't cause any
+		// loss of significant information. 
+	}
 	
 	private Map returnMap(Map map, boolean isFolder) {
 		if(isFolder)
@@ -506,4 +552,5 @@ public class WebdavSiteScape implements BasicWebdavStore {
 	private boolean representsFolder(Map m) {
 		return ((Boolean) m.get(URI_IS_FOLDER)).booleanValue();
 	}
+
 }

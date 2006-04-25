@@ -30,6 +30,7 @@ public abstract class CrossContextConstants {
 	public static final Integer OPERATION_GET_LAST_MODIFIED = new Integer(8);
 	public static final Integer OPERATION_GET_CREATION_DATE = new Integer(9);
 	public static final Integer OPERATION_GET_CHILDREN_NAMES = new Integer(10);
+	public static final Integer OPERATION_GET_PROPERTIES = new Integer(11);
 	/*
 	public static final String OPERATION_AUTHENTICATE = "authenticate";
 	public static final String OPERATION_OBJECT_EXISTS = "objectExists";
@@ -91,4 +92,10 @@ public abstract class CrossContextConstants {
 	public static final String ERROR_NO_ACCESS = "noAccess";
 	public static final String ERROR_NO_SUCH_OBJECT = "noSuchObject";
 	public static final String ERROR_ALREADY_EXISTS = "alreadyExists"; 
+	
+	// DAV Properties
+	public static final String DAV_PROPERTIES_CREATION_DATE = "DAV::creationdate";
+	public static final String DAV_PROPERTIES_GET_CONTENT_LENGTH = "DAV::getcontentlength";
+	public static final String DAV_PROPERTIES_GET_CONTENT_TYPE = "DAV::getcontenttype";
+	public static final String DAV_PROPERTIES_GET_LAST_MODIFIED = "DAV::getlastmodified";
 }
