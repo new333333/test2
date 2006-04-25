@@ -213,9 +213,14 @@ if (document.createStyleSheet) {
   background-color: ${ss_form_background_color};
   }
     
-.ss_form_no_color, .ss_form_no_color table {
+.ss_style_color, .ss_style_color table, .ss_style form {
   color: ${ss_style_text_color};
   background-color: ${ss_style_background_color};
+  }
+    
+.ss_form_color {
+  color: ${ss_form_text_color};
+  background-color: ${ss_form_background_color};
   }
     
 .ss_form.ss_gray {

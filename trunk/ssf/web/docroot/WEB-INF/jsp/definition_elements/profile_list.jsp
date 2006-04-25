@@ -1,12 +1,9 @@
 <% // Profile listing %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssBinder" type="com.sitescape.ef.domain.ProfileBinder" scope="request" />
 <jsp:useBean id="ssUserFolderProperties" type="com.sitescape.ef.domain.UserProperties" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
 
 <%
-	String binderId = ssBinder.getId().toString();
-
 	String slidingTableStyle = "sliding";
 	if (ssUser.getDisplayStyle() != null && 
 	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
@@ -70,7 +67,7 @@ function highlightLineById(id) {
 </div>
 </div>
 <ssf:slidingTable id="ss_folder_table" type="<%= slidingTableStyle %>" 
- height="<%= ssFolderTableHeight %>" folderId="<%= binderId %>">
+ height="<%= ssFolderTableHeight %>" folderId="${ssBinder.id}">
 
 <ssf:slidingTableRow headerRow="true">
   <ssf:slidingTableColumn width="30%">Title</ssf:slidingTableColumn>

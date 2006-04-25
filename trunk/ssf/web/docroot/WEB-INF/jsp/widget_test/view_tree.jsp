@@ -53,7 +53,7 @@ function t_<portlet:namespace/>_ws2Tree_showId(id, obj) {
 				<td>
 					First tree:
 					<div>
-						<ssf:tree treeName="wsTree" treeDocument="<%= wsTree %>" sortable="true" />
+						<ssf:tree treeName="wsTree" treeDocument="<%= wsTree %>" />
 					</div>
 				</td>
 			</tr>

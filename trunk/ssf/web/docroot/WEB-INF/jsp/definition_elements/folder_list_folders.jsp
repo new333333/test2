@@ -1,11 +1,4 @@
 <% // Folders %>
-<%
-	String parentFolderId = "";
-	if (ssFolder instanceof Folder) {
-		Folder parentFolder = ((Folder) ssFolder).getParentFolder();
-		if (parentFolder != null) parentFolderId = parentFolder.getId().toString();
-	}
-%>
 <ssf:expandableArea title="${ssFolder.title}">
 <table class="ss_style" width="100%" border="0" cellpadding="2" cellspacing="0">
  <tr>

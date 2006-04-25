@@ -190,7 +190,7 @@ public class TreeTag extends TagSupport {
 				
 				//Close the sortable table if needed
 				if (this.tableOpened) {
-					jspOut.print("</ul>\n</td>\n</tr>\n</tbody>\n</table>\n");
+					jspOut.print("<li></li></ul>\n</td>\n</tr>\n</tbody>\n</table>\n");
 					this.tableOpened = false;
 				}
 			}
@@ -271,7 +271,7 @@ public class TreeTag extends TagSupport {
 			//Show the tree in the requested style (sortable or normal)
 			if (this.displayStyle.equals("sortable")) {
 				//"sortable" style shows the tree in a series of lists
-				String listStyle = e.attributeValue("listStyle", "ss_sortableList");
+				String listStyle = e.attributeValue("listStyle", "ss_sortable");
 				if (this.tableOpened && !this.lastListStyle.equals("") && !this.lastListStyle.equals(listStyle)) {
 					//Switching styles, so close the table
 					jspOut.print("</ul>\n</td>\n</tr>\n</tbody>\n</table>\n");
@@ -279,7 +279,7 @@ public class TreeTag extends TagSupport {
 				}
 
 				if (!this.tableOpened) {
-					jspOut.print("<table class=\"ss_sortableList\">\n<tbody>\n<tr>\n<td>\n");
+					jspOut.print("<table class=\"ss_sortable\">\n<tbody>\n<tr>\n<td>\n");
 					this.tableOpened = true;
 				
 					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
@@ -292,7 +292,6 @@ public class TreeTag extends TagSupport {
 					
 					// Link
 					jspOut.print("<ul id=\"ul_"+s_id+"\"");
-					jspOut.print(" name=\""+s_parentId+"\"");
 					jspOut.print(" class=\"ss_dragableLink "+listStyle+"\">\n");
 				}
 				recursedNodes.add(0, "0");
@@ -370,7 +369,7 @@ public class TreeTag extends TagSupport {
 					}
 		
 					if (this.tableOpened) {
-						jspOut.print("</ul>\n</td>\n</tr>\n</tbody>\n</table>\n");
+						jspOut.print("<li></li></ul>\n</td>\n</tr>\n</tbody>\n</table>\n");
 						this.tableOpened = false;
 					}
 					if (divHasBeenOutput) {

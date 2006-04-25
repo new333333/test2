@@ -489,7 +489,7 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderGraphic" />
 	</item>
 
-	<item name="attachFiles" caption="__attach_files" 
+	<item name="attachFiles" caption="__attach_files" type="data"
 			multipleAllowed="false" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="ss_attachFile" readonly="true"/>
