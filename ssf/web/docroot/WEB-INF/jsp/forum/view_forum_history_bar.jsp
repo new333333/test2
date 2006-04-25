@@ -60,7 +60,7 @@ function ss_restoreImages (currentEntry) {
 var ss_baseHistoryUrl = '<ssf:url
           adapter="true"
           portletName="ss_forum" 
-          folderId="<%= ssFolder.getId().toString() %>"
+          folderId="${ssFolder.id}"
           action="view_entry"
           operation="view_entry"
           actionUrl="false"
@@ -162,7 +162,7 @@ if (false) {
           href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
-          folderId="<%= ssFolder.getId().toString() %>"
+          folderId="${ssFolder.id}"
           action="view_entry"        
           operation="entry_previous"
           actionUrl="false"
@@ -177,7 +177,7 @@ if (false) {
           href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
-          folderId="<%= ssFolder.getId().toString() %>"
+          folderId="${ssFolder.id}"
           action="view_entry"        
           operation="entry_previous"
           actionUrl="false"
@@ -191,7 +191,7 @@ if (false) {
      <td><a href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
-          folderId="<%= ssFolder.getId().toString() %>"
+          folderId="${ssFolder.id}"
           action="view_entry"
           operation="entry_next"
           actionUrl="false"
@@ -207,7 +207,7 @@ if (false) {
           href="<ssf:url
           adapter="true"
           portletName="ss_forum" 
-          folderId="<%= ssFolder.getId().toString() %>"
+          folderId="${ssFolder.id}"
           action="view_entry"
           operation="entry_next"
           actionUrl="false"

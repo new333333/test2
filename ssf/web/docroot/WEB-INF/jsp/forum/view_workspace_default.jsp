@@ -22,10 +22,10 @@
 <% // Show the workspace default parts %>
 
 <% // Title %>
-<%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_title.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_title.jsp" %>
 
 <% // List of workspaces and folders %>
-<%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_binder_list.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/workspace_binder_list.jsp" %>
 
 </div>
 

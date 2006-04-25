@@ -172,11 +172,12 @@ public class AjaxController  extends SAbstractForumController {
 	
 	private void ajaxSaveFavorites(ActionRequest request, ActionResponse response) {
 		//Save the order of the favorites list
+		String movedItemId = ((String[])formData.get("movedItemId"))[0];
 		String favoritesList = ((String[])formData.get("favorites"))[0];
 		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
 		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
 		Favorites f = new Favorites(favorites);
-		favorites = f.saveOrder(favoritesList);
+		favorites = f.saveOrder(movedItemId, favoritesList);
 		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
 	}
 	
@@ -187,6 +188,8 @@ public class AjaxController  extends SAbstractForumController {
 		Favorites f = new Favorites(favorites);
 		Document favTree = f.getFavoritesTree();
 		model.put(WebKeys.FAVORITES_TREE, favTree);
+		Document favTreeDelete = f.getFavoritesTreeDelete();
+		model.put(WebKeys.FAVORITES_TREE_DELETE, favTreeDelete);
 
 		response.setContentType("text/xml");
 		model.put(WebKeys.AJAX_STATUS, statusMap);

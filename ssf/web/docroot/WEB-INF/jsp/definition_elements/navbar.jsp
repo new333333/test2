@@ -31,13 +31,107 @@
 
 <script type="text/javascript">
 
+//Routine to go to a favorite when it is clicked
+function favTree_showId(id, obj) {
+	if (ss_pauseFavoriteClick == 1) return false;
+	//Get the binderId from the elementId ("ss_favorites_xxx")
+	var binderData = id.substr(13).split("_");
+	binderId = binderData[2];
+	
+	//Build a url to go to
+	var url = "<portlet:renderURL windowState="maximized">
+				<portlet:param name="action" value="view_listing"/>
+				<portlet:param name="binderId" value="ssBinderIdPlaceHolder"/>
+				</portlet:renderURL>"
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	self.location.href = url;
+	return false;
+}
+
 var ss_favoritesListArray = new Array();
 var ss_favoritesListCount = 0;
 function ss_enableFavoritesList(id) {
 	ss_favoritesListArray[ss_favoritesListCount] = id;
 	ss_favoritesListCount++;
-	ss_DragDrop.makeListContainer( document.getElementById(id));
-	document.getElementById(id).onDragDrop = function() {ss_saveFavorites();};
+
+    var idObj = document.getElementById(id)
+	ss_DragDrop.makeListContainer(idObj);
+    eval("idObj.onDragOver = function() {ss_highlightFavorites('"+idObj.id+"');}");
+    eval("idObj.onDragOut = function() {ss_unhighlightFavorites('"+idObj.id+"');}");
+    eval("idObj.onDragDrop = function() {ss_saveFavorites('"+idObj.id+"');}");
+
+    var items = idObj.getElementsByTagName( "li" );
+	for (var i = 0; i < items.length; i++) {
+		eval("items[i].onDragEndCallback = function() {ss_saveDragId('"+items[i].id+"');}");
+	}
+}
+var ss_lastDropped = null;
+function ss_saveDragId(id) {
+    ss_lastDropped = id
+    return false;
+}
+
+var ss_savedFavoriteClassNames = new Array();
+var ss_lastHighlightedFavorite = null;
+function ss_highlightFavorites(id) {
+	ss_unhighlightFavorites();
+	var idObj = document.getElementById(id);
+	//document.getElementById('debugLog').innerHTML += 'Highlight '+idObj.id+'  '
+	if (!ss_savedFavoriteClassNames[idObj.id] || 
+			ss_savedFavoriteClassNames[idObj.id] == "undefined" || 
+			ss_savedFavoriteClassNames[idObj.id] == "") {
+		ss_savedFavoriteClassNames[idObj.id] = idObj.className;
+	}
+	idObj.className = ss_savedFavoriteClassNames[idObj.id] + " ss_sortableHighlighted"
+	//document.getElementById('debugLog').innerHTML += ' ('+idObj.className+') '
+	ss_lastHighlightedFavorite = idObj;
+}
+
+function ss_unhighlightFavorites() {
+	if (ss_lastHighlightedFavorite != null) {
+		//document.getElementById('debugLog').innerHTML += ' unHighlight '+ss_lastHighlightedFavorite.id+'  '
+		var id = ss_lastHighlightedFavorite.id;
+		if (ss_savedFavoriteClassNames[id] && 
+				ss_savedFavoriteClassNames[id] != "undefined" && 
+				ss_savedFavoriteClassNames[id] != "") {
+			var idObj = document.getElementById(id);
+			idObj.className = ss_savedFavoriteClassNames[id];
+			//document.getElementById('debugLog').innerHTML += ' ok '
+		}
+	}
+	ss_lastHighlightedFavorite = null;
+}
+
+function ss_saveFavorites(id) {
+	ss_unhighlightFavorites(id)
+	if (ss_lastDropped == null) return;
+	
+	//The list was sorted, so turn off the click
+	ss_noClickFavorite();
+	
+	var s = "";
+	for (var i = 0; i < ss_favoritesListCount; i++) {
+		var ulObj = self.document.getElementById(ss_favoritesListArray[i]);
+    	var items = ulObj.getElementsByTagName( "li" );
+		for (var j = 0; j < items.length; j++) {
+			s += items[j].id + " "
+		}
+	}
+	var url = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="true" >
+		<ssf:param name="operation" value="save_favorites" />
+    	</ssf:url>"
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addKeyValue("movedItemId", ss_lastDropped)
+	ss_lastDropped = null;
+	ajaxRequest.addKeyValue("favorites", s)
+	ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
 }
 
 var ss_pauseFavoriteClick = 0;
@@ -45,17 +139,12 @@ var ss_pauseFavoriteClickTimer = null;
 function ss_noClickFavorite() {
 	ss_pauseFavoriteClick = 1;
 	if (ss_pauseFavoriteClickTimer != null) clearTimeout(ss_pauseFavoriteClickTimer);
-	ss_pauseFavoriteClickTimer = setTimeout("ss_clickFavorite();", 200)
+	ss_pauseFavoriteClickTimer = setTimeout("ss_clickFavorite();", 500)
 }
 function ss_clickFavorite() {
 	ss_pauseFavoriteClick = 0;
 	if (ss_pauseFavoriteClickTimer != null) clearTimeout(ss_pauseFavoriteClickTimer);
 	ss_pauseFavoriteClickTimer = null;
-}
-
-function ss_favorite_clicked(obj) {
-	if (ss_pauseFavoriteClick == 1) return;
-	alert('Clicked '+obj.parentNode.id)
 }
 
 function ss_addForumToFavorites() {
@@ -95,33 +184,6 @@ function ss_addFavoriteCategory() {
 	ajaxRequest.sendRequest();  //Send the request
 }
 
-function ss_saveFavorites() {
-	//The list was sorted, so turn off the click
-	ss_noClickFavorite();
-	
-	var s = "";
-	for (var i = 0; i < ss_favoritesListCount; i++) {
-		var ulObj = self.document.getElementById(ss_favoritesListArray[i]);
-    	var items = ulObj.getElementsByTagName( "li" );
-		for (var j = 0; j < items.length; j++) {
-			s += ulObj.name + "/" + items[j].id + " "
-		}
-	}
-	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true" >
-		<ssf:param name="operation" value="save_favorites" />
-    	</ssf:url>"
-	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addKeyValue("favorites", s)
-	ajaxRequest.setEchoDebugInfo();
-	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
-	ajaxRequest.setUsePOST();
-	ajaxRequest.sendRequest();  //Send the request
-}
-
 var ss_favoritesPaneTopOffset = 10;
 var ss_favoritesPaneLeftOffset = 4;
 var ss_favoritesMarginW = 4;
@@ -129,14 +191,16 @@ var ss_favoritesMarginH = 6;
 function ss_showFavoritesPane() {
 	var fObj = self.document.getElementById("ss_favorites_pane");
 	fObj.style.visibility = "visible";
+	ss_setOpacity(fObj, 0)
 	fObj.style.display = "none";
 	fObj.style.display = "block";
 	var fObj2 = self.document.getElementById("ss_favorites_table")
 	var w = ss_getObjectWidth(fObj)
 	ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_bottom") + ss_favoritesPaneTopOffset))
-	ss_setObjectLeft(fObj, parseInt(ss_favoritesPaneLeftOffset - w))
+	ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_bottom")))
 	var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom") + ss_favoritesPaneLeftOffset);
-	ss_slideOpenDivHorizontal("ss_favorites_pane", leftEnd, 6);
+	ss_showDivFadeIn("ss_favorites_pane", 500);
+	ss_hideObj("ss_favorites_form_div");
 
 	var url = "<ssf:url 
     	adapter="true" 
@@ -156,14 +220,8 @@ function ss_postFavoritesRequest(obj) {
 	if (self.document.getElementById("ss_favorites_status_message").innerHTML == "error") {
 		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 	}
-
-	var fObj = self.document.getElementById("ss_favorites_pane")
-	var fObj2 = self.document.getElementById("ss_favorites")
-	ss_setObjectWidth(fObj, parseInt(ss_getObjectWidth(fObj2) + ss_favoritesMarginW));
-	ss_setObjectHeight(fObj, parseInt(ss_getObjectHeight(fObj2) + ss_favoritesMarginH));
-	var fObj3 = self.document.getElementById("ss_favorites_table")
-	var fObj4 = self.document.getElementById("ss_favorites_table2")
-	ss_setObjectWidth(fObj4, parseInt(ss_getObjectWidth(fObj3) + ss_favoritesMarginW));
+	ss_hideObj("ss_favorites_form_div");
+	ss_setFavoritesPaneSize();
 
 	ss_favoritesListArray = new Array();
 	ss_favoritesListCount = 0;
@@ -173,25 +231,24 @@ function ss_postFavoritesRequest(obj) {
 			ss_enableFavoritesList(uls[i].id)
 		}
 	}
+	if (document.getElementById("ul_ss_delete") != null) ss_enableFavoritesList("ul_ss_delete");
 }
 
-var ss_slideOpenDivHorizontalTimer = null;
-function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
-	if (ss_slideOpenDivHorizontalTimer != null) {
-		clearTimeout(ss_slideOpenDivHorizontalTimer);
-		ss_slideOpenDivHorizontalTimer = null;
+function ss_setFavoritesPaneSize() {
+	var fObj = self.document.getElementById("ss_favorites_pane")
+	var fObj2 = self.document.getElementById("ss_favorites")
+	var fObj22 = self.document.getElementById("ss_favorites2")
+	ss_setObjectWidth(fObj, parseInt(ss_getObjectWidth(fObj2) + ss_favoritesMarginW));
+	ss_setObjectHeight(fObj, parseInt(ss_getObjectHeight(fObj2) + ss_getObjectHeight(fObj22) + ss_favoritesMarginH * 2));
+	var fObj3 = self.document.getElementById("ss_favorites_table")
+	var fObj4 = self.document.getElementById("ss_favorites_table2")
+	var tableWidth = ss_getObjectWidth(fObj3);
+	var table2Width = ss_getObjectWidth(fObj4);
+	if (tableWidth > table2Width) {
+		ss_setObjectWidth(fObj4, ss_getObjectWidth(fObj3));
+	} else {
+		ss_setObjectWidth(fObj3, ss_getObjectWidth(fObj4));
 	}
-	var obj = self.document.getElementById(id);
-	var left = ss_getDivLeft(id);
-	var w = ss_getObjectWidth(obj)
-	steps--;
-	if (steps <= 0) {
-		ss_setObjectLeft(obj, leftEnd);
-		return;
-	}
-	var newLeft = parseInt(((leftEnd - left) / steps) + left);
-	ss_setObjectLeft(obj, newLeft);
-	ss_slideOpenDivHorizontalTimer = setTimeout("ss_slideOpenDivHorizontal('"+id+"', "+leftEnd+", "+steps+")", 20);
 }
 
 </script>
@@ -204,12 +261,13 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 <div class="ss_style" id="ss_favorites_pane" 
   style="position:absolute; visibility:hidden; z-index:200;
   border:solid 1px black; height:200px;">
+  <div>
   <div class="ss_style" id="ss_favorites">
-	<table class="ss_form_no_color" id="ss_favorites_table" cellspacing="0" cellpadding="0">
+	<table id="ss_favorites_table" cellspacing="0" cellpadding="0">
 	<tbody>
 	<tr>
 	  <td class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
-	  <td align="right"><a onClick="ss_hideDiv('ss_favorites_pane');return false;"
+	  <td align="right"><a onClick="ss_hideDivFadeOut('ss_favorites_pane', 100);return false;"
         ><img border="0" src="<html:imagesPath/>box/close_off.gif"/></a></td>
 	</tr>
 	<tr><td colspan="2"></td></tr>
@@ -221,30 +279,41 @@ function ss_slideOpenDivHorizontal(id, leftEnd, steps) {
 	</table>
   </div>
   
-  <div class="ss_style" id="ss_favorites2">
-	<table class="ss_form_no_color" id="ss_favorites_table2" cellspacing="0" cellpadding="0">
+  <div id="ss_favorites2">
+	<table id="ss_favorites_table2">
 	<tbody>
 	<tr><td><hr/></td></tr>
 	<tr>
-	<td>
+	<td nowrap="nowrap">
 	<a href="javascript: ;" 
 	 onClick="ss_addForumToFavorites();return false;"
-	><span class="ss_bold">Add the current page to the favorites list...</span></a>
+	><span class="ss_bold"><ssf:nlt tag="favorites.addCurrentPage" 
+		text="Add the current page to the favorites list..."/></span></a>
 	</td>
 	</tr>
 	<tr><td> </td></tr>
 	<tr>
 	<td nowrap="nowrap">
-	<form class="ss_form_no_color" name="ss_favorites_form" method="post" onSubmit="return false;" >
-	  <span class="ss_bold">Add a new favorites category:</span><br />
-	  <input type="text" size="20" name="new_favorites_category" />
-	  <input type="submit" name="add_favorites_category" 
-	   value="<ssf:nlt tag="button.ok" text="OK"/>" 
-	   onClick="ss_addFavoriteCategory();return false;" />
-	</form>
+	  <a href="#" onClick="ss_showObjBlock('ss_favorites_form_div');ss_setFavoritesPaneSize();return false;">
+	    <span class="ss_bold"><ssf:nlt tag="favorites.addCategory" 
+		  	text="Add a new favorites category..."/></span>
+	  </a>
+	  <br />
+	  <div id="ss_favorites_form_div" style="visibility:hidden; display:none; margin:4px;">
+		<form class="ss_style ss_style_color" id="ss_favorites_form" 
+		  method="post" onSubmit="return false;" >
+		  <span class="ss_style_color ss_labelAbove"><ssf:nlt tag="favorites.categoryName" 
+		  	text="Category name:"/></span>
+		  <input class="ss_style_color" type="text" size="20" name="new_favorites_category" />
+		  <input class="ss_style_color" type="submit" name="add_favorites_category" 
+		   value="<ssf:nlt tag="button.ok" text="OK"/>" 
+		   onClick="ss_addFavoriteCategory();return false;" />
+		</form>
+	  </div>
 	</td>
 	</tr>
 	</tbody>
 	</table>
+  </div>
   </div>
 </div>

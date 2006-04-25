@@ -26,7 +26,7 @@
 <tbody>
 <tr>
   <td colspan="2" class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
-  <td align="right"><a onClick="ss_hideDiv('ss_favorites_pane');return false;"
+  <td align="right"><a onClick="ss_hideDivFadeOut('ss_favorites_pane', 100);return false;"
     ><img border="0" src="<html:imagesPath/>box/close_off.gif"/></a></td>
 </tr>
 <tr>
@@ -34,6 +34,17 @@
 
 <c:if test="${!empty ss_favoritesTree}">
 <ssf:tree treeName="favTree" treeDocument="${ss_favoritesTree}"
+  rootOpen="true" displayStyle="sortable" nowrap="true" />
+</c:if>
+
+</td>
+</tr>
+
+<tr>
+<td colspan="3">
+<br/>
+<c:if test="${!empty ss_favoritesTree && !empty ss_favoritesTreeDelete}">
+<ssf:tree treeName="favTreeDelete" treeDocument="${ss_favoritesTreeDelete}"
   rootOpen="true" displayStyle="sortable" nowrap="true" />
 </c:if>
 

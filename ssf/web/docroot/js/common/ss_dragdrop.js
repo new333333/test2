@@ -52,6 +52,8 @@ var ss_DragDrop = {
 	},
 
 	makeItemDragable : function(item) {
+        if (document.getElementById('debugLog')) 
+            //document.getElementById('debugLog').innerHTML += ' MakeItemDragable: '+item.id+'<br>';
 		ss_Drag.makeDraggable(item);
 		item.setDragThreshold(5);
 		
@@ -61,9 +63,11 @@ var ss_DragDrop = {
 		item.onDragStart = ss_DragDrop.onDragStart;
 		item.onDrag = ss_DragDrop.onDrag;
 		item.onDragEnd = ss_DragDrop.onDragEnd;
+		item.onDragEndCallback = new Function();
 	},
 
 	onDragStart : function(nwPosition, sePosition, nwOffset, seOffset) {
+        //document.getElementById('debugLog').innerHTML += '<br>onDragStart<br>'
         // remember the original parent
         ss_DragDrop.dragStartParent = this.parentNode;
         ss_DragDrop.dragStartCursor = this.style.cursor;
@@ -83,7 +87,7 @@ var ss_DragDrop = {
 		}
 	
 		// item starts out over current parent
-		this.parentNode.onDragOver();
+		if (this.parentNode.onDragOver) this.parentNode.onDragOver();
 	},
 
 	onDrag : function(nwPosition, sePosition, nwOffset, seOffset) {
@@ -106,9 +110,15 @@ var ss_DragDrop = {
 					// temporary clone of some previous container node and
 					// it needs to be removed from the document
 					var tempParent = this.parentNode;
+			        //document.getElementById('debugLog').innerHTML += '&nbsp;&nbsp;&nbsp;Remove: '+this.id+" from: "+tempParent.id
 					tempParent.removeChild( this );
-					container.appendChild( this );
-					tempParent.parentNode.removeChild( tempParent );
+					//document.getElementById('debugLog').innerHTML += ' Add: '+this.id+" to: "+container.id
+                    container.appendChild( this );
+			        //document.getElementById('debugLog').innerHTML += ' Remove: '+tempParent.id+" from: "+tempParent.parentNode.id
+					if (document.getElementsByTagName( "body" ).item(0) == tempParent.parentNode) {
+                        //document.getElementById('debugLog').innerHTML += ' (This was the body element) /// '
+                    }
+                    tempParent.parentNode.removeChild( tempParent );
 					break;
 				}
 				container = container.nextContainer;
@@ -140,8 +150,10 @@ var ss_DragDrop = {
 					this.isOutside = false;
 					//document.getElementById('debugLog').innerHTML += 'Over '+container.id;
 					this.style.cursor = "move";
+			        //document.getElementById('debugLog').innerHTML += ' Remove: '+this.id+" from: "+this.parentNode.id
 					this.parentNode.removeChild( this );
-					container.appendChild( this );
+					//document.getElementById('debugLog').innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;Add to container: '+container.id+" ////  "
+                    container.appendChild( this );
 					break;
 				}
 				container = container.nextContainer;
@@ -149,13 +161,18 @@ var ss_DragDrop = {
 			// if we're not in any container now, make a temporary clone of
 			// the previous container node and add it to the document
 			if (this.isOutside) {
-				var tempParent = this.parentNode.cloneNode( false );
+				//document.getElementById('debugLog').innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp; Clone node: '+this.parentNode.id
+                var tempParent = this.parentNode.cloneNode( false );
+                tempParent.id = "__tempParent_"+this.parentNode.id
 				if (this.style.zIndex) tempParent.style.zIndex = parseInt(parseInt(this.style.zIndex) + 1);
+			    //document.getElementById('debugLog').innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp; Remove: '+this.id+" from: "+this.parentNode.id
 				this.parentNode.removeChild( this );
+                //document.getElementById('debugLog').innerHTML += ' Add to container: '+tempParent.id
 				tempParent.appendChild( this );
-				document.getElementsByTagName( "body" ).item(0).appendChild( tempParent );
-				//document.getElementById('debugLog').innerHTML += 'Cloned node '+this.id;
-				//document.getElementById('debugLog').innerHTML += 'x,y: '+this.style.left+", "+this.style.top;
+				//document.getElementById('debugLog').innerHTML += ' Add to body ('+document.getElementsByTagName( "body" ).item(0).id+'): '+tempParent.id
+                document.getElementsByTagName( "body" ).item(0).appendChild( tempParent );
+				//document.getElementById('debugLog').innerHTML += ' Cloned node '+this.id;
+				//document.getElementById('debugLog').innerHTML += ' x,y: '+this.style.left+", "+this.style.top;
 				return;
 			}
 		}
@@ -193,14 +210,18 @@ var ss_DragDrop = {
 	},
 
 	onDragEnd : function(nwPosition, sePosition, nwOffset, seOffset) {
-		// if the drag ends and we're still outside all containers
+        //document.getElementById('debugLog').innerHTML += '<br>onDragEnd<br>'
+        // if the drag ends and we're still outside all containers
 		// it's time to remove ourselves from the document
 		if (this.isOutside) {
 			var tempParent = this.parentNode;
             //document.getElementById('debugLog').innerHTML += ' Restoring to: ' + ss_DragDrop.dragStartParent.id;
-			this.parentNode.removeChild( this );
+			//document.getElementById('debugLog').innerHTML += ' Remove: '+this.id+" from: "+this.parentNode.id
+            this.parentNode.removeChild( this );
+            //document.getElementById('debugLog').innerHTML += ' Add: '+this.id+" to: "+ss_DragDrop.dragStartParent.id
             ss_DragDrop.dragStartParent.appendChild(this);
             this.isOutside = false;
+			//document.getElementById('debugLog').innerHTML += ' Remove: '+tempParent.id+" from: "+tempParent.parentNode.id
 			tempParent.parentNode.removeChild( tempParent );
 			// return;
 		} else {
@@ -218,15 +239,21 @@ var ss_DragDrop = {
 		//Restore the cursor
 		this.style.cursor = ss_DragDrop.dragStartCursor;
 		this.parentNode.onDragOut();
-		if (this.dragThresholdExceeded) this.parentNode.onDragDrop();
+        if (this.dragThresholdExceeded) {
+            //Let any listeners know that this item was dropped
+            this.onDragEndCallback();
+            this.parentNode.onDragDrop();
+        }
 		this.style["top"] = "0px";
 		this.style["left"] = "0px";
+        
 	}
 };
 
 var ss_DragUtils = {
 	swap : function(item1, item2) {
-		var parent = item1.parentNode;
+        var parent = item1.parentNode;
+		//document.getElementById('debugLog').innerHTML += ' Swap: '+item1.id+", "+item2.id
 		parent.removeChild(item1);
 		parent.insertBefore(item1, item2);
 

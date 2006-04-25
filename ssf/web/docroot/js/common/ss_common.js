@@ -144,6 +144,74 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
+// Function by Simon Willison from sitepoint.com
+function ss_setOpacity(obj, opacity) {
+  opacity = (opacity == 100)?99.999:opacity;
+
+  // IE/Win
+  obj.style.filter = "alpha(opacity:"+opacity+")";
+
+  // Safari<1.2, Konqueror
+  obj.style.KHTMLOpacity = opacity/100;
+
+  // Older Mozilla and Firefox
+  obj.style.MozOpacity = opacity/100;
+
+  // Safari 1.2, newer Firefox and Mozilla, CSS3
+  obj.style.opacity = opacity/100;
+}
+
+//Routine to fade in a div
+function ss_showDivFadeIn(id, ms) {
+    var now = new Date();
+    var endTime = parseInt(now.getTime() + ms);
+    ss_setOpacity(document.getElementById(id),0);
+    ss_showDivFader(id, 0, endTime, 20)
+}
+
+function ss_showDivFader(id, opacity, endTime, count) {
+    count--
+    var now = new Date();
+    var incTime = parseInt(endTime - now.getTime());
+    if (count <= 0 || incTime <= 0) {
+        ss_setOpacity(document.getElementById(id),100);
+    } else {
+        var incOpacity = parseInt((100 - opacity) / count)
+        if (incOpacity < 5) incOpacity = 5;
+        opacity = parseInt(opacity + incOpacity)
+        if (opacity > 100) opacity = 100;
+        ss_setOpacity(document.getElementById(id), opacity);
+        var sleepTime = parseInt(incTime/count);
+        setTimeout("ss_showDivFader('"+id+"', "+opacity+", "+endTime+", "+count+");", sleepTime);
+    }
+}
+
+//Routine to fade out a div
+function ss_hideDivFadeOut(id, ms) {
+    var now = new Date();
+    var endTime = parseInt(now.getTime() + parseInt(ms));
+    ss_hideDivFader(id, 100, endTime, 20)
+}
+
+function ss_hideDivFader(id, opacity, endTime, count) {
+    count--
+    var now = new Date();
+    var incTime = parseInt(endTime - now.getTime());
+    if (count <= 0 || incTime <= 0) {
+        ss_setOpacity(document.getElementById(id), 0);
+    } else {
+        var incOpacity = parseInt(opacity / count)
+        if (incOpacity < 5) incOpacity = 5;
+        opacity = parseInt(opacity - incOpacity)
+        if (opacity < 0) opacity = 0;
+        ss_setOpacity(document.getElementById(id), opacity);
+        var sleepTime = parseInt(incTime/count);
+        setTimeout("ss_hideDivFader('"+id+"', "+opacity+", "+endTime+", "+count+");", sleepTime);
+    }
+}
+
+
+
 //Routine to add the innerHMTL of one div to another div
 function ss_addToDiv(target, source) {
     var objTarget
