@@ -32,16 +32,15 @@
     <c:set var="textValue" value="${ssDefinitionEntry.customAttributes[property_name].value.text}"/>
   </c:if>
 </c:if>
-<jsp:useBean id="textValue" type="java.lang.String" />
 <div class="ss_entryContent">
   <span class="ss_labelLeft"><%= caption %><%= required %></span>
     <ssf:htmleditor id="<%= elementName %>" 
-      formName="<%= formName %>" height="<%= height %>" color="${ss_form_element_header_color}"
-      initText="<%= textValue %>" />
+      formName="${formName}" height="<%= height %>" color="${ss_form_element_header_color}"
+      initText="${textValue}" />
 <script type="text/javascript">
-ss_createEventObj('ss_htmlareaUnload_<%= formName %>_<%= elementName %>', "UNLOAD")
-function ss_htmlareaUnload_<%= formName %>_<%= elementName %>() {
-	//alert('ss_htmlareaUnload_<%= formName %>_<%= elementName %>' + document.forms.<%= formName %>.<%= elementName %>.value)
+ss_createEventObj('ss_htmlareaUnload_${formName}_${property_name}', "UNLOAD")
+function ss_htmlareaUnload_${formName}_${property_name}() {
+	alert('ss_htmlareaUnload_${formName}_${property_name}' + document.forms.${formName}.${property_name}.value)
 }
 </script>
 </div>
