@@ -156,8 +156,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			// with the given uri. This invocation is merely to fill the
 			// new resource with the initial content. Therefore, this should
 			// create very first version of the resource, not second one. 
-			// Clear the thread local variable. 
-			createRequested.set(null);
+			createRequested.set(null);  // Clear the thread local variable.
 			objectExists(uri, objMap); // just to populate objMap			
 		}
 		
