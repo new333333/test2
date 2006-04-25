@@ -65,7 +65,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 		try {
 			Map m = parseUri(uri);
 		
-			return objectExists(m);
+			return objectExists(uri, m);
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
@@ -83,7 +83,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 		try {
 			Map m = parseUri(uri);
 		
-			return (representsFolder(m) && objectExists(m));
+			return (representsFolder(m) && objectExists(uri, m));
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
@@ -101,7 +101,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 		try {
 			Map m = parseUri(uri);
 		
-			return (!representsFolder(m) && objectExists(m));
+			return (!representsFolder(m) && objectExists(uri, m));
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
@@ -119,53 +119,78 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 		throw new AccessDeniedException(folderUri, "Creating folder is not supported", "create");	
 	}
 
-	public void createResource(String resourceUri) throws ServiceAccessException, 
+	public void createResource(String uri) throws ServiceAccessException, 
 	AccessDeniedException, ObjectAlreadyExistsException, ObjectLockedException {
 		try {
-			Map m = parseUri(resourceUri);
+			Map m = parseUri(uri);
 		
 			if(representsFolder(m))
 				throw new ServiceAccessException(service, "The position refers to a folder");
 			else
-				client.createResource(m);
+				client.createResource(uri, m);
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(resourceUri, e.getMessage(), "create");
+			throw new AccessDeniedException(uri, e.getMessage(), "create");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(resourceUri, e.getMessage(), "create");
+			throw new AccessDeniedException(uri, e.getMessage(), "create");
 		}
 		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		} 
 		catch (AlreadyExistsException e) {
-			throw new ObjectAlreadyExistsException(resourceUri);
+			throw new ObjectAlreadyExistsException(uri);
 		}		
 	}
 
-	public void setResourceContent(String resourceUri, InputStream content, 
+	public void setResourceContent(String uri, InputStream content, 
 			String contentType, String characterEncoding) throws ServiceAccessException, 
 			AccessDeniedException, ObjectNotFoundException, ObjectLockedException {
 		try {
-			Map m = parseUri(resourceUri);
+			Map m = parseUri(uri);
 		
 			if(representsFolder(m))
-				throw new ObjectNotFoundException(resourceUri);
+				throw new ObjectNotFoundException(uri);
 			else
-				client.setResource(m, content); // we don't use contentType and characterEncoding
+				client.setResource(uri, m, content); // we don't use contentType and characterEncoding
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(resourceUri, e.getMessage(), "store");
+			throw new AccessDeniedException(uri, e.getMessage(), "store");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(resourceUri, e.getMessage(), "store");
+			throw new AccessDeniedException(uri, e.getMessage(), "store");
 		}
 		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		} 
 		catch (NoSuchObjectException e) {
-			throw new ObjectNotFoundException(resourceUri);
+			throw new ObjectNotFoundException(uri);
 		}				
+	}
+
+	public void createAndSetResource(String uri, InputStream content, 
+			String contentType, String characterEncoding) throws ServiceAccessException, 
+			AccessDeniedException, ObjectAlreadyExistsException, ObjectLockedException {
+		try {
+			Map m = parseUri(uri);
+		
+			if(representsFolder(m))
+				throw new ServiceAccessException(service, "The position refers to a folder");
+			else
+				client.createAndSetResource(uri, m, content); // Discard contentType and characterEncoding
+		}
+		catch(ZoneMismatchException e) {
+			throw new AccessDeniedException(uri, e.getMessage(), "create");
+		}		
+		catch (NoAccessException e) {
+			throw new AccessDeniedException(uri, e.getMessage(), "create");
+		}
+		catch (CCClientException e) {
+			throw new ServiceAccessException(service, e.getMessage());
+		} 
+		catch (AlreadyExistsException e) {
+			throw new ObjectAlreadyExistsException(uri);
+		}		
 	}
 
 	public Date getLastModified(String uri) throws ServiceAccessException, 
@@ -176,7 +201,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 			if(representsAbstractFolder(m))
 				return new Date(0); // There's no good answer for this - Will this work?
 			else
-				return client.getLastModified(m);
+				return client.getLastModified(uri, m);
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
@@ -200,7 +225,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 			if(representsAbstractFolder(m))
 				return new Date(0); // There's no good answer for this - Will this work?
 			else
-				return client.getCreationDate(m);
+				return client.getCreationDate(uri, m);
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
@@ -241,7 +266,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 				return new String[] {URI_TYPE_INTERNAL};
 			}
 			else {
-				return client.getChildrenNames(m);
+				return client.getChildrenNames(folderUri, m);
 			}
 		}
 		catch(ZoneMismatchException e) {
@@ -258,50 +283,50 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 		}				
 	}
 
-	public InputStream getResourceContent(String resourceUri) throws ServiceAccessException, AccessDeniedException, ObjectNotFoundException, ObjectLockedException {
+	public InputStream getResourceContent(String uri) throws ServiceAccessException, AccessDeniedException, ObjectNotFoundException, ObjectLockedException {
 		try {
-			Map m = parseUri(resourceUri);
+			Map m = parseUri(uri);
 		
 			if(representsFolder(m))
-				throw new ObjectNotFoundException(resourceUri);
+				throw new ObjectNotFoundException(uri);
 			else
-				return client.getResource(m); 
+				return client.getResource(uri, m); 
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(resourceUri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getMessage(), "read");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(resourceUri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getMessage(), "read");
 		}
 		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		} 
 		catch (NoSuchObjectException e) {
-			throw new ObjectNotFoundException(resourceUri);
+			throw new ObjectNotFoundException(uri);
 		}				
 	}
 
-	public long getResourceLength(String resourceUri) throws ServiceAccessException, 
+	public long getResourceLength(String uri) throws ServiceAccessException, 
 	AccessDeniedException, ObjectNotFoundException, ObjectLockedException {
 		try {
-			Map m = parseUri(resourceUri);
+			Map m = parseUri(uri);
 		
 			if(representsFolder(m))
-				throw new ObjectNotFoundException(resourceUri);
+				throw new ObjectNotFoundException(uri);
 			else
-				return client.getResourceLength(m); 
+				return client.getResourceLength(uri, m); 
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(resourceUri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getMessage(), "read");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(resourceUri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getMessage(), "read");
 		}
 		catch (CCClientException e) {
 			throw new ServiceAccessException(service, e.getMessage());
 		} 
 		catch (NoSuchObjectException e) {
-			throw new ObjectNotFoundException(resourceUri);
+			throw new ObjectNotFoundException(uri);
 		}				
 	}
 
@@ -313,7 +338,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 			if(representsFolder(m))
 				throw new AccessDeniedException(uri, "Removing folder is not supported", "create");
 			else
-				client.removeResource(m); 
+				client.removeResource(uri, m); 
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "delete");
@@ -335,13 +360,19 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 			Map m = parseUri(uri);
 					
 			if(representsAbstractFolder(m)) {
+				// Implementation Note:
+				// Do not return non-String type properties. So for now, I will
+				// comment this out.
+				/*
 				Map<String,Object> props = new HashMap<String,Object>();
 				props.put(CrossContextConstants.DAV_PROPERTIES_CREATION_DATE, new Date(0));
 				props.put(CrossContextConstants.DAV_PROPERTIES_GET_LAST_MODIFIED, new Date(0));
 				return props;
+				*/
+				return null;
 			}
 			else {
-				return client.getProperties(m);
+				return client.getProperties(uri, m);
 			}
 		}
 		catch(ZoneMismatchException e) {
@@ -509,7 +540,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 		}
 	}
 	
-	private boolean objectExists(Map m) throws NoAccessException, CCClientException {
+	private boolean objectExists(String uri, Map m) throws NoAccessException, CCClientException {
 		if(m == null)
 			return false;
 		
@@ -521,7 +552,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 		if(representsAbstractFolder(m))
 			return true;  // /files/<zonename>/<internal or library>
 		else
-			return client.objectExists(m);		
+			return client.objectExists(uri, m);		
 	}
 
 	/**

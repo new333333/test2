@@ -31,6 +31,7 @@ public abstract class CrossContextConstants {
 	public static final Integer OPERATION_GET_CREATION_DATE = new Integer(9);
 	public static final Integer OPERATION_GET_CHILDREN_NAMES = new Integer(10);
 	public static final Integer OPERATION_GET_PROPERTIES = new Integer(11);
+	public static final Integer OPERATION_CREATE_SET_RESOURCE = new Integer(12);
 	/*
 	public static final String OPERATION_AUTHENTICATE = "authenticate";
 	public static final String OPERATION_OBJECT_EXISTS = "objectExists";

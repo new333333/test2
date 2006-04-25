@@ -587,6 +587,7 @@
 				     of logging. -->
 				<value>aopallianceOpenSessionInViewInterceptor</value>
 				<value>aopallianceUserPreloadInterceptor</value>
+				<value>aopallianceMethodInvocationTraceInterceptor</value>
 			</list>
 		</property>
 	</bean>
@@ -605,7 +606,7 @@
 		</property>
 		<property name="interceptorNames">
 			<list>
-				<value>loggingInterceptor</value>
+				<value>aopallianceLoggingInterceptor</value>
 				<!-- When a user request is served, typically one of the very first 
 				     interceptors we define is one that sets up request context for 
 				     the serving thread. In the case of Web request, typically this
@@ -625,7 +626,7 @@
 		</property>
 	</bean>
 	
-	<bean id="loggingInterceptor" class="com.sitescape.ef.util.aopalliance.LoggingInterceptor"/>
+	<bean id="aopallianceLoggingInterceptor" class="com.sitescape.ef.util.aopalliance.LoggingInterceptor"/>
 	
 	<bean id="aopallianceOpenSessionInViewInterceptor" class="com.sitescape.ef.util.aopalliance.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref local="sessionFactory"/></property>
@@ -634,6 +635,8 @@
 	<bean id="aopallianceUserPreloadInterceptor" class="com.sitescape.ef.util.aopalliance.UserPreloadInterceptor">
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
+	
+	<bean id="aopallianceMethodInvocationTraceInterceptor" class="com.sitescape.ef.util.aopalliance.MethodInvocationTraceInterceptor"/>
 	
 	<!-- referenced internally when viewing files and sending mail -->
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap"/>

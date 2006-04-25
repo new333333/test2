@@ -168,6 +168,10 @@ public class DispatchServer extends GenericServlet {
 			Map properties = ssfs.getProperties(uri);
 			req.setAttribute(CrossContextConstants.RETURN, properties);
 		}
+		else if(operation.equals(CrossContextConstants.OPERATION_CREATE_SET_RESOURCE)) {
+			InputStream content = (InputStream) req.getAttribute(CrossContextConstants.INPUT_STREAM);
+			ssfs.createAndSetResource(uri, content);
+		}
 		else {
 			throw new ServletException("Invalid operation " + operation);
 		}		
