@@ -96,6 +96,15 @@ public class CCClient {
 		return returnObj;
 	}
 	
+	public static Map getProperties(String zoneName, String userName, Map uri) throws CCClientException,
+	NoAccessException, NoSuchObjectException {
+		Map returnObj = (Map) CCExecutionTemplate.execute(
+				zoneName, userName, uri, 
+				CrossContextConstants.OPERATION_GET_PROPERTIES, 
+				defaultCallback);
+		return returnObj;
+	}
+	
 	static class DefaultCCClientCallback implements CCClientCallback {
 		public void additionalInput(HttpServletRequest req, Map m) {
 		}

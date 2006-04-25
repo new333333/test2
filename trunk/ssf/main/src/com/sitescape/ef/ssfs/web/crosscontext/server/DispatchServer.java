@@ -164,6 +164,10 @@ public class DispatchServer extends GenericServlet {
 			String[] names = ssfs.getChildrenNames(uri);
 			req.setAttribute(CrossContextConstants.RETURN, names);
 		}
+		else if(operation.equals(CrossContextConstants.OPERATION_GET_PROPERTIES)) {
+			Map properties = ssfs.getProperties(uri);
+			req.setAttribute(CrossContextConstants.RETURN, properties);
+		}
 		else {
 			throw new ServletException("Invalid operation " + operation);
 		}		

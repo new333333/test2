@@ -34,4 +34,7 @@ public interface SiteScapeFileSystem {
 
 	public String[] getChildrenNames(Map uri) throws NoAccessException,
 	NoSuchObjectException;
+	
+	public Map getProperties(Map uri) throws NoAccessException,
+	NoSuchObjectException;
 }
