@@ -86,9 +86,11 @@
 
 		<options>
 			<option name="titleView" caption="__title" initial="true" />
+			<option name="entryCreatorView" caption="__entry_creator" initial="true" />
+			<option name="entryDateView" caption="__entry_date" initial="true" />
 			<option name="descriptionView" caption="__description" initial="true" />
 			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
-			<option name="entryWorkflow" caption="__entry_Workflow" initial="true" />
+			<option name="entryWorkflow" caption="__entry_workflow" initial="true" />
 			<option name="entryAttachments" caption="__entry_attachments" initial="true" />
 			<option name="entryReplies" caption="__entry_replies" initial="true" />
 			<option_select path="//item[@category='entryLayout']" optionCaption="__entry_layout_options" />
@@ -232,6 +234,24 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
 		<notify summary="true" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderDescription" />
+	</item>
+	
+	<item name="entryCreatorView" caption="__entry_creator">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_creator"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="entryDateView" caption="__entry_date">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_date"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
+		</jsps>
 	</item>
 	
 	<item name="descriptionView" caption="__description">
@@ -591,9 +611,18 @@
 			<property name="style" caption="__box_style" type="selectbox" default="rounded">
 				<option name="rounded" caption="__box_rounded" />
 				<option name="square" caption="__box_square" />
+				<option name="squareNoBorder" caption="__box_square_no_border" />
 			</property>
 		</properties>
 		<options>
+			<option name="titleView" caption="__title" />
+			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
+			<option name="entryDateView" definitionType="1" caption="__entry_date" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
 			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
 			<option_select path="//item[@category='commonEntryData']" />
@@ -615,6 +644,14 @@
 			</property>
 		</properties>
 		<options>
+			<option name="titleView" caption="__title" />
+			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
+			<option name="entryDateView" definitionType="1" caption="__entry_date" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
 			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
 			<option_select path="//item[@category='commonEntryData']" />
@@ -787,7 +824,6 @@
 			<option name="folderDataItem" caption="__folder_data_item" 
 				definitionType="5" />
 			<option name="folderList" default="true" />
-			<option name="calendarList" />
 			<option name="viewEntry" default="true" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>

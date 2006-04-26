@@ -23,6 +23,8 @@
 <c:set var="ss_folder_border_color" value="#CC6666" scope="request"/>
 <c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
 <c:set var="ss_entry_border_color" value="#CC0000" scope="request"/>
+<c:set var="ss_replies_background_color" value="#FFCCCC" scope="request"/>
+<c:set var="ss_replies_text_color" value="#009900" scope="request"/>
 
 <c:set var="ss_form_background_color" value="#CCFFFF" scope="request"/>
 <c:set var="ss_form_text_color" value="#3333FF" scope="request"/>
@@ -206,6 +208,14 @@ if (document.createStyleSheet) {
   background-color: ${ss_form_background_color};
   }
     
+.ss_replies {
+  color: ${ss_replies_text_color};
+  background-color: ${ss_replies_background_color};
+  }
+div.ss_replies {
+  margin:10px;
+  }
+      
 .ss_style_color, .ss_style_color table, .ss_style form {
   color: ${ss_style_text_color};
   background-color: ${ss_style_background_color};
