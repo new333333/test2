@@ -297,7 +297,8 @@ public class Favorites {
     	destRoot.addAttribute("title", NLT.get("favorites.delete"));
     	destRoot.addAttribute("image", "folder");
     	destRoot.addAttribute("id", "ss_delete");
-    	destRoot.addAttribute("listStyle", "ss_bold");
+    	destRoot.addAttribute("listStyle", "ss_sortable ss_bold");
+    	destRoot.addAttribute("displayOnly", "true");
     	//favTree.asXML();
     	return favTreeDelete;
 	}

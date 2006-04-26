@@ -52,8 +52,7 @@ var ss_DragDrop = {
 	},
 
 	makeItemDragable : function(item) {
-        if (document.getElementById('debugLog')) 
-            //document.getElementById('debugLog').innerHTML += ' MakeItemDragable: '+item.id+'<br>';
+        //if (document.getElementById('debugLog')) document.getElementById('debugLog').innerHTML += ' MakeItemDragable: '+item.id+'<br>';
 		ss_Drag.makeDraggable(item);
 		item.setDragThreshold(5);
 		

@@ -47,24 +47,26 @@ public class AccessControlController extends SAbstractController {
 			String s_roleId = request.getParameter("roleId");
 			if (!Validator.isNull(s_roleId)) {
 				Long roleId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "roleId"));
-				String userIds[] = PortletRequestUtils.getStringParameters(request, "users");
-				String groupIds[] = PortletRequestUtils.getStringParameters(request, "groups");
+				//String userIds[] = PortletRequestUtils.getStringParameters(request, "users");
+				//String groupIds[] = PortletRequestUtils.getStringParameters(request, "groups");
+				String userIds[] = null;
+				if (formData.containsKey("users")) userIds = (String[])formData.get("users");
+				String groupIds[] = null;
+				if (formData.containsKey("groups")) groupIds = (String[])formData.get("groups");
 				Set memberIds = new HashSet();
 				if (userIds != null) {
-					for(int i = 0; i < userIds.length; i++) {
+					for (int i = 0; i < userIds.length; i++) {
 						String[] ids = userIds[i].split(" ");
-						for(int j = 0; j < ids.length; j++) {
-							if(ids[j].length() > 0)
-								memberIds.add(Long.valueOf(ids[j]));
+						for (int j = 0; j < ids.length; j++) {
+							if (ids[j].length() > 0) memberIds.add(Long.valueOf(ids[j]));
 						}
 					}
 				}
 				if (groupIds != null) {
 					for (int i = 0; i < groupIds.length; i++) {
 						String[] ids = groupIds[i].split(" ");
-						for(int j = 0; j < ids.length; j++) {
-							if(ids[j].length() > 0)
-								memberIds.add(Long.valueOf(ids[j]));
+						for (int j = 0; j < ids.length; j++) {
+							if (ids[j].length() > 0) memberIds.add(Long.valueOf(ids[j]));
 						}
 					}
 				}

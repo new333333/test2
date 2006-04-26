@@ -37,6 +37,7 @@
 <c:set var="ss_toolbar_text_color" value="#000000" scope="request"/>
 <c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 <c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
+<c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
 
 <c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
 
@@ -151,24 +152,16 @@ function ss_createStyleSheet(url) {
 
 var ss_urlBase = self.location.protocol + "//" + self.location.host + "/";
 var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
-<c:if test="<%= isIE %>">
-var ss_forumCss2Url = ss_urlBase + "<html:rootPath/>css/forum_ie.css";
-</c:if>
-<c:if test="<%= !isIE %>">
-var ss_forumCss2Url = ss_urlBase + "<html:rootPath/>css/forum_nn.css";
-</c:if>
 
 var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
 var niftyCornersCssUrl = ss_urlBase + "<html:rootPath/>css/nifty_corners.css";
 var htmlareaCssUrl = ss_urlBase + "<html:rootPath/>js/htmlarea/htmlarea.css";
 if (document.createStyleSheet) {
 	document.createStyleSheet(ss_forumCssUrl);
-	document.createStyleSheet(ss_forumCss2Url);
 	document.createStyleSheet(niftyCornersCssUrl);
 	document.createStyleSheet(htmlareaCssUrl);
 } else {
 	ss_createStyleSheet(ss_forumCssUrl);
-	ss_createStyleSheet(ss_forumCss2Url);
 	ss_createStyleSheet(niftyCornersCssUrl);
 	ss_createStyleSheet(htmlareaCssUrl);
 }
@@ -380,6 +373,22 @@ div.ss_sliding_table_info_popup {
 .ss_toolbar a:hover {
   color: ${ss_toolbar_link_hover_color};
 }
+ul.ss_dropdownmenu {
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  margin-bottom: 2px;
+  padding: 2px;
+}
+
+ul.ss_dropdownmenu li {
+  list-style-type: square;
+  margin-left: 0px;
+  margin-bottom: 2px;
+  padding-left: 2px;
+  color: ${ss_toolbar_dropdown_menu_color};
+} 
+
 
   
 /* highlights */
