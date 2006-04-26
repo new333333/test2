@@ -199,6 +199,7 @@ function ss_hideDivFader(id, opacity, endTime, count) {
     var incTime = parseInt(endTime - now.getTime());
     if (count <= 0 || incTime <= 0) {
         ss_setOpacity(document.getElementById(id), 0);
+        ss_hideObj(id);
     } else {
         var incOpacity = parseInt(opacity / count)
         if (incOpacity < 5) incOpacity = 5;

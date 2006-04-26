@@ -1,5 +1,6 @@
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<script type="text/javascript" src="/ssf/js/tree/tree_widget.js"></script>
 <div id="debugLog">
 </div>
 
@@ -234,6 +235,10 @@ function ss_postFavoritesRequest(obj) {
 	if (document.getElementById("ul_ss_delete") != null) ss_enableFavoritesList("ul_ss_delete");
 }
 
+function ss_hideFavoritesPane() {
+	ss_hideDivFadeOut('ss_favorites_pane', 100);
+}
+
 function ss_setFavoritesPaneSize() {
 	var fObj = self.document.getElementById("ss_favorites_pane")
 	var fObj2 = self.document.getElementById("ss_favorites")
@@ -267,7 +272,7 @@ function ss_setFavoritesPaneSize() {
 	<tbody>
 	<tr>
 	  <td class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
-	  <td align="right"><a onClick="ss_hideDivFadeOut('ss_favorites_pane', 100);return false;"
+	  <td align="right"><a onClick="ss_hideFavoritesPane();return false;"
         ><img border="0" src="<html:imagesPath/>box/close_off.gif"/></a></td>
 	</tr>
 	<tr><td colspan="2"></td></tr>

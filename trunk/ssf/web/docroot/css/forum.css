@@ -81,9 +81,9 @@ ul.ss_square li {
 /* ------------------------------------------------------------------------ */
 /* entry styles: common to entry views and entry forms */
 
-h1.ss_entryTitle {
+.ss_entryTitle {
   font-weight: bold;
-  font-size: 18px;
+  font-size: 16px;
   margin-bottom: .5em;
   margin-top: .5em;
   }

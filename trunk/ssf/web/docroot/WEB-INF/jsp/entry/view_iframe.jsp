@@ -4,6 +4,9 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 %>
 
 <div id="ss_showfolder" class="ss_style ss_portlet">
+<c:set var="ss_folderType" value="${ssConfigElement.type}" scope="request"/>
+<c:out value="${ssConfigElement.type}"/><br>
+
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}" />

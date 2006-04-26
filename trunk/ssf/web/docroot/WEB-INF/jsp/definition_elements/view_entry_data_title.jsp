@@ -1,6 +1,6 @@
 <% //Title view %>
 <div class="ss_entryContent">
-<h1 class="ss_entryTitle">
+<span class="ss_entryTitle">
 <c:if test="${!empty ssDefinitionEntry.docNumber}">
 <c:set var="title_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="title_entry" type="com.sitescape.ef.domain.Entry" />
@@ -20,5 +20,5 @@
 </c:if>
 <c:if test="${empty ssDefinitionEntry.title}">
     <span class="ss_gray">--no title--</span>
-    </c:if><c:out value="${ssDefinitionEntry.title}"/></a></h1>
+    </c:if><c:out value="${ssDefinitionEntry.title}"/></a></span>
 </div>
