@@ -22,10 +22,10 @@
 	if (roleId == null) roleId = "";
 %>
 <c:set var="roleId" value="<%= roleId %>" />
-<div class="ss_style ss_portlet">
-<div class="ss_form">
+<div class="ss_portlet">
+<div class="ss_style ss_form" style="margin:6px;">
 <div class="ss_rounded">
-<div style="margin:6px;">
+<div style="margin:6px; width:100%;">
 <h3><ssf:nlt tag="binder.configure.access_control" text="Configure access control"/></h3>
 <c:if test="${!empty ssBinder.parentWorkArea}">
 <fieldset class="ss_fieldset">
@@ -45,7 +45,7 @@
 <c:set var="no_checked" value="checked"/>
 </c:if>
 <br><br>
-<form name="inheritanceForm" method="post" 
+<form class="ss_form" name="inheritanceForm" method="post" 
   onSubmit="return ss_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
@@ -112,19 +112,26 @@
 	  <span class="ss_italic ss_gray ss_smallprint">[<ssf:nlt tag="none"/>]</span>
 	</c:if>
   </td>
+  </td>
   <td valign="top">
 <c:if test="${!ssBinder.functionMembershipInherited}">
-    <form style="display:inline;" method="post"
+    <form method="post" style="display:inline;"
 	  action="<portlet:actionURL>
 			  <portlet:param name="action" value="configure_access_control"/>
 			  <portlet:param name="binderId" value="${ssBinder.id}"/>
 			  </portlet:actionURL>">
 
+	<table class="ss_form" cellspacing="0" cellpadding="0">
+	<tr>
+	<td>
       <input type="hidden" name="roleId" value="${function.key.id}">
       <input type="submit" class="ss_submit" name="modifyBtn" 
         value="<ssf:nlt tag="button.modify" text="Modify"/>">&nbsp;&nbsp;
       <input type="submit" class="ss_submit" name="deleteBtn" 
         value="<ssf:nlt tag="button.delete" text="Delete"/>">
+    </td>
+    </tr>
+    </table>
     </form>
 </c:if>
   </td>
@@ -151,13 +158,13 @@
       text="No roles have been defined. Please contact the zone administrator to define "/></span>]
   </c:if>
   <c:if test="${!empty ssFunctionMap}">
-<form name="rolesForm" method="post" 
+<form class="ss_form" name="rolesForm" method="post" 
   onSubmit="return ss_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
 		  </portlet:actionURL>">
-<table cellspacing="10px" cellpadding="10px">
+<table cellspacing="10px" cellpadding="10px" width="100%">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="binder.configure.access_control.role" 
  text="Role"/></td>
@@ -187,12 +194,14 @@
   <ssf:findUsers formName="rolesForm" formElement="groups" type="group"/>
 </td>
 </tr>
-</table>
-
+<tr>
+<td colspan="2">
 <input type="submit" class="ss_submit" name="addBtn"
  value="<ssf:nlt tag="button.add" text="Add"/>"
  onClick="return ss_checkRoleIdField(this)">
-<br/>
+</td>
+</tr>
+</table>
 
 </form>
 </c:if>
@@ -204,7 +213,7 @@
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.modifyRole" 
     text="Modify role membership"/></legend>
   <c:if test="${!empty ssFunctionMap}">
-<form name="rolesForm" method="post" 
+<form class="ss_style" name="rolesForm" method="post" 
   onSubmit="return ss_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
@@ -242,12 +251,18 @@
   </c:if>
 </c:forEach>
 
+<table cellspacing="4px" cellpadding="4px">
+<tr>
+<td>
 <input type="submit" class="ss_submit" name="addBtn"
  value="<ssf:nlt tag="button.modify" text="Modify"/>"
  onClick="return ss_checkRoleIdField(this)">&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="cancelModifyBtn"
  value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 <br/>
+</td>
+</tr>
+</table>
 
 </form>
 </c:if>
@@ -268,13 +283,21 @@ function ss_checkRoleIdField(btnObj) {
 </c:if>
 
 <c:if test="${empty roleId}">
-<br/>
-<form method="post" action="<portlet:actionURL>
+<form class="ss_form" method="post" style="display:inline;" 
+		action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_access_control"/>
 			<portlet:param name="binderId" value="${ssBinder.id}"/>
 		</portlet:actionURL>">
 
-	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<table cellspacing="4px" cellpadding="4px" width="100%">
+<tr>
+<td>
+<br/>
+	<input type="submit" class="ss_submit" name="closeBtn" 
+	value="<ssf:nlt tag="button.close" text="Close"/>">
+</td>
+</tr>
+</table>
 </form>
 </c:if>
 </div>

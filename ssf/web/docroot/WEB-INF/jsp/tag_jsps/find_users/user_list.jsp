@@ -62,7 +62,9 @@ function ss_userListSearch(text, elementName, userGroupType) {
 		<ssf:param name="operation" value="user_list_search" />
     	</ssf:url>"
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addKeyValue("searchText", text + "*")
+	var searchText = text;
+	if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
+	ajaxRequest.addKeyValue("searchText", searchText)
 	ajaxRequest.addKeyValue("listDivId", "available_"+elementName)
 	ajaxRequest.addKeyValue("maxEntries", "10")
 	if (userGroupType == 'group') {
