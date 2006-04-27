@@ -6,7 +6,6 @@
 </ssf:ifadapter>
 
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
-<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
 
 <div class="ss_style ss_portlet">
 
