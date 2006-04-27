@@ -117,6 +117,7 @@
 		    	<include name="**/calendar_005fview_005fmonth_jsp.java"/>
 			    <include name="**/calendar_005fview_005fweek_jsp.java"/>
 		    	<include name="**/calendar_005fnav_005fbar_jsp.java"/>
+		    	<include name="**/calendar_005fview_jsp.java"/>
 		    	<include name="**/collection_005fview_jsp.java"/>
 		    	<include name="**/file_005flibrary_jsp.java"/>
 		    	<include name="**/folder_005flist_005ffolders_jsp.java"/>
@@ -127,6 +128,7 @@
 		    	<include name="**/view_005fhorizontal_jsp.java"/>
 		    	<include name="**/view_005fforum_005fuser_005ffilters_jsp*.java"/>
 		    	<include name="**/view_005fforum_005fhistory_005fbar_jsp*.java"/>
+		    	<include name="**/view_005fentry_jsp.java"/>
 		    	<include name="**/view_005feventtester_jsp*.java"/>
 		    	<include name="**/view_005ftimepicker_jsp.java"/>
 				<include name="**/view_005fentry_005fdata_005fuser_005flist_jsp.java"/>
