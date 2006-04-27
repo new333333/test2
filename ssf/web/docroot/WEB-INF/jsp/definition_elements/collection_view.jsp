@@ -6,7 +6,7 @@
 
 	if (style.equals("folderList")) {
 %>
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_list.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/folder_view.jsp" %>
 <%
 	} else if (style.equals("fileLibrary")) {
 %>
