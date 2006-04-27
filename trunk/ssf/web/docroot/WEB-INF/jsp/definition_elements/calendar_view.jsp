@@ -3,8 +3,6 @@
 <%@ page import="com.sitescape.ef.domain.Entry" %>
 <jsp:useBean id="ssEventDates" type="java.util.HashMap" scope="request" />
 <jsp:useBean id="ssCalendarViewMode" type="java.lang.String" scope="request" />
-<jsp:useBean id="ssUserFolderProperties" type="com.sitescape.ef.domain.UserProperties" scope="request" />
-<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
 
 <%
 	String ssFolderTableHeight = "";
@@ -15,6 +13,14 @@
 	if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
 			ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
 %>
+
+<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+
+<% // Toolbar %>
+<c:if test="${!empty ssFolderToolbar}">
+<c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
+<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+</c:if>
 
 <script type="text/javascript">
 function highlightLineById(id) {

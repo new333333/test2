@@ -5,6 +5,7 @@
 <body>
 </ssf:ifadapter>
 
+<jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
 <%

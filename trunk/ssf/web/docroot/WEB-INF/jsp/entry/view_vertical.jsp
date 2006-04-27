@@ -5,7 +5,13 @@ int sliderDivHeight = 22;
 int sliderDivArrowHeight = 17;    //This is the height of pics/sym_s_arrows_northsouth.gif
 int sliderDivBlankHeight = sliderDivHeight - sliderDivArrowHeight;
 String sliderDivOffset = "-" + String.valueOf(sliderDivHeight);
+
+//Get the folder type of this definition (folder, file, or event)
+String folderViewStyle = "folder";
+Element folderViewTypeEle = (Element)ssConfigElement.selectSingleNode("properties/property[@name='type']");
+if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValue("value", "folder");
 %>
+<c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 <a name="ss_top_of_folder"></a>
 <div id="ss_showfolder" class="ss_style ss_portlet">
 <div id="ss_folder">
@@ -78,18 +84,24 @@ var ss_marginRight = 2
 var ss_folderDivMarginOffset = 6
 
 function ss_setEntryDivHeight() {
-    var wObj3 = self.document.getElementById('ss_showentryframe')
-    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
-    var entryHeightPlus2 = parseInt(entryHeight + 2)
-	ss_setObjectHeight(wObj3, ss_minEntryDivHeight);
-	setTimeout("ss_setEntryDivHeight2();", 100);
+	if (window.ss_showentryframe && window.ss_showentryframe.document && 
+			window.ss_showentryframe.document.body) {
+	    var wObj3 = self.document.getElementById('ss_showentryframe')
+	    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
+	    var entryHeightPlus2 = parseInt(entryHeight + 2)
+		ss_setObjectHeight(wObj3, ss_minEntryDivHeight);
+		setTimeout("ss_setEntryDivHeight2();", 100);
+	}
 }
 function ss_setEntryDivHeight2() {
-    var wObj3 = self.document.getElementById('ss_showentryframe')
-    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
-    var entryHeightPlus2 = parseInt(entryHeight + 2)
-	ss_setObjectHeight(wObj3, entryHeightPlus2);
-	setTimeout("ss_positionEntryDiv();", 100);
+	if (window.ss_showentryframe && window.ss_showentryframe.document && 
+			window.ss_showentryframe.document.body) {
+	    var wObj3 = self.document.getElementById('ss_showentryframe')
+	    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
+	    var entryHeightPlus2 = parseInt(entryHeight + 2)
+		ss_setObjectHeight(wObj3, entryHeightPlus2);
+		setTimeout("ss_positionEntryDiv();", 100);
+	}
 }
 function ss_positionEntryDiv() {
 	ss_positioningEntryDiv = 1
@@ -112,12 +124,15 @@ function ss_positionEntryDiv() {
     //var entryHeight = parseInt(ss_getWindowHeight() - ss_getDivTop('ss_showfolder_slider') - ss_bottomHeight)
     
     //Allow the entry section to grow to as large as needed to show the entry
-    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
-    
-    if (entryHeight < ss_minEntryDivHeight) entryHeight = ss_minEntryDivHeight;
-	ss_setObjectHeight(wObj1, entryHeight);
-	ss_setObjectHeight(wObj3, entryHeight);
-	ss_setObjectHeight(wObj4, entryHeight);
+	if (window.ss_showentryframe && window.ss_showentryframe.document && 
+			window.ss_showentryframe.document.body) {
+	    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
+	    
+	    if (entryHeight < ss_minEntryDivHeight) entryHeight = ss_minEntryDivHeight;
+		ss_setObjectHeight(wObj1, entryHeight);
+		ss_setObjectHeight(wObj3, entryHeight);
+		ss_setObjectHeight(wObj4, entryHeight);
+	}
 	
 	ss_positioningEntryDiv = 0
 }

@@ -13,6 +13,9 @@
     class="ss_rounded_border"
   </c:if>
 </c:if>
+<c:if test="${property_style == 'square'}">
+  style="border:solid black 1px;"
+</c:if>
 >
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
