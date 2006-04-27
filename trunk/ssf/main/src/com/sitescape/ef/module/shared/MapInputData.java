@@ -2,6 +2,7 @@ package com.sitescape.ef.module.shared;
 
 import java.util.Map;
 
+import com.sitescape.ef.InternalException;
 
 public class MapInputData implements InputDataAccessor {
 
@@ -13,16 +14,27 @@ public class MapInputData implements InputDataAccessor {
 	
 	public String getSingleValue(String key) {
 		Object result = source.get(key);
-		if (result instanceof String) return (String)result;
-		return ((String[]) source.get(key))[0];
+		if(result == null)
+			return null;
+		else if (result instanceof String) 
+			return (String)result;
+		else if (result instanceof String[]) 
+			return ((String[]) result)[0];
+		else
+			throw new InternalException("Illgal value type [" + result.getClass() + "]");
 	}
 
 	public String[] getValues(String key) {
 		Object result = source.get(key);
-		if (result instanceof String[]) return (String[])result;
-		String[] val = new String[1];
-		val[0] = (String)result;
-		return val;
+		if(result == null)
+			return null;
+		else if (result instanceof String[]) 
+			return (String[])result;
+		else if(result instanceof String)
+			return new String[] { (String) result };
+		else {
+			throw new InternalException("Illgal value type [" + result.getClass() + "]");			
+		}
 	}
 
 	public boolean exists(String key) {
