@@ -949,8 +949,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 											    	if (fileName.equals("")) continue;
 											    	// Different repository can be specified for each file uploaded.
 											    	// If not specified, use the statically selected one.  
-											    	String repositoryServiceName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(i));
-											    	if(repositoryServiceName == null) {
+											    	String repositoryServiceName = null;
+											    	if (inputData.exists(nameValue + "_repos" + Integer.toString(i))) 
+											    		repositoryServiceName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(i));
+											    	if (repositoryServiceName == null) {
 												    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
 												    	repositoryServiceName = storageElem.attributeValue("value",
 												    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
