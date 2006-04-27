@@ -17,7 +17,7 @@
 				//Output the first <td>
 				Element tdItem1 = (Element) itItems.next();
 %>
-<td>
+<td valign="top">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= tdItem1 %>" configJspStyle="${ssConfigJspStyle}" 
   processThisItem="true" />
@@ -27,7 +27,7 @@
 				if (itItems.hasNext()) {
 					Element tdItem2 = (Element) itItems.next();
 %>
-<td>
+<td valign="top">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= tdItem2 %>" configJspStyle="${ssConfigJspStyle}" 
   processThisItem="true" />
@@ -35,7 +35,7 @@
 <%
 				} else {
 %>
-<td>&nbsp;</td>
+<td valign="top">&nbsp;</td>
 <%
 				}
 %>

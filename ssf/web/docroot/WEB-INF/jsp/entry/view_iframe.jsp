@@ -1,11 +1,14 @@
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
-%>
 
+//Get the folder type of this definition (folder, file, or event)
+String folderViewStyle = "folder";
+Element folderViewTypeEle = (Element)ssConfigElement.selectSingleNode("properties/property[@name='type']");
+if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValue("value", "folder");
+%>
+<c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 <div id="ss_showfolder" class="ss_style ss_portlet">
-<c:set var="ss_folderType" value="${ssConfigElement.type}" scope="request"/>
-<c:out value="${ssConfigElement.type}"/><br>
 
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 

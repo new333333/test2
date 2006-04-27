@@ -158,9 +158,12 @@ public class SAbstractForumController extends SAbstractController {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 				
+		//See if this folder is to be viewed as a calendar
 		Element view = (Element)model.get(WebKeys.CONFIG_ELEMENT);
 		if (view != null) {
-			if ((view.selectSingleNode("./item[@name='calendarView']") != null)) {
+			Element viewType = (Element)view.selectSingleNode("./properties/property[@name='type']");
+			if (viewType != null && viewType.attributeValue("value", "").equals("event")) {
+				//This is a calendar view, so get the event beans
 				getEvents(folder, entries, model, req, response);
 			}
 		}

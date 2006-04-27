@@ -697,7 +697,14 @@
 			</property>
 		</properties>
 		<options>
+			<option name="titleView" caption="__title" />
+			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
+			<option name="entryDateView" definitionType="1" caption="__entry_date" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
 			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__form_elements" />
 			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__form_elements" />
 			<option_select path="//item[@category='commonEntryData']" optionCaption="__form_elements_common" />
@@ -719,6 +726,14 @@
 			</property>
 		</properties>
 		<options>
+			<option name="titleView" caption="__title" />
+			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
+			<option name="entryDateView" definitionType="1" caption="__entry_date" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements"/>
 			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
 			<option_select path="//item[@category='commonEntryData']" />
@@ -739,6 +754,14 @@
 			<property name="htmlBottom" caption="__html_bottom" type="textarea"/>
 		</properties>
 		<options>
+			<option name="titleView" caption="__title" />
+			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
+			<option name="entryDateView" definitionType="1" caption="__entry_date" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements"/>
 			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
 			<option_select path="//item[@category='commonEntryData']" />
@@ -757,6 +780,14 @@
 			<property name="viewJsp" caption="__view_jsp_name" type="text"/>
 		</properties>
 		<options>
+			<option name="titleView" caption="__title" />
+			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
+			<option name="entryDateView" definitionType="1" caption="__entry_date" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
 			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
 			<option_select path="//item[@category='commonEntryData']" />

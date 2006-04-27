@@ -23,7 +23,7 @@
 <c:set var="ss_folder_border_color" value="#CC6666" scope="request"/>
 <c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
 <c:set var="ss_entry_border_color" value="#CC0000" scope="request"/>
-<c:set var="ss_replies_background_color" value="#FFCCCC" scope="request"/>
+<c:set var="ss_replies_background_color" value="#FFEECC" scope="request"/>
 <c:set var="ss_replies_text_color" value="#009900" scope="request"/>
 
 <c:set var="ss_form_background_color" value="#CCFFFF" scope="request"/>
