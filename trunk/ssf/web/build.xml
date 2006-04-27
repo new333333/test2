@@ -121,6 +121,7 @@
 		    	<include name="**/collection_005fview_jsp.java"/>
 		    	<include name="**/file_005flibrary_jsp.java"/>
 		    	<include name="**/folder_005flist_005ffolders_jsp.java"/>
+		    	<include name="**/folder_005fview_jsp.java"/>
 		    	<include name="**/view_005fprofile_005fdata_005felement_jsp.java"/>
 		    	<include name="**/view_005fiframe_jsp.java"/>
 		    	<include name="**/view_005fpopup_jsp.java"/>
