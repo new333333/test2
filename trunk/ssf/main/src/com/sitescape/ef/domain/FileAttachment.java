@@ -112,7 +112,8 @@ public class FileAttachment extends Attachment {
 	}
     public int hashCode() {
        	int hash = 7;
-    	hash = 31*hash + repositoryServiceName.hashCode();
+       	if(repositoryServiceName != null)
+       		hash = 31*hash + repositoryServiceName.hashCode();
     	hash = 31*hash + fileItem.hashCode();
     	return hash;
     }
