@@ -59,7 +59,7 @@ public interface ProfileModule {
     public UserProperties setUserProperty(Long userId, String property, Object value);
     public UserProperties getUserProperties(Long userId);
     public SeenMap getUserSeenMap(Long userId);
-    public void updateUserSeenEntry(Long userId, Entry entry);
-    public void updateUserSeenEntry(Long userId, List entries);
+    public void setSeen(Long userId, Entry entry);
+    public void setSeen(Long userId, List entries);
 
 }

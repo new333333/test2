@@ -147,7 +147,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  		}
    		return seen;
    }
-   public void updateUserSeenEntry(Long userId, Entry entry) {
+   public void setSeen(Long userId, Entry entry) {
    		User user = RequestContextHolder.getRequestContext().getUser();
    		SeenMap seen;
    		if (userId == null) userId = user.getId();
@@ -156,7 +156,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			 seen.setSeen(entry);
 		}
    }
-   public void updateUserSeenEntry(Long userId, List entries) {
+   public void setSeen(Long userId, List entries) {
    		User user = RequestContextHolder.getRequestContext().getUser();
    		SeenMap seen;
    		if (userId == null) userId = user.getId();
