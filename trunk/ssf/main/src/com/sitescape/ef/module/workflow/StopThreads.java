@@ -44,6 +44,7 @@ public class StopThreads extends AbstractActionHandler {
 					WorkflowState thread = entry.getWorkflowStateByThread(ws.getDefinition(), threadName);
 					if (thread != null) {
 						//child is active, end it
+//						Token childToken = executionContext.getJbpmContext().loadToken(thread.getTokenId().longValue());
 						Token childToken = WorkflowFactory.getSession().getGraphSession().loadToken(thread.getTokenId().longValue());
 						if (childToken != null)	childToken.end();
 						found = true;
@@ -52,7 +53,7 @@ public class StopThreads extends AbstractActionHandler {
 					}
 				}
 			}
-			if (found) checkForWaits(token, entry);
+			if (found) checkForWaits(executionContext, token, entry);
 		}
 		if (infoEnabled) logger.info("Stop threads end at: " + stateName);
 	}

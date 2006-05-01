@@ -37,7 +37,7 @@
 	<ResourceParams name="mail/SiteScapePosting">
 		<parameter>
 			<name>mail.pop3.host</name>
-			<value>host54a.simplicato.com</value>
+			<value>localhost</value>
 		</parameter>
 		<parameter>
 			<name>mail.store.protocol</name>
@@ -46,6 +46,14 @@
 		<parameter>
 			<name>mail.pop3.auth</name>
 			<value>true</value>
+		</parameter>
+		<parameter>
+			<name>mail.user</name>
+			<value>liferay</value>
+		</parameter>
+		<parameter>
+			<name>mail.password</name>
+			<value>liferay</value>
 		</parameter>
 	</ResourceParams>
 </Context>

@@ -45,46 +45,46 @@ public class StartThreads extends AbstractActionHandler {
 				Map pT = (Map) parallelThreadStarts.get(i);
 				String threadName = (String) pT.get(ObjectKeys.WORKFLOW_PARALLEL_THREAD_NAME);
 				String startState = (String) pT.get(ObjectKeys.WORKFLOW_PARALLEL_THREAD_START_STATE);
-				startParallelWorkflowThread(entry, threadName, startState, ws, token);
+				startParallelWorkflowThread(executionContext, entry, threadName, startState, ws, token);
 				if (infoEnabled) logger.info("Start threads start: " + threadName);
 			}
 		}
 		if (infoEnabled) logger.info("Start threads end at: " + stateName);
 	}
 	  
-	protected void startParallelWorkflowThread(WorkflowSupport entry, String threadName, String startState, 
+	protected void startParallelWorkflowThread(ExecutionContext executionContext, WorkflowSupport entry, String threadName, String startState, 
 			WorkflowState currentWs, Token currentToken) {
-		
-		JbpmSession session = WorkflowFactory.getSession();
-		
-		//if thread exists, terminate it
-		WorkflowState thread = entry.getWorkflowStateByThread(currentWs.getDefinition(), threadName);
-		if (thread != null) {
+			JbpmSession session = WorkflowFactory.getSession();
+			//	if thread exists, terminate it
+			WorkflowState thread = entry.getWorkflowStateByThread(currentWs.getDefinition(), threadName);
+			if (thread != null) {
+//				Token childToken = executionContext.getJbpmContext().loadToken(thread.getTokenId().longValue());
 			Token childToken = session.getGraphSession().loadToken(thread.getTokenId().longValue());
-			childToken.end(false);
-			entry.removeWorkflowState(thread);
-		}
-		ProcessInstance pI = currentToken.getProcessInstance();
-        ProcessDefinition pD = pI.getProcessDefinition();
-		//Now start a thread - since threads can be restarted and we don't delete old
-        //tokens, each thread instance needs a unique name
-        //This also implies we cannot look child tokens up by name cause we don't know it
-        //the 'real' thread name is kept in WorkflowState
-		Token subToken = new Token(pI.getRootToken(), threadName + "-" + new Date());
+				childToken.end(false);
+				entry.removeWorkflowState(thread);
+			}
+			ProcessInstance pI = currentToken.getProcessInstance();
+			ProcessDefinition pD = pI.getProcessDefinition();
+			//Now start a thread - since threads can be restarted and we don't delete old
+			//tokens, each thread instance needs a unique name
+			//This also implies we cannot look child tokens up by name cause we don't know it
+			//the 'real' thread name is kept in WorkflowState
+			Token subToken = new Token(pI.getRootToken(), threadName + "-" + new Date());
+//			executionContext.getJbpmContext().getSession().save(subToken);
 		session.getSession().save(subToken);
-		//Track state of thread
-		thread = (WorkflowState) new WorkflowState();
-		thread.setThreadName(threadName);
-		thread.setTokenId(new Long(subToken.getId()));
-		thread.setState(startState);
-		//Use the same workflow definition as the current workflow state
-		thread.setDefinition(currentWs.getDefinition());
-		//need to save explicitly - actions called by the node.enter may look it up 
-		getCoreDao().save(thread);
-		entry.addWorkflowState(thread);
+			//Track state of thread
+			thread = (WorkflowState) new WorkflowState();
+			thread.setThreadName(threadName);
+			thread.setTokenId(new Long(subToken.getId()));
+			thread.setState(startState);
+			//Use the same workflow definition as the current workflow state
+			thread.setDefinition(currentWs.getDefinition());
+			//need to save explicitly - actions called by the node.enter may look it up 
+			getCoreDao().save(thread);
+			entry.addWorkflowState(thread);
 			
-		Node node = pD.findNode(startState);
-		node.enter(new ExecutionContext(subToken));
+			Node node = pD.findNode(startState);
+			node.enter(new ExecutionContext(subToken));
 	}
 	  
 }

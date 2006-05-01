@@ -35,7 +35,7 @@ import org.hibernate.HibernateException;
 import org.jbpm.calendar.BusinessCalendar;
 import org.jbpm.calendar.Duration;
 import org.jbpm.context.exe.ContextInstance;
-import org.jbpm.db.JbpmSession;
+import com.sitescape.ef.module.workflow.impl.JbpmContext;
 import org.jbpm.db.SchedulerSession;
 import org.jbpm.graph.def.Action;
 import org.jbpm.graph.def.Event;
@@ -56,7 +56,7 @@ import org.jbpm.scheduler.exe.Timer;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
 public class WorkflowModuleImpl extends CommonDependencyInjection implements WorkflowModule {
-   static BusinessCalendar businessCalendar = new BusinessCalendar();
+   static BusinessCalendar businessCalendar;
 
    /**
     * Called after bean is initialized.  Use this to make sure
@@ -64,6 +64,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     *
     */
    public void init() {
+//	   businessCalendar = new BusinessCalendar();
 	   List companies = getCoreDao().findCompanies();
 	   for (int i=0; i<companies.size(); ++i) {
 		   String zoneName = (String)companies.get(i);
@@ -96,116 +97,137 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	   }
    }
 	public List getAllDefinitions() {
+		JbpmContext context = WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-	        return session.getGraphSession().findAllProcessDefinitions();
+	        return context.getGraphSession().findAllProcessDefinitions();
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
+	    } finally {
+	    	context.close();
 	    }
 	};
 
 	public List getAllDefinitions(String name) {
+		JbpmContext context = WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-	        return session.getGraphSession().findAllProcessDefinitionVersions(name);
+	        return context.getGraphSession().findAllProcessDefinitionVersions(name);
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
+	    } finally {
+	    	context.close();
 	    }
 	};
 
 	public List getLatestDefinitions() {
+		JbpmContext context = WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-	        return session.getGraphSession().findLatestProcessDefinitions();
+	        return context.getGraphSession().findLatestProcessDefinitions();
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
+	    } finally {
+	    	context.close();
 	    }
 	};
 
 	public List getNodes(Long id) {
+		JbpmContext context = WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-	        ProcessDefinition pD = session.getGraphSession().loadProcessDefinition(id.longValue());
+	        ProcessDefinition pD = context.getGraphSession().loadProcessDefinition(id.longValue());
 	        return pD.getNodes();
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
+	    } finally {
+	    	context.close();
 	    }
 	};
 
 	public List getProcessInstances(Long id) {
+		JbpmContext context = WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-	        return session.getGraphSession().findProcessInstances(id.longValue());
+	        return context.getGraphSession().findProcessInstances(id.longValue());
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
+	    } finally {
+	    	context.close();
 	    }
 	};
 
 	public void deleteProcessInstance(Long processInstanceId) {
+		JbpmContext context = WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-	       	ProcessInstance pI = session.getGraphSession().loadProcessInstance(processInstanceId.longValue());
-	       	if (pI != null) session.getGraphSession().deleteProcessInstance(pI);
+	       	ProcessInstance pI = context.loadProcessInstanceForUpdate(processInstanceId.longValue());
+	       	if (pI != null) context.getGraphSession().deleteProcessInstance(pI);
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
+	    } finally {
+	    	context.close();
 	    }
 	};
 	
 	public ProcessDefinition getWorkflow(Long id) {
+		JbpmContext context = WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-	        return session.getGraphSession().loadProcessDefinition(id.longValue());
+	        return context.getGraphSession().loadProcessDefinition(id.longValue());
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
+	    } finally {
+	    	context.close();
 	    }
 	};
 
 	public ProcessInstance getProcessInstance(Long id) {
+		JbpmContext context = WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-        	ProcessInstance pI = session.getGraphSession().loadProcessInstance(id.longValue());
+        	ProcessInstance pI = context.getGraphSession().loadProcessInstance(id.longValue());
 	        return pI;
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
+	    } finally {
+	    	context.close();
 	    }
 	};
 
 	public ProcessDefinition addWorkflow(String xmlString){
+		JbpmContext context = WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
         	ProcessDefinition pD = ProcessDefinition.parseXmlString(xmlString);
-        	session.getGraphSession().saveProcessDefinition(pD);
+        	context.getGraphSession().saveProcessDefinition(pD);
         	return pD;
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
+	    } finally {
+	    	context.close();
 	    }
 	}
 	public ProcessInstance addWorkflowInstance(Long id) {
+		JbpmContext context = WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-        	ProcessDefinition pD = session.getGraphSession().loadProcessDefinition(id.longValue());
+        	ProcessDefinition pD = context.getGraphSession().loadProcessDefinition(id.longValue());
         	ProcessInstance pI = new ProcessInstance(pD);
-		    session.getGraphSession().saveProcessInstance(pI);
+        	context.save(pI);
         	return pI;
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
+	    } finally {
+	    	context.close();
 	    }
 	}
 	public ProcessInstance setTransition(Long processInstanceId, String transitionId) {
+		JbpmContext context = WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-        	ProcessInstance pI = session.getGraphSession().loadProcessInstance(processInstanceId.longValue());
+        	ProcessInstance pI = context.loadProcessInstanceForUpdate(processInstanceId.longValue());
             pI.signal(transitionId);
-            session.getGraphSession().saveProcessInstance(pI);
             return pI;
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
-	    }		
+	    } finally {
+	    	context.close();
+	    }
 	}
 	public ProcessInstance setNextTransition(Long processInstanceId) {
+		JbpmContext context = WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-        	ProcessInstance pI = session.getGraphSession().loadProcessInstance(processInstanceId.longValue());
+        	ProcessInstance pI = context.loadProcessInstanceForUpdate(processInstanceId.longValue());
         	Token token = pI.getRootToken();
         	Transition transition = token.getNode().getDefaultLeavingTransition();
         	if (transition == null) {
@@ -214,35 +236,39 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
         		transition = (Transition) transitions.get((int) 0);
         	}
             token.signal(transition);
-            session.getGraphSession().saveProcessInstance(pI);
             return pI;
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
-	    }	
+	    } finally {
+	    	context.close();
+	    }
 	}
 	public ProcessInstance setNode(Long processInstanceId, String nodeId) {
+		JbpmContext context = WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-        	ProcessInstance pI = session.getGraphSession().loadProcessInstance(processInstanceId.longValue());
+	    	ProcessInstance pI = context.loadProcessInstanceForUpdate(processInstanceId.longValue());
         	Token token = pI.getRootToken();
             ProcessDefinition pD = pI.getProcessDefinition();
             Node node = pD.findNode(nodeId);
         	token.setNode(node);
             ExecutionContext executionContext = new ExecutionContext(token);
             node.enter(executionContext);
-            session.getGraphSession().saveProcessInstance(pI);
             return pI;
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
-	    }	
+	    } finally {
+	    	context.close();
+	    }
 	}
 	public void deleteProcessDefinition(Long id) {
-       	try {
-       		JbpmSession session = WorkflowFactory.getSession();
-            session.getGraphSession().deleteProcessDefinition(id.longValue());
+		JbpmContext context = WorkflowFactory.getContext();
+	    try {
+	    	context.getGraphSession().deleteProcessDefinition(id.longValue());
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
-	    }	
+	    } finally {
+	    	context.close();
+	    }
 	}
 	private RuntimeException convertJbpmException(Exception ex) {
 		// try to decode and translate HibernateExceptions
@@ -261,262 +287,268 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	
 	//Routine to build (or modify) a workflow process definition from a Definition
 	public void modifyProcessDefinition(String definitionName, Definition def) {
+		JbpmContext context = WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-	        ProcessDefinition pD = session.getGraphSession().findLatestProcessDefinition(definitionName);
+	        ProcessDefinition pD = context.getGraphSession().findLatestProcessDefinition(definitionName);
 	        if (pD == null) {
 	        	//The process definition doesn't exist yet, go create one
 	        	pD = ProcessDefinition.createNewProcessDefinition();
 	    		pD.setName(definitionName);        	
 	        }
 	        modifyProcessDefinition(pD, def);
-	    	session.getGraphSession().saveProcessDefinition(pD);
+	    	context.getGraphSession().saveProcessDefinition(pD);
 
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
+	    } finally {
+	    	context.close();
 	    }
 		
 	}
 
 	public void modifyProcessDefinition(ProcessDefinition pD, Definition def) {
-       	JbpmSession session = WorkflowFactory.getSession();
-		Document defDoc = def.getDefinition();
-		Element defRoot = defDoc.getRootElement();
+		JbpmContext context = WorkflowFactory.getContext();
+	    try {
+	    	Document defDoc = def.getDefinition();
+	    	Element defRoot = defDoc.getRootElement();
 		
-		//Start by remembering all of the nodes
-		Map nodesMap = pD.getNodesMap();
-		if (nodesMap == null) nodesMap = new HashMap();
-		nodesMap = new HashMap(nodesMap);
+	    	//Start by remembering all of the nodes
+	    	Map nodesMap = pD.getNodesMap();
+	    	if (nodesMap == null) nodesMap = new HashMap();
+	    	nodesMap = new HashMap(nodesMap);
 		
-		Map events = pD.getEvents();
-		if (events == null) events = new HashMap();
+	    	Map events = pD.getEvents();
+	    	if (events == null) events = new HashMap();
 		
-		Map actions = pD.getActions();
-		if (actions == null) actions = new HashMap();
+	    	Map actions = pD.getActions();
+	    	if (actions == null) actions = new HashMap();
 		
-		//Add the standard events (if they aren't there already)
-		Action recordEvent = null;
-		if (!actions.containsKey("recordEvent")) {
-			recordEvent = setupAction(pD, "recordEvent", "com.sitescape.ef.module.workflow.RecordEvent");
-		} else {
-			recordEvent = (Action) actions.get("recordEvent");
-		}
+	    	//	Add the standard events (if they aren't there already)
+	    	Action recordEvent = null;
+	    	if (!actions.containsKey("recordEvent")) {
+	    		recordEvent = setupAction(pD, "recordEvent", "com.sitescape.ef.module.workflow.RecordEvent");
+	    	} else {
+	    		recordEvent = (Action) actions.get("recordEvent");
+	    	}
 		
-		Action decisionAction = null;
-		if (!actions.containsKey("decisionAction")) {
-			decisionAction = setupAction(pD, "decisionAction", "com.sitescape.ef.module.workflow.DecisionAction");
-			pD.addAction(decisionAction);
-		} else {
-			decisionAction = (Action) actions.get("decisionAction");
-		}
+	    	Action decisionAction = null;
+	    	if (!actions.containsKey("decisionAction")) {
+	    		decisionAction = setupAction(pD, "decisionAction", "com.sitescape.ef.module.workflow.DecisionAction");
+	    		pD.addAction(decisionAction);
+	    	} else {
+	    		decisionAction = (Action) actions.get("decisionAction");
+	    	}
+	    	
+	    	Action startThreads = null;
+	    	if (!actions.containsKey("startThreads")) {
+	    		startThreads = setupAction(pD, "startThreads", "com.sitescape.ef.module.workflow.StartThreads");
+	    		pD.addAction(startThreads);
+	    	} else {
+	    		startThreads = (Action) actions.get("startThreads");
+	    	}
 		
-		Action startThreads = null;
-		if (!actions.containsKey("startThreads")) {
-			startThreads = setupAction(pD, "startThreads", "com.sitescape.ef.module.workflow.StartThreads");
-			pD.addAction(startThreads);
-		} else {
-			startThreads = (Action) actions.get("startThreads");
-		}
-		
-		Action stopThreads = null;
-		if (!actions.containsKey("stopThreads")) {
-			stopThreads = setupAction(pD, "stopThreads", "com.sitescape.ef.module.workflow.StopThreads");
-			pD.addAction(stopThreads);
-		} else {
-			stopThreads = (Action) actions.get("stopThreads");
-		}
+	    	Action stopThreads = null;
+	    	if (!actions.containsKey("stopThreads")) {
+	    		stopThreads = setupAction(pD, "stopThreads", "com.sitescape.ef.module.workflow.StopThreads");
+	    		pD.addAction(stopThreads);
+	    	} else {
+	    		stopThreads = (Action) actions.get("stopThreads");
+	    	}
 
-		Action notifyAction = null;
-		if (!actions.containsKey("notifyAction")) {
-			notifyAction = setupAction(pD, "notifyAction", "com.sitescape.ef.module.workflow.Notify");
-			pD.addAction(notifyAction);
-		} else {
-			notifyAction = (Action) actions.get("notifyAction");
-		}
+	    	Action notifyAction = null;
+	    	if (!actions.containsKey("notifyAction")) {
+	    		notifyAction = setupAction(pD, "notifyAction", "com.sitescape.ef.module.workflow.Notify");
+	    		pD.addAction(notifyAction);
+	    	} else {
+	    		notifyAction = (Action) actions.get("notifyAction");
+	    	}
 
-		//add global named events - will fire on every node
-		if (!events.containsKey("node-enter")) {
-			Event enterEvent = new Event("node-enter");
-			enterEvent.addAction(recordEvent);
-			pD.addEvent(enterEvent);
-		}
+	    	//add global named events - will fire on every node
+	    	if (!events.containsKey("node-enter")) {
+	    		Event enterEvent = new Event("node-enter");
+	    		enterEvent.addAction(recordEvent);
+	    		pD.addEvent(enterEvent);
+	    	}
 		
-		//Add our common start and end states
-		if (!nodesMap.containsKey(ObjectKeys.WORKFLOW_START_STATE)) {
-			StartState startState = new StartState(ObjectKeys.WORKFLOW_START_STATE);
-			pD.addNode(startState);
-		} else {
-			nodesMap.remove(ObjectKeys.WORKFLOW_START_STATE);
-		}
-		if (!nodesMap.containsKey(ObjectKeys.WORKFLOW_END_STATE)) {
-			EndState endState = new EndState(ObjectKeys.WORKFLOW_END_STATE);
-			pD.addNode(endState);
-		} else {
-			nodesMap.remove(ObjectKeys.WORKFLOW_END_STATE);
-		}
+	    	//Add our common start and end states
+	    	if (!nodesMap.containsKey(ObjectKeys.WORKFLOW_START_STATE)) {
+	    		StartState startState = new StartState(ObjectKeys.WORKFLOW_START_STATE);
+	    		pD.addNode(startState);
+	    	} else {
+	    		nodesMap.remove(ObjectKeys.WORKFLOW_START_STATE);
+	    	}
+	    	if (!nodesMap.containsKey(ObjectKeys.WORKFLOW_END_STATE)) {
+	    		EndState endState = new EndState(ObjectKeys.WORKFLOW_END_STATE);
+	    		pD.addNode(endState);
+	    	} else {
+	    		nodesMap.remove(ObjectKeys.WORKFLOW_END_STATE);
+	    	}
 		
 	
-		//Add all of the states in the definition
-		List stateNodes = defRoot.selectNodes("//item[@name='state']");
-		Iterator itStates = stateNodes.iterator();
-		while (itStates.hasNext()) {
-			Element state = (Element) itStates.next();
-			Element stateNameProperty = (Element) state.selectSingleNode("./properties/property[@name='name']");
-			String stateName = stateNameProperty.attributeValue("value", "");
-			if (!stateName.equals("")) {
-				//determine type of node needed
-				Node stateNode = (Node)nodesMap.get(stateName);
-				if (!nodesMap.containsKey(stateName)) {
-					stateNode = new Node(stateName);
-					Action action = new Action();
-					action.setReferencedAction(decisionAction);
-					stateNode.setAction(action);
-					pD.addNode(stateNode);
-				} else {
-					nodesMap.remove(stateName);
-				}
-				//Check if need parallel threads - if so add special actgion
-				List threads = (List)state.selectNodes("./item[@name='startParallelThread']");
-				if (!threads.isEmpty()) {
-					//make sure start threads action exists
-					 addEnterEventAction(stateNode, startThreads);				
-				} else {
-					// remove any old startThreads for this node
-					removeEnterEventAction(stateNode, startThreads);
-				}
-				//Check if top stop threads - if so add special node
-				threads = (List)state.selectNodes("./item[@name='stopParallelThread']");
-				if (!threads.isEmpty()) {
-					//make sure start threads action exists
-					addEnterEventAction(stateNode, stopThreads);
+	    	//Add all of the states in the definition
+	    	List stateNodes = defRoot.selectNodes("//item[@name='state']");
+	    	Iterator itStates = stateNodes.iterator();
+	    	while (itStates.hasNext()) {
+	    		Element state = (Element) itStates.next();
+	    		Element stateNameProperty = (Element) state.selectSingleNode("./properties/property[@name='name']");
+	    		String stateName = stateNameProperty.attributeValue("value", "");
+	    		if (!stateName.equals("")) {
+	    			//determine type of node needed
+	    			Node stateNode = (Node)nodesMap.get(stateName);
+	    			if (!nodesMap.containsKey(stateName)) {
+	    				stateNode = new Node(stateName);
+	    				Action action = new Action();
+	    				action.setReferencedAction(decisionAction);
+	    				stateNode.setAction(action);
+	    				pD.addNode(stateNode);
+	    			} else {
+	    				nodesMap.remove(stateName);
+	    			}	
+	    			//Check if need parallel threads - if so add special actgion
+	    			List threads = (List)state.selectNodes("./item[@name='startParallelThread']");
+	    			if (!threads.isEmpty()) {
+	    				//make sure start threads action exists
+	    				addEnterEventAction(context, stateNode, startThreads);				
+	    			} else {
+	    				// remove any old startThreads for this node
+	    				removeEnterEventAction(context, stateNode, startThreads);
+	    			}
+	    			//Check if top stop threads - if so add special node
+	    			threads = (List)state.selectNodes("./item[@name='stopParallelThread']");
+	    			if (!threads.isEmpty()) {
+	    				//make sure start threads action exists
+	    				addEnterEventAction(context, stateNode, stopThreads);
 					
-				} else {
-					// remove any old stopThreads for this node
-					removeEnterEventAction(stateNode, stopThreads);
-				}
-				List notifications = (List)state.selectNodes("./item[@name='notifications']/item[@name='entryNotification']");
-				if (!notifications.isEmpty()) {
-					//make sure notify action exists
-					addEnterEventAction(stateNode, notifyAction);
-				} else {
-					// remove any old notifyAction for this node
-					removeEnterEventAction(stateNode, notifyAction);
-				}
-				notifications = (List)state.selectNodes("./item[@name='notifications']/item[@name='exitNotification']");
-				if (!notifications.isEmpty()) {
-					//make sure notify action exists
-					addExitEventAction(stateNode, notifyAction);
-				} else {
-					// remove any old notifyAction for this node
-					removeExitEventAction(stateNode, notifyAction);
-				}
-				Element timer = (Element)state.selectSingleNode("./item[@name='transitions']/item[@name='conditionOnElapsedTime']");
-				if (timer != null) {
-					Element props = (Element)timer.selectSingleNode("./properties/property[@name='toState']");
-					String toState = null;
-					if (props != null) {
-						toState = props.attributeValue("value");
-					}
-					//get days and convert to minutes
-					props = (Element)timer.selectSingleNode("./properties/property[@name='days']");
-					String val=null;
-					long total = 0;
-					if (props != null) {
-						val= props.attributeValue("value");
-						if (!Validator.isNull(val))
-							total += Long.parseLong(val)*24*60;
-					}
-					props = (Element)timer.selectSingleNode("./properties/property[@name='hours']");
-					if (props != null) {
-						val= props.attributeValue("value");
-						if (!Validator.isNull(val))
-							total += Long.parseLong(val)*60;				    	
-					}
-					props = (Element)timer.selectSingleNode("./properties/property[@name='mins']");
-					if (props != null) {
-						val = props.attributeValue("value");
-						if (!Validator.isNull(val))
-							total += Long.parseLong(val);
-					}
-					addTimer(stateNode, "onElapsedTime", String.valueOf(total) + " minutes", toState);
- 				} else {
-					// remove any old timers for this node
-					removeTimer(stateNode, "onElapsedTime");
-				}
-			}
-		}
+	    			} else {
+	    				// remove any old stopThreads for this node
+	    				removeEnterEventAction(context, stateNode, stopThreads);
+	    			}
+	    			List notifications = (List)state.selectNodes("./item[@name='notifications']/item[@name='entryNotification']");
+	    			if (!notifications.isEmpty()) {
+	    				//make sure notify action exists
+	    				addEnterEventAction(context, stateNode, notifyAction);
+	    			} else {
+	    				// remove any old notifyAction for this node
+	    				removeEnterEventAction(context, stateNode, notifyAction);
+	    			}
+	    			notifications = (List)state.selectNodes("./item[@name='notifications']/item[@name='exitNotification']");
+	    			if (!notifications.isEmpty()) {
+	    				//make sure notify action exists
+	    				addExitEventAction(context, stateNode, notifyAction);
+	    			} else {
+	    				// remove any old notifyAction for this node
+	    				removeExitEventAction(context, stateNode, notifyAction);
+	    			}
+	    			Element timer = (Element)state.selectSingleNode("./item[@name='transitions']/item[@name='conditionOnElapsedTime']");
+	    			if (timer != null) {
+	    				Element props = (Element)timer.selectSingleNode("./properties/property[@name='toState']");
+	    				String toState = null;
+	    				if (props != null) {
+	    					toState = props.attributeValue("value");
+	    				}
+	    				//get days and convert to minutes
+	    				props = (Element)timer.selectSingleNode("./properties/property[@name='days']");
+	    				String val=null;
+	    				long total = 0;
+	    				if (props != null) {
+	    					val= props.attributeValue("value");
+	    					if (!Validator.isNull(val))
+	    						total += Long.parseLong(val)*24*60;
+	    				}
+	    				props = (Element)timer.selectSingleNode("./properties/property[@name='hours']");
+	    				if (props != null) {
+	    					val= props.attributeValue("value");
+	    					if (!Validator.isNull(val))
+	    						total += Long.parseLong(val)*60;				    	
+	    				}
+	    				props = (Element)timer.selectSingleNode("./properties/property[@name='mins']");
+	    				if (props != null) {
+	    					val = props.attributeValue("value");
+	    					if (!Validator.isNull(val))
+	    						total += Long.parseLong(val);
+	    				}
+	    				addTimer(context, stateNode, "onElapsedTime", String.valueOf(total) + " minutes", toState);
+	    			} else {
+					// 	remove any old timers for this node
+	    				removeTimer(context, stateNode, "onElapsedTime");
+	    			}
+	    		}
+	    	}
 		
-		//Remove any nodes that are remaining in nodesMap. 
-		//  These must have been deleted from the definition.
-		Iterator itNodes = nodesMap.entrySet().iterator();
-		while (itNodes.hasNext()) {
-			Map.Entry me = (Map.Entry) itNodes.next();
-			Node delNode = (Node)me.getValue();
-			pD.removeNode(delNode);
-			session.getSession().delete(delNode);
-		}
-		//Add all of the manual transitions
-		nodesMap = pD.getNodesMap();
-		itNodes = nodesMap.entrySet().iterator();
-		while (itNodes.hasNext()) {
-			Map.Entry me = (Map.Entry) itNodes.next();
-			Node fromNode = (Node) me.getValue();
-			String stateName = fromNode.getName();
-			//Get all existing transitions
-			Map oldTransitions = fromNode.getLeavingTransitionsMap();
-			if (oldTransitions == null) oldTransitions = new HashMap();
-			else oldTransitions = new HashMap(oldTransitions);
+	    	//Remove any nodes that are remaining in nodesMap. 
+	    	//  These must have been deleted from the definition.
+	    	Iterator itNodes = nodesMap.entrySet().iterator();
+	    	while (itNodes.hasNext()) {
+	    		Map.Entry me = (Map.Entry) itNodes.next();
+	    		Node delNode = (Node)me.getValue();
+	    		pD.removeNode(delNode);
+	    		context.getSession().delete(delNode);
+	    	}
+	    	//Add all of the manual transitions
+	    	nodesMap = pD.getNodesMap();
+	    	itNodes = nodesMap.entrySet().iterator();
+	    	while (itNodes.hasNext()) {
+	    		Map.Entry me = (Map.Entry) itNodes.next();
+	    		Node fromNode = (Node) me.getValue();
+	    		String stateName = fromNode.getName();
+	    		//Get all existing transitions
+	    		Map oldTransitions = fromNode.getLeavingTransitionsMap();
+	    		if (oldTransitions == null) oldTransitions = new HashMap();
+	    		else oldTransitions = new HashMap(oldTransitions);
 			
-			//Get the list of manual transitions from the workflow definition
-			Map manualTransitions = WorkflowUtils.getManualTransitions(def, fromNode.getName());
-			Iterator itTransitions = manualTransitions.entrySet().iterator();
-			while (itTransitions.hasNext()) {
-				Map.Entry me2 = (Map.Entry) itTransitions.next();
-				String toNodeName = (String) me2.getKey();
-				String tName = stateName + "." + toNodeName;					
-				if (oldTransitions.containsKey(tName)) {
-					oldTransitions.remove(tName);
-				} else {
-					Node toNode = (Node) pD.getNode(toNodeName);
-					if (toNode != null) {
-						Transition t = new Transition();
-						t.setProcessDefinition(pD);
-						t.setName(tName);
-						t.setTo(toNode);
-						fromNode.addLeavingTransition(t);
-					}
-
-				}
-			}
-			//Get the list of automatic transitions from the workflow definition
-			List waits = WorkflowUtils.getParallelThreadWaits(def, stateName);
-			for (int i=0; i<waits.size(); ++i) {
-				WfWaits w = (WfWaits)waits.get(i);
-				String toNodeName = w.getToStateName();
-				String tName = stateName + "." + toNodeName;					
-				if (oldTransitions.containsKey(tName)) {
-					oldTransitions.remove(tName);
-				} else {
-					Node toNode = (Node) pD.getNode(toNodeName);
-					if (toNode != null) {
-						Transition t = new Transition();
-						t.setProcessDefinition(pD);
-						t.setName(tName);
-						t.setTo(toNode);
-						fromNode.addLeavingTransition(t);
-					}
-
-				}
-			}
-			Iterator itTrans = oldTransitions.entrySet().iterator();
-			while (itTrans.hasNext()) {
-				Map.Entry me2 = (Map.Entry) itTrans.next();
-				Transition delTrans = (Transition)me2.getValue();
-				fromNode.removeLeavingTransition(delTrans);
-				session.getSession().delete(delTrans);
-			}
-		}
+	    		//Get the list of manual transitions from the workflow definition
+	    		Map manualTransitions = WorkflowUtils.getManualTransitions(def, fromNode.getName());
+	    		Iterator itTransitions = manualTransitions.entrySet().iterator();
+	    		while (itTransitions.hasNext()) {
+	    			Map.Entry me2 = (Map.Entry) itTransitions.next();
+	    			String toNodeName = (String) me2.getKey();
+	    			String tName = stateName + "." + toNodeName;					
+	    			if (oldTransitions.containsKey(tName)) {
+	    				oldTransitions.remove(tName);
+	    			} else {
+	    				Node toNode = (Node) pD.getNode(toNodeName);
+	    				if (toNode != null) {
+	    					Transition t = new Transition();
+	    					t.setProcessDefinition(pD);
+	    					t.setName(tName);
+	    					t.setTo(toNode);
+	    					fromNode.addLeavingTransition(t);
+	    				}
+	    				
+	    			}
+	    		}
+	    		//Get the list of automatic transitions from the workflow definition
+	    		List waits = WorkflowUtils.getParallelThreadWaits(def, stateName);
+	    		for (int i=0; i<waits.size(); ++i) {
+	    			WfWaits w = (WfWaits)waits.get(i);
+	    			String toNodeName = w.getToStateName();
+	    			String tName = stateName + "." + toNodeName;					
+	    			if (oldTransitions.containsKey(tName)) {
+	    				oldTransitions.remove(tName);
+	    			} else {
+	    				Node toNode = (Node) pD.getNode(toNodeName);
+	    				if (toNode != null) {
+	    					Transition t = new Transition();
+	    					t.setProcessDefinition(pD);
+	    					t.setName(tName);
+	    					t.setTo(toNode);
+	    					fromNode.addLeavingTransition(t);
+	    				}
+	    				
+	    			}
+	    		}
+	    		Iterator itTrans = oldTransitions.entrySet().iterator();
+	    		while (itTrans.hasNext()) {
+	    			Map.Entry me2 = (Map.Entry) itTrans.next();
+	    			Transition delTrans = (Transition)me2.getValue();
+	    			fromNode.removeLeavingTransition(delTrans);
+	    			context.getSession().delete(delTrans);
+	    		}
+	    	}
 		
+	    } finally {
+	    	context.close();
+	    }
 		
     	Writer writer = new StringWriter();
 	    JpdlXmlWriter jpdl = new JpdlXmlWriter(writer);
@@ -524,7 +556,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    logger.info("Workflow process definition created: " + pD.getName());
 	    logger.info(writer.toString());
 	}
-	private Event addTimer(Node node, String name, String timeout, String toState) {
+	private Event addTimer(JbpmContext context, Node node, String name, String timeout, String toState) {
 		//	make sure start threads event exits
 		Event event = node.getEvent(Event.EVENTTYPE_NODE_ENTER);
 		if (event == null) {
@@ -581,7 +613,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		return event;
 	
 	}
-	private void removeTimer(Node node, String name) {
+	private void removeTimer(JbpmContext context, Node node, String name) {
 		Event event = node.getEvent(Event.EVENTTYPE_NODE_ENTER);
 		if (event != null) {
 			List eventActions=event.getActions();
@@ -592,7 +624,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 						CreateTimerAction createAction = (CreateTimerAction)a;
 						if (name.equals(createAction.getTimerName())) {
 							event.removeAction(a);
-							WorkflowFactory.getSession().getSession().delete(a);	
+							context.getSession().delete(a);	
 							break;
 						}
 					}
@@ -609,7 +641,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 						CancelTimerAction cancelAction = (CancelTimerAction)a;
 						if (name.equals(cancelAction.getTimerName())) {
 							event.removeAction(a);
-							WorkflowFactory.getSession().getSession().delete(a);	
+							context.getSession().delete(a);	
 							break;
 						}
 					}
@@ -618,7 +650,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		}
 		
 	}
-	private Event addEnterEventAction(Node node, Action action) {
+	private Event addEnterEventAction(JbpmContext context,Node node, Action action) {
 		//	make sure start threads event exits
 		Event event = node.getEvent(Event.EVENTTYPE_NODE_ENTER);
 		if (event == null) {
@@ -644,12 +676,11 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		return event;
 	
 	}
-	private void removeEnterEventAction(Node node, Action action) {
+	private void removeEnterEventAction(JbpmContext context,Node node, Action action) {
 		Event event = node.getEvent(Event.EVENTTYPE_NODE_ENTER);
 		if (event == null) return;
 		List eventActions = new ArrayList(event.getActions());
 		if ((eventActions != null) && !eventActions.isEmpty()) {
-			JbpmSession session = WorkflowFactory.getSession();
 			for (int i=0; i<eventActions.size(); ++i) {
 				Action a = (Action)eventActions.get(i);
 				if ((a.getReferencedAction() != null) && a.getReferencedAction().equals(action)) {
@@ -658,7 +689,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 					//these associations (STUPID)
 					a.setReferencedAction(null);
 					a.setActionDelegation(null);
-					session.getSession().delete(a);
+					context.getSession().delete(a);
 					break;
 					
 				}
@@ -666,7 +697,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		}
 	}
 
-	private Event addExitEventAction(Node node, Action action) {
+	private Event addExitEventAction(JbpmContext context, Node node, Action action) {
 		//	make sure start threads event exits
 		Event event = node.getEvent(Event.EVENTTYPE_NODE_LEAVE);
 		if (event == null) {
@@ -692,12 +723,11 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		return event;
 	
 	}
-	private void removeExitEventAction(Node node, Action action) {
+	private void removeExitEventAction(JbpmContext context, Node node, Action action) {
 		Event event = node.getEvent(Event.EVENTTYPE_NODE_LEAVE);
 		if (event == null) return;
 		List eventActions = new ArrayList(event.getActions());
 		if ((eventActions != null) && !eventActions.isEmpty()) {
-			JbpmSession session = WorkflowFactory.getSession();
 			for (int i=0; i<eventActions.size(); ++i) {
 				Action a = (Action)eventActions.get(i);
 				if ((a.getReferencedAction() != null) && (a.getReferencedAction().equals(action))) {
@@ -706,7 +736,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 					//these associations (STUPID)
 					a.setReferencedAction(null);
 					a.setActionDelegation(null);
-					session.getSession().delete(a);
+					context.getSession().delete(a);
 					break;
 				}
 			}
@@ -727,11 +757,10 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		String initialState = WorkflowUtils.getInitialState(workflowDef);
 		if (!Validator.isNull(initialState)) {
 			//Now start the workflow at the desired initial state
-			JbpmSession session;
+			JbpmContext context=WorkflowFactory.getContext();
 			ProcessDefinition pD;
 			try {
-		       	session = WorkflowFactory.getSession();
-		        pD = session.getGraphSession().findLatestProcessDefinition(workflowDef.getId());
+		        pD = context.getGraphSession().findLatestProcessDefinition(workflowDef.getId());
 		        Node node = pD.getNode(initialState);
 			    if (node != null) {
 		        	ProcessInstance pI = new ProcessInstance(pD);
@@ -750,88 +779,96 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 					//Start the workflow process at the initial state
 				    ExecutionContext executionContext = new ExecutionContext(token);
 		            node.enter(executionContext);
-		            
-		            session.getGraphSession().saveProcessInstance(pI);
+		            context.save(pI);
 			    }
 		    } catch (Exception ex) {
 		        throw convertJbpmException(ex);
+		    } finally {
+		    	context.close();
 		    }
 		}
 	}
 	
 	public void modifyWorkflowState(Long tokenId, String fromState, String toState) {
+		JbpmContext context=WorkflowFactory.getContext();
 	    try {
-	       	JbpmSession session = WorkflowFactory.getSession();
-        	Token t = session.getGraphSession().loadToken(tokenId.longValue());
+        	Token t = context.loadTokenForUpdate(tokenId.longValue());
             t.signal(fromState + "." + toState);
-            //need to make this call to save logs
-            session.getGraphSession().saveProcessInstance(t.getProcessInstance());
+            context.save(t);
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
-	    }		
+	    } finally {
+	    	context.close();
+	    }
 	}
 
 	public void modifyWorkflowStateOnTimeout(Long timerId) {
 //TODO: worry about timers from other zones??
 		//Assume RequestContext is set
-		JbpmSession session = WorkflowFactory.getSession();
-   		SchedulerSession schedulerSession = new SchedulerSession(session);
-      	Timer timer = (Timer)session.getSession().load(Timer.class, timerId);
-      	if (timer == null) return;
-      	Token token = timer.getToken();
-      	Entry entry = null;
-      	if (token != null) {
-      		//token id is id of workflowState
-      		WorkflowState ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
-      		entry = (Entry)ws.getOwner().getEntity();
-      	}
+		JbpmContext context=WorkflowFactory.getContext();
+	    try {
+	    	
+    		SchedulerSession schedulerSession = context.getSchedulerSession();
+    		Timer timer = (Timer)context.getSession().load(Timer.class, timerId);
+    		if (timer == null) return;
+    		Token token = timer.getToken();
+    		Entry entry = null;
+    		if (token != null) {
+    			//	token id is id of workflowState
+    			WorkflowState ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
+    			entry = (Entry)ws.getOwner().getEntity();
+    		}
   
-      	// execute
-        timer.execute();
-        //re-index for state changes
-        if (entry != null) {
-        	EntryProcessor processor = 
-        		(EntryProcessor) getProcessorManager().getProcessor(entry.getParentBinder(), 
-        					EntryProcessor.PROCESSOR_KEY);
-        	processor.reindexEntry(entry);
-        }
-        // if there was an exception, just save the timer
-        if (timer.getException()==null) {
-        	// if repeat is specified
-        	if (timer.getRepeat()!=null) {
-        		// update timer by adding the repeat duration
-        		Date dueDate = timer.getDueDate();
+    		// execute
+    		timer.execute();
+    		//re-index for state changes
+    		if (entry != null) {
+    			EntryProcessor processor = 
+    				(EntryProcessor) getProcessorManager().getProcessor(entry.getParentBinder(), 
+        						EntryProcessor.PROCESSOR_KEY);
+    			processor.reindexEntry(entry);
+    		}
+    		// if there was an exception, just save the timer
+    		if (timer.getException()==null) {
+    			// 	if repeat is specified
+    			if (timer.getRepeat()!=null) {
+    				// update timer by adding the repeat duration
+    				Date dueDate = timer.getDueDate();
           
-        		// suppose that it took the timer runner thread a 
-        		// very long time to execute the timers.
-        		// then the repeat action dueDate could already have passed.
-        		while (dueDate.getTime()<=System.currentTimeMillis()) {
-        			dueDate = businessCalendar
-        			.add(dueDate, 
+    				// suppose that it took the timer runner thread a 
+    				// very long time to execute the timers.
+    				// then the repeat action dueDate could already have passed.
+    				while (dueDate.getTime()<=System.currentTimeMillis()) {
+    					dueDate = businessCalendar
+    					.add(dueDate, 
         					new Duration(timer.getRepeat()));
-        		}
-        		timer.setDueDate( dueDate );
-        		// save the updated timer in the database
-        		logger.debug("saving updated timer for repetition '"+timer+"' in '"+(dueDate.getTime()-System.currentTimeMillis())+"' millis");
-        		schedulerSession.saveTimer(timer);
-        	} else {
-        		// delete this timer
-        		logger.debug("deleting timer '"+timer+"'");
-        		schedulerSession.deleteTimer(timer);
-        	}
+    				}
+    				timer.setDueDate( dueDate );
+    				// save the updated timer in the database
+    				logger.debug("saving updated timer for repetition '"+timer+"' in '"+(dueDate.getTime()-System.currentTimeMillis())+"' millis");
+    				schedulerSession.saveTimer(timer);
+    			} else {
+    				// delete this timer
+    				logger.debug("deleting timer '"+timer+"'");
+    				schedulerSession.deleteTimer(timer);
+    			}
+    		}
+    		if (token != null) context.save(token);
+        } finally {
+        	context.close();
         }
 		
 	}
 	
 	public void deleteEntryWorkflow(WorkflowSupport entry) {
 		//Delete all JBPM tokens and process instances associated with this entry
+		JbpmContext context=WorkflowFactory.getContext();
 	    try {
 			Set processInstances = new HashSet();
-	       	JbpmSession session = WorkflowFactory.getSession();
 	  		Set workflowStates = entry.getWorkflowStates();
    			for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
 				WorkflowState ws = (WorkflowState)iter.next();
-				Token t = session.getGraphSession().loadToken(ws.getTokenId().longValue());
+				Token t = context.loadToken(ws.getTokenId().longValue());
 				//Remember all of the unique process instances that we have to delete
 				//tokens may belong to the same PI
 				processInstances.add(t.getProcessInstance());
@@ -840,18 +877,25 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			for (Iterator iter=processInstances.iterator(); iter.hasNext();) {
 				ProcessInstance pI = (ProcessInstance)iter.next();
 				pI.end();
-				session.getSchedulerSession().cancelTimersForProcessInstance(pI);
-				session.getGraphSession().deleteProcessInstance(pI);
+				context.getSchedulerSession().cancelTimersForProcessInstance(pI);
+				context.getGraphSession().deleteProcessInstance(pI);
+				context.save(pI);
 			}
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
-	    }		
+	    } finally {
+	    	context.close();
+	    }
 	}
 	
 	public void deleteWorkflowToken(WorkflowState ws) {
-       	JbpmSession session = WorkflowFactory.getSession();
-		Token t = session.getGraphSession().loadToken(ws.getTokenId().longValue());
-		t.end();
+		JbpmContext context=WorkflowFactory.getContext();
+	    try {
+	    	Token t = context.loadTokenForUpdate(ws.getTokenId().longValue());
+	    	t.end();
+	    } finally {
+	    	context.close();
+	    }
 	}
 	
 }

@@ -18,17 +18,14 @@ import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.def.Transition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
+import com.sitescape.ef.module.workflow.impl.JbpmContext;
 import org.jbpm.jpdl.xml.JpdlXmlWriter;
-import org.jbpm.taskmgmt.exe.TaskInstance;
-import org.jbpm.context.exe.ContextInstance;
-import org.jbpm.db.JbpmSession;
 
 import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.ef.domain.AnyOwner;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -194,6 +191,7 @@ public class WorkflowController extends SAbstractController {
 			 } else if (operation.equals("addNode")) {
 			    	wId=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
 				    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+				    JbpmContext context = WorkflowFactory.getContext();
 				    try {
 				    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
 				    	if (!pD.hasNode("orphan") && !pD.hasNode("orphan3") && pD.hasNode("orphan2")) {
@@ -214,7 +212,7 @@ public class WorkflowController extends SAbstractController {
 				    		while (itTransitions.hasNext()) {
 				    			Transition trans = (Transition)itTransitions.next();
 				    			pD.getNode("orphan2").removeLeavingTransition(trans);
-				    			WorkflowFactory.getSession().getSession().delete(trans);
+				    			context.getSession().delete(trans);
 				    			
 				    		}
 				    		pD.getNode("orphan2").addLeavingTransition(transition2);
@@ -223,20 +221,28 @@ public class WorkflowController extends SAbstractController {
 				    } catch (Exception e) {
 				    	txManager.rollback(status);
 				    	throw e;
-				    } 
+				    } finally {
+				    	context.close();
+				    }
 			 } else if (operation.equals("deleteNode")) {
 			    	wId=PortletRequestUtils.getRequiredStringParameter(request,"workflowId");
 				    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
 				    try {
 				    	ProcessDefinition pD = getWorkflowModule().getWorkflow(Long.valueOf(wId));
-				    	if (pD.hasNode("orphan")) 
-				    		WorkflowFactory.getSession().getSession().delete(pD.removeNode(pD.getNode("orphan")));
-				    	else if (pD.hasNode("orphan3")) 
-				    		WorkflowFactory.getSession().getSession().delete(pD.removeNode(pD.getNode("orphan3")));
+					    JbpmContext context = WorkflowFactory.getContext();
+					    try {
+					    	if (pD.hasNode("orphan")) 
+					    		context.getSession().delete(pD.removeNode(pD.getNode("orphan")));
+					    	else if (pD.hasNode("orphan3")) 
+					    		context.getSession().delete(pD.removeNode(pD.getNode("orphan3")));
+					    } finally {
+					    	context.close();
+					    }
 				    	txManager.commit(status);
 				    } catch (Exception e) {
 				    	txManager.rollback(status);
 				    } 
+				    
 				    pId=PortletRequestUtils.getStringParameter(request,"processId", "");
 				    if (!Validator.isNull(pId)) {
 				    	ProcessInstance processInstance = getWorkflowModule().getProcessInstance(Long.valueOf(pId));
@@ -266,17 +272,19 @@ public class WorkflowController extends SAbstractController {
 			    		List defs = getWorkflowModule().getLatestDefinitions();
 			    		wId = String.valueOf(((ProcessDefinition)defs.get(0)).getId());
 			    	}
-			       	JbpmSession session = WorkflowFactory.getSession();
-		        	ProcessInstance pI = session.getGraphSession().loadProcessInstance(Long.valueOf(pId).longValue());
-		        	Token subToken = new Token(pI.getRootToken(), "parallel_1");
-		            ProcessDefinition pD = pI.getProcessDefinition();
-		            Node node = pD.findNode("parallel_1");
-		            if (node != null) {
-		            	subToken.setNode(node);
-					    session.getGraphSession().saveProcessInstance(pI);
-		            }
-			    	
-				    state= subToken.getNode().getName();
+				    JbpmContext context = WorkflowFactory.getContext();
+				    try {
+				    	ProcessInstance pI = context.loadProcessInstanceForUpdate(Long.valueOf(pId).longValue());
+				    	Token subToken = new Token(pI.getRootToken(), "parallel_1");
+				    	ProcessDefinition pD = pI.getProcessDefinition();
+				    	Node node = pD.findNode("parallel_1");
+				    	if (node != null) {
+				    		subToken.setNode(node);
+				    	}
+					    state= subToken.getNode().getName();
+				    } finally {
+				    	context.close();
+				    }	    	
 	
 			}
 		} catch(Exception e) {
