@@ -15,8 +15,8 @@ import com.sitescape.ef.search.BasicIndexUtils;
 public class FieldBuilderUserlist extends AbstractFieldBuilder {
 
     public String makeFieldName(String dataElemName) {
-        // e.g. data element name = "abc" -> field name = "userlist#abc"
-        return INDEXING_TYPE_USERLIST + BasicIndexUtils.DELIMITER + dataElemName;
+        //Just use the data name. It is guaranteed to be unique within its definition
+    	return dataElemName;
     }
     
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
@@ -29,7 +29,7 @@ public class FieldBuilderUserlist extends AbstractFieldBuilder {
         Field field;
         int i = 0;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
-	        val = (Long) it.next();
+	        val = Long.valueOf((String)it.next());
 	        field = new Field(fieldName, val.toString(), false, true, false);
 	        fields[i] = field;
         }

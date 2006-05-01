@@ -61,6 +61,6 @@ public interface DefinitionModule {
 	public List getDefinitions();
 	
 	public void addIndexFieldsForEntity(org.apache.lucene.document.Document indexDoc, DefinableEntity entity);
-	public void addNotifyElementForEntity(Element element, Notify notifyDef, DefinableEntity entity, String[] categories);
+	public void addNotifyElementForEntity(Element element, Notify notifyDef, DefinableEntity entity);
 	public Map getEntryDefinitionElements(String id);
 }

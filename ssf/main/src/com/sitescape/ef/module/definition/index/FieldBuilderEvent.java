@@ -11,8 +11,8 @@ import com.sitescape.ef.search.BasicIndexUtils;
 
 public class FieldBuilderEvent extends AbstractFieldBuilder {
     public String makeFieldName(String dataElemName, String fieldName) {
-        // e.g. data element name = "abc" -> field name = "_event#abc"
-        return EntryIndexUtils.EVENT_FIELD + BasicIndexUtils.DELIMITER + dataElemName + BasicIndexUtils.DELIMITER + fieldName;
+        //Just use the data name concatenated with the field name. It is guaranteed to be unique within its definition
+        return dataElemName + BasicIndexUtils.DELIMITER + fieldName;
     }
 	   protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
 	        // This default text implementation ignores args.

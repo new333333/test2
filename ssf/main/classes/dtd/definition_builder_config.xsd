@@ -103,7 +103,8 @@
     <xsd:sequence>
       <xsd:element name="option" type="optionType" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="option_select" type="option_selectType" minOccurs="0" maxOccurs="unbounded"/>
-   </xsd:sequence>
+    </xsd:sequence>
+    <xsd:attribute name="optionCaption" type="xsd:string"/>
   </xsd:complexType>
 
   <xsd:complexType name="optionType">
