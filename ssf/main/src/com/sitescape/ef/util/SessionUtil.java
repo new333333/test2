@@ -9,7 +9,12 @@ import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
-
+/**
+ * Helper class to setup hibernate.  Simulates openSessionInView for
+ * non-web users, ie) scheduled jobs.
+ * @author Janet McCann
+ *
+ */
 public class SessionUtil {
 	private static SessionFactory sessionFactory=null;
 	private static SessionFactory getSessionFactory() {

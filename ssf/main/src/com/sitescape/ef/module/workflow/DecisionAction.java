@@ -43,7 +43,7 @@ public class DecisionAction extends AbstractActionHandler {
 				}
 				if (!current.isRoot()) {
 					entry.removeWorkflowState(ws);
-					checkForWaits(current, entry);
+					checkForWaits(executionContext, current, entry);
 				} 
 				return;
 			}

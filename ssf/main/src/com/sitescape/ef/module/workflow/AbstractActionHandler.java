@@ -55,7 +55,7 @@ public abstract class AbstractActionHandler implements ActionHandler {
 				(Long)ctx.getVariable(WorkflowUtils.ENTRY_ID));
 	}
 
-	protected void checkForWaits(Token current, WorkflowSupport entry) {
+	protected void checkForWaits(ExecutionContext executionContext, Token current, WorkflowSupport entry) {
 		JbpmSession session = WorkflowFactory.getSession();
 		HashMap oldStates = new HashMap();
 		//save states to see if any change
@@ -93,4 +93,45 @@ public abstract class AbstractActionHandler implements ActionHandler {
 		}
 		
 	}
+	/**
+	 * save for jbmp3.1
+	protected void checkForWaits(ExecutionContext executionContext, Token current, WorkflowSupport entry) {
+		JbpmContext context = executionContext.getJbpmContext();
+		HashMap oldStates = new HashMap();
+		//save states to see if any change
+		for (Iterator iter=entry.getWorkflowStates().iterator(); iter.hasNext();) {
+			WorkflowState state = (WorkflowState)iter.next();
+			oldStates.put(state.getTokenId(), state.getState());
+		}
+		
+		//keep looping until nothing changes
+		while (true) {
+			for (Iterator iter=entry.getWorkflowStates().iterator(); iter.hasNext();) {
+				WorkflowState state = (WorkflowState)iter.next();
+				//See if state is waiting for thread state changes
+				if (!state.getWfWaits().isEmpty()) {
+					Token t = context.loadToken(state.getTokenId().longValue());
+					if (!t.equals(current)) {
+						Node n = t.getNode();
+						n.execute(new ExecutionContext(t));
+					}
+				}
+				
+			}
+			
+			//see if anything changed
+			HashMap newStates = new HashMap();
+			//save states to see if any change
+			for (Iterator iter=entry.getWorkflowStates().iterator(); iter.hasNext();) {
+				WorkflowState state = (WorkflowState)iter.next();
+				newStates.put(state.getTokenId(), state.getState());
+			}
+			
+			if (oldStates.equals(newStates)) break;
+			oldStates = newStates;
+			
+		}
+		
+	}
+	**/
 }

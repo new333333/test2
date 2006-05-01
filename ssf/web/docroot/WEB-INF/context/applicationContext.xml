@@ -547,9 +547,9 @@
 		</property>
 	</bean>		
 		
-	<bean id="workflowModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler" >
+	<bean id="workflowModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler, workflowFactory" >
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl" init-method="init">
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl" depends-on="zoneConfig, scheduler, workflowFactory" init-method="init">
 			</bean>
 		</property>
 	</bean>	
