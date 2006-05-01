@@ -506,8 +506,10 @@ public class SAbstractForumController extends SAbstractController {
 			// look through the custom attrs of this entry for any of type EVENT
 			for (int j = 0; j < count; j++) {
 				String name = (String)e.get(EntryIndexUtils.EVENT_FIELD + j);
-				Date evStartDate = (Date)e.get(EntryIndexUtils.EVENT_FIELD + BasicIndexUtils.DELIMITER + name + BasicIndexUtils.DELIMITER + EntryIndexUtils.EVENT_FIELD_START_DATE);
-				Date evEndDate = (Date)e.get(EntryIndexUtils.EVENT_FIELD + BasicIndexUtils.DELIMITER + name + BasicIndexUtils.DELIMITER + EntryIndexUtils.EVENT_FIELD_END_DATE);
+				Date evStartDate = (Date)e.get(name + BasicIndexUtils.DELIMITER + 
+						EntryIndexUtils.EVENT_FIELD_START_DATE);
+				Date evEndDate = (Date)e.get(name + BasicIndexUtils.DELIMITER + 
+						EntryIndexUtils.EVENT_FIELD_END_DATE);
 				Event ev = new Event();
 				GregorianCalendar gcal = new GregorianCalendar();
 				gcal.setTime(evStartDate);

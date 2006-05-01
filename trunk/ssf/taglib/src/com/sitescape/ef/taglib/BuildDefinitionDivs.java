@@ -418,7 +418,15 @@ public class BuildDefinitionDivs extends TagSupport {
 			Element e_options = rootConfigElement.element("options");
 			Element e_option;
 			Map optionsSeen = new HashMap();
-			
+
+			String optionCaption = "";
+			if (e_options != null) {
+				optionCaption = NLT.getDef(e_options.attributeValue("optionCaption", ""));
+				if (!optionCaption.equals("")) {
+					sb.append("<b>").append(optionCaption).append("</b>\n");
+				}
+			}
+
 			sb.append("<ul>\n");
 			if (e_options != null) {
 				Iterator itOptions = e_options.elementIterator("option");
@@ -482,7 +490,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					Iterator itOptionsSelect = rootConfigElement.selectNodes(optionPath).iterator();
 					if (!itOptionsSelect.hasNext()) continue;
 					
-					String optionCaption = NLT.getDef(e_option.attributeValue("optionCaption", ""));
+					optionCaption = NLT.getDef(e_option.attributeValue("optionCaption", ""));
 					if (!optionCaption.equals("")) {
 						sb.append("</ul>\n<br/>\n<b>").append(optionCaption).append("</b>\n<ul>\n");
 					}

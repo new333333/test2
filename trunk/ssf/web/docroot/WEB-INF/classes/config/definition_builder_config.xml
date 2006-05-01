@@ -84,7 +84,7 @@
 			<operation name="addOption" caption="__add" />
 		</operations>
 
-		<options>
+		<options optionCaption="__standard_entry_options">
 			<option name="titleView" caption="__title" initial="true" />
 			<option name="entryCreatorView" caption="__entry_creator" initial="true" />
 			<option name="entryDateView" caption="__entry_date" initial="true" />
@@ -826,7 +826,7 @@
 		</jsps>
 	</item>
 	
-	<item name="binderName" caption="__binder_name" canBeDeleted="false" 
+	<item name="binderName" caption="__binder_name" type="data" canBeDeleted="false" 
 		multipleAllowed="false">
 		<properties>
 			<property name="name" caption="__binder_name" type="text"
@@ -886,12 +886,6 @@
 		</jsps>
 	</item>
 
-	<item name="calendarView" caption="__calendar_view">
-		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/calendar_view.jsp" />
-		</jsps>
-	</item>
-		
 	<item name="viewEntry" caption="__view_entry_selectbox">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_selectbox.jsp" />

@@ -995,8 +995,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	            Element root = definitionTree.getRootElement();
 	
 	            //Get a list of all of the items in the definition
-	            Element entryFormItem = (Element) root
-	                    .selectSingleNode("item[@name='entryForm' or @name='profileEntryForm']");
+				Element entryFormItem = (Element) 
+					root.selectSingleNode("item[@type='form' or @name='entryForm' or @name='profileEntryForm']");
 	            if (entryFormItem != null) {
 	                Iterator itItems = entryFormItem.selectNodes("//item")
 	                        .listIterator();
@@ -1016,8 +1016,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	                                    .selectSingleNode("//item[@name='"
 	                                            + itemName + "']");
 	                            if (configItem != null) {
-	                                if (configItem.attributeValue("category", "")
-	                                        .equals("entryData")) {
+	                                if (configItem.attributeValue("type", "")
+	                                        .equals("data")) {
 	                                    String nameValue = nameProperty
 	                                            .attributeValue("value", "");
 	                                    if (nameValue.equals("")) {
@@ -1110,8 +1110,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
         }
         return map;
     }
-	public void addNotifyElementForEntity(Element element, Notify notifyDef, DefinableEntity entry,
-			String[] categories) {
+	public void addNotifyElementForEntity(Element element, Notify notifyDef, 
+			DefinableEntity entry) {
 
         Element configRoot = getDefinitionConfig().getRootElement();
         Definition def = entry.getEntryDef();
@@ -1121,8 +1121,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
             Element root = definitionTree.getRootElement();
 
             //Get a list of all of the items in the definition
-            Element entryFormItem = (Element) root
-                    .selectSingleNode("item[@name='entryForm'  or @name='profileEntryForm']");
+			Element entryFormItem = (Element) 
+				root.selectSingleNode("item[@type='form' or @name='entryForm' or @name='profileEntryForm']");
             if (entryFormItem != null) {
                 Iterator itItems = entryFormItem.selectNodes("//item")
                         .listIterator();
@@ -1142,7 +1142,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                                     .selectSingleNode("//item[@name='"
                                             + itemName + "']");
                             if (configItem != null) {
-                            	if(matchCategory(configItem.attributeValue("category", ""), categories)) {
+                            	if (configItem.attributeValue("type", "").equals("data")) {
                                     String nameValue = nameProperty
                                             .attributeValue("value", "");
                                     if (nameValue.equals("")) {

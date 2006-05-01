@@ -368,7 +368,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		element.addAttribute("docLevel", String.valueOf(entry.getDocLevel()));
 		String entryUrl = WebUrlUtil.getEntryViewURL(entry);
 		element.addAttribute("href", entryUrl);
-		definitionModule.addNotifyElementForEntity(element, notifyDef, entry, new String[] {"entryData"});	
+		definitionModule.addNotifyElementForEntity(element, notifyDef, entry);	
 	}
 	// get cached template.  If not cached yet,load it
 	protected Transformer getTransformer(String zoneName, String type) throws TransformerConfigurationException {
