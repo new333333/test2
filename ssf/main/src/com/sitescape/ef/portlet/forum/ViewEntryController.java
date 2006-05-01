@@ -212,12 +212,12 @@ public class ViewEntryController extends SAbstractForumController {
 				Entry reply = (Entry)replies.get(i);
 				//if any reply is not seen, add it to list - try to avoid update transaction
 				if (!seen.checkIfSeen(reply)) {
-					getProfileModule().updateUserSeenEntry(null, replies);
+					getProfileModule().setSeen(null, replies);
 					break;
 				}
 			}
 		} else if (!seen.checkIfSeen(entry)) {
-			getProfileModule().updateUserSeenEntry(null, entry);
+			getProfileModule().setSeen(null, entry);
 		}
 		return model;
 	}
