@@ -9,9 +9,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sitescape.ef.ssfs.wck.Util;
+
 public class DispatchClient {
-	
-	private static final String SSF_CONTEXT_PATH_DEFAULT = "/ssf";
 	
 	private static final String SSFS_CC_DISPATCHER = "ssfsCCDispatcher";
 	
@@ -57,11 +57,8 @@ public class DispatchClient {
 	
 	private static void initInternal() {
 		synchronized(DispatchClient.class) {
-			if(ssfContext == null) {
-				String ssfContextPath = ssfsServletConfig.getInitParameter("contextPath");
-				if(ssfContextPath == null || ssfContextPath.length() == 0)
-					ssfContextPath = SSF_CONTEXT_PATH_DEFAULT;					
-				ssfContext = ssfsServletConfig.getServletContext().getContext(ssfContextPath);
+			if(ssfContext == null) {				
+				ssfContext = ssfsServletConfig.getServletContext().getContext(Util.getSsfContextPath());
 			}
 		}
 	}
