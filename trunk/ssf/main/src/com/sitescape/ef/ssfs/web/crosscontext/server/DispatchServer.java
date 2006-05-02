@@ -19,6 +19,7 @@ import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
 import com.sitescape.ef.ssfs.AlreadyExistsException;
 import com.sitescape.ef.ssfs.CrossContextConstants;
+import com.sitescape.ef.ssfs.LockException;
 import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystem;
@@ -107,6 +108,11 @@ public class DispatchServer extends GenericServlet {
 				logger.warn(e);
 				throw new ServletException(e.getMessage());
 			}
+			catch(LockException e) {
+				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_LOCK);
+				logger.warn(e);
+				throw new ServletException(e.getMessage());
+			}
 			catch(IOException e) {
 				logger.error(e.getMessage(), e);
 				throw e;
@@ -171,6 +177,15 @@ public class DispatchServer extends GenericServlet {
 		else if(operation.equals(CrossContextConstants.OPERATION_CREATE_SET_RESOURCE)) {
 			InputStream content = (InputStream) req.getAttribute(CrossContextConstants.INPUT_STREAM);
 			ssfs.createAndSetResource(uri, content);
+		}
+		else if(operation.equals(CrossContextConstants.OPERATION_LOCK_RESOURCE)) {
+			String lockId = (String) req.getAttribute(CrossContextConstants.LOCK_PROPERTIES_ID);
+			Date lockExpirationDate = (Date) req.getAttribute(CrossContextConstants.LOCK_PROPERTIES_EXPIRATION_DATE);
+			ssfs.lockResource(uri, lockId, lockExpirationDate);
+		}
+		else if(operation.equals(CrossContextConstants.OPERATION_UNLOCK_RESOURCE)) {
+			String lockId = (String) req.getAttribute(CrossContextConstants.LOCK_PROPERTIES_ID);
+			ssfs.unlockResource(uri, lockId);
 		}
 		else {
 			throw new ServletException("Invalid operation " + operation);

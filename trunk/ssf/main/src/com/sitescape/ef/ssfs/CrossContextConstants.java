@@ -32,6 +32,8 @@ public abstract class CrossContextConstants {
 	public static final Integer OPERATION_GET_CHILDREN_NAMES = new Integer(10);
 	public static final Integer OPERATION_GET_PROPERTIES = new Integer(11);
 	public static final Integer OPERATION_CREATE_SET_RESOURCE = new Integer(12);
+	public static final Integer OPERATION_LOCK_RESOURCE = new Integer(13);
+	public static final Integer OPERATION_UNLOCK_RESOURCE = new Integer(14);
 	/*
 	public static final String OPERATION_AUTHENTICATE = "authenticate";
 	public static final String OPERATION_OBJECT_EXISTS = "objectExists";
@@ -93,10 +95,17 @@ public abstract class CrossContextConstants {
 	public static final String ERROR_NO_ACCESS = "noAccess";
 	public static final String ERROR_NO_SUCH_OBJECT = "noSuchObject";
 	public static final String ERROR_ALREADY_EXISTS = "alreadyExists"; 
+	public static final String ERROR_LOCK = "lock";
 	
 	// DAV Properties
+	public static final String DAV_PROPERTIES_NAMESPACE = "DAV:";
 	public static final String DAV_PROPERTIES_CREATION_DATE = "DAV::creationdate";
 	public static final String DAV_PROPERTIES_GET_CONTENT_LENGTH = "DAV::getcontentlength";
 	public static final String DAV_PROPERTIES_GET_CONTENT_TYPE = "DAV::getcontenttype";
 	public static final String DAV_PROPERTIES_GET_LAST_MODIFIED = "DAV::getlastmodified";
+	
+	// LOCK Properties
+	public static final String LOCK_PROPERTIES_ID = "lockId"; 
+	public static final String LOCK_PROPERTIES_OWNER_NAME = "lockOwnerName";
+	public static final String LOCK_PROPERTIES_EXPIRATION_DATE = "lockExpirationDate";
 }

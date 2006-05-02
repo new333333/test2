@@ -9,9 +9,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.sitescape.ef.ssfs.AlreadyExistsException;
+import com.sitescape.ef.ssfs.LockException;
 import com.sitescape.ef.ssfs.CrossContextConstants;
 import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
+
+import org.apache.slide.simple.store.WebdavStoreLockExtension.Lock;
 
 public class CCClient {
 
@@ -76,7 +79,7 @@ public class CCClient {
 		CCExecutionTemplate.execute(zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_SET_RESOURCE, 
 			new CCClientCallback() {
-				public void additionalInput(HttpServletRequest req, Map m) {
+				public void additionalInput(HttpServletRequest req, Map uri) {
 					req.setAttribute(CrossContextConstants.INPUT_STREAM, content);
 				}
 			}
@@ -155,7 +158,7 @@ public class CCClient {
 		return returnObj;
 	}
 	
-	public Map getProperties(String resourceUri, Map uri) throws CCClientException,
+	public Map getDAVProperties(String resourceUri, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
 		Map props = getPropertiesCached(resourceUri, uri);
 
@@ -170,11 +173,103 @@ public class CCClient {
 			Map.Entry entry = (Map.Entry) it.next();
 			String key = (String) entry.getKey();
 			Object val = entry.getValue();
-			if(val instanceof String)
+			// Select only those properties whose value types are String and the
+			// key names belong to DAV namespace. 
+			if(val instanceof String && key.startsWith(CrossContextConstants.DAV_PROPERTIES_NAMESPACE))
 				result.put(key, (String) val);
 		}
 
 		return result;
+	}
+	
+	/**
+	 * Locks the specified resource/file. If the resource is currently unlocked, 
+	 * it creates a lock under the user's name. If the resource is currently locked
+	 * by the same user AND the lock id matches, the lock is updated/extended 
+	 * with the new expiration date. If the resource is currently locked by
+	 * the same user BUT the lock id does not match, it throws <code>LockException</code>. 
+	 * If locked by another user, it throws <code>LockException</code> (that is, 
+	 * when accessed through WebDAV, the two situations are not distinguished). 
+	 * 
+	 * @param resourceUri
+	 * @param uri
+	 * @param lock
+	 * @throws CCClientException if unexpected error occurs
+	 * @throws NoAccessException if the user has no write permission to the specified resource
+	 * @throws NoSuchObjectException if the specified resource does not exist
+	 * @throws LockException if fails to lock the resource
+	 */
+	public void lockResource(String resourceUri, Map uri, final Lock lock) 
+	throws CCClientException, NoAccessException, NoSuchObjectException,
+	LockException {
+		CCExecutionTemplate.execute(zoneName, userName, uri, 
+				CrossContextConstants.OPERATION_LOCK_RESOURCE, 
+			new CCClientCallback() {
+				public void additionalInput(HttpServletRequest req, Map uri) {
+					req.setAttribute(CrossContextConstants.LOCK_PROPERTIES_ID, lock.getId());
+					req.setAttribute(CrossContextConstants.LOCK_PROPERTIES_EXPIRATION_DATE, lock.getExpirationDate());
+				}
+			}
+		);
+		
+		
+		//locks.put(resourceUri, lock);
+	}
+	
+	//private static Map locks = new HashMap();
+	
+	/**
+	 * Unlocks the specified resource/file given the id of the existing lock. 
+	 * If the resource is currently unlocked, this should be noop and returns
+	 * silently. If the resource is currently locked by another user, or by
+	 * the same user but the lock id does not match, it throws <code>LockException</code>.
+	 */
+	public void unlockResource(String resourceUri, Map uri, final String lockId)
+	throws CCClientException, NoAccessException, NoSuchObjectException {
+		CCExecutionTemplate.execute(zoneName, userName, uri, 
+				CrossContextConstants.OPERATION_UNLOCK_RESOURCE, 
+			new CCClientCallback() {
+				public void additionalInput(HttpServletRequest req, Map uri) {
+					req.setAttribute(CrossContextConstants.LOCK_PROPERTIES_ID, lockId);
+				}
+			}
+		);
+		
+		//locks.remove(resourceUri);
+	}
+	
+	/**
+	 * Returns lock information about the resource/file.
+	 * 
+	 * @param resourceUri
+	 * @param uri
+	 * @return
+	 * @throws CCClientException
+	 * @throws NoAccessException
+	 * @throws NoSuchObjectException
+	 */
+	public Lock[] getLockInfo(String resourceUri, Map uri)
+	throws CCClientException, NoAccessException, NoSuchObjectException {
+		Map props = getPropertiesCached(resourceUri, uri);
+		
+		String lockId = (String) props.get(CrossContextConstants.LOCK_PROPERTIES_ID);
+		// We don't support cross-zone information reference. 
+		// So zone name is always fixed within user session. 
+		String lockOwnerZoneName = this.zoneName; 
+		String lockOwnerUserName = (String) props.get(CrossContextConstants.LOCK_PROPERTIES_OWNER_NAME);
+		Date lockExpirationDate = (Date) props.get(CrossContextConstants.LOCK_PROPERTIES_EXPIRATION_DATE);
+			
+		Lock lock = new SimpleLock(lockId, lockOwnerZoneName, lockOwnerUserName, lockExpirationDate);
+			
+		return new Lock[] {lock};
+		
+		/*
+		Lock lock = (Lock) locks.get(resourceUri);
+		if(lock == null)
+			return null;
+		else
+			return new Lock[] {lock};
+		*/
 	}
 	
 	private Map getPropertiesCached(String resourceUri, Map uri) throws CCClientException,
@@ -219,7 +314,7 @@ public class CCClient {
 	}
 	
 	static class DefaultCCClientCallback implements CCClientCallback {
-		public void additionalInput(HttpServletRequest req, Map m) {
+		public void additionalInput(HttpServletRequest req, Map uri) {
 		}
 	}
 }
