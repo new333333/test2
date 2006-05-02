@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Map;
 
 import com.sitescape.ef.ssfs.AlreadyExistsException;
+import com.sitescape.ef.ssfs.LockException;
 import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
 
@@ -16,7 +17,7 @@ public interface SiteScapeFileSystem {
 	AlreadyExistsException;
 	
 	public void setResource(Map uri, InputStream content) 
-	throws NoAccessException, AlreadyExistsException;
+	throws NoAccessException, NoSuchObjectException;
 	
 	public void createAndSetResource(Map uri, InputStream content) 
 	throws NoAccessException, AlreadyExistsException;
@@ -41,4 +42,10 @@ public interface SiteScapeFileSystem {
 	
 	public Map getProperties(Map uri) throws NoAccessException,
 	NoSuchObjectException;
+	
+	public void lockResource(Map uri, String lockId, Date lockExpirationDate) 
+	throws NoAccessException, NoSuchObjectException, LockException;
+	
+	public void unlockResource(Map uri, String lockId) throws NoAccessException,
+	NoSuchObjectException, LockException;
 }

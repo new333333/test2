@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 
 import com.sitescape.ef.ssfs.AlreadyExistsException;
 import com.sitescape.ef.ssfs.CrossContextConstants;
+import com.sitescape.ef.ssfs.LockException;
 import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
 import com.sitescape.ef.ssfs.web.crosscontext.DispatchClient;
@@ -20,7 +21,7 @@ public class CCExecutionTemplate {
 	throws AlreadyExistsException, CCClientException, NoAccessException, 
 	NoSuchObjectException {
 		AttributesAndParamsOnlyServletRequest req = 
-			new AttributesAndParamsOnlyServletRequest(Constants.CONTEXT_PATH);
+			new AttributesAndParamsOnlyServletRequest(Util.CONTEXT_PATH);
 
 		req.setAttribute(CrossContextConstants.ZONE_NAME, zoneName);
 		req.setAttribute(CrossContextConstants.USER_NAME, userName);
@@ -48,6 +49,8 @@ public class CCExecutionTemplate {
 					throw new NoSuchObjectException(message);
 				else if(statusCode.equals(CrossContextConstants.ERROR_ALREADY_EXISTS))
 					throw new AlreadyExistsException(message);
+				else if(statusCode.equals(CrossContextConstants.ERROR_LOCK))
+					throw new LockException(message);
 				else
 					throw new CCClientException(message);
 			}

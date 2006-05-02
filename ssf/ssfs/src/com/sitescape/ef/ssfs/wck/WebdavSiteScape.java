@@ -17,17 +17,19 @@ import org.apache.slide.security.AccessDeniedException;
 import org.apache.slide.security.UnauthenticatedException;
 import org.apache.slide.simple.store.BasicWebdavStore;
 import org.apache.slide.simple.store.WebdavStoreBulkPropertyExtension;
+import org.apache.slide.simple.store.WebdavStoreLockExtension;
 import org.apache.slide.structure.ObjectAlreadyExistsException;
 import org.apache.slide.structure.ObjectNotFoundException;
 
 import com.sitescape.ef.ssfs.AlreadyExistsException;
-import com.sitescape.ef.ssfs.CrossContextConstants;
+import com.sitescape.ef.ssfs.LockException;
 import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
 
 import static com.sitescape.ef.ssfs.CrossContextConstants.*;
 
-public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropertyExtension {
+public class WebdavSiteScape implements BasicWebdavStore, 
+	WebdavStoreBulkPropertyExtension, WebdavStoreLockExtension {
 
 	private Service service;
 	private LoggerFacade logger;
@@ -42,9 +44,8 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 		this.service = service;
 		this.logger = logger;
 		if(connection != null) {
-			String[] v = ((String) connection).split(Constants.USERNAME_DELIM);
-			this.zoneName = v[0].trim();
-			this.userName = v[1].trim();
+			this.zoneName = Util.getZoneNameFromExtendedUserName((String) connection);
+			this.userName = Util.getUserNameFromExtendedUserName((String) connection);
 		}
 		this.client = new CCClient(zoneName, userName);
 	}
@@ -372,7 +373,7 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 				return null;
 			}
 			else {
-				return client.getProperties(uri, m);
+				return client.getDAVProperties(uri, m);
 			}
 		}
 		catch(ZoneMismatchException e) {
@@ -404,6 +405,112 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 		// loss of significant information. 
 	}
 	
+	public void lockObject(String uri, String lockId, String subject, 
+			Date expiration, boolean exclusive, boolean inheritable) 
+	throws ServiceAccessException, AccessDeniedException {
+		if(!exclusive)
+			throw new AccessDeniedException(uri, "Shared lock is not supported", "lock");
+		
+		if(inheritable)
+			throw new AccessDeniedException(uri, "Recursive locking is not supported", "lock");
+		
+		// Make sure that the subject passed in matches the credential of
+		// the currently executing user. We do NOT allow users to obtain locks
+		// on behalf of another user (Although WCK doesn't appear to allow
+		// it either, I'm doing additional check here - just in case). 
+		String zName = Util.getZoneNameFromSubject(subject);
+		String uName = Util.getUserNameFromSubject(subject);
+		if(!zName.equals(this.zoneName) || !uName.equals(this.userName))
+			throw new AccessDeniedException(uri, "Cannot obtain lock on behalf of another user", "lock");
+		
+		try {
+			Map m = parseUri(uri);
+		
+			if(representsFolder(m))
+				throw new AccessDeniedException(uri, "Locking of folder is not supported", "lock");
+			else
+				client.lockResource(uri, m, new SimpleLock(lockId, zName, uName, expiration)); 
+		}
+		catch(ZoneMismatchException e) {
+			throw new AccessDeniedException(uri, e.getMessage(), "lock");
+		}		
+		catch (NoAccessException e) {
+			throw new AccessDeniedException(uri, e.getMessage(), "lock");
+		}
+		catch (CCClientException e) {
+			throw new ServiceAccessException(service, e.getMessage());
+		}
+		catch (NoSuchObjectException e) {
+			// The specified object does not exist. Although WebDAV specification
+			// allows locking of object that does not yet fully exist (called
+			// "Null Resource" - see WebDAV spec and/or the corresponding method 
+			// description in WebdavStoreLockExtension for details), SSFS does 
+			// not support this capability. Therefore, we throw an exception 
+			// indicating that the store denies locking of this object. 
+			throw new AccessDeniedException(uri, "Null-resource locking (locking of non-existing object) is not supported", "lock");
+		}	
+		catch(LockException e) {
+			// If someone else (or even another program run by the same user)
+			// locks the resource between the time this thread reads the lock 
+			// and the time it attempts to obtain it, I guess this condition 
+			// can occur. But this should be extremely unlikely except when 
+			// system load is unusually high with many concurrent users
+			// trying to edit the same files... (again, very unlikely). 
+			throw new AccessDeniedException(uri, "Failed to lock the resource", "lock");
+		}
+	}
+
+	public void unlockObject(String uri, String lockId) 
+	throws ServiceAccessException, AccessDeniedException {
+		try {
+			Map m = parseUri(uri);
+		
+			// If the uri represents a folder, we haven't locked the object since
+			// we don't support locking of folder. Silently return in that case.
+			if(!representsFolder(m))
+				client.unlockResource(uri, m, lockId); 
+		}
+		catch(ZoneMismatchException e) {
+			throw new AccessDeniedException(uri, e.getMessage(), "lock");
+		}		
+		catch (NoAccessException e) {
+			throw new AccessDeniedException(uri, e.getMessage(), "lock");
+		}
+		catch (CCClientException e) {
+			throw new ServiceAccessException(service, e.getMessage());
+		}
+		catch (NoSuchObjectException e) {
+			// The specified object does not exist. This means nothing to 
+			// unlock, so return silently.
+		}				
+	}
+
+	public Lock[] getLockInfo(String uri) throws ServiceAccessException, AccessDeniedException {
+		try {
+			Map m = parseUri(uri);
+		
+			// If the uri represents a folder, we haven't locked the object since
+			// we don't support locking of folder. Return null in that case.
+			if(representsFolder(m))
+				return null;
+			else
+				return client.getLockInfo(uri, m); 
+		}
+		catch(ZoneMismatchException e) {
+			throw new AccessDeniedException(uri, e.getMessage(), "lock");
+		}		
+		catch (NoAccessException e) {
+			throw new AccessDeniedException(uri, e.getMessage(), "lock");
+		}
+		catch (CCClientException e) {
+			throw new ServiceAccessException(service, e.getMessage());
+		}
+		catch (NoSuchObjectException e) {
+			// The specified object does not exist. 
+			return null;
+		}	
+	}
+	
 	private Map returnMap(Map map, boolean isFolder) {
 		if(isFolder)
 			map.put(URI_IS_FOLDER, Boolean.TRUE);
@@ -422,11 +529,11 @@ public class WebdavSiteScape implements BasicWebdavStore, WebdavStoreBulkPropert
 	 * @return
 	 */
 	private Map parseUri(String uri) throws ZoneMismatchException {
-		if(uri.startsWith(Constants.URI_DELIM))
+		if(uri.startsWith(Util.URI_DELIM))
 			uri = uri.substring(1);
 		
 		// Break uri into pieces
-		String[] u = uri.split(Constants.URI_DELIM);
+		String[] u = uri.split(Util.URI_DELIM);
 		
 		if(!u[0].equals("files"))
 			return null;

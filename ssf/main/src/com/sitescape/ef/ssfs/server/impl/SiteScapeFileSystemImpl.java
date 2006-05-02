@@ -39,6 +39,7 @@ import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.ssfs.AlreadyExistsException;
 import com.sitescape.ef.ssfs.CrossContextConstants;
+import com.sitescape.ef.ssfs.LockException;
 import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystem;
@@ -427,6 +428,15 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		return props;
 	}
 	
+	public void lockResource(Map uri, String lockId, Date lockExpirationDate) 
+	throws NoAccessException, NoSuchObjectException, LockException {
+		// TODO
+	}
+	public void unlockResource(Map uri, String lockId) throws NoAccessException, 
+	NoSuchObjectException, LockException {
+		// TODO
+	}
+	
 	private String getOriginal(Map uri) {
 		return (String) uri.get(CrossContextConstants.URI_ORIGINAL);		
 	}
@@ -684,5 +694,5 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			throw new UnsupportedOperationException();
 		}		
 	}
-	
+
 }
