@@ -21,7 +21,7 @@ public class CCExecutionTemplate {
 	throws AlreadyExistsException, CCClientException, NoAccessException, 
 	NoSuchObjectException {
 		AttributesAndParamsOnlyServletRequest req = 
-			new AttributesAndParamsOnlyServletRequest(Util.CONTEXT_PATH);
+			new AttributesAndParamsOnlyServletRequest(Util.getSsfContextPath());
 
 		req.setAttribute(CrossContextConstants.ZONE_NAME, zoneName);
 		req.setAttribute(CrossContextConstants.USER_NAME, userName);

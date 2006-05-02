@@ -417,10 +417,12 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		// Make sure that the subject passed in matches the credential of
 		// the currently executing user. We do NOT allow users to obtain locks
 		// on behalf of another user (Although WCK doesn't appear to allow
-		// it either, I'm doing additional check here - just in case). 
-		String zName = Util.getZoneNameFromSubject(subject);
-		String uName = Util.getUserNameFromSubject(subject);
-		if(!zName.equals(this.zoneName) || !uName.equals(this.userName))
+		// the described situation to occur, I'm doing additional check here - 
+		// just to make sure). Essentially we use subject only for validation
+		// purpose and do not actually store the string along with the lock. 
+		String[] id = Util.parseSubject(subject);
+
+		if(!id[0].equals(this.zoneName) || !id[1].equals(this.userName))
 			throw new AccessDeniedException(uri, "Cannot obtain lock on behalf of another user", "lock");
 		
 		try {
@@ -429,7 +431,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			if(representsFolder(m))
 				throw new AccessDeniedException(uri, "Locking of folder is not supported", "lock");
 			else
-				client.lockResource(uri, m, new SimpleLock(lockId, zName, uName, expiration)); 
+				client.lockResource(uri, m, new SimpleLock(lockId, zoneName, userName, expiration)); 
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "lock");

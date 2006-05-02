@@ -255,9 +255,19 @@
 	<servlet>
 		<servlet-name>SiteScapeServlet</servlet-name>
 		<servlet-class>com.sitescape.ef.ssfs.web.servlet.SiteScapeServlet</servlet-class>
+		<!-- Context root path for SSF web app. If not specified, defaults to "/ssf". -->
 		<init-param>
-			<param-name>contextPath</param-name>
+			<param-name>ssfContextPath</param-name>
 			<param-value>/ssf</param-value>
+		</init-param>
+		<!-- Default zone name assumed when users log into SSFS without specifying zone name.
+		     If not specified here, no default zone name is used and users must always
+		     provide both zone and user names when logging in. Using default is useful
+		     when there is only one zone in the installation or small number of zones
+		     exist with one of them being accessed much more frequently than others. -->
+		<init-param>
+			<param-name>defaultZoneName</param-name>
+			<param-value>liferay.com</param-value>
 		</init-param>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
