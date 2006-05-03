@@ -14,6 +14,13 @@ public class FileItem  {
     private long length=0;
    
     /**
+     * This method name might be a bit misleading because it returns not just
+     * name portion of the file but its pathname as well if it exists. 
+     * (eg. /abc/xyz/foo.txt).  
+     * 
+     * Implementation Note: Given the fact that the path could be deep,
+     * is 256 characters enough to store them?
+     * 
      * @hibernate.property length="256" column="fileName"
      * @return
      */
