@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.ef.ConfigurationException;
+import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.domain.DefinableEntity;
@@ -31,7 +32,7 @@ public class RepositoryServiceUtil {
 	
 	public static int fileInfo(String repositoryServiceName,
 			Binder binder, DefinableEntity entry, String fileName)
-		throws RepositoryServiceException {
+		throws RepositoryServiceException, UncheckedIOException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 
 		Object session = service.openRepositorySession();
@@ -45,7 +46,8 @@ public class RepositoryServiceUtil {
 	}
 	
 	public static String createVersioned(Binder binder, DefinableEntity entry,
-			FileUploadItem fui) throws RepositoryServiceException {
+			FileUploadItem fui) throws RepositoryServiceException,
+			UncheckedIOException {
 		String repositoryServiceName = fui.getRepositoryServiceName();
 
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
@@ -75,7 +77,7 @@ public class RepositoryServiceUtil {
 
 	public static void createUnversioned(String repositoryServiceName,
 			Binder binder, DefinableEntity entry, String fileName, InputStream in) 
-		throws RepositoryServiceException {
+		throws RepositoryServiceException, UncheckedIOException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 
 		Object session = service.openRepositorySession();
@@ -89,7 +91,8 @@ public class RepositoryServiceUtil {
 	}
 
 	public static void update(Binder binder, DefinableEntity entry,
-			FileUploadItem fui) throws RepositoryServiceException {
+			FileUploadItem fui) throws RepositoryServiceException,
+			UncheckedIOException {
 		String repositoryServiceName = fui.getRepositoryServiceName();
 
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
@@ -116,7 +119,8 @@ public class RepositoryServiceUtil {
 	}
 	
 	public static void delete(String repositoryServiceName, Binder binder,
-			DefinableEntity entry, String fileName) throws RepositoryServiceException {
+			DefinableEntity entry, String fileName) 
+		throws RepositoryServiceException, UncheckedIOException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 		Object session = service.openRepositorySession();
 		try {
@@ -128,7 +132,7 @@ public class RepositoryServiceUtil {
 
 	public static void read(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry, String fileName, OutputStream out)
-			throws RepositoryServiceException {
+			throws RepositoryServiceException, UncheckedIOException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 		Object session = service.openRepositorySession();
 		try {
@@ -140,7 +144,7 @@ public class RepositoryServiceUtil {
 
 	public static InputStream read(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry, String fileName)
-			throws RepositoryServiceException {
+			throws RepositoryServiceException, UncheckedIOException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 		Object session = service.openRepositorySession();
 		try {
@@ -152,7 +156,7 @@ public class RepositoryServiceUtil {
 
 	public static void checkout(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry, String fileName)
-			throws RepositoryServiceException {
+			throws RepositoryServiceException, UncheckedIOException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 		Object session = service.openRepositorySession();
 		try {
@@ -164,7 +168,7 @@ public class RepositoryServiceUtil {
 
 	public static void uncheckout(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry,String fileName)
-			throws RepositoryServiceException {
+			throws RepositoryServiceException, UncheckedIOException {
 		RepositoryService service = lookupRepositoryService(repositoryServiceName);
 		Object session = service.openRepositorySession();
 		try {
@@ -186,6 +190,6 @@ public class RepositoryServiceUtil {
 
 	public static String getDefaultRepositoryServiceName() {
 		return SPropsUtil.getString("default.repository.service",
-				"internalWebdavRepositoryService");
+				"fileRepositoryService");
 	}
 }

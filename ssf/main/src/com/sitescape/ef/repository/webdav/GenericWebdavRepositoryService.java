@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
@@ -35,25 +36,25 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 		this.docRootDir = docRootDir;
 	}
 	
-	public Object openRepositorySession() throws RepositoryServiceException{
+	public Object openRepositorySession() throws RepositoryServiceException, UncheckedIOException{
 		try {
 			return openResource();
 		} catch (IOException e) {
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 	
-	public void closeRepositorySession(Object session) throws RepositoryServiceException{
+	public void closeRepositorySession(Object session) throws RepositoryServiceException, UncheckedIOException{
 		try {
 			((SWebdavResource) session).close();
 		} catch (IOException e) {
-			throw new RepositoryServiceException(e);			
+			throw new UncheckedIOException(e);			
 		}
 	}
 
 	public String createVersioned(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, MultipartFile mf) 
-		throws RepositoryServiceException {
+		throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -61,110 +62,110 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 					mf.getInputStream(), true);
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
 
 	public String createVersioned(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in) throws RepositoryServiceException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
 			return createResource(wdr, binder, entry, relativeFilePath, in, true);
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}	
 	}
 
 	public void createUnversioned(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in) throws RepositoryServiceException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
 			createResource(wdr, binder, entry, relativeFilePath, in, false);
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}	
 	}
 
 	public void update(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, MultipartFile mf) 
-		throws RepositoryServiceException {
+		throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
 			updateResource(wdr, binder, entry, relativeFilePath, mf.getInputStream());
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
 	public void update(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in) throws RepositoryServiceException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
 			updateResource(wdr, binder, entry, relativeFilePath, in);
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}	
 	}
 	
 	public void delete(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
 			deleteResource(wdr, binder, entry, relativeFilePath);
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}		
 	}
 	
 	public void read(Object session, Binder binder, DefinableEntity entry, String relativeFilePath, 
-			OutputStream out) throws RepositoryServiceException {	
+			OutputStream out) throws RepositoryServiceException, UncheckedIOException {	
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
 			readResource(wdr, getResourcePath(binder, entry, relativeFilePath), out);
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
 	public InputStream read(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {	
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {	
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
 			return wdr.getMethodData(getResourcePath(binder, entry, relativeFilePath));
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
 	// obsolete
-	public void readVersion(Object session, String fileVersionURI, OutputStream out) throws RepositoryServiceException {
+	public void readVersion(Object session, String fileVersionURI, OutputStream out) throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
 			readResource(wdr, fileVersionURIToResourcePath(fileVersionURI), out);
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
 	public void readVersion(Object session, Binder binder, DefinableEntity entry, String relativeFilePath, 
-			String versionName, OutputStream out) throws RepositoryServiceException {
+			String versionName, OutputStream out) throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -174,31 +175,31 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			readResource(wdr, versionResourcePath, out);
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
 	public List getVersionNames(Object session, Binder binder, DefinableEntity entry, String relativeFilePath) 
-		throws RepositoryServiceException {
+		throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
 			return WebdavUtil.getVersionNames(wdr, getResourcePath(binder, entry, relativeFilePath));
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
 	public DataSource getDataSource(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, FileTypeMap fileTypeMap)		
-		throws RepositoryServiceException {
+		throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;		
 		return new WebDavDataSource(wdr, getResourcePath(binder, entry, relativeFilePath), relativeFilePath, fileTypeMap);
 	}
 	public DataSource getDataSourceVersion(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName, FileTypeMap fileTypeMap)		
-		throws RepositoryServiceException {
+		throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -208,12 +209,12 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}	
 	// obsolete
 	public List fileVersionsURIs(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -229,12 +230,12 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
 	public void checkout(Object session, Binder binder, DefinableEntity entry, String relativeFilePath) 
-		throws RepositoryServiceException {
+		throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -256,11 +257,11 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			}
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
-	public void uncheckout(Object session, Binder binder, DefinableEntity entry, String relativeFilePath) throws RepositoryServiceException {
+	public void uncheckout(Object session, Binder binder, DefinableEntity entry, String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -272,12 +273,12 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			}
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
 	public String checkin(Object session, Binder binder, DefinableEntity entry, String relativeFilePath) 
-		throws RepositoryServiceException {
+		throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -308,12 +309,12 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			return versionName;
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 	
 	public boolean isCheckedOut(Object session, Binder binder, DefinableEntity entry, String relativeFilePath) 
-		throws RepositoryServiceException {
+		throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -322,12 +323,12 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			return isCheckedOut(wdr, resourcePath);
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 	
 	/*
-	public boolean exists(Object session, Binder binder, DefinableEntity entry, String relativeFilePath) throws RepositoryServiceException {
+	public boolean exists(Object session, Binder binder, DefinableEntity entry, String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -342,7 +343,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 
 	public long getContentLength(Object session, Binder binder, 
 			DefinableEntity entry, String relativeFilePath) 
-		throws RepositoryServiceException {
+		throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -353,13 +354,13 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			return wdr.getGetContentLength();
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 	
 	public long getContentLength(Object session, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, String versionName) 
-		throws RepositoryServiceException {
+		throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -371,13 +372,13 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			return wdr.getGetContentLength();
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 	
 	/*
 	public boolean isVersioned(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -398,7 +399,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	
 
 	public int fileInfo(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		SWebdavResource wdr = (SWebdavResource) session;
 		
 		try {
@@ -417,7 +418,7 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 			}
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}	
 	}
 	
@@ -474,14 +475,14 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	
 	protected String getVersionResourcePath(SWebdavResource wdr, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, String versionName) 
-		throws RepositoryServiceException, HttpException, IOException {
+		throws RepositoryServiceException, UncheckedIOException, HttpException, IOException {
 		return getVersionResourcePath(wdr, getResourcePath(binder, entry, relativeFilePath),
 				versionName);
 	}
 	
 	protected String getVersionResourcePath(SWebdavResource wdr,
 			String versionControlledResourcePath, String versionName) 
-		throws RepositoryServiceException, HttpException, IOException {
+		throws RepositoryServiceException, UncheckedIOException, HttpException, IOException {
 		String versionHistoryResourcePath = getVersionHistoryResourcePath(wdr,
 				versionControlledResourcePath);
 		

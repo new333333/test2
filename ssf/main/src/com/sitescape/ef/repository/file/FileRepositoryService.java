@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -21,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Binder;
@@ -59,16 +59,16 @@ public class FileRepositoryService implements RepositoryService {
 		this.subDirName = subDirName;
 	}
 
-	public Object openRepositorySession() throws RepositoryServiceException {
+	public Object openRepositorySession() throws RepositoryServiceException, UncheckedIOException {
 		// This file repository service maintains no connection or session.
 		return null;
 	}
 
-	public void closeRepositorySession(Object session) throws RepositoryServiceException {
+	public void closeRepositorySession(Object session) throws RepositoryServiceException, UncheckedIOException {
 	}
 	
 	public String createVersioned(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
+			String relativeFilePath, MultipartFile mf) throws RepositoryServiceException, UncheckedIOException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
         try {
@@ -85,12 +85,12 @@ public class FileRepositoryService implements RepositoryService {
 			throw new RepositoryServiceException(e);
 
 		} catch (IOException e) {
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
 	public String createVersioned(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in) throws RepositoryServiceException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
 		try {
@@ -105,12 +105,12 @@ public class FileRepositoryService implements RepositoryService {
 			return versionName;
 		}
 		catch(IOException e) {
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
 	public void createUnversioned(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in) throws RepositoryServiceException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
 		try {
@@ -132,12 +132,12 @@ public class FileRepositoryService implements RepositoryService {
 			}
 		}
 		catch(IOException e) {
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
 	public void update(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath, MultipartFile mf) throws RepositoryServiceException {
+			String relativeFilePath, MultipartFile mf) throws RepositoryServiceException, UncheckedIOException {
 		
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
@@ -166,12 +166,12 @@ public class FileRepositoryService implements RepositoryService {
 			throw new RepositoryServiceException(e);
 		} 
 		catch (IOException e) {
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}			
 	}
 
 	public void update(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in) throws RepositoryServiceException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
@@ -197,12 +197,12 @@ public class FileRepositoryService implements RepositoryService {
 			}
 		}
 		catch (IOException e) {
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}			
 	}
 	
 	public void delete(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		// Since this operation may involve deleting multiple files, it is 
 		// tricky to deal with error conditions precisely. For now, I'll 
 		// take simplistic approach of throwing an exception on the first
@@ -232,7 +232,7 @@ public class FileRepositoryService implements RepositoryService {
 			}
 			catch(IOException e) {
 				logger.error("Error deleting file [" + tempFile.getAbsolutePath() + "]");
-				throw new RepositoryServiceException(e);
+				throw new UncheckedIOException(e);
 			}
 		}
 		
@@ -248,7 +248,7 @@ public class FileRepositoryService implements RepositoryService {
 			}
 			catch(IOException e) {
 				logger.error("Error deleting file [" + versionFile.getAbsolutePath() + "]");			
-				throw new RepositoryServiceException(e);
+				throw new UncheckedIOException(e);
 			}
 		}
 		
@@ -260,31 +260,31 @@ public class FileRepositoryService implements RepositoryService {
 		}
 		catch(IOException e) {
 			logger.error("Error deleting file [" + unversionedFile.getAbsolutePath() + "]");
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}			
 	}
 
 	public void read(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath, OutputStream out) throws RepositoryServiceException {
+			String relativeFilePath, OutputStream out) throws RepositoryServiceException, UncheckedIOException {
 		File file = getFileForRead(session, binder, entry, relativeFilePath);
 		
 		readFile(file, out);
 	}
 
 	public InputStream read(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		File file = getFileForRead(session, binder, entry, relativeFilePath);
 		
 		try {
 			return new FileInputStream(file);
 		}
 		catch(IOException e) {
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}	
 	}
 
 	public void readVersion(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath, String versionName, OutputStream out) throws RepositoryServiceException {
+			String relativeFilePath, String versionName, OutputStream out) throws RepositoryServiceException, UncheckedIOException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
 		if(fileInfo == VERSIONED_FILE) {
@@ -303,7 +303,7 @@ public class FileRepositoryService implements RepositoryService {
 	}
 
 	public int fileInfo(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
 		
 		if(unversionedFile.exists()) {
@@ -324,7 +324,7 @@ public class FileRepositoryService implements RepositoryService {
 	
 	public DataSource getDataSource(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, FileTypeMap fileTypeMap)		
-		throws RepositoryServiceException {
+		throws RepositoryServiceException, UncheckedIOException {
 		File latestFile = getLatestFile(binder, entry, relativeFilePath);
 		FileDataSource fSource = new FileDataSource(latestFile);
 		fSource.setFileTypeMap(fileTypeMap);
@@ -332,7 +332,7 @@ public class FileRepositoryService implements RepositoryService {
 	}
 	public DataSource getDataSourceVersion(Object session, Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName, FileTypeMap fileTypeMap)		
-		throws RepositoryServiceException {
+		throws RepositoryServiceException, UncheckedIOException {
 		File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
 		FileDataSource fSource = new FileDataSource(versionFile);
 		fSource.setFileTypeMap(fileTypeMap);
@@ -340,7 +340,7 @@ public class FileRepositoryService implements RepositoryService {
 	}	
 	
 	public void checkout(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
 		if(fileInfo == VERSIONED_FILE) {
@@ -359,7 +359,7 @@ public class FileRepositoryService implements RepositoryService {
 						throw new RepositoryServiceException("No version file is found");
 					}
 				} catch (IOException e) {
-					throw new RepositoryServiceException(e);
+					throw new UncheckedIOException(e);
 				}
 			}
 		}
@@ -374,7 +374,7 @@ public class FileRepositoryService implements RepositoryService {
 	}
 
 	public void uncheckout(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
 		if(fileInfo == VERSIONED_FILE) {
@@ -385,7 +385,7 @@ public class FileRepositoryService implements RepositoryService {
 				try {
 					FileHelper.delete(tempFile);
 				} catch (IOException e) {
-					throw new RepositoryServiceException(e);
+					throw new UncheckedIOException(e);
 				}
 			}
 		}
@@ -400,7 +400,7 @@ public class FileRepositoryService implements RepositoryService {
 	}
 
 	public String checkin(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
 		if(fileInfo == VERSIONED_FILE) {
@@ -414,7 +414,7 @@ public class FileRepositoryService implements RepositoryService {
 			    try {
 					FileHelper.move(tempFile, versionFile);
 				} catch (IOException e) {
-					throw new RepositoryServiceException(e);
+					throw new UncheckedIOException(e);
 				}
 				
 				return versionName;
@@ -434,7 +434,7 @@ public class FileRepositoryService implements RepositoryService {
 	}
 
 	public boolean isCheckedOut(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		File tempFile = getTempFile(binder, entry, relativeFilePath);
 		
 		return tempFile.exists();
@@ -447,7 +447,7 @@ public class FileRepositoryService implements RepositoryService {
 
 	/*
 	public boolean exists(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		String[] versionFileNames = getVersionFileNames(binder, entry, relativeFilePath);
 		if(versionFileNames == null || versionFileNames.length == 0)
 			return false;
@@ -456,7 +456,7 @@ public class FileRepositoryService implements RepositoryService {
 	}*/
 
 	public long getContentLength(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
 		if(fileInfo == VERSIONED_FILE) {
@@ -476,7 +476,7 @@ public class FileRepositoryService implements RepositoryService {
 	}
 	
 	public long getContentLength(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath, String versionName) throws RepositoryServiceException {
+			String relativeFilePath, String versionName) throws RepositoryServiceException, UncheckedIOException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
 		if(fileInfo == VERSIONED_FILE) {
@@ -698,12 +698,12 @@ public class FileRepositoryService implements RepositoryService {
 		return new File(file.getParent(), tempFileName);		
 	}
 
-	private void readFile(File file, OutputStream out) throws RepositoryServiceException {
+	private void readFile(File file, OutputStream out) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			FileCopyUtils.copy(new BufferedInputStream(new FileInputStream(file)), out);
 		} 
 		catch (IOException e) {
-			throw new RepositoryServiceException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
@@ -723,7 +723,7 @@ public class FileRepositoryService implements RepositoryService {
 	}
 	
 	private File getFileForRead(Object session, Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		int fileInfo = fileInfo(session, binder, entry, relativeFilePath);
 		
 		if(fileInfo == VERSIONED_FILE) {
