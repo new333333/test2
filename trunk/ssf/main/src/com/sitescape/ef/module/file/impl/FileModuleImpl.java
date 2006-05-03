@@ -19,6 +19,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.InternalException;
+import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
@@ -33,11 +34,8 @@ import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.module.file.CheckedOutByOtherException;
 import com.sitescape.ef.module.file.ContentFilter;
 import com.sitescape.ef.module.file.FilesErrors;
-import com.sitescape.ef.module.file.FileException;
 import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.file.FilterException;
-import com.sitescape.ef.module.file.NoSuchFileException;
-import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
@@ -147,167 +145,121 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 
 	public void deleteFiles(Binder binder, DefinableEntity entry) {
-		try {
-			List fAtts = entry.getFileAttachments();
-			for(int i = 0; i < fAtts.size(); i++) {
-				FileAttachment fAtt = (FileAttachment) fAtts.get(i);
-	
-				deleteFile(binder, entry, fAtt);
-			}
-		}
-		catch(RepositoryServiceException e) {
-			throw new FileException(e);
-		}
-	}
-	
-	public void deleteFile(Binder binder,
-			DefinableEntity entry, String repositoryServiceName, String fileName) {
-		try {
-			FileAttachment fAtt = entry.getFileAttachment(
-					repositoryServiceName, fileName);
-
-			if (fAtt == null)
-				throw new NoSuchFileException(entry, fileName);
+		List fAtts = entry.getFileAttachments();
+		for(int i = 0; i < fAtts.size(); i++) {
+			FileAttachment fAtt = (FileAttachment) fAtts.get(i);
 
 			deleteFile(binder, entry, fAtt);
-		} catch (RepositoryServiceException e) {
-			throw new FileException(e);
 		}
 	}
 	
-	public void readFile(Binder binder,
-			DefinableEntity entry, String repositoryServiceName, String fileName, OutputStream out) {
+	public void deleteFile(Binder binder, DefinableEntity entry,
+			FileAttachment fAtt) {
+		forceUncheckoutIfNecessary(binder, entry, fAtt);
+
+		String relativeFilePath = fAtt.getFileItem().getName();
+		String repositoryServiceName = fAtt.getRepositoryServiceName();
+
+		RepositoryService service = RepositoryServiceUtil
+				.lookupRepositoryService(repositoryServiceName);
+
+		Object session = service.openRepositorySession();
+
 		try {
-			FileAttachment fAtt = entry.getFileAttachment(
-					repositoryServiceName, fileName);
+			// Delete primary file
+			service.delete(session, binder, entry, relativeFilePath);
 
-			if (fAtt == null)
-				throw new NoSuchFileException(entry, fileName);
+			// Currently we do not store metadata about "generated" files
+			// (should
+			// we?). Unfortunately this results in clumsy and less efficient
+			// attempt at deleting those files.
 
-			RepositoryServiceUtil.read(repositoryServiceName, binder, entry,
-					fileName, out);
-		} catch (RepositoryServiceException e) {
-			throw new FileException(e);
+			// Try deleting scaled file if exists
+			String scaledFileName = makeScaledFileName(relativeFilePath);
+			if (service.fileInfo(session, binder, entry, scaledFileName) != RepositoryService.NON_EXISTING_FILE) {
+				try {
+					service.delete(session, binder, entry, scaledFileName);
+				} catch (RepositoryServiceException e) {
+					// Don't let the failure to delete generated file abort the
+					// entire operation. Log and proceed.
+					logger.warn(e.getMessage(), e);
+				}
+			}
+
+			// Try deleting thumbnail file if exists
+
+			// Directly-accessible thumbnail file?
+			File directlyAccessibleThumbnailFile = getDirectlyAccessibleThumbnailFile(
+					entry, relativeFilePath);
+			try {
+				FileHelper.delete(directlyAccessibleThumbnailFile);
+			} catch (IOException e) {
+				logger.warn(e.getMessage(), e);
+			}
+
+			// thumbnail file stored in repository?
+			String thumbnailFileName = makeThumbnailFileName(relativeFilePath);
+			if (service.fileInfo(session, binder, entry, thumbnailFileName) != RepositoryService.NON_EXISTING_FILE) {
+				try {
+					service.delete(session, binder, entry, thumbnailFileName);
+				} catch (RepositoryServiceException e) {
+					logger.warn(e.getMessage(), e);
+				}
+			}
+		} finally {
+			service.closeRepositorySession(session);
 		}
-	}
 
-	public InputStream readFile(Binder binder,
-			DefinableEntity entry, String repositoryServiceName, String fileName) {
-		try {
-			FileAttachment fAtt = entry.getFileAttachment(
-					repositoryServiceName, fileName);
-
-			if (fAtt == null)
-				throw new NoSuchFileException(entry, fileName);
-
-			return RepositoryServiceUtil.read(repositoryServiceName, binder, entry,
-					fileName);
-		} catch (RepositoryServiceException e) {
-			throw new FileException(e);
-		}
+		// Remove metadata
+		removeAttachmentMetadata(entry, fAtt);
 	}
 
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
-		try {
-			String repositoryServiceName = fa.getRepositoryServiceName();
-			if(repositoryServiceName == null)
-				repositoryServiceName = RepositoryServiceUtil.getDefaultRepositoryServiceName();
-			
-	    	RepositoryServiceUtil.read(repositoryServiceName, binder, entry, 
-					fa.getFileItem().getName(), out);
-		}
-		catch(RepositoryServiceException e) {
-			throw new FileException(e);
-		}
+		String repositoryServiceName = fa.getRepositoryServiceName();
+		if(repositoryServiceName == null)
+			repositoryServiceName = RepositoryServiceUtil.getDefaultRepositoryServiceName();
+		
+    	RepositoryServiceUtil.read(repositoryServiceName, binder, entry, 
+				fa.getFileItem().getName(), out);
 	}
 	
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
-		try {
-			String repositoryServiceName = fa.getRepositoryServiceName();
-			if(repositoryServiceName == null)
-				repositoryServiceName = RepositoryServiceUtil.getDefaultRepositoryServiceName();
-			
-	    	return RepositoryServiceUtil.read(repositoryServiceName, binder, entry, 
-					fa.getFileItem().getName());
-		}
-		catch(RepositoryServiceException e) {
-			throw new FileException(e);
-		}
-	}
-	
-	public boolean scaledFileExists(Binder binder, 
-			DefinableEntity entry, String repositoryServiceName, String primaryFileName) throws NoSuchFileException, FileException {
-		FileAttachment fAtt = null;
-		try {
-			fAtt = entry.getFileAttachment(
-					repositoryServiceName, primaryFileName);
-
-		}
-		catch(RepositoryServiceException e) {
-			throw new FileException(e);
-		}
-		if (fAtt == null)
-			throw new NoSuchFileException(entry, primaryFileName);
+		String repositoryServiceName = fa.getRepositoryServiceName();
+		if(repositoryServiceName == null)
+			repositoryServiceName = RepositoryServiceUtil.getDefaultRepositoryServiceName();
 		
-		return scaledFileExists(binder, entry, fAtt);
+    	return RepositoryServiceUtil.read(repositoryServiceName, binder, entry, 
+				fa.getFileItem().getName());
 	}
 	
 	public boolean scaledFileExists(Binder binder, 
-			DefinableEntity entry, FileAttachment fAtt) throws NoSuchFileException, FileException {
-		try {
-			if (fAtt == null)
-				throw new IllegalArgumentException("FileAttachment must be passed in");
+			DefinableEntity entry, FileAttachment fAtt) {
+		if (fAtt == null)
+			throw new IllegalArgumentException("FileAttachment must be passed in");
 
-			int fileInfo = RepositoryServiceUtil.fileInfo(fAtt.getRepositoryServiceName(), 
-					binder, entry, makeScaledFileName(fAtt.getFileItem().getName()));
-			
-			if(fileInfo == RepositoryService.UNVERSIONED_FILE)
-				return true;
-			else if(fileInfo == RepositoryService.NON_EXISTING_FILE)
-				return false;
-			else
-				throw new InternalException();
-		}
-		catch(RepositoryServiceException e) {
-			throw new FileException(e);
-		}
+		int fileInfo = RepositoryServiceUtil.fileInfo(fAtt.getRepositoryServiceName(), 
+				binder, entry, makeScaledFileName(fAtt.getFileItem().getName()));
+		
+		if(fileInfo == RepositoryService.UNVERSIONED_FILE)
+			return true;
+		else if(fileInfo == RepositoryService.NON_EXISTING_FILE)
+			return false;
+		else
+			throw new InternalException();
 	}
-	
-	public boolean thumbnailFileExists(Binder binder, 
-			DefinableEntity entry, String repositoryServiceName, String primaryFileName) throws NoSuchFileException, FileException {
-		try {
-			FileAttachment fAtt = entry.getFileAttachment(
-					repositoryServiceName, primaryFileName);
 
-			if (fAtt == null)
-				throw new NoSuchFileException(entry, primaryFileName);
-
-			int fileInfo = RepositoryServiceUtil.fileInfo(repositoryServiceName, 
-					binder, entry, makeThumbnailFileName(primaryFileName));
-			
-			if(fileInfo == RepositoryService.UNVERSIONED_FILE)
-				return true;
-			else if(fileInfo == RepositoryService.NON_EXISTING_FILE)
-				return false;
-			else
-				throw new InternalException();
-		}
-		catch(RepositoryServiceException e) {
-			throw new FileException(e);
-		}
-	}
-	
+	/*
 	public HistoryStamp getCheckoutInfo(
-			Binder binder, DefinableEntity entry, String repositoryServiceName, String fileName) {
-		FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
-		return fAtt.getCheckout();
-	}
+			Binder binder, DefinableEntity entry, FileAttachment fa) {
+		return fa.getCheckout();
+	}*/
 
+	/*
 	public void checkout(Binder binder, 
-			DefinableEntity entry, String repositoryServiceName, String fileName) {
+			DefinableEntity entry, String repositoryServiceName, String relativeFilePath) {
 		try {
-			checkoutInternal(repositoryServiceName, binder, entry, fileName);
+			checkoutInternal(repositoryServiceName, binder, entry, relativeFilePath);
 		}
 		catch(RepositoryServiceException e) {
 			throw new FileException(e);
@@ -315,9 +267,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	public void uncheckout(Binder binder, 
-			DefinableEntity entry, String repositoryServiceName, String fileName) {
+			DefinableEntity entry, String repositoryServiceName, String relativeFilePath) {
 		try {
-			uncheckoutInternal(repositoryServiceName, binder, entry, fileName);
+			uncheckoutInternal(repositoryServiceName, binder, entry, relativeFilePath);
 		}
 		catch(RepositoryServiceException e) {
 			throw new FileException(e);
@@ -325,64 +277,59 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 
 	public void checkin(Binder binder, 
-			DefinableEntity entry, String repositoryServiceName, String fileName) {
+			DefinableEntity entry, String repositoryServiceName, String relativeFilePath) {
 		try {
-			checkinInternal(repositoryServiceName, binder, entry, fileName);
+			checkinInternal(repositoryServiceName, binder, entry, relativeFilePath);
 		}
 		catch(RepositoryServiceException e) {
 			throw new FileException(e);
 		}
 	}
-	
-	public void readScaledFile(Binder binder, 
-			DefinableEntity entry, String repositoryServiceName, String fileName, OutputStream out) {
-		RepositoryServiceUtil.read(repositoryServiceName, binder, entry, makeScaledFileName(fileName), out);
-	}
+	*/
 	
 	public void readScaledFile(Binder binder, DefinableEntity entry, FileAttachment fa, OutputStream out) {
-		readScaledFile(binder, entry, fa.getRepositoryServiceName(), 
-				fa.getFileItem().getName(), out);
+		RepositoryServiceUtil.read(fa.getRepositoryServiceName(), binder, entry, makeScaledFileName(fa.getFileItem().getName()), out);
 	}
 	
 	public void readIndirectlyAccessibleThumbnailFile(
-			Binder binder, DefinableEntity entry, String repositoryServiceName, String fileName, OutputStream out) {
-		RepositoryServiceUtil.read(repositoryServiceName, binder, entry, makeThumbnailFileName(fileName), out);	
+			Binder binder, DefinableEntity entry, String repositoryServiceName, String relativeFilePath, OutputStream out) {
+		RepositoryServiceUtil.read(repositoryServiceName, binder, entry, makeThumbnailFileName(relativeFilePath), out);	
 	}
 	
 	public void readIndirectlyAccessibleThumbnailFile(
 			Binder binder, DefinableEntity entry, FileAttachment fa, OutputStream out) {
-		readIndirectlyAccessibleThumbnailFile(
-				binder, entry, fa.getRepositoryServiceName(), fa.getFileItem().getName(), out);
+		RepositoryServiceUtil.read(fa.getRepositoryServiceName(), binder, entry, makeThumbnailFileName(fa.getFileItem().getName()), out);	
 	}
 	
 	public void generateScaledFile(Binder binder, 
-			DefinableEntity entry, String repositoryServiceName, String fileName, int maxWidth, int maxHeight) {
+			DefinableEntity entry, FileAttachment fa, int maxWidth, int maxHeight) {
+		String repositoryServiceName = fa.getRepositoryServiceName();
+		String relativeFilePath = fa.getFileItem().getName();
+		
+		RepositoryService service = RepositoryServiceUtil.lookupRepositoryService(repositoryServiceName);
+		
+		Object session = service.openRepositorySession();
+		
 		try {
-			RepositoryService service = RepositoryServiceUtil.lookupRepositoryService(repositoryServiceName);
-			
-			Object session = service.openRepositorySession();
-			
-			try {
-				// Read the input file from the repository into a byte array. 
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
-				service.read(session, binder, entry, fileName, baos);
-		
-				generateAndStoreScaledFile(service, session, binder, entry, 
-						fileName, baos.toByteArray(), maxWidth, maxHeight);
-			}
-			finally {
-				service.closeRepositorySession(session);
-			}
+			// Read the input file from the repository into a byte array. 
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	
+			service.read(session, binder, entry, relativeFilePath, baos);
+	
+			generateAndStoreScaledFile(service, session, binder, entry, 
+					relativeFilePath, baos.toByteArray(), maxWidth, maxHeight);
 		}
-		catch(RepositoryServiceException e) {
-			throw new FileException(e);
-		}		
+		finally {
+			service.closeRepositorySession(session);
+		}	
 	}
 	
 	public void generateThumbnailFile(Binder binder, 
-			DefinableEntity entry, String repositoryServiceName, String fileName, int maxWidth, int maxHeight, 
+			DefinableEntity entry, FileAttachment fa, int maxWidth, int maxHeight, 
 			boolean thumbnailDirectlyAccessible) {
+		String repositoryServiceName = fa.getRepositoryServiceName();
+		String relativeFilePath = fa.getFileItem().getName();
+
 		try {
 			RepositoryService service = RepositoryServiceUtil.lookupRepositoryService(repositoryServiceName);
 			
@@ -392,24 +339,21 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				// Read the input file from the repository into a byte array. 
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		
-				service.read(session, binder, entry, fileName, baos);
+				service.read(session, binder, entry, relativeFilePath, baos);
 		
 				generateAndStoreThumbnailFile(service, session, binder, entry, 
-						fileName, baos.toByteArray(), maxWidth, maxHeight, thumbnailDirectlyAccessible);
+						relativeFilePath, baos.toByteArray(), maxWidth, maxHeight, thumbnailDirectlyAccessible);
 			}
 			finally {
 				service.closeRepositorySession(session);
 			}
 		}
 		catch(FileNotFoundException e) {
-			throw new FileException(e);
+			throw new UncheckedIOException(e);
 		}
 		catch(IOException e) {
-			throw new FileException(e);
-		}
-		catch(RepositoryServiceException e) {
-			throw new FileException(e);
-		}		
+			throw new UncheckedIOException(e);
+		}	
 	}
 	
 	/**
@@ -419,9 +363,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	 * primary file only once. 
 	 */
 	public void generateFiles(Binder binder, 
-			DefinableEntity entry, String repositoryServiceName, String fileName, int maxWidth, int maxHeight, 
+			DefinableEntity entry, FileAttachment fa, int maxWidth, int maxHeight, 
 			int thumbnailMaxWidth, int thumbnailMaxHeight, 
 			boolean thumbnailDirectlyAccessible) {
+		String repositoryServiceName = fa.getRepositoryServiceName();
+		String relativeFilePath = fa.getFileItem().getName();
+
 		try {
 			RepositoryService service = RepositoryServiceUtil.lookupRepositoryService(repositoryServiceName);
 			
@@ -431,28 +378,25 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				// Read the input file from the repository into a byte array. 
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		
-				service.read(session, binder, entry, fileName, baos);
+				service.read(session, binder, entry, relativeFilePath, baos);
 		
 				// Generate and store scaled file.
 				generateAndStoreScaledFile(service, session, binder, entry, 
-						fileName, baos.toByteArray(), maxWidth, maxHeight);
+						relativeFilePath, baos.toByteArray(), maxWidth, maxHeight);
 				
 				// Generate and store thumbnail file.
 				generateAndStoreThumbnailFile(service, session, binder, entry, 
-						fileName, baos.toByteArray(), maxWidth, maxHeight, thumbnailDirectlyAccessible);
+						relativeFilePath, baos.toByteArray(), maxWidth, maxHeight, thumbnailDirectlyAccessible);
 			}
 			finally {
 				service.closeRepositorySession(session);
 			}
 		}
 		catch(FileNotFoundException e) {
-			throw new FileException(e);
+			throw new UncheckedIOException(e);
 		}
 		catch(IOException e) {
-			throw new FileException(e);
-		}
-		catch(RepositoryServiceException e) {
-			throw new FileException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 	
@@ -615,11 +559,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void checkinInternal(String repositoryServiceName, Binder binder, 
-			DefinableEntity entry, String fileName) {
-    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
-    	
-    	if(fAtt == null)
-    		throw new NoSuchFileException(entry, fileName);
+			DefinableEntity entry, String relativeFilePath) {
+    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, relativeFilePath);
     	
         User user = RequestContextHolder.getRequestContext().getUser();
         
@@ -638,13 +579,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			String versionName = null;
     			long contentLength = 0;
     			try {
-    				versionName = service.checkin(session, binder, entry, fileName);
+    				versionName = service.checkin(session, binder, entry, relativeFilePath);
     				if(versionName == null)
     					throw new InternalException();
     				if(versionName != null)
-    					contentLength = service.getContentLength(session, binder, entry, fileName, versionName);
+    					contentLength = service.getContentLength(session, binder, entry, relativeFilePath, versionName);
     				else
-    					contentLength = service.getContentLength(session, binder, entry, fileName);
+    					contentLength = service.getContentLength(session, binder, entry, relativeFilePath);
     			} finally {
     				service.closeRepositorySession(session);
     			}
@@ -656,18 +597,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		}
     		else {
     			// The file is checked out by some other person. 
-    			throw new CheckedOutByOtherException(entry, fileName, user);
+    			throw new CheckedOutByOtherException(entry, relativeFilePath, user);
     		}
     	}
 		
 	}
 	
 	private void uncheckoutInternal(String repositoryServiceName, Binder binder, 
-			DefinableEntity entry, String fileName) {
-    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
-    	
-    	if(fAtt == null)
-    		throw new NoSuchFileException(entry, fileName);
+			DefinableEntity entry, String relativeFilePath) {
+    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, relativeFilePath);
     	
         User user = RequestContextHolder.getRequestContext().getUser();
         
@@ -680,23 +618,20 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		if(user.equals(co.getPrincipal())) {
     			// The file is checked out by the same person calling this. 
         		RepositoryServiceUtil.uncheckout(fAtt.getRepositoryServiceName(),
-        				binder, entry, fileName);
+        				binder, entry, relativeFilePath);
         		// Mark our metadata that the file is not checked out.
         		setCheckoutMetadata(fAtt, null);
     		}
     		else {
     			// The file is checked out by some other person. 
-    			throw new CheckedOutByOtherException(entry, fileName, user);
+    			throw new CheckedOutByOtherException(entry, relativeFilePath, user);
     		}
     	}
 	}
 
 	private void checkoutInternal(String repositoryServiceName, Binder binder, 
-			DefinableEntity entry, String fileName) {
-    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
-    	
-    	if(fAtt == null)
-    		throw new NoSuchFileException(entry, fileName);
+			DefinableEntity entry, String relativeFilePath) {
+    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, relativeFilePath);
     	
         User user = RequestContextHolder.getRequestContext().getUser();
         
@@ -711,7 +646,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		// the resource, but actual versioning of the content does not
     		// take place. 
     		RepositoryServiceUtil.checkout(fAtt.getRepositoryServiceName(),
-    				binder, entry, fileName);
+    				binder, entry, relativeFilePath);
     		// Mark our metadata that the file is checked out by the user.
     		setCheckoutMetadata(fAtt, new HistoryStamp(user));
     	}
@@ -722,7 +657,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		}
     		else {
     			// The file is checked out by some other person. 
-    			throw new CheckedOutByOtherException(entry, fileName, user);
+    			throw new CheckedOutByOtherException(entry, relativeFilePath, user);
     		}
     	}
 	}
@@ -744,7 +679,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			throw new InternalException();
 		}
 		
-		String fileName = fui.getOriginalFilename();
+		String relativeFilePath = fui.getOriginalFilename();
 		String repositoryServiceName = fui.getRepositoryServiceName();
 
 		// First, find out whether or not this is a new file for the entry.
@@ -753,7 +688,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		// In other words, regardless of the data elements used for accessing
 		// the file, the files are treated identical globally within a single
 		// Entry instance as long as their file names are identical. 
-    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, fileName);
+    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, relativeFilePath);
 
     	boolean isNew = false;
     	
@@ -786,11 +721,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		    		}
 	    		}
 	    		catch(Exception e) {
-	    			logger.error("Error storing file " + fileName, e);
+	    			logger.error("Error storing file " + relativeFilePath, e);
 	    			// We failed to write the primary file. In this case, we 
 	    			// discard the rest of the operation (i.e., step2 thru 4).
 	    			errors.addProblem(new FilesErrors.Problem
-	    					(repositoryServiceName, fileName, 
+	    					(repositoryServiceName, relativeFilePath, 
 	    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
 	    			return;
 	    		}
@@ -805,24 +740,24 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	        			//if(1==1)
 	        			//	throw new ThumbnailException("Fake error");
 	        			
-	        			generateAndStoreScaledFile(service, session, binder, entry, fileName,
+	        			generateAndStoreScaledFile(service, session, binder, entry, relativeFilePath,
 	        				primaryContent, fui.getMaxWidth(),fui.getMaxWidth());
 	        		}
 	        		catch(ThumbnailException e) {
 	        			// Scaling operation can fail for a variety of reasons, primarily
 	        			// when the file format is not supported. Do not cause this to
 	        			// fail the entire operation. Simply log it and proceed.  
-	        			logger.warn("Error generating scaled version of " + fileName, e);
+	        			logger.warn("Error generating scaled version of " + relativeFilePath, e);
 		    			errors.addProblem(new FilesErrors.Problem
-		    					(repositoryServiceName, fileName, 
+		    					(repositoryServiceName, relativeFilePath, 
 		    							FilesErrors.Problem.PROBLEM_GENERATING_SCALED_FILE, e));
 	        		}
 	        		catch(Exception e) {
 		    			// Failed to store scaled file. In this case, we report the 
 	        			// problem to the client but still proceed here.
-	        			logger.warn("Error storing scaled version of " + fileName, e);
+	        			logger.warn("Error storing scaled version of " + relativeFilePath, e);
 		    			errors.addProblem(new FilesErrors.Problem
-		    					(repositoryServiceName, fileName, 
+		    					(repositoryServiceName, relativeFilePath, 
 		    							FilesErrors.Problem.PROBLEM_STORING_SCALED_FILE, e));	        			
 	        		}
 	        	}    
@@ -831,19 +766,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	        	if(fui.getGenerateThumbnail()) {
 	        		try {
 	        			generateAndStoreThumbnailFile(service, session, binder, entry,
-	        				fileName, primaryContent, fui.getThumbnailMaxWidth(), 
+	        				relativeFilePath, primaryContent, fui.getThumbnailMaxWidth(), 
 	        				fui.getThumbnailMaxHeight(), fui.isThumbnailDirectlyAccessible());
 	        		}
 	        		catch(ThumbnailException e) {
-	        			logger.warn("Error generating thumbnail version of " + fileName, e);
+	        			logger.warn("Error generating thumbnail version of " + relativeFilePath, e);
 		    			errors.addProblem(new FilesErrors.Problem
-		    					(repositoryServiceName, fileName, 
+		    					(repositoryServiceName, relativeFilePath, 
 		    							FilesErrors.Problem.PROBLEM_GENERATING_THUMBNAIL_FILE, e));
 	        		}
 	        		catch(Exception e) {
-	        			logger.warn("Error storing thumbnail version of " + fileName, e);
+	        			logger.warn("Error storing thumbnail version of " + relativeFilePath, e);
 		    			errors.addProblem(new FilesErrors.Problem
-		    					(repositoryServiceName, fileName, 
+		    					(repositoryServiceName, relativeFilePath, 
 		    							FilesErrors.Problem.PROBLEM_STORING_THUMBNAIL_FILE, e));	        			
 	        		}
 	        	}
@@ -851,7 +786,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	else { // We do not need to generate secondary files. 	  
 	    		try {
 	    			//for testing only
-	    			//if(fileName.equals("junk.txt"))
+	    			//if(relativeFilePath.equals("junk.txt"))
 	    			//	throw new IllegalArgumentException("Something bad happend");
 	    			
 		    		InputStream is = fui.getInputStream();
@@ -877,9 +812,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		catch(Exception e) {
 	    			// We failed to write the primary file. In this case, we 
 	    			// discard the rest of the operation (i.e., step2 thru 4).
-	    			logger.error("Error storing file " + fileName, e);
+	    			logger.error("Error storing file " + relativeFilePath, e);
 	    			errors.addProblem(new FilesErrors.Problem
-	    					(repositoryServiceName, fileName, 
+	    					(repositoryServiceName, relativeFilePath, 
 	    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
 	    			return;
 	    		}
@@ -929,19 +864,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private void writeExistingFile(RepositoryService service, Object session,
     		Binder binder, DefinableEntity entry, FileUploadItem fui, Object inputData)
 		throws CheckedOutByOtherException, RepositoryServiceException {
-    	String fileName = fui.getOriginalFilename();
-    	FileAttachment fAtt = entry.getFileAttachment(fui.getRepositoryServiceName(), fileName);
+    	String relativeFilePath = fui.getOriginalFilename();
+    	FileAttachment fAtt = entry.getFileAttachment(fui.getRepositoryServiceName(), relativeFilePath);
     	User user = RequestContextHolder.getRequestContext().getUser();
 
     	String versionName = null;
     	HistoryStamp co = fAtt.getCheckout();
 		if(co == null) { // This file is not checked out by anyone.
 			// In this case we create a new version silently.
-			int fileInfo = service.fileInfo(session, binder, entry, fileName);
+			int fileInfo = service.fileInfo(session, binder, entry, relativeFilePath);
 			if(fileInfo == RepositoryService.VERSIONED_FILE) { // Normal condition
-				service.checkout(session, binder, entry, fileName);
-				updateWithInputData(service, session, binder, entry, fileName, inputData);
-				versionName = service.checkin(session, binder, entry, fileName);	    					
+				service.checkout(session, binder, entry, relativeFilePath);
+				updateWithInputData(service, session, binder, entry, relativeFilePath, inputData);
+				versionName = service.checkin(session, binder, entry, relativeFilePath);	    					
 			}
 			else if(fileInfo == RepositoryService.NON_EXISTING_FILE) {
 				// For some reason the file doesn't exist in the repository.
@@ -955,7 +890,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				// this kind of situation appears to be the one that is more
 				// forgiving or self-curing. This part of code implements that.
 				versionName = createVersionedWithInputData(service, session, binder,
-						entry, fileName, inputData);
+						entry, relativeFilePath, inputData);
 			}
 			else {
 				throw new InternalException();
@@ -963,18 +898,18 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			try {
 				updateFileAttachment(fAtt, user, versionName, fui.getSize());
 			} catch (IOException e) {
-				throw new FileException(e);
+				throw new UncheckedIOException(e);
 			}
 		}
 		else {
 	   		if(user.equals(co.getPrincipal())) {
 				// The file is checked out by the same person calling this.
 	   			// Update the file to the repository.
-	   			updateWithInputData(service, session, binder, entry, fileName, inputData);
+	   			updateWithInputData(service, session, binder, entry, relativeFilePath, inputData);
 			}
 			else {
 				// The file is checked out by some other person. 
-				throw new CheckedOutByOtherException(entry, fileName, user);
+				throw new CheckedOutByOtherException(entry, relativeFilePath, user);
 			}				    				
 		}
     }
@@ -1013,12 +948,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private FileAttachment createFile(RepositoryService service, Object session, 
 			Binder binder, DefinableEntity entry, FileUploadItem fui, Object inputData) 
 		throws RepositoryServiceException {
-		String fileName = fui.getOriginalFilename();
+		String relativeFilePath = fui.getOriginalFilename();
 		
 		FileAttachment fAtt = createFileAttachment(entry, fui);
 		
 		String versionName = createVersionedWithInputData(service, session, binder, entry,
-				fileName, inputData);
+				relativeFilePath, inputData);
 
 		createVersionAttachment(fAtt, versionName);
 
@@ -1026,19 +961,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private String createVersionedWithInputData(RepositoryService service, Object session,
-			Binder binder, DefinableEntity entry, String fileName, Object inputData)
+			Binder binder, DefinableEntity entry, String relativeFilePath, Object inputData)
 		throws RepositoryServiceException {
 		String versionName = null;
 		/*if(inputData instanceof MultipartFile) {
 			versionName = service.createVersioned(session, binder, entry, 
-					fileName, (MultipartFile) inputData);
+					relativeFilePath, (MultipartFile) inputData);
 		}
 		else*/ if(inputData instanceof byte[]) {
-			versionName = service.createVersioned(session, binder, entry, fileName,
+			versionName = service.createVersioned(session, binder, entry, relativeFilePath,
 					new ByteArrayInputStream((byte[]) inputData));
 		}
 		else if(inputData instanceof InputStream) {
-			versionName = service.createVersioned(session, binder, entry, fileName, 
+			versionName = service.createVersioned(session, binder, entry, relativeFilePath, 
 					(InputStream) inputData);
 		}
 		else {
@@ -1049,18 +984,18 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void updateWithInputData(RepositoryService service, Object session,
-			Binder binder, DefinableEntity entry, String fileName, Object inputData)
+			Binder binder, DefinableEntity entry, String relativeFilePath, Object inputData)
 		throws RepositoryServiceException {
 		/*if(inputData instanceof MultipartFile) {
 			service.update(session, binder, entry, 
-					fileName, (MultipartFile) inputData);
+					relativeFilePath, (MultipartFile) inputData);
 		}
 		else*/ if(inputData instanceof byte[]) {
-			service.update(session, binder, entry, fileName,
+			service.update(session, binder, entry, relativeFilePath,
 					new ByteArrayInputStream((byte[]) inputData));
 		}
 		else if(inputData instanceof InputStream) {
-			service.update(session, binder, entry, fileName, 
+			service.update(session, binder, entry, relativeFilePath, 
 					(InputStream) inputData);
 		}
 		else {
@@ -1068,74 +1003,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}		
 	}
 	
-	private void deleteFile(Binder binder, DefinableEntity entry, FileAttachment fAtt) 
-		throws RepositoryServiceException {
-		forceUncheckoutIfNecessary(binder, entry, fAtt);
-		
-		String fileName = fAtt.getFileItem().getName();
-		String repositoryServiceName = fAtt.getRepositoryServiceName();
-		
-		RepositoryService service = RepositoryServiceUtil.lookupRepositoryService(repositoryServiceName);
-			
-		Object session = service.openRepositorySession();
-		
-		try {
-			// Delete primary file
-			service.delete(session, binder, entry, fileName);
-	
-			// Currently we do not store metadata about "generated" files (should
-			// we?). Unfortunately this results in clumsy and less efficient
-			// attempt at deleting those files. 
-			
-			// Try deleting scaled file if exists
-			String scaledFileName = makeScaledFileName(fileName);
-			if(service.fileInfo(session, binder, entry, scaledFileName) != RepositoryService.NON_EXISTING_FILE) {
-				try {
-					service.delete(session, binder, entry, scaledFileName);
-				}
-				catch(RepositoryServiceException e) {
-					// Don't let the failure to delete generated file abort the
-					// entire operation. Log and proceed.
-					logger.warn(e.getMessage(), e);
-				}
-			}
-			
-			// Try deleting thumbnail file if exists
-			
-			// Directly-accessible thumbnail file?
-			File directlyAccessibleThumbnailFile = getDirectlyAccessibleThumbnailFile(entry, fileName);
-			try {
-				FileHelper.delete(directlyAccessibleThumbnailFile);
-			}
-			catch(IOException e) {
-				logger.warn(e.getMessage(), e);
-			}
-			
-			// thumbnail file stored in repository?
-			String thumbnailFileName = makeThumbnailFileName(fileName);
-			if(service.fileInfo(session, binder, entry, thumbnailFileName) != RepositoryService.NON_EXISTING_FILE) {
-				try {
-					service.delete(session, binder, entry, thumbnailFileName);
-				}
-				catch(RepositoryServiceException e) {
-					logger.warn(e.getMessage(), e);
-				}
-			}
-		}
-		finally {
-			service.closeRepositorySession(session);
-		}
-		
-		// Remove metadata
-		removeAttachmentMetadata(entry, fAtt);
-	}
-	
 	private FileAttachment createFileAttachment(DefinableEntity entry, FileUploadItem fui) {
     	// TODO Take care of file path info?
     	
         User user = RequestContextHolder.getRequestContext().getUser();
 
-        String fileName = fui.getOriginalFilename();
+        String relativeFilePath = fui.getOriginalFilename();
 	
 		FileAttachment fAtt = new FileAttachment();
 		fAtt.setOwner(entry);
@@ -1145,11 +1018,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	//set attribute name - null if not not named
     	fAtt.setName(fui.getName());
     	FileItem fItem = new FileItem();
-    	fItem.setName(fileName);
+    	fItem.setName(relativeFilePath);
     	try {
 			fItem.setLength(fui.getSize());
 		} catch (IOException e) {
-			throw new FileException(e);
+			throw new UncheckedIOException(e);
 		}
     	fAtt.setFileItem(fItem);
 	
@@ -1198,10 +1071,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void generateAndStoreScaledFile(RepositoryService service, 
-			Object session, Binder binder, DefinableEntity entry, String fileName, 
+			Object session, Binder binder, DefinableEntity entry, String relativeFilePath, 
 			byte[] inputData, int maxWidth, int maxHeight) 
 		throws ThumbnailException, RepositoryServiceException {
-		String scaledFileName = makeScaledFileName(fileName);
+		String scaledFileName = makeScaledFileName(relativeFilePath);
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		
@@ -1228,7 +1101,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	 * @param session
 	 * @param binder
 	 * @param entry
-	 * @param fileName
+	 * @param relativeFilePath
 	 * @param inputData
 	 * @param maxWidth
 	 * @param maxHeight
@@ -1243,7 +1116,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	 * is stored in a client-visible directory on file system
 	 */
 	private void generateAndStoreThumbnailFile(RepositoryService service, 
-			Object session, Binder binder, DefinableEntity entry, String fileName, 
+			Object session, Binder binder, DefinableEntity entry, String relativeFilePath, 
 			byte[] inputData, int maxWidth, int maxHeight, boolean directlyAccessible) 
 		throws ThumbnailException, RepositoryServiceException, FileNotFoundException,
 		IOException {
@@ -1252,7 +1125,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// The thumbnail is to be stored in a directory where 
 			// the client can access it directly without going
 			// through the repository service layer.
-			File directlyAccessibleThumbnailFile = getDirectlyAccessibleThumbnailFile(entry, fileName);
+			File directlyAccessibleThumbnailFile = getDirectlyAccessibleThumbnailFile(entry, relativeFilePath);
 			
 			// Make sure that the directory exists before opening a file in it.
 			FileHelper.mkdirsIfNecessary(directlyAccessibleThumbnailFile.getParentFile());
@@ -1291,7 +1164,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		else {
 			// The thumbnail is to be stored in the same repository
 			// as the primary file. 
-			String thumbnailFileName = makeThumbnailFileName(fileName);
+			String thumbnailFileName = makeThumbnailFileName(relativeFilePath);
 			
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			

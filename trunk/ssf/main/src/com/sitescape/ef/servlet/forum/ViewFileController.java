@@ -16,7 +16,6 @@ import com.sitescape.ef.web.servlet.SAbstractController;
 import com.sitescape.util.FileUtil;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.ef.module.file.FileException;
 import org.springframework.web.bind.RequestUtils;
 
 public class ViewFileController extends SAbstractController {
@@ -68,14 +67,14 @@ public class ViewFileController extends SAbstractController {
 						scaledFileExists = true;
 					}
 				}
-				catch(FileException e1) {}
+				catch(Exception e1) {}
 				if (scaledFileExists) {
 					getFileModule().readScaledFile(parent, entity, fa, response.getOutputStream());
 				} else {
 					try {
 						getFileModule().readFile(parent, entity, fa, response.getOutputStream());				
 					}
-					catch(FileException e) {
+					catch(Exception e) {
 						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
 					}
 				}
@@ -83,7 +82,7 @@ public class ViewFileController extends SAbstractController {
 				try {
 					getFileModule().readFile(parent, entity, fa, response.getOutputStream());				
 				}
-				catch(FileException e) {
+				catch(Exception e) {
 					response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
 				}
 			}

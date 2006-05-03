@@ -324,7 +324,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		//see if associated with a customAttribute
     		if (a instanceof FileAttachment) {
     			FileAttachment fa = (FileAttachment)a;
-    			getFileModule().deleteFile(binder, entity, fa.getRepositoryServiceName(), fa.getFileItem().getName());
+    			getFileModule().deleteFile(binder, entity, fa);
     		} else {
     			entity.removeAttachment(a);
     		}

@@ -2,13 +2,14 @@ package com.sitescape.ef.module.file;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Date;
 import java.util.List;
 
+import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.repository.RepositoryServiceException;
 
 /**
  * Provides uniform interface and integrated management for various file 
@@ -47,7 +48,8 @@ public interface FileModule {
 	 * @param entity
 	 * metadata on the <code>entity</code>. 
 	 */
-	public void deleteFiles(Binder binder, DefinableEntity entity) throws FileException;
+	public void deleteFiles(Binder binder, DefinableEntity entity) 
+		throws UncheckedIOException, RepositoryServiceException;
 	
 	/**
 	 * Deletes the specified file. If applicable, also delete generated files
@@ -56,16 +58,14 @@ public interface FileModule {
 	 * If the file is currently checked out by anyone, this forcefully unchecks 
 	 * it before deleting it. 
 	 * 
-	 * @param repositoryServiceName
 	 * @param binder
 	 * @param entity
-	 * @param fileName
-	 * @throws NoSuchFileException
-	 * @throws FileException
+	 * @param fa
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
 	 */
-	public void deleteFile(Binder binder, DefinableEntity entity, 
-			String repositoryServiceName, String fileName) 
-		throws NoSuchFileException, FileException;
+	public void deleteFile(Binder binder, DefinableEntity entity, FileAttachment fa) 
+		throws UncheckedIOException, RepositoryServiceException;
 	
 	/**
 	 * Writes the specified file to the system. If applicable, generate 
@@ -99,17 +99,17 @@ public interface FileModule {
     /**
      * Reads the specified file into the output stream.
      * 
-     * @param repositoryServiceName
+     * @param repositoryName
      * @param binder
      * @param entity
-     * @param fileName
+     * @param relativeFilePath
      * @param out
-     * @throws NoSuchFileException
-     * @throws FileException
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
      */
-    public void readFile(Binder binder, DefinableEntity entity, 
-    		String repositoryServiceName, String fileName, OutputStream out) 
-    	throws NoSuchFileException, FileException;
+    //public void readFile(Binder binder, DefinableEntity entity, 
+    //		String repositoryName, String relativeFilePath, OutputStream out) 
+    //	throws NoSuchFileException, UncheckedIOException, RepositoryServiceException;
     
     /**
      * Returns <code>InputStream</code> from which to read the content
@@ -118,15 +118,15 @@ public interface FileModule {
      * 
      * @param binder
      * @param entity
-     * @param repositoryServiceName
-     * @param fileName
+     * @param repositoryName
+     * @param relativeFilePath
      * @return
-     * @throws NoSuchFileException
-     * @throws FileException
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
      */
-    public InputStream readFile(Binder binder, DefinableEntity entity, 
-    		String repositoryServiceName, String fileName) 
-    	throws NoSuchFileException, FileException;
+    //public InputStream readFile(Binder binder, DefinableEntity entity, 
+    //		String repositoryName, String relativeFilePath) 
+    //	throws NoSuchFileException, UncheckedIOException, RepositoryServiceException;
     
     /**
      * Reads the specified file into the output stream.
@@ -135,11 +135,12 @@ public interface FileModule {
      * @param binder
      * @param entity
      * @param out
-	 * @throws NoSuchFileException
-     * @throws FileException
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
      */
 	public void readFile(Binder binder, DefinableEntity entity, FileAttachment fa, 
-			OutputStream out) throws NoSuchFileException, FileException;
+			OutputStream out) throws UncheckedIOException, 
+			RepositoryServiceException;
 	
 	/**
      * Returns <code>InputStream</code> from which to read the content
@@ -149,29 +150,30 @@ public interface FileModule {
 	 * @param binder
 	 * @param entity
 	 * @param fa
-	 * @return
-	 * @throws NoSuchFileException
-	 * @throws FileException
+	 * @return input stream
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
 	 */
 	public InputStream readFile(Binder binder, DefinableEntity entity, 
-			FileAttachment fa) throws NoSuchFileException, FileException;
+			FileAttachment fa) throws UncheckedIOException, 
+			RepositoryServiceException;
 	
 	
     /**
      * Reads the specified scaled file into the output stream.
      * 
-     * @param repositoryServiceName
+     * @param repositoryName
      * @param binder
      * @param entity
      * @param primaryFileName
      * @param out
-     * @throws NoSuchFileException
-     * @throws FileException
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
      */
-    public void readScaledFile(Binder binder, 
-    		DefinableEntity entity, String repositoryServiceName, String primaryFileName, 
-    		OutputStream out) 
-    	throws NoSuchFileException, FileException;
+    //public void readScaledFile(Binder binder, 
+    //		DefinableEntity entity, String repositoryName, String primaryFileName, 
+    //		OutputStream out) 
+    //	throws NoSuchFileException, UncheckedIOException, RepositoryServiceException;
     
     /**
      * Reads the specified scaled file into the output stream.
@@ -180,11 +182,12 @@ public interface FileModule {
      * @param binder
      * @param entity
      * @param out
-	 * @throws NoSuchFileException
-     * @throws FileException
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
      */
-	public void readScaledFile(Binder binder, DefinableEntity entity, FileAttachment fa, 
-			OutputStream out) throws NoSuchFileException, FileException;
+	public void readScaledFile(Binder binder, DefinableEntity entity, 
+			FileAttachment fa, OutputStream out) throws  
+			UncheckedIOException, RepositoryServiceException;
 	
 	/**
 	 * Returns a file object representing the thumbnail of the specified file. 
@@ -199,29 +202,30 @@ public interface FileModule {
 	 * 
 	 * @param binder
 	 * @param entity
-	 * @param fileName
+	 * @param relativeFilePath
 	 * @return
 	 */
 	//public File getDirectlyAccessibleThumbnailFile(Binder binder, DefinableEntity entity, 
-	//		String fileName);
+	//		String relativeFilePath);
 	
     /**
      * Reads the specified thumbnail file into the output stream.
      * If the thumbnail was originally stored as "directly accessible" file,
      * the caller must not use this method. 
      * 
-     * @param repositoryServiceName
+     * @param repositoryName
      * @param binder
      * @param entity
      * @param primaryFileName
      * @param out
-     * @throws NoSuchFileException
-     * @throws FileException
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
      */
-    public void readIndirectlyAccessibleThumbnailFile
-    	(Binder binder, 
-    		DefinableEntity entity, String repositoryServiceName, String primaryFileName, OutputStream out) 
-    	throws NoSuchFileException, FileException;
+    //public void readIndirectlyAccessibleThumbnailFile
+    //	(Binder binder, 
+    //		DefinableEntity entity, String repositoryName, 
+    //		String primaryFileName, OutputStream out) throws NoSuchFileException, 
+    //		UncheckedIOException, RepositoryServiceException;
     
     /**
      * Reads the specified scaled file into the output stream.
@@ -232,101 +236,108 @@ public interface FileModule {
      * @param binder
      * @param entity
      * @param out
-	 * @throws NoSuchFileException
-     * @throws FileException
      */
 	public void readIndirectlyAccessibleThumbnailFile(
 			Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out) 
-		throws NoSuchFileException, FileException;
+		throws UncheckedIOException, RepositoryServiceException;
 	
 	/**
 	 * (Re)generate scaled file from the specified primary file.
 	 * Scaled file is not versioned, thus newly generated file replaces 
 	 * old one if exists.   
 	 * 
-	 * @param repositoryServiceName
 	 * @param binder
 	 * @param entity
-	 * @param primaryFileName
+	 * @param fa
 	 * @param maxWidth
 	 * @param maxHeight
-	 * @throws NoSuchFileException
-	 * @throws FileException
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
 	 */
 	public void generateScaledFile(Binder binder, 
-    		DefinableEntity entity, String repositoryServiceName, String primaryFileName, int maxWidth, int maxHeight) 
-		throws NoSuchFileException, FileException;
+    		DefinableEntity entity, FileAttachment fa, 
+    		int maxWidth, int maxHeight) 
+		throws UncheckedIOException, RepositoryServiceException;
 	
 	/**
 	 * (Re)generate thumbnail file from the specified primary file.
 	 * Thumbnail file is not versioned, thus newly generated file replaces 
 	 * old one if exists.   
 	 * 
-	 * @param repositoryServiceName
 	 * @param binder
 	 * @param entity
-	 * @param primaryFileName
+	 * @param fa
 	 * @param thumbnailDirectlyAccessible
-	 * @throws NoSuchFileException
-	 * @throws FileException
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
 	 */
 	public void generateThumbnailFile(Binder binder, 
-    		DefinableEntity entity, String repositoryServiceName, String primaryFileName, int maxWidth, int maxHeight,
+    		DefinableEntity entity, FileAttachment fa, 
+    		int maxWidth, int maxHeight, 
     		boolean thumbnailDirectlyAccessible) 
-		throws NoSuchFileException, FileException;
+		throws UncheckedIOException, RepositoryServiceException;
 
 	/**
 	 * (Re)generate both scaled file and thumbnail file from the specified 
 	 * primary file. Generated files are not versioned, thus newly generated 
 	 * files replace old ones if exists.   
 	 * 
-	 * @param repositoryServiceName
 	 * @param binder
 	 * @param entity
 	 * @param primaryFileName
 	 * @param thumbnailDirectlyAccessible
-	 * @throws NoSuchFileException
-	 * @throws FileException
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
 	 */
 	public void generateFiles(Binder binder, 
-    		DefinableEntity entity, String repositoryServiceName, String primaryFileName, int maxWidth, int maxHeight,
+    		DefinableEntity entity, FileAttachment fa, 
+    		int maxWidth, int maxHeight,
     		int thumbnailMaxWidth, int thumbnailMaxHeight, 
     		boolean thumbnailDirectlyAccessible) 
-		throws NoSuchFileException, FileException;
+		throws UncheckedIOException, RepositoryServiceException;
 	
 	/**
 	 * Returns whether a scaled copy of the file exists or not. 
 	 * 
-	 * @param repositoryServiceName
+	 * @param repositoryName
 	 * @param binder
 	 * @param entity
 	 * @param primaryFileName
 	 * @return
-	 * @throws NoSuchFileException raised if unrecognized primary file
-	 * @throws FileException
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
+	 */
+	//public boolean scaledFileExists(Binder binder, DefinableEntity entity, 
+	//		String repositoryName, String primaryFileName) 
+	//	throws NoSuchFileException, UncheckedIOException, RepositoryServiceException;
+	
+	/**
+	 * Returns whether a sacled copy of the file exists or not.
+	 * 
+	 * @param binder
+	 * @param entity
+	 * @param fAtt
+	 * @return
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
 	 */
 	public boolean scaledFileExists(Binder binder, DefinableEntity entity, 
-			String repositoryServiceName, String primaryFileName) 
-		throws NoSuchFileException, FileException;
-	
-	public boolean scaledFileExists(Binder binder, DefinableEntity entity, 
 			FileAttachment fAtt) 
-		throws NoSuchFileException, FileException;
-	
+		throws UncheckedIOException, RepositoryServiceException;
+		
 	/**
 	 * Returns whether a thumbnail of the file exists or not. 
 	 * 
-	 * @param repositoryServiceName
 	 * @param binder
 	 * @param entity
-	 * @param primaryFileName
+	 * @param fa
 	 * @return
-	 * @throws NoSuchFileException raised if unrecognized primary file
-	 * @throws FileException
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
 	 */
-	public boolean thumbnailFileExists(Binder binder, DefinableEntity entity, 
-			String repositoryServiceName, String primaryFileName) 
-	throws NoSuchFileException, FileException;
+	//public boolean thumbnailFileExists(Binder binder, DefinableEntity entity, 
+	//		FileAttachment fa) 
+	//	throws UncheckedIOException, RepositoryServiceException;
 	
 	/**
 	 * If the specified file is checked out, returns <code>HistoryStamp</code>
@@ -335,11 +346,11 @@ public interface FileModule {
 	 * 
 	 * @param binder
 	 * @param entity
-	 * @param fileName
+	 * @param fa
 	 * @return
 	 */
-	public HistoryStamp getCheckoutInfo(Binder binder, DefinableEntity entity, 
-			String repositoryServiceName, String fileName);
+	//public HistoryStamp getCheckoutInfo(Binder binder, DefinableEntity entity, 
+	//		FileAttachment fa);
 	
 	/**
 	 * Checkes out the specified file. 
@@ -348,12 +359,14 @@ public interface FileModule {
 	 * operation is noop. If it is currently checked out by someone else, it
 	 * throws <code>CheckedOutByOtherException</code>.
 	 * 
-	 * @throws NoSuchFileException
 	 * @throws CheckedOutByOtherException
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
 	 */
-	public void checkout(Binder binder, 
-			DefinableEntity entity, String repositoryServiceName, String fileName) throws CheckedOutByOtherException, 
-			NoSuchFileException, FileException;
+	//public void checkout(Binder binder, 
+	//		DefinableEntity entity, String repositoryName, String relativeFilePath) 
+	//	throws CheckedOutByOtherException, NoSuchFileException, 
+	//	UncheckedIOException, RepositoryServiceException;
 	
 	/**
 	 * Cancels the checkout for the specified file. 
@@ -368,14 +381,15 @@ public interface FileModule {
 	 * 
 	 * @param binder
 	 * @param entity
-	 * @param fileName
+	 * @param relativeFilePath
 	 * @throws CheckedOutByOtherException
-	 * @throws NoSuchFileException
-	 * @throws FileException
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
 	 */
-	public void uncheckout(Binder binder, 
-			DefinableEntity entity, String repositoryServiceName, String fileName) throws CheckedOutByOtherException, 
-			NoSuchFileException, FileException;
+	//public void uncheckout(Binder binder, 
+	//		DefinableEntity entity, String repositoryName, String relativeFilePath) 
+	//	throws CheckedOutByOtherException, NoSuchFileException, 
+	//	UncheckedIOException, RepositoryServiceException;
 
 	/**
 	 * Checkes in the specified file. 
@@ -391,17 +405,19 @@ public interface FileModule {
 	 * 
 	 * @param binder
 	 * @param entity
-	 * @param fileName
+	 * @param relativeFilePath
 	 * @throws CheckedOutByOtherException
-	 * @throws NoSuchFileException
-	 * @throws FileException
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
 	 */
-	public void checkin(Binder binder, 
-			DefinableEntity entity, String repositoryServiceName, String fileName) throws CheckedOutByOtherException, 
-			NoSuchFileException, FileException;
+	//public void checkin(Binder binder, 
+	//		DefinableEntity entity, String repositoryName, String relativeFilePath) 
+	//	throws CheckedOutByOtherException, NoSuchFileException, 
+	//	UncheckedIOException, RepositoryServiceException;
+	
 	/*
-	public void createThumbnail(String repositoryServiceName, Binder binder,
-			DefinableEntity entity, String fileName, String thumbFileName,
+	public void createThumbnail(String repositoryName, Binder binder,
+			DefinableEntity entity, String relativeFilePath, String thumbFileName,
 			int maxWidth, int maxHeight) 
 		throws NoSuchFileException, FileException;
 	
@@ -410,26 +426,27 @@ public interface FileModule {
 		throws FileException;
 		*/
 	
-    public FilesErrors writeFiles(Binder binder, DefinableEntity entity, List fileUploadItems, 
-    		FilesErrors errors);
+    public FilesErrors writeFiles(Binder binder, DefinableEntity entity, 
+    		List fileUploadItems, FilesErrors errors);
     
-    public FilesErrors filterFiles(Binder binder, List fileUploadItems) throws FilterException;
+    public FilesErrors filterFiles(Binder binder, List fileUploadItems) 
+    	throws FilterException;
     
     /*
     public void lock(Binder binder, DefinableEntity entity, String repositoryName,
-    		String fileName, String lockId, Date expirationDate) 
+    		String relativeFilePath, String lockId, Date expirationDate) 
     	throws LockedByAnotherUserException, LockIdMismatchException, 
     	NoSuchFileException, FileException;
     
     public void lockAndCheckout(Binder binder, DefinableEntity entity, 
-    		String repositoryName, String fileName) 
+    		String repositoryName, String relativeFilePath) 
     	throws LockedByAnotherUserException, LockIdMismatchException, 
     	NoSuchFileException, FileException;
     
     
     
     public void unlock(Binder binder, DefinableEntity entity, String repositoryName,
-    		String fileName, String lockId) throws LockedByAnotherUserException, 
+    		String relativeFilePath, String lockId) throws LockedByAnotherUserException, 
     		LockIdMismatchException, NoSuchFileException, FileException;
     */
     
