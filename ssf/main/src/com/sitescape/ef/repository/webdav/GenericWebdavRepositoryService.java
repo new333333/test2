@@ -668,6 +668,11 @@ public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactor
 	}
 	
 	private String getResourcePath(String entryDirPath, String relativeFilePath) {
+		// Because entryDirPath always ends with slash, we must ensure that
+		// no extra slash is put in between. 
+		if(relativeFilePath.startsWith(Constants.SLASH))
+			relativeFilePath = relativeFilePath.substring(1);
+		
 		return entryDirPath + relativeFilePath;
 	}
 	
