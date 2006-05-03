@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.activation.DataSource;
 import javax.activation.FileTypeMap;
 
+import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Binder;
 
@@ -29,14 +30,16 @@ public interface RepositoryService {
 	 * 
 	 * @return
 	 */
-	public Object openRepositorySession() throws RepositoryServiceException;
+	public Object openRepositorySession() throws RepositoryServiceException,
+		UncheckedIOException;
 	
 	/**
 	 * Closes the session with the repository system.
 	 * 
 	 * @param session
 	 */
-	public void closeRepositorySession(Object session) throws RepositoryServiceException;
+	public void closeRepositorySession(Object session) 
+		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
 	 * Returns one of the following values:<br>
@@ -52,7 +55,8 @@ public interface RepositoryService {
 	 * @throws RepositoryServiceException
 	 */
 	public int fileInfo(Object session, Binder binder, DefinableEntity entity,
-			String relativeFilePath) throws RepositoryServiceException;
+			String relativeFilePath) throws RepositoryServiceException,
+			UncheckedIOException;
 	
 	/**
 	 * Returns whether or not the specified file resource is versioned.
@@ -82,9 +86,9 @@ public interface RepositoryService {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public String createVersioned(Object session, Binder binder, DefinableEntity entity, 
-			String relativeFilePath, MultipartFile mf) 
-		throws RepositoryServiceException;
+	public String createVersioned(Object session, Binder binder, 
+			DefinableEntity entity, String relativeFilePath, MultipartFile mf) 
+		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
 	 * Creates a new file resource in the repository system. 
@@ -101,9 +105,9 @@ public interface RepositoryService {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public String createVersioned(Object session, Binder binder, DefinableEntity entity, 
-			String relativeFilePath, InputStream in) 
-		throws RepositoryServiceException;
+	public String createVersioned(Object session, Binder binder, 
+			DefinableEntity entity, String relativeFilePath, InputStream in) 
+		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
 	 * Creates a new file resource in the repository system. The specified file
@@ -117,9 +121,9 @@ public interface RepositoryService {
 	 * @param in
 	 * @throws RepositoryServiceException
 	 */
-	public void createUnversioned(Object session, Binder binder, DefinableEntity entity, 
-			String relativeFilePath, InputStream in) 
-		throws RepositoryServiceException;
+	public void createUnversioned(Object session, Binder binder, 
+			DefinableEntity entity, String relativeFilePath, InputStream in) 
+		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
 	 * Updates the existing file resource.  
@@ -141,7 +145,7 @@ public interface RepositoryService {
 	 */
 	public void update(Object session, Binder binder, DefinableEntity entity, 
 			String relativeFilePath, MultipartFile mf) 
-		throws RepositoryServiceException;
+		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
 	 * Updates the existing file resource.  
@@ -163,7 +167,7 @@ public interface RepositoryService {
 	 */
 	public void update(Object session, Binder binder, DefinableEntity entity, 
 			String relativeFilePath, InputStream in) 
-		throws RepositoryServiceException;
+		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
 	 * Deletes the file resource. If the resource is versioned all its versions
@@ -176,7 +180,8 @@ public interface RepositoryService {
 	 * @throws RepositoryServiceException
 	 */
 	public void delete(Object session, Binder binder, DefinableEntity entity,
-			String relativeFilePath) throws RepositoryServiceException;
+			String relativeFilePath) throws RepositoryServiceException,
+			UncheckedIOException;
 		
 	/**
 	 * Reads the content of the specified file resource from the repository 
@@ -196,7 +201,7 @@ public interface RepositoryService {
 	 */
 	public void read(Object session, Binder binder, DefinableEntity entity, 
 			String relativeFilePath, OutputStream out) 
-		throws RepositoryServiceException;
+		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
 	 * Returns an <code>InputStream</code> from which to read the content of
@@ -214,8 +219,9 @@ public interface RepositoryService {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public InputStream read(Object session, Binder binder, DefinableEntity entity,
-			String relativeFilePath) throws RepositoryServiceException;
+	public InputStream read(Object session, Binder binder, 
+			DefinableEntity entity, String relativeFilePath) 
+		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
 	 * Reads from the repository system the content of the specified version 
@@ -233,7 +239,7 @@ public interface RepositoryService {
 	 */
 	public void readVersion(Object session, Binder binder, DefinableEntity entity, 
 			String relativeFilePath, String versionName, OutputStream out) 
-		throws RepositoryServiceException;
+		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
 	 * Return a datasource that will be used to read the file to a mime message
@@ -246,8 +252,11 @@ public interface RepositoryService {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public DataSource getDataSource(Object session, Binder binder, DefinableEntity entity, 
-				String relativeFilePath, FileTypeMap fileTypeMap) throws RepositoryServiceException;
+	public DataSource getDataSource(Object session, Binder binder, 
+			DefinableEntity entity, String relativeFilePath, 
+			FileTypeMap fileTypeMap) throws RepositoryServiceException,
+			UncheckedIOException;
+	
 	/**
 	 * 
 	 * @param session
@@ -260,8 +269,10 @@ public interface RepositoryService {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public DataSource getDataSourceVersion(Object session, Binder binder, DefinableEntity entity, 
-			String relativeFilePath, String versionName, FileTypeMap fileTypeMap) throws RepositoryServiceException;
+	public DataSource getDataSourceVersion(Object session, Binder binder, 
+			DefinableEntity entity, String relativeFilePath, String versionName, 
+			FileTypeMap fileTypeMap) throws RepositoryServiceException,
+			UncheckedIOException;
 
 	/**
 	 * Returns the names of the versions for the specified file resource. 
@@ -300,7 +311,8 @@ public interface RepositoryService {
 	 * @throws RepositoryServiceException
 	 */
 	public void checkout(Object session, Binder binder, DefinableEntity entity, 
-			String relativeFilePath) throws RepositoryServiceException;
+			String relativeFilePath) throws RepositoryServiceException,
+			UncheckedIOException;
 	
 	/**
 	 * Cancels the checkout for the specified file resource. It is illegal to 
@@ -316,7 +328,8 @@ public interface RepositoryService {
 	 * @throws RepositoryServiceException
 	 */
 	public void uncheckout(Object session, Binder binder, DefinableEntity entity, 
-			String relativeFilePath) throws RepositoryServiceException;
+			String relativeFilePath) throws RepositoryServiceException,
+			UncheckedIOException;
 	
 	/**
 	 * Checks in the specified file resource and returns the name of the new
@@ -335,7 +348,8 @@ public interface RepositoryService {
 	 * @throws RepositoryServiceException
 	 */
 	public String checkin(Object session, Binder binder, DefinableEntity entity, 
-			String relativeFilePath) throws RepositoryServiceException;
+			String relativeFilePath) throws RepositoryServiceException,
+			UncheckedIOException;
 	
 	/**
 	 * Returns whether the specified file resource is currently checked out
@@ -348,8 +362,9 @@ public interface RepositoryService {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public boolean isCheckedOut(Object session, Binder binder, DefinableEntity entity, 
-			String relativeFilePath) throws RepositoryServiceException;
+	public boolean isCheckedOut(Object session, Binder binder, 
+			DefinableEntity entity, String relativeFilePath) 
+		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
 	 * Returns whether the specified file resource exists or not. 
@@ -373,8 +388,9 @@ public interface RepositoryService {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public long getContentLength(Object session, Binder binder, DefinableEntity entity,
-			String relativeFilePath) throws RepositoryServiceException;
+	public long getContentLength(Object session, Binder binder, 
+			DefinableEntity entity, String relativeFilePath) 
+		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
 	 * Returns the length (in byte) of the content of the specific version
@@ -388,8 +404,10 @@ public interface RepositoryService {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public long getContentLength(Object session, Binder binder, DefinableEntity entity,
-			String relativeFilePath, String versionName) throws RepositoryServiceException;
+	public long getContentLength(Object session, Binder binder, 
+			DefinableEntity entity, String relativeFilePath, 
+			String versionName) throws RepositoryServiceException,
+			UncheckedIOException;
 	
 	/**
 	 * Returns whether or not the repository service supports versioning.
