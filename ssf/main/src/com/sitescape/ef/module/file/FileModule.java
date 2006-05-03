@@ -2,6 +2,7 @@ package com.sitescape.ef.module.file;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 
 import com.sitescape.ef.domain.FileAttachment;
@@ -15,6 +16,19 @@ import com.sitescape.ef.domain.HistoryStamp;
  * systems from the caller. Provides higher-level wrapper around underlying
  * repository system implementations and adds metadata management which
  * may require database transaction support.   
+ * 
+ * IMPORTANT: Although most of the methods defined in this module take
+ * binder and entity/entry as arguments, they are used primarily to 
+ * construct full path to file resource. In other words, the focus of
+ * the operations is files not binders or entries. For that reason, this
+ * module does NOT perform any access-control because files are NOT
+ * access-controlled objects themselves. Instead, access control is enforced
+ * by their enclosing entries. Therefore, when implementing an application
+ * feature using the services provided by this module, it is important
+ * for the feature implementation to perform appropriate access checking
+ * either by first calling another module that does the access checking
+ * or by wrapping invocation of FileModule methods within another higher-level 
+ * module and calling the method in the wrapper.   
  * 
  * @author jong
  *
@@ -334,14 +348,6 @@ public interface FileModule {
 	 * operation is noop. If it is currently checked out by someone else, it
 	 * throws <code>CheckedOutByOtherException</code>.
 	 * 
-	 * @param binder
-	 * @param entity
-	 * @param fileName
-	 */
-	/**
-	 * @param binder
-	 * @param entity
-	 * @param fileName
 	 * @throws NoSuchFileException
 	 * @throws CheckedOutByOtherException
 	 */
@@ -408,4 +414,23 @@ public interface FileModule {
     		FilesErrors errors);
     
     public FilesErrors filterFiles(Binder binder, List fileUploadItems) throws FilterException;
+    
+    /*
+    public void lock(Binder binder, DefinableEntity entity, String repositoryName,
+    		String fileName, String lockId, Date expirationDate) 
+    	throws LockedByAnotherUserException, LockIdMismatchException, 
+    	NoSuchFileException, FileException;
+    
+    public void lockAndCheckout(Binder binder, DefinableEntity entity, 
+    		String repositoryName, String fileName) 
+    	throws LockedByAnotherUserException, LockIdMismatchException, 
+    	NoSuchFileException, FileException;
+    
+    
+    
+    public void unlock(Binder binder, DefinableEntity entity, String repositoryName,
+    		String fileName, String lockId) throws LockedByAnotherUserException, 
+    		LockIdMismatchException, NoSuchFileException, FileException;
+    */
+    
 }
