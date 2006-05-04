@@ -276,10 +276,12 @@ function PopupWindow_autoHide() {
 	}
 // This global function checks all PopupWindow objects onmouseup to see if they should be hidden
 function PopupWindow_hidePopupWindows(e) {
-	for (var i=0; i<popupWindowObjects.length; i++) {
-		if (popupWindowObjects[i] != null) {
-			var p = popupWindowObjects[i];
-			if (p.hideIfNotClicked) p.hideIfNotClicked(e);
+	if (self.popupWindowObjects) {
+		for (var i=0; i<popupWindowObjects.length; i++) {
+			if (popupWindowObjects[i] != null) {
+				var p = popupWindowObjects[i];
+				if (p.hideIfNotClicked) p.hideIfNotClicked(e);
+				}
 			}
 		}
 	}
