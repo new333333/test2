@@ -64,7 +64,6 @@
 	<classpathentry kind="lib" path="lib/commons-codec.jar"/>
 	<classpathentry kind="lib" path="lib/opensaml.jar"/>
 	<classpathentry kind="lib" path="lib/xalan.jar"/>
-	<classpathentry kind="lib" path="lib/xmlrpc-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/xmlsec.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-slide-wck-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/slide-kernel-2.2pre1.jar"/>
