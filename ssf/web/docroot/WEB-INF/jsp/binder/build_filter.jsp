@@ -20,7 +20,13 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <jsp:useBean id="ss_searchFilterData" type="java.util.Map" scope="request" />
 
-<div class="ss_style ss_portlet ss_form">
+<script type="text/javascript" src="<html:rootPath/>js/datepicker/CalendarPopup.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/AnchorPosition.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/PopupWindow.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
+
+<div class="ss_style ss_portlet">
+<div style="margin:10px;">
 <script type="text/javascript">
 
 function ss_getFilterTypeSelection(obj, op2) {
@@ -45,14 +51,15 @@ function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
     if (op2 != null && op2 != "") url += "&operation2=" + op2;
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements(formObj.name);
-	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 }
 
-var ss_filterTermNumber = 1;
+var ss_filterTermNumber = 0;
+var ss_filterTermNumberMax = 0;
 function ss_addFilterTerm() {
-	ss_filterTermNumber++;
+	ss_filterTermNumberMax++;
 	var tableDiv = document.getElementById('filterTerms');
 	var tbl = document.createElement("table");
 	tbl.className = "ss_style";
@@ -66,29 +73,36 @@ function ss_addFilterTerm() {
 	tdCell.vAlign = "top"
 	var typeListDiv = document.getElementById('typeList1');
 	var newTypeListDiv = typeListDiv.cloneNode(true);
-	newTypeListDiv.id = "typeList" + parseInt(ss_filterTermNumber);
+	newTypeListDiv.id = "typeList" + parseInt(ss_filterTermNumberMax);
 	tdCell.appendChild(newTypeListDiv)
 	row.appendChild(tdCell);
 	
 	tdCell = document.createElement("td");
 	tdCell.vAlign = "top"
 	var newEntryListDiv = document.createElement("div");
-	newEntryListDiv.id = "entryList" + parseInt(ss_filterTermNumber);
+	newEntryListDiv.id = "entryList" + parseInt(ss_filterTermNumberMax);
 	tdCell.appendChild(newEntryListDiv)
 	row.appendChild(tdCell);
 	
 	tdCell = document.createElement("td");
 	tdCell.vAlign = "top"
 	var elementListDiv = document.createElement("div");
-	elementListDiv.id = "elementList" + parseInt(ss_filterTermNumber);
+	elementListDiv.id = "elementList" + parseInt(ss_filterTermNumberMax);
 	tdCell.appendChild(elementListDiv)
 	row.appendChild(tdCell);
 	
 	tdCell = document.createElement("td");
 	tdCell.vAlign = "top"
 	var valueListDiv = document.createElement("div");
-	valueListDiv.id = "valueList" + parseInt(ss_filterTermNumber);
+	valueListDiv.id = "valueList" + parseInt(ss_filterTermNumberMax);
 	tdCell.appendChild(valueListDiv)
+	var valueDataDiv = document.createElement("div");
+	valueDataDiv.id = "valueData" + parseInt(ss_filterTermNumberMax);
+	tdCell.appendChild(valueDataDiv)
+	row.appendChild(tdCell);
+
+	tdCell = document.createElement("td");
+	tdCell.vAlign = "top"
 	row.appendChild(tdCell);
 
 	var br = document.createElement("br");
@@ -102,6 +116,10 @@ function ss_buttonSelect(btn) {
 	ss_buttonSelected = btn
 }
 function checkFilterForm(obj) {
+	//Set the term numbers into the form
+	var formObj = ss_getContainingForm(obj)
+	formObj.ss_filterTermNumber.value = parseInt(ss_filterTermNumber);
+	formObj.ss_filterTermNumberMax.value = parseInt(ss_filterTermNumberMax);
 	if (ss_buttonSelected == 'ok' && obj.filterName.value == "") {
 		alert("<ssf:nlt tag="filter.enterName" text="Please fill in the filter name field."/>")
 		obj.filterName.focus()
@@ -110,9 +128,16 @@ function checkFilterForm(obj) {
 	return true;
 }
 
+function ss_deleteFilterTerm(obj, termNumber) {
+	var formObj = ss_getContainingForm(obj)
+	//Set the term number into the form
+	formObj.ss_filterTermNumber.value = parseInt(termNumber);
+	return true;
+}
+
 </script>
 
-<form name="filterData" id="filterData" class="ss_style ss_form" method="post" 
+<form name="filterData" id="filterData" method="post" 
     action="<portlet:actionURL>
 	<portlet:param name="action" value="build_filter"/>
 	<portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -138,12 +163,13 @@ function checkFilterForm(obj) {
   
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="filter.terms" text="Filter terms"/></legend>
-	<span class="ss_bold"><ssf:nlt tag="filter.selectFilterType" text="Select the type of filter to be added..."/></span>
+	<span class="ss_bold"><ssf:nlt tag="filter.selectFilterType" 
+	  text="Select the terms of the filter to be added..."/></span>
 	<br/>
 	<div id="filterTerms">
 	  <table class="ss_style">
 	  <tbody>
-	  <c:if test="${empty ss_selectedFilter}">
+	  <c:if test="${empty ss_selectedFilter || ss_searchFilterData.filterTermCount == '0'}">
 	  <tr>
 	  <td valign="top">
 	    <div id="typeList1" style="display:inline;">
@@ -176,11 +202,17 @@ function checkFilterForm(obj) {
 	  <td valign="top">
 	    <div id="valueList1" style="visibility:hidden; display:inline;">
 	    </div>
+	    <div id="valueData1" style="visibility:hidden; display:inline;">
+	    </div>
 	  </td>
+	  <td></td>
 	  </tr>
+<script type="text/javascript">
+ss_filterTermNumberMax++;
+</script>
 	  </c:if>
 	  
-	  <c:if test="${!empty ss_selectedFilter}">
+	  <c:if test="${!empty ss_selectedFilter && !empty ss_searchFilterData.filterTermCount}">
 <%
 		for (int i = 1; i <= ((Integer)ss_searchFilterData.get("filterTermCount")).intValue(); i++) {
 %>
@@ -276,8 +308,45 @@ function checkFilterForm(obj) {
 			}
 %>
 		    </div>
+		    <div id="valueData<%= String.valueOf(i) %>" 
+		      style="visibility:visible; display:inline;">
+<%
+			if (((String) ss_searchFilterData.get("filterType" + String.valueOf(i))).equals("text")) {
+			} else {
+				if (ss_searchFilterData.containsKey("elementValue" + String.valueOf(i))) {
+					Map valueMap = (Map) ss_searchFilterData.get("elementValue" + String.valueOf(i));
+%>
+					<select name="elementValue<%= String.valueOf(i) %>" 
+					  size="<%= String.valueOf(valueMap.entrySet().size()) %>" multiple>
+<%
+					Iterator itValues = valueMap.entrySet().iterator();
+					while (itValues.hasNext()) {
+						String value = (String)((Map.Entry)itValues.next()).getKey();
+						%>
+						<option name="<%= value %>" selected><%= value %></option>
+						<%
+					}
+%>
+					</select>
+					<select name="elementValueData<%= String.valueOf(i) %>" 
+					  size="<%= String.valueOf(valueMap.entrySet().size()) %>" multiple>
+					    <option>xxxxxxxxxxxx</option>
+					</select>
+<%
+				}
+			}
+%>
+		    </div>
+		  </td>
+		  <td valign="top">
+		    <input type="submit" class="ss_fineprint" name="deleteTerm" 
+		      value="<ssf:nlt tag="button.delete" text="Delete this term"/>" 
+		      onClick="ss_deleteFilterTerm(this, '<%= String.valueOf(i) %>');" />
 		  </td>
 		  </tr>
+<script type="text/javascript">
+ss_filterTermNumberMax++;
+</script>
 <%
 		}
 %>
@@ -300,10 +369,12 @@ function checkFilterForm(obj) {
   value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 </div>
 
-<input type="hidden" name="ss_filterTermNumber" value="1"/>
+<input type="hidden" name="ss_filterTermNumber"/>
+<input type="hidden" name="ss_filterTermNumberMax"/>
 <input type="hidden" name="selectedSearchFilter" value="<c:out value="${ss_selectedFilter}"/>"/>
 </form>
 <div id="ss_filter_status_message" style="display:none;"></div>
+</div>
 </div>
 <script type="text/javascript">
 self.document.getElementById('filterData').filterName.focus();

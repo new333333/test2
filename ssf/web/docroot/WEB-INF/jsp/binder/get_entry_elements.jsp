@@ -46,6 +46,12 @@
 	parseInBrowser="true"><div 
 	id="valueList<c:out value="${ss_filterTermNumber}"/>" 
 	style="visibility:visible; display:inline;"></div></taconite-replace>
+
+	<taconite-replace contextNodeID="valueData<c:out value="${ss_filterTermNumber}"/>" 
+	parseInBrowser="true"><div 
+	  id="valueData<c:out value="${ss_filterTermNumber}"/>" 
+	  style="visibility:visible; display:inline;"></div></taconite-replace>
+
 <%
 	}
 %>	

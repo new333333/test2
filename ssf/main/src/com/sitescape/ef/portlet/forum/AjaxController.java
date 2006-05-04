@@ -89,7 +89,10 @@ public class AjaxController  extends SAbstractForumController {
 				return new ModelAndView("forum/save_entry_width_return", model);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_HEIGHT)) {
 				return new ModelAndView("forum/save_entry_height_return", model);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS)) {
+			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FILTER_TYPE) || 
+					op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
+					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
+					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
 				return new ModelAndView("binder/get_entry_elements", model);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_WORKSPACE_TREE)) {
 				return new ModelAndView("tag_jsps/tree/get_tree_div", model);
@@ -126,7 +129,8 @@ public class AjaxController  extends SAbstractForumController {
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FILTER_TYPE) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES)) {
+				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
+				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
 			return ajaxGetFilterData(request, response);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_WORKSPACE_TREE)) {
@@ -313,19 +317,24 @@ public class AjaxController  extends SAbstractForumController {
 			
 		String filterTermNumber = ((String[])formData.get(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER))[0];
 		model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, filterTermNumber);
+		String filterTermNumberMax = ((String[])formData.get(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX))[0];
+		model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX, filterTermNumberMax);
 		
 		//Get the definition id (if present)
 		if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES)) {
-			String defId = ((String[])formData.get(WebKeys.FILTER_ENTRY_DEF_ID+filterTermNumber))[0];
-			if (defId.equals("_common")) {
-				model.put(WebKeys.FILTER_ENTRY_DEF_ID, "");
-				Map elementData = getFolderModule().getCommonEntryElements(binderId);
-				model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
-			} else {
-				model.put(WebKeys.FILTER_ENTRY_DEF_ID, defId);
-				Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
-				model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
+				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
+				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
+			if (formData.containsKey(WebKeys.FILTER_ENTRY_DEF_ID+filterTermNumber)) {
+				String defId = ((String[])formData.get(WebKeys.FILTER_ENTRY_DEF_ID+filterTermNumber))[0];
+				if (defId.equals("_common")) {
+					model.put(WebKeys.FILTER_ENTRY_DEF_ID, "");
+					Map elementData = getFolderModule().getCommonEntryElements(binderId);
+					model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
+				} else {
+					model.put(WebKeys.FILTER_ENTRY_DEF_ID, defId);
+					Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
+					model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
+				}
 			}
 		}
 		
@@ -348,8 +357,15 @@ public class AjaxController  extends SAbstractForumController {
 			return new ModelAndView("binder/get_filter_type", model);
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS)) {
 			return new ModelAndView("binder/get_entry_elements", model);
-		} else {
+		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES)) {
 			return new ModelAndView("binder/get_element_value", model);
+		} else {
+			model.put(WebKeys.FILTER_VALUE_TYPE, "");
+			if (formData.containsKey("elementValueDateType" + filterTermNumber)) {
+				model.put(WebKeys.FILTER_VALUE_TYPE, 
+						((String[])formData.get("elementValueDateType" + filterTermNumber))[0]);
+			}
+			return new ModelAndView("binder/get_element_value_data", model);
 		}
 	}
 	

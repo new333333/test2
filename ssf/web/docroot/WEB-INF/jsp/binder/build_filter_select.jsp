@@ -17,7 +17,8 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<div class="ss_style ss_portlet" style="margin:6px;">
+<div class="ss_style ss_portlet">
+<div style="margin:10px;">
 <script type="text/javascript">
 
 var ss_buttonSelected = "";
@@ -36,7 +37,7 @@ function checkFilterForm(obj) {
 
 </script>
 
-<form name="filterData" id="filterData" class="ss_style ss_form" method="post" 
+<form name="filterData" id="filterData" method="post" 
     action="<portlet:actionURL>
 	<portlet:param name="action" value="build_filter"/>
 	<portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -82,7 +83,7 @@ function checkFilterForm(obj) {
 	</c:if>
   </fieldset>
 
-<div class="ss_formBreak"/>
+<div class="ss_formBreak"></div>
 
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="closeBtn" 
@@ -92,3 +93,5 @@ function checkFilterForm(obj) {
 
 </form>
 
+</div>
+</div>
