@@ -1,6 +1,5 @@
 package com.sitescape.ef.web.util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.module.profile.index.IndexUtils;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
@@ -48,11 +46,13 @@ public class FilterHelper {
    	public final static String FilterElementNameField = "elementName";
    	public final static String FilterElementNameCaptionField = "elementNameCaption";
    	public final static String FilterElementValueField = "elementValue";
+   	public final static String FilterElementValueTypeField = "elementValueType";
 	
 	//Routine to parse the results of submitting the filter builder form
    	static public Document getSearchFilter (PortletRequest request) throws Exception {
 		Document searchFilter = DocumentHelper.createDocument();
 		Element sfRoot = searchFilter.addElement(FilterRootName);
+		Map formData = request.getParameterMap();
 
 		String filterName = PortletRequestUtils.getRequiredStringParameter(request, FilterNameField);
 		Element filterNameEle = sfRoot.addElement(FilterName);
@@ -61,11 +61,19 @@ public class FilterHelper {
 		Element filterTerms = sfRoot.addElement(FilterTerms);
 		
 		//Get the terms out of the formData
-		Integer maxTermNumber = new Integer(PortletRequestUtils.getRequiredStringParameter(request, WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER));
+		Integer maxTermNumber = new Integer(PortletRequestUtils.getRequiredStringParameter(request, WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX));
 		for (int i = 1; i <= maxTermNumber.intValue(); i++) {
-			String filterType = PortletRequestUtils.getRequiredStringParameter(request, FilterTypeField + String.valueOf(i));
+			String filterType = PortletRequestUtils.getStringParameter(request, FilterTypeField + String.valueOf(i));
 			if (!filterType.equals("")) {
 				//Found a possible term
+				if (formData.containsKey("deleteTerm")) {
+					String filterTermNumber = PortletRequestUtils.getStringParameter(request, WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER);
+					if (filterTermNumber.equals(String.valueOf(i))) {
+						//This term is to be deleted
+						continue;
+					}
+				}
+				
 				if (filterType.equals(FilterTypeSearchText)) {
 					//Get the search text
 					String searchText = PortletRequestUtils.getStringParameter(request, FilterElementValueField + String.valueOf(i), "");
@@ -79,6 +87,17 @@ public class FilterHelper {
 					String defId = PortletRequestUtils.getStringParameter(request, FilterEntryDefIdField + String.valueOf(i), "");
 					String name = PortletRequestUtils.getStringParameter(request, FilterElementNameField + String.valueOf(i), "");
 					String[] value = PortletRequestUtils.getStringParameters(request, FilterElementValueField + String.valueOf(i));
+					String[] valueType = PortletRequestUtils.getStringParameters(request, FilterElementValueTypeField + String.valueOf(i));
+					if (valueType.length > 0 && valueType[0].equals("checkbox")) {
+						//Fix up the value for a checkbox. Make it either true or false
+						if (value.length > 0 && value[0].equals("on")) {
+							value[0] = "true";
+						} else if (value.length > 0) {
+							value[0] = "false";
+						} else {
+							value = new String[] {"false"};
+						}
+					}
 					if (!defId.equals("") && !name.equals("") && value.length > 0) {
 						Element filterTerm = filterTerms.addElement(FilterTerm);
 						filterTerm.addAttribute(FilterType, filterType);

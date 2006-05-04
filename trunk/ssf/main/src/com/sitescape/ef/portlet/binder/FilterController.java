@@ -65,6 +65,21 @@ public class FilterController extends SAbstractController {
 			}
 			setResponseOnClose(request, response);
 		
+		} else if (formData.containsKey("deleteTerm")) {
+			//This is a request to delete a term
+			//Parse the search filter
+			Document searchFilter = FilterHelper.getSearchFilter(request);
+			if (searchFilter != null) {
+				UserProperties userForumProperties = getProfileModule().getUserFolderProperties(user.getId(), binderId);
+				Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+				if (searchFilters == null) searchFilters = new HashMap();
+				searchFilters.put(FilterHelper.getFilterName(searchFilter), searchFilter);
+				
+				//Save the updated search filters
+				getProfileModule().setUserFolderProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
+			}
+			response.setRenderParameters(formData);
+		
 		} else if (formData.containsKey("cancelBtn")) {
 			//Go back to the "Add filter" page
 			response.setRenderParameters(formData);
@@ -103,11 +118,12 @@ public class FilterController extends SAbstractController {
 		Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 		model.put(WebKeys.FILTER_SEARCH_FILTERS, searchFilters);
 		Map searchFilterData = new HashMap();
+		searchFilterData.put("filterTermCount", new Integer(0));
 		model.put(WebKeys.FILTER_SEARCH_FILTER_DATA, searchFilterData);
 
 		if (formData.containsKey("addBtn")) {
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);
-		} else if (formData.containsKey("modifyBtn")) {
+		} else if (formData.containsKey("modifyBtn") || formData.containsKey("deleteTerm")) {
 			//Build a bean that contains all of the fields to be shown
 			if (searchFilters.containsKey(selectedSearchFilter)) {
 				Map elementData = getFolderModule().getCommonEntryElements(binderId);

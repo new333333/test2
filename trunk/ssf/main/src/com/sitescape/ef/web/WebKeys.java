@@ -85,6 +85,7 @@ public class WebKeys {
     public static final String OPERATION_ADD_WORKSPACE = "add_workspace";
 	public static final String FORUM_OPERATION_GET_ENTRY_ELEMENTS = "get_entry_elements";
 	public static final String FORUM_OPERATION_GET_ELEMENT_VALUES = "get_element_values";
+	public static final String FORUM_OPERATION_GET_ELEMENT_VALUE_DATA = "get_element_value_data";
 	public static final String FORUM_OPERATION_GET_FAVORITES_TREE = "get_favorites_tree";
 	public static final String FORUM_OPERATION_GET_FILTER_TYPE = "get_filter_type";
 	public static final String FORUM_OPERATION_SET_DISPLAY_STYLE = "set_display_style";
@@ -137,10 +138,12 @@ public class WebKeys {
     public static final String FILTER_ENTRY_DEF_ID = "ss_filter_entry_def_id";
     public static final String FILTER_ENTRY_ELEMENT_NAME = "ss_filter_entry_element_name";
     public static final String FILTER_ENTRY_FILTER_TERM_NUMBER="ss_filterTermNumber";
+    public static final String FILTER_ENTRY_FILTER_TERM_NUMBER_MAX="ss_filterTermNumberMax";
     public static final String FILTER_SEARCH_FILTERS="ss_searchFilters";
     public static final String FILTER_SEARCH_FILTER_DATA="ss_searchFilterData";
     public static final String FILTER_SELECTED_FILTER_NAME="ss_selectedFilter";
     public static final String FILTER_TYPE="ss_filterType";
+    public static final String FILTER_VALUE_TYPE="ss_filterValueType";
     public static final String FOLDER = "ssFolder";
     public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";
     public static final String FOLDER_DEFINTION_MAP="ssFolderDefinitionMap";

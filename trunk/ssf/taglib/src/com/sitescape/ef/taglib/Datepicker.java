@@ -112,16 +112,16 @@ public class Datepicker extends TagSupport {
 
 	        StringBuffer sb = new StringBuffer();
 	        // load support for datapicker 
-	        sb.append("<script language=\"JavaScript\" src=\"")
+	        sb.append("<script type=\"text/javascript\" src=\"")
 	          .append(contextPath)
 	          .append("/js/datepicker/CalendarPopup.js\"></script>\n");
-	        sb.append("<script language=\"JavaScript\" src=\"")
+	        sb.append("<script type=\"text/javascript\" src=\"")
 	          .append(contextPath)
 	          .append("/js/common/AnchorPosition.js\"></script>\n");
-	        sb.append("<script language=\"JavaScript\" src=\"")
+	        sb.append("<script type=\"text/javascript\" src=\"")
 	          .append(contextPath)
 	          .append("/js/common/PopupWindow.js\"></script>\n");
-	        sb.append("<script language=\"JavaScript\" src=\"")
+	        sb.append("<script type=\"text/javascript\" src=\"")
 	          .append(contextPath)
 	          .append("/js/datepicker/date.js\"></script>\n");
 
@@ -129,7 +129,7 @@ public class Datepicker extends TagSupport {
 			// we have to keep the instance name and the setMultipleValues function name unique
 			// in case there is more than one picker on the page
 			
-			sb.append("<script language=\"javascript\" type=\"text/javascript\">\n");
+			sb.append("<script type=\"text/javascript\">\n");
 			sb.append("function dpos_")
 			  .append(prefix)
 			  .append("() {\n")
@@ -221,7 +221,7 @@ public class Datepicker extends TagSupport {
 			}
 			sb.append("today = new Date();\n")
 			  .append("if (m == 0) {m = today.getMonth()+1; mblank=1; } \n")
-			  .append("if (m < 10) { \n")
+			  .append("if (m == 0 || m == 1 || m == 2 || m == 3 || m == 4 || m == 5 || m == 6 || m == 7 || m == 8 || m == 9) { \n")
 			  .append("mm = '0' + m;\n")
 			  .append("} else {\n")
 			  .append("mm = m;\n}\n");
@@ -239,7 +239,7 @@ public class Datepicker extends TagSupport {
 			    .append("_date.selectedIndex ;\n");
 			}
 			sb.append("if (d == 0) { d = today.getDate(); dblank = 1; } \n")
-			  .append("if (d < 10) { \n")
+			  .append("if (d == 0 || d == 1 || d == 2 || d == 3 || d == 4 || d == 5 || d == 6 || d == 7 || d == 8 || d == 9) { \n")
 			  .append("dd = '0' + d;\n")
 			  .append("} else {\n")
 			  .append("dd = d;\n}\n");
@@ -252,7 +252,7 @@ public class Datepicker extends TagSupport {
 			  .append("if (format == \"mdy\") {\n")
 			  .append("return m + \"/\" + d + \"/\" + y;\n")
 			  .append("} else {\n")
-			  .append("if (mblank==1 && dblank==1 && yblank==1) { return \"\" }\n")
+			  .append("if (mblank==1) {\n  if (dblank==1) {\n    if (yblank==1) { return \"\" }\n  }\n}\n")
 			  .append("return y + \"-\" + mm + \"-\" + dd + \"T00\" + \":\" + \"00\" + \":\" + \"00\";\n }\n}\n");
 
 			sb.append("</script>\n");
@@ -266,11 +266,11 @@ public class Datepicker extends TagSupport {
 					  if (immediateMode.booleanValue()) {
 					    sb.append("<input type=\"hidden\"")
 					      .append(" name=\"").append(prefix).append("_month\"")
-					      .append(" value=\"").append(cal.get(Calendar.MONTH)+1).append("\">\n");
+					      .append(" value=\"").append(cal.get(Calendar.MONTH)+1).append("\" />\n");
 					  } else {
 					    sb.append("<select name=\"").append(prefix).append("_month\">\n");
 					    if (!initDateProvided) {
-					      selected = "selected";
+					      selected = "selected=\"selected\"";
 					    }
 					    sb.append("<option value=\"0\"")
 					      .append(selected)
@@ -279,7 +279,7 @@ public class Datepicker extends TagSupport {
 					      .append("</option>\n");
 					    for (i=1; i<13; i++) {
 					      if (cal.get(Calendar.MONTH) == i-1 && initDateProvided) {
-						selected = "selected";
+						selected = "selected=\"selected\"";
 					      } else {
 						selected = "";
 					      }
@@ -296,11 +296,11 @@ public class Datepicker extends TagSupport {
 					  if (immediateMode.booleanValue()) {
 					    sb.append("<input type=\"hidden\"")
 					      .append(" name=\"").append(prefix).append("_date\"")
-					      .append(" value=\"").append(cal.get(Calendar.DATE)).append("\">\n");
+					      .append(" value=\"").append(cal.get(Calendar.DATE)).append("\" />\n");
 					  } else {
 					    sb.append("<select name=\"").append(prefix).append("_date\">\n");
 					    if (!initDateProvided) {
-					      selected = "selected";
+					      selected = "selected=\"selected\"";
 					    }
 					    sb.append("<option value=\"0\"")
 					      .append(selected)
@@ -310,7 +310,7 @@ public class Datepicker extends TagSupport {
 					    selected = "";
 					    for (i=1; i<32; i++) {
 					      if (cal.get(Calendar.DATE) == i && initDateProvided) {
-						selected = "selected";
+						selected = "selected=\"selected\"";
 					      } else {
 						selected = "";
 					      }
@@ -325,7 +325,7 @@ public class Datepicker extends TagSupport {
 					  if (immediateMode.booleanValue()) {
 					    sb.append("<input type=\"hidden\"")
 					      .append(" name=\"").append(prefix).append("_year\"")
-					      .append(" value=\"").append(cal.get(Calendar.YEAR)).append("\">\n");
+					      .append(" value=\"").append(cal.get(Calendar.YEAR)).append("\" />\n");
 					  } else {
 					    sb.append("<INPUT TYPE=\"text\" CLASS=\"ss_text\" NAME=\"").append(prefix)
 					      .append("_year\" VALUE=\"");
@@ -334,7 +334,7 @@ public class Datepicker extends TagSupport {
 					    } else {
 					      sb.append("\"\"");
 					    }
-					    sb.append("\" SIZE=4>\n");
+					    sb.append("\" SIZE=\"4\" />\n");
 					  }
 					  break;
 				    }
@@ -356,17 +356,17 @@ public class Datepicker extends TagSupport {
 			  .append("><IMG BORDER=\"0\" SRC=\"")
 			  .append(contextPath)
 			  .append("/images/pics/sym_s_cal.gif\" ");
-			sb.append("alt=\"").append(this.altText).append("\"></A>\n");
+			sb.append("alt=\"").append(this.altText).append("\" /></A>\n");
 			sb.append("<input type=\"hidden\" name=\"")
 			  .append(prefix)
-			  .append("_hidden\" value=\"\">\n");
+			  .append("_hidden\" value=\"\" />\n");
 
 			TimeZone tz = TimeZone.getDefault();
-			sb.append("<input type=\"hidden\", name=\"")
+			sb.append("<input type=\"hidden\" name=\"")
 			  .append(prefix)
 			  .append("_timezoneid\" value=\"")
 			  .append(tz.getID())
-			  .append("\">\n");
+			  .append("\" />\n");
 			
 			jspOut.print(sb.toString());
       }
