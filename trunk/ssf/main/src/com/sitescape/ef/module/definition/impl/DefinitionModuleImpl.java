@@ -431,7 +431,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								throw new DefinitionInvalidException(defId, NLT.get("definition.error.notAnInteger") + " (" +configProperty.attributeValue("caption") + ")");
 							}
 							newPropertyEle.addAttribute("value", value);
-						} else if (type.equals("selectbox") || type.equals("itemSelect") || type.equals("replyStyle")) {
+						} else if (type.equals("selectbox") || type.equals("itemSelect") || 
+								type.equals("replyStyle") || type.equals("iconList")) {
 							newPropertyEle.addAttribute("value", value);
 						} else if (type.equals("boolean") || type.equals("checkbox")) {
 							if (value == null) {value = "false";}

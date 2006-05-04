@@ -523,7 +523,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 			  <ssf:param name="box_width" value="300" />
 			  <ssf:param name="box_show_close_icon" value="true" />
 			  <ssf:param name="box_show_close_routine" value="hideDisplayDiv()" />
-			  <ssf:param name="box_color" value="${ss_form_background_color}" />
+			  <ssf:param name="box_color" value="${ss_form_gray_color}" />
 			  <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
 			<div class="ss_form" id="displaydiv" 
 			  style="margin:0px; padding:4px;">&nbsp;</div>  
