@@ -2,6 +2,7 @@ package com.sitescape.ef.dao.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
@@ -353,9 +354,84 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
         	 );    	
        	
     }
-        
-    public void deleteEntryWorkflows(Folder folder) {
+    //All of this code is dependent on the JBPM data structures.
+    public void deleteEntryWorkflows(final Folder folder) {
     	//brute force delete of jbpm data structures
+	   	getHibernateTemplate().execute(
+		   	new HibernateCallback() {
+		   		public Object doInHibernate(Session session) throws HibernateException {
+		   			//load top level tokens
+		   			Set tokenIds = new HashSet(session.createQuery("select w.tokenId from com.sitescape.ef.domain.WorkflowState w where w.owner.owningBinderId=:id")
+    	   				.setLong("id", folder.getId().longValue())
+    	   				.list());
+		   			
+		   			//now get process instances 
+		   			Set pIs = new HashSet(session.createQuery("select p.id from org.jbpm.graph.exe.ProcessInstance p where p.rootToken in (:pList)")
+       	   				.setParameterList("pList", tokenIds)
+    	   				.list());
+		   			
+		   			//start down the tree with ProcessInstances
+		   			tokenIds.clear();
+		   			List subTokens;
+		   			List subPIs = new ArrayList(pIs);
+		   			while (true) {
+			   			//start down tree from here
+		   				subTokens = session.createQuery("select t.id from org.jbpm.graph.exe.Token t where t.processInstance in (:pList)")
+	      	   				.setParameterList("pList", subPIs)
+	    	   				.list();
+			   			if (subTokens.isEmpty()) break;
+			   			tokenIds.addAll(subTokens);
+
+			   			subPIs = session.createQuery("select p.id from org.jbpm.graph.exe.ProcessInstance p where p.superProcessToken in (:pList)")
+   	   						.setParameterList("pList", subTokens)
+   	   						.list();
+			   			if (subPIs.isEmpty()) break;
+			   			pIs.addAll(subPIs);
+		   				
+		   			}
+		   			
+		   			//delete logs
+		   			session.createQuery("Delete org.jbpm.logging.log.ProcessLog where token in (:pList)")
+        	   			.setParameterList("pList", tokenIds)
+        	   			.executeUpdate();
+		   			//delete comments
+		   			session.createQuery("Delete org.jbpm.graph.exe.Comment where token in (:pList)")
+        	   			.setParameterList("pList", tokenIds)
+        	   			.executeUpdate();
+		   			//delete variables
+		   			session.createQuery("Delete org.jbpm.context.exe.VariableInstance where token in (:pList)")
+	   					.setParameterList("pList", tokenIds)
+	   					.executeUpdate();
+		   			session.createQuery("Delete org.jbpm.context.exe.TokenVariableMap where token in (:pList)")
+        	   			.setParameterList("pList", tokenIds)
+        	   			.executeUpdate();
+	   			
+		   			session.createQuery("Delete org.jbpm.graph.exe.RuntimeAction where processInstance in (:pList)")
+		   				.setParameterList("pList", pIs)
+        	   			.executeUpdate();
+		   			session.createQuery("Delete org.jbpm.module.exe.ModuleInstance where processInstance in (:pList)")
+	   					.setParameterList("pList", pIs)
+	   					.executeUpdate();
+
+		   			session.createQuery("Delete org.jbpm.scheduler.exe.Timer where processInstance in (:pList)")
+   						.setParameterList("pList", pIs)
+   						.executeUpdate();
+
+		   			//break token =>process connection
+		   			session.createQuery("Update org.jbpm.graph.exe.Token set processInstance=null,parent=null where id in (:pList)")
+		   				.setParameterList("pList", tokenIds)
+		   				.executeUpdate();
+		   			session.createQuery("Delete org.jbpm.graph.exe.ProcessInstance where id in (:pList)")
+		   				.setParameterList("pList", pIs)
+						.executeUpdate();
+		   			session.createQuery("Delete org.jbpm.graph.exe.Token where id in (:pList)")
+		   				.setParameterList("pList", tokenIds)
+		   				.executeUpdate();
+		   			return null;
+		   			
+		   		}
+		  	}
+		);
     }
     public void deleteEntryWorkflows(List entries) {
     	
@@ -365,7 +441,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      * Moving all of the folderEntries with the folder.  The folder has been updated.
      * The owningFolderSortKey of the entries must change, 
      * but the owningBinderId remains the same.   
-     * Sub folder and their entries should must be handled separetly
+     * Sub folder and their entries must be handled separetly
      */
     public void moveEntries(final Folder folder) {
 	   	getHibernateTemplate().execute(

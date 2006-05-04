@@ -4,7 +4,7 @@ package com.sitescape.ef.jobs;
 import java.util.Iterator;
 import java.util.Date;
 
-import org.jbpm.db.JbpmSession;
+import com.sitescape.ef.module.workflow.impl.JbpmContext;
 import org.jbpm.db.SchedulerSession;
 import org.jbpm.scheduler.exe.Timer;
 import org.quartz.JobDataMap;
@@ -31,30 +31,7 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
      * The bulk of this code is taken from org.jbpm.scheduler.impl.SchedulerThread
      * @see com.sitescape.ef.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
      */
-	public void doExecute(JobExecutionContext context) throws JobExecutionException {	
-		WorkflowModule work = (WorkflowModule)SpringContextUtil.getBean("workflowModule");
-    	JbpmSession jbpmSession = WorkflowFactory.getSession();
-   		SchedulerSession schedulerSession = new SchedulerSession(jbpmSession);
-    	      
-   		logger.debug("checking for timers");
-   		Iterator iter = schedulerSession.findTimersByDueDate();
-   		boolean isDueDateInPast=true; 
-   		while( (iter.hasNext()) && (isDueDateInPast)) {
-    		Timer timer = (Timer) iter.next();
-    	    logger.debug("found timer "+timer);
-    	    //Do work inside a transaction in the workflowModule
-    	    // if this timer is due
-    	    if (timer.isDue()) {
-    	    	logger.debug("executing timer '"+timer+"'");
-    	        work.modifyWorkflowStateOnTimeout(new Long(timer.getId()));  
 
-    	    } else { // this is the first timer that is not yet due
-    	      isDueDateInPast = false;
-    		}
-   	      }
-    }
-/**
- * Save for jbpm 3.1
 	public void doExecute(JobExecutionContext context) throws JobExecutionException {	
 		WorkflowModule work = (WorkflowModule)SpringContextUtil.getBean("workflowModule");
     	JbpmContext jContext = WorkflowFactory.getContext();
@@ -81,7 +58,7 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
     		jContext.close();
     	}
     }
-	**/
+
     public void schedule(String zoneName, int seconds) {
 		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
 		try {

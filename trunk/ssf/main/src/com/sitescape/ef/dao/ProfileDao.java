@@ -33,9 +33,7 @@ public interface ProfileDao {
     public void delete(Principal entry);
     public void deleteEntries(ProfileBinder profile);
     public void deleteEntries(List entries);
-    public void deleteEntryWorkflows(ProfileBinder profile);
-    public void deleteEntryWorkflows(List entries);
-     public ProfileBinder getProfileBinder(String zoneName);
+    public ProfileBinder getProfileBinder(String zoneName);
       
     /**
      * 

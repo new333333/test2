@@ -8,13 +8,9 @@ package com.sitescape.ef.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import java.util.List;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
-import org.jdom.Element;
 
 import com.sitescape.util.Validator;
 import com.sitescape.ef.util.CollectionUtil;
@@ -29,7 +25,7 @@ import com.sitescape.ef.util.CollectionUtil;
 * @author Jong Kim
 *
 */
-public abstract class Principal extends WorkflowControlledEntry  {
+public abstract class Principal extends Entry  {
 	protected boolean disabled=false;
     protected String name;
     protected String lcName;

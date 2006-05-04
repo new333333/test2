@@ -93,6 +93,7 @@
       <property name="HFormat" column="description_format"/>
     </component>
     <property name="title" length="1024"/>
+    <property name="iconName" length="64"/>    
     <many-to-one access="field" class="com.sitescape.ef.domain.Definition" name="entryDef">
       <column name="entryDef" sql-type="char(32)"/>
     </many-to-one>
