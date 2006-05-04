@@ -13,6 +13,7 @@ import java.util.Date;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
@@ -549,7 +550,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    } finally {
 	    	context.close();
 	    }
-		
     	Writer writer = new StringWriter();
 	    JpdlXmlWriter jpdl = new JpdlXmlWriter(writer);
 	    jpdl.write(pD);
@@ -607,7 +607,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			cancelAction = new CancelTimerAction();
 			cancelAction.setTimerName(name);
 			event.addAction(cancelAction);
-			createAction.setName("cancelTimer");
+			cancelAction.setName("cancelTimer");
 		}
 			
 		return event;
@@ -803,8 +803,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	}
 
 	public void modifyWorkflowStateOnTimeout(Long timerId) {
-//TODO: worry about timers from other zones??
-		//Assume RequestContext is set
 		JbpmContext context=WorkflowFactory.getContext();
 	    try {
 	    	
@@ -817,6 +815,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     			//	token id is id of workflowState
     			WorkflowState ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
     			entry = (Entry)ws.getOwner().getEntity();
+        		//only process timers in current zone
+        		if (!ws.getDefinition().getZoneName().equals(RequestContextHolder.getRequestContext().getZoneName())) return;
     		}
   
     		// execute
@@ -879,7 +879,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				pI.end();
 				context.getSchedulerSession().cancelTimersForProcessInstance(pI);
 				context.getGraphSession().deleteProcessInstance(pI);
-				context.save(pI);
 			}
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);

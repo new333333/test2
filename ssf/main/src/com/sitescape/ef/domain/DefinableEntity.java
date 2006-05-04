@@ -24,6 +24,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     // these collections are loaded for quicker indexing, hibernate will not persist them
     protected Set iEvents,iAttachments;
     protected Map iCustomAttributes;
+    protected String iconName="";
  
     public DefinableEntity() {
     }
@@ -70,6 +71,16 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     
     public void setEntryDef(Definition entryDef) {
         this.entryDef = entryDef;
+    }
+    
+    /**
+     * @hibernate.property length="64"
+     */
+    public String getIconName() {
+    	return iconName;
+    }
+    public void setIconName(String iconName) {
+    	this.iconName = iconName;
     }
 
     /**

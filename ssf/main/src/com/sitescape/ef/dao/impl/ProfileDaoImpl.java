@@ -180,12 +180,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
        	
     }
         
-    public void deleteEntryWorkflows(ProfileBinder profile) {
-    	//brute force delete of jbpm data structures
-    }
-    public void deleteEntryWorkflows(List entries) {
-    	
-    }    /**
+    /**
      * Lookup binder and cache result.  Profile binder is a fixed name
      */
     public ProfileBinder getProfileBinder(final String zoneName) {
