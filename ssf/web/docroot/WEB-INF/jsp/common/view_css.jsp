@@ -83,10 +83,12 @@
 	<c:set var="ss_folder_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_entry_border_color" value="#CECECE" scope="request"/>
+	<c:set var="ss_replies_background_color" value="#FFEECC" scope="request"/>
+	<c:set var="ss_replies_text_color" value="#009900" scope="request"/>
 	
 	<c:set var="ss_form_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_form_text_color" value="#000000" scope="request"/>
-	<c:set var="ss_form_gray_color" value="#CC99CC" scope="request"/>
+	<c:set var="ss_form_gray_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_form_element_color" value="#EEEEEE" scope="request"/>
 	<c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/>
 	<c:set var="ss_form_element_border_color" value="#CCCCCC" scope="request"/>

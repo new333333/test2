@@ -4,29 +4,32 @@
 <div id="debugLog">
 </div>
 
-<div class="ss_toolbar">
+<div >
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr>
 
 <% // Favorites link %>
 <td align="center"><a href="javascript: ;"
   onClick="ss_showFavoritesPane();return false;"
-  ><ssf:nlt tag="navigation.workspace" text="Favorites"/></a></td>
-
-<% // Workspace link %>
-<td align="center"><ssf:nlt tag="navigation.workspace" text="Workspace"/></td>
+  ><img border="0" src="<html:imagesPath/>icons/favorites.png" 
+  alt="<ssf:nlt tag="navigation.workspace" text="Favorites"/>" /></a></td>
 
 <% // Search form %>
-<td align="center"><ssf:nlt tag="navigation.workspace" text="Search"/></td>
+<td align="center" nowrap="nowrap"><img border="0" src="<html:imagesPath/>icons/find.png" 
+  alt="<ssf:nlt tag="navigation.workspace" text="Search"/>" /><input
+  type="text" size="20"/><input type="submit" value="Go"/></td>
 
 <% // Clipboard %>
-<td align="center"><ssf:nlt tag="navigation.workspace" text="Clipboard"/></td>
+<td align="center"><img border="0" src="<html:imagesPath/>icons/clipboard.png" 
+  alt="<ssf:nlt tag="navigation.workspace" text="Clipboard"/>" /></td>
 
 <% // Help toggle %>
-<td align="center"><ssf:nlt tag="navigation.workspace" text="Help"/></td>
+<td align="center"><img border="0" src="<html:imagesPath/>icons/help.png" 
+  alt="<ssf:nlt tag="navigation.workspace" text="Help"/>" /></td>
 
 </tr>
 </table>
+
 <c:if test="${empty ss_navbarBottomSeen}">
 <c:set var="ss_navbarBottomSeen" value="1"/>
 
@@ -200,7 +203,7 @@ function ss_showFavoritesPane() {
 	ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_bottom") + ss_favoritesPaneTopOffset))
 	ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_bottom")))
 	var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom") + ss_favoritesPaneLeftOffset);
-	ss_showDivFadeIn("ss_favorites_pane", 500);
+	ss_showDivFadeIn("ss_favorites_pane", 0);
 	ss_hideObj("ss_favorites_form_div");
 
 	var url = "<ssf:url 
@@ -236,7 +239,7 @@ function ss_postFavoritesRequest(obj) {
 }
 
 function ss_hideFavoritesPane() {
-	ss_hideDivFadeOut('ss_favorites_pane', 100);
+	ss_hideDivFadeOut('ss_favorites_pane', 0);
 }
 
 function ss_setFavoritesPaneSize() {
@@ -259,6 +262,7 @@ function ss_setFavoritesPaneSize() {
 </script>
 
 <div id="ss_navbar_bottom"></div>
+<br/>
 
 </c:if>
 </div>

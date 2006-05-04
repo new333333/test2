@@ -55,6 +55,8 @@
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="icon" caption="__icons.entry" type="iconList" path="icons.entry" 
+				default="" />
 			<property name="replyStyle" caption="__reply_style" type="replyStyle" />
 		</properties>
 		
@@ -801,6 +803,8 @@
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="icon" caption="__icons.folder" type="iconList" path="icons.folder" 
+				default="" />
 		</properties>
 		
 		<options>
@@ -1162,6 +1166,8 @@
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="icon" caption="__icons.profileList" type="iconList" path="icons.profileList" 
+				default="" />
 		</properties>
 		
 		<options>
@@ -1354,6 +1360,8 @@
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="icon" caption="__icons.workspace" type="iconList" path="icons.workspace" 
+				default="" />
 		</properties>
 		
 		<options>

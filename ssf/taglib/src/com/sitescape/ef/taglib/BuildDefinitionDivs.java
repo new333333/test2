@@ -11,6 +11,7 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.util.SPropsUtil;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,6 +40,7 @@ public class BuildDefinitionDivs extends TagSupport {
 	private String rootElementId;
 	private String rootElementName;
 	private Element rootConfigElement;
+	private String contextPath;
 	
     
 	public int doStartTag() throws JspException {
@@ -46,6 +48,10 @@ public class BuildDefinitionDivs extends TagSupport {
 	        throw new JspException("The title must be specified");
 	    
 		try {
+			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
+			contextPath = req.getContextPath();
+			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
+
 			JspWriter jspOut = pageContext.getOut();
 			StringBuffer sb = new StringBuffer();
 			StringBuffer hb = new StringBuffer();
@@ -95,9 +101,6 @@ public class BuildDefinitionDivs extends TagSupport {
 	private void buildDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		Iterator itRootElements;
 		Iterator itRootElements2;
-		HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
-		String contextPath = req.getContextPath();
-		if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 		helpImgUrl = contextPath + "/images/pics/sym_s_help.gif";
 
 		if (filter.equals("")) {
@@ -780,6 +783,28 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(">").append(entryDef.getTitle()).append(" (").append(entryDef.getName()).append(")</option>\n");
 						}
 						sb.append("</select>\n<br/><br/>\n");
+					
+					} else if (type.equals("iconList")) {
+						if (!propertyConfig.attributeValue("caption", "").equals("")) {
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+							sb.append("\n<br/>\n");
+						}
+						String iconListPath = propertyConfig.attributeValue("path", "");
+						String[] iconList = (String[]) SPropsUtil.getString(iconListPath, "").split(",");
+						Element iconValueEle = (Element)sourceRoot.selectSingleNode("properties/property[@name='icon']");
+						String iconValue = "";
+						if (iconValueEle != null) iconValue = iconValueEle.attributeValue("value", "");
+						for (int i = 0; i < iconList.length; i++) {
+							String checked = "";
+							if (iconValue.equals(iconList[i])) {
+								checked = " checked=\"checked\"";
+							}
+							sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
+							sb.append(iconList[i]);
+							sb.append("\"").append(checked).append("/>");
+							sb.append("<img src=\"").append(contextPath + "/images/icons/").append(iconList[i]).append("\"/>");
+							sb.append("<br/>\n");
+						}
 					
 					} else {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {

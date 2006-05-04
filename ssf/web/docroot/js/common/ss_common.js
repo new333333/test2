@@ -176,7 +176,7 @@ function ss_showDivFader(id, opacity, endTime, count) {
     if (count <= 0 || incTime <= 0) {
         ss_setOpacity(document.getElementById(id),100);
     } else {
-        var incOpacity = parseInt((100 - opacity) / count)
+        var incOpacity = parseInt((100 - opacity) / count * 2)
         if (incOpacity < 5) incOpacity = 5;
         opacity = parseInt(opacity + incOpacity)
         if (opacity > 100) opacity = 100;
