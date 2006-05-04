@@ -6,9 +6,15 @@
 <%@ page import="com.sitescape.ef.web.WebKeys" %>
 <%@ page import="com.sitescape.ef.context.request.RequestContextHolder" %>
 <%@ page import="com.sitescape.ef.domain.User" %>
-<%
 
+<%
 // Color values used in ss styles, highlighting, borders, and headers
+// Select a color theme: "black and white" or "debug"
+%>
+<c:set var="ss_color_style" value="black and white" scope="request"/>
+
+<%
+//Color theme: "debug"
 %>
 <c:set var="ss_portlet_style_background_color" value="#FFFFAA" scope="request"/>
 <c:set var="ss_portlet_style_text_color" value="#000099" scope="request"/>
@@ -60,13 +66,12 @@
 <c:set var="ss_calendar_today_background_color" value="#ffffe8" scope="request"/>
 <c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
 
-<% //**********************************************************************// %>
-
-<c:set var="ss_color_style" value="black and white" scope="request"/>
-<c:set var="ss_color_style" value="debug" scope="request"/>
+<%
+//Color theme: "black and white"
+%>
 <c:if test="${ss_color_style == 'black and white'}">
-	<c:set var="ss_portlet_style_background_color" value="#FFFFAA" scope="request"/>
-	<c:set var="ss_portlet_style_text_color" value="#000099" scope="request"/>
+	<c:set var="ss_portlet_style_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_portlet_style_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 	
 	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
@@ -75,17 +80,17 @@
 	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
 	<c:set var="ss_style_gray_color" value="#999999" scope="request"/>
 	
-	<c:set var="ss_folder_border_color" value="#CC6666" scope="request"/>
+	<c:set var="ss_folder_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
-	<c:set var="ss_entry_border_color" value="#CC0000" scope="request"/>
+	<c:set var="ss_entry_border_color" value="#CECECE" scope="request"/>
 	
-	<c:set var="ss_form_background_color" value="#CCFFFF" scope="request"/>
-	<c:set var="ss_form_text_color" value="#3333FF" scope="request"/>
+	<c:set var="ss_form_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_form_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_form_gray_color" value="#CC99CC" scope="request"/>
-	<c:set var="ss_form_element_color" value="#FFCCFF" scope="request"/>
+	<c:set var="ss_form_element_color" value="#EEEEEE" scope="request"/>
 	<c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/>
-	<c:set var="ss_form_element_border_color" value="#669966" scope="request"/>
-	<c:set var="ss_form_element_text_color" value="#0033FF" scope="request"/>
+	<c:set var="ss_form_element_border_color" value="#CCCCCC" scope="request"/>
+	<c:set var="ss_form_element_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_form_element_readonly_color" value="InfoBackground" scope="request"/>
 	
 	<c:set var="ss_toolbar_background_color" value="#CECECE" scope="request"/>
@@ -102,12 +107,12 @@
 	<c:set var="ss_box_title_color" value="#009999" scope="request"/>
 	<c:set var="ss_box_title_text_color" value="#993333" scope="request"/>
 	
-	<c:set var="ss_sliding_table_background_color" value="#FFFFAA" scope="request"/>
-	<c:set var="ss_sliding_table_border_color" value="#999999" scope="request"/>
+	<c:set var="ss_sliding_table_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_sliding_table_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_sliding_table_text_color" value="#3333FF" scope="request"/>
 	<c:set var="ss_sliding_table_link_hover_color" value="#3333FF" scope="request"/>
-	<c:set var="ss_sliding_table_row0_background_color" value="#FFFFCC" scope="request"/>
-	<c:set var="ss_sliding_table_row1_background_color" value="#FFFFAA" scope="request"/>
+	<c:set var="ss_sliding_table_row0_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_sliding_table_row1_background_color" value="#EEEEEE" scope="request"/>
 	
 	<c:set var="ss_calendar_today_background_color" value="#ffffe8" scope="request"/>
 	<c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
@@ -167,6 +172,8 @@ if (document.createStyleSheet) {
 	ss_createStyleSheet(niftyCornersCssUrl);
 	ss_createStyleSheet(htmlareaCssUrl);
 }
+
+//Color theme is: <c:out value="${ss_color_style}"/>
 
 </script>
 
