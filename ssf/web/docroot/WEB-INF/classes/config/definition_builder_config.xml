@@ -1304,7 +1304,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_name_form.jsp" />
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_name_view.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderProfileName" />
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderName" />
 	</item>
 	
 	<item name="profileElements" caption="__profile_elements" type="data" category="profileEntryData">
