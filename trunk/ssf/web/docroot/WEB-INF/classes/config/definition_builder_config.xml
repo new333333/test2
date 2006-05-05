@@ -56,7 +56,7 @@
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
 			<property name="icon" caption="__icons.entry" type="iconList" path="icons.entry" 
-				default="" />
+				default="/icons/page.png" />
 			<property name="replyStyle" caption="__reply_style" type="replyStyle" />
 		</properties>
 		
@@ -155,6 +155,7 @@
 		<options>
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
+			<option name="entryIcon" />
 			<option name="attachFiles" default="true" />
 			<option name="entryFormButtons" initial="true" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
@@ -196,6 +197,20 @@
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/title_view.jsp" />
 		</jsps>
+	</item>
+	
+	<item name="entryIcon" caption="__icon" type="data" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="iconName" 
+			  readonly="true" unique="//item[@type='data']">
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__icon"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_entry.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/icon_view.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderIcon" />
 	</item>
 	
 	<item name="event" caption="__event" type="data" category="entryData">
@@ -803,8 +818,8 @@
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
-			<property name="icon" caption="__icons.folder" type="iconList" path="icons.folder" 
-				default="" />
+			<property name="icon" caption="__icons.folder" type="iconList" 
+				path="icons.folder" default="/icons/folder.png" />
 		</properties>
 		
 		<options>
@@ -819,6 +834,7 @@
 			<option name="binderName" initial="true" />
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
+			<option name="folderIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="textarea" />
 			<option name="graphic" />
@@ -841,6 +857,20 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/binder_name_form.jsp" />
 		</jsps>
+	</item>
+	
+	<item name="folderIcon" caption="__icon" type="data" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="iconName" 
+			  readonly="true" unique="//item[@type='data']">
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__icon"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_folder.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/icon_view.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderIcon" />
 	</item>
 	
 	<item name="forumView" caption="__folder_view" 
@@ -1166,8 +1196,8 @@
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
-			<property name="icon" caption="__icons.profileList" type="iconList" path="icons.profileList" 
-				default="" />
+			<property name="icon" caption="__icons.profileList" type="iconList" 
+				path="icons.profileList" default="/icons/profile_list.png" />
 		</properties>
 		
 		<options>
@@ -1360,8 +1390,8 @@
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
-			<property name="icon" caption="__icons.workspace" type="iconList" path="icons.workspace" 
-				default="" />
+			<property name="icon" caption="__icons.workspace" type="iconList" 
+				path="icons.workspace" default="/icons/workspace.gif" />
 		</properties>
 		
 		<options>
@@ -1376,6 +1406,7 @@
 			<option name="binderName" initial="true" />
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
+			<option name="workspaceIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="textarea" />
 			<option name="graphic" />
@@ -1387,6 +1418,20 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/workspace_form.jsp" />
 		</jsps>
+	</item>
+	
+	<item name="workspaceIcon" caption="__icon" type="data" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="iconName" 
+			  readonly="true" unique="//item[@type='data']">
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__icon"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_workspace.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/icon_view.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderIcon" />
 	</item>
 	
 	<item name="workspaceView" caption="__workspace_view" canBeDeleted="false" 

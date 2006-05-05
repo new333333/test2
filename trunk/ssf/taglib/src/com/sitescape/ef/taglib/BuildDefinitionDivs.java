@@ -303,11 +303,11 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("\" disabled=\"true\"/>\n");
 			sb.append("<input type=\"hidden\" name=\"modifyDefinitionName\" value=\"");
 			sb.append(sourceRoot.attributeValue("name", "").replaceAll("\"", "&quot;"));
-			sb.append("\" />\n<br/>\n");
+			sb.append("\" />\n<br/><br/>\n");
 			sb.append("<span>Caption</span><br/>\n");
 			sb.append("<input type=\"text\" class=\"ss_text\" name=\"modifyDefinitionCaption\" size=\"40\" value=\"");
 			sb.append(sourceRoot.attributeValue("caption", "").replaceAll("\"", "&quot;"));
-			sb.append("\"/><br/>\n");
+			sb.append("\"/><br/><br/>\n");
 
 			//Append the properties form elements
 			this.option = "properties";
@@ -592,7 +592,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 							sb.append("\n<br/>\n");
 						}
-						sb.append("<textarea name=\"propertyId_" + propertyId + "\" rows=\"6\" cols=\"45\" "+readonly+">"+propertyValue0+"</textarea>\n");
+						sb.append("<textarea name=\"propertyId_" + propertyId + "\" rows=\"6\" cols=\"45\" "+readonly+">"+propertyValue0+"</textarea>\n<br/>\n");
 					
 					} else if (type.equals("boolean") || type.equals("checkbox")) {
 						String checked = "";
@@ -723,7 +723,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								//No options were output, show something to avoid having an empty select box
 								sb.append("<option value=\"\">"+NLT.get("definition.noOptions")+"</option>\n");
 							}
-							sb.append("</select>\n");
+							sb.append("</select><br/><br/>\n");
 						}
 					
 					} else if (type.equals("itemSelect")) {
@@ -759,7 +759,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								sb.append(">").append(selectedItemCaption).append(" (").append(selectedItemName).append(")</option>\n");
 							}
 						}
-						sb.append("</select>\n<br/>\n");
+						sb.append("</select>\n<br/><br/>\n");
 					
 					} else if (type.equals("replyStyle")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
@@ -795,15 +795,17 @@ public class BuildDefinitionDivs extends TagSupport {
 						String iconValue = "";
 						if (iconValueEle != null) iconValue = iconValueEle.attributeValue("value", "");
 						for (int i = 0; i < iconList.length; i++) {
+							String iconListValue = iconList[i].trim();
+							if (iconListValue.equals("")) continue;
 							String checked = "";
-							if (iconValue.equals(iconList[i])) {
+							if (iconValue.equals(iconListValue)) {
 								checked = " checked=\"checked\"";
 							}
 							sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
-							sb.append(iconList[i]);
+							sb.append(iconListValue);
 							sb.append("\"").append(checked).append("/>");
-							sb.append("<img src=\"").append(contextPath + "/images/icons/").append(iconList[i]).append("\"/>");
-							sb.append("<br/>\n");
+							sb.append("<img src=\"").append(contextPath + "/images").append(iconListValue).append("\"/>");
+							sb.append("<br/><br/>\n");
 						}
 					
 					} else {
@@ -833,7 +835,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					
 					sb.append("<input type=\"hidden\" name=\"propertyName_" + propertyId + "\" ");
 					sb.append("value=\""+propertyName.replaceAll("\"", "&quot;")+"\"/>\n");
-					sb.append("<br/>\n");
+					sb.append("<br/><br/>\n");
 				}
 			}
 			sb.append("<br/>");

@@ -492,6 +492,11 @@ ul.ss_dropdownmenu li {
   height:20px;
   border:none;
   }
+.ss_twIcon {
+  width:16px;
+  height:16px;
+  border:none;
+  }
 .ss_twPlus {
   width:19px;
   height:20px;
@@ -526,18 +531,6 @@ ul.ss_dropdownmenu li {
   width:19px;
   height:20px;
   background-image: url(<html:imagesPath/>trees/join_bottom.gif);
-  border:none;
-  }
-.ss_twFolder {
-  width:19px;
-  height:20px;
-  background-image: url(<html:imagesPath/>trees/folder.gif);
-  border:none;
-  }
-.ss_twFolderOpen {
-  width:19px;
-  height:20px;
-  background-image: url(<html:imagesPath/>trees/folder_open.gif);
   border:none;
   }
 
