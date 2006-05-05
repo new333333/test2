@@ -266,7 +266,9 @@ function ss_setFavoritesPaneSize() {
 	var fObj2 = self.document.getElementById("ss_favorites")
 	var fObj22 = self.document.getElementById("ss_favorites2")
 	ss_setObjectWidth(fObj, parseInt(ss_getObjectWidth(fObj2) + ss_favoritesMarginW));
-	ss_setObjectHeight(fObj, parseInt(ss_getObjectHeight(fObj2) + ss_getObjectHeight(fObj22) + ss_favoritesMarginH * 2));
+	var height = parseInt(ss_getObjectHeight(fObj2) + ss_getObjectHeight(fObj22) + ss_favoritesMarginH * 2);
+	if (height < 400) height = "400px";
+	ss_setObjectHeight(fObj, height);
 	var fObj3 = self.document.getElementById("ss_favorites_table")
 	var fObj4 = self.document.getElementById("ss_favorites_table2")
 	var tableWidth = ss_getObjectWidth(fObj3);
