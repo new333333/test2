@@ -80,19 +80,29 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 		Element url;
 		if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {
 			Workspace ws = (Workspace)source;
+			String icon = ws.getIconName();
+			String imageClass = "ss_twIcon";
+			if (icon == null || icon.equals("")) {
+				icon = "/icons/workspace.gif";
+				imageClass = "ss_twImg";
+			}
 			element.addAttribute("type", "workspace");
 			element.addAttribute("title", ws.getTitle());
 			element.addAttribute("id", ws.getId().toString());
-			element.addAttribute("image", "workspace");
+			element.addAttribute("image", icon);
+			element.addAttribute("imageClass", imageClass);
         	url = element.addElement("url");
 	    	url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 	     	url.addAttribute(WebKeys.URL_BINDER_ID, ws.getId().toString());
 		} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
 			Folder f = (Folder)source;
+			String icon = f.getIconName();
+			if (icon == null || icon.equals("")) icon = "/icons/folder.png";
 			element.addAttribute("type", "folder");
 			element.addAttribute("title", f.getTitle());
 			element.addAttribute("id", f.getId().toString());
-			element.addAttribute("image", "folder");
+			element.addAttribute("image", icon);
+			element.addAttribute("imageClass", "ss_twIcon");
         	url = element.addElement("url");
 	    	url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 	     	url.addAttribute(WebKeys.URL_BINDER_ID, f.getId().toString());
@@ -104,8 +114,16 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 		public Element setupDomElement(String type, Object source, Element element) {
 			Element url;
 			Binder binder = (Binder) source;
+			String icon = binder.getIconName();
+			String imageClass = "ss_twIcon";
+			if (icon == null || icon.equals("")) {
+				icon = "/icons/workspace.gif";
+				imageClass = "ss_twImg";
+			}
 			element.addAttribute("title", binder.getTitle());
 			element.addAttribute("id", binder.getId().toString());
+			element.addAttribute("image", icon);
+			element.addAttribute("imageClass", imageClass);
 
 			if (getBinderModule().hasBinders(binder)) {
 				element.addAttribute("hasChildren", "true");
@@ -138,12 +156,22 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 			}
 			if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {
 				Workspace ws = (Workspace)source;
+				String icon = ws.getIconName();
+				String imageClass = "ss_twIcon";
+				if (icon == null || icon.equals("")) {
+					icon = "/icons/workspace.gif";
+					imageClass = "ss_twImg";
+				}
 				element.addAttribute("type", "workspace");
-				element.addAttribute("image", "workspace");
+				element.addAttribute("image", icon);
+				element.addAttribute("imageClass", imageClass);
 			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
 				Folder f = (Folder)source;
+				String icon = f.getIconName();
+				if (icon == null || icon.equals("")) icon = "/icons/folder.png";
 				element.addAttribute("type", "folder");
-				element.addAttribute("image", "folder");
+				element.addAttribute("image", icon);
+				element.addAttribute("imageClass", "ss_twIcon");
 			} else return null;
 			return element;
 		}

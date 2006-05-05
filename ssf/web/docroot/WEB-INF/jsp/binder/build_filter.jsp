@@ -51,7 +51,7 @@ function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
     if (op2 != null && op2 != "") url += "&operation2=" + op2;
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements(formObj.name);
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 }

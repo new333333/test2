@@ -764,10 +764,14 @@ public class SAbstractForumController extends SAbstractController {
 	
 			if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
 				Folder f = (Folder)source;
+				String icon = f.getIconName();
+				if (icon == null || icon.equals("")) icon = "/icons/folder.gif";
+				
 				element.addAttribute("type", "folder");
 				element.addAttribute("title", f.getTitle());
 				element.addAttribute("id", f.getId().toString());
-				element.addAttribute("image", "folder");
+				element.addAttribute("image", icon);
+				element.addAttribute("imageClass", "ss_twIcon");
 				Element url = element.addElement("url");
 				url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 				url.addAttribute(WebKeys.URL_BINDER_ID, f.getId().toString());
@@ -798,12 +802,22 @@ public class SAbstractForumController extends SAbstractController {
 			}
 			if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {
 				Workspace ws = (Workspace)source;
+				String icon = ws.getIconName();
+				String imageClass = "ss_twIcon";
+				if (icon == null || icon.equals("")) {
+					icon = "/icons/workspace.gif";
+					imageClass = "ss_twImg";
+				}
 				element.addAttribute("type", "workspace");
-				element.addAttribute("image", "workspace");
+				element.addAttribute("image", icon);
+				element.addAttribute("imageClass", imageClass);
 			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
 				Folder f = (Folder)source;
+				String icon = f.getIconName();
+				if (icon == null || icon.equals("")) icon = "/icons/folder.gif";
 				element.addAttribute("type", "folder");
-				element.addAttribute("image", "folder");
+				element.addAttribute("image", icon);
+				element.addAttribute("imageClass", "ss_twIcon");
 			} else return null;
 			return element;
 		}

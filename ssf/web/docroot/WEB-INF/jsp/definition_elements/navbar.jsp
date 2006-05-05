@@ -12,20 +12,39 @@
 <td align="center"><a href="javascript: ;"
   onClick="ss_showFavoritesPane();return false;"
   ><img border="0" src="<html:imagesPath/>icons/favorites.png" 
-  alt="<ssf:nlt tag="navigation.workspace" text="Favorites"/>" /></a></td>
+  alt="<ssf:nlt tag="navigation.workspace" text="Favorites"/>" /></a>
+  <br/>
+  <span class="ss_fineprint"><ssf:nlt tag="navigation.workspace" text="Favorites"/></span>
+</td>
+
+<% // History %>
+<td align="center"><img border="0" src="<html:imagesPath/>icons/history.png" 
+  alt="<ssf:nlt tag="navigation.history" text="History"/>" />
+  <br>
+  <span class="ss_fineprint"><ssf:nlt tag="navigation.history" text="History"/></span>
+</td>
 
 <% // Search form %>
 <td align="center" nowrap="nowrap"><img border="0" src="<html:imagesPath/>icons/find.png" 
   alt="<ssf:nlt tag="navigation.workspace" text="Search"/>" /><input
-  type="text" size="20"/><input type="submit" value="Go"/></td>
+  type="text" size="20"/><input type="submit" value="Go"/>
+  <br>
+  <span class="ss_fineprint"><ssf:nlt tag="navigation.search" text="Search"/></span>
+</td>
 
 <% // Clipboard %>
 <td align="center"><img border="0" src="<html:imagesPath/>icons/clipboard.png" 
-  alt="<ssf:nlt tag="navigation.workspace" text="Clipboard"/>" /></td>
+  alt="<ssf:nlt tag="navigation.clipboard" text="Clipboard"/>" />
+  <br>
+  <span class="ss_fineprint"><ssf:nlt tag="navigation.clipboard" text="Clipboard"/></span>
+</td>
 
 <% // Help toggle %>
 <td align="center"><img border="0" src="<html:imagesPath/>icons/help.png" 
-  alt="<ssf:nlt tag="navigation.workspace" text="Help"/>" /></td>
+  alt="<ssf:nlt tag="navigation.workspace" text="Help"/>" />
+  <br>
+  <span class="ss_fineprint"><ssf:nlt tag="navigation.help" text="Help"/></span>
+</td>
 
 </tr>
 </table>
@@ -132,7 +151,7 @@ function ss_saveFavorites(id) {
 	ajaxRequest.addKeyValue("movedItemId", ss_lastDropped)
 	ss_lastDropped = null;
 	ajaxRequest.addKeyValue("favorites", s)
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
@@ -162,7 +181,7 @@ function ss_addForumToFavorites() {
     	</ssf:url>"
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("binderId", binderId)
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
@@ -182,7 +201,7 @@ function ss_addFavoriteCategory() {
     	</ssf:url>"
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("category", s)
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
@@ -214,7 +233,7 @@ function ss_showFavoritesPane() {
 		<ssf:param name="operation" value="get_favorites_tree" />
     	</ssf:url>"
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request

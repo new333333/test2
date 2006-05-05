@@ -240,6 +240,7 @@ public class TreeTag extends TagSupport {
 			//Image
 			String s_image = getImage(e.attributeValue("image"));
 			String s_imageOpen = getImageOpen(e.attributeValue("image"));
+			String s_imageClass = e.attributeValue("imageClass", "ss_twImg");
 			boolean displayOnly = GetterUtil.getBoolean((String)e.attributeValue("displayOnly"));
 			
 			//Url (if any)
@@ -472,7 +473,7 @@ public class TreeTag extends TagSupport {
 			
 					// Link
 					if (hcn || hhcn) {
-						jspOut.print("<img class=\"ss_twImg\" id=\"");
+						jspOut.print("<img class=\""+s_imageClass+"\" id=\"");
 						jspOut.print(this.treeName);
 						jspOut.print("icon" + s_id + "\" src=\"");
 			
@@ -485,7 +486,7 @@ public class TreeTag extends TagSupport {
 						jspOut.print("\"/>");
 					}
 					else {
-						jspOut.print("<img class=\"ss_twImg\" id=\"");
+						jspOut.print("<img class=\""+s_imageClass+"\" id=\"");
 						jspOut.print(this.treeName);
 						jspOut.print("icon" + s_id + "\" src=\"" + s_image + "\"/>");
 					}
@@ -576,6 +577,7 @@ public class TreeTag extends TagSupport {
 			//Image
 			String s_image = getImage(e.attributeValue("image"));
 			String s_imageOpen = getImageOpen(e.attributeValue("image"));
+			String s_imageClass = e.attributeValue("imageClass", "ss_twImg");
 			boolean displayOnly = GetterUtil.getBoolean((String)e.attributeValue("displayOnly"));
 			
 			//Url = null value means 
@@ -652,14 +654,14 @@ public class TreeTag extends TagSupport {
 	
 			// Link
 			if (hcn) {
-				jspOut.print("<img class=\"ss_twImg\" id=\"");
+				jspOut.print("<img class=\""+s_imageClass+"\" id=\"");
 				jspOut.print(this.treeName);
 				jspOut.print("icon" + s_id + "\" src=\"");
 				jspOut.print(s_imageOpen); // e.g., folder_open.gif
 				jspOut.print("\"/>");
 			}
 			else {
-				jspOut.print("<img class=\"ss_twImg\" id=\"");
+				jspOut.print("<img class=\""+s_imageClass+"\" id=\"");
 				jspOut.print(this.treeName);
 				jspOut.print("icon" + s_id + "\" src=\"" + s_image + "\"/>");
 			}
@@ -799,11 +801,23 @@ public class TreeTag extends TagSupport {
 	}
 	
 	private String getImage(String image) {
-		return (this.images.containsKey(image)) ? this.commonImg + (String)this.images.get(image) : this.commonImg + (String) this.images.get("page");
+		if (image == null || image.equals("")) image = "page";
+		if (image.contains(".")) {
+			//This is a graphic, so just return it
+			return this.commonImg + image;
+		} else {
+			return (this.images.containsKey(image)) ? this.commonImg + (String)this.images.get(image) : this.commonImg + (String) this.images.get("page");
+		}
 	}
 	
 	private String getImageOpen(String image) {
-		return (this.imagesOpen.containsKey(image)) ? this.commonImg + (String)this.imagesOpen.get(image) : getImage(image);
+		if (image == null || image.equals("")) image = "page";
+		if (image.contains(".")) {
+			//This is a graphic, so just return it
+			return this.commonImg + image;
+		} else {
+			return (this.imagesOpen.containsKey(image)) ? this.commonImg + (String)this.imagesOpen.get(image) : getImage(image);
+		}
 	}
 }
 

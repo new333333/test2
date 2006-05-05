@@ -26,7 +26,7 @@
 <tbody>
 <tr>
   <td colspan="2" class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
-  <td align="right"><a onClick="ss_hideDivFadeOut('ss_favorites_pane', 100);return false;"
+  <td align="right"><a onClick="ss_hideDivFadeOut('ss_favorites_pane', 0);return false;"
     ><img border="0" src="<html:imagesPath/>box/close_off.gif"/></a></td>
 </tr>
 <tr>
