@@ -55,13 +55,12 @@ public interface FolderDao {
 	
 	public Folder loadFolder(Long folderId, String zoneName) throws DataAccessException,NoFolderByTheIdException;
   
-    public UserProperties loadUserFolderProperties(Long userId, Long folderId);
     public HistoryMap loadHistoryMap(Long userId, Long folderId);
     public void delete(Folder folder);
     public void deleteEntries(Folder folder);
     public void deleteEntries(List entries);
     public void deleteEntryWorkflows(Folder folder);
-    public void deleteEntryWorkflows(List entries);
+    public void deleteEntryWorkflows(Folder folder, List ids);
     public void moveEntries(Folder folder);
     public void moveEntries(Folder folder, List ids);
 

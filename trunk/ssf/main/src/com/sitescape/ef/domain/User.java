@@ -19,7 +19,7 @@ import java.util.TimeZone;
 
 import com.sitescape.ef.InternalException;
 import com.sitescape.util.Validator;
-
+import com.sitescape.ef.NotSupportedException;
 
 /**
  * @hibernate.subclass discriminator-value="U" dynamic-update="true" node="User"
@@ -62,15 +62,28 @@ public class User extends Principal {
 		return timeZone;
 	}
 
-    private void setupTitle() {
+	public String getTitle() {
+		// title is set by hibernate access=field
+		//title is only kept in the db for sql queries
+		String val = super.getTitle();
+    	if (!Validator.isNull(val)) return val;
+    	val = setupTitle();
+    	if (!Validator.isNull(val)) return val;
+    	return getName();		
+	}
+	public void setTitle(String title) {
+		throw new NotSupportedException("Cannot set title directly");
+	}
+    private String setupTitle() {
+    	String val;
     	StringBuffer tBuf = new StringBuffer();
-    	title = getFirstName();
-    	if (!Validator.isNull(title)) tBuf.append(title + " ");
-    	title = getMiddleName();
-    	if (!Validator.isNull(title)) tBuf.append(title + " ");
-    	title = getLastName();
-    	if (!Validator.isNull(title)) tBuf.append(title + " ");
-    	title = tBuf.toString().trim();
+    	val = getFirstName();
+    	if (!Validator.isNull(val)) tBuf.append(val + " ");
+    	val = getMiddleName();
+    	if (!Validator.isNull(val)) tBuf.append(val + " ");
+    	val = getLastName();
+    	if (!Validator.isNull(val)) tBuf.append(val + " ");
+    	return tBuf.toString().trim();
     	
     }
 	/**
@@ -156,7 +169,7 @@ public class User extends Principal {
      */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
-        setupTitle();
+        title = setupTitle();
     }
 
     
@@ -171,8 +184,8 @@ public class User extends Principal {
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
-        setupTitle();
-    }
+        title = setupTitle();
+   }
  
     /**
      * @return Returns the middleName.
@@ -185,7 +198,7 @@ public class User extends Principal {
      */
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
-        setupTitle();
+        title = setupTitle();
     }
     
     /**

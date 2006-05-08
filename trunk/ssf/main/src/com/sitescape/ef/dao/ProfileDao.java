@@ -94,6 +94,7 @@ public interface ProfileDao {
 
     public int countUsers(FilterControls filter, String zoneName);
     public UserProperties loadUserProperties(Long userId);
+    public UserProperties loadUserProperties(Long userId, Long binderId);
     
     public Group loadGroup(Long groupId, String zoneName);
     public List loadGroups(Collection groupsIds, String zoneName);

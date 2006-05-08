@@ -28,7 +28,7 @@ public class ListProfilesController extends  SAbstractProfileController {
 			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SELECT_FILTER)) {
-			getProfileModule().setUserFolderProperty(user.getId(), binderId, 
+			getProfileModule().setUserProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_USER_FILTER, 
 					PortletRequestUtils.getStringParameter(request,
 							WebKeys.FORUM_OPERATION_SELECT_FILTER,""));

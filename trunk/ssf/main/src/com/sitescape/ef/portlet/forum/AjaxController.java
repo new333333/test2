@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.module.profile.index.IndexUtils;
+import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
@@ -149,7 +149,7 @@ public class AjaxController  extends SAbstractForumController {
 		String columnPositions = ((String[])formData.get("column_positions"))[0];
 		if (!columnPositions.equals("")) {
 			//Save the column positions
-		   	getProfileModule().setUserFolderProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_COLUMN_POSITIONS, columnPositions);
+		   	getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_COLUMN_POSITIONS, columnPositions);
 		}
 	}
 	
@@ -253,7 +253,7 @@ public class AjaxController  extends SAbstractForumController {
 		if (!entryHeight.equals("")) {
 			//Save the entry width
 			String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
-		   	getProfileModule().setUserFolderProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
+		   	getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
 		}
 		response.setContentType("text/xml");
 		model.put(WebKeys.AJAX_STATUS, statusMap);
@@ -274,10 +274,10 @@ public class AjaxController  extends SAbstractForumController {
 			if (!idsToSkip[i].equals("")) userIdsToSkip.put(idsToSkip[i], Long.valueOf(idsToSkip[i]));
 		}
 		
-    	String nameType = IndexUtils.LASTNAME_FIELD;
-    	if (searchType.equals("firstName")) nameType = IndexUtils.FIRSTNAME_FIELD;
-    	if (searchType.equals("loginName")) nameType = IndexUtils.USERNAME_FIELD;
-    	if (searchType.equals("groupName")) nameType = IndexUtils.GROUPNAME_FIELD;
+    	String nameType = ProfileIndexUtils.LASTNAME_FIELD;
+    	if (searchType.equals("firstName")) nameType = ProfileIndexUtils.FIRSTNAME_FIELD;
+    	if (searchType.equals("loginName")) nameType = ProfileIndexUtils.LOGINNAME_FIELD;
+    	if (searchType.equals("groupName")) nameType = ProfileIndexUtils.GROUPNAME_FIELD;
     	if (searchType.equals("title")) nameType = EntryIndexUtils.TITLE_FIELD;
 
     	//Build the search query

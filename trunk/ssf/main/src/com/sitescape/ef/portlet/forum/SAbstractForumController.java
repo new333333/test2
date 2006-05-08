@@ -74,7 +74,7 @@ public class SAbstractForumController extends SAbstractController {
 	
 		User user = RequestContextHolder.getRequestContext().getUser();
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
-		UserProperties userFolderProperties = getProfileModule().getUserFolderProperties(user.getId(), binderId);
+		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
@@ -84,7 +84,7 @@ public class SAbstractForumController extends SAbstractController {
 			searchFilter = (Document)searchFilters.get(searchFilterName);
 		}
 		//See if the user has selected a specific view to use
-        UserProperties uProps = getProfileModule().getUserFolderProperties(user.getId(), binderId);
+        UserProperties uProps = getProfileModule().getUserProperties(user.getId(), binderId);
 		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 		DefinitionUtils.getDefinitions(binder, model, userDefaultDef);
 		String view;
@@ -387,7 +387,7 @@ public class SAbstractForumController extends SAbstractController {
 		Iterator entryIterator = entrylist.listIterator();
 		PortletSession ps = WebHelper.getRequiredPortletSession(req);
 		// view mode is one of day, week, or month
-		UserProperties userFolderProperties = (UserProperties) getProfileModule().getUserFolderProperties(
+		UserProperties userFolderProperties = (UserProperties) getProfileModule().getUserProperties(
 				user.getId(), folder.getId());
 		Map userFolderPropertiesMap = userFolderProperties.getProperties();
 		String viewMode = WebKeys.CALENDAR_VIEW_WEEK;

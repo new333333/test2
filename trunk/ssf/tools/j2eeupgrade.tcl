@@ -27,7 +27,6 @@ array set ::j2ee_Principals_class_MAP {
    timeZoneId   {timeZoneId "varchar 10"}
    loginDate	{loginDate timestamp}
    preferredWorkspace {preferredWorkspace int32}
-   defaultIdentity	{defaultIdentity boolean}
    reserved	{reserved boolean}
    parentBinder {parentBinder int32}
    functionMembershipInherited   {functionMembershipInherited boolean}
@@ -408,7 +407,6 @@ proc doUsers {userList} {
 				
 	set attrs(zoneName) $::zoneName
 	set attrs(reserved) 0
-	set attrs(defaultIdentity) 0
     set attrs(parentBinder) $::_profileId
 	
 	user_property load -filter defaultSummit

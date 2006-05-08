@@ -34,15 +34,14 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
 import com.sitescape.ef.search.BasicIndexUtils;
-import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.index.IndexUtils;
+import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
@@ -65,8 +64,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
     	getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).
 							setSeen(entry);
-        getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
-   }
+    	if (entry instanceof AclControlled)
+    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
+    	else
+    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(binder)); // Just for testing
+     }
 
 	 protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
 		 getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
@@ -83,8 +85,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  	}
  	protected void indexEntries_postIndex(Binder binder, Entry entry) {
  		super.indexEntries_postIndex(binder, entry);
- 		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry));
- 	}
+    	if (entry instanceof AclControlled)
+    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
+    	else
+    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(binder)); // Just for testing
+	}
  	protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, 
     		String [] entryTypes, org.dom4j.Document searchFilter) {
     	  
@@ -136,11 +141,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
         
     protected Object deleteEntry_workflow(Binder parentBinder, Entry entry, Object ctx) {
-    	List entries = new ArrayList((List)ctx);
-      	for (int i=0; i<entries.size(); ++i) {
-    		super.deleteEntry_workflow(parentBinder, (FolderEntry)entries.get(i), null);
+       	List replies = (List)ctx;
+    	List ids = new ArrayList();
+      	for (int i=0; i<replies.size(); ++i) {
+    		ids.add(((FolderEntry)replies.get(i)).getId());
     	}
-   		super.deleteEntry_workflow(parentBinder, entry, null);
+      	ids.add(entry.getId());
+      	//use optimized bulk delete
+   		getFolderDao().deleteEntryWorkflows((Folder)parentBinder, ids);
         return ctx;
     }
     

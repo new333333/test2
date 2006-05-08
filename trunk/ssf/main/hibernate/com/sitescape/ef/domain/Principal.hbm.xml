@@ -22,7 +22,6 @@
       <key column="principal"/>
       <one-to-many class="com.sitescape.ef.domain.Event"/>
     </set>
-    <property name="defaultIdentity"/>
     <property name="reserved"/>
     <property name="preferredWorkspaceId">
       <column name="preferredWorkspace"/>
@@ -43,7 +42,7 @@
       <property name="HDescription" column="description_text" type="com.sitescape.ef.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>
     </component>
-    <property name="title" length="1024"/>
+    <property name="title" access="field" length="1024"/>
     <property name="iconName" length="64"/>    
     <many-to-one access="field" class="com.sitescape.ef.domain.Definition" name="entryDef">
       <column name="entryDef" sql-type="char(32)"/>

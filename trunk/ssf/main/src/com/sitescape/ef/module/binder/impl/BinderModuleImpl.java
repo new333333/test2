@@ -172,7 +172,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	throws AccessControlException {
 		Binder binder = setConfiguration(binderId, definitionIds);
 		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS);    	
-		binder.setWorkflowAssociations(workflowAssociations);
+		Map wf = new HashMap();
+		Definition def;
+		String companyId = binder.getZoneName();
+		for (Iterator iter=workflowAssociations.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry me = (Map.Entry)iter.next();
+			//	TODO:	getAccessControlManager().checkAcl(def, AccessType.READ);
+			def = getCoreDao().loadDefinition((String)me.getValue(), companyId);
+			wf.put(me.getKey(), def);
+		}
+		binder.setWorkflowAssociations(wf);
 		binder.setDefinitionsInherited(false);
 		return binder;
 	}

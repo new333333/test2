@@ -182,11 +182,11 @@
 		  <select name="workflow_<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
 		    <option value=""><ssf:nlt tag="common.select.none" text="--none--"/></option>
 	          <c:forEach var="wfp" items="${ssPublicWorkflowDefinitions}">
-	            <c:if test="${ssBinder.workflowAssociations[item.value.id] eq wfp.value.id}">
+	            <c:if test="${ssBinder.workflowAssociations[item.value.id] eq wfp.value}">
 	              <option value="<c:out value="${wfp.value.id}"/>" selected>
 	              <c:out value="${wfp.value.title}"/> (<c:out value="${wfp.value.name}"/>)</option>
 	            </c:if>
-	            <c:if test="${ssBinder.workflowAssociations[item.value.id] != wfp.value.id}">
+	            <c:if test="${ssBinder.workflowAssociations[item.value.id] != wfp.value}">
 	              <option value="<c:out value="${wfp.value.id}"/>">
 	              <c:out value="${wfp.value.title}"/> (<c:out value="${wfp.value.name}"/>)</option>
 	            </c:if>

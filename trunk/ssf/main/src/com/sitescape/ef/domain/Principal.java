@@ -35,17 +35,6 @@ public abstract class Principal extends Entry  {
     protected String zoneName;
     protected Long preferredWorkspaceId;
     protected boolean reserved;
-    protected boolean defaultIdentity;
-    /**
-     * @hibernate.property
-     * @return
-     */
-    public boolean isDefaultIdentity() {
-    	return defaultIdentity;
-    }
-    public void setDefaultIdentity(boolean defaultIdentity) {
-    	this.defaultIdentity = defaultIdentity;
-    }
     
     /**
      * @hibernate.property

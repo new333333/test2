@@ -271,6 +271,17 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    	context.close();
 	    }
 	}
+	public void deleteProcessDefinition(String name) {
+		JbpmContext context = WorkflowFactory.getContext();
+	    try {
+	        ProcessDefinition pD = context.getGraphSession().findLatestProcessDefinition(name);
+	        context.getGraphSession().deleteProcessDefinition(pD);
+	    } catch (Exception ex) {
+	        throw convertJbpmException(ex);
+	    } finally {
+	    	context.close();
+	    }
+	};
 	private RuntimeException convertJbpmException(Exception ex) {
 		// try to decode and translate HibernateExceptions
 	    if (ex instanceof HibernateException) {

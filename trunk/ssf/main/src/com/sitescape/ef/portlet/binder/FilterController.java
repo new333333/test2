@@ -40,13 +40,13 @@ public class FilterController extends SAbstractController {
 			//Parse the search filter
 			Document searchFilter = FilterHelper.getSearchFilter(request);
 			if (searchFilter != null) {
-				UserProperties userForumProperties = getProfileModule().getUserFolderProperties(user.getId(), binderId);
+				UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 				Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 				if (searchFilters == null) searchFilters = new HashMap();
 				searchFilters.put(FilterHelper.getFilterName(searchFilter), searchFilter);
 				
 				//Save the updated search filters
-				getProfileModule().setUserFolderProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
+				getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
 			}
 			setResponseOnClose(request, response);
 		
@@ -54,13 +54,13 @@ public class FilterController extends SAbstractController {
 			//This is a request to delete a filter
 			String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilter", "");
 			if (!selectedSearchFilter.equals("")) {
-				UserProperties userForumProperties = getProfileModule().getUserFolderProperties(user.getId(), binderId);
+				UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 				Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 				if (searchFilters == null) searchFilters = new HashMap();
 				if (searchFilters.containsKey(selectedSearchFilter)) {
 					searchFilters.remove(selectedSearchFilter);
 					//Save the updated search filters
-					getProfileModule().setUserFolderProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
+					getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
 				}
 			}
 			setResponseOnClose(request, response);
@@ -70,13 +70,13 @@ public class FilterController extends SAbstractController {
 			//Parse the search filter
 			Document searchFilter = FilterHelper.getSearchFilter(request);
 			if (searchFilter != null) {
-				UserProperties userForumProperties = getProfileModule().getUserFolderProperties(user.getId(), binderId);
+				UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 				Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 				if (searchFilters == null) searchFilters = new HashMap();
 				searchFilters.put(FilterHelper.getFilterName(searchFilter), searchFilter);
 				
 				//Save the updated search filters
-				getProfileModule().setUserFolderProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
+				getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
 			}
 			response.setRenderParameters(formData);
 		
@@ -114,7 +114,7 @@ public class FilterController extends SAbstractController {
 		DefinitionUtils.getDefinitions(binder, model);
 		DefinitionUtils.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 
-		UserProperties userForumProperties = getProfileModule().getUserFolderProperties(user.getId(), binderId);
+		UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 		model.put(WebKeys.FILTER_SEARCH_FILTERS, searchFilters);
 		Map searchFilterData = new HashMap();
