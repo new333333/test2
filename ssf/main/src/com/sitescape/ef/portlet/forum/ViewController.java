@@ -80,12 +80,12 @@ public class ViewController  extends SAbstractForumController {
 			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
 		
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_DEFINITION)) {
-			getProfileModule().setUserFolderProperty(user.getId(), binderId, 
+			getProfileModule().setUserProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 		
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE)) {
-			getProfileModule().setUserFolderProperty(user.getId(), binderId, 
+			getProfileModule().setUserProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 		
@@ -96,7 +96,7 @@ public class ViewController  extends SAbstractForumController {
 			Date newdate = sdf.parse(urldate);
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, newdate);
 			String viewMode = PortletRequestUtils.getStringParameter(request,WebKeys.CALENDAR_URL_VIEWMODE, "");
-			getProfileModule().setUserFolderProperty(user.getId(), binderId, 
+			getProfileModule().setUserProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE, viewMode);
 		
 		} else if (op.equals(WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE)) {
@@ -105,7 +105,7 @@ public class ViewController  extends SAbstractForumController {
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, dt);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SELECT_FILTER)) {
-			getProfileModule().setUserFolderProperty(user.getId(), binderId, 
+			getProfileModule().setUserProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_USER_FILTER, 
 					PortletRequestUtils.getStringParameter(request,
 							WebKeys.FORUM_OPERATION_SELECT_FILTER,""));

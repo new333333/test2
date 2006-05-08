@@ -24,7 +24,9 @@
     <map inverse="false" table="SS_WorkflowMap" access="field" cascade="all,delete-orphan" lazy="true" name="workflowAssociations">
       <key column="binder"/>
       <map-key type="string" column="entryDefinition" length="32"/>
-      <element type="string" column="workflowDefinition" length="32"/>
+      <many-to-many class="com.sitescape.ef.domain.Definition">
+      	<column name="workflowDefinition" sql-type="char(32)"/>
+      </many-to-many>
     </map>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
       <key column="binder"/>
@@ -36,7 +38,7 @@
     </set>
     <list inverse="false" access="field" cascade="persist,merge,save-update,refresh,evict" lazy="true" table="SS_DefinitionMap" name="definitions">
       <cache usage="read-write"/>
-      <key column="forum"/>
+      <key column="binder"/>
       <index type="integer" column="position"/>
       <many-to-many fetch="join" class="com.sitescape.ef.domain.Definition">
         <column name="definition" sql-type="char(32)"/>

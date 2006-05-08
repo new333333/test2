@@ -36,7 +36,7 @@ public class SAbstractProfileController extends SAbstractController {
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		UserProperties userFolderProperties = getProfileModule().getUserFolderProperties(user.getId(), binderId);
+		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
 		Map users = null;
 		if (searchFilterName != null && !searchFilterName.equals("")) {
@@ -50,7 +50,7 @@ public class SAbstractProfileController extends SAbstractController {
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FOLDER, binder);
 		model.put(WebKeys.ENTRIES, users.get(ObjectKeys.ENTRIES));
-		model.put(WebKeys.USER_FOLDER_PROPERTIES, getProfileModule().getUserFolderProperties(user.getId(), binderId));
+		model.put(WebKeys.USER_FOLDER_PROPERTIES, getProfileModule().getUserProperties(user.getId(), binderId));
 		DefinitionUtils.getDefinitions(binder, model);
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 

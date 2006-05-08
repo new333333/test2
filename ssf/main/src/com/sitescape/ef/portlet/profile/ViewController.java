@@ -30,7 +30,7 @@ public class ViewController extends  SAbstractController {
 		
 		//Get the profile binder
 		//If first time here, add a profile folder to the top workspace
-		ProfileBinder binder = getProfileModule().addProfileBinder();
+		ProfileBinder binder = getProfileModule().getProfileBinder();
 		
 		model.put(WebKeys.BINDER, binder);
 		Toolbar toolbar = new Toolbar();

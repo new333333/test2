@@ -16,8 +16,6 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.SeenMap;
@@ -27,7 +25,6 @@ import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.file.WriteFilesException;
-import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -37,8 +34,6 @@ import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.domain.NoBinderByTheNameException;
-import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 
 
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
@@ -59,60 +54,38 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	private ProfileBinder loadBinder() {
 	   return (ProfileBinder)getProfileDao().getProfileBinder(RequestContextHolder.getRequestContext().getZoneName());
 	}
-	public ProfileBinder addProfileBinder() {
-		ProfileBinder pf;
-		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		try {
-			return (ProfileBinder)getCoreDao().findBinderByName("_profiles", zoneName);
-			
-		} catch (NoBinderByTheNameException nb) {
-			pf = new ProfileBinder();
-			pf.setName("_profiles");
-			pf.setZoneName(zoneName);
-			getCoreDao().save(pf);
-			getCoreDao().findTopWorkspace(zoneName).addBinder(pf);
-			List users = getProfileDao().loadUsers(new FilterControls(), zoneName);
-			for (int i=0; i<users.size(); ++i) {
-				User u = (User)users.get(i);
-				u.setParentBinder(pf);
-			}
-			
-			List groups = getProfileDao().loadGroups(new FilterControls(), zoneName);
-			for (int i=0; i<groups.size(); ++i) {
-				Group g = (Group)groups.get(i);
-				g.setParentBinder(pf);
-			}
-			return pf;
-		}
-	}
+
 	public ProfileBinder getProfileBinder() {
 	   ProfileBinder binder = loadBinder();
-	   //todo: access check
+		// Check if the user has "read" access to the folder.
+		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);		
 	   return binder;
     }
 
 	public Principal getEntry(Long binderId, Long principaId) {
         ProfileBinder binder = loadBinder(binderId);
-        return getProfileDao().loadPrincipal(principaId, binder.getZoneName());        
+        Principal p = getProfileDao().loadPrincipal(principaId, binder.getZoneName());        
+        AccessUtils.readCheck(p);
+        return p;
     }
-   public UserProperties setUserFolderProperty(Long userId, Long folderId, String property, Object value) {
+   public UserProperties setUserProperty(Long userId, Long binderId, String property, Object value) {
    		UserProperties uProps=null;
    		User user = RequestContextHolder.getRequestContext().getUser();
   		if (userId == null) userId = user.getId();
    		//TODO: probably need access checks, but how?
   		if (user.getId().equals(userId)) {
-    		uProps = getFolderDao().loadUserFolderProperties(userId, folderId);
+    		uProps = getProfileDao().loadUserProperties(userId, binderId);
 			uProps.setProperty(property, value); 	
   		}
   		return uProps;
    }
-   public UserProperties getUserFolderProperties(Long userId, Long folderId) {
+   public UserProperties getUserProperties(Long userId, Long binderId) {
    		UserProperties uProps=null;
    		User user = RequestContextHolder.getRequestContext().getUser();
   		if (userId == null) userId = user.getId();
 		//TODO: probably need access checks, but how?
   		if (user.getId().equals(userId)) {
-			uProps = getFolderDao().loadUserFolderProperties(userId, folderId);
+			uProps = getProfileDao().loadUserProperties(userId, binderId);
 		}
 		return uProps;
 }
@@ -171,15 +144,16 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   
     public List getGroups(Long binderId) {
         ProfileBinder binder = loadBinder(binderId);
-  		FilterControls filter = new FilterControls();
+		getAccessControlManager().checkOperation(binder,  WorkAreaOperation.READ_ENTRIES);
+ 		FilterControls filter = new FilterControls();
     	filter.setOrderBy(new OrderBy("title"));
     	List result = getProfileDao().loadGroups(filter, RequestContextHolder.getRequestContext().getZoneName());
-    	//TODO: check access
     	return result;
     }
  
     public Map getGroups(Long binderId, int maxEntries, Document searchFilter) {
         ProfileBinder binder = loadBinder(binderId);
+		getAccessControlManager().checkOperation(binder,  WorkAreaOperation.READ_ENTRIES);
         return loadProcessor(binder).getBinderEntries(binder, groupDocType, maxEntries, searchFilter);        
    }
  
@@ -252,6 +226,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     
     public void indexEntries(Long binderId) {
         ProfileBinder binder = loadBinder(binderId);
+		getAccessControlManager().checkOperation(binder,  WorkAreaOperation.BINDER_ADMINISTRATION);
         loadProcessor(binder).indexEntries(binder);
     }
 
@@ -264,6 +239,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  
     public Map getUsers(Long binderId, int maxEntries, Document searchFilter) {
         ProfileBinder binder = loadBinder(binderId);
+		getAccessControlManager().checkOperation(binder,  WorkAreaOperation.READ_ENTRIES);
         return loadProcessor(binder).getBinderEntries(binder, userDocType, maxEntries, searchFilter);
         
    }

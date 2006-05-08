@@ -16,7 +16,6 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.CommaSeparatedValue;
 import com.sitescape.util.Validator;
@@ -242,7 +241,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	
 	public void deleteDefinition(String id) {
 		Definition def = getDefinition(id);
-		coreDao.delete(def);
+		getCoreDao().delete(def);
+		if (def.getType() == Definition.WORKFLOW) {
+			//jbpm defs are named with the string id of the ss definitions
+			getWorkflowModule().deleteProcessDefinition(def.getId());
+		} 
 	}
 
 	public Document getDefaultDefinition(String name, String title, int type, Map formData) {

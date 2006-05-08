@@ -88,22 +88,22 @@ public class AccessUtils  {
 	public static void readCheck(Entry entry) throws AccessControlException {
     	if (entry instanceof WorkflowSupport)
     		readCheck(entry.getParentBinder(), (WorkflowSupport)entry);
-    	else if (entry instanceof AclControlled)
-    		readCheck(entry.getParentBinder(), (AclControlled)entry);
+    	else 
+    		readCheck(entry.getParentBinder(), (Entry)entry);
     		
    }
-	public static void readCheck(Binder binder, AclControlled entry) {
+	public static void readCheck(Binder binder, Entry entry) {
        	try {
        		getAccessManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
        	} catch (OperationAccessControlException ex) {
-       		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) 
+       		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreation().getPrincipal())) 
     				getAccessManager().checkOperation(binder, WorkAreaOperation.CREATOR_READ);
        		else throw ex;
        	}
     }
     public static void readCheck(Binder binder, WorkflowSupport entry) {
 		if (!entry.hasAclSet()) {
-	       	readCheck(binder, (AclControlled)entry);
+	       	readCheck(binder, (Entry)entry);
 	    } else {         	
 	       	//entry has a workflow
 	       	//see if owner can read
@@ -133,22 +133,22 @@ public class AccessUtils  {
     public static void modifyCheck(Entry entry) throws AccessControlException {
     	if (entry instanceof WorkflowSupport)
     		modifyCheck(entry.getParentBinder(), (WorkflowSupport)entry);
-    	else if (entry instanceof AclControlled)
-    		modifyCheck(entry.getParentBinder(), (AclControlled)entry);
+    	else 
+    		modifyCheck(entry.getParentBinder(), (Entry)entry);
     		
    }
-    public static void modifyCheck(Binder binder, AclControlled entry) {
+    public static void modifyCheck(Binder binder, Entry entry) {
        	try {
        		getAccessManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES);
        	} catch (OperationAccessControlException ex) {
-      		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) 
+      		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreation().getPrincipal())) 
       			getAccessManager().checkOperation(binder, WorkAreaOperation.CREATOR_MODIFY);
       		else throw ex;
       	}
     }
      public static void modifyCheck(Binder binder, WorkflowSupport entry) {
         if (!entry.hasAclSet()) {
-        	modifyCheck(binder, (AclControlled)entry);
+        	modifyCheck(binder, (Entry)entry);
         } else {         	
         	//entry has a workflow
         	//see if owner can modify
@@ -178,22 +178,22 @@ public class AccessUtils  {
     public static void deleteCheck(Entry entry) throws AccessControlException {
      	if (entry instanceof WorkflowSupport)
      		deleteCheck(entry.getParentBinder(), (WorkflowSupport)entry);
-     	else if (entry instanceof AclControlled)
-     		deleteCheck(entry.getParentBinder(), (AclControlled)entry);
+     	else 
+     		deleteCheck(entry.getParentBinder(), (Entry)entry);
      		
     }
-    public static void deleteCheck(Binder binder, AclControlled entry) {
+    public static void deleteCheck(Binder binder, Entry entry) {
       	try {
        		getAccessManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES);
        	} catch (OperationAccessControlException ex) {
-      		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) 
+      		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreation().getPrincipal())) 
    				getAccessManager().checkOperation(binder, WorkAreaOperation.CREATOR_DELETE);
       		else throw ex;
       	}   
     }
     public static void deleteCheck(Binder binder, WorkflowSupport entry) {
         if (!entry.hasAclSet()) {
-        	deleteCheck(binder, (AclControlled)entry);
+        	deleteCheck(binder, (Entry)entry);
         } else {         	
         	//entry has a workflow
         	//see if owner can delete

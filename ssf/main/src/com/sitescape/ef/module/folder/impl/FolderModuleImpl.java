@@ -124,6 +124,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
         Folder folder = loadFolder(folderId);
+        checkAddEntryAllowed(folder);
         Definition def = null;
         if (!Validator.isNull(definitionId)) { 
         	def = getCoreDao().loadDefinition(definitionId, folder.getZoneName());
@@ -386,14 +387,14 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         Folder folder = loadFolder(parentFolderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        AccessUtils.readCheck(folder, entry);
-        return (FolderEntry)processor.getEntry(folder, entryId);
+        AccessUtils.readCheck(entry);
+        return entry;
     }
     public Map getEntryTree(Long parentFolderId, Long entryId) {
         Folder folder = loadFolder(parentFolderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        AccessUtils.readCheck(folder, entry);
+        AccessUtils.readCheck(entry);
         return processor.getEntryTree(folder, entry);   	
     }
     
@@ -405,7 +406,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         processor.deleteEntry(folder, entry);
     }
     public void checkDeleteEntryAllowed(FolderEntry entry) {
-        AccessUtils.deleteCheck(entry.getParentBinder(), entry);    	
+        AccessUtils.deleteCheck(entry);    	
     }
     public void moveEntry(Long folderId, Long entryId, Long destinationId) {
         Folder folder = loadFolder(folderId);

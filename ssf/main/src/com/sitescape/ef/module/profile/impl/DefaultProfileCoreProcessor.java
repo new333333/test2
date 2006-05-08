@@ -28,7 +28,7 @@ import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
-import com.sitescape.ef.module.profile.index.IndexUtils;
+import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -148,14 +148,10 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		// Add doc type
 		if (entry instanceof User) {
 			User user = (User)entry;
-		       // Add doc type
-			IndexUtils.addName(indexDoc, user);
-	        IndexUtils.addFirstName(indexDoc, user);
-	        IndexUtils.addMiddleName(indexDoc, user);
-	        IndexUtils.addLastName(indexDoc, user);
-	        IndexUtils.addEmailAddress(indexDoc, user);
+		    // Add doc type
+			ProfileIndexUtils.addName(indexDoc, user);
 		} else {
-	        IndexUtils.addName(indexDoc, (Group)entry);
+	        ProfileIndexUtils.addName(indexDoc, (Group)entry);
 			
 		}
            

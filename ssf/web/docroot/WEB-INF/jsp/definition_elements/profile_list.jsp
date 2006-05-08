@@ -111,7 +111,7 @@ function highlightLineById(id) {
   </ssf:slidingTableColumn>
 
   <ssf:slidingTableColumn>
-    <span><c:out value="${entry._userName}"/></span>
+    <span><c:out value="${entry._loginName}"/></span>
   </ssf:slidingTableColumn>
   
  </ssf:slidingTableRow>

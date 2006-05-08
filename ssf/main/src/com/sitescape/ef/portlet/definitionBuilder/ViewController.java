@@ -122,13 +122,13 @@ public class ViewController extends SAbstractController {
 				}
 			} catch (DefinitionInvalidOperation e) {
 				//An error occurred while processing the operation; pass the error message back to the jsp
-				response.setRenderParameter("ss_configErrorMessage", e.getMessage());
+				response.setRenderParameter("ss_configErrorMessage", e.getLocalizedMessage());
 			} catch (DefinitionInvalidException e) {
 				//An error occurred while processing the operation; pass the error message back to the jsp
-				response.setRenderParameter("ss_configErrorMessage", e.getMessage());
+				response.setRenderParameter("ss_configErrorMessage", e.getLocalizedMessage());
 			} catch(NoDefinitionByTheIdException e) {
 				//The selected id must be non-existant. Give an error message
-				response.setRenderParameter("ss_configErrorMessage", e.getMessage());
+				response.setRenderParameter("ss_configErrorMessage", e.getLocalizedMessage());
 				selectedItem = "";
 			}
 		}

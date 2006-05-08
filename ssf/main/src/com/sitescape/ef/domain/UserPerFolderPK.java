@@ -9,13 +9,13 @@ import java.io.Serializable;
  */
 public class UserPerFolderPK implements Serializable {
 	private final static long serialVersionUID=1;
-	private Long folderId, principalId;
+	private Long binderId, principalId;
 	public UserPerFolderPK() {
 		
 	}
-	public UserPerFolderPK(Long principalId, Long folderId) {
+	public UserPerFolderPK(Long principalId, Long binderId) {
 		this.principalId = principalId;
-		this.folderId = folderId;
+		this.binderId = binderId;
 	}
 	/**
  	 * @hibernate.key-property position="1"
@@ -29,11 +29,11 @@ public class UserPerFolderPK implements Serializable {
 	/**
  	 * @hibernate.key-property position="2"
  	 */
-	public Long getFolderId() {
-		return folderId;
+	public Long getBinderId() {
+		return binderId;
 	}
-	public void setFolderId(Long folderId) {
-		this.folderId = folderId;
+	public void setBinderId(Long binderId) {
+		this.binderId = binderId;
 	}
 
 	public boolean equals(Object obj) {
@@ -42,12 +42,12 @@ public class UserPerFolderPK implements Serializable {
 		if (obj instanceof UserPerFolderPK) {
 			UserPerFolderPK seen = (UserPerFolderPK) obj;
 			if (seen.getPrincipalId().equals(principalId) && 
-				seen.getFolderId().equals(folderId)) return true;
+				seen.getBinderId().equals(binderId)) return true;
 		}
 		return false;
 	}
 	public int hashCode() {
-		return 31*folderId.hashCode() + principalId.hashCode();
+		return 31*binderId.hashCode() + principalId.hashCode();
 	}
 	
 }

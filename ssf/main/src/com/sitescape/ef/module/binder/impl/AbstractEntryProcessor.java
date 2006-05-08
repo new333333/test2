@@ -410,8 +410,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        				Entry entry = (Entry)batch.get(i);
        				// 	Create an index document from the entry object.
        				org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry);
-           			if (logger.isDebugEnabled())
-           				logger.debug("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
+//           			if (logger.isDebugEnabled())
+           				logger.info("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
       				getCoreDao().evict(entry);
       				docs.add(indexDoc);
       				indexEntries_postIndex(binder, entry);
@@ -776,7 +776,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		Binder binder, Entry entry) {
       	EntryIndexUtils.addEntryType(indexDoc, entry);       
         // Add ACL field. We only need to index ACLs for read access.
-        EntryIndexUtils.addReadAcls(indexDoc,AccessUtils.getReadAclIds(entry));
+      	if (entry instanceof AclControlled)
+      		EntryIndexUtils.addReadAcls(indexDoc,AccessUtils.getReadAclIds(entry));
+      	else 
+      		BasicIndexUtils.addReadAcls(indexDoc, binder, entry, getAclManager());
+      		
         //add parent binder - this isn't added for binders because it is used
         //in delete terms for entries in a binder. 
         //

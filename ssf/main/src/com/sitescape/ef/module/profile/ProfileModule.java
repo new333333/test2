@@ -38,7 +38,6 @@ public interface ProfileModule {
 		throws AccessControlException, WriteFilesException;
    public void checkDeleteEntryAllowed(Principal entry) throws AccessControlException;
 
-   public ProfileBinder addProfileBinder();
    public ProfileBinder getProfileBinder();
 
     /**
@@ -54,8 +53,8 @@ public interface ProfileModule {
     public Map getUsers(Long binderId, int maxEntries, Document searchFilter);
     	   
     public void indexEntries(Long binderId);
-    public UserProperties setUserFolderProperty(Long userId, Long folderId, String property, Object value);
-    public UserProperties getUserFolderProperties(Long userId, Long folderId);
+    public UserProperties setUserProperty(Long userId, Long folderId, String property, Object value);
+    public UserProperties getUserProperties(Long userId, Long folderId);
     public UserProperties setUserProperty(Long userId, String property, Object value);
     public UserProperties getUserProperties(Long userId);
     public SeenMap getUserSeenMap(Long userId);

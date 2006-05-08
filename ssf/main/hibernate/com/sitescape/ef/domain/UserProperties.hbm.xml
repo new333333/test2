@@ -5,7 +5,7 @@
   <class table="SS_UserProperties" name="com.sitescape.ef.domain.UserProperties">
     <composite-id name="id" class="com.sitescape.ef.domain.UserPropertiesPK">
       <key-property name="principalId"/>
-      <key-property name="folderId"/>
+      <key-property name="binderId"/>
     </composite-id>
     <property name="properties" not-null="true" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
   </class>

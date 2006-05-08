@@ -34,6 +34,7 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 
 	protected CoreDaoImpl cdi;
 	protected FolderDaoImpl fdi;
+	protected ProfileDaoImpl pdi;
 	private static String zoneName ="testZone";
 	private static String adminGroup = "administrators";
 	private static String adminUser = "administrator";
@@ -52,6 +53,9 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 	
 	public void setFolderDaoImpl(FolderDaoImpl fdi) {
 		this.fdi = fdi;
+	}
+	public void setProfileDaoImpl(ProfileDaoImpl pdi) {
+		this.pdi = pdi;
 	}
 	public void testAddFolder() {
 		Workspace top = createZone(zoneName);
@@ -244,7 +248,7 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 		Workspace top = createZone("testZone");
 		Folder folder = createFolder(top, "testFolder");
 		List entries = fillFolderEntries(folder);
-		fdi.loadUserFolderProperties(Long.valueOf(0), folder.getId());
+		pdi.loadUserProperties(Long.valueOf(0), folder.getId());
 		//have to clear session cause we are bypassing hibernate cascade.
 		cdi.clear();
 		

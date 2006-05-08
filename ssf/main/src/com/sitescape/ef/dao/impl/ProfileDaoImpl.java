@@ -279,8 +279,9 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	User user = (User)getHibernateTemplate().get(User.class, userId);
         if (user == null) {throw new NoUserByTheIdException(userId);}
         //make sure from correct zone
-        if ((zoneName != null ) && !user.isDefaultIdentity() &&
-        		!user.getZoneName().equals(zoneName)) {throw new NoUserByTheIdException(userId);}
+        if ((zoneName != null ) && !user.getZoneName().equals(zoneName)) {
+        	throw new NoUserByTheIdException(userId);
+        }
         return user;
     }
 	public User loadUserOnlyIfEnabled(Long userId, String zoneName) {
@@ -406,6 +407,17 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
  		return uProps;
     }
  
+    public UserProperties loadUserProperties(Long userId, Long binderId) {
+    	UserPropertiesPK id = new UserPropertiesPK(userId, binderId);
+        UserProperties uProps = (UserProperties)getHibernateTemplate().get(UserProperties.class, id);
+        if (uProps == null) {
+        	uProps = new UserProperties(id);
+        	getCoreDao().saveNewSession(uProps);
+        	//quick write
+         	uProps=(UserProperties)getHibernateTemplate().get(UserProperties.class, id);
+    	}
+        return uProps;
+    }
  
 	public Group loadGroup(final Long groupId, String zoneName)  {
 		Group group = (Group)getHibernateTemplate().get(Group.class, groupId);

@@ -39,6 +39,8 @@ import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.CustomAttributeListElement;
+import com.sitescape.ef.domain.DefinitionInvalidOperation;
+
 import com.sitescape.ef.util.LongIdComparator;
 
 import com.sitescape.ef.domain.Definition;
@@ -134,13 +136,13 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   			session.createQuery("DELETE com.sitescape.ef.domain.Notification where binder=:owner")
 		   				.setLong("owner", binder.getId().longValue())
 		   				.executeUpdate();
-		   			session.createQuery("DELETE com.sitescape.ef.domain.UserProperties where folderId=:owner")
+		   			session.createQuery("DELETE com.sitescape.ef.domain.UserProperties where binderId=:owner")
 		   				.setLong("owner", binder.getId().longValue())
 		   				.executeUpdate();
 		   			Connection connect = session.connection();
 		   			try {
 		   				Statement s = connect.createStatement();
-		   				s.executeUpdate("delete from SS_DefinitionMap where forum=" + binder.getId());
+		   				s.executeUpdate("delete from SS_DefinitionMap where binder=" + binder.getId());
 		   				s.executeUpdate("delete from SS_WorkflowMap where binder=" + binder.getId());
 		   			} catch (SQLException sq) {
 		   				throw new HibernateException(sq);
@@ -374,6 +376,51 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	public List loadDefinitions(String zoneName) {
     	return loadObjects(new ObjectControls(Definition.class), new FilterControls("zoneName", zoneName));
+	}
+	//associations not maintained from definition to binders, only from
+	//binders to definitions
+	public void delete(final Definition def) {
+		getHibernateTemplate().execute(
+	        new HibernateCallback() {
+	            public Object doInHibernate(Session session) throws HibernateException {
+	            	//see if in use
+	            	List results;
+	               	if (def.getType() != Definition.WORKFLOW) {
+	               		int count = countObjects(com.sitescape.ef.domain.FolderEntry.class, new FilterControls("entryDef", def.getId()));
+	               		if (count > 0) throw new DefinitionInvalidOperation("Definition in use");
+	               		count = countObjects(com.sitescape.ef.domain.Principal.class, new FilterControls("entryDef", def.getId()));
+	               		if (count > 0) throw new DefinitionInvalidOperation("Definition in use");
+	               		results = session.createCriteria(Binder.class)
+	               			.createCriteria("definitions")
+	               			.add(Expression.eq("id", def.getId()))
+	               			.list();
+		               	//definition not used by an entry, but may be part of a binder config
+		               	//it is safe to remove it now.
+		               	for (int i=0; i<results.size(); ++i ) {
+		               		Binder b = (Binder)results.get(i);
+		               		b.removeDefinition(def);
+		               	}
+	               	} else {
+	               		int count = countObjects(com.sitescape.ef.domain.WorkflowState.class, new FilterControls("definition", def.getId()));
+	               		if (count > 0) throw new DefinitionInvalidOperation("Definition in use");
+
+	               		results = session.createCriteria(Binder.class)
+	               			.createCriteria("workflowAssociations")
+	               			.add(Expression.eq("id", def.getId()))
+	               			.list();
+		               	//definition not used by an entry, but may be part of a binder config
+		               	//it is safe to remove it now.
+		               	for (int i=0; i<results.size(); ++i ) {
+		               		Binder b = (Binder)results.get(i);
+		               		b.removeWorkflow(def);
+		               	}
+	               	}
+	               	session.delete(def);
+		   			session.getSessionFactory().evict(Definition.class, def.getId());
+	               	return null;
+	            }
+	        }
+	    );		
 	}
 	public List loadEmailAliases(String zoneName) {
     	return loadObjects(new ObjectControls(EmailAlias.class), new FilterControls("zoneName", zoneName));

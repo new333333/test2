@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Iterator;
 
 import com.sitescape.util.Validator;
 import com.sitescape.ef.modelprocessor.InstanceLevelProcessorSupport;
@@ -364,9 +365,16 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     //definitions doesn't keep an inverse collection so just update here
     public void setDefinitions(List definitions) {
      	if (this.definitions == null) this.definitions = new ArrayList();
- 		//order matters.
- 		this.definitions.clear();
- 		if (definitions != null) this.definitions.addAll(definitions); 
+ 		//order matters. = don't squash self
+     	if (definitions != this.definitions) {
+     		this.definitions.clear();
+     		if (definitions != null) this.definitions.addAll(definitions);
+     	}
+    }
+    public void removeDefinition(Definition def) {
+    	getDefinitions().remove(def);
+    	Map myDefs = getWorkflowAssociations();
+    	myDefs.remove(def.getId());
     }
      public Definition getDefaultEntryDef() {
     	
@@ -396,8 +404,23 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     }
     public void setWorkflowAssociations(Map workflowAssociations) {
        	if (this.workflowAssociations == null) this.workflowAssociations = new HashMap();
-       	else this.workflowAssociations.clear(); 
-       	if (workflowAssociations != null) this.workflowAssociations.putAll(workflowAssociations);
+       	if (workflowAssociations != this.workflowAssociations) {
+       		this.workflowAssociations.clear(); 
+       		if (workflowAssociations != null) this.workflowAssociations.putAll(workflowAssociations);
+       	}
+    }
+    /** 
+     * Remove the mapping from an definition to a workflow.
+     * The same workflow may be mapped to multiple times. 
+     */
+    public void removeWorkflow(Definition def) {
+    	Map myDefs = getWorkflowAssociations();
+    	//make a copy since we are altering the contents
+    	Map defs = new HashMap(myDefs);
+    	for (Iterator iter=defs.entrySet().iterator(); iter.hasNext();) {
+    		Map.Entry e =(Map.Entry)iter.next();
+    		if (def.equals(e.getValue())) myDefs.remove(e.getKey()); 
+    	}
     }
     public abstract List getEntryDefinitions();
     public abstract List getViewDefinitions();

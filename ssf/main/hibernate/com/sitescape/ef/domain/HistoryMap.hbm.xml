@@ -5,7 +5,7 @@
   <class dynamic-update="true" table="SS_HistoryMap" name="com.sitescape.ef.domain.HistoryMap">
     <composite-id name="id" class="com.sitescape.ef.domain.UserPerFolderPK">
       <key-property name="principalId"/>
-      <key-property name="folderId"/>
+      <key-property name="binderId"/>
     </composite-id>
     <property name="historyMap" not-null="true" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
     <property name="lastPrune"/>
