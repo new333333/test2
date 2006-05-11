@@ -17,10 +17,10 @@ import java.util.ArrayList;
  * <code>FolderEntry</code> represents a entry or a reply.
  *
  */
-public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupport {
+public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupport, Reservable {
 
     protected boolean allowEdits = false;
-    protected HistoryStamp reservedDoc;
+    protected HistoryStamp reservation;
     protected boolean sendMail = false;
     public static final int ABSTRACT=1;
     public static final int FILESET= 2;
@@ -85,16 +85,17 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     /**
      * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="reserved_"
      */
-    public HistoryStamp getReservedDoc() {
-        return this.reservedDoc;
+    public HistoryStamp getReservation() {
+        return this.reservation;
     }
 
-    public void setReservedDoc(HistoryStamp reservedDoc) {
-        this.reservedDoc = reservedDoc;
+    public void setReservation(HistoryStamp reservation) {
+        this.reservation = reservation;
     }
-    public void setReservedDoc(User reservedDoc) {
-        setReservedDoc(new HistoryStamp(reservedDoc));
+    public void setReservation(User owner) {
+        setReservation(new HistoryStamp(owner));
     }    
+    
     /** 	
      * @hibernate.property
      * @return

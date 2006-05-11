@@ -39,6 +39,12 @@ public class FilesErrors {
 		public static int PROBLEM_STORING_SCALED_FILE		= 4;
 		public static int PROBLEM_GENERATING_THUMBNAIL_FILE	= 5;
 		public static int PROBLEM_STORING_THUMBNAIL_FILE	= 6;
+		public static int PROBLEM_DELETING_PRIMARY_FILE		= 7;
+		public static int PROBLEM_DELETING_SCALED_FILE		= 8;
+		public static int PROBLEM_DELETING_THUMBNAIL_FILE	= 9;
+		public static int PROBLEM_CANCELING_LOCK			= 10;
+		public static int PROBLEM_LOCKED_BY_ANOTHER_USER	= 11;
+		public static int PROBLEM_RESERVED_BY_ANOTHER_USER  = 12;
 		
 		public static String[] typeCodes = {
 			"fileupload.error.other",
@@ -47,7 +53,13 @@ public class FilesErrors {
 			"fileupload.error.generating.scaled.file",
 			"fileupload.error.storing.scaled.file",
 			"fileupload.error.generating.thumbnail.file",
-			"fileupload.error.storing.thumbnail.file"
+			"fileupload.error.storing.thumbnail.file",
+			"fileupload.error.deleting.primary.file",
+			"fileupload.error.deleting.scaled.file",
+			"fileupload.error.deleting.thumbnail.file",
+			"fileupload.error.canceling.lock",
+			"fileupload.error.locked.by.another.user",
+			"fileupload.error.reserved.by.another.user"
 		};
 		
 		private String repositoryServiceName;

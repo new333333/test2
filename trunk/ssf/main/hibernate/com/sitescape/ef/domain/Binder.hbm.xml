@@ -111,6 +111,7 @@
         <column name="modification_principal"/>
       </many-to-one>
     </component>
+    <property name="lockedFileCount" access="field"/>
     <subclass name="com.sitescape.ef.domain.Folder" node="ss_folder" discriminator-value="folder" dynamic-update="true">
       <many-to-one embed-xml="false" node="topFolder/@id" name="topFolder"/>
       <property name="nextEntryNumber"/>

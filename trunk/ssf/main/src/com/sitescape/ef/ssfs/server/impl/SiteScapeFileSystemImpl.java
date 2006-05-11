@@ -139,6 +139,9 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 
 		FileAttachment fa = (FileAttachment) objMap.get(FILE_ATTACHMENT);
 
+		// Because objectExists always performs "read" access check for the
+		// user, we can safely request the file module for the content of
+		// the file. 
 		return getFileModule().readFile((Binder) objMap.get(BINDER), 
 				(Entry) objMap.get(ENTRY), fa);
 	}

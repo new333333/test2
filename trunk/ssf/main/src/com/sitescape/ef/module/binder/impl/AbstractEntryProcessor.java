@@ -307,7 +307,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
     protected Object deleteEntry_processFiles(Binder parentBinder, Entry entry, Object ctx) {
-    	getFileModule().deleteFiles(parentBinder, entry);
+    	getFileModule().deleteFiles(parentBinder, entry, null);
       	return ctx;
     }
     

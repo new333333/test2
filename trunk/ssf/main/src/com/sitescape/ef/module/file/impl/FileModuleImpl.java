@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,17 +26,22 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.FileAttachment;
+import com.sitescape.ef.domain.FileAttachment.FileLock;
 import com.sitescape.ef.domain.FileItem;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.domain.Reservable;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.VersionAttachment;
-import com.sitescape.ef.module.file.CheckedOutByOtherException;
+import com.sitescape.ef.module.binder.ReservedByAnotherUserException;
 import com.sitescape.ef.module.file.ContentFilter;
 import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.file.FilterException;
+import com.sitescape.ef.module.file.LockIdMismatchException;
+import com.sitescape.ef.module.file.LockedByAnotherUserException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceException;
@@ -78,6 +84,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private static final String SCALED_FILE_SUFFIX = "__ssfscaled_";
 	private static final String THUMBNAIL_FILE_SUFFIX = "__ssfthumbnail_";
 	
+	private static final String NON_WEBDAV_LOCK_ID = "";
+	
+	private static final Date MAX_DATE = new Date(Long.MAX_VALUE);
+	
 	protected Log logger = LogFactory.getLog(getClass());
 
 	private CoreDao coreDao;
@@ -85,6 +95,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private ContentFilter contentFilter;
 	private String failedFilterFile;
 	private String failedFilterTransaction;
+	private int lockExpirationAllowance; // number of seconds
 	
 	protected CoreDao getCoreDao() {
 		return coreDao;
@@ -114,6 +125,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return failedFilterFile;
 	}
 
+	public void setLockExpirationAllowance(int lockExpirationAllowance) {
+		this.lockExpirationAllowance = lockExpirationAllowance;
+	}
+	
+	protected int getLockExpirationAllowanceMilliseconds() {
+		return this.lockExpirationAllowance * 1000;
+	}
+	
 	public void setFailedFilterFile(String failedFilterFile) {
 		if(FAILED_FILTER_FILE_DELETE.equals(failedFilterFile)) {
 			this.failedFilterFile = FAILED_FILTER_FILE_DELETE;
@@ -122,7 +141,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			this.failedFilterFile = FAILED_FILTER_FILE_MOVE;
 		}
 		else {
-			logger.info("Unknown failedFilterFile " + failedFilterFile + " defaults to " + FAILED_FILTER_FILE_DEFAULT);
+			logger.info("Unknown failedFilterFile " + failedFilterFile + 
+					" defaults to " + FAILED_FILTER_FILE_DEFAULT);
 			this.failedFilterFile = FAILED_FILTER_FILE_DEFAULT;
 		}
 	}
@@ -139,105 +159,73 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			this.failedFilterTransaction = FAILED_FILTER_TRANSACTION_ABORT;
 		}
 		else {
-			logger.info("Unknown failedFilterTransaction " + failedFilterTransaction + " defaults to " + FAILED_FILTER_TRANSACTION_DEFAULT);
+			logger.info("Unknown failedFilterTransaction " + failedFilterTransaction + 
+					" defaults to " + FAILED_FILTER_TRANSACTION_DEFAULT);
 			this.failedFilterTransaction = FAILED_FILTER_TRANSACTION_DEFAULT;
 		}
 	}
 
-	public void deleteFiles(Binder binder, DefinableEntity entry) {
+	public FilesErrors deleteFiles(Binder binder, DefinableEntity entry,
+			FilesErrors errors) {
+		if(errors == null)
+			errors = new FilesErrors();
+		
 		List fAtts = entry.getFileAttachments();
 		for(int i = 0; i < fAtts.size(); i++) {
 			FileAttachment fAtt = (FileAttachment) fAtts.get(i);
 
-			deleteFile(binder, entry, fAtt);
+			try {
+				deleteFileInternal(binder, entry, fAtt, errors);
+			}
+			catch(Exception e) {
+				logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
+    			errors.addProblem(new FilesErrors.Problem
+    					(fAtt.getRepositoryServiceName(),  fAtt.getFileItem().getName(), 
+    							FilesErrors.Problem.OTHER_PROBLEM, e));
+			}
 		}
+		
+		// Even in the situation where the operation was not entirely successful,
+		// we need to reflect the corresponding metadata changes back to the
+		// database. 
+		triggerUpdateTransaction();
+		
+		return errors;
 	}
 	
-	public void deleteFile(Binder binder, DefinableEntity entry,
-			FileAttachment fAtt) {
-		forceUncheckoutIfNecessary(binder, entry, fAtt);
-
-		String relativeFilePath = fAtt.getFileItem().getName();
-		String repositoryServiceName = fAtt.getRepositoryServiceName();
-
-		RepositoryService service = RepositoryServiceUtil
-				.lookupRepositoryService(repositoryServiceName);
-
-		Object session = service.openRepositorySession();
-
+	public FilesErrors deleteFile(Binder binder, DefinableEntity entry,
+			FileAttachment fAtt, FilesErrors errors) {
+		if(errors == null)
+			errors = new FilesErrors();
+		
 		try {
-			// Delete primary file
-			service.delete(session, binder, entry, relativeFilePath);
-
-			// Currently we do not store metadata about "generated" files
-			// (should
-			// we?). Unfortunately this results in clumsy and less efficient
-			// attempt at deleting those files.
-
-			// Try deleting scaled file if exists
-			String scaledFileName = makeScaledFileName(relativeFilePath);
-			if (service.fileInfo(session, binder, entry, scaledFileName) != RepositoryService.NON_EXISTING_FILE) {
-				try {
-					service.delete(session, binder, entry, scaledFileName);
-				} catch (RepositoryServiceException e) {
-					// Don't let the failure to delete generated file abort the
-					// entire operation. Log and proceed.
-					logger.warn(e.getMessage(), e);
-				}
-			}
-
-			// Try deleting thumbnail file if exists
-
-			// Directly-accessible thumbnail file?
-			File directlyAccessibleThumbnailFile = getDirectlyAccessibleThumbnailFile(
-					entry, relativeFilePath);
-			try {
-				FileHelper.delete(directlyAccessibleThumbnailFile);
-			} catch (IOException e) {
-				logger.warn(e.getMessage(), e);
-			}
-
-			// thumbnail file stored in repository?
-			String thumbnailFileName = makeThumbnailFileName(relativeFilePath);
-			if (service.fileInfo(session, binder, entry, thumbnailFileName) != RepositoryService.NON_EXISTING_FILE) {
-				try {
-					service.delete(session, binder, entry, thumbnailFileName);
-				} catch (RepositoryServiceException e) {
-					logger.warn(e.getMessage(), e);
-				}
-			}
-		} finally {
-			service.closeRepositorySession(session);
+			deleteFileInternal(binder, entry, fAtt, errors);
 		}
-
-		// Remove metadata
-		removeAttachmentMetadata(entry, fAtt);
+		catch(Exception e) {
+			logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
+			errors.addProblem(new FilesErrors.Problem
+					(fAtt.getRepositoryServiceName(),  fAtt.getFileItem().getName(), 
+							FilesErrors.Problem.OTHER_PROBLEM, e));
+		}
+				
+		triggerUpdateTransaction();
+		
+		return errors;
 	}
-
+	
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
-		String repositoryServiceName = fa.getRepositoryServiceName();
-		if(repositoryServiceName == null)
-			repositoryServiceName = RepositoryServiceUtil.getDefaultRepositoryServiceName();
-		
-    	RepositoryServiceUtil.read(repositoryServiceName, binder, entry, 
+    	RepositoryServiceUtil.read(fa.getRepositoryServiceName(), binder, entry, 
 				fa.getFileItem().getName(), out);
 	}
 	
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
-		String repositoryServiceName = fa.getRepositoryServiceName();
-		if(repositoryServiceName == null)
-			repositoryServiceName = RepositoryServiceUtil.getDefaultRepositoryServiceName();
-		
-    	return RepositoryServiceUtil.read(repositoryServiceName, binder, entry, 
+		return RepositoryServiceUtil.read(fa.getRepositoryServiceName(), binder, entry, 
 				fa.getFileItem().getName());
 	}
 	
 	public boolean scaledFileExists(Binder binder, 
 			DefinableEntity entry, FileAttachment fAtt) {
-		if (fAtt == null)
-			throw new IllegalArgumentException("FileAttachment must be passed in");
-
 		int fileInfo = RepositoryServiceUtil.fileInfo(fAtt.getRepositoryServiceName(), 
 				binder, entry, makeScaledFileName(fAtt.getFileItem().getName()));
 		
@@ -254,59 +242,27 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			Binder binder, DefinableEntity entry, FileAttachment fa) {
 		return fa.getCheckout();
 	}*/
-
-	/*
-	public void checkout(Binder binder, 
-			DefinableEntity entry, String repositoryServiceName, String relativeFilePath) {
-		try {
-			checkoutInternal(repositoryServiceName, binder, entry, relativeFilePath);
-		}
-		catch(RepositoryServiceException e) {
-			throw new FileException(e);
-		}
-	}
 	
-	public void uncheckout(Binder binder, 
-			DefinableEntity entry, String repositoryServiceName, String relativeFilePath) {
-		try {
-			uncheckoutInternal(repositoryServiceName, binder, entry, relativeFilePath);
-		}
-		catch(RepositoryServiceException e) {
-			throw new FileException(e);
-		}
-	}
-
-	public void checkin(Binder binder, 
-			DefinableEntity entry, String repositoryServiceName, String relativeFilePath) {
-		try {
-			checkinInternal(repositoryServiceName, binder, entry, relativeFilePath);
-		}
-		catch(RepositoryServiceException e) {
-			throw new FileException(e);
-		}
-	}
-	*/
-	
-	public void readScaledFile(Binder binder, DefinableEntity entry, FileAttachment fa, OutputStream out) {
-		RepositoryServiceUtil.read(fa.getRepositoryServiceName(), binder, entry, makeScaledFileName(fa.getFileItem().getName()), out);
+	public void readScaledFile(Binder binder, DefinableEntity entry, 
+			FileAttachment fa, OutputStream out) {
+		RepositoryServiceUtil.read(fa.getRepositoryServiceName(), binder, 
+				entry, makeScaledFileName(fa.getFileItem().getName()), out);
 	}
 	
 	public void readIndirectlyAccessibleThumbnailFile(
-			Binder binder, DefinableEntity entry, String repositoryServiceName, String relativeFilePath, OutputStream out) {
-		RepositoryServiceUtil.read(repositoryServiceName, binder, entry, makeThumbnailFileName(relativeFilePath), out);	
+			Binder binder, DefinableEntity entry, FileAttachment fa, 
+			OutputStream out) {
+		RepositoryServiceUtil.read(fa.getRepositoryServiceName(), binder, 
+				entry, makeThumbnailFileName(fa.getFileItem().getName()), out);	
 	}
 	
-	public void readIndirectlyAccessibleThumbnailFile(
-			Binder binder, DefinableEntity entry, FileAttachment fa, OutputStream out) {
-		RepositoryServiceUtil.read(fa.getRepositoryServiceName(), binder, entry, makeThumbnailFileName(fa.getFileItem().getName()), out);	
-	}
-	
-	public void generateScaledFile(Binder binder, 
-			DefinableEntity entry, FileAttachment fa, int maxWidth, int maxHeight) {
+	public void generateScaledFile(Binder binder, DefinableEntity entry, 
+			FileAttachment fa, int maxWidth, int maxHeight) {
 		String repositoryServiceName = fa.getRepositoryServiceName();
 		String relativeFilePath = fa.getFileItem().getName();
 		
-		RepositoryService service = RepositoryServiceUtil.lookupRepositoryService(repositoryServiceName);
+		RepositoryService service = 
+			RepositoryServiceUtil.lookupRepositoryService(repositoryServiceName);
 		
 		Object session = service.openRepositorySession();
 		
@@ -325,8 +281,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	public void generateThumbnailFile(Binder binder, 
-			DefinableEntity entry, FileAttachment fa, int maxWidth, int maxHeight, 
-			boolean thumbnailDirectlyAccessible) {
+			DefinableEntity entry, FileAttachment fa, int maxWidth, 
+			int maxHeight, boolean thumbnailDirectlyAccessible) {
 		String repositoryServiceName = fa.getRepositoryServiceName();
 		String relativeFilePath = fa.getFileItem().getName();
 
@@ -362,15 +318,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	 * more efficient than calling them separately because it reads in the
 	 * primary file only once. 
 	 */
-	public void generateFiles(Binder binder, 
-			DefinableEntity entry, FileAttachment fa, int maxWidth, int maxHeight, 
+	public void generateFiles(Binder binder, DefinableEntity entry, 
+			FileAttachment fa, int maxWidth, int maxHeight, 
 			int thumbnailMaxWidth, int thumbnailMaxHeight, 
 			boolean thumbnailDirectlyAccessible) {
 		String repositoryServiceName = fa.getRepositoryServiceName();
 		String relativeFilePath = fa.getFileItem().getName();
 
 		try {
-			RepositoryService service = RepositoryServiceUtil.lookupRepositoryService(repositoryServiceName);
+			RepositoryService service = 
+				RepositoryServiceUtil.lookupRepositoryService(repositoryServiceName);
 			
 			Object session = service.openRepositorySession();
 			
@@ -386,7 +343,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				
 				// Generate and store thumbnail file.
 				generateAndStoreThumbnailFile(service, session, binder, entry, 
-						relativeFilePath, baos.toByteArray(), maxWidth, maxHeight, thumbnailDirectlyAccessible);
+						relativeFilePath, baos.toByteArray(), maxWidth, maxHeight, 
+						thumbnailDirectlyAccessible);
 			}
 			finally {
 				service.closeRepositorySession(session);
@@ -400,28 +358,40 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
-    public FilesErrors writeFiles(Binder binder, DefinableEntity entry, List fileUploadItems,
-    		FilesErrors errors) {
-    	if(errors == null)
+    public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
+    		List fileUploadItems, FilesErrors errors) 
+    	throws ReservedByAnotherUserException {
+		if(errors == null)
     		errors = new FilesErrors();
+    	
+    	// Read-write operations require up-to-date view of the lock and
+    	// reservation state. So we must take care of expired locks first
+    	// (if any). This runs in its own transaction.
+    	//closeExpiredLocksTransactional(binder, entry, true);
+    	
+    	checkReservation(entry);
     	
     	for(int i = 0; i < fileUploadItems.size(); i++) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
     		try {
-    			this.writeFileInternal(binder, entry, fui, errors);
+    			// Unlike deleteFileInternal, writeFileTransactional is transactional.
+    			// See the comment in writeFileMetadataTransactional for reason. 
+    			this.writeFileTransactional(binder, entry, fui, errors);
     		}
     		catch(Exception e) {
-    			logger.error("Error processing file " + fui.getOriginalFilename(), e);
+    			logger.error("Error writing file " + fui.getOriginalFilename(), e);
     			errors.addProblem(new FilesErrors.Problem
     					(fui.getRepositoryServiceName(),  fui.getOriginalFilename(), 
     							FilesErrors.Problem.OTHER_PROBLEM, e));
     		}
     	}
-	
-    	return errors;
+    	
+    	// Because writeFileTransactional itself is transactional, we do not trigger
+    	// another transaction here. 
+		
+		return errors;
     }
     
-
 	public FilesErrors filterFiles(Binder binder, List fileUploadItems) 
 		throws FilterException {
 		FilesErrors errors = null;
@@ -471,12 +441,204 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
     	return errors;
 	}
+	
+	public void lock(Binder binder, DefinableEntity entity, FileAttachment fa, 
+			String lockId, Date expirationDate) throws ReservedByAnotherUserException, 
+			LockedByAnotherUserException, LockIdMismatchException, 
+			UncheckedIOException, RepositoryServiceException {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		// The following call is commented out because: We want to write a
+		// bit more tolerating system where client (WebDAV client in this case)
+		// can still renew a lock that has already expired. For that reason,
+		// we do not want to close all expired locks here. 
+    	//closeExpiredLocksTransactional(binder, entity, true);
+    	
+    	Reservable reservable = null;
+    	HistoryStamp reservation = null;
+    	if(entity instanceof Reservable) {
+    		reservable = (Reservable) entity;
+    		reservation = reservable.getReservation();
+    	}
+    	
+    	if(reservation == null || reservation.getPrincipal().equals(user)) {
+    		// This is one of the following three conditions:
+    		// 1) The entity is not reservable
+    		// 2) The entity is reservable but not reserved by anyone
+    		// 3) The entity is reservable and reserved by the calling user
+    		
+    		FileAttachment.FileLock lock = fa.getFileLock();
+    		if(lock == null) { // The file is not locked
+    			// Lock the file
+    			fa.setFileLock(new FileAttachment.FileLock(lockId, user, expirationDate));
+    			// Increment count
+    			entity.incrLockedFileCount();
+    		}
+    		else { // The file is locked
+    			if(lock.getOwner().equals(user)) {
+    				// The lock is owned by the same user
+        			if(lock.getId().equals(lockId)) { // Lock id matches
+        				// Renew the lock
+        				lock.setExpirationDate(expirationDate);
+        			}
+        			else { // Lock id does not match
+        				throw new LockIdMismatchException();    				
+        			}     		
+    			}
+    			else { // The lock is owned by another user
+    				// Because we chose not to close expired locks above, we 
+    				// must test for expired lock here. 
+    				if(isLockExpired(lock)) { // The lock has expired
+    					// Commit any pending changes associated with the expired lock
+    					commitPendingChanges(binder, entity, fa, lock.getOwner()); 
+    					// Set the new lock (lockedFileCount remains same).
+    					fa.setFileLock(new FileLock(lockId, user, expirationDate));
+    				}
+    				else { // The lock is still effective
+        				throw new LockedByAnotherUserException(entity, fa, lock.getOwner());    					
+    				}
+    			}
+    		}
+    	}
+    	else {
+    		// The entity is reservable and reserved by another user
+    		throw new ReservedByAnotherUserException(entity, reservation.getPrincipal());
+    	}
+    	
+    	triggerUpdateTransaction();
+	}
+
+    public void unlock(Binder binder, DefinableEntity entity, FileAttachment fa,
+    		String lockId) throws UncheckedIOException, RepositoryServiceException {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+    	//closeExpiredLocksTransactional(binder, entity, true);
+    	
+		FileAttachment.FileLock lock = fa.getFileLock();
+
+		if(lock != null && lock.getOwner().equals(user) && lock.getId().equals(lockId)) {
+			// The file is locked by the calling user and the lock id matches.
+			
+			// Commit any pending changes associated with the lock. In this 
+			// case, we don't care if the lock is effective or expired.
+			commitPendingChanges(binder, entity, fa, lock.getOwner());
+			
+			fa.setFileLock(null); // Clear the lock
+			
+			entity.decrLockedFileCount(); // Decrement count
+			
+			triggerUpdateTransaction();
+		}
+    }
+
+	private void triggerUpdateTransaction() {
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {  
+                return null;
+        	}
+        });	
+	}
+	
+	private void deleteFileInternal(Binder binder, DefinableEntity entry,
+			FileAttachment fAtt, FilesErrors errors) {
+		String relativeFilePath = fAtt.getFileItem().getName();
+		String repositoryServiceName = fAtt.getRepositoryServiceName();
+		
+		// Forcefully unlock the file (if locked). We discard pending
+		// changes for the file for obvious reason - The file is soon
+		// to be deleted. 
+		try {
+			closeLock(binder, entry, fAtt, false);
+		}
+		catch(Exception e) {
+			logger.error("Error canceling lock on file " + relativeFilePath, e);
+			errors.addProblem(new FilesErrors.Problem
+					(repositoryServiceName, relativeFilePath, 
+							FilesErrors.Problem.PROBLEM_CANCELING_LOCK, e));
+			return;
+		}
+
+		RepositoryService service = RepositoryServiceUtil
+				.lookupRepositoryService(repositoryServiceName);
+
+		Object session = service.openRepositorySession();
+
+		try {
+			try {
+				// Delete primary file
+				service.delete(session, binder, entry, relativeFilePath);
+			}
+			catch(Exception e) {
+				logger.error("Error deleting primary file " + relativeFilePath, e);
+				errors.addProblem(new FilesErrors.Problem
+						(repositoryServiceName, relativeFilePath, 
+								FilesErrors.Problem.PROBLEM_DELETING_PRIMARY_FILE, e));
+				// If failed to delete primary file, it's not worth trying to
+				// delete generated files. Stop here and return.
+				return;				
+			}
+
+			// Currently file module does not maintain metadata about "generated"
+			// files, which unfortunately, leads to this clumsy and not-so-precise
+			// attempt at deleting those generated files. However, storing too
+			// much metadata has its own share of problems. So...
+			
+			// Try deleting scaled file if exists
+			try {
+				String scaledFileName = makeScaledFileName(relativeFilePath);
+				if (service.fileInfo(session, binder, entry, scaledFileName) 
+						!= RepositoryService.NON_EXISTING_FILE) {
+					service.delete(session, binder, entry, scaledFileName);
+				}
+			}
+			catch(Exception e) {
+				logger.error("Error deleting scaled copy of " + relativeFilePath, e);
+				errors.addProblem(new FilesErrors.Problem
+						(repositoryServiceName, relativeFilePath, 
+								FilesErrors.Problem.PROBLEM_DELETING_SCALED_FILE, e));
+				// Since we successfully deleted the primary file above (which
+				// indicates that at least the repository seems up and running),
+				// let's not the failure to delete generated file to abort the
+				// entire operation. So we proceed. 
+			}
+
+			// Try deleting thumbnail file if exists
+
+			try {
+				// Directly-accessible thumbnail file?
+				File directlyAccessibleThumbnailFile = getDirectlyAccessibleThumbnailFile(
+						entry, relativeFilePath);
+				// Delete it if exists
+				FileHelper.delete(directlyAccessibleThumbnailFile);
+	
+				// thumbnail file stored in repository?
+				String thumbnailFileName = makeThumbnailFileName(relativeFilePath);
+				if (service.fileInfo(session, binder, entry, thumbnailFileName) 
+						!= RepositoryService.NON_EXISTING_FILE) {
+					service.delete(session, binder, entry, thumbnailFileName);
+				}
+			}
+			catch(Exception e) {
+				logger.error("Error deleting thumbnail copy of " + relativeFilePath, e);
+				errors.addProblem(new FilesErrors.Problem
+						(repositoryServiceName, relativeFilePath, 
+								FilesErrors.Problem.PROBLEM_DELETING_THUMBNAIL_FILE, e));
+				// We proceed and update metadata.
+			}
+		} finally {
+			service.closeRepositorySession(session);
+		}
+
+		// Remove metadata
+		entry.removeAttachment(fAtt);
+	}
 
 	private void move(Binder binder, FileUploadItem fui) throws IOException {
 		File filteringFailedDir = SPropsUtil.getFile("filtering.failed.dir");
 		if(!filteringFailedDir.exists())
 			FileHelper.mkdirs(filteringFailedDir);
-		FileHelper.move(fui.getFile(), new File(filteringFailedDir, makeFileName(binder, fui)));
+		FileHelper.move(fui.getFile(), 
+				new File(filteringFailedDir, makeFileName(binder, fui)));
 	}
 	
 	private static final String DELIM = "_";
@@ -495,16 +657,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return sb.toString();
 	}
 	
-	protected void writeFileMetadata(final Binder binder, final DefinableEntity entry, 
+	private void writeFileMetadataTransactional(final Binder binder, final DefinableEntity entry, 
     		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew) {	
     	
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
         		if(isNew) {
-            		// Since file attachment is stored into custom attribute using
-            		// its id value rather than association, this new object must
-            		// be persisted here just in case it is to be put into custom
-            		// attribute down below. 
+            		// Important: Since file attachment is stored into custom 
+        			// attribute using its id value rather than association, 
+        			// this new object must be persisted here just in case it 
+        			// is to be put into custom attribute down below. This 
+        			// piece of code makes it impossible for the caller to 
+        			// utilize the usual tactic of delaying update db 
+        			// transaction to the very end of the operation.  
             		getCoreDao().save(fAtt);    		
             	}
 
@@ -538,11 +703,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         });
     }
 
-	protected void setCheckoutMetadata(final FileAttachment fAtt, final HistoryStamp co) {
+	/*
+	protected void setLockMetadata(final FileAttachment fAtt, final FileLock lock) {
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
-        		fAtt.setCheckout(co);      
-                
+        		fAtt.setFileLock(lock);    
                 return null;
         	}
         });
@@ -556,113 +721,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
                 return null;
         	}
         });
-	}
-	
-	private void checkinInternal(String repositoryServiceName, Binder binder, 
-			DefinableEntity entry, String relativeFilePath) {
-    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, relativeFilePath);
-    	
-        User user = RequestContextHolder.getRequestContext().getUser();
-        
-        HistoryStamp co = fAtt.getCheckout();
-    	
-    	if(co == null) { // The file is not checked out.
-    		// Nothing to do
-    	}
-    	else { // The file is checked out by someone. 
-    		if(user.equals(co.getPrincipal())) {
-    			// The file is checked out by the same person calling this. 
-    			
-    			RepositoryService service = RepositoryServiceUtil.lookupRepositoryService
-    				(fAtt.getRepositoryServiceName());
-    			Object session = service.openRepositorySession();
-    			String versionName = null;
-    			long contentLength = 0;
-    			try {
-    				versionName = service.checkin(session, binder, entry, relativeFilePath);
-    				if(versionName == null)
-    					throw new InternalException();
-    				if(versionName != null)
-    					contentLength = service.getContentLength(session, binder, entry, relativeFilePath, versionName);
-    				else
-    					contentLength = service.getContentLength(session, binder, entry, relativeFilePath);
-    			} finally {
-    				service.closeRepositorySession(session);
-    			}
-
-    			updateFileAttachment(fAtt, user, versionName, contentLength);		
-    			
-        		// Mark our metadata that the file is not checked out.
-    			setCheckoutMetadata(fAtt, null);
-    		}
-    		else {
-    			// The file is checked out by some other person. 
-    			throw new CheckedOutByOtherException(entry, relativeFilePath, user);
-    		}
-    	}
-		
-	}
-	
-	private void uncheckoutInternal(String repositoryServiceName, Binder binder, 
-			DefinableEntity entry, String relativeFilePath) {
-    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, relativeFilePath);
-    	
-        User user = RequestContextHolder.getRequestContext().getUser();
-        
-        HistoryStamp co = fAtt.getCheckout();
-    	
-    	if(co == null) { // The file is not checked out.
-    		// Nothing to do
-    	}
-    	else { // The file is checked out by someone. 
-    		if(user.equals(co.getPrincipal())) {
-    			// The file is checked out by the same person calling this. 
-        		RepositoryServiceUtil.uncheckout(fAtt.getRepositoryServiceName(),
-        				binder, entry, relativeFilePath);
-        		// Mark our metadata that the file is not checked out.
-        		setCheckoutMetadata(fAtt, null);
-    		}
-    		else {
-    			// The file is checked out by some other person. 
-    			throw new CheckedOutByOtherException(entry, relativeFilePath, user);
-    		}
-    	}
-	}
-
-	private void checkoutInternal(String repositoryServiceName, Binder binder, 
-			DefinableEntity entry, String relativeFilePath) {
-    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, relativeFilePath);
-    	
-        User user = RequestContextHolder.getRequestContext().getUser();
-        
-        HistoryStamp co = fAtt.getCheckout();
-    	
-    	if(co == null) { // The file is not checked out.
-    		// Instruct the underlying repository system to actually check out
-    		// the file. If the repository system does not support versioning,
-    		// this call is noop, which means that the checkout/checkin is 
-    		// implemented soley on our side using metadata only. In that case,
-    		// checkout facility is only used to enforce exclusive locking on
-    		// the resource, but actual versioning of the content does not
-    		// take place. 
-    		RepositoryServiceUtil.checkout(fAtt.getRepositoryServiceName(),
-    				binder, entry, relativeFilePath);
-    		// Mark our metadata that the file is checked out by the user.
-    		setCheckoutMetadata(fAtt, new HistoryStamp(user));
-    	}
-    	else { // The file is checked out by someone. 
-    		if(user.equals(co.getPrincipal())) {
-    			// The file is checked out by the same person calling this. 
-    			// Nothing to do. 
-    		}
-    		else {
-    			// The file is checked out by some other person. 
-    			throw new CheckedOutByOtherException(entry, relativeFilePath, user);
-    		}
-    	}
-	}
-
-    private void writeFileInternal(Binder binder, DefinableEntity entry, 
+	}*/
+	 
+    private void writeFileTransactional(Binder binder, DefinableEntity entry, 
     		FileUploadItem fui, FilesErrors errors) {
     	
     	/// Work Flow:
@@ -721,25 +782,20 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		    		}
 	    		}
 	    		catch(Exception e) {
-	    			logger.error("Error storing file " + relativeFilePath, e);
+	    			logger.error("Error storing primary file " + relativeFilePath, e);
 	    			// We failed to write the primary file. In this case, we 
 	    			// discard the rest of the operation (i.e., step2 thru 4).
 	    			errors.addProblem(new FilesErrors.Problem
 	    					(repositoryServiceName, relativeFilePath, 
 	    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
 	    			return;
-	    		}
-	    		
+	    		}		
 
 	    		// Scaled file
 	        	if(fui.getMaxWidth() > 0 && fui.getMaxHeight() > 0) {
 	            	// Generate scaled file which goes into the same repository as
 	        		// the primary file except that the generated file is not versioned.
 	        		try {
-	        			//for testing only
-	        			//if(1==1)
-	        			//	throw new ThumbnailException("Fake error");
-	        			
 	        			generateAndStoreScaledFile(service, session, binder, entry, relativeFilePath,
 	        				primaryContent, fui.getMaxWidth(),fui.getMaxWidth());
 	        		}
@@ -747,15 +803,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	        			// Scaling operation can fail for a variety of reasons, primarily
 	        			// when the file format is not supported. Do not cause this to
 	        			// fail the entire operation. Simply log it and proceed.  
-	        			logger.warn("Error generating scaled version of " + relativeFilePath, e);
+	        			logger.warn("Error generating scaled copy of " + relativeFilePath, e);
 		    			errors.addProblem(new FilesErrors.Problem
 		    					(repositoryServiceName, relativeFilePath, 
 		    							FilesErrors.Problem.PROBLEM_GENERATING_SCALED_FILE, e));
 	        		}
 	        		catch(Exception e) {
-		    			// Failed to store scaled file. In this case, we report the 
-	        			// problem to the client but still proceed here.
-	        			logger.warn("Error storing scaled version of " + relativeFilePath, e);
+		    			// Failed to store scaled file. Record the problem and proceed.
+	        			logger.warn("Error storing scaled copy of " + relativeFilePath, e);
 		    			errors.addProblem(new FilesErrors.Problem
 		    					(repositoryServiceName, relativeFilePath, 
 		    							FilesErrors.Problem.PROBLEM_STORING_SCALED_FILE, e));	        			
@@ -770,13 +825,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	        				fui.getThumbnailMaxHeight(), fui.isThumbnailDirectlyAccessible());
 	        		}
 	        		catch(ThumbnailException e) {
-	        			logger.warn("Error generating thumbnail version of " + relativeFilePath, e);
+	        			logger.warn("Error generating thumbnail copy of " + relativeFilePath, e);
 		    			errors.addProblem(new FilesErrors.Problem
 		    					(repositoryServiceName, relativeFilePath, 
 		    							FilesErrors.Problem.PROBLEM_GENERATING_THUMBNAIL_FILE, e));
 	        		}
 	        		catch(Exception e) {
-	        			logger.warn("Error storing thumbnail version of " + relativeFilePath, e);
+	        			logger.warn("Error storing thumbnail copy of " + relativeFilePath, e);
 		    			errors.addProblem(new FilesErrors.Problem
 		    					(repositoryServiceName, relativeFilePath, 
 		    							FilesErrors.Problem.PROBLEM_STORING_THUMBNAIL_FILE, e));	        			
@@ -785,10 +840,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	}
 	    	else { // We do not need to generate secondary files. 	  
 	    		try {
-	    			//for testing only
-	    			//if(relativeFilePath.equals("junk.txt"))
-	    			//	throw new IllegalArgumentException("Something bad happend");
-	    			
 		    		InputStream is = fui.getInputStream();
 		    		
 		    		try {
@@ -812,7 +863,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		catch(Exception e) {
 	    			// We failed to write the primary file. In this case, we 
 	    			// discard the rest of the operation (i.e., step2 thru 4).
-	    			logger.error("Error storing file " + relativeFilePath, e);
+	    			logger.error("Error storing primary file " + relativeFilePath, e);
 	    			errors.addProblem(new FilesErrors.Problem
 	    					(repositoryServiceName, relativeFilePath, 
 	    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
@@ -826,7 +877,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
     	// Finally update metadata - We do this only after successfully writing
     	// the file to the repository to ensure that our metadata describes
-    	// what actually exists (Of course, there could be a failure scenario
+    	// what actually exists. Of course, there could be a failure scenario
     	// where this metadata update fails leaving the file dangling in the
     	// repository. But that is expected to be a lot more rare, and not
     	// quite as destructive as the other case. But the bottom line is, 
@@ -835,8 +886,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	// always be error cases that can leave the data inconsistent. 
     	// When a repository supports JCA, this should be possible to do
     	// using JTA. But that's not always available, and this version of
-    	// the system does not try to address that). 
-    	writeFileMetadata(binder, entry, fui, fAtt, isNew);
+    	// the system does not try to address that. 
+    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew);
     }
     
     private File getDirectlyAccessibleThumbnailFile(DefinableEntity entry, String primaryFileName) {
@@ -846,76 +897,72 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private String directlyAccessibleThumbnailFilePath(DefinableEntity entry, String primaryFileName) {
     	return DirPath.getThumbnailDirPath() + File.separator + entry.getId() + "_" + primaryFileName;
     }
-    
-	private void forceUncheckoutIfNecessary(Binder binder, DefinableEntity entry, 
-			FileAttachment fAtt) 
-		throws RepositoryServiceException {
-		HistoryStamp co = fAtt.getCheckout();
-		
-		if(co != null) { // The file is checked out (by someone).
-			// Uncheck it out from the underlying repository.
-    		RepositoryServiceUtil.uncheckout(fAtt.getRepositoryServiceName(),
-    				binder, entry, fAtt.getFileItem().getName());
-    		// Mark our metadata that the file is not checked out.
-    		setCheckoutMetadata(fAtt, null);	
-		}
-	}
 
     private void writeExistingFile(RepositoryService service, Object session,
     		Binder binder, DefinableEntity entry, FileUploadItem fui, Object inputData)
-		throws CheckedOutByOtherException, RepositoryServiceException {
+		throws LockedByAnotherUserException, RepositoryServiceException, UncheckedIOException {
+    	User user = RequestContextHolder.getRequestContext().getUser();
     	String relativeFilePath = fui.getOriginalFilename();
     	FileAttachment fAtt = entry.getFileAttachment(fui.getRepositoryServiceName(), relativeFilePath);
-    	User user = RequestContextHolder.getRequestContext().getUser();
-
+    	
+    	// Before checking the lock, we must make sure that the lock state is
+    	// up-to-date.
+    	closeExpiredLock(service, session, binder, entry, fAtt, true);
+    	
+    	// Now that lock state is current, we can test it for the user.
+    	checkLock(entry, fAtt);
+    	
+    	FileAttachment.FileLock lock = fAtt.getFileLock();
+    	
+    	// All expired locks were taken care of higher up in the call stack.
+    	// Also owner check was done already. So we can assume that lock, 
+    	// if exists, is effective and owned by the calling user.
+    	
     	String versionName = null;
-    	HistoryStamp co = fAtt.getCheckout();
-		if(co == null) { // This file is not checked out by anyone.
-			// In this case we create a new version silently.
-			int fileInfo = service.fileInfo(session, binder, entry, relativeFilePath);
-			if(fileInfo == RepositoryService.VERSIONED_FILE) { // Normal condition
-				service.checkout(session, binder, entry, relativeFilePath);
-				updateWithInputData(service, session, binder, entry, relativeFilePath, inputData);
-				versionName = service.checkin(session, binder, entry, relativeFilePath);	    					
-			}
-			else if(fileInfo == RepositoryService.NON_EXISTING_FILE) {
-				// For some reason the file doesn't exist in the repository.
-				// That is, our metadata says it exists, but the repository 
-				// says otherwise. This reflects some previous error condition.
-				// For example, previous attempt to add the file may have
-				// failed partially. Or someone may have gone and errorneously
-				// deleted the file from the repository. At any rate, the
-				// end result is descrepency between the repository system
-				// and our metadata. Although not ideal, better response to
-				// this kind of situation appears to be the one that is more
-				// forgiving or self-curing. This part of code implements that.
-				versionName = createVersionedWithInputData(service, session, binder,
-						entry, relativeFilePath, inputData);
-			}
-			else {
-				throw new InternalException();
-			}
-			try {
-				updateFileAttachment(fAtt, user, versionName, fui.getSize());
-			} catch (IOException e) {
-				throw new UncheckedIOException(e);
-			}
-		}
-		else {
-	   		if(user.equals(co.getPrincipal())) {
-				// The file is checked out by the same person calling this.
-	   			// Update the file to the repository.
-	   			updateWithInputData(service, session, binder, entry, relativeFilePath, inputData);
-			}
-			else {
-				// The file is checked out by some other person. 
-				throw new CheckedOutByOtherException(entry, relativeFilePath, user);
-			}				    				
-		}
+    	int fileInfo = service.fileInfo(session, binder, entry, relativeFilePath);
+    	if(fileInfo == RepositoryService.VERSIONED_FILE) { // Normal condition
+    		// Attempt to check out the file. If the file was already checked out
+    		// this is noop. So no harm. 
+    		service.checkout(session, binder, entry, relativeFilePath);
+    		// Update the file content
+    		updateWithInputData(service, session, binder, entry, relativeFilePath, inputData);
+    		if(lock == null) {
+    			// This update request is being made without the user's prior 
+    			// obtaining lock. Since there's no lock to associate the 
+    			// checkout with, we must checkin the file here. 
+    			versionName = service.checkin(session, binder, entry, relativeFilePath);
+    		}
+    	}
+    	else if(fileInfo == RepositoryService.NON_EXISTING_FILE) {
+			// For some reason the file doesn't exist in the repository.
+			// That is, our metadata says it exists, but the repository 
+			// says otherwise. This reflects some previous error condition.
+			// For example, previous attempt to add the file may have
+			// failed partially. Or someone may have gone and errorneously
+			// deleted the file from the repository. At any rate, the
+			// end result is descrepency between the repository system
+			// and our metadata. Although not ideal, better response to
+			// this kind of situation appears to be the one that is more
+			// forgiving or self-curing. This part of code implements that.
+			versionName = createVersionedWithInputData(service, session, binder,
+					entry, relativeFilePath, inputData);
+    	}
+    	else {
+    		throw new InternalException();
+    	}
+    	
+    	if(versionName != null) {
+    		try {
+    			updateFileAttachment(fAtt, user, versionName, fui.getSize());
+    		}
+    		catch(IOException e) {
+    			throw new UncheckedIOException(e);
+    		}
+    	}
     }
 
     private void updateFileAttachment(FileAttachment fAtt, 
-			User user, String versionName, long contentLength) {
+			Principal user, String versionName, long contentLength) {
 		fAtt.setModification(new HistoryStamp(user));
 		
 		FileItem fItem = fAtt.getFileItem();
@@ -935,7 +982,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			fAtt.addFileVersion(vAtt);
 		}
 	}
-	
+    
     /**
 	 * Creates a new file in the system.
 	 * <p>
@@ -947,13 +994,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	 */
 	private FileAttachment createFile(RepositoryService service, Object session, 
 			Binder binder, DefinableEntity entry, FileUploadItem fui, Object inputData) 
-		throws RepositoryServiceException {
-		String relativeFilePath = fui.getOriginalFilename();
+		throws RepositoryServiceException, UncheckedIOException {	
+		// Since we are creating a new file, file locking doesn't concern us.
 		
 		FileAttachment fAtt = createFileAttachment(entry, fui);
 		
 		String versionName = createVersionedWithInputData(service, session, binder, entry,
-				relativeFilePath, inputData);
+				fui.getOriginalFilename(), inputData);
 
 		createVersionAttachment(fAtt, versionName);
 
@@ -1187,5 +1234,230 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				throw new InternalException();
 			}
 		}		
+	}       
+    
+    private void closeLocksTransactional(Binder binder, DefinableEntity entity,
+    		boolean commit) throws RepositoryServiceException,
+    		UncheckedIOException {
+    	if(closeLocks(binder, entity, commit))
+    		triggerUpdateTransaction();   	
+    }
+    
+    private boolean closeLocks(Binder binder, DefinableEntity entity,
+    		boolean commit) throws RepositoryServiceException,
+    		UncheckedIOException {
+    	boolean metadataDirty = false; 
+    	
+    	if(entity.getLockedFileCount() > 0) {
+    		// Iterate over file attachments and close each lock.
+    		List fAtts = entity.getFileAttachments();
+    		for(int i = 0; i < fAtts.size(); i++) {
+    			FileAttachment fa = (FileAttachment) fAtts.get(i);
+    			if(closeLock(binder, entity, fa, commit))
+    				metadataDirty = true;
+    		}
+    	}
+    	
+    	return metadataDirty;  	
+    }
+    
+    private void closeLockTransactional(Binder binder, DefinableEntity entity,
+    		FileAttachment fa, boolean commit) throws RepositoryServiceException,
+    		UncheckedIOException {
+    	if(closeLock(binder, entity, fa, commit))
+    		this.triggerUpdateTransaction();
+    }
+
+    private boolean closeLock(Binder binder, DefinableEntity entity, 
+    		FileAttachment fa, boolean commit) throws RepositoryServiceException,
+    		UncheckedIOException {
+    	boolean metadataDirty = false;
+    	
+    	FileAttachment.FileLock lock = fa.getFileLock();
+    	
+    	if (lock != null) {
+			if (commit) { 
+				// Commit pending changes if any. We don't care whether the 
+				// lock is currently effective or expired.
+				commitPendingChanges(binder, entity, fa, lock.getOwner());
+			} 
+			else { // Discard pending changes if any
+				RepositoryServiceUtil.uncheckout(fa.getRepositoryServiceName(), 
+						binder, entity, fa.getFileItem().getName()); 					
+			}
+
+			fa.setFileLock(null); // Clear the lock
+			entity.decrLockedFileCount(); // Decrement lock count
+			metadataDirty = true;
+		}
+    	
+    	return metadataDirty;
+    }
+    
+    private void closeExpiredLocksTransactional(Binder binder, DefinableEntity entity,
+    		boolean commit) throws RepositoryServiceException,
+    		UncheckedIOException {
+    	if(closeExpiredLocks(binder, entity, commit))
+    		triggerUpdateTransaction();   	
+    }
+    		
+    private boolean closeExpiredLocks(Binder binder, DefinableEntity entity,
+    		boolean commit) throws RepositoryServiceException,
+    		UncheckedIOException {
+    	boolean metadataDirty = false; 
+    	
+    	if(entity.getLockedFileCount() > 0) {
+    		// Iterate over file attachments and close each expired lock.
+    		List fAtts = entity.getFileAttachments();
+    		for(int i = 0; i < fAtts.size(); i++) {
+    			FileAttachment fa = (FileAttachment) fAtts.get(i);
+    			if(closeExpiredLock(binder, entity, fa, commit))
+    				metadataDirty = true;
+    		}
+    	}
+    	
+    	return metadataDirty;	
+    }
+    
+    private void closeExpiredLockTransactional(Binder binder, DefinableEntity entity,
+    		FileAttachment fa, boolean commit) throws RepositoryServiceException,
+    		UncheckedIOException {
+    	if(closeExpiredLock(binder, entity, fa, commit))
+    		this.triggerUpdateTransaction();
+    }
+    
+    private boolean closeExpiredLock(Binder binder, DefinableEntity entity, 
+    		FileAttachment fa, boolean commit) throws RepositoryServiceException,
+    		UncheckedIOException {
+    	String relativeFilePath = fa.getFileItem().getName();
+
+    	RepositoryService service = 
+			RepositoryServiceUtil.lookupRepositoryService(fa.getRepositoryServiceName());
+		
+		Object session = service.openRepositorySession();
+
+		try {
+			return closeExpiredLock(service, session, binder, entity, fa, commit);
+		}
+		finally {
+			service.closeRepositorySession(session);
+		}	
 	}
+    
+    private boolean closeExpiredLock(RepositoryService service, Object session,
+    		Binder binder, DefinableEntity entity, FileAttachment fa, 
+    		boolean commit) throws RepositoryServiceException, UncheckedIOException {
+    	boolean metadataDirty = false;
+    	
+    	FileAttachment.FileLock lock = fa.getFileLock();
+    	
+    	if(lock != null) {
+        	if(isLockExpired(lock)) { // Lock expired
+				if(commit) { // Commit pending changes if any
+					commitPendingChanges(service, session, binder, entity, fa, lock.getOwner()); 
+				}
+				else {	// Discard pending changes if any
+					service.uncheckout(session, binder, entity, fa.getFileItem().getName());
+				}
+
+				fa.setFileLock(null); // Clear the expired lock
+				entity.decrLockedFileCount(); // Decrement lock count
+				metadataDirty = true;	
+        	}
+    	}
+    	
+    	return metadataDirty;
+    }
+    
+    private boolean commitPendingChanges(Binder binder, DefinableEntity entity,
+    		FileAttachment fa, Principal changeOwner)
+    	throws RepositoryServiceException, UncheckedIOException {
+    	String relativeFilePath = fa.getFileItem().getName();
+
+    	RepositoryService service = 
+			RepositoryServiceUtil.lookupRepositoryService(fa.getRepositoryServiceName());
+		
+		Object session = service.openRepositorySession();
+		
+		try {
+			return commitPendingChanges(service, session, binder, entity, fa,
+					changeOwner);
+		}
+		finally {
+			service.closeRepositorySession(session);
+		}			
+    }
+    
+    private boolean commitPendingChanges(RepositoryService service, Object session,
+    		Binder binder, DefinableEntity entity, FileAttachment fa, Principal changeOwner)
+    	throws RepositoryServiceException, UncheckedIOException {
+    	String relativeFilePath = fa.getFileItem().getName();
+		
+		boolean metadataDirty = false; 
+		
+		// Attempt to check in. If the file was previously checked out (and
+		// only if any change has made since checkout??), this will create 
+		// a new version and return the name of the new version. If not,
+		// it will return the name of the latest existing version.
+		String versionName = service.checkin(session, binder, entity, relativeFilePath);
+		VersionAttachment va = fa.findFileVersion(versionName);
+		if(va == null) {
+			// This means that the checkin above created a new version
+			// of the file. 
+			long contentLength = service.getContentLength(session, 
+					binder, entity, relativeFilePath, versionName);
+			updateFileAttachment(fa, changeOwner, versionName, contentLength);
+			metadataDirty = true;
+		}   			
+		
+		return metadataDirty;
+    }
+    
+    private void checkReservation(DefinableEntity entity) 
+    	throws ReservedByAnotherUserException {
+		User user = RequestContextHolder.getRequestContext().getUser();
+
+    	HistoryStamp reservation = null;
+    	if(entity instanceof Reservable)
+    		reservation = ((Reservable) entity).getReservation();
+    	
+    	if(reservation != null && !reservation.getPrincipal().equals(user)) {
+    		// The entry is currently under reservation by another user.
+    		throw new ReservedByAnotherUserException(entity, reservation.getPrincipal());
+    	}
+    }
+    
+    private void checkLock(DefinableEntity entity, FileAttachment fa) 
+    	throws LockedByAnotherUserException {
+    	// This method assumes that the lock has been brought up-to-date
+    	// prior to the execution of this method. In other words, expired
+    	// lock has already been taken care of. Therefore the lock, if
+    	// exists, is effective. 
+    	
+		User user = RequestContextHolder.getRequestContext().getUser();
+
+		FileLock lock = fa.getFileLock();
+		if(lock != null && !lock.getOwner().equals(user)) {
+			// The file is locked by another user.
+			throw new LockedByAnotherUserException(entity, fa, lock.getOwner());
+		}
+    }
+    
+    private boolean isLockExpired(FileLock lock) {
+    	// Note that we take additional 
+		// "allowance" value into consideration when computing the
+		// expiration date used for the comparison. This is to 
+		// account for the situation where subsequent lock renewal
+		// or data update request following initial lock request is
+		// delayed significantly that it actually arrives at the server
+		// after the initial lock has expired. Although expected to be
+		// rare, this situation can occur by environmental flunctuations
+		// such as unusual network latency or extremely high system 
+		// load, etc. To prevent undesired version proliferation from
+		// occuring as result, we give each lock some reasonable 
+		// allowance (ie, extended life).
+    	
+    	return (lock.getExpirationDate().getTime() + 
+    			this.getLockExpirationAllowanceMilliseconds() <= System.currentTimeMillis());
+    }
 }

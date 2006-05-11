@@ -284,8 +284,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
             ids.add(fEntry.getCreation().getPrincipal().getId());
         if (fEntry.getModification() != null)
             ids.add(fEntry.getModification().getPrincipal().getId());
-        if (fEntry.getReservedDoc() != null) 
-            ids.add(fEntry.getReservedDoc().getPrincipal().getId());
+        if (fEntry.getReservation() != null) 
+            ids.add(fEntry.getReservation().getPrincipal().getId());
         getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      } 
 
@@ -331,8 +331,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
                 ids.add(entry.getCreation().getPrincipal().getId());
             if (entry.getModification() != null)
                 ids.add(entry.getModification().getPrincipal().getId());
-            if (entry.getReservedDoc() != null) 
-                ids.add(entry.getReservedDoc().getPrincipal().getId());
+            if (entry.getReservation() != null) 
+                ids.add(entry.getReservation().getPrincipal().getId());
         }
         getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      }     

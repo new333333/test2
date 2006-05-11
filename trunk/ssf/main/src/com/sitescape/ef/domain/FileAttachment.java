@@ -7,11 +7,14 @@
 package com.sitescape.ef.domain;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.util.CollectionUtil;
+import com.sitescape.ef.util.SPropsUtil;
 
 
 /**
@@ -21,11 +24,11 @@ import com.sitescape.ef.util.CollectionUtil;
 public class FileAttachment extends Attachment {
     private List fileVersions; //set by hibernate access="field"
     private Integer lastVersion;
-    private String repositoryServiceName="fileRepositoryService";
+    private String repositoryServiceName;//initialized by hibernate access=field
 
     private FileItem fileItem;
     
-    private HistoryStamp checkout;
+    private FileLock fileLock;
 
     public FileAttachment() {
         
@@ -98,13 +101,24 @@ public class FileAttachment extends Attachment {
     			break;
     		}
     	}
-    }   
+    }
+   
+   public VersionAttachment findFileVersion(String versionName) {
+	   List vList = getFileVersions();
+	   for(int i = 0; i < vList.size(); i++) {
+		   VersionAttachment v = (VersionAttachment) vList.get(i);
+		   if(v.getVersionName().equals(versionName))
+			   return v;
+	   }
+	   return null;
+   }
+   
    public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
 		FileAttachment o = (FileAttachment) obj;
 		// Don't use id - may not be saved yet
-		if (repositoryServiceName.equals(o.getRepositoryServiceName())
+		if (getRepositoryServiceName().equals(o.getRepositoryServiceName())
 				&& fileItem.equals(o.getFileItem()))
 			return true;
 		else 
@@ -112,8 +126,7 @@ public class FileAttachment extends Attachment {
 	}
     public int hashCode() {
        	int hash = 7;
-       	if(repositoryServiceName != null)
-       		hash = 31*hash + repositoryServiceName.hashCode();
+       	hash = 31*hash + getRepositoryServiceName().hashCode();
     	hash = 31*hash + fileItem.hashCode();
     	return hash;
     }
@@ -127,24 +140,92 @@ public class FileAttachment extends Attachment {
     	return changed;
     }
     
-    /**
-     * @hibernate.property length="128"
-     * @return
-     */
 	public String getRepositoryServiceName() {
-		return repositoryServiceName;
+		if(repositoryServiceName == null)
+			return RepositoryServiceUtil.getDefaultRepositoryServiceName();
+		else
+			return repositoryServiceName;
 	}
 	public void setRepositoryServiceName(String repositoryServiceName) {
 		this.repositoryServiceName = repositoryServiceName;
 	}
-    
+	
     /**
-     * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="checkout_"
+     * @hibernate.component class="com.sitescape.ef.domain.FileLock" prefix="filelock_"
      */
-    public HistoryStamp getCheckout() {
-        return this.checkout;
+    public FileLock getFileLock() {
+        return this.fileLock;
     }
-    public void setCheckout(HistoryStamp stamp) {
-        this.checkout = stamp;
+    public void setFileLock(FileLock fileLock) {
+        this.fileLock = fileLock;
     }
+    
+    public boolean isCurrentlyLocked() {
+    	FileLock lock = getFileLock();
+    	if(lock == null) {
+    		return false;
+    	}
+    	else {
+    		if(lock.getExpirationDate().getTime() > System.currentTimeMillis())
+    			return true;
+    		else
+    			return false;
+    	}
+    }
+    
+    public static class FileLock implements Cloneable {
+
+    	private String id;
+    	private Principal owner;
+    	private Date expirationDate;
+
+    	public FileLock() {
+    	}
+
+    	public FileLock(String id, Principal owner, Date expirationDate) {
+    		this.id = id;
+    		this.owner = owner;
+    		this.expirationDate = expirationDate;
+    	}
+
+    	public String getId() {
+    		return id;
+    	}
+
+    	public void setId(String id) {
+    		this.id = id;
+    	}
+
+    	public Principal getOwner() {
+    		return owner;
+    	}
+    	
+    	public void setOwner(Principal owner) {
+    		this.owner = owner; 
+    	}
+    	
+    	public Date getExpirationDate() {
+    		return expirationDate;
+    	}
+
+    	public void setExpirationDate(Date expirationDate) {
+    		this.expirationDate = expirationDate;
+    	}
+    	
+    	public Object clone() {
+    		try {
+    			FileLock other = (FileLock) super.clone();
+
+    			other.id = id;
+    			other.owner = owner;
+    			other.expirationDate = expirationDate;
+
+    			return other;
+    		} catch (CloneNotSupportedException e) {
+    			// This shouldn't happen, since we are Cloneable
+    			throw new InternalError();
+    		}
+    	}
+    }
+
 }
