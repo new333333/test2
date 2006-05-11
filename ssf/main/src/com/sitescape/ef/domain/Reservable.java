@@ -1,6 +1,6 @@
 package com.sitescape.ef.domain;
 
-public interface Reservable {
+public interface Reservable extends PersistentLongId {
 
 	public HistoryStamp getReservation();
 
