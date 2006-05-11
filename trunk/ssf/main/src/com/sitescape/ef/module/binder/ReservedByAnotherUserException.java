@@ -1,31 +1,22 @@
 package com.sitescape.ef.module.binder;
 
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.domain.Reservable;
 import com.sitescape.ef.exception.UncheckedCodedException;
 
 public class ReservedByAnotherUserException extends UncheckedCodedException {
 	
 	private static final String ReservedByAnotherUserException_ErrorCode = "errorcode.reserved.by.another.user";
 
-	private DefinableEntity entity;
-	private Principal reservationOwner;
+	private Reservable reservable;
 	
-	public ReservedByAnotherUserException(DefinableEntity entity, 
-			Principal reservationOwner) {
+	public ReservedByAnotherUserException(Reservable reservable) {
 		super(ReservedByAnotherUserException_ErrorCode, new Object[] { 
-				entity.getId(), reservationOwner.getName() });
+				reservable.getId(), reservable.getReservation().getPrincipal() });
 		
-		this.entity = entity;
-		this.reservationOwner = reservationOwner;
+		this.reservable = reservable;
 	}
 
-	public DefinableEntity getEntity() {
-		return entity;
+	public Reservable getReservable() {
+		return reservable;
 	}
-
-	public Principal getReservationOwner() {
-		return reservationOwner;
-	}
-
 }
