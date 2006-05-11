@@ -1,6 +1,5 @@
-package com.sitescape.ef.module.binder;
+package com.sitescape.ef.domain;
 
-import com.sitescape.ef.domain.Reservable;
 import com.sitescape.ef.exception.UncheckedCodedException;
 
 public class ReservedByAnotherUserException extends UncheckedCodedException {

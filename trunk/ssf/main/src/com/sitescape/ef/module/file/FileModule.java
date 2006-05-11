@@ -9,7 +9,7 @@ import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.module.binder.ReservedByAnotherUserException;
+import com.sitescape.ef.domain.ReservedByAnotherUserException;
 import com.sitescape.ef.repository.RepositoryServiceException;
 
 /**
