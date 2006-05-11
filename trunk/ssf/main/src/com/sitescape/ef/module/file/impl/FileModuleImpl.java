@@ -502,7 +502,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	}
     	else {
     		// The entity is reservable and reserved by another user
-    		throw new ReservedByAnotherUserException(entity, reservation.getPrincipal());
+    		throw new ReservedByAnotherUserException(reservable);
     	}
     	
     	triggerUpdateTransaction();
@@ -1423,7 +1423,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
     	if(reservation != null && !reservation.getPrincipal().equals(user)) {
     		// The entry is currently under reservation by another user.
-    		throw new ReservedByAnotherUserException(entity, reservation.getPrincipal());
+    		throw new ReservedByAnotherUserException((Reservable) entity);
     	}
     }
     
