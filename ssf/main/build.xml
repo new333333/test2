@@ -112,7 +112,7 @@
   		<antcall target="ss-create-tables-internal" />
 	  </target>
 	
-	  <target name="ss-create-tables-internal">
+	  <target name="ss-create-tables-internal" depends="ss-hib-gen">
 			<path id="initpath">
 	  			<pathelement location="${classes.dir}"/>
 				<fileset dir="${project.dir}/util" includes="*.jar"/>
@@ -154,7 +154,9 @@
 		     </schemaexport>
 	    </target>
 
-	<target name="ss-update-tables" description="Update database tables for sitescape domain">
+	<target name="ss-update-tables" 
+		description="Update database tables for sitescape domain"
+		depends="ss-hib-gen">
 		<path id="initpath">
   			<pathelement location="${classes.dir}"/>
 			<fileset dir="${project.dir}/util" includes="*.jar"/>

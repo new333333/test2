@@ -26,7 +26,7 @@
     </bag>
     <property name="docContent"/>
     <property name="allowEdits"/>
-    <component name="reservedDoc" class="com.sitescape.ef.domain.HistoryStamp">
+    <component name="reservation" class="com.sitescape.ef.domain.HistoryStamp">
       <property name="date" column="reserved_date" type="timestamp"/>
       <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
         <column name="reserved_principal"/>
@@ -76,5 +76,6 @@
         <column name="modification_principal"/>
       </many-to-one>
     </component>
+    <property name="lockedFileCount" access="field"/>
   </class>
 </hibernate-mapping>

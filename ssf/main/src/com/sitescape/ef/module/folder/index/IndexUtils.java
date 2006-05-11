@@ -45,8 +45,8 @@ public class IndexUtils  {
     
     public static void addReservedByPrincipalId(Document doc, FolderEntry entry) {
     	//Add the id of the reserver
-        if (entry.getReservedDoc() != null && entry.getReservedDoc().getPrincipal() != null) {
-        	Field reservedByIdField = Field.Keyword(RESERVEDBYID_FIELD, entry.getReservedDoc().getPrincipal().getId().toString());
+        if (entry.getReservation() != null && entry.getReservation().getPrincipal() != null) {
+        	Field reservedByIdField = Field.Keyword(RESERVEDBYID_FIELD, entry.getReservation().getPrincipal().getId().toString());
         	doc.add(reservedByIdField);
         }
     }   

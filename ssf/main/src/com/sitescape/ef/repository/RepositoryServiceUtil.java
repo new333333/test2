@@ -166,6 +166,18 @@ public class RepositoryServiceUtil {
 		}
 	}
 
+	public static void checkin(String repositoryServiceName, Binder binder, 
+			DefinableEntity entry, String relativeFilePath)
+			throws RepositoryServiceException, UncheckedIOException {
+		RepositoryService service = lookupRepositoryService(repositoryServiceName);
+		Object session = service.openRepositorySession();
+		try {
+			service.checkin(session, binder, entry, relativeFilePath);
+		} finally {
+			service.closeRepositorySession(session);
+		}
+	}
+
 	public static void uncheckout(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry,String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {

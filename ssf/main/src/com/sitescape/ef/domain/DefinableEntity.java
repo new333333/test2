@@ -2,6 +2,7 @@ package com.sitescape.ef.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,6 +26,9 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected Set iEvents,iAttachments;
     protected Map iCustomAttributes;
     protected String iconName="";
+    // Number of locked files - This refers to all "not-yet-cleared" locks
+    // including both effective and expired locks. 
+    protected Integer lockedFileCount; // access="field"
  
     public DefinableEntity() {
     }
@@ -398,4 +402,24 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     public String getTypedId() {
     	return getEntityIdentifier().getEntityType().name() + "_" + getEntityIdentifier().getEntityId();
     }
+    
+    public void setLockedFileCount(int lockedFileCount) {
+    	this.lockedFileCount = lockedFileCount; // auto boxing
+    }
+    
+    public int getLockedFileCount() {
+    	if(lockedFileCount == null)
+    		return 0;
+    	else 
+    		return lockedFileCount;
+    }
+    
+    public void incrLockedFileCount() {
+    	setLockedFileCount(getLockedFileCount()+1);
+    }
+    
+    public void decrLockedFileCount() {
+    	setLockedFileCount(getLockedFileCount()-1);
+    }
+    
 }

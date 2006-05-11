@@ -1,6 +1,7 @@
 package com.sitescape.ef.module.file;
 
 import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.exception.UncheckedCodedException;
 
@@ -9,18 +10,19 @@ public class LockedByAnotherUserException extends UncheckedCodedException {
 	private static final String AlreadyLockedByAnotherUserException_ErrorCode = "errorcode.already.locked.by.another.user";
 
 	private DefinableEntity entity;
-	private String repositoryName;
-	private String fileName;
+	private FileAttachment fa;
 	private Principal lockOwner;
 	
 	public LockedByAnotherUserException(DefinableEntity entity, 
-			String repositoryName, String fileName, Principal lockOwner) {
+			FileAttachment fa, Principal lockOwner) {
 		super(AlreadyLockedByAnotherUserException_ErrorCode, new Object[] { 
-				entity.getId(), repositoryName, fileName, lockOwner.getName() });
+				entity.getId(),
+				fa.getRepositoryServiceName(),
+				fa.getFileItem().getName(),
+				lockOwner.getName() });
 		
 		this.entity = entity;
-		this.repositoryName = repositoryName;
-		this.fileName = fileName;
+		this.fa = fa;
 		this.lockOwner = lockOwner;
 	}
 
@@ -28,12 +30,8 @@ public class LockedByAnotherUserException extends UncheckedCodedException {
 		return entity;
 	}
 
-	public String getRepositoryName() {
-		return repositoryName;
-	}
-	
-	public String getFileName() {
-		return fileName;
+	public FileAttachment getFileAttachment() {
+		return fa;
 	}
 
 	public Principal getLockOwner() {

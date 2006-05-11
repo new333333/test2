@@ -51,12 +51,13 @@
         <key column="parentAttachment"/>
         <one-to-many class="com.sitescape.ef.domain.VersionAttachment"/>
       </bag>
-      <property name="repositoryServiceName" length="128"/>
-      <component name="checkout" class="com.sitescape.ef.domain.HistoryStamp">
-        <property name="date" column="checkout_date" type="timestamp"/>
-        <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
-          <column name="checkout_principal"/>
+      <property name="repositoryServiceName" access="field" length="128"/>
+      <component name="fileLock" class="com.sitescape.ef.domain.FileAttachment$FileLock">
+      	<property name="id" length="128" column="filelock_id"/>
+        <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="owner">
+          <column name="filelock_owner"/>
         </many-to-one>
+        <property name="expirationDate" column="filelock_expirationDate" type="timestamp"/>
       </component>
       <subclass name="com.sitescape.ef.domain.VersionAttachment" discriminator-value="V" dynamic-update="true">
         <property name="versionNumber"/>
