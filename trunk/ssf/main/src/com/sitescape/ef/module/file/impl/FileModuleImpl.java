@@ -471,8 +471,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		if(lock == null) { // The file is not locked
     			// Lock the file
     			fa.setFileLock(new FileAttachment.FileLock(lockId, user, expirationDate));
-    			// Increment count
-    			entity.incrLockedFileCount();
     		}
     		else { // The file is locked
     			if(lock.getOwner().equals(user)) {
@@ -491,7 +489,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     				if(isLockExpired(lock)) { // The lock has expired
     					// Commit any pending changes associated with the expired lock
     					commitPendingChanges(binder, entity, fa, lock.getOwner()); 
-    					// Set the new lock (lockedFileCount remains same).
+    					// Set the new lock.
     					fa.setFileLock(new FileLock(lockId, user, expirationDate));
     				}
     				else { // The lock is still effective
@@ -525,11 +523,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			
 			fa.setFileLock(null); // Clear the lock
 			
-			entity.decrLockedFileCount(); // Decrement count
-			
 			triggerUpdateTransaction();
 		}
     }
+
+
+	public void BringLocksUpToDate(Binder binder, DefinableEntity entity) 
+		throws RepositoryServiceException, UncheckedIOException {
+		closeExpiredLocksTransactional(binder, entity, true);
+	}
 
 	private void triggerUpdateTransaction() {
         getTransactionTemplate().execute(new TransactionCallback() {
@@ -1246,19 +1248,24 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private boolean closeLocks(Binder binder, DefinableEntity entity,
     		boolean commit) throws RepositoryServiceException,
     		UncheckedIOException {
-    	boolean metadataDirty = false; 
-    	
-    	if(entity.getLockedFileCount() > 0) {
-    		// Iterate over file attachments and close each lock.
-    		List fAtts = entity.getFileAttachments();
-    		for(int i = 0; i < fAtts.size(); i++) {
-    			FileAttachment fa = (FileAttachment) fAtts.get(i);
-    			if(closeLock(binder, entity, fa, commit))
-    				metadataDirty = true;
-    		}
+    	if((entity instanceof Reservable) &&
+    			((Reservable)entity).getLockedFileCount() <= 0) {
+    		// A little optimization for reservable entity.
+    		return false; 
     	}
-    	
-    	return metadataDirty;  	
+    	else {
+	    	boolean metadataDirty = false; 
+	    	
+			// Iterate over file attachments and close each lock.
+			List fAtts = entity.getFileAttachments();
+			for(int i = 0; i < fAtts.size(); i++) {
+				FileAttachment fa = (FileAttachment) fAtts.get(i);
+				if(closeLock(binder, entity, fa, commit))
+					metadataDirty = true;
+			}
+	    	
+	    	return metadataDirty;  	
+    	}
     }
     
     private void closeLockTransactional(Binder binder, DefinableEntity entity,
@@ -1287,7 +1294,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			}
 
 			fa.setFileLock(null); // Clear the lock
-			entity.decrLockedFileCount(); // Decrement lock count
+			if(entity instanceof Reservable) {
+				((Reservable)entity).decrLockedFileCount(); // Decrement lock count
+			}
 			metadataDirty = true;
 		}
     	
@@ -1304,9 +1313,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private boolean closeExpiredLocks(Binder binder, DefinableEntity entity,
     		boolean commit) throws RepositoryServiceException,
     		UncheckedIOException {
-    	boolean metadataDirty = false; 
-    	
-    	if(entity.getLockedFileCount() > 0) {
+    	if((entity instanceof Reservable) &&
+    			((Reservable)entity).getLockedFileCount() <= 0) {
+    		// A little optimization for reservable entity.
+    		return false; 
+    	}
+    	else {
+        	boolean metadataDirty = false; 
+        	
     		// Iterate over file attachments and close each expired lock.
     		List fAtts = entity.getFileAttachments();
     		for(int i = 0; i < fAtts.size(); i++) {
@@ -1314,9 +1328,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			if(closeExpiredLock(binder, entity, fa, commit))
     				metadataDirty = true;
     		}
+
+    		return metadataDirty;
     	}
-    	
-    	return metadataDirty;	
     }
     
     private void closeExpiredLockTransactional(Binder binder, DefinableEntity entity,
@@ -1361,7 +1375,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				}
 
 				fa.setFileLock(null); // Clear the expired lock
-				entity.decrLockedFileCount(); // Decrement lock count
+				if(entity instanceof Reservable) {
+					((Reservable)entity).decrLockedFileCount(); // Decrement lock count
+				}
 				metadataDirty = true;	
         	}
     	}

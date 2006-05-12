@@ -21,9 +21,12 @@ import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
+import com.sitescape.ef.domain.ReservedByAnotherUserException;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.User;
@@ -31,7 +34,10 @@ import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.file.WriteFilesException;
+import com.sitescape.ef.module.folder.FileLockInfo;
+import com.sitescape.ef.module.folder.FilesLockedByOtherUsersException;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.folder.index.IndexUtils;
@@ -56,6 +62,7 @@ import com.sitescape.util.Validator;
 public class FolderModuleImpl extends CommonDependencyInjection implements FolderModule {
     private String[] entryTypes = {EntryIndexUtils.ENTRY_TYPE_ENTRY};
     protected DefinitionModule definitionModule;
+    protected FileModule fileModule;
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
@@ -66,6 +73,13 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
 	}
+	protected FileModule getFileModule() {
+		return fileModule;
+	}
+	public void setFileModule(FileModule fileModule) {
+		this.fileModule = fileModule;
+	}
+	
 	private Folder loadFolder(Long folderId)  {
         String companyId = RequestContextHolder.getRequestContext().getZoneName();
         return  getFolderDao().loadFolder(folderId, companyId);
@@ -471,6 +485,80 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	}
     	
     	return result;
+    }
+
+    public void reserveEntry(Long folderId, Long entryId)
+	throws AccessControlException, ReservedByAnotherUserException,
+	FilesLockedByOtherUsersException {
+    	// Because I don't expect customers to override or extend this 
+    	// functionality, I don't delegate its implementation to a
+    	// processor (Am I wrong about this?)
+    	
+        Folder folder = loadFolder(folderId);
+        FolderCoreProcessor processor=loadProcessor(folder);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+
+        // For now, check against the same access right needed for modifying
+        // entry. We might want to have a separate right for reserving entry...
+    	checkModifyEntryAllowed(entry);
+
+        User user = RequestContextHolder.getRequestContext().getUser();
+    	
+    	HistoryStamp reservation = entry.getReservation();
+    	if(reservation == null) { // The entry is not currently reserved. 
+    		// We must check if any of the files in the entry is locked
+    		// by another user. 
+    		
+    		// Make sure that the lock states are current before examining them.
+    		getFileModule().BringLocksUpToDate(folder, entry);
+    		
+    		// Now that lock states are up-to-date, we can examine them.
+    		
+    		if(entry.getLockedFileCount() > 0) { // At least one effective lock
+	    		boolean allOwnedBySameUser = true;
+	    		List fAtts = entry.getFileAttachments();
+	    		for(int i = 0; i < fAtts.size(); i++) {
+	    			FileAttachment fa = (FileAttachment) fAtts.get(i);
+	    			if(fa.getFileLock() != null && !fa.getFileLock().getOwner().equals(user)) {
+	    				allOwnedBySameUser = false;
+	    				break;
+	    			}
+	    		}	
+	    		if(allOwnedBySameUser) {
+	    			// All remaining effective locks are owned by the same user.
+	    			// Proceed and reserve the entry.
+	    			entry.setReservation(user);
+	    		}
+	    		else { // One or more lock is held by someone else.
+	    			// Build error information.
+	    			List<FileLockInfo> info = new ArrayList<FileLockInfo>();
+		    		for(int i = 0; i < fAtts.size(); i++) {
+		    			FileAttachment fa = (FileAttachment) fAtts.get(i);
+		    			if(fa.getFileLock() != null) {
+		    				info.add(new FileLockInfo
+		    						(fa.getRepositoryServiceName(), 
+		    								fa.getFileItem().getName(), 
+		    								fa.getFileLock().getOwner()));
+		    			}
+		    		}		    			
+		    		throw new FilesLockedByOtherUsersException(info);
+	    		}
+    		}
+    		else { // No effective lock
+    			// Proceed and reserve the entry.
+    			entry.setReservation(user);
+    		}
+    	}
+    	else {	
+    		// The entry is currently reserved. 
+    		if(reservation.getPrincipal().equals(user)) {
+    			// The entry is reserved by the same user. Noop.
+    		}
+    		else {
+    			// The entry is reserved by another user.
+    			throw new ReservedByAnotherUserException(entry);
+    		}
+    	}
     }
 
     /**

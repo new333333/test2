@@ -59,7 +59,6 @@
         <column name="modification_principal"/>
       </many-to-one>
     </component>
-    <property name="lockedFileCount" access="field"/>
     <subclass name="com.sitescape.ef.domain.Group" discriminator-value="group" dynamic-update="true">
       <bag inverse="false" access="field" cascade="persist,merge,save-update" lazy="true" table="SS_PrincipalMembership" name="members">
         <key column="groupId"/>

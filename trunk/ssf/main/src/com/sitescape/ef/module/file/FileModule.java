@@ -334,4 +334,15 @@ public interface FileModule {
     		Binder binder, DefinableEntity entity, boolean commit) 
 		throws RepositoryServiceException, UncheckedIOException;
 	*/
+    
+    /**
+     * Bring the states of the locks up-to-date by identifying and processing
+     * expired locks. Any pending change associated with expired lock is
+     * committed and the lock is cleared. All effective locks (ones that
+     * have not expired) remain intact. The caller can assume that by the
+     * time this method returns all expired locks are gone and all remaining
+     * locks are effective. 
+     */
+    public void BringLocksUpToDate(Binder binder, DefinableEntity entity) 
+	throws RepositoryServiceException, UncheckedIOException;
 }

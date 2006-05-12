@@ -6,6 +6,7 @@ import java.util.Map;
 import org.dom4j.Document;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.ReservedByAnotherUserException;
 
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
@@ -89,4 +90,8 @@ public interface FolderModule {
      * @return
      */
     public List<String> getFolderIds();
+    
+    public void reserveEntry(Long folderId, Long entryId)
+    	throws AccessControlException, ReservedByAnotherUserException,
+    	FilesLockedByOtherUsersException;
 }

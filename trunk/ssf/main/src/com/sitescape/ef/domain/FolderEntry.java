@@ -38,6 +38,9 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     protected String owningFolderSortKey;
      //missing
     String docProps;
+    // Number of locked files - This refers to all "not-yet-cleared" locks
+    // including both effective and expired locks. 
+    protected Integer lockedFileCount; // access="field"
  
     public FolderEntry() {
         super();
@@ -96,6 +99,25 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
         setReservation(new HistoryStamp(owner));
     }    
     
+    public void setLockedFileCount(int lockedFileCount) {
+    	this.lockedFileCount = lockedFileCount; // auto boxing
+    }
+    
+    public int getLockedFileCount() {
+    	if(lockedFileCount == null)
+    		return 0;
+    	else 
+    		return lockedFileCount;
+    }
+    
+    public void incrLockedFileCount() {
+    	setLockedFileCount(getLockedFileCount()+1);
+    }
+    
+    public void decrLockedFileCount() {
+    	setLockedFileCount(getLockedFileCount()-1);
+    }
+
     /** 	
      * @hibernate.property
      * @return
