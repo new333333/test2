@@ -47,5 +47,5 @@ public interface SiteScapeFileSystem {
 	throws NoAccessException, NoSuchObjectException, LockException;
 	
 	public void unlockResource(Map uri, String lockId) throws NoAccessException,
-	NoSuchObjectException, LockException;
+	NoSuchObjectException;
 }
