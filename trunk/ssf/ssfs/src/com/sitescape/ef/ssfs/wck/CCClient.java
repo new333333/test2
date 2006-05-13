@@ -220,9 +220,8 @@ public class CCClient {
 	
 	/**
 	 * Unlocks the specified resource/file given the id of the existing lock. 
-	 * If the resource is currently unlocked, this should be noop and returns
-	 * silently. If the resource is currently locked by another user, or by
-	 * the same user but the lock id does not match, it throws <code>LockException</code>.
+	 * If the resource is currently locked with the specified id, it unlocks
+	 * it. In all other conditions, it is noop and returns silently.  
 	 */
 	public void unlockResource(String resourceUri, Map uri, final String lockId)
 	throws CCClientException, NoAccessException, NoSuchObjectException {
