@@ -26,9 +26,13 @@ import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
+import com.sitescape.ef.domain.ReservedByAnotherUserException;
+import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.FileModule;
+import com.sitescape.ef.module.file.LockIdMismatchException;
+import com.sitescape.ef.module.file.LockedByAnotherUserException;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.profile.ProfileModule;
@@ -393,6 +397,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		Map<String,Object> props = new HashMap<String,Object>();
 		
 		if(fa != null) { // This is a file. 
+			// Get DAV properties
 			props.put(CrossContextConstants.DAV_PROPERTIES_CREATION_DATE,
 					fa.getCreation().getDate());
 			props.put(CrossContextConstants.DAV_PROPERTIES_GET_LAST_MODIFIED,
@@ -401,6 +406,15 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 					fa.getFileItem().getLength());
 			props.put(CrossContextConstants.DAV_PROPERTIES_GET_CONTENT_TYPE,
 					getMimeTypes().getContentType(fa.getFileItem().getName()));
+			
+			FileAttachment.FileLock lock = fa.getFileLock();
+			if(lock != null) {
+				// Get lock properties
+				props.put(CrossContextConstants.LOCK_PROPERTIES_ID, lock.getId());
+				props.put(CrossContextConstants.LOCK_PROPERTIES_OWNER_NAME, lock.getOwner().getName());
+				props.put(CrossContextConstants.LOCK_PROPERTIES_EXPIRATION_DATE, lock.getExpirationDate());
+			}
+			
 			return props;
 		}
 
@@ -433,11 +447,59 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 	
 	public void lockResource(Map uri, String lockId, Date lockExpirationDate) 
 	throws NoAccessException, NoSuchObjectException, LockException {
-		// TODO
+		Map objMap = new HashMap();
+		if(!objectExists(uri, objMap))
+			throw new NoSuchObjectException("The resource does not exist");
+
+		Entry entry = (Entry) objMap.get(ENTRY);
+
+		// Check if the user has right to modify the entry
+		try {
+			AccessUtils.modifyCheck(entry);
+		}
+		catch(AccessControlException e) {
+			throw new NoAccessException(e.getLocalizedMessage());
+		}
+		
+		FileAttachment fa = (FileAttachment) objMap.get(FILE_ATTACHMENT);
+		
+		try {
+			getFileModule().lock(((Binder) objMap.get(BINDER)), entry, 
+				((FileAttachment) objMap.get(FILE_ATTACHMENT)), 
+				lockId, lockExpirationDate);
+		}
+		catch(ReservedByAnotherUserException e) {
+			throw new LockException(e.getLocalizedMessage());
+		}
+		catch(LockedByAnotherUserException e) {
+			throw new LockException(e.getLocalizedMessage());
+		}
+		catch(LockIdMismatchException e) {
+			throw new LockException(e.getLocalizedMessage());			
+		}
 	}
+	
 	public void unlockResource(Map uri, String lockId) throws NoAccessException, 
-	NoSuchObjectException, LockException {
-		// TODO
+	NoSuchObjectException {
+		Map objMap = new HashMap();
+		if(!objectExists(uri, objMap))
+			throw new NoSuchObjectException("The resource does not exist");
+
+		Entry entry = (Entry) objMap.get(ENTRY);
+
+		// Check if the user has right to modify the entry
+		try {
+			AccessUtils.modifyCheck(entry);
+		}
+		catch(AccessControlException e) {
+			throw new NoAccessException(e.getLocalizedMessage());
+		}
+		
+		FileAttachment fa = (FileAttachment) objMap.get(FILE_ATTACHMENT);
+		
+		getFileModule().unlock(((Binder) objMap.get(BINDER)), entry, 
+				((FileAttachment) objMap.get(FILE_ATTACHMENT)), 
+				lockId);
 	}
 	
 	private String getOriginal(Map uri) {
