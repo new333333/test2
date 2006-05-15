@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.Collection;
 
 
 import javax.portlet.ActionResponse;
@@ -19,23 +18,18 @@ import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import com.sitescape.ef.InternalException;
+
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
-import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
-import com.sitescape.ef.web.util.PortletRequestUtils;
 
 import com.sitescape.ef.rss.util.UrlUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
@@ -60,7 +54,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class SAbstractForumController extends SAbstractController {
 	public ModelAndView returnToViewForum(RenderRequest request, RenderResponse response, Map formData, Long binderId) throws Exception {
 
-		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		Binder binder = getBinderModule().getBinder(binderId);
 		Map<String,Object> model = new HashMap<String,Object>();
 		model.put(WebKeys.BINDER, binder);
@@ -69,7 +63,7 @@ public class SAbstractForumController extends SAbstractController {
 		//Build a reload url
 		PortletURL reloadUrl = response.createRenderURL();
 		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 	
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -88,14 +82,7 @@ public class SAbstractForumController extends SAbstractController {
 		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 		DefinitionUtils.getDefinitions(binder, model, userDefaultDef);
 		String view;
-		if (binder instanceof Folder)
-			view = getShowFolder(formData, request, response, (Folder)binder, searchFilter, model);
-		else if (binder instanceof Workspace)
-			view = getShowWorkspace(formData, request, response, (Workspace)binder, searchFilter, model);
-		else if (binder instanceof ProfileBinder)
-			throw new InternalException("Not here yet");
-		else 
-			throw new InternalException("Not here yet");
+		view = getShowFolder(formData, request, response, (Folder)binder, searchFilter, model);
 			
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 
@@ -113,28 +100,10 @@ public class SAbstractForumController extends SAbstractController {
 
 	protected void setupViewBinder(ActionResponse response, Long binderId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
-		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
 	}
 		
-	protected String getShowWorkspace(Map formData, RenderRequest req, RenderResponse response, Workspace ws, Document searchFilter, Map<String,Object>model) throws PortletRequestBindingException {
-		Document wsTree;
-
-//		if (searchFilter != null) {
-//			wsEntries = getWorkspaceModule().getWorkspaceTree(wsId, searchFilter);
-//		} else {
-			Long top = PortletRequestUtils.getLongParameter(req, WebKeys.URL_OPERATION2);
-			if ((top != null) && (ws.getParentBinder() != null)) {
-				wsTree = getWorkspaceModule().getDomWorkspaceTree(top, ws.getId(), new WsTreeBuilder(ws, true));
-			} else {
-				wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsTreeBuilder(ws, true),1);
-			}
-//		}
-		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
-		model.put(WebKeys.FOLDER_TOOLBAR, buildWorkspaceToolbar(response, ws, ws.getId().toString()).getToolbar());
-
-		return WebKeys.VIEW_WORKSPACE;
-	}  
 	protected String getShowFolder(Map formData, RenderRequest req, RenderResponse response, Folder folder, Document searchFilter, Map<String,Object>model) throws PortletRequestBindingException {
 		Map folderEntries;
 		Long folderId = folder.getId();
@@ -189,7 +158,7 @@ public class SAbstractForumController extends SAbstractController {
 				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
 					Definition def = (Definition) defaultEntryDefinitions.get(i);
 					AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
-					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
 					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
 					String title = NLT.getDef(def.getTitle());
@@ -210,6 +179,7 @@ public class SAbstractForumController extends SAbstractController {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_SUB_FOLDER);
 			Map qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
@@ -220,29 +190,35 @@ public class SAbstractForumController extends SAbstractController {
 		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
 		//Access control
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ACCESS_CONTROL);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url);
 		//Configuration
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_CONFIGURE_FORUM);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_FORUM);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);
 		//Definition builder
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
 		//Delete
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DELETE_BINDER);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.delete_folder"), url);
-		
+		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.delete_folder"), url);		
 		//move
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOVE_BINDER);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.move_folder"), url);
 
 		//	The "Display styles" menu
@@ -253,7 +229,7 @@ public class SAbstractForumController extends SAbstractController {
 			Definition def = (Definition)folderViewDefs.get(i);
 			//Build a url to switch to this view
 			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_DEFINITION);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_VALUE, def.getId());
@@ -262,28 +238,28 @@ public class SAbstractForumController extends SAbstractController {
 		
 		//vertical
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
 		toolbar.addToolbarMenuItem("3_display_styles", "styles", NLT.get("toolbar.menu.display_style_vertical"), url);
 		//accessible
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
 		toolbar.addToolbarMenuItem("3_display_styles", "styles", NLT.get("toolbar.menu.display_style_accessible"), url);
 		//iframe
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
 		toolbar.addToolbarMenuItem("3_display_styles", "styles", NLT.get("toolbar.menu.display_style_iframe"), url);
 		//popup
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
@@ -294,86 +270,7 @@ public class SAbstractForumController extends SAbstractController {
 		return toolbar;
 	}
 	
-	protected Toolbar buildWorkspaceToolbar(RenderResponse response, Workspace workspace, String forumId) {
-		//Build the toolbar array
-		Toolbar toolbar = new Toolbar();
-		//	The "Add" menu
-		PortletURL url;
-		boolean addMenuCreated=false;
-		
-		//Add Workspace
-		try {
-			getWorkspaceModule().checkAddWorkspaceAllowed(workspace);
-			toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
-			addMenuCreated=true;
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
-			Map qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			toolbar.addToolbarMenuItem("1_add", "workspace", NLT.get("toolbar.menu.addWorkspace"), adapterUrl.toString(), qualifiers);
-		} catch (AccessControlException ac) {};
 
-		//Add Folder
-		try {
-			getWorkspaceModule().checkAddFolderAllowed(workspace);
-			if (addMenuCreated == false) {
-				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
-				addMenuCreated=true;
-			}
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
-			Map qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), adapterUrl.toString(), qualifiers);
-		} catch (AccessControlException ac) {};
-		
-		try {
-			getBinderModule().checkModifyBinderAllowed(workspace);
-			//The "Modify" menu
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			Map qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
-		} catch (AccessControlException ac) {};
-		
-		//The "Administration" menu
-		toolbar.addToolbarMenu("3_administration", NLT.get("toolbar.administration"));
-		//Access control
-		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ACCESS_CONTROL);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.accessControl"), url);
-		//Configuration
-		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_CONFIGURE_FORUM);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.configuration"), url);
-		//Definition builder
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
-		
-		//Delete
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DELETE_BINDER);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.delete_workspace"), url);
-		//move
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOVE_BINDER);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.move_workspace"), url);
-		return toolbar;
-	}
-		
-	
 	/* 
 	 * getEvents ripples through all the entries in the current entry list, finds their
 	 * associated events, checks each event against the session's current calendar view mode
@@ -408,27 +305,27 @@ public class SAbstractForumController extends SAbstractController {
 
 		// calendar navigation via nav bar; must be an action so form data is transmitted
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE);
 		model.put("goto_form_url", url.toString());
 		
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
 		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_DAY);
 		model.put("set_day_view", url.toString());
 
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
 		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_WEEK);
 		model.put("set_week_view", url.toString());
 		
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
 		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_MONTH);
@@ -647,7 +544,7 @@ public class SAbstractForumController extends SAbstractController {
 						// and we don't want to clobber urldatestring because it's used later for the week URL
 						urldatestring2 = urldatesdf.format(gcal.getTime());
 						url = response.createRenderURL();
-						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 						url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
 						url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
 						url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring2);
@@ -660,7 +557,7 @@ public class SAbstractForumController extends SAbstractController {
 					dayList = new ArrayList();
 				}
 				url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
 				url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "week");
@@ -671,7 +568,7 @@ public class SAbstractForumController extends SAbstractController {
 			daymap.put(WebKeys.CALENDAR_DOW, DateHelper.getDayAbbrevString(loopCal.get(Calendar.DAY_OF_WEEK)));
 			daymap.put(WebKeys.CALENDAR_DOM, Integer.toString(loopCal.get(Calendar.DAY_OF_MONTH)));
 			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
 			url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
@@ -740,7 +637,7 @@ public class SAbstractForumController extends SAbstractController {
 				// and we don't want to clobber urldatestring because it's used later for the week URL
 				urldatestring2 = urldatesdf.format(loopCal.getTime());
 				url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
 				url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
@@ -758,7 +655,7 @@ public class SAbstractForumController extends SAbstractController {
 		model.put(WebKeys.CALENDAR_VIEWBEAN, monthBean);
 	}
 
-	protected class TreeBuilder implements DomTreeBuilder {
+	public static class TreeBuilder implements DomTreeBuilder {
 		
 		public Element setupDomElement(String type, Object source, Element element) {
 	
@@ -772,52 +669,7 @@ public class SAbstractForumController extends SAbstractController {
 				element.addAttribute("id", f.getId().toString());
 				element.addAttribute("image", icon);
 				element.addAttribute("imageClass", "ss_twIcon");
-				Element url = element.addElement("url");
-				url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
-				url.addAttribute(WebKeys.URL_BINDER_ID, f.getId().toString());
-			} else return null;
-			return element;
-		}
-	}
-	protected class WsTreeBuilder implements DomTreeBuilder {
-		Workspace bottom;
-		boolean check;
-		public WsTreeBuilder(Workspace ws, boolean checkChildren) {
-			this.bottom = ws;
-			this.check = checkChildren;
-		}
-		public Element setupDomElement(String type, Object source, Element element) {
-			Element url;
-			Binder binder = (Binder) source;
-			element.addAttribute("title", binder.getTitle());
-			element.addAttribute("id", binder.getId().toString());
-
-			//only need this information if this is the bottom of the tree
-			if (check && bottom.equals(binder.getParentBinder())) {
-				if (getBinderModule().hasBinders(binder)) {
-					element.addAttribute("hasChildren", "true");
-				} else {	
-					element.addAttribute("hasChildren", "false");
-				}
-			}
-			if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {
-				Workspace ws = (Workspace)source;
-				String icon = ws.getIconName();
-				String imageClass = "ss_twIcon";
-				if (icon == null || icon.equals("")) {
-					icon = "/icons/workspace.gif";
-					imageClass = "ss_twImg";
-				}
-				element.addAttribute("type", "workspace");
-				element.addAttribute("image", icon);
-				element.addAttribute("imageClass", imageClass);
-			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
-				Folder f = (Folder)source;
-				String icon = f.getIconName();
-				if (icon == null || icon.equals("")) icon = "/icons/folder.gif";
-				element.addAttribute("type", "folder");
-				element.addAttribute("image", icon);
-				element.addAttribute("imageClass", "ss_twIcon");
+				element.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			} else return null;
 			return element;
 		}

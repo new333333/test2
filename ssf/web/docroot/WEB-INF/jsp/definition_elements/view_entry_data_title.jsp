@@ -15,7 +15,7 @@
 <c:out value="${ssDefinitionEntry.docNumber}"/>.
  <a style="text-decoration: none;" href="<ssf:url 
     folderId="${ssDefinitionEntry.parentFolder.id}" 
-    action="view_entry"
+    action="view_folder_entry"
     entryId="${ssDefinitionEntry.id}"/>">
 </c:if>
 <c:if test="${empty ssDefinitionEntry.title}">

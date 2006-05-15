@@ -40,7 +40,7 @@ public class ViewEntryController extends SAbstractProfileController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
-		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
+		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
 		Map model = new HashMap();	
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
@@ -70,7 +70,7 @@ public class ViewEntryController extends SAbstractProfileController {
 			getProfileModule().checkModifyEntryAllowed(entry);
 			//	The "Modify" menu
 			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_ENTRY);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
@@ -81,14 +81,15 @@ public class ViewEntryController extends SAbstractProfileController {
 		try {
 			getProfileModule().checkDeleteEntryAllowed(entry);
 			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DELETE_ENTRY);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url);
 		} catch (AccessControlException ac) {};
     
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, toolbar.getToolbar());
-			return new ModelAndView(WebKeys.VIEW_LISTING, model);
+		return new ModelAndView(WebKeys.VIEW_LISTING, model);
 	}	
 	
 } 

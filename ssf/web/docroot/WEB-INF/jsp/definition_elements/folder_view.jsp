@@ -153,7 +153,7 @@ function highlightLineById(id) {
     adapter="<%= useAdaptor %>" 
     portletName="ss_forum" 
     folderId="${ssFolder.id}" 
-    action="view_entry" 
+    action="view_folder_entry" 
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
     ><span <%= seenStyle %>><c:out value="${entry1._docNum}"/>.</span></a>&nbsp;&nbsp;&nbsp;
@@ -164,7 +164,7 @@ function highlightLineById(id) {
     adapter="<%= useAdaptor %>" 
     portletName="ss_forum" 
     folderId="${ssFolder.id}" 
-    action="view_entry" 
+    action="view_folder_entry" 
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
     ><c:if test="${empty entry1.title}"
@@ -178,7 +178,7 @@ function highlightLineById(id) {
     adapter="<%= useAdaptor %>" 
     portletName="ss_forum" 
     folderId="${ssFolder.id}" 
-    action="view_entry" 
+    action="view_folder_entry" 
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
     ><span <%= seenStyle %>><c:out value="${entry1._workflowStateCaption}"/></span></a>

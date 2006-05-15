@@ -49,6 +49,7 @@
   onSubmit="return ss_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
+		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
 		  </portlet:actionURL>">
 <ssf:nlt tag="binder.configure.access_control.inherit"
@@ -119,6 +120,7 @@
 	  action="<portlet:actionURL>
 			  <portlet:param name="action" value="configure_access_control"/>
 			  <portlet:param name="binderId" value="${ssBinder.id}"/>
+		     <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 			  </portlet:actionURL>">
 
 	<table class="ss_form" cellspacing="0" cellpadding="0">
@@ -163,6 +165,7 @@
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
+			<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 		  </portlet:actionURL>">
 <table cellspacing="10px" cellpadding="10px" width="100%">
 <tr>
@@ -218,6 +221,7 @@
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
+		<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 		  </portlet:actionURL>">
 
 <c:forEach var="function" items="${ssFunctionMap}">
@@ -287,6 +291,7 @@ function ss_checkRoleIdField(btnObj) {
 		action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_access_control"/>
 			<portlet:param name="binderId" value="${ssBinder.id}"/>
+			<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 		</portlet:actionURL>">
 
 <table cellspacing="4px" cellpadding="4px" width="100%">

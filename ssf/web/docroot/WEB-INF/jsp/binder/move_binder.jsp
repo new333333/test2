@@ -17,8 +17,10 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <form class="ss_style ss_form" method="post" 
 		  action="<portlet:actionURL>
-		 <portlet:param name="action" value="move_binder"/>
+		 <portlet:param name="action" value="modify_binder"/>		  
+		 <portlet:param name="operation" value="move"/>
 		 <portlet:param name="binderId" value="${ssBinder.id}"/>
+		 <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 		 </portlet:actionURL>" name="<portlet:namespace />fm">
 <div class="ss_style ss_portlet">
 <br>

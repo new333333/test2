@@ -36,14 +36,14 @@ public class ModifyEntryController extends SAbstractProfileController {
 		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
-		if (action.equals(WebKeys.ACTION_DELETE_ENTRY)) {
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if (op.equals(WebKeys.OPERATION_DELETE)) {
 			getProfileModule().deleteEntry(binderId, entryId);			
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
-			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
 			response.setRenderParameter("ssReloadUrl", "");
-		} else if (formData.containsKey("okBtn")) {
+		} else if (formData.containsKey("okBtn") && op.equals("")) {
 			//The modify form was submitted. Go process it
 			Map fileMap=null;
 			if (request instanceof MultipartFileSupport) {
@@ -72,13 +72,13 @@ public class ModifyEntryController extends SAbstractProfileController {
 	private void setupViewEntry(ActionResponse response, Long folderId, Long entryId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());		
-		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 		RenderResponse response) throws Exception {
 
-		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
-		if (!action.equals(WebKeys.ACTION_MODIFY_ENTRY)) {
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if (!op.equals("")) {
 			return returnToView(request, response);
 		}
 		Map model = new HashMap();	

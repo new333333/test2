@@ -22,7 +22,7 @@ import com.sitescape.util.Validator;
  * @author Janet McCann
  *
  */
-public class AddFolderController extends SAbstractForumController {
+public class AddFolderController extends SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
@@ -52,9 +52,9 @@ public class AddFolderController extends SAbstractForumController {
 			} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
 				getWorkspaceModule().addWorkspace(binderId, entryType, inputData, fileMap);				
 			}
-			setupViewBinder(response, binderId);
+			setupViewBinder(response, binderId, operation);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			setupViewBinder(response, binderId);
+			setupViewBinder(response, binderId, operation);
 		} else {
 			response.setRenderParameters(formData);
 		}
@@ -66,13 +66,9 @@ public class AddFolderController extends SAbstractForumController {
 		Map formData = request.getParameterMap();
 		Map model = new HashMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		if (!Validator.isNull(request.getParameter("redirect"))) {
-			model.put(WebKeys.BINDER_ID, binderId.toString());
-			return new ModelAndView(WebKeys.VIEW_LISTING_REDIRECT, model);
-		}
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (operation.equals("") && formData.containsKey("operation")) {
-			operation = ((String[])formData.get("operation"))[0];
+		if (operation.equals("") && formData.containsKey("_operation")) {
+			operation = ((String[])formData.get("_operation"))[0];
 		}
 		String defId = "";
 		if (formData.containsKey("binderDefinition")) {
@@ -115,6 +111,15 @@ public class AddFolderController extends SAbstractForumController {
 			view = WebKeys.VIEW_ADD_BINDER;
 		}
 		return new ModelAndView(view, model);
+	}
+	protected void setupViewBinder(ActionResponse response, Long binderId, String operation) {
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
+		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
+		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		} else {
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+		}
 	}
 }
 

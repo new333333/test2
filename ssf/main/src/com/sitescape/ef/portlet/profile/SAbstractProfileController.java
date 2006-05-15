@@ -2,7 +2,6 @@
 package com.sitescape.ef.portlet.profile;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletURL;
@@ -11,11 +10,9 @@ import javax.portlet.RenderResponse;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
@@ -34,8 +31,13 @@ public class SAbstractProfileController extends SAbstractController {
 	public ModelAndView returnToView(RenderRequest request, RenderResponse response) throws Exception {
 		HashMap model = new HashMap();
 	   	User user = RequestContextHolder.getRequestContext().getUser();
-		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		//Build a reload url
+		PortletURL reloadUrl = response.createRenderURL();
+		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
 		Map users = null;
@@ -91,46 +93,49 @@ public class SAbstractProfileController extends SAbstractController {
 		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
 		//Access control
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ACCESS_CONTROL);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityIdentifier().getEntityType().name());
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url);
 		//Configuration
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_CONFIGURE_FORUM);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_FORUM);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityIdentifier().getEntityType().name());
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);
 		//Definition builder
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityIdentifier().getEntityType().name());
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
 		
 		//	The "Display styles" menu
 		toolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.display_styles"));
 		//vertical
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_vertical"), url);
 		//accessible
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_accessible"), url);
 		//iframe
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_iframe"), url);
 		//popup
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);

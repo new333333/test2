@@ -37,6 +37,7 @@ public class WebKeys {
     public static final String URL_ATTRIBUTE = "attr";
     public static final String URL_ATTRIBUTE_ID = "attrId";
     public static final String URL_BINDER_ID="binderId";
+    public static final String URL_BINDER_TYPE="binderType";
     public static final String URL_DOWNLOAD_FILE="download";
 	public static final String URL_ENTRY_ID = "entryId";
     public static final String URL_ENTRY_TYPE="entryType";
@@ -52,21 +53,21 @@ public class WebKeys {
 	
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
-    public static final String ACTION_ADD_ENTRY = "add_entry";
+    public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
     public static final String ACTION_ADD_BINDER = "add_binder";
     public static final String ACTION_MODIFY_BINDER = "modify_binder";
-    public static final String ACTION_MOVE_BINDER = "move_binder";
-    public static final String ACTION_DELETE_BINDER = "delete_binder";
-	public static final String FORUM_ACTION_ADD_REPLY = "add_reply";
-	public static final String FORUM_ACTION_ACCESS_CONTROL = "configure_access_control";
-	public static final String FORUM_ACTION_CONFIGURE_FORUM = "configure_forum";
-	public static final String FORUM_ACTION_DEFINITION_BUILDER = "definition_builder";
-	public static final String FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
-	public static final String ACTION_DELETE_ENTRY = "delete_entry";
-	public static final String ACTION_MODIFY_ENTRY = "modify_entry";
-	public static final String ACTION_MOVE_ENTRY = "move_entry";
-	public static final String ACTION_VIEW_LISTING = "view_listing";
-	public static final String ACTION_VIEW_ENTRY = "view_entry";
+ 	public static final String ACTION_ADD_FOLDER_REPLY = "add_folder_reply";
+	public static final String ACTION_ACCESS_CONTROL = "configure_access_control";
+	public static final String ACTION_CONFIGURE_FORUM = "configure_forum";
+	public static final String ACTION_DEFINITION_BUILDER = "definition_builder";
+	public static final String ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
+	public static final String ACTION_MODIFY_FOLDER_ENTRY = "modify_folder_entry";
+	public static final String ACTION_MODIFY_PROFILE_ENTRY = "modify_profile_entry";
+	public static final String ACTION_VIEW_PROFILE_LISTING = "view_profile_listing";
+	public static final String ACTION_VIEW_FOLDER_LISTING = "view_folder_listing";
+	public static final String ACTION_VIEW_WS_LISTING = "view_ws_listing";
+	public static final String ACTION_VIEW_FOLDER_ENTRY = "view_folder_entry";
+	public static final String ACTION_VIEW_PROFILE_ENTRY = "view_profile_entry";
 	public static final String FORUM_AJAX_REQUEST = "__ajax_request";
 	public static final String LDAP_ACTION_CONFIGURE="configure_ldap";
 	public static final String NOTIFY_ACTION_CONFIGURE="configure_notify";
@@ -75,7 +76,7 @@ public class WebKeys {
 	public static final String FOLDER_INDEX_ACTION_CONFIGURE="configure_folder_index";
 	public static final String PROFILE_INDEX_ACTION_CONFIGURE="configure_profile_index";
 	public static final String DEFINITION_ACTION_IMPORT="import_definition";
-	//oerations
+	//operations
  	public static final String FORUM_OPERATION_ADD_FAVORITE_BINDER = "add_favorite_binder";
  	public static final String FORUM_OPERATION_ADD_FAVORITES_CATEGORY = "add_favorites_category";
  	public static final String FORUM_OPERATION_SAVE_FAVORITES = "save_favorites";
@@ -83,6 +84,9 @@ public class WebKeys {
     public static final String OPERATION_ADD_FOLDER = "add_folder";
     public static final String OPERATION_ADD_SUB_FOLDER = "add_subFolder";
     public static final String OPERATION_ADD_WORKSPACE = "add_workspace";
+    public static final String OPERATION_DELETE="delete";
+    public static final String OPERATION_MOVE="move";
+       
 	public static final String FORUM_OPERATION_GET_ENTRY_ELEMENTS = "get_entry_elements";
 	public static final String FORUM_OPERATION_GET_ELEMENT_VALUES = "get_element_values";
 	public static final String FORUM_OPERATION_GET_ELEMENT_VALUE_DATA = "get_element_value_data";
@@ -232,7 +236,6 @@ public class WebKeys {
     public static final String VIEW_ENTRY="entry/view_entry";
     public static final String VIEW_FORUM="forum/view";
     public static final String VIEW_LISTING="entry/view_listing";
-    public static final String VIEW_LISTING_REDIRECT="entry/view_listing_redirect";
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
     public static final String VIEW_MOVE_ENTRY="entry/move_entry";
     public static final String VIEW_MODIFY_BINDER="forum/modify_binder";

@@ -17,22 +17,22 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.util.Validator;
+
 
 /**
  * @author Peter Hurley
  *
  */
-public class FilterController extends SAbstractController {
+public class FilterController extends AbstractBinderController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));	
+		String binderType = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_BINDER_TYPE);	
 		User user = RequestContextHolder.getRequestContext().getUser();
 			
 		//See if the form was submitted
@@ -48,7 +48,7 @@ public class FilterController extends SAbstractController {
 				//Save the updated search filters
 				getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
 			}
-			setResponseOnClose(request, response);
+			setupViewBinder(response, binderId, binderType);
 		
 		} else if (formData.containsKey("deleteBtn")) {
 			//This is a request to delete a filter
@@ -63,7 +63,7 @@ public class FilterController extends SAbstractController {
 					getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
 				}
 			}
-			setResponseOnClose(request, response);
+			setupViewBinder(response, binderId, binderType);
 		
 		} else if (formData.containsKey("deleteTerm")) {
 			//This is a request to delete a term
@@ -85,7 +85,7 @@ public class FilterController extends SAbstractController {
 			response.setRenderParameters(formData);
 		
 		} else if (formData.containsKey("closeBtn")) {
-			setResponseOnClose(request, response);
+			setupViewBinder(response, binderId, binderType);
 		
 		} else {
 			response.setRenderParameters(formData);
@@ -94,15 +94,11 @@ public class FilterController extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Binder binder = getBinderModule().getBinder(binderId);
 		
 		Map model = new HashMap();
-		if (!Validator.isNull(request.getParameter("redirect"))) {
-			model.put(WebKeys.BINDER_ID, binderId.toString());
-			return new ModelAndView(WebKeys.VIEW_LISTING_REDIRECT, model);
-		}
 		Map formData = request.getParameterMap();
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Binder binder = getBinderModule().getBinder(binderId);
 		
 		//Get the name of the selected filter (if one is selected)
 		String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilter", "");
@@ -138,8 +134,5 @@ public class FilterController extends SAbstractController {
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER_SELECT, model);
 		}
 	}
-	protected void setResponseOnClose(ActionRequest request, ActionResponse response) {
-		response.setRenderParameter(WebKeys.URL_BINDER_ID, request.getParameter(WebKeys.URL_BINDER_ID));
-		response.setRenderParameter("redirect", "true");
-	}
+
 }

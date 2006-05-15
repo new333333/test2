@@ -51,7 +51,7 @@ function ss_showNotLoggedInMsg() {
 					  <td>&nbsp;&nbsp;&nbsp;</td>
 					  <td>
 						<a href="<portlet:renderURL windowState="maximized">
-								<portlet:param name="action" value="view_listing"/>
+								<portlet:param name="action" value="view_folder_listing"/>
 								<portlet:param name="binderId" value="${folder.id}"/>
 							</portlet:renderURL>"><c:out value="${folder.title}"/></a>
 					  </td>

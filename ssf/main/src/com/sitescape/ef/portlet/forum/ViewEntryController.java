@@ -55,7 +55,7 @@ public class ViewEntryController extends SAbstractForumController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model;		
-		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
+		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 
 		Map formData = request.getParameterMap();
 		Long folderId=null;
@@ -75,7 +75,7 @@ public class ViewEntryController extends SAbstractForumController {
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
-			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
+			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 			request.setAttribute("ssReloadUrl", reloadUrl.toString());			
 		} else {
 			Object obj = model.get(WebKeys.CONFIG_ELEMENT);
@@ -110,7 +110,7 @@ public class ViewEntryController extends SAbstractForumController {
 					String replyStyleId = ((Element)replyStyles.get(0)).attributeValue("value", "");
 					if (!replyStyleId.equals("")) {
 						Map params = new HashMap();
-						params.put(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
+						params.put(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
 						params.put(WebKeys.URL_BINDER_ID, folderId);
 						params.put(WebKeys.URL_ENTRY_TYPE, replyStyleId);
 						params.put(WebKeys.URL_ENTRY_ID, entryId);
@@ -125,7 +125,7 @@ public class ViewEntryController extends SAbstractForumController {
 						try {
 							Definition replyDef = getDefinitionModule().getDefinition(replyStyleId);
 							url = response.createActionURL();
-							url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_ADD_REPLY);
+							url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
 							url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 							url.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
 							url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
@@ -142,14 +142,15 @@ public class ViewEntryController extends SAbstractForumController {
 			getFolderModule().checkModifyEntryAllowed(entry);
 			//The "Modify" menu
 			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_ENTRY);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
 			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 			url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
 			//The "Move" menu
 			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOVE_ENTRY);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
 			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 			toolbar.addToolbarMenu("3_move", NLT.get("toolbar.move"), url);
@@ -160,7 +161,8 @@ public class ViewEntryController extends SAbstractForumController {
 			getFolderModule().checkDeleteEntryAllowed(entry);
 			//The "Delete" menu
 			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DELETE_ENTRY);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 			url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 

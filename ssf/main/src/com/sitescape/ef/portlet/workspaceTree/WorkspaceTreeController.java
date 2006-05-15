@@ -6,149 +6,222 @@ import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
-
-import javax.portlet.PortletSession;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.module.binder.BinderModule;
+import com.sitescape.ef.portletadapter.AdaptedPortletURL;
+import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.web.util.WebHelper;
+import com.sitescape.ef.web.util.Toolbar;
 
 /**
  * @author Peter Hurley
  *
  */
-public class WorkspaceTreeController extends SAbstractController implements DomTreeBuilder {
+public class WorkspaceTreeController extends SAbstractController  {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
-		Long folderId = null;
-		folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
-		if (folderId != null) {
-			//redirect handler too forum action
-		    response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
-		    response.setWindowState(WindowState.MAXIMIZED);
-		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
 		Map<String,Object> model = new HashMap<String,Object>();
-		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
-
-		PortletSession ses = WebHelper.getRequiredPortletSession(request);
-		Document wsTree = (Document)ses.getAttribute(WebKeys.WORKSPACE_DOM_TREE);
-		Long wsTreeId = (Long)ses.getAttribute(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID);
-		if (wsTree == null || wsTreeId == null || binderId == null || !binderId.equals(wsTreeId)) {
-			Workspace binder = getWorkspaceModule().getWorkspace(binderId);
-			if (binderId == null) {
-				//when at the top, don't expand
-				binderId = binder.getId();
-				if (request.getWindowState().equals(WindowState.NORMAL)) {
-					wsTree = getWorkspaceModule().getDomWorkspaceTree(binderId, new WsTopOnly(), 0);
-				} else {
-					wsTree = getWorkspaceModule().getDomWorkspaceTree(binderId, new WsTreeBuilder((Workspace)binder, true), 1);									
-				}
-			} else {
-				wsTree = getWorkspaceModule().getDomWorkspaceTree(binderId, new WsTreeBuilder((Workspace)binder, true), 1);				
-				//Save the tree for the session as a performance improvement
-				ses.setAttribute(WebKeys.WORKSPACE_DOM_TREE, wsTree);
-				ses.setAttribute(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binderId);
-			}
+		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);						
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if (op.equals(WebKeys.FORUM_OPERATION_RELOAD_LISTING)) {
+			//An action is asking us to build the url to reload the parent page
+			PortletURL reloadUrl = response.createRenderURL();
+			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+			request.setAttribute("ssReloadUrl", reloadUrl.toString());
+			return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
 		}
-		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
-		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binderId.toString());
+		
+		Map formData = request.getParameterMap();
+		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+		Binder binder = getBinderModule().getBinder(binderId);
+
+		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.DEFINITION_ENTRY, binder);
+		model.put(WebKeys.ENTRY, binder);
+		//Build a reload url
+		PortletURL reloadUrl = response.createRenderURL();
+		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+	
+		User user = RequestContextHolder.getRequestContext().getUser();
+		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
+		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+
+		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
+		Document searchFilter = null;
+		if (searchFilterName != null && !searchFilterName.equals("")) {
+			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+			searchFilter = (Document)searchFilters.get(searchFilterName);
+		}
+		//See if the user has selected a specific view to use
+        UserProperties uProps = getProfileModule().getUserProperties(user.getId(), binderId);
+		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+		DefinitionUtils.getDefinitions(binder, model, userDefaultDef);
+		getShowWorkspace(formData, request, response, (Workspace)binder, searchFilter, model);
 			
-	    return new ModelAndView("workspacetree/view", model);
+		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
+		if ((obj == null) || (obj.equals(""))) 
+			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
+		obj = model.get(WebKeys.CONFIG_DEFINITION);
+		if ((obj == null) || (obj.equals(""))) 
+			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
+		try {
+			//won't work on adapter
+			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
+		} catch (UnsupportedOperationException us) {}
+		
+		return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
 	}
+	protected void getShowWorkspace(Map formData, RenderRequest req, RenderResponse response, Workspace ws, Document searchFilter, Map<String,Object>model) throws PortletRequestBindingException {
+		Document wsTree;
 
-	public Element setupDomElement(String type, Object source, Element element) {
-		Element url;
-		if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {
-			Workspace ws = (Workspace)source;
-			String icon = ws.getIconName();
-			String imageClass = "ss_twIcon";
-			if (icon == null || icon.equals("")) {
-				icon = "/icons/workspace.gif";
-				imageClass = "ss_twImg";
+//		if (searchFilter != null) {
+//			wsEntries = getWorkspaceModule().getWorkspaceTree(wsId, searchFilter);
+//		} else {
+			Long top = PortletRequestUtils.getLongParameter(req, WebKeys.URL_OPERATION2);
+			if ((top != null) && (ws.getParentBinder() != null)) {
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(top, ws.getId(), new WsTreeBuilder(ws, true, getBinderModule()));
+			} else {
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsTreeBuilder(ws, true, getBinderModule()),1);
 			}
-			element.addAttribute("type", "workspace");
-			element.addAttribute("title", ws.getTitle());
-			element.addAttribute("id", ws.getId().toString());
-			element.addAttribute("image", icon);
-			element.addAttribute("imageClass", imageClass);
-        	url = element.addElement("url");
-	    	url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
-	     	url.addAttribute(WebKeys.URL_BINDER_ID, ws.getId().toString());
-		} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
-			Folder f = (Folder)source;
-			String icon = f.getIconName();
-			if (icon == null || icon.equals("")) icon = "/icons/folder.png";
-			element.addAttribute("type", "folder");
-			element.addAttribute("title", f.getTitle());
-			element.addAttribute("id", f.getId().toString());
-			element.addAttribute("image", icon);
-			element.addAttribute("imageClass", "ss_twIcon");
-        	url = element.addElement("url");
-	    	url.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
-	     	url.addAttribute(WebKeys.URL_BINDER_ID, f.getId().toString());
-		} else return null;
-		return element;
+//		}
+		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+		model.put(WebKeys.FOLDER_TOOLBAR, buildWorkspaceToolbar(response, ws, ws.getId().toString()).getToolbar());
+		
+	}  
+	protected Toolbar buildWorkspaceToolbar(RenderResponse response, Workspace workspace, String forumId) {
+		//Build the toolbar array
+		Toolbar toolbar = new Toolbar();
+		//	The "Add" menu
+		PortletURL url;
+		boolean addMenuCreated=false;
+		
+		//Add Workspace
+		try {
+			getWorkspaceModule().checkAddWorkspaceAllowed(workspace);
+			toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+			addMenuCreated=true;
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			toolbar.addToolbarMenuItem("1_add", "workspace", NLT.get("toolbar.menu.addWorkspace"), adapterUrl.toString(), qualifiers);
+		} catch (AccessControlException ac) {};
+
+		//Add Folder
+		try {
+			getWorkspaceModule().checkAddFolderAllowed(workspace);
+			if (addMenuCreated == false) {
+				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+				addMenuCreated=true;
+			}
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), adapterUrl.toString(), qualifiers);
+		} catch (AccessControlException ac) {};
+		
+		try {
+			getBinderModule().checkModifyBinderAllowed(workspace);
+			//The "Modify" menu
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
+		} catch (AccessControlException ac) {};
+		
+		//The "Administration" menu
+		toolbar.addToolbarMenu("3_administration", NLT.get("toolbar.administration"));
+		//Access control
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.accessControl"), url);
+		//Configuration
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_FORUM);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.configuration"), url);
+		//Definition builder
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
+		
+		//Delete
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.delete_workspace"), url);
+		//move
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.move_workspace"), url);
+		return toolbar;
 	}
-
-	protected class WsTopOnly implements DomTreeBuilder {
-		public Element setupDomElement(String type, Object source, Element element) {
-			Element url;
-			Binder binder = (Binder) source;
-			String icon = binder.getIconName();
-			String imageClass = "ss_twIcon";
-			if (icon == null || icon.equals("")) {
-				icon = "/icons/workspace.gif";
-				imageClass = "ss_twImg";
-			}
-			element.addAttribute("title", binder.getTitle());
-			element.addAttribute("id", binder.getId().toString());
-			element.addAttribute("image", icon);
-			element.addAttribute("imageClass", imageClass);
-
-			if (getBinderModule().hasBinders(binder)) {
-				element.addAttribute("hasChildren", "true");
-			} else {	
-				element.addAttribute("hasChildren", "false");
-			}
-			return element;
-		}
-	}
-	protected class WsTreeBuilder implements DomTreeBuilder {
+		
+	public static class WsTreeBuilder implements DomTreeBuilder {
 		Workspace bottom;
 		boolean check;
-		public WsTreeBuilder(Workspace ws, boolean checkChildren) {
+		BinderModule binderModule;
+		public WsTreeBuilder(Workspace ws, boolean checkChildren, BinderModule binderModule) {
 			this.bottom = ws;
 			this.check = checkChildren;
+			this.binderModule = binderModule;
 		}
 		public Element setupDomElement(String type, Object source, Element element) {
-			Element url;
 			Binder binder = (Binder) source;
 			element.addAttribute("title", binder.getTitle());
 			element.addAttribute("id", binder.getId().toString());
 
 			//only need this information if this is the bottom of the tree
 			if (check && bottom.equals(binder.getParentBinder())) {
-				if (getBinderModule().hasBinders(binder)) {
+				if (binderModule.hasBinders(binder)) {
 					element.addAttribute("hasChildren", "true");
 				} else {	
 					element.addAttribute("hasChildren", "false");
@@ -165,6 +238,7 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 				element.addAttribute("type", "workspace");
 				element.addAttribute("image", icon);
 				element.addAttribute("imageClass", imageClass);
+				element.addAttribute("action", WebKeys.ACTION_VIEW_WS_LISTING);
 			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
 				Folder f = (Folder)source;
 				String icon = f.getIconName();
@@ -172,6 +246,7 @@ public class WorkspaceTreeController extends SAbstractController implements DomT
 				element.addAttribute("type", "folder");
 				element.addAttribute("image", icon);
 				element.addAttribute("imageClass", "ss_twIcon");
+				element.addAttribute("action", WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			} else return null;
 			return element;
 		}

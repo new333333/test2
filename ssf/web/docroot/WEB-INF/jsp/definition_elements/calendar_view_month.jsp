@@ -93,7 +93,7 @@ if (ssSeenMap.checkIfSeen(e)) {
     adapter="true" 
     portletName="ss_forum" 
     folderId="${ssFolder.id}" 
-    action="view_entry" 
+    action="view_folder_entry" 
     entryId="<%= e.get("_docId").toString() %>" actionUrl="false" />"
     onClick="ss_loadEntry(this,'<c:out value="${evim.entry._docId}"/>');return false;" 
     ><c:if test="${empty evim.entry.title}"

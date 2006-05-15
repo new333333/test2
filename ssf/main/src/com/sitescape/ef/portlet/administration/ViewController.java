@@ -42,8 +42,8 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("title", NLT.get("administration.definition_builder_entry_form_designer"));
 		element.addAttribute("image", "bullet");
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.COMMAND));
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.COMMAND));
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
@@ -53,8 +53,8 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("title", NLT.get("administration.definition_builder_folder_view_designer"));
 		element.addAttribute("image", "bullet");
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FOLDER_VIEW));
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FOLDER_VIEW));
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
@@ -64,8 +64,8 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("title", NLT.get("administration.definition_builder_workflow_designer"));
 		element.addAttribute("image", "bullet");
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKFLOW));
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKFLOW));
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
@@ -75,8 +75,8 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("title", NLT.get("administration.definition_builder_profile_listing_designer"));
 		element.addAttribute("image", "bullet");
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.PROFILE_VIEW));
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.PROFILE_VIEW));
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
@@ -86,8 +86,8 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("title", NLT.get("administration.definition_builder_profile_designer"));
 		element.addAttribute("image", "bullet");
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.PROFILE_ENTRY_VIEW));
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.PROFILE_ENTRY_VIEW));
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
@@ -97,8 +97,8 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("title", NLT.get("administration.definition_builder_workspace_designer"));
 		element.addAttribute("image", "bullet");
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FORUM_ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKSPACE_VIEW));
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKSPACE_VIEW));
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());

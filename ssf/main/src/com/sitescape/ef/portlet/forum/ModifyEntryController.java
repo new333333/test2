@@ -33,15 +33,15 @@ public class ModifyEntryController extends SAbstractForumController {
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
-		if (action.equals(WebKeys.ACTION_DELETE_ENTRY)) {
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if (op.equals(WebKeys.OPERATION_DELETE)) {
 			getFolderModule().deleteEntry(folderId, entryId);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
-			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
 			response.setRenderParameter("ssReloadUrl", "");
 		} else if (formData.containsKey("okBtn")) {
-			if (action.equals(WebKeys.ACTION_MODIFY_ENTRY)) {
+			if (op.equals("")) {
 
 				//See if the add entry form was submitted
 				//The form was submitted. Go process it
@@ -63,12 +63,12 @@ public class ModifyEntryController extends SAbstractForumController {
 			
 				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts);
 				setupViewEntry(response, folderId, entryId);
-			} else if (action.equals(WebKeys.ACTION_MOVE_ENTRY)) {
+			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be move entry
 				Long destinationId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "destination"));
 				getFolderModule().moveEntry(folderId, entryId, destinationId);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
-				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
+				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
 				response.setRenderParameter("ssReloadUrl", "");
 			}
@@ -82,7 +82,7 @@ public class ModifyEntryController extends SAbstractForumController {
 	private void setupViewEntry(ActionResponse response, Long folderId, Long entryId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());		
-		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 	}
 		
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -91,10 +91,10 @@ public class ModifyEntryController extends SAbstractForumController {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 
 		Map model = new HashMap();	
-		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String path;
 		FolderEntry entry=null;
-		if (action.equals(WebKeys.ACTION_MODIFY_ENTRY)) {
+		if (op.equals("")) {
 			try {
 				Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 				entry  = getFolderModule().getEntry(folderId, entryId);
@@ -107,7 +107,7 @@ public class ModifyEntryController extends SAbstractForumController {
 			} catch (NoDefinitionByTheIdException nd) {
 				return returnToViewForum(request, response, formData, folderId);
 			}
-		} else if (action.equals(WebKeys.ACTION_MOVE_ENTRY)) {
+		} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 			entry  = getFolderModule().getEntry(folderId, entryId);
 			model.put(WebKeys.ENTRY, entry);
