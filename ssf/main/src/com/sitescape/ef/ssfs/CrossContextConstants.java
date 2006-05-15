@@ -80,7 +80,7 @@ public abstract class CrossContextConstants {
 	// URI item type values (values for URI_ITEM_TYPE) - Do NOT abbreviate 
 	// or alter the string value since it is actually used as part of the 
 	// WebDAV URI.
-	public static final String URI_ITEM_TYPE_PRIMARY = "primary";
+	public static final String URI_ITEM_TYPE_LIBRARY = "library";
 	public static final String URI_ITEM_TYPE_FILE	 = "file";
 	public static final String URI_ITEM_TYPE_GRAPHIC = "graphic";
 	public static final String URI_ITEM_TYPE_ATTACH  = "attach";

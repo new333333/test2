@@ -34,7 +34,7 @@ public class SPropsUtil {
 	public static final String SSF_PORT = "ssf.port";
 	public static final String SSF_SECURE_PORT = "ssf.secure.port";
 	public static final String TEMP_DIR = "temp.dir";
-	
+	public static final String SSFS_CTX = "ssfs.ctx";
 	
 	public SPropsUtil() {
 		if(instance != null)
