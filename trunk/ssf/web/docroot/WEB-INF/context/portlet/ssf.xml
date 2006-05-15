@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../../dtd/spring-beans.dtd">
+<beans>
+
+	<!-- Controllers -->
+
+	<bean id="viewController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewController" />
+	<bean id="editController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.EditController" />
+
+	<bean id="folderAddEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AddEntryController" />
+	<bean id="folderAddFolderController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AddFolderController" />
+	<bean id="folderAjaxController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AjaxController" />
+
+	<bean id="filterController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.FilterController" />
+	<bean id="accessControlController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.AccessControlController" />
+	<bean id="configureController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ConfigureController" />
+	<bean id="definitionController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.definitionBuilder.ViewController" />
+	<bean id="binderModifyController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ModifyBinderController" />
+
+	<bean id="profileModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ModifyEntryController" />
+	<bean id="folderModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ModifyEntryController" />
+
+	<bean id="profileViewEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ViewEntryController" />
+	<bean id="folderViewEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewEntryController" />
+
+	<bean id="listProfilesController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ListProfilesController" />
+	<bean id="listFolderController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ListFolderController" />
+	<bean id="listWSController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController" />
+
+ 	<!-- Handlers -->
+
+	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
+			<property name="portletModeParameterMap">
+			<map>
+				<entry key="view">
+					<map>
+						<entry key="build_filter"><ref bean="filterController"/></entry>
+						<entry key="configure_access_control"><ref bean="accessControlController"/></entry>
+						<entry key="configure_forum"><ref bean="configureController"/></entry>
+						<entry key="definition_builder"><ref bean="definitionController"/></entry>
+						<entry key="modify_binder"><ref bean="binderModifyController"/></entry>
+
+						<entry key="add_folder_entry"><ref bean="folderAddEntryController"/></entry>
+						<entry key="add_folder_reply"><ref bean="folderAddEntryController"/></entry>
+						<entry key="add_binder"><ref bean="folderAddFolderController"/></entry>
+						<entry key="modify_folder_entry"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="modify_profile_entry"><ref bean="profileModifyEntryController"/></entry>
+						<entry key="view_folder_entry"><ref bean="folderViewEntryController"/></entry>
+						<entry key="view_profile_entry"><ref bean="profileViewEntryController"/></entry>
+						<entry key="view_folder_listing"><ref bean="listFolderController"/></entry>
+						<entry key="view_profile_listing"><ref bean="listProfilesController"/></entry>
+						<entry key="view_ws_listing"><ref bean="listWSController"/></entry>
+						<entry key="__ajax_request"><ref bean="folderAjaxController"/></entry>
+					</map>
+				</entry>
+				<entry key="edit">
+					<map>
+					</map>
+				</entry>
+				<entry key="help">
+					<map>
+					</map>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="portletModeHandlerMapping" parent="portletModeHandlerMappingTemplate">
+		<property name="portletModeMap">
+			<map>
+				<entry key="view"><ref bean="viewController"/></entry>
+				<entry key="edit"><ref bean="editController"/></entry>
+<!--				<entry key="help"><ref bean="forumHelpController"/></entry> -->
+			</map>
+		</property>
+	</bean>
+
+	<bean id="defaultExceptionHandler" parent="portletDefaultExceptionHandlerTemplate"/>
+
+</beans>

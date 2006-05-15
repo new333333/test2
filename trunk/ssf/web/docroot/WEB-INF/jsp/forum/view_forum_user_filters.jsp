@@ -19,7 +19,7 @@
 <div style="display:inline; border:1px solid black;">
 <form name="ss_filterSelect"
 	action="<portlet:renderURL windowState="maximized">
-		<portlet:param name="action" value="view_listing"/>
+		<portlet:param name="action" value="${action}"/>
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		<portlet:param name="operation" value="select_filter"/>
 		</portlet:renderURL>" method="post" style="display:inline;">
@@ -42,7 +42,8 @@
 </div>
 &nbsp;&nbsp;&nbsp;<a href="<portlet:renderURL windowState="maximized">
 		<portlet:param name="action" value="build_filter"/>
-		<portlet:param name="binderId" value="${ssFolder.id}"/>
+		<portlet:param name="binderId" value="${ssBinder.id}"/>
+		<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 		</portlet:renderURL>"
 ><span class="ss_fineprint"><ssf:nlt tag="edit" text="edit"/></span></a>
 </div>

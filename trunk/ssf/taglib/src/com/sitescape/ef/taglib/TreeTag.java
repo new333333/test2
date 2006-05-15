@@ -268,7 +268,7 @@ public class TreeTag extends TagSupport {
 			boolean hcn = (e.attributeValue("treeHasChildren") == "1") ? true : false;
 			boolean hhcn = (e.attributeValue("treeHasHiddenChildren") == "1") ? true : false;
 			boolean ino = (e.attributeValue("treeOpen") == "1") ? true : false;
-
+			String action = e.attributeValue("action", "");
 			//Show the tree in the requested style (sortable or normal)
 			if (this.displayStyle.equals("sortable")) {
 				//"sortable" style shows the tree in a series of lists
@@ -326,7 +326,10 @@ public class TreeTag extends TagSupport {
 					if (!className.equals("")) classField = "class=\""+className+"\"";
 					jspOut.print("<a "+classField+" href=\"" + s_url + "\" ");
 					if (s_id != null && !s_id.equals("")) {
-						jspOut.print("onClick=\"if (self."+this.treeName+"_showId) {return "+this.treeName+"_showId('"+s_id+"', this);}\" ");
+						if (action.equals(""))
+							jspOut.print("onClick=\"if (self."+this.treeName+"_showId) {return "+this.treeName+"_showId('"+s_id+"', this);}\" ");
+						else
+							jspOut.print("onClick=\"if (self."+this.treeName+"_showId) {return "+this.treeName+"_showId('"+s_id+"', this,'"+action+"');}\" ");
 					}
 					jspOut.print(">");
 				}
@@ -496,8 +499,11 @@ public class TreeTag extends TagSupport {
 						if (!className.equals("")) classField = "class=\""+className+"\"";
 						jspOut.print("<a "+classField+" href=\"" + s_url + "\" ");
 						if (s_id != null && !s_id.equals("")) {
-							jspOut.print("onClick=\"if (self."+this.treeName+"_showId) {return "+this.treeName+"_showId('"+s_id+"', this);}\" ");
-						}
+							if (action.equals(""))
+								jspOut.print("onClick=\"if (self."+this.treeName+"_showId) {return "+this.treeName+"_showId('"+s_id+"', this);}\" ");
+							else
+								jspOut.print("onClick=\"if (self."+this.treeName+"_showId) {return "+this.treeName+"_showId('"+s_id+"', this,'"+action+"');}\" ");
+											}
 						jspOut.print(">");
 					}
 					jspOut.print("<span " + titleClass + ">");

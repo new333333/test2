@@ -50,6 +50,7 @@
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_forum"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
+		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 		  </portlet:actionURL>">
 <ssf:nlt tag="binder.configure.definitions.inherit"
  text="Inherit definitions :"/>
@@ -66,6 +67,7 @@
 </c:if>
 <form method="post" action="<portlet:actionURL>
 					<portlet:param name="action" value="configure_forum"/>
+					<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 					<portlet:param name="binderId" value="${ssBinder.id}"/>
 					</portlet:actionURL>" >
 

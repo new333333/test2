@@ -1,5 +1,6 @@
 package com.sitescape.ef.portlet.profile;
 
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -32,7 +33,21 @@ public class ListProfilesController extends  SAbstractProfileController {
 					ObjectKeys.USER_PROPERTY_USER_FILTER, 
 					PortletRequestUtils.getStringParameter(request,
 							WebKeys.FORUM_OPERATION_SELECT_FILTER,""));
-}
+		} else if (op.equals(WebKeys.FORUM_OPERATION_RELOAD_LISTING)) {
+			PortletURL reloadUrl = response.createRenderURL();
+			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+			request.setAttribute("ssReloadUrl", reloadUrl.toString());			
+		} else if (op.equals(WebKeys.FORUM_OPERATION_RELOAD_LISTING)) {
+			//An action is asking us to build the url to reload the parent page
+			PortletURL reloadUrl = response.createRenderURL();
+			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+			request.setAttribute("ssReloadUrl", reloadUrl.toString());
+			return new ModelAndView(WebKeys.VIEW_LISTING);
+		}
+
+		
 		return returnToView(request, response);
 	}
 

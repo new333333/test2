@@ -2,52 +2,54 @@ package com.sitescape.ef.portlet.forum;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
-import javax.portlet.PortletSession;
+import javax.portlet.PortletConfig;
 
+import org.dom4j.Document;
+import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
 
-import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.module.shared.MapInputData;
-import com.sitescape.ef.portletadapter.AdaptedPortletURL;
+import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
-import com.sitescape.ef.web.util.DateHelper;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.ProfileBinder;
+import com.sitescape.ef.domain.Workspace;
+import com.sitescape.util.Validator;
+import com.sitescape.ef.web.portlet.SAbstractController;
+
 
 /**
  * @author Peter Hurley
  *
  */
-public class ViewController  extends SAbstractForumController {
+public class ViewController  extends SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-        User user = RequestContextHolder.getRequestContext().getUser();
-		Map formData = request.getParameterMap();
-		Map<String,Object> model = new HashMap<String,Object>();
-		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
+ 		Map<String,Object> model = new HashMap<String,Object>();
 
-		if ((binderId == null) || (request.getWindowState().equals(WindowState.NORMAL))) {
+		//TODO: need to make the display type a config option
+		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
+		String pName = pConfig.getPortletName();
+		if ("ss_forum".equals(pName) || Validator.isNull(pName)) {
 			//Build the toolbar and add it to the model
 			buildForumToolbar(model);
-			
+		
 			//This is the portlet view; get the configured list of folders to show
 			String[] preferredBinderIds = request.getPreferences().getValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
 
@@ -56,80 +58,42 @@ public class ViewController  extends SAbstractForumController {
 			for (int i = 0; i < preferredBinderIds.length; i++) {
 				binderIds.add(new Long(preferredBinderIds[i]));
 			}
-			if (binderIds.size() > 0) {
-				model.put(WebKeys.FOLDER_LIST, getFolderModule().getFolders(binderIds));
-				return new ModelAndView(WebKeys.VIEW_FORUM, model);
-			}
-			try {
-				binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-			} catch (Exception ex) {
-				return new ModelAndView(WebKeys.VIEW_FORUM);
-			}
-			
-			binderIds.add(binderId);
 			model.put(WebKeys.FOLDER_LIST, getFolderModule().getFolders(binderIds));
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
 			return new ModelAndView(WebKeys.VIEW_FORUM, model);
-		}
-
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
-			Map<String,Object> updates = new HashMap<String,Object>();
-			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
-					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
-		
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_DEFINITION)) {
-			getProfileModule().setUserProperty(user.getId(), binderId, 
-					ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, 
-					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-		
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE)) {
-			getProfileModule().setUserProperty(user.getId(), binderId, 
-					ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE, 
-					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-		
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE)) {
-			PortletSession ps = WebHelper.getRequiredPortletSession(request);
-			String urldate = PortletRequestUtils.getStringParameter(request,WebKeys.CALENDAR_URL_NEWVIEWDATE, "");
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd");
-			Date newdate = sdf.parse(urldate);
-			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, newdate);
-			String viewMode = PortletRequestUtils.getStringParameter(request,WebKeys.CALENDAR_URL_VIEWMODE, "");
-			getProfileModule().setUserProperty(user.getId(), binderId, 
-					ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE, viewMode);
-		
-		} else if (op.equals(WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE)) {
-			PortletSession ps = WebHelper.getRequiredPortletSession(request);
-			Date dt = DateHelper.getDateFromInput(new MapInputData(formData), "ss_goto");
-			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, dt);
-			
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SELECT_FILTER)) {
-			getProfileModule().setUserProperty(user.getId(), binderId, 
-					ObjectKeys.USER_PROPERTY_USER_FILTER, 
-					PortletRequestUtils.getStringParameter(request,
-							WebKeys.FORUM_OPERATION_SELECT_FILTER,""));
-			
-		} else if (op.equals(WebKeys.FORUM_OPERATION_RELOAD_LISTING)) {
-			PortletURL reloadUrl = response.createRenderURL();
-			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_LISTING);
-			request.setAttribute("ssReloadUrl", reloadUrl.toString());			
-
-		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY)) {
-			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-			if (!entryId.equals("")) {
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-				request.setAttribute("ssLoadEntryUrl", adapterUrl.toString());			
-				request.setAttribute("ssLoadEntryId", entryId);			
+		} else if ("ss_profile".equals(pName)) {
+			//Get the profile binder
+			//If first time here, add a profile folder to the top workspace
+			ProfileBinder binder = getProfileModule().getProfileBinder();
+				
+			model.put(WebKeys.BINDER, binder);
+			Toolbar toolbar = new Toolbar();
+			PortletURL url;
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+			url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+			url.setWindowState(WindowState.MAXIMIZED);
+			toolbar.addToolbarMenu("listing", NLT.get("profile.list", "List users"), url);
+			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
+			return new ModelAndView(WebKeys.VIEW_PROFILE, model);
+		} else if ("ss_workspacetree".equals(pName)) {
+			PortletSession ses = WebHelper.getRequiredPortletSession(request);
+			Workspace binder = getWorkspaceModule().getWorkspace();
+			Document wsTree;
+			//when at the top, don't expand
+			if (request.getWindowState().equals(WindowState.NORMAL)) {
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsTopOnly(), 0);
+			} else {
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsTreeBuilder((Workspace)binder, true, getBinderModule()), 1);									
 			}
+			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
+				
+		    return new ModelAndView("workspacetree/view", model);			
 		}
+		return null;
+	}
 
-		return returnToViewForum(request, response, formData, binderId);
-	} 
 	
 	protected void buildForumToolbar(Map<String,Object> model) {
 		//Build the toolbar array
@@ -142,6 +106,29 @@ public class ViewController  extends SAbstractForumController {
 		toolbar.addToolbarMenu("1_showunseen", NLT.get("toolbar.showUnseen"), url, qualifiers);
 
 		model.put(WebKeys.FORUM_TOOLBAR, toolbar.getToolbar());
+	}
+	protected class WsTopOnly implements DomTreeBuilder {
+		public Element setupDomElement(String type, Object source, Element element) {
+			Element url;
+			Binder binder = (Binder) source;
+			String icon = binder.getIconName();
+			String imageClass = "ss_twIcon";
+			if (icon == null || icon.equals("")) {
+				icon = "/icons/workspace.gif";
+				imageClass = "ss_twImg";
+			}
+			element.addAttribute("title", binder.getTitle());
+			element.addAttribute("id", binder.getId().toString());
+			element.addAttribute("image", icon);
+			element.addAttribute("imageClass", imageClass);
+			element.addAttribute("action", WebKeys.ACTION_VIEW_WS_LISTING);
+			if (getBinderModule().hasBinders(binder)) {
+				element.addAttribute("hasChildren", "true");
+			} else {	
+				element.addAttribute("hasChildren", "false");
+			}
+			return element;
+		}
 	}
 
 }

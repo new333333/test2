@@ -63,7 +63,7 @@ function favTree_showId(id, obj) {
 	
 	//Build a url to go to
 	var url = "<portlet:renderURL windowState="maximized">
-				<portlet:param name="action" value="view_listing"/>
+				<portlet:param name="action" value="${action}"/>
 				<portlet:param name="binderId" value="ssBinderIdPlaceHolder"/>
 				</portlet:renderURL>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);

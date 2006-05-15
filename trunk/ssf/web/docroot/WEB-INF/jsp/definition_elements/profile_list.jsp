@@ -94,7 +94,7 @@ function highlightLineById(id) {
     adapter="true" 
     portletName="ss_profile" 
     folderId="${ssBinder.id}" 
-    action="view_entry" 
+    action="view_profile_entry" 
     entryId="<%= docId %>" actionUrl="false" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry._docId}"/>');return false;" >
     <c:if test="${empty entry.title}">

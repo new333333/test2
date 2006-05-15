@@ -343,7 +343,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         deleteBinder_indexDel(binder, ctx);   	
     }
     
-    protected Object deleteBinder_preDelete(Binder binder) {   
+    protected Object deleteBinder_preDelete(Binder binder) { 
     	return null;
     }
   
@@ -359,6 +359,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	return ctx;
     }
     protected Object deleteBinder_postDelete(Binder binder, Object ctx) {
+    	if (binder.getParentBinder() != null) binder.getParentBinder().removeBinder(binder);
        	return ctx;
     }
 

@@ -34,7 +34,7 @@ function ss_loadEntry(obj,id) {
 %>
   </td>
   <td valign="top" width="40%">
-    <a href="<ssf:url folderId="${ssFolder.id}" action="view_entry" 
+    <a href="<ssf:url folderId="${ssFolder.id}" action="view_folder_entry" 
     entryId="<%= fileEntry.getId().toString() %>" />" 
     onClick="ss_loadEntry(this,'folderLine_<c:out value="${fileEntry.id}"/>');return false;" >
     <c:if test="${empty fileEntry.title}">

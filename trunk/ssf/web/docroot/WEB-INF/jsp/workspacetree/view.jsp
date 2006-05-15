@@ -20,13 +20,14 @@
 String wsTreeName = renderResponse.getNamespace() + "_wsTree";
 %>
 <script type="text/javascript">
-function <%= wsTreeName %>_showId(id, obj) {
+function <%= wsTreeName %>_showId(id, obj, action) {
 	//Build a url to go to
 	var url = "<portlet:renderURL windowState="maximized">
-				<portlet:param name="action" value="view_listing"/>
+				<portlet:param name="action" value="ssActionPlaceHolder"/>
 				<portlet:param name="binderId" value="ssBinderIdPlaceHolder"/>
 				</portlet:renderURL>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
 	self.location.href = url;
 	return false;
 }

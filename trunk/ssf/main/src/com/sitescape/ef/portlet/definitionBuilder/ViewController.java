@@ -148,7 +148,7 @@ public class ViewController extends SAbstractController {
 		String selectedItemTitle = "";
 
 		//See if there is a definition type requested
-		String definitionType = PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, "");
+		String definitionType = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, "");
 
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.CONFIG_DEFINITION, getDefinitionModule().getDefinitionConfig());

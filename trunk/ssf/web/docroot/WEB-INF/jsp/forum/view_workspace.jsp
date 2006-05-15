@@ -5,25 +5,18 @@
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
+<c:if test="${!empty ssReloadUrl}">
+<script type="text/javascript">
+	//Open the current url in the opener window
+	ss_reloadOpener('<c:out value="${ssReloadUrl}"/>')
+</script>
+
+</c:if>
+<c:if test="${empty ssReloadUrl}">
 
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
 
-<%
-String ssReloadUrl = (String) renderRequest.getAttribute("ssReloadUrl");
-if (ssReloadUrl == null) ssReloadUrl = "";
-boolean reloadCaller = false;
-if (!ssReloadUrl.equals("")) reloadCaller = true;
-%>
-
-<c:if test="<%= reloadCaller %>">
-<script type="text/javascript">
-	//Open the current url in the opener window
-	ss_reloadOpener('<%= ssReloadUrl %>')
-</script>
-</c:if>
-
-<c:if test="<%= !reloadCaller %>">
 <script type="text/javascript">
 var ss_reloadUrl = "${ss_reloadUrl}";
 </script>

@@ -45,7 +45,7 @@
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 		<init-param>
 			<name>contextConfigLocation</name>
-			<value>/WEB-INF/context/portlet/workspaceTree.xml</value>
+			<value>/WEB-INF/context/portlet/ssf.xml</value>
 		</init-param>
         <expiration-cache>300</expiration-cache>
         <supports>
@@ -62,7 +62,7 @@
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 		<init-param>
 			<name>contextConfigLocation</name>
-			<value>/WEB-INF/context/portlet/forum.xml</value>
+			<value>/WEB-INF/context/portlet/ssf.xml</value>
 		</init-param>
         <expiration-cache>300</expiration-cache>
         <supports>
@@ -72,6 +72,24 @@
         </supports>
         <supported-locale>en</supported-locale>
         <resource-bundle>content.forum</resource-bundle>
+    </portlet>
+
+     <portlet>
+        <description xml:lang="en">SiteScape Profiles</description>
+        <portlet-name>ss_profile</portlet-name>
+        <display-name xml:lang="en">Profiles</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/ssf.xml</value>
+		</init-param>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>content.profile</resource-bundle>
     </portlet>
 
     <portlet>
@@ -92,24 +110,6 @@
         <resource-bundle>content.administration</resource-bundle>
     </portlet>
  
-    <portlet>
-        <description xml:lang="en">SiteScape Profiles</description>
-        <portlet-name>ss_profile</portlet-name>
-        <display-name xml:lang="en">Profiles</display-name>
-        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-		<init-param>
-			<name>contextConfigLocation</name>
-			<value>/WEB-INF/context/portlet/profile.xml</value>
-		</init-param>
-        <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>text/html</mime-type>
-            <portlet-mode>view</portlet-mode>
-        </supports>
-        <supported-locale>en</supported-locale>
-        <resource-bundle>content.profile</resource-bundle>
-    </portlet>
-
     <user-attribute>
         <description xml:lang="en">User Name</description>
         <name>user.name</name>

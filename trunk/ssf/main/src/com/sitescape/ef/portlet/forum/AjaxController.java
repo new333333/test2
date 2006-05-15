@@ -32,12 +32,14 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
-
+import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
+import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.portlet.forum.SAbstractForumController.TreeBuilder;
 /**
  * @author Peter Hurley
  *
  */
-public class AjaxController  extends SAbstractForumController {
+public class AjaxController  extends SAbstractController {
 	private Map model;
 	private Map statusMap;
 	private Map unseenCounts;
@@ -382,9 +384,9 @@ public class AjaxController  extends SAbstractForumController {
 			if (binder instanceof Workspace) {
 				if ((topId != null) && (binder.getParentBinder() != null)) {
 					//top must be a workspace
-					tree = getWorkspaceModule().getDomWorkspaceTree(topId, binder.getId(), new WsTreeBuilder((Workspace)binder, true));
+					tree = getWorkspaceModule().getDomWorkspaceTree(topId, binder.getId(), new WsTreeBuilder((Workspace)binder, true, getBinderModule()));
 				} else {
-					tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsTreeBuilder((Workspace)binder, true),1);
+					tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsTreeBuilder((Workspace)binder, true, getBinderModule()),1);
 				}
 			} else {
 				Folder topFolder = ((Folder)binder).getTopFolder();
@@ -399,7 +401,7 @@ public class AjaxController  extends SAbstractForumController {
 						//just load the whole thing
 						tree = getFolderModule().getDomFolderTree(top.getId(), new TreeBuilder());
 					else {
-						tree = getWorkspaceModule().getDomWorkspaceTree(topId, topFolder.getParentBinder().getId(), new WsTreeBuilder((Workspace)top, false));
+						tree = getWorkspaceModule().getDomWorkspaceTree(topId, topFolder.getParentBinder().getId(), new WsTreeBuilder((Workspace)top, false, getBinderModule()));
 						Element topBinderElement = (Element)tree.selectSingleNode("//" + DomTreeBuilder.NODE_CHILD + "[@id='" + topFolder.getId() + "']");
 						Document folderTree = getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder());
 						topBinderElement.setContent(folderTree.getRootElement().content());

@@ -47,9 +47,9 @@ public class AddEntryController extends SAbstractForumController {
 				fileMap = new HashMap();
 			}
 			MapInputData inputData = new MapInputData(formData);
-			if (action.equals(WebKeys.ACTION_ADD_ENTRY)) {
+			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
 				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap);
-			} else if (action.equals(WebKeys.FORUM_ACTION_ADD_REPLY)) {
+			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
 				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap );
 			}
@@ -57,10 +57,10 @@ public class AddEntryController extends SAbstractForumController {
 			//flag reload
 			response.setRenderParameter("ssReloadUrl", "");
 		} else if (formData.containsKey("cancelBtn")) {
-			if (action.equals(WebKeys.ACTION_ADD_ENTRY)) {
+			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());				
-				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
-			} else if (action.equals(WebKeys.FORUM_ACTION_ADD_REPLY)) {
+				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
 				entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 				setupViewEntry(response, folderId, entryId);
 			}
@@ -69,7 +69,7 @@ public class AddEntryController extends SAbstractForumController {
 	}
 	private void setupViewEntry(ActionResponse response, Long folderId, Long entryId) {
 		//return to view entry
-		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_ENTRY);
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 		
@@ -87,7 +87,7 @@ public class AddEntryController extends SAbstractForumController {
 		
 		//See if this is an "add entry" or an "add reply" request
 		try {
-			if (action.equals(WebKeys.ACTION_ADD_ENTRY)) {
+			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
 				model = new HashMap();
 				Folder folder = getFolderModule().getFolder(folderId);
 				//Adding an entry; get the specific definition
