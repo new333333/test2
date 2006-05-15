@@ -583,7 +583,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			
 			String itemType = u[5];
 			
-			if(!itemType.equals(URI_ITEM_TYPE_PRIMARY) &&
+			if(!itemType.equals(URI_ITEM_TYPE_LIBRARY) &&
 					!itemType.equals(URI_ITEM_TYPE_FILE) &&
 					!itemType.equals(URI_ITEM_TYPE_GRAPHIC) &&
 					!itemType.equals(URI_ITEM_TYPE_ATTACH))
@@ -594,7 +594,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			if(u.length == 6)
 				return returnMap(map, true);
 			
-			if(itemType.equals(URI_ITEM_TYPE_PRIMARY)) {
+			if(itemType.equals(URI_ITEM_TYPE_LIBRARY)) {
 				map.put(URI_FILENAME, u[6]);
 				
 				if(u.length == 7)

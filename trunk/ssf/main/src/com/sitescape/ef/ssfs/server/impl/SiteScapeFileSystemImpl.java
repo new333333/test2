@@ -258,8 +258,8 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			Document def = entry.getEntryDef().getDefinition();
 			if(def != null) {
 				Element root = def.getRootElement();
-				if(root.selectNodes("//item[@name='primary' and @type='data']").size() > 0)
-					children.add(CrossContextConstants.URI_ITEM_TYPE_PRIMARY);
+				if(root.selectNodes("//item[@name='libraryFile' and @type='data']").size() > 0)
+					children.add(CrossContextConstants.URI_ITEM_TYPE_LIBRARY);
 				if(root.selectNodes("//item[@name='file' and @type='data']").size() > 0)
 					children.add(CrossContextConstants.URI_ITEM_TYPE_FILE);
 				if(root.selectNodes("//item[@name='graphic' and @type='data']").size() > 0)
@@ -270,7 +270,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			return children.toArray(new String[children.size()]);
 		}
 		
-		if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_PRIMARY)) {
+		if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_LIBRARY)) {
 			if(getFileName(uri) == null) {
 				CustomAttribute ca = entry.getCustomAttribute((String) objMap.get(ELEMENT_NAME));
 				if(ca != null) {
@@ -542,8 +542,8 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 	}
 	
 	private String toDefItemType(String itemType) {
-		if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_PRIMARY)) {
-			return "primaryFile";
+		if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_LIBRARY)) {
+			return "libraryFile";
 		}
 		else if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_FILE)) {
 			return "file";
