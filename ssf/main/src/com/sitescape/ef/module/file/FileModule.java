@@ -239,31 +239,36 @@ public interface FileModule {
     
     /**
      * Locks the file so that subsequent updates can be made to the file. 
+     * This serves two purposes:<br>
+     * 1) Provide the user with exclusive write access to the file, which
+     * prevents other users from making modification to the same resource.<br>
+     * 2) Allows the user to make multiple updates (that is, multiple saves) 
+     * to the resource without causing each update to create a new version 
+     * of the file. Up to one new version is created at the time of unlock.<br> 
      * <p>
-     * USED BY WEBDAV CLIENT ONLY!!!
+     * IMPORTANT: THIS METHOD IS FOR WEBDAV CLIENT ONLY!!!
      * <p>
      * 1) If the enclosing entity is not reserved by anyone, this locks the
      * file and increments locked-file-count on the entity.<br>
      * 2) If the entity is reserved by another user, it throws 
      * <code>ReservedByAnotherUserException</code>.<br> 
      * 3) If the entity is reserved by the same user:<br>
-     * 3.1) If the file is not locked, it locks it and increments lock
-     * count on the reservation object.<br> 
+     * 3.1) If the file is not locked, it locks it and increments 
+     * locked-file-count count on the entity.<br> 
      * 3.2) If the file is locked and lock id does not match, it throws
      * <code>LockIdMismatchException</code>.<br> 
      * 3.3) If the file is locked and lock id matches, renew the lock by 
-     * extending/updating expiration date. The lock count on the reservation
-     * object remains the same. 
+     * extending/updating expiration date. The locked-file-count on the entity
+     * remains the same. 
      * 
      * @param binder
      * @param entity
      * @param fa
      * @param lockId Lock token id. 
-     * @param expirationDate Lock expiration date. This is meaningful only
-     * when called by WebDAV client. For non-WebDAV clients, use <code>null</code>.
+     * @param expirationDate Lock expiration date.
      * @throws ReservedByAnotherUserException If the enclosing entity is already
      * under reservation by another user
-     * @throws LockedByAnotherUserException
+     * @throws LockedByAnotherUserException If the file is locked by another user.
      * @throws LockIdMismatchException The file is already locked by the same
      * user but the lock id does not match.
      * @throws UncheckedIOException I/O error
@@ -277,10 +282,10 @@ public interface FileModule {
     /**
      * Unlocks the file and commits pending changes associated with it if any.
      * <p>
-     * USED BY WEBDAV CLIENT ONLY!!!
+     * IMPORTANT: THIS METHOD IS FOR WEBDAV CLIENT ONLY!!!
      * <p>
      * If the file is locked by the same user and the lock id matches, it
-     * commits pending changes associated with the lock, and then releases
+     * commits pending changes associated with the lock, and then clears
      * the lock. In all other conditions, this is noop and returns silently
      * (that is, this method is more tolerating than <code>lock</code> method).
      * Lock count on the reservation object is adjusted accordingly. 
