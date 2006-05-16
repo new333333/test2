@@ -282,6 +282,18 @@
 	</tag>
 	
 	<tag>
+		<name>ifSupportsEditInPlace</name>
+		<tag-class>com.sitescape.ef.taglib.IfSupportsEditInPlaceTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>relativeFilePath</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>		
+	</tag>
+	
+	<tag>
 		<name>menu</name>
 		<tag-class>com.sitescape.ef.taglib.MenuTag</tag-class>
 		<body-content>JSP</body-content>
@@ -441,6 +453,84 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+
+	<tag>
+		<name>ssfsAttachmentUrl</name>
+		<tag-class>com.sitescape.ef.taglib.SsfsAttachmentUrlTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>binder</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.ef.domain.Binder</type>
+		</attribute>		
+		<attribute>
+			<name>entity</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.ef.domain.DefinableEntity</type>
+		</attribute>		
+		<attribute>
+			<name>fileAttachment</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.ef.domain.FileAttachment</type>
+		</attribute>		
+	</tag>	
+
+	<tag>
+		<name>ssfsFileUrl</name>
+		<tag-class>com.sitescape.ef.taglib.SsfsFileUrlTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>binder</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.ef.domain.Binder</type>
+		</attribute>		
+		<attribute>
+			<name>entity</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.ef.domain.DefinableEntity</type>
+		</attribute>		
+		<attribute>
+			<name>elemName</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>		
+		<attribute>
+			<name>fileAttachment</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.ef.domain.FileAttachment</type>
+		</attribute>		
+	</tag>	
+
+	<tag>
+		<name>ssfsLibraryFileUrl</name>
+		<tag-class>com.sitescape.ef.taglib.SsfsLibraryFileUrlTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>binder</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.ef.domain.Binder</type>
+		</attribute>		
+		<attribute>
+			<name>entity</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.ef.domain.DefinableEntity</type>
+		</attribute>		
+		<attribute>
+			<name>fileAttachment</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.ef.domain.FileAttachment</type>
+		</attribute>		
+	</tag>	
 
 	<tag>
 		<name>timepicker</name>

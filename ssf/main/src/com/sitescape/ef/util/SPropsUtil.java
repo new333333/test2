@@ -102,6 +102,23 @@ public class SPropsUtil {
 		return new File(getString(key));
 	}
 	
+	public static String[] getStringArray(String key, String delim) {
+		String val = get(key);
+		if(val == null) {
+			return new String[0];
+		}
+
+		val = val.trim();
+		if(val.length() == 0)
+			return new String[0];
+
+		String[] vals = val.split(delim);
+		for(int i = 0; i < vals.length; i++)
+			vals[i] = vals[i].trim();
+		
+		return vals;
+	}
+	
 	private static String get(String key) {
 		return (String) getInstance().getProperties().get(key);			
 	}

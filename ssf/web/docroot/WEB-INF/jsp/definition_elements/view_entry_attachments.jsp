@@ -13,8 +13,18 @@
     folderId="${ssDefinitionEntry.parentBinder.id}"
     entryId="${ssDefinitionEntry.id}" >
     <ssf:param name="fileId" value="${selection.id}"/>
-    </ssf:url>"><c:out value="${selection.fileItem.name} "/></a><br>
- </c:forEach>
- </span>
+    </ssf:url>"><c:out value="${selection.fileItem.name} "/>
+</a>
+<ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}">
+<a 
+	href="<ssf:ssfsAttachmentUrl 
+		binder="${ssDefinitionEntry.parentBinder}"
+		entity="${ssDefinitionEntry}"
+		fileAttachment="${selection}"/>"><b><font color="#FF0000">Edit</font></b>
+</a>
+</ssf:ifSupportsEditInPlace>
+<br>
+</c:forEach>
+</span>
 </div>
 </c:if>
