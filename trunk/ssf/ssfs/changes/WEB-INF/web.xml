@@ -733,7 +733,7 @@
     </security-constraint>
     <login-config>
         <auth-method>BASIC</auth-method>
-        <realm-name>Slide DAV Server</realm-name>
+        <realm-name>SiteScape DAV Server</realm-name>
     </login-config>
     <security-role>
         <role-name>root</role-name>
