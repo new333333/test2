@@ -510,7 +510,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     		// by another user. 
     		
     		// Make sure that the lock states are current before examining them.
-    		getFileModule().BringLocksUpToDate(folder, entry);
+    		getFileModule().RefreshLocks(folder, entry);
     		
     		// Now that lock states are up-to-date, we can examine them.
     		
