@@ -565,7 +565,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		if(u.length == 3)
 			return returnMap(map, true);
 		
-		if(u[2].equals(URI_TYPE_INTERNAL)) {
+		if(u[2].equals(URI_TYPE_INTERNAL)) { // internal
 			try {
 				map.put(URI_BINDER_ID, Long.valueOf(u[3]));
 			}
@@ -595,12 +595,9 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				return returnMap(map, true);
 			
 			if(itemType.equals(URI_ITEM_TYPE_LIBRARY)) {
-				map.put(URI_FILENAME, u[6]);
+				map.put(URI_FILEPATH, makeFilepath(u, 6));
 				
-				if(u.length == 7)
-					return returnMap(map, false);
-				else
-					return null;
+				return returnMap(map, false);
 			}
 			else if(itemType.equals(URI_ITEM_TYPE_ATTACH)) {
 				map.put(URI_REPOS_NAME, u[6]);
@@ -608,12 +605,9 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				if(u.length == 7)
 					return returnMap(map, true);
 				
-				map.put(URI_FILENAME, u[7]);
+				map.put(URI_FILEPATH, makeFilepath(u, 7));
 				
-				if(u.length == 8)
-					return returnMap(map, false);
-				else
-					return null;				
+				return returnMap(map, false);			
 			}
 			else { // file or graphic
 				map.put(URI_ELEMNAME, u[6]);
@@ -621,15 +615,12 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				if(u.length == 7)
 					return returnMap(map, true);
 				
-				map.put(URI_FILENAME, u[7]);
+				map.put(URI_FILEPATH, makeFilepath(u, 7));
 				
-				if(u.length == 8)
-					return returnMap(map, false);
-				else
-					return null;
+				return returnMap(map, false);
 			}
 		}
-		else {
+		else { // library
 			try {
 				map.put(URI_BINDER_ID, Long.valueOf(u[3]));
 			}
@@ -640,12 +631,9 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			if(u.length == 4)
 				return returnMap(map, true);
 			
-			map.put(URI_FILENAME, u[4]);
+			map.put(URI_FILEPATH, makeFilepath(u, 4));
 			
-			if(u.length == 5)
-				return returnMap(map, false);
-			else
-				return null;
+			return returnMap(map, false);
 		}
 	}
 	
@@ -695,4 +683,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		return ((Boolean) m.get(URI_IS_FOLDER)).booleanValue();
 	}
 
+	private String makeFilepath(String[] input, int startIndex) {
+		StringBuffer sb = new StringBuffer();
+		for(int i = startIndex; i < input.length; i++) {
+			if(i > startIndex)
+				sb.append("/");
+			sb.append(input[i]);
+		}
+		return sb.toString();
+	}
 }

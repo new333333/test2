@@ -522,7 +522,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 	}
 	
 	private String getFileName(Map uri) {
-		return (String) uri.get(CrossContextConstants.URI_FILENAME);
+		return (String) uri.get(CrossContextConstants.URI_FILEPATH);
 	}
 	
 	private Long getEntryId(Map uri) {
