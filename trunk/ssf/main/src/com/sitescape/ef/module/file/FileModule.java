@@ -343,6 +343,6 @@ public interface FileModule {
      * time this method returns all expired locks are gone and all remaining
      * locks are effective. 
      */
-    public void BringLocksUpToDate(Binder binder, DefinableEntity entity) 
+    public void RefreshLocks(Binder binder, DefinableEntity entity) 
 	throws RepositoryServiceException, UncheckedIOException;
 }

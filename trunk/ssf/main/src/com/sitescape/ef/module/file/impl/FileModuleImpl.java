@@ -528,7 +528,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
 
 
-	public void BringLocksUpToDate(Binder binder, DefinableEntity entity) 
+	public void RefreshLocks(Binder binder, DefinableEntity entity) 
 		throws RepositoryServiceException, UncheckedIOException {
 		closeExpiredLocksTransactional(binder, entity, true);
 	}
