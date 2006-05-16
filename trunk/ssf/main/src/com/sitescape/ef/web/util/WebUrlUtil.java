@@ -56,6 +56,10 @@ public class WebUrlUtil {
 		return sb;
 	}
 	
+	public static StringBuffer getSSFSContextRootURL() {
+		return getSSFSContextRootURL(false);
+	}
+	
 	public static StringBuffer getSSFSContextRootURL(boolean secure) {
 		StringBuffer sb = getHostAndPort(null, secure);
 		
