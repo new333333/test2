@@ -114,6 +114,8 @@ array set ::j2ee_FolderEntry_class_MAP {
    entry_sortKey   {entry_sortKey "varchar 512"}
    nextDescendant {nextDescendant int32}
    replyCount {replyCount int32}
+   iconName {iconName "varchar 64"}
+   lockedFileCount {lockedFileCount int32}
 }
 
 array set ::j2ee_Attachments_class_MAP {
@@ -141,6 +143,9 @@ array set ::j2ee_Attachments_class_MAP {
    title         {title "varchar 256"}
    bookmarkEntry {bookmarkEntry int32}
    parentAttachment {parentAttachment uuid}
+   filelock_id {filelock_id "varchar 128"}
+   filelock_owner {filelock_owner int32}
+   filelock_expirationDate {filelock_expirationDate timestamp}
 }
 array set ::j2ee_CustomAttributes_class_MAP {
    	id           {id uuid}
