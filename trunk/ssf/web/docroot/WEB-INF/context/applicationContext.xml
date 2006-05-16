@@ -362,7 +362,7 @@
 				<bean class="com.sitescape.ef.docconverter.pipeline.DocConverterHandler">
 					<property name="name"><value>Doc Converter</value></property>
 					<property name="docConverter"><ref local="docConverter"/></property>
-					<property name="timeout"><value>10000</value></property>
+					<property name="timeout"><value>20000</value></property>
 				</bean>
 			</list>
 		</property>
