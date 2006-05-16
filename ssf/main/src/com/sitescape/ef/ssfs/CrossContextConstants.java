@@ -64,7 +64,7 @@ public abstract class CrossContextConstants {
 	public static final String URI_ZONENAME = "zonename"; // value = String
 	public static final String URI_TYPE = "type";	// value = String
 	public static final String URI_BINDER_ID = "binderId";	// value = Long
-	public static final String URI_FILENAME = "filename";	// value = String
+	public static final String URI_FILEPATH = "filepath";	// value = String
 	public static final String URI_ENTRY_ID = "entryId";	// value = Long
 	public static final String URI_ITEM_TYPE = "itemType";	// value = String
 	public static final String URI_ELEMNAME = "elemname";	// value = String
