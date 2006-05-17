@@ -54,12 +54,12 @@ public class AddEntryController extends SAbstractForumController {
 				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap );
 			}
 			setupViewEntry(response, folderId, entryId);
-			//flag reload
+			//flag reload of folder listing
 			response.setRenderParameter("ssReloadUrl", "");
 		} else if (formData.containsKey("cancelBtn")) {
 			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());				
-				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
 				entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 				setupViewEntry(response, folderId, entryId);

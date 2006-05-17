@@ -30,15 +30,11 @@ import com.sitescape.ef.domain.User;
  */
 public class ListFolderController  extends SAbstractForumController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
-		response.setRenderParameters(request.getParameterMap());
-	}
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
-			RenderResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
-		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
-
+		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		
 		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
 			Map<String,Object> updates = new HashMap<String,Object>();
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
@@ -71,18 +67,27 @@ public class ListFolderController  extends SAbstractForumController {
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, dt);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SELECT_FILTER)) {
-			getProfileModule().setUserProperty(user.getId(), binderId, 
-					ObjectKeys.USER_PROPERTY_USER_FILTER, 
-					PortletRequestUtils.getStringParameter(request,
-							WebKeys.FORUM_OPERATION_SELECT_FILTER,""));
+			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, 
+					PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_OPERATION_SELECT_FILTER,""));
+		}
+		response.setRenderParameters(request.getParameterMap());
+		
 			
-		} else if (op.equals(WebKeys.FORUM_OPERATION_RELOAD_LISTING)) {
+	}
+	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+			RenderResponse response) throws Exception {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		Map formData = request.getParameterMap();
+		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
+
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if (op.equals(WebKeys.FORUM_OPERATION_RELOAD_LISTING)) {
 			//An action is asking us to build the url
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			request.setAttribute("ssReloadUrl", reloadUrl.toString());			
-			return new ModelAndView(WebKeys.VIEW_LISTING);
+//			return new ModelAndView(WebKeys.VIEW_LISTING);
 		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY)) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			if (!entryId.equals("")) {

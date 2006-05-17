@@ -18,11 +18,11 @@
 <span class="ss_bold"><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span>
 <div style="display:inline; border:1px solid black;">
 <form name="ss_filterSelect"
-	action="<portlet:renderURL windowState="maximized">
+	action="<portlet:actionURL windowState="maximized">
 		<portlet:param name="action" value="${action}"/>
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		<portlet:param name="operation" value="select_filter"/>
-		</portlet:renderURL>" method="post" style="display:inline;">
+		</portlet:actionURL>" method="post" style="display:inline;">
 <div id="ss_filterTitle" style="display:inline;">
 <ssf:menu title="<%= filterName %>" titleId="ss_filterTitle">
 <ul>

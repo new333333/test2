@@ -21,7 +21,7 @@
       <map-key type="string" column="name"/>
       <one-to-many class="com.sitescape.ef.domain.CustomAttribute"/>
     </map>
-    <map inverse="false" table="SS_WorkflowMap" access="field" cascade="all,delete-orphan" lazy="true" name="workflowAssociations">
+    <map inverse="false" table="SS_WorkflowMap" access="field" cascade="persist,merge,save-update,refresh,evict" lazy="true" name="workflowAssociations">
       <key column="binder"/>
       <map-key type="string" column="entryDefinition" length="32"/>
       <many-to-many class="com.sitescape.ef.domain.Definition">

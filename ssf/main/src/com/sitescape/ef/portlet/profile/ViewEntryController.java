@@ -16,11 +16,12 @@ import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
 
-public class ViewEntryController extends SAbstractProfileController {
+public class ViewEntryController extends SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();

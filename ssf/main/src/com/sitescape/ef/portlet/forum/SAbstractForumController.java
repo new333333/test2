@@ -228,7 +228,7 @@ public class SAbstractForumController extends SAbstractController {
 		for (int i = 0; i < folderViewDefs.size(); i++) {
 			Definition def = (Definition)folderViewDefs.get(i);
 			//Build a url to switch to this view
-			url = response.createRenderURL();
+			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_DEFINITION);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -237,28 +237,28 @@ public class SAbstractForumController extends SAbstractController {
 		}
 		
 		//vertical
-		url = response.createRenderURL();
+		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
 		toolbar.addToolbarMenuItem("3_display_styles", "styles", NLT.get("toolbar.menu.display_style_vertical"), url);
 		//accessible
-		url = response.createRenderURL();
+		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
 		toolbar.addToolbarMenuItem("3_display_styles", "styles", NLT.get("toolbar.menu.display_style_accessible"), url);
 		//iframe
-		url = response.createRenderURL();
+		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
 		toolbar.addToolbarMenuItem("3_display_styles", "styles", NLT.get("toolbar.menu.display_style_iframe"), url);
 		//popup
-		url = response.createRenderURL();
+		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -310,21 +310,21 @@ public class SAbstractForumController extends SAbstractController {
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE);
 		model.put("goto_form_url", url.toString());
 		
-		url = response.createRenderURL();
+		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
 		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_DAY);
 		model.put("set_day_view", url.toString());
 
-		url = response.createRenderURL();
+		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
 		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_WEEK);
 		model.put("set_week_view", url.toString());
 		
-		url = response.createRenderURL();
+		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
@@ -543,7 +543,7 @@ public class SAbstractForumController extends SAbstractController {
 						// because this loop is adding extra days, we need to build their URLs into the daymap here
 						// and we don't want to clobber urldatestring because it's used later for the week URL
 						urldatestring2 = urldatesdf.format(gcal.getTime());
-						url = response.createRenderURL();
+						url = response.createActionURL();
 						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 						url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
 						url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
@@ -556,7 +556,7 @@ public class SAbstractForumController extends SAbstractController {
 				} else {
 					dayList = new ArrayList();
 				}
-				url = response.createRenderURL();
+				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
@@ -567,7 +567,7 @@ public class SAbstractForumController extends SAbstractController {
 			HashMap daymap = new HashMap();
 			daymap.put(WebKeys.CALENDAR_DOW, DateHelper.getDayAbbrevString(loopCal.get(Calendar.DAY_OF_WEEK)));
 			daymap.put(WebKeys.CALENDAR_DOM, Integer.toString(loopCal.get(Calendar.DAY_OF_MONTH)));
-			url = response.createRenderURL();
+			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
@@ -636,7 +636,7 @@ public class SAbstractForumController extends SAbstractController {
 				// because this loop is adding extra days, we need to build their URLs into the daymap here
 				// and we don't want to clobber urldatestring because it's used later for the week URL
 				urldatestring2 = urldatesdf.format(loopCal.getTime());
-				url = response.createRenderURL();
+				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
