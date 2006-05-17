@@ -36,10 +36,7 @@ public class ModifyEntryController extends SAbstractForumController {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.OPERATION_DELETE)) {
 			getFolderModule().deleteEntry(folderId, entryId);
-			response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
-			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
-			response.setRenderParameter("ssReloadUrl", "");
+			setupViewFolder(response, folderId);		
 		} else if (formData.containsKey("okBtn")) {
 			if (op.equals("")) {
 
@@ -63,14 +60,13 @@ public class ModifyEntryController extends SAbstractForumController {
 			
 				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts);
 				setupViewEntry(response, folderId, entryId);
+				//flag reload of folder listing
+				response.setRenderParameter("ssReloadUrl", "");
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be move entry
 				Long destinationId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "destination"));
 				getFolderModule().moveEntry(folderId, entryId, destinationId);
-				response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
-				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
-				response.setRenderParameter("ssReloadUrl", "");
+				setupViewFolder(response, folderId);		
 			}
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
@@ -79,10 +75,17 @@ public class ModifyEntryController extends SAbstractForumController {
 			response.setRenderParameters(formData);		
 		}
 	}
+
 	private void setupViewEntry(ActionResponse response, Long folderId, Long entryId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());		
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+	}
+	private void setupViewFolder(ActionResponse response, Long folderId) {
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
+		
 	}
 		
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -94,7 +97,13 @@ public class ModifyEntryController extends SAbstractForumController {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String path;
 		FolderEntry entry=null;
-		if (op.equals("")) {
+		if (op.equals(WebKeys.OPERATION_MOVE)) {
+			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
+			entry  = getFolderModule().getEntry(folderId, entryId);
+			model.put(WebKeys.ENTRY, entry);
+			model.put(WebKeys.BINDER, entry.getParentFolder());
+			path = WebKeys.VIEW_MOVE_ENTRY;
+		} else {
 			try {
 				Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 				entry  = getFolderModule().getEntry(folderId, entryId);
@@ -107,15 +116,7 @@ public class ModifyEntryController extends SAbstractForumController {
 			} catch (NoDefinitionByTheIdException nd) {
 				return returnToViewForum(request, response, formData, folderId);
 			}
-		} else if (op.equals(WebKeys.OPERATION_MOVE)) {
-			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
-			entry  = getFolderModule().getEntry(folderId, entryId);
-			model.put(WebKeys.ENTRY, entry);
-			model.put(WebKeys.BINDER, entry.getParentFolder());
-			path = WebKeys.VIEW_MOVE_ENTRY;
-			
-		} else
-			return returnToViewForum(request, response, formData, folderId);
+		} 
 			
 		return new ModelAndView(path, model);
 	}

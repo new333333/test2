@@ -27,6 +27,7 @@ import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
@@ -35,7 +36,7 @@ import com.sitescape.util.Validator;
 import com.sitescape.ef.security.AccessControlException;
 
 
-public class ViewEntryController extends SAbstractForumController {
+public class ViewEntryController extends  SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
@@ -54,22 +55,16 @@ public class ViewEntryController extends SAbstractForumController {
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Map model;		
-		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 
 		Map formData = request.getParameterMap();
-		Long folderId=null;
-		try {
-			folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		} catch (NoFolderByTheIdException nf) {
-			return new ModelAndView(WebKeys.VIEW_FORUM);
-		}
-
 		String viewPath=WebKeys.VIEW_LISTING;
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-		model = getShowEntry(entryId, formData, request, response, folderId);
+		Map model = getShowEntry(entryId, formData, request, response, folderId);
 		entryId = (String)model.get(WebKeys.ENTRY_ID);
 		model.put(WebKeys.URL_ENTRY_ID, entryId);
+		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+
 		if (formData.containsKey("ssReloadUrl")) {
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());

@@ -29,7 +29,7 @@ import com.sitescape.ef.domain.Principal;
  * @author Peter Hurley
  *
  */
-public class ModifyEntryController extends SAbstractProfileController {
+public class ModifyEntryController extends SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 
@@ -77,10 +77,6 @@ public class ModifyEntryController extends SAbstractProfileController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 		RenderResponse response) throws Exception {
 
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (!op.equals("")) {
-			return returnToView(request, response);
-		}
 		Map model = new HashMap();	
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
