@@ -176,14 +176,17 @@ public class FileAttachment extends Attachment {
     public static class FileLock implements Cloneable {
 
     	private String id;
+    	private String subject;
     	private Principal owner;
     	private Date expirationDate;
 
     	public FileLock() {
     	}
 
-    	public FileLock(String id, Principal owner, Date expirationDate) {
+    	public FileLock(String id, String subject, Principal owner, 
+    			Date expirationDate) {
     		this.id = id;
+    		this.subject = subject;
     		this.owner = owner;
     		this.expirationDate = expirationDate;
     	}
@@ -196,6 +199,14 @@ public class FileAttachment extends Attachment {
     		this.id = id;
     	}
 
+    	public String getSubject() {
+    		return subject;
+    	}
+    	
+    	public void setSubject(String subject) {
+    		this.subject = subject;
+    	}
+    	
     	public Principal getOwner() {
     		return owner;
     	}

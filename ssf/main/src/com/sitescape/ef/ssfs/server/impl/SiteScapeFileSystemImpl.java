@@ -411,7 +411,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			if(lock != null) {
 				// Get lock properties
 				props.put(CrossContextConstants.LOCK_PROPERTIES_ID, lock.getId());
-				props.put(CrossContextConstants.LOCK_PROPERTIES_OWNER_NAME, lock.getOwner().getName());
+				props.put(CrossContextConstants.LOCK_PROPERTIES_SUBJECT, lock.getSubject());
 				props.put(CrossContextConstants.LOCK_PROPERTIES_EXPIRATION_DATE, lock.getExpirationDate());
 			}
 			
@@ -445,7 +445,8 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		return props;
 	}
 	
-	public void lockResource(Map uri, String lockId, Date lockExpirationDate) 
+	public void lockResource(Map uri, String lockId, String lockSubject, 
+			Date lockExpirationDate) 
 	throws NoAccessException, NoSuchObjectException, LockException {
 		Map objMap = new HashMap();
 		if(!objectExists(uri, objMap))
@@ -466,7 +467,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		try {
 			getFileModule().lock(((Binder) objMap.get(BINDER)), entry, 
 				((FileAttachment) objMap.get(FILE_ATTACHMENT)), 
-				lockId, lockExpirationDate);
+				lockId, lockSubject, lockExpirationDate);
 		}
 		catch(ReservedByAnotherUserException e) {
 			throw new LockException(e.getLocalizedMessage());

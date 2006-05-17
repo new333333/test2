@@ -207,6 +207,7 @@ public class CCClient {
 			new CCClientCallback() {
 				public void additionalInput(HttpServletRequest req, Map uri) {
 					req.setAttribute(CrossContextConstants.LOCK_PROPERTIES_ID, lock.getId());
+					req.setAttribute(CrossContextConstants.LOCK_PROPERTIES_SUBJECT, lock.getSubject());
 					req.setAttribute(CrossContextConstants.LOCK_PROPERTIES_EXPIRATION_DATE, lock.getExpirationDate());
 				}
 			}
@@ -253,13 +254,10 @@ public class CCClient {
 		
 		String lockId = (String) props.get(CrossContextConstants.LOCK_PROPERTIES_ID);
 		if(lockId != null) {
-			// We don't support cross-zone information reference. 
-			// So zone name is always fixed within user session. 
-			String lockOwnerZoneName = this.zoneName; 
-			String lockOwnerUserName = (String) props.get(CrossContextConstants.LOCK_PROPERTIES_OWNER_NAME);
+			String lockSubject = (String) props.get(CrossContextConstants.LOCK_PROPERTIES_SUBJECT);
 			Date lockExpirationDate = (Date) props.get(CrossContextConstants.LOCK_PROPERTIES_EXPIRATION_DATE);
 				
-			Lock lock = new SimpleLock(lockId, lockOwnerZoneName, lockOwnerUserName, lockExpirationDate);
+			Lock lock = new SimpleLock(lockId, lockSubject, lockExpirationDate);
 				
 			return new Lock[] {lock};
 		}

@@ -265,6 +265,8 @@ public interface FileModule {
      * @param entity
      * @param fa
      * @param lockId Lock token id. 
+     * @param lockSubject String representing owner of this lock. This value is
+     * treated as opaque string and has no meaning/utility on the server side. 
      * @param expirationDate Lock expiration date.
      * @throws ReservedByAnotherUserException If the enclosing entity is already
      * under reservation by another user
@@ -275,7 +277,7 @@ public interface FileModule {
      * @throws RepositoryServiceException Any other internal or unexpected error	
      */
     public void lock(Binder binder, DefinableEntity entity, FileAttachment fa,
-    		String lockId, Date expirationDate)
+    		String lockId, String lockSubject, Date expirationDate)
     	throws ReservedByAnotherUserException, LockedByAnotherUserException,
     	LockIdMismatchException, UncheckedIOException, RepositoryServiceException;
     
