@@ -54,6 +54,7 @@
       <property name="repositoryServiceName" access="field" length="128"/>
       <component name="fileLock" class="com.sitescape.ef.domain.FileAttachment$FileLock">
       	<property name="id" length="128" column="filelock_id"/>
+      	<property name="subject" length="192" column="filelock_subject"/>
         <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="owner">
           <column name="filelock_owner"/>
         </many-to-one>

@@ -44,8 +44,9 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		this.service = service;
 		this.logger = logger;
 		if(connection != null) {
-			this.zoneName = Util.getZoneNameFromExtendedUserName((String) connection);
-			this.userName = Util.getUserNameFromExtendedUserName((String) connection);
+			String[] id = Util.parseUserIdInput((String) connection);			
+			this.zoneName = id[0];
+			this.userName = id[1];
 		}
 		this.client = new CCClient(zoneName, userName);
 	}
@@ -431,7 +432,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			if(representsFolder(m))
 				throw new AccessDeniedException(uri, "Locking of folder is not supported", "lock");
 			else
-				client.lockResource(uri, m, new SimpleLock(lockId, zoneName, userName, expiration)); 
+				client.lockResource(uri, m, new SimpleLock(lockId, subject, expiration)); 
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "lock");

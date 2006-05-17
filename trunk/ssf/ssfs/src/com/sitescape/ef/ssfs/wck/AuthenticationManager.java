@@ -33,18 +33,20 @@ public class AuthenticationManager implements SessionAuthenticationManager {
 				throw e;
 		} 
 		
-		return Util.makeExtendedUserName(id[0], id[1]); // canonical representation
+		// We simply use the original user id as session object. 
+		return user; 
 	}
 
 	public Object getAuthenticationSession(String user) throws Exception {
-		// Instead of maintaining mapping from user id string to session object,
-		// we will simply re-compute it here. This is because 1) SSFS does not
-		// need separate session/state for each login (i.e. multiple logins
-		// from different users or even from the same user), and 2) keeping
-		// session map is much more problematic for nothing. 
+		// Since this method is called only for successfully authenticated
+		// user, we can safely return the session object which is the same
+		// string as the user id. 
+		// We do not really need connection-oriented session object because
+		// 1) SSFS does not need separate session/state for each login (i.e. 
+		// multiple logins from different users or even from the same user), 
+		// and 2) keeping session map is problematic hence best avoided. 
 		
-		String[] id = Util.parseUserIdInput(user);
-		return Util.makeExtendedUserName(id[0], id[1]);
+		return user;
 	}
 
 	public void closeAuthenticationSession(Object session) throws Exception {

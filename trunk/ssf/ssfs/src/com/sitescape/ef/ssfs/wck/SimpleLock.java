@@ -7,14 +7,12 @@ import org.apache.slide.simple.store.WebdavStoreLockExtension.Lock;
 public class SimpleLock implements Lock {
 
 	private String id;
-	private String ownerZoneName;
-	private String ownerUserName;
+	private String subject;
 	private Date expirationDate;
 	
-	public SimpleLock(String id, String zoneName, String userName, Date expirationDate) {
+	public SimpleLock(String id, String subject, Date expirationDate) {
 		this.id = id;
-		this.ownerZoneName = zoneName;
-		this.ownerUserName = userName;
+		this.subject = subject;
 		this.expirationDate = expirationDate;
 	}
 	
@@ -35,8 +33,7 @@ public class SimpleLock implements Lock {
 	}
 
 	public String getSubject() {
-		// Subject string is computed rather than stored.
-		return Util.makeSubject(ownerZoneName, ownerUserName);
+		return subject;
 	}
 
 }

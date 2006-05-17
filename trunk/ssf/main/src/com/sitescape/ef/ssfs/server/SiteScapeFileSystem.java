@@ -43,7 +43,8 @@ public interface SiteScapeFileSystem {
 	public Map getProperties(Map uri) throws NoAccessException,
 	NoSuchObjectException;
 	
-	public void lockResource(Map uri, String lockId, Date lockExpirationDate) 
+	public void lockResource(Map uri, String lockId, String lockSubject, 
+			Date lockExpirationDate) 
 	throws NoAccessException, NoSuchObjectException, LockException;
 	
 	public void unlockResource(Map uri, String lockId) throws NoAccessException,

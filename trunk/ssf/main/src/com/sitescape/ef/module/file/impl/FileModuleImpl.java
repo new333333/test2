@@ -443,7 +443,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	public void lock(Binder binder, DefinableEntity entity, FileAttachment fa, 
-			String lockId, Date expirationDate) throws ReservedByAnotherUserException, 
+			String lockId, String lockSubject, Date expirationDate) 
+		throws ReservedByAnotherUserException, 
 			LockedByAnotherUserException, LockIdMismatchException, 
 			UncheckedIOException, RepositoryServiceException {
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -470,7 +471,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		FileAttachment.FileLock lock = fa.getFileLock();
     		if(lock == null) { // The file is not locked
     			// Lock the file
-    			fa.setFileLock(new FileAttachment.FileLock(lockId, user, expirationDate));
+    			fa.setFileLock(new FileAttachment.FileLock(lockId, lockSubject, 
+    					user, expirationDate));
     		}
     		else { // The file is locked
     			if(lock.getOwner().equals(user)) {
@@ -490,7 +492,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     					// Commit any pending changes associated with the expired lock
     					commitPendingChanges(binder, entity, fa, lock.getOwner()); 
     					// Set the new lock.
-    					fa.setFileLock(new FileLock(lockId, user, expirationDate));
+    					fa.setFileLock(new FileLock(lockId, lockSubject, 
+    							user, expirationDate));
     				}
     				else { // The lock is still effective
         				throw new LockedByAnotherUserException(entity, fa, lock.getOwner());    					
