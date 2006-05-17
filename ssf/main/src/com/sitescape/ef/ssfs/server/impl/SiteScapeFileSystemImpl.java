@@ -271,7 +271,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		}
 		
 		if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_LIBRARY)) {
-			if(getFileName(uri) == null) {
+			if(getFilePath(uri) == null) {
 				CustomAttribute ca = entry.getCustomAttribute((String) objMap.get(ELEMENT_NAME));
 				if(ca != null) {
 					Iterator it = ((Set) ca.getValue()).iterator();
@@ -327,7 +327,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 				return children.toArray(new String[children.size()]);
 			}
 			
-			if(getFileName(uri) == null) {
+			if(getFilePath(uri) == null) {
 				CustomAttribute ca = entry.getCustomAttribute((String) objMap.get(ELEMENT_NAME));
 				if(ca != null) {
 					Iterator it = ((Set) ca.getValue()).iterator();
@@ -362,7 +362,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 				return children.toArray(new String[children.size()]);
 			}
 			
-			if(getFileName(uri) == null) {
+			if(getFilePath(uri) == null) {
 				Iterator it = entry.getFileAttachments(getReposName(uri)).iterator();
 				while(it.hasNext()) {
 					FileAttachment fa = (FileAttachment) it.next();
@@ -522,7 +522,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		return (Long) uri.get(CrossContextConstants.URI_BINDER_ID);
 	}
 	
-	private String getFileName(Map uri) {
+	private String getFilePath(Map uri) {
 		return (String) uri.get(CrossContextConstants.URI_FILEPATH);
 	}
 	
@@ -571,7 +571,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 	 */
 	private void writeResource(Map uri, Map objMap, InputStream in) {
 		// Wrap the input stream in a datastructure suitable for our business module. 
-		SsfsMultipartFile mf = new SsfsMultipartFile(getFileName(uri), in);
+		SsfsMultipartFile mf = new SsfsMultipartFile(getFilePath(uri), in);
 		
 		Map fileItems = new HashMap(); // Map of names to file items
 		InputDataAccessor inputData;   // Input data other than file
@@ -707,13 +707,13 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 				}
 				
 				// Finally check file itself. 
-				String fileName = getFileName(uri);
-				if(fileName == null)
+				String filePath = getFilePath(uri);
+				if(filePath == null)
 					return true; // no more checking to do
 				
 				if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_ATTACH)) {
 					// Use FileAttachment directly
-					FileAttachment fa = entry.getFileAttachment(reposName, fileName);
+					FileAttachment fa = entry.getFileAttachment(reposName, filePath);
 					if(fa == null)
 						return false; // No matching file
 					else {
@@ -737,7 +737,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 						Iterator it = ((Set) ca.getValue()).iterator();
 						while(it.hasNext()) {
 							FileAttachment fa = (FileAttachment) it.next();
-							if(fa.getFileItem().getName().equals(fileName)) {
+							if(fa.getFileItem().getName().equals(filePath)) {
 								objMap.put(FILE_ATTACHMENT, fa);
 								return true; // File name matches
 							}
