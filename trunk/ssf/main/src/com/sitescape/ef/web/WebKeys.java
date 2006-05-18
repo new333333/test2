@@ -85,6 +85,7 @@ public class WebKeys {
     public static final String OPERATION_ADD_SUB_FOLDER = "add_subFolder";
     public static final String OPERATION_ADD_WORKSPACE = "add_workspace";
     public static final String OPERATION_DELETE="delete";
+    public static final String OPERATION_MODIFY="modify";
     public static final String OPERATION_MOVE="move";
        
 	public static final String FORUM_OPERATION_GET_ENTRY_ELEMENTS = "get_entry_elements";

@@ -136,9 +136,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     public void checkDeleteBinderAllowed(Binder binder) {
     	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
     }
+    public void checkMoveBinderAllowed(Binder binder) {
+    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+    }
     public void moveBinder(Long fromId, Long toId) {
        	Binder source = loadBinder(fromId);
-		getAccessControlManager().checkOperation(source, WorkAreaOperation.BINDER_ADMINISTRATION); 
+       	checkMoveBinderAllowed(source);
        	Binder destination = loadBinder(toId);
 		getAccessControlManager().checkOperation(destination, WorkAreaOperation.CREATE_BINDERS); 
        	

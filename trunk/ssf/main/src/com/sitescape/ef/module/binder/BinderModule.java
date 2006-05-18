@@ -71,4 +71,5 @@ public interface BinderModule {
     public void checkDeleteBinderAllowed(Binder binder) throws AccessControlException;
 
     public void moveBinder(Long fromId, Long toId);
- }
+    public void checkMoveBinderAllowed(Binder binder);
+}
