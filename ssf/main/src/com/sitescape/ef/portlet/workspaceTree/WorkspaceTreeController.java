@@ -155,18 +155,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 			toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), adapterUrl.toString(), qualifiers);
 		} catch (AccessControlException ac) {};
 		
-		try {
-			getBinderModule().checkModifyBinderAllowed(workspace);
-			//The "Modify" menu
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
-			Map qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
-		} catch (AccessControlException ac) {};
-		
 		//The "Administration" menu
 		toolbar.addToolbarMenu("3_administration", NLT.get("toolbar.administration"));
 		//Access control
@@ -189,19 +177,40 @@ public class WorkspaceTreeController extends SAbstractController  {
 		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
 		
 		//Delete
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
-		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.delete_workspace"), url);
-		//move
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
-		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.move_workspace"), url);
+		try {
+			getBinderModule().checkDeleteBinderAllowed(workspace);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+			toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.delete_workspace"), url);
+		} catch (AccessControlException ac) {};
+
+		//Modify
+		try {
+			getBinderModule().checkModifyBinderAllowed(workspace);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.modify_workspace"), url, qualifiers);
+		} catch (AccessControlException ac) {};
+		
+		//Move
+		try {
+			getBinderModule().checkMoveBinderAllowed(workspace);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+			toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.move_workspace"), url);
+		} catch (AccessControlException ac) {};
+		
 		return toolbar;
 	}
 		

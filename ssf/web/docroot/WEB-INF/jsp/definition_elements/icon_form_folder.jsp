@@ -10,9 +10,11 @@
 		caption = "<b>"+caption+"</b><br>";
 	}
 
+	Binder binder = (Binder) request.getAttribute("ssDefinitionEntry");
 	String iconListPath = "icons.folder";
 	String[] iconList = (String[]) SPropsUtil.getString(iconListPath, "").split(",");
-	String iconValue = "";
+	String iconValue = binder.getIconName();
+	if (iconValue == null) iconValue = "";
 %>
 <div style="display:inline;"><%= caption %>
 <%

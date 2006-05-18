@@ -206,20 +206,39 @@ public class SAbstractForumController extends SAbstractController {
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
-		//Delete
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
-		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.delete_folder"), url);		
-		//move
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
-		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.move_folder"), url);
+		
+		//Delete binder
+		try {
+			getBinderModule().checkDeleteBinderAllowed(folder);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
+			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.delete_folder"), url);		
+		} catch (AccessControlException ac) {};
+
+		//Modify binder
+		try {
+			getBinderModule().checkModifyBinderAllowed(folder);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
+			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_folder"), url);		
+		} catch (AccessControlException ac) {};
+		
+		//Move binder
+		try {
+			getBinderModule().checkMoveBinderAllowed(folder);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
+			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.move_folder"), url);
+		} catch (AccessControlException ac) {};
 
 		//	The "Display styles" menu
 		toolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.display_styles"));

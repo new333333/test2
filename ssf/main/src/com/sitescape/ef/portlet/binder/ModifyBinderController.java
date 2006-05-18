@@ -15,6 +15,7 @@ import java.util.Iterator;
 
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
@@ -42,7 +43,7 @@ public class ModifyBinderController extends AbstractBinderController {
 			response.setRenderParameter("ssReloadUrl", "");
 			
 		} else if (formData.containsKey("okBtn")) {
-			if (op.equals("")) { 			
+			if (op.equals("") || op.equals(WebKeys.OPERATION_MODIFY)) { 			
 				//	The modify form was submitted. Go process it
 				Map fileMap = null;
 				if (request instanceof MultipartFileSupport) {
@@ -88,6 +89,20 @@ public class ModifyBinderController extends AbstractBinderController {
 			path = WebKeys.VIEW_MOVE_BINDER;
 		} else {
 			Binder binder = getBinderModule().getBinder(binderId);
+			String binderType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_TYPE, "");
+
+			Map publicBinderDefs = new HashMap();
+			DefinitionUtils.getDefinitions(model);
+			if (binderType.equals(EntityIdentifier.EntityType.folder.name())) {
+				publicBinderDefs = (Map) model.get(WebKeys.PUBLIC_FOLDER_DEFINITIONS);
+			} else if (binderType.equals(EntityIdentifier.EntityType.workspace.name())) {
+				publicBinderDefs = (Map) model.get(WebKeys.PUBLIC_WORKSPACE_DEFINITIONS);
+			}
+			
+			model.put(WebKeys.PUBLIC_BINDER_DEFINITIONS, publicBinderDefs);
+
+			DefinitionUtils.getDefinitions(binder, model);
+			
 			model.put(WebKeys.BINDER, binder);
 			model.put(WebKeys.ENTRY, binder);
 			model.put(WebKeys.CONFIG_JSP_STYLE, "form");
