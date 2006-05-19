@@ -1206,7 +1206,8 @@
 		</options>
 	</item>
 	
-	<item name="profileForm" caption="__profile_Form" canBeDeleted="false" multipleAllowed="false" >		
+	<item name="profileForm" caption="__profile_Form" type="form" 
+		canBeDeleted="false" multipleAllowed="false" >		
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
@@ -1255,7 +1256,8 @@
 		</options>
 	</item>
 	
-	<item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" canBeDeleted="false" multipleAllowed="false">
+	<item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" 
+		canBeDeleted="false" multipleAllowed="false">
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
