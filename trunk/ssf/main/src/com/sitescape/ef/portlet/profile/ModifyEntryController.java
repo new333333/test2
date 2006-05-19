@@ -87,7 +87,7 @@ public class ModifyEntryController extends SAbstractController {
 		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 		Definition entryDef = entry.getEntryDef();
 		if (entryDef == null) {
-			DefinitionUtils.getDefaultEntryView(entry, model);
+			DefinitionUtils.getDefaultEntryView(entry, model, "//item[@name='entryForm' or @name='profileEntryForm']");
 		} else {
 			DefinitionUtils.getDefinition(entryDef, model, "//item[@type='form']");
 		}

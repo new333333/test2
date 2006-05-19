@@ -29,7 +29,7 @@ public class DefinitionUtils {
 		
 		instance = this;
 	}
-    private static DefinitionUtils getInstance() {
+    public static DefinitionUtils getInstance() {
     	return instance;
     }
     public void setDefinitionModule(DefinitionModule definitionModule) {
@@ -184,6 +184,10 @@ public class DefinitionUtils {
 	}
 	//Routine to build a definition file on the fly for viewing entries with no definition
 	public static void getDefaultEntryView(Entry entry, Map model) {
+		String path = "//item[@name='entryView' or @name='profileEntryView']";
+		getDefaultEntryView(entry, model, path);
+	}
+	public static void getDefaultEntryView(Entry entry, Map model, String path) {
 		//Create an empty entry definition
 		Map formData = new HashMap();
 		int definitionType = Definition.COMMAND;
@@ -193,7 +197,7 @@ public class DefinitionUtils {
 		Document defDoc = getInstance().getDefinitionModule().getDefaultDefinition("ss_default_entry_view","__definition_default_entry_view", definitionType, formData);
 		
 		//Add the "default viewer" item
-		Element entryView = (Element) defDoc.getRootElement().selectSingleNode("//item[@name='entryView' or @name='profileEntryView']");
+		Element entryView = (Element) defDoc.getRootElement().selectSingleNode(path);
 		model.put(WebKeys.CONFIG_ELEMENT, entryView);
 		model.put(WebKeys.CONFIG_DEFINITION, defDoc);
 	}

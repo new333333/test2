@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
@@ -35,12 +36,15 @@ public class DisplayConfiguration extends TagSupport {
     private String configJspStyle;
     private boolean processThisItem = false;
     private DefinableEntity entry;
+    private Document configDefaultDefinition;
     
 	public int doStartTag() throws JspException {
 		try {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
+			this.configDefaultDefinition = DefinitionUtils.getInstance().getDefinitionModule().getDefinitionConfig();
+			
 			if (this.configDefinition == null) {
 					throw new JspException("No configuration definition available for this item.");
 			} else if (this.configElement != null) {
@@ -63,6 +67,12 @@ public class DisplayConfiguration extends TagSupport {
 						Element itemDefinition = (Element) definitionRoot.selectSingleNode("//item[@name='"+itemType+"']");
 						if (itemDefinition != null) {
 							Element jspEle = (Element) itemDefinition.selectSingleNode("jsps/jsp[@name='"+this.configJspStyle+"']");
+							if (jspEle == null) {
+								//The definition doesn't list the jsp, so try the base definition xml file
+								Element defaultConfigRoot = this.configDefaultDefinition.getRootElement();
+								Element defaultConfigItem = (Element) defaultConfigRoot.selectSingleNode("//item[@name='"+itemType+"']");
+								jspEle = (Element) defaultConfigItem.selectSingleNode("jsps/jsp[@name='"+this.configJspStyle+"']");
+							}
 							if (jspEle != null) {
 								String jsp = jspEle.attributeValue("value", "");
 								if (!jsp.equals("")) {

@@ -141,7 +141,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			
 			//Write out the changed definition (if it actually changed)
 			if (defChanged) setDefinition(def, defDoc);
-		}
+
+			//When any change is made, validate the the definition is at the same level as the configuration file
+			validateDefinitionAttributes(def);
+}
 	}
 	
 	public void modifyDefinitionAttribute(String id, String key, String value) {
@@ -152,6 +155,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			defDoc.getRootElement().addAttribute(key, value);
 			setDefinition(def, defDoc);
 		}
+		//When any change is made, validate the the definition is at the same level as the configuration file
+		validateDefinitionAttributes(def);
 	}
 	
     protected void setDefinition(Definition def, Document doc) {
@@ -196,7 +201,44 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				processProperties(def.getId(), definition, defDoc.getRootElement(), formData2);
 			}
 			setDefinition(def, defDoc);
+			
+			//When any change is made, validate the the definition is at the same level as the configuration file
+			validateDefinitionAttributes(def);
 		}
+	}
+	
+	//Rouitine to make sure a definition has all of the proper attributes as defined in the config file
+	//  This is useful to propagate new attributes added to the config definition xml file
+	public void validateDefinitionAttributes(Definition def) {
+		Document defDoc = def.getDefinition();
+		if (updateDefinitionAttributes(defDoc)) setDefinition(def, defDoc);
+	}
+	public boolean updateDefinitionAttributes(Document defDoc) {
+		boolean defChanged = false;
+		Element defRoot = defDoc.getRootElement();
+		this.getDefinitionConfig();
+		Element configRoot = definitionConfig.getRootElement();
+		
+		//Look at all of the items to see if any of their attributes are missing
+		Iterator itDefItems = defRoot.elementIterator("item");
+		while (itDefItems.hasNext()) {
+			Element defItem = (Element) itDefItems.next();
+			//Find the matching element in the configuration xml file
+			Element configItem = (Element) configRoot.selectSingleNode("item[@name='"+defItem.attributeValue("name", "")+"']");
+			if (configItem != null) {
+				//Check to see if there are new attributes from the config file that should be copied into the definition
+				Iterator itConfigItemAttributes = configItem.attributeIterator();
+				while (itConfigItemAttributes.hasNext()) {
+					Attribute attr = (Attribute) itConfigItemAttributes.next();
+					//If the attribute does not exist in the definition item, copy it from the config file
+					if (defItem.attributeValue(attr.getName()) == null) {
+						defItem.addAttribute(attr.getName(), attr.getValue());
+						defChanged = true;
+					}
+				}
+			}
+		}
+		return defChanged;
 	}
 	
 	public void saveDefinitionLayout(String id, Map formData) {
@@ -267,6 +309,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		//Add the properties
 		processProperties("0", definition, ntRoot, formData);
 
+		//Copy any additional attributes from the configuration file
+		updateDefinitionAttributes(newTree);
+		
 		return newTree;
 	}
 	
