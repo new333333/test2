@@ -287,7 +287,7 @@ function modifyItem(id, name, item) {
 function cloneItem(id, name, item) {
 }
 
-function getConditionSelectbox(obj, nameRoot, op, op2) {
+function getConditionSelectbox(obj, op, op2) {
 	var formObj = ss_getContainingForm(obj)
 	var nameObj = obj.name
 	if (!obj.name) nameObj = obj.id;

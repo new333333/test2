@@ -89,6 +89,7 @@ public class WebKeys {
     public static final String OPERATION_MOVE="move";
        
 	public static final String FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS = "get_condition_entry_elements";
+	public static final String FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST = "get_condition_entry_element_values";
 	public static final String FORUM_OPERATION_GET_ENTRY_ELEMENTS = "get_entry_elements";
 	public static final String FORUM_OPERATION_GET_ELEMENT_VALUES = "get_element_values";
 	public static final String FORUM_OPERATION_GET_ELEMENT_VALUE_DATA = "get_element_value_data";

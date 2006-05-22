@@ -23,31 +23,47 @@
 		<div id="ss_condition_status_message" style="visibility:hidden; display:none;">ok</div>
 	</taconite-replace>
 
-	<taconite-replace contextNodeID="conditionEntryElements" 
-	parseInBrowser="true"><div 
-	   id="conditionEntryElements" ><select
-	   name="conditionElementName" 
-	   onChange="ss_getFilterSelectionBox(this, 'elementName', 'get_element_values')">
-	     <option value="" selected="selected"><ssf:nlt 
-	       tag="filter.selectElement" text="--select an element--"/></option>
-	     <c:forEach var="element" items="${ssEntryDefinitionElementData}">
-	       <c:if test="${element.value.type == 'title' || element.value.type == 'event' || 
-	                     element.value.type == 'text'  || element.value.type == 'selectbox' || 
-	                     element.value.type == 'radio' || element.value.type == 'checkbox' || 
-	       				 element.value.type == 'date'  || element.value.type == 'user_list'}">
-	         <option value="<c:out value="${element.key}"/>"><c:out value="${element.value.caption}"/></option>
-	       </c:if>
-	     </c:forEach>
-	   </select></div></taconite-replace>
-
 	<taconite-replace contextNodeID="conditionValueList" 
 	parseInBrowser="true"><div 
-	id="conditionValueList" 
-	style="visibility:visible; display:inline;"></div></taconite-replace>
+	   id="conditionValueList" >
+	   <input type="hidden" name="conditionDefinitionId" value="" />
+       <c:if test="${element.value.type == 'event' || 
+                     element.value.type == 'selectbox' || 
+                     element.value.type == 'radio' || 
+                     element.value.type == 'checkbox' || 
+       				 element.value.type == 'date'  || 
+       				 element.value.type == 'user_list'}">
+		   <select
+		   name="conditionElementValue" 
+		   onChange="getConditionSelectbox(this, 'get_condition_operators')">
+		     <option value="" selected="selected"><ssf:nlt 
+		       tag="condition.selectValue" text="--select a value--"/></option>
+		     <c:forEach var="element" items="${ssEntryDefinitionElementData}">
+		       <c:if test="${element.value.type == 'event'}">
+		         <option value="<c:out value="${element.key}"/>"><c:out value="${element.value.caption}"/></option>
+		       </c:if>
+		       <c:if test="${element.value.type == 'selectbox'}">
+		         <option value="<c:out value="${element.key}"/>"><c:out value="${element.value.caption}"/></option>
+		       </c:if>
+		       <c:if test="${element.value.type == 'radio'}">
+		         <option value="<c:out value="${element.key}"/>"><c:out value="${element.value.caption}"/></option>
+		       </c:if>
+		       <c:if test="${element.value.type == 'user_list'}">
+		         <option value="<c:out value="${element.key}"/>"><c:out value="${element.value.caption}"/></option>
+		       </c:if>
+		     </c:forEach>
+		   </select>
+		</c:if>
+		</div></taconite-replace>
 
-	<taconite-replace contextNodeID="conditionValueData" 
+	<taconite-replace contextNodeID="conditionOperators" 
 	parseInBrowser="true"><div 
-	  id="conditionValueData" 
+	  id="conditionOperators" 
+	  style="visibility:visible; display:inline;"></div></taconite-replace>
+
+	<taconite-replace contextNodeID="conditionOperand" 
+	parseInBrowser="true"><div 
+	  id="conditionOperand" 
 	  style="visibility:visible; display:inline;"></div></taconite-replace>
 
 <%
