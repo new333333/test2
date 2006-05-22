@@ -109,7 +109,7 @@
 		
 		<copy file="tomcat/resources/ssf.xml" todir="${app.server.dir}/conf/Catalina/localhost" />		
 		<copy file="tomcat/resources/server.slide.xml" tofile="${app.server.dir}/conf/server.xml" />		
-		<copy file="liferay/resources/web.tomcat.ssf.xml" tofile="${deploy.liferay.webinf}/web.xml" />
+		<copy file="liferay/changes/resources/tomcat.web.xml" tofile="${deploy.liferay.webinf}/web.xml" />
 		<copy file="tomcat/resources/jaas.liferay.slide.config" tofile="${app.server.dir}/conf/jaas.config" />
 		<copy file="lib/portal-ejb.jar" todir="${deploy.liferay.lib.dir}" />
 		<!-- Copy jdom.jar file into our lib directory because jakarta Slide 
@@ -159,9 +159,9 @@
 		<!--<copy file="jboss/resources/login-config.slide.xml" tofile="${app.server.dir}/server/default/conf/login-config.xml" />-->
 		<!--<move file="${app.server.deploy.dir}/slide.war/WEB-INF/lib/slide-jaas-2.1.jar" todir="${app.server.dir}/server/default/lib" failonerror="false" />-->
 		<!-- For Liferay -->
-		<copy file="liferay/resources/web.jboss.ssf.xml" tofile="${deploy.liferay.webinf}/web.xml" />
-		<copy file="liferay/resources/portal.jboss.ssf.properties" tofile="${app.server.deploy.dir}/ext.ear/portal-ejb.jar/portal.properties" />
-		<copy file="liferay/resources/MANIFEST.jboss.ssf.MF" tofile="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/META-INF/MANIFEST.MF" />
+		<copy file="liferay/changes/resources/web.jboss.ssf.xml" tofile="${deploy.liferay.webinf}/web.xml" />
+		<copy file="liferay/changes/resources/portal.jboss.ssf.properties" tofile="${app.server.deploy.dir}/ext.ear/portal-ejb.jar/portal.properties" />
+		<copy file="liferay/changes/resources/MANIFEST.jboss.ssf.MF" tofile="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/META-INF/MANIFEST.MF" />
 	</target>		
 	
 </project>

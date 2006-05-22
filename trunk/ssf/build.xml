@@ -9,6 +9,7 @@
 		<property name="project.dir" value="." />
   		<property file="build.${user.name}.properties" />
   		<property file="build.properties" />
+		<property name="temp.dir" value="${basedir}/temp" />
 		<path id="project.classpath">
 			<pathelement path="${classpath}" />
 			<fileset dir="${project.dir}/lib" includes="*.jar" />
@@ -38,6 +39,7 @@
 	</target>
 
 	<target name="clean">
+		<delete dir="${temp.dir}" />
 		<delete dir="dist" />
 		<delete dir="liferay/temp" />
 		<delete dir="${docs.api.dir}" />
@@ -192,6 +194,13 @@
 		</zip>
 	</target>
 
+	<!-- Build Aspen kit bundled with Liferay+Tomcat -->
+	<target name="liferay-tomcat-bundle" depends="init-build">
+		<delete dir="${temp.dir}" />
+		<unzip src="3rd-party/liferay/${liferay.tomcat.kit}" dest="${temp.dir}/" />
+		
+	</target>
+	
 	<target name="release">
 		<!--
 		<delete>
