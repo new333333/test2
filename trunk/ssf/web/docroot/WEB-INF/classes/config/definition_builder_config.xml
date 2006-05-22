@@ -981,7 +981,7 @@
 			<option name="conditionOnModify" />
 			<option name="conditionOnReply" />
 			<option name="conditionOnResponse" />
-			<option name="conditionOnDate" />
+			<option name="conditionOnConditions" />
 			<option name="conditionOnElapsedTime" />
 			<option name="conditionOnVariable" />
 			<option name="waitForParallelThread" />
@@ -1036,12 +1036,15 @@
 			<option name="variable" />
 		</options>
 	</item>
-	<item name="conditionOnDate" caption="__transition_condition_on_date" type="transition">
+	<item name="conditionOnConditions" caption="__transition_condition_on_conditions" type="transition">
 		<properties>
-			<property name="date" caption="__transition_condition_on_date" type="text" />
+			<property name="allMustMatch" caption="__allMustMatch" type="boolean" default="true">
+				<help>__allMustMatchHelp</help>
+			</property>
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
+			<option name="workflowEntryCondition" initial="true" />
 			<option name="variable" />
 		</options>
 	</item>
@@ -1068,6 +1071,14 @@
 		<options>
 			<option name="variable" />
 		</options>
+	</item>
+	
+	<item name="workflowEntryCondition" caption="__workflow_entry_condition" 
+		multipleAllowed="true" >
+		<properties>
+			<property name="condition" caption="__workflow_entry_condition" 
+				type="workflowCondition" />
+		</properties>
 	</item>
 	
 	<item name="variable" caption="__workflow_variable" >

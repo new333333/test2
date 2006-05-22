@@ -12,6 +12,8 @@ import org.dom4j.Element;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.DefinitionUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -807,6 +809,28 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("<img src=\"").append(contextPath + "/images").append(iconListValue).append("\"/>");
 							sb.append("<br/><br/>\n");
 						}
+					
+					} else if (type.equals("workflowCondition")) {
+						Map definitions = new HashMap();
+						DefinitionUtils.getDefinitions(definitions);
+						Map publicEntryDefinitions = (Map) definitions.get(WebKeys.PUBLIC_ENTRY_DEFINITIONS);
+						
+						sb.append("<select name=\"conditionDefinitionId\" ");
+						sb.append("onChange=\"getConditionSelectbox(this, 'conditionDefinitionId', 'get_condition_entry_elements')\" ");
+						sb.append(">\n");
+						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
+						Iterator itEntryDefinitions = publicEntryDefinitions.keySet().iterator();
+						while (itEntryDefinitions.hasNext()) {
+							//Build a list of the entry definitions
+							Definition entryDef = (Definition) this.entryDefinitions.get((String) itEntryDefinitions.next());
+							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
+							sb.append(">").append(entryDef.getTitle()).append(" (").append(entryDef.getName()).append(")</option>\n");
+						}
+						sb.append("</select>\n<br/><br/>\n");
+						sb.append("<div id=\"conditionEntryElements\"></div>\n");
+						sb.append("<div id=\"conditionValueList\"></div>\n");
+						sb.append("<div id=\"conditionValueData\"></div>\n");
+						
 					
 					} else {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {

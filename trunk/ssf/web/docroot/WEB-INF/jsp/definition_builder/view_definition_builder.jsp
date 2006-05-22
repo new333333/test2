@@ -287,6 +287,35 @@ function modifyItem(id, name, item) {
 function cloneItem(id, name, item) {
 }
 
+function getConditionSelectbox(obj, nameRoot, op, op2) {
+	var formObj = ss_getContainingForm(obj)
+	var nameObj = obj.name
+	if (!obj.name) nameObj = obj.id;
+	var url = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="true" >
+    	</ssf:url>"
+    url += "&operation=" + op;
+    if (op2 != null && op2 != "") url += "&operation2=" + op2;
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addFormElements(formObj.name);
+	ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_postLoadGetConditionRequest);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+}
+
+function ss_postLoadGetConditionRequest() {
+	//See if there was an error
+	if (self.document.getElementById("ss_condition_status_message").innerHTML == "error") {
+		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+	} else {
+		showDisplayDiv()
+	}
+}
+
 function showOptions(id, name, item) {
 	//alert('showOptions: ' + id + ', ' + name + ', ' + item)
 	//User selected an operation, show the operation options
@@ -467,6 +496,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 </script>
 <div class="ss_style ss_portlet">
 <div id="ss_load_div_status_message"></div>
+<div id="ss_condition_status_message"></div>
 <div>
 
 <c:if test="${!empty ss_configErrorMessage}">
