@@ -55,7 +55,7 @@
 <script type="text/javascript">
 
 //Routine to go to a favorite when it is clicked
-function favTree_showId(id, obj) {
+function favTree_showId(id, obj, action) {
 	if (ss_pauseFavoriteClick == 1) return false;
 	//Get the binderId from the elementId ("ss_favorites_xxx")
 	var binderData = id.substr(13).split("_");
@@ -63,10 +63,11 @@ function favTree_showId(id, obj) {
 	
 	//Build a url to go to
 	var url = "<portlet:renderURL windowState="maximized">
-				<portlet:param name="action" value="${action}"/>
+				<portlet:param name="action" value="ssActionPlaceHolder"/>
 				<portlet:param name="binderId" value="ssBinderIdPlaceHolder"/>
 				</portlet:renderURL>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
 	self.location.href = url;
 	return false;
 }
@@ -172,6 +173,7 @@ function ss_clickFavorite() {
 
 function ss_addForumToFavorites() {
 	var binderId = '${ssBinder.id}';
+	var action = '${action}';
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
@@ -180,7 +182,8 @@ function ss_addForumToFavorites() {
 		<ssf:param name="operation" value="add_favorite_binder" />
     	</ssf:url>"
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addKeyValue("binderId", binderId)
+	ajaxRequest.addKeyValue("binderId", binderId);
+	ajaxRequest.addKeyValue("viewAction", action);
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
 	ajaxRequest.setUsePOST();

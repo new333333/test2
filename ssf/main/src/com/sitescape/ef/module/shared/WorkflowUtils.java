@@ -72,6 +72,55 @@ public class WorkflowUtils {
 		return transitionData;
     }
     
+    /**
+     * Get variables whose values we are waiting on.
+     * @param wfDef
+     * @param stateName
+     * @return
+     */
+    public static List getVariableWaits(Definition wfDef, String stateName) {
+		List transitionData = new ArrayList();
+		Document wfDoc = wfDef.getDefinition();
+		Element wfRoot = wfDoc.getRootElement();
+		//Find the current state in the definition
+		Element stateEle = getState(wfRoot, stateName);
+		if (stateEle != null) {
+			//Build a list of all variable transitions for this state
+			List transitions = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionCondition']");
+			if (transitions != null) {
+				for (int j = 0; j < transitions.size(); j++) {
+					Element toStateEle = (Element) ((Element) 
+							transitions.get(j)).selectSingleNode("./properties/property[@name='toState']");
+					if (toStateEle != null) {
+						String toStateValue = toStateEle.attributeValue("value", "");
+						String toStateCaption = "";
+						if (!toStateValue.equals("")) {
+							//We have a transition. get the caption;
+							Element toStateEle2 = (Element) wfRoot.selectSingleNode(
+									"//item[@name='workflowProcess']/item[@name='state']"+
+									"/properties/property[@name='name' and @value='"+toStateValue+"']");
+							if (toStateEle2 != null) {
+								Element toStateCaptionEle = 
+									(Element) toStateEle2.selectSingleNode("../property[@name='caption']");
+								if (toStateCaptionEle != null) {
+									toStateCaption = toStateCaptionEle.attributeValue("value", "");
+								}
+							}
+						}
+						if (toStateCaption.equals("")) toStateCaption = toStateValue;
+						if (!toStateValue.equals("") && !toStateCaption.equals("")) {
+							//TODO Check that the user has the right to execute this transition
+							
+							//Ok, add this transition to the map
+//							transitionData.put(toStateValue, toStateCaption);
+						}
+					}
+				}
+			}
+		}
+		return transitionData;
+    }
+    
     public static List getParallelThreadStarts(Definition wfDef, String stateName) {
 		List parallelExecutions = new ArrayList();
 		Document wfDoc = wfDef.getDefinition();
