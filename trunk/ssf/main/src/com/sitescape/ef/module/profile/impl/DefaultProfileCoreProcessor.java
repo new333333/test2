@@ -160,7 +160,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     }
     /**
      * Use to synchronize a user with an outside source.
-     * Don't index if not changed
+     * Don't index if not changed - could be on a schedule and don't want to
+     * reindex all uses unnecessarily
      */
 	public void syncEntry(final Principal entry, final InputDataAccessor inputData) {
 	    Map entryDataAll = modifyEntry_toEntryData(entry, inputData, null);
@@ -202,8 +203,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		return false;		
 	}
 	/**
-	 * Synchronize a list of entries.  The map key is entry Id, value
-	 * is a map of updates
+	 * Synchronize a list of entries.  The map key is the entry, value
+	 * is an InputDataAccessor of updates
 	 */
 	public void syncEntries(final Map entries) {
 	        

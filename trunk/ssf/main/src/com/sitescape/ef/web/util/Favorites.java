@@ -23,7 +23,6 @@ import com.sitescape.ef.util.NLT;
 public class Favorites {
    	public final static String FAVORITE_BINDER = "binder";
    	public final static String FAVORITE_ENTRY = "entry";
-   	
 	private Document favorites = null;
 	
 	public Favorites() {
@@ -33,7 +32,7 @@ public class Favorites {
 		this.favorites = favoritesDoc;
 	}
 	
-	public Document addFavorite(String name, String type, String value, String categoryId) {
+	public Document addFavorite(String name, String type, String value, String action, String categoryId) {
 		getFavorites();
 		Element root = this.favorites.getRootElement();
 		int id = Integer.parseInt((String)root.attributeValue("nextId"));
@@ -49,6 +48,7 @@ public class Favorites {
 		newFavorite.addAttribute("name", name);
 		newFavorite.addAttribute("type", type);
 		newFavorite.addAttribute("value", value);
+		newFavorite.addAttribute("action", action);
 		newFavorite.addAttribute("image", "page");
 		root.addAttribute("nextId", String.valueOf(++id));
 		
@@ -322,6 +322,7 @@ public class Favorites {
 				Element e = (Element)source;
 				element.addAttribute("title", e.attributeValue("name", "???"));
 				element.addAttribute("image", e.attributeValue("image", "page"));
+				element.addAttribute("action", e.attributeValue("action", ""));
 				//The id contains the favorite Id, the favorite type and the binderId
 				//  ss_favorites_xxx_type_yyy where xxx=the favorite id and yyy=the binderId
 				//  type is "b" for binder and "e" for entry

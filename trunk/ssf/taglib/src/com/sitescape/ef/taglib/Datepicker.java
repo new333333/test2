@@ -10,7 +10,6 @@ import javax.servlet.jsp.tagext.TagSupport;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
-import com.sitescape.ef.web.util.DatepickerException;
 import com.sitescape.ef.util.NLT;
 
 import java.util.Date;
@@ -18,7 +17,6 @@ import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.GregorianCalendar;
 import java.util.regex.*;
-import java.text.DateFormat;
 
 
 /**
@@ -37,13 +35,12 @@ public class Datepicker extends TagSupport {
     private String popupDivId = "";
     
     private boolean initDateProvided;
-    private DateFormat idf;
     private String contextPath;
 
-    	public int doStartTag() throws JspException, DatepickerException {
+    	public int doStartTag() throws JspException {
 	    JspWriter jspOut = pageContext.getOut(); 
 	    if (id == null) {
-	        throw new DatepickerException("ssf:datepicker calls must include a unique id"); 
+	        throw new JspException("ssf:datepicker calls must include a unique id"); 
 	    }
 	    String prefix = id;
 	    Pattern pat;
@@ -53,7 +50,7 @@ public class Datepicker extends TagSupport {
 	    pat = Pattern.compile("^.* .*$");
 	    mat = pat.matcher(prefix);
 	    if (mat.find()) {
-	        throw new DatepickerException("ssf:datepicker id (formName and id) must not contain spaces");
+	        throw new JspException("ssf:datepicker id (formName and id) must not contain spaces");
 	    }
 	    
 	    if (initDate == null) {
@@ -400,17 +397,17 @@ public class Datepicker extends TagSupport {
 	// component order is the order of the three form elements, month, day, and year
 	// the string should be any permutation of "m", "d", and "y", e.g. "mdy" or "ydm". 
 	public void setComponentOrder(String componentOrder) 
-	throws DatepickerException {
+	throws JspException {
 	    // check for a valid format string
 	    if (componentOrder.length() != 3) {
-	        throw new DatepickerException(
+	        throw new JspException(
 	                "componentOrder must be a string of exactly three characters");
 	    }
 	    for (int i = 0; i < 3; i++) {
 	        if (componentOrder.charAt(i)!= 'm' && 
 	                componentOrder.charAt(i) != 'd' &&
 	                componentOrder.charAt(i) != 'y') {
-	            throw new DatepickerException("componentOrder contains an illegal format charater: " + 
+	            throw new JspException("componentOrder contains an illegal format charater: " + 
 	                    componentOrder.charAt(i));
 	        }
 	    }

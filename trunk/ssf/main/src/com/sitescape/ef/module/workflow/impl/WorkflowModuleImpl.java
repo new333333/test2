@@ -14,14 +14,19 @@ import java.util.Date;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.domain.WfCondition;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.ef.module.workflow.WorkflowModule;
+import com.sitescape.ef.util.InvokeUtil;
+import com.sitescape.ef.util.ObjectPropertyNotFoundException;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.util.SZoneConfig;
 import com.sitescape.ef.domain.WfWaits;
@@ -800,6 +805,9 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		}
 	}
 	
+	/**
+	 * Signal a transition.  The caller is responsible for updating the index.
+	 */
 	public void modifyWorkflowState(Long tokenId, String fromState, String toState) {
 		JbpmContext context=WorkflowFactory.getContext();
 	    try {
@@ -865,6 +873,64 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     			}
     		}
     		if (token != null) context.save(token);
+        } finally {
+        	context.close();
+        }
+		
+	}
+	/**
+	 * See if an conditions have been met for a transition to a new state.
+	 * This would be triggered by a modify.  The caller is responsible for
+	 * udpating the index.
+	 * @param entry
+	 */
+	public void modifyWorkflowStateOnUpdate(WorkflowSupport entry, Definition entryDef) {
+		boolean found = true;
+		//loop until we get through states without any changes occuring.  Each change could trigger another
+		JbpmContext context=WorkflowFactory.getContext();
+	    try {
+	    	while (found) {
+	    		found=false;
+	    		Set states = entry.getWorkflowStates();
+		
+	    		for (Iterator iter=states.iterator(); iter.hasNext(); ) {
+	    			WorkflowState ws = (WorkflowState)iter.next();
+	    			List conditions = WorkflowUtils.getVariableWaits(ws.getDefinition(), ws.getState());
+	    			//process each condition until one is successful
+	    			for (int i=0; i<conditions.size(); ++i) {
+	    				WfCondition condition = (WfCondition)conditions.get(i);
+	    				if ((condition.getEntryDefId() != null) && (entryDef != null)) {
+	    					//make sure condition applies to fields of this entry
+	    					if (!condition.getEntryDefId().equals(entryDef.getId())) continue;
+	    				} else if ((condition.getEntryDefId() != null) || (entryDef != null))  continue;
+	    				Object currentVal=null;
+	    				try {
+	    					currentVal = InvokeUtil.invokeGetter(entry, condition.getAttributeName());
+	    				} catch (ObjectPropertyNotFoundException pe) {
+	    					if (entry instanceof DefinableEntity) {
+	    						CustomAttribute attr = ((DefinableEntity)entry).getCustomAttribute(condition.getAttributeName());
+	    						if (attr != null) currentVal = attr.getValue();
+	    					}
+	    					
+	    				}	    					
+	    				//create input access to handle condition and pass to getDefinitionModule.getEntryData();
+	    				//than compare
+	    				//compareTo works for string, Boolean, date, Long
+	    				//attr.getValue().compareTo(value);
+	    			
+	    				
+	    				if (true) {
+	    			       	Token t = context.loadTokenForUpdate(ws.getTokenId().longValue());
+	    		            t.signal(ws.getState() + "." + "transition");
+	    		            context.save(t);
+	    		            found = true;
+	    		            break;
+	    				}
+	    			}
+	    			//state set may have changed due to signal processing
+	    			if (found) break;
+	    		}
+	    	}
         } finally {
         	context.close();
         }

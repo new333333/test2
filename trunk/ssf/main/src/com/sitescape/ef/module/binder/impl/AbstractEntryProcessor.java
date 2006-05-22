@@ -224,6 +224,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		modifyEntry_postFillIn(binder, entry, inputData, entryData);
         		return null;
         	}});
+        modifyEntry_startWorkflow(entry);
+
         modifyEntry_indexRemoveFiles(binder, entry, deleteAttachments);
 	    modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems);
 	    
@@ -252,6 +254,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void modifyEntry_indexRemoveFiles(Binder binder, Entry entry, Collection attachments) {
     	removeFilesIndex(entry, attachments);
     }
+
+    protected void modifyEntry_startWorkflow(Entry entry) {
+    	if (!(entry instanceof WorkflowSupport)) return;
+    	WorkflowSupport wEntry = (WorkflowSupport)entry;
+    	//see if updates to entry, trigger transitions in workflow
+    	if (!wEntry.getWorkflowStates().isEmpty()) getWorkflowModule().modifyWorkflowStateOnUpdate(wEntry, entry.getEntryDef());
+    }   
+    
     protected Map modifyEntry_toEntryData(Entry entry, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
         Definition def = entry.getEntryDef();

@@ -63,18 +63,6 @@ public class EntryBuilder {
 
 	}
 	/**
-	 * Apply different updates to a collection of entries
-	 * @param entries - collection of <code>Entry</code>
-	 * @param data - a map index by the entry id, whose values are a map of updates
-	 */
-	public static void updateEntries(Collection entries, Map data) {
-    	for (Iterator iter=entries.iterator();iter.hasNext();) {
-    		DefinableEntity target = (DefinableEntity)iter.next();
-    		updateEntry(target,(Map)data.get(target.getId()));
-    	}
-
-	}
-	/**
 	 * Apply the same updates to a collection of entries
 	 * @param entries - collection of <code>Entry</code>
 	 * @param update - a map indexed by attribute name.  Apply same update to all entries

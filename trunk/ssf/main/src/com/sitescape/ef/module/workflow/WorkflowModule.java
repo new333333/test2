@@ -29,5 +29,6 @@ public interface WorkflowModule {
 	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef);
 	public void deleteEntryWorkflow(WorkflowSupport entry);
 	public void modifyWorkflowState(Long tokenId, String fromState, String toState);
+	public void modifyWorkflowStateOnUpdate(WorkflowSupport entry, Definition entryDef);
 	public void modifyWorkflowStateOnTimeout(Long timerId);
 }

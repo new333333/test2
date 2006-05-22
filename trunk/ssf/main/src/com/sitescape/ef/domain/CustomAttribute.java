@@ -6,7 +6,6 @@
  */
 package com.sitescape.ef.domain;
 import java.util.Date;
-import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;

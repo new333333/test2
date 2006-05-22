@@ -162,12 +162,12 @@ public class AjaxController  extends SAbstractController {
 	
 	private void ajaxAddFavoriteBinder(ActionRequest request, ActionResponse response) {
 		//Add a binder to the favorites list
-		String binderId = ((String[])formData.get("binderId"))[0];
+		String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		Binder binder = getBinderModule().getBinder(Long.valueOf(binderId));
 		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
 		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
 		Favorites f = new Favorites(favorites);
-		favorites = f.addFavorite(binder.getTitle(), Favorites.FAVORITE_BINDER, binderId, "");
+		favorites = f.addFavorite(binder.getTitle(), Favorites.FAVORITE_BINDER, binderId, PortletRequestUtils.getStringParameter(request, "viewAction", ""), "");
 		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
 	}
 	

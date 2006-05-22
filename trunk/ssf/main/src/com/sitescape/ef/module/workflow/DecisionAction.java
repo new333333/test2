@@ -70,7 +70,7 @@ public class DecisionAction extends AbstractActionHandler {
 						}
 						if (done) {
 							if (infoEnabled) logger.info("Decision transition("+ ws.getThreadName() + "): " + ws.getState() + "." + toState);
-							current.signal(ws.getState() + "." + toState);
+							executionContext.leaveNode(ws.getState() + "." + toState);
 							return;
 						}
  
