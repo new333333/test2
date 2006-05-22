@@ -159,9 +159,9 @@
 		<!--<copy file="jboss/resources/login-config.slide.xml" tofile="${app.server.dir}/server/default/conf/login-config.xml" />-->
 		<!--<move file="${app.server.deploy.dir}/slide.war/WEB-INF/lib/slide-jaas-2.1.jar" todir="${app.server.dir}/server/default/lib" failonerror="false" />-->
 		<!-- For Liferay -->
-		<copy file="liferay/changes/resources/web.jboss.ssf.xml" tofile="${deploy.liferay.webinf}/web.xml" />
-		<copy file="liferay/changes/resources/portal.jboss.ssf.properties" tofile="${app.server.deploy.dir}/ext.ear/portal-ejb.jar/portal.properties" />
-		<copy file="liferay/changes/resources/MANIFEST.jboss.ssf.MF" tofile="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/META-INF/MANIFEST.MF" />
+		<copy file="liferay/changes/resources/jboss.web.xml" tofile="${deploy.liferay.webinf}/web.xml" />
+		<copy file="liferay/changes/resources/jboss.portal.properties" tofile="${app.server.deploy.dir}/ext.ear/portal-ejb.jar/portal.properties" />
+		<copy file="liferay/changes/resources/jboss.MANIFEST.MF" tofile="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/META-INF/MANIFEST.MF" />
 	</target>		
 	
 </project>
