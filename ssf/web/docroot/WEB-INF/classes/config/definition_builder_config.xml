@@ -966,6 +966,7 @@
 			<option name="notifications" initial="true" />
 			<option name="onEntry" />
 			<option name="onExit" />
+			<option name="workflowQuestion" />
 			<option name="variable" />
 			<option name="startParallelThread" />
 			<option name="stopParallelThread" />
@@ -1044,9 +1045,10 @@
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
-			<option name="workflowEntryCondition" initial="true" />
+			<option name="workflowEntryCondition" />
 			<option name="variable" />
 		</options>
+		<help>__help_workflow_condition</help>
 	</item>
 	<item name="conditionOnElapsedTime" caption="__transition_condition_on_elapsed_time" type="transition">
 		<properties>
@@ -1078,6 +1080,27 @@
 		<properties>
 			<property name="condition" caption="__workflow_entry_condition" 
 				type="workflowCondition" />
+		</properties>
+	</item>
+	
+	<item name="workflowQuestion" caption="__workflow_question" type="workflowQuestion">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" 
+				unique="//item[@type='workflowQuestion']" />
+			<property name="question" caption="__workflow_question_text" type="text" />
+		</properties>
+		<options>
+			<option name="workflowResponse" caption="__workflow_response" />
+		</options>
+	</item>
+	
+	<item name="workflowResponse" caption="__workflow_response" type="workflowResponse" >
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$"
+				unique="//item[@type='workflowResponse']" />
+			<property name="response" caption="__workflow_response_text" type="text" />
 		</properties>
 	</item>
 	

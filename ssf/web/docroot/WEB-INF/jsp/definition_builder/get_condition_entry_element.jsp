@@ -27,14 +27,16 @@
 	parseInBrowser="true"><div 
 	   id="conditionEntryElements" ><select
 	   name="conditionDefinitionId" 
-	   onChange="ss_getFilterSelectionBox(this, 'elementName', 'get_element_values')">
+	   onChange="getConditionSelectbox(this, 'get_condition_entry_element_values')">
 	     <option value="" selected="selected"><ssf:nlt 
 	       tag="filter.selectElement" text="--select an element--"/></option>
 	     <c:forEach var="element" items="${ssEntryDefinitionElementData}">
-	       <c:if test="${element.value.type == 'title' || element.value.type == 'event' || 
-	                     element.value.type == 'text'  || element.value.type == 'selectbox' || 
-	                     element.value.type == 'radio' || element.value.type == 'checkbox' || 
-	       				 element.value.type == 'date'  || element.value.type == 'user_list'}">
+	       <c:if test="${element.value.type == 'event' || 
+	                     element.value.type == 'selectbox' || 
+	                     element.value.type == 'radio' || 
+	                     element.value.type == 'checkbox' || 
+	       				 element.value.type == 'date'  || 
+	       				 element.value.type == 'user_list'}">
 	         <option value="<c:out value="${element.key}"/>"><c:out value="${element.value.caption}"/></option>
 	       </c:if>
 	     </c:forEach>
@@ -42,12 +44,17 @@
 
 	<taconite-replace contextNodeID="conditionValueList" 
 	parseInBrowser="true"><div 
-	id="conditionValueList" 
-	style="visibility:visible; display:inline;"></div></taconite-replace>
+	  id="conditionValueList" 
+	  style="visibility:visible; display:inline;"></div></taconite-replace>
 
-	<taconite-replace contextNodeID="conditionValueData" 
+	<taconite-replace contextNodeID="conditionOperators" 
 	parseInBrowser="true"><div 
-	  id="conditionValueData" 
+	  id="conditionOperators" 
+	  style="visibility:visible; display:inline;"></div></taconite-replace>
+
+	<taconite-replace contextNodeID="conditionOperand" 
+	parseInBrowser="true"><div 
+	  id="conditionOperand" 
 	  style="visibility:visible; display:inline;"></div></taconite-replace>
 
 <%
