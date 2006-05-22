@@ -6,7 +6,7 @@ package com.sitescape.ef.web.util;
 
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.util.NLT;
-
+import com.sitescape.ef.ConfigurationException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -25,7 +25,7 @@ public class DateHelper {
   * Use this call, without the sequence number, for the vanilla case
   */
     static public Date getDateFromInput(InputDataAccessor inputData, String id) 
-    throws DatepickerException {
+    throws ConfigurationException {
         return getDateFromInput (inputData, id, "0");
     }
     
@@ -35,7 +35,7 @@ public class DateHelper {
  * In this case, the sequence number is passed in to select which timepicker tag is to be used.
  */
     static public Date getDateFromInput (InputDataAccessor inputData, String id, String sequenceNumber) 
-    throws DatepickerException {
+    throws ConfigurationException {
         Date d = new Date();
         // date fields don't have a sequence number; time fields do
         String datePrefix = id + "_";
@@ -55,10 +55,10 @@ public class DateHelper {
         // check that the fields are there
         // date fields (select boxes) *must* be there
         if (!inputData.exists(datePrefix+"month")) {
-            throw new DatepickerException("Cannot find required date field: month.");
+            throw new ConfigurationException("Cannot find required date field: month.");
         }
         if (!inputData.exists(datePrefix+"date")) {
-            throw new DatepickerException("Cannot find required date field: date.");
+            throw new ConfigurationException("Cannot find required date field: date.");
         }
 
         GregorianCalendar cal = new GregorianCalendar();
