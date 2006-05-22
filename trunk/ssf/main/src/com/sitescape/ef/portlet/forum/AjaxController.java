@@ -386,6 +386,11 @@ public class AjaxController  extends SAbstractController {
 				Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
 				model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
 			}
+		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
+			if (formData.containsKey(WebKeys.CONDITION_ENTRY_DEF_ID)) {
+				String defId = ((String[])formData.get(WebKeys.CONDITION_ENTRY_DEF_ID))[0];
+				model.put(WebKeys.CONDITION_ENTRY_DEF_ID, defId);
+			}
 		}
 		
 		model.put(WebKeys.AJAX_STATUS, statusMap);
