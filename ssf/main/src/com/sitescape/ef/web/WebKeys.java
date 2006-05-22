@@ -88,6 +88,7 @@ public class WebKeys {
     public static final String OPERATION_MODIFY="modify";
     public static final String OPERATION_MOVE="move";
        
+	public static final String FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS = "get_condition_entry_elements";
 	public static final String FORUM_OPERATION_GET_ENTRY_ELEMENTS = "get_entry_elements";
 	public static final String FORUM_OPERATION_GET_ELEMENT_VALUES = "get_element_values";
 	public static final String FORUM_OPERATION_GET_ELEMENT_VALUE_DATA = "get_element_value_data";
@@ -120,6 +121,7 @@ public class WebKeys {
 	public static final String BINDER="ssBinder";
 	public static final String BINDER_ID="ssBinderId";
 	public static final String BINDER_ENTRIES="ssBinderEntries";
+	public static final String CONDITION_ENTRY_DEF_ID="conditionDefinitionId";
 	public static final String CONFIG_ELEMENT="ssConfigElement";
     public static final String CONFIG_DEFINITION="ssConfigDefinition";
     public static final String CONFIG_JSP_STYLE="ssConfigJspStyle";
