@@ -1,0 +1,40 @@
+<Context path="" docBase="../liferay" debug="0" reloadable="true" crossContext="true">
+	<Resource name="jdbc/LiferayPool" auth="Container" type="javax.sql.DataSource" />
+	<ResourceParams name="jdbc/LiferayPool">
+		<parameter>
+			<name>driverClassName</name>
+			<value>net.sourceforge.jtds.jdbc.Driver</value>
+		</parameter>
+		<parameter>
+			<name>url</name>
+			<value>jdbc:jtds:sqlserver://localhost/lportal</value>
+		</parameter>
+		<parameter>
+			<name>username</name>
+			<value>sa</value>
+		</parameter>
+		<parameter>
+			<name>password</name>
+			<value>sa</value>
+		</parameter>
+		<parameter> 
+			<name>maxActive</name> 
+			<value>20</value> 
+		</parameter>
+	</ResourceParams>
+	<Resource name="mail/MailSession" auth="Container" type="javax.mail.Session" />
+	<ResourceParams name="mail/MailSession">
+		<parameter>
+			<name>mail.smtp.host</name>
+			<value>localhost</value>
+		</parameter>
+	</ResourceParams>
+	<Realm
+		className="org.apache.catalina.realm.JAASRealm"
+		appName="PortalRealm"
+		userClassNames="com.liferay.portal.jaas.PortalPrincipal"
+		roleClassNames="com.liferay.portal.jaas.PortalRole"
+		debug="99"
+		useContextClassLoader="false"
+	/>
+</Context>
