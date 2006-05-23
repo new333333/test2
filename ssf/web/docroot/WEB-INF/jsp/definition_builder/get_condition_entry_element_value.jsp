@@ -23,48 +23,86 @@
 		<div id="ss_condition_status_message" style="visibility:hidden; display:none;">ok</div>
 	</taconite-replace>
 
-	<taconite-replace contextNodeID="conditionValueList" 
-	parseInBrowser="true"><div 
-	   id="conditionValueList" >
-	   <input type="hidden" name="conditionDefinitionId" value="" />
-       <c:if test="${element.value.type == 'event' || 
-                     element.value.type == 'selectbox' || 
-                     element.value.type == 'radio' || 
-                     element.value.type == 'checkbox' || 
-       				 element.value.type == 'date'  || 
-       				 element.value.type == 'user_list'}">
-		   <select
-		   name="conditionElementValue" 
-		   onChange="getConditionSelectbox(this, 'get_condition_operators')">
-		     <option value="" selected="selected"><ssf:nlt 
-		       tag="condition.selectValue" text="--select a value--"/></option>
-		     <c:forEach var="element" items="${ssEntryDefinitionElementData}">
-		       <c:if test="${element.value.type == 'event'}">
-		         <option value="<c:out value="${element.key}"/>"><c:out value="${element.value.caption}"/></option>
-		       </c:if>
-		       <c:if test="${element.value.type == 'selectbox'}">
-		         <option value="<c:out value="${element.key}"/>"><c:out value="${element.value.caption}"/></option>
-		       </c:if>
-		       <c:if test="${element.value.type == 'radio'}">
-		         <option value="<c:out value="${element.key}"/>"><c:out value="${element.value.caption}"/></option>
-		       </c:if>
-		       <c:if test="${element.value.type == 'user_list'}">
-		         <option value="<c:out value="${element.key}"/>"><c:out value="${element.value.caption}"/></option>
-		       </c:if>
-		     </c:forEach>
-		   </select>
-		</c:if>
-		</div></taconite-replace>
-
-	<taconite-replace contextNodeID="conditionOperators" 
-	parseInBrowser="true"><div 
-	  id="conditionOperators" 
-	  style="visibility:visible; display:inline;"></div></taconite-replace>
-
 	<taconite-replace contextNodeID="conditionOperand" 
 	parseInBrowser="true"><div 
-	  id="conditionOperand" 
-	  style="visibility:visible; display:inline;"></div></taconite-replace>
+	   id="conditionOperand" >
+	   <input type="hidden" name="conditionDefinitionId" value="${conditionDefinitionId}" />
+	   <input type="hidden" name="conditionElementName" value="${conditionElementName}" />
+	   <input type="hidden" name="conditionElementOperation" value="${conditionElementOperation}" />
+       <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'event' || 
+                     ssEntryDefinitionElementData[conditionElementName].type == 'selectbox' || 
+                     ssEntryDefinitionElementData[conditionElementName].type == 'radio' || 
+       				 ssEntryDefinitionElementData[conditionElementName].type == 'date'  || 
+       				 ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
+		   
+		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'event'}">
+		     <c:if test="${conditionElementOperation == 'beforeStart' || 
+		                   conditionElementOperation == 'afterStart' || 
+		                   conditionElementOperation == 'beforeEnd' || 
+		                   conditionElementOperation == 'afterEnd'}">
+		       <table>
+		        <tbody>
+		         <tr>
+		           <td valign="top">
+		             <input type="text" size="3" name="operationDateOffset"/>
+		           </td>
+		           <td valign="top">
+		             <input type="radio" name="operationDateType" value="minutes" /><ssf:nlt tag="minutes" text="minutes"/><br/>
+		             <input type="radio" name="operationDateType" value="hours" /><ssf:nlt tag="hours" text="hours"/><br/>
+		             <input type="radio" name="operationDateType" value="days" checked="checked" /><ssf:nlt tag="days" text="days"/>
+		           </td>
+		         </tr>
+		        </tbody>
+		       </table>
+		     </c:if>
+		   </c:if>
+		   
+		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'date'}">
+		     <c:if test="${conditionElementOperation == 'beforeDate' || 
+		                   conditionElementOperation == 'afterDate'}">
+		       <table>
+		        <tbody>
+		         <tr>
+		           <td valign="top">
+		             <input type="text" size="3" name="operationDateOffset"/>
+		           </td>
+		           <td valign="top">
+		             <input type="radio" name="operationDateType" value="minutes" /><ssf:nlt tag="minutes" text="minutes"/><br/>
+		             <input type="radio" name="operationDateType" value="hours" /><ssf:nlt tag="hours" text="hours"/><br/>
+		             <input type="radio" name="operationDateType" value="days" checked="checked" /><ssf:nlt tag="days" text="days"/>
+		           </td>
+		         </tr>
+		        </tbody>
+		       </table>
+		     </c:if>
+		   </c:if>
+		   
+		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'selectbox'}">
+		     <select
+		     name="conditionElementValue">
+		     <option value="" selected="selected"><ssf:nlt 
+		       tag="condition.selectValue" text="--select a value--"/></option>
+		       <c:forEach var="elementValue" items="${ssEntryDefinitionElementData[conditionElementName].values}">
+		         <option value="<c:out value="${elementValue.key}"/>"><c:out value="${elementValue.value}"/></option>
+		       </c:forEach>
+		     </select>
+		   </c:if>
+		   
+		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'radio'}">
+		     <select
+		     name="conditionElementValue">
+		     <option value="" selected="selected"><ssf:nlt 
+		       tag="condition.selectValue" text="--select a value--"/></option>
+		       <c:forEach var="elementValue" items="${ssEntryDefinitionElementData[conditionElementName].values}">
+		         <option value="<c:out value="${elementValue.key}"/>"><c:out value="${elementValue.value}"/></option>
+		       </c:forEach>
+		     </select>
+		   </c:if>
+		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
+		       -- user and group selection goes here --<br/>
+		   </c:if>
+		</c:if>
+		</div></taconite-replace>
 
 <%
 	}

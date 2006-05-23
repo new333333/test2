@@ -71,7 +71,7 @@ public class AjaxController  extends SAbstractController {
 		this.unseenCounts = new HashMap();
 		this.statusMap = new HashMap();
 		this.formData = request.getParameterMap();
-		this. op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		this.op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		this.op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		
 		if (!WebHelper.isUserLoggedIn(request)) {
@@ -96,7 +96,9 @@ public class AjaxController  extends SAbstractController {
 					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
 					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
 				return new ModelAndView("binder/get_entry_elements", model);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS)) {
+			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
+					op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST) ||
+				op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
 				return new ModelAndView("definition_builder/get_condition_element", model);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_WORKSPACE_TREE)) {
 				return new ModelAndView("tag_jsps/tree/get_tree_div", model);
@@ -137,7 +139,9 @@ public class AjaxController  extends SAbstractController {
 				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
 			return ajaxGetFilterData(request, response);
 
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS)) {
+		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
+				op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
+				op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
 			return ajaxGetConditionData(request, response);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_WORKSPACE_TREE)) {
@@ -379,24 +383,34 @@ public class AjaxController  extends SAbstractController {
 	private ModelAndView ajaxGetConditionData(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		//Get the definition id (if present)
-		if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS)) {
-			if (formData.containsKey(WebKeys.CONDITION_ENTRY_DEF_ID)) {
-				String defId = ((String[])formData.get(WebKeys.CONDITION_ENTRY_DEF_ID))[0];
-				model.put(WebKeys.CONDITION_ENTRY_DEF_ID, defId);
-				Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
-				model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
-			}
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
-			if (formData.containsKey(WebKeys.CONDITION_ENTRY_DEF_ID)) {
-				String defId = ((String[])formData.get(WebKeys.CONDITION_ENTRY_DEF_ID))[0];
-				model.put(WebKeys.CONDITION_ENTRY_DEF_ID, defId);
-			}
+		if (formData.containsKey(WebKeys.CONDITION_ENTRY_DEF_ID)) {
+			String defId = ((String[])formData.get(WebKeys.CONDITION_ENTRY_DEF_ID))[0];
+			model.put(WebKeys.CONDITION_ENTRY_DEF_ID, defId);
+			Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
+			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
+		}
+		
+		if (formData.containsKey(WebKeys.CONDITION_ELEMENT_NAME)) {
+			String name = ((String[])formData.get(WebKeys.CONDITION_ELEMENT_NAME))[0];
+			model.put(WebKeys.CONDITION_ELEMENT_NAME, name);
+		}
+		
+		if (formData.containsKey(WebKeys.CONDITION_ELEMENT_OPERATION)) {
+			String value = ((String[])formData.get(WebKeys.CONDITION_ELEMENT_OPERATION))[0];
+			model.put(WebKeys.CONDITION_ELEMENT_OPERATION, value);
+		}
+		
+		if (formData.containsKey(WebKeys.CONDITION_ELEMENT_VALUE)) {
+			String value = ((String[])formData.get(WebKeys.CONDITION_ELEMENT_VALUE))[0];
+			model.put(WebKeys.CONDITION_ELEMENT_VALUE, value);
 		}
 		
 		model.put(WebKeys.AJAX_STATUS, statusMap);
 		response.setContentType("text/xml");
 		if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS)) {
 			return new ModelAndView("definition_builder/get_condition_entry_element", model);
+		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_OPERATIONS)) {
+			return new ModelAndView("definition_builder/get_condition_entry_element_operations", model);
 		} else {
 			return new ModelAndView("definition_builder/get_condition_entry_element_value", model);
 		}
