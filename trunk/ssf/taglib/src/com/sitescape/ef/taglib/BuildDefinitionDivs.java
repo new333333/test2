@@ -828,8 +828,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						}
 						sb.append("</select>\n<br/><br/>\n");
 						sb.append("<div id=\"conditionEntryElements\"></div>\n");
-						sb.append("<div id=\"conditionValueList\"></div>\n");
-						sb.append("<div id=\"conditionOperators\"></div>\n");
+						sb.append("<div id=\"conditionOperations\"></div>\n");
 						sb.append("<div id=\"conditionOperand\"></div>\n");
 						
 					

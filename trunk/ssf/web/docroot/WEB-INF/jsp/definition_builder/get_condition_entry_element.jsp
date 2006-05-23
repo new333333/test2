@@ -25,9 +25,11 @@
 
 	<taconite-replace contextNodeID="conditionEntryElements" 
 	parseInBrowser="true"><div 
-	   id="conditionEntryElements" ><select
-	   name="conditionDefinitionId" 
-	   onChange="getConditionSelectbox(this, 'get_condition_entry_element_values')">
+	   id="conditionEntryElements" >
+	   <input type="hidden" name="conditionDefinitionId" value="${conditionDefinitionId}" />
+	   <select
+	   name="conditionElementName" 
+	   onChange="getConditionSelectbox(this, 'get_condition_entry_element_operations')">
 	     <option value="" selected="selected"><ssf:nlt 
 	       tag="filter.selectElement" text="--select an element--"/></option>
 	     <c:forEach var="element" items="${ssEntryDefinitionElementData}">
@@ -42,14 +44,9 @@
 	     </c:forEach>
 	   </select></div></taconite-replace>
 
-	<taconite-replace contextNodeID="conditionValueList" 
+	<taconite-replace contextNodeID="conditionOperations" 
 	parseInBrowser="true"><div 
-	  id="conditionValueList" 
-	  style="visibility:visible; display:inline;"></div></taconite-replace>
-
-	<taconite-replace contextNodeID="conditionOperators" 
-	parseInBrowser="true"><div 
-	  id="conditionOperators" 
+	  id="conditionOperations" 
 	  style="visibility:visible; display:inline;"></div></taconite-replace>
 
 	<taconite-replace contextNodeID="conditionOperand" 
