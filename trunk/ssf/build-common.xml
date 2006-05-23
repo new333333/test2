@@ -17,12 +17,12 @@
 	<taskdef classpathref="project.classpath" resource="axis-tasks.properties" />
 	<property name="java2html.dir" value="${api.dir}/${ant.project.name}" />
 	<property name="javadoc.dir" value="${api.dir}/${ant.project.name}" />
-	<propertycopy name="app.server.dir" from="app.server.${app.server.type}.dir" />
-	<propertycopy name="app.server.deploy.dir" from="app.server.${app.server.type}.deploy.dir" />
-	<propertycopy name="app.server.lib.dir" from="app.server.${app.server.type}.lib.dir" />
-	<propertycopy name="app.server.ssf.dir" from="app.server.${app.server.type}.ssf.dir" />
-	<propertycopy name="app.server.slide.dir" from="app.server.${app.server.type}.slide.dir" />
-
+	<propertycopy name="app.server.dir" from="app.server.${portal.type}.${app.server.type}.dir" />
+	<propertycopy name="app.server.deploy.dir" from="app.server.${portal.type}.${app.server.type}.deploy.dir" />
+	<propertycopy name="app.server.lib.dir" from="app.server.${portal.type}.${app.server.type}.lib.dir" />
+	<propertycopy name="app.server.ssf.dir" from="app.server.${portal.type}.${app.server.type}.ssf.dir" />
+	<propertycopy name="app.server.ssfs.dir" from="app.server.${portal.type}.${app.server.type}.ssfs.dir" />
+	
 	<target name="clean">
 		<delete file="${jar.file}" failonerror="false" />
 		<delete dir="${java2html.dir}" />
@@ -56,7 +56,7 @@
 
 	<target name="java2html">
 		<java
-			classname="com.liferay.util.Java2Html"
+			classname="com.sitescape.util.Java2Html"
 			classpathref="project.classpath"
 			fork="true">
 				<arg value="${java2html.bat}" />

@@ -12,7 +12,7 @@
 		</delete>		
 		
 		<delete dir="${app.server.ssf.dir}"/>
-		<delete dir="${app.server.slide.dir}"/>
+		<delete dir="${app.server.ssfs.dir}"/>
 	</target>
 	
 	<target name="init-liferay">
@@ -104,6 +104,9 @@
 				<!--<arg value="${app.server.deploy.dir}/ext.ear/lib/util-jsf.jar" />-->
 		</java>
 
+		
+		
+		
 		<antcall target="deploy-liferay-post" />
 		<ant dir="ssfs" target="deploy" inheritAll="false" />
 		
@@ -119,6 +122,7 @@
 		     v1.0 of jdom. -->
 		<copy file="lib/jdom.jar" todir="${app.server.ssf.dir}/WEB-INF/lib" />
 		<copy file="lib/xalan.jar" todir="${app.server.dir}/common/endorsed" />
+		<copy file="lib/jtds.jar" todir="${app.server.dir}/common/lib" />
 	</target>
 		
 	<target name="deploy-liferay-jboss-tomcat" depends="init-liferay">	
@@ -162,6 +166,7 @@
 		<copy file="liferay/changes/resources/jboss.web.xml" tofile="${deploy.liferay.webinf}/web.xml" />
 		<copy file="liferay/changes/resources/jboss.portal.properties" tofile="${app.server.deploy.dir}/ext.ear/portal-ejb.jar/portal.properties" />
 		<copy file="liferay/changes/resources/jboss.MANIFEST.MF" tofile="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/META-INF/MANIFEST.MF" />
+		<copy file="lib/jtds.jar" todir="${app.server.server.dir}/lib" />
 	</target>		
 	
 </project>
