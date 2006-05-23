@@ -1,0 +1,80 @@
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+
+<%@ page contentType="text/xml" %>
+<%@ page import="java.util.Map" %>
+<jsp:useBean id="ss_ajaxStatus" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssEntryDefinitionElementData" type="java.util.Map" scope="request" />
+
+<taconite-root>
+<%
+	if (ss_ajaxStatus.containsKey("ss_ajaxNotLoggedIn")) {
+%>
+	<taconite-replace contextNodeID="ss_condition_status_message" parseInBrowser="true">
+		<div id="ss_condition_status_message">
+		  <script type="text/javascript">
+		    if (self.ss_notLoggedIn) self.ss_notLoggedIn();
+		  </script>
+		</div
+	</taconite-replace>
+<%
+	} else {
+%>
+	<taconite-replace contextNodeID="ss_condition_status_message" parseInBrowser="true">
+		<div id="ss_condition_status_message" style="visibility:hidden; display:none;">ok</div>
+	</taconite-replace>
+
+	<taconite-replace contextNodeID="conditionOperations" 
+	parseInBrowser="true"><div 
+	   id="conditionOperations" >
+	   <input type="hidden" name="conditionDefinitionId" value="${conditionDefinitionId}" />
+	   <input type="hidden" name="conditionElementName" value="${conditionElementName}" />
+       <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'event' || 
+                     ssEntryDefinitionElementData[conditionElementName].type == 'selectbox' || 
+                     ssEntryDefinitionElementData[conditionElementName].type == 'radio' || 
+                     ssEntryDefinitionElementData[conditionElementName].type == 'checkbox' || 
+       				 ssEntryDefinitionElementData[conditionElementName].type == 'date'  || 
+       				 ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
+	   <select
+	   name="conditionElementOperation" 
+	   onChange="getConditionSelectbox(this, 'get_condition_entry_element_values')">
+	     <option value="" selected="selected"><ssf:nlt 
+	       tag="filter.selectElementOperation" text="--select an operation--"/></option>
+		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'event'}">
+		       <option value="started"><ssf:nlt tag="started" text="Start date passed"/></option>
+		       <option value="ended"><ssf:nlt tag="ended" text="End date passed"/></option>
+		       <option value="beforeStart"><ssf:nlt tag="beforeStart" text="Before the start date"/></option>
+		       <option value="afterStart"><ssf:nlt tag="afterStart" text="After the start date"/></option>
+		       <option value="beforeEnd"><ssf:nlt tag="beforeEnd" text="Before the end date"/></option>
+		       <option value="afterEnd"><ssf:nlt tag="afterEnd" text="After the end date"/></option>
+		     </c:if>
+		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'date'}">
+		       <option value="ended"><ssf:nlt tag="ended" text="Date passed"/></option>
+		       <option value="beforeDate"><ssf:nlt tag="beforeDate" text="Before the date"/></option>
+		       <option value="afterDate"><ssf:nlt tag="afterDate" text="After the date"/></option>
+		     </c:if>
+		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'checkbox'}">
+		       <option value="true"><ssf:nlt tag="checked" text="Checked"/></option>
+		       <option value="false"><ssf:nlt tag="checked_not" text="Not checked"/></option>
+		     </c:if>
+		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'selectbox'}">
+		         <option value="equals"><ssf:nlt tag="equals" text="Equals"/></option>
+		     </c:if>
+		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'radio'}">
+		         <option value="equals"><ssf:nlt tag="equals" text="Equals"/></option>
+		     </c:if>
+		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
+		         <option value="equals"><ssf:nlt tag="equals" text="Equals"/></option>
+		     </c:if>
+	   </select>
+	   </c:if>
+	   </div></taconite-replace>
+
+	<taconite-replace contextNodeID="conditionOperand" 
+	parseInBrowser="true"><div 
+	  id="conditionOperand" 
+	  style="visibility:visible; display:inline;"></div></taconite-replace>
+
+<%
+	}
+%>	
+</taconite-root>
