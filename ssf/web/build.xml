@@ -5,8 +5,8 @@
 	
 	<property name="war.file" value="ssf-web.war" />
 		
-	<propertycopy name="app.server.dir" from="app.server.${app.server.type}.dir" />
-	<propertycopy name="app.server.ssf.dir" from="app.server.${app.server.type}.ssf.dir" />
+	<propertycopy name="app.server.dir" from="app.server.${portal.type}.${app.server.type}.dir" />
+	<propertycopy name="app.server.ssf.dir" from="app.server.${portal.type}.${app.server.type}.ssf.dir" />
 	<property name="jsp.artifacts.dir" value="${basedir}/${jspclasses.dir}/${app.server.type}" />
 
 	<target name="clean">

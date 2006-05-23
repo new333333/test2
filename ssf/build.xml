@@ -4,33 +4,44 @@
 
 	<property name="docs.api.dir" value="docs/api" />
 
-	<target name="init-build">
+	<target name="init">
 		<property environment="env" />
 		<property name="project.dir" value="." />
+		<property file="app.server.${user.name}.properties" />
+		<property file="app.server.properties" />
   		<property file="build.${user.name}.properties" />
   		<property file="build.properties" />
+  		<property file="release.${user.name}.properties" />
+  		<property file="release.properties" />
+  		<property file="liferay.${user.name}.properties" />
+  		<property file="liferay.properties" />
 		<property name="temp.dir" value="${basedir}/temp" />
+		<pathconvert targetos="unix" property="temp.dir.path">
+			<path>
+				<pathelement location="${temp.dir}"/>
+			</path>
+		</pathconvert>
 		<path id="project.classpath">
 			<pathelement path="${classpath}" />
-			<fileset dir="${project.dir}/lib" includes="*.jar" />
+			<fileset dir="lib" includes="*.jar" />
 		</path>
 		<path id="project.sourcepath">
 			<pathelement path="${sourcepath}" />
 		</path>
-	</target>
-	
-	<target name="init-release">
-		<property environment="env" />
-  		<property file="release.${user.name}.properties" />
-  		<property file="release.properties" />
+		<taskdef classpathref="project.classpath" resource="net/sf/antcontrib/antcontrib.properties" />
 	</target>
 
 	<target name="all" depends="clean,build,deploy" />
 
 	<target name="all-without-clean" depends="build,deploy" />
 
-	<target name="deploy">
-		<ant antfile="build-deploy.xml" target="deploy-liferay" />
+	<target name="deploy" depends="init">
+		<if>
+			<equals arg1="${portal.type}" arg2="liferay" />
+			<then>				
+				<ant dir="liferay" target="full-deploy" inheritAll="false" />
+			</then>
+		</if>
 	</target>
 	
 	<target name="build">
@@ -41,7 +52,6 @@
 	<target name="clean">
 		<delete dir="${temp.dir}" />
 		<delete dir="dist" />
-		<delete dir="liferay/temp" />
 		<delete dir="${docs.api.dir}" />
 		
 		<ant dir="util" target="clean" />
@@ -139,7 +149,7 @@
 	</target>
 
 
-	<target name="javadoc-combined" depends="init-build">
+	<target name="javadoc-combined" depends="init">
 		<delete dir="${docs.api.dir}" />
 		<mkdir dir="${docs.api.dir}" />
 		<javadoc
@@ -148,7 +158,7 @@
 			destdir="${docs.api.dir}"
 			packagenames="*.*"
 			sourcepathref="project.sourcepath"
-			stylesheetfile="${project.dir}/tools/javadoc.css"
+			stylesheetfile="tools/javadoc.css"
 		/>	</target>
 	
 	<!-- This will not run properly unless you've already deployed -->
@@ -164,7 +174,7 @@
   		<ant dir="stellent" target="zip" />
 	</target>
 
-	<target name="zip-docs" depends="init-release">
+	<target name="zip-docs" depends="init">
 		<mkdir dir="${dist.dir}" />
 		<delete file="${dist.dir}/sitescape-forum-${ssf.version}-doc.zip" failonerror="false" />
 		<zip zipfile="${dist.dir}/sitescape-forum-${ssf.version}-doc.zip"
@@ -173,7 +183,7 @@
 		/>
 	</target>
 
-	<!--<target name="zip-src" depends="init-release">
+	<!--<target name="zip-src" depends="init">
 		<delete file="${dist.dir}/sitescape-forum-${ssf.version}-src.zip" failonerror="false" />
 		<zip zipfile="${dist.dir}/sitescape-forum-${ssf.version}-src.zip"
 			basedir="${ssf.source.dir}"
@@ -181,7 +191,7 @@
 		/>
 	</target>-->
 
-	<target name="zip-war" depends="init-release">
+	<target name="zip-war" depends="init">
 		<mkdir dir="${dist.dir}" />
 		<delete file="${dist.dir}/sitescape-forum-${ssf.version}-war.zip" failonerror="false" />
 		<zip destfile="${dist.dir}/sitescape-forum-${ssf.version}-war.zip">
@@ -195,10 +205,20 @@
 	</target>
 
 	<!-- Build Aspen kit bundled with Liferay+Tomcat -->
-	<target name="liferay-tomcat-bundle" depends="init-build">
+	<target name="liferay-tomcat-bundle" depends="init">
 		<delete dir="${temp.dir}" />
-		<unzip src="3rd-party/liferay/${liferay.tomcat.kit}" dest="${temp.dir}/" />
-		
+		<unzip src="liferay/download/${liferay.tomcat.zip.file.name}" dest="${temp.dir}/" />
+		<move file="app.server.${user.name}.properties" tofile="app.server.${user.name}.properties.moved" failonerror="false"/>
+		<echo file="app.server.${user.name}.properties">portal.type=liferay
+app.server.type=tomcat
+app.server.liferay.tomcat.dir=${temp.dir.path}
+		</echo>
+		<ant dir="liferay" target="full-deploy" inheritAll="false" />
+		<mkdir dir="${dist.dir}" />
+		<delete file="${dist.dir}/sitescape-forum-${ssf.version}-liferay-tomcat.zip" failonerror="false" />
+		<zip destfile="${dist.dir}/sitescape-forum-${ssf.version}-liferay-tomcat.zip"
+			basedir="${temp.dir}" />
+		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
 	</target>
 	
 	<target name="release">
@@ -217,6 +237,7 @@
 		      <antcall target="unit-test" />-->
 		<!--<antcall target="java2html" />-->
 		<antcall target="javadoc-combined" />
+		<antcall target="liferay-tomcat-bundle" />
 		<antcall target="zip" />
 	</target>
 
