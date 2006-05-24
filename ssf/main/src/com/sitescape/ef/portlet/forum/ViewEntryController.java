@@ -28,6 +28,7 @@ import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
@@ -58,7 +59,7 @@ public class ViewEntryController extends  SAbstractController {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 
 		Map formData = request.getParameterMap();
-		String viewPath=WebKeys.VIEW_LISTING;
+		String viewPath = BinderHelper.getViewListingJsp();
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		Map model = getShowEntry(entryId, formData, request, response, folderId);
 		entryId = (String)model.get(WebKeys.ENTRY_ID);

@@ -36,6 +36,7 @@ import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.Toolbar;
@@ -137,7 +138,7 @@ public class SAbstractForumController extends SAbstractController {
 			}
 		}
 		model.put(WebKeys.FOLDER_TOOLBAR, buildFolderToolbar(response, folder, forumId).getToolbar());
-		return WebKeys.VIEW_LISTING;
+		return BinderHelper.getViewListingJsp();
 	}  
 	protected Toolbar buildFolderToolbar(RenderResponse response, Folder folder, String forumId) {
 		//Build the toolbar array

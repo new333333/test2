@@ -26,14 +26,13 @@
 	<taconite-replace contextNodeID="conditionOperations" 
 	parseInBrowser="true"><div 
 	   id="conditionOperations" >
-	   <input type="hidden" name="conditionDefinitionId" value="${conditionDefinitionId}" />
-	   <input type="hidden" name="conditionElementName" value="${conditionElementName}" />
        <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'event' || 
                      ssEntryDefinitionElementData[conditionElementName].type == 'selectbox' || 
                      ssEntryDefinitionElementData[conditionElementName].type == 'radio' || 
                      ssEntryDefinitionElementData[conditionElementName].type == 'checkbox' || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'date'  || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
+	   <span class="ss_bold"><ssf:nlt tag="definition.selectEntryOperation"/></span>
 	   <select
 	   name="conditionElementOperation" 
 	   onChange="getConditionSelectbox(this, 'get_condition_entry_element_values')">
