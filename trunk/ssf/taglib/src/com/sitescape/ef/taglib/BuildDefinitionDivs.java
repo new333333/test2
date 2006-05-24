@@ -815,6 +815,9 @@ public class BuildDefinitionDivs extends TagSupport {
 						DefinitionUtils.getDefinitions(definitions);
 						Map publicEntryDefinitions = (Map) definitions.get(WebKeys.PUBLIC_ENTRY_DEFINITIONS);
 						
+						sb.append("<span class=\"ss_bold\">");
+						sb.append(NLT.get("definition.selectEntryType"));
+						sb.append("</span><br>");
 						sb.append("<select name=\"conditionDefinitionId\" ");
 						sb.append("onChange=\"getConditionSelectbox(this, 'get_condition_entry_elements')\" ");
 						sb.append(">\n");
@@ -827,8 +830,8 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(">").append(entryDef.getTitle()).append(" (").append(entryDef.getName()).append(")</option>\n");
 						}
 						sb.append("</select>\n<br/><br/>\n");
-						sb.append("<div id=\"conditionEntryElements\"></div>\n");
-						sb.append("<div id=\"conditionOperations\"></div>\n");
+						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");
+						sb.append("<div id=\"conditionOperations\"></div><br/>\n");
 						sb.append("<div id=\"conditionOperand\"></div>\n");
 						
 					

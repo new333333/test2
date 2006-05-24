@@ -17,6 +17,7 @@ import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
@@ -90,7 +91,7 @@ public class ViewEntryController extends SAbstractController {
 		} catch (AccessControlException ac) {};
     
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, toolbar.getToolbar());
-		return new ModelAndView(WebKeys.VIEW_LISTING, model);
+		return new ModelAndView(BinderHelper.getViewListingJsp(), model);
 	}	
 	
 } 

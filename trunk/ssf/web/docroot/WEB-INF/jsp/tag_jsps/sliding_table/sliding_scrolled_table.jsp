@@ -137,9 +137,18 @@ function ss_showSlidingTableCols() {
     	//But, always start the first column at the left edge
     	if (i == 1) deltaLeft = 0;
 	    
-	    //The column cannot start to the left of the table boundary or be wider than the table
+ 	    //The column cannot start to the left of the table boundary or be wider than the table
+	    //Also leave enough room at the right edge of each column so it can be grabbed
+	    var maxColDelta = parseInt((ss_columnCount - i) * 8);
+	    var maxColLeftAdjusted = parseInt(maxColLeft - maxColDelta)
 	    if (deltaLeft < 0) deltaLeft = 0
-	    if (deltaLeft > maxColLeft) deltaLeft = maxColLeft
+	    if (deltaLeft > maxColLeftAdjusted) {
+	    	deltaLeft = maxColLeftAdjusted
+	    	if (ss_colWidthsUser["col"+i]) {
+	    		//Save the adjusted value
+	    		ss_colWidthsUser["col"+i] = deltaLeft
+	    	}
+	    }
     	
     	w = parseInt(ss_sTableInnerWidth - deltaLeft) + "px"
     	if (parseInt(w) < 0) w = defColWidth + "px";
@@ -557,6 +566,8 @@ function ss_postSlidingTableRequest(obj) {
 	//See if there was an error
 	if (self.document.getElementById("ss_sliding_table_status_message").innerHTML == "error") {
 		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+	} else {
+		ss_showSlidingTableCols200()
 	}
 }
 </script>

@@ -26,7 +26,7 @@
 	<taconite-replace contextNodeID="conditionEntryElements" 
 	parseInBrowser="true"><div 
 	   id="conditionEntryElements" >
-	   <input type="hidden" name="conditionDefinitionId" value="${conditionDefinitionId}" />
+	   <span class="ss_bold"><ssf:nlt tag="definition.selectEntryElement"/></span>
 	   <select
 	   name="conditionElementName" 
 	   onChange="getConditionSelectbox(this, 'get_condition_entry_element_operations')">

@@ -490,6 +490,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								value = "false";
 							}
 							newPropertyEle.addAttribute("value", value);
+						} else if (type.equals("workflowCondition")) {
+							//Workflow conditions typically have 4 bits of data to capture: 
+							//  the definition id, the element name, the operation, and the operand value
+							
 						}
 					}
 				} else {

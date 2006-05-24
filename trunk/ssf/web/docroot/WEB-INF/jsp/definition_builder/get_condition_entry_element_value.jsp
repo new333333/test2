@@ -26,9 +26,6 @@
 	<taconite-replace contextNodeID="conditionOperand" 
 	parseInBrowser="true"><div 
 	   id="conditionOperand" >
-	   <input type="hidden" name="conditionDefinitionId" value="${conditionDefinitionId}" />
-	   <input type="hidden" name="conditionElementName" value="${conditionElementName}" />
-	   <input type="hidden" name="conditionElementOperation" value="${conditionElementOperation}" />
        <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'event' || 
                      ssEntryDefinitionElementData[conditionElementName].type == 'selectbox' || 
                      ssEntryDefinitionElementData[conditionElementName].type == 'radio' || 
@@ -78,6 +75,7 @@
 		   </c:if>
 		   
 		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'selectbox'}">
+	   		 <span class="ss_bold"><ssf:nlt tag="definition.selectEntryValue"/></span>
 		     <select
 		     name="conditionElementValue">
 		     <option value="" selected="selected"><ssf:nlt 
@@ -89,6 +87,7 @@
 		   </c:if>
 		   
 		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'radio'}">
+	   		<span class="ss_bold"><ssf:nlt tag="definition.selectEntryValue"/></span>
 		     <select
 		     name="conditionElementValue">
 		     <option value="" selected="selected"><ssf:nlt 

@@ -18,6 +18,7 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.web.util.DateHelper;
@@ -87,7 +88,7 @@ public class ListFolderController  extends SAbstractForumController {
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			request.setAttribute("ssReloadUrl", reloadUrl.toString());			
-//			return new ModelAndView(WebKeys.VIEW_LISTING);
+//			return new ModelAndView(BinderHelper.getViewListingJsp());
 		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY)) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			if (!entryId.equals("")) {

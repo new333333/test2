@@ -21,6 +21,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
@@ -53,7 +54,7 @@ public class ListProfilesController extends   SAbstractController {
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			model.put("ssReloadUrl", reloadUrl.toString());
-			return new ModelAndView(WebKeys.VIEW_LISTING, model);
+			return new ModelAndView(BinderHelper.getViewListingJsp(), model);
 		}
 
 	   	User user = RequestContextHolder.getRequestContext().getUser();
@@ -87,7 +88,7 @@ public class ListProfilesController extends   SAbstractController {
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
 		model.put(WebKeys.FOLDER_TOOLBAR, buildViewToolbar(response, binder).getToolbar());
-		return new ModelAndView(WebKeys.VIEW_LISTING, model);
+		return new ModelAndView(BinderHelper.getViewListingJsp(), model);
 	}
 
 	protected Toolbar buildViewToolbar(RenderResponse response, ProfileBinder binder) {
