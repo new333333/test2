@@ -522,6 +522,7 @@ function ss_saveSlidingTableCoords() {
     for (var i = 0; i <= ss_columnCount; i++) {
     	var colLeft = parseInt(parseInt(self.document.getElementById("col"+i).style.left) - ss_sTableLeft - ss_sTableMarginLeft)
 	    s += colLeft+" "
+	    ss_colWidthsUser["col"+i] = colLeft
     }
     self.document.forms['ss_columnPositionForm'].column_positions.value = s;
 	var url = "<ssf:url 
