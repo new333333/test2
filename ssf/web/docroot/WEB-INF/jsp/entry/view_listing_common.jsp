@@ -1,13 +1,5 @@
 <% // The main forum view - for viewing folder listings and for viewing entries %>
-<c:if test="${!empty ssReloadUrl}">
-<script type="text/javascript">
-	//Open the current url in the opener window
-	ss_reloadOpener('<c:out value="${ssReloadUrl}"/>')
-</script>
 
-</c:if>
-
-<c:if test="${empty ssReloadUrl}">
 <%
 
 String op = (String) renderRequest.getAttribute(WebKeys.ACTION);
@@ -20,7 +12,8 @@ String ssLoadEntryUrl = (String) renderRequest.getAttribute("ssLoadEntryUrl");
 if (ssLoadEntryUrl == null) ssLoadEntryUrl = "";
 String ssLoadEntryId = (String) renderRequest.getAttribute("ssLoadEntryId");
 if (ssLoadEntryId == null) ssLoadEntryId = "";
-
+//this jsp should is not included when reloadurl is set.  This is left here
+//until we get after a reply to work - it may be needed then
 String ssReloadUrl = (String) renderRequest.getAttribute("ssReloadUrl");
 if (ssReloadUrl == null) ssReloadUrl = "";
 boolean reloadCaller = false;
@@ -279,5 +272,3 @@ ss_createOnResizeObj('ss_viewEntryResize', ss_viewEntryResize);
 %>
   </c:if>
 </c:if>
-</c:if>
-
