@@ -9,9 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
 
@@ -814,6 +817,131 @@ public class BuildDefinitionDivs extends TagSupport {
 						Map definitions = new HashMap();
 						DefinitionUtils.getDefinitions(definitions);
 						Map publicEntryDefinitions = (Map) definitions.get(WebKeys.PUBLIC_ENTRY_DEFINITIONS);
+						Element workflowConditionProperty = (Element)rootElement.selectSingleNode("properties/property[@name='condition']");
+						if (workflowConditionProperty != null) {
+							Element workflowConditionEle = (Element) workflowConditionProperty.selectSingleNode("workflowCondition");
+							if (workflowConditionEle != null) {
+								//We have the current condition element; print out its values
+								String definitionId = workflowConditionEle.attributeValue("definitionId", "");
+								String elementName = workflowConditionEle.attributeValue("elementName", "");
+								String operation = workflowConditionEle.attributeValue("operation", "");
+								String duration = workflowConditionEle.attributeValue("duration", "");
+								String durationType = workflowConditionEle.attributeValue("durationType", "");
+								//Get the entry definition itself
+								DefinitionModule definitionModule = (DefinitionModule)SpringContextUtil.getBean("definitionModule");
+								Definition def = definitionModule.getDefinition(definitionId);
+								if (def != null) {
+									
+									sb.append("<span class=\"ss_bold\">");
+									sb.append(NLT.get("definition.workflowCondition"));
+									sb.append("</span><br/><br/>");
+									sb.append("<table class=\"ss_form\"><tbody>");
+									sb.append("<tr>");
+									sb.append("<td valign=\"top\">");
+									sb.append("<span class=\"ss_bold\">");
+									sb.append(NLT.get("definition.currentWorkflowConditionEntryType"));
+									sb.append("</span><br/>");
+									sb.append("</td>");
+									sb.append("<td valign=\"top\">");
+									sb.append(def.getTitle());
+									sb.append("</td>");
+									sb.append("</tr>");
+									
+									sb.append("<tr>");
+									sb.append("<td valign=\"top\">");
+									sb.append("<span class=\"ss_bold\">");
+									sb.append(NLT.get("definition.currentWorkflowConditionElementName"));
+									sb.append("</span><br/>");
+									sb.append("</td>");
+									sb.append("<td valign=\"top\">");
+									sb.append(elementName);
+									sb.append("</td>");
+									sb.append("</tr>");
+									
+									sb.append("<tr>");
+									sb.append("<td valign=\"top\">");
+									sb.append("<span class=\"ss_bold\">");
+									sb.append(NLT.get("definition.currentWorkflowConditionOperation"));
+									sb.append("</span><br/>");
+									sb.append("</td>");
+									sb.append("<td valign=\"top\">");
+									if (operation.equals("equals")) {
+										sb.append(NLT.get("definition.operation_equals"));
+									} else if (operation.equals("started")) {
+										sb.append(NLT.get("definition.operation_started"));
+									} else if (operation.equals("ended")) {
+										sb.append(NLT.get("definition.operation_ended"));
+									} else if (operation.equals("datePassed")) {
+										sb.append(NLT.get("definition.operation_datePassed"));
+									} else if (operation.equals("beforeStart")) {
+										sb.append(NLT.get("definition.operation_beforeStart"));
+									} else if (operation.equals("afterStart")) {
+										sb.append(NLT.get("definition.operation_afterStart"));
+									} else if (operation.equals("beforeEnd")) {
+										sb.append(NLT.get("definition.operation_beforeEnd"));
+									} else if (operation.equals("afterEnd")) {
+										sb.append(NLT.get("definition.operation_afterEnd"));
+									} else if (operation.equals("beforeDate")) {
+										sb.append(NLT.get("definition.operation_beforeDate"));
+									} else if (operation.equals("afterDate")) {
+										sb.append(NLT.get("definition.operation_afterDate"));
+									} else if (operation.equals("checked")) {
+										sb.append(NLT.get("definition.operation_checked"));
+									} else if (operation.equals("checkedNot")) {
+										sb.append(NLT.get("definition.operation_checkedNot"));
+									} else {
+										sb.append(operation);
+									}
+									sb.append("</td>");
+									sb.append("</tr>");
+									
+									//See if there is a duration
+									if (!duration.equals("") && !durationType.equals("")) {
+										sb.append("<tr>");
+										sb.append("<td valign=\"top\">");
+										sb.append("<span class=\"ss_bold\">");
+										sb.append(NLT.get("definition.currentWorkflowConditionDuration"));
+										sb.append("</span><br/>");
+										sb.append("</td>");
+										sb.append("<td valign=\"top\">");
+										sb.append(duration);
+										sb.append(" ");
+										if (durationType.equals("minutes")) {
+											sb.append(NLT.get("definition.currentWorkflowConditionDurationMinutes"));
+										} else if (durationType.equals("hours")) {
+											sb.append(NLT.get("definition.currentWorkflowConditionDurationHours"));
+										} else if (durationType.equals("days")) {
+											sb.append(NLT.get("definition.currentWorkflowConditionDurationDays"));
+										}
+										sb.append("</td>");
+										sb.append("</tr>");
+									}
+									
+									//See if there are values
+									Iterator it_workflowConditionValues = workflowConditionEle.elementIterator("value");
+									if (it_workflowConditionValues.hasNext()) {
+										sb.append("<tr>");
+										sb.append("<td valign=\"top\">");
+										sb.append("<span class=\"ss_bold\">");
+										sb.append(NLT.get("definition.currentWorkflowConditionValues"));
+										sb.append("</span><br/>");
+										sb.append("</td>");
+										sb.append("<td valign=\"top\">");
+										while (it_workflowConditionValues.hasNext()) {
+											sb.append(((Element)it_workflowConditionValues.next()).getText());
+											if (it_workflowConditionValues.hasNext()) sb.append("<br/>");
+										}
+										sb.append("</td>");
+										sb.append("</tr>");
+									}
+										
+									sb.append("</tbody></table>");
+									sb.append("");
+									sb.append("");
+									sb.append("<br/>");
+								}
+							}
+						}
 						
 						sb.append("<span class=\"ss_bold\">");
 						sb.append(NLT.get("definition.selectEntryType"));
