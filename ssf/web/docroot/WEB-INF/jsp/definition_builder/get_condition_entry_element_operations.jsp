@@ -32,7 +32,7 @@
                      ssEntryDefinitionElementData[conditionElementName].type == 'checkbox' || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'date'  || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
-	   <span class="ss_bold"><ssf:nlt tag="definition.selectEntryOperation"/></span>
+	   <span class="ss_bold"><ssf:nlt tag="definition.selectEntryOperation"/></span><br/>
 	   <select
 	   name="conditionElementOperation" 
 	   onChange="getConditionSelectbox(this, 'get_condition_entry_element_values')">

@@ -75,7 +75,7 @@
 		   </c:if>
 		   
 		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'selectbox'}">
-	   		 <span class="ss_bold"><ssf:nlt tag="definition.selectEntryValue"/></span>
+	   		 <span class="ss_bold"><ssf:nlt tag="definition.selectEntryValue"/></span><br/>
 		     <select
 		     name="conditionElementValue">
 		     <option value="" selected="selected"><ssf:nlt 
@@ -87,7 +87,7 @@
 		   </c:if>
 		   
 		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'radio'}">
-	   		<span class="ss_bold"><ssf:nlt tag="definition.selectEntryValue"/></span>
+	   		<span class="ss_bold"><ssf:nlt tag="definition.selectEntryValue"/></span><br/>
 		     <select
 		     name="conditionElementValue">
 		     <option value="" selected="selected"><ssf:nlt 
