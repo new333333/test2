@@ -817,7 +817,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						
 						sb.append("<span class=\"ss_bold\">");
 						sb.append(NLT.get("definition.selectEntryType"));
-						sb.append("</span><br>");
+						sb.append("</span><br/>");
 						sb.append("<select name=\"conditionDefinitionId\" ");
 						sb.append("onChange=\"getConditionSelectbox(this, 'get_condition_entry_elements')\" ");
 						sb.append(">\n");
