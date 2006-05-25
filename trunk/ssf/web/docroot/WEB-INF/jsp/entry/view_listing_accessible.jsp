@@ -4,7 +4,13 @@
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
+<c:if test="${!empty ssReloadUrl}">
+<script type="text/javascript">
+	//Open the current url in the opener window
+	ss_reloadOpener('<c:out value="${ssReloadUrl}"/>')
+</script>
 
+</c:if>
 <c:if test="${empty ssReloadUrl}">
 <jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
@@ -12,20 +18,7 @@
 <%@ include file="/WEB-INF/jsp/entry/view_listing_common.jsp" %>
 <jsp:useBean id="ss_entryWindowWidth" type="java.lang.Integer" scope="request" />
 <jsp:useBean id="ss_entryWindowHeight" type="java.lang.Integer" scope="request" />
-<%
-String op = (String) renderRequest.getAttribute(WebKeys.ACTION);
 
-String ssReloadUrl = (String) renderRequest.getAttribute("ssReloadUrl");
-if (ssReloadUrl == null) ssReloadUrl = "";
-boolean reloadCaller = false;
-if (!ssReloadUrl.equals("")) reloadCaller = true;
-
-boolean isViewEntry = false;
-if (!op.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING) && !op.equals(WebKeys.ACTION_VIEW_PROFILE_LISTING)) {
-	isViewEntry = true;
-}
-	
-%>
   <c:if test="<%= !reloadCaller %>">
     <c:if test="<%= !isViewEntry %>">
 
