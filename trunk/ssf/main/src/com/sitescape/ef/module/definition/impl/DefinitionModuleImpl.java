@@ -491,29 +491,39 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								value = "false";
 							}
 							newPropertyEle.addAttribute("value", value);
-						} else if (type.equals("workflowCondition")) {
-							//Workflow conditions typically have 4 bits of data to capture: 
-							//  the definition id, the element name, the operation, and the operand value
-							if (formData.containsKey("conditionDefinitionId") && 
-									formData.containsKey("conditionElementName") &&
-									formData.containsKey("conditionElementOperation")) {
-								String conditionDefinitionId = ((String[]) formData.get("conditionDefinitionId"))[0];
-								String conditionElementName = ((String[]) formData.get("conditionElementName"))[0];
-								String conditionElementOperation = ((String[]) formData.get("conditionElementOperation"))[0];
-								Element workflowCondition = newPropertyEle.addElement("workflowCondition");
-								workflowCondition.addAttribute("definitionId", conditionDefinitionId);
-								workflowCondition.addAttribute("elementName", conditionElementName);
-								workflowCondition.addAttribute("operation", conditionElementOperation);
-								if (formData.containsKey("conditionElementValue")) {
-									String[] conditionValues = (String[]) formData.get("conditionElementValue");
-									for (int j = 0; j < conditionValues.length; j++) { 
-										String conditionValue = conditionValues[j];
-										workflowCondition.addElement("value").setText(conditionValue);
-									}
-								}
+						}
+					}
+				} else if (type.equals("workflowCondition")) {
+					//Workflow conditions typically have 4 bits of data to capture: 
+					//  the definition id, the element name, the operation, and the operand value
+					if (formData.containsKey("conditionDefinitionId") && 
+							formData.containsKey("conditionElementName") &&
+							formData.containsKey("conditionElementOperation")) {
+						Element newPropertyEle = configProperty.createCopy();
+						newPropertiesEle.add(newPropertyEle);
+						String conditionDefinitionId = ((String[]) formData.get("conditionDefinitionId"))[0];
+						String conditionElementName = ((String[]) formData.get("conditionElementName"))[0];
+						String conditionElementOperation = ((String[]) formData.get("conditionElementOperation"))[0];
+						Element workflowCondition = newPropertyEle.addElement("workflowCondition");
+						workflowCondition.addAttribute("definitionId", conditionDefinitionId);
+						workflowCondition.addAttribute("elementName", conditionElementName);
+						workflowCondition.addAttribute("operation", conditionElementOperation);
+						if (formData.containsKey("operationDuration") && 
+								formData.containsKey("operationDurationType")) {
+							String operationDuration = ((String[]) formData.get("operationDuration"))[0];
+							String operationDurationType = ((String[]) formData.get("operationDurationType"))[0];
+							workflowCondition.addAttribute("duration", operationDuration);
+							workflowCondition.addAttribute("durationType", operationDurationType);
+						}
+						if (formData.containsKey("conditionElementValue")) {
+							String[] conditionValues = (String[]) formData.get("conditionElementValue");
+							for (int j = 0; j < conditionValues.length; j++) { 
+								String conditionValue = conditionValues[j];
+								workflowCondition.addElement("value").setText(conditionValue);
 							}
 						}
 					}
+					
 				} else {
 					if (type.equals("boolean") || type.equals("checkbox")) {
 						String value = "false";

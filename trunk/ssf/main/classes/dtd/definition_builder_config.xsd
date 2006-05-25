@@ -147,6 +147,8 @@
     <xsd:attribute name="definitionId" type="xsd:string"/>
     <xsd:attribute name="elementName" type="xsd:string"/>
     <xsd:attribute name="operation" type="xsd:string"/>
+    <xsd:attribute name="duration" type="xsd:string"/>
+    <xsd:attribute name="durationType" type="xsd:string"/>
   </xsd:complexType>
 
   <xsd:complexType name="excludeType">
