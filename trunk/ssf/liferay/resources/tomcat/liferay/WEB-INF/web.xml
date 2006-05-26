@@ -226,6 +226,7 @@
 		<servlet-class>com.liferay.portal.spring.servlet.RemotingServlet</servlet-class>
 		<load-on-startup>14</load-on-startup>
 	</servlet>
+	<!-- SiteScape: Added SiteScapeServlet servlet -->
 	<servlet>
 		<servlet-name>SiteScapeServlet</servlet-name>
 		<servlet-class>com.sitescape.ef.portalmodule.web.servlet.SiteScapeServlet</servlet-class>
