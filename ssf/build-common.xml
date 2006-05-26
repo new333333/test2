@@ -18,6 +18,7 @@
 	<property name="java2html.dir" value="${api.dir}/${ant.project.name}" />
 	<property name="javadoc.dir" value="${api.dir}/${ant.project.name}" />
 	<propertycopy name="app.server.dir" from="app.server.${portal.type}.${app.server.type}.dir" />
+	<propertycopy name="app.server.server.dir" from="app.server.${portal.type}.${app.server.type}.server.dir" />
 	<propertycopy name="app.server.deploy.dir" from="app.server.${portal.type}.${app.server.type}.deploy.dir" />
 	<propertycopy name="app.server.lib.dir" from="app.server.${portal.type}.${app.server.type}.lib.dir" />
 	<propertycopy name="app.server.ssf.dir" from="app.server.${portal.type}.${app.server.type}.ssf.dir" />

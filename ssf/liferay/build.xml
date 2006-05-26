@@ -101,7 +101,7 @@
 
 				<!-- Optional Arguments -->
 
-				<jvmarg value="-Ddeployer.jboss.prefix=1" />
+				<!--<jvmarg value="-Ddeployer.jboss.prefix=1" />-->
 				<jvmarg value="-Ddeployer.tomcat.lib.dir=${app.server.dir}/common/lib/ext" />
 
 				<!-- Dependent Libraries -->
@@ -149,14 +149,14 @@
 
 				<!-- Required Arguments -->
 
-				<jvmarg value="-Ddeployer.base.dir=liferay/temp/" />
+				<jvmarg value="-Ddeployer.base.dir=temp/" />
 				<jvmarg value="-Ddeployer.dest.dir=${app.server.deploy.dir}" />
 				<jvmarg value="-Ddeployer.app.server.type=${app.server.type}" />
 				<jvmarg value="-Ddeployer.portlet.taglib.dtd=${deploy.liferay.portlet.tld}" />
 
 				<!-- Optional Arguments -->
 
-				<jvmarg value="-Ddeployer.jboss.prefix=1" />
+				<!--<jvmarg value="-Ddeployer.jboss.prefix=1" />-->
 				<!--<jvmarg value="-Ddeployer.tomcat.lib.dir=${app.server.dir}/common/lib/ext" />-->
 
 				<!-- Dependent Libraries -->
@@ -170,17 +170,24 @@
 		
 		<antcall target="deploy-additional-components" />
 		
-		<!-- For SSF -->
-		<copy file="jboss/resources/ssf-ds.xml" todir="${app.server.deploy.dir}" />		
-		<copy file="jboss/resources/mail-service.liferay.ssf.xml" tofile="${app.server.deploy.dir}/mail-service.xml" />		
-		<!-- For Slide -->
-		<!--<copy file="jboss/resources/server.slide.xml" tofile="${app.server.deploy.dir}/jbossweb-tomcat55.sar/server.xml" />-->
-		<!--<copy file="jboss/resources/login-config.slide.xml" tofile="${app.server.dir}/server/default/conf/login-config.xml" />-->
-		<!--<move file="${app.server.deploy.dir}/slide.war/WEB-INF/lib/slide-jaas-2.1.jar" todir="${app.server.dir}/server/default/lib" failonerror="false" />-->
-		<!-- For Liferay -->
-		<copy file="liferay/changes/resources/jboss.web.xml" tofile="${deploy.liferay.webinf}/web.xml" />
-		<copy file="liferay/changes/resources/jboss.portal.properties" tofile="${app.server.deploy.dir}/ext.ear/portal-ejb.jar/portal.properties" />
-		<copy file="liferay/changes/resources/jboss.MANIFEST.MF" tofile="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/META-INF/MANIFEST.MF" />
+		<copy todir="${app.server.dir}" overwrite="true">
+			<fileset dir="resources/jboss-tomcat" />
+		</copy>
+		
+		<!--<echo file="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/META-INF/MANIFEST.MF" append="true" message=" lib/ssf-liferay.jar lib/ssf-portalmodule.jar" />-->
+	
+		<copy todir="${app.server.dir}" overwrite="true">
+			<fileset dir="${project.dir}/jboss/resources" />
+		</copy>
+		
+		<delete>
+			<fileset dir="${app.server.deploy.dir}/ssfs.war/WEB-INF/lib" includes="commons-logging*.jar"/>
+		</delete>
+		
+		<!--
+		<move file="${app.server.deploy.dir}/slide.war/WEB-INF/lib/slide-jaas-2.1.jar" todir="${app.server.dir}/server/default/lib" failonerror="false" />
+		-->
+				
 		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.server.dir}/lib" />
 	</target>		
 	
