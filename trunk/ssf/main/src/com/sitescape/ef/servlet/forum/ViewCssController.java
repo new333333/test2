@@ -12,6 +12,7 @@ public class ViewCssController extends SAbstractController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 		
+		response.setContentType("text/xml");			
 		String viewPath = "common/ssf_css";
 		return new ModelAndView(viewPath);
 	}

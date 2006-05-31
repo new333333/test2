@@ -13,7 +13,7 @@ String ssfBoxId = renderResponse.getNamespace() + "_ssf_box_div";
 </div>
 
 <div id="ss_showentrydiv" style="position:absolute; visibility:hidden; x:0; y:0; z-index:50;
-  width:<%= ss_entryWindowWidth %>; height:80%; display:none;">
+  width:${ss_entryWindowWidth}; height:80%; display:none;">
   <ssf:box>
     <ssf:param name="box_id" value="<%= ssfBoxId %>" />
     <ssf:param name="box_width" value="400" />
@@ -25,7 +25,7 @@ String ssfBoxId = renderResponse.getNamespace() + "_ssf_box_div";
 </div>
 
 <script type="text/javascript">
-var ss_entryWindowWidth = <%= ss_entryWindowWidth %>;
+var ss_entryWindowWidth = ${ss_entryWindowWidth};
 var ss_originalEntryDivHtml = null;
 if (isNSN || isNSN6 || isMoz5) {
     wObj = self.document.getElementById('ss_showentrydiv')

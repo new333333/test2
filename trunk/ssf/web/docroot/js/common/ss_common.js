@@ -568,6 +568,7 @@ function ss_getDivWidth(divName) {
     } else {
         var obj = self.document.all[divName]
     }
+    //if (!obj) alert(divName);
     return parseInt(obj.offsetWidth);
 }
 
