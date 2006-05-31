@@ -727,14 +727,27 @@ HTMLArea.prototype.generate = function () {
 			html += "<head>\n";
 			if (editor.config.baseURL)
 				html += '<base href="' + editor.config.baseURL + '" />';
-			html += "<style> html,body { border: 0px; background-color: " + 
-			    _editor_bgColor + "; color:" + _editor_textColor + ";} " +
+			html += "<style> html,body { border: 0px; } " +
 				editor.config.pageStyle + "</style>\n";
+			html += "<script type=\"text/javascript\">\n";
+			html += "function ss_createStyleSheet(url) {\n";
+			html += "   if (document.createStyleSheet) {\n";
+			html += "      document.createStyleSheet(url);\n";
+			html += "   } else {\n";
+			html += "	   var styles = \"@import url(' \" + url +\" ');\";\n";
+			html += "	   var newSS = document.createElement('link');\n";
+			html += "	   newSS.rel = 'stylesheet';\n";
+			html += "	   newSS.href = 'data:text/css,' + escape(styles);\n";
+			html += "	   document.getElementsByTagName(\"head\")[0].appendChild(newSS);\n";
+			html += "   }\n";
+			html += "}\n";
+			html += "</script>\n";
 			html += "</head>\n";
-			html += "<body onUnload='parent.document.getElementById(\"" + editor._textArea.name + "\").value = document.body.innerHTML'>\n";
+			html += "<body onLoad=\"ss_createStyleSheet('" + _editor_style_sheet + "')\" class=\"htmlEditorColorScheme\" onUnload='parent.document.getElementById(\"" + editor._textArea.name + "\").value = document.body.innerHTML'>\n";
 			html += editor._textArea.value;
 			html += "</body>\n";
 			html += "</html>";
+			alert(html);
 			doc.write(html);
 			doc.close();
 		} else {

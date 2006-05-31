@@ -50,12 +50,12 @@ ${dayabbrev}</td>
 
 <c:choose>
 <c:when test="${daymap.isToday}">
-<td class="ss_fineprint" bgcolor="${ss_calendar_today_background_color}" 
+<td class="ss_calendar_today ss_fineprint" 
   valign="top"><span class="ss_right ss_bold"><a 
   href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
 </c:when>
 <c:when test="${!daymap.inView}">
-<td class="ss_fineprint" bgcolor="${ss_calendar_notInView_background_color}" 
+<td class="ss_calendar_notInView ss_fineprint" 
   valign="top"><span class="ss_right ss_bold"><a 
   href="${daymap.dayURL}">${daymap.cal_dom}</a></span><br />&nbsp;
 </c:when>
