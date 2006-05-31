@@ -52,7 +52,7 @@ function ss_createStyleSheet(url) {
 var ss_urlBase = self.location.protocol + "//" + self.location.host + "/";
 var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
 var ssf_cssUrl = "<ssf:url     
-    webPath="viewCss" />ssf_css.css";
+    webPath="viewCss" />ssf_css_${ss_color_theme}.css";
 var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
 var niftyCornersCssUrl = ss_urlBase + "<html:rootPath/>css/nifty_corners.css";
 var htmlareaCssUrl = ss_urlBase + "<html:rootPath/>js/htmlarea/htmlarea.css";
