@@ -33,7 +33,7 @@ function setFilteredEntry(id) {
 <tr>
 <c:choose>
 <c:when test="${daymap.isToday}">
-<td align="center" bgcolor="${ss_calendar_today_background_color}" width="1%" valign="top">
+<td class="ss_calendar_today" align="center" width="1%" valign="top">
 </c:when>
 <c:otherwise>
 <td align="center" width="1%" valign="top">

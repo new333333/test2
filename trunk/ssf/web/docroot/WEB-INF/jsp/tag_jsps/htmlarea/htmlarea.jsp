@@ -19,8 +19,7 @@
 <script type="text/javascript">	
 var _editor_url = "<html:rootPath />js/htmleditor/";
 var _editor_lang = "en";
-var _editor_bgColor = "${ss_form_element_color}";
-var _editor_textColor = "${ss_form_element_text_color}";
+var _editor_style_sheet = "<html:rootPath/>css/ss_color_theme_${ss_color_theme}.css";
 </script>
 
 <style>
