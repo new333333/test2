@@ -1,17 +1,23 @@
 package com.sitescape.ef.module.binder;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import com.sitescape.ef.SingletonViolationException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.WfAcl;
 import com.sitescape.ef.domain.WorkflowSupport;
+import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.ef.security.acl.AclAccessControlException;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.function.OperationAccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
@@ -175,14 +181,56 @@ public class AccessUtils  {
     	   		getAccessManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES);     	   
         }    	
     }
-    public static void deleteCheck(Entry entry) throws AccessControlException {
+     public static void checkTransitionIn(Binder binder, WorkflowSupport entry, Definition definition, String toState)  
+     	throws AccessControlException {
+     	 WfAcl acl = WorkflowUtils.getStateTransitionInAcl(definition, toState);
+     	checkTransitionAcl(acl, binder, entry, "transitionIn");
+     }
+     public static void checkTransitionOut(Binder binder, WorkflowSupport entry, Definition definition, String toState)  
+     	throws AccessControlException {
+     	 WfAcl acl = WorkflowUtils.getStateTransitionOutAcl(definition, toState);
+     	checkTransitionAcl(acl, binder, entry, "transitionOut");
+     }
+     private static void checkTransitionAcl(WfAcl acl, Binder binder, WorkflowSupport entry, String type)  
+      	throws AccessControlException {
+    	 //see if owner can modify
+      	 if (acl.isCreator()) {
+      		 if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) {
+       			 if (binder.isWidenModify()) return;
+       			 if (getAccessManager().testOperation(binder, WorkAreaOperation.CREATOR_MODIFY)) return;
+       		 }
+       	 }
+       	 //see if folder default is enabled.
+	     if (acl.isUseDefault()) {
+       		 try {
+       			 getAccessManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES); 
+       			 return;
+       		 } catch (OperationAccessControlException ex) {
+       			 //at this point we can stop if workflow cannot widen access
+       			 if (!binder.isWidenModify()) throw ex;
+       		 }
+     	 }
+       	 //if fail this test exception is thrown
+       	 getAccessManager().checkAcl(binder, (AclControlled)entry, AccessType.WRITE, false, false);
+       	 if (binder.isWidenModify()) return;
+       	 //make sure acl list is sub-set of binder access
+       	 User user = RequestContextHolder.getRequestContext().getUser();
+       	 Set principalIds = user.computePrincipalIds();
+       	 Set memberIds = acl.getPrincipals();
+         for (Iterator i = principalIds.iterator(); i.hasNext();) {
+             if(memberIds.contains(i.next()))
+                 return;
+         }
+         throw new AclAccessControlException(user.getName(), type); 
+     }
+     public static void deleteCheck(Entry entry) throws AccessControlException {
      	if (entry instanceof WorkflowSupport)
      		deleteCheck(entry.getParentBinder(), (WorkflowSupport)entry);
      	else 
      		deleteCheck(entry.getParentBinder(), (Entry)entry);
      		
     }
-    public static void deleteCheck(Binder binder, Entry entry) {
+    public static void deleteCheck(Binder binder, Entry entry) throws AccessControlException {
       	try {
        		getAccessManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES);
        	} catch (OperationAccessControlException ex) {
@@ -191,7 +239,7 @@ public class AccessUtils  {
       		else throw ex;
       	}   
     }
-    public static void deleteCheck(Binder binder, WorkflowSupport entry) {
+    public static void deleteCheck(Binder binder, WorkflowSupport entry)  throws AccessControlException {
         if (!entry.hasAclSet()) {
         	deleteCheck(binder, (Entry)entry);
         } else {         	

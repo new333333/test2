@@ -58,6 +58,10 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref bean="coreDaoImpl"/></property>
 	</bean>
+	<bean id="profileDaoImpl" class="com.sitescape.ef.dao.impl.ProfileDaoImpl">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="coreDao"><ref bean="coreDaoImpl"/></property>
+	</bean>
 
 	<!-- Local transaction manager. -->
 	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">

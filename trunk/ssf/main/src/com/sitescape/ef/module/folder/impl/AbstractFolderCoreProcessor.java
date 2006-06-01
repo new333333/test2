@@ -28,6 +28,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.HKey;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
@@ -379,11 +380,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         		return null;
         	}});
         
-        addReply_indexAdd(parent, entry, inputData, entryData, fileData);
         
         addReply_startWorkflow(entry);
-        
-        
+         
+        addReply_indexAdd(parent, entry, inputData, entryData, fileData);
+                
         cleanupFiles(fileData);
         
     	if(filesErrors.getProblems().size() > 0) {
@@ -448,6 +449,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     
     protected void addReply_postSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
     	getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
+    	if (parent instanceof WorkflowSupport)
+    		getWorkflowModule().modifyWorkflowStateOnReply(parent);
+
     }
     
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 

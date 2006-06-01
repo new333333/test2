@@ -161,7 +161,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	
     protected void setDefinition(Definition def, Document doc) {
     	//Write out the new definition file
-    	def.setDefintion(doc);
+    	def.setDefinition(doc);
     	
     	//If this is a workflow definition, build the corresponding JBPM workflow definition
     	if (def.getType() == Definition.WORKFLOW) {

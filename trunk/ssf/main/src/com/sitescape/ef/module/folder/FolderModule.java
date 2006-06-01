@@ -51,8 +51,11 @@ public interface FolderModule {
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData) 
     	throws AccessControlException, WriteFilesException;
     public void checkModifyEntryAllowed(FolderEntry entry) throws AccessControlException;
-    public void modifyWorkflowState(Long folderId, Long entryId, Long tokenId, String toState) throws AccessControlException;
-    
+    public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException;
+	public void checkTransitionOutStateAllowed(FolderEntry entry, Long stateId) throws AccessControlException;
+	public void checkTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) throws AccessControlException;
+	public Map getManualTransitions(FolderEntry entry, Long stateId);
+
     /**
      * Apply the filter and get back a list of matching entries. 
      * Access control is also applied implicitly.

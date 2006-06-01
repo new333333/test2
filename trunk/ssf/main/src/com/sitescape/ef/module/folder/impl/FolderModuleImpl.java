@@ -3,6 +3,7 @@ package com.sitescape.ef.module.folder.impl;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
@@ -30,6 +31,7 @@ import com.sitescape.ef.domain.ReservedByAnotherUserException;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.BinderComparator;
@@ -51,6 +53,7 @@ import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.module.shared.ObjectBuilder;
+import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.util.NLT;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -191,13 +194,37 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		AccessUtils.modifyCheck(entry);   		
     }
     
-    public void modifyWorkflowState(Long folderId, Long entryId, Long tokenId, String toState) throws AccessControlException {
+    public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException {
         Folder folder = loadFolder(folderId);       
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        checkModifyEntryAllowed(entry);
-        processor.modifyWorkflowState(folder, entry, tokenId, toState);
+		checkTransitionOutStateAllowed(entry, stateId);
+		checkTransitionInStateAllowed(entry, stateId, toState);
+        processor.modifyWorkflowState(folder, entry, stateId, toState);
     }
+
+    public void checkTransitionOutStateAllowed(FolderEntry entry, Long stateId) {
+		WorkflowState ws = entry.getWorkflowState(stateId);
+		AccessUtils.checkTransitionOut(entry.getParentBinder(), entry, ws.getDefinition(), ws.getState());   		
+    }
+	
+    public void checkTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) {
+		WorkflowState ws = entry.getWorkflowState(stateId);
+		AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), toState);   		
+    }
+	public Map getManualTransitions(FolderEntry entry, Long stateId) {
+		WorkflowState ws = entry.getWorkflowState(stateId);
+		Map result = WorkflowUtils.getManualTransitions(ws.getDefinition(), ws.getState());
+		Map transitionData = new HashMap();
+		for (Iterator iter=result.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry me = (Map.Entry)iter.next();
+			try {
+				AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey());  
+				transitionData.put(me.getKey(), me.getValue());
+			} catch (AccessControlException ac) {};
+		}
+		return transitionData;
+    }		
 
     public List applyEntryFilter(Definition entryFilter) {
         // TODO Auto-generated method stub

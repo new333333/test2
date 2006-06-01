@@ -41,9 +41,9 @@ public class Notify extends AbstractActionHandler {
 		}
 		List notifications;
 		if (Event.EVENTTYPE_NODE_ENTER.equals(executionContext.getEvent().getEventType())) {
-			notifications = ws.getWfEnterNotifications();
+			notifications = WorkflowUtils.getEnterNotifications(ws.getDefinition(), ws.getState());
 		} else {
-			notifications = ws.getWfExitNotifications();
+			notifications = WorkflowUtils.getExitNotifications(ws.getDefinition(), ws.getState());
 		}
 		for (int i=0; i<notifications.size(); ++i) {
 			WfNotify notify = (WfNotify)notifications.get(i);

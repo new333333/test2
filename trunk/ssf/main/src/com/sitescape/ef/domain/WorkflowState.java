@@ -3,13 +3,12 @@ package com.sitescape.ef.domain;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.ef.module.shared.WorkflowUtils;
+import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.util.NLT;
-import com.sitescape.util.Validator;
 import com.sitescape.ef.security.acl.AccessType;
 
 /**
@@ -26,11 +25,6 @@ public class WorkflowState {
     protected long lockVersion;
 	
 	//cached during transaction as needed 
-	protected List wfWaits=null;
-	protected List endStates=null;
-	protected List wfStarts=null;
-	protected List wfEnterNotify=null;
-	protected List wfExitNotify = null;
 	protected Map wfAcls=null;
    
  	public Long getId() {
@@ -82,11 +76,6 @@ public class WorkflowState {
  	public void setState(String state) {
  		this.state = state;
  		//on state change, clear cached values associated with previous state
- 		endStates=null;
- 		wfWaits=null;
- 		wfStarts = null;
-		wfExitNotify = null;
-		wfEnterNotify = null;
 		wfAcls = null;
  	}
 
@@ -132,83 +121,16 @@ public class WorkflowState {
     	return tokenId.hashCode();
     }
 
-    /**
-     * Method to get the list of allowed manual transitions from this state for this user
-     */
-    public Map getManualTransitions() {
-    	return WorkflowUtils.getManualTransitions(this.getDefinition(), this.getState());
-    }
-    
-    public String getStateCaption() {
-    	String stateCaption = "";
-    	//Find the actual caption of the state
-    	Definition wfDef = this.getDefinition();
-    	if (wfDef != null) {
-    		Document wfDefDoc = wfDef.getDefinition();
-        	Element stateProperty = (Element) wfDefDoc.getRootElement().selectSingleNode("//item[@name='state']/properties/property[@name='name' and @value='"+this.getState()+"']");
-        	if (stateProperty != null) {
-        		Element statePropertyCaption = (Element) stateProperty.getParent().selectSingleNode("./property[@name='caption']");
-        		if (statePropertyCaption != null) stateCaption = statePropertyCaption.attributeValue("value", "");
-        	}
-        	if (stateCaption.equals("")) {
-        		stateCaption = this.getState();
-        	} else {
-        		stateCaption = NLT.getDef(stateCaption);
-        	}
-    	}
-    	return stateCaption;
-    }
-    
-    /**
-     * Waits are cached in this object, but not persisted here
-     * @return
-     */
-    public List getWfWaits() {
-    	if (wfWaits == null)
-    		wfWaits = WorkflowUtils.getParallelThreadWaits(definition, state);
-    	return wfWaits;
-    	
-    }
-    public List getWfStarts() {
-    	if (wfStarts == null) wfStarts = WorkflowUtils.getParallelThreadStarts(definition, state);
-    	return wfStarts; 
-    }
-    public List getWfEnterNotifications() {
-    	if (wfEnterNotify == null)
-    		wfEnterNotify = WorkflowUtils.getEnterNotifications(definition, state);
-    	return wfEnterNotify;
-    	
-    }
-    public List getWfExitNotifications() {
-    	if (wfExitNotify == null)
-    		wfExitNotify = WorkflowUtils.getExitNotifications(definition, state);
-    	return wfExitNotify;
-    	
-    }
+
     public WfAcl getAcl(AccessType type) {
     	WfAcl acl=null;
     	if (wfAcls == null) wfAcls = new HashMap();
     	else acl = (WfAcl)wfAcls.get(type);
     	if (acl != null) return acl;
-    	acl = WorkflowUtils.getStateAcl(definition, (WorkflowControlledEntry)owner.getEntity(), state, type);
+    	acl = WorkflowUtils.getStateAcl(definition, state, type);
     	wfAcls.put(type, acl);
     	return acl;
     }
    
-    public List getThreadEndStates() {
-    	if (endStates == null) {
-    		if (Validator.isNull(threadName)) {
-    			endStates = WorkflowUtils.getEndState(definition);
-    		} else {
-    			endStates = WorkflowUtils.getThreadEndState(definition, threadName);
-    		}
-    	}
-    	return endStates;
-    	   	
-    }
-    public boolean isThreadEndState() {
-    	if (getThreadEndStates().contains(state)) return true;
-    	return false;
-    }
-
+ 
 }

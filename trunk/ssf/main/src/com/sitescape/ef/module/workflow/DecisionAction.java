@@ -1,5 +1,4 @@
 package com.sitescape.ef.module.workflow;
-import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 	
@@ -12,7 +11,6 @@ import org.jbpm.graph.exe.Token;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.util.Validator;
-import com.sitescape.ef.domain.WfWaits;
 
 public class DecisionAction extends AbstractActionHandler {
 	protected Log logger = LogFactory.getLog(getClass());
@@ -25,7 +23,7 @@ public class DecisionAction extends AbstractActionHandler {
 		WorkflowState ws = entry.getWorkflowState(new Long(current.getId()));
 		if (ws != null) {
 			if (infoEnabled) logger.info("Decision begin: at state " + ws.getState() + " thread " + ws.getThreadName());
-			if (ws.isThreadEndState()) {
+			if (WorkflowUtils.isThreadEndState(ws.getDefinition(), ws.getState(), ws.getThreadName())) {
 				if (infoEnabled) logger.info("Decision: end thread");
 				if (!current.isRoot()) {
 					current.end(false);
@@ -43,41 +41,22 @@ public class DecisionAction extends AbstractActionHandler {
 				}
 				if (!current.isRoot()) {
 					entry.removeWorkflowState(ws);
-					checkForWaits(executionContext, current, entry);
+					//check all threads
+					TransitionUtils.processConditions(executionContext, entry, false);
 				} 
 				return;
 			}
-			//see if threads I am waiting for are done
-			List waitingFor = ws.getWfWaits();
-			for (int i=0; i<waitingFor.size(); ++i) {
-				WfWaits wait = (WfWaits)waitingFor.get(i);
-				List result = wait.getThreads();
-				if (!result.isEmpty()) {
-					String toState = wait.getToStateName();
-					if (!Validator.isNull(toState)) {
-						boolean done = true;
-						for (int j=0; j<result.size(); ++j) {
-							String threadName = (String)result.get(j);
-							if (!Validator.isNull(threadName)) {
-								//See if child has ended
-								WorkflowState child = entry.getWorkflowStateByThread(ws.getDefinition(), threadName);
-								//if found - still running
-								if (child != null) {
-									done = false;
-									break;
-								}
-							}							
-						}
-						if (done) {
-							if (infoEnabled) logger.info("Decision transition("+ ws.getThreadName() + "): " + ws.getState() + "." + toState);
-							executionContext.leaveNode(ws.getState() + "." + toState);
-							return;
-						}
- 
-					}
-				}
+			//Check for conditions on this threads
+			String toState = TransitionUtils.processConditions(executionContext, entry, ws, false);
+			if (toState != null) {
+				if (infoEnabled) logger.info("Decision transition("+ ws.getThreadName() + "): " + ws.getState() + "." + toState);
+					executionContext.leaveNode(ws.getState() + "." + toState);
+					return;
 			}
-			if (infoEnabled) logger.info("Decision end: at state " + ws.getState() + " thread " + ws.getThreadName());
+
+			
+			//wait for external event to trigger a transition
+			if (infoEnabled) logger.info("Decision wait: at state " + ws.getState() + " thread " + ws.getThreadName());
 		}
 	}
 

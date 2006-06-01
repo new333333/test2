@@ -25,6 +25,7 @@ import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.search.BasicIndexUtils;
 
 /**
@@ -139,7 +140,7 @@ public class EntryIndexUtils {
     				Field workflowStateField = Field.Keyword(WORKFLOW_STATE_FIELD, 
    						ws.getState());
     				Field workflowStateCaptionField = Field.Keyword(WORKFLOW_STATE_CAPTION_FIELD, 
-   						ws.getStateCaption());
+   						WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()));
     				//Index the workflow state
     				doc.add(workflowStateField);
     				doc.add(workflowStateCaptionField);

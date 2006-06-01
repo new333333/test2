@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Iterator;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -24,11 +26,13 @@ import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.SeenMap;
+import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
+import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
@@ -48,9 +52,11 @@ public class ViewEntryController extends  SAbstractController {
 		if (formData.containsKey("changeStateBtn")) {
 			//Change the state
 			//Get the workflow process to change and the name of the new state
+			Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
+			if (replyId == null) replyId = entryId;
 	        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
 			String toState = PortletRequestUtils.getRequiredStringParameter(request, "toState");
-			getFolderModule().modifyWorkflowState(folderId, entryId, tokenId, toState);
+			getFolderModule().modifyWorkflowState(folderId, replyId, tokenId, toState);
 		}
 		response.setRenderParameters(formData);
 	}
@@ -207,7 +213,7 @@ public class ViewEntryController extends  SAbstractController {
 		if (replies != null)  {
 			replies.add(entry);
 			for (int i=0; i<replies.size(); i++) {
-				Entry reply = (Entry)replies.get(i);
+				FolderEntry reply = (FolderEntry)replies.get(i);
 				//if any reply is not seen, add it to list - try to avoid update transaction
 				if (!seen.checkIfSeen(reply)) {
 					getProfileModule().setSeen(null, replies);
@@ -217,6 +223,28 @@ public class ViewEntryController extends  SAbstractController {
 		} else if (!seen.checkIfSeen(entry)) {
 			getProfileModule().setSeen(null, entry);
 		}
+		Map captionMap = new HashMap();
+		Map transitionMap = new HashMap();
+		for (int i=0; i<replies.size(); i++) {
+			FolderEntry reply = (FolderEntry)replies.get(i);
+			Set states = reply.getWorkflowStates();
+			for (Iterator iter=states.iterator(); iter.hasNext();) {
+				WorkflowState ws = (WorkflowState)iter.next();
+				//store the UI caption for each state
+				captionMap.put(ws.getTokenId(), WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()));
+				try {
+					//See if user can transition out of this state
+					getFolderModule().checkTransitionOutStateAllowed(reply, ws.getTokenId());
+					//get all manual transitions
+					Map trans = getFolderModule().getManualTransitions(reply, ws.getTokenId());
+					transitionMap.put(ws.getTokenId(), trans);
+				} catch (AccessControlException ac) {}
+					
+			}
+		}
+		model.put(WebKeys.WORKFLOW_CAPTIONS, captionMap);
+		model.put(WebKeys.WORKFLOW_TRANSITIONS, transitionMap);
+		
 		return model;
 	}
 	
