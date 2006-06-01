@@ -17,9 +17,6 @@ if(RequestContextHolder.getRequestContext() != null) {
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 
-<c:set var="ss_color_theme" value="debug" scope="request"/>
-<%@ include file="/WEB-INF/jsp/common/ssf_css_common.jsp" %>
-
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/nifty_corners.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_drag.js"></script>
@@ -51,8 +48,6 @@ function ss_createStyleSheet(url) {
 
 var ss_urlBase = self.location.protocol + "//" + self.location.host + "/";
 var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
-var ssf_cssUrl = "<ssf:url     
-    webPath="viewCss" />ssf_css_${ss_color_theme}.css";
 var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
 var niftyCornersCssUrl = ss_urlBase + "<html:rootPath/>css/nifty_corners.css";
 var htmlareaCssUrl = ss_urlBase + "<html:rootPath/>js/htmlarea/htmlarea.css";
@@ -60,15 +55,18 @@ if (document.createStyleSheet) {
 	document.createStyleSheet(ss_forumCssUrl);
 	document.createStyleSheet(niftyCornersCssUrl);
 	document.createStyleSheet(htmlareaCssUrl);
-	document.createStyleSheet(ssf_cssUrl);
 } else {
 	ss_createStyleSheet(ss_forumCssUrl);
 	ss_createStyleSheet(niftyCornersCssUrl);
 	ss_createStyleSheet(htmlareaCssUrl);
-	ss_createStyleSheet(ssf_cssUrl);
 }
 
 </script>
+
+<c:set var="ss_color_theme" value="debug" scope="request"/>
+<style>
+<jsp:include page="/WEB-INF/jsp/common/ssf_css.jsp" />
+</style>
 
 </c:if>
 

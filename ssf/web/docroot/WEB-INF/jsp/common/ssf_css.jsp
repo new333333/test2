@@ -17,14 +17,21 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_portlet_style_text_color" value="#000099" scope="request"/>
 <c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 
+<c:set var="ss_style_background_color" value="#FFFFCC" scope="request"/>
 <c:set var="ss_style_text_color" value="#009900" scope="request"/>
 <c:set var="ss_style_link_color" value="#009900" scope="request"/>
 <c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
 <c:set var="ss_style_gray_color" value="#999999" scope="request"/>
 
+<c:set var="ss_folder_border_color" value="#CC6666" scope="request"/>
+<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
+<c:set var="ss_entry_border_color" value="#CC0000" scope="request"/>
 <c:set var="ss_replies_background_color" value="#FFEECC" scope="request"/>
 <c:set var="ss_replies_text_color" value="#009900" scope="request"/>
 
+<c:set var="ss_form_background_color" value="#CCFFFF" scope="request"/>
+<c:set var="ss_form_gray_color" value="#CC99CC" scope="request"/>
+<c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/>
 <c:set var="ss_form_text_color" value="#3333FF" scope="request"/>
 <c:set var="ss_form_element_color" value="#FFCCFF" scope="request"/>
 <c:set var="ss_form_element_border_color" value="#669966" scope="request"/>
@@ -40,6 +47,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
 
 <c:set var="ss_tree_highlight_line_color" value="#6666FF" scope="request"/>
+
+<c:set var="ss_box_color" value="#CCCCCC" scope="request"/>
+<c:set var="ss_box_canvas_color" value="#FFFFCC" scope="request"/>
+<c:set var="ss_box_title_color" value="#009999" scope="request"/>
+<c:set var="ss_box_title_text_color" value="#993333" scope="request"/>
 
 <c:set var="ss_sliding_table_background_color" value="#FFFFAA" scope="request"/>
 <c:set var="ss_sliding_table_border_color" value="#999999" scope="request"/>
@@ -59,14 +71,21 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_portlet_style_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 	
+	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_style_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_style_link_color" value="#000000" scope="request"/>
 	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
 	<c:set var="ss_style_gray_color" value="#999999" scope="request"/>
 	
+	<c:set var="ss_folder_border_color" value="#CECECE" scope="request"/>
+	<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
+	<c:set var="ss_entry_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_replies_background_color" value="#FFEECC" scope="request"/>
 	<c:set var="ss_replies_text_color" value="#009900" scope="request"/>
 	
+	<c:set var="ss_form_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_form_gray_color" value="#CECECE" scope="request"/>
+	<c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/>
 	<c:set var="ss_form_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_form_element_color" value="#EEEEEE" scope="request"/>
 	<c:set var="ss_form_element_border_color" value="#CCCCCC" scope="request"/>
@@ -82,6 +101,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 	<c:set var="ss_tree_highlight_line_color" value="#6666FF" scope="request"/>
 	
+	<c:set var="ss_box_color" value="#CCCCCC" scope="request"/>
+	<c:set var="ss_box_canvas_color" value="#FFFFCC" scope="request"/>
+	<c:set var="ss_box_title_color" value="#009999" scope="request"/>
+	<c:set var="ss_box_title_text_color" value="#993333" scope="request"/>
+	
 	<c:set var="ss_sliding_table_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_sliding_table_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_sliding_table_text_color" value="#3333FF" scope="request"/>
@@ -92,8 +116,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_calendar_today_background_color" value="#ffffe8" scope="request"/>
 	<c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
 </c:if>
-
-<%@ include file="/WEB-INF/jsp/common/ssf_css_common.jsp" %>
 
 .ss_portlet_style, .ss_portlet_style * {
 <c:if test="${!empty ss_portlet_style_background_color}">
