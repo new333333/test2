@@ -631,13 +631,13 @@ public class BuildDefinitionDivs extends TagSupport {
 							for (int i = 0; i < propertyValues.size(); i++) {
 								if (((String)propertyValues.get(i)).equals(selection.attributeValue("name", ""))) {
 									checked = " selected=\"selected\"";
-									break;
+									if (type.equals("radio")) checked = " checked=\"checked\"";									break;
 								}
 							}
 							if ((propertyValues.size() == 0 && !propertyValueDefault.equals("") && 
 									propertyValueDefault.equals(selection.attributeValue("name", "")))) {
 								checked = " selected=\"selected\"";
-							}
+								if (type.equals("radio")) checked = " checked=\"checked\"";							}
 							if (type.equals("selectbox")) {
 								sb.append("<option value=\"").append(selection.attributeValue("name", "")).append("\"").append(checked).append(">");
 								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
@@ -647,7 +647,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								sb.append(selection.attributeValue("name", ""));
 								sb.append("\"").append(checked).append("/>");
 								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
-								sb.append("</input><br/>\n");
+								sb.append("<br/>\n");
 							}
 						}
 						//See if there are any items to be shown from the "sourceRoot"
@@ -698,12 +698,14 @@ public class BuildDefinitionDivs extends TagSupport {
 										for (int i = 0; i < propertyValues.size(); i++) {
 											if (((String)propertyValues.get(i)).equals(entryFormItemNamePropertyName)) {
 												checked = " selected=\"selected\"";
+												if (type.equals("radio")) checked = " checked=\"checked\"";
 												break;
 											}
 										}
 										if ((propertyValues.size() == 0 && !propertyValueDefault.equals("") && 
 												propertyValueDefault.equals(entryFormItemNamePropertyName))) {
 											checked = " selected=\"selected\"";
+											if (type.equals("radio")) checked = " checked=\"checked\"";
 										}
 
 										if (type.equals("selectbox")) {
@@ -716,7 +718,7 @@ public class BuildDefinitionDivs extends TagSupport {
 											sb.append(entryFormItemNamePropertyName);
 											sb.append("\"").append(checked).append("/>");
 											sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
-											sb.append("</input><br/>\n");
+											sb.append("<br/>\n");
 										}
 									}
 								}

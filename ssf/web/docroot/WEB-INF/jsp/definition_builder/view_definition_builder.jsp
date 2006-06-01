@@ -477,7 +477,7 @@ function ss_loadNextDiv(option, itemId, itemName) {
 	//alert(url)
 	
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
-	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postLoadNextDivRequest);
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
@@ -561,7 +561,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 			  style="margin:0; padding:4px; visibility:hidden;">
 			<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
 			&nbsp;&nbsp;&nbsp;
-			<input type="submit" name="okBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
+			<input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 			</div>
 			</ssf:box>
 			<input type="hidden" name="selectedId" />
