@@ -26,9 +26,9 @@ import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.security.acl.AclControlled;
-import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
@@ -57,7 +57,7 @@ import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
-
+import com.sitescape.ef.module.workflow.WorkflowUtils;
 /**
  *
  * Add entries to the binder
@@ -136,7 +136,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         if (def != null) {
         	return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
         } else {
-        	return new HashMap();
+        	//handle basic fields only without definition
+        	Map entryData = new HashMap();
+			if (inputData.exists("title")) entryData.put("title", inputData.getSingleValue("title"));
+			if (inputData.exists("description")) {
+				Description description = new Description();
+				description.setText(inputData.getSingleValue("description"));
+				description.setFormat(Description.FORMAT_HTML);
+				entryData.put("description", description);
+			}
+        	
+        	return entryData;
         }
     }
     
@@ -195,7 +205,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		if (entryDef != null) {
 	    		if (workflowAssociations.containsKey(entryDef.getId()) && 
 	    				!workflowAssociations.get(entryDef.getId()).equals("")) {
-	    			Definition wfDef = getDefinitionModule().getDefinition((String)workflowAssociations.get(entryDef.getId()));
+	    			Definition wfDef = (Definition)workflowAssociations.get(entryDef.getId());
 	    			getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef);
 	    		}
     		}
@@ -259,7 +269,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	if (!(entry instanceof WorkflowSupport)) return;
     	WorkflowSupport wEntry = (WorkflowSupport)entry;
     	//see if updates to entry, trigger transitions in workflow
-    	if (!wEntry.getWorkflowStates().isEmpty()) getWorkflowModule().modifyWorkflowStateOnUpdate(wEntry, entry.getEntryDef());
+    	if (!wEntry.getWorkflowStates().isEmpty()) getWorkflowModule().modifyWorkflowStateOnUpdate(wEntry);
     }   
     
     protected Map modifyEntry_toEntryData(Entry entry, InputDataAccessor inputData, Map fileItems) {
@@ -360,7 +370,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  		if (ws != null) {
 			//We have the workflowState of the current state
 			//See if the user is allowed to go to this state
-			Map transitions = ws.getManualTransitions();
+			Map transitions = WorkflowUtils.getManualTransitions(ws.getDefinition(), ws.getState());
 			if (transitions.containsKey(toState)) {
 				//It is ok to transition to this state; go do it
 				getWorkflowModule().modifyWorkflowState(ws.getTokenId(), ws.getState(), toState);

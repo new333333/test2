@@ -14,25 +14,20 @@ import java.util.Date;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.WfCondition;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.module.shared.WorkflowUtils;
 import com.sitescape.ef.module.workflow.WorkflowModule;
-import com.sitescape.ef.util.InvokeUtil;
-import com.sitescape.ef.util.ObjectPropertyNotFoundException;
+import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.util.SZoneConfig;
-import com.sitescape.ef.domain.WfWaits;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.jobs.WorkflowTimeout;
 import com.sitescape.ef.module.binder.EntryProcessor;
+import com.sitescape.ef.module.workflow.TransitionUtils;
 
 
 import org.dom4j.Document;
@@ -341,11 +336,11 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    	if (actions == null) actions = new HashMap();
 		
 	    	//	Add the standard events (if they aren't there already)
-	    	Action recordEvent = null;
-	    	if (!actions.containsKey("recordEvent")) {
-	    		recordEvent = setupAction(pD, "recordEvent", "com.sitescape.ef.module.workflow.RecordEvent");
+	    	Action enterNodeEvent = null;
+	    	if (!actions.containsKey("enterNodeEvent")) {
+	    		enterNodeEvent = setupAction(pD, "enterNodeEvent", "com.sitescape.ef.module.workflow.EnterEvent");
 	    	} else {
-	    		recordEvent = (Action) actions.get("recordEvent");
+	    		enterNodeEvent = (Action) actions.get("enterNodeEvent");
 	    	}
 		
 	    	Action decisionAction = null;
@@ -356,21 +351,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    		decisionAction = (Action) actions.get("decisionAction");
 	    	}
 	    	
-	    	Action startThreads = null;
-	    	if (!actions.containsKey("startThreads")) {
-	    		startThreads = setupAction(pD, "startThreads", "com.sitescape.ef.module.workflow.StartThreads");
-	    		pD.addAction(startThreads);
-	    	} else {
-	    		startThreads = (Action) actions.get("startThreads");
-	    	}
-		
-	    	Action stopThreads = null;
-	    	if (!actions.containsKey("stopThreads")) {
-	    		stopThreads = setupAction(pD, "stopThreads", "com.sitescape.ef.module.workflow.StopThreads");
-	    		pD.addAction(stopThreads);
-	    	} else {
-	    		stopThreads = (Action) actions.get("stopThreads");
-	    	}
 
 	    	Action notifyAction = null;
 	    	if (!actions.containsKey("notifyAction")) {
@@ -383,7 +363,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    	//add global named events - will fire on every node
 	    	if (!events.containsKey("node-enter")) {
 	    		Event enterEvent = new Event("node-enter");
-	    		enterEvent.addAction(recordEvent);
+	    		enterEvent.addAction(enterNodeEvent);
 	    		pD.addEvent(enterEvent);
 	    	}
 		
@@ -407,9 +387,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    	Iterator itStates = stateNodes.iterator();
 	    	while (itStates.hasNext()) {
 	    		Element state = (Element) itStates.next();
-	    		Element stateNameProperty = (Element) state.selectSingleNode("./properties/property[@name='name']");
-	    		String stateName = stateNameProperty.attributeValue("value", "");
-	    		if (!stateName.equals("")) {
+	    		String stateName = WorkflowUtils.getProperty(state, "name");
+	    		if (!Validator.isNull(stateName)) {
 	    			//determine type of node needed
 	    			Node stateNode = (Node)nodesMap.get(stateName);
 	    			if (!nodesMap.containsKey(stateName)) {
@@ -421,25 +400,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    			} else {
 	    				nodesMap.remove(stateName);
 	    			}	
-	    			//Check if need parallel threads - if so add special actgion
-	    			List threads = (List)state.selectNodes("./item[@name='startParallelThread']");
-	    			if (!threads.isEmpty()) {
-	    				//make sure start threads action exists
-	    				addEnterEventAction(context, stateNode, startThreads);				
-	    			} else {
-	    				// remove any old startThreads for this node
-	    				removeEnterEventAction(context, stateNode, startThreads);
-	    			}
-	    			//Check if top stop threads - if so add special node
-	    			threads = (List)state.selectNodes("./item[@name='stopParallelThread']");
-	    			if (!threads.isEmpty()) {
-	    				//make sure start threads action exists
-	    				addEnterEventAction(context, stateNode, stopThreads);
-					
-	    			} else {
-	    				// remove any old stopThreads for this node
-	    				removeEnterEventAction(context, stateNode, stopThreads);
-	    			}
 	    			List notifications = (List)state.selectNodes("./item[@name='notifications']/item[@name='entryNotification']");
 	    			if (!notifications.isEmpty()) {
 	    				//make sure notify action exists
@@ -458,32 +418,17 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    			}
 	    			Element timer = (Element)state.selectSingleNode("./item[@name='transitions']/item[@name='conditionOnElapsedTime']");
 	    			if (timer != null) {
-	    				Element props = (Element)timer.selectSingleNode("./properties/property[@name='toState']");
-	    				String toState = null;
-	    				if (props != null) {
-	    					toState = props.attributeValue("value");
-	    				}
-	    				//get days and convert to minutes
-	    				props = (Element)timer.selectSingleNode("./properties/property[@name='days']");
-	    				String val=null;
+	    				String toState = WorkflowUtils.getProperty(timer, "toState");
 	    				long total = 0;
-	    				if (props != null) {
-	    					val= props.attributeValue("value");
-	    					if (!Validator.isNull(val))
-	    						total += Long.parseLong(val)*24*60;
-	    				}
-	    				props = (Element)timer.selectSingleNode("./properties/property[@name='hours']");
-	    				if (props != null) {
-	    					val= props.attributeValue("value");
-	    					if (!Validator.isNull(val))
-	    						total += Long.parseLong(val)*60;				    	
-	    				}
-	    				props = (Element)timer.selectSingleNode("./properties/property[@name='mins']");
-	    				if (props != null) {
-	    					val = props.attributeValue("value");
-	    					if (!Validator.isNull(val))
-	    						total += Long.parseLong(val);
-	    				}
+	    			    //get days and convert to minutes
+	    				String val=WorkflowUtils.getProperty(timer, "days");
+	    				if (!Validator.isNull(val)) total += Long.parseLong(val)*24*60;
+	    				
+	    				val=WorkflowUtils.getProperty(timer, "hours");
+	    				if (!Validator.isNull(val)) total += Long.parseLong(val)*60;				    	
+	    				
+	    				val=WorkflowUtils.getProperty(timer, "mins");
+    					if (!Validator.isNull(val)) total += Long.parseLong(val);
 	    				addTimer(context, stateNode, "onElapsedTime", String.valueOf(total) + " minutes", toState);
 	    			} else {
 					// 	remove any old timers for this node
@@ -514,31 +459,9 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    		else oldTransitions = new HashMap(oldTransitions);
 			
 	    		//Get the list of manual transitions from the workflow definition
-	    		Map manualTransitions = WorkflowUtils.getManualTransitions(def, fromNode.getName());
-	    		Iterator itTransitions = manualTransitions.entrySet().iterator();
-	    		while (itTransitions.hasNext()) {
-	    			Map.Entry me2 = (Map.Entry) itTransitions.next();
-	    			String toNodeName = (String) me2.getKey();
-	    			String tName = stateName + "." + toNodeName;					
-	    			if (oldTransitions.containsKey(tName)) {
-	    				oldTransitions.remove(tName);
-	    			} else {
-	    				Node toNode = (Node) pD.getNode(toNodeName);
-	    				if (toNode != null) {
-	    					Transition t = new Transition();
-	    					t.setProcessDefinition(pD);
-	    					t.setName(tName);
-	    					t.setTo(toNode);
-	    					fromNode.addLeavingTransition(t);
-	    				}
-	    				
-	    			}
-	    		}
-	    		//Get the list of automatic transitions from the workflow definition
-	    		List waits = WorkflowUtils.getParallelThreadWaits(def, stateName);
-	    		for (int i=0; i<waits.size(); ++i) {
-	    			WfWaits w = (WfWaits)waits.get(i);
-	    			String toNodeName = w.getToStateName();
+	    		Set allTransitions = WorkflowUtils.getAllTransitions(def, fromNode.getName());
+	    		for (Iterator iter=allTransitions.iterator(); iter.hasNext();) {
+	    			String toNodeName = (String)iter.next();
 	    			String tName = stateName + "." + toNodeName;					
 	    			if (oldTransitions.containsKey(tName)) {
 	    				oldTransitions.remove(tName);
@@ -879,64 +802,42 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		
 	}
 	/**
-	 * See if an conditions have been met for a transition to a new state.
+	 * See if any conditions have been met for a transition to a new state.
 	 * This would be triggered by a modify.  The caller is responsible for
-	 * udpating the index.
+	 * updating the index.
 	 * @param entry
 	 */
-	public void modifyWorkflowStateOnUpdate(WorkflowSupport entry, Definition entryDef) {
-		boolean found = true;
-		//loop until we get through states without any changes occuring.  Each change could trigger another
+	public void modifyWorkflowStateOnUpdate(WorkflowSupport entry) {
+		TransitionUtils.processConditions(null, entry, true);
+	}
+
+	/**
+	 * See if reply will trigger a transition to a new state.
+	 * The caller is responsible for updating the index.
+	 * @param entry
+	 */
+	public void modifyWorkflowStateOnReply(WorkflowSupport entry) {
 		JbpmContext context=WorkflowFactory.getContext();
 	    try {
-	    	while (found) {
-	    		found=false;
-	    		Set states = entry.getWorkflowStates();
+	   		//copy set because may change as we process each state
+	   		Set states = new HashSet(entry.getWorkflowStates());
 		
-	    		for (Iterator iter=states.iterator(); iter.hasNext(); ) {
-	    			WorkflowState ws = (WorkflowState)iter.next();
-	    			List conditions = WorkflowUtils.getVariableWaits(ws.getDefinition(), ws.getState());
-	    			//process each condition until one is successful
-	    			for (int i=0; i<conditions.size(); ++i) {
-	    				WfCondition condition = (WfCondition)conditions.get(i);
-	    				if ((condition.getEntryDefId() != null) && (entryDef != null)) {
-	    					//make sure condition applies to fields of this entry
-	    					if (!condition.getEntryDefId().equals(entryDef.getId())) continue;
-	    				} else if ((condition.getEntryDefId() != null) || (entryDef != null))  continue;
-	    				Object currentVal=null;
-	    				try {
-	    					currentVal = InvokeUtil.invokeGetter(entry, condition.getAttributeName());
-	    				} catch (ObjectPropertyNotFoundException pe) {
-	    					if (entry instanceof DefinableEntity) {
-	    						CustomAttribute attr = ((DefinableEntity)entry).getCustomAttribute(condition.getAttributeName());
-	    						if (attr != null) currentVal = attr.getValue();
-	    					}
-	    					
-	    				}	    					
-	    				//create input access to handle condition and pass to getDefinitionModule.getEntryData();
-	    				//than compare
-	    				//compareTo works for string, Boolean, date, Long
-	    				//attr.getValue().compareTo(value);
-	    			
-	    				
-	    				if (true) {
-	    			       	Token t = context.loadTokenForUpdate(ws.getTokenId().longValue());
-	    		            t.signal(ws.getState() + "." + "transition");
-	    		            context.save(t);
-	    		            found = true;
-	    		            break;
-	    				}
-	    			}
-	    			//state set may have changed due to signal processing
-	    			if (found) break;
-	    		}
+	   		for (Iterator iter=states.iterator(); iter.hasNext(); ) {
+	   			WorkflowState ws = (WorkflowState)iter.next();
+		       	Token t = context.loadTokenForUpdate(ws.getTokenId().longValue());
+	   			//make sure state hasn't been removed as the result of another thread
+	   			if (t.hasEnded() || (ws.getOwner() == null)) continue;
+	   			String toState = WorkflowUtils.getReplyTransitionState(ws.getDefinition(), ws.getState());
+	   			if (!Validator.isNull(toState)) {
+   		            t.signal(ws.getState() + "." + toState);
+   		            context.save(t);	   				
+	   			}
 	    	}
         } finally {
         	context.close();
         }
 		
-	}
-	
+	}	
 	public void deleteEntryWorkflow(WorkflowSupport entry) {
 		//Delete all JBPM tokens and process instances associated with this entry
 		JbpmContext context=WorkflowFactory.getContext();

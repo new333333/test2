@@ -22,16 +22,17 @@
 	    <td>&nbsp;&nbsp;</td>
 	    <td></td>
 	    <td>&nbsp;&nbsp;</td>
-	    <td valign="top">${workflow.stateCaption}</td>
+	    <td valign="top">${ssWorkflowCaptions[workflow.id]}</td>
 	    <td>&nbsp;&nbsp;&nbsp;</td>
-	    <c:if test="${!empty workflow.manualTransitions}">
+	    <c:if test="${!empty ssWorkflowTransitions[workflow.id]}">
 	      <td valign="top" align="right"><b><ssf:nlt tag="workflow.transitionTo" 
 	        text="Transition to:"/></b></td>
 	      <td valign="top">
 		  <form class="ss_style ss_form" method="post" action="" style="display:inline;">
-		  <input type="hidden" name="tokenId" value="${workflow.tokenId}">
+		  <input type="hidden" name="tokenId" value="${workflow.id}">
+		  <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
 		  <select name="toState">
-		  <c:forEach var="transition" items="${workflow.manualTransitions}">
+		  <c:forEach var="transition" items="${ssWorkflowTransitions[workflow.id]}">
 		    <option value="${transition.key}">${transition.value}</option>
 		  </c:forEach>
 		  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
@@ -39,7 +40,7 @@
 		  </form>
 		  </td>
 		</c:if>
-		<c:if test="${empty workflow.manualTransitions}">
+		<c:if test="${empty ssWorkflowTransitions[workflow.id]}">
 		  <td></td><td></td>
 		</c:if>
 	  </tr>
@@ -56,16 +57,17 @@
 			    <td>&nbsp;&nbsp;</td>
 			    <td valign="top"><c:out value="${workflow2.threadName}"/></td>
 			    <td>&nbsp;&nbsp;</td>
-			    <td valign="top">${workflow2.stateCaption}</td>
+			    <td valign="top">${ssWorkflowCaptions[workflow2.id]}</td>
 			    <td>&nbsp;&nbsp;&nbsp;</td>
-			    <c:if test="${!empty workflow2.manualTransitions}">
+			    <c:if test="${!empty ssWorkflowTransitions[workflow2.id]}">
 			      <td valign="top" align="right"><b><ssf:nlt tag="workflow2.transitionTo" 
 			        text="Transition to:"/></b></td>
 			      <td valign="top">
 				  <form class="ss_style ss_form" method="post" action="" style="display:inline;">
-				  <input type="hidden" name="tokenId" value="${workflow2.tokenId}">
+				  <input type="hidden" name="tokenId" value="${workflow2.id}">
+				  <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
 				  <select name="toState">
-				  <c:forEach var="transition" items="${workflow2.manualTransitions}">
+				  <c:forEach var="transition" items="${ssWorkflowTransitions[workflow2.id]}">
 				    <option value="${transition.key}">${transition.value}</option>
 				  </c:forEach>
 				  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
@@ -73,7 +75,7 @@
 				  </form>
 				  </td>
 				</c:if>
-				<c:if test="${empty workflow2.manualTransitions}">
+				<c:if test="${empty ssWorkflowTransitions[workflow2.id]}">
 				  <td></td><td></td>
 				</c:if>
 			  </tr>

@@ -141,7 +141,7 @@ public class Definition extends PersistentTimestampObject implements AclControll
     	}
     	return doc;
     }
-    public void setDefintion(Document doc) {
+    public void setDefinition(Document doc) {
        	try {
     		FileWriter fOut = new FileWriter("c:/ss/" + getName());
     		XMLWriter xOut = new XMLWriter(fOut, OutputFormat.createPrettyPrint());

@@ -1,9 +1,11 @@
-package com.sitescape.ef.module.shared;
+package com.sitescape.ef.module.workflow;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -11,12 +13,12 @@ import org.dom4j.Element;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.util.Validator;
-import com.sitescape.ef.domain.WfWaits;
 import com.sitescape.ef.domain.WfNotify;
 import com.sitescape.ef.domain.WfAcl;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.ef.util.NLT;
 
 
 /**
@@ -40,87 +42,122 @@ public class WorkflowUtils {
 			List transitions = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionManual']");
 			if (transitions != null) {
 				for (int j = 0; j < transitions.size(); j++) {
-					Element toStateEle = (Element) ((Element) 
-							transitions.get(j)).selectSingleNode("./properties/property[@name='toState']");
-					if (toStateEle != null) {
-						String toStateValue = toStateEle.attributeValue("value", "");
-						String toStateCaption = "";
-						if (!toStateValue.equals("")) {
-							//We have a transition. get the caption;
-							Element toStateEle2 = (Element) wfRoot.selectSingleNode(
+					String toStateValue = getProperty((Element)transitions.get(j), "toState");
+					String toStateCaption = "";
+					if (!Validator.isNull(toStateValue)) {
+						//We have a transition. get the caption;
+						Element toStateEle = (Element) wfRoot.selectSingleNode(
 									"//item[@name='workflowProcess']/item[@name='state']"+
 									"/properties/property[@name='name' and @value='"+toStateValue+"']");
-							if (toStateEle2 != null) {
-								Element toStateCaptionEle = 
-									(Element) toStateEle2.selectSingleNode("../property[@name='caption']");
-								if (toStateCaptionEle != null) {
-									toStateCaption = toStateCaptionEle.attributeValue("value", "");
-								}
+						if (toStateEle != null) {
+							Element toStateCaptionEle = 
+								(Element) toStateEle.selectSingleNode("../property[@name='caption']");
+							if (toStateCaptionEle != null) {
+								toStateCaption = toStateCaptionEle.attributeValue("value", "");
 							}
 						}
 						if (toStateCaption.equals("")) toStateCaption = toStateValue;
-						if (!toStateValue.equals("") && !toStateCaption.equals("")) {
-							//TODO Check that the user has the right to execute this transition
+						//TODO Check that the user has the right to execute this transition
 							
-							//Ok, add this transition to the map
-							transitionData.put(toStateValue, toStateCaption);
-						}
+						//Ok, add this transition to the map
+						transitionData.put(toStateValue, toStateCaption);
 					}
 				}
 			}
 		}
 		return transitionData;
     }
-    
+    public static String getStateCaption(Definition wfDef, String state) {
+    	String stateCaption = "";
+    	//Find the actual caption of the state
+    	if (wfDef != null) {
+    		Document wfDefDoc = wfDef.getDefinition();
+        	Element stateProperty = (Element) wfDefDoc.getRootElement().selectSingleNode("//item[@name='state']/properties/property[@name='name' and @value='"+state+"']");
+        	if (stateProperty != null) {
+        		Element statePropertyCaption = (Element) stateProperty.getParent().selectSingleNode("./property[@name='caption']");
+        		if (statePropertyCaption != null) stateCaption = statePropertyCaption.attributeValue("value", "");
+        	}
+        	if (stateCaption.equals("")) {
+        		stateCaption = state;
+        	} else {
+        		stateCaption = NLT.getDef(stateCaption);
+        	}
+    	}
+    	return stateCaption;
+    }    
     /**
-     * Get variables whose values we are waiting on.
+     * Return the set of states that this state can transition to
      * @param wfDef
      * @param stateName
-     * @return
+     * @return transition to states
      */
-    public static List getVariableWaits(Definition wfDef, String stateName) {
-		List transitionData = new ArrayList();
+    public static Set getAllTransitions(Definition wfDef, String stateName) {
+		Set transitionData = new HashSet();
 		Document wfDoc = wfDef.getDefinition();
 		Element wfRoot = wfDoc.getRootElement();
 		//Find the current state in the definition
 		Element stateEle = getState(wfRoot, stateName);
 		if (stateEle != null) {
-			//Build a list of all variable transitions for this state
-			List transitions = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionCondition']");
+			//Build a list of all manual transitions for this state
+			List transitions = stateEle.selectNodes("./item[@name='transitions']/item[@type='transition']");
 			if (transitions != null) {
 				for (int j = 0; j < transitions.size(); j++) {
 					Element toStateEle = (Element) ((Element) 
 							transitions.get(j)).selectSingleNode("./properties/property[@name='toState']");
 					if (toStateEle != null) {
 						String toStateValue = toStateEle.attributeValue("value", "");
-						String toStateCaption = "";
 						if (!toStateValue.equals("")) {
-							//We have a transition. get the caption;
-							Element toStateEle2 = (Element) wfRoot.selectSingleNode(
-									"//item[@name='workflowProcess']/item[@name='state']"+
-									"/properties/property[@name='name' and @value='"+toStateValue+"']");
-							if (toStateEle2 != null) {
-								Element toStateCaptionEle = 
-									(Element) toStateEle2.selectSingleNode("../property[@name='caption']");
-								if (toStateCaptionEle != null) {
-									toStateCaption = toStateCaptionEle.attributeValue("value", "");
-								}
-							}
-						}
-						if (toStateCaption.equals("")) toStateCaption = toStateValue;
-						if (!toStateValue.equals("") && !toStateCaption.equals("")) {
-							//TODO Check that the user has the right to execute this transition
-							
-							//Ok, add this transition to the map
-//							transitionData.put(toStateValue, toStateCaption);
+							transitionData.add(toStateValue);
 						}
 					}
 				}
 			}
 		}
 		return transitionData;
+    }    
+    /**
+     * Get transitions triggered by a condition, ie) not manual
+     * 
+     * @param wfDef
+     * @param stateName
+     * @return Return the Dom elements
+     */
+    public static List getConditions(Definition wfDef, String stateName) {
+    	List conditions=null;
+		Document wfDoc = wfDef.getDefinition();
+		Element wfRoot = wfDoc.getRootElement();
+		//Find the current state in the definition
+		Element stateEle = getState(wfRoot, stateName);
+		if (stateEle != null) {
+			//Build a list of all conditional transitions for this state
+			conditions = stateEle.selectNodes("./item[@name='transitions']/item[@name!='transitionManual']");
+		}
+		if (conditions == null) conditions = new ArrayList();
+		return conditions;
     }
-    
+    /**
+     * Return next state if conditionOnReply exists
+     * @param wfDef
+     * @param stateName
+     * @return transition to state or null
+     */
+    public static String getReplyTransitionState(Definition wfDef, String stateName) {
+		Document wfDoc = wfDef.getDefinition();
+		Element wfRoot = wfDoc.getRootElement();
+		//Find the current state in the definition
+		Element stateEle = getState(wfRoot, stateName);
+		if (stateEle != null) {
+			//Build a list of all conditional transitions for this state
+			Element transition  = (Element)stateEle.selectSingleNode("./item[@name='transitions']/item[@name='conditionOnReply']");
+			if (transition != null) {
+				Element toStateEle = (Element)transition.selectSingleNode("./properties/property[@name='toState']");
+				if (toStateEle != null) {
+					return toStateEle.attributeValue("value", "");
+				}
+			}
+		}
+		return null;
+    }    
     public static List getParallelThreadStarts(Definition wfDef, String stateName) {
 		List parallelExecutions = new ArrayList();
 		Document wfDoc = wfDef.getDefinition();
@@ -187,45 +224,7 @@ public class WorkflowUtils {
 		}
 		return parallelExecutions;
     }    
-    /**
-     * Return a lists of WfWaits objects. Represents all of the thread waits
-     * for the current state
-     * @param wfDef
-     * @param stateName
-     * @return
-     */
-    public static List getParallelThreadWaits(Definition wfDef, String stateName) {
-		List parallelExecutions = new ArrayList();
-		Document wfDoc = wfDef.getDefinition();
-		Element wfRoot = wfDoc.getRootElement();
-		//Find the current state in the definition
-		Element stateEle = getState(wfRoot, stateName);
-		if (stateEle != null) {
-			//Build a list of all parallel executions for this state
-			List waitParallelExecutions = stateEle.selectNodes(
-					"./item[@name='transitions']/item[@name='waitForParallelThread']");
-			if (waitParallelExecutions != null) {
-				for (int j = 0; j < waitParallelExecutions.size(); j++) {
-					//Get the "startState" property
-					List parallelThreads = (List) ((Element) 
-							waitParallelExecutions.get(j)).selectNodes(
-							"./properties/property[@name='name']");
-					Element transitionEle = (Element) ((Element) 
-							waitParallelExecutions.get(j)).selectSingleNode(
-							"./properties/property[@name='toState']");
-					List result = new ArrayList();
-					for (int k=0; k<parallelThreads.size(); ++k) {
-						Element thread = (Element)parallelThreads.get(k);
-						result.add(thread.attributeValue("value",""));
-					}
-					parallelExecutions.add(new WfWaits((String)transitionEle.attributeValue("value", ""),result));
-					
-				}
-			}
-		}
-		return parallelExecutions;
-    }
- 
+
     public static String getInitialState(Definition wfDef) {
 		Document workflowDoc = wfDef.getDefinition();
 		String initialState="";
@@ -249,38 +248,25 @@ public class WorkflowUtils {
 		}
 		return initialState;
     }
-    public static List getEndState(Definition wfDef) {
-		Document workflowDoc = wfDef.getDefinition();
-		List endStates= new ArrayList();
-		if (workflowDoc != null) {
-			Element workflowRoot = workflowDoc.getRootElement();
-			List ends = (List)workflowRoot.selectNodes("./item[@name='workflowProcess']/properties/property[@name='endState']");
-			if (ends != null) {
-				for (int i=0; i<ends.size(); ++i) {
-					endStates.add(((Element)ends.get(i)).attributeValue("value", ""));
-				}
-			}
-		}
-		return endStates;
-    }
-    public static List getThreadEndState(Definition wfDef, String threadName) {
+    public static boolean isThreadEndState(Definition wfDef, String stateName, String threadName) {
 		Document wfDoc = wfDef.getDefinition();
 		Element wfRoot = wfDoc.getRootElement();
-		//Find the thread definition
-		List endStates= new ArrayList();
-		Element threadEle = (Element) wfRoot.selectSingleNode("//item[@name='parallelThread']/properties/property[@name='name' and @value='"+threadName+"']");
-		if (threadEle != null) {
-			Element properties = threadEle.getParent();
-			List ends = properties.selectNodes("./property[@name='endState']");
-			if (ends != null) {
-				for (int i=0; i<ends.size(); ++i) {
-					endStates.add(((Element)ends.get(i)).attributeValue("value", ""));
-				}
+		if (Validator.isNull(threadName)) {
+			List ends = (List)wfRoot.selectNodes("./item[@name='workflowProcess']/properties/property[@name='endState' and @value='"+stateName+"']");
+    		if ((ends == null) || ends.isEmpty()) return false;
+    		return true;
+    	} else {
+    		Element threadEle = (Element) wfRoot.selectSingleNode("//item[@name='parallelThread']/properties/property[@name='name' and @value='"+threadName+"']");
+    		if (threadEle != null) {
+    			Element properties = threadEle.getParent();
+    			List ends = properties.selectNodes("./property[@name='endState' and @value='"+stateName+"']");
+        		if ((ends == null) || ends.isEmpty()) return false;
+        		return true;
 			}
 		}
-		return endStates;
+		return false;
     } 
-    public static WfAcl getStateAcl(Definition wfDef, Entry entry, String stateName, AccessType type) {
+    public static WfAcl getStateAcl(Definition wfDef, String stateName, AccessType type) {
     	Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
 		Element stateEle = getState(wfDoc.getRootElement(), stateName);
@@ -298,7 +284,31 @@ public class WorkflowUtils {
 		}
 		return getAcl(null);
     }
-    public static Map getAcls(Definition wfDef, Entry entry, String stateName) {
+    public static WfAcl getStateTransitionOutAcl(Definition wfDef, String stateName) {
+    	Document wfDoc = wfDef.getDefinition();
+		//Find the current state in the definition
+		Element stateEle = getState(wfDoc.getRootElement(), stateName);
+		if (stateEle != null) {
+			Element accessControls = (Element)stateEle.selectSingleNode("./item[@name='accessControls']");
+			if (accessControls != null) {
+				return getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionOutAccess']"));
+			}			
+		}
+		return getAcl(null);
+    }
+    public static WfAcl getStateTransitionInAcl(Definition wfDef, String stateName) {
+    	Document wfDoc = wfDef.getDefinition();
+		//Find the current state in the definition
+		Element stateEle = getState(wfDoc.getRootElement(), stateName);
+		if (stateEle != null) {
+			Element accessControls = (Element)stateEle.selectSingleNode("./item[@name='accessControls']");
+			if (accessControls != null) {
+				return getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionInAccess']"));
+			}			
+		}
+		return getAcl(null);
+    }    
+    public static Map getAcls(Definition wfDef, String stateName) {
     	Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
 		Element stateEle = getState(wfDoc.getRootElement(), stateName);
@@ -385,6 +395,7 @@ public class WorkflowUtils {
     	return result;
     	
     }
+ 
     private static Element getState(Element wfRoot, String stateName) {
 		//Find the current state in the definition
 		Element statePropertyEle = (Element) wfRoot.selectSingleNode(
@@ -395,5 +406,27 @@ public class WorkflowUtils {
 		}
 		return null;
 
+    }
+    public static List getItems(Definition wfDef, String stateName) {
+    	Document wfDoc = wfDef.getDefinition();
+		//Find the current state in the definition
+    	Element stateEle = getState(wfDoc.getRootElement(), stateName);
+		List items = stateEle.selectNodes("./item");
+		if (items == null) return new ArrayList();
+		return items;
+    }
+    public static String getProperty(Element element, String name) {
+		Element variableEle = (Element)element.selectSingleNode("./properties/property[@name='" + name + "']");
+		if (variableEle == null) return null;
+		return variableEle.attributeValue("value");   	
+    }
+    public static List getPropertyList(Element element, String name) {
+		List resultElements = element.selectNodes("./properties/property[@name='" + name + "']");
+    	List results = new ArrayList();
+    	for (int i=0; i<resultElements.size(); ++i) {
+    		Element variableEle = (Element)resultElements.get(i);
+    		results.add(variableEle.attributeValue("value",  ""));
+    	}
+		return results;   	
     }
 }
