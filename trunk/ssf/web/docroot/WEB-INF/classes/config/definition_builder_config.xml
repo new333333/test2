@@ -967,7 +967,6 @@
 			<option name="onEntry" />
 			<option name="onExit" />
 			<option name="workflowQuestion" />
-			<option name="variable" />
 			<option name="startParallelThread" />
 			<option name="stopParallelThread" />
 		</options>
@@ -979,12 +978,12 @@
 		</operations>
 		<options>
 			<option name="transitionManual" />
-			<option name="conditionOnModify" />
-			<option name="conditionOnReply" />
-			<option name="conditionOnResponse" />
-			<option name="conditionOnConditions" />
-			<option name="conditionOnElapsedTime" />
-			<option name="conditionOnVariable" />
+			<option name="transitionOnModify" />
+			<option name="transitionOnReply" />
+			<option name="transitionOnResponse" />
+			<option name="transitionOnEntryData" />
+			<option name="transitionOnElapsedTime" />
+			<option name="transitionOnVariable" />
 			<option name="waitForParallelThread" />
 		</options>
 	</item>
@@ -994,7 +993,7 @@
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
-			<option name="variable" />
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 	</item>
 	
@@ -1010,75 +1009,77 @@
 		</properties>
 	</item>
 	
-	<item name="conditionOnModify" caption="__transition_condition_on_modify" type="transition">
+	<item name="transitionOnModify" caption="__transition_on_modify" type="transition">
 		<properties>
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
-			<option name="variable" />
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 	</item>
 	
-	<item name="conditionOnReply" caption="__transition_condition_on_reply" type="transition">
+	<item name="transitionOnReply" caption="__transition_on_reply" type="transition">
 		<properties>
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
-			<option name="variable" />
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 	</item>
 
-	<item name="conditionOnResponse" caption="__transition_condition_on_response" type="transition">
+	<item name="transitionOnResponse" caption="__transition_on_response" type="transition">
 		<properties>
-			<property name="response" caption="__transition_condition_on_response" type="text" />
+			<property name="response" caption="__transition_on_response" type="text" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
-			<option name="variable" />
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 	</item>
-	<item name="conditionOnConditions" caption="__transition_condition_on_conditions" type="transition">
+	<item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition">
 		<properties>
-			<property name="allMustMatch" caption="__allMustMatch" type="boolean" default="true">
+			<property name="allMustMatch" caption="__matchEntryData" type="radio" default="true">
+				<option name="true" caption="__matchAll" />
+				<option name="false" caption="__matchAny" />
 				<help>__allMustMatchHelp</help>
 			</property>
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
-			<option name="workflowEntryCondition" />
-			<option name="variable" />
+			<option name="workflowEntryDataValue" />
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 		<help>__help_workflow_condition</help>
 	</item>
-	<item name="conditionOnElapsedTime" caption="__transition_condition_on_elapsed_time" type="transition">
+	<item name="transitionOnElapsedTime" caption="__transition_on_elapsed_time" type="transition">
 		<properties>
-			<property name="days" caption="__transition_condition_on_days" type="text" 
+			<property name="days" caption="__transition_on_days" type="text" 
 				characterMask="^[0-9]*$" />
-			<property name="hours" caption="__transition_condition_on_hours" type="text"
+			<property name="hours" caption="__transition_on_hours" type="text"
 				characterMask="^[0-9]*$" />
-			<property name="mins" caption="__transition_condition_on_mins" type="text"
+			<property name="mins" caption="__transition_on_mins" type="text"
 				characterMask="^[0-9]*$" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
-			<option name="variable" />
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 	</item>
-	<item name="conditionOnVariable" caption="__transition_condition_on_variable" type="transition">
+	<item name="transitionOnVariable" caption="__transition_on_variable" type="transition">
 		<properties>
-			<property name="name" caption="__transition_condition_on_variable_name" type="text" />
-			<property name="value" caption="__transition_condition_on_variable_value" type="text" />
+			<property name="name" caption="__transition_on_variable_name" type="text" />
+			<property name="value" caption="__transition_on_variable_value" type="text" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
-			<option name="variable" />
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 	</item>
 	
-	<item name="workflowEntryCondition" caption="__workflow_entry_condition" 
+	<item name="workflowEntryDataValue" caption="__workflow_entry_data_value" 
 		multipleAllowed="true" >
 		<properties>
-			<property name="condition" caption="__workflow_entry_condition" 
+			<property name="condition" caption="__workflow_entry_data_value" 
 				type="workflowCondition" />
 		</properties>
 	</item>
@@ -1194,14 +1195,14 @@
 	
 	<item name="onEntry" caption="__onEntry" canBeDeleted="true" multipleAllowed="false">
 		<options>
-			<option name="variable" />
+			<option name="variable" caption="__workflow_variable_set" />
 			<option_select path="//item[@category='onEntryExitLayout']" />
 		</options>
 	</item>
 	
 	<item name="onExit" caption="__onExit" canBeDeleted="true" multipleAllowed="false">
 		<options>
-			<option name="variable" />
+			<option name="variable" caption="__workflow_variable_set" />
 			<option_select path="//item[@category='onEntryExitLayout']" />
 		</options>
 	</item>

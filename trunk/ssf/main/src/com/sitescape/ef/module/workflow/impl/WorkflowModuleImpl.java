@@ -416,7 +416,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    				// remove any old notifyAction for this node
 	    				removeExitEventAction(context, stateNode, notifyAction);
 	    			}
-	    			Element timer = (Element)state.selectSingleNode("./item[@name='transitions']/item[@name='conditionOnElapsedTime']");
+	    			Element timer = (Element)state.selectSingleNode("./item[@name='transitions']/item[@name='transitionOnElapsedTime']");
 	    			if (timer != null) {
 	    				String toState = WorkflowUtils.getProperty(timer, "toState");
 	    				long total = 0;
