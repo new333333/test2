@@ -19,6 +19,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.web.WebKeys;
 
 
 /**
@@ -66,6 +67,38 @@ public class WorkflowUtils {
 			}
 		}
 		return transitionData;
+    }
+    public static Map getQuestions(Definition wfDef, String stateName) {
+		Map questionsData = new LinkedHashMap();
+		Document wfDoc = wfDef.getDefinition();
+		Element wfRoot = wfDoc.getRootElement();
+		//Find the current state in the definition
+		Element stateEle = getState(wfRoot, stateName);
+		if (stateEle != null) {
+			//Build a list of all questions for this state
+			List questions = stateEle.selectNodes("./item[@name='workflowQuestion']");
+			if (questions != null) {
+				for (int j = 0; j < questions.size(); j++) {
+					Map questionData = new LinkedHashMap();
+					String questionName = getProperty((Element)questions.get(j), "name");
+					String questionText = getProperty((Element)questions.get(j), "question");
+					Map responseData = new LinkedHashMap();
+					questionData.put(WebKeys.WORKFLOW_QUESTION_TEXT, questionText);
+					questionData.put(WebKeys.WORKFLOW_QUESTION_RESPONSES, responseData);
+					List responses = ((Element)questions.get(j)).selectNodes("./item[@name='workflowResponse']");
+					if (responses != null) {
+						for (int k = 0; k < responses.size(); k++) {
+							String responseName = getProperty((Element)responses.get(j), "name");
+							String responseText = getProperty((Element)responses.get(j), "response");
+							responseData.put(responseName, responseText);
+						}
+					}
+					//Ok, add this question to the map
+					questionsData.put(questionName, questionData);
+				}
+			}
+		}
+		return questionsData;
     }
     public static String getStateCaption(Definition wfDef, String state) {
     	String stateCaption = "";

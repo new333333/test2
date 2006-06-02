@@ -215,7 +215,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	public Map getManualTransitions(FolderEntry entry, Long stateId) {
 		WorkflowState ws = entry.getWorkflowState(stateId);
 		Map result = WorkflowUtils.getManualTransitions(ws.getDefinition(), ws.getState());
-		Map transitionData = new HashMap();
+		Map transitionData = new LinkedHashMap();
 		for (Iterator iter=result.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry me = (Map.Entry)iter.next();
 			try {
@@ -224,6 +224,13 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 			} catch (AccessControlException ac) {};
 		}
 		return transitionData;
+    }		
+
+	public Map getWorkflowQuestions(FolderEntry entry, Long stateId) {
+		WorkflowState ws = entry.getWorkflowState(stateId);
+		Map questions = WorkflowUtils.getQuestions(ws.getDefinition(), ws.getState());
+		//TODO - Check if user is allowed to respond (add a user list property to the workflowQuestion item)
+		return questions;
     }		
 
     public List applyEntryFilter(Definition entryFilter) {

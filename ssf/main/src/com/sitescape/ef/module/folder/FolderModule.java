@@ -55,7 +55,7 @@ public interface FolderModule {
 	public void checkTransitionOutStateAllowed(FolderEntry entry, Long stateId) throws AccessControlException;
 	public void checkTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) throws AccessControlException;
 	public Map getManualTransitions(FolderEntry entry, Long stateId);
-
+	public Map getWorkflowQuestions(FolderEntry entry, Long stateId);
     /**
      * Apply the filter and get back a list of matching entries. 
      * Access control is also applied implicitly.

@@ -224,6 +224,7 @@ public class ViewEntryController extends  SAbstractController {
 			getProfileModule().setSeen(null, entry);
 		}
 		Map captionMap = new HashMap();
+		Map questionsMap = new HashMap();
 		Map transitionMap = new HashMap();
 		for (int i=0; i<replies.size(); i++) {
 			FolderEntry reply = (FolderEntry)replies.get(i);
@@ -240,9 +241,12 @@ public class ViewEntryController extends  SAbstractController {
 					transitionMap.put(ws.getTokenId(), trans);
 				} catch (AccessControlException ac) {}
 					
+				Map qMap = getFolderModule().getWorkflowQuestions(reply, ws.getTokenId());
+				questionsMap.put(ws.getTokenId(), qMap);
 			}
 		}
 		model.put(WebKeys.WORKFLOW_CAPTIONS, captionMap);
+		model.put(WebKeys.WORKFLOW_QUESTIONS, questionsMap);
 		model.put(WebKeys.WORKFLOW_TRANSITIONS, transitionMap);
 		
 		return model;
