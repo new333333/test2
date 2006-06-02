@@ -180,10 +180,6 @@
 			<fileset dir="${project.dir}/jboss/resources" />
 		</copy>
 		
-		<delete>
-			<fileset dir="${app.server.deploy.dir}/ssfs.war/WEB-INF/lib" includes="commons-logging*.jar"/>
-		</delete>
-		
 		<!--
 		<move file="${app.server.deploy.dir}/slide.war/WEB-INF/lib/slide-jaas-2.1.jar" todir="${app.server.dir}/server/default/lib" failonerror="false" />
 		-->
