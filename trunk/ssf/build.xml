@@ -13,8 +13,6 @@
   		<property file="build.properties" />
   		<property file="release.${user.name}.properties" />
   		<property file="release.properties" />
-  		<property file="liferay.${user.name}.properties" />
-  		<property file="liferay.properties" />
 		<property name="temp.dir" value="${basedir}/temp" />
 		<pathconvert targetos="unix" property="temp.dir.path">
 			<path>
@@ -170,22 +168,24 @@
 		<antcall target="zip-docs" />
 		<!--<antcall target="zip-src" />-->
 		<antcall target="zip-war" />
+		<antcall target="liferay-tomcat-bundle" />
+		<antcall target="liferay-jboss-tomcat-bundle" />
   		<ant dir="indexer-lucene" target="zip" />
   		<ant dir="stellent" target="zip" />
 	</target>
 
 	<target name="zip-docs" depends="init">
 		<mkdir dir="${dist.dir}" />
-		<delete file="${dist.dir}/sitescape-forum-${ssf.version}-doc.zip" failonerror="false" />
-		<zip zipfile="${dist.dir}/sitescape-forum-${ssf.version}-doc.zip"
+		<delete file="${dist.dir}/sitescape-forum-doc-${forum.version}.zip" failonerror="false" />
+		<zip zipfile="${dist.dir}/sitescape-forum-doc-${forum.version}.zip"
 			basedir="."
 			includes="docs/**/*.*"
 		/>
 	</target>
 
 	<!--<target name="zip-src" depends="init">
-		<delete file="${dist.dir}/sitescape-forum-${ssf.version}-src.zip" failonerror="false" />
-		<zip zipfile="${dist.dir}/sitescape-forum-${ssf.version}-src.zip"
+		<delete file="${dist.dir}/sitescape-forum-src-${forum.version}.zip" failonerror="false" />
+		<zip zipfile="${dist.dir}/sitescape-forum-src-${forum.version}.zip"
 			basedir="${ssf.source.dir}"
 			excludes="**/CVS/**,**/*.scc"
 		/>
@@ -193,18 +193,13 @@
 
 	<target name="zip-war" depends="init">
 		<mkdir dir="${dist.dir}" />
-		<delete file="${dist.dir}/sitescape-forum-${ssf.version}-war.zip" failonerror="false" />
-		<zip destfile="${dist.dir}/sitescape-forum-${ssf.version}-war.zip">
-			<zipfileset dir="war">
-				<include name="ssf.war" />
-			</zipfileset>
-			<zipfileset dir="ssfs">
-				<include name="ssfs.war" />
-			</zipfileset>
-		</zip>
+		<delete file="${dist.dir}/sitescape-forum-ssf-${forum.version}.war" failonerror="false" />
+		<delete file="${dist.dir}/sitescape-forum-ssfs-${forum.version}.war" failonerror="false" />
+		<copy file="war/ssf.war" tofile="${dist.dir}/sitescape-forum-ssf-${forum.version}.war" />
+		<copy file="ssfs/ssfs/war" tofile="${dist.dir}/sitescape-forum-ssfs-${forum.version}.war" />
 	</target>
 
-	<!-- Build Aspen kit bundled with Liferay+Tomcat -->
+	<!-- Build Aspen kit bundled with Liferay-Tomcat -->
 	<target name="liferay-tomcat-bundle" depends="init">
 		<delete dir="${temp.dir}" />
 		<unzip src="liferay/download/${liferay.tomcat.zip.file.name}" dest="${temp.dir}/" />
@@ -215,8 +210,25 @@ app.server.liferay.tomcat.dir=${temp.dir.path}
 		</echo>
 		<ant dir="liferay" target="full-deploy" inheritAll="false" />
 		<mkdir dir="${dist.dir}" />
-		<delete file="${dist.dir}/sitescape-forum-${ssf.version}-liferay-tomcat.zip" failonerror="false" />
-		<zip destfile="${dist.dir}/sitescape-forum-${ssf.version}-liferay-tomcat.zip"
+		<delete file="${dist.dir}/sitescape-forum-${forum.version}-liferay-tomcat.zip" failonerror="false" />
+		<zip destfile="${dist.dir}/sitescape-forum-${forum.version}-liferay-tomcat.zip"
+			basedir="${temp.dir}" />
+		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
+	</target>
+	
+	<!-- Build Aspen kit bundled with Liferay-JBoss-Tomcat -->
+	<target name="liferay-jboss-tomcat-bundle" depends="init">
+		<delete dir="${temp.dir}" />
+		<unzip src="liferay/download/${liferay.jboss-tomcat.zip.file.name}" dest="${temp.dir}/" />
+		<move file="app.server.${user.name}.properties" tofile="app.server.${user.name}.properties.moved" failonerror="false"/>
+		<echo file="app.server.${user.name}.properties">portal.type=liferay
+app.server.type=jboss-tomcat
+app.server.liferay.jboss-tomcat.dir=${temp.dir.path}
+		</echo>
+		<ant dir="liferay" target="full-deploy" inheritAll="false" />
+		<mkdir dir="${dist.dir}" />
+		<delete file="${dist.dir}/sitescape-forum-${forum.version}-liferay-jboss-tomcat.zip" failonerror="false" />
+		<zip destfile="${dist.dir}/sitescape-forum-${forum.version}-liferay-jboss-tomcat.zip"
 			basedir="${temp.dir}" />
 		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
 	</target>
