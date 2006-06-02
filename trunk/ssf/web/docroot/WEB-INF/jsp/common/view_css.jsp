@@ -29,15 +29,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
   </c:if>
 <script type="text/javascript">
 
-//Routine to round the corners of the rounded box tag
-function ss_rounded() {
-	if(!NiftyCheck()) return;
-	Rounded("*.ss_rounded", "all", "${ss_style_background_color}", "${ss_form_background_color}", "smooth");
-	Rounded("*.ss_rounded_border", "all", "${ss_style_background_color}", "transparent", "border smooth");
-	Rounded("*.ss_rounded_border_form", "all", "${ss_form_background_color}", "transparent", "border smooth");
-}
-ss_createOnLoadObj('ss_rounded', ss_rounded);
-
 function ss_createStyleSheet(url) {
 	var styles = "@import url('" + " " + url + " " + "');";
 	var newSS = document.createElement('link');
@@ -67,6 +58,19 @@ if (document.createStyleSheet) {
 <style>
 <jsp:include page="/WEB-INF/jsp/common/ssf_css.jsp" />
 </style>
+
+<script type="text/javascript">
+
+//Routine to round the corners of the rounded box tag
+function ss_rounded() {
+	if(!NiftyCheck()) return;
+	Rounded("*.ss_rounded", "all", "${ss_style_background_color}", "${ss_form_background_color}", "smooth");
+	Rounded("*.ss_rounded_border", "all", "${ss_style_background_color}", "transparent", "border smooth");
+	Rounded("*.ss_rounded_border_form", "all", "${ss_form_background_color}", "transparent", "border smooth");
+}
+ss_createOnLoadObj('ss_rounded', ss_rounded);
+
+</script>
 
 </c:if>
 

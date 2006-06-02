@@ -43,6 +43,27 @@
 		<c:if test="${empty ssWorkflowTransitions[workflow.id]}">
 		  <td></td><td></td>
 		</c:if>
+	    <c:if test="${!empty ssWorkflowQuestions[workflow.id]}">
+	      <td valign="top" align="right">&nbsp;&nbsp;&nbsp;</td>
+	      <td valign="top">
+		  <c:forEach var="question" items="${ssWorkflowQuestions[workflow.id]}">
+		    <form class="ss_style ss_form" method="post" action="" style="display:inline;">
+		    <input type="hidden" name="tokenId" value="${workflow.id}">
+		    <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
+		    <span class="ss_bold"><c:out value="${question.value.ssWorkflowQuestionText}"/></span><br/>
+		    <select name="${question.key}">
+		    <c:forEach var="response" items="${question.value.ssWorkflowQuestionResponses}">
+		      <option value="${response.key}">${response.value}</option>
+		    </c:forEach>
+		    </select><input type="submit" class="ss_submit" name="respondBtn" 
+		     value="<ssf:nlt tag="button.ok" text="OK"/>">
+		    </form>
+		  </c:forEach>
+		  </td>
+		</c:if>
+		<c:if test="${empty ssWorkflowQuestions[workflow.id]}">
+		  <td></td><td></td>
+		</c:if>
 	  </tr>
 	  <%	column1 = "";  %>
 	  <c:set var="lastWorkflowTitle" value="${workflow.definition.title}"/>
