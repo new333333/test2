@@ -747,7 +747,6 @@ HTMLArea.prototype.generate = function () {
 			html += editor._textArea.value;
 			html += "</body>\n";
 			html += "</html>";
-			alert(html);
 			doc.write(html);
 			doc.close();
 		} else {
