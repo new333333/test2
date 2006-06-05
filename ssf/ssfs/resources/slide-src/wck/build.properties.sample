@@ -1,0 +1,74 @@
+# ----- Compile Control Flags -----
+compile.debug=on
+compile.deprecation=off
+compile.optimize=on
+compile.target=1.3
+build.compiler=modern
+
+#skip.javadoc
+#skip.slide
+
+# ----- Project -----
+# change this if you want the build to work for your own project
+# create a new Domain.xml pointing to your implementation and add a new
+# jaas.config for your own authentication
+# change the slide properties only if you want other parts
+# enabled / disabled
+# add your sources and libraries to the additional paths
+
+#name=Jakarta-Slide-WebDAV-Construction-Kit
+#year=2004
+#version=1.0
+#release-notes=RELEASE-NOTES-1.0
+#project=jakarta-slide-wck
+#final.name=${project}-${version}
+#license=LICENSE
+#readme=README
+
+#domain=conf/Domain.xml
+#jaas.config=conf/jaas.config
+#slide.properties=src/org/apache/slide/slide.properties
+#web.xml=
+
+#additional.src.dir=
+#additional.lib.dir=
+
+# also add a directory additional configuration files that shall go into the classpath
+
+#additional.conf.dir=
+
+# ----- Slide -----
+# these properties by default point to the Slide
+# version checked out along with WCK
+# if this is not 2.2pre1 uncomment the slide.version
+# property and set it to accordingly
+#
+# if you do not want WCK to build against the Slide source it was
+# checked out with, you will have to adjust slide.base.dir
+# to the path where your Slide base directory is
+#
+# if you are building against Slide 2.1 you will have to comment out 
+# supports.macro.store as Slide 2.1 does not support macro store opertations
+
+slide.base.dir=..
+#lib.dir=${slide.base.dir}/lib
+#slide.lib.dir=${slide.base.dir}/dist/slide/lib
+#slide.version=2.2pre1
+supports.macro.store
+commons.transaction.version=1.1b2
+
+# ----- Catalina distribution directory -----
+# add the location of your catalina distribution here to make the
+# deploy target work
+#
+# you will need at least Jakarta Tomcat 5.0.28
+
+#catalina.dist=
+catalina.server.lib=${catalina.dist}/server/lib
+catalina.common.lib=${catalina.dist}/common/lib
+catalina.jar=${catalina.server.lib}/catalina.jar
+# for 5.0.28
+jmx.jar=${catalina.dist}/bin/jmx.jar
+# for earlier versions
+#jmx.jar=${catalina.common.lib}/jmx.jar
+
