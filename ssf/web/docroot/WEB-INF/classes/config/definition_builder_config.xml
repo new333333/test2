@@ -177,7 +177,7 @@
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
-			<property name="width" caption="__textboxWidth" type="text"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60" />
 			<property name="inline" caption="__inline" type="boolean">
 				<help>__help_mark_as_inline</help>
 			</property>
@@ -342,7 +342,7 @@
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="width" caption="__textboxWidth" type="text"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="inline" caption="__inline" type="boolean">
 				<help>__help_mark_as_inline</help>
 			</property>
@@ -364,7 +364,7 @@
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="width" caption="__textareaWidth" type="text"/>
+			<property name="width" caption="__textareaWidth" type="text" default="60"/>
 			<property name="rows" caption="__rows" type="text"/>
 			<property name="inline" caption="__inline" type="boolean">
 				<help>__help_mark_as_inline</help>
@@ -505,7 +505,7 @@
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="width" caption="__browseboxWidth" type="text"/>
+			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
 			<property name="maxWidth" caption="__max_graphic_width" type="text"
 				characterMask="^[0-9]*$">
 				<help>__help_graphic_constraints</help>
@@ -531,7 +531,7 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="ss_attachFile" readonly="true"/>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="width" caption="__browseboxWidth" type="text"/>
+			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
 			<property name="number" caption="__number_of_file_select_boxes_to_be_shown" type="integer"/>
 			<property name="storage" caption="__storage_media" type="selectbox" default="fileRepositoryService">
 				<!-- 
@@ -561,7 +561,7 @@
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="width" caption="__browseboxWidth" type="text"/>
+			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
 			<property name="storage" caption="__storage_media" type="selectbox" default="fileRepositoryService">
 				<option name="fileRepositoryService" caption="__file_system" />
 				<option name="internalWebdavRepositoryService" caption="__internal_webdav" />
@@ -885,11 +885,12 @@
 		</properties>
 		<options>
 			<option name="titleView" />
+			<option name="summaryCanvas" initial="true" />
 			<option name="descriptionView" initial="true" />
 			<option name="folderDataItem" caption="__folder_data_item" 
 				definitionType="5" />
-			<option name="folderList" default="true" />
-			<option name="viewEntry" default="true" />
+			<option name="folderList" initial="true" />
+			<option name="viewEntry" initial="true" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 	</item>
@@ -1265,6 +1266,7 @@
 		
 		<options>
 			<option name="titleView" />
+			<option name="summaryCanvas" initial="true" />
 			<option name="descriptionView" initial="true" />
 			<option name="profileList" initial="true" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -1335,7 +1337,7 @@
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text" value="__profile_name"/>
-			<property name="width" caption="__textboxWidth" type="text"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_name_form.jsp" />
@@ -1357,7 +1359,7 @@
 				<option name="zonName" caption="__zonName" />
 		    </property>
 			<property name="caption" caption="__caption" type="text" />
-			<property name="width" caption="__textboxWidth" type="text"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>__help_required</help>
 			</property>
@@ -1475,6 +1477,7 @@
 		multipleAllowed="false" >		
 		<options>
 			<option name="workspaceTitleView" initial="true" />
+			<option name="summaryCanvas" initial="true" />
 			<option name="descriptionView" initial="true" />
 			<option name="workspaceDataItem" caption="__workspace_data_item" 
 				definitionType="8" />
@@ -1535,6 +1538,15 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="summaryCanvas" caption="__summary_canvas">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_summary_canvas.jsp" />
 		</jsps>
 	</item>
 		

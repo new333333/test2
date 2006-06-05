@@ -93,6 +93,7 @@ public class DisplayConfiguration extends TagSupport {
 									//Also set up the default values for all properties defined in the definition configuration
 									//  These will be overwritten by the real values (if they exist) below
 									Iterator itItemDefinitionProperties = itemDefinition.selectNodes("properties/property").iterator();
+									Map propertyDefaultValues = new HashMap();
 									while (itItemDefinitionProperties.hasNext()) {
 										Element property = (Element) itItemDefinitionProperties.next();
 										String propertyName = property.attributeValue("name", "");
@@ -104,6 +105,8 @@ public class DisplayConfiguration extends TagSupport {
 										}
 										if (!propertyName.equals("")) {
 											req.setAttribute("property_"+propertyName, propertyDefaultValue);
+											//Remember the default setting so it won't get cleared later
+											propertyDefaultValues.put("property_"+propertyName, propertyDefaultValue);
 										}
 									}
 									
@@ -113,7 +116,8 @@ public class DisplayConfiguration extends TagSupport {
 										String propertyName = property.attributeValue("name", "");
 										
 										if (!propertyName.equals("")) {												
-											req.setAttribute("property_"+propertyName, "");
+											if (!propertyDefaultValues.containsKey("property_"+propertyName)) 
+												req.setAttribute("property_"+propertyName, "");
 
 											//Get the type from the config definition
 											Element propertyConfig = (Element) itemDefinition.selectSingleNode("properties/property[@name='"+propertyName+"']");
