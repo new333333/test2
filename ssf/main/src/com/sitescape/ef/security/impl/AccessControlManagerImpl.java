@@ -222,9 +222,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
            	// We have to check against the explicit set associated with this object.
            	Set principalIds = user.computePrincipalIds();
            	Set memberIds = aclControlledObj.getAclSet().getMemberIds(accessType);
-  //TODO:remove when we get acls - need this to module to test functions now though
-           	return true;
-           	//return intersectedSets(principalIds, memberIds);
+           	return intersectedSets(principalIds, memberIds);
         }        
     }
     

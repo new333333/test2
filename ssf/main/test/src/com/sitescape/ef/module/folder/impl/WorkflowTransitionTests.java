@@ -22,6 +22,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 import com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl;
 import com.sitescape.util.Validator;
 
@@ -57,18 +58,49 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 		this.pdi = pdi;
 	}
 	public void testManualTransition() {
-		Workspace top = createZone(zoneName);
-		Folder folder = createFolder(top, "testFolder");
-		FolderEntry entry = createEntry(folder);
+		try {
+			Workspace top = createZone(zoneName);
+			Folder folder = createFolder(top, "testFolder");
+			FolderEntry entry = createEntry(folder);
 		
-		Definition workflowDef = importDef("testManual");
-		wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
-		WorkflowState ws = checkState(entry, "start");
-		wfi.modifyWorkflowState(ws.getId(), ws.getState(), "state1");
-		ws = checkState(entry, "state1");
-		wfi.modifyWorkflowState(ws.getId(), ws.getState(), "state2");
-		ws = checkState(entry, "state2");
+			Definition workflowDef = importDef("testManual");
+			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
+			WorkflowState ws = checkState(entry, "start");
+			wfi.modifyWorkflowState(entry, ws, "state1");
+			ws = checkState(entry, "state1");
+			wfi.modifyWorkflowState(entry, ws, "state2");
+			ws = checkState(entry, "state2");
+			wfi.modifyWorkflowState(entry, ws, "end");
+			ws = checkState(entry, "end");
 		
+			entry = createEntry(folder);		
+			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
+			ws = checkState(entry, "start");
+			wfi.modifyWorkflowState(entry, ws, "state2");
+			ws = checkState(entry, "state2");
+			wfi.modifyWorkflowState(entry, ws, "end");
+			ws = checkState(entry, "end");
+		} finally {
+			WorkflowFactory.release();
+		}
+		
+	}
+	public void testVariableTransition() {
+		try {
+			Workspace top = createZone(zoneName);
+			Folder folder = createFolder(top, "testFolder");
+			FolderEntry entry = createEntry(folder);
+		
+			Definition workflowDef = importDef("testTransitionOnVariable");
+			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
+			WorkflowState ws = checkState(entry, "start");
+			//this transition will set a variable which should push the
+			//workflow all the way through.  Along the way and enter event
+			//changes the variable, but another transition allow that to pass.
+			wfi.modifyWorkflowState(entry, ws, "state1");
+		} finally {
+			WorkflowFactory.release();
+		}
 		
 	}
 	private WorkflowState checkState(FolderEntry entry, String stateName) {
