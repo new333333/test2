@@ -58,6 +58,20 @@ import org.apache.slide.util.Configuration;
  */
 public class StructureImpl implements Structure {
 
+	// 4/21/06 JK - begin
+	private static final ThreadLocal ssf_retrieveChild = new ThreadLocal();
+	public static void ssf_setRetrieveChild(Boolean bool) {
+		ssf_retrieveChild.set(bool);
+	}
+	public static Boolean ssf_getRetrieveChild() {
+		Boolean value = (Boolean) ssf_retrieveChild.get();
+		if(value == null)
+			return Boolean.TRUE; // default is true
+		else
+			return value;
+	}
+	// JK - end
+	
 	// ----------------------------------------------------------- Constructors
 
 	/**
@@ -125,17 +139,24 @@ public class StructureImpl implements Structure {
 	public Enumeration getChildren(SlideToken token, ObjectNode object)
 			throws ServiceAccessException, ObjectNotFoundException,
 			LinkedObjectNotFoundException, VetoException {
-		Enumeration childrenUri = object.enumerateChildren();
-		Vector result = new Vector();
-		while (childrenUri.hasMoreElements()) {
-			String childUri = (String) childrenUri.nextElement();
-			try {
-				ObjectNode child = retrieve(token, childUri, false);
-				result.addElement(child);
-			} catch (AccessDeniedException e) {
+		// 4/21/06 JK - Do not fetch children of children.
+		ssf_setRetrieveChild(Boolean.FALSE);
+		try {
+			Enumeration childrenUri = object.enumerateChildren();
+			Vector result = new Vector();
+			while (childrenUri.hasMoreElements()) {
+				String childUri = (String) childrenUri.nextElement();
+				try {
+					ObjectNode child = retrieve(token, childUri, false);
+					result.addElement(child);
+				} catch (AccessDeniedException e) {
+				}
 			}
+			return result.elements();
 		}
-		return result.elements();
+		finally {
+			ssf_setRetrieveChild(Boolean.TRUE);
+		}
 	}
 
 	public ObjectNode getParent(SlideToken token, ObjectNode object)
