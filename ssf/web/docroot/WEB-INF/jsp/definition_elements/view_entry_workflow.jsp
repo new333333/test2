@@ -103,12 +103,19 @@
           </c:if>
         </c:if>
       </c:forEach>
-      
+	  <c:if test="${!empty workflow.description}">
+	    <tr>
+	      <td colspan="8">
+			<div class="ss_entryContent">
+			 <span><c:out value="${workflow.description}" escapeXml="false"/></span>
+			</div>
+	      </td>
+	    </tr>
+	  </c:if>
     </c:if>
   <c:set var="workflowTitle" value="${workflow.definition.title}"/>
   </c:if>
 </c:forEach>
-
 </table>
 </div>
 </c:if>
