@@ -18,6 +18,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 
 <c:set var="ss_style_background_color" value="#FFFFCC" scope="request"/>
+<c:set var="ss_style_border_color" value="#999999" scope="request"/>
 <c:set var="ss_style_text_color" value="#009900" scope="request"/>
 <c:set var="ss_style_link_color" value="#009900" scope="request"/>
 <c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
@@ -72,6 +73,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 	
 	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_style_border_color" value="#999999" scope="request"/>
 	<c:set var="ss_style_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_style_link_color" value="#000000" scope="request"/>
 	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
@@ -147,6 +149,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 .ss_gray {
   color: ${ss_style_gray_color};   
+  }
+
+.ss_border_light {
+  border: 1px ${ss_style_border_color} solid;
   }
 
 .ss_form, .ss_form table, .ss_style form {
