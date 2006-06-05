@@ -155,7 +155,7 @@ public class WorkflowUtils {
      * @param stateName
      * @return Return the Dom elements
      */
-    public static List getConditions(Definition wfDef, String stateName) {
+    public static List getConditionElements(Definition wfDef, String stateName) {
     	List conditions=null;
 		Document wfDoc = wfDef.getDefinition();
 		Element wfRoot = wfDoc.getRootElement();
@@ -169,7 +169,27 @@ public class WorkflowUtils {
 		return conditions;
     }
     /**
-     * Return next state if conditionOnReply exists
+     * Get transitions triggered by a manual request
+     * 
+     * @param wfDef
+     * @param stateName
+     * @return Return the Dom elements
+     */
+    public static List getManualElements(Definition wfDef, String stateName) {
+    	List conditions=null;
+		Document wfDoc = wfDef.getDefinition();
+		Element wfRoot = wfDoc.getRootElement();
+		//Find the current state in the definition
+		Element stateEle = getState(wfRoot, stateName);
+		if (stateEle != null) {
+			//Build a list of all conditional transitions for this state
+			conditions = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionManual']");
+		}
+		if (conditions == null) conditions = new ArrayList();
+		return conditions;
+    }
+    /**
+     * Return next state if transitionOnReply exists
      * @param wfDef
      * @param stateName
      * @return transition to state or null
@@ -181,7 +201,7 @@ public class WorkflowUtils {
 		Element stateEle = getState(wfRoot, stateName);
 		if (stateEle != null) {
 			//Build a list of all conditional transitions for this state
-			Element transition  = (Element)stateEle.selectSingleNode("./item[@name='transitions']/item[@name='conditionOnReply']");
+			Element transition  = (Element)stateEle.selectSingleNode("./item[@name='transitions']/item[@name='transitionOnReply']");
 			if (transition != null) {
 				Element toStateEle = (Element)transition.selectSingleNode("./properties/property[@name='toState']");
 				if (toStateEle != null) {

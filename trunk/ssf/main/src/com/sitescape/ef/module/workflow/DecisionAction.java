@@ -32,22 +32,24 @@ public class DecisionAction extends AbstractActionHandler {
 				}
 				// cleanup any children - should only have children if token is root
 				Map children = current.getChildren();
-				for (Iterator iter=children.values().iterator();iter.hasNext();) {
-					Token child = (Token)iter.next();
-					WorkflowState w = entry.getWorkflowState(new Long(child.getId()));
-					if (w != null) {
-						entry.removeWorkflowState(w);
+				if (children != null) {
+					for (Iterator iter=children.values().iterator();iter.hasNext();) {
+						Token child = (Token)iter.next();
+						WorkflowState w = entry.getWorkflowState(new Long(child.getId()));
+						if (w != null) {
+							entry.removeWorkflowState(w);
+						}
 					}
 				}
 				if (!current.isRoot()) {
 					entry.removeWorkflowState(ws);
-					//check all threads
-					TransitionUtils.processConditions(executionContext, entry, false);
+					//check all other threads
+					TransitionUtils.processConditions(entry, current);
 				} 
 				return;
 			}
 			//Check for conditions on this threads
-			String toState = TransitionUtils.processConditions(executionContext, entry, ws, false);
+			String toState = TransitionUtils.processConditions(executionContext, entry, ws);
 			if (toState != null) {
 				if (infoEnabled) logger.info("Decision transition("+ ws.getThreadName() + "): " + ws.getState() + "." + toState);
 					executionContext.leaveNode(ws.getState() + "." + toState);

@@ -731,17 +731,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	/**
 	 * Signal a transition.  The caller is responsible for updating the index.
 	 */
-	public void modifyWorkflowState(Long tokenId, String fromState, String toState) {
-		JbpmContext context=WorkflowFactory.getContext();
-	    try {
-        	Token t = context.loadTokenForUpdate(tokenId.longValue());
-            t.signal(fromState + "." + toState);
-            context.save(t);
-	    } catch (Exception ex) {
-	        throw convertJbpmException(ex);
-	    } finally {
-	    	context.close();
-	    }
+	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, String toState) {
+		TransitionUtils.processManualTransition(entry, state, toState);
 	}
 
 	public void modifyWorkflowStateOnTimeout(Long timerId) {
@@ -808,7 +799,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	 * @param entry
 	 */
 	public void modifyWorkflowStateOnUpdate(WorkflowSupport entry) {
-		TransitionUtils.processConditions(null, entry, true);
+		TransitionUtils.processConditions(entry, true, false);
 	}
 
 	/**
@@ -817,26 +808,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	 * @param entry
 	 */
 	public void modifyWorkflowStateOnReply(WorkflowSupport entry) {
-		JbpmContext context=WorkflowFactory.getContext();
-	    try {
-	   		//copy set because may change as we process each state
-	   		Set states = new HashSet(entry.getWorkflowStates());
-		
-	   		for (Iterator iter=states.iterator(); iter.hasNext(); ) {
-	   			WorkflowState ws = (WorkflowState)iter.next();
-		       	Token t = context.loadTokenForUpdate(ws.getTokenId().longValue());
-	   			//make sure state hasn't been removed as the result of another thread
-	   			if (t.hasEnded() || (ws.getOwner() == null)) continue;
-	   			String toState = WorkflowUtils.getReplyTransitionState(ws.getDefinition(), ws.getState());
-	   			if (!Validator.isNull(toState)) {
-   		            t.signal(ws.getState() + "." + toState);
-   		            context.save(t);	   				
-	   			}
-	    	}
-        } finally {
-        	context.close();
-        }
-		
+		TransitionUtils.processConditions(entry, false, true);	
 	}	
 	public void deleteEntryWorkflow(WorkflowSupport entry) {
 		//Delete all JBPM tokens and process instances associated with this entry

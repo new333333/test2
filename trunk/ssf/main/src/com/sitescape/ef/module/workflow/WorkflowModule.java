@@ -6,6 +6,7 @@ import org.jbpm.graph.exe.ProcessInstance;
 
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier;
+import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowSupport;
 
 public interface WorkflowModule {
@@ -28,7 +29,7 @@ public interface WorkflowModule {
 	public void modifyProcessDefinition(ProcessDefinition pD, Definition def);
 	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef);
 	public void deleteEntryWorkflow(WorkflowSupport entry);
-	public void modifyWorkflowState(Long tokenId, String fromState, String toState);
+	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, String toState);
 	public void modifyWorkflowStateOnReply(WorkflowSupport entry);
 	public void modifyWorkflowStateOnUpdate(WorkflowSupport entry);
 	public void modifyWorkflowStateOnTimeout(Long timerId);

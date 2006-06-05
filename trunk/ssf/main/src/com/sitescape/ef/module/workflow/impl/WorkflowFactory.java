@@ -86,6 +86,14 @@ public class WorkflowFactory  implements InitializingBean {
     	}
 
     }
+    public static void release() {
+    	if (TransactionSynchronizationManager.hasResource(getInstance().getJbpmSessionFactory())) {
+    		JbpmSessionHolder jbpmSessionHolder =
+    			(JbpmSessionHolder) TransactionSynchronizationManager.unbindResource(getInstance().getJbpmSessionFactory());
+    		jbpmSessionHolder.clear();
+    	}
+
+    }
     private static class JbpmSessionHolder extends ResourceHolderSupport {
 
         private JbpmSession jbpmSession;

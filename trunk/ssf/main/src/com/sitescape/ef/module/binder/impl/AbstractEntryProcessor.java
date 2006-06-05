@@ -368,20 +368,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		//Find the workflowState
 		WorkflowState ws = wEntry.getWorkflowState(tokenId);
  		if (ws != null) {
-			//We have the workflowState of the current state
-			//See if the user is allowed to go to this state
-			Map transitions = WorkflowUtils.getManualTransitions(ws.getDefinition(), ws.getState());
-			if (transitions.containsKey(toState)) {
-				//It is ok to transition to this state; go do it
-				getWorkflowModule().modifyWorkflowState(ws.getTokenId(), ws.getState(), toState);
-				// Do NOT use reindexEntry(entry) since it reindexes attached
-				// files as well. We want workflow state change to be lightweight
-				// and reindexing all attachments will be unacceptably costly.
-				// TODO (Roy, I believe this was your design idea, so please 
-				// verify that this strategy will indeed work). 
+			getWorkflowModule().modifyWorkflowState(wEntry, ws, toState);
+			// Do NOT use reindexEntry(entry) since it reindexes attached
+			// files as well. We want workflow state change to be lightweight
+			// and reindexing all attachments will be unacceptably costly.
+			// TODO (Roy, I believe this was your design idea, so please 
+			// verify that this strategy will indeed work). 
 				
-				indexEntry(binder, entry, new ArrayList(), null, false);
-			}
+			indexEntry(binder, entry, new ArrayList(), null, false);
 		}
     }
  
