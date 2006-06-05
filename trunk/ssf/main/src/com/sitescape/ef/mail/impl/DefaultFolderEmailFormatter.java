@@ -34,8 +34,6 @@ import javax.mail.BodyPart;
 import javax.mail.Part;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
-import javax.mail.Flags;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -56,13 +54,8 @@ import com.sitescape.ef.domain.UserNotification;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.mail.FolderEmailFormatter;
 import com.sitescape.ef.mail.MailManager;
-import com.sitescape.ef.security.AccessControlManager;
-import com.sitescape.ef.security.acl.AclManager;
 import com.sitescape.ef.util.DirPath;
 import com.sitescape.ef.util.NLT;
-import com.sitescape.ef.portletadapter.AdaptedPortletURL;
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.domain.Principal;
@@ -72,10 +65,9 @@ import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.FolderModule;
-import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.ef.module.binder.AccessUtils;
 /**
  * @author Janet McCann
  *
@@ -96,7 +88,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
     public void setFolderModule(FolderModule folderModule) {
     	this.folderModule = folderModule;
     }
-	public void setmailManager(MailManager mailManager) {
+	public void setMailManager(MailManager mailManager) {
 		this.mailManager = mailManager;
 	}
 
@@ -661,8 +653,10 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			for (Iterator iter=entries.iterator(); iter.hasNext(); ) {
 				WorkflowControlledEntry e = (WorkflowControlledEntry)iter.next();
 //TODO: this isn't accounting for the binder override
-				if (getAccessControlManager().testAcl(user, e.getParentBinder(), e, AccessType.READ))
+				try {
+					AccessUtils.readCheck(e);
 					this.entries.add(e);
+				} catch (Exception ex) {};
 			}
 		}
 		protected List getEntries() {
