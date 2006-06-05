@@ -16,6 +16,7 @@
 //
 // browser-specific vars
 
+var ss_common_loaded = 1;
 var jsDebug = 0;
 
 var isNSN = (navigator.appName == "Netscape");
