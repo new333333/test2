@@ -52,7 +52,7 @@
 
 			</or>
 			<then>
-				<delete dir="${deploy.war.dir}/${deploy-support.war.name}" />
+				<delete dir="${deploy.war.dir}/${deploy-support.war.name}" includeemptydirs="true"/>
 				<copy file="${deploy-support.war.name}.war" todir="${deploy.war.dir}" />
 			</then>
 			<elseif>
@@ -61,7 +61,7 @@
 					<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
 				</or>
 				<then>
-					<delete dir="${deploy.war.dir}/${deploy-support.war.name}.war" />
+					<delete dir="${deploy.war.dir}/${deploy-support.war.name}.war" includeemptydirs="true"/>
 					<unwar src="${deploy-support.war.name}.war" dest="${deploy.war.dir}/${deploy-support.war.name}.war"/>
 				</then>
 			</elseif>
