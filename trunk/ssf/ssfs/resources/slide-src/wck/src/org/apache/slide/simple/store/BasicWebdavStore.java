@@ -265,6 +265,34 @@ public interface BasicWebdavStore {
             throws ServiceAccessException, AccessDeniedException, ObjectNotFoundException, ObjectLockedException;
 
     /**
+     * 4/25/06 JK - This method sort of cimbines the functionality of
+     * <code>createResource</code> and <code>setResourceContent</code>
+     * into one to achieve the following goals:
+     * <p>
+     * 1) Create a single version of the specified resource rather than two.<br>
+     * 2) Makes a single trip to the backend rather than two for beffer efficiency.  
+     * 
+     * @param resourceUri
+     *            URI of the content resource
+     * @param content
+     *            input stream the content of the resource can be read from
+     * @param contentType
+     *            content type of the resource or <code>null</code> if unknown
+     * @param characterEncoding
+     *            character encoding of the resource or <code>null</code> if
+     *            unknown or not applicable
+     * @throws ServiceAccessException
+     *             if any kind of internal error or any unexpected state occurs
+     * @throws AccessDeniedException
+     *             if the store denies write access to this content resource
+     * @throws ObjectAlreadyExistsException
+     *             if there already is an object at <code>resourceUri</code>
+     * @throws ObjectLockedException if the object has been locked internally
+     */
+    void createAndSetResource(String resourceUri, InputStream content, String contentType, String characterEncoding)
+            throws ServiceAccessException, AccessDeniedException, ObjectAlreadyExistsException, ObjectLockedException;
+
+    /**
      * Gets the date of the last modiciation of the object specified by
      * <code>uri</code>.
      * 
