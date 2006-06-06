@@ -1,3 +1,0 @@
-Slide 2.2pre1 built from Slide Subversion HEAD as of 3/30/2006.
-This WAR file includes WCK 1.0. To rebuild this original WAR file
-CD to <slide>/wck directory and enter "ant dist" command.

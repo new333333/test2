@@ -6,17 +6,20 @@
 	
 	<property name="jar.file" value="ssf-ssfs.jar" />
 
-	<property name="input.war.file" value="slide.war" />
+	<property name="slide.war.file" value="slide.war" />
 	<property name="output.war.name" value="ssfs" />
 	<property name="output.war.file" value="${output.war.name}.war" />
 	<property name="temp.dir" value="temp" />
 
-	<target name="clean" depends="build-common.clean">
+	<target name="delete-temp">
+		<delete includeEmptyDirs="true" failonerror="true">
+			<fileset dir="${temp.dir}" />
+		</delete>
+	</target>
+	
+	<target name="clean" depends="build-common.clean, delete-temp">
 		<delete>
 			<fileset dir="." includes="${output.war.file}" />
-		</delete>
-		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${temp.dir}" />
 		</delete>
 	</target>
 		
@@ -37,20 +40,13 @@
 		</jar>
 	</target>
 
-	<target name="unwar-original">
-		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${temp.dir}" />
-		</delete>		
-		<unwar src="original-kit/${input.war.file}" dest="${temp.dir}"/>
+	<target name="unwar-original" depends="delete-temp">		
+		<unwar src="resources/${slide.war.file}" dest="${temp.dir}"/>
 	</target>
 	
 	<target name="apply-changes" depends="jar,unwar-original">
-		<!-- Since it is possible for the web.xml in the original slide.war
-		     to have a later timestamp than the one in changes directory,
-		     we must delete the original web.xml before copying it -->
-		<delete file="${temp.dir}/WEB-INF/web.xml" />
-		<copy todir="${temp.dir}">
-			<fileset dir="changes" includes="**/*" />
+		<copy todir="${temp.dir}" overwrite="true">
+			<fileset dir="resources/slide-war" includes="**/*" />
 		</copy>
 		<copy file="${jar.file}" todir="${temp.dir}/WEB-INF/lib" />
 	</target>
@@ -79,5 +75,29 @@
 			</then>
 		</if>
     </target>
-	
+
+	<target name="build-war-from-scratch" depends="delete-temp">
+		<antcall target="build-custom-slide-war"/>
+		<antcall target="war"/>
+	</target>
+
+	<target name="build-custom-slide-war">
+		<unzip src="download/${slide.src.zip.file.name}" dest="${temp.dir}" />
+		<copy todir="${temp.dir}" overwrite="true">
+			<fileset dir="resources/slide-src" />
+		</copy>
+		<copy file="resources/slide-src/wck/build.properties.sample" tofile="${temp.dir}/wck/build.properties" overwrite="true" />
+		<ant dir="${temp.dir}/wck" target="dist" inheritAll="false" />
+		<copy file="${temp.dir}/wck/dist/slide.war" todir="resources" />
+		<!-- The following jar files are copied into our lib directory because they are
+		     needed to compile the Java source files in com.sitescape.ef.ssfs.* packages.
+		     (the first two jar files also contain some changes we made to customize Slide). -->
+		<!-- NOTE: Instead of copying these generated jar files into lib directory at build
+		           time, we checked them into SCM for two reasons: 1) dealing with archives
+		           in SCM is easier for developers (as opposed to two-pass build), 
+		           2) these jar files will not change frequently. -->
+		<!--<copy file="${temp.dir}/wck/dist/jakarta-slide-wck-1.0.jar" todir="${project.dir}/lib" />-->
+		<!--<copy file="${temp.dir}/wck/dist/slide-kernel-2.2pre1.jar" todir="${project.dir}/lib" />-->
+		<!--<copy file="${temp.dir}/dist/slide/lib/slide-jaas-2.2pre1.jar" todir="${project.dir}/lib" />-->
+	</target>
 </project>
