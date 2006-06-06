@@ -12,9 +12,7 @@
 	<property name="temp.dir" value="temp" />
 
 	<target name="delete-temp">
-		<delete includeEmptyDirs="true" failonerror="true">
-			<fileset dir="${temp.dir}" />
-		</delete>
+		<delete includeemptydirs="true" dir="${temp.dir}" failonerror="true"/>
 	</target>
 	
 	<target name="clean" depends="build-common.clean, delete-temp">
@@ -45,6 +43,20 @@
 	</target>
 	
 	<target name="apply-changes" depends="jar,unwar-original">
+		<!-- The following archives and files are not needed by SSFS. -->
+		<delete failonerror="true">
+			<fileset dir="${temp.dir}/WEB-INF/lib">
+				<include name="ant.jar"/>
+				<include name="commons-dbcp-*.jar"/>
+				<include name="commons-httpclient.jar"/>
+				<include name="db-ojb-*.jar"/>
+				<include name="jakarta-slide-webdavlib-*.jar"/>
+				<include name="lucene-*.jar"/>
+				<include name="PDFBox-*.jar"/>
+				<include name="tm-extractors-*.jar"/>
+				<include name="tm-extractors.notice"/>
+			</fileset>
+		</delete>
 		<copy todir="${temp.dir}" overwrite="true">
 			<fileset dir="resources/slide-war" includes="**/*" />
 		</copy>
