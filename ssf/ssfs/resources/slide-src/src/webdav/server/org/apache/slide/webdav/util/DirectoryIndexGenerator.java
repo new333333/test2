@@ -261,8 +261,16 @@ public class DirectoryIndexGenerator {
             permissionsList = null;
             locksList = null;
             try {
-                NodeRevisionDescriptors revisionDescriptors =
-                    content.retrieve(slideToken, currentResource);
+            	// 4/21/06 JK - Do NOT fetch children of children.
+            	NodeRevisionDescriptors revisionDescriptors = null;            	
+            	org.apache.slide.structure.StructureImpl.ssf_setRetrieveChild(Boolean.FALSE);
+            	try {
+            		revisionDescriptors =
+            			content.retrieve(slideToken, currentResource);
+            	}
+            	finally {
+            		org.apache.slide.structure.StructureImpl.ssf_setRetrieveChild(Boolean.TRUE);
+            	}
                 // Retrieve latest revision descriptor
                 currentDescriptor =
                     content.retrieve(slideToken, revisionDescriptors);
