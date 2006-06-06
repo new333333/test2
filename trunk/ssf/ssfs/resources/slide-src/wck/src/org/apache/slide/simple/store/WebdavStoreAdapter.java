@@ -60,6 +60,16 @@ import org.apache.slide.util.logger.*;
 public class WebdavStoreAdapter extends AbstractXAServiceBase implements Service, ContentStore, NodeStore, LockStore,
         RevisionDescriptorStore, RevisionDescriptorsStore {
 
+	// 4/21/06 JK - begin
+	private static final ThreadLocal ssf_retrieveChild = new ThreadLocal();
+	static {
+		ssf_retrieveChild.set(Boolean.TRUE); // initialize to true
+	}
+	public static void ssf_setRetrieveChild(Boolean bool) {
+		ssf_retrieveChild.set(bool);
+	}
+	// JK - end
+	
     protected static final String LOG_CHANNEL = WebdavStoreAdapter.class.getName();
 
     protected static final String CALLBACK_PARAMETER = "callback-store";
@@ -534,19 +544,46 @@ public class WebdavStoreAdapter extends AbstractXAServiceBase implements Service
                 NodeRevisionContent revisionContent) throws ServiceAccessException, RevisionAlreadyExistException {
             checkAuthentication();
             try {
-                store.createResource(uri.toString());
-                storeRevisionContent(uri, revisionDescriptor, revisionContent);
+            	// 4/25/06 JK - Do not use separate call to create an empty resource.
+            	// Instead we will combine two calls into one for better efficiency.
+                //store.createResource(uri.toString());
+            	// 4/25/06 JK - Use the new method I added.
+                createAndStoreRevisionContent(uri, revisionDescriptor, revisionContent);
                 tentativeResourceCreated.add(uri.toString());
                 toBeCreated.remove(uri.toString());
             } catch (ObjectAlreadyExistsException e) {
                 throw new RevisionAlreadyExistException(uri.toString(), revisionDescriptor.getRevisionNumber());
             } catch (AccessDeniedException e) {
                 throw new ServiceAccessException(service, e);
-            } catch (RevisionNotFoundException e) {
+            } catch (IOException e) {
                 throw new ServiceAccessException(service, e);
             } catch (ObjectLockedException e) {
                 throw new ServiceAccessException(service, e);
+            } 
+        }
+
+        // 4/25/06 JK - I added this method so that we can make a single call 
+        // to the backend to create and populate the new resource. This brings
+        // two benefits: The backend creates a single version rather than two
+        // versions of the specified resource. Cuts down the number of calls to
+        // the backend. 
+        protected void createAndStoreRevisionContent(Uri uri, NodeRevisionDescriptor revisionDescriptor,
+                NodeRevisionContent revisionContent) throws ServiceAccessException, 
+                ObjectAlreadyExistsException, IOException, AccessDeniedException, ObjectLockedException {
+            checkAuthentication();
+
+            String contentType = null;
+            String characterEncoding = null;
+            if (revisionDescriptor != null) {
+                NodeProperty property = revisionDescriptor.getProperty("characterEncoding");
+                if (property != null) {
+                    characterEncoding = property.getValue().toString();
+                }
+                contentType = revisionDescriptor.getContentType();
             }
+            store.createAndSetResource(uri.toString(), revisionContent.streamContent(), contentType,
+                    characterEncoding);
+
         }
 
         public void storeRevisionContent(Uri uri, NodeRevisionDescriptor revisionDescriptor,
@@ -592,10 +629,14 @@ public class WebdavStoreAdapter extends AbstractXAServiceBase implements Service
 
                     SubjectNode subject = new SubjectNode(uri.toString());
                     if (!objectExistsScheduled(uri) && store.isFolder(uri.toString())) {
-                        String[] children = store.getChildrenNames(uri.toString());
-                        for (int i = 0; i < children.length; i++) {
-                            subject.addChild(new SubjectNode(children[i]));
-                        }
+                    	// 4/21/06 JK - Conditionalize fetching of children based on
+                    	// the value of threadlocal variable.
+                    	if(org.apache.slide.structure.StructureImpl.ssf_getRetrieveChild().equals(Boolean.TRUE)) {
+	                        String[] children = store.getChildrenNames(uri.toString());
+	                        for (int i = 0; i < children.length; i++) {
+	                            subject.addChild(new SubjectNode(children[i]));
+	                        }
+                    	}
                     }
                     return subject;
                 } catch (AccessDeniedException e) {
@@ -864,7 +905,26 @@ public class WebdavStoreAdapter extends AbstractXAServiceBase implements Service
         public void renewLock(Uri uri, NodeLock lock) throws ServiceAccessException, LockTokenNotFoundException {
             checkAuthentication();
             if (lockStore != null) {
-                removeLock(uri, lock);
+            	// 5/14/06 JK - Unfortunately the way WCK invokes SPI methods
+            	// around lock management does not align with the way WebDAV
+            	// defines locking interaction. Specifically, WebDAV client's
+            	// LOCK invocation for an attempt to extend an existing lock
+            	// does map to "removal" of existing lock followed by "putting"
+            	// another lock (with the same lock id). This makes it very
+            	// difficult, if not impossible, for SPI implementation to 
+            	// detect that the "put" method should really be translated
+            	// into a "renewal" request for an existing lock. The difficulty
+            	// comes due to the SPI's inability to distinguish renewal
+            	// situation (which is initiated by WebDAV LOCK command) from
+            	// WebDAV UNLOCK command. Both commans result in WCK's calling
+            	// SPI's unlockObject method.  
+            	// This inconsistency griefs SSFS especially badly, because
+            	// it makes SSFS to create new version of the file (if there
+            	// has been an update) everytime the lock is renewed. To prevent
+            	// this situation, I'm simply commenting out the following 
+            	// call to removeLock. This simple cure appears to be sufficient
+            	// for us. 
+                //removeLock(uri, lock);
                 putLock(uri, lock);
             }
         }
