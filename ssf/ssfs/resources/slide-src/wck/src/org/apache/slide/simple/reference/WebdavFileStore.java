@@ -409,6 +409,21 @@ public class WebdavFileStore implements BasicWebdavStore, WebdavStoreLockExtensi
         }
     }
 
+    // 4/25/06 JK - Due to changes to the superclass, I had to add implementation
+    // of this additional method.
+    public void createAndSetResource(String resourceUri, InputStream content, String contentType, String characterEncoding)
+    throws ServiceAccessException, AccessDeniedException, ObjectAlreadyExistsException {
+    	createResource(resourceUri);
+    	
+    	try {
+    		setResourceContent(resourceUri, content, contentType, characterEncoding);
+    	}
+    	catch(ObjectNotFoundException e) {
+    		// This should never occur. 
+    		throw new ServiceAccessException(service, e);
+    	}
+    }
+
     public long getResourceLength(String resourceUri) throws ServiceAccessException, AccessDeniedException,
             ObjectNotFoundException {
         try {
