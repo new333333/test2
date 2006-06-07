@@ -215,15 +215,6 @@
        unpackWARs="true" autoDeploy="true"
        xmlValidation="false" xmlNamespaceAware="false">
 
-        <Context path="/ssfs" debug="0" privileged="true" useNaming="true" crossContext="true">
-          <Realm className="org.apache.catalina.realm.JAASRealm"
-            appName="slide_login"
-            userClassNames="org.apache.slide.jaas.spi.SlidePrincipal"
-            roleClassNames="org.apache.slide.jaas.spi.SlideRole"
-            name="Slide DAV Server"
-            useContextClassLoader="false" />
-        </Context>
-
         <!-- Defines a cluster for this node,
              By defining this element, means that every manager will be changed.
              So when running a cluster, only make sure that you have webapps in there
