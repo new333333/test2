@@ -77,14 +77,28 @@
         	<param name="deploy-support.war.name" value="${output.war.name}" />
         </antcall>
 		<if>
-			<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
+			<equals arg1="${app.server.type}" arg2="tomcat" />
 			<then>
-				<!-- JBoss does not allow applications to load their own commons logging classes. 
-				     They must use the shared one that JBoss already has. -->
+				<!-- On Tomcat, Liferay's archives are deployed in common directory.
+				     Delete the following jar files from ssfs so that it uses the
+				     ones deployed with Liferay. Otherwise, it becomes problematic. -->
 				<delete>
-					<fileset dir="${app.server.deploy.dir}/ssfs.war/WEB-INF/lib" includes="commons-logging*.jar"/>
-				</delete>		
+					<fileset dir="${app.server.ssfs.dir}/WEB-INF/lib">
+						<include name="commons-logging-*.jar"/>
+						<include name="log4j-*.jar"/>
+					</fileset>
+				</delete>
 			</then>
+			<elseif>
+				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
+				<then>
+					<!-- JBoss does not allow applications to load their own commons logging classes. 
+					     They must use the shared one that JBoss already has. -->
+					<delete>
+						<fileset dir="${app.server.deploy.dir}/ssfs.war/WEB-INF/lib" includes="commons-logging*.jar"/>
+					</delete>		
+				</then>
+			</elseif>
 		</if>
     </target>
 
