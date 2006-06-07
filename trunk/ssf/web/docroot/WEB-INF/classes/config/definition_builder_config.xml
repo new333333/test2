@@ -885,7 +885,7 @@
 		</properties>
 		<options>
 			<option name="titleView" />
-			<option name="summaryCanvas" initial="true" />
+			<option name="dashboardCanvas" initial="true" />
 			<option name="descriptionView" initial="true" />
 			<option name="folderDataItem" caption="__folder_data_item" 
 				definitionType="5" />
@@ -1266,7 +1266,7 @@
 		
 		<options>
 			<option name="titleView" />
-			<option name="summaryCanvas" initial="true" />
+			<option name="dashboardCanvas" initial="true" />
 			<option name="descriptionView" initial="true" />
 			<option name="profileList" initial="true" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -1477,7 +1477,7 @@
 		multipleAllowed="false" >		
 		<options>
 			<option name="workspaceTitleView" initial="true" />
-			<option name="summaryCanvas" initial="true" />
+			<option name="dashboardCanvas" initial="true" />
 			<option name="descriptionView" initial="true" />
 			<option name="workspaceDataItem" caption="__workspace_data_item" 
 				definitionType="8" />
@@ -1524,13 +1524,6 @@
 		</jsps>
 	</item>
 
-	<item name="workspaceDashboard" caption="__workspace_dashboard" 
-		category="workspaceView">
-		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/workspace_dashboard.jsp" />
-		</jsps>
-	</item>
-
 	<item name="workspaceAttachments" type="dataView" 
 		caption="__workspace_attachments" category="workspaceView">
 		<properties>
@@ -1541,12 +1534,12 @@
 		</jsps>
 	</item>
 		
-	<item name="summaryCanvas" caption="__summary_canvas">
+	<item name="dashboardCanvas" caption="__dashboard_canvas">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_summary_canvas.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_dashboard_canvas.jsp" />
 		</jsps>
 	</item>
 		

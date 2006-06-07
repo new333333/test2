@@ -130,6 +130,13 @@ public class WebKeys {
 	public static final String CONFIG_ELEMENT="ssConfigElement";
     public static final String CONFIG_DEFINITION="ssConfigDefinition";
     public static final String CONFIG_JSP_STYLE="ssConfigJspStyle";
+    public static final String DASHBOARD="ssDashboard";
+    public static final String DASHBOARD_COMPONENTS_NARROW_FIXED="components_narrow_fixed";
+    public static final String DASHBOARD_COMPONENTS_NARROW_VARIABLE="components_narrow_variable";
+    public static final String DASHBOARD_COMPONENTS_WIDE="components_wide";
+    public static final String DASHBOARD_INCLUDE_BINDER_TITLE="includeBinderTitle";
+    public static final String DASHBOARD_NARROW_FIXED_WIDTH="narrowFixedWidth";
+    public static final String DASHBOARD_TITLE="title";
     public static final String DEFAULT_FOLDER_DEFINITION="ssDefaultFolderDefinition";
     public static final String DEFAULT_FOLDER_DEFINITION_ID="ssDefaultFolderDefinitionId";
     public static final String DEFINITION="ssDefinition";

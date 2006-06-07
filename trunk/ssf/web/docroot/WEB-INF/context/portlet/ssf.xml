@@ -16,7 +16,7 @@
 	<bean id="configureController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ConfigureController" />
 	<bean id="definitionController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.definitionBuilder.ViewController" />
 	<bean id="binderModifyController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ModifyBinderController" />
-	<bean id="summaryModifyController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ModifySummaryController" />
+	<bean id="dashboardModifyController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ModifyDashboardController" />
 
 	<bean id="profileModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ModifyEntryController" />
 	<bean id="folderModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ModifyEntryController" />
@@ -40,7 +40,7 @@
 						<entry key="configure_forum"><ref bean="configureController"/></entry>
 						<entry key="definition_builder"><ref bean="definitionController"/></entry>
 						<entry key="modify_binder"><ref bean="binderModifyController"/></entry>
-						<entry key="modify_summary"><ref bean="summaryModifyController"/></entry>
+						<entry key="modify_dashboard"><ref bean="dashboardModifyController"/></entry>
 
 						<entry key="add_folder_entry"><ref bean="folderAddEntryController"/></entry>
 						<entry key="add_folder_reply"><ref bean="folderAddEntryController"/></entry>
