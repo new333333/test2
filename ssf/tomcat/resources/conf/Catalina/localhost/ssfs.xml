@@ -1,4 +1,4 @@
-<Context path="/ssfs" docBase="../webapps/ssfs" debug="0" reloadable="true" crossContext="true">
+<Context path="/ssfs" docBase="../webapps/ssfs" debug="0" reloadable="false" crossContext="true">
     <Realm
         className="org.apache.catalina.realm.JAASRealm"
         appName="slide_login"
