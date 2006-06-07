@@ -53,7 +53,8 @@
 			</or>
 			<then>
 				<delete dir="${deploy.war.dir}/${deploy-support.war.name}" includeemptydirs="true"/>
-				<copy file="${deploy-support.war.name}.war" todir="${deploy.war.dir}" />
+				<!--<copy file="${deploy-support.war.name}.war" todir="${deploy.war.dir}" />-->
+				<unwar src="${deploy-support.war.name}.war" dest="${deploy.war.dir}/${deploy-support.war.name}"/>
 			</then>
 			<elseif>
 				<or>
