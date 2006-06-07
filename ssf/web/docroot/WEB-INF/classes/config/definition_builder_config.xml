@@ -884,7 +884,7 @@
 			</property>
 		</properties>
 		<options>
-			<option name="titleView" />
+			<option name="folderTitleView" initial="true" />
 			<option name="dashboardCanvas" initial="true" />
 			<option name="descriptionView" initial="true" />
 			<option name="folderDataItem" caption="__folder_data_item" 
@@ -893,6 +893,15 @@
 			<option name="viewEntry" initial="true" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
+	</item>
+	
+	<item name="folderTitleView" caption="__title">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__title"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" />
+		</jsps>
 	</item>
 	
 	<item name="folderDataItem" type="dataView" 
@@ -1265,7 +1274,7 @@
 		</operations>
 		
 		<options>
-			<option name="titleView" />
+			<option name="folderTitleView" />
 			<option name="dashboardCanvas" initial="true" />
 			<option name="descriptionView" initial="true" />
 			<option name="profileList" initial="true" />
