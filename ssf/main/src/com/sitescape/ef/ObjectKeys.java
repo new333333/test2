@@ -28,6 +28,7 @@ public interface ObjectKeys {
     public static final String USER_DISPLAY_STYLE_POPUP = "popup";
     public static final String USER_DISPLAY_STYLE_VERTICAL = "vertical";
     public static final String USER_PROPERTY_CALENDAR_VIEWMODE = "calendarViewMode";
+    public static final String USER_PROPERTY_DASHBOARD = "dashboard";
     public static final String USER_PROPERTY_DISPLAY_STYLE = "displayStyle";
     public static final String USER_PROPERTY_DISPLAY_DEFINITION = "displayDefinition";
     public static final String USER_PROPERTY_SEARCH_FILTERS = "searchFilters";
