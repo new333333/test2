@@ -14,6 +14,7 @@ import com.sitescape.ef.domain.Binder;
 public interface RepositoryService {
 
 	/**
+	 * The file exists and is versioned.
 	 */
 	public static final int VERSIONED_FILE 		= 0;
 	/**
