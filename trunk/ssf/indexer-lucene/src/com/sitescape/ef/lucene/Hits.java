@@ -18,7 +18,7 @@ public class Hits implements Serializable {
     private float[] scores;
     private int totalHits = 0;
 
-    private Hits(int length) {
+    public Hits(int length) {
         this.size = length;
         documents = new Document[length];
         scores = new float[length];
@@ -51,11 +51,11 @@ public class Hits implements Serializable {
         return ss_hits;
     }
 
-    private void setDoc(Document doc, int n) {
+    public void setDoc(Document doc, int n) {
         documents[n] = doc;
     }
 
-    private void setScore(float score, int n) {
+    public void setScore(float score, int n) {
         scores[n] = score;
     }
 
