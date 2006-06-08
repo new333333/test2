@@ -1,4 +1,5 @@
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 
@@ -9,6 +10,17 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 <div id="ss_showfolder" class="ss_style ss_portlet">
+
+<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+
+<% // Navigation bar %>
+<%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
+
+<% // Toolbar %>
+<c:if test="${!empty ssFolderToolbar}">
+<c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
+<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+</c:if>
 
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 

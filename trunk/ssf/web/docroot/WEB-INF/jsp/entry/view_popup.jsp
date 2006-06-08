@@ -8,6 +8,18 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 
 <div id="ss_showfolder" class="ss_style ss_portlet" style="display:block; margin:2;">
+
+<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+
+<% // Navigation bar %>
+<%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
+
+<% // Toolbar %>
+<c:if test="${!empty ssFolderToolbar}">
+<c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
+<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+</c:if>
+
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}" />

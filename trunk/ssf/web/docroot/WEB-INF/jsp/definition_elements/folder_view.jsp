@@ -22,17 +22,6 @@
 	if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
 			ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
 %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-
-<% // Navigation bar %>
-<%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
-
-<% // Toolbar %>
-<c:if test="${!empty ssFolderToolbar}">
-<c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
-</c:if>
-
 <script type="text/javascript">
 var ss_displayStyle = "<%= displayStyle %>";
 function highlightLineById(id) {
