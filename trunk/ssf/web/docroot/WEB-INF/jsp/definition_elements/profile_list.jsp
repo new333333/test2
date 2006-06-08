@@ -19,15 +19,6 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
-<% // Navigation bar %>
-<%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
-
-<% // Toolbar %>
-<c:if test="${!empty ssFolderToolbar}">
-<c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
-</c:if>
-
 <script type="text/javascript">
 function highlightLineById(id) {
     if (id == "") {return;}

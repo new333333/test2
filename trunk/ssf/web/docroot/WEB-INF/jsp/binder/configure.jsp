@@ -108,7 +108,7 @@
       <c:choose>
         <c:when test="${empty ssFolderDefinitionMap[item.key]}">
   	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-  	      <c:out value="${item.value.title}"/> (<c:out value="${item.value.title}"/>)<br/>
+  	      <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
   	    </c:when>
 	    <c:otherwise>
 	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
