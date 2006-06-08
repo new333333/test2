@@ -343,6 +343,14 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    		enterNodeEvent = (Action) actions.get("enterNodeEvent");
 	    	}
 		
+	       	//	Add the standard events (if they aren't there already)
+	    	Action leaveNodeEvent = null;
+	    	if (!actions.containsKey("leaveNodeEvent")) {
+	    		leaveNodeEvent = setupAction(pD, "leaveNodeEvent", "com.sitescape.ef.module.workflow.ExitEvent");
+	    	} else {
+	    		leaveNodeEvent = (Action) actions.get("leaveNodeEvent");
+	    	}
+
 	    	Action decisionAction = null;
 	    	if (!actions.containsKey("decisionAction")) {
 	    		decisionAction = setupAction(pD, "decisionAction", "com.sitescape.ef.module.workflow.DecisionAction");
@@ -367,6 +375,12 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    		pD.addEvent(enterEvent);
 	    	}
 		
+	    	//add global named events - will fire on every node
+	    	if (!events.containsKey("node-leave")) {
+	    		Event leaveEvent = new Event("node-leave");
+	    		leaveEvent.addAction(leaveNodeEvent);
+	    		pD.addEvent(leaveEvent);
+	    	}
 	    	//Add our common start and end states
 	    	if (!nodesMap.containsKey(ObjectKeys.WORKFLOW_START_STATE)) {
 	    		StartState startState = new StartState(ObjectKeys.WORKFLOW_START_STATE);
@@ -444,6 +458,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    		Map.Entry me = (Map.Entry) itNodes.next();
 	    		Node delNode = (Node)me.getValue();
 	    		pD.removeNode(delNode);
+	    		Action a = delNode.getAction();
+	    		if (a != null) a.setReferencedAction(null);
 	    		context.getSession().delete(delNode);
 	    	}
 	    	//Add all of the manual transitions

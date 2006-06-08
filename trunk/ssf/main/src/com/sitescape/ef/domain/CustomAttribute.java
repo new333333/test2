@@ -49,7 +49,8 @@ public class CustomAttribute  {
     protected Set values;
     // these collections are loaded for quicker indexing, hibernate will not persist them
     protected Set iValues;
-
+    protected String definitionId;
+    protected Long userId;
     protected int valueType=NONE;
     	private static final int NONE=0;
     	public static final int STRING= 1;
@@ -76,6 +77,17 @@ public class CustomAttribute  {
    }
    public void setId(String id) {
        this.id = id;
+   }
+   /**
+    * The definition that this attribute belongs to
+    * @hibernate.property length=32
+    * @return
+    */
+   public String getDefinitionId() {
+	   return definitionId;
+   }
+   public void setDefinitionId(String definitionId) {
+	   this.definitionId = definitionId;
    }
    //keep protected, want name set up
    protected CustomAttribute() {   	
