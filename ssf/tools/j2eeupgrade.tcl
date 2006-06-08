@@ -854,7 +854,7 @@ proc setupAccess {} {
     set fId [new_function_uuid]
 	wimsql_rw "insert into SS_Functions (id, lockVersion, zoneName, name) values ($fId,1, '[sql_quote_value $::zoneName]', 'Site Administration');"
 	foreach op [list addReplies binderAdministration changeAccessControl createEntries createBinders creatorDeleteEntries creatorModifyEntries creatorReadEntries \
-	 				deleteEntries generateReports mangeEntryDefinitions manageWorkflowDefinitions modifyEntries readEntries siteAdministration] {
+	 				deleteEntries generateReports manageEntryDefinitions manageWorkflowDefinitions modifyEntries readEntries siteAdministration] {
 	 	wimsql_rw "insert into SS_FunctionOperations (functionId,operationName) values ($fId, '$op');"				
 	 }
     if {$::dialect == "mssql"} {
