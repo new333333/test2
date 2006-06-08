@@ -3,6 +3,8 @@ package com.sitescape.ef.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -13,14 +15,34 @@ import org.springframework.core.io.Resource;
  */
 public class ClassPathConfigFiles {
     
-    protected String[] configFiles;
-    protected Resource[] resources;
+    protected List<String> configFiles;
+    protected List<Resource> resources;
     
-    public void setConfigFiles(String[] configFiles) {
-        this.configFiles = configFiles;
-        this.resources = new Resource[configFiles.length];
-        for(int i = 0; i < configFiles.length; i++)
-            this.resources[i] = toResource(configFiles[i]);
+    public void setConfigFiles(String[] cFiles) {
+    	configFiles = new ArrayList<String>();
+    	resources = new ArrayList<Resource>();
+    	
+    	for(int i = 0; i < cFiles.length; i++) {
+    		String cFile = cFiles[i];
+    		Resource resource = null;
+    		if(cFile.startsWith("optional:")) {
+    			cFile = cFile.substring(9);
+    			resource = toResource(cFile);
+    			// The following method call is used to test whether or not
+    			// the specified file exists. 
+    			try {
+    				resource.getURL();
+    			}
+    			catch(Exception e) {
+    				continue; // cannot find it. proceed.
+    			}
+    		}
+    		else {
+    			resource = toResource(cFile);
+    		}
+			configFiles.add(cFile);
+			resources.add(resource);    			
+    	}
     }
     
     /**
@@ -29,7 +51,7 @@ public class ClassPathConfigFiles {
      * @return
      */
     public int size() {
-        return configFiles.length;
+        return configFiles.size();
     }
     
     /**
@@ -50,7 +72,7 @@ public class ClassPathConfigFiles {
      * @throws IOException
      */
     public File getAsFile(int index) throws IOException {
-        return resources[index].getFile();
+    	return resources.get(index).getFile();
     }
     
     /**
@@ -71,7 +93,7 @@ public class ClassPathConfigFiles {
      * @throws IOException
      */
     public InputStream getAsInputStream(int index) throws IOException {
-        return resources[index].getInputStream();
+    	return resources.get(index).getInputStream();
     }
     
     private Resource toResource(String filePath) {
