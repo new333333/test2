@@ -22,7 +22,7 @@ import com.sitescape.ef.util.Constants;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Binder;
 
-public class GenericWebdavRepositoryService extends AbstractWebdavResourceFactory implements RepositoryService {
+public class WebdavRepositoryService extends AbstractWebdavResourceFactory implements RepositoryService {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
