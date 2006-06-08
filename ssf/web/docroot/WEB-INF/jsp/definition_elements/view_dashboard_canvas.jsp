@@ -13,7 +13,7 @@
   </td>
   <td align="right" valign="top">
     <a href="<ssf:url 
-      folderId="${ssDefinitionEntry.id}" 
+      folderId="${ssBinder.id}" 
       action="modify_dashboard"/>"><span class="ss_gray"><ssf:nlt tag="Edit"/></span></a>
   </td>
 </tr>

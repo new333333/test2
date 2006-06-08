@@ -849,10 +849,9 @@
 	<item name="binderName" caption="__binder_name" type="data" canBeDeleted="false" 
 		multipleAllowed="false">
 		<properties>
-			<property name="name" caption="__binder_name" type="text"
-				characterMask="^[a-z][a-z0-9]*$">
-				<help>__help_binder_name</help>
-			</property>
+			<property name="caption" caption="__caption" type="text" value="__folderName">
+			    <help>__help_binder_name</help>
+	        </property>
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/binder_name_form.jsp" />
@@ -1251,7 +1250,7 @@
 		</options>
 	</item>
 	
-	<item name="profileForm" caption="__profile_Form" type="form" 
+	<item name="profileForm" caption="__profile_form" type="form" 
 		canBeDeleted="false" multipleAllowed="false" >		
 		<operations>
 			<operation name="addOption" caption="__add" />
@@ -1545,7 +1544,7 @@
 		
 	<item name="dashboardCanvas" caption="__dashboard_canvas">
 		<properties>
-			<property name="caption" caption="__caption" type="text"/>
+			<property name="caption" caption="__caption" type="text" value="__dashboard_canvas"/>
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_dashboard_canvas.jsp" />
