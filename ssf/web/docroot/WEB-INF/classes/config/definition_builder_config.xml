@@ -1038,6 +1038,7 @@
 
 	<item name="transitionOnResponse" caption="__transition_on_response" type="transition">
 		<properties>
+			<property name="question" caption="__transition_on_question" type="text" />
 			<property name="response" caption="__transition_on_response" type="text" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>

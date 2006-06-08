@@ -53,8 +53,9 @@ public class EnterEvent extends AbstractActionHandler {
 				Element item = (Element)items.get(i);
 	   			String name = item.attributeValue("name","");
 	   			if ("onEntry".equals(name)) {
-	   				TransitionUtils.setVariable(item, executionContext, entry, ws);
-	   				check = true;
+	   				if (TransitionUtils.setVariables(item, executionContext, entry, ws)) {
+	   					check = true;
+	   				}
 	   			} else if ("startParallelThread".equals(name)) {
 	   				startThread(item, executionContext, entry, ws);
 	   			} else if ("stopParallelThread".equals(name)) {
@@ -135,25 +136,5 @@ public class EnterEvent extends AbstractActionHandler {
 		}
 		return false;
 	}
-	/**
-	 * Set a variable for the process instance.  Variables are set on 
-	 * the root token and therefore available to all child tokens.
-	 * 
-	 * @param item
-	 * @param executionContext
-	 * @param entry
-	 * @param currentWs
-	 */
-	protected void setVariable(Element item, ExecutionContext executionContext, WorkflowSupport entry, WorkflowState currentWs) {
-		Element variableEle = (Element)item.selectSingleNode("./properties/property[@name='name']");
-		if (variableEle == null) return;
-		String name = WorkflowUtils.getProperty(variableEle, "name");
-		if (name == null) return;
-		String value = WorkflowUtils.getProperty(variableEle, "value");
-
-		ContextInstance cI = executionContext.getContextInstance();
-		cI.setVariable(name, value);
-
-	}		
 }
 

@@ -137,16 +137,19 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
         } else {
         	//handle basic fields only without definition
-        	Map entryData = new HashMap();
-			if (inputData.exists("title")) entryData.put("title", inputData.getSingleValue("title"));
+        	Map entryDataAll = new HashMap();
+	        Map entryData = new HashMap();
+	        entryDataAll.put("entryData", entryData);
+	        entryDataAll.put("fileData", new ArrayList());
+ 			if (inputData.exists("title")) entryData.put("title", inputData.getSingleValue("title"));
 			if (inputData.exists("description")) {
 				Description description = new Description();
 				description.setText(inputData.getSingleValue("description"));
 				description.setFormat(Description.FORMAT_HTML);
 				entryData.put("description", description);
 			}
-        	
-        	return entryData;
+      	
+        	return entryDataAll;
         }
     }
     
@@ -278,7 +281,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         if (def != null) {
             return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
         } else {
-        	return new HashMap();
+           	Map entryDataAll = new HashMap();
+	        entryDataAll.put("entryData",  new HashMap());
+	        entryDataAll.put("fileData",  new ArrayList());
+	        return entryDataAll;
         }
     }
     protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  

@@ -188,29 +188,7 @@ public class WorkflowUtils {
 		if (conditions == null) conditions = new ArrayList();
 		return conditions;
     }
-    /**
-     * Return next state if transitionOnReply exists
-     * @param wfDef
-     * @param stateName
-     * @return transition to state or null
-     */
-    public static String getReplyTransitionState(Definition wfDef, String stateName) {
-		Document wfDoc = wfDef.getDefinition();
-		Element wfRoot = wfDoc.getRootElement();
-		//Find the current state in the definition
-		Element stateEle = getState(wfRoot, stateName);
-		if (stateEle != null) {
-			//Build a list of all conditional transitions for this state
-			Element transition  = (Element)stateEle.selectSingleNode("./item[@name='transitions']/item[@name='transitionOnReply']");
-			if (transition != null) {
-				Element toStateEle = (Element)transition.selectSingleNode("./properties/property[@name='toState']");
-				if (toStateEle != null) {
-					return toStateEle.attributeValue("value", "");
-				}
-			}
-		}
-		return null;
-    }    
+   
     public static List getParallelThreadStarts(Definition wfDef, String stateName) {
 		List parallelExecutions = new ArrayList();
 		Document wfDoc = wfDef.getDefinition();

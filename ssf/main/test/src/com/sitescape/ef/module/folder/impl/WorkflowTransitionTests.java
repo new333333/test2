@@ -7,24 +7,22 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.context.request.RequestContext;
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.impl.CoreDaoImpl;
 import com.sitescape.ef.dao.impl.FolderDaoImpl;
 import com.sitescape.ef.dao.impl.ProfileDaoImpl;
+import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 import com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl;
-import com.sitescape.util.Validator;
 
 public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpringContextTests {
 
@@ -63,41 +61,128 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 			Folder folder = createFolder(top, "testFolder");
 			FolderEntry entry = createEntry(folder);
 		
-			Definition workflowDef = importDef("testManual");
+			Definition workflowDef = importWorkflow("testManual");
 			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
 			WorkflowState ws = checkState(entry, "start");
 			wfi.modifyWorkflowState(entry, ws, "state1");
-			ws = checkState(entry, "state1");
+			checkState(ws, "state1");
 			wfi.modifyWorkflowState(entry, ws, "state2");
-			ws = checkState(entry, "state2");
+			checkState(ws, "state2");
 			wfi.modifyWorkflowState(entry, ws, "end");
-			ws = checkState(entry, "end");
+			checkState(ws, "end");
 		
 			entry = createEntry(folder);		
 			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
 			ws = checkState(entry, "start");
 			wfi.modifyWorkflowState(entry, ws, "state2");
-			ws = checkState(entry, "state2");
+			checkState(ws, "state2");
 			wfi.modifyWorkflowState(entry, ws, "end");
-			ws = checkState(entry, "end");
+			checkState(ws, "end");
 		} finally {
 			WorkflowFactory.release();
 		}
 		
 	}
+	/**
+	 * Test setting variables on transition or when entering/exitting a state.
+	 * Also tests transitions on variables.
+	 *
+	 */
 	public void testVariableTransition() {
+		Workspace top = createZone(zoneName);
+		Folder folder = createFolder(top, "testFolder");
+
 		try {
-			Workspace top = createZone(zoneName);
-			Folder folder = createFolder(top, "testFolder");
 			FolderEntry entry = createEntry(folder);
 		
-			Definition workflowDef = importDef("testTransitionOnVariable");
+			Definition workflowDef = importWorkflow("testTransitionOnVariable");
 			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
 			WorkflowState ws = checkState(entry, "start");
-			//this transition will set a variable which should push the
-			//workflow all the way through.  Along the way and enter event
-			//changes the variable, but another transition allow that to pass.
+			//This transition will set a variable, which will cause state1 to
+			//automatically transition to state2.  On entry to state2, 
+			//a variable will be set again.  This new setting will cause state2 to transition
+			//to state end.
 			wfi.modifyWorkflowState(entry, ws, "state1");
+			checkState(ws, "end");
+
+			entry = createEntry(folder);
+			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
+			ws = checkState(entry, "start");
+			//This transition will set a variable, which will cause state3 to
+			//automatically transition to state4.  On EXIT from state3, 
+			//a variable will be set again.  This new setting will cause state4 to transition
+			//to state end.
+			wfi.modifyWorkflowState(entry, ws, "state3");
+			checkState(ws, "end");
+		} finally {
+			WorkflowFactory.release();
+		}
+		
+	}
+	/**
+	 * Test transitions when entry data is modified.
+	 *
+	 */
+	public void testDataTransition() {
+		Workspace top = createZone(zoneName);
+		Folder folder = createFolder(top, "testFolder");
+
+		try {
+			Definition commandDef = importCommand("testEntry");
+		
+			Definition workflowDef = importWorkflow("testDataTransitions");
+			FolderEntry entry = createEntry(folder);
+			entry.setEntryDef(commandDef);
+			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
+			WorkflowState ws = checkState(entry, "start");
+			wfi.modifyWorkflowState(entry, ws, "singleSelect");
+			checkState(ws, "singleSelect");
+			//Set the value of the radio field and check transitions
+			CustomAttribute attr = entry.addCustomAttribute("singleSelect", new String[] {"blue"});
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "blue");
+			wfi.modifyWorkflowState(entry, ws, "start");
+			attr.setValue(new String[] {"purple"});
+			wfi.modifyWorkflowState(entry, ws, "singleSelect");
+			//should go right to no
+			checkState(ws, "purple");
+			wfi.modifyWorkflowState(entry, ws, "start");
+
+			//check radio button
+			wfi.modifyWorkflowState(entry, ws, "radio");
+			checkState(ws, "radio");
+			//Set the value of the radio field and check transitions
+			attr = entry.addCustomAttribute("radio", "yes");
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "yes");
+			wfi.modifyWorkflowState(entry, ws, "start");
+			attr.setValue("no");
+			wfi.modifyWorkflowState(entry, ws, "radio");
+			//should go right to no
+			checkState(ws, "no");
+			wfi.modifyWorkflowState(entry, ws, "start");
+			attr.setValue("maybe");
+			wfi.modifyWorkflowState(entry, ws, "radio");
+			//should go right to maybe
+			checkState(ws, "maybe");
+			wfi.modifyWorkflowState(entry, ws, "start");
+
+			//check checkBox
+			wfi.modifyWorkflowState(entry, ws, "start");
+			wfi.modifyWorkflowState(entry, ws, "checkBox");
+			checkState(ws, "checkBox");
+			//Set the value of the radio field and check transitions
+			attr = entry.addCustomAttribute("checkBox", Boolean.FALSE);
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "notChecked");
+			wfi.modifyWorkflowState(entry, ws, "start");
+			attr.setValue(Boolean.TRUE);
+			wfi.modifyWorkflowState(entry, ws, "checkBox");
+			//should go right to no
+			checkState(ws, "checked");
+			wfi.modifyWorkflowState(entry, ws, "start");
+
+			wfi.modifyWorkflowState(entry, ws, "end");
 		} finally {
 			WorkflowFactory.release();
 		}
@@ -109,6 +194,10 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 			if (ws.getState().equals(stateName)) return ws;
 		}
 		return null;
+	}
+	private void  checkState(WorkflowState ws, String stateName) throws RuntimeException {
+		if (ws.getState().equals(stateName)) return;
+		throw new RuntimeException("Invalid transition, expecting state " + stateName + " at " + ws.getState());		
 	}
 	private Workspace createZone(String name) {
 		Workspace top;
@@ -153,7 +242,7 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 		return entry;
 		
 	}
-	private Definition importDef(String name) {
+	private Definition importWorkflow(String name) {
 		Definition def = new Definition();
 		def.setZoneName(zoneName);
 		def.setType(Definition.WORKFLOW);
@@ -168,6 +257,27 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
     	}
 		cdi.save(def);
 		wfi.modifyProcessDefinition(def.getId(), def);
+    	return def;		
+	}
+	private Definition importCommand(String name) {
+		Definition def = new Definition();
+		def.setZoneName(zoneName);
+		def.setType(Definition.COMMAND);
+		def.setName(name);
+		def.setTitle(name);
+	   	try {
+           Resource r = new ClassPathResource("com/sitescape/ef/module/folder/impl/" + name);
+           SAXReader xIn = new SAXReader();
+           def.setDefinition(xIn.read(r.getInputStream()));   
+    	} catch (Exception fe) {
+    		fe.printStackTrace();
+    	}
+    	//keep the database id, referenced from workflow definition for
+    	//entry data transitions
+		String id = def.getDefinition().getRootElement().attributeValue("databaseId", "");
+		//import - try reusing existing guid
+		def.setId(id);
+		cdi.replicate(def);
     	return def;		
 	}
 }

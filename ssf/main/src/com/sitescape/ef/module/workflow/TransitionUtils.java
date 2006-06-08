@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Collection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,12 +12,16 @@ import org.dom4j.Element;
 import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
-
+import com.sitescape.ef.domain.CustomAttribute;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.module.workflow.impl.JbpmContext;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
+import com.sitescape.ef.util.InvokeUtil;
+import com.sitescape.ef.util.ObjectPropertyNotFoundException;
 import com.sitescape.util.Validator;
+import com.sitescape.util.GetterUtil;
 
 public class TransitionUtils {
 	protected static Log logger = LogFactory.getLog(TransitionUtils.class);
@@ -63,7 +68,7 @@ public class TransitionUtils {
 					if (toState.equals(newState)) {
 						Token t = context.loadTokenForUpdate(ws.getTokenId().longValue());
 			        	ExecutionContext ctx = new ExecutionContext(t);
-			        	setVariable(transition, ctx, entry, ws);
+			        	setVariables(transition, ctx, entry, ws);
 						if (infoEnabled) logger.info("Take manual transition " + ws.getState() + "." + toState);
 			            ctx.leaveNode(ws.getState() + "." + toState);
 			            context.save(t);						
@@ -88,9 +93,9 @@ public class TransitionUtils {
 	 * @param entry
 	 * @param currentWs
 	 */
-	public static void setVariable(Element item, ExecutionContext executionContext, WorkflowSupport entry, WorkflowState currentWs) {
+	public static boolean setVariables(Element item, ExecutionContext executionContext, WorkflowSupport entry, WorkflowState currentWs) {
 		List variables = item.selectNodes("./item[@name='variable']");
-		if (variables == null) return;
+		if ((variables == null) || variables.isEmpty()) return false;
 		for (int i=0; i<variables.size(); ++i) {
 			Element variableEle = (Element)variables.get(i);
 			String name = WorkflowUtils.getProperty(variableEle, "name");
@@ -101,6 +106,7 @@ public class TransitionUtils {
 			cI.setVariable(name, value);
 			if (infoEnabled) logger.info("Set variable " + name + "=" + value);
 		}
+		return true;
 
 	}	
 	private static void processConditions(WorkflowSupport entry, Token current, boolean isModify, boolean isReply) {
@@ -154,35 +160,89 @@ public class TransitionUtils {
 				String type = condition.attributeValue("name", "");
 				if (type.equals("transitionOnModify")) {
 					if (isModify) {
-						setVariable(condition, executionContext, entry, state);
+						setVariables(condition, executionContext, entry, state);
 						if (infoEnabled) logger.info("Take conditional transition(" + type + ") " + state.getState() + "." + toState);
 						return toState;
 					}
 					
 				} else if (type.equals("transitionOnReply")) {
 					if (isReply) {
-						setVariable(condition, executionContext, entry, state);
+						setVariables(condition, executionContext, entry, state);
 						if (infoEnabled) logger.info("Take conditional transition(" + type + ") " + state.getState() + "." + toState);
 						return toState;
 					}
 				} else if (type.equals("transitionOnResponse")) {
 					if (false) {
-						setVariable(condition, executionContext, entry, state);
+						setVariables(condition, executionContext, entry, state);
 						if (infoEnabled) logger.info("Take conditional transition(" + type + ") " + state.getState() + "." + toState);
 						return toState;
 					}
 				} else if (type.equals("transitionOnEntryData")) {
 					Object currentVal=null;
-						
-//						try {
-//							currentVal = InvokeUtil.invokeGetter(entry, condition.getAttributeName());
-//						} catch (ObjectPropertyNotFoundException pe) {
-//							if (entry instanceof DefinableEntity) {
-//								CustomAttribute attr = ((DefinableEntity)entry).getCustomAttribute(condition.getAttributeName());
-//								if (attr != null) currentVal = attr.getValue();
-//							}
+					DefinableEntity dEntry = null;
+					if (entry instanceof DefinableEntity) dEntry = (DefinableEntity)entry;
+					boolean allMatch = GetterUtil.getBoolean(WorkflowUtils.getProperty(condition, "allMustMatch"));
+					List entryConditions = condition.selectNodes(".//workflowCondition");
+					if (entryConditions == null) continue;
+					boolean currentMatch = true;
+					for (int j=0; j<entryConditions.size(); ++j) {
+						currentMatch=true;
+						Element eCondition = (Element)entryConditions.get(j);
+						String defId = eCondition.attributeValue("definitionId", "");
+						if (!Validator.isNull(defId)) {
+							if (dEntry == null) currentMatch = false;
+							else if (!defId.equals(dEntry.getEntryDef().getId())) {
+								currentMatch = false;
+							}
+						}
+						String cName = eCondition.attributeValue("elementName", "");
+						String operation = eCondition.attributeValue("operation", "");
+						//if elementName or operation are null we will treat the condition as a match
+						if (currentMatch && !Validator.isNull(cName) && !Validator.isNull(operation)) {
+							Element vEle = (Element)eCondition.selectSingleNode("./value");
+							String value = null;
+							if (vEle != null) value=vEle.getText();
 							
-//						}
+							try {
+								currentVal = InvokeUtil.invokeGetter(entry, cName);
+							} catch (ObjectPropertyNotFoundException pe) {
+								if (dEntry != null) {
+									CustomAttribute attr = dEntry.getCustomAttribute(cName);
+									if (attr != null) currentVal = attr.getValue();
+								}
+							}
+							if (currentVal == null) {
+								if (!Validator.isNull(value)) currentMatch = false;
+								else if (!operation.equals("equals")) currentMatch = false;
+							} else {
+								if ("equals".equals(operation)) {
+									if (currentVal instanceof Collection) {
+										Collection c = collectionToStrings((Collection)currentVal);
+										if ((c.size() != 1) || !c.contains(value)) currentMatch=false;										
+									} else {
+										if (!currentVal.toString().equals(value)) currentMatch=false;
+									}
+								} else if ("checked".equals(operation)) {
+									if (currentVal.toString().equals("false")) currentMatch=false;									
+								} else if ("checkedNot".equals(operation)) {
+									if (currentVal.toString().equals("true")) currentMatch=false;
+								} else currentMatch=false;
+
+							}
+								
+							
+						}
+						//check if this was an and condition
+						if ((currentMatch == false) && (allMatch == true)) break;
+						//check if this was an or and we are done
+						if ((currentMatch == true) && (allMatch == false)) break;
+					}
+					//either they all matched, or the this is an or condition and last one matched
+					if (currentMatch == true) {
+						setVariables(condition, executionContext, entry, state);
+						if (infoEnabled) logger.info("Take conditional transition(" + type + ") " + state.getState() + "." + toState);
+						return toState;
+					}
 						
 				} else if (type.equals("waitForParallelThread")) {
 					//	get names of threads we are waiting for
@@ -201,7 +261,7 @@ public class TransitionUtils {
 						}
 					}
 					if (done) {
-						setVariable(condition, executionContext, entry, state);
+						setVariables(condition, executionContext, entry, state);
 						if (infoEnabled) logger.info("Take conditional transition(" + type + ") " + state.getState() + "." + toState);
 						return toState;
 					}
@@ -212,7 +272,7 @@ public class TransitionUtils {
 						Object currentVal = executionContext.getVariable(name);
 						if (((currentVal != null) && currentVal.equals(value)) ||
 								(currentVal == value)) {
-							setVariable(condition, executionContext, entry, state);
+							setVariables(condition, executionContext, entry, state);
 							if (infoEnabled) logger.info("Take conditional transition(" + type + ") " + state.getState() + "." + toState);
 							return toState;
 
@@ -224,4 +284,13 @@ public class TransitionUtils {
 		}
 		return null;
 	}
+	private static Collection collectionToStrings(Collection currentVal) {
+		Set c = new HashSet();
+		for (Iterator iter=currentVal.iterator(); iter.hasNext();) {
+			Object o = iter.next();
+			c.add(o.toString());
+		}
+		return c;
+	}
+
 }
