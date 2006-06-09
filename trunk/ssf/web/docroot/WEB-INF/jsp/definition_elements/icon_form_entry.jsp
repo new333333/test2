@@ -12,7 +12,7 @@
 
 	Binder binder = (Binder) request.getAttribute("ssDefinitionEntry");
 	String iconListPath = "icons.entry";
-	String[] iconList = (String[]) SPropsUtil.getString(iconListPath, "").split(",");
+	String[] iconList = SPropsUtil.getCombinedPropertyList(iconListPath, ObjectKeys.CUSTOM_PROPERTY_PREFIX);
 	if (binder != null) {
 		String iconValue = binder.getIconName();
 		if (iconValue == null) iconValue = "";

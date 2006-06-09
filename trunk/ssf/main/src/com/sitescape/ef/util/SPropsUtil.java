@@ -146,4 +146,31 @@ public class SPropsUtil {
     private Properties getProperties() {
     	return props;
     }
+    
+	//Property comma-separated lists
+	//Routine to get a combined String[] array
+	//  This routine combines the factory list and a user custom list (if any)
+	static public String[] getCombinedPropertyList(String name, String customPrefix) {
+		String[] propertyList = SPropsUtil.getStringArray(name, ",");
+		String[] customPropertyList = SPropsUtil.getStringArray(customPrefix + name, ",");
+		
+		String[] combinedPropertyList = new String[propertyList.length + customPropertyList.length];
+		int next = 0;
+		for (int i = 0; i < propertyList.length; i++) {
+			String propertyValue = propertyList[i].trim();
+			if (!propertyValue.equals("")) {
+				combinedPropertyList[next] = propertyValue;
+				next++;
+			}
+		}
+		for (int i = 0; i < customPropertyList.length; i++) {
+			String propertyValue = customPropertyList[i].trim();
+			if (!propertyValue.equals("")) {
+				combinedPropertyList[next] = propertyValue;
+				next++;
+			}
+		}
+		return combinedPropertyList;
+	}
+
 }

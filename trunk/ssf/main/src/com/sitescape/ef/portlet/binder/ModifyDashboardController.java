@@ -47,6 +47,17 @@ public class ModifyDashboardController extends AbstractBinderController {
 			getProfileModule().setUserProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_DASHBOARD, dashboard);
 		} else if (formData.containsKey("add_wideTop")) {
+			Map component = new HashMap();
+			Map components = (Map) dashboard.get(DashboardHelper.Components);
+			component.put(DashboardHelper.Name, 
+					PortletRequestUtils.getStringParameter(request, "name", ""));
+			int nextComponent = (Integer) dashboard.get(DashboardHelper.NextComponent);
+			components.put(String.valueOf(nextComponent), component);
+			//Increment the next component id
+			dashboard.put(DashboardHelper.NextComponent, new Integer(nextComponent++));
+			
+			getProfileModule().setUserProperty(user.getId(), binderId, 
+					ObjectKeys.USER_PROPERTY_DASHBOARD, dashboard);
 		} else if (formData.containsKey("add_narrowFixed")) {
 		} else if (formData.containsKey("add_narrowVariable")) {
 		} else if (formData.containsKey("add_wideBottom")) {
