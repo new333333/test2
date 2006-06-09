@@ -12,6 +12,7 @@ public interface ObjectKeys {
      */
     
     public static final String BINDER="binder";
+    public static final String CUSTOM_PROPERTY_PREFIX="custom.";
     public static final String ENTRIES="entries";
     public static final String FOLDER_ENTRY_ANCESTORS="folderEntryAncestors";
     public static final String FOLDER_ENTRY_DESCENDANTS="folderEntryDescendants";

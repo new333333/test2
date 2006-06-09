@@ -55,9 +55,19 @@
 <table border="1" style="width:100%;">
   <tr>
     <td colspan="2">
+    
+<c:forEach var="component" items="${ssDashboard.wide_top}">
+  <c:set var="id" value="${component.value.id}"/>
+<div>
+<ssf:dashboard name="${ssDashboard.components[id].name}" 
+  type="config" configuration="ssDashboard"/>
+</div>
+<br/>
+</c:forEach>
+
       <br/>
       <br/>
-      <select name="type">
+      <select name="name">
         <option value="">--<ssf:nlt tag="dashboard.selectComponent"/>--</option>
         <c:forEach var="component" items="${ssDashboard.components_wide}">
           <option value="${component}"><ssf:nlt 
@@ -72,7 +82,7 @@
     <td valign="top" width="${ssDashboard.narrowFixedWidth}">
       <br/>
       <br/>
-      <select name="type">
+      <select name="name">
         <option value="">--<ssf:nlt tag="dashboard.selectComponent"/>--</option>
         <c:forEach var="component" items="${ssDashboard.components_narrow_fixed}">
           <option value="${component}"><ssf:nlt 
@@ -85,7 +95,7 @@
     <td valign="top">
       <br/>
       <br/>
-      <select name="type">
+      <select name="name">
         <option value="">--<ssf:nlt tag="dashboard.selectComponent"/>--</option>
         <c:forEach var="component" items="${ssDashboard.components_narrow_variable}">
           <option value="${component}"><ssf:nlt 
@@ -100,7 +110,7 @@
     <td colspan="2">
       <br/>
       <br/>
-      <select name="type">
+      <select name="name">
         <option value="">--<ssf:nlt tag="dashboard.selectComponent"/>--</option>
         <c:forEach var="component" items="${ssDashboard.components_wide}">
           <option value="${component}"><ssf:nlt 

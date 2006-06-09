@@ -67,6 +67,28 @@
 	</tag>
 
 	<tag>
+		<name>dashboard</name>
+		<tag-class>com.sitescape.ef.taglib.DashboardTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>configuration</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.Map</type>
+		</attribute>		
+	</tag>
+	
+	<tag>
 		<name>datepicker</name>
 		<tag-class>com.sitescape.ef.taglib.Datepicker</tag-class>
 		<body-content>JSP</body-content>

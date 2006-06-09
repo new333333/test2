@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.module.definition.DefinitionModule;
@@ -797,7 +798,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("\n<br/>\n");
 						}
 						String iconListPath = propertyConfig.attributeValue("path", "");
-						String[] iconList = (String[]) SPropsUtil.getString(iconListPath, "").split(",");
+						String[] iconList = SPropsUtil.getCombinedPropertyList(iconListPath, ObjectKeys.CUSTOM_PROPERTY_PREFIX);
 						Element iconValueEle = (Element)sourceRoot.selectSingleNode("properties/property[@name='icon']");
 						String iconValue = "";
 						if (iconValueEle != null) iconValue = iconValueEle.attributeValue("value", "");

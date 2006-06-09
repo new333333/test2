@@ -9,6 +9,7 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 
 public class DashboardHelper {
@@ -29,7 +30,7 @@ public class DashboardHelper {
 	public final static String Visible = "visible";
 	
 	//Component map keys
-	public final static String Type = "type";
+	public final static String Name = "name";
 	public final static String Roles = "roles";
 
 	static public Map getNewDashboardMap() {
@@ -45,4 +46,5 @@ public class DashboardHelper {
 		
 		return dashboard;
 	}
+	
 }
