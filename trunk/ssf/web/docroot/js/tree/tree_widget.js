@@ -58,7 +58,8 @@ function ss_treeToggle(treeName, id, bottom, type) {
 
 function ss_postTreeDivRequest(obj) {
 	//See if there was an error
-	if (self.document.getElementById("ss_tree_div_status_message").innerHTML == "error") {
+	var statusDiv = "ss_tree_div_status_message" + obj.getData('treeName');
+	if (self.document.getElementById(statusDiv).innerHTML == "error") {
 		alert(ss_treeNotLoggedInMsg);
 	} else {
 		ss_treeOpen(obj.getData('treeName'), obj.getData('id'), obj.getData('bottom'), obj.getData('type'));

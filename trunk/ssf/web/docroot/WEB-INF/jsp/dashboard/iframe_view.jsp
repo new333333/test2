@@ -15,4 +15,9 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<div align="${ssDashboard.dashboard.components[ssDashboardId].data.align[0]}">
+<iframe src="${ssDashboard.dashboard.components[ssDashboardId].data.url[0]}"
+  style="width: ${ssDashboard.dashboard.components[ssDashboardId].data.width[0]};
+  height: ${ssDashboard.dashboard.components[ssDashboardId].data.height[0]};" >xxx</iframe>
+</div>
