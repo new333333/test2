@@ -32,7 +32,7 @@ public interface RepositorySession {
 	 * @param session
 	 */
 	public void close() 
-		throws RepositoryServiceException, UncheckedIOException;
+		throws RepositoryException, UncheckedIOException;
 	
 	/**
 	 * Returns one of the following values:<br>
@@ -44,10 +44,10 @@ public interface RepositorySession {
 	 * @param entity
 	 * @param relativeFilePath
 	 * @return
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public int fileInfo(Binder binder, DefinableEntity entity,
-			String relativeFilePath) throws RepositoryServiceException,
+			String relativeFilePath) throws RepositoryException,
 			UncheckedIOException;
 	
 	/**
@@ -58,10 +58,10 @@ public interface RepositorySession {
 	 * @param entity
 	 * @param relativeFilePath
 	 * @return
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	//public boolean isVersioned(Binder binder, DefinableEntity entity,
-	//		String relativeFilePath) throws RepositoryServiceException;
+	//		String relativeFilePath) throws RepositoryException;
 	
 	/**
 	 * Creates a new file resource in the repository system. 
@@ -76,11 +76,11 @@ public interface RepositorySession {
 	 * simply be the name of the file. 
 	 * @param mf
 	 * @return
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public String createVersioned(Binder binder, 
 			DefinableEntity entity, String relativeFilePath, MultipartFile mf) 
-		throws RepositoryServiceException, UncheckedIOException;
+		throws RepositoryException, UncheckedIOException;
 	
 	/**
 	 * Creates a new file resource in the repository system. 
@@ -95,11 +95,11 @@ public interface RepositorySession {
 	 * simply be the name of the file. 
 	 * @param in
 	 * @return
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public String createVersioned(Binder binder, 
 			DefinableEntity entity, String relativeFilePath, InputStream in) 
-		throws RepositoryServiceException, UncheckedIOException;
+		throws RepositoryException, UncheckedIOException;
 	
 	/**
 	 * Creates a new file resource in the repository system. The specified file
@@ -111,11 +111,11 @@ public interface RepositorySession {
 	 * @param relativeFilePath A pathname of the file relative to the entity. This may
 	 * simply be the name of the file. 
 	 * @param in
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public void createUnversioned(Binder binder, 
 			DefinableEntity entity, String relativeFilePath, InputStream in) 
-		throws RepositoryServiceException, UncheckedIOException;
+		throws RepositoryException, UncheckedIOException;
 	
 	/**
 	 * Updates the existing file resource.  
@@ -133,11 +133,11 @@ public interface RepositorySession {
 	 * @param relativeFilePath A pathname of the file relative to the entity. This may
 	 * simply be the name of the file. 
 	 * @param mf
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public void update(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, MultipartFile mf) 
-		throws RepositoryServiceException, UncheckedIOException;
+		throws RepositoryException, UncheckedIOException;
 	
 	/**
 	 * Updates the existing file resource.  
@@ -155,11 +155,11 @@ public interface RepositorySession {
 	 * @param relativeFilePath A pathname of the file relative to the entity. This may
 	 * simply be the name of the file. 
 	 * @param in
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public void update(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, InputStream in) 
-		throws RepositoryServiceException, UncheckedIOException;
+		throws RepositoryException, UncheckedIOException;
 	
 	/**
 	 * Deletes the file resource. If the resource is versioned all its versions
@@ -169,10 +169,10 @@ public interface RepositorySession {
 	 * @param binder
 	 * @param entity
 	 * @param relativeFilePath
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public void delete(Binder binder, DefinableEntity entity,
-			String relativeFilePath) throws RepositoryServiceException,
+			String relativeFilePath) throws RepositoryException,
 			UncheckedIOException;
 		
 	/**
@@ -189,11 +189,11 @@ public interface RepositorySession {
 	 * @param relativeFilePath A pathname of the file relative to the entity. This may
 	 * simply be the name of the file. 
 	 * @param out
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public void read(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, OutputStream out) 
-		throws RepositoryServiceException, UncheckedIOException;
+		throws RepositoryException, UncheckedIOException;
 	
 	/**
 	 * Returns an <code>InputStream</code> from which to read the content of
@@ -209,11 +209,11 @@ public interface RepositorySession {
 	 * @param entity
 	 * @param relativeFilePath
 	 * @return
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public InputStream read(Binder binder, 
 			DefinableEntity entity, String relativeFilePath) 
-		throws RepositoryServiceException, UncheckedIOException;
+		throws RepositoryException, UncheckedIOException;
 	
 	/**
 	 * Reads from the repository system the content of the specified version 
@@ -226,12 +226,12 @@ public interface RepositorySession {
 	 * simply be the name of the file. 
 	 * @param versionName the name of the version
 	 * @param out
-	 * @throws RepositoryServiceException thrown if the specified version does
+	 * @throws RepositoryException thrown if the specified version does
 	 * not exist, or if some other error occurs
 	 */
 	public void readVersion(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, String versionName, OutputStream out) 
-		throws RepositoryServiceException, UncheckedIOException;
+		throws RepositoryException, UncheckedIOException;
 	
 	/**
 	 * Return a datasource that will be used to read the file to a mime message
@@ -242,11 +242,11 @@ public interface RepositorySession {
 	 * simply be the name of the file. 
 	 * @param fileTypeMap
 	 * @return
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public DataSource getDataSource(Binder binder, 
 			DefinableEntity entity, String relativeFilePath, 
-			FileTypeMap fileTypeMap) throws RepositoryServiceException,
+			FileTypeMap fileTypeMap) throws RepositoryException,
 			UncheckedIOException;
 	
 	/**
@@ -259,11 +259,11 @@ public interface RepositorySession {
 	 * @param versionName the name of the version
 	 * @param fileTypeMap 
 	 * @return
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public DataSource getDataSourceVersion(Binder binder, 
 			DefinableEntity entity, String relativeFilePath, String versionName, 
-			FileTypeMap fileTypeMap) throws RepositoryServiceException,
+			FileTypeMap fileTypeMap) throws RepositoryException,
 			UncheckedIOException;
 
 	/**
@@ -275,10 +275,10 @@ public interface RepositorySession {
 	 * @param entity
 	 * @param relativeFilePath
 	 * @return
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	//public List getVersionNames(Binder binder, DefinableEntity entity,
-	//		String relativeFilePath) throws RepositoryServiceException;
+	//		String relativeFilePath) throws RepositoryException;
 	
 	/**
 	 * Checks out the specified file resource. It is illegal to call this method
@@ -300,10 +300,10 @@ public interface RepositorySession {
 	 * @param entity
 	 * @param relativeFilePath A pathname of the file relative to the entity. This may
 	 * simply be the name of the file. 
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public void checkout(Binder binder, DefinableEntity entity, 
-			String relativeFilePath) throws RepositoryServiceException,
+			String relativeFilePath) throws RepositoryException,
 			UncheckedIOException;
 	
 	/**
@@ -317,10 +317,10 @@ public interface RepositorySession {
 	 * @param entity
 	 * @param relativeFilePath A pathname of the file relative to the entity. This may
 	 * simply be the name of the file. 
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public void uncheckout(Binder binder, DefinableEntity entity, 
-			String relativeFilePath) throws RepositoryServiceException,
+			String relativeFilePath) throws RepositoryException,
 			UncheckedIOException;
 	
 	/**
@@ -337,10 +337,10 @@ public interface RepositorySession {
 	 * @param relativeFilePath A pathname of the file relative to the entity. 
 	 * This may simply be the name of the file. 
 	 * @return the name of the new version
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public String checkin(Binder binder, DefinableEntity entity, 
-			String relativeFilePath) throws RepositoryServiceException,
+			String relativeFilePath) throws RepositoryException,
 			UncheckedIOException;
 	
 	/**
@@ -352,11 +352,11 @@ public interface RepositorySession {
 	 * @param entity
 	 * @param relativeFilePath
 	 * @return
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public boolean isCheckedOut(Binder binder, 
 			DefinableEntity entity, String relativeFilePath) 
-		throws RepositoryServiceException, UncheckedIOException;
+		throws RepositoryException, UncheckedIOException;
 	
 	/**
 	 * Returns whether the specified file resource exists or not. 
@@ -368,7 +368,7 @@ public interface RepositorySession {
 	 * @return
 	 */
 	//public boolean exists(Binder binder, DefinableEntity entity, 
-	//		String relativeFilePath) throws RepositoryServiceException;
+	//		String relativeFilePath) throws RepositoryException;
 	
 	/**
 	 * Returns the length (in byte) of the content of the specific file resource. 
@@ -378,11 +378,11 @@ public interface RepositorySession {
 	 * @param entity
 	 * @param relativeFilePath
 	 * @return
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public long getContentLength(Binder binder, 
 			DefinableEntity entity, String relativeFilePath) 
-		throws RepositoryServiceException, UncheckedIOException;
+		throws RepositoryException, UncheckedIOException;
 	
 	/**
 	 * Returns the length (in byte) of the content of the specific version
@@ -394,10 +394,10 @@ public interface RepositorySession {
 	 * @param relativeFilePath
 	 * @param versionName
 	 * @return
-	 * @throws RepositoryServiceException
+	 * @throws RepositoryException
 	 */
 	public long getContentLength(Binder binder, 
 			DefinableEntity entity, String relativeFilePath, 
-			String versionName) throws RepositoryServiceException,
+			String versionName) throws RepositoryException,
 			UncheckedIOException;
 }
