@@ -661,15 +661,15 @@
 
 	<!-- ======================== File & Repository Services ====================== -->
 	
-	<bean id="fileRepositoryService" class="com.sitescape.ef.repository.file.FileRepositoryService" depends-on="sPropsUtil">
+	<bean id="fileRepositoryService" class="com.sitescape.ef.repository.file.FileRepositorySessionFactory" depends-on="sPropsUtil">
 		<property name="dataRootDirProperty"><value>data.root.dir</value></property>	
 		<property name="subDirName"><value>filerepository</value></property>
 	</bean>
 
-	<bean id="internalWebdavRepositoryService" class="com.sitescape.ef.repository.webdav.WebdavRepositoryService">		
+	<bean id="internalWebdavRepositoryService" class="com.sitescape.ef.repository.webdav.WebdavRepositorySessionFactory">		
 		<!-- Include scheme, hostname, and (optional) port number -->
 		<property name="hostUrl"><value>http://localhost:8080</value></property>
-		<!-- Context path MUST end with '/'. Otherwise it will not work. -->
+		<!-- Context path must end with '/' -->
 		<property name="contextPath"><value>/slide/</value></property>
 		<property name="docRootDir"><value>/slide/files/sitescape/document/</value></property>
 		<property name="username"><value>root</value></property>
