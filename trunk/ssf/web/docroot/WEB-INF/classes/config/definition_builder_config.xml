@@ -1543,7 +1543,7 @@
 		</jsps>
 	</item>
 		
-	<item name="dashboardCanvas" caption="__dashboard_canvas">
+	<item name="dashboardCanvas" caption="__dashboard_canvas" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__dashboard_canvas"/>
 		</properties>
