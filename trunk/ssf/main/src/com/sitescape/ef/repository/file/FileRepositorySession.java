@@ -612,7 +612,7 @@ public class FileRepositorySession implements RepositorySession {
 	private String getEntityDirPath(Binder binder, DefinableEntity entry) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		
-		return new StringBuffer(dataRootDir).append(zoneName).append(File.separator).append(subDirName).append(File.separator).append(binder.getId()).append(File.separator).append(entry.getTypedId()).append(File.separator).toString();
+		return new StringBuffer(dataRootDir).append(subDirName).append(File.separator).append(zoneName).append(File.separator).append(binder.getId()).append(File.separator).append(entry.getTypedId()).append(File.separator).toString();
 	}
 	
 	private File getFile(Binder binder, DefinableEntity entry, String relativeFilePath) {

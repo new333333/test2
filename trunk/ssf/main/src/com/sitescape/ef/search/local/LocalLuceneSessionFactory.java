@@ -41,6 +41,6 @@ public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory {
     }
 	
 	private String getIndexDirPath(String indexName) {
-		return dataRootDir + indexName + File.separator + subDirName;
+		return dataRootDir + subDirName + File.separator + indexName;
 	}
 }
