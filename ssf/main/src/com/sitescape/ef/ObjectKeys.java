@@ -24,12 +24,15 @@ public interface ObjectKeys {
     public static final String TOOLBAR_QUALIFIER_ONCLICK = "onClick";
     public static final String USER = "user";
     
+    public static final String BINDER_PROPERTY_DASHBOARD = "dashboard";
+
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
     public static final String USER_DISPLAY_STYLE_IFRAME = "iframe";
     public static final String USER_DISPLAY_STYLE_POPUP = "popup";
     public static final String USER_DISPLAY_STYLE_VERTICAL = "vertical";
     public static final String USER_PROPERTY_CALENDAR_VIEWMODE = "calendarViewMode";
     public static final String USER_PROPERTY_DASHBOARD = "dashboard";
+    public static final String USER_PROPERTY_DASHBOARD_GLOBAL = "dashboard_global";
     public static final String USER_PROPERTY_DISPLAY_STYLE = "displayStyle";
     public static final String USER_PROPERTY_DISPLAY_DEFINITION = "displayDefinition";
     public static final String USER_PROPERTY_SEARCH_FILTERS = "searchFilters";

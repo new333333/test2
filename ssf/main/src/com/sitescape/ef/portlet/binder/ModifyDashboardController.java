@@ -35,25 +35,27 @@ public class ModifyDashboardController extends AbstractBinderController {
 		response.setRenderParameters(formData);		
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String binderType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_TYPE);	
+		Binder binder = getBinderModule().getBinder(binderId);
+		String scope = PortletRequestUtils.getStringParameter(request, "scope", "");	
 
 		if (formData.containsKey("set_title")) {
-			setTitle(request, binderId);
+			setTitle(request, binder, scope);
 		} else if (formData.containsKey("add_wideTop")) {
-			addComponent(request, binderId, DashboardHelper.Wide_Top);
+			addComponent(request, binder, DashboardHelper.Wide_Top, scope);
 		} else if (formData.containsKey("add_narrowFixed")) {
-			addComponent(request, binderId, DashboardHelper.Narrow_Fixed);
+			addComponent(request, binder, DashboardHelper.Narrow_Fixed, scope);
 		} else if (formData.containsKey("add_narrowVariable")) {
-			addComponent(request, binderId, DashboardHelper.Narrow_Variable);
+			addComponent(request, binder, DashboardHelper.Narrow_Variable, scope);
 		} else if (formData.containsKey("add_wideBottom")) {
-			addComponent(request, binderId, DashboardHelper.Wide_Bottom);
+			addComponent(request, binder, DashboardHelper.Wide_Bottom, scope);
 		} else if (formData.containsKey("_saveConfigData")) {
-			saveComponentData(request, binderId);
+			saveComponentData(request, binder, scope);
 		} else if (formData.containsKey("_deleteComponent")) {
-			deleteComponent(request, binderId);
+			deleteComponent(request, binder, scope);
 		} else if (formData.containsKey("_moveUp")) {
-			moveComponent(request, binderId, "up");
+			moveComponent(request, binder, scope, "up");
 		} else if (formData.containsKey("_moveDown")) {
-			moveComponent(request, binderId, "down");
+			moveComponent(request, binder, scope, "down");
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			setupViewBinder(response, binderId, binderType);
@@ -62,14 +64,14 @@ public class ModifyDashboardController extends AbstractBinderController {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 		RenderResponse response) throws Exception {
-		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
+		String scope = PortletRequestUtils.getStringParameter(request, "scope", "");
+		if (scope.equals("")) scope = DashboardHelper.Local;
 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-		Map dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
-		Map ssDashboard = DashboardHelper.getDashboardMap(dashboard);
+		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, scope);
 		
 		Map model = new HashMap();
 		model.put(WebKeys.BINDER, binder);
@@ -111,31 +113,26 @@ public class ModifyDashboardController extends AbstractBinderController {
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_NARROW_VARIABLE, cnv);
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_WIDE, cw);
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_TITLES, componentTitles);
+		ssDashboard.put(WebKeys.DASHBOARD_SCOPE, scope);
 		
 		model.put(WebKeys.DASHBOARD, ssDashboard);
 			
 		return new ModelAndView("binder/modify_dashboard", model);
 	}
 	
-	private void setTitle(ActionRequest request, Long binderId) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-		Map dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
-		if (dashboard == null) dashboard = DashboardHelper.getNewDashboardMap();
+	private void setTitle(ActionRequest request, Binder binder, String scope) {
+		Map dashboard = getDashboard(binder, scope);
 		
 		dashboard.put(DashboardHelper.Title, 
 				PortletRequestUtils.getStringParameter(request, "title", ""));
 		dashboard.put(DashboardHelper.IncludeBinderTitle, 
 				PortletRequestUtils.getBooleanParameter(request, "includeBinderTitle", false));
-		getProfileModule().setUserProperty(user.getId(), binderId, 
-				ObjectKeys.USER_PROPERTY_DASHBOARD, dashboard);
+		
+		saveDashboard(binder, scope, dashboard);
 	}
 	
-	private void addComponent(ActionRequest request, Long binderId, String listName) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-		Map dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
-		if (dashboard == null) dashboard = DashboardHelper.getNewDashboardMap();
+	private void addComponent(ActionRequest request, Binder binder, String listName, String scope) {
+		Map dashboard = getDashboard(binder, scope);
 		
 		//Get the name of the component to be added
 		String componentName = PortletRequestUtils.getStringParameter(request, "name", "");
@@ -146,29 +143,26 @@ public class ModifyDashboardController extends AbstractBinderController {
 			component.put(DashboardHelper.Roles, 
 					PortletRequestUtils.getStringParameters(request, "roles"));
 			int nextComponent = (Integer) dashboard.get(DashboardHelper.NextComponent);
-			components.put(String.valueOf(nextComponent), component);
+			String id = scope + "_" + String.valueOf(nextComponent);
+			components.put(id, component);
 			
 			//Add this new component to the list
 			List componentList = (List) dashboard.get(listName);
 			Map componentListItem = new HashMap();
-			componentListItem.put(DashboardHelper.Id, String.valueOf(nextComponent));
-			componentListItem.put(DashboardHelper.Scope, DashboardHelper.Local);
+			componentListItem.put(DashboardHelper.Id, id);
+			componentListItem.put(DashboardHelper.Scope, scope);
 			componentListItem.put(DashboardHelper.Visible, true);
 			componentList.add(componentListItem);
 			
 			//Increment the next component id
 			dashboard.put(DashboardHelper.NextComponent, new Integer(++nextComponent));
 			
-			getProfileModule().setUserProperty(user.getId(), binderId, 
-					ObjectKeys.USER_PROPERTY_DASHBOARD, dashboard);
+			saveDashboard(binder, scope, dashboard);
 		}
 	}
 	
-	private void saveComponentData(ActionRequest request, Long binderId) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-		Map dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
-		if (dashboard == null) dashboard = DashboardHelper.getNewDashboardMap();
+	private void saveComponentData(ActionRequest request, Binder binder, String scope) {
+		Map dashboard = getDashboard(binder, scope);
 
 		Map formData = request.getParameterMap();
 		Map componentData = new HashMap();
@@ -206,15 +200,11 @@ public class ModifyDashboardController extends AbstractBinderController {
 			}
 		}
 		//Save the updated dashbord configuration 
-		getProfileModule().setUserProperty(user.getId(), binderId, 
-				ObjectKeys.USER_PROPERTY_DASHBOARD, dashboard);
+		saveDashboard(binder, scope, dashboard);
 	}
 
-	private void deleteComponent(ActionRequest request, Long binderId) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-		Map dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
-		if (dashboard == null) dashboard = DashboardHelper.getNewDashboardMap();
+	private void deleteComponent(ActionRequest request, Binder binder, String scope) {
+		Map dashboard = getDashboard(binder, scope);
 
 		//Get the dashboard component
 		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
@@ -233,15 +223,11 @@ public class ModifyDashboardController extends AbstractBinderController {
 			}
 		}
 		//Save the updated dashbord configuration 
-		getProfileModule().setUserProperty(user.getId(), binderId, 
-				ObjectKeys.USER_PROPERTY_DASHBOARD, dashboard);
+		saveDashboard(binder, scope, dashboard);
 	}
 
-	private void moveComponent(ActionRequest request, Long binderId, String direction) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-		Map dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
-		if (dashboard == null) dashboard = DashboardHelper.getNewDashboardMap();
+	private void moveComponent(ActionRequest request, Binder binder, String scope, String direction) {
+		Map dashboard = getDashboard(binder, scope);
 
 		//Get the dashboard component
 		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
@@ -270,8 +256,38 @@ public class ModifyDashboardController extends AbstractBinderController {
 			}
 		}
 		//Save the updated dashbord configuration 
-		getProfileModule().setUserProperty(user.getId(), binderId, 
-				ObjectKeys.USER_PROPERTY_DASHBOARD, dashboard);
+		saveDashboard(binder, scope, dashboard);
 	}
+
+	private Map getDashboard(Binder binder, String scope) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binder.getId());
+		Map dashboard = null;
+		if (scope.equals(DashboardHelper.Local)) {
+			dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
+		} else if (scope.equals(DashboardHelper.Global)) {
+			dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD_GLOBAL);
+		} else if (scope.equals(DashboardHelper.Binder)) {
+			dashboard = (Map) binder.getProperty(ObjectKeys.BINDER_PROPERTY_DASHBOARD);
+		}
+		if (dashboard == null) dashboard = DashboardHelper.getNewDashboardMap();
+		return dashboard;
+	}
+	
+	private void saveDashboard(Binder binder, String scope, Map dashboard) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		//Save the updated dashbord configuration 
+		if (scope.equals(DashboardHelper.Local)) {
+			getProfileModule().setUserProperty(user.getId(), binder.getId(), 
+					ObjectKeys.USER_PROPERTY_DASHBOARD, dashboard);
+		} else if (scope.equals(DashboardHelper.Global)) {
+			getProfileModule().setUserProperty(user.getId(), binder.getId(), 
+					ObjectKeys.USER_PROPERTY_DASHBOARD_GLOBAL, dashboard);
+		} else if (scope.equals(DashboardHelper.Binder)) {
+			binder.setProperty(ObjectKeys.BINDER_PROPERTY_DASHBOARD, dashboard);
+		}
+	}
+	
 }
 

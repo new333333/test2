@@ -41,6 +41,10 @@
 </tr>
 
 <tr>
+<td valign="top"><br/></td>
+</tr>
+
+<tr>
 <td valign="top">
 <span class="ss_bold"><ssf:nlt tag="dashboard.rootOpen"/></span>
 <br/>

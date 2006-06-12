@@ -80,8 +80,7 @@ public class ListProfilesController extends   SAbstractController {
 		model.put(WebKeys.FOLDER, binder);
 		model.put(WebKeys.ENTRIES, users.get(ObjectKeys.ENTRIES));
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
-		Map dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
-		Map ssDashboard = DashboardHelper.getDashboardMap(dashboard);
+		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties);
 		model.put(WebKeys.DASHBOARD, ssDashboard);
 		DefinitionUtils.getDefinitions(binder, model);
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
