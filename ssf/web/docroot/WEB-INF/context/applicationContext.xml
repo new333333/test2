@@ -661,12 +661,14 @@
 
 	<!-- ======================== File & Repository Services ====================== -->
 	
-	<bean id="fileRepositoryService" class="com.sitescape.ef.repository.file.FileRepositorySessionFactory" depends-on="sPropsUtil">
+	<bean id="fileRepositoryService" class="com.sitescape.ef.repository.file.FileRepositorySessionFactory" 
+		depends-on="sPropsUtil" init-method="initialize" destroy-method="shutdown">
 		<property name="dataRootDirProperty"><value>data.root.dir</value></property>	
 		<property name="subDirName"><value>filerepository</value></property>
 	</bean>
 
-	<bean id="internalWebdavRepositoryService" class="com.sitescape.ef.repository.webdav.WebdavRepositorySessionFactory">		
+	<bean id="internalWebdavRepositoryService" class="com.sitescape.ef.repository.webdav.WebdavRepositorySessionFactory"
+		init-method="initialize" destroy-method="shutdown">
 		<!-- Include scheme, hostname, and (optional) port number -->
 		<property name="hostUrl"><value>http://localhost:8080</value></property>
 		<!-- Context path must end with '/' -->
@@ -675,6 +677,10 @@
 		<property name="username"><value>root</value></property>
 		<property name="password"><value>root</value></property>
 	</bean>
+	
+	<!--<bean id="jcrRepository" class="com.sitescape.ef.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
+		init-method="initialize" destroy-method="shutdown">	
+	</bean>-->
 	
 	<!-- ================================ Presence Service =============================== -->
 	<bean id="presenceService" class="com.sitescape.ef.presence.impl.PresenceServiceImpl">
