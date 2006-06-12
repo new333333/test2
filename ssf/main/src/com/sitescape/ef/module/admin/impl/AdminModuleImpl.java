@@ -242,12 +242,14 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		return zoneFunctions;
     }
     
-	public void addWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership) {
+	public void addWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds) {
        	String companyId = RequestContextHolder.getRequestContext().getZoneName();
-		
+		WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
 		membership.setZoneName(companyId);
 		membership.setWorkAreaId(workArea.getWorkAreaId());
 		membership.setWorkAreaType(workArea.getWorkAreaType());
+		membership.setFunctionId(functionId);
+		membership.setMemberIds(memberIds);
 
         //Check that this user is allowed to do this operation; 
 		// Is it SITE_ADMINISTRATION right operation for this checking?
@@ -317,12 +319,20 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		// Is it SITE_ADMINISTRATION right operation for this checking?
         accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 
-        return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(companyId, workArea);
+        return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(companyId, source);
 	}
 
 	public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) 
     throws AccessControlException {
-    	getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);    	
+    	getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL); 
+    	if (workArea.isFunctionMembershipInherited() && !inherit) {
+    		//copy parent values as beginning values
+    		List current = getWorkAreaFunctionMembershipsInherited(workArea);
+    		for (int i=0; i<current.size(); ++i) {
+    			WorkAreaFunctionMembership wf = (WorkAreaFunctionMembership)current.get(i);
+    			addWorkAreaFunctionMembership(workArea, wf.getFunctionId(), wf.getMemberIds());
+    		}
+    	}
     	workArea.setFunctionMembershipInherited(inherit);
     } 
 

@@ -66,6 +66,7 @@ public interface BinderModule {
     		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException;
     public void modifyBinder(Long binderId, InputDataAccessor inputData) 
     	throws AccessControlException, WriteFilesException;
+    public void setProperty(Long binderId, String property, Object value);
     public void checkModifyBinderAllowed(Binder binder) throws AccessControlException;
     public void deleteBinder(Long binderId) throws AccessControlException;
     public void checkDeleteBinderAllowed(Binder binder) throws AccessControlException;

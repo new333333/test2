@@ -50,6 +50,8 @@ public class WebKeys {
 
     //Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "forumIdList";
+	public static final String PRESENCE_PREF_USER_LIST = "com.sitescape.presence.user.list";
+	public static final String PRESENCE_PREF_GROUP_LIST = "com.sitescape.presence.group.list";
 	
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
@@ -269,6 +271,9 @@ public class WebKeys {
     public static final String VIEW_MOVE_BINDER="binder/move_binder";
     public static final String VIEW_NO_DEFINITION="forum/view_default";
     public static final String VIEW_NO_ENTRY="entry/view_no_entry";
+    public static final String VIEW_PRESENCE="presence/view";
+    public static final String VIEW_PRESENCE_AJAX="presence/view_ajax";
+    public static final String VIEW_PRESENCE_EDIT="presence/edit";
     public static final String VIEW_PROFILE="profile/view";
     public static final String VIEW_WORKSPACE="forum/view_workspace";
     //servlet paths

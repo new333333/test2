@@ -10,7 +10,7 @@
 <a href="javascript: ;"
  onClick="popupPresenceMenu(this, '', '', '-1', '', '', '', '', '');return false;"
 ><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
- alt="<c:out value="${ss_presence_text}"/>"></a>
+ alt="<c:out value="${ss_presence_text}"/>"/></a>
 </c:if>
 
 <c:if test="${!empty ss_presence_user}">
@@ -53,5 +53,5 @@
     '${ss_presence_vcard}', 
     '${current}');return false;"
 ><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
- alt="<c:out value="${ss_presence_text}"/>"></a>
+ alt="<c:out value="${ss_presence_text}"/>"/></a>
 </c:if>
