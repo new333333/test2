@@ -43,7 +43,7 @@ import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.LockIdMismatchException;
 import com.sitescape.ef.module.file.LockedByAnotherUserException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.repository.RepositoryServiceException;
+import com.sitescape.ef.repository.RepositoryException;
 import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.repository.RepositorySession;
 import com.sitescape.ef.repository.RepositorySessionFactoryUtil;
@@ -439,7 +439,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			String lockId, String lockSubject, Date expirationDate) 
 		throws ReservedByAnotherUserException, 
 			LockedByAnotherUserException, LockIdMismatchException, 
-			UncheckedIOException, RepositoryServiceException {
+			UncheckedIOException, RepositoryException {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		// The following call is commented out because: We want to write a
@@ -503,7 +503,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 
     public void unlock(Binder binder, DefinableEntity entity, FileAttachment fa,
-    		String lockId) throws UncheckedIOException, RepositoryServiceException {
+    		String lockId) throws UncheckedIOException, RepositoryException {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
     	//closeExpiredLocksTransactional(binder, entity, true);
@@ -525,7 +525,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
 
 	public void RefreshLocks(Binder binder, DefinableEntity entity) 
-		throws RepositoryServiceException, UncheckedIOException {
+		throws RepositoryException, UncheckedIOException {
 		closeExpiredLocksTransactional(binder, entity, true);
 	}
 
@@ -892,7 +892,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
     private void writeExistingFile(RepositorySession session,
     		Binder binder, DefinableEntity entry, FileUploadItem fui, Object inputData)
-		throws LockedByAnotherUserException, RepositoryServiceException, UncheckedIOException {
+		throws LockedByAnotherUserException, RepositoryException, UncheckedIOException {
     	User user = RequestContextHolder.getRequestContext().getUser();
     	String relativeFilePath = fui.getOriginalFilename();
     	FileAttachment fAtt = entry.getFileAttachment(fui.getRepositoryServiceName(), relativeFilePath);
@@ -986,7 +986,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	 */
 	private FileAttachment createFile(RepositorySession session, 
 			Binder binder, DefinableEntity entry, FileUploadItem fui, Object inputData) 
-		throws RepositoryServiceException, UncheckedIOException {	
+		throws RepositoryException, UncheckedIOException {	
 		// Since we are creating a new file, file locking doesn't concern us.
 		
 		FileAttachment fAtt = createFileAttachment(entry, fui);
@@ -1001,7 +1001,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private String createVersionedWithInputData(RepositorySession session,
 			Binder binder, DefinableEntity entry, String relativeFilePath, Object inputData)
-		throws RepositoryServiceException {
+		throws RepositoryException {
 		String versionName = null;
 		/*if(inputData instanceof MultipartFile) {
 			versionName = service.createVersioned(session, binder, entry, 
@@ -1024,7 +1024,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private void updateWithInputData(RepositorySession session,
 			Binder binder, DefinableEntity entry, String relativeFilePath, Object inputData)
-		throws RepositoryServiceException {
+		throws RepositoryException {
 		/*if(inputData instanceof MultipartFile) {
 			service.update(session, binder, entry, 
 					relativeFilePath, (MultipartFile) inputData);
@@ -1112,7 +1112,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private void generateAndStoreScaledFile(RepositorySession session, 
 			Binder binder, DefinableEntity entry, String relativeFilePath, 
 			byte[] inputData, int maxWidth, int maxHeight) 
-		throws ThumbnailException, RepositoryServiceException {
+		throws ThumbnailException, RepositoryException {
 		String scaledFileName = makeScaledFileName(relativeFilePath);
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -1146,7 +1146,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	 * @param directlyAccessible
 	 * @throws ThumbnailException if thumbnail generation procedure itself fails; 
 	 * typically indicates that the data format is not supported.
-	 * @throws RepositoryServiceException error in repository operation; can occur
+	 * @throws RepositoryException error in repository operation; can occur
 	 * when thumbnail is stored by repository service
 	 * @throws FileNotFoundException error in file operation; can occur when thumbnail
 	 * is stored in a client-visible directory on file system
@@ -1156,7 +1156,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private void generateAndStoreThumbnailFile(RepositorySession session, 
 			Binder binder, DefinableEntity entry, String relativeFilePath, 
 			byte[] inputData, int maxWidth, int maxHeight, boolean directlyAccessible) 
-		throws ThumbnailException, RepositoryServiceException, FileNotFoundException,
+		throws ThumbnailException, RepositoryException, FileNotFoundException,
 		IOException {
 
 		if(directlyAccessible) {
@@ -1228,14 +1228,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}       
     
     private void closeLocksTransactional(Binder binder, DefinableEntity entity,
-    		boolean commit) throws RepositoryServiceException,
+    		boolean commit) throws RepositoryException,
     		UncheckedIOException {
     	if(closeLocks(binder, entity, commit))
     		triggerUpdateTransaction();   	
     }
     
     private boolean closeLocks(Binder binder, DefinableEntity entity,
-    		boolean commit) throws RepositoryServiceException,
+    		boolean commit) throws RepositoryException,
     		UncheckedIOException {
     	if((entity instanceof Reservable) &&
     			((Reservable)entity).getLockedFileCount() <= 0) {
@@ -1258,14 +1258,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
     
     private void closeLockTransactional(Binder binder, DefinableEntity entity,
-    		FileAttachment fa, boolean commit) throws RepositoryServiceException,
+    		FileAttachment fa, boolean commit) throws RepositoryException,
     		UncheckedIOException {
     	if(closeLock(binder, entity, fa, commit))
     		this.triggerUpdateTransaction();
     }
 
     private boolean closeLock(Binder binder, DefinableEntity entity, 
-    		FileAttachment fa, boolean commit) throws RepositoryServiceException,
+    		FileAttachment fa, boolean commit) throws RepositoryException,
     		UncheckedIOException {
     	boolean metadataDirty = false;
     	
@@ -1293,14 +1293,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
     
     private void closeExpiredLocksTransactional(Binder binder, DefinableEntity entity,
-    		boolean commit) throws RepositoryServiceException,
+    		boolean commit) throws RepositoryException,
     		UncheckedIOException {
     	if(closeExpiredLocks(binder, entity, commit))
     		triggerUpdateTransaction();   	
     }
     		
     private boolean closeExpiredLocks(Binder binder, DefinableEntity entity,
-    		boolean commit) throws RepositoryServiceException,
+    		boolean commit) throws RepositoryException,
     		UncheckedIOException {
     	if((entity instanceof Reservable) &&
     			((Reservable)entity).getLockedFileCount() <= 0) {
@@ -1323,14 +1323,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
     
     private void closeExpiredLockTransactional(Binder binder, DefinableEntity entity,
-    		FileAttachment fa, boolean commit) throws RepositoryServiceException,
+    		FileAttachment fa, boolean commit) throws RepositoryException,
     		UncheckedIOException {
     	if(closeExpiredLock(binder, entity, fa, commit))
     		this.triggerUpdateTransaction();
     }
     
     private boolean closeExpiredLock(Binder binder, DefinableEntity entity, 
-    		FileAttachment fa, boolean commit) throws RepositoryServiceException,
+    		FileAttachment fa, boolean commit) throws RepositoryException,
     		UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryServiceName());
 
@@ -1344,7 +1344,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     
     private boolean closeExpiredLock(RepositorySession session,
     		Binder binder, DefinableEntity entity, FileAttachment fa, 
-    		boolean commit) throws RepositoryServiceException, UncheckedIOException {
+    		boolean commit) throws RepositoryException, UncheckedIOException {
     	boolean metadataDirty = false;
     	
     	FileAttachment.FileLock lock = fa.getFileLock();
@@ -1371,7 +1371,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     
     private boolean commitPendingChanges(Binder binder, DefinableEntity entity,
     		FileAttachment fa, Principal changeOwner)
-    	throws RepositoryServiceException, UncheckedIOException {
+    	throws RepositoryException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryServiceName());
 
 		try {
@@ -1386,7 +1386,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private boolean commitPendingChanges(RepositorySession session,
     		Binder binder, DefinableEntity entity, FileAttachment fa, 
     		Principal changeOwner)
-    	throws RepositoryServiceException, UncheckedIOException {
+    	throws RepositoryException, UncheckedIOException {
     	String relativeFilePath = fa.getFileItem().getName();
 		
 		boolean metadataDirty = false; 
