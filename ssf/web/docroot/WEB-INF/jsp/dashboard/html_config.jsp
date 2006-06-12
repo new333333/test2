@@ -15,4 +15,10 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<br/>
+<span class="ss_bold"><ssf:nlt tag="dashboard.enterHtml"/></span>
+<br/>
+<textarea name="data.html" rows="8" cols="60"><c:out
+value="${ssDashboard.dashboard.components[ssDashboardId].data.html[0]}"/></textarea>
+<br/>

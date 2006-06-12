@@ -22,6 +22,7 @@ import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
+import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
@@ -80,7 +81,8 @@ public class ListProfilesController extends   SAbstractController {
 		model.put(WebKeys.ENTRIES, users.get(ObjectKeys.ENTRIES));
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		Map dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
-		model.put(WebKeys.DASHBOARD, dashboard);
+		Map ssDashboard = DashboardHelper.getDashboardMap(dashboard);
+		model.put(WebKeys.DASHBOARD, ssDashboard);
 		DefinitionUtils.getDefinitions(binder, model);
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 

@@ -15,4 +15,5 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<c:out value="${ssDashboard.dashboard.components[ssDashboardId].data.html[0]}" escapeXml="false"/>

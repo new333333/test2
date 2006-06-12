@@ -18,6 +18,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 
 <c:set var="ss_style_background_color" value="#FFFFCC" scope="request"/>
+<c:set var="ss_style_component_background_color" value="#FFFF66" scope="request"/>
 <c:set var="ss_style_border_color" value="#999999" scope="request"/>
 <c:set var="ss_style_text_color" value="#009900" scope="request"/>
 <c:set var="ss_style_link_color" value="#009900" scope="request"/>
@@ -31,6 +32,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_replies_text_color" value="#009900" scope="request"/>
 
 <c:set var="ss_form_background_color" value="#CCFFFF" scope="request"/>
+<c:set var="ss_form_component_background_color" value="#66FFFF" scope="request"/>
+<c:set var="ss_form_border_color" value="#CC99CC" scope="request"/>
 <c:set var="ss_form_gray_color" value="#CC99CC" scope="request"/>
 <c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/>
 <c:set var="ss_form_text_color" value="#3333FF" scope="request"/>
@@ -69,6 +72,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <c:if test="${ss_color_theme == 'blackandwhite'}">
 	<c:set var="ss_portlet_style_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_style_component_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_portlet_style_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 	
@@ -86,6 +90,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_replies_text_color" value="#009900" scope="request"/>
 	
 	<c:set var="ss_form_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_form_component_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_form_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_form_gray_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/>
 	<c:set var="ss_form_text_color" value="#000000" scope="request"/>
@@ -357,6 +363,18 @@ ul.ss_dropdownmenu li {
 
 .ss_calendar_notInView {
   background-color: ${ss_calendar_today_background_color};
+}
+
+.ss_dashboard_config {
+  margin: 10px;
+  border: 1px solid ${ss_form_border_color};
+  background-color: ${ss_form_component_background_color};
+}
+
+.ss_dashboard_view {
+  margin: 4px;
+  border: 1px solid ${ss_style_border_color};
+  background-color: ${ss_style_component_background_color};
 }
 
   

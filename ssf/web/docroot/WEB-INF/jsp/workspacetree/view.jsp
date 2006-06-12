@@ -58,4 +58,4 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	</tr>
 </table>
 </div>
-<div id="ss_tree_div_status_message"></div>
+<div id="ss_tree_div_status_message<%= wsTreeName %>"></div>

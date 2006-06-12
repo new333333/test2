@@ -15,4 +15,56 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<br/>
+<table>
 
+<tr>
+<td colspan="2" valign="top">
+<span class="ss_bold"><ssf:nlt tag="dashboard.url"/></span>
+<br/>
+<input type="text" name="data.url" size="60" 
+  value="${ssDashboard.dashboard.components[ssDashboardId].data.url[0]}"/>
+</td>
+</tr>
+
+<tr>
+<td valign="top">
+<span class="ss_bold"><ssf:nlt tag="dashboard.width"/></span><br/>
+<input type="text" name="data.width" size="6" 
+  value="${ssDashboard.dashboard.components[ssDashboardId].data.width[0]}"/>
+</td>
+<td valign="top">
+<span class="ss_bold"><ssf:nlt tag="dashboard.height"/></span><br/>
+<input type="text" name="data.height" size="6" 
+  value="${ssDashboard.dashboard.components[ssDashboardId].data.height[0]}"/>
+</td>
+</tr>
+
+<tr>
+<td colspan="2" valign="top">
+<span class="ss_bold"><ssf:nlt tag="dashboard.alignment"/></span>
+<br/>
+<c:set var="checked" value=""/>
+<c:if test="${empty ssDashboard.dashboard.components[ssDashboardId].data.align[0] || 
+    ssDashboard.dashboard.components[ssDashboardId].data.align[0] == 'left'}">
+  <c:set var="checked" value="checked=\"checked\""/>
+</c:if>
+&nbsp;&nbsp;&nbsp;<input type="radio" name="data.align" value="left" 
+  <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="dashboard.alignment.left"/><br/>
+<c:set var="checked" value=""/>
+<c:if test="${ssDashboard.dashboard.components[ssDashboardId].data.align[0] == 'center'}">
+  <c:set var="checked" value="checked=\"checked\""/>
+</c:if>
+&nbsp;&nbsp;&nbsp;<input type="radio" name="data.align" value="center" 
+  <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="dashboard.alignment.center"/><br/>
+<c:set var="checked" value=""/>
+<c:if test="${ssDashboard.dashboard.components[ssDashboardId].data.align[0] == 'right'}">
+  <c:set var="checked" value="checked=\"checked\""/>
+</c:if>
+&nbsp;&nbsp;&nbsp;<input type="radio" name="data.align" value="right" 
+  <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="dashboard.alignment.right"/><br/>
+</td>
+</tr>
+
+</table>
