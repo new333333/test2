@@ -6,7 +6,7 @@ import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
 import com.sitescape.ef.module.definition.notify.NotifyBuilderUtil;
 import com.sitescape.ef.module.definition.notify.Notify;
-import com.sitescape.ef.repository.RepositoryServiceUtil;
+import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
@@ -987,7 +987,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	
 									    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
 									    	String repositoryServiceName = storageElem.attributeValue("value",
-									    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
+									    			RepositoryUtil.getDefaultRepositoryServiceName());
 									    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryServiceName);
 	
 									    	//See if there is a scaling request for this graphic file. If yes, pass along the hieght and width
@@ -1038,7 +1038,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 											    	if (repositoryServiceName == null) {
 												    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
 												    	repositoryServiceName = storageElem.attributeValue("value",
-												    			RepositoryServiceUtil.getDefaultRepositoryServiceName());
+												    			RepositoryUtil.getDefaultRepositoryServiceName());
 											    	}
 											    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryServiceName);
 											    	fileData.add(fui);

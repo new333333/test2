@@ -24,7 +24,7 @@ import com.sitescape.ef.web.servlet.PrincipalServletRequest;
 import com.sitescape.ef.web.servlet.SAbstractController;
 import com.sitescape.util.FileUtil;
 import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.ef.repository.RepositoryServiceUtil;
+import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.rss.RssGenerator;
 
 import org.springframework.web.bind.RequestUtils;

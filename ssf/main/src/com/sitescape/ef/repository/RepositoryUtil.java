@@ -29,9 +29,9 @@ import com.sitescape.ef.util.FileUploadItem;
  * @author jong
  *
  */
-public class RepositoryServiceUtil {
+public class RepositoryUtil {
 
-	private static final Log logger = LogFactory.getLog(RepositoryServiceUtil.class);
+	private static final Log logger = LogFactory.getLog(RepositoryUtil.class);
 	
 	public static int fileInfo(String repositoryServiceName,
 			Binder binder, DefinableEntity entry, String relativeFilePath)

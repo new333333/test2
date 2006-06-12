@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.sitescape.ef.repository.RepositoryServiceUtil;
+import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.util.CollectionUtil;
 import com.sitescape.ef.util.SPropsUtil;
 
@@ -142,7 +142,7 @@ public class FileAttachment extends Attachment {
     
 	public String getRepositoryServiceName() {
 		if(repositoryServiceName == null)
-			return RepositoryServiceUtil.getDefaultRepositoryServiceName();
+			return RepositoryUtil.getDefaultRepositoryServiceName();
 		else
 			return repositoryServiceName;
 	}
