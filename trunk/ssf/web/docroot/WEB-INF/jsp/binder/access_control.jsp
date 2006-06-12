@@ -79,8 +79,8 @@
 <table cellspacing="10px" cellpadding="4px" width="100%">
  <tr>
   <th align="left"><ssf:nlt tag="binder.configure.access_control.role" text="Role"/></th>
-  <th align="left"><ssf:nlt tag="binder.configure.access_control.users" text="Users"/></th>
-  <th align="left"><ssf:nlt tag="binder.configure.access_control.groups" text="Groups"/></th>
+  <th align="left"><ssf:nlt tag="general.users" text="Users"/></th>
+  <th align="left"><ssf:nlt tag="general.groups" text="Groups"/></th>
   <th></th>
  </tr>
 	<c:forEach var="function" items="${ssFunctionMap}">
@@ -184,14 +184,14 @@
 </td>
 </tr>
 <tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="binder.configure.access_control.users" 
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" 
  text="Users"/></td>
 <td valign="top">
   <ssf:findUsers formName="rolesForm" formElement="users" type="user"/>
 </td>
 </tr>
 <tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="binder.configure.access_control.groups" 
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" 
  text="Groups"/></td>
 <td valign="top">
   <ssf:findUsers formName="rolesForm" formElement="groups" type="group"/>
@@ -236,7 +236,7 @@
 </td>
 </tr>
 <tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="binder.configure.access_control.users" 
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" 
  text="Users"/></td>
 <td valign="top">
   <ssf:findUsers formName="rolesForm" formElement="users" 
@@ -244,7 +244,7 @@
 </td>
 </tr>
 <tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="binder.configure.access_control.groups" 
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" 
  text="Groups"/></td>
 <td valign="top">
   <ssf:findUsers formName="rolesForm" formElement="groups" 

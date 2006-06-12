@@ -42,7 +42,8 @@ public interface AdminModule {
     public void modifyEmailAlias(String aliasId, Map updates);
     public void addEmailAlias(Map updates);
     public void deleteEmailAlias(String aliasId);
-    public void addWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership);
+
+	public void addWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds);
     public void modifyWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership);
     public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 

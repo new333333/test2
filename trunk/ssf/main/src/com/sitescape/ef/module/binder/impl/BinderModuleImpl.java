@@ -18,6 +18,8 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
+import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.binder.BinderProcessor;
 import com.sitescape.ef.module.binder.EntryProcessor;
@@ -115,6 +117,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     public void checkModifyBinderAllowed(Binder binder) {
     	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
     }
+    public void setProperty(Long binderId, String property, Object value) {
+    	Binder binder = loadBinder(binderId);
+    	checkModifyBinderAllowed(binder);
+		binder.setProperty(property, value);	
+   }    
     public void deleteBinder(Long binderId) {
     	Binder binder = loadBinder(binderId);
     	//if can delete this binder, can delete everything under it??

@@ -110,7 +110,26 @@
         <resource-bundle>content.administration</resource-bundle>
     </portlet>
  
-    <user-attribute>
+    <portlet>
+        <description xml:lang="en">SiteScape Presence</description>
+        <portlet-name>ss_presence</portlet-name>
+        <display-name xml:lang="en">Presence</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/presence.xml</value>
+		</init-param>
+        <expiration-cache>300</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>content.presence</resource-bundle>
+    </portlet>
+ 
+     <user-attribute>
         <description xml:lang="en">User Name</description>
         <name>user.name</name>
     </user-attribute>

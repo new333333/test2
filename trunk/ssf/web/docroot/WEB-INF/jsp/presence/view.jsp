@@ -15,10 +15,11 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:set var="folderIdList" value=""/>
-<jsp:useBean id="folderIdList" type="java.lang.String" />
+<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<c:set var="userIdList" value=""/>
+<jsp:useBean id="userIdList" type="java.lang.String" />
 
-<div id="ss_showfolder" class="ss_portlet_style ss_portlet">
+<div id="ss_showpresence" class="ss_portlet_style ss_portlet">
 
 <% // Toolbar %>
 <c:if test="${!empty ssForumToolbar}">
@@ -30,7 +31,7 @@ function ss_showNotLoggedInMsg() {
 	alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 }
 </script>
-<div id="ss_status_message" class="ss_portlet_style" style="visibility:hidden; display:none;"></div>
+<div id="ss_presence_status_message" class="ss_portlet_style" style="visibility:hidden; display:none;"></div>
 
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
@@ -38,28 +39,45 @@ function ss_showNotLoggedInMsg() {
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td valign="top">
-				<c:if test="${empty ssFolderList}">
+				<c:if test="${empty ssUsers}">
 				  <ssf:nlt tag="portlet.notConfigured" 
 				   text="The portlet preferences are not set.  Choose the edit button to configure the portlet."/>
 				 </c:if>
-				<c:if test="${!empty ssFolderList}">
+				<c:if test="${!empty ssUsers}">
 					<table cellspacing="0" cellpadding="0">
-					<c:forEach var="folder" items="${ssFolderList}">
-					<jsp:useBean id="folder" type="com.sitescape.ef.domain.Folder" />
+					<c:forEach var="u1" items="${ssUsers}">
+					<jsp:useBean id="u1" type="com.sitescape.ef.domain.User" />
 					  <tr>
-					  <td><span id="count_<c:out value="${folder.id}"/>"><font color="silver">-</font></span></td>
+					  <td><span id="count_<c:out value="${u1.id}"/>"><ssf:presenceInfo user="<%=u1%>"/> </span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
-					  <td>
-						<a href="<portlet:renderURL windowState="maximized">
-								<portlet:param name="action" value="view_folder_listing"/>
-								<portlet:param name="binderId" value="${folder.id}"/>
-							</portlet:renderURL>"><c:out value="${folder.title}"/></a>
-					  </td>
+					  <td><c:out value="${u1.title}"/>
+					  </td>							
 					  </tr>
 					  <%
-					  	if (!folderIdList.equals("")) folderIdList += " ";
-					  	folderIdList += folder.getId().toString();
+					  	if (!userIdList.equals("")) userIdList += " ";
+					  	userIdList += u1.getId().toString();
 					  %>
+					</c:forEach>
+					</table>
+				 </c:if>
+				<c:if test="${!empty ssGroups}">
+					<table cellspacing="0" cellpadding="0">
+					<c:forEach var="group" items="${ssGroups}">
+					<c:forEach var="u2" items="${group.members}">
+					<jsp:useBean id="u2" type="com.sitescape.ef.domain.Principal" />
+					<c:if test="<%= u2 instanceof com.sitescape.ef.domain.User %>">
+					  <tr>
+					  <td><span id="count_<c:out value="${u2.id}"/>"><ssf:presenceInfo user="<%=(com.sitescape.ef.domain.User)u2%>"/> </span></td>
+					  <td>&nbsp;&nbsp;&nbsp;</td>
+					  <td><c:out value="${u2.title}"/>
+					  </td>							
+					  </tr>
+					</c:if>
+					  <%
+					  	if (!userIdList.equals("")) userIdList += " ";
+					  	userIdList += u2.getId().toString();
+					  %>
+					</c:forEach>
 					</c:forEach>
 					</table>
 				 </c:if>
@@ -74,21 +92,17 @@ function ss_showNotLoggedInMsg() {
 </div>
 <script type="text/javascript">
 var count = 0
-function ss_getUnseenCounts() {
-	<c:forEach var="folder" items="${ssFolderList}">
-		document.getElementById("count_<c:out value="${folder.id}"/>").style.color = "silver";
-	</c:forEach>
+function ss_getPresence() {
 	var url = "<ssf:url 
     	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true" >
-		<ssf:param name="operation" value="unseen_counts" />
+    	portletName="ss_presence" 
+    	action="view_presence" 
+    	actionUrl="false" >
     	</ssf:url>"
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addFormElements("unseenCountForm")
-	//ajaxRequest.setEchoDebugInfo();
-	//ajaxRequest.setPreRequest(ss_preRequest);
+	ajaxRequest.addFormElements("presenceForm")
+//	ajaxRequest.setEchoDebugInfo();
+//	ajaxRequest.setPreRequest(ss_preRequest);
 	ajaxRequest.setPostRequest(ss_postRequest);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
@@ -104,8 +118,8 @@ function ss_postRequest(obj) {
 	}
 }
 </script>
-<form class="ss_portlet_style ss_form" id="unseenCountForm" style="display:none;">
-<input type="hidden" name="forumList" value="<%= folderIdList %>">
+<form class="ss_portlet_style ss_form" id="presenceForm" style="display:none;">
+<input type="hidden" name="userList" value="<%= userIdList %>">
 </form>
 
 

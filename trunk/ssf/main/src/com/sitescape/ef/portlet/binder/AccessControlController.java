@@ -72,11 +72,7 @@ public class AccessControlController extends AbstractBinderController {
 				}
 				WorkAreaFunctionMembership wfm = getAdminModule().getWorkAreaFunctionMembership(binder, roleId);
 				if (wfm == null) {
-					wfm = new WorkAreaFunctionMembership();
-					//Build the workarea membership object
-					wfm.setFunctionId(roleId);
-					wfm.setMemberIds(memberIds);
-					getAdminModule().addWorkAreaFunctionMembership(binder, wfm);
+					getAdminModule().addWorkAreaFunctionMembership(binder, roleId, memberIds);
 				} else {
 					//Modify the existing membership
 					wfm.setMemberIds(memberIds);
