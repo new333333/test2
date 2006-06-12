@@ -26,8 +26,6 @@ import com.sitescape.ef.domain.DefinitionInvalidException;
 import com.sitescape.ef.domain.DefinitionInvalidOperation;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 
-import com.sitescape.ef.repository.RepositoryService;
-import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;

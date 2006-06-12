@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.activation.DataSource;
+import javax.activation.FileTypeMap;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,15 +36,11 @@ public class RepositoryServiceUtil {
 	public static int fileInfo(String repositoryServiceName,
 			Binder binder, DefinableEntity entry, String relativeFilePath)
 		throws RepositoryServiceException, UncheckedIOException {
-		RepositoryService service = lookupRepositoryService(repositoryServiceName);
-
-		Object session = service.openRepositorySession();
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 		try {
-			// TODO For now we ignore file path relative to the owning entry.
-			// We simply treat that the file path is identical to the file name.
-			return service.fileInfo(session, binder, entry, relativeFilePath);
+			return session.fileInfo(binder, entry, relativeFilePath);
 		} finally {
-			service.closeRepositorySession(session);
+			session.close();
 		}		
 	}
 	
@@ -50,15 +49,14 @@ public class RepositoryServiceUtil {
 			UncheckedIOException {
 		String repositoryServiceName = fui.getRepositoryServiceName();
 
-		RepositoryService service = lookupRepositoryService(repositoryServiceName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 
-		Object session = service.openRepositorySession();
 		try {
 			// TODO For now we ignore file path relative to the owning entry.
 			// We simply treat that the file path is identical to the file name.
 			InputStream is = fui.getInputStream();
 			try {
-				return service.createVersioned(session, binder, entry, fui
+				return session.createVersioned(binder, entry, fui
 					.getOriginalFilename(), is);
 			}
 			finally {
@@ -71,22 +69,21 @@ public class RepositoryServiceUtil {
 		} catch (IOException e) {
 			throw new RepositoryServiceException(e);
 		} finally {
-			service.closeRepositorySession(session);
+			session.close();
 		}
 	}
 
 	public static void createUnversioned(String repositoryServiceName,
 			Binder binder, DefinableEntity entry, String relativeFilePath, InputStream in) 
 		throws RepositoryServiceException, UncheckedIOException {
-		RepositoryService service = lookupRepositoryService(repositoryServiceName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 
-		Object session = service.openRepositorySession();
 		try {
 			// TODO For now we ignore file path relative to the owning entry.
 			// We simply treat that the file path is identical to the file name.
-			service.createUnversioned(session, binder, entry, relativeFilePath, in);
+			session.createUnversioned(binder, entry, relativeFilePath, in);
 		} finally {
-			service.closeRepositorySession(session);
+			session.close();
 		}
 	}
 
@@ -95,14 +92,13 @@ public class RepositoryServiceUtil {
 			UncheckedIOException {
 		String repositoryServiceName = fui.getRepositoryServiceName();
 
-		RepositoryService service = lookupRepositoryService(repositoryServiceName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 
-		Object session = service.openRepositorySession();
 		try {
 			InputStream is = fui.getInputStream();
 			
 			try {
-				service.update(session, binder, entry, fui.getOriginalFilename(), is);
+				session.update(binder, entry, fui.getOriginalFilename(), is);
 			}
 			finally {
 				try {
@@ -114,90 +110,93 @@ public class RepositoryServiceUtil {
 		} catch (IOException e) {
 			throw new RepositoryServiceException(e);
 		} finally {
-			service.closeRepositorySession(session);
+			session.close();
 		}
 	}
 	
 	public static void delete(String repositoryServiceName, Binder binder,
 			DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException {
-		RepositoryService service = lookupRepositoryService(repositoryServiceName);
-		Object session = service.openRepositorySession();
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+
 		try {
-			service.delete(session, binder, entry, relativeFilePath);
+			session.delete(binder, entry, relativeFilePath);
 		} finally {
-			service.closeRepositorySession(session);
+			session.close();
 		}		
 	}
 
 	public static void read(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, OutputStream out)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositoryService service = lookupRepositoryService(repositoryServiceName);
-		Object session = service.openRepositorySession();
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+
 		try {
-			service.read(session, binder, entry, relativeFilePath, out);
+			session.read(binder, entry, relativeFilePath, out);
 		} finally {
-			service.closeRepositorySession(session);
+			session.close();
 		}
 	}
 
 	public static InputStream read(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositoryService service = lookupRepositoryService(repositoryServiceName);
-		Object session = service.openRepositorySession();
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+
 		try {
-			return service.read(session, binder, entry, relativeFilePath);
+			return session.read(binder, entry, relativeFilePath);
 		} finally {
-			service.closeRepositorySession(session);
+			session.close();
 		}
 	}
 
+	public static DataSource getDataSource(String repositoryServiceName, Binder binder, 
+			DefinableEntity entity, String relativeFilePath, 
+			FileTypeMap fileTypeMap) throws RepositoryServiceException,
+			UncheckedIOException {
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+
+		try {
+			return session.getDataSource(binder, entity, relativeFilePath, fileTypeMap);
+		} finally {
+			session.close();
+		}	
+	}
+	
 	public static void checkout(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositoryService service = lookupRepositoryService(repositoryServiceName);
-		Object session = service.openRepositorySession();
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+
 		try {
-			service.checkout(session, binder, entry, relativeFilePath);
+			session.checkout(binder, entry, relativeFilePath);
 		} finally {
-			service.closeRepositorySession(session);
+			session.close();
 		}
 	}
 
 	public static void checkin(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositoryService service = lookupRepositoryService(repositoryServiceName);
-		Object session = service.openRepositorySession();
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+
 		try {
-			service.checkin(session, binder, entry, relativeFilePath);
+			session.checkin(binder, entry, relativeFilePath);
 		} finally {
-			service.closeRepositorySession(session);
+			session.close();
 		}
 	}
 
 	public static void uncheckout(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry,String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositoryService service = lookupRepositoryService(repositoryServiceName);
-		Object session = service.openRepositorySession();
-		try {
-			service.uncheckout(session, binder, entry, relativeFilePath);
-		} finally {
-			service.closeRepositorySession(session);
-		}
-	}
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 
-	public static RepositoryService lookupRepositoryService(
-			String repositoryServiceName) throws ConfigurationException {
-		RepositoryService service = (RepositoryService) SpringContextUtil
-				.getBean(repositoryServiceName);
-		if (service == null)
-			throw new ConfigurationException("Repository service '"
-					+ repositoryServiceName + "' not found");
-		return service;
+		try {
+			session.uncheckout(binder, entry, relativeFilePath);
+		} finally {
+			session.close();
+		}
 	}
 
 	public static String getDefaultRepositoryServiceName() {

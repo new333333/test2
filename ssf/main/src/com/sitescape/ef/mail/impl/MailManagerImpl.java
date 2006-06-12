@@ -49,7 +49,6 @@ import com.sitescape.ef.mail.MimeMessagePreparator;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.jobs.ScheduleInfo;
-import com.sitescape.ef.repository.RepositoryService;
 import com.sitescape.ef.repository.RepositoryServiceUtil;
 import com.sitescape.ef.util.ConfigPropertyNotFoundException;
 import com.sitescape.ef.util.PortabilityUtil;
@@ -443,16 +442,12 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 			helper.setText((String)result.get(FolderEmailFormatter.PLAIN), (String)result.get(FolderEmailFormatter.HTML));
 			Set atts = notify.getAttachments();
 			for (Iterator iter=atts.iterator(); iter.hasNext();) {
-				FileAttachment fAtt = (FileAttachment)iter.next();
-				RepositoryService service = RepositoryServiceUtil.lookupRepositoryService(fAtt.getRepositoryServiceName());
-				if (service != null) {
-					FolderEntry entry = (FolderEntry)fAtt.getOwner().getEntity();
-					DataSource ds = service.getDataSource(service.openRepositorySession(), entry.getParentFolder(), 
-								entry, fAtt.getFileItem().getName(), helper.getFileTypeMap());
+				FileAttachment fAtt = (FileAttachment)iter.next();			
+				FolderEntry entry = (FolderEntry)fAtt.getOwner().getEntity();
+				DataSource ds = RepositoryServiceUtil.getDataSource(fAtt.getRepositoryServiceName(), entry.getParentFolder(), 
+							entry, fAtt.getFileItem().getName(), helper.getFileTypeMap());
 
-					helper.addAttachment(fAtt.getFileItem().getName(), ds);
-				}
-				
+				helper.addAttachment(fAtt.getFileItem().getName(), ds);
 			}
 			notify.clearAttachments();
 			//save message incase cannot connect and need to resend;

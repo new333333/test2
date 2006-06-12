@@ -37,6 +37,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	public void close() throws RepositoryServiceException, UncheckedIOException{
 		try {
 			wdr.close();
+			wdr = null;
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
