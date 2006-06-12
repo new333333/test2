@@ -44,7 +44,7 @@ import com.sitescape.ef.module.file.LockIdMismatchException;
 import com.sitescape.ef.module.file.LockedByAnotherUserException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.repository.RepositoryException;
-import com.sitescape.ef.repository.RepositoryServiceUtil;
+import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.repository.RepositorySession;
 import com.sitescape.ef.repository.RepositorySessionFactoryUtil;
 import com.sitescape.ef.util.DirPath;
@@ -216,18 +216,18 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
-    	RepositoryServiceUtil.read(fa.getRepositoryServiceName(), binder, entry, 
+    	RepositoryUtil.read(fa.getRepositoryServiceName(), binder, entry, 
 				fa.getFileItem().getName(), out);
 	}
 	
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
-		return RepositoryServiceUtil.read(fa.getRepositoryServiceName(), binder, entry, 
+		return RepositoryUtil.read(fa.getRepositoryServiceName(), binder, entry, 
 				fa.getFileItem().getName());
 	}
 	
 	public boolean scaledFileExists(Binder binder, 
 			DefinableEntity entry, FileAttachment fAtt) {
-		int fileInfo = RepositoryServiceUtil.fileInfo(fAtt.getRepositoryServiceName(), 
+		int fileInfo = RepositoryUtil.fileInfo(fAtt.getRepositoryServiceName(), 
 				binder, entry, makeScaledFileName(fAtt.getFileItem().getName()));
 		
 		if(fileInfo == RepositorySession.UNVERSIONED_FILE)
@@ -246,14 +246,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	public void readScaledFile(Binder binder, DefinableEntity entry, 
 			FileAttachment fa, OutputStream out) {
-		RepositoryServiceUtil.read(fa.getRepositoryServiceName(), binder, 
+		RepositoryUtil.read(fa.getRepositoryServiceName(), binder, 
 				entry, makeScaledFileName(fa.getFileItem().getName()), out);
 	}
 	
 	public void readIndirectlyAccessibleThumbnailFile(
 			Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
-		RepositoryServiceUtil.read(fa.getRepositoryServiceName(), binder, 
+		RepositoryUtil.read(fa.getRepositoryServiceName(), binder, 
 				entry, makeThumbnailFileName(fa.getFileItem().getName()), out);	
 	}
 	
@@ -1278,7 +1278,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				commitPendingChanges(binder, entity, fa, lock.getOwner());
 			} 
 			else { // Discard pending changes if any
-				RepositoryServiceUtil.uncheckout(fa.getRepositoryServiceName(), 
+				RepositoryUtil.uncheckout(fa.getRepositoryServiceName(), 
 						binder, entity, fa.getFileItem().getName()); 					
 			}
 

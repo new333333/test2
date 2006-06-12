@@ -49,7 +49,7 @@ import com.sitescape.ef.mail.MimeMessagePreparator;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.jobs.ScheduleInfo;
-import com.sitescape.ef.repository.RepositoryServiceUtil;
+import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.util.ConfigPropertyNotFoundException;
 import com.sitescape.ef.util.PortabilityUtil;
 import com.sitescape.ef.util.SPropsUtil;
@@ -444,7 +444,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 			for (Iterator iter=atts.iterator(); iter.hasNext();) {
 				FileAttachment fAtt = (FileAttachment)iter.next();			
 				FolderEntry entry = (FolderEntry)fAtt.getOwner().getEntity();
-				DataSource ds = RepositoryServiceUtil.getDataSource(fAtt.getRepositoryServiceName(), entry.getParentFolder(), 
+				DataSource ds = RepositoryUtil.getDataSource(fAtt.getRepositoryServiceName(), entry.getParentFolder(), 
 							entry, fAtt.getFileItem().getName(), helper.getFileTypeMap());
 
 				helper.addAttachment(fAtt.getFileItem().getName(), ds);
