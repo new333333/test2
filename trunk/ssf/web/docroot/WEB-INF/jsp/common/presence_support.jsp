@@ -30,7 +30,7 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
     var m = ''
     var imgid = "ppgpres"
     var ostatus = " <ssf:nlt tag="presence.none"/>"
-    obj = self.document.getElementById('presencePopUp')
+    obj = self.document.getElementById('ss_presencePopUp')
     m += '<div style="position: relative; background: #666; margin: 4px;">'
     m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1; border: 1px solid #666666; background-color:white">'
 
@@ -98,7 +98,7 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
 
     obj.innerHTML = m;
 
-    ss_activateMenuLayer('presencePopUp');
+    ss_activateMenuLayer('ss_presencePopUp');
     if (self.document.images["ppgpres"]) {
         self.document.images["ppgpres"].src = ss_presencePopupGraphics["pres"].src;
     }
@@ -139,12 +139,25 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
         var diff = scrollHt + windowHt - mousePosY;
         if (divHt > 0) {
             if (diff <= divHt) {
-               ss_positionDiv('presencePopUp', mousePosX, mousePosY - divHt);
+               ss_positionDiv('ss_presencePopUp', mousePosX, mousePosY - divHt);
             }
+        }
+        //See if we need to make the portlet longer to hold the pop-up menu
+        var menuObj = document.getElementById('ss_presencePopUp');
+        var sizerObj = document.getElementById('ss_presence_sizer_div');
+        if (sizerObj) {
+        	var menuTop = ss_getDivTop('ss_presencePopUp');
+        	var menuHeight = ss_getDivHeight('ss_presencePopUp');
+        	var sizerTop = ss_getDivTop('ss_presence_sizer_div');
+        	var sizerHeight = ss_getDivHeight('ss_presence_sizer_div');
+        	var deltaSizerHeight = parseInt((menuTop + menuHeight) - (sizerTop + sizerHeight));
+        	if (deltaSizerHeight > 0) {
+        		ss_setObjectHeight(sizerObj, parseInt(sizerHeight + deltaSizerHeight));
+        	}
         }
     }
 }
 </script>
-<div id="presencePopUp" style="position:absolute; visibility:hidden; z-index:500;"></div>
+<div id="ss_presencePopUp" style="position:absolute; visibility:hidden; z-index:500;"></div>
 <c:set var="ss_presence_support_loaded" value="1" scope="request"/>
 </c:if>
