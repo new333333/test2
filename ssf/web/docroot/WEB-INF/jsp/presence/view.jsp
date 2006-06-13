@@ -89,6 +89,7 @@ function ss_showNotLoggedInMsg() {
 </tr>
 </table>
 
+<div id="ss_presence_sizer_div"></div>
 </div>
 <script type="text/javascript">
 var count = 0
@@ -121,5 +122,3 @@ function ss_postRequest(obj) {
 <form class="ss_portlet_style ss_form" id="presenceForm" style="display:none;">
 <input type="hidden" name="userList" value="<%= userIdList %>">
 </form>
-
-
