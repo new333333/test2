@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -22,32 +21,26 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.security.acl.AccessType;
-import com.sitescape.ef.security.acl.AclSet;
-import com.sitescape.ef.util.ConfigPropertyNotFoundException;
-import com.sitescape.ef.util.DirPath;
-import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.util.WebUrlUtil;
-
 
 public class RssGenerator extends CommonDependencyInjection {
 
 	protected Log logger = LogFactory.getLog(getClass());
 	
-	private String dataRootDir;
-	private String subDirName;
+	private String rssRootDir;
 	
-	public void setDataRootDirProperty(String dataRootDirProperty) 
-		throws ConfigPropertyNotFoundException, IOException {
-		this.dataRootDir = SPropsUtil.getDirPath(dataRootDirProperty);
+	public String getRssRootDir() {
+		return rssRootDir;
 	}
-	
-	public void setSubDirName(String subDirName) {
-		this.subDirName = subDirName;
+
+	public void setRssRootDir(String rssRootDir) {
+		if(rssRootDir.endsWith("/"))
+			this.rssRootDir = rssRootDir;
+		else
+			this.rssRootDir = rssRootDir + "/";
 	}
-	
+
 	public void generateRssFeed(Binder binder) {
 		
 		// See if the feed already exists
@@ -56,7 +49,7 @@ public class RssGenerator extends CommonDependencyInjection {
 		if (rf.exists()) return;
 
 		// Make sure the rss directory exists
-		File rssdir = new File(getRssDirPath());
+		File rssdir = new File(rssRootDir);
 		if (!rssdir.exists()) rssdir.mkdir();	
 		
 		// First create our top-level document
@@ -89,13 +82,8 @@ public class RssGenerator extends CommonDependencyInjection {
 	
 	public String getRssFileName(Binder binder) 
 	{
-		String path = getRssDirPath();
-		String rssFileName = path + File.separator + binder.getId() + ".xml";
+		String rssFileName = rssRootDir + binder.getId() + ".xml";
 		return rssFileName;
-	}
-	
-	private String getRssDirPath() {
-		return dataRootDir + File.separator + subDirName;
 	}
 	
 	public void writeRssFile(Binder binder, Document doc)

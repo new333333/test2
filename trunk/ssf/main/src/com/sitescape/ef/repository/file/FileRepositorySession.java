@@ -36,12 +36,10 @@ public class FileRepositorySession implements RepositorySession {
 	private static final String VERSION_NAME_SUFFIX = "_";
 	private static final String TEMP_STRING = "_ssftempfile_";
 
-	private String dataRootDir;
-	private String subDirName;
+	private String repositoryRootDir;
 	
-	public FileRepositorySession(String dataRootDir, String subDirName) {
-		this.dataRootDir = dataRootDir;
-		this.subDirName = subDirName;
+	public FileRepositorySession(String repositoryRootDir) {
+		this.repositoryRootDir = repositoryRootDir;
 	}
 	
 	public void close() throws RepositoryException, UncheckedIOException {
@@ -612,7 +610,7 @@ public class FileRepositorySession implements RepositorySession {
 	private String getEntityDirPath(Binder binder, DefinableEntity entry) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		
-		return new StringBuffer(dataRootDir).append(subDirName).append(File.separator).append(zoneName).append(File.separator).append(binder.getId()).append(File.separator).append(entry.getTypedId()).append(File.separator).toString();
+		return new StringBuffer(repositoryRootDir).append(zoneName).append(File.separator).append(binder.getId()).append(File.separator).append(entry.getTypedId()).append(File.separator).toString();
 	}
 	
 	private File getFile(Binder binder, DefinableEntity entry, String relativeFilePath) {

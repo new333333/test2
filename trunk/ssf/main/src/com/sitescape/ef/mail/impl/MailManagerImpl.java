@@ -83,8 +83,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 	protected JavaMailSender mailSender;
 	protected JndiAccessor jndiAccessor;
 	protected Map defaultProps = new HashMap();
-	private String dataRootDir;
-	private String subDirName;
+	private String mailRootDir;
 
 	public MailManagerImpl() {
 		defaultProps.put(MailManager.POSTING_JOB, "com.sitescape.ef.jobs.DefaultEmailPosting");
@@ -93,14 +92,17 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		defaultProps.put(MailManager.NOTIFY_TEMPLATE_CACHE_DISABLED, "false");
 	}
 
-	public void setDataRootDirProperty(String dataRootDirProperty)
-			throws ConfigPropertyNotFoundException, IOException {
-		this.dataRootDir = SPropsUtil.getDirPath(dataRootDirProperty);
+	public String getMailRootDir() {
+		return mailRootDir;
 	}
 
-	public void setSubDirName(String subDirName) {
-		this.subDirName = subDirName;
+	public void setMailRootDir(String mailRootDir) {
+		if(mailRootDir.endsWith("/"))
+			this.mailRootDir = mailRootDir;
+		else
+			this.mailRootDir = mailRootDir + "/";
 	}
+
 	public void setJndiAccessor(JndiAccessor jndiAccessor) {
 		this.jndiAccessor = jndiAccessor;
 	}
@@ -108,7 +110,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		this.mailSender = mailSender;
 	}
 	public File getMailDirPath(Binder binder) {
-		return new File(new StringBuffer(dataRootDir).append(binder.getZoneName()).append(File.separator).append(subDirName).append(File.separator).append(binder.getId().toString()).append(File.separator).toString());
+		return new File(new StringBuffer(mailRootDir).append(binder.getZoneName()).append(File.separator).append(binder.getId().toString()).append(File.separator).toString());
 	}
 	public String getMailProperty(String zoneName, String name) {
 		String val = SZoneConfig.getString(zoneName, "mailConfiguration/property[@name='" + name + "']");

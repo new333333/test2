@@ -11,31 +11,27 @@ import com.sitescape.ef.util.SPropsUtil;
 
 public class FileRepositorySessionFactory implements RepositorySessionFactory {
 
-	private String dataRootDir;
-	private String subDirName;
+	private String repositoryRootDir;
 
-	public void setDataRootDirProperty(String dataRootDirProperty)
-			throws ConfigPropertyNotFoundException, IOException {
-		this.dataRootDir = SPropsUtil.getDirPath(dataRootDirProperty);
+	public String getRepositoryRootDir() {
+		return repositoryRootDir;
 	}
 
-	public void setSubDirName(String subDirName) {
-		this.subDirName = subDirName;
+	public void setRepositoryRootDir(String repositoryRootDir) {
+		if(repositoryRootDir.endsWith("/"))
+			this.repositoryRootDir = repositoryRootDir;
+		else
+			this.repositoryRootDir = repositoryRootDir + "/";
 	}
 
 	public void initialize() throws RepositoryException, UncheckedIOException {
-		if(dataRootDir == null || dataRootDir.length() == 0)
-			throw new RepositoryException("Data root directory must be specified");
-		
-		if(subDirName == null || subDirName.length() == 0)
-			throw new RepositoryException("Sub directory name must be specified");
 	}
 
 	public void shutdown() throws RepositoryException, UncheckedIOException {
 	}
 
 	public RepositorySession openSession() throws RepositoryException, UncheckedIOException {
-		return new FileRepositorySession(dataRootDir, subDirName);
+		return new FileRepositorySession(repositoryRootDir);
 	}
 
 	public boolean supportVersioning() {
