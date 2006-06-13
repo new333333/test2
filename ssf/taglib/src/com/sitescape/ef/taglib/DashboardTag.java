@@ -36,6 +36,9 @@ public class DashboardTag extends BodyTagSupport {
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 			User user = RequestContextHolder.getRequestContext().getUser();
 			
+			//Save the starting dashboard so it can be restored later
+			savedDashboard = (Map) this._configuration.get(WebKeys.DASHBOARD_MAP);
+			
 			//Get the data map associated with the component
 			String scope = this._id.split("_")[0];
 			Map dashboard = null;
@@ -46,6 +49,7 @@ public class DashboardTag extends BodyTagSupport {
 			} else if (scope.equals(DashboardHelper.Binder)) {
 				dashboard = (Map)this._configuration.get(WebKeys.DASHBOARD_BINDER_MAP);
 			}
+			this._configuration.put(WebKeys.DASHBOARD_MAP, dashboard);
 			if (dashboard != null) {
 				// Get the jsp to run
 				Map components = (Map) dashboard.get(DashboardHelper.Components);
@@ -77,7 +81,7 @@ public class DashboardTag extends BodyTagSupport {
 					}
 				}
 			}
-
+			this._configuration.put(WebKeys.DASHBOARD_MAP, savedDashboard);
 			return EVAL_PAGE;
 		}
 		catch (Exception e) {
@@ -105,6 +109,7 @@ public class DashboardTag extends BodyTagSupport {
 	private String _id;
 	private String _type;
 	private Map _configuration;
+	private Map savedDashboard;
 	private String _bodyContent;
 
 }
