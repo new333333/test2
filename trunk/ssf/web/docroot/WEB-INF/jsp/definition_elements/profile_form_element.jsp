@@ -21,10 +21,13 @@
 		    Class[] types = new Class[] {};
 		    Method method = entry.getClass().getMethod(mName, types);
 		    value = (String) method.invoke(entry, new Object[0]);
+		    if (value == null) value = "";
 		}
 %>
 <div >
+<c:if test="${!empty property_caption}">
 <span class="ss_labelAbove"><c:out value="${property_caption}"/></span>
+</c:if>
 <input type="text" class="ss_text" name="<%= property_name %>" 
  value="<%= value %>">
 </div>

@@ -9,8 +9,11 @@
     Class[] types = new Class[] {};
     Method method = entry.getClass().getMethod(mName, types);
     String ss_profileElementValue = (String) method.invoke(entry, new Object[0]);
+    if (ss_profileElementValue == null) ss_profileElementValue = "";
 %>
 <div class="ss_entryContent">
+<c:if test="${!empty property_caption}">
 <span class="ss_bold"><c:out value="${property_caption}"/>:</span>
+</c:if>
 <%= ss_profileElementValue %>
 </div>
