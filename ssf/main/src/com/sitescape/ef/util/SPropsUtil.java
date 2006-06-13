@@ -47,8 +47,12 @@ public class SPropsUtil {
         this.props = config.getProperties();
     }
 	
+    public static Properties getProperties() {
+    	return getInstance().getProps();
+    }
+    
 	public static boolean containsKey(String key) {
-		return getInstance().getProperties().containsKey(key);
+		return getInstance().getProps().containsKey(key);
 	}
 	
 	public static String getString(String key) throws ConfigPropertyNotFoundException {
@@ -120,7 +124,7 @@ public class SPropsUtil {
 	}
 	
 	private static String get(String key) {
-		return (String) getInstance().getProperties().get(key);			
+		return (String) getInstance().getProps().get(key);			
 	}
     
 	private static String getRequired(String key) {
@@ -143,7 +147,7 @@ public class SPropsUtil {
     	return instance;
     }
     
-    private Properties getProperties() {
+    private Properties getProps() {
     	return props;
     }
     

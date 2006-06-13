@@ -200,7 +200,7 @@ public class RepositoryUtil {
 	}
 
 	public static String getDefaultRepositoryServiceName() {
-		return SPropsUtil.getString("default.repository.service",
+		return SPropsUtil.getString("default.repository",
 				"fileRepositoryService");
 	}
 }

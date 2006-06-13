@@ -5,8 +5,12 @@
 
 	<!-- =========================== Basic Infrastructural Beans ========================== -->
 
-	<!-- Configurer that replaces ${...} placeholders with values from a properties file -->
-	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<!-- Configurer that replaces ${...} placeholders with values from ssf 
+	     properties file(s) that are accessed through sPropsUtil bean. -->
+	<bean id="propertyPlaceholderConfigurer" 
+		class="com.sitescape.ef.util.PropertyPlaceholderConfigurer" 
+		depends-on="sPropsUtil">	
+		<property name="location"><value>config/ssf.properties</value></property>								
 	</bean>
 
 	<!-- Message source for this context, loaded from localized "messages_xx" files -->
@@ -52,8 +56,8 @@
 	  </bean>
 -->	
 	<!-- Default lob handler -->
-  <bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler">
-	  </bean>
+  	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler">
+	</bean>
 
 	<!-- Hibernate session factory -->
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
@@ -267,8 +271,7 @@
 	<!-- ============================ Indexing/Search Service =========================== -->
 	
 	<bean id="luceneSessionFactory" class = "com.sitescape.ef.search.local.LocalLuceneSessionFactory" depends-on="sPropsUtil">
-		<property name="dataRootDirProperty"><value>data.root.dir</value></property>	
-		<property name="subDirName"><value>lucene</value></property>
+		<property name="indexRootDir"><value>${data.root.dir}/lucene</value></property>
 	</bean>
 	
 	<bean id="objectIndexMapping" class = "com.sitescape.ef.search.docbuilder.mapped.ObjectIndexMapping">
@@ -296,8 +299,7 @@
 	<!-- ============================== RSS Generator ============================ -->
 	
     <bean id="rssGenerator" class="com.sitescape.ef.rss.RssGenerator">
-	    <property name="dataRootDirProperty"><value>data.root.dir</value></property>
-	    <property name="subDirName"><value>rss</value></property>
+    	<property name="rssRootDir"><value>${data.root.dir}/rss</value></property>
     </bean>
 	
 	<!-- ================================ Security Service =============================== -->
@@ -663,19 +665,16 @@
 	
 	<bean id="fileRepositoryService" class="com.sitescape.ef.repository.file.FileRepositorySessionFactory" 
 		depends-on="sPropsUtil" init-method="initialize" destroy-method="shutdown">
-		<property name="dataRootDirProperty"><value>data.root.dir</value></property>	
-		<property name="subDirName"><value>filerepository</value></property>
+		<property name="repositoryRootDir"><value>${data.root.dir}/filerepository</value></property>
 	</bean>
 
 	<bean id="internalWebdavRepositoryService" class="com.sitescape.ef.repository.webdav.WebdavRepositorySessionFactory"
 		init-method="initialize" destroy-method="shutdown">
-		<!-- Include scheme, hostname, and (optional) port number -->
-		<property name="hostUrl"><value>http://localhost:8080</value></property>
-		<!-- Context path must end with '/' -->
-		<property name="contextPath"><value>/slide/</value></property>
-		<property name="docRootDir"><value>/slide/files/sitescape/document/</value></property>
-		<property name="username"><value>root</value></property>
-		<property name="password"><value>root</value></property>
+		<property name="hostUrl"><value>${webdav.repository.hosturl}</value></property>
+		<property name="contextPath"><value>${webdav.repository.context.path}</value></property>
+		<property name="docRootPath"><value>${webdav.repository.document.root.path}</value></property>
+		<property name="username"><value>${webdav.repository.username}</value></property>
+		<property name="password"><value>${webdav.repository.password}</value></property>
 	</bean>
 	
 	<!--<bean id="jcrRepository" class="com.sitescape.ef.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
@@ -684,16 +683,16 @@
 	
 	<!-- ================================ Presence Service =============================== -->
 	<bean id="presenceService" class="com.sitescape.ef.presence.impl.PresenceServiceImpl">
-		<property name="jabberServer"><value>iic.homedns.org</value></property>
-		<property name="jabberServerPort"><value>5353</value></property>
-		<property name="enable"><value>true</value></property>
+		<property name="jabberServer"><value>${presence.service.jabber.server}</value></property>
+		<property name="jabberServerPort"><value>${presence.service.jabber.server.port}</value></property>
+		<property name="enable"><value>${presence.service.enable}</value></property>
 	</bean>
 	<bean id="presenceBroker" class="com.sitescape.ef.presence.impl.PresenceBrokerImpl">
-		<property name="adminId"><value>admin</value></property>
-		<property name="adminPasswd"><value>zonscape</value></property>
-		<property name="zonUrl"><value>http://70.84.177.226:8000/imidio_api/</value></property>
-		<property name="jabberDomain"><value>iic.homedns.org</value></property>
-		<property name="defaultCommunityId"><value>sitescape</value></property>
+		<property name="adminId"><value>${presence.broker.admin.id}</value></property>
+		<property name="adminPasswd"><value>${presence.broker.admin.passwd}</value></property>
+		<property name="zonUrl"><value>${presence.broker.zon.url}</value></property>
+		<property name="jabberDomain"><value>${presence.broker.jabber.domain}</value></property>
+		<property name="defaultCommunityId"><value>${presence.broker.default.community.id}</value></property>
 	</bean>
 	<!-- ================================  Mail Support =============================== -->
 	<!-- this bean is only used to allow setting of initial context properties -->
@@ -707,8 +706,7 @@
 	<bean id="mailManager" parent="moduleDependencyTemplate" class="com.sitescape.ef.mail.impl.MailManagerImpl">
 		<property name="mailSender"><ref local="mailSender"/></property>
 		<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>
-		<property name="dataRootDirProperty"><value>data.root.dir</value></property>	
-		<property name="subDirName"><value>mail</value></property>
+		<property name="mailRootDir"><value>${data.root.dir}/mail</value></property>
 	</bean>	
 	
 	<!-- ================================  JMX/MBean Support =============================== -->

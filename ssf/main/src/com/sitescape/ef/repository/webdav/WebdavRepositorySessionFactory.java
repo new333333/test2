@@ -13,23 +13,34 @@ public class WebdavRepositorySessionFactory implements RepositorySessionFactory 
 
 	protected String hostUrl;
 	protected String contextPath;
-	protected String docRootDir;
+	protected String docRootPath;
 	protected String username;
 	protected String password;
+
+	protected String docRootDir;
 
 	public void setHostUrl(String hostUrl) {
 		this.hostUrl = hostUrl;
 	}
 
 	public void setContextPath(String contextPath) {
+		// The context path must end with '/'. Otherwise it appears that
+		// connection request to WebDAV server (Slide in particular) 
+		// does not work. 
 		if(contextPath.endsWith("/"))
 			this.contextPath = contextPath;
 		else
 			this.contextPath = contextPath + "/";
 	}
 
-	public void setDocRootDir(String docRootDir) {
-		this.docRootDir = docRootDir;
+	public void setDocRootPath(String docRootPath) {
+		if(docRootPath.startsWith("/"))
+			docRootPath = docRootPath.substring(1);
+		
+		if(docRootPath.endsWith("/"))
+			this.docRootPath = docRootPath;
+		else
+			this.docRootPath = docRootPath + "/";
 	}
 	
 	public void setPassword(String password) {
@@ -41,6 +52,7 @@ public class WebdavRepositorySessionFactory implements RepositorySessionFactory 
 	}
 	
 	public void initialize() throws RepositoryException, UncheckedIOException {
+		docRootDir = contextPath + docRootPath;
 	}
 
 	public void shutdown() throws RepositoryException, UncheckedIOException {
