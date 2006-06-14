@@ -1,13 +1,9 @@
 package com.sitescape.ef.repository.file;
 
-import java.io.IOException;
-
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositorySession;
 import com.sitescape.ef.repository.RepositorySessionFactory;
-import com.sitescape.ef.util.ConfigPropertyNotFoundException;
-import com.sitescape.ef.util.SPropsUtil;
 
 public class FileRepositorySessionFactory implements RepositorySessionFactory {
 
