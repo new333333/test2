@@ -44,14 +44,12 @@ public class AjaxController  extends SAbstractController {
 	private Map statusMap;
 	private Map unseenCounts;
 	private Map formData;
-	private User user;
 	private String op;
 	private String op2;
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		if (WebHelper.isUserLoggedIn(request)) {
-		   	this.user = RequestContextHolder.getRequestContext().getUser();
 			this.formData = request.getParameterMap();
 			this.op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 			if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
@@ -111,7 +109,6 @@ public class AjaxController  extends SAbstractController {
 			}
 			return new ModelAndView("forum/ajax_return", model);
 		}
-	   	this.user = RequestContextHolder.getRequestContext().getUser();		
 		
 		if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_COUNTS)) {
 			return ajaxGetUnseenCounts(request, response);
@@ -155,6 +152,7 @@ public class AjaxController  extends SAbstractController {
 	} 
 	
 	private void ajaxSaveColumnPositions(ActionRequest request, ActionResponse response) {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		//Save the user's placement of columns in this folder
 		String columnPositions = ((String[])formData.get("column_positions"))[0];
@@ -165,6 +163,7 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private void ajaxAddFavoriteBinder(ActionRequest request, ActionResponse response) {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		//Add a binder to the favorites list
 		String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		Binder binder = getBinderModule().getBinder(Long.valueOf(binderId));
@@ -176,6 +175,7 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private void ajaxAddFavoritesCategory(ActionRequest request, ActionResponse response) {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		//Add a category to the favorites list
 		String category = ((String[])formData.get("category"))[0];
 		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
@@ -186,6 +186,7 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private void ajaxSaveFavorites(ActionRequest request, ActionResponse response) {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		//Save the order of the favorites list
 		String movedItemId = ((String[])formData.get("movedItemId"))[0];
 		String favoritesList = ((String[])formData.get("favorites"))[0];
@@ -198,6 +199,7 @@ public class AjaxController  extends SAbstractController {
 	
 	private ModelAndView ajaxGetFavoritesTree(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
 		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
 		Favorites f = new Favorites(favorites);
@@ -247,6 +249,7 @@ public class AjaxController  extends SAbstractController {
 	
 	private ModelAndView ajaxSaveEntryWidth(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		//Save the user's selected entry width
 		String entryWidth = ((String[])formData.get("entry_width"))[0];
 		if (!entryWidth.equals("")) {
@@ -260,6 +263,7 @@ public class AjaxController  extends SAbstractController {
 	
 	private ModelAndView ajaxSaveEntryHeight(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		String entryHeight = ((String[])formData.get("entry_height"))[0];
 		if (!entryHeight.equals("")) {
 			//Save the entry width

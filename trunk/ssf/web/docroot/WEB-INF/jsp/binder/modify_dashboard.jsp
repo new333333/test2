@@ -41,28 +41,6 @@ type="submit" class="ss_submit" name="closeBtn"
   <span class="ss_largerprint ss_bold"><ssf:nlt tag="dashboard.binderDashboard" /></span>
   <br/>
 </c:if>
-<br/>
-<span class="ss_bold"><ssf:nlt tag="dashboard.selectDashboard" /></span><br>
-<ul style="display:inline;">
-<li><a href="<portlet:actionURL>
-		  <portlet:param name="action" value="modify_dashboard"/>
-		  <portlet:param name="binderId" value="${ssBinder.id}"/>
-		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-		  <portlet:param name="scope" value="local"/>
-		  </portlet:actionURL>"><ssf:nlt tag="dashboard.editLocal" /></a></li>
-<li><a href="<portlet:actionURL>
-		  <portlet:param name="action" value="modify_dashboard"/>
-		  <portlet:param name="binderId" value="${ssBinder.id}"/>
-		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-		  <portlet:param name="scope" value="global"/>
-		  </portlet:actionURL>"><ssf:nlt tag="dashboard.editGlobal" /></a></li>
-<li><a href="<portlet:actionURL>
-		  <portlet:param name="action" value="modify_dashboard"/>
-		  <portlet:param name="binderId" value="${ssBinder.id}"/>
-		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-		  <portlet:param name="scope" value="binder"/>
-		  </portlet:actionURL>"><ssf:nlt tag="dashboard.editBinder" /></a></li>
-</ul>
 </div>
 <br/>
 <br/>

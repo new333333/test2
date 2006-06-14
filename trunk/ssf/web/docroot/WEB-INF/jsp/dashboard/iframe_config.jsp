@@ -20,7 +20,7 @@
 <table>
 
 <tr>
-<td colspan="2" valign="top">
+<td valign="top">
 <span class="ss_bold"><ssf:nlt tag="dashboard.url"/></span>
 <br/>
 <input type="text" name="data.url" size="60" 
@@ -30,11 +30,6 @@
 
 <tr>
 <td valign="top">
-<span class="ss_bold"><ssf:nlt tag="dashboard.width"/></span><br/>
-<input type="text" name="data.width" size="6" 
-  value="${ssDashboard.dashboard.components[ssDashboardId].data.width[0]}"/>
-</td>
-<td valign="top">
 <span class="ss_bold"><ssf:nlt tag="dashboard.height"/></span><br/>
 <input type="text" name="data.height" size="6" 
   value="${ssDashboard.dashboard.components[ssDashboardId].data.height[0]}"/>
@@ -42,7 +37,7 @@
 </tr>
 
 <tr>
-<td colspan="2" valign="top">
+<td valign="top">
 <span class="ss_bold"><ssf:nlt tag="dashboard.alignment"/></span>
 <br/>
 <c:set var="checked" value=""/>

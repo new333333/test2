@@ -48,7 +48,7 @@ public class DashboardHelper {
 	static public Map getNewDashboardMap() {
 		Map dashboard = new HashMap();
 		dashboard.put(DashboardHelper.Title, "");
-		dashboard.put(DashboardHelper.IncludeBinderTitle, new Boolean(true));
+		dashboard.put(DashboardHelper.IncludeBinderTitle, new Boolean(false));
 		dashboard.put(DashboardHelper.NextComponent, new Integer(1));
 		dashboard.put(DashboardHelper.Components, new HashMap());
 		dashboard.put(DashboardHelper.Wide_Top, new ArrayList());
@@ -59,13 +59,15 @@ public class DashboardHelper {
 		return dashboard;
 	}
 	
-	static public Map getDashboardMap(Binder binder, UserProperties userFolderProperties) {
-		return getDashboardMap(binder, userFolderProperties, DashboardHelper.Local);
+	static public Map getDashboardMap(Binder binder, UserProperties userFolderProperties, 
+			Map userProperties) {
+		return getDashboardMap(binder, userFolderProperties, userProperties, DashboardHelper.Local);
 	}
-	static public Map getDashboardMap(Binder binder, UserProperties userFolderProperties, String scope) {
+	static public Map getDashboardMap(Binder binder, UserProperties userFolderProperties, 
+			Map userProperties, String scope) {
 		Map dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
 		if (dashboard == null) dashboard = DashboardHelper.getNewDashboardMap();
-		Map dashboard_g = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD_GLOBAL);
+		Map dashboard_g = (Map) userProperties.get(ObjectKeys.USER_PROPERTY_DASHBOARD_GLOBAL);
 		if (dashboard_g == null) dashboard_g = DashboardHelper.getNewDashboardMap();
 		Map dashboard_b = (Map) binder.getProperty(ObjectKeys.BINDER_PROPERTY_DASHBOARD);
 		if (dashboard_b == null) dashboard_b = DashboardHelper.getNewDashboardMap();
@@ -80,8 +82,11 @@ public class DashboardHelper {
 		ssDashboard.put(WebKeys.DASHBOARD_LOCAL_MAP, dashboard);
 		ssDashboard.put(WebKeys.DASHBOARD_GLOBAL_MAP, dashboard_g);
 		ssDashboard.put(WebKeys.DASHBOARD_BINDER_MAP, dashboard_b);
+		int narrowFixedWidth = new Integer(SPropsUtil.getString("dashboard.size.narrowFixedWidth"));
 		ssDashboard.put(WebKeys.DASHBOARD_NARROW_FIXED_WIDTH, 
-				SPropsUtil.getString("dashboard.size.narrowFixedWidth"));
+				String.valueOf(narrowFixedWidth));
+		ssDashboard.put(WebKeys.DASHBOARD_NARROW_FIXED_WIDTH2, 
+				String.valueOf(narrowFixedWidth / 2));
 		
 		//Build the lists of components
 		if (scope.equals(DashboardHelper.Local)) {

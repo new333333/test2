@@ -69,10 +69,11 @@ public class SAbstractForumController extends SAbstractController {
 		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 	
 		User user = RequestContextHolder.getRequestContext().getUser();
-		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
-		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties);
+		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, userProperties);
 		model.put(WebKeys.DASHBOARD, ssDashboard);
 
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
