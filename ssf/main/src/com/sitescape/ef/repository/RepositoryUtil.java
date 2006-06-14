@@ -14,6 +14,7 @@ import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.util.FileUploadItem;
@@ -202,5 +203,25 @@ public class RepositoryUtil {
 	public static String getDefaultRepositoryServiceName() {
 		return SPropsUtil.getString("default.repository",
 				"fileRepositoryService");
+	}
+	
+	/**
+	 * Returns entity path. The returned path does not contain root path and
+	 * it always ends with a separator character.  
+	 * 
+	 * @param binder
+	 * @param entry
+	 * @param separator
+	 * @return
+	 */
+	public static String getEntityPath(Binder binder, DefinableEntity entry, String separator) {
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		
+		return new StringBuffer(zoneName).
+			append(separator).
+			append(binder.getId()).
+			append(separator).
+			append(entry.getTypedId()).
+			append(separator).toString();
 	}
 }

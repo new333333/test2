@@ -22,6 +22,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.util.Constants;
 import com.sitescape.ef.web.util.WebUrlUtil;
 
 public class RssGenerator extends CommonDependencyInjection {
@@ -35,10 +36,10 @@ public class RssGenerator extends CommonDependencyInjection {
 	}
 
 	public void setRssRootDir(String rssRootDir) {
-		if(rssRootDir.endsWith("/"))
+		if(rssRootDir.endsWith(Constants.SLASH))
 			this.rssRootDir = rssRootDir;
 		else
-			this.rssRootDir = rssRootDir + "/";
+			this.rssRootDir = rssRootDir + Constants.SLASH;
 	}
 
 	public void generateRssFeed(Binder binder) {

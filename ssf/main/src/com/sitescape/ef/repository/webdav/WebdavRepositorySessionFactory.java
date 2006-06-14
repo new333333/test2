@@ -8,16 +8,15 @@ import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositorySession;
 import com.sitescape.ef.repository.RepositorySessionFactory;
+import com.sitescape.ef.util.Constants;
 
 public class WebdavRepositorySessionFactory implements RepositorySessionFactory {
 
 	protected String hostUrl;
 	protected String contextPath;
-	protected String docRootPath;
+	protected String docRootPath; // This does not include context path
 	protected String username;
 	protected String password;
-
-	protected String docRootDir;
 
 	public void setHostUrl(String hostUrl) {
 		this.hostUrl = hostUrl;
@@ -27,20 +26,20 @@ public class WebdavRepositorySessionFactory implements RepositorySessionFactory 
 		// The context path must end with '/'. Otherwise it appears that
 		// connection request to WebDAV server (Slide in particular) 
 		// does not work. 
-		if(contextPath.endsWith("/"))
+		if(contextPath.endsWith(Constants.SLASH))
 			this.contextPath = contextPath;
 		else
-			this.contextPath = contextPath + "/";
+			this.contextPath = contextPath + Constants.SLASH;
 	}
 
 	public void setDocRootPath(String docRootPath) {
-		if(docRootPath.startsWith("/"))
+		if(docRootPath.startsWith(Constants.SLASH))
 			docRootPath = docRootPath.substring(1);
 		
-		if(docRootPath.endsWith("/"))
+		if(docRootPath.endsWith(Constants.SLASH))
 			this.docRootPath = docRootPath;
 		else
-			this.docRootPath = docRootPath + "/";
+			this.docRootPath = docRootPath + Constants.SLASH;
 	}
 	
 	public void setPassword(String password) {
@@ -52,10 +51,9 @@ public class WebdavRepositorySessionFactory implements RepositorySessionFactory 
 	}
 	
 	public void initialize() throws RepositoryServiceException, UncheckedIOException {
-		docRootDir = contextPath + docRootPath;
 	}
 
-	public void shutdown() throws RepositoryServiceException, UncheckedIOException {
+	public void shutdown() {
 	}
 
 	public RepositorySession openSession() throws RepositoryServiceException, UncheckedIOException {
@@ -66,7 +64,7 @@ public class WebdavRepositorySessionFactory implements RepositorySessionFactory 
 			
 			//WebdavUtil.dump(wdr);
 			
-			return new WebdavRepositorySession(wdr, docRootDir);
+			return new WebdavRepositorySession(wdr, contextPath + docRootPath);
 		}
 		catch(IOException e) {
 			throw new UncheckedIOException(e);

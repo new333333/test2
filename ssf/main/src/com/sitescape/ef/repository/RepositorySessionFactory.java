@@ -6,7 +6,14 @@ public interface RepositorySessionFactory {
 
 	public void initialize() throws RepositoryServiceException, UncheckedIOException;
 	
-	public void shutdown() throws RepositoryServiceException, UncheckedIOException;
+	/**
+	 * Shuts down the factory. 
+	 * <p>
+	 * Possible errors are logged rather than thrown as exceptions as there is
+	 * little that a client application could do in such a case. 
+	 *
+	 */
+	public void shutdown();
 	
 	public RepositorySession openSession() throws RepositoryServiceException, UncheckedIOException;
 	
