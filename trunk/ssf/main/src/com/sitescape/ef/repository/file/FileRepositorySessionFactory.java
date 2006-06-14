@@ -3,7 +3,7 @@ package com.sitescape.ef.repository.file;
 import java.io.IOException;
 
 import com.sitescape.ef.UncheckedIOException;
-import com.sitescape.ef.repository.RepositoryException;
+import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositorySession;
 import com.sitescape.ef.repository.RepositorySessionFactory;
 import com.sitescape.ef.util.ConfigPropertyNotFoundException;
@@ -24,13 +24,13 @@ public class FileRepositorySessionFactory implements RepositorySessionFactory {
 			this.repositoryRootDir = repositoryRootDir + "/";
 	}
 
-	public void initialize() throws RepositoryException, UncheckedIOException {
+	public void initialize() throws RepositoryServiceException, UncheckedIOException {
 	}
 
-	public void shutdown() throws RepositoryException, UncheckedIOException {
+	public void shutdown() throws RepositoryServiceException, UncheckedIOException {
 	}
 
-	public RepositorySession openSession() throws RepositoryException, UncheckedIOException {
+	public RepositorySession openSession() throws RepositoryServiceException, UncheckedIOException {
 		return new FileRepositorySession(repositoryRootDir);
 	}
 

@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.apache.commons.httpclient.HttpURL;
 
 import com.sitescape.ef.UncheckedIOException;
-import com.sitescape.ef.repository.RepositoryException;
+import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositorySession;
 import com.sitescape.ef.repository.RepositorySessionFactory;
 
@@ -51,14 +51,14 @@ public class WebdavRepositorySessionFactory implements RepositorySessionFactory 
 		this.username = username;
 	}
 	
-	public void initialize() throws RepositoryException, UncheckedIOException {
+	public void initialize() throws RepositoryServiceException, UncheckedIOException {
 		docRootDir = contextPath + docRootPath;
 	}
 
-	public void shutdown() throws RepositoryException, UncheckedIOException {
+	public void shutdown() throws RepositoryServiceException, UncheckedIOException {
 	}
 
-	public RepositorySession openSession() throws RepositoryException, UncheckedIOException {
+	public RepositorySession openSession() throws RepositoryServiceException, UncheckedIOException {
 		try { 
 			HttpURL hrl = new HttpURL(getHttpUrl());
 			hrl.setUserinfo(username, password);

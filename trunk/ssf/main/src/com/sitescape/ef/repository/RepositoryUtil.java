@@ -35,7 +35,7 @@ public class RepositoryUtil {
 	
 	public static int fileInfo(String repositoryServiceName,
 			Binder binder, DefinableEntity entry, String relativeFilePath)
-		throws RepositoryException, UncheckedIOException {
+		throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 		try {
 			return session.fileInfo(binder, entry, relativeFilePath);
@@ -45,7 +45,7 @@ public class RepositoryUtil {
 	}
 	
 	public static String createVersioned(Binder binder, DefinableEntity entry,
-			FileUploadItem fui) throws RepositoryException,
+			FileUploadItem fui) throws RepositoryServiceException,
 			UncheckedIOException {
 		String repositoryServiceName = fui.getRepositoryServiceName();
 
@@ -67,7 +67,7 @@ public class RepositoryUtil {
 				}
 			}
 		} catch (IOException e) {
-			throw new RepositoryException(e);
+			throw new RepositoryServiceException(e);
 		} finally {
 			session.close();
 		}
@@ -75,7 +75,7 @@ public class RepositoryUtil {
 
 	public static void createUnversioned(String repositoryServiceName,
 			Binder binder, DefinableEntity entry, String relativeFilePath, InputStream in) 
-		throws RepositoryException, UncheckedIOException {
+		throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 
 		try {
@@ -88,7 +88,7 @@ public class RepositoryUtil {
 	}
 
 	public static void update(Binder binder, DefinableEntity entry,
-			FileUploadItem fui) throws RepositoryException,
+			FileUploadItem fui) throws RepositoryServiceException,
 			UncheckedIOException {
 		String repositoryServiceName = fui.getRepositoryServiceName();
 
@@ -108,7 +108,7 @@ public class RepositoryUtil {
 				}
 			}
 		} catch (IOException e) {
-			throw new RepositoryException(e);
+			throw new RepositoryServiceException(e);
 		} finally {
 			session.close();
 		}
@@ -116,7 +116,7 @@ public class RepositoryUtil {
 	
 	public static void delete(String repositoryServiceName, Binder binder,
 			DefinableEntity entry, String relativeFilePath) 
-		throws RepositoryException, UncheckedIOException {
+		throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 
 		try {
@@ -128,7 +128,7 @@ public class RepositoryUtil {
 
 	public static void read(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, OutputStream out)
-			throws RepositoryException, UncheckedIOException {
+			throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 
 		try {
@@ -140,7 +140,7 @@ public class RepositoryUtil {
 
 	public static InputStream read(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath)
-			throws RepositoryException, UncheckedIOException {
+			throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 
 		try {
@@ -152,7 +152,7 @@ public class RepositoryUtil {
 
 	public static DataSource getDataSource(String repositoryServiceName, Binder binder, 
 			DefinableEntity entity, String relativeFilePath, 
-			FileTypeMap fileTypeMap) throws RepositoryException,
+			FileTypeMap fileTypeMap) throws RepositoryServiceException,
 			UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 
@@ -165,7 +165,7 @@ public class RepositoryUtil {
 	
 	public static void checkout(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath)
-			throws RepositoryException, UncheckedIOException {
+			throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 
 		try {
@@ -177,7 +177,7 @@ public class RepositoryUtil {
 
 	public static void checkin(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath)
-			throws RepositoryException, UncheckedIOException {
+			throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 
 		try {
@@ -189,7 +189,7 @@ public class RepositoryUtil {
 
 	public static void uncheckout(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry,String relativeFilePath)
-			throws RepositoryException, UncheckedIOException {
+			throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 
 		try {
