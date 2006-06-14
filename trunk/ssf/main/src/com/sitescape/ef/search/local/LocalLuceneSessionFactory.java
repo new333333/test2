@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.sitescape.ef.search.AbstractLuceneSessionFactory;
 import com.sitescape.ef.search.LuceneException;
 import com.sitescape.ef.search.LuceneSession;
+import com.sitescape.ef.util.Constants;
 import com.sitescape.ef.util.FileHelper;
 
 /**
@@ -29,10 +30,10 @@ public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory {
     }
 	
 	public void setIndexRootDir(String indexRootDir) {
-		if(indexRootDir.endsWith("/"))
+		if(indexRootDir.endsWith(Constants.SLASH))
 			this.indexRootDir = indexRootDir;
 		else
-			this.indexRootDir = indexRootDir + "/";
+			this.indexRootDir = indexRootDir + Constants.SLASH;
 	}
 	
 	public String getIndexRootDir() {

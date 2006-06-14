@@ -186,7 +186,7 @@ public class WebdavUtil {
 			return null;
 		
 		String sub = path.substring(0, path.length()-1);
-		int idx = sub.lastIndexOf("/");
+		int idx = sub.lastIndexOf(Constants.SLASH);
 		if(idx < 0)
 			return null;
 		else
@@ -204,7 +204,7 @@ public class WebdavUtil {
 			System.out.println(sb.toString());
 			String[] children = wdr.list();
 			for(int i = 0; i < children.length; i++) {
-				wdr.setPath(path + ((path.endsWith("/"))? "" : "/") + children[i]);
+				wdr.setPath(path + ((path.endsWith(Constants.SLASH))? "" : Constants.SLASH) + children[i]);
 				dumpHierarchyInternal(wdr, tab, indent+1);
 			}
 		}

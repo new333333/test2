@@ -26,6 +26,7 @@ import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositorySession;
+import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.util.FileHelper;
 
 public class FileRepositorySession implements RepositorySession {
@@ -608,9 +609,7 @@ public class FileRepositorySession implements RepositorySession {
 	}
 	
 	private String getEntityDirPath(Binder binder, DefinableEntity entry) {
-		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		
-		return new StringBuffer(repositoryRootDir).append(zoneName).append(File.separator).append(binder.getId()).append(File.separator).append(entry.getTypedId()).append(File.separator).toString();
+		return repositoryRootDir + RepositoryUtil.getEntityPath(binder, entry, File.separator);
 	}
 	
 	private File getFile(Binder binder, DefinableEntity entry, String relativeFilePath) {

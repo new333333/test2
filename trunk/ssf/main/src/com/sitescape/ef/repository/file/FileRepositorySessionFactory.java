@@ -4,6 +4,7 @@ import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositorySession;
 import com.sitescape.ef.repository.RepositorySessionFactory;
+import com.sitescape.ef.util.Constants;
 
 public class FileRepositorySessionFactory implements RepositorySessionFactory {
 
@@ -14,16 +15,16 @@ public class FileRepositorySessionFactory implements RepositorySessionFactory {
 	}
 
 	public void setRepositoryRootDir(String repositoryRootDir) {
-		if(repositoryRootDir.endsWith("/"))
+		if(repositoryRootDir.endsWith(Constants.SLASH))
 			this.repositoryRootDir = repositoryRootDir;
 		else
-			this.repositoryRootDir = repositoryRootDir + "/";
+			this.repositoryRootDir = repositoryRootDir + Constants.SLASH;
 	}
 
 	public void initialize() throws RepositoryServiceException, UncheckedIOException {
 	}
 
-	public void shutdown() throws RepositoryServiceException, UncheckedIOException {
+	public void shutdown() {
 	}
 
 	public RepositorySession openSession() throws RepositoryServiceException, UncheckedIOException {

@@ -20,6 +20,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositorySession;
+import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.util.Constants;
 
 public class WebdavRepositorySession implements RepositorySession {
@@ -27,11 +28,11 @@ public class WebdavRepositorySession implements RepositorySession {
 	protected static Log logger = LogFactory.getLog(WebdavRepositorySession.class);
 
 	private SWebdavResource wdr;
-	private String docRootDir;
+	private String docRootPath; // This includes context path as well.
 	
 	public WebdavRepositorySession(SWebdavResource wdr, String docRootDir) {
 		this.wdr = wdr;
-		this.docRootDir = docRootDir;
+		this.docRootPath = docRootDir;
 	}
 	
 	public void close() throws RepositoryServiceException, UncheckedIOException{
@@ -425,7 +426,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	
 	protected String makeVersionResourcePath(String versionHistoryResourcePath,
 			String versionName) {
-		return versionHistoryResourcePath + "/" + versionName;
+		return versionHistoryResourcePath + Constants.SLASH + versionName;
 	}
 	
 	private boolean isCheckedOut(SWebdavResource wdr, String resourcePath) 
@@ -585,16 +586,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 
 	private String getEntityDirPath(Binder binder, DefinableEntity entry) {
-		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		
-		return new StringBuffer(docRootDir).
-			append(zoneName).
-			append(Constants.SLASH).
-			append(binder.getId()).
-			append(Constants.SLASH).
-			append(entry.getTypedId()).
-			append(Constants.SLASH).
-			toString();
+		return docRootPath + RepositoryUtil.getEntityPath(binder, entry, Constants.SLASH);
 	}
 	
 	private String getResourcePath(String entryDirPath, String relativeFilePath) {

@@ -51,6 +51,7 @@ import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.util.ConfigPropertyNotFoundException;
+import com.sitescape.ef.util.Constants;
 import com.sitescape.ef.util.PortabilityUtil;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.SpringContextUtil;
@@ -97,10 +98,10 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 	}
 
 	public void setMailRootDir(String mailRootDir) {
-		if(mailRootDir.endsWith("/"))
+		if(mailRootDir.endsWith(Constants.SLASH))
 			this.mailRootDir = mailRootDir;
 		else
-			this.mailRootDir = mailRootDir + "/";
+			this.mailRootDir = mailRootDir + Constants.SLASH;
 	}
 
 	public void setJndiAccessor(JndiAccessor jndiAccessor) {
