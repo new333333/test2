@@ -47,13 +47,13 @@
 		<delete failonerror="true">
 			<fileset dir="${temp.dir}/WEB-INF/lib">
 				<include name="ant.jar"/>
-				<include name="commons-dbcp-*.jar"/>
+				<include name="commons-dbcp*.jar"/>
 				<include name="commons-httpclient.jar"/>
-				<include name="db-ojb-*.jar"/>
-				<include name="jakarta-slide-webdavlib-*.jar"/>
-				<include name="lucene-*.jar"/>
-				<include name="PDFBox-*.jar"/>
-				<include name="tm-extractors-*.jar"/>
+				<include name="db-ojb*.jar"/>
+				<include name="jakarta-slide-webdavlib*.jar"/>
+				<include name="lucene*.jar"/>
+				<include name="PDFBox*.jar"/>
+				<include name="tm-extractors*.jar"/>
 				<include name="tm-extractors.notice"/>
 			</fileset>
 		</delete>
@@ -122,8 +122,8 @@
 		           time, we checked them into SCM for two reasons: 1) dealing with archives
 		           in SCM is easier for developers (as opposed to two-pass build), 
 		           2) these jar files will not change frequently. -->
-		<!--<copy file="${temp.dir}/wck/dist/jakarta-slide-wck-1.0.jar" todir="${project.dir}/lib" />-->
-		<!--<copy file="${temp.dir}/wck/dist/slide-kernel-2.2pre1.jar" todir="${project.dir}/lib" />-->
-		<!--<copy file="${temp.dir}/dist/slide/lib/slide-jaas-2.2pre1.jar" todir="${project.dir}/lib" />-->
+		<!--<copy file="${temp.dir}/wck/dist/jakarta-slide-wck-1.0.jar" tofile="${project.dir}/lib/jakarta-slide-wck.jar" />-->
+		<!--<copy file="${temp.dir}/wck/dist/slide-kernel-2.2pre1.jar" todir="${project.dir}/lib/slide-kernel.jar" />-->
+		<!--<copy file="${temp.dir}/dist/slide/lib/slide-jaas-2.2pre1.jar" todir="${project.dir}/lib/slide-jaas.jar" />-->
 	</target>
 </project>

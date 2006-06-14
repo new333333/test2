@@ -179,10 +179,6 @@
 		<copy todir="${app.server.dir}" overwrite="true">
 			<fileset dir="${project.dir}/jboss/resources" />
 		</copy>
-		
-		<!--
-		<move file="${app.server.deploy.dir}/slide.war/WEB-INF/lib/slide-jaas-2.1.jar" todir="${app.server.dir}/server/default/lib" failonerror="false" />
-		-->
 				
 		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.server.dir}/lib" />
 	</target>		

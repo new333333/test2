@@ -4,19 +4,20 @@
 	<import file="../build-common.xml" />
 	
 	<property name="war.file" value="ssf.war" />
+	<property name="temp.dir" value="temp" />
 
 	<target name="clean">
 		<delete>
 			<fileset dir="." includes="${war.file}" />
 		</delete>
 		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="pro-war" />
+			<fileset dir="${temp.dir}" />
 		</delete>
 	</target>
 		
-	<target name="war">
+	<target name="war" depends="clean">
 		
-		<copy todir="pro-war/WEB-INF/lib">
+		<copy todir="${temp.dir}/WEB-INF/lib">
 			<fileset dir="${project.dir}/main" includes="ssf-main.jar" />
 			<fileset dir="${project.dir}/util" includes="ssf-util.jar" />
 			<fileset dir="${project.dir}/taglib" includes="ssf-taglib.jar" />
@@ -26,14 +27,14 @@
 			<fileset dir="${project.dir}/lib" includes="jms.jar,mail.jar" />
 		</copy>
 
-		<copy todir="pro-war/applets">
+		<copy todir="${temp.dir}/applets">
 			<fileset dir="${project.dir}/applets" includes="**/*.jar" />
 		</copy>		
 
 		<copy file="${project.dir}/web/ssf-web.war" tofile="${war.file}" overwrite="yes" />
 		
 		<war
-			basedir="pro-war"
+			basedir="${temp.dir}"
 			destfile="${war.file}"
 			update="yes"
 		/>

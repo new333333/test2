@@ -21,9 +21,10 @@
 			excludes="WEB-INF/web.xml"
 			webxml="${web.dir}/WEB-INF/web.xml"
 		>
+			<!-- No longer necessary
 			<manifest>
 				<attribute name="Class-Path" value="ssf-main.jar ${classpath.manifest.ss} ${classpath.manifest.3rd}" />
-			</manifest>
+			</manifest>-->
 		</war>
 	</target>
 
