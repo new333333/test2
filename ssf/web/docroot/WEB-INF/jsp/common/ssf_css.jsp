@@ -9,7 +9,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 // Color values used in ss styles, highlighting, borders, and headers
 // Select a color theme: "blackandwhite" or "debug"
 %>
-<c:set var="ss_color_theme" value="debug" scope="request"/>
+<c:set var="ss_color_theme" value="blackandwhite" scope="request"/>
 <%
 //Color theme: "debug"
 %>
@@ -19,7 +19,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 <c:set var="ss_style_background_color" value="#FFFFCC" scope="request"/>
 <c:set var="ss_style_component_background_color" value="#FFFF66" scope="request"/>
+<c:set var="ss_style_component_toolbar_background_color" value="#FFFFAA" scope="request"/>
 <c:set var="ss_style_border_color" value="#999999" scope="request"/>
+<c:set var="ss_style_border_color_light" value="#cecece" scope="request"/>
 <c:set var="ss_style_text_color" value="#009900" scope="request"/>
 <c:set var="ss_style_link_color" value="#009900" scope="request"/>
 <c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
@@ -72,12 +74,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <c:if test="${ss_color_theme == 'blackandwhite'}">
 	<c:set var="ss_portlet_style_background_color" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_style_component_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_portlet_style_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 	
 	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_style_component_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_style_component_toolbar_background_color" value="#FFFFAA" scope="request"/>
 	<c:set var="ss_style_border_color" value="#999999" scope="request"/>
+	<c:set var="ss_style_border_color_light" value="#cecece" scope="request"/>
 	<c:set var="ss_style_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_style_link_color" value="#000000" scope="request"/>
 	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
@@ -160,6 +164,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_border_light {
   border: 1px ${ss_style_border_color} solid;
   }
+
+.ss_shadowbox {
+  background: #ccc;
+  position: relative;
+  top: 2px;
+  left: 2px;
+}
+.ss_shadowbox2 {
+  position: relative;
+  top: -2px;
+  left: -2px;
+}
 
 .ss_form, .ss_form table, .ss_style form {
   color: ${ss_form_text_color};
@@ -372,9 +388,13 @@ ul.ss_dropdownmenu li {
 }
 
 .ss_dashboard_view {
-  margin: 4px;
   border: 1px solid ${ss_style_border_color};
   background-color: ${ss_style_component_background_color};
+}
+
+.ss_dashboard_view_toolbar {
+  background-color: ${ss_style_component_toolbar_background_color} !important;
+  border-bottom: 1px solid ${ss_style_border_color_light} !important;
 }
 
   
