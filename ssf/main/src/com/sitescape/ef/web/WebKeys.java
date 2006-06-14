@@ -133,6 +133,7 @@ public class WebKeys {
     public static final String CONFIG_DEFINITION="ssConfigDefinition";
     public static final String CONFIG_JSP_STYLE="ssConfigJspStyle";
     public static final String DASHBOARD="ssDashboard";
+    public static final String DASHBOARD_COMPONENT_ID="ssComponentId";
     public static final String DASHBOARD_COMPONENT_LIST_WIDE_TOP="wide_top";
     public static final String DASHBOARD_COMPONENT_LIST_NARROW_FIXED="narrow_fixed";
     public static final String DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE="narrow_variable";
@@ -141,13 +142,16 @@ public class WebKeys {
     public static final String DASHBOARD_COMPONENTS_NARROW_FIXED="components_narrow_fixed";
     public static final String DASHBOARD_COMPONENTS_NARROW_VARIABLE="components_narrow_variable";
     public static final String DASHBOARD_COMPONENTS_WIDE="components_wide";
+    public static final String DASHBOARD_LIST="dashboardList";
     public static final String DASHBOARD_MAP="dashboard";
+    public static final String DASHBOARD_RETURN_VIEW="returnView";
     public static final String DASHBOARD_BINDER_MAP="dashboard_binder";
     public static final String DASHBOARD_GLOBAL_MAP="dashboard_global";
     public static final String DASHBOARD_LOCAL_MAP="dashboard_local";
     public static final String DASHBOARD_ID="ssDashboardId";
     public static final String DASHBOARD_INCLUDE_BINDER_TITLE="includeBinderTitle";
     public static final String DASHBOARD_NARROW_FIXED_WIDTH="narrowFixedWidth";
+    public static final String DASHBOARD_NARROW_FIXED_WIDTH2="narrowFixedWidth2";
     public static final String DASHBOARD_SCOPE="scope";
     public static final String DASHBOARD_TITLE="title";
     public static final String DEFAULT_FOLDER_DEFINITION="ssDefaultFolderDefinition";

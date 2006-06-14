@@ -80,7 +80,9 @@ public class ListProfilesController extends   SAbstractController {
 		model.put(WebKeys.FOLDER, binder);
 		model.put(WebKeys.ENTRIES, users.get(ObjectKeys.ENTRIES));
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
-		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties);
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
+		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, userProperties);
 		model.put(WebKeys.DASHBOARD, ssDashboard);
 		DefinitionUtils.getDefinitions(binder, model);
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
@@ -89,7 +91,6 @@ public class ListProfilesController extends   SAbstractController {
 		obj = model.get(WebKeys.CONFIG_DEFINITION);
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
-		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()).getProperties());
 		model.put(WebKeys.FOLDER_TOOLBAR, buildViewToolbar(response, binder).getToolbar());
 		return new ModelAndView(BinderHelper.getViewListingJsp(), model);
 	}
