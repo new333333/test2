@@ -10,7 +10,7 @@ import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
-import com.sitescape.ef.repository.RepositoryException;
+import com.sitescape.ef.repository.RepositoryServiceException;
 
 /**
  * Provides uniform interface and integrated management for various file 
@@ -88,11 +88,11 @@ public interface FileModule {
      * @param entity
      * @param out
 	 * @throws UncheckedIOException
-	 * @throws RepositoryException
+	 * @throws RepositoryServiceException
      */
 	public void readFile(Binder binder, DefinableEntity entity, FileAttachment fa, 
 			OutputStream out) throws UncheckedIOException, 
-			RepositoryException;
+			RepositoryServiceException;
 	
 	/**
      * Returns <code>InputStream</code> from which to read the content
@@ -104,11 +104,11 @@ public interface FileModule {
 	 * @param fa
 	 * @return input stream
 	 * @throws UncheckedIOException
-	 * @throws RepositoryException
+	 * @throws RepositoryServiceException
 	 */
 	public InputStream readFile(Binder binder, DefinableEntity entity, 
 			FileAttachment fa) throws UncheckedIOException, 
-			RepositoryException;
+			RepositoryServiceException;
 	    
     /**
      * Reads the specified scaled file into the output stream.
@@ -118,11 +118,11 @@ public interface FileModule {
      * @param entity
      * @param out
 	 * @throws UncheckedIOException
-	 * @throws RepositoryException
+	 * @throws RepositoryServiceException
      */
 	public void readScaledFile(Binder binder, DefinableEntity entity, 
 			FileAttachment fa, OutputStream out) throws  
-			UncheckedIOException, RepositoryException;
+			UncheckedIOException, RepositoryServiceException;
 	    
     /**
      * Reads the specified scaled file into the output stream.
@@ -139,7 +139,7 @@ public interface FileModule {
      */
 	public void readIndirectlyAccessibleThumbnailFile(
 			Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out) 
-		throws UncheckedIOException, RepositoryException;
+		throws UncheckedIOException, RepositoryServiceException;
 	
 	/**
 	 * (Re)generate scaled file from the specified primary file.
@@ -152,12 +152,12 @@ public interface FileModule {
 	 * @param maxWidth
 	 * @param maxHeight
 	 * @throws UncheckedIOException
-	 * @throws RepositoryException
+	 * @throws RepositoryServiceException
 	 */
 	public void generateScaledFile(Binder binder, 
     		DefinableEntity entity, FileAttachment fa, 
     		int maxWidth, int maxHeight) 
-		throws UncheckedIOException, RepositoryException;
+		throws UncheckedIOException, RepositoryServiceException;
 	
 	/**
 	 * (Re)generate thumbnail file from the specified primary file.
@@ -169,13 +169,13 @@ public interface FileModule {
 	 * @param fa
 	 * @param thumbnailDirectlyAccessible
 	 * @throws UncheckedIOException
-	 * @throws RepositoryException
+	 * @throws RepositoryServiceException
 	 */
 	public void generateThumbnailFile(Binder binder, 
     		DefinableEntity entity, FileAttachment fa, 
     		int maxWidth, int maxHeight, 
     		boolean thumbnailDirectlyAccessible) 
-		throws UncheckedIOException, RepositoryException;
+		throws UncheckedIOException, RepositoryServiceException;
 
 	/**
 	 * (Re)generate both scaled file and thumbnail file from the specified 
@@ -187,14 +187,14 @@ public interface FileModule {
 	 * @param primaryFileName
 	 * @param thumbnailDirectlyAccessible
 	 * @throws UncheckedIOException
-	 * @throws RepositoryException
+	 * @throws RepositoryServiceException
 	 */
 	public void generateFiles(Binder binder, 
     		DefinableEntity entity, FileAttachment fa, 
     		int maxWidth, int maxHeight,
     		int thumbnailMaxWidth, int thumbnailMaxHeight, 
     		boolean thumbnailDirectlyAccessible) 
-		throws UncheckedIOException, RepositoryException;
+		throws UncheckedIOException, RepositoryServiceException;
 		
 	/**
 	 * Returns whether a scaled copy of the file exists or not.
@@ -204,11 +204,11 @@ public interface FileModule {
 	 * @param fAtt
 	 * @return
 	 * @throws UncheckedIOException
-	 * @throws RepositoryException
+	 * @throws RepositoryServiceException
 	 */
 	public boolean scaledFileExists(Binder binder, DefinableEntity entity, 
 			FileAttachment fAtt) 
-		throws UncheckedIOException, RepositoryException;
+		throws UncheckedIOException, RepositoryServiceException;
 			
 	/**
 	 * Write multiple files for the specified entity. If the entity is
@@ -274,12 +274,12 @@ public interface FileModule {
      * @throws LockIdMismatchException The file is already locked by the same
      * user but the lock id does not match.
      * @throws UncheckedIOException I/O error
-     * @throws RepositoryException Any other internal or unexpected error	
+     * @throws RepositoryServiceException Any other internal or unexpected error	
      */
     public void lock(Binder binder, DefinableEntity entity, FileAttachment fa,
     		String lockId, String lockSubject, Date expirationDate)
     	throws ReservedByAnotherUserException, LockedByAnotherUserException,
-    	LockIdMismatchException, UncheckedIOException, RepositoryException;
+    	LockIdMismatchException, UncheckedIOException, RepositoryServiceException;
     
     /**
      * Unlocks the file and commits pending changes associated with it if any.
@@ -297,10 +297,10 @@ public interface FileModule {
      * @param fa
      * @param lockId Lock token id.
      * @throws UncheckedIOException I/O error
-     * @throws RepositoryException Any other internal or unexpected error	
+     * @throws RepositoryServiceException Any other internal or unexpected error	
      */
     public void unlock(Binder binder, DefinableEntity entity, FileAttachment fa,
-    		String lockId) throws UncheckedIOException, RepositoryException;
+    		String lockId) throws UncheckedIOException, RepositoryServiceException;
     
     /**
      * Forcefully unlocks the file and commits pending changes associated
@@ -317,10 +317,10 @@ public interface FileModule {
      * @param entity
      * @param fa
      * @throws UncheckedIOException
-     * @throws RepositoryException
+     * @throws RepositoryServiceException
      */
     //public void forceUnlock(Binder binder, DefinableEntity entity, FileAttachment fa) 
-    //	throws UncheckedIOException, RepositoryException;
+    //	throws UncheckedIOException, RepositoryServiceException;
     
     /**
      * Brings locks and reservation state up-to-date by processing expired
@@ -333,13 +333,13 @@ public interface FileModule {
      * @param binder
      * @param entity
      * @param commit
-     * @throws RepositoryException
+     * @throws RepositoryServiceException
      * @throws UncheckedIOException
      */
     /*
     public void updateExpiredLocks(RepositoryService service, Object session,
     		Binder binder, DefinableEntity entity, boolean commit) 
-		throws RepositoryException, UncheckedIOException;
+		throws RepositoryServiceException, UncheckedIOException;
 	*/
     
     /**
@@ -351,5 +351,5 @@ public interface FileModule {
      * locks are effective. 
      */
     public void RefreshLocks(Binder binder, DefinableEntity entity) 
-	throws RepositoryException, UncheckedIOException;
+	throws RepositoryServiceException, UncheckedIOException;
 }

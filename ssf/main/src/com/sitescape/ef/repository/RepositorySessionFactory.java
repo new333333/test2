@@ -4,11 +4,11 @@ import com.sitescape.ef.UncheckedIOException;
 
 public interface RepositorySessionFactory {
 
-	public void initialize() throws RepositoryException, UncheckedIOException;
+	public void initialize() throws RepositoryServiceException, UncheckedIOException;
 	
-	public void shutdown() throws RepositoryException, UncheckedIOException;
+	public void shutdown() throws RepositoryServiceException, UncheckedIOException;
 	
-	public RepositorySession openSession() throws RepositoryException, UncheckedIOException;
+	public RepositorySession openSession() throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
 	 * Returns whether or not the repository supports versioning.

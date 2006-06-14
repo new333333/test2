@@ -18,7 +18,7 @@ import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.repository.RepositoryException;
+import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositorySession;
 import com.sitescape.ef.util.Constants;
 
@@ -34,7 +34,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		this.docRootDir = docRootDir;
 	}
 	
-	public void close() throws RepositoryException, UncheckedIOException{
+	public void close() throws RepositoryServiceException, UncheckedIOException{
 		try {
 			wdr.close();
 			wdr = null;
@@ -45,7 +45,7 @@ public class WebdavRepositorySession implements RepositorySession {
 
 	public String createVersioned(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, MultipartFile mf) 
-		throws RepositoryException, UncheckedIOException {
+		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			return createResource(wdr, binder, entry, relativeFilePath, 
 					mf.getInputStream(), true);
@@ -57,7 +57,7 @@ public class WebdavRepositorySession implements RepositorySession {
 
 
 	public String createVersioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in) throws RepositoryException, UncheckedIOException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			return createResource(wdr, binder, entry, relativeFilePath, in, true);
 		} catch (IOException e) {
@@ -67,7 +67,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 
 	public void createUnversioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in) throws RepositoryException, UncheckedIOException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			createResource(wdr, binder, entry, relativeFilePath, in, false);
 		} catch (IOException e) {
@@ -78,7 +78,7 @@ public class WebdavRepositorySession implements RepositorySession {
 
 	public void update(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, MultipartFile mf) 
-		throws RepositoryException, UncheckedIOException {
+		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			updateResource(wdr, binder, entry, relativeFilePath, mf.getInputStream());
 		} catch (IOException e) {
@@ -88,7 +88,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 
 	public void update(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in) throws RepositoryException, UncheckedIOException {
+			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			updateResource(wdr, binder, entry, relativeFilePath, in);
 		} catch (IOException e) {
@@ -98,7 +98,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 	
 	public void delete(Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryException, UncheckedIOException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			deleteResource(wdr, binder, entry, relativeFilePath);
 		} catch (IOException e) {
@@ -108,7 +108,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 	
 	public void read(Binder binder, DefinableEntity entry, String relativeFilePath, 
-			OutputStream out) throws RepositoryException, UncheckedIOException {	
+			OutputStream out) throws RepositoryServiceException, UncheckedIOException {	
 		try {
 			readResource(wdr, getResourcePath(binder, entry, relativeFilePath), out);
 		} catch (IOException e) {
@@ -118,7 +118,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 
 	public InputStream read(Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryException, UncheckedIOException {	
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {	
 		try {
 			return wdr.getMethodData(getResourcePath(binder, entry, relativeFilePath));
 		} catch (IOException e) {
@@ -128,7 +128,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 
 	// obsolete
-	public void readVersion(String fileVersionURI, OutputStream out) throws RepositoryException, UncheckedIOException {
+	public void readVersion(String fileVersionURI, OutputStream out) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			readResource(wdr, fileVersionURIToResourcePath(fileVersionURI), out);
 		} catch (IOException e) {
@@ -138,7 +138,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 
 	public void readVersion(Binder binder, DefinableEntity entry, String relativeFilePath, 
-			String versionName, OutputStream out) throws RepositoryException, UncheckedIOException {
+			String versionName, OutputStream out) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String versionResourcePath = getVersionResourcePath(wdr, binder, entry, 
 					relativeFilePath, versionName);			
@@ -151,7 +151,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 
 	public List getVersionNames(Binder binder, DefinableEntity entry, String relativeFilePath) 
-		throws RepositoryException, UncheckedIOException {
+		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			return WebdavUtil.getVersionNames(wdr, getResourcePath(binder, entry, relativeFilePath));
 		} catch (IOException e) {
@@ -162,12 +162,12 @@ public class WebdavRepositorySession implements RepositorySession {
 
 	public DataSource getDataSource(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, FileTypeMap fileTypeMap)		
-		throws RepositoryException, UncheckedIOException {
+		throws RepositoryServiceException, UncheckedIOException {
 		return new WebDavDataSource(wdr, getResourcePath(binder, entry, relativeFilePath), relativeFilePath, fileTypeMap);
 	}
 	public DataSource getDataSourceVersion(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName, FileTypeMap fileTypeMap)		
-		throws RepositoryException, UncheckedIOException {
+		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String versionResourcePath = getVersionResourcePath(wdr, binder, entry, 
 					relativeFilePath, versionName);			
@@ -180,7 +180,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}	
 	// obsolete
 	public List fileVersionsURIs(Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryException, UncheckedIOException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 			
@@ -188,7 +188,7 @@ public class WebdavRepositorySession implements RepositorySession {
 					resourcePath, "version-history");
 			
 			if(value == null || value.length() == 0)
-				throw new RepositoryException("Cannot find version-history property for " + resourcePath);
+				throw new RepositoryServiceException("Cannot find version-history property for " + resourcePath);
 			
 			return WebdavUtil.getHrefValues(wdr, value, "version-set");
 
@@ -199,7 +199,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 
 	public void checkout(Binder binder, DefinableEntity entry, String relativeFilePath) 
-		throws RepositoryException, UncheckedIOException {
+		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 
@@ -215,7 +215,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			if(!isCheckedOut(wdr, resourcePath)) {
 				result = wdr.checkoutMethod(resourcePath);
 				if(!result)
-					throw new RepositoryException("Failed to checkout [" + resourcePath + "]");
+					throw new RepositoryServiceException("Failed to checkout [" + resourcePath + "]");
 			}
 		} catch (IOException e) {
 			logError(wdr);
@@ -223,13 +223,13 @@ public class WebdavRepositorySession implements RepositorySession {
 		}
 	}
 
-	public void uncheckout(Binder binder, DefinableEntity entry, String relativeFilePath) throws RepositoryException, UncheckedIOException {
+	public void uncheckout(Binder binder, DefinableEntity entry, String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 			if(isCheckedOut(wdr, resourcePath)) {
 				boolean result = wdr.uncheckoutMethod(resourcePath);
 				if(!result)
-					throw new RepositoryException("Failed to uncheckout [" + resourcePath + "]");
+					throw new RepositoryServiceException("Failed to uncheckout [" + resourcePath + "]");
 			}
 		} catch (IOException e) {
 			logError(wdr);
@@ -238,7 +238,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 
 	public String checkin(Binder binder, DefinableEntity entry, String relativeFilePath) 
-		throws RepositoryException, UncheckedIOException {
+		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 			String checkedInVersionResourcePath = getCheckedInVersionResourcePath(wdr, resourcePath);
@@ -249,7 +249,7 @@ public class WebdavRepositorySession implements RepositorySession {
 				String location = wdr.checkin(resourcePath);
 				
 				if(location == null || location.length() == 0)
-					throw new RepositoryException("Failed to checkin [" + resourcePath + "]");
+					throw new RepositoryServiceException("Failed to checkin [" + resourcePath + "]");
 				
 				String newVersionResourcePath = locationURLToResourcePath(location);
 				
@@ -262,7 +262,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			versionName = getVersionName(wdr, versionResourcePath);
 			
 			if(versionName == null || versionName.length() == 0)
-				throw new RepositoryException("Failed to get version name for [" + versionResourcePath + "]");
+				throw new RepositoryServiceException("Failed to get version name for [" + versionResourcePath + "]");
 			
 			return versionName;
 		} catch (IOException e) {
@@ -272,7 +272,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 	
 	public boolean isCheckedOut(Binder binder, DefinableEntity entry, String relativeFilePath) 
-		throws RepositoryException, UncheckedIOException {
+		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 			
@@ -284,20 +284,20 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 	
 	/*
-	public boolean exists(Binder binder, DefinableEntity entry, String relativeFilePath) throws RepositoryException, UncheckedIOException {
+	public boolean exists(Binder binder, DefinableEntity entry, String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 			
 			return WebdavUtil.exists(wdr, resourcePath);
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryException(e);
+			throw new RepositoryServiceException(e);
 		}
 	}*/
 
 	public long getContentLength(Binder binder, 
 			DefinableEntity entry, String relativeFilePath) 
-		throws RepositoryException, UncheckedIOException {
+		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 		
@@ -312,7 +312,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	
 	public long getContentLength(Binder binder, 
 			DefinableEntity entry, String relativeFilePath, String versionName) 
-		throws RepositoryException, UncheckedIOException {
+		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String versionResourcePath = getVersionResourcePath(wdr, binder, entry, 
 					relativeFilePath, versionName);			
@@ -328,7 +328,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	
 	/*
 	public boolean isVersioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryException, UncheckedIOException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 		
@@ -341,13 +341,13 @@ public class WebdavRepositorySession implements RepositorySession {
 	
 		} catch (IOException e) {
 			logError(wdr);
-			throw new RepositoryException(e);
+			throw new RepositoryServiceException(e);
 		}
 	}*/
 	
 
 	public int fileInfo(Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryException, UncheckedIOException {
+			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 		
@@ -405,19 +405,19 @@ public class WebdavRepositorySession implements RepositorySession {
 	
 	protected String getVersionResourcePath(SWebdavResource wdr, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, String versionName) 
-		throws RepositoryException, UncheckedIOException, HttpException, IOException {
+		throws RepositoryServiceException, UncheckedIOException, HttpException, IOException {
 		return getVersionResourcePath(wdr, getResourcePath(binder, entry, relativeFilePath),
 				versionName);
 	}
 	
 	protected String getVersionResourcePath(SWebdavResource wdr,
 			String versionControlledResourcePath, String versionName) 
-		throws RepositoryException, UncheckedIOException, HttpException, IOException {
+		throws RepositoryServiceException, UncheckedIOException, HttpException, IOException {
 		String versionHistoryResourcePath = getVersionHistoryResourcePath(wdr,
 				versionControlledResourcePath);
 		
 		if(versionHistoryResourcePath == null || versionHistoryResourcePath.length() == 0)
-			throw new RepositoryException("Cannot find version history resource for " + 
+			throw new RepositoryServiceException("Cannot find version history resource for " + 
 					versionControlledResourcePath);
 
 		return makeVersionResourcePath(versionHistoryResourcePath, versionName);
