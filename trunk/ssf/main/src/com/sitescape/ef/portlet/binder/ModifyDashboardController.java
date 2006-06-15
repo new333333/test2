@@ -46,13 +46,17 @@ public class ModifyDashboardController extends AbstractBinderController {
 		if (formData.containsKey("set_title")) {
 			setTitle(request, binder, scope);
 		} else if (formData.containsKey("add_wideTop")) {
-			addComponent(request, binder, DashboardHelper.Wide_Top, scope);
+			componentId = addComponent(request, binder, DashboardHelper.Wide_Top, scope);
+			response.setRenderParameter("_componentId", componentId);
 		} else if (formData.containsKey("add_narrowFixed")) {
-			addComponent(request, binder, DashboardHelper.Narrow_Fixed, scope);
+			componentId = addComponent(request, binder, DashboardHelper.Narrow_Fixed, scope);
+			response.setRenderParameter("_componentId", componentId);
 		} else if (formData.containsKey("add_narrowVariable")) {
-			addComponent(request, binder, DashboardHelper.Narrow_Variable, scope);
+			componentId = addComponent(request, binder, DashboardHelper.Narrow_Variable, scope);
+			response.setRenderParameter("_componentId", componentId);
 		} else if (formData.containsKey("add_wideBottom")) {
-			addComponent(request, binder, DashboardHelper.Wide_Bottom, scope);
+			componentId = addComponent(request, binder, DashboardHelper.Wide_Bottom, scope);
+			response.setRenderParameter("_componentId", componentId);
 		} else if (formData.containsKey("_modifyComponentData") || formData.containsKey("_modifyComponentData.x")) {
 		} else if (formData.containsKey("_modifyConfigData") || formData.containsKey("_modifyConfigData.x")) {
 		} else if (formData.containsKey("_saveConfigData") || formData.containsKey("_saveConfigData.x")) {
@@ -142,9 +146,13 @@ public class ModifyDashboardController extends AbstractBinderController {
 		
 		if (formData.containsKey("set_title")) {
 		} else if (formData.containsKey("add_wideTop")) {
+			view = "binder/modify_dashboard_component";
 		} else if (formData.containsKey("add_narrowFixed")) {
+			view = "binder/modify_dashboard_component";
 		} else if (formData.containsKey("add_narrowVariable")) {
+			view = "binder/modify_dashboard_component";
 		} else if (formData.containsKey("add_wideBottom")) {
+			view = "binder/modify_dashboard_component";
 		} else if (formData.containsKey("_modifyComponentData") || formData.containsKey("_modifyComponentData.x")) {
 			view = "binder/modify_dashboard_component";
 		} else if (formData.containsKey("_modifyConfigData") || formData.containsKey("_modifyConfigData.x")) {
@@ -171,8 +179,9 @@ public class ModifyDashboardController extends AbstractBinderController {
 		saveDashboard(binder, scope, dashboard);
 	}
 	
-	private void addComponent(ActionRequest request, Binder binder, String listName, String scope) {
+	private String addComponent(ActionRequest request, Binder binder, String listName, String scope) {
 		Map dashboard = getDashboard(binder, scope);
+		String id = "";
 		
 		//Get the name of the component to be added
 		String componentName = PortletRequestUtils.getStringParameter(request, "name", "");
@@ -183,7 +192,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 			component.put(DashboardHelper.Roles, 
 					PortletRequestUtils.getStringParameters(request, "roles"));
 			int nextComponent = (Integer) dashboard.get(DashboardHelper.NextComponent);
-			String id = scope + "_" + String.valueOf(nextComponent);
+			id = scope + "_" + String.valueOf(nextComponent);
 			components.put(id, component);
 			
 			//Add this new component to the list
@@ -199,6 +208,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 			
 			saveDashboard(binder, scope, dashboard);
 		}
+		return id;
 	}
 	
 	private void saveComponentData(ActionRequest request, Binder binder, String scope) {
