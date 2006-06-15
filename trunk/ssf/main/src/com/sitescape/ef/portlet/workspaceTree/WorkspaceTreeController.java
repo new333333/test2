@@ -46,6 +46,11 @@ public class WorkspaceTreeController extends SAbstractController  {
 			RenderResponse response) throws Exception {
 		
 		Map<String,Object> model = new HashMap<String,Object>();
+		try {
+			//won't work on adapter
+			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
+		} catch (UnsupportedOperationException us) {}
+
 		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);						
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.FORUM_OPERATION_RELOAD_LISTING)) {
@@ -96,10 +101,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		obj = model.get(WebKeys.CONFIG_DEFINITION);
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
-		try {
-			//won't work on adapter
-			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
-		} catch (UnsupportedOperationException us) {}
 		
 		return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
 	}
