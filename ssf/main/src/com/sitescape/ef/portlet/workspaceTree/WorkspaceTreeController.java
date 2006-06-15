@@ -2,6 +2,7 @@ package com.sitescape.ef.portlet.workspaceTree;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 
 import javax.portlet.ActionRequest;
@@ -58,6 +59,9 @@ public class WorkspaceTreeController extends SAbstractController  {
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+			String random = String.valueOf(new Random().nextInt(999999));
+			reloadUrl.setParameter(WebKeys.URL_RANDOM, random);
+			reloadUrl.setParameter(WebKeys.URL_OPERATION, "noop");
 			request.setAttribute("ssReloadUrl", reloadUrl.toString());
 			return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
 		}
