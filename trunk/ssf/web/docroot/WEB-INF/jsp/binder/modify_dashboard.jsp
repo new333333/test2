@@ -68,32 +68,44 @@ type="submit" class="ss_submit" name="closeBtn"
 <span class="ss_bold"><ssf:nlt tag="dashboard.layout" /></span><br/>
 <table border="1" style="width:100%;">
   <tr>
-    <td colspan="2">
+    <td colspan="3">
     
-      <c:forEach var="component" items="${ssDashboard.dashboard.wide_top}">
+      <c:forEach var="component" items="${ssDashboard.wide_top}">
 		<c:set var="id" value="${component.id}"/>
-		<div class="ss_dashboard_config">
-		<span class="ss_bold"><ssf:nlt checkIfTag="true"
-		  tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[id].name]}"/></span>
-		<br/>
-		<form method="post">
-		<div style="margin:5px;">
-		<ssf:dashboard id="${id}" type="config" configuration="${ssDashboard}"/>
-		<input type="hidden" name="_dashboardList" value="wide_top">
-		<input type="hidden" name="_componentId" value="${id}">
-		<input type="submit" name="_saveConfigData" value="<ssf:nlt tag="button.saveChanges"/>">
-		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="_deleteComponent" value="<ssf:nlt tag="button.delete"/>">
-		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="_moveUp" value="<ssf:nlt tag="button.moveUp"/>">
-		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="_moveDown" value="<ssf:nlt tag="button.moveDown"/>">
-		
+		<div class="ss_shadowbox">
+		<div class="ss_shadowbox2 ss_dashboard_view">
+		 <div class="ss_dashboard_view_toolbar">
+		  <div align="right">
+		  <form class="ss_dashboard_view_toolbar" method="post" 
+		    action="<portlet:actionURL>
+		    <portlet:param name="action" value="modify_dashboard"/>
+		    <portlet:param name="binderId" value="${ssBinder.id}"/>
+		    <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
+		    </portlet:actionURL>">
+			<input type="hidden" name="_dashboardList" value="wide_top">
+			<input type="hidden" name="_componentId" value="${id}">
+			<input type="hidden" name="_returnView" value="form"/>
+			<input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
+			  name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
+			&nbsp;
+			<input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
+			  name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
+			&nbsp;
+			<input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
+			  name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
+			&nbsp;
+			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
+			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+		  </form>
+		  </div>
+		 </div>
+		<div align="left" style="margin:0px; padding:2px;">
+		<ssf:dashboard id="${id}"
+		  type="view" configuration="${ssDashboard}"/>
 		</div>
-		<input type="hidden" name="scope" value="${ssDashboard.scope}"/>
-		</form>
 		</div>
-		<br/>
+		</div>
+		<div style="margin:2px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
 	  </c:forEach>
 
       <br/>
@@ -112,35 +124,49 @@ type="submit" class="ss_submit" name="closeBtn"
       </form>
     </td>
   </tr>
+
   <tr>
     <td valign="top">
+      <c:forEach var="component" items="${ssDashboard.narrow_fixed}">
+		<c:set var="id" value="${component.id}"/>
+		<div class="ss_shadowbox" style="width:${ssDashboard.narrowFixedWidth}px;">
+		<div class="ss_shadowbox2 ss_dashboard_view" style="width:${ssDashboard.narrowFixedWidth}px;">
+		 <div class="ss_dashboard_view_toolbar" 
+		   style="width:${ssDashboard.narrowFixedWidth}px;">
+		  <div align="right">
+		  <form class="ss_dashboard_view_toolbar" style="display:inline;"
+		    method="post" action="<portlet:actionURL>
+		  <portlet:param name="action" value="modify_dashboard"/>
+		  <portlet:param name="binderId" value="${ssBinder.id}"/>
+		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
+		  </portlet:actionURL>">
+			<input type="hidden" name="_dashboardList" value="narrow_fixed">
+			<input type="hidden" name="_componentId" value="${id}">
+			<input type="hidden" name="_returnView" value="form"/>
+			<input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
+			  name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
+			&nbsp;
+			<input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
+			  name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
+			&nbsp;
+			<input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
+			  name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
+			&nbsp;
+			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
+			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+		  </form>
+		 </div>
+		 </div>
+		<div align="left" style="margin:0px; padding:2px;">
 	    <img src="<html:imagesPath/>pics/1pix.gif" 
-	      hspace="${ssDashboard.narrowFixedWidth/2}px" vspace="0px"/><br/>
-		<c:forEach var="component" items="${ssDashboard.dashboard.narrow_fixed}">
-		  <c:set var="id" value="${component.id}"/>
-		<div class="ss_dashboard_config">
-		<span class="ss_bold"><ssf:nlt checkIfTag="true"
-		  tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[id].name]}"/></span>
-		<br/>
-		<form method="post">
-		<div style="margin:5px;">
-		<ssf:dashboard id="${id}" type="config" configuration="${ssDashboard}"/>
-		<input type="hidden" name="_dashboardList" value="narrow_fixed">
-		<input type="hidden" name="_componentId" value="${id}">
-		<input type="submit" name="_saveConfigData" value="<ssf:nlt tag="button.saveChanges"/>">
-		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="_deleteComponent" value="<ssf:nlt tag="button.delete"/>">
-		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="_moveUp" value="<ssf:nlt tag="button.moveUp"/>">
-		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="_moveDown" value="<ssf:nlt tag="button.moveDown"/>">
-		
+	      hspace="${ssDashboard.narrowFixedWidth2}px" vspace="0px"/><br/>
+		<ssf:dashboard id="${id}"
+		  type="view" configuration="${ssDashboard}"/>
 		</div>
-		<input type="hidden" name="scope" value="${ssDashboard.scope}"/>
-		</form>
 		</div>
-		<br/>
-		</c:forEach>
+		</div>
+		<div style="margin:2px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
+	  </c:forEach>
 
         <br/>
         <br/>
@@ -157,32 +183,44 @@ type="submit" class="ss_submit" name="closeBtn"
         <input type="hidden" name="scope" value="${ssDashboard.scope}"/>
         </form>
     </td>
+    <td>&nbsp;&nbsp;</td>
     <td valign="top">
-		<c:forEach var="component" items="${ssDashboard.dashboard.narrow_variable}">
-		  <c:set var="id" value="${component.id}"/>
-		<div class="ss_dashboard_config">
-		<span class="ss_bold"><ssf:nlt checkIfTag="true"
-		  tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[id].name]}"/></span>
-		<br/>
-		<form method="post">
-		<div style="margin:5px;">
-		<ssf:dashboard id="${id}" type="config" configuration="${ssDashboard}"/>
-		<input type="hidden" name="_dashboardList" value="narrow_variable">
-		<input type="hidden" name="_componentId" value="${id}">
-		<input type="submit" name="_saveConfigData" value="<ssf:nlt tag="button.saveChanges"/>">
-		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="_deleteComponent" value="<ssf:nlt tag="button.delete"/>">
-		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="_moveUp" value="<ssf:nlt tag="button.moveUp"/>">
-		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="_moveDown" value="<ssf:nlt tag="button.moveDown"/>">
-		
+      <c:forEach var="component" items="${ssDashboard.narrow_variable}">
+		<c:set var="id" value="${component.id}"/>
+		<div class="ss_shadowbox">
+		<div class="ss_shadowbox2 ss_dashboard_view" align="left">
+		 <div class="ss_dashboard_view_toolbar">
+		  <div align="right">
+		  <form class="ss_dashboard_view_toolbar" method="post" action="<portlet:actionURL>
+		  <portlet:param name="action" value="modify_dashboard"/>
+		  <portlet:param name="binderId" value="${ssBinder.id}"/>
+		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
+		  </portlet:actionURL>">
+			<input type="hidden" name="_dashboardList" value="narrow_variable">
+			<input type="hidden" name="_componentId" value="${id}">
+			<input type="hidden" name="_returnView" value="form"/>
+			<input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
+			  name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
+			&nbsp;
+			<input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
+			  name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
+			&nbsp;
+			<input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
+			  name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
+			&nbsp;
+			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
+			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+		  </form>
+		 </div>
+		 </div>
+		<div align="left" style="margin:0px; padding:2px;">
+		<ssf:dashboard id="${id}"
+		  type="view" configuration="${ssDashboard}"/>
 		</div>
-		<input type="hidden" name="scope" value="${ssDashboard.scope}"/>
-		</form>
 		</div>
-		<br/>
-		</c:forEach>
+		</div>
+		<div style="margin:2px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
+	  </c:forEach>
 
         <br/>
         <br/>
@@ -201,33 +239,44 @@ type="submit" class="ss_submit" name="closeBtn"
     </td>
   </tr>
   <tr>
-    <td colspan="2">
-
-		<c:forEach var="component" items="${ssDashboard.dashboard.wide_bottom}">
-		  <c:set var="id" value="${component.id}"/>
-		<div class="ss_dashboard_config">
-		<span class="ss_bold"><ssf:nlt checkIfTag="true"
-		  tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[id].name]}"/></span>
-		<br/>
-		<form method="post">
-		<div style="margin:5px;">
-		<ssf:dashboard id="${id}" type="config" configuration="${ssDashboard}"/>
-		<input type="hidden" name="_dashboardList" value="wide_bottom">
-		<input type="hidden" name="_componentId" value="${id}">
-		<input type="submit" name="_saveConfigData" value="<ssf:nlt tag="button.saveChanges"/>">
-		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="_deleteComponent" value="<ssf:nlt tag="button.delete"/>">
-		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="_moveUp" value="<ssf:nlt tag="button.moveUp"/>">
-		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="_moveDown" value="<ssf:nlt tag="button.moveDown"/>">
-		
+    <td colspan="3">
+      <c:forEach var="component" items="${ssDashboard.wide_bottom}">
+		<c:set var="id" value="${component.id}"/>
+		<div class="ss_shadowbox">
+		<div class="ss_shadowbox2 ss_dashboard_view">
+		 <div class="ss_dashboard_view_toolbar" align="right">
+		  <div align="right">
+		  <form class="ss_dashboard_view_toolbar" method="post"
+		    action="<portlet:actionURL>
+		    <portlet:param name="action" value="modify_dashboard"/>
+		    <portlet:param name="binderId" value="${ssBinder.id}"/>
+		    <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
+		    </portlet:actionURL>">
+			<input type="hidden" name="_dashboardList" value="wide_bottom">
+			<input type="hidden" name="_componentId" value="${id}">
+			<input type="hidden" name="_returnView" value="form"/>
+			<input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
+			  name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
+			&nbsp;
+			<input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
+			  name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
+			&nbsp;
+			<input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
+			  name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
+			&nbsp;
+			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
+			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+		  </form>
+		 </div>
+		 </div>
+		<div align="left" style="margin:0px; padding:2px;">
+		<ssf:dashboard id="${id}"
+		  type="view" configuration="${ssDashboard}"/>
 		</div>
-		<input type="hidden" name="scope" value="${ssDashboard.scope}"/>
-		</form>
 		</div>
-		<br/>
-		</c:forEach>
+		</div>
+		<div style="margin:2px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
+	  </c:forEach>
 
         <br/>
         <br/>

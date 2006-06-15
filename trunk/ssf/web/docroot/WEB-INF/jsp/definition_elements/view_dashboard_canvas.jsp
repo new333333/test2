@@ -44,19 +44,19 @@ function ss_toggle_toolbars() {
 	  <portlet:param name="action" value="modify_dashboard"/>
 	  <portlet:param name="binderId" value="${ssBinder.id}"/>
 	  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-	  <portlet:param name="scope" value="local"/>
+	  <portlet:param name="_scope" value="local"/>
 	  </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.local"/></a></li>
 	  <li><a href="<portlet:actionURL>
 	  <portlet:param name="action" value="modify_dashboard"/>
 	  <portlet:param name="binderId" value="${ssBinder.id}"/>
 	  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-	  <portlet:param name="scope" value="local"/>
+	  <portlet:param name="_scope" value="global"/>
 	  </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.global"/></a></li>
 	  <li><a href="<portlet:actionURL>
 	  <portlet:param name="action" value="modify_dashboard"/>
 	  <portlet:param name="binderId" value="${ssBinder.id}"/>
 	  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-	  <portlet:param name="scope" value="local"/>
+	  <portlet:param name="_scope" value="binder"/>
 	  </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.binder"/></a></li>
 	  </ul>
 	  </td></tr></table>
@@ -106,7 +106,7 @@ function ss_toggle_toolbars() {
 		</div>
 		</div>
 		</div>
-		<div style="margin:2px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
+		<div style="margin:3px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
 	  </c:forEach>
 
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
@@ -157,7 +157,7 @@ function ss_toggle_toolbars() {
 		</div>
 		</div>
 		</div>
-		<div style="margin:2px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
+		<div style="margin:3px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
 	  </c:forEach>
 
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
@@ -203,7 +203,7 @@ function ss_toggle_toolbars() {
 		</div>
 		</div>
 		</div>
-		<div style="margin:2px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
+		<div style="margin:3px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
 	  </c:forEach>
 
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
@@ -252,7 +252,7 @@ function ss_toggle_toolbars() {
 		</div>
 		</div>
 		</div>
-		<div style="margin:2px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
+		<div style="margin:3px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
 	  </c:forEach>
 
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
