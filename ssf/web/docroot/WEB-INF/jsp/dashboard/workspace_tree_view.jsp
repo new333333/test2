@@ -38,11 +38,19 @@ function wsTreeComponent_showId(id, obj, action) {
     value="${ssDashboard.dashboard.components[ssDashboardId].data.rootOpen[0]}"/>
 </c:if>
 
+<c:if test="${empty ssWsDomTree || empty ssDefinitionEntry.id}">
+  <span class="ss_bold"><ssf:nlt checkIfTag="true"
+    tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[ssDashboardId].name]}"/></span><br/>
+  <span><ssf:nlt tag="dashboard.displatNotAvailable"/></span>
+</c:if>
+
+<c:if test="${!empty ssWsDomTree && !empty ssDefinitionEntry.id}">
 <ssf:tree treeName="wsTreeComponent" treeDocument="${ssWsDomTree}" 
   topId="${ssDefinitionEntry.id}" highlightNode="${ssDefinitionEntry.id}" 
   rootOpen="${rootOpen}" />
 <div id="ss_tree_div_status_messagewsTreeComponent" 
   style="visibility:hidden; display:none;"></div>
+</c:if>
 </c:if>
 
 <c:if test="${ssDashboard.dashboard.components[ssDashboardId].data.start[0] == 'select'}">

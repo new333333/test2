@@ -46,6 +46,7 @@ public class WebKeys {
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
     public static final String URL_OPERATION="operation";
     public static final String URL_OPERATION2="operation2";
+	public static final String URL_RANDOM = "random";
 	public static final String URL_VALUE = "value";
 
     //Preferences

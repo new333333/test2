@@ -41,7 +41,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 		if (componentId.contains("_")) scope = componentId.split("_")[0];
 		if (scope.equals("")) scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 		if (scope.equals("")) scope = DashboardHelper.Local;
-		String returnView = PortletRequestUtils.getStringParameter(request, "_returnView", "");
+		String returnView = PortletRequestUtils.getStringParameter(request, "_returnView", "binder");
 
 		if (formData.containsKey("set_title")) {
 			setTitle(request, binder, scope);
@@ -68,7 +68,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
-			setupViewBinder(response, binderId, binderType);
+			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		}
 	}
 
@@ -82,7 +82,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 		String scope = componentId.split("_")[0];
 		if (scope.equals("")) scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 		if (scope.equals("")) scope = DashboardHelper.Local;
-		String returnView = PortletRequestUtils.getStringParameter(request, "_returnView", "");
+		String returnView = PortletRequestUtils.getStringParameter(request, "_returnView", "binder");
 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
@@ -135,7 +135,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 		ssDashboard.put(WebKeys.DASHBOARD_LIST, dashboardList);
 		ssDashboard.put(WebKeys.DASHBOARD_SCOPE, scope);
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_ID, componentId);
-		ssDashboard.put(WebKeys.DASHBOARD_RETURN_VIEW, "binder");
+		ssDashboard.put(WebKeys.DASHBOARD_RETURN_VIEW, returnView);
 		
 		model.put(WebKeys.DASHBOARD, ssDashboard);
 		String view = "binder/modify_dashboard";
