@@ -19,7 +19,7 @@ function ss_toggle_toolbars() {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 </script>
-<div class="ss_indent_small" style="width:98%;">
+<div class="ss_indent_medium" style="width:100%;">
 <table cellspacing="0" cellpadding="0" style="width:100%;">
 <tr>
   <td align="left" valign="top" nowrap width="2%">
@@ -70,14 +70,27 @@ function ss_toggle_toolbars() {
   <td colspan="3">
       <c:forEach var="component" items="${ssDashboard.wide_top}">
 		<c:set var="id" value="${component.id}"/>
+		<c:set var="scope" value="${component.scope}"/>
+		<c:set var="scopeTitle" value="dashboard.local"/>
+		<c:if test="${scope == 'global'}">
+		  <c:set var="scopeTitle" value="dashboard.global"/>
+		</c:if>
+		<c:if test="${scope == 'binder'}">
+		  <c:set var="scopeTitle" value="dashboard.binder"/>
+		</c:if>
 		<div class="ss_shadowbox">
 		<div class="ss_shadowbox2 ss_dashboard_view">
 		 <div id="ss_dashboard_toolbar_${ss_toolbar_count}"
 		   class="ss_dashboard_view_toolbar" 
 		   style="visibility:hidden; display:none;">
 		  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
-		  <div align="right">
-		  <form class="ss_dashboard_view_toolbar" method="post" 
+		  <div>
+		  <table class="ss_dashboard_view_toolbar" 
+		    cellspacing="0" cellpadding="0" style="width:100%;">
+		  <tr>
+		  <td><span class="ss_bold"><ssf:nlt tag="${scopeTitle}"/></span></td>
+		  <td align="right">
+		  <form class="ss_dashboard_view_toolbar" method="post" style="display:inline;"
 		    action="<portlet:actionURL>
 		    <portlet:param name="action" value="modify_dashboard"/>
 		    <portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -86,18 +99,40 @@ function ss_toggle_toolbars() {
 			<input type="hidden" name="_dashboardList" value="wide_top">
 			<input type="hidden" name="_componentId" value="${id}">
 			<input type="hidden" name="_returnView" value="binder"/>
-			<input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
-			  name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
-			&nbsp;
-			<input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
-			  name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
-			&nbsp;
-			<input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-			  name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
-			&nbsp;
-			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+			
+			<c:if test="${scope == 'local'}">
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
+			    name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
+			    name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
+			    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
+			    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+			</c:if>
+
+			<c:if test="${scope != 'local'}">
+			  <c:if test="${component.visible}">
+			    <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
+			      name="_hide" alt="<ssf:nlt tag="button.hide"/>">
+			  </c:if>
+			  <c:if test="${!component.visible}">
+			    <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
+			      name="_show" alt="<ssf:nlt tag="button.show"/>">
+			  </c:if>
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
+			    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
+			    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+			</c:if>
+			
 		  </form>
+		  </td></tr></table>
 		 </div>
 		 </div>
 		<div align="left" style="margin:0px; padding:2px;">
@@ -119,13 +154,26 @@ function ss_toggle_toolbars() {
   <td valign="top">
       <c:forEach var="component" items="${ssDashboard.narrow_fixed}">
 		<c:set var="id" value="${component.id}"/>
+		<c:set var="scope" value="${component.scope}"/>
+		<c:set var="scopeTitle" value="dashboard.local"/>
+		<c:if test="${scope == 'global'}">
+		  <c:set var="scopeTitle" value="dashboard.global"/>
+		</c:if>
+		<c:if test="${scope == 'binder'}">
+		  <c:set var="scopeTitle" value="dashboard.binder"/>
+		</c:if>
 		<div class="ss_shadowbox" style="width:${ssDashboard.narrowFixedWidth}px;">
 		<div class="ss_shadowbox2 ss_dashboard_view" style="width:${ssDashboard.narrowFixedWidth}px;">
 		 <div id="ss_dashboard_toolbar_${ss_toolbar_count}"
 		   class="ss_dashboard_view_toolbar" 
 		   style="visibility:hidden; display:none; width:${ssDashboard.narrowFixedWidth}px;">
 		  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
-		  <div align="right">
+		  <div>
+		  <table class="ss_dashboard_view_toolbar" 
+		    cellspacing="0" cellpadding="0" style="width:100%;">
+		  <tr>
+		  <td><ssf:nlt tag="${scopeTitle}"/></td>
+		  <td align="right">
 		  <form class="ss_dashboard_view_toolbar" style="display:inline;"
 		    method="post" action="<portlet:actionURL>
 		  <portlet:param name="action" value="modify_dashboard"/>
@@ -147,6 +195,7 @@ function ss_toggle_toolbars() {
 			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
 			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
 		  </form>
+		  </td></tr></table>
 		 </div>
 		 </div>
 		<div align="left" style="margin:0px; padding:2px;">
@@ -168,13 +217,26 @@ function ss_toggle_toolbars() {
   <td valign="top">
       <c:forEach var="component" items="${ssDashboard.narrow_variable}">
 		<c:set var="id" value="${component.id}"/>
+		<c:set var="scope" value="${component.scope}"/>
+		<c:set var="scopeTitle" value="dashboard.local"/>
+		<c:if test="${scope == 'global'}">
+		  <c:set var="scopeTitle" value="dashboard.global"/>
+		</c:if>
+		<c:if test="${scope == 'binder'}">
+		  <c:set var="scopeTitle" value="dashboard.binder"/>
+		</c:if>
 		<div class="ss_shadowbox">
 		<div class="ss_shadowbox2 ss_dashboard_view" align="left">
 		 <div id="ss_dashboard_toolbar_${ss_toolbar_count}"
 		   class="ss_dashboard_view_toolbar" 
 		   style="visibility:hidden; display:none;">
 		  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
-		  <div align="right">
+		  <div>
+		  <table class="ss_dashboard_view_toolbar" 
+		    cellspacing="0" cellpadding="0" style="width:100%;">
+		  <tr>
+		  <td><ssf:nlt tag="${scopeTitle}"/></td>
+		  <td align="right">
 		  <form class="ss_dashboard_view_toolbar" method="post" action="<portlet:actionURL>
 		  <portlet:param name="action" value="modify_dashboard"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -195,6 +257,7 @@ function ss_toggle_toolbars() {
 			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
 			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
 		  </form>
+		  </td></tr></table>
 		 </div>
 		 </div>
 		<div align="left" style="margin:0px; padding:2px;">
@@ -216,13 +279,26 @@ function ss_toggle_toolbars() {
   <td colspan="3">
       <c:forEach var="component" items="${ssDashboard.wide_bottom}">
 		<c:set var="id" value="${component.id}"/>
+		<c:set var="scope" value="${component.scope}"/>
+		<c:set var="scopeTitle" value="dashboard.local"/>
+		<c:if test="${scope == 'global'}">
+		  <c:set var="scopeTitle" value="dashboard.global"/>
+		</c:if>
+		<c:if test="${scope == 'binder'}">
+		  <c:set var="scopeTitle" value="dashboard.binder"/>
+		</c:if>
 		<div class="ss_shadowbox">
 		<div class="ss_shadowbox2 ss_dashboard_view">
 		 <div id="ss_dashboard_toolbar_${ss_toolbar_count}"
 		   class="ss_dashboard_view_toolbar" align="right" 
 		   style="visibility:hidden; display:none;">
 		  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
-		  <div align="right">
+		  <div>
+		  <table class="ss_dashboard_view_toolbar" 
+		    cellspacing="0" cellpadding="0" style="width:100%;">
+		  <tr>
+		  <td><ssf:nlt tag="${scopeTitle}"/></td>
+		  <td align="right">
 		  <form class="ss_dashboard_view_toolbar" method="post"
 		    action="<portlet:actionURL>
 		    <portlet:param name="action" value="modify_dashboard"/>
@@ -244,6 +320,7 @@ function ss_toggle_toolbars() {
 			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
 			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
 		  </form>
+		  </td></tr></table>
 		 </div>
 		 </div>
 		<div align="left" style="margin:0px; padding:2px;">

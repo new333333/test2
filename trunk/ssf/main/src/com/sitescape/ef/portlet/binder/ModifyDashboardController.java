@@ -48,21 +48,31 @@ public class ModifyDashboardController extends AbstractBinderController {
 		} else if (formData.containsKey("add_wideTop")) {
 			componentId = addComponent(request, binder, DashboardHelper.Wide_Top, scope);
 			response.setRenderParameter("_componentId", componentId);
+			response.setRenderParameter("_dashboardList", DashboardHelper.Wide_Top);
 		} else if (formData.containsKey("add_narrowFixed")) {
 			componentId = addComponent(request, binder, DashboardHelper.Narrow_Fixed, scope);
 			response.setRenderParameter("_componentId", componentId);
+			response.setRenderParameter("_dashboardList", DashboardHelper.Narrow_Fixed);
 		} else if (formData.containsKey("add_narrowVariable")) {
 			componentId = addComponent(request, binder, DashboardHelper.Narrow_Variable, scope);
 			response.setRenderParameter("_componentId", componentId);
+			response.setRenderParameter("_dashboardList", DashboardHelper.Narrow_Variable);
 		} else if (formData.containsKey("add_wideBottom")) {
 			componentId = addComponent(request, binder, DashboardHelper.Wide_Bottom, scope);
 			response.setRenderParameter("_componentId", componentId);
+			response.setRenderParameter("_dashboardList", DashboardHelper.Wide_Bottom);
 		} else if (formData.containsKey("_modifyComponentData") || formData.containsKey("_modifyComponentData.x")) {
 		} else if (formData.containsKey("_modifyConfigData") || formData.containsKey("_modifyConfigData.x")) {
 		} else if (formData.containsKey("_saveConfigData") || formData.containsKey("_saveConfigData.x")) {
 			saveComponentData(request, binder, scope);
 		} else if (formData.containsKey("_deleteComponent") || formData.containsKey("_deleteComponent.x")) {
 			deleteComponent(request, binder, scope);
+			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
+		} else if (formData.containsKey("_show") || formData.containsKey("_show.x")) {
+			showHideComponent(request, binder, scope, "show");
+			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
+		} else if (formData.containsKey("_hide") || formData.containsKey("_hide.x")) {
+			showHideComponent(request, binder, scope, "hide");
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("_moveUp") || formData.containsKey("_moveUp.x")) {
 			moveComponent(request, binder, scope, "up");
@@ -96,46 +106,6 @@ public class ModifyDashboardController extends AbstractBinderController {
 		Map model = new HashMap();
 		model.put(WebKeys.BINDER, binder);
 		
-		//Get the lists of dashboard components that are supported
-		String[] components_wide = SPropsUtil.getCombinedPropertyList(
-				"dashboard.components.wide", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
-		String[] components_narrowFixed = SPropsUtil.getCombinedPropertyList(
-				"dashboard.components.narrowFixed", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
-		String[] components_narrowVariable = SPropsUtil.getCombinedPropertyList(
-				"dashboard.components.narrowVariable", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
-		
-		List cw = new ArrayList();
-		List cnf = new ArrayList();
-		List cnv = new ArrayList();
-		Map componentTitles = new HashMap();
-		for (int i = 0; i < components_wide.length; i++) {
-			if (!components_wide[i].trim().equals("")) {
-				String component = components_wide[i].trim();
-				cw.add(component);
-				String componentTitle = SPropsUtil.getString("dashboard.title." + component, component);
-				componentTitles.put(component, componentTitle);
-			}
-		}
-		for (int i = 0; i < components_narrowFixed.length; i++) {
-			if (!components_narrowFixed[i].trim().equals("")) {
-				String component = components_narrowFixed[i].trim();
-				cnf.add(component);
-				String componentTitle = SPropsUtil.getString("dashboard.title." + component, component);
-				componentTitles.put(component, componentTitle);
-			}
-		}
-		for (int i = 0; i < components_narrowVariable.length; i++) {
-			if (!components_narrowVariable[i].trim().equals("")) {
-				String component = components_narrowVariable[i].trim();
-				cnv.add(component);
-				String componentTitle = SPropsUtil.getString("dashboard.title." + component, component);
-				componentTitles.put(component, componentTitle);
-			}
-		}
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_NARROW_FIXED, cnf);
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_NARROW_VARIABLE, cnv);
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_WIDE, cw);
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_TITLES, componentTitles);
 		ssDashboard.put(WebKeys.DASHBOARD_LIST, dashboardList);
 		ssDashboard.put(WebKeys.DASHBOARD_SCOPE, scope);
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_ID, componentId);
@@ -158,7 +128,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 		} else if (formData.containsKey("_modifyConfigData") || formData.containsKey("_modifyConfigData.x")) {
 			ssDashboard.put(WebKeys.DASHBOARD_RETURN_VIEW, "form");
 		} else if (formData.containsKey("_saveConfigData") || formData.containsKey("_saveConfigData.x")) {
-			if (returnView.equals("binder")) view = "binder/modify_dashboard_component";
+			view = "binder/modify_dashboard_component";
 		} else if (formData.containsKey("_deleteComponent") || formData.containsKey("_deleteComponent.x")) {
 		} else if (formData.containsKey("_moveUp") || formData.containsKey("_moveUp.x")) {
 		} else if (formData.containsKey("_moveDown") || formData.containsKey("_moveDown.x")) {
@@ -268,6 +238,33 @@ public class ModifyDashboardController extends AbstractBinderController {
 				if (id.equals(componentId)) {
 					//We have found the component to be deleted
 					dashboardList.remove(i);
+					break;
+				}
+			}
+		}
+		//Save the updated dashbord configuration 
+		saveDashboard(binder, scope, dashboard);
+	}
+
+	private void showHideComponent(ActionRequest request, Binder binder, String scope, String action) {
+		Map dashboard = getDashboard(binder, scope);
+
+		//Get the dashboard component
+		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
+		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
+
+		if (!dashboardListKey.equals("") && dashboard.containsKey(dashboardListKey)) {
+			List dashboardList = (List) dashboard.get(dashboardListKey);
+			for (int i = 0; i < dashboardList.size(); i++) {
+				Map component = (Map) dashboardList.get(i);
+				String id = (String) component.get(DashboardHelper.Id);
+				if (id.equals(componentId)) {
+					//We have found the component to be shown or hidden
+					if (action.equals("show")) {
+						component.put(DashboardHelper.Visible, true);
+					} else if (action.equals("hide")) {
+						component.put(DashboardHelper.Visible, false);
+					}
 					break;
 				}
 			}
