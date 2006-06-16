@@ -23,10 +23,15 @@
 <div style="margin:6px;">
 <h3><ssf:nlt tag="dashboard.configure" text="Configure dashboard options"/></h3>
 
-<div class="ss_form"><form 
-class="ss_form" method="post"><div class="ss_form ss_buttonBarRight"><input 
-type="submit" class="ss_submit" name="closeBtn" 
-  value="<ssf:nlt tag="button.close" text="Close"/>"></form></div>
+<div class="ss_form">
+<form class="ss_form" method="post">
+<div class="ss_form ss_buttonBarRight">
+<input type="submit" class="ss_submit" name="closeBtn" 
+  value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="hidden" name="_returnView" value="binder"/>
+</div>
+</form>
+</div>
 
 <div class="ss_form">
 <c:if test="${ssDashboard.scope == 'local'}">
@@ -45,6 +50,28 @@ type="submit" class="ss_submit" name="closeBtn"
 <br/>
 <br/>
 
+  <table><tr><td>
+  <ul>
+  <li><a href="<portlet:actionURL>
+  <portlet:param name="action" value="modify_dashboard"/>
+  <portlet:param name="binderId" value="${ssBinder.id}"/>
+  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
+  <portlet:param name="_scope" value="local"/>
+  </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.local"/></a></li>
+  <li><a href="<portlet:actionURL>
+  <portlet:param name="action" value="modify_dashboard"/>
+  <portlet:param name="binderId" value="${ssBinder.id}"/>
+  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
+  <portlet:param name="_scope" value="global"/>
+  </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.global"/></a></li>
+  <li><a href="<portlet:actionURL>
+  <portlet:param name="action" value="modify_dashboard"/>
+  <portlet:param name="binderId" value="${ssBinder.id}"/>
+  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
+  <portlet:param name="_scope" value="binder"/>
+  </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.binder"/></a></li>
+  </ul>
+  </td></tr></table>
   
 <form method="post" >
 <span class="ss_bold"><ssf:nlt tag="dashboard.title" /></span><br/>
@@ -72,10 +99,23 @@ type="submit" class="ss_submit" name="closeBtn"
     
       <c:forEach var="component" items="${ssDashboard.wide_top}">
 		<c:set var="id" value="${component.id}"/>
+		<c:set var="scope" value="${component.scope}"/>
+		<c:set var="scopeTitle" value="dashboard.local"/>
+		<c:if test="${scope == 'global'}">
+		  <c:set var="scopeTitle" value="dashboard.global"/>
+		</c:if>
+		<c:if test="${scope == 'binder'}">
+		  <c:set var="scopeTitle" value="dashboard.binder"/>
+		</c:if>
 		<div class="ss_shadowbox">
 		<div class="ss_shadowbox2 ss_dashboard_view">
 		 <div class="ss_dashboard_view_toolbar">
-		  <div align="right">
+		  <div>
+		  <table class="ss_dashboard_view_toolbar" 
+		    cellspacing="0" cellpadding="0" style="width:100%;">
+		  <tr>
+		  <td><ssf:nlt tag="${scopeTitle}"/></td>
+		  <td align="right">
 		  <form class="ss_dashboard_view_toolbar" method="post" 
 		    action="<portlet:actionURL>
 		    <portlet:param name="action" value="modify_dashboard"/>
@@ -97,6 +137,7 @@ type="submit" class="ss_submit" name="closeBtn"
 			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
 			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
 		  </form>
+		  </td></tr></table>
 		  </div>
 		 </div>
 		<div align="left" style="margin:0px; padding:2px;">
@@ -120,7 +161,10 @@ type="submit" class="ss_submit" name="closeBtn"
       </select>
       <input type="submit" name="add_wideTop" 
         value="<ssf:nlt tag="button.add"/>"/>
-      <input type="hidden" name="scope" value="${ssDashboard.scope}"/>
+	  <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
+	  <input type="hidden" name="_componentId" value="">
+	  <input type="hidden" name="_scope" value="${ssDashboard.scope}"/>
+	  <input type="hidden" name="_returnView" value="form"/>
       </form>
     </td>
   </tr>
@@ -129,11 +173,24 @@ type="submit" class="ss_submit" name="closeBtn"
     <td valign="top">
       <c:forEach var="component" items="${ssDashboard.narrow_fixed}">
 		<c:set var="id" value="${component.id}"/>
+		<c:set var="scope" value="${component.scope}"/>
+		<c:set var="scopeTitle" value="dashboard.local"/>
+		<c:if test="${scope == 'global'}">
+		  <c:set var="scopeTitle" value="dashboard.global"/>
+		</c:if>
+		<c:if test="${scope == 'binder'}">
+		  <c:set var="scopeTitle" value="dashboard.binder"/>
+		</c:if>
 		<div class="ss_shadowbox" style="width:${ssDashboard.narrowFixedWidth}px;">
 		<div class="ss_shadowbox2 ss_dashboard_view" style="width:${ssDashboard.narrowFixedWidth}px;">
 		 <div class="ss_dashboard_view_toolbar" 
 		   style="width:${ssDashboard.narrowFixedWidth}px;">
-		  <div align="right">
+		  <div>
+		  <table class="ss_dashboard_view_toolbar" 
+		    cellspacing="0" cellpadding="0" style="width:100%;">
+		  <tr>
+		  <td><ssf:nlt tag="${scopeTitle}"/></td>
+		  <td align="right">
 		  <form class="ss_dashboard_view_toolbar" style="display:inline;"
 		    method="post" action="<portlet:actionURL>
 		  <portlet:param name="action" value="modify_dashboard"/>
@@ -155,6 +212,7 @@ type="submit" class="ss_submit" name="closeBtn"
 			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
 			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
 		  </form>
+		  </td></tr></table>
 		 </div>
 		 </div>
 		<div align="left" style="margin:0px; padding:2px;">
@@ -180,17 +238,33 @@ type="submit" class="ss_submit" name="closeBtn"
         </select>
         <input type="submit" name="add_narrowFixed" 
           value="<ssf:nlt tag="button.add"/>"/>
-        <input type="hidden" name="scope" value="${ssDashboard.scope}"/>
+	    <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
+	    <input type="hidden" name="_componentId" value="">
+	    <input type="hidden" name="_scope" value="${ssDashboard.scope}"/>
+	    <input type="hidden" name="_returnView" value="form"/>
         </form>
     </td>
     <td>&nbsp;&nbsp;</td>
     <td valign="top">
       <c:forEach var="component" items="${ssDashboard.narrow_variable}">
 		<c:set var="id" value="${component.id}"/>
+		<c:set var="scope" value="${component.scope}"/>
+		<c:set var="scopeTitle" value="dashboard.local"/>
+		<c:if test="${scope == 'global'}">
+		  <c:set var="scopeTitle" value="dashboard.global"/>
+		</c:if>
+		<c:if test="${scope == 'binder'}">
+		  <c:set var="scopeTitle" value="dashboard.binder"/>
+		</c:if>
 		<div class="ss_shadowbox">
 		<div class="ss_shadowbox2 ss_dashboard_view" align="left">
 		 <div class="ss_dashboard_view_toolbar">
-		  <div align="right">
+		  <div>
+		  <table class="ss_dashboard_view_toolbar" 
+		    cellspacing="0" cellpadding="0" style="width:100%;">
+		  <tr>
+		  <td><ssf:nlt tag="${scopeTitle}"/></td>
+		  <td align="right">
 		  <form class="ss_dashboard_view_toolbar" method="post" action="<portlet:actionURL>
 		  <portlet:param name="action" value="modify_dashboard"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -211,6 +285,7 @@ type="submit" class="ss_submit" name="closeBtn"
 			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
 			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
 		  </form>
+		  </td></tr></table>
 		 </div>
 		 </div>
 		<div align="left" style="margin:0px; padding:2px;">
@@ -234,7 +309,10 @@ type="submit" class="ss_submit" name="closeBtn"
         </select>
         <input type="submit" name="add_narrowVariable" 
           value="<ssf:nlt tag="button.add"/>"/>
-        <input type="hidden" name="scope" value="${ssDashboard.scope}"/>
+	    <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
+	    <input type="hidden" name="_componentId" value="">
+	    <input type="hidden" name="_scope" value="${ssDashboard.scope}"/>
+	    <input type="hidden" name="_returnView" value="form"/>
         </form>
     </td>
   </tr>
@@ -242,10 +320,23 @@ type="submit" class="ss_submit" name="closeBtn"
     <td colspan="3">
       <c:forEach var="component" items="${ssDashboard.wide_bottom}">
 		<c:set var="id" value="${component.id}"/>
+		<c:set var="scope" value="${component.scope}"/>
+		<c:set var="scopeTitle" value="dashboard.local"/>
+		<c:if test="${scope == 'global'}">
+		  <c:set var="scopeTitle" value="dashboard.global"/>
+		</c:if>
+		<c:if test="${scope == 'binder'}">
+		  <c:set var="scopeTitle" value="dashboard.binder"/>
+		</c:if>
 		<div class="ss_shadowbox">
 		<div class="ss_shadowbox2 ss_dashboard_view">
 		 <div class="ss_dashboard_view_toolbar" align="right">
-		  <div align="right">
+		  <div>
+		  <table class="ss_dashboard_view_toolbar" 
+		    cellspacing="0" cellpadding="0" style="width:100%;">
+		  <tr>
+		  <td><ssf:nlt tag="${scopeTitle}"/></td>
+		  <td align="right">
 		  <form class="ss_dashboard_view_toolbar" method="post"
 		    action="<portlet:actionURL>
 		    <portlet:param name="action" value="modify_dashboard"/>
@@ -267,6 +358,7 @@ type="submit" class="ss_submit" name="closeBtn"
 			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
 			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
 		  </form>
+		  </td></tr></table>
 		 </div>
 		 </div>
 		<div align="left" style="margin:0px; padding:2px;">
@@ -290,7 +382,10 @@ type="submit" class="ss_submit" name="closeBtn"
         </select>
         <input type="submit" name="add_wideBottom" 
           value="<ssf:nlt tag="button.add"/>"/>
-        <input type="hidden" name="scope" value="${ssDashboard.scope}"/>
+	    <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
+	    <input type="hidden" name="_componentId" value="">
+	    <input type="hidden" name="_scope" value="${ssDashboard.scope}"/>
+	    <input type="hidden" name="_returnView" value="form"/>
         </form>
     </td>
   </tr>
@@ -302,6 +397,7 @@ type="submit" class="ss_submit" name="closeBtn"
 <div class="ss_buttonBarLeft">
 <form method="post">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="hidden" name="_returnView" value="binder"/>
 </form>
 </div>
 
