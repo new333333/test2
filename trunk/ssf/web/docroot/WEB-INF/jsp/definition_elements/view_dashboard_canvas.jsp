@@ -23,8 +23,8 @@ function ss_toggle_toolbars() {
 <table cellspacing="0" cellpadding="0" style="width:100%;">
 <tr>
   <td align="left" valign="top" nowrap width="2%">
-    <span class="ss_bold"><c:out value="${ssDashboard.dashboard.title}"/> 
-      <c:if test="${ssDashboard.dashboard.includeBinderTitle}">
+    <span class="ss_bold"><c:out value="${ssDashboard.title}"/> 
+      <c:if test="${ssDashboard.includeBinderTitle}">
         <c:out value="${ssBinder.title}"/>
       </c:if>
     </span>
