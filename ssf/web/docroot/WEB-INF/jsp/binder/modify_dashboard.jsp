@@ -123,6 +123,7 @@
 			    <portlet:param name="binderId" value="${ssBinder.id}"/>
 			    <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 			    </portlet:actionURL>">
+				<input type="hidden" name="_scope" value="${ssDashboard.scope}">
 				<input type="hidden" name="_dashboardList" value="wide_top">
 				<input type="hidden" name="_componentId" value="${id}">
 				<input type="hidden" name="_returnView" value="form"/>
@@ -221,6 +222,7 @@
 			  <portlet:param name="binderId" value="${ssBinder.id}"/>
 			  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 			  </portlet:actionURL>">
+				<input type="hidden" name="_scope" value="${ssDashboard.scope}">
 				<input type="hidden" name="_dashboardList" value="narrow_fixed">
 				<input type="hidden" name="_componentId" value="${id}">
 				<input type="hidden" name="_returnView" value="form"/>
@@ -317,6 +319,7 @@
 			  <portlet:param name="binderId" value="${ssBinder.id}"/>
 			  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 			  </portlet:actionURL>">
+				<input type="hidden" name="_scope" value="${ssDashboard.scope}">
 				<input type="hidden" name="_dashboardList" value="narrow_variable">
 				<input type="hidden" name="_componentId" value="${id}">
 				<input type="hidden" name="_returnView" value="form"/>
@@ -413,6 +416,7 @@
 			    <portlet:param name="binderId" value="${ssBinder.id}"/>
 			    <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 			    </portlet:actionURL>">
+				<input type="hidden" name="_scope" value="${ssDashboard.scope}">
 				<input type="hidden" name="_dashboardList" value="wide_bottom">
 				<input type="hidden" name="_componentId" value="${id}">
 				<input type="hidden" name="_returnView" value="form"/>
