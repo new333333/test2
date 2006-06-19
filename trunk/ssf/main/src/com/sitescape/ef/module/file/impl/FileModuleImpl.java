@@ -544,9 +544,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		// Forcefully unlock the file (if locked). We discard pending
 		// changes for the file for obvious reason - The file is soon
-		// to be deleted. 
+		// to be deleted.
+		// 
+		// 6/18/06 JK - It appears that JSR-170 does not provide a way to 
+		// uncheckout a previously checked-in file (strange?) Therefore, 
+		// we will simply checkin the file (hence possibly creating a 
+		// new version) before deletion. Not ideal, but it works. 
 		try {
-			closeLock(binder, entry, fAtt, false);
+			//closeLock(binder, entry, fAtt, false);
+			closeLock(binder, entry, fAtt, true);
 		}
 		catch(Exception e) {
 			logger.error("Error canceling lock on file " + relativeFilePath, e);
@@ -1227,13 +1233,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}		
 	}       
     
+	/*
     private void closeLocksTransactional(Binder binder, DefinableEntity entity,
     		boolean commit) throws RepositoryServiceException,
     		UncheckedIOException {
     	if(closeLocks(binder, entity, commit))
     		triggerUpdateTransaction();   	
-    }
+    }*/
     
+	/*
     private boolean closeLocks(Binder binder, DefinableEntity entity,
     		boolean commit) throws RepositoryServiceException,
     		UncheckedIOException {
@@ -1255,14 +1263,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	
 	    	return metadataDirty;  	
     	}
-    }
+    }*/
     
+    /*
     private void closeLockTransactional(Binder binder, DefinableEntity entity,
     		FileAttachment fa, boolean commit) throws RepositoryServiceException,
     		UncheckedIOException {
     	if(closeLock(binder, entity, fa, commit))
     		this.triggerUpdateTransaction();
-    }
+    }*/
 
     private boolean closeLock(Binder binder, DefinableEntity entity, 
     		FileAttachment fa, boolean commit) throws RepositoryServiceException,
@@ -1322,12 +1331,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	}
     }
     
+    /*
     private void closeExpiredLockTransactional(Binder binder, DefinableEntity entity,
     		FileAttachment fa, boolean commit) throws RepositoryServiceException,
     		UncheckedIOException {
     	if(closeExpiredLock(binder, entity, fa, commit))
     		this.triggerUpdateTransaction();
-    }
+    }*/
     
     private boolean closeExpiredLock(Binder binder, DefinableEntity entity, 
     		FileAttachment fa, boolean commit) throws RepositoryServiceException,

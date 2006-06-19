@@ -216,8 +216,9 @@ public interface RepositorySession {
 		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
-	 * Reads from the repository system the content of the specified version 
-	 * of the file resource. 
+	 * Returns an <code>InputStream</code> from which to read the content of
+	 * the specified version of the file resource from the repository.
+	 * The caller is responsible for closing the stream after use. 
 	 * 
 	 * @param session
 	 * @param binder
@@ -225,12 +226,11 @@ public interface RepositorySession {
 	 * @param relativeFilePath A pathname of the file relative to the entity. This may
 	 * simply be the name of the file. 
 	 * @param versionName the name of the version
-	 * @param out
 	 * @throws RepositoryServiceException thrown if the specified version does
 	 * not exist, or if some other error occurs
 	 */
-	public void readVersion(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, String versionName, OutputStream out) 
+	public InputStream readVersion(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, String versionName) 
 		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
@@ -354,9 +354,9 @@ public interface RepositorySession {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public boolean isCheckedOut(Binder binder, 
-			DefinableEntity entity, String relativeFilePath) 
-		throws RepositoryServiceException, UncheckedIOException;
+	//public boolean isCheckedOut(Binder binder, 
+	//		DefinableEntity entity, String relativeFilePath) 
+	//	throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
 	 * Returns whether the specified file resource exists or not. 
