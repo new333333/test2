@@ -1,6 +1,9 @@
 package com.sitescape.ef.module.folder.impl;
 
 import java.util.Iterator;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import com.sitescape.util.cal.Duration;
 
 import org.dom4j.io.SAXReader;
 import org.springframework.core.io.ClassPathResource;
@@ -14,6 +17,7 @@ import com.sitescape.ef.dao.impl.FolderDaoImpl;
 import com.sitescape.ef.dao.impl.ProfileDaoImpl;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
@@ -184,6 +188,150 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 
 			wfi.modifyWorkflowState(entry, ws, "end");
 		} finally {
+			WorkflowFactory.release();
+		}
+		
+	}
+	/**
+	 * Test transitions on a date field
+	 * This isn't an exact real scenerio since we are forcing the checks by
+	 * calling "modifyWorkflowStateOnUpdate", instead of allowing the system timer
+	 * to do the work.
+	 *
+	 */
+	public void testDateTransition() {
+		Workspace top = createZone(zoneName);
+		Folder folder = createFolder(top, "testFolder");
+
+		try {
+			Definition commandDef = importCommand("testEntry");
+		
+			Definition workflowDef = importWorkflow("testDateTransitions");
+			FolderEntry entry = createEntry(folder);
+			entry.setEntryDef(commandDef);
+			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
+			WorkflowState ws = checkState(entry, "start");
+			wfi.modifyWorkflowState(entry, ws, "doDates");
+			checkState(ws, "doDates");
+			Date passed = new Date(0);
+			CustomAttribute attr = entry.addCustomAttribute("datePassed", passed);			
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "datePassed");
+			entry.removeCustomAttribute("datePassed");
+			wfi.modifyWorkflowState(entry, ws, "doDates");
+			checkState(ws, "doDates");
+			passed = new Date();
+			passed.setTime(passed.getTime() + 50000);
+			attr = entry.addCustomAttribute("dateBefore", passed);
+			
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "dateBefore");
+			entry.removeCustomAttribute("dateBefore");
+			wfi.modifyWorkflowState(entry, ws, "doDates");
+			checkState(ws, "doDates");
+			passed = new Date();
+			passed.setTime(passed.getTime() - 70000);
+			attr = entry.addCustomAttribute("dateAfter", passed);
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "dateAfter");
+	} finally {
+			WorkflowFactory.release();
+		}
+		
+	}
+
+	public void testEventNoRecurTransition() {
+		Workspace top = createZone(zoneName);
+		Folder folder = createFolder(top, "testFolder");
+
+		try {
+			Definition commandDef = importCommand("testEntry");
+		
+			Definition workflowDef = importWorkflow("testDateTransitions");
+			FolderEntry entry = createEntry(folder);
+			entry.setEntryDef(commandDef);
+			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
+			WorkflowState ws = checkState(entry, "start");
+			wfi.modifyWorkflowState(entry, ws, "doNoRecur");
+			checkState(ws, "doNoRecur");
+			
+			//event started 1 minute ago
+			GregorianCalendar cal = new GregorianCalendar();
+			Event event = new Event();
+			cdi.save(event);
+			Date date = new Date();
+			cal.setTimeInMillis(date.getTime()-60000);
+			CustomAttribute attr = entry.addCustomAttribute("eventStarted", event);			
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "eventStarted");
+			entry.removeCustomAttribute("eventStarted");
+			wfi.modifyWorkflowState(entry, ws, "doNoRecur");
+			checkState(ws, "doNoRecur");
+
+			//event started 1 minute ago and lasted 30 seconds
+			cal = new GregorianCalendar();
+			date = new Date();
+			cal.setTimeInMillis(date.getTime()-60*1000);
+			event = new Event(cal, new Duration(0,0,30));
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventEnded", event);			
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "eventEnded");
+			entry.removeCustomAttribute("eventEnded");
+			wfi.modifyWorkflowState(entry, ws, "doNoRecur");
+
+			//event starts in 59 minutes and lasts 30 seconds
+			cal = new GregorianCalendar();
+			date = new Date();
+			//Test 1 hour before trigger
+			cal.setTimeInMillis(date.getTime()+59*60*1000);
+			event = new Event(cal, new Duration(0,0,30));
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventBeforeStart", event);			
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "eventBeforeStart");
+			entry.removeCustomAttribute("eventBeforeStart");
+			wfi.modifyWorkflowState(entry, ws, "doNoRecur");
+
+			//event started 26 minutes ago, and lasts for 30 minues
+			cal = new GregorianCalendar();
+			date = new Date();
+			//check for 5 minutes before end 
+			cal.setTimeInMillis(date.getTime()-26*60*1000);
+			event = new Event(cal, new Duration(0,30,0));
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventBeforeEnd", event);			
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "eventBeforeEnd");
+			entry.removeCustomAttribute("eventBeforeEnd");
+			wfi.modifyWorkflowState(entry, ws, "doNoRecur");
+			
+			//event started 1 day and 1 minute ago and lasted 30 seconds
+			cal = new GregorianCalendar();
+			date = new Date();
+			//test 1 day after trigger
+			cal.setTimeInMillis(date.getTime()-24*61*60*1000);
+			event = new Event(cal, new Duration(0,0,30));
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventAfterStart", event);			
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "eventAfterStart");
+			entry.removeCustomAttribute("eventAfterStart");
+			wfi.modifyWorkflowState(entry, ws, "doNoRecur");
+
+			//event started 2 minutes ago and lasted 30 seconds
+			cal = new GregorianCalendar();
+			date = new Date();
+			//test 1 minute after end
+			cal.setTimeInMillis(date.getTime()-120*1000);
+			event = new Event(cal, new Duration(0,0,30));
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventAfterEnd", event);			
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "eventAfterEnd");
+			entry.removeCustomAttribute("eventAfterEnd");
+			wfi.modifyWorkflowState(entry, ws, "doNoRecur");
+	} finally {
 			WorkflowFactory.release();
 		}
 		

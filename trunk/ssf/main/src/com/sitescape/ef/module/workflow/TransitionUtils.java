@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +34,7 @@ import com.sitescape.util.Validator;
 public class TransitionUtils {
 	protected static Log logger = LogFactory.getLog(TransitionUtils.class);
 	protected static boolean infoEnabled=logger.isInfoEnabled();
+	protected static boolean debugEnabled=logger.isDebugEnabled();
 	protected static BusinessCalendar businessCalendar = new BusinessCalendar();
 
 	/**
@@ -165,8 +168,10 @@ public class TransitionUtils {
 	private static String processConditions(ExecutionContext executionContext, WorkflowSupport entry, WorkflowState state, 
 			boolean isModify, boolean isReply) {
 		List conditions = WorkflowUtils.getConditionElements(state.getDefinition(), state.getState());
-		Date currentDate = new Date();
+//		Date currentDate = new Date();
 		Date minDate = new Date(0);
+		GregorianCalendar currentCal = new GregorianCalendar();
+		boolean debug = true;
 		for (int i=0; i<conditions.size(); ++i) {
 			Element condition = (Element)conditions.get(i);
 //			if ((condition.getEntryDefId() != null) && (entryDef != null)) {
@@ -246,11 +251,31 @@ public class TransitionUtils {
 								} else if ("checkedNot".equals(operation)) {
 									if (currentVal.toString().equals("true")) currentMatch=false;
 								} else if ("datePassed".equals(operation)) {
-									if (!passedDate(eCondition, currentVal, currentDate, minDate)) currentMatch = false;
+									if (!passedDate(eCondition, currentVal, currentCal, minDate)) currentMatch = false;
 								} else if ("beforeDate".equals(operation)) {
-									if (!beforeDate(eCondition, currentVal, currentDate, minDate)) currentMatch = false;
+									if (!beforeDate(eCondition, currentVal, currentCal, minDate)) currentMatch = false;
 								} else if ("afterDate".equals(operation)) {
-									if (!afterDate(eCondition, currentVal, currentDate, minDate)) currentMatch = false;
+									if (!afterDate(eCondition, currentVal, currentCal, minDate)) currentMatch = false;
+
+								} else if (currentVal instanceof Event) {
+									Event e = (Event)currentVal;
+									if (e.getFrequency() == Event.NO_RECURRENCE) {
+										if ("beforeStart".equals(operation)) {
+											if (!beforeDate(eCondition, e.getDtStart().getTime(), currentCal, minDate)) currentMatch = false;									
+										} else if ("afterStart".equals(operation)) {
+											if (!afterDate(eCondition, e.getDtStart().getTime(), currentCal, minDate)) currentMatch = false;							
+										} else if ("started".equals(operation)) {
+											if (!passedDate(eCondition, e.getDtStart().getTime(), currentCal, minDate)) currentMatch = false;
+										} else if ("ended".equals(operation)) {
+											if (!passedDate(eCondition, e.getDtEnd().getTime(), currentCal, minDate)) currentMatch = false;
+										} else if ("afterEnd".equals(operation)) {
+											if (!afterDate(eCondition, e.getDtEnd().getTime(), currentCal, minDate)) currentMatch = false;							
+										} else if ("beforeEnd".equals(operation)) {
+											if (!beforeDate(eCondition, e.getDtEnd().getTime(), currentCal, minDate)) currentMatch = false;									
+										}
+									} else {
+										
+									}
 								} else currentMatch=false;
 
 							}
@@ -328,11 +353,11 @@ public class TransitionUtils {
     	return null;
 	}
 	
-	private static boolean passedDate(Element condition, Object currentVal, Date currentDate, Date minDate) {
+	private static boolean passedDate(Element condition, Object currentVal, Calendar currentCal, Date minDate) {
 		if (currentVal instanceof Date) {
 			Date c = (Date)currentVal;
 			//if already passed, don't need to update minDate
-			if (!currentDate.before(c)) return true;
+			if (!currentCal.getTime().before(c)) return true;
 			updateMinimum(minDate,c);
 			return false;
 		} else if (currentVal instanceof Event) {
@@ -340,12 +365,12 @@ public class TransitionUtils {
 		}
 		return false;
 	}
-	private static boolean beforeDate(Element condition, Object currentVal, Date currentDate, Date minDate) {
+	private static boolean beforeDate(Element condition, Object currentVal, Calendar currentCal, Date minDate) {
 		if (currentVal instanceof Date) {
 			Date c = (Date)currentVal;
 			//if already passed, don't need to update minDate
 			Date cDate = adjustDate(condition, c, false);
-			if (currentDate.after(cDate)) return true;
+			if (currentCal.getTime().after(cDate)) return true;
 			updateMinimum(minDate,cDate);
 			return false;
 		} else if (currentVal instanceof Event) {
@@ -353,12 +378,12 @@ public class TransitionUtils {
 		}
 		return false;
 	}
-	private static boolean afterDate(Element condition, Object currentVal, Date currentDate, Date minDate) {
+	private static boolean afterDate(Element condition, Object currentVal, Calendar currentCal, Date minDate) {
 		if (currentVal instanceof Date) {
 			Date c = (Date)currentVal;
 			//if already passed, don't need to update minDate
 			Date cDate = adjustDate(condition, c, true);
-			if (currentDate.after(cDate)) return true;
+			if (currentCal.getTime().after(cDate)) return true;
 			updateMinimum(minDate,cDate);
 			return false;
 		} else if (currentVal instanceof Event) {
