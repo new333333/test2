@@ -31,6 +31,8 @@ public class ExitEvent extends AbstractActionHandler {
 		WorkflowState ws = entry.getWorkflowState(id);
 		if (ws != null) {
 			if (infoEnabled) logger.info("Workflow event (" + executionContext.getEvent().getEventType() + ")");
+			//cancel timers associated with this state.
+			token.getProcessInstance().getSchedulerInstance().cancel("onDataValue", token);
 			List items  = WorkflowUtils.getItems(ws.getDefinition(), state);
 			boolean check = false;
 			for (int i=0; i<items.size(); ++i) {

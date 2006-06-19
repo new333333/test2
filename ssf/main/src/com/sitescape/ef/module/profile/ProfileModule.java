@@ -7,6 +7,7 @@ package com.sitescape.ef.module.profile;
 import java.util.Collection;
 import java.util.Map;
 import java.util.List;
+import java.util.Set;
 
 import org.dom4j.Document;
 
@@ -48,11 +49,18 @@ public interface ProfileModule {
 
     public List getGroups(Long binderId);
     public Map getGroups(Long binderId, int maxEntries, Document searchFilter);
-	public Collection getGroups(List groupds);
+	public Collection getGroups(Set groupIds);
     public Map getUsers(Long binderId);
     public Map getUsers(Long binderId, int maxEntries);
     public Map getUsers(Long binderId, int maxEntries, Document searchFilter);
-	public Collection getUsers(List userIds);
+	public Collection getUsers(Set userIds);
+	/**
+	 * Return a collection of user.  The are either in the principal list
+	 * or members of groups in the principal list.
+	 * @param principalIds
+	 * @return
+	 */
+	public Collection getUsersFromPrincipals(Set principalIds);
     	   
     public void indexEntries(Long binderId);
     public UserProperties setUserProperty(Long userId, Long folderId, String property, Object value);

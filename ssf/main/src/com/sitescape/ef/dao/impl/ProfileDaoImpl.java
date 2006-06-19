@@ -315,7 +315,6 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                    User user = (User)session.getNamedQuery("find-User-Company")
                         		.setString(ParameterNames.USER_NAME, userName)
                         		.setString(ParameterNames.COMPANY_ID, zoneName)
-                        		.setCacheable(true)
                         		.uniqueResult();
                    if (user == null) {
                        throw new NoUserByTheNameException(userName); 

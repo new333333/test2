@@ -29,7 +29,7 @@
 
         -->
     <defaultCache
-        maxElementsInMemory="1000"
+        maxElementsInMemory="100"
         eternal="false"
         timeToIdleSeconds="120"
         timeToLiveSeconds="120"
@@ -55,35 +55,32 @@
 
         -->
 <cache name="com.sitescape.ef.domain.Principal" 
-	maxElementsInMemory="100" eternal="false"
-	timeToIdleSeconds="300" timeToLiveSeconds="600"
-	overflowToDisk="false"/>
-<cache name="com.sitescape.ef.domain.Principal.HMemberOf" 
 	maxElementsInMemory="300" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
+<cache name="com.sitescape.ef.domain.Principal.memberOf" 
+	maxElementsInMemory="300" eternal="false"
+	timeToIdleSeconds="300" timeToLiveSeconds="600"
+	overflowToDisk="false"/>
+
 <cache name="com.sitescape.ef.domain.Binder" 
+	maxElementsInMemory="500" eternal="false"
+	timeToIdleSeconds="300" timeToLiveSeconds="600"
+	overflowToDisk="false"/>
+<cache name="com.sitescape.ef.domain.Binder.definitions" 
 	maxElementsInMemory="300" eternal="false"
+	timeToIdleSeconds="300" timeToLiveSeconds="600"
+	overflowToDisk="false"/>
+<cache name="com.sitescape.ef.domain.Binder.binders" 
+	maxElementsInMemory="500" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
 	
-<cache name="com.sitescape.ef.domain.Binder.HDefinitions" 
-	maxElementsInMemory="300" eternal="false"
-	timeToIdleSeconds="300" timeToLiveSeconds="600"
-	overflowToDisk="false"/>
-<cache name="com.sitescape.ef.domain.Folder.HFolders" 
-	maxElementsInMemory="300" eternal="false"
-	timeToIdleSeconds="300" timeToLiveSeconds="600"
-	overflowToDisk="false"/>
-	
-<cache name="com.sitescape.ef.domain.Workspace.HBinders" 
-	maxElementsInMemory="300" eternal="false"
-	timeToIdleSeconds="300" timeToLiveSeconds="600"
-	overflowToDisk="false"/>
 <cache name="com.sitescape.ef.domain.Definition" 
 	maxElementsInMemory="100" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
+
 <cache name="com.sitescape.ef.security.function.Function" 
 	maxElementsInMemory="300" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
@@ -92,6 +89,7 @@
 	maxElementsInMemory="300" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
+
 <cache name="com.sitescape.ef.security.function.WorkAreaFunctionMembership" 
 	maxElementsInMemory="300" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"

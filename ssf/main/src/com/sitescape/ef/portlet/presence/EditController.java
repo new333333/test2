@@ -74,17 +74,26 @@ public class EditController extends SAbstractController {
 		String[] uIds = request.getPreferences().getValues(WebKeys.PRESENCE_PREF_USER_LIST, new String[0]);
 		String[] gIds = request.getPreferences().getValues(WebKeys.PRESENCE_PREF_GROUP_LIST, new String[0]);
 
-		//Build the jsp bean (sorted by folder title)
-		List<Long> userIds = new ArrayList<Long>();
+		Set<Long> userIds = new HashSet<Long>();
 		for (int i = 0; i < uIds.length; i++) {
 			userIds.add(new Long(uIds[i]));
 		}
-		List<Long> groupIds = new ArrayList<Long>();
 		for (int i = 0; i < gIds.length; i++) {
-			groupIds.add(new Long(gIds[i]));
+			userIds.add(new Long(gIds[i]));
 		}
-		model.put(WebKeys.USERS, getProfileModule().getUsers(userIds));
-		model.put(WebKeys.GROUPS, getProfileModule().getGroups(groupIds));
+
+		model.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(userIds));
+		//Build the jsp bean (sorted by folder title)
+//		List<Long> userIds = new ArrayList<Long>();
+//		for (int i = 0; i < uIds.length; i++) {
+//			userIds.add(new Long(uIds[i]));
+//		}
+//		List<Long> groupIds = new ArrayList<Long>();
+//		for (int i = 0; i < gIds.length; i++) {
+//			groupIds.add(new Long(gIds[i]));
+//		}
+//		model.put(WebKeys.USERS, getProfileModule().getUsers(userIds));
+//		model.put(WebKeys.GROUPS, getProfileModule().getGroups(groupIds));
 		
 		return new ModelAndView(WebKeys.VIEW_PRESENCE_EDIT, model);
 	}

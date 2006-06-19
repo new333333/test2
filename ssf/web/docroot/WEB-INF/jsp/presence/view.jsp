@@ -19,6 +19,13 @@
 <c:set var="userIdList" value=""/>
 <jsp:useBean id="userIdList" type="java.lang.String" />
 
+<script language="JavaScript">
+var ss_presenceTimer = setTimeout("ss_presenceTimeout()", 300000);
+function ss_presenceTimeout() {
+	ss_getPresence();
+ss_presenceTimer = setTimeout("ss_presenceTimeout()", 300000);
+}	
+</script>
 <div id="ss_showpresence" class="ss_portlet_style ss_portlet">
 
 <% // Toolbar %>
@@ -32,14 +39,16 @@ function ss_showNotLoggedInMsg() {
 }
 </script>
 <div id="ss_presence_status_message" class="ss_portlet_style" style="visibility:hidden; display:none;"></div>
-
+<div id="ss_refreshDate" class="ss_portlet_style">
+<ssf:nlt tag="presence.last.refresh"/> <fmt:formatDate value="<%= new java.util.Date() %>" type="both" />
+</div>
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
 	<td>
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td valign="top">
-				<c:if test="${empty ssUsers}">
+				<c:if test="${empty ssUsers and empty ssGroups}">
 				  <ssf:nlt tag="portlet.notConfigured" 
 				   text="The portlet preferences are not set.  Choose the edit button to configure the portlet."/>
 				 </c:if>
@@ -94,6 +103,7 @@ function ss_showNotLoggedInMsg() {
 <script type="text/javascript">
 var count = 0
 function ss_getPresence() {
+	clearTimeout(ss_presenceTimer);
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_presence" 

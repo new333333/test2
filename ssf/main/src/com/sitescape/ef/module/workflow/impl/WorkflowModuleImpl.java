@@ -359,6 +359,13 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    		decisionAction = (Action) actions.get("decisionAction");
 	    	}
 	    	
+	    	Action timerAction = null;
+	    	if (!actions.containsKey("timerAction")) {
+	    		timerAction = setupAction(pD, "timerAction", "com.sitescape.ef.module.workflow.TimerAction");
+	    		pD.addAction(timerAction);
+	    	} else {
+	    		timerAction = (Action) actions.get("timerAction");
+	    	}
 
 	    	Action notifyAction = null;
 	    	if (!actions.containsKey("notifyAction")) {
@@ -768,39 +775,55 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
         		if (!ws.getDefinition().getZoneName().equals(RequestContextHolder.getRequestContext().getZoneName())) return;
     		}
   
-    		// execute
-    		timer.execute();
-    		//re-index for state changes
-    		if (entry != null) {
-    			EntryProcessor processor = 
-    				(EntryProcessor) getProcessorManager().getProcessor(entry.getParentBinder(), 
-        						EntryProcessor.PROCESSOR_KEY);
-    			processor.reindexEntry(entry);
-    		}
-    		// if there was an exception, just save the timer
-    		if (timer.getException()==null) {
-    			// 	if repeat is specified
-    			if (timer.getRepeat()!=null) {
-    				// update timer by adding the repeat duration
-    				Date dueDate = timer.getDueDate();
+			if (timer.getName().equals("onDataValue")) {
+				//this is a sitescape addition to timer processing
+				// execute
+				timer.execute();
+				//re-index for state changes
+				if (entry != null) {
+					EntryProcessor processor = 
+						(EntryProcessor) getProcessorManager().getProcessor(entry.getParentBinder(), 
+        							EntryProcessor.PROCESSOR_KEY);
+					processor.reindexEntry(entry);
+				}
+			} else {
+				// execute
+				timer.execute();
+				//re-index for state changes
+				if (entry != null) {
+					EntryProcessor processor = 
+						(EntryProcessor) getProcessorManager().getProcessor(entry.getParentBinder(), 
+        							EntryProcessor.PROCESSOR_KEY);
+					processor.reindexEntry(entry);
+				}
+				// if there was an exception, just save the timer
+				if (timer.getException()== null) {
+    				// 	if repeat is specified
+    				if (timer.getRepeat()!=null) {
+    					// update timer by adding the repeat duration
+    					Date dueDate = timer.getDueDate();
           
-    				// suppose that it took the timer runner thread a 
-    				// very long time to execute the timers.
-    				// then the repeat action dueDate could already have passed.
-    				while (dueDate.getTime()<=System.currentTimeMillis()) {
-    					dueDate = businessCalendar
-    					.add(dueDate, 
+    					// suppose that it took the timer runner thread a 
+    					// very long time to execute the timers.
+    					// then the repeat action dueDate could already have passed.
+    					while (dueDate.getTime()<=System.currentTimeMillis()) {
+    						dueDate = businessCalendar
+    						.add(dueDate, 
         					new Duration(timer.getRepeat()));
+    					}
+    					timer.setDueDate( dueDate );
+    					// save the updated timer in the database
+    					logger.debug("saving updated timer for repetition '"+timer+"' in '"+(dueDate.getTime()-System.currentTimeMillis())+"' millis");
+    					schedulerSession.saveTimer(timer);
+    				} else {
+    					// 	delete this timer
+    					logger.debug("deleting timer '"+timer+"'");
+    					schedulerSession.deleteTimer(timer);
     				}
-    				timer.setDueDate( dueDate );
-    				// save the updated timer in the database
-    				logger.debug("saving updated timer for repetition '"+timer+"' in '"+(dueDate.getTime()-System.currentTimeMillis())+"' millis");
-    				schedulerSession.saveTimer(timer);
-    			} else {
-    				// delete this timer
-    				logger.debug("deleting timer '"+timer+"'");
-    				schedulerSession.deleteTimer(timer);
-    			}
+				} else {
+					schedulerSession.saveTimer(timer);
+				}
+
     		}
     		if (token != null) context.save(token);
         } finally {
