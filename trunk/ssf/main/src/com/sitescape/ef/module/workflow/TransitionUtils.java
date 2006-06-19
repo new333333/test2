@@ -1,31 +1,38 @@
 package com.sitescape.ef.module.workflow;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Collection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.jbpm.calendar.BusinessCalendar;
+import org.jbpm.calendar.Duration;
 import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
+import org.jbpm.scheduler.exe.Timer;
+
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.module.workflow.impl.JbpmContext;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 import com.sitescape.ef.util.InvokeUtil;
 import com.sitescape.ef.util.ObjectPropertyNotFoundException;
-import com.sitescape.util.Validator;
 import com.sitescape.util.GetterUtil;
+import com.sitescape.util.Validator;
 
 public class TransitionUtils {
 	protected static Log logger = LogFactory.getLog(TransitionUtils.class);
 	protected static boolean infoEnabled=logger.isInfoEnabled();
+	protected static BusinessCalendar businessCalendar = new BusinessCalendar();
 
 	/**
 	 * Process the conditions related to a state.  
@@ -145,9 +152,21 @@ public class TransitionUtils {
 			context.close();
 		}
 	}
+	/**
+	 * Look for the first condition that is met and return the state to transition to.  If
+	 * no condition is fully satisfied, return the earlies timeout we should wait for.  If neither, return null;   
+	 * @param executionContext
+	 * @param entry
+	 * @param state
+	 * @param isModify
+	 * @param isReply
+	 * @return
+	 */
 	private static String processConditions(ExecutionContext executionContext, WorkflowSupport entry, WorkflowState state, 
 			boolean isModify, boolean isReply) {
 		List conditions = WorkflowUtils.getConditionElements(state.getDefinition(), state.getState());
+		Date currentDate = new Date();
+		Date minDate = new Date(0);
 		for (int i=0; i<conditions.size(); ++i) {
 			Element condition = (Element)conditions.get(i);
 //			if ((condition.getEntryDefId() != null) && (entryDef != null)) {
@@ -226,6 +245,12 @@ public class TransitionUtils {
 									if (currentVal.toString().equals("false")) currentMatch=false;									
 								} else if ("checkedNot".equals(operation)) {
 									if (currentVal.toString().equals("true")) currentMatch=false;
+								} else if ("datePassed".equals(operation)) {
+									if (!passedDate(eCondition, currentVal, currentDate, minDate)) currentMatch = false;
+								} else if ("beforeDate".equals(operation)) {
+									if (!beforeDate(eCondition, currentVal, currentDate, minDate)) currentMatch = false;
+								} else if ("afterDate".equals(operation)) {
+									if (!afterDate(eCondition, currentVal, currentDate, minDate)) currentMatch = false;
 								} else currentMatch=false;
 
 							}
@@ -282,8 +307,85 @@ public class TransitionUtils {
 			}
 					
 		}
-		return null;
+		//if Time is null, didn't have timeout to process
+		if (minDate.getTime() == 0) return null;
+	   	Long timerId = state.getTimerId();
+    	if (timerId != null) {
+    		try {
+	    		Timer timer = (Timer)WorkflowFactory.getSession().getSession().load(Timer.class, timerId);
+	    		if (minDate.getTime() != timer.getDueDate().getTime()) {
+	    			timer.setDueDate(minDate);
+	    		}
+    		} catch (Exception ex) {};
+    	} else {
+    		Timer timer = new Timer(executionContext.getToken());
+    		timer.setDueDate(minDate);
+    		timer.setName("onDataValue");
+    		WorkflowFactory.getSession().getSession().save(timer);
+    		state.setTimerId(timer.getId());
+    		timer.setAction(executionContext.getProcessDefinition().getAction("timerAction"));
+    	}
+    	return null;
 	}
+	
+	private static boolean passedDate(Element condition, Object currentVal, Date currentDate, Date minDate) {
+		if (currentVal instanceof Date) {
+			Date c = (Date)currentVal;
+			//if already passed, don't need to update minDate
+			if (!currentDate.before(c)) return true;
+			updateMinimum(minDate,c);
+			return false;
+		} else if (currentVal instanceof Event) {
+			
+		}
+		return false;
+	}
+	private static boolean beforeDate(Element condition, Object currentVal, Date currentDate, Date minDate) {
+		if (currentVal instanceof Date) {
+			Date c = (Date)currentVal;
+			//if already passed, don't need to update minDate
+			Date cDate = adjustDate(condition, c, false);
+			if (currentDate.after(cDate)) return true;
+			updateMinimum(minDate,cDate);
+			return false;
+		} else if (currentVal instanceof Event) {
+			
+		}
+		return false;
+	}
+	private static boolean afterDate(Element condition, Object currentVal, Date currentDate, Date minDate) {
+		if (currentVal instanceof Date) {
+			Date c = (Date)currentVal;
+			//if already passed, don't need to update minDate
+			Date cDate = adjustDate(condition, c, true);
+			if (currentDate.after(cDate)) return true;
+			updateMinimum(minDate,cDate);
+			return false;
+		} else if (currentVal instanceof Event) {
+			
+		}
+		return false;
+	}
+	private static Date adjustDate(Element condition, Date current, boolean forward) {
+		String duration = condition.attributeValue("duration", "").trim();
+		String type = condition.attributeValue("durationType", "").trim();
+		Duration d;
+		//skip bad values
+		try {
+			if (forward)
+				d = new Duration(duration + " " + type);
+			else
+				d = new Duration("-" + duration + " " + type);
+			Date result = businessCalendar.add(current, d);
+			return result;
+		} catch (Exception ex) {};
+		return new Date(current.getTime());
+	}
+	private static void updateMinimum(Date min, Date c) {
+		if (min.getTime() == 0) min.setTime(c.getTime());
+		else if (min.after(c)) min.setTime(c.getTime());
+	}
+
 	private static Collection collectionToStrings(Collection currentVal) {
 		Set c = new HashSet();
 		for (Iterator iter=currentVal.iterator(); iter.hasNext();) {

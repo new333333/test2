@@ -1,14 +1,9 @@
 package com.sitescape.ef.domain;
 
-import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
-
-import org.dom4j.Document;
-import org.dom4j.Element;
+import java.util.Map;
 
 import com.sitescape.ef.module.workflow.WorkflowUtils;
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.security.acl.AccessType;
 
 /**
@@ -23,6 +18,7 @@ public class WorkflowState {
     protected Definition definition;
     protected AnyOwner owner;
     protected long lockVersion;
+    protected Long timerId=null;
 	
 	//cached during transaction as needed 
 	protected Map wfAcls=null;
@@ -100,7 +96,16 @@ public class WorkflowState {
     public void setDefinition(Definition definition) {
     	this.definition = definition;
     } 	
- 	/**
+    /**
+     * @hibernate.property
+     */
+ 	public Long getTimerId() {
+ 		return timerId;
+ 	}
+ 	public void setTimerId(Long timerId) {
+ 		this.timerId = timerId;
+ 	}
+      /**
  	 * Compare tokenIds.  A token can have only 1 state
  	 */
  	public boolean equals(Object obj) {

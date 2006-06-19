@@ -135,7 +135,7 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
     public boolean checkWorkAreaFunctionMembership(final String zoneName,
             final Long workAreaId, final String workAreaType, 
             final String workAreaOperationName, final Set membersToLookup) {
-        List matches = (List) getHibernateTemplate().execute(
+    	List matches = (List) getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                         // The following query performs 4 table joins in a single SQL query.
@@ -151,7 +151,8 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
                         	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
                         	.setParameterList(PRINCIPAL_IDS, membersToLookup)
                         	.setMaxResults(1) // Fetching the first matching row is enough for us
-                        	.list();
+                         	.setCacheable(true)
+                         	.list();
                     }
                 }
             );

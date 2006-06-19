@@ -28,6 +28,7 @@
     </component>
     <property name="state" length="64"/>
     <property name="threadName" length="64"/>
+    <property name="timerId"/>
     <many-to-one name="definition">
     	<column name="definition" sql-type="char(32)"/>
     </many-to-one>

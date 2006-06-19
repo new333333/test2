@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -53,11 +55,16 @@ public class ViewController  extends SAbstractController {
 		} else {
  			//Build the toolbar and add it to the model
  			buildToolbar(model);
- 			
+ 			Set ids = new HashSet();		
+ 			ids.addAll(getIds(request.getPreferences().getValues(WebKeys.PRESENCE_PREF_USER_LIST, new String[0])));
+ 			ids.addAll(getIds(request.getPreferences().getValues(WebKeys.PRESENCE_PREF_GROUP_LIST, new String[0])));
  			//This is the portlet view; get the configured list of principals to show
- 			model.put(WebKeys.USERS, getUsers(request.getPreferences().getValues(WebKeys.PRESENCE_PREF_USER_LIST, new String[0])));
- 			model.put(WebKeys.GROUPS, getGroups(request.getPreferences().getValues(WebKeys.PRESENCE_PREF_GROUP_LIST, new String[0]))); 			
- 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
+ 			model.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
+ 			//if we list groups, then we have issues when a user appears in multiple groups??
+ 			//how do we update the correct divs??
+ 			//so, explode the groups and just show members
+ 			//TODO: either deal with groups correctly or remove
+  			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
  			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);
  		}
 
@@ -65,7 +72,7 @@ public class ViewController  extends SAbstractController {
 	}
 
 	private Collection getUsers(String [] ids) {
-		List<Long> userIds = new ArrayList<Long>();
+		Set<Long> userIds = new HashSet<Long>();
 		for (int i = 0; i < ids.length; i++) {
 			try {
 				userIds.add(new Long(ids[i]));
@@ -75,13 +82,23 @@ public class ViewController  extends SAbstractController {
 		
 	}
 	private Collection getGroups(String [] ids) {
-		List<Long> groupIds = new ArrayList<Long>();
+		Set<Long> groupIds = new HashSet<Long>();
 		for (int i = 0; i < ids.length; i++) {
 			try  {
 				groupIds.add(new Long(ids[i]));
 			} catch (Exception ex) {};
 		}
 		return getProfileModule().getGroups(groupIds);
+		
+	}
+	private Set getIds(String [] ids) {
+		Set<Long> groupIds = new HashSet<Long>();
+		for (int i = 0; i < ids.length; i++) {
+			try  {
+				groupIds.add(new Long(ids[i]));
+			} catch (Exception ex) {};
+		}
+		return groupIds;
 		
 	}
 	protected void buildToolbar(Map<String,Object> model) {

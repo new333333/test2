@@ -12,7 +12,11 @@
 		<div id="ss_presence_status_message" style="visibility:hidden; display:none;">ok</div>
 	</taconite-replace>
 </c:if>
-	
+	<taconite-replace contextNodeID="ss_refreshDate" parseInBrowser="true">
+		<div id="ss_refreshDate" class="ss_portlet_style">
+<ssf:nlt tag="presence.last.refresh"/> <fmt:formatDate value="<%= new java.util.Date() %>" type="both" />
+		</div>
+	</taconite-replace>
 <c:forEach var="user" items="${ssUsers}">
 <jsp:useBean id="user" type="com.sitescape.ef.domain.User" />
 

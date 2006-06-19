@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
-
+import java.util.Set;
 import org.dom4j.Document;
 
 import com.sitescape.ef.ObjectKeys;
@@ -162,14 +162,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		getAccessControlManager().checkOperation(binder,  WorkAreaOperation.READ_ENTRIES);
         return loadProcessor(binder).getBinderEntries(binder, groupDocType, maxEntries, searchFilter);        
     }
-	public Collection getGroups(List entryIds) {
+	public Collection getGroups(Set entryIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new UserComparator(user.getLocale());
        	TreeSet<Group> result = new TreeSet<Group>(c);
-		for (int i=0; i<entryIds.size(); ++i) {
+		for (Iterator iter=entryIds.iterator(); iter.hasNext();) {
 			try {
 				// assuming users are cached
-				result.add(getProfileDao().loadGroup((Long)entryIds.get(i), user.getZoneName()));
+				result.add(getProfileDao().loadGroup((Long)iter.next(), user.getZoneName()));
 			} catch (NoGroupByTheIdException ex) {
 			} catch (AccessControlException ax) {
 			}
@@ -265,14 +265,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         
    }
  
-	public Collection getUsers(List entryIds) {
+	public Collection getUsers(Set entryIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new UserComparator(user.getLocale());
        	TreeSet<User> result = new TreeSet<User>(c);
-		for (int i=0; i<entryIds.size(); ++i) {
+		for (Iterator iter=entryIds.iterator(); iter.hasNext();) {
 			try {
 				// assuming users are cached
-				result.add(getProfileDao().loadUser((Long)entryIds.get(i), user.getZoneName()));
+				result.add(getProfileDao().loadUser((Long)iter.next(), user.getZoneName()));
 			} catch (NoUserByTheIdException ex) {
 			} catch (AccessControlException ax) {
 			}
@@ -281,6 +281,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return result;
 	}
    
+	public Collection getUsersFromPrincipals(Set principalIds) {
+		Set ids = getProfileDao().explodeGroups(principalIds);
+		return getUsers(ids);
+	}
 	public class UserComparator implements Comparator {
 	   	private Collator c;
 		public UserComparator(Locale locale) {
