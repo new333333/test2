@@ -516,6 +516,7 @@
 			</property>
 			<property name="storage" caption="__storage_media" type="selectbox" default="fileRepositoryService">
 				<option name="fileRepositoryService" caption="__file_system" />
+				<option name="jackrabbitRepository" caption="__jackrabbit_repository" />
 				<option name="internalWebdavRepositoryService" caption="__internal_webdav" />
 				<help>__help_storage_media</help>
 			</property>
@@ -544,6 +545,7 @@
 				    this master list dynamically. So it must be listed explicitly.
 				-->   
 				<option name="fileRepositoryService" caption="__file_system" />
+				<option name="jackrabbitRepository" caption="__jackrabbit_repository" />
 				<option name="internalWebdavRepositoryService" caption="__internal_webdav" />
 				<help>__help_storage_media</help>
 			</property>
@@ -564,6 +566,7 @@
 			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
 			<property name="storage" caption="__storage_media" type="selectbox" default="fileRepositoryService">
 				<option name="fileRepositoryService" caption="__file_system" />
+				<option name="jackrabbitRepository" caption="__jackrabbit_repository" />
 				<option name="internalWebdavRepositoryService" caption="__internal_webdav" />
 				<help>__help_storage_media</help>
 			</property>
