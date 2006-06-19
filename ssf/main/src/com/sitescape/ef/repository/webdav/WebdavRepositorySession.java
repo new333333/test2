@@ -128,23 +128,13 @@ public class WebdavRepositorySession implements RepositorySession {
 		}
 	}
 
-	// obsolete
-	public void readVersion(String fileVersionURI, OutputStream out) throws RepositoryServiceException, UncheckedIOException {
-		try {
-			readResource(wdr, fileVersionURIToResourcePath(fileVersionURI), out);
-		} catch (IOException e) {
-			logError(wdr);
-			throw new UncheckedIOException(e);
-		}
-	}
-
-	public void readVersion(Binder binder, DefinableEntity entry, String relativeFilePath, 
-			String versionName, OutputStream out) throws RepositoryServiceException, UncheckedIOException {
+	public InputStream readVersion(Binder binder, DefinableEntity entry, String relativeFilePath, 
+			String versionName) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String versionResourcePath = getVersionResourcePath(wdr, binder, entry, 
 					relativeFilePath, versionName);			
 			
-			readResource(wdr, versionResourcePath, out);
+			return wdr.getMethodData(versionResourcePath);
 		} catch (IOException e) {
 			logError(wdr);
 			throw new UncheckedIOException(e);
@@ -224,7 +214,8 @@ public class WebdavRepositorySession implements RepositorySession {
 		}
 	}
 
-	public void uncheckout(Binder binder, DefinableEntity entry, String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
+	public void uncheckout(Binder binder, DefinableEntity entry, String relativeFilePath) 
+		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 			if(isCheckedOut(wdr, resourcePath)) {
@@ -272,6 +263,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		}
 	}
 	
+	/*
 	public boolean isCheckedOut(Binder binder, DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
@@ -282,7 +274,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			logError(wdr);
 			throw new UncheckedIOException(e);
 		}
-	}
+	}*/
 	
 	/*
 	public boolean exists(Binder binder, DefinableEntity entry, String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
@@ -477,8 +469,8 @@ public class WebdavRepositorySession implements RepositorySession {
 			throws IOException {
 		boolean result = false;
 
-		// Get the path for the entry containing the file.
-		String entryDirPath = getEntityDirPath(binder, entry);
+		// Get the path for the file resource.
+		String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 
 		/*
 		 * boolean b = wdr.headMethod("/slide/files");
@@ -491,10 +483,7 @@ public class WebdavRepositorySession implements RepositorySession {
 
 		// If necessary, create containing collections (recursively) before
 		// writing the file itself.
-		WebdavUtil.createCollectionIfNecessary(wdr, entryDirPath);
-
-		// Get the path for the file resource.
-		String resourcePath = getResourcePath(entryDirPath, relativeFilePath);
+		WebdavUtil.createCollectionIfNecessary(wdr, getResourceDirPath(resourcePath));
 
 		// Write the file.
 		result = wdr.putMethod(resourcePath, is);
@@ -601,6 +590,10 @@ public class WebdavRepositorySession implements RepositorySession {
 	private String getResourcePath(Binder binder, DefinableEntity entry, 
 			String relativeFilePath) {
 		return getResourcePath(getEntityDirPath(binder, entry), relativeFilePath);
+	}
+	
+	private String getResourceDirPath(String resourcePath) {
+		return resourcePath.substring(0, resourcePath.lastIndexOf(Constants.SLASH) + 1);
 	}
 	
 	public class WebDavDataSource implements DataSource {

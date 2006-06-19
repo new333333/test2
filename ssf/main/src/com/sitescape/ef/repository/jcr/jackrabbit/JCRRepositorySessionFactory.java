@@ -3,6 +3,7 @@ package com.sitescape.ef.repository.jcr.jackrabbit;
 import java.io.File;
 import java.io.IOException;
 
+import javax.activation.FileTypeMap;
 import javax.jcr.Credentials;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -28,6 +29,7 @@ public class JCRRepositorySessionFactory implements RepositorySessionFactory {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
+	protected FileTypeMap mimeTypes;
 	protected String repositoryRootDir;
 	protected String homeSubdirName;
 	protected String configFileName;
@@ -39,6 +41,10 @@ public class JCRRepositorySessionFactory implements RepositorySessionFactory {
 	private boolean initialized; 
 	private Repository repository;
 	private String workspaceName;
+	
+	public void setFileTypeMap(FileTypeMap mimeTypes) {
+		this.mimeTypes = mimeTypes;
+	}
 	
 	public void setConfigFileName(String configFileName) {
 		this.configFileName = configFileName;
@@ -105,7 +111,7 @@ public class JCRRepositorySessionFactory implements RepositorySessionFactory {
 
 	public RepositorySession openSession() throws RepositoryServiceException, UncheckedIOException {
 		try {
-			return new JCRRepositorySession(createSession(workspaceName));
+			return new JCRRepositorySession(createSession(workspaceName), mimeTypes);
 		} catch (RepositoryException e) {
 			throw new RepositoryServiceException(e);
 		}

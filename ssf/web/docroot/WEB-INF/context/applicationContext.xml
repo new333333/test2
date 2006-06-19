@@ -679,6 +679,7 @@
 	
 	<!--<bean id="jackrabbitRepository" class="com.sitescape.ef.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
 		init-method="initialize" destroy-method="shutdown">	
+		<property name="fileTypeMap"><ref local="mimeTypes"/></property>
 		<property name="repositoryRootDir"><value>${data.root.dir}/jackrabbit</value></property>
 		<property name="homeSubdirName"><value>home</value></property>
 		<property name="configFileName"><value>jackrabbit-repository.xml</value></property>

@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -255,21 +256,26 @@ public class FileRepositorySession implements RepositorySession {
 		File file = getFileForRead(binder, entry, relativeFilePath);
 		
 		try {
-			return new FileInputStream(file);
+			return new BufferedInputStream(new FileInputStream(file));
 		}
 		catch(IOException e) {
 			throw new UncheckedIOException(e);
 		}	
 	}
 
-	public void readVersion(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, String versionName, OutputStream out) throws RepositoryServiceException, UncheckedIOException {
+	public InputStream readVersion(Binder binder, DefinableEntity entry, 
+			String relativeFilePath, String versionName) 
+		throws RepositoryServiceException, UncheckedIOException {
 		int fileInfo = fileInfo(binder, entry, relativeFilePath);
 		
 		if(fileInfo == VERSIONED_FILE) {
 			File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
 			
-			readFile(versionFile, out);
+			try {
+				return new BufferedInputStream(new FileInputStream(versionFile));
+			} catch (FileNotFoundException e) {
+				throw new UncheckedIOException(e);
+			}
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
@@ -408,12 +414,13 @@ public class FileRepositorySession implements RepositorySession {
 		}		
 	}
 
+	/*
 	public boolean isCheckedOut(Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		File tempFile = getTempFile(binder, entry, relativeFilePath);
 		
 		return tempFile.exists();
-	}
+	}*/
 
 	/*
 	public boolean exists(Binder binder, DefinableEntity entry, 
