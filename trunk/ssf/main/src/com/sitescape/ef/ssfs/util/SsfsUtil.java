@@ -58,12 +58,23 @@ public class SsfsUtil {
 	}
 
 	public static boolean supportsEditInPlace(String relativeFilePath) {
+		String extension = null;
+		int index = relativeFilePath.lastIndexOf(".");
+		if(index < 0)
+			return false; // No extension. can not support edit-in-place
+		else
+			extension = relativeFilePath.substring(index).toLowerCase();
+		
 		if(editInPlaceFileExtensions == null) {
-			editInPlaceFileExtensions = SPropsUtil.getStringArray("edit.in.place.file.extensions", ",");
+			String[] s = SPropsUtil.getStringArray("edit.in.place.file.extensions", ",");
+			for(int i = 0; i < s.length; i++) {
+				s[i] = s[i].toLowerCase();
+			}		
+			editInPlaceFileExtensions = s;
 		}
 		
 		for(int i = 0; i < editInPlaceFileExtensions.length; i++) {
-			if(relativeFilePath.endsWith(editInPlaceFileExtensions[i]))
+			if(extension.endsWith(editInPlaceFileExtensions[i]))
 				return true;
 		}
 		
