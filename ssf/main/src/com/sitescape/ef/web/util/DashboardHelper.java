@@ -87,7 +87,22 @@ public class DashboardHelper {
 				String.valueOf(narrowFixedWidth));
 		ssDashboard.put(WebKeys.DASHBOARD_NARROW_FIXED_WIDTH2, 
 				String.valueOf(narrowFixedWidth / 2));
-		
+
+		//Get the title for this page
+		String title = (String) dashboard_b.get(Title);
+		Boolean includeBinderTitle = (Boolean) dashboard_b.get(IncludeBinderTitle);
+		Boolean includeBinderTitle_l = (Boolean) dashboard.get(IncludeBinderTitle);
+		if (includeBinderTitle_l || !dashboard.get(Title).equals("")) {
+			title = (String) dashboard.get(Title);
+			includeBinderTitle = includeBinderTitle_l;
+		}
+		if (title.equals("") && !includeBinderTitle) {
+			title = (String) dashboard_g.get(Title);
+			includeBinderTitle = (Boolean) dashboard_g.get(IncludeBinderTitle);
+		}
+		ssDashboard.put(WebKeys.DASHBOARD_TITLE, title);
+		ssDashboard.put(WebKeys.DASHBOARD_INCLUDE_BINDER_TITLE, includeBinderTitle);
+
 		//Build the lists of components
 		if (scope.equals(DashboardHelper.Local)) {
 			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, buildDashboardList(Wide_Top, ssDashboard));
