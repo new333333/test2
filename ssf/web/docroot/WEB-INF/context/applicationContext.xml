@@ -677,7 +677,7 @@
 		<property name="password"><value>${webdav.repository.password}</value></property>
 	</bean>
 	
-	<!--<bean id="jackrabbitRepository" class="com.sitescape.ef.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
+	<bean id="jackrabbitRepository" class="com.sitescape.ef.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
 		init-method="initialize" destroy-method="shutdown">	
 		<property name="fileTypeMap"><ref local="mimeTypes"/></property>
 		<property name="repositoryRootDir"><value>${data.root.dir}/jackrabbit</value></property>
@@ -686,7 +686,7 @@
 		<property name="initializeOnStartup"><value>false</value></property>
 		<property name="username"><value>none</value></property>
 		<property name="password"><value>none</value></property>
-	</bean>-->
+	</bean>
 	
 	<!-- ================================ Presence Service =============================== -->
 	<bean id="presenceService" class="com.sitescape.ef.presence.impl.PresenceServiceImpl">
