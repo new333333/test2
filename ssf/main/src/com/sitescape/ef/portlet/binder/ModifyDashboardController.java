@@ -37,8 +37,9 @@ public class ModifyDashboardController extends AbstractBinderController {
 		String binderType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_TYPE);	
 		Binder binder = getBinderModule().getBinder(binderId);
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
+		String componentScope = "";
+		if (componentId.contains("_")) componentScope = componentId.split("_")[0];
 		String scope = "";
-		if (componentId.contains("_")) scope = componentId.split("_")[0];
 		if (scope.equals("")) scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 		if (scope.equals("")) scope = DashboardHelper.Local;
 		String returnView = PortletRequestUtils.getStringParameter(request, "_returnView", "binder");
@@ -66,7 +67,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 		} else if (formData.containsKey("_saveConfigData") || formData.containsKey("_saveConfigData.x")) {
 			saveComponentData(request, binder, scope);
 		} else if (formData.containsKey("_deleteComponent") || formData.containsKey("_deleteComponent.x")) {
-			deleteComponent(request, binder, scope);
+			deleteComponent(request, binder);
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("_show") || formData.containsKey("_show.x")) {
 			showHideComponent(request, binder, scope, "show");
@@ -93,8 +94,9 @@ public class ModifyDashboardController extends AbstractBinderController {
 		Binder binder = getBinderModule().getBinder(binderId);
 		String dashboardList = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
-		String scope = componentId.split("_")[0];
-		if (scope.equals("")) scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
+		String componentScope = "";
+		if (componentId.contains("_")) componentScope = componentId.split("_")[0];
+		String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 		if (scope.equals("")) scope = DashboardHelper.Local;
 		String returnView = PortletRequestUtils.getStringParameter(request, "_returnView", "binder");
 
@@ -182,68 +184,77 @@ public class ModifyDashboardController extends AbstractBinderController {
 	}
 	
 	private void saveComponentData(ActionRequest request, Binder binder, String scope) {
-		Map dashboard = getDashboard(binder, scope);
-
-		Map formData = request.getParameterMap();
-		Map componentData = new HashMap();
-		Iterator itKeys = formData.keySet().iterator();
-		while (itKeys.hasNext()) {
-			String key = (String) itKeys.next();
-			if (key.startsWith(DashboardHelper.ElementNamePrefix)) {
-				String elementName = key.substring(DashboardHelper.ElementNamePrefix.length());
-				//Save this value for use when displaying the component
-				componentData.put(elementName, PortletRequestUtils.getStringParameters(request, key));
-			}
-		}
-		
 		//Get the dashboard component
 		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
+		String componentScope = "";
+		if (componentId.contains("_")) componentScope = componentId.split("_")[0];
+		if (!componentScope.equals("")) {
+			Map dashboard = getDashboard(binder, componentScope);
 
-		if (!dashboardListKey.equals("") && dashboard.containsKey(dashboardListKey)) {
-			List dashboardList = (List) dashboard.get(dashboardListKey);
-			Iterator itDashboardList = dashboardList.iterator();
-			while (itDashboardList.hasNext()) {
-				Map component = (Map) itDashboardList.next();
-				String id = (String) component.get(DashboardHelper.Id);
-				if (id.equals(componentId)) {
-					//Get the component config data map
-					Map components = (Map)dashboard.get(DashboardHelper.Components);
-					if (components != null) {
-						Map componentMap = (Map) components.get(id);
-						if (componentMap != null) {
-							//Save the data map
-							componentMap.put(DashboardHelper.Data, componentData);
-						}						
+			Map formData = request.getParameterMap();
+			Map componentData = new HashMap();
+			Iterator itKeys = formData.keySet().iterator();
+			while (itKeys.hasNext()) {
+				String key = (String) itKeys.next();
+				if (key.startsWith(DashboardHelper.ElementNamePrefix)) {
+					String elementName = key.substring(DashboardHelper.ElementNamePrefix.length());
+					//Save this value for use when displaying the component
+					componentData.put(elementName, PortletRequestUtils.getStringParameters(request, key));
+				}
+			}
+			
+			if (!dashboardListKey.equals("") && dashboard.containsKey(dashboardListKey)) {
+				List dashboardList = (List) dashboard.get(dashboardListKey);
+				Iterator itDashboardList = dashboardList.iterator();
+				while (itDashboardList.hasNext()) {
+					Map component = (Map) itDashboardList.next();
+					String id = (String) component.get(DashboardHelper.Id);
+					if (id.equals(componentId)) {
+						//Get the component config data map
+						Map components = (Map)dashboard.get(DashboardHelper.Components);
+						if (components != null) {
+							Map componentMap = (Map) components.get(id);
+							if (componentMap != null) {
+								//Save the data map
+								componentMap.put(DashboardHelper.Data, componentData);
+							}						
+						}
 					}
 				}
 			}
+			//Save the updated dashbord configuration 
+			saveDashboard(binder, componentScope, dashboard);
 		}
-		//Save the updated dashbord configuration 
-		saveDashboard(binder, scope, dashboard);
 	}
 
-	private void deleteComponent(ActionRequest request, Binder binder, String scope) {
-		Map dashboard = getDashboard(binder, scope);
-
+	private void deleteComponent(ActionRequest request, Binder binder) {
 		//Get the dashboard component
 		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
-
-		if (!dashboardListKey.equals("") && dashboard.containsKey(dashboardListKey)) {
-			List dashboardList = (List) dashboard.get(dashboardListKey);
-			for (int i = 0; i < dashboardList.size(); i++) {
-				Map component = (Map) dashboardList.get(i);
-				String id = (String) component.get(DashboardHelper.Id);
-				if (id.equals(componentId)) {
-					//We have found the component to be deleted
-					dashboardList.remove(i);
-					break;
+		String componentScope = "";
+		if (componentId.contains("_")) componentScope = componentId.split("_")[0];
+		if (!componentScope.equals("")) {
+			Map dashboard = getDashboard(binder, componentScope);	
+			if (!dashboardListKey.equals("") && dashboard.containsKey(dashboardListKey)) {
+				List dashboardList = (List) dashboard.get(dashboardListKey);
+				for (int i = 0; i < dashboardList.size(); i++) {
+					Map component = (Map) dashboardList.get(i);
+					String id = (String) component.get(DashboardHelper.Id);
+					if (id.equals(componentId)) {
+						//We have found the component to be deleted
+						dashboardList.remove(i);
+					}
 				}
 			}
+			//Delete the component itself
+			Map components = (Map) dashboard.get(DashboardHelper.Components);
+			if (components != null && components.containsKey(componentId)) {
+				components.remove(componentId);
+			}
+			//Save the updated dashbord configuration 
+			saveDashboard(binder, componentScope, dashboard);
 		}
-		//Save the updated dashbord configuration 
-		saveDashboard(binder, scope, dashboard);
 	}
 
 	private void showHideComponent(ActionRequest request, Binder binder, String scope, String action) {
@@ -274,14 +285,19 @@ public class ModifyDashboardController extends AbstractBinderController {
 	}
 
 	private void moveComponent(ActionRequest request, Binder binder, String scope, String direction) {
-		Map dashboard = getDashboard(binder, scope);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binder.getId());
+		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, userProperties, scope);
+
+		Map dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_MAP);
 
 		//Get the dashboard component
 		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
 
-		if (!dashboardListKey.equals("") && dashboard.containsKey(dashboardListKey)) {
-			List dashboardList = (List) dashboard.get(dashboardListKey);
+		if (!dashboardListKey.equals("") && ssDashboard.containsKey(dashboardListKey)) {
+			List dashboardList = (List) ssDashboard.get(dashboardListKey);
 			for (int i = 0; i < dashboardList.size(); i++) {
 				Map component = (Map) dashboardList.get(i);
 				String id = (String) component.get(DashboardHelper.Id);
@@ -298,6 +314,9 @@ public class ModifyDashboardController extends AbstractBinderController {
 							dashboardList.add(i+1, component);
 						}
 					}
+					//Write the list back to the dashboard
+					//  If the list is "local", this is the combined list.
+					dashboard.put(dashboardListKey, dashboardList);
 					break;
 				}
 			}
