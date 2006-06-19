@@ -66,11 +66,23 @@ public class DashboardHelper {
 	static public Map getDashboardMap(Binder binder, UserProperties userFolderProperties, 
 			Map userProperties, String scope) {
 		Map dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
-		if (dashboard == null) dashboard = DashboardHelper.getNewDashboardMap();
+		if (dashboard == null) {
+			dashboard = DashboardHelper.getNewDashboardMap();
+		} else {
+			dashboard = new HashMap(dashboard);
+		}
 		Map dashboard_g = (Map) userProperties.get(ObjectKeys.USER_PROPERTY_DASHBOARD_GLOBAL);
-		if (dashboard_g == null) dashboard_g = DashboardHelper.getNewDashboardMap();
+		if (dashboard_g == null) {
+			dashboard_g = DashboardHelper.getNewDashboardMap();
+		} else {
+			dashboard_g = new HashMap(dashboard_g);
+		}
 		Map dashboard_b = (Map) binder.getProperty(ObjectKeys.BINDER_PROPERTY_DASHBOARD);
-		if (dashboard_b == null) dashboard_b = DashboardHelper.getNewDashboardMap();
+		if (dashboard_b == null) {
+			dashboard_b = DashboardHelper.getNewDashboardMap();
+		} else {
+			dashboard_b = new HashMap(dashboard_b);
+		}
 		Map ssDashboard = new HashMap();
 		if (scope.equals(DashboardHelper.Local)) {
 			ssDashboard.put(WebKeys.DASHBOARD_MAP, dashboard);
@@ -110,15 +122,15 @@ public class DashboardHelper {
 			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, buildDashboardList(Narrow_Variable, ssDashboard));
 			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, buildDashboardList(Wide_Bottom, ssDashboard));
 		} else if (scope.equals(DashboardHelper.Global)) {
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, dashboard_g.get(Wide_Top));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_FIXED, dashboard_g.get(Narrow_Fixed));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, dashboard_g.get(Narrow_Variable));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, dashboard_g.get(Wide_Bottom));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, new ArrayList((List)dashboard_g.get(Wide_Top)));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_FIXED, new ArrayList((List)dashboard_g.get(Narrow_Fixed)));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, new ArrayList((List)dashboard_g.get(Narrow_Variable)));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, new ArrayList((List)dashboard_g.get(Wide_Bottom)));
 		} else if (scope.equals(DashboardHelper.Binder)) {
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, dashboard_b.get(Wide_Top));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_FIXED, dashboard_b.get(Narrow_Fixed));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, dashboard_b.get(Narrow_Variable));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, dashboard_b.get(Wide_Bottom));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, new ArrayList((List)dashboard_b.get(Wide_Top)));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_FIXED, new ArrayList((List)dashboard_b.get(Narrow_Fixed)));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, new ArrayList((List)dashboard_b.get(Narrow_Variable)));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, new ArrayList((List)dashboard_b.get(Wide_Bottom)));
 		}
 		
 		//Get the lists of dashboard components that are supported
@@ -167,8 +179,11 @@ public class DashboardHelper {
 
 	private static List buildDashboardList(String listName, Map ssDashboard) {
 		Map localDashboard = (Map) ssDashboard.get(WebKeys.DASHBOARD_LOCAL_MAP);
+		if (localDashboard != null) localDashboard = new HashMap(localDashboard);
 		Map globalDashboard = (Map) ssDashboard.get(WebKeys.DASHBOARD_GLOBAL_MAP);
+		if (globalDashboard != null) globalDashboard = new HashMap(globalDashboard);
 		Map binderDashboard = (Map) ssDashboard.get(WebKeys.DASHBOARD_BINDER_MAP);
+		if (binderDashboard != null) binderDashboard = new HashMap(binderDashboard);
 		
 		//Start with a copy of the local list
 		List components = new ArrayList((List)localDashboard.get(listName));

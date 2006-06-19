@@ -337,7 +337,12 @@ public class ModifyDashboardController extends AbstractBinderController {
 		} else if (scope.equals(DashboardHelper.Binder)) {
 			dashboard = (Map) binder.getProperty(ObjectKeys.BINDER_PROPERTY_DASHBOARD);
 		}
-		if (dashboard == null) dashboard = DashboardHelper.getNewDashboardMap();
+		if (dashboard == null) {
+			dashboard = DashboardHelper.getNewDashboardMap();
+		} else {
+			//Make a copy of the dashboard so changes won't accidentally bleed through
+			dashboard = new HashMap(dashboard);
+		}
 		return dashboard;
 	}
 	
