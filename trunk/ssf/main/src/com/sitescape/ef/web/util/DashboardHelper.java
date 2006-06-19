@@ -158,17 +158,25 @@ public class DashboardHelper {
 		//Start with a copy of the local list
 		List components = new ArrayList((List)localDashboard.get(listName));
 		
-		//Then merge in the global and binder lists
-		List globalComponents = (List)globalDashboard.get(listName);
-		for (int i = 0; i < globalComponents.size(); i++) {
-			if (!components.contains(globalComponents.get(i))) {
-				components.add(globalComponents.get(i));
-			}
+		List seenList = new ArrayList();
+		for (int i = 0; i < components.size(); i++) {
+			String id = (String) ((Map)components.get(i)).get(DashboardHelper.Id);
+			if (!seenList.contains(id)) seenList.add(id);
 		}
-		List binderComponents = (List)binderDashboard.get(listName);
-		for (int i = 0; i < binderComponents.size(); i++) {
-			if (!components.contains(binderComponents.get(i))) {
-				components.add(binderComponents.get(i));
+		
+		//Then merge in the global and binder lists
+		List globalAndBinderComponents = (List)globalDashboard.get(listName);
+		globalAndBinderComponents.addAll((List)binderDashboard.get(listName));
+		for (int i = 0; i < globalAndBinderComponents.size(); i++) {
+			String id = (String) ((Map)globalAndBinderComponents.get(i)).get(DashboardHelper.Id);
+			String scope = (String) ((Map)globalAndBinderComponents.get(i)).get(DashboardHelper.Scope);
+			if (!seenList.contains(id)) {
+				seenList.add(id);
+				Map newComponent = new HashMap();
+				newComponent.put(DashboardHelper.Id, id);
+				newComponent.put(DashboardHelper.Scope, scope);
+				newComponent.put(DashboardHelper.Visible, true);
+				components.add(newComponent);
 			}
 		}
 		

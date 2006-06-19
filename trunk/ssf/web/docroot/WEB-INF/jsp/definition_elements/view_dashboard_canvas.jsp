@@ -78,8 +78,15 @@ function ss_toggle_toolbars() {
 		<c:if test="${scope == 'binder'}">
 		  <c:set var="scopeTitle" value="dashboard.binder"/>
 		</c:if>
+		<c:if test="${component.visible}">
 		<div class="ss_shadowbox">
 		<div class="ss_shadowbox2 ss_dashboard_view">
+		</c:if>
+		<c:if test="${!component.visible}">
+		<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
+		  class="ss_dashboard_view" style="visibility:hidden; display:none;">
+		<c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
+		</c:if>
 		 <div id="ss_dashboard_toolbar_${ss_toolbar_count}"
 		   class="ss_dashboard_view_toolbar" 
 		   style="visibility:hidden; display:none;">
@@ -135,13 +142,23 @@ function ss_toggle_toolbars() {
 		  </td></tr></table>
 		 </div>
 		 </div>
-		<div align="left" style="margin:0px; padding:2px;">
-		<ssf:dashboard id="${id}"
-		  type="view" configuration="${ssDashboard}"/>
+		<c:if test="${component.visible}">
+		  <div align="left" style="margin:0px; padding:2px;">
+		  <ssf:dashboard id="${id}"
+		    type="view" configuration="${ssDashboard}"/>
+		  </div>
 		</div>
+		</c:if>
 		</div>
-		</div>
+	    <c:if test="${component.visible}">
 		<div style="margin:3px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
+	    </c:if>
+	    <c:if test="${!component.visible}">
+		<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
+		  style="visibility:hidden; display:none; 
+		  margin:3px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
+	    <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
+	    </c:if>
 	  </c:forEach>
 
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
@@ -172,7 +189,7 @@ function ss_toggle_toolbars() {
 		  <table class="ss_dashboard_view_toolbar" 
 		    cellspacing="0" cellpadding="0" style="width:100%;">
 		  <tr>
-		  <td><ssf:nlt tag="${scopeTitle}"/></td>
+		  <td><span class="ss_bold"><ssf:nlt tag="${scopeTitle}"/></span></td>
 		  <td align="right">
 		  <form class="ss_dashboard_view_toolbar" style="display:inline;"
 		    method="post" action="<portlet:actionURL>
@@ -183,27 +200,49 @@ function ss_toggle_toolbars() {
 			<input type="hidden" name="_dashboardList" value="narrow_fixed">
 			<input type="hidden" name="_componentId" value="${id}">
 			<input type="hidden" name="_returnView" value="binder"/>
-			<input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
-			  name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
-			&nbsp;
-			<input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
-			  name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
-			&nbsp;
-			<input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-			  name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
-			&nbsp;
-			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+
+			<c:if test="${scope == 'local'}">
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
+			    name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
+			    name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
+			    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
+			    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+			</c:if>
+
+			<c:if test="${scope != 'local'}">
+			  <c:if test="${component.visible}">
+			    <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
+			      name="_hide" alt="<ssf:nlt tag="button.hide"/>">
+			  </c:if>
+			  <c:if test="${!component.visible}">
+			    <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
+			      name="_show" alt="<ssf:nlt tag="button.show"/>">
+			  </c:if>
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
+			    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
+			    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+			</c:if>
 		  </form>
 		  </td></tr></table>
 		 </div>
 		 </div>
-		<div align="left" style="margin:0px; padding:2px;">
-	    <img src="<html:imagesPath/>pics/1pix.gif" 
-	      hspace="${ssDashboard.narrowFixedWidth2}px" vspace="0px"/><br/>
-		<ssf:dashboard id="${id}"
-		  type="view" configuration="${ssDashboard}"/>
-		</div>
+		<c:if test="${component.visible}">
+		  <div align="left" style="margin:0px; padding:2px;">
+	      <img src="<html:imagesPath/>pics/1pix.gif" 
+	        hspace="${ssDashboard.narrowFixedWidth2}px" vspace="0px"/><br/>
+		  <ssf:dashboard id="${id}"
+		    type="view" configuration="${ssDashboard}"/>
+		  </div>
+		</c:if>
 		</div>
 		</div>
 		<div style="margin:3px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
@@ -212,6 +251,8 @@ function ss_toggle_toolbars() {
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
 	  style="visibility:hidden; display:none; height:20px;"></div>
 	<c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
+	<img src="<html:imagesPath/>pics/1pix.gif" 
+	        hspace="${ssDashboard.narrowFixedWidth2}px" vspace="0px"/>
   </td>
   <td>&nbsp;&nbsp;</td>
   <td valign="top">
@@ -235,7 +276,7 @@ function ss_toggle_toolbars() {
 		  <table class="ss_dashboard_view_toolbar" 
 		    cellspacing="0" cellpadding="0" style="width:100%;">
 		  <tr>
-		  <td><ssf:nlt tag="${scopeTitle}"/></td>
+		  <td><span class="ss_bold"><ssf:nlt tag="${scopeTitle}"/></span></td>
 		  <td align="right">
 		  <form class="ss_dashboard_view_toolbar" method="post" action="<portlet:actionURL>
 		  <portlet:param name="action" value="modify_dashboard"/>
@@ -245,25 +286,47 @@ function ss_toggle_toolbars() {
 			<input type="hidden" name="_dashboardList" value="narrow_variable">
 			<input type="hidden" name="_componentId" value="${id}">
 			<input type="hidden" name="_returnView" value="binder"/>
-			<input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
-			  name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
-			&nbsp;
-			<input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
-			  name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
-			&nbsp;
-			<input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-			  name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
-			&nbsp;
-			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+
+			<c:if test="${scope == 'local'}">
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
+			    name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
+			    name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
+			    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
+			    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+			</c:if>
+
+			<c:if test="${scope != 'local'}">
+			  <c:if test="${component.visible}">
+			    <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
+			      name="_hide" alt="<ssf:nlt tag="button.hide"/>">
+			  </c:if>
+			  <c:if test="${!component.visible}">
+			    <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
+			      name="_show" alt="<ssf:nlt tag="button.show"/>">
+			  </c:if>
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
+			    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
+			    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+			</c:if>
 		  </form>
 		  </td></tr></table>
 		 </div>
 		 </div>
-		<div align="left" style="margin:0px; padding:2px;">
-		<ssf:dashboard id="${id}"
-		  type="view" configuration="${ssDashboard}"/>
-		</div>
+		<c:if test="${component.visible}">
+		  <div align="left" style="margin:0px; padding:2px;">
+		  <ssf:dashboard id="${id}"
+		    type="view" configuration="${ssDashboard}"/>
+		  </div>
+		</c:if>
 		</div>
 		</div>
 		<div style="margin:3px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
@@ -297,7 +360,7 @@ function ss_toggle_toolbars() {
 		  <table class="ss_dashboard_view_toolbar" 
 		    cellspacing="0" cellpadding="0" style="width:100%;">
 		  <tr>
-		  <td><ssf:nlt tag="${scopeTitle}"/></td>
+		  <td><span class="ss_bold"><ssf:nlt tag="${scopeTitle}"/></span></td>
 		  <td align="right">
 		  <form class="ss_dashboard_view_toolbar" method="post"
 		    action="<portlet:actionURL>
@@ -308,25 +371,47 @@ function ss_toggle_toolbars() {
 			<input type="hidden" name="_dashboardList" value="wide_bottom">
 			<input type="hidden" name="_componentId" value="${id}">
 			<input type="hidden" name="_returnView" value="binder"/>
-			<input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
-			  name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
-			&nbsp;
-			<input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
-			  name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
-			&nbsp;
-			<input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-			  name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
-			&nbsp;
-			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+
+			<c:if test="${scope == 'local'}">
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
+			    name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
+			    name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
+			    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
+			    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+			</c:if>
+
+			<c:if test="${scope != 'local'}">
+			  <c:if test="${component.visible}">
+			    <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
+			      name="_hide" alt="<ssf:nlt tag="button.hide"/>">
+			  </c:if>
+			  <c:if test="${!component.visible}">
+			    <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
+			      name="_show" alt="<ssf:nlt tag="button.show"/>">
+			  </c:if>
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
+			    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
+			  &nbsp;
+			  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
+			    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
+			</c:if>
 		  </form>
 		  </td></tr></table>
 		 </div>
 		 </div>
-		<div align="left" style="margin:0px; padding:2px;">
-		<ssf:dashboard id="${id}"
-		  type="view" configuration="${ssDashboard}"/>
-		</div>
+		<c:if test="${component.visible}">
+		  <div align="left" style="margin:0px; padding:2px;">
+		  <ssf:dashboard id="${id}"
+		    type="view" configuration="${ssDashboard}"/>
+		  </div>
+		</c:if>
 		</div>
 		</div>
 		<div style="margin:3px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
