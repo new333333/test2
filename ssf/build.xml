@@ -196,7 +196,7 @@
 		<delete file="${dist.dir}/sitescape-forum-ssf-${forum.version}.war" failonerror="false" />
 		<delete file="${dist.dir}/sitescape-forum-ssfs-${forum.version}.war" failonerror="false" />
 		<copy file="war/ssf.war" tofile="${dist.dir}/sitescape-forum-ssf-${forum.version}.war" />
-		<copy file="ssfs/ssfs/war" tofile="${dist.dir}/sitescape-forum-ssfs-${forum.version}.war" />
+		<copy file="ssfs/ssfs.war" tofile="${dist.dir}/sitescape-forum-ssfs-${forum.version}.war" />
 	</target>
 
 	<!-- Build Aspen kit bundled with Liferay-Tomcat -->
