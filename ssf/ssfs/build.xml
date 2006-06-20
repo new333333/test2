@@ -10,12 +10,17 @@
 	<property name="output.war.name" value="ssfs" />
 	<property name="output.war.file" value="${output.war.name}.war" />
 	<property name="temp.dir" value="temp" />
+	<property name="temp.slide.dir" value="temp-slide" />
 
 	<target name="delete-temp">
 		<delete includeemptydirs="true" dir="${temp.dir}" failonerror="true"/>
 	</target>
 	
-	<target name="clean" depends="build-common.clean, delete-temp">
+	<target name="delete-temp-slide">
+		<delete includeemptydirs="true" dir="${temp.slide.dir}" failonerror="true"/>
+	</target>
+	
+	<target name="clean" depends="build-common.clean, delete-temp, delete-temp-slide">
 		<delete>
 			<fileset dir="." includes="${output.war.file}" />
 		</delete>
@@ -102,19 +107,25 @@
 		</if>
     </target>
 
-	<target name="build-war-from-scratch" depends="delete-temp">
+	<!-- Build ssfs.war from scratch by first re-building slide.war (which
+	     ssfs.war is based on) from its source pool. This is necessary only 
+	     when slide.war has changed, which should be very rare. In all other
+	     cases, simply use "war" which is significantly more efficient. -->
+	<target name="build-war-from-scratch">
 		<antcall target="build-custom-slide-war"/>
 		<antcall target="war"/>
 	</target>
 
-	<target name="build-custom-slide-war">
-		<unzip src="download/${slide.src.zip.file.name}" dest="${temp.dir}" />
-		<copy todir="${temp.dir}" overwrite="true">
+	<!-- Build custom slide.war file from its source pool in conjunction with
+	     the modifications we made to some of the source code. -->
+	<target name="build-custom-slide-war" depends="delete-temp-slide">
+		<unzip src="download/${slide.src.zip.file.name}" dest="${temp.slide.dir}" />
+		<copy todir="${temp.slide.dir}" overwrite="true">
 			<fileset dir="resources/slide-src" />
 		</copy>
-		<copy file="resources/slide-src/wck/build.properties.sample" tofile="${temp.dir}/wck/build.properties" overwrite="true" />
-		<ant dir="${temp.dir}/wck" target="dist" inheritAll="false" />
-		<copy file="${temp.dir}/wck/dist/slide.war" todir="resources" />
+		<copy file="resources/slide-src/wck/build.properties.sample" tofile="${temp.slide.dir}/wck/build.properties" overwrite="true" />
+		<ant dir="${temp.slide.dir}/wck" target="dist" inheritAll="false" />
+		<copy file="${temp.slide.dir}/wck/dist/slide.war" todir="resources" />
 		<!-- The following jar files are copied into our lib directory because they are
 		     needed to compile the Java source files in com.sitescape.ef.ssfs.* packages.
 		     (the first two jar files also contain some changes we made to customize Slide). -->
@@ -122,8 +133,8 @@
 		           time, we checked them into SCM for two reasons: 1) dealing with archives
 		           in SCM is easier for developers (as opposed to two-pass build), 
 		           2) these jar files will not change frequently. -->
-		<!--<copy file="${temp.dir}/wck/dist/jakarta-slide-wck-1.0.jar" tofile="${project.dir}/lib/jakarta-slide-wck.jar" />-->
-		<!--<copy file="${temp.dir}/wck/dist/slide-kernel-2.2pre1.jar" todir="${project.dir}/lib/slide-kernel.jar" />-->
-		<!--<copy file="${temp.dir}/dist/slide/lib/slide-jaas-2.2pre1.jar" todir="${project.dir}/lib/slide-jaas.jar" />-->
+		<!--<copy file="${temp.slide.dir}/wck/dist/jakarta-slide-wck-1.0.jar" tofile="${project.dir}/lib/jakarta-slide-wck.jar" />-->
+		<!--<copy file="${temp.slide.dir}/wck/dist/slide-kernel-2.2pre1.jar" todir="${project.dir}/lib/slide-kernel.jar" />-->
+		<!--<copy file="${temp.slide.dir}/dist/slide/lib/slide-jaas-2.2pre1.jar" todir="${project.dir}/lib/slide-jaas.jar" />-->
 	</target>
 </project>
