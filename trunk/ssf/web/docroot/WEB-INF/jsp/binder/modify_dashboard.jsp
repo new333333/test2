@@ -100,7 +100,7 @@
       <c:forEach var="component" items="${ssDashboard.wide_top}">
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
-		<c:if test="${ssDashboard.scope == 'local' || ssDashboard.scope == scope}">
+		<c:if test="${ssDashboard.scope == scope}">
 			<c:set var="scopeTitle" value="dashboard.local"/>
 			<c:if test="${scope == 'global'}">
 			  <c:set var="scopeTitle" value="dashboard.global"/>
@@ -198,7 +198,7 @@
       <c:forEach var="component" items="${ssDashboard.narrow_fixed}">
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
-		<c:if test="${ssDashboard.scope == 'local' || ssDashboard.scope == scope}">
+		<c:if test="${ssDashboard.scope == scope}">
 			<c:set var="scopeTitle" value="dashboard.local"/>
 			<c:if test="${scope == 'global'}">
 			  <c:set var="scopeTitle" value="dashboard.global"/>
@@ -297,7 +297,7 @@
       <c:forEach var="component" items="${ssDashboard.narrow_variable}">
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
-		<c:if test="${ssDashboard.scope == 'local' || ssDashboard.scope == scope}">
+		<c:if test="${ssDashboard.scope == scope}">
 			<c:set var="scopeTitle" value="dashboard.local"/>
 			<c:if test="${scope == 'global'}">
 			  <c:set var="scopeTitle" value="dashboard.global"/>
@@ -393,7 +393,7 @@
       <c:forEach var="component" items="${ssDashboard.wide_bottom}">
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
-		<c:if test="${ssDashboard.scope == 'local' || ssDashboard.scope == scope}">
+		<c:if test="${ssDashboard.scope == scope}">
 			<c:set var="scopeTitle" value="dashboard.local"/>
 			<c:if test="${scope == 'global'}">
 			  <c:set var="scopeTitle" value="dashboard.global"/>

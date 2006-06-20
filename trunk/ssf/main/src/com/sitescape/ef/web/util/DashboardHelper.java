@@ -34,6 +34,7 @@ public class DashboardHelper {
 	
 	//Component keys
 	public final static String Name = "name";
+	public final static String Component_Title = "title";
 	public final static String Roles = "roles";
 	public final static String Data = "data";
 	
@@ -85,11 +86,11 @@ public class DashboardHelper {
 		}
 		Map ssDashboard = new HashMap();
 		if (scope.equals(DashboardHelper.Local)) {
-			ssDashboard.put(WebKeys.DASHBOARD_MAP, dashboard);
+			ssDashboard.put(WebKeys.DASHBOARD_MAP, new HashMap(dashboard));
 		} else if (scope.equals(DashboardHelper.Global)) {
-			ssDashboard.put(WebKeys.DASHBOARD_MAP, dashboard_g);
+			ssDashboard.put(WebKeys.DASHBOARD_MAP, new HashMap(dashboard_g));
 		} else if (scope.equals(DashboardHelper.Binder)) {
-			ssDashboard.put(WebKeys.DASHBOARD_MAP, dashboard_b);
+			ssDashboard.put(WebKeys.DASHBOARD_MAP, new HashMap(dashboard_b));
 		}
 		ssDashboard.put(WebKeys.DASHBOARD_LOCAL_MAP, dashboard);
 		ssDashboard.put(WebKeys.DASHBOARD_GLOBAL_MAP, dashboard_g);
@@ -191,16 +192,22 @@ public class DashboardHelper {
 		List seenList = new ArrayList();
 		for (int i = 0; i < components.size(); i++) {
 			String id = (String) ((Map)components.get(i)).get(DashboardHelper.Id);
-			if (!seenList.contains(id)) seenList.add(id);
+			if (seenList.contains(id) || !checkIfComponentExists(id, ssDashboard)) {
+				//Remove duplicates
+				components.remove(i);
+				i--;
+			} else {
+				seenList.add(id);
+			}
 		}
 		
 		//Then merge in the global and binder lists
-		List globalAndBinderComponents = (List)globalDashboard.get(listName);
+		List globalAndBinderComponents = new ArrayList((List)globalDashboard.get(listName));
 		globalAndBinderComponents.addAll((List)binderDashboard.get(listName));
 		for (int i = 0; i < globalAndBinderComponents.size(); i++) {
 			String id = (String) ((Map)globalAndBinderComponents.get(i)).get(DashboardHelper.Id);
 			String scope = (String) ((Map)globalAndBinderComponents.get(i)).get(DashboardHelper.Scope);
-			if (!seenList.contains(id)) {
+			if (!seenList.contains(id) && checkIfComponentExists(id, ssDashboard)) {
 				seenList.add(id);
 				Map newComponent = new HashMap();
 				newComponent.put(DashboardHelper.Id, id);
@@ -211,5 +218,60 @@ public class DashboardHelper {
 		}
 		
 		return components;
+	}
+	
+	public static boolean checkDashboardLists(Map ssDashboard) {
+		boolean changesMade = false;
+		String[] listNames = {Wide_Top, Narrow_Fixed, Narrow_Variable, Wide_Bottom};
+		for (int i = 0; i < listNames.length; i++) {
+			boolean localChangesMade = checkDashboardList(ssDashboard, 
+					(Map)ssDashboard.get(WebKeys.DASHBOARD_LOCAL_MAP), listNames[i]);
+			boolean globalChangesMade = checkDashboardList(ssDashboard, 
+					(Map)ssDashboard.get(WebKeys.DASHBOARD_GLOBAL_MAP), listNames[i]);
+			boolean binderChangesMade = checkDashboardList(ssDashboard, 
+					(Map)ssDashboard.get(WebKeys.DASHBOARD_BINDER_MAP), listNames[i]);
+			if (localChangesMade || globalChangesMade || binderChangesMade) changesMade = true;
+		}
+		return changesMade;
+	}
+	
+	private static boolean checkDashboardList(Map ssDashboard, Map dashboard, String listName) {
+		boolean changesMade = false;
+		if (dashboard == null) return false;
+		List components = (List)dashboard.get(listName);
+		
+		List seenList = new ArrayList();
+		for (int i = 0; i < components.size(); i++) {
+			String id = (String) ((Map)components.get(i)).get(DashboardHelper.Id);
+			if (seenList.contains(id) || !checkIfComponentExists(id, ssDashboard)) {
+				//Remove duplicates or non-existant components
+				components.remove(i);
+				i--;
+				changesMade = true;
+			} else {
+				seenList.add(id);
+			}
+		}		
+		return changesMade;
+	}
+	
+	private static boolean checkIfComponentExists(String id, Map ssDashboard) {
+		String componentScope = "";
+		if (id.contains("_")) componentScope = id.split("_")[0];
+		if (!componentScope.equals("")) {
+			Map dashboard = null;
+			if (componentScope.equals(DashboardHelper.Local)) {
+				dashboard = (Map) ssDashboard.get(WebKeys.DASHBOARD_LOCAL_MAP);
+			} else if (componentScope.equals(DashboardHelper.Global)) {
+				dashboard = (Map) ssDashboard.get(WebKeys.DASHBOARD_GLOBAL_MAP);
+			} else if (componentScope.equals(DashboardHelper.Binder)) {
+				dashboard = (Map) ssDashboard.get(WebKeys.DASHBOARD_BINDER_MAP);
+			}
+			if (dashboard != null) {
+				Map components = (Map) dashboard.get(Components);
+				if (components.containsKey(id)) return true;
+			}
+		}
+		return false;
 	}
 }

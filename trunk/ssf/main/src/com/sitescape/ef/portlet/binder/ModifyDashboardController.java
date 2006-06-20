@@ -104,6 +104,11 @@ public class ModifyDashboardController extends AbstractBinderController {
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, userProperties, scope);
+
+		if (DashboardHelper.checkDashboardLists(ssDashboard)) {
+			//The dashboard was fixed up. Go save it
+			saveDashboards(binder, ssDashboard);
+		}
 		
 		Map model = new HashMap();
 		model.put(WebKeys.BINDER, binder);
@@ -204,6 +209,9 @@ public class ModifyDashboardController extends AbstractBinderController {
 				}
 			}
 			
+			//Get the component title
+			String componentTitle = PortletRequestUtils.getStringParameter(request, DashboardHelper.Component_Title, "");
+			
 			if (!dashboardListKey.equals("") && dashboard.containsKey(dashboardListKey)) {
 				List dashboardList = (List) dashboard.get(dashboardListKey);
 				Iterator itDashboardList = dashboardList.iterator();
@@ -216,14 +224,15 @@ public class ModifyDashboardController extends AbstractBinderController {
 						if (components != null) {
 							Map componentMap = (Map) components.get(id);
 							if (componentMap != null) {
-								//Save the data map
+								//Save the title and data map
+								componentMap.put(DashboardHelper.Component_Title, componentTitle);
 								componentMap.put(DashboardHelper.Data, componentData);
 							}						
 						}
 					}
 				}
 			}
-			//Save the updated dashbord configuration 
+			//Save the updated dashboard configuration 
 			saveDashboard(binder, componentScope, dashboard);
 		}
 	}
@@ -344,6 +353,16 @@ public class ModifyDashboardController extends AbstractBinderController {
 			dashboard = new HashMap(dashboard);
 		}
 		return dashboard;
+	}
+	
+	private void saveDashboards(Binder binder, Map ssDashboard) {
+		//Save the updated dashbord configurations
+		String scope = DashboardHelper.Local;
+		saveDashboard(binder, scope, (Map)ssDashboard.get(WebKeys.DASHBOARD_LOCAL_MAP));
+		scope = DashboardHelper.Global;
+		saveDashboard(binder, scope, (Map)ssDashboard.get(WebKeys.DASHBOARD_GLOBAL_MAP));
+		scope = DashboardHelper.Binder;
+		saveDashboard(binder, scope, (Map)ssDashboard.get(WebKeys.DASHBOARD_BINDER_MAP));
 	}
 	
 	private void saveDashboard(Binder binder, String scope, Map dashboard) {

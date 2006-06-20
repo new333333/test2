@@ -2,6 +2,7 @@ package com.sitescape.ef.taglib;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DashboardHelper;
@@ -55,8 +56,10 @@ public class DashboardTag extends BodyTagSupport {
 				Map components = (Map) dashboard.get(DashboardHelper.Components);
 				if (components != null) {
 					if (components.containsKey(this._id)) {
-						Map component =  (Map) components.get(this._id);
+						Map component = (Map) components.get(this._id);
 						String name = (String) component.get(DashboardHelper.Name);
+						String title = (String) component.get(DashboardHelper.Component_Title);
+						if (title == null) title = "";
 						String jsp = "";
 						if (_type == null || _type.equals("")) _type = "config";
 						if (_type.equals("config")) {
@@ -64,7 +67,11 @@ public class DashboardTag extends BodyTagSupport {
 						} else if (_type.equals("view")) {
 							jsp = SPropsUtil.getString("dashboard.viewJsp." + name, "");
 						}
-						if (!jsp.equals("")) {
+						if (_type.equals("title")) {
+							//Output just the title
+							pageContext.getOut().print(NLT.getDef(title));
+						
+						} else if (!jsp.equals("")) {
 							RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 				
 							ServletRequest req = new DynamicServletRequest(
