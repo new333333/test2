@@ -57,17 +57,22 @@
   
 <form method="post" >
 <div style="width:100%;">
-<span class="ss_bold"><ssf:nlt tag="dashboard.componentLayout" /></span><br/>
-<table border="1" style="width:100%;">
-  <tr>
-    <td>
- 		<c:set var="id" value="${ssDashboard.ssComponentId}"/>
-		<div class="ss_dashboard_config">
+	<span class="ss_bold"><ssf:nlt tag="dashboard.componentLayout" /></span>
+	<br/>
+	<br/>
+	<c:set var="id" value="${ssDashboard.ssComponentId}"/>
+	<div class="ss_dashboard_config">
+		<form method="post">
 		<span class="ss_bold"><ssf:nlt checkIfTag="true"
 		  tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[id].name]}"/></span>
 		<br/>
-		<form method="post">
+		<br/>
 		<div style="margin:5px;">
+		<span class="ss_bold"><ssf:nlt tag="dashboard.componentTitle"/></span>
+		<br/>
+		<input type="text" name="title" size="80" 
+		  value="${ssDashboard.dashboard.components[id].title}">
+		<br/>
 		<ssf:dashboard id="${id}" type="config" configuration="${ssDashboard}"/>
 		<input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
 		<input type="hidden" name="_componentId" value="${id}">
@@ -76,13 +81,10 @@
 		<input type="submit" name="_saveConfigData" value="<ssf:nlt tag="button.saveChanges"/>">
 		&nbsp;&nbsp;&nbsp;
 		<input type="submit" name="_deleteComponent" value="<ssf:nlt tag="button.delete"/>">
-		
-		</div>
-		</form>
-		</div>
-    </td>
-  </tr>
-</table>
+	</div>
+	</form>
+	</div>
+
 </div>
 
 <div class="ss_formBreak"/>

@@ -18,8 +18,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 
 <c:set var="ss_style_background_color" value="#FFFFCC" scope="request"/>
-<c:set var="ss_style_component_background_color" value="#FFFF66" scope="request"/>
-<c:set var="ss_style_component_toolbar_background_color" value="#FFFFAA" scope="request"/>
+<c:set var="ss_style_component_background_color" value="#FFFFAA" scope="request"/>
+<c:set var="ss_style_component_toolbar_background_color" value="#FFFFDD" scope="request"/>
 <c:set var="ss_style_border_color" value="#999999" scope="request"/>
 <c:set var="ss_style_border_color_light" value="#cecece" scope="request"/>
 <c:set var="ss_style_text_color" value="#009900" scope="request"/>
@@ -79,7 +79,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_style_component_background_color" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_style_component_toolbar_background_color" value="#FFFFAA" scope="request"/>
+	<c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/>
 	<c:set var="ss_style_border_color" value="#999999" scope="request"/>
 	<c:set var="ss_style_border_color_light" value="#cecece" scope="request"/>
 	<c:set var="ss_style_text_color" value="#000000" scope="request"/>
@@ -392,9 +392,14 @@ ul.ss_dropdownmenu li {
   background-color: ${ss_style_component_background_color};
 }
 
-.ss_dashboard_view_toolbar {
-  background-color: ${ss_style_component_toolbar_background_color} !important;
+.ss_dashboard_toolbar {
+  margin:0px;
+  padding:0px;
   border-bottom: 1px solid ${ss_style_border_color_light} !important;
+}
+
+.ss_dashboard_toolbar_color {
+  background-color: ${ss_style_component_toolbar_background_color} !important;
 }
 
   
