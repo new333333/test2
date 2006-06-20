@@ -65,10 +65,13 @@
 	<classpathentry kind="lib" path="lib/opensaml.jar"/>
 	<classpathentry kind="lib" path="lib/xalan.jar"/>
 	<classpathentry kind="lib" path="lib/xmlsec.jar"/>
-	<classpathentry kind="lib" path="lib/jakarta-slide-wck-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/slide-kernel-2.2pre1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-transaction-1.1.1pre1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils.jar"/>
 	<classpathentry kind="lib" path="lib/frontbasejdbc.jar"/>
+	<classpathentry kind="lib" path="lib/commons-transaction.jar"/>
+	<classpathentry kind="lib" path="lib/jackrabbit-core.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta-slide-wck.jar"/>
+	<classpathentry kind="lib" path="lib/jcr.jar"/>
+	<classpathentry kind="lib" path="lib/slide-jaas.jar"/>
+	<classpathentry kind="lib" path="lib/slide-kernel.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
