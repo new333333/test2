@@ -249,8 +249,6 @@ app.server.liferay.jboss-tomcat.dir=${temp.dir.path}
 		      <antcall target="unit-test" />-->
 		<!--<antcall target="java2html" />-->
 		<antcall target="javadoc-combined" />
-		<antcall target="liferay-tomcat-bundle" />
-		<antcall target="liferay-jboss-tomcat-bundle" />
 		<antcall target="zip" />
 	</target>
 
