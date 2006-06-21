@@ -41,8 +41,8 @@ function ss_toggle_toolbars() {
    style="visibility:hidden; display:none;">
   <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
   <br/>
+  <ul style="list-style: inside; margin:2px; padding:2px;">
   <span class="ss_bold"><ssf:nlt tag="dashboard.addModifyDelete"/></span>
-  <ul>
   <li><a href="<portlet:actionURL>
   <portlet:param name="action" value="modify_dashboard"/>
   <portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -62,6 +62,7 @@ function ss_toggle_toolbars() {
   <portlet:param name="_scope" value="binder"/>
   </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.binder"/></a></li>
   </ul>
+  <br/>
 </div>
 
 <table cellspacing="0" cellpadding="0" style="width:99%;">

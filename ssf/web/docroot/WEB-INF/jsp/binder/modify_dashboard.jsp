@@ -51,8 +51,8 @@
 <br/>
 
   <table><tr><td>
+  <ul style="list-style: inside; margin:2px; padding:2px;">
   <span class="ss_bold"><ssf:nlt tag="dashboard.addModifyDelete"/></span>
-  <ul>
   <li><a href="<portlet:actionURL>
   <portlet:param name="action" value="modify_dashboard"/>
   <portlet:param name="binderId" value="${ssBinder.id}"/>
