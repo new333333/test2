@@ -51,6 +51,7 @@
 <br/>
 
   <table><tr><td>
+  <span class="ss_bold"><ssf:nlt tag="dashboard.addModifyDelete"/></span>
   <ul>
   <li><a href="<portlet:actionURL>
   <portlet:param name="action" value="modify_dashboard"/>
@@ -93,7 +94,7 @@
 
 <div style="width:100%;">
 <span class="ss_bold"><ssf:nlt tag="dashboard.layout" /></span><br/>
-<table border="1" style="width:100%;">
+<table border="1" cellpadding="6" style="width:100%;">
   <tr>
     <td colspan="2">
     
@@ -101,23 +102,16 @@
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
 		<c:if test="${ssDashboard.scope == scope}">
-			<c:set var="scopeTitle" value="dashboard.local"/>
-			<c:if test="${scope == 'global'}">
-			  <c:set var="scopeTitle" value="dashboard.global"/>
-			</c:if>
-			<c:if test="${scope == 'binder'}">
-			  <c:set var="scopeTitle" value="dashboard.binder"/>
-			</c:if>
-			<div class="ss_shadowbox">
-			<div class="ss_shadowbox2 ss_dashboard_view">
-			 <div class="ss_dashboard_view_toolbar">
-			  <div>
-			  <table class="ss_dashboard_view_toolbar" 
-			    cellspacing="0" cellpadding="0" style="width:100%;">
+		  <div class="ss_shadowbox">
+		  <div class="ss_shadowbox2 ss_dashboard_view">
+		  <div class="ss_dashboard_toolbar ss_dashboard_toolbar_color">
+		  <table class="ss_dashboard_toolbar_color" 
+		    cellspacing="0" cellpadding="1" style="width:100%;">
 			  <tr>
-			  <td><span class="ss_bold"><ssf:nlt tag="${scopeTitle}"/></span></td>
+			  <td><span class="ss_bold"><ssf:dashboard id="${id}"
+		    	type="title" configuration="${ssDashboard}"/></span></td>
 			  <td align="right">
-			  <form class="ss_dashboard_view_toolbar" method="post" 
+			  <form class="ss_dashboard_toolbar_color" method="post" 
 			    action="<portlet:actionURL>
 			    <portlet:param name="action" value="modify_dashboard"/>
 			    <portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -161,7 +155,6 @@
 	
 			  </form>
 			  </td></tr></table>
-			  </div>
 			 </div>
 			<div align="left" style="margin:0px; padding:2px;">
 			<ssf:dashboard id="${id}"
@@ -169,7 +162,8 @@
 			</div>
 			</div>
 			</div>
-			<div style="margin:2px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
+			<div style="margin:2px; padding:0px;"><img 
+			  src="<html:imagesPath/>pics/1pix.gif"></div>
 		</c:if>
 	  </c:forEach>
 
@@ -199,24 +193,17 @@
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
 		<c:if test="${ssDashboard.scope == scope}">
-			<c:set var="scopeTitle" value="dashboard.local"/>
-			<c:if test="${scope == 'global'}">
-			  <c:set var="scopeTitle" value="dashboard.global"/>
-			</c:if>
-			<c:if test="${scope == 'binder'}">
-			  <c:set var="scopeTitle" value="dashboard.binder"/>
-			</c:if>
 			<div class="ss_shadowbox" style="width:${ssDashboard.narrowFixedWidth}px;">
 			<div class="ss_shadowbox2 ss_dashboard_view" style="width:${ssDashboard.narrowFixedWidth}px;">
-			 <div class="ss_dashboard_view_toolbar" 
+			 <div class="ss_dashboard_toolbar ss_dashboard_toolbar_color" 
 			   style="width:${ssDashboard.narrowFixedWidth}px;">
-			  <div>
-			  <table class="ss_dashboard_view_toolbar" 
-			    cellspacing="0" cellpadding="0" style="width:100%;">
+			  <table class="ss_dashboard_toolbar_color" 
+			    cellspacing="0" cellpadding="1" style="width:100%;">
 			  <tr>
-			  <td><span class="ss_bold"><ssf:nlt tag="${scopeTitle}"/></span></td>
+			  <td><span class="ss_bold"><ssf:dashboard id="${id}"
+		    	type="title" configuration="${ssDashboard}"/></span></td>
 			  <td align="right">
-			  <form class="ss_dashboard_view_toolbar" style="display:inline;"
+			  <form class="ss_dashboard_toolbar_color" style="display:inline;"
 			    method="post" action="<portlet:actionURL>
 			  <portlet:param name="action" value="modify_dashboard"/>
 			  <portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -261,10 +248,9 @@
 			  </form>
 			  </td></tr></table>
 			 </div>
-			 </div>
 			<div align="left" style="margin:0px; padding:2px;">
 		    <img src="<html:imagesPath/>pics/1pix.gif" 
-		      hspace="${ssDashboard.narrowFixedWidth2}px" vspace="0px"/><br/>
+		      hspace="${ssDashboard.narrowFixedWidth2}" vspace="0" /><br/>
 			<ssf:dashboard id="${id}"
 			  type="view" configuration="${ssDashboard}"/>
 			</div>
@@ -298,23 +284,16 @@
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
 		<c:if test="${ssDashboard.scope == scope}">
-			<c:set var="scopeTitle" value="dashboard.local"/>
-			<c:if test="${scope == 'global'}">
-			  <c:set var="scopeTitle" value="dashboard.global"/>
-			</c:if>
-			<c:if test="${scope == 'binder'}">
-			  <c:set var="scopeTitle" value="dashboard.binder"/>
-			</c:if>
 			<div class="ss_shadowbox">
 			<div class="ss_shadowbox2 ss_dashboard_view" align="left">
-			 <div class="ss_dashboard_view_toolbar">
-			  <div>
-			  <table class="ss_dashboard_view_toolbar" 
-			    cellspacing="0" cellpadding="0" style="width:100%;">
+			<div class="ss_dashboard_toolbar ss_dashboard_toolbar_color">
+			<table class="ss_dashboard_toolbar_color" 
+			  cellspacing="0" cellpadding="1" style="width:100%;">
 			  <tr>
-			  <td><span class="ss_bold"><ssf:nlt tag="${scopeTitle}"/></span></td>
+			  <td><span class="ss_bold"><ssf:dashboard id="${id}"
+		    	type="title" configuration="${ssDashboard}"/></span></td>
 			  <td align="right">
-			  <form class="ss_dashboard_view_toolbar" method="post" action="<portlet:actionURL>
+			  <form class="ss_dashboard_toolbar_color" method="post" action="<portlet:actionURL>
 			  <portlet:param name="action" value="modify_dashboard"/>
 			  <portlet:param name="binderId" value="${ssBinder.id}"/>
 			  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
@@ -358,7 +337,6 @@
 			  </form>
 			  </td></tr></table>
 			 </div>
-			 </div>
 			<div align="left" style="margin:0px; padding:2px;">
 			<ssf:dashboard id="${id}"
 			  type="view" configuration="${ssDashboard}"/>
@@ -394,23 +372,16 @@
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
 		<c:if test="${ssDashboard.scope == scope}">
-			<c:set var="scopeTitle" value="dashboard.local"/>
-			<c:if test="${scope == 'global'}">
-			  <c:set var="scopeTitle" value="dashboard.global"/>
-			</c:if>
-			<c:if test="${scope == 'binder'}">
-			  <c:set var="scopeTitle" value="dashboard.binder"/>
-			</c:if>
-			<div class="ss_shadowbox">
-			<div class="ss_shadowbox2 ss_dashboard_view">
-			 <div class="ss_dashboard_view_toolbar" align="right">
-			  <div>
-			  <table class="ss_dashboard_view_toolbar" 
-			    cellspacing="0" cellpadding="0" style="width:100%;">
+		  <div class="ss_shadowbox">
+		  <div class="ss_shadowbox2 ss_dashboard_view">
+		  <div class="ss_dashboard_toolbar ss_dashboard_toolbar_color">
+		  <table class="ss_dashboard_toolbar_color" 
+		    cellspacing="0" cellpadding="1" style="width:100%;">
 			  <tr>
-			  <td><span class="ss_bold"><ssf:nlt tag="${scopeTitle}"/></span></td>
+			  <td><span class="ss_bold"><ssf:dashboard id="${id}"
+		    	type="title" configuration="${ssDashboard}"/></span></td>
 			  <td align="right">
-			  <form class="ss_dashboard_view_toolbar" method="post"
+			  <form class="ss_dashboard_toolbar_color" method="post"
 			    action="<portlet:actionURL>
 			    <portlet:param name="action" value="modify_dashboard"/>
 			    <portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -454,7 +425,6 @@
 	
 			  </form>
 			  </td></tr></table>
-			 </div>
 			 </div>
 			<div align="left" style="margin:0px; padding:2px;">
 			<ssf:dashboard id="${id}"
