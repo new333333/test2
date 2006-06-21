@@ -1,0 +1,385 @@
+<!ELEMENT dataset (
+    SS_Attachments*,
+    SS_CustomAttributes*,
+    SS_DefinitionMap*,
+    SS_Definitions*,
+    SS_EmailAlias*,
+    SS_Events*,
+    SS_FolderEntries*,
+    SS_Forums*,
+    SS_FunctionOperations*,
+    SS_Functions*,
+    SS_HistoryMap*,
+    SS_Notifications*,
+    SS_Postings*,
+    SS_PrincipalMembership*,
+    SS_Principals*,
+    SS_SeenMap*,
+    SS_Tags*,
+    SS_UserProperties*,
+    SS_WorkareaFunctionMembers*,
+    SS_WorkAreaFunctionMemberships*,
+    SS_WorkflowMap*,
+    SS_WorkflowStates*)>
+
+<!ELEMENT SS_Attachments EMPTY>
+<!ATTLIST SS_Attachments
+    id CDATA #REQUIRED
+    type CDATA #REQUIRED
+    lockVersion CDATA #REQUIRED
+    folderEntry CDATA #IMPLIED
+    principal CDATA #IMPLIED
+    binder CDATA #IMPLIED
+    ownerType CDATA #IMPLIED
+    ownerId CDATA #IMPLIED
+    owningFolderSortKey CDATA #IMPLIED
+    owningBinderId CDATA #IMPLIED
+    name CDATA #IMPLIED
+    creation_date CDATA #IMPLIED
+    creation_principal CDATA #IMPLIED
+    modification_date CDATA #IMPLIED
+    modification_principal CDATA #IMPLIED
+    fileName CDATA #IMPLIED
+    fileLength CDATA #IMPLIED
+    lastVersion CDATA #IMPLIED
+    repositoryServiceName CDATA #IMPLIED
+    filelock_id CDATA #IMPLIED
+    filelock_subject CDATA #IMPLIED
+    filelock_owner CDATA #IMPLIED
+    filelock_expirationDate CDATA #IMPLIED
+    versionNumber CDATA #IMPLIED
+    versionName CDATA #IMPLIED
+    parentAttachment CDATA #IMPLIED
+>
+
+<!ELEMENT SS_CustomAttributes EMPTY>
+<!ATTLIST SS_CustomAttributes
+    id CDATA #REQUIRED
+    type CDATA #REQUIRED
+    folderEntry CDATA #IMPLIED
+    principal CDATA #IMPLIED
+    binder CDATA #IMPLIED
+    ownerType CDATA #IMPLIED
+    ownerId CDATA #IMPLIED
+    owningFolderSortKey CDATA #IMPLIED
+    owningBinderId CDATA #IMPLIED
+    name CDATA #IMPLIED
+    stringValue CDATA #IMPLIED
+    description_text CDATA #IMPLIED
+    description_format CDATA #IMPLIED
+    longValue CDATA #IMPLIED
+    dateValue CDATA #IMPLIED
+    serializedValue CDATA #IMPLIED
+    xmlValue CDATA #IMPLIED
+    booleanValue CDATA #IMPLIED
+    valueType CDATA #IMPLIED
+    parent CDATA #IMPLIED
+>
+
+<!ELEMENT SS_DefinitionMap EMPTY>
+<!ATTLIST SS_DefinitionMap
+    binder CDATA #REQUIRED
+    definition CDATA #REQUIRED
+    position CDATA #REQUIRED
+>
+
+<!ELEMENT SS_Definitions EMPTY>
+<!ATTLIST SS_Definitions
+    id CDATA #REQUIRED
+    lockVersion CDATA #REQUIRED
+    acl_readMembers CDATA #IMPLIED
+    acl_writeMembers CDATA #IMPLIED
+    acl_deleteMembers CDATA #IMPLIED
+    acl_changeAclMembers CDATA #IMPLIED
+    name CDATA #IMPLIED
+    title CDATA #IMPLIED
+    type CDATA #IMPLIED
+    visibility CDATA #IMPLIED
+    zoneName CDATA #REQUIRED
+    encoding CDATA #IMPLIED
+    acl_inheritFromParent CDATA #REQUIRED
+    creation_date CDATA #IMPLIED
+    creation_principal CDATA #IMPLIED
+    modification_date CDATA #IMPLIED
+    modification_principal CDATA #IMPLIED
+>
+
+<!ELEMENT SS_EmailAlias EMPTY>
+<!ATTLIST SS_EmailAlias
+    id CDATA #REQUIRED
+    lockVersion CDATA #REQUIRED
+    aliasName CDATA #IMPLIED
+    zoneName CDATA #REQUIRED
+>
+
+<!ELEMENT SS_Events EMPTY>
+<!ATTLIST SS_Events
+    id CDATA #REQUIRED
+    lockVersion CDATA #REQUIRED
+    folderEntry CDATA #IMPLIED
+    principal CDATA #IMPLIED
+    binder CDATA #IMPLIED
+    ownerType CDATA #IMPLIED
+    ownerId CDATA #IMPLIED
+    owningFolderSortKey CDATA #IMPLIED
+    owningBinderId CDATA #IMPLIED
+    name CDATA #IMPLIED
+    dtStart CDATA #REQUIRED
+    dtEnd CDATA #IMPLIED
+    frequency CDATA #IMPLIED
+    repeatInterval CDATA #IMPLIED
+    until CDATA #IMPLIED
+    repeatCount CDATA #IMPLIED
+    weekStart CDATA #IMPLIED
+    timeZoneSensitive CDATA #IMPLIED
+    days CDATA #IMPLIED
+    monthDay CDATA #IMPLIED
+    yearDay CDATA #IMPLIED
+    weekNo CDATA #IMPLIED
+    months CDATA #IMPLIED
+    minutes CDATA #IMPLIED
+    hours CDATA #IMPLIED
+    duration CDATA #REQUIRED
+    creation_date CDATA #IMPLIED
+    creation_principal CDATA #IMPLIED
+    modification_date CDATA #IMPLIED
+    modification_principal CDATA #IMPLIED
+>
+
+<!ELEMENT SS_FolderEntries EMPTY>
+<!ATTLIST SS_FolderEntries
+    id CDATA #REQUIRED
+    lockVersion CDATA #REQUIRED
+    docContent CDATA #IMPLIED
+    allowEdits CDATA #IMPLIED
+    reserved_date CDATA #IMPLIED
+    reserved_principal CDATA #IMPLIED
+    sendMail CDATA #IMPLIED
+    entry_level CDATA #IMPLIED
+    entry_sortKey CDATA #IMPLIED
+    owningFolderSortKey CDATA #IMPLIED
+    lastActivity CDATA #IMPLIED
+    replyCount CDATA #REQUIRED
+    nextDescendant CDATA #REQUIRED
+    totalReplyCount CDATA #REQUIRED
+    topEntry CDATA #IMPLIED
+    parentEntry CDATA #IMPLIED
+    wrk_date CDATA #IMPLIED
+    wrk_principal CDATA #IMPLIED
+    parentBinder CDATA #IMPLIED
+    description_text CDATA #IMPLIED
+    description_format CDATA #IMPLIED
+    title CDATA #IMPLIED
+    iconName CDATA #IMPLIED
+    entryDef CDATA #IMPLIED
+    creation_date CDATA #IMPLIED
+    creation_principal CDATA #IMPLIED
+    modification_date CDATA #IMPLIED
+    modification_principal CDATA #IMPLIED
+    lockedFileCount CDATA #IMPLIED
+>
+
+<!ELEMENT SS_Forums EMPTY>
+<!ATTLIST SS_Forums
+    id CDATA #REQUIRED
+    type CDATA #REQUIRED
+    lockVersion CDATA #REQUIRED
+    zoneName CDATA #REQUIRED
+    parentBinder CDATA #IMPLIED
+    defaultPostingDef CDATA #IMPLIED
+    name CDATA #REQUIRED
+    notify_teamOn CDATA #IMPLIED
+    notify_email CDATA #IMPLIED
+    notify_fromAddress CDATA #IMPLIED
+    notify_subject CDATA #IMPLIED
+    owner_date CDATA #IMPLIED
+    owner_principal CDATA #IMPLIED
+    properties CDATA #IMPLIED
+    functionMembershipInherited CDATA #REQUIRED
+    acl_readMembers CDATA #IMPLIED
+    acl_writeMembers CDATA #IMPLIED
+    acl_deleteMembers CDATA #IMPLIED
+    acl_changeAclMembers CDATA #IMPLIED
+    definitionsInherited CDATA #IMPLIED
+    acl_inheritFromParent CDATA #IMPLIED
+    acl_widenRead CDATA #IMPLIED
+    acl_widenModify CDATA #IMPLIED
+    acl_widenDelete CDATA #IMPLIED
+    description_text CDATA #IMPLIED
+    description_format CDATA #IMPLIED
+    title CDATA #IMPLIED
+    iconName CDATA #IMPLIED
+    entryDef CDATA #IMPLIED
+    creation_date CDATA #IMPLIED
+    creation_principal CDATA #IMPLIED
+    modification_date CDATA #IMPLIED
+    modification_principal CDATA #IMPLIED
+    topFolder CDATA #IMPLIED
+    nextEntryNumber CDATA #IMPLIED
+    nextFolderNumber CDATA #IMPLIED
+    displayStyle CDATA #IMPLIED
+    folder_level CDATA #IMPLIED
+    folder_sortKey CDATA #IMPLIED
+    entryRoot_level CDATA #IMPLIED
+    entryRoot_sortKey CDATA #IMPLIED
+>
+
+<!ELEMENT SS_FunctionOperations EMPTY>
+<!ATTLIST SS_FunctionOperations
+    functionId CDATA #REQUIRED
+    operationName CDATA #REQUIRED
+>
+
+<!ELEMENT SS_Functions EMPTY>
+<!ATTLIST SS_Functions
+    id CDATA #REQUIRED
+    lockVersion CDATA #REQUIRED
+    zoneName CDATA #REQUIRED
+    name CDATA #REQUIRED
+>
+
+<!ELEMENT SS_HistoryMap EMPTY>
+<!ATTLIST SS_HistoryMap
+    principalId CDATA #REQUIRED
+    binderId CDATA #REQUIRED
+    historyMap CDATA #REQUIRED
+    lastPrune CDATA #IMPLIED
+>
+
+<!ELEMENT SS_Notifications EMPTY>
+<!ATTLIST SS_Notifications
+    id CDATA #REQUIRED
+    type CDATA #REQUIRED
+    lockVersion CDATA #REQUIRED
+    binder CDATA #IMPLIED
+    sendTo CDATA #IMPLIED
+    style CDATA #IMPLIED
+    disabled CDATA #IMPLIED
+>
+
+<!ELEMENT SS_Postings EMPTY>
+<!ATTLIST SS_Postings
+    id CDATA #REQUIRED
+    lockVersion CDATA #REQUIRED
+    enabled CDATA #IMPLIED
+    zoneName CDATA #REQUIRED
+    binder CDATA #IMPLIED
+    definition CDATA #IMPLIED
+    emailAlias CDATA #IMPLIED
+    subject CDATA #IMPLIED
+    replyPostingOption CDATA #IMPLIED
+>
+
+<!ELEMENT SS_PrincipalMembership EMPTY>
+<!ATTLIST SS_PrincipalMembership
+    userId CDATA #REQUIRED
+    groupId CDATA #REQUIRED
+>
+
+<!ELEMENT SS_Principals EMPTY>
+<!ATTLIST SS_Principals
+    id CDATA #REQUIRED
+    type CDATA #REQUIRED
+    lockVersion CDATA #REQUIRED
+    reserved CDATA #IMPLIED
+    preferredWorkspace CDATA #IMPLIED
+    zoneName CDATA #REQUIRED
+    signature CDATA #IMPLIED
+    disabled CDATA #IMPLIED
+    lcName CDATA #IMPLIED
+    name CDATA #IMPLIED
+    foreignName CDATA #IMPLIED
+    parentBinder CDATA #IMPLIED
+    description_text CDATA #IMPLIED
+    description_format CDATA #IMPLIED
+    title CDATA #IMPLIED
+    iconName CDATA #IMPLIED
+    entryDef CDATA #IMPLIED
+    creation_date CDATA #IMPLIED
+    creation_principal CDATA #IMPLIED
+    modification_date CDATA #IMPLIED
+    modification_principal CDATA #IMPLIED
+    functionMembershipInherited CDATA #IMPLIED
+    displayStyle CDATA #IMPLIED
+    loginDate CDATA #IMPLIED
+    timeZoneName CDATA #IMPLIED
+    languageId CDATA #IMPLIED
+    country CDATA #IMPLIED
+    emailAddress CDATA #IMPLIED
+    firstName CDATA #IMPLIED
+    lastName CDATA #IMPLIED
+    middleName CDATA #IMPLIED
+    homepage CDATA #IMPLIED
+    organization CDATA #IMPLIED
+    phone CDATA #IMPLIED
+    webPubDir CDATA #IMPLIED
+    calender CDATA #IMPLIED
+    zonName CDATA #IMPLIED
+    password CDATA #IMPLIED
+>
+
+<!ELEMENT SS_SeenMap EMPTY>
+<!ATTLIST SS_SeenMap
+    principalId CDATA #REQUIRED
+    seenMap CDATA #REQUIRED
+    lastPrune CDATA #IMPLIED
+>
+
+<!ELEMENT SS_Tags EMPTY>
+<!ATTLIST SS_Tags
+    id CDATA #REQUIRED
+    entity_id CDATA #IMPLIED
+    entity_type CDATA #IMPLIED
+    owner_id CDATA #IMPLIED
+    owner_type CDATA #IMPLIED
+    name CDATA #IMPLIED
+    isPublic CDATA #IMPLIED
+>
+
+<!ELEMENT SS_UserProperties EMPTY>
+<!ATTLIST SS_UserProperties
+    principalId CDATA #REQUIRED
+    binderId CDATA #REQUIRED
+    properties CDATA #REQUIRED
+>
+
+<!ELEMENT SS_WorkareaFunctionMembers EMPTY>
+<!ATTLIST SS_WorkareaFunctionMembers
+    workAreaFunctionMembershipId CDATA #REQUIRED
+    memberId CDATA #REQUIRED
+>
+
+<!ELEMENT SS_WorkAreaFunctionMemberships EMPTY>
+<!ATTLIST SS_WorkAreaFunctionMemberships
+    id CDATA #REQUIRED
+    lockVersion CDATA #REQUIRED
+    workAreaId CDATA #REQUIRED
+    workAreaType CDATA #REQUIRED
+    zoneName CDATA #REQUIRED
+    functionId CDATA #REQUIRED
+>
+
+<!ELEMENT SS_WorkflowMap EMPTY>
+<!ATTLIST SS_WorkflowMap
+    binder CDATA #REQUIRED
+    workflowDefinition CDATA #REQUIRED
+    entryDefinition CDATA #REQUIRED
+>
+
+<!ELEMENT SS_WorkflowStates EMPTY>
+<!ATTLIST SS_WorkflowStates
+    tokenId CDATA #REQUIRED
+    lockVersion CDATA #REQUIRED
+    folderEntry CDATA #IMPLIED
+    principal CDATA #IMPLIED
+    binder CDATA #IMPLIED
+    ownerType CDATA #IMPLIED
+    ownerId CDATA #IMPLIED
+    owningFolderSortKey CDATA #IMPLIED
+    owningBinderId CDATA #IMPLIED
+    state CDATA #IMPLIED
+    threadName CDATA #IMPLIED
+    definition CDATA #IMPLIED
+    timerId CDATA #IMPLIED
+>
+
