@@ -41,7 +41,7 @@ function wsTreeComponent_showId(id, obj, action) {
 <c:if test="${empty ssWsDomTree || empty ssDefinitionEntry.id}">
   <span class="ss_bold"><ssf:nlt checkIfTag="true"
     tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[ssDashboardId].name]}"/></span><br/>
-  <span><ssf:nlt tag="dashboard.displatNotAvailable"/></span>
+  <span class="ss_italic"><ssf:nlt tag="dashboard.displayNotAvailable"/></span>
 </c:if>
 
 <c:if test="${!empty ssWsDomTree && !empty ssDefinitionEntry.id}">

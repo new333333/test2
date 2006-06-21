@@ -20,7 +20,7 @@ function ss_toggle_toolbars() {
 }
 </script>
 <div class="ss_indent_medium" style="width:100%;">
-<table cellspacing="0" cellpadding="0" style="width:99%;">
+<table cellspacing="0" cellpadding="0" style="width:99%; margin-bottom:2px;">
 <tr>
   <td align="left" valign="top" nowrap width="2%">
     <span class="ss_bold"><c:out value="${ssDashboard.title}"/> 
@@ -37,11 +37,11 @@ function ss_toggle_toolbars() {
   </td>
 </tr>
 </table>
-
 <div id="ss_dashboard_toolbar_${ss_toolbar_count}"
    style="visibility:hidden; display:none;">
   <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
-  <table><tr><td>
+  <br/>
+  <span class="ss_bold"><ssf:nlt tag="dashboard.addModifyDelete"/></span>
   <ul>
   <li><a href="<portlet:actionURL>
   <portlet:param name="action" value="modify_dashboard"/>
@@ -62,7 +62,6 @@ function ss_toggle_toolbars() {
   <portlet:param name="_scope" value="binder"/>
   </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.binder"/></a></li>
   </ul>
-  </td></tr></table>
 </div>
 
 <table cellspacing="0" cellpadding="0" style="width:99%;">
@@ -118,15 +117,18 @@ function ss_toggle_toolbars() {
 		      style="width:13px; height:13px; hspace:2px;">
 		  </form></td></tr></table>
 		 </div>
+		 <div align="left" style="margin:0px; padding:2px;">
 		 <c:if test="${component.visible}">
-		  <div align="left" style="margin:0px; padding:2px;">
 		  <ssf:dashboard id="${id}"
 		    type="view" configuration="${ssDashboard}"/>
-		  </div>
 		 </c:if>
+		 <c:if test="${!component.visible}">
+		   <span class="ss_italic"><ssf:nlt tag="dashboard.dataNotVisible"/></span>
+		 </c:if>
+		 </div>
 		</div>
 		</div>
-		<div style="margin:3px; padding:0px;"><img 
+		<div style="margin:6px; padding:0px;"><img 
 		  src="<html:imagesPath/>pics/1pix.gif"></div>
 		</div>
 	  </c:forEach>
@@ -192,18 +194,21 @@ function ss_toggle_toolbars() {
 		  </form>
 		  </td></tr></table>
 		 </div>
-		 <c:if test="${component.visible}">
-		  <div align="left" style="margin:0px; padding:2px;"><img 
+		 <div align="left" style="margin:0px; padding:2px;"><img 
 		  src="<html:imagesPath/>pics/1pix.gif" 
 	        hspace="${ssDashboard.narrowFixedWidth2}" vspace="0"/><br/>
+		 <c:if test="${component.visible}">
 		  <ssf:dashboard id="${id}"
 		    type="view" configuration="${ssDashboard}"/>
-		  </div>
 		 </c:if>
+		 <c:if test="${!component.visible}">
+		   <span class="ss_italic"><ssf:nlt tag="dashboard.dataNotVisible"/></span>
+		 </c:if>
+		 </div>
 		</div>
 		</div>
-		<div style="margin:3px; padding:0px;"><img 
-		  src="<html:imagesPath/>pics/1pix.gif"></div>
+		<div style="margin:6px; padding:0px;"><img 
+		  src="<html:imagesPath/>pics/1pix.gif"/></div>
 		</div>
 	  </c:forEach>
 
@@ -271,15 +276,18 @@ function ss_toggle_toolbars() {
 		  </form>
 		  </td></tr></table>
 		 </div>
+		 <div align="left" style="margin:0px; padding:2px;">
 		 <c:if test="${component.visible}">
-		  <div align="left" style="margin:0px; padding:2px;">
 		  <ssf:dashboard id="${id}"
 		    type="view" configuration="${ssDashboard}"/>
-		  </div>
 		 </c:if>
+		 <c:if test="${!component.visible}">
+		   <span class="ss_italic"><ssf:nlt tag="dashboard.dataNotVisible"/></span>
+		 </c:if>
+		 </div>
 		</div>
 		</div>
-		<div style="margin:3px; padding:0px;"><img 
+		<div style="margin:6px; padding:0px;"><img 
 		  src="<html:imagesPath/>pics/1pix.gif"></div>
 		</div>
 	  </c:forEach>
@@ -344,15 +352,18 @@ function ss_toggle_toolbars() {
 		  </form>
 		  </td></tr></table>
 		 </div>
+		 <div align="left" style="margin:0px; padding:2px;">
 		 <c:if test="${component.visible}">
-		  <div align="left" style="margin:0px; padding:2px;">
 		  <ssf:dashboard id="${id}"
 		    type="view" configuration="${ssDashboard}"/>
-		  </div>
 		 </c:if>
+		 <c:if test="${!component.visible}">
+		   <span class="ss_italic"><ssf:nlt tag="dashboard.dataNotVisible"/></span>
+		 </c:if>
+		 </div>
 		</div>
 		</div>
-		<div style="margin:3px; padding:0px;"><img 
+		<div style="margin:6px; padding:0px;"><img 
 		  src="<html:imagesPath/>pics/1pix.gif"></div>
 		</div>
 	  </c:forEach>
