@@ -244,6 +244,7 @@ app.server.liferay.jboss-tomcat.dir=${temp.dir.path}
 
 		<antcall target="clean" />
 		<antcall target="build" />
+		<ant dir="tools/sql" target="generate-all-create-scripts" />
 		<!--  4/18/06 JK temporarily commented out (until the build is
 		      fully automated) 
 		      <antcall target="unit-test" />-->
