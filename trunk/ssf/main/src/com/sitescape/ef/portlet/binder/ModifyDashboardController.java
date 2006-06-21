@@ -267,14 +267,19 @@ public class ModifyDashboardController extends AbstractBinderController {
 	}
 
 	private void showHideComponent(ActionRequest request, Binder binder, String scope, String action) {
-		Map dashboard = getDashboard(binder, scope);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binder.getId());
+		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, userProperties, scope);
+
+		Map dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_MAP);
 
 		//Get the dashboard component
 		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
 
-		if (!dashboardListKey.equals("") && dashboard.containsKey(dashboardListKey)) {
-			List dashboardList = (List) dashboard.get(dashboardListKey);
+		if (!dashboardListKey.equals("") && ssDashboard.containsKey(dashboardListKey)) {
+			List dashboardList = (List) ssDashboard.get(dashboardListKey);
 			for (int i = 0; i < dashboardList.size(); i++) {
 				Map component = (Map) dashboardList.get(i);
 				String id = (String) component.get(DashboardHelper.Id);
@@ -285,6 +290,8 @@ public class ModifyDashboardController extends AbstractBinderController {
 					} else if (action.equals("hide")) {
 						component.put(DashboardHelper.Visible, false);
 					}
+					//Make sure the list also gets saved (in case it was a generated list)
+					dashboard.put(dashboardListKey, dashboardList);
 					break;
 				}
 			}
