@@ -26,6 +26,11 @@ public interface ObjectKeys {
     
     public static final String BINDER_PROPERTY_DASHBOARD = "dashboard";
 
+    public static final String DASHBOARD_COMPONENT_BUDDY_LIST = "buddyList";
+    public static final String DASHBOARD_COMPONENT_FOLDER = "folder";
+    public static final String DASHBOARD_COMPONENT_SEARCH = "search";
+    public static final String DASHBOARD_COMPONENT_WORKSPACE_TREE = "workspaceTree";
+
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
     public static final String USER_DISPLAY_STYLE_IFRAME = "iframe";
     public static final String USER_DISPLAY_STYLE_POPUP = "popup";

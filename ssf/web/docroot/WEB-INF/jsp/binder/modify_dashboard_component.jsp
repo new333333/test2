@@ -25,6 +25,7 @@
 
 <div class="ss_form">
 <form class="ss_form" method="post">
+
 <div class="ss_form ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="closeBtn" 
   value="<ssf:nlt tag="button.close" text="Close"/>">
@@ -55,14 +56,15 @@
 <br/>
 
   
-<form method="post" >
 <div style="width:100%;">
 	<span class="ss_bold"><ssf:nlt tag="dashboard.componentLayout" /></span>
 	<br/>
 	<br/>
 	<c:set var="id" value="${ssDashboard.ssComponentId}"/>
 	<div class="ss_dashboard_config">
-		<form method="post">
+		<c:set var="ss_dashboard_config_form_name" value="form1" scope="request"/>
+		<form method="post" name="${ss_dashboard_config_form_name}" 
+		  onSubmit="return ss_onSubmit(this);">
 		<span class="ss_bold"><ssf:nlt checkIfTag="true"
 		  tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[id].name]}"/></span>
 		<br/>

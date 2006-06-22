@@ -134,6 +134,7 @@ public class WebKeys {
     public static final String CONFIG_DEFINITION="ssConfigDefinition";
     public static final String CONFIG_JSP_STYLE="ssConfigJspStyle";
     public static final String DASHBOARD="ssDashboard";
+    public static final String DASHBOARD_BEAN_MAP="beans";
     public static final String DASHBOARD_COMPONENT_ID="ssComponentId";
     public static final String DASHBOARD_COMPONENT_LIST_WIDE_TOP="wide_top";
     public static final String DASHBOARD_COMPONENT_LIST_NARROW_FIXED="narrow_fixed";
