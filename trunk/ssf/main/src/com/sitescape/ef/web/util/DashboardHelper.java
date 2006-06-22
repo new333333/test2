@@ -2,20 +2,27 @@ package com.sitescape.ef.web.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import org.dom4j.Document;
+import java.util.Set;
 
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.SingletonViolationException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.module.binder.BinderModule;
+import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 
 public class DashboardHelper {
+	private static DashboardHelper instance; // A singleton instance
+
 	//Dashboard map keys
 	public final static String Title = "title";
 	public final static String IncludeBinderTitle = "includeBinderTitle";
@@ -44,9 +51,130 @@ public class DashboardHelper {
 	public final static String Global = "global";
 	
 	//Form keys
-	public final static String ElementNamePrefix = "data.";
+	public final static String ElementNamePrefix = "data_";
 
-	static public Map getNewDashboardMap() {
+	protected FolderModule folderModule;
+	protected BinderModule binderModule;
+	protected DefinitionModule definitionModule;
+	protected ProfileModule profileModule;
+	
+	public DashboardHelper() {
+		if(instance != null)
+			throw new SingletonViolationException(DefinitionUtils.class);
+		
+		instance = this;
+	}
+    public static DashboardHelper getInstance() {
+    	return instance;
+    }
+	protected BinderModule getBinderModule() {
+		return binderModule;
+	}
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
+	protected DefinitionModule getDefinitionModule() {
+		return definitionModule;
+	}
+	public void setDefinitionModule(DefinitionModule definitionModule) {
+		this.definitionModule = definitionModule;
+	}
+	protected FolderModule getFolderModule() {
+		return folderModule;
+	}
+	public void setFolderModule(FolderModule folderModule) {
+		this.folderModule = folderModule;
+	}
+	protected ProfileModule getProfileModule() {
+		return profileModule;
+	}
+	public void setProfileModule(ProfileModule profileModule) {
+		this.profileModule = profileModule;
+	}
+	
+    public static void getDashboardBeans(Map ssDashboard) {
+		//Go through each list and build the needed beans
+    	String[] listNames = {Wide_Top, Narrow_Fixed, Narrow_Variable, Wide_Bottom};
+    	List componentList = new ArrayList();
+    	for (int i = 0; i < listNames.length; i++) {
+			String scope = (String)ssDashboard.get(WebKeys.DASHBOARD_SCOPE);
+			if (scope.equals(DashboardHelper.Local)) {
+				componentList = (List) ((Map)ssDashboard.get(WebKeys.DASHBOARD_LOCAL_MAP)).get(listNames[i]);
+			} else if (scope.equals(DashboardHelper.Global)) {
+				componentList = (List) ((Map)ssDashboard.get(WebKeys.DASHBOARD_GLOBAL_MAP)).get(listNames[i]);
+			} else if (scope.equals(DashboardHelper.Binder)) {
+				componentList = (List) ((Map)ssDashboard.get(WebKeys.DASHBOARD_BINDER_MAP)).get(listNames[i]);
+			}
+			for (int j = 0; j < componentList.size(); j++) {
+				Map component = (Map) componentList.get(j);
+				if ((Boolean)component.get(Visible)) {
+					//Set up the bean for this component
+					getDashboardBean(ssDashboard, (String)component.get(Id));
+				}
+			}
+		}
+    }
+    
+    public static void getDashboardBean(Map ssDashboard, String id) {
+		String componentScope = "";
+		if (id.contains("_")) componentScope = id.split("_")[0];
+		if (!componentScope.equals("")) {
+			//Get the component from the appropriate scope
+			Map dashboard = new HashMap();
+			if (componentScope.equals(DashboardHelper.Local)) {
+				dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_LOCAL_MAP);
+			} else if (componentScope.equals(DashboardHelper.Global)) {
+				dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_GLOBAL_MAP);
+			} else if (componentScope.equals(DashboardHelper.Binder)) {
+				dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_BINDER_MAP);
+			}
+			if (dashboard.containsKey(Components)) {
+				Map components = (Map) dashboard.get(Components);
+				if (components.containsKey(id)) {
+					Map component = (Map) components.get(id);
+					//See if this component needs a bean
+					if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
+						//Set up the buddy list bean
+						getBuddyListBean(ssDashboard, id, component);
+					}
+				}
+			}
+		}
+    }
+    
+    static private void getBuddyListBean(Map ssDashboard, String id, Map component) {
+    	Map data = (Map)component.get(Data);
+    	if (data != null) {
+	    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
+	    	if (beans == null) {
+	    		beans = new HashMap();
+	    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
+	    	}
+	    	Map idData = new HashMap();
+	    	beans.put(id, idData);
+	    	String[] users = new String[0];
+	    	if (data.containsKey("users")) users = (String[])data.get("users");
+	    	if (users.length > 0) users = users[0].split(" ");
+	    	String[] groups = new String[0];
+	    	if (data.containsKey("groups")) groups = (String[])data.get("groups");
+	    	if (groups.length > 0) groups = groups[0].split(" ");
+	
+			Set ids = new HashSet();		
+			for (int i = 0; i < users.length; i++) {
+				if (!users[i].trim().equals("")) ids.add(new Long(users[i].trim()));
+			}
+			//Get the configured list of principals to show
+			idData.put(WebKeys.USERS, getInstance().getProfileModule().getUsersFromPrincipals(ids));
+			
+			Set gids = new HashSet();		
+			for (int i = 0; i < groups.length; i++) {
+				if (!groups[i].trim().equals("")) gids.add(new Long(groups[i].trim()));
+			}
+			idData.put(WebKeys.GROUPS, getInstance().getProfileModule().getGroups(gids));
+    	}
+    }
+    
+    static public Map getNewDashboardMap() {
 		Map dashboard = new HashMap();
 		dashboard.put(DashboardHelper.Title, "");
 		dashboard.put(DashboardHelper.IncludeBinderTitle, new Boolean(false));
@@ -85,6 +213,8 @@ public class DashboardHelper {
 			dashboard_b = new HashMap(dashboard_b);
 		}
 		Map ssDashboard = new HashMap();
+		ssDashboard.put(WebKeys.DASHBOARD_SCOPE, scope);
+		
 		if (scope.equals(DashboardHelper.Local)) {
 			ssDashboard.put(WebKeys.DASHBOARD_MAP, new HashMap(dashboard));
 		} else if (scope.equals(DashboardHelper.Global)) {
@@ -175,6 +305,9 @@ public class DashboardHelper {
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_WIDE, cw);
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_TITLES, componentTitles);
 
+		//Set up the beans
+		getDashboardBeans(ssDashboard);
+		
 		return ssDashboard;
 	}
 

@@ -28,14 +28,14 @@
     ssDashboard.dashboard.components[ssDashboardId].data.start[0]== 'this'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
-&nbsp;&nbsp;&nbsp;<input type="radio" name="data.start" value="this" 
+&nbsp;&nbsp;&nbsp;<input type="radio" name="data_start" value="this" 
   <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="dashboard.startingPoint.current"/><br/>
 
 <c:set var="checked" value=""/>
 <c:if test="${ssDashboard.dashboard.components[ssDashboardId].data.align[0] == 'select'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
-&nbsp;&nbsp;&nbsp;<input type="radio" name="data.start" value="select" 
+&nbsp;&nbsp;&nbsp;<input type="radio" name="data_start" value="select" 
   <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="dashboard.startingPoint.select"/><br/>
 </td>
 </tr>
@@ -53,14 +53,14 @@
     ssDashboard.dashboard.components[ssDashboardId].data.rootOpen[0]== 'true'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
-&nbsp;&nbsp;&nbsp;<input type="radio" name="data.rootOpen" value="true" 
+&nbsp;&nbsp;&nbsp;<input type="radio" name="data_rootOpen" value="true" 
   <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="yes"/><br/>
 
 <c:set var="checked" value=""/>
 <c:if test="${ssDashboard.dashboard.components[ssDashboardId].data.rootOpen[0] == 'false'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
-&nbsp;&nbsp;&nbsp;<input type="radio" name="data.rootOpen" value="false" 
+&nbsp;&nbsp;&nbsp;<input type="radio" name="data_rootOpen" value="false" 
   <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="no"/><br/>
 </td>
 </tr>

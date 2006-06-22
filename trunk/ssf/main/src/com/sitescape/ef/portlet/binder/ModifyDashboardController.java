@@ -18,7 +18,6 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
@@ -205,7 +204,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 				if (key.startsWith(DashboardHelper.ElementNamePrefix)) {
 					String elementName = key.substring(DashboardHelper.ElementNamePrefix.length());
 					//Save this value for use when displaying the component
-					componentData.put(elementName, PortletRequestUtils.getStringParameters(request, key));
+					componentData.put(elementName, formData.get(key));
 				}
 			}
 			
