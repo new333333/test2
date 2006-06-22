@@ -379,7 +379,7 @@
     owningBinderId CDATA #IMPLIED
     state CDATA #IMPLIED
     threadName CDATA #IMPLIED
-    definition CDATA #IMPLIED
     timerId CDATA #IMPLIED
+    definition CDATA #IMPLIED
 >
 
