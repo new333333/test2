@@ -43,12 +43,17 @@ public class GenerateCreateTablesUnconstrained {
 		while((line = in.readLine()) != null) {
 			if(line.contains("alter table") && !line.contains("drop")) {
 				secondary.write(line);
-				secondary.newLine();				
-				do {
+				secondary.newLine();	
+				while(!line.endsWith(";")) {
 					line = in.readLine();
 					secondary.write(line);
-					secondary.newLine();
-				} while (!line.endsWith(";"));
+					secondary.newLine();					
+				}
+			}
+			else if(line.contains("alter table") || line.contains("drop table")) {
+				while(!line.endsWith(";")) {
+					line = in.readLine();					
+				}			
 			}
 			else {
 				primary.write(line);
