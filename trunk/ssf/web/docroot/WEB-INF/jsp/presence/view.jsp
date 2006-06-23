@@ -20,16 +20,16 @@
 <jsp:useBean id="userIdList" type="java.lang.String" />
 
 <script language="JavaScript">
-var ss_presenceTimer = setTimeout("ss_presenceTimeout()", 300000);
+var ss_presenceTimer = null;
 function ss_presenceTimeout() {
 	ss_getPresence();
-ss_presenceTimer = setTimeout("ss_presenceTimeout()", 300000);
+	ss_presenceTimer = setTimeout("ss_presenceTimeout()", 300000);
 }	
 </script>
 <div id="ss_showpresence" class="ss_portlet_style ss_portlet">
 
 <% // Toolbar %>
-<c:if test="${!empty ssForumToolbar}">
+<c:if test="${empty ssForumToolbar && !empty ssForumToolbar}">
 <c:set var="ss_toolbar" value="${ssForumToolbar}" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 </c:if>
@@ -39,8 +39,19 @@ function ss_showNotLoggedInMsg() {
 }
 </script>
 <div id="ss_presence_status_message" class="ss_portlet_style" style="visibility:hidden; display:none;"></div>
-<div id="ss_refreshDate" class="ss_portlet_style">
-<ssf:nlt tag="presence.last.refresh"/> <fmt:formatDate value="<%= new java.util.Date() %>" type="both" />
+<div class="ss_toolbar">
+<table cellspacing="0" cellpadding="2" style="width:100%;">
+<tr>
+<td><a class="ss_linkButton ss_bold ss_smallprint" href=""
+  onClick="if (ss_getPresence) {ss_getPresence()};return false;"
+><ssf:nlt tag="general.Refresh"/></a></td>
+<td align="right"><div id="ss_refreshDate">
+<span class="ss_smallprint ss_gray"><ssf:nlt 
+tag="presence.last.refresh"/> <fmt:formatDate value="<%= new java.util.Date() %>" 
+type="time" /></span>
+</div></td>
+</tr>
+</table>
 </div>
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
@@ -57,7 +68,8 @@ function ss_showNotLoggedInMsg() {
 					<c:forEach var="u1" items="${ssUsers}">
 					<jsp:useBean id="u1" type="com.sitescape.ef.domain.User" />
 					  <tr>
-					  <td><span id="count_<c:out value="${u1.id}"/>"><ssf:presenceInfo user="<%=u1%>"/> </span></td>
+					  <td><span id="count_<c:out value="${u1.id}"/>"><ssf:presenceInfo 
+					    user="<%=u1%>"/> </span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
 					  <td><c:out value="${u1.title}"/>
 					  </td>							
@@ -76,7 +88,8 @@ function ss_showNotLoggedInMsg() {
 					<jsp:useBean id="u2" type="com.sitescape.ef.domain.Principal" />
 					<c:if test="<%= u2 instanceof com.sitescape.ef.domain.User %>">
 					  <tr>
-					  <td><span id="count_<c:out value="${u2.id}"/>"><ssf:presenceInfo user="<%=(com.sitescape.ef.domain.User)u2%>"/> </span></td>
+					  <td><span id="count_<c:out value="${u2.id}"/>"><ssf:presenceInfo 
+					    user="<%=(com.sitescape.ef.domain.User)u2%>"/> </span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
 					  <td><c:out value="${u2.title}"/>
 					  </td>							
@@ -124,7 +137,7 @@ function ss_preRequest(obj) {
 function ss_postRequest(obj) {
 	//alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
 	//See if there was an error
-	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+	if (self.document.getElementById("ss_presence_status_message").innerHTML == "error") {
 		if (self.ss_showNotLoggedInMsg) self.ss_showNotLoggedInMsg();
 	}
 }
@@ -132,3 +145,9 @@ function ss_postRequest(obj) {
 <form class="ss_portlet_style ss_form" id="presenceForm" style="display:none;">
 <input type="hidden" name="userList" value="<%= userIdList %>">
 </form>
+
+<script type="text/javascript">
+ss_presenceTimer = setTimeout("ss_presenceTimeout()", 300000);
+</script>
+
+

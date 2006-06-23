@@ -3,25 +3,32 @@
 <taconite-root xml:space="preserve">
 <c:if test="${!empty ss_ajaxStatus[ss_ajaxNotLoggedIn]}">
 
-	<taconite-replace contextNodeID="ss_presence_status_message" parseInBrowser="true">
-		<div id="ss_presence_status_message" style="visibility:hidden; display:none;">error</div>
+	<taconite-replace contextNodeID="ss_presence_status_message_${ssDashboardId}" 
+	  parseInBrowser="true">
+		<div id="ss_presence_status_message_${ssDashboardId}" 
+		  style="visibility:hidden; display:none;">error</div>
 	</taconite-replace>
 </c:if>
 <c:if test="${empty ss_ajaxStatus[ss_ajaxNotLoggedIn]}">
-	<taconite-replace contextNodeID="ss_presence_status_message" parseInBrowser="true">
-		<div id="ss_presence_status_message" style="visibility:hidden; display:none;">ok</div>
+	<taconite-replace contextNodeID="ss_presence_status_message_${ssDashboardId}" 
+	  parseInBrowser="true">
+		<div id="ss_presence_status_message_${ssDashboardId}" 
+		  style="visibility:hidden; display:none;">ok</div>
 	</taconite-replace>
 </c:if>
-	<taconite-replace contextNodeID="ss_refreshDate" parseInBrowser="true">
-		<div id="ss_refreshDate" class="ss_portlet_style">
-<ssf:nlt tag="presence.last.refresh"/> <fmt:formatDate value="<%= new java.util.Date() %>" type="both" />
-		</div>
+	<taconite-replace contextNodeID="ss_refreshDate_${ssDashboardId}" 
+	  parseInBrowser="true">
+<div id="ss_refreshDate_${ssDashboardId}">
+<span class="ss_smallprint ss_gray"><ssf:nlt tag="presence.last.refresh"/> 
+<fmt:formatDate value="<%= new java.util.Date() %>" type="time" /></span>
+</div>
 	</taconite-replace>
 <c:forEach var="user" items="${ssUsers}">
 <jsp:useBean id="user" type="com.sitescape.ef.domain.User" />
 
-	<taconite-replace contextNodeID="count_${user.id}" 
-	parseInBrowser="true"><span id="count_${user.id}">
-	<ssf:presenceInfo user="<%=user%>"/></span></taconite-replace>
+	<taconite-replace contextNodeID="count_${ssDashboardId}_${user.id}" 
+	parseInBrowser="true"><span id="count_${ssDashboardId}_${user.id}">
+	<ssf:presenceInfo user="<%=user%>" 
+	  componentId="${ssDashboardId}"/></span></taconite-replace>
 </c:forEach>
 </taconite-root>

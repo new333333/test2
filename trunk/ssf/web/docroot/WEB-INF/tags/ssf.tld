@@ -388,6 +388,11 @@
 			<rtexprvalue>true</rtexprvalue>
 			<type>com.sitescape.ef.domain.User</type>
 		</attribute>		
+		<attribute>
+			<name>componentId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
 	</tag>	
 
 	<tag>

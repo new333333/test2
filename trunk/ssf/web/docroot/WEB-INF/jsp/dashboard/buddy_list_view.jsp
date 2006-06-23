@@ -20,22 +20,37 @@
 <jsp:useBean id="userIdList" type="java.lang.String" />
 
 <script language="JavaScript">
-var ss_presenceTimer = setTimeout("ss_presenceTimeout()", 300000);
-function ss_presenceTimeout() {
-	ss_getPresence();
-ss_presenceTimer = setTimeout("ss_presenceTimeout()", 300000);
+var ss_presenceTimer${ssDashboardId} = null;
+function ss_presenceTimeout${ssDashboardId}() {
+	ss_getPresence${ssDashboardId}(true);
+	ss_presenceTimer${ssDashboardId} = setTimeout("ss_presenceTimeout${ssDashboardId}()", 300000);
 }	
 </script>
-<div id="ss_showpresence">
+<div id="ss_showpresence${ssDashboardId}">
 
 <script type="text/javascript">
 function ss_showNotLoggedInMsg() {
 	alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 }
 </script>
-<div id="ss_presence_status_message" class="ss_portlet_style" style="visibility:hidden; display:none;"></div>
-<div id="ss_refreshDate" class="ss_portlet_style">
-<ssf:nlt tag="presence.last.refresh"/> <fmt:formatDate value="<%= new java.util.Date() %>" type="both" />
+<div id="ss_presence_status_message${ssDashboardId}" class="ss_portlet_style" style="visibility:hidden; display:none;"></div>
+<div class="ss_portlet_style">
+<table style="width:100%;">
+<tr>
+<td>
+<a class="ss_linkButton ss_bold ss_smallprint" href=""
+  onClick="if (ss_getPresence${ssDashboardId}) {ss_getPresence${ssDashboardId}()};return false;"
+><ssf:nlt tag="general.Refresh"/></a>
+</td>
+<td align="right">
+<div id="ss_refreshDate${ssDashboardId}">
+<span class="ss_smallprint ss_gray"><ssf:nlt 
+tag="presence.last.refresh"/> <fmt:formatDate value="<%= new java.util.Date() %>" 
+type="time" /></span>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
@@ -48,7 +63,8 @@ function ss_showNotLoggedInMsg() {
 					<c:forEach var="u1" items="${ssDashboard.beans[ssDashboardId].ssUsers}">
 					<jsp:useBean id="u1" type="com.sitescape.ef.domain.User" />
 					  <tr>
-					  <td><span id="count_<c:out value="${u1.id}"/>"><ssf:presenceInfo user="<%=u1%>"/> </span></td>
+					  <td><span id="count${ssDashboardId}_<c:out value="${u1.id}"/>"
+					  ><ssf:presenceInfo user="<%=u1%>" componentId="${ssDashboardId}"/> </span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
 					  <td><c:out value="${u1.title}"/>
 					  </td>							
@@ -67,7 +83,9 @@ function ss_showNotLoggedInMsg() {
 					<jsp:useBean id="u2" type="com.sitescape.ef.domain.Principal" />
 					<c:if test="<%= u2 instanceof com.sitescape.ef.domain.User %>">
 					  <tr>
-					  <td><span id="count_<c:out value="${u2.id}"/>"><ssf:presenceInfo user="<%=(com.sitescape.ef.domain.User)u2%>"/> </span></td>
+					  <td><span id="count${ssDashboardId}_<c:out value="${u2.id}"/>"
+					  ><ssf:presenceInfo user="<%=(com.sitescape.ef.domain.User)u2%>"
+					    componentId="${ssDashboardId}"/> </span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
 					  <td><c:out value="${u2.title}"/>
 					  </td>							
@@ -89,12 +107,11 @@ function ss_showNotLoggedInMsg() {
 </tr>
 </table>
 
-<div id="ss_presence_sizer_div"></div>
 </div>
 <script type="text/javascript">
 var count = 0
-function ss_getPresence() {
-	clearTimeout(ss_presenceTimer);
+function ss_getPresence${ssDashboardId}(timeout) {
+	clearTimeout(ss_presenceTimer${ssDashboardId});
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_presence" 
@@ -102,24 +119,30 @@ function ss_getPresence() {
     	actionUrl="false" >
     	</ssf:url>"
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addFormElements("presenceForm")
-//	ajaxRequest.setEchoDebugInfo();
-//	ajaxRequest.setPreRequest(ss_preRequest);
-	ajaxRequest.setPostRequest(ss_postRequest);
+	ajaxRequest.addKeyValue("ssDashboardId", "${ssDashboardId}")
+	ajaxRequest.addFormElements("presenceForm${ssDashboardId}")
+	ajaxRequest.setData("timeout", timeout)
+	ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_postRequest${ssDashboardId});
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 }
-function ss_preRequest(obj) {
-	alert('preRequest: ' + obj.getQueryString());
-}
-function ss_postRequest(obj) {
+function ss_postRequest${ssDashboardId}(obj) {
 	//alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
 	//See if there was an error
-	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		if (self.ss_showNotLoggedInMsg) self.ss_showNotLoggedInMsg();
+	if (self.document.getElementById("ss_presence_status_message${ssDashboardId}").innerHTML == "error") {
+		if (!obj.getData('treeName')) {
+			//This call wasn't made from a timeout. So, give error message
+			if (self.ss_showNotLoggedInMsg) self.ss_showNotLoggedInMsg();
+		}
 	}
 }
 </script>
-<form class="ss_portlet_style ss_form" id="presenceForm" style="display:none;">
+<form class="ss_portlet_style ss_form" id="presenceForm${ssDashboardId}" 
+  style="display:none;">
 <input type="hidden" name="userList" value="<%= userIdList %>">
 </form>
+
+<script type="text/javascript">
+ss_presenceTimer${ssDashboardId} = setTimeout("ss_presenceTimeout()", 300000);
+</script>

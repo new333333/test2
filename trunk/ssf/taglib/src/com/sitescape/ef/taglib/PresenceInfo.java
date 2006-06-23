@@ -22,6 +22,7 @@ import com.sitescape.util.servlet.StringServletResponse;
  */
 public class PresenceInfo extends BodyTagSupport {
     private User user;
+    private String componentId;
     private int userStatus=-1;
     
 	public int doStartTag() {
@@ -37,6 +38,7 @@ public class PresenceInfo extends BodyTagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
+			if (this.componentId == null) this.componentId = "";
 			userStatus = PresenceServiceUtils.getPresence(user);
 			if (userStatus != -99) {
 				String dudeGif = "sym_s_white_dude.gif"; 
@@ -62,6 +64,7 @@ public class PresenceInfo extends BodyTagSupport {
 				httpReq.setAttribute(WebKeys.PRESENCE_DUDE, dudeGif);
 				httpReq.setAttribute(WebKeys.PRESENCE_TEXT, altText);
 				httpReq.setAttribute(WebKeys.PRESENCE_ZON_BRIDGE, "enabled");
+				httpReq.setAttribute(WebKeys.PRESENCE_COMPONENT_ID, this.componentId);
 	
 				// Output the presence info
 				String jsp = "/WEB-INF/jsp/tag_jsps/presence/show_dude.jsp";
@@ -69,7 +72,7 @@ public class PresenceInfo extends BodyTagSupport {
 				ServletRequest req = pageContext.getRequest();
 				StringServletResponse res = new StringServletResponse(httpRes);
 				rd.include(req, res);
-				pageContext.getOut().print(res.getString());
+				pageContext.getOut().print(res.getString().trim());
 			}
 		}
 	    catch(Exception e) {
@@ -77,9 +80,14 @@ public class PresenceInfo extends BodyTagSupport {
 	    }
 		finally {
 			userStatus = -1;
+			componentId = "";
 		}
 	    
 		return EVAL_PAGE;
+	}
+
+	public void setComponentId(String componentId) {
+	    this.componentId = componentId;
 	}
 
 	public void setUser(User user) {

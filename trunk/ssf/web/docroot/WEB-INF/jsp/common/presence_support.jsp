@@ -25,12 +25,17 @@ ss_presencePopupGraphics["phone"].src = '<html:imagesPath/>pics/sym_s_gray_phone
 ss_presencePopupGraphics["sched"] = new Image();
 ss_presencePopupGraphics["sched"].src = '<html:imagesPath/>pics/sym_s_sched.gif';
 
-function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current) {
+function ss_popupPresenceMenu${ssDashboardId}(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current) {
     var obj
     var m = ''
     var imgid = "ppgpres"
     var ostatus = " <ssf:nlt tag="presence.none"/>"
-    obj = self.document.getElementById('ss_presencePopUp')
+    obj = self.document.getElementById('ss_presencePopUp${ssDashboardId}')
+    if (obj.parentNode.tagName.toLowerCase() != 'body') {
+    	//move the pop-up div to the body tag so it goes to the right x,y
+    	obj.parentNode.removeChild(obj);
+    	document.getElementsByTagName("body").item(0).appendChild(obj);
+    }
     m += '<div style="position: relative; background: #666; margin: 4px;">'
     m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1; border: 1px solid #666666; background-color:white">'
 
@@ -98,7 +103,7 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
 
     obj.innerHTML = m;
 
-    ss_activateMenuLayer('ss_presencePopUp');
+    ss_activateMenuLayer('ss_presencePopUp${ssDashboardId}');
     if (self.document.images["ppgpres"]) {
         self.document.images["ppgpres"].src = ss_presencePopupGraphics["pres"].src;
     }
@@ -133,23 +138,22 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
     var mousePosX = parseInt(ss_getClickPositionX());
     var mousePosY = parseInt(ss_getClickPositionY());
     if (mousePosY != 0) {
-        var divHt = ss_getObjectHeight(obj);
+        var divHt = parseInt(ss_getDivHeight('ss_presencePopUp${ssDashboardId}'));
         var windowHt = parseInt(ss_getWindowHeight());
         var scrollHt = self.document.body.scrollTop;
         var diff = scrollHt + windowHt - mousePosY;
         if (divHt > 0) {
             if (diff <= divHt) {
-               ss_positionDiv('ss_presencePopUp', mousePosX, mousePosY - divHt);
+               ss_positionDiv('ss_presencePopUp${ssDashboardId}', mousePosX, mousePosY - divHt);
             }
         }
         //See if we need to make the portlet longer to hold the pop-up menu
-        var menuObj = document.getElementById('ss_presencePopUp');
-        var sizerObj = document.getElementById('ss_presence_sizer_div');
-        if (sizerObj) {
-        	var menuTop = ss_getDivTop('ss_presencePopUp');
-        	var menuHeight = ss_getDivHeight('ss_presencePopUp');
-        	var sizerTop = ss_getDivTop('ss_presence_sizer_div');
-        	var sizerHeight = ss_getDivHeight('ss_presence_sizer_div');
+        var sizerObj = document.getElementById('ss_presence_sizer_div${ssDashboardId}');
+        if (sizerObj != null) {
+        	var menuTop = ss_getDivTop('ss_presencePopUp${ssDashboardId}');
+        	var menuHeight = ss_getDivHeight('ss_presencePopUp${ssDashboardId}');
+        	var sizerTop = ss_getDivTop('ss_presence_sizer_div${ssDashboardId}');
+        	var sizerHeight = ss_getDivHeight('ss_presence_sizer_div${ssDashboardId}');
         	var deltaSizerHeight = parseInt((menuTop + menuHeight) - (sizerTop + sizerHeight));
         	if (deltaSizerHeight > 0) {
         		ss_setObjectHeight(sizerObj, parseInt(sizerHeight + deltaSizerHeight));
@@ -158,6 +162,6 @@ function popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, 
     }
 }
 </script>
-<div id="ss_presencePopUp" style="position:absolute; visibility:hidden; z-index:500;"></div>
+<div id="ss_presencePopUp${ssDashboardId}" style="position:absolute; visibility:hidden; z-index:500;"></div>
 <c:set var="ss_presence_support_loaded" value="1" scope="request"/>
 </c:if>
