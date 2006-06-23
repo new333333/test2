@@ -144,5 +144,5 @@ function ss_postRequest${ssDashboardId}(obj) {
 </form>
 
 <script type="text/javascript">
-ss_presenceTimer${ssDashboardId} = setTimeout("ss_presenceTimeout()", 300000);
+ss_presenceTimer${ssDashboardId} = setTimeout("ss_presenceTimeout${ssDashboardId}()", 300000);
 </script>
