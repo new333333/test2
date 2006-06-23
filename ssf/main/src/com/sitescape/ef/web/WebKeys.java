@@ -208,6 +208,7 @@ public class WebKeys {
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
     public static final String NOTIFICATION="ssNotification";
     public static final String POSTINGS="ssPostings";
+    public static final String PRESENCE_COMPONENT_ID="ss_presence_component_id";
     public static final String PRESENCE_DUDE="ss_presence_dude";
     public static final String PRESENCE_STATUS="ss_presence_userStatus";
     public static final String PRESENCE_SWEEP_TIME="ss_presence_sweep_time";

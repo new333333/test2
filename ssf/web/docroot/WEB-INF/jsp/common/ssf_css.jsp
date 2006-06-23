@@ -50,6 +50,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
 <c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
 
+<c:set var="ss_linkbutton_background_color" value="#FFFE8" scope="request"/>
+<c:set var="ss_linkbutton_text_color" value="#009900" scope="request"/>
+<c:set var="ss_linkbutton_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
+<c:set var="ss_linkbutton_border_color_in" value="#d5d5d5" scope="request"/>
+<c:set var="ss_linkbutton_border_color_out" value="#666666" scope="request"/>
+
 <c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
 
 <c:set var="ss_tree_highlight_line_color" value="#6666FF" scope="request"/>
@@ -108,6 +114,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_toolbar_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 	<c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
+	<c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
+
+	<c:set var="ss_linkbutton_background_color" value="#FFFE8" scope="request"/>
+	<c:set var="ss_linkbutton_text_color" value="#666666" scope="request"/>
+	<c:set var="ss_linkbutton_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
+	<c:set var="ss_linkbutton_border_color_in" value="#dddddd" scope="request"/>
+	<c:set var="ss_linkbutton_border_color_out" value="#666666" scope="request"/>
 	
 	<c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
 	
@@ -226,6 +239,43 @@ div.ss_replies {
 
 .ss_form input.ss_submit:hover {}
   
+/* Text styled as buttons */
+a.ss_linkButton:link, a.ss_linkButton:visited {
+  color: ${ss_linkbutton_text_color};
+  border-top: 1px solid ${ss_linkbutton_border_color_in};
+  border-left: 1px solid ${ss_linkbutton_border_color_in};
+  border-right: 1px solid ${ss_linkbutton_border_color_out};
+  border-bottom: 1px solid ${ss_linkbutton_border_color_out};
+  background-color: ${ss_linkbutton_background_color};
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-left: 0px;
+  margin-right: 6px;
+  margin-bottom: 2px;
+  margin-top: 2px;
+  line-height: 200%;
+  text-decoration: none;
+  display: inline;
+  }
+
+a.ss_linkButton:focus, a.ss_linkButton:hover {
+  color: ${ss_linkbutton_link_hover_color};
+  border-top: 1px solid ${ss_linkbutton_border_color_out};
+  border-left: 1px solid ${ss_linkbutton_border_color_out};
+  border-right: 1px solid ${ss_linkbutton_border_color_in};
+  border-bottom: 1px solid ${ss_linkbutton_border_color_in};
+  background-color: ${ss_linkbutton_background_color};
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-left: 0px;
+  margin-right: 6px;
+  margin-bottom: 2px;
+  margin-top: 2px;
+  line-height: 200%;
+  text-decoration: none;
+  display: inline;
+  }
+
 /* Sliding tables */
 div.ss_sliding_table_column0 {
   display: block; 

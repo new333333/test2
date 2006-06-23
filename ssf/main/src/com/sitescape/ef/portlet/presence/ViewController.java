@@ -40,6 +40,7 @@ public class ViewController  extends SAbstractController {
  		if (!Validator.isNull(action)) {
 			Map statusMap = new HashMap();
 			model.put(WebKeys.AJAX_STATUS, statusMap);		
+			model.put(WebKeys.DASHBOARD_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DASHBOARD_ID, ""));
 			response.setContentType("text/xml");
  			if (!WebHelper.isUserLoggedIn(request)) {
  				
