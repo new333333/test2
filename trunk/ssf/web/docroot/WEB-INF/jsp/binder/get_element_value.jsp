@@ -3,7 +3,7 @@
 <%@ page contentType="text/xml" %>
 <%@ page import="java.util.Map" %>
 <jsp:useBean id="ss_ajaxStatus" type="java.util.Map" scope="request" />
-<jsp:useBean id="ss_filter_entry_def_id" type="java.lang.String" scope="request" />
+<jsp:useBean id="ss_entry_def_id" type="java.lang.String" scope="request" />
 <jsp:useBean id="ssEntryDefinitionElementData" type="java.util.Map" scope="request" />
 
 <taconite-root>

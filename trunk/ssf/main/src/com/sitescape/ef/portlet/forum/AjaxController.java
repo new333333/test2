@@ -94,6 +94,11 @@ public class AjaxController  extends SAbstractController {
 					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
 					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
 				return new ModelAndView("binder/get_entry_elements", model);
+			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_TYPE) || 
+					op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
+					op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
+					op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
+				return new ModelAndView("binder/get_entry_elements", model);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
 					op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST) ||
 				op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
@@ -135,6 +140,12 @@ public class AjaxController  extends SAbstractController {
 				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
 			return ajaxGetFilterData(request, response);
+
+		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_TYPE) || 
+				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
+				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
+				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
+			return ajaxGetSearchFormData(request, response);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
@@ -343,7 +354,7 @@ public class AjaxController  extends SAbstractController {
 				String defId = ((String[])formData.get(WebKeys.FILTER_ENTRY_DEF_ID+filterTermNumber))[0];
 				if (defId.equals("_common")) {
 					model.put(WebKeys.FILTER_ENTRY_DEF_ID, "");
-					Map elementData = getFolderModule().getCommonEntryElements(binderId);
+					Map elementData = getFolderModule().getCommonEntryElements();
 					model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
 				} else {
 					model.put(WebKeys.FILTER_ENTRY_DEF_ID, defId);
@@ -381,6 +392,58 @@ public class AjaxController  extends SAbstractController {
 						((String[])formData.get("elementValueDateType" + filterTermNumber))[0]);
 			}
 			return new ModelAndView("binder/get_element_value_data", model);
+		}
+	}
+	
+	private ModelAndView ajaxGetSearchFormData(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		String filterTermNumber = ((String[])formData.get(WebKeys.SEARCH_FORM_ENTRY_FILTER_TERM_NUMBER))[0];
+		model.put(WebKeys.SEARCH_FORM_ENTRY_FILTER_TERM_NUMBER, filterTermNumber);
+		String filterTermNumberMax = ((String[])formData.get(WebKeys.SEARCH_FORM_ENTRY_FILTER_TERM_NUMBER_MAX))[0];
+		model.put(WebKeys.SEARCH_FORM_ENTRY_FILTER_TERM_NUMBER_MAX, filterTermNumberMax);
+		
+		//Get the definition id (if present)
+		if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
+				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
+				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
+			if (formData.containsKey(WebKeys.SEARCH_FORM_ENTRY_DEF_ID+filterTermNumber)) {
+				String defId = ((String[])formData.get(WebKeys.SEARCH_FORM_ENTRY_DEF_ID+filterTermNumber))[0];
+				if (defId.equals("_common")) {
+					model.put(WebKeys.SEARCH_FORM_ENTRY_DEF_ID, "");
+					Map elementData = getFolderModule().getCommonEntryElements();
+					model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
+				} else {
+					model.put(WebKeys.SEARCH_FORM_ENTRY_DEF_ID, defId);
+					Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
+					model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
+				}
+			}
+		}
+		
+		if (formData.containsKey("elementName" + filterTermNumber)) {
+			String elementName = ((String[])formData.get("elementName" + filterTermNumber))[0];
+			model.put(WebKeys.SEARCH_FORM_ENTRY_ELEMENT_NAME, elementName);
+		}
+
+		DefinitionUtils.getDefinitions(model);
+    	DefinitionUtils.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
+		
+    	model.put(WebKeys.AJAX_STATUS, statusMap);
+		response.setContentType("text/xml");
+		if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_TYPE)) {
+			model.put(WebKeys.SEARCH_FORM_TYPE, op2);
+			return new ModelAndView("tag_jsps/search_form/get_filter_type", model);
+		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS)) {
+			return new ModelAndView("tag_jsps/search_form/get_entry_elements", model);
+		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES)) {
+			return new ModelAndView("tag_jsps/search_form/get_element_value", model);
+		} else {
+			model.put(WebKeys.SEARCH_FORM_VALUE_TYPE, "");
+			if (formData.containsKey("elementValueDateType" + filterTermNumber)) {
+				model.put(WebKeys.SEARCH_FORM_VALUE_TYPE, 
+						((String[])formData.get("elementValueDateType" + filterTermNumber))[0]);
+			}
+			return new ModelAndView("tag_jsps/search_form/get_element_value_data", model);
 		}
 	}
 	

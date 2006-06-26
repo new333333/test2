@@ -78,7 +78,7 @@ public interface FolderModule {
     public void indexFolderTree(Long folderId);
     public void indexEntries(Long folderId);
 
-    public Map getCommonEntryElements(Long folderId);
+    public Map getCommonEntryElements();
 
    	  
     public FolderEntry getEntry(Long parentFolderId, Long entryId) throws AccessControlException;
