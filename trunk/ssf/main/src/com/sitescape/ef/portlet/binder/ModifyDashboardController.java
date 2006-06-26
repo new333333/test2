@@ -7,7 +7,6 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -36,8 +35,6 @@ public class ModifyDashboardController extends AbstractBinderController {
 		String binderType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_TYPE);	
 		Binder binder = getBinderModule().getBinder(binderId);
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
-		String componentScope = "";
-		if (componentId.contains("_")) componentScope = componentId.split("_")[0];
 		String scope = "";
 		if (scope.equals("")) scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 		if (scope.equals("")) scope = DashboardHelper.Local;
@@ -91,10 +88,12 @@ public class ModifyDashboardController extends AbstractBinderController {
 		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
+
+		Map model = new HashMap();
+		model.put(WebKeys.BINDER, binder);
+		
 		String dashboardList = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
-		String componentScope = "";
-		if (componentId.contains("_")) componentScope = componentId.split("_")[0];
 		String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 		if (scope.equals("")) scope = DashboardHelper.Local;
 		String returnView = PortletRequestUtils.getStringParameter(request, "_returnView", "binder");
@@ -102,15 +101,13 @@ public class ModifyDashboardController extends AbstractBinderController {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, userProperties, scope);
+		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, 
+				userProperties, model, scope);
 
 		if (DashboardHelper.checkDashboardLists(ssDashboard)) {
 			//The dashboard was fixed up. Go save it
 			saveDashboards(binder, ssDashboard);
 		}
-		
-		Map model = new HashMap();
-		model.put(WebKeys.BINDER, binder);
 		
 		ssDashboard.put(WebKeys.DASHBOARD_LIST, dashboardList);
 		ssDashboard.put(WebKeys.DASHBOARD_SCOPE, scope);
@@ -269,7 +266,8 @@ public class ModifyDashboardController extends AbstractBinderController {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binder.getId());
-		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, userProperties, scope);
+		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, 
+				userProperties, scope);
 
 		Map dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_MAP);
 

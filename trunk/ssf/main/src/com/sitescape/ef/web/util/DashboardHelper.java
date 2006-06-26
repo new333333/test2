@@ -7,16 +7,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.dom4j.Document;
+
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.SingletonViolationException;
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.EntityIdentifier;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.profile.ProfileModule;
+import com.sitescape.ef.module.workspace.WorkspaceModule;
+import com.sitescape.ef.portlet.forum.SAbstractForumController.TreeBuilder;
+import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 
@@ -57,6 +63,7 @@ public class DashboardHelper {
 	protected BinderModule binderModule;
 	protected DefinitionModule definitionModule;
 	protected ProfileModule profileModule;
+	protected WorkspaceModule workspaceModule;
 	
 	public DashboardHelper() {
 		if(instance != null)
@@ -92,14 +99,21 @@ public class DashboardHelper {
 		this.profileModule = profileModule;
 	}
 	
-    public static void getDashboardBeans(Map ssDashboard) {
+	protected WorkspaceModule getWorkspaceModule() {
+		return workspaceModule;
+	}
+	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
+		this.workspaceModule = workspaceModule;
+	}
+	
+    public static void getDashboardBeans(Binder binder, Map ssDashboard, Map model) {
 		//Go through each list and build the needed beans
     	String[] listNames = {Wide_Top, Narrow_Fixed, Narrow_Variable, Wide_Bottom};
     	List componentList = new ArrayList();
     	for (int i = 0; i < listNames.length; i++) {
 			String scope = (String)ssDashboard.get(WebKeys.DASHBOARD_SCOPE);
 			if (scope.equals(DashboardHelper.Local)) {
-				componentList = (List) ((Map)ssDashboard.get(WebKeys.DASHBOARD_LOCAL_MAP)).get(listNames[i]);
+				componentList = (List) ssDashboard.get(listNames[i]);
 			} else if (scope.equals(DashboardHelper.Global)) {
 				componentList = (List) ((Map)ssDashboard.get(WebKeys.DASHBOARD_GLOBAL_MAP)).get(listNames[i]);
 			} else if (scope.equals(DashboardHelper.Binder)) {
@@ -109,13 +123,13 @@ public class DashboardHelper {
 				Map component = (Map) componentList.get(j);
 				if ((Boolean)component.get(Visible)) {
 					//Set up the bean for this component
-					getDashboardBean(ssDashboard, (String)component.get(Id));
+					getDashboardBean(binder, ssDashboard, model, (String)component.get(Id));
 				}
 			}
 		}
     }
     
-    public static void getDashboardBean(Map ssDashboard, String id) {
+    public static void getDashboardBean(Binder binder, Map ssDashboard, Map model, String id) {
 		String componentScope = "";
 		if (id.contains("_")) componentScope = id.split("_")[0];
 		if (!componentScope.equals("")) {
@@ -136,6 +150,9 @@ public class DashboardHelper {
 					if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
 						//Set up the buddy list bean
 						getBuddyListBean(ssDashboard, id, component);
+					} else if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
+						//Set up the workspace tree bean
+						getWorkspaceTreeBean(binder, ssDashboard, model, id, component);
 					}
 				}
 			}
@@ -174,6 +191,35 @@ public class DashboardHelper {
     	}
     }
     
+    static private void getWorkspaceTreeBean(Binder binder, Map ssDashboard, Map model, 
+    		String id, Map component) {
+    	Map data = (Map)component.get(Data);
+    	if (data != null) {
+	    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
+	    	if (beans == null) {
+	    		beans = new HashMap();
+	    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
+	    	}
+	    	Map idData = new HashMap();
+	    	beans.put(id, idData);
+
+	    	Document tree = null;
+	    	if (binder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
+				if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {
+					tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
+				} else {
+					tree = getInstance().getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsTreeBuilder((Workspace)binder, true, getInstance().getBinderModule()),1);
+				}
+			} else if (binder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
+				Folder topFolder = ((Folder)binder).getTopFolder();
+				if (topFolder == null) topFolder = (Folder)binder;
+				Binder workspace = (Binder)topFolder.getParentBinder();
+				tree = getInstance().getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new WsTreeBuilder((Workspace)workspace, true, getInstance().getBinderModule()),1);
+			}
+			idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
+    	}
+    }
+    
     static public Map getNewDashboardMap() {
 		Map dashboard = new HashMap();
 		dashboard.put(DashboardHelper.Title, "");
@@ -189,11 +235,17 @@ public class DashboardHelper {
 	}
 	
 	static public Map getDashboardMap(Binder binder, UserProperties userFolderProperties, 
-			Map userProperties) {
-		return getDashboardMap(binder, userFolderProperties, userProperties, DashboardHelper.Local);
+			Map userProperties, Map model) {
+		return getDashboardMap(binder, userFolderProperties, userProperties, model, 
+				DashboardHelper.Local);
 	}
 	static public Map getDashboardMap(Binder binder, UserProperties userFolderProperties, 
 			Map userProperties, String scope) {
+		return getDashboardMap(binder, userFolderProperties, userProperties, 
+				new HashMap(), scope);
+	}
+	static public Map getDashboardMap(Binder binder, UserProperties userFolderProperties, 
+			Map userProperties, Map model, String scope) {
 		Map dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
 		if (dashboard == null) {
 			dashboard = DashboardHelper.getNewDashboardMap();
@@ -306,8 +358,8 @@ public class DashboardHelper {
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_TITLES, componentTitles);
 
 		//Set up the beans
-		getDashboardBeans(ssDashboard);
-		
+		getDashboardBeans(binder, ssDashboard, model);
+		model.put(WebKeys.DASHBOARD, ssDashboard);
 		return ssDashboard;
 	}
 
