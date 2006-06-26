@@ -261,7 +261,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         loadProcessor(folder).indexEntries(folder);
     }
 
-    public Map getCommonEntryElements(Long folderId) {
+    public Map getCommonEntryElements() {
     	Map entryElements = new HashMap();
     	Map itemData;
     	//Build a map of common elements for use in search filters

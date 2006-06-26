@@ -122,7 +122,7 @@ public class FilterController extends AbstractBinderController {
 		} else if (formData.containsKey("modifyBtn") || formData.containsKey("deleteTerm")) {
 			//Build a bean that contains all of the fields to be shown
 			if (searchFilters.containsKey(selectedSearchFilter)) {
-				Map elementData = getFolderModule().getCommonEntryElements(binderId);
+				Map elementData = getFolderModule().getCommonEntryElements();
 				searchFilterData = FilterHelper.buildFilterFormMap(
 						(Document)searchFilters.get(selectedSearchFilter),
 						(Map) model.get(WebKeys.PUBLIC_ENTRY_DEFINITIONS),

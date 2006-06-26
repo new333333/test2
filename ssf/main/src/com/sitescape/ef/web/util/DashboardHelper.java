@@ -51,6 +51,9 @@ public class DashboardHelper {
 	public final static String Roles = "roles";
 	public final static String Data = "data";
 	
+	//Component data keys
+	public final static String SearchFormSavedSearchQuery = "__savedSearchQuery";
+	
 	//Scopes
 	public final static String Local = "local";
 	public final static String Binder = "binder";
@@ -153,6 +156,9 @@ public class DashboardHelper {
 					} else if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
 						//Set up the workspace tree bean
 						getWorkspaceTreeBean(binder, ssDashboard, model, id, component);
+					} else if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH)) {
+						//Set up the search results bean
+						getSearchResultsBean(ssDashboard, model, id, component);
 					}
 				}
 			}
@@ -220,6 +226,34 @@ public class DashboardHelper {
 				
 			}
 			idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
+    	}
+    }
+    
+    static private void getSearchResultsBean(Map ssDashboard, Map model, 
+    		String id, Map component) {
+    	Map data = (Map)component.get(Data);
+    	if (data != null) {
+	    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
+	    	if (beans == null) {
+	    		beans = new HashMap();
+	    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
+	    	}
+	    	Map idData = new HashMap();
+	    	beans.put(id, idData);
+
+			Map searchSearchFormData = new HashMap();
+			searchSearchFormData.put("searchFormTermCount", new Integer(0));
+			idData.put(WebKeys.SEARCH_FORM_DATA, searchSearchFormData);
+			
+			Document searchQuery = null;
+			if (data.containsKey(SearchFormSavedSearchQuery)) 
+					searchQuery = (Document)data.get(SearchFormSavedSearchQuery);
+
+			Map elementData = getInstance().getFolderModule().getCommonEntryElements();
+			searchSearchFormData = FilterHelper.buildFilterFormMap(
+					(Document)data.get(SearchFormSavedSearchQuery),
+					(Map) model.get(WebKeys.PUBLIC_ENTRY_DEFINITIONS),
+					elementData);
     	}
     }
     

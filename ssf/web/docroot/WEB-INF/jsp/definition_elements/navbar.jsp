@@ -12,9 +12,9 @@
 <td align="center"><a href="javascript: ;"
   onClick="ss_showFavoritesPane();return false;"
   ><img border="0" src="<html:imagesPath/>icons/favorites.png" 
-  alt="<ssf:nlt tag="navigation.workspace" text="Favorites"/>" /></a>
+  alt="<ssf:nlt tag="navigation.favorites" text="Favorites"/>" /></a>
   <br/>
-  <span class="ss_fineprint"><ssf:nlt tag="navigation.workspace" text="Favorites"/></span>
+  <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites" text="Favorites"/></span>
 </td>
 
 <% // History %>
@@ -26,7 +26,7 @@
 
 <% // Search form %>
 <td align="center" nowrap="nowrap"><img border="0" src="<html:imagesPath/>icons/find.png" 
-  alt="<ssf:nlt tag="navigation.workspace" text="Search"/>" /><input
+  alt="<ssf:nlt tag="navigation.search" text="Search"/>" /><input
   type="text" size="20"/><input type="submit" value="Go"/>
   <br>
   <span class="ss_fineprint"><ssf:nlt tag="navigation.search" text="Search"/></span>
@@ -41,7 +41,7 @@
 
 <% // Help toggle %>
 <td align="center"><img border="0" src="<html:imagesPath/>icons/help.png" 
-  alt="<ssf:nlt tag="navigation.workspace" text="Help"/>" />
+  alt="<ssf:nlt tag="navigation.help" text="Help"/>" />
   <br>
   <span class="ss_fineprint"><ssf:nlt tag="navigation.help" text="Help"/></span>
 </td>

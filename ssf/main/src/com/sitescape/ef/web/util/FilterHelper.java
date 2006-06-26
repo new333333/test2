@@ -41,8 +41,8 @@ public class FilterHelper {
    	private final static String FilterNameField = "filterName";
    	private final static String FilterTypeField = "filterType";
    	
-   	public final static String FilterEntryDefIdField = "ss_filter_entry_def_id";
-   	public final static String FilterEntryDefIdCaptionField = "ss_filter_entry_def_id_caption";
+   	public final static String FilterEntryDefIdField = "ss_entry_def_id";
+   	public final static String FilterEntryDefIdCaptionField = "ss_entry_def_id_caption";
    	public final static String FilterElementNameField = "elementName";
    	public final static String FilterElementNameCaptionField = "elementNameCaption";
    	public final static String FilterElementValueField = "elementValue";
@@ -120,6 +120,14 @@ public class FilterHelper {
    	
    	static public Map buildFilterFormMap(Document searchFilter, Map entryDefs, Map commonElements) {
    		Map searchFilterData = new HashMap();
+   		if (searchFilter == null) {
+   			//Create an empty filter
+   			searchFilter = DocumentHelper.createDocument();
+   			Element sfRoot = searchFilter.addElement(FilterRootName);
+   			Element filterNameEle = sfRoot.addElement(FilterName);
+   			filterNameEle.setText("");
+   			Element filterTerms = sfRoot.addElement(FilterTerms);
+   		}
    		Element sfRoot = searchFilter.getRootElement();
     	List liFilterTerms = sfRoot.selectNodes(FilterTerms + "/" + FilterTerm);
 		searchFilterData.put("filterTermCount", new Integer(liFilterTerms.size()));

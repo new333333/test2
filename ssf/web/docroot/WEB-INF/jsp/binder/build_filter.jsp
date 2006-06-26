@@ -243,12 +243,12 @@ ss_filterTermNumberMax++;
 <%
 			if (!((String) ss_searchFilterData.get("filterType" + String.valueOf(i))).equals("text")) {
 %>
-		      <select name="ss_filter_entry_def_id<%= String.valueOf(i) %>" size="1" multiple>
+		      <select name="ss_entry_def_id<%= String.valueOf(i) %>" size="1" multiple>
 <%
-				if (ss_searchFilterData.containsKey("ss_filter_entry_def_id" + String.valueOf(i))) {
+				if (ss_searchFilterData.containsKey("ss_entry_def_id" + String.valueOf(i))) {
 %>
-				<option value="<%= (String) ss_searchFilterData.get("ss_filter_entry_def_id" + String.valueOf(i)) %>" 
-				  selected><%= (String) ss_searchFilterData.get("ss_filter_entry_def_id_caption" + String.valueOf(i)) %></option>
+				<option value="<%= (String) ss_searchFilterData.get("ss_entry_def_id" + String.valueOf(i)) %>" 
+				  selected><%= (String) ss_searchFilterData.get("ss_entry_def_id_caption" + String.valueOf(i)) %></option>
 <%
 				}
 %>

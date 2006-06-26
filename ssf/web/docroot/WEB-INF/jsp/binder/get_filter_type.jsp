@@ -31,9 +31,9 @@
          name="elementValue<c:out value="${ss_filterTermNumber}"/>" />
 	  </c:if>
 	  <c:if test="${ss_filterType == 'entry'}">
-    	<select name="ss_filter_entry_def_id<c:out value="${ss_filterTermNumber}"/>" 
-    	   id="ss_filter_entry_def_id<c:out value="${ss_filterTermNumber}"/>" 
-    	  onChange="ss_getFilterSelectionBox(this, 'ss_filter_entry_def_id', 'get_entry_elements')">
+    	<select name="ss_entry_def_id<c:out value="${ss_filterTermNumber}"/>" 
+    	   id="ss_entry_def_id<c:out value="${ss_filterTermNumber}"/>" 
+    	  onChange="ss_getFilterSelectionBox(this, 'ss_entry_def_id', 'get_entry_elements')">
     	  <option value="" selected="selected"><ssf:nlt 
     	    tag="filter.selectElement" text="--select an entry type--"/></option>
     	  <option value="_common"><ssf:nlt 

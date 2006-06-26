@@ -418,6 +418,27 @@
 	</tag>
 
 	<tag>
+		<name>searchForm</name>
+		<tag-class>com.sitescape.ef.taglib.SearchFormTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>form</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>element</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>data</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+	
+	<tag>
 		<name>servletrooturl</name>
 		<tag-class>com.sitescape.ef.taglib.ServletRootUrlTag</tag-class>
 		<body-content>empty</body-content>
