@@ -209,12 +209,15 @@ public class DashboardHelper {
 					tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
 				} else {
 					tree = getInstance().getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsTreeBuilder((Workspace)binder, true, getInstance().getBinderModule()),1);
+					idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, binder.getId().toString());
 				}
 			} else if (binder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
 				Folder topFolder = ((Folder)binder).getTopFolder();
 				if (topFolder == null) topFolder = (Folder)binder;
 				Binder workspace = (Binder)topFolder.getParentBinder();
 				tree = getInstance().getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new WsTreeBuilder((Workspace)workspace, true, getInstance().getBinderModule()),1);
+				idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, workspace.getId().toString());
+				
 			}
 			idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
     	}

@@ -46,7 +46,7 @@ function wsTreeComponent_showId(id, obj, action) {
 
 <c:if test="${!empty ssDashboard.beans[ssDashboardId].workspaceTree && !empty ssDefinitionEntry.id}">
 <ssf:tree treeName="wsTreeComponent" treeDocument="${ssDashboard.beans[ssDashboardId].workspaceTree}" 
-  topId="${ssDefinitionEntry.id}" highlightNode="${ssDefinitionEntry.id}" 
+  topId="${ssDashboard.beans[ssDashboardId].topId}" highlightNode="${ssDefinitionEntry.id}" 
   rootOpen="${rootOpen}" />
 <div id="ss_tree_div_status_messagewsTreeComponent" 
   style="visibility:hidden; display:none;"></div>
