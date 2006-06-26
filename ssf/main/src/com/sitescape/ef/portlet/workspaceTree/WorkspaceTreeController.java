@@ -84,8 +84,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
-		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, userProperties);
-		model.put(WebKeys.DASHBOARD, ssDashboard);
+		DashboardHelper.getDashboardMap(binder, userFolderProperties, 
+				userProperties, model);
 
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
 		Document searchFilter = null;

@@ -122,7 +122,7 @@ function ss_getPresence${ssDashboardId}(timeout) {
 	ajaxRequest.addKeyValue("ssDashboardId", "${ssDashboardId}")
 	ajaxRequest.addFormElements("presenceForm${ssDashboardId}")
 	ajaxRequest.setData("timeout", timeout)
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postRequest${ssDashboardId});
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
