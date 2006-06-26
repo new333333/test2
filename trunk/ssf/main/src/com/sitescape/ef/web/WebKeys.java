@@ -157,6 +157,7 @@ public class WebKeys {
     public static final String DASHBOARD_SCOPE="scope";
     public static final String DASHBOARD_TITLE="title";
     public static final String DASHBOARD_WORKSPACE_TREE="workspaceTree";
+    public static final String DASHBOARD_WORKSPACE_TOPID="topId";
     public static final String DEFAULT_FOLDER_DEFINITION="ssDefaultFolderDefinition";
     public static final String DEFAULT_FOLDER_DEFINITION_ID="ssDefaultFolderDefinitionId";
     public static final String DEFINITION="ssDefinition";
