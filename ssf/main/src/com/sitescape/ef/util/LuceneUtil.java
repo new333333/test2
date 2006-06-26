@@ -48,13 +48,33 @@ public class LuceneUtil {
 	}
 
 	public static IndexReader getReader(String indexPath) throws IOException {
-		return IndexReader.open(indexPath);
+		try {
+			return IndexReader.open(indexPath);
+		}
+		catch(IOException e) {
+			if(initializeIndex(indexPath)) {
+				return IndexReader.open(indexPath);
+			}
+			else {
+				throw e;
+			}
+		}
 	}
 
 	public static IndexSearcher getSearcher(String indexPath)
 		throws IOException {
 
-		return new IndexSearcher(indexPath);
+		try {
+			return new IndexSearcher(indexPath);
+		}
+		catch(IOException e) {
+			if(initializeIndex(indexPath)) {
+				return new IndexSearcher(indexPath);
+			}
+			else {
+				throw e;
+			}
+		}
 	}
 
 	public static IndexWriter getWriter(String indexPath) throws IOException {
@@ -67,4 +87,18 @@ public class LuceneUtil {
 		return new IndexWriter(indexPath, new MixedCaseAnalyzer(), create);
 	}
 
+	private static boolean initializeIndex(String indexPath) throws IOException {
+		synchronized(LuceneUtil.class) {
+			if(IndexReader.indexExists(indexPath)) {
+				// Index already exists at the specified directory. 
+				// We shouldn't initialize index in this case.
+				return false;
+			}
+			else {
+				// No index exists at the specified directory. Create a new one.
+				getWriter(indexPath, true);
+				return true;
+			}
+		}
+	}
 }
