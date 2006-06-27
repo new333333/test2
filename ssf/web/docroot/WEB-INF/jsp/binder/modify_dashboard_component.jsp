@@ -64,6 +64,7 @@
 	<div class="ss_dashboard_config">
 		<c:set var="ss_dashboard_config_form_name" value="form1" scope="request"/>
 		<form method="post" name="${ss_dashboard_config_form_name}" 
+		  id="${ss_dashboard_config_form_name}" 
 		  onSubmit="return ss_onSubmit(this);">
 		<span class="ss_bold"><ssf:nlt checkIfTag="true"
 		  tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[id].name]}"/></span>

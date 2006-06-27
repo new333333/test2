@@ -94,7 +94,7 @@ public class AjaxController  extends SAbstractController {
 					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
 					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
 				return new ModelAndView("binder/get_entry_elements", model);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_TYPE) || 
+			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE) || 
 					op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
 					op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
 					op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
@@ -141,7 +141,7 @@ public class AjaxController  extends SAbstractController {
 				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
 			return ajaxGetFilterData(request, response);
 
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_TYPE) || 
+		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
@@ -397,10 +397,10 @@ public class AjaxController  extends SAbstractController {
 	
 	private ModelAndView ajaxGetSearchFormData(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		String filterTermNumber = ((String[])formData.get(WebKeys.SEARCH_FORM_ENTRY_FILTER_TERM_NUMBER))[0];
-		model.put(WebKeys.SEARCH_FORM_ENTRY_FILTER_TERM_NUMBER, filterTermNumber);
-		String filterTermNumberMax = ((String[])formData.get(WebKeys.SEARCH_FORM_ENTRY_FILTER_TERM_NUMBER_MAX))[0];
-		model.put(WebKeys.SEARCH_FORM_ENTRY_FILTER_TERM_NUMBER_MAX, filterTermNumberMax);
+		String filterTermNumber = ((String[])formData.get(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER))[0];
+		model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, filterTermNumber);
+		String filterTermNumberMax = ((String[])formData.get(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX))[0];
+		model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX, filterTermNumberMax);
 		
 		//Get the definition id (if present)
 		if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
@@ -422,7 +422,7 @@ public class AjaxController  extends SAbstractController {
 		
 		if (formData.containsKey("elementName" + filterTermNumber)) {
 			String elementName = ((String[])formData.get("elementName" + filterTermNumber))[0];
-			model.put(WebKeys.SEARCH_FORM_ENTRY_ELEMENT_NAME, elementName);
+			model.put(WebKeys.FILTER_ENTRY_ELEMENT_NAME, elementName);
 		}
 
 		DefinitionUtils.getDefinitions(model);
@@ -430,17 +430,17 @@ public class AjaxController  extends SAbstractController {
 		
     	model.put(WebKeys.AJAX_STATUS, statusMap);
 		response.setContentType("text/xml");
-		if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_TYPE)) {
-			model.put(WebKeys.SEARCH_FORM_TYPE, op2);
+		if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE)) {
+			model.put(WebKeys.FILTER_TYPE, op2);
 			return new ModelAndView("tag_jsps/search_form/get_filter_type", model);
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS)) {
 			return new ModelAndView("tag_jsps/search_form/get_entry_elements", model);
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES)) {
 			return new ModelAndView("tag_jsps/search_form/get_element_value", model);
 		} else {
-			model.put(WebKeys.SEARCH_FORM_VALUE_TYPE, "");
+			model.put(WebKeys.FILTER_VALUE_TYPE, "");
 			if (formData.containsKey("elementValueDateType" + filterTermNumber)) {
-				model.put(WebKeys.SEARCH_FORM_VALUE_TYPE, 
+				model.put(WebKeys.FILTER_VALUE_TYPE, 
 						((String[])formData.get("elementValueDateType" + filterTermNumber))[0]);
 			}
 			return new ModelAndView("tag_jsps/search_form/get_element_value_data", model);

@@ -31,16 +31,28 @@ public class ViewController extends  SAbstractController {
 			RenderResponse response) throws Exception {
 		PortletURL url;
 		//Build the tree
+		int nextId = 0;
+		
 		Document adminTree = DocumentHelper.createDocument();
 		Element rootElement = adminTree.addElement("root");
 		rootElement.addAttribute("title", NLT.get("administration.title"));
 		rootElement.addAttribute("image", "admin_tools");
 		rootElement.addAttribute("displayOnly", "true");
+		rootElement.addAttribute("id", String.valueOf(nextId++));
+
+		
+		//Definition builders
+		Element designerElement = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		designerElement.addAttribute("title", NLT.get("administration.definition_builder_designers"));
+		designerElement.addAttribute("image", "bullet");
+		designerElement.addAttribute("displayOnly", "true");
+		designerElement.addAttribute("id", String.valueOf(nextId++));
 		
 		//Definition builder - Entry form designer
-		Element element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		Element element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder_entry_form_designer"));
 		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.COMMAND));
@@ -48,10 +60,23 @@ public class ViewController extends  SAbstractController {
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 		
+		//Definition builder - File entry form designer
+		element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", NLT.get("administration.definition_builder_file_entry_form_designer"));
+		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FILE_ENTRY_VIEW));
+		url.setWindowState(WindowState.MAXIMIZED);
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
+		
 		//Definition builder - Folder view designer
-		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder_folder_view_designer"));
 		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FOLDER_VIEW));
@@ -59,10 +84,23 @@ public class ViewController extends  SAbstractController {
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 		
+		//Definition builder - File folder view designer
+		element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", NLT.get("administration.definition_builder_file_folder_view_designer"));
+		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FILE_FOLDER_VIEW));
+		url.setWindowState(WindowState.MAXIMIZED);
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
+		
 		//Definition builder - Workflow designer
-		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder_workflow_designer"));
 		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKFLOW));
@@ -71,9 +109,10 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("url", url.toString());
 		
 		//Definition builder - Profile listing designer
-		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder_profile_listing_designer"));
 		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.PROFILE_VIEW));
@@ -82,9 +121,10 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("url", url.toString());
 		
 		//Definition builder - Profile designer
-		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder_profile_designer"));
 		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.PROFILE_ENTRY_VIEW));
@@ -93,9 +133,10 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("url", url.toString());
 		
 		//Definition builder - Workspace designer
-		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder_workspace_designer"));
 		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKSPACE_VIEW));
@@ -107,6 +148,7 @@ public class ViewController extends  SAbstractController {
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_ldap"));
 		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.LDAP_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
@@ -117,6 +159,7 @@ public class ViewController extends  SAbstractController {
 		element = rootElement.addElement("child");
 		element.addAttribute("title", NLT.get("administration.configure_roles"));
 		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ADMIN_ACTION_CONFIGURE_ROLES);
 		url.setWindowState(WindowState.MAXIMIZED);
@@ -127,6 +170,7 @@ public class ViewController extends  SAbstractController {
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_notify"));
 		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.NOTIFY_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
@@ -137,6 +181,7 @@ public class ViewController extends  SAbstractController {
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_posting"));
 		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.POSTING_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
@@ -147,6 +192,7 @@ public class ViewController extends  SAbstractController {
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_posting_job"));
 		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.POSTINGJOB_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
@@ -157,6 +203,7 @@ public class ViewController extends  SAbstractController {
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_search_index"));
 		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.FOLDER_INDEX_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
@@ -167,6 +214,7 @@ public class ViewController extends  SAbstractController {
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_profile_index"));
 		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.PROFILE_INDEX_ACTION_CONFIGURE);
 		url.setWindowState(WindowState.NORMAL);
@@ -177,6 +225,7 @@ public class ViewController extends  SAbstractController {
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.importDefinitions"));
 		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.DEFINITION_ACTION_IMPORT);
 		url.setPortletMode(PortletMode.VIEW);

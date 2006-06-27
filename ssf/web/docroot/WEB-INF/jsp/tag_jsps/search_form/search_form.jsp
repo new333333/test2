@@ -26,17 +26,17 @@
 
 <script type="text/javascript">
 
-function ss_getSearchFormTypeSelection(obj, op2) {
+function ss_getFilterTypeSelection(obj, op2) {
 	var divObj = obj.parentNode.parentNode.parentNode;
-	ss_getSearchFormSelectionBox(divObj, 'typeList', 'get_searchForm_type', op2)
+	ss_getFilterSelectionBox(divObj, 'typeList', 'get_search_form_filter_type', op2)
 }
-function ss_getSearchFormSelectionBox(obj, nameRoot, op, op2) {
+function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
 	var formObj = ss_getContainingForm(obj)
 	//Set the term number
 	var nameObj = obj.name
 	if (!obj.name) nameObj = obj.id;
 	var termNumber = nameObj.substr(nameRoot.length, nameObj.length)
-	formObj.ss_searchFormTermNumber.value = parseInt(termNumber);
+	formObj.ss_filterTermNumber.value = parseInt(termNumber);
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
@@ -53,11 +53,11 @@ function ss_getSearchFormSelectionBox(obj, nameRoot, op, op2) {
 	ajaxRequest.sendRequest();  //Send the request
 }
 
-var ss_searchFormTermNumber = 0;
-var ss_searchFormTermNumberMax = 0;
-function ss_addSearchFormTerm() {
-	ss_searchFormTermNumberMax++;
-	var tableDiv = document.getElementById('searchFormTerms');
+var ss_filterTermNumber = 0;
+var ss_filterTermNumberMax = 0;
+function ss_addFilterTerm() {
+	ss_filterTermNumberMax++;
+	var tableDiv = document.getElementById('filterTerms');
 	var tbl = document.createElement("table");
 	tbl.className = "ss_style";
 	var tableBody = document.createElement("tbody");
@@ -70,31 +70,31 @@ function ss_addSearchFormTerm() {
 	tdCell.vAlign = "top"
 	var typeListDiv = document.getElementById('typeList1');
 	var newTypeListDiv = typeListDiv.cloneNode(true);
-	newTypeListDiv.id = "typeList" + parseInt(ss_searchFormTermNumberMax);
+	newTypeListDiv.id = "typeList" + parseInt(ss_filterTermNumberMax);
 	tdCell.appendChild(newTypeListDiv)
 	row.appendChild(tdCell);
 	
 	tdCell = document.createElement("td");
 	tdCell.vAlign = "top"
 	var newEntryListDiv = document.createElement("div");
-	newEntryListDiv.id = "entryList" + parseInt(ss_searchFormTermNumberMax);
+	newEntryListDiv.id = "entryList" + parseInt(ss_filterTermNumberMax);
 	tdCell.appendChild(newEntryListDiv)
 	row.appendChild(tdCell);
 	
 	tdCell = document.createElement("td");
 	tdCell.vAlign = "top"
 	var elementListDiv = document.createElement("div");
-	elementListDiv.id = "elementList" + parseInt(ss_searchFormTermNumberMax);
+	elementListDiv.id = "elementList" + parseInt(ss_filterTermNumberMax);
 	tdCell.appendChild(elementListDiv)
 	row.appendChild(tdCell);
 	
 	tdCell = document.createElement("td");
 	tdCell.vAlign = "top"
 	var valueListDiv = document.createElement("div");
-	valueListDiv.id = "valueList" + parseInt(ss_searchFormTermNumberMax);
+	valueListDiv.id = "valueList" + parseInt(ss_filterTermNumberMax);
 	tdCell.appendChild(valueListDiv)
 	var valueDataDiv = document.createElement("div");
-	valueDataDiv.id = "valueData" + parseInt(ss_searchFormTermNumberMax);
+	valueDataDiv.id = "valueData" + parseInt(ss_filterTermNumberMax);
 	tdCell.appendChild(valueDataDiv)
 	row.appendChild(tdCell);
 
@@ -112,53 +112,58 @@ var ss_buttonSelected = "";
 function ss_buttonSelect(btn) {
 	ss_buttonSelected = btn
 }
-function checkSearchFormForm(obj) {
+function ss_checkFilterForm(obj) {
 	//Set the term numbers into the form
-	var formObj = ss_getContainingForm(obj)
-	formObj.ss_searchFormTermNumber.value = parseInt(ss_searchFormTermNumber);
-	formObj.ss_searchFormTermNumberMax.value = parseInt(ss_searchFormTermNumberMax);
-	if (ss_buttonSelected == 'ok' && obj.searchFormName.value == "") {
-		alert("<ssf:nlt tag="searchForm.enterName" text="Please fill in the searchForm name field."/>")
+	alert('${ssSearchFormForm}')
+	var formObj = document.getElementById('${ssSearchFormForm}')
+	alert(formObj.id)
+	alert(formObj.ss_filterTermNumber)
+	formObj.ss_filterTermNumber.value = parseInt(ss_filterTermNumber);
+	formObj.ss_filterTermNumberMax.value = parseInt(ss_filterTermNumberMax);
+	alert(formObj.ss_filterTermNumberMax.value)
+	if (ss_buttonSelected == 'ok' && obj.searchFormName && obj.searchFormName.value == "") {
+		alert("<ssf:nlt tag="searchForm.enterName" text="Please fill in the filter name field."/>")
 		obj.searchFormName.focus()
 		return false;
 	}
 	return true;
 }
+ss_createOnSubmitObj('ss_checkFilterForm', '${ssSearchFormForm}', ss_checkFilterForm);
 
-function ss_deleteSearchFormTerm(obj, termNumber) {
+function ss_deleteFilterTerm(obj, termNumber) {
 	var formObj = ss_getContainingForm(obj)
 	//Set the term number into the form
-	formObj.ss_searchFormTermNumber.value = parseInt(termNumber);
+	formObj.ss_filterTermNumber.value = parseInt(termNumber);
 	return true;
 }
 
 </script>
 
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="searchForm.terms" text="SearchForm terms"/></legend>
-	<span class="ss_bold"><ssf:nlt tag="searchForm.selectSearchFormType" 
-	  text="Select the terms of the searchForm to be added..."/></span>
+    <legend class="ss_legend"><ssf:nlt tag="searchForm.terms" text="Filter terms"/></legend>
+	<span class="ss_bold"><ssf:nlt tag="searchForm.selectFilterType" 
+	  text="Select the terms of the filter to be added..."/></span>
 	<br/>
-	<div id="searchFormTerms">
+	<div id="filterTerms">
 	  <table class="ss_style">
 	  <tbody>
-	  <c:if test="${empty ss_selectedSearchForm || ssSearchFormData.searchFormTermCount == '0'}">
+	  <c:if test="${empty ss_selectedSearchForm || ssSearchFormData.filterTermCount == '0'}">
 	  <tr>
 	  <td valign="top">
 	    <div id="typeList1" style="display:inline;">
 	      <ul class="ss_square" style="margin:0px 14px; padding:2px;">
 	      <li><a href="javascript: ;" 
-	        onClick="ss_getSearchFormTypeSelection(this, 'text');return false;">
+	        onClick="ss_getFilterTypeSelection(this, 'text');return false;">
 	          <ssf:nlt tag="searchForm.searchText" text="Search text"/>
 	      </a></li>
 	      
 	      <li><a href="javascript: ;" 
-	        onClick="ss_getSearchFormTypeSelection(this, 'entry');return false;">
+	        onClick="ss_getFilterTypeSelection(this, 'entry');return false;">
 	          <ssf:nlt tag="searchForm.entryAttributes" text="Entry attributes"/>
 	      </a></li>
 
 	      <li><a href="javascript: ;" 
-	        onClick="ss_getSearchFormTypeSelection(this, 'workflow');return false;">
+	        onClick="ss_getFilterTypeSelection(this, 'workflow');return false;">
 	          <ssf:nlt tag="searchForm.workflowStates" text="Workflow states"/>
 	      </a></li>
 
@@ -181,30 +186,30 @@ function ss_deleteSearchFormTerm(obj, termNumber) {
 	  <td></td>
 	  </tr>
 <script type="text/javascript">
-ss_searchFormTermNumberMax++;
+ss_filterTermNumberMax++;
 </script>
 	  </c:if>
 	  
-	  <c:if test="${!empty ss_selectedSearchForm && !empty ssSearchFormData.searchFormTermCount}">
+	  <c:if test="${!empty ss_selectedSearchForm && !empty ssSearchFormData.filterTermCount}">
 <%
-		for (int i = 1; i <= ((Integer)ssSearchFormData.get("searchFormTermCount")).intValue(); i++) {
+		for (int i = 1; i <= ((Integer)ssSearchFormData.get("filterTermCount")).intValue(); i++) {
 %>
 		  <tr>
 		  <td valign="top">
 		    <div id="typeList<%= String.valueOf(i) %>" style="display:inline;">
 		      <ul class="ss_square" style="margin:0px 14px; padding:2px;">
 		      <li><a href="javascript: ;" 
-		        onClick="ss_getSearchFormTypeSelection(this, 'text');return false;">
+		        onClick="ss_getFilterTypeSelection(this, 'text');return false;">
 		          <ssf:nlt tag="searchForm.searchText" text="Search text"/>
 		      </a></li>
 		      
 		      <li><a href="javascript: ;" 
-		        onClick="ss_getSearchFormTypeSelection(this, 'entry');return false;">
+		        onClick="ss_getFilterTypeSelection(this, 'entry');return false;">
 		          <ssf:nlt tag="searchForm.entryAttributes" text="Entry attributes"/>
 		      </a></li>
 	
 		      <li><a href="javascript: ;" 
-		        onClick="ss_getSearchFormTypeSelection(this, 'workflow');return false;">
+		        onClick="ss_getFilterTypeSelection(this, 'workflow');return false;">
 		          <ssf:nlt tag="searchForm.workflowStates" text="Workflow states"/>
 		      </a></li>
 	
@@ -213,7 +218,7 @@ ss_searchFormTermNumberMax++;
 		  <td valign="top">
 		    <div id="entryList<%= String.valueOf(i) %>" style="display:inline;">
 <%
-			if (!((String) ssSearchFormData.get("searchFormType" + String.valueOf(i))).equals("text")) {
+			if (!((String) ssSearchFormData.get("filterType" + String.valueOf(i))).equals("text")) {
 %>
 		      <select name="ss_entry_def_id<%= String.valueOf(i) %>" size="1" multiple>
 <%
@@ -228,14 +233,14 @@ ss_searchFormTermNumberMax++;
 <%
 			}
 %>
-			  <input type="hidden" name="searchFormType<%= String.valueOf(i) %>"
-			    value="<%= (String) ssSearchFormData.get("searchFormType" + String.valueOf(i)) %>"/>
+			  <input type="hidden" name="filterType<%= String.valueOf(i) %>"
+			    value="<%= (String) ssSearchFormData.get("filterType" + String.valueOf(i)) %>"/>
 		    </div>
 		  </td>
 		  <td valign="top">
 		    <div id="elementList<%= String.valueOf(i) %>" style="visibility:visible; display:inline;">
 <%
-			if (((String) ssSearchFormData.get("searchFormType" + String.valueOf(i))).equals("text")) {
+			if (((String) ssSearchFormData.get("filterType" + String.valueOf(i))).equals("text")) {
 %>
 				<span><ssf:nlt tag="searchForm.searchText" text="Search text"/>:</span>
 <%
@@ -253,7 +258,7 @@ ss_searchFormTermNumberMax++;
 		  <td valign="top">
 		    <div id="valueList<%= String.valueOf(i) %>" style="visibility:visible; display:inline;">
 <%
-			if (((String) ssSearchFormData.get("searchFormType" + String.valueOf(i))).equals("text")) {
+			if (((String) ssSearchFormData.get("filterType" + String.valueOf(i))).equals("text")) {
 				if (ssSearchFormData.containsKey("elementValue" + String.valueOf(i))) {
 					String value = (String) ssSearchFormData.get("elementValue" + String.valueOf(i));
 %>
@@ -284,7 +289,7 @@ ss_searchFormTermNumberMax++;
 		    <div id="valueData<%= String.valueOf(i) %>" 
 		      style="visibility:visible; display:inline;">
 <%
-			if (((String) ssSearchFormData.get("searchFormType" + String.valueOf(i))).equals("text")) {
+			if (((String) ssSearchFormData.get("filterType" + String.valueOf(i))).equals("text")) {
 			} else {
 				if (ssSearchFormData.containsKey("elementValue" + String.valueOf(i))) {
 					Map valueMap = (Map) ssSearchFormData.get("elementValue" + String.valueOf(i));
@@ -314,11 +319,11 @@ ss_searchFormTermNumberMax++;
 		  <td valign="top">
 		    <input type="submit" class="ss_fineprint" name="deleteTerm" 
 		      value="<ssf:nlt tag="button.delete" text="Delete this term"/>" 
-		      onClick="ss_deleteSearchFormTerm(this, '<%= String.valueOf(i) %>');" />
+		      onClick="ss_deleteFilterTerm(this, '<%= String.valueOf(i) %>');" />
 		  </td>
 		  </tr>
 <script type="text/javascript">
-ss_searchFormTermNumberMax++;
+ss_filterTermNumberMax++;
 </script>
 <%
 		}
@@ -329,13 +334,13 @@ ss_searchFormTermNumberMax++;
 	  </table>
 	</div>
 	<br/>
-	<a class="ss_linkButton" href="javascript: ;" onClick="ss_addSearchFormTerm();return false;">Add another searchForm term</a>
+	<a class="ss_linkButton" href="javascript: ;" onClick="ss_addFilterTerm();return false;">Add another filter term</a>
 	  
   </fieldset>
   
-<input type="hidden" name="ss_searchFormTermNumber"/>
-<input type="hidden" name="ss_searchFormTermNumberMax"/>
-<input type="hidden" name="selectedSearchSearchForm" value="<c:out value="${ss_selectedSearchForm}"/>"/>
+<input type="hidden" name="ss_filterTermNumber"/>
+<input type="hidden" name="ss_filterTermNumberMax"/>
+<input type="hidden" name="selectedSearchFilter" value="<c:out value="${ss_selectedFilter}"/>"/>
 
 <div id="ss_search_form_status_message" style="display:none;"></div>
 

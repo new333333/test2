@@ -111,7 +111,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_SAVE_COLUMN_POSITIONS = "save_column_positions";
 	public static final String FORUM_OPERATION_SAVE_ENTRY_WIDTH = "save_entry_width";
 	public static final String FORUM_OPERATION_SAVE_ENTRY_HEIGHT = "save_entry_height";
-	public static final String FORUM_OPERATION_GET_SEARCH_FORM_TYPE = "get_searchForm_type";
+	public static final String FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE = "get_search_form_filter_type";
 	public static final String FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS = "get_searchForm_entry_elements";
 	public static final String FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES = "get_searchForm_element_values";
 	public static final String FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA = "get_searchForm_element_value_data";
@@ -236,14 +236,9 @@ public class WebKeys {
     public static final String SEARCH_FORM_ELEMENT="ssSearchFormElement";
     public static final String SEARCH_FORM_FORM="ssSearchFormForm";
     public static final String SEARCH_FORM_ENTRY_DEF_ID = "ss_entry_def_id";
-    public static final String SEARCH_FORM_ENTRY_ELEMENT_NAME = "ss_searchForm_entry_element_name";
-    public static final String SEARCH_FORM_ENTRY_FILTER_TERM_NUMBER="ss_searchFormTermNumber";
-    public static final String SEARCH_FORM_ENTRY_FILTER_TERM_NUMBER_MAX="ss_searchFormTermNumberMax";
     public static final String SEARCH_FORM_SEARCH_FILTERS="ss_searchSearchForms";
     public static final String SEARCH_FORM_SEARCH_FILTER_DATA="ss_searchSearchFormData";
     public static final String SEARCH_FORM_SELECTED_FILTER_NAME="ss_selectedSearchForm";
-    public static final String SEARCH_FORM_TYPE="ss_searchFormType";
-    public static final String SEARCH_FORM_VALUE_TYPE="ss_searchFormValueType";
     public static final String SEEN_MAP="ssSeenMap";
     public static final String SELECTED_GROUPS="ssSelectedGroups";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
