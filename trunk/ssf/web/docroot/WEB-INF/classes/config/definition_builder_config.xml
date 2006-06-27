@@ -47,6 +47,21 @@
 			<operation name="addDefinition" item="workspaceViewType" caption="__add_a_new_workspace_view" />
 		</operations>
 	</definition>
+
+	<definition name="fileFolderViewDefinition" definitionType="9" caption="__file_folder_views" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="fileFolderViewType" caption="__add_a_new_file_folder_view" />
+		</operations>
+	</definition>
+	
+	<definition name="fileEntryTypeDefinition" definitionType="10" 
+		  caption="__file_entry_definitions" canBeDeleted="false">		
+		<operations>
+			<operation name="addDefinition" item="fileEntryType" 
+				caption="__add_a_new_file_entry_definition" />
+		</operations>
+	</definition>
+	
 	
 <!-- Items -->
 
@@ -1552,6 +1567,125 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_dashboard_canvas.jsp" />
+		</jsps>
+	</item>
+
+<!-- File folder items -->
+	<item name="fileFolderViewType" definitionType="9" 
+		    caption="__file_folder_view_definition">		
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+			<property name="icon" caption="__icons.folder" type="iconList" 
+				path="icons.filefolder" default="/icons/folder.png" />
+		</properties>
+		
+		<options>
+			<option name="fileFolderForm" caption="__file_folder_form" 
+				initial="true" multipleAllowed="false" />
+			<option name="fileFolderView" caption="__file_folder_view" 
+				initial="true" multipleAllowed="false" />
+		</options>
+	</item>
+	
+	<item name="fileFolderForm" caption="__file_folder_form" type="form" 
+			canBeDeleted="false" 
+		multipleAllowed="false" >		
+		<options>
+			<option name="binderName" initial="true" />
+			<option name="title" initial="true" />
+			<option name="description" initial="true" />
+			<option name="folderIcon" initial="true" />
+			<option name="htmlEditorTextarea" />
+			<option name="textarea" />
+			<option name="graphic" />
+			<option_select path="//item[@category='fileFolderForm']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/folder_form.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="fileFolderView" caption="__file_folder_view" 
+		canBeDeleted="false" multipleAllowed="false" >		
+		<properties>
+			<property name="type" caption="__type" type="selectbox" default="file">
+				<option name="file" caption="__file_folder" />
+				<option name="event" caption="__folder_event" />
+				<help>__help_folder_view_type</help>
+			</property>
+		</properties>
+		<options>
+			<option name="folderTitleView" initial="true" />
+			<option name="dashboardCanvas" initial="true" />
+			<option name="descriptionView" initial="true" />
+			<option name="folderDataItem" caption="__folder_data_item" 
+				definitionType="9" />
+			<option name="fileFolderList" initial="true" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+	</item>
+	
+	<item name="fileFolderList" caption="__file_folder_listing">
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
+		</jsps>
+	</item>
+
+	<!-- File Entry items -->
+	<item name="fileEntryType" definitionType="10" caption="__file_entry_definition">		
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+			<property name="icon" caption="__icons.entry" type="iconList" path="icons.fileentry" 
+				default="/icons/page.png" />
+			<property name="replyStyle" caption="__reply_style" type="replyStyle" />
+		</properties>
+		
+		<options>
+			<option name="fileEntryForm" initial="true" />
+			<option name="fileEntryView" initial="true" />
+		</options>
+	</item>
+	
+	<item name="fileEntryForm" caption="__file_entry_form_definition" 
+			type="form" canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+
+		<options>
+			<option name="fileEntryFormForm" initial="true" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
+		</jsps>
+	</item>
+
+	<item name="entryView" caption="__file_entry_view_definition" 
+			canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+
+		<options optionCaption="__standard_entry_options">
+			<option name="titleView" caption="__title" initial="true" />
+			<option name="entryCreatorView" caption="__entry_creator" initial="true" />
+			<option name="entryDateView" caption="__entry_date" initial="true" />
+			<option name="descriptionView" caption="__description" initial="true" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="entryWorkflow" caption="__entry_workflow" initial="true" />
+			<option name="entryAttachments" caption="__entry_attachments" initial="true" />
+			<option name="entryReplies" caption="__entry_replies" initial="true" />
+			<option_select path="//item[@category='entryLayout']" optionCaption="__entry_layout_options" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/entry_view.jsp" />
 		</jsps>
 	</item>
 		

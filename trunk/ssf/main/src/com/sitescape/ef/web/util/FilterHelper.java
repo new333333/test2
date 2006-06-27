@@ -54,7 +54,7 @@ public class FilterHelper {
 		Element sfRoot = searchFilter.addElement(FilterRootName);
 		Map formData = request.getParameterMap();
 
-		String filterName = PortletRequestUtils.getRequiredStringParameter(request, FilterNameField);
+		String filterName = PortletRequestUtils.getStringParameter(request, FilterNameField, "");
 		Element filterNameEle = sfRoot.addElement(FilterName);
 		filterNameEle.setText(filterName);
 		

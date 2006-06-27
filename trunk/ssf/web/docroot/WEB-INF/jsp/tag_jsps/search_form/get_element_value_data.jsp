@@ -23,28 +23,28 @@
 		<div id="ss_search_form_status_message" style="visibility:hidden; display:none;">ok</div>
 	</taconite-replace>
 
-	<taconite-replace contextNodeID="valueData<c:out value="${ss_searchFormTermNumber}"/>" 
+	<taconite-replace contextNodeID="valueData<c:out value="${ss_filterTermNumber}"/>" 
 	parseInBrowser="true"><div 
-	  id="valueData<c:out value="${ss_searchFormTermNumber}"/>" 
+	  id="valueData<c:out value="${ss_filterTermNumber}"/>" 
 	  style="visibility:visible; display:inline;">
 	  
-	  <c:if test="${ss_searchFormValueType == 'onOrBefore'}">
-	      <ssf:datepicker id="elementValue${ss_searchFormTermNumber}" 
+	  <c:if test="${ss_filterValueType == 'onOrBefore'}">
+	      <ssf:datepicker id="elementValue${ss_filterTermNumber}" 
             formName="searchFormData" showSelectors="false" 
             initDate="<%= new Date() %>" />
 	  </c:if>
 	  
-	  <c:if test="${ss_searchFormValueType == 'onOrAfter'}">
+	  <c:if test="${ss_filterValueType == 'onOrAfter'}">
 	  </c:if>
 	  
-	  <c:if test="${ss_searchFormValueType == 'withinNextFewDays'}">
+	  <c:if test="${ss_filterValueType == 'withinNextFewDays'}">
 	    <ssf:nlt tag="searchForm.days" text="Days" />: <input type="text" 
-	    name="elementValue${ss_searchFormTermNumber}" size="4" />
+	    name="elementValue${ss_filterTermNumber}" size="4" />
 	  </c:if>
 	  
-	  <c:if test="${ss_searchFormValueType == 'withinPastFewDays'}">
+	  <c:if test="${ss_filterValueType == 'withinPastFewDays'}">
 	    <ssf:nlt tag="searchForm.days" text="Days" />: <input type="text" 
-	    name="elementValue${ss_searchFormTermNumber}" size="4" />
+	    name="elementValue${ss_filterTermNumber}" size="4" />
 	  </c:if>
 	  
 	</div></taconite-replace>

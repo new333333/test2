@@ -23,32 +23,32 @@
 		<div id="ss_search_form_status_message" style="visibility:hidden; display:none;">ok</div>
 	</taconite-replace>
 
-	<taconite-replace contextNodeID="valueList<c:out value="${ss_searchFormTermNumber}"/>" 
+	<taconite-replace contextNodeID="valueList<c:out value="${ss_filterTermNumber}"/>" 
 	parseInBrowser="true"><div 
-	id="valueList<c:out value="${ss_searchFormTermNumber}"/>" 
+	id="valueList<c:out value="${ss_filterTermNumber}"/>" 
 	style="visibility:visible; display:inline;">
 	  <c:forEach var="element" items="${ssEntryDefinitionElementData}">
-		<c:if test="${element.key == ss_searchForm_entry_element_name}">
+		<c:if test="${element.key == ss_filter_entry_element_name}">
 	       
 	       <c:if test="${element.value.type == 'title' || element.value.type == 'text'}">
 	         <ssf:nlt tag="searchForm.searchText" text="Search text"/>: <input 
 	         type="text" class="ss_text" style="width:150px;" 
-	         name="elementValue<c:out value="${ss_searchFormTermNumber}"/>" />
+	         name="elementValue<c:out value="${ss_filterTermNumber}"/>" />
 	         <input type="hidden" 
-	         name="elementValueType<c:out value="${ss_searchFormTermNumber}"/>" 
+	         name="elementValueType<c:out value="${ss_filterTermNumber}"/>" 
 	         value="${element.value.type}"/>
 	       </c:if>
 	       
 	       <c:if test="${element.value.type == 'event'}">
 	         <ssf:nlt tag="searchForm.date" text="Date"/>: ...
 	         <input type="hidden" 
-	         name="elementValueType<c:out value="${ss_searchFormTermNumber}"/>" 
+	         name="elementValueType<c:out value="${ss_filterTermNumber}"/>" 
 	         value="${element.value.type}"/>
 	       </c:if>
 	       
 	       <c:if test="${element.value.type == 'date'}">
-	         <select name="elementValueDateType<c:out value="${ss_searchFormTermNumber}"/>" 
-	         onChange="ss_getSearchFormSelectionBox(this, 'elementValueDateType', 'get_searchForm_element_value_data', 'date')" >
+	         <select name="elementValueDateType<c:out value="${ss_filterTermNumber}"/>" 
+	         onChange="ss_getFilterSelectionBox(this, 'elementValueDateType', 'get_searchForm_element_value_data', 'date')" >
 	           <option value=""><ssf:nlt tag="searchForm.selectDateOption"/></option>
 	           <option value="onOrBefore"><ssf:nlt tag="searchForm.onOrBefore"/></option>
 	           <option value="onOrAfter"><ssf:nlt tag="searchForm.onOrAfter"/></option>
@@ -56,13 +56,13 @@
 	           <option value="withinPastFewDays"><ssf:nlt tag="searchForm.withinPastFewDays"/></option>
 	         </select>
 	         <input type="hidden" 
-	         name="elementValueType<c:out value="${ss_searchFormTermNumber}"/>" 
+	         name="elementValueType<c:out value="${ss_filterTermNumber}"/>" 
 	         value="${element.value.type}"/>
 	       </c:if>
 	       
 	       <c:if test="${element.value.type == 'selectbox' || element.value.type == 'radio'}">
 			 <select
-		       name="elementValue<c:out value="${ss_searchFormTermNumber}"/>" 
+		       name="elementValue<c:out value="${ss_filterTermNumber}"/>" 
 		       multiple="multiple" 
 		       size="<c:out value="${element.value.length}"/>"
 		     >
@@ -71,16 +71,16 @@
 				</c:forEach>
 		       </select>
 	         <input type="hidden" 
-	         name="elementValueType<c:out value="${ss_searchFormTermNumber}"/>" 
+	         name="elementValueType<c:out value="${ss_filterTermNumber}"/>" 
 	         value="${element.value.type}"/>
 	       </c:if>
 	       
 	       <c:if test="${element.value.type == 'checkbox'}">
 	         <input type="checkbox" 
-	         name="elementValue<c:out value="${ss_searchFormTermNumber}"/>" 
+	         name="elementValue<c:out value="${ss_filterTermNumber}"/>" 
 	         checked="checked"/> <c:out value="${element.value.caption}"/>
 	         <input type="hidden" 
-	         name="elementValueType<c:out value="${ss_searchFormTermNumber}"/>" 
+	         name="elementValueType<c:out value="${ss_filterTermNumber}"/>" 
 	         value="${element.value.type}"/>
 	       </c:if>
 	       
@@ -91,9 +91,9 @@
 	  </c:forEach>
 	 </div></taconite-replace>
        
-	<taconite-replace contextNodeID="valueData<c:out value="${ss_searchFormTermNumber}"/>" 
+	<taconite-replace contextNodeID="valueData<c:out value="${ss_filterTermNumber}"/>" 
 	parseInBrowser="true"><div 
-	  id="valueData<c:out value="${ss_searchFormTermNumber}"/>" 
+	  id="valueData<c:out value="${ss_filterTermNumber}"/>" 
 	  style="visibility:visible; display:inline;">
 	</div></taconite-replace>
 

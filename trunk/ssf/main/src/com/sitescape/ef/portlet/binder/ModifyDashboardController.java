@@ -5,6 +5,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DashboardHelper;
+import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 
 /**
@@ -193,6 +195,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 		if (!componentScope.equals("")) {
 			Map dashboard = getDashboard(binder, componentScope);
 
+			//Get the generic data elements that start with the ElementNamePrefix
 			Map formData = request.getParameterMap();
 			Map componentData = new HashMap();
 			Iterator itKeys = formData.keySet().iterator();
@@ -220,6 +223,16 @@ public class ModifyDashboardController extends AbstractBinderController {
 						if (components != null) {
 							Map componentMap = (Map) components.get(id);
 							if (componentMap != null) {
+								//Get any component specific data
+								if (componentMap.get(DashboardHelper.Name).
+										equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH)) {
+									//Get the search query
+									try {
+										Document query = FilterHelper.getSearchFilter(request);
+										componentMap.put(ObjectKeys.DASHBOARD_SEARCH_DATA_QUERY, query);
+									} catch(Exception ex) {}
+								}
+								
 								//Save the title and data map
 								componentMap.put(DashboardHelper.Component_Title, componentTitle);
 								componentMap.put(DashboardHelper.Data, componentData);
