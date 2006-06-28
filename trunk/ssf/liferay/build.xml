@@ -119,10 +119,7 @@
 			<fileset dir="resources/tomcat" />
 		</copy>
 		
-		<!-- TODO WE MUST USE ssfs.xml INSTEAD OF MODIFYING SERVER.XML!!! -->
-		<copy todir="${app.server.dir}" overwrite="true">
-			<fileset dir="${project.dir}/tomcat/resources" />
-		</copy>
+		<ant dir="${project.dir}/tomcat" target="deploy" />
 
 		<copy file="resources/tomcat.portal.properties" tofile="temp/portal.properties" overwrite="true" />
 		<jar destfile="${deploy.liferay.lib.dir}/portal-ejb.jar" basedir="temp" 

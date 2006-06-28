@@ -1,59 +1,31 @@
 <Context path="/ssf" docBase="../webapps/ssf" debug="0" reloadable="false" crossContext="true">
-	<Resource name="jdbc/SiteScapePool" auth="Container" type="javax.sql.DataSource" />
-	<ResourceParams name="jdbc/SiteScapePool">
-		<parameter>
-			<name>driverClassName</name>
-			<value>net.sourceforge.jtds.jdbc.Driver</value>
-		</parameter>
-		<parameter>
-			<name>url</name>
-			<value>jdbc:jtds:sqlserver://localhost/sitescape</value>
-		</parameter>
-		<parameter>
-			<name>username</name>
-			<value>sitescape</value>
-		</parameter>
-		<parameter>
-			<name>password</name>
-			<value>sitescape</value>
-		</parameter>
-		<parameter> 
-			<name>maxActive</name> 
-			<value>20</value> 
-		</parameter>
-	</ResourceParams>
-	<Resource name="mail/SiteScape" auth="Container" type="javax.mail.Session" />
-	<ResourceParams name="mail/SiteScape">
-		<parameter>
-			<name>mail.smtp.host</name>
-			<value>host54a.simplicato.com</value>
-		</parameter>
-		<parameter>
-			<name>mail.user</name>
-			<value>mccann@sitescape.com</value>
-		</parameter>
-	</ResourceParams>
-	<Resource name="mail/SiteScapePosting" auth="Container" type="javax.mail.Session" />
-	<ResourceParams name="mail/SiteScapePosting">
-		<parameter>
-			<name>mail.pop3.host</name>
-			<value>localhost</value>
-		</parameter>
-		<parameter>
-			<name>mail.store.protocol</name>
-			<value>pop3</value>
-		</parameter>
-		<parameter>
-			<name>mail.pop3.auth</name>
-			<value>true</value>
-		</parameter>
-		<parameter>
-			<name>mail.user</name>
-			<value>liferay</value>
-		</parameter>
-		<parameter>
-			<name>mail.password</name>
-			<value>liferay</value>
-		</parameter>
-	</ResourceParams>
+	<Resource 
+		name="jdbc/SiteScapePool" 
+		auth="Container" 
+		type="javax.sql.DataSource" 
+		driverClassName="net.sourceforge.jtds.jdbc.Driver"
+		url="jdbc:jtds:sqlserver://localhost/sitescape"
+		username="sitescape"
+		password="sitescape"
+		maxActive="20"
+	/>
+	<Resource
+		name="mail/SiteScape" 
+		auth="Container" 
+		type="javax.mail.Session"
+		
+		mail.transport.protocol="smtp"
+		mail.smtp.host="host54a.simplicato.com"
+		mail.user="mccann@sitescape.com"
+	/>
+	<Resource 
+		name="mail/SiteScapePosting" 
+		auth="Container" 
+		type="javax.mail.Session"
+		mail.pop3.host="localhost"
+		mail.store.protocol="pop3"
+		mail.pop3.auth="true"
+		mail.user="liferay"
+		mail.password="liferay"
+	/>
 </Context>
