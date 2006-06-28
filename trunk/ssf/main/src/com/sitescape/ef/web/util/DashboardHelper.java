@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.SingletonViolationException;
@@ -16,13 +20,20 @@ import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.BinderModule;
+import com.sitescape.ef.module.binder.EntryProcessor;
+import com.sitescape.ef.module.dashboard.DashboardModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.portlet.forum.SAbstractForumController.TreeBuilder;
 import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
+import com.sitescape.ef.search.LuceneSession;
+import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 
@@ -62,11 +73,8 @@ public class DashboardHelper {
 	//Form keys
 	public final static String ElementNamePrefix = "data_";
 
-	protected FolderModule folderModule;
-	protected BinderModule binderModule;
-	protected DefinitionModule definitionModule;
-	protected ProfileModule profileModule;
-	protected WorkspaceModule workspaceModule;
+	protected DashboardModule dashboardModule;
+	
 	
 	public DashboardHelper() {
 		if(instance != null)
@@ -77,36 +85,12 @@ public class DashboardHelper {
     public static DashboardHelper getInstance() {
     	return instance;
     }
-	protected BinderModule getBinderModule() {
-		return binderModule;
-	}
-	public void setBinderModule(BinderModule binderModule) {
-		this.binderModule = binderModule;
-	}
-	protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
-	}
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule = definitionModule;
-	}
-	protected FolderModule getFolderModule() {
-		return folderModule;
-	}
-	public void setFolderModule(FolderModule folderModule) {
-		this.folderModule = folderModule;
-	}
-	protected ProfileModule getProfileModule() {
-		return profileModule;
-	}
-	public void setProfileModule(ProfileModule profileModule) {
-		this.profileModule = profileModule;
-	}
 	
-	protected WorkspaceModule getWorkspaceModule() {
-		return workspaceModule;
+	protected DashboardModule getDashboardModule() {
+		return dashboardModule;
 	}
-	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
-		this.workspaceModule = workspaceModule;
+	public void setDashboardModule(DashboardModule dashboardModule) {
+		this.dashboardModule = dashboardModule;
 	}
 	
     public static void getDashboardBeans(Binder binder, Map ssDashboard, Map model) {
@@ -150,111 +134,25 @@ public class DashboardHelper {
 				if (components.containsKey(id)) {
 					Map component = (Map) components.get(id);
 					//See if this component needs a bean
-					if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
+					if (component.get(Name).equals(
+							ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
 						//Set up the buddy list bean
-						getBuddyListBean(ssDashboard, id, component);
-					} else if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
+						getInstance().dashboardModule.getBuddyListBean(ssDashboard, 
+								id, component);
+					} else if (component.get(Name).equals(
+							ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
 						//Set up the workspace tree bean
-						getWorkspaceTreeBean(binder, ssDashboard, model, id, component);
-					} else if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH)) {
+						getInstance().dashboardModule.getWorkspaceTreeBean(binder, 
+								ssDashboard, model, id, component);
+					} else if (component.get(Name).equals(
+							ObjectKeys.DASHBOARD_COMPONENT_SEARCH)) {
 						//Set up the search results bean
-						getSearchResultsBean(ssDashboard, model, id, component);
+						getInstance().dashboardModule.getSearchResultsBean(ssDashboard, 
+								model, id, component);
 					}
 				}
 			}
 		}
-    }
-    
-    static private void getBuddyListBean(Map ssDashboard, String id, Map component) {
-    	Map data = (Map)component.get(Data);
-    	if (data != null) {
-	    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
-	    	if (beans == null) {
-	    		beans = new HashMap();
-	    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
-	    	}
-	    	Map idData = new HashMap();
-	    	beans.put(id, idData);
-	    	String[] users = new String[0];
-	    	if (data.containsKey("users")) users = (String[])data.get("users");
-	    	if (users.length > 0) users = users[0].split(" ");
-	    	String[] groups = new String[0];
-	    	if (data.containsKey("groups")) groups = (String[])data.get("groups");
-	    	if (groups.length > 0) groups = groups[0].split(" ");
-	
-			Set ids = new HashSet();		
-			for (int i = 0; i < users.length; i++) {
-				if (!users[i].trim().equals("")) ids.add(new Long(users[i].trim()));
-			}
-			//Get the configured list of principals to show
-			idData.put(WebKeys.USERS, getInstance().getProfileModule().getUsersFromPrincipals(ids));
-			
-			Set gids = new HashSet();		
-			for (int i = 0; i < groups.length; i++) {
-				if (!groups[i].trim().equals("")) gids.add(new Long(groups[i].trim()));
-			}
-			idData.put(WebKeys.GROUPS, getInstance().getProfileModule().getGroups(gids));
-    	}
-    }
-    
-    static private void getWorkspaceTreeBean(Binder binder, Map ssDashboard, Map model, 
-    		String id, Map component) {
-    	Map data = (Map)component.get(Data);
-    	if (data != null) {
-	    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
-	    	if (beans == null) {
-	    		beans = new HashMap();
-	    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
-	    	}
-	    	Map idData = new HashMap();
-	    	beans.put(id, idData);
-
-	    	Document tree = null;
-	    	if (binder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
-				if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {
-					tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
-				} else {
-					tree = getInstance().getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsTreeBuilder((Workspace)binder, true, getInstance().getBinderModule()),1);
-					idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, binder.getId().toString());
-				}
-			} else if (binder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-				Folder topFolder = ((Folder)binder).getTopFolder();
-				if (topFolder == null) topFolder = (Folder)binder;
-				Binder workspace = (Binder)topFolder.getParentBinder();
-				tree = getInstance().getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new WsTreeBuilder((Workspace)workspace, true, getInstance().getBinderModule()),1);
-				idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, workspace.getId().toString());
-				
-			}
-			idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
-    	}
-    }
-    
-    static private void getSearchResultsBean(Map ssDashboard, Map model, 
-    		String id, Map component) {
-    	Map data = (Map)component.get(Data);
-    	if (data != null) {
-	    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
-	    	if (beans == null) {
-	    		beans = new HashMap();
-	    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
-	    	}
-	    	Map idData = new HashMap();
-	    	beans.put(id, idData);
-
-			Map searchSearchFormData = new HashMap();
-			searchSearchFormData.put("searchFormTermCount", new Integer(0));
-			idData.put(WebKeys.SEARCH_FORM_DATA, searchSearchFormData);
-			
-			Document searchQuery = null;
-			if (data.containsKey(SearchFormSavedSearchQuery)) 
-					searchQuery = (Document)data.get(SearchFormSavedSearchQuery);
-
-			Map elementData = getInstance().getFolderModule().getCommonEntryElements();
-			searchSearchFormData = FilterHelper.buildFilterFormMap(
-					(Document)data.get(SearchFormSavedSearchQuery),
-					(Map) model.get(WebKeys.PUBLIC_ENTRY_DEFINITIONS),
-					elementData);
-    	}
     }
     
     static public Map getNewDashboardMap() {

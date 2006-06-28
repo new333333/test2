@@ -4,6 +4,7 @@ import org.springframework.web.portlet.mvc.SimpleFormController;
 
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.binder.BinderModule;
+import com.sitescape.ef.module.dashboard.DashboardModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.folder.FolderModule;
@@ -27,6 +28,7 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	private LdapModule ldapModule;
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;
+	private DashboardModule dashboardModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -111,5 +113,13 @@ public abstract class SSimpleFormController extends SimpleFormController {
 	
 	protected RssGenerator getRssGenerator() {
 		return rssGenerator;
+	}
+	
+	protected DashboardModule getDashboardModule() {
+		return dashboardModule;
+	}
+
+	public void setDashboardModule(DashboardModule dashboardModule) {
+		this.dashboardModule = dashboardModule;
 	}
 }
