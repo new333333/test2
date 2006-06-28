@@ -229,7 +229,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 									//Get the search query
 									try {
 										Document query = FilterHelper.getSearchFilter(request);
-										componentMap.put(ObjectKeys.DASHBOARD_SEARCH_DATA_QUERY, query);
+										componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query);
 									} catch(Exception ex) {}
 								}
 								

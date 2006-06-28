@@ -30,7 +30,6 @@ public interface ObjectKeys {
     public static final String DASHBOARD_COMPONENT_FOLDER = "folder";
     public static final String DASHBOARD_COMPONENT_SEARCH = "search";
     public static final String DASHBOARD_COMPONENT_WORKSPACE_TREE = "workspaceTree";
-    public static final String DASHBOARD_SEARCH_DATA_QUERY = "query";
 
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
     public static final String USER_DISPLAY_STYLE_IFRAME = "iframe";

@@ -496,16 +496,26 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	return getBinderEntries(binder, entryTypes, maxChildEntries, searchFilter);
     }
     public Map getBinderEntries(Binder binder, String[] entryTypes, int maxChildEntries, org.dom4j.Document searchFilter) {
-        int count=0;
-        Field fld;
         //search engine will only return entries you have access to
          //validate entry count
         maxChildEntries = getBinderEntries_maxEntries(maxChildEntries); 
         //do actual search index query
         Hits hits = getBinderEntries_doSearch(binder, entryTypes, maxChildEntries, searchFilter);
         //iterate through results
+        ArrayList childEntries = getBinderEntries_entriesArray(hits);
+       	Map model = new HashMap();
+        model.put(ObjectKeys.BINDER, binder);      
+        model.put(ObjectKeys.ENTRIES, childEntries);
+        model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.length()));
+        return model;
+   }
+ 
+    public ArrayList getBinderEntries_entriesArray(Hits hits) {
+        //Iterate through the search results and build the entries array
         ArrayList childEntries = new ArrayList(hits.length());
         try {
+            int count=0;
+            Field fld;
  	        while (count < hits.length()) {
 	            HashMap ent = new HashMap();
 	            Document doc = hits.doc(count);
@@ -513,7 +523,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	            Enumeration flds = doc.fields();
 	            while (flds.hasMoreElements()) {
 	            	fld = (Field)flds.nextElement();
-	            	//This hack needs to go.
+	            	//TODO This hack needs to go.
 	            	if (fld.name().toLowerCase().indexOf("date") > 0) 
 	            		ent.put(fld.name(),DateField.stringToDate(fld.stringValue()));
 	            	else if (!ent.containsKey(fld.name())) {
@@ -541,17 +551,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         List users = loadEntryHistoryLuc(childEntries);
         // walk the entries, and stuff in the user object.
         for (int i = 0; i < childEntries.size(); i++) {
-        	Principal p;
         	HashMap child = (HashMap)childEntries.get(i);
         	if (child.get(getEntryPrincipalField()) != null) {
         		child.put(WebKeys.PRINCIPAL, getPrincipal(users,child.get(getEntryPrincipalField()).toString()));
         	}        	
         }
-       	Map model = new HashMap();
-        model.put(ObjectKeys.BINDER, binder);      
-        model.put(ObjectKeys.ENTRIES, childEntries);
-        model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.length()));
-        return model;
+        return childEntries;
    }
  
     protected abstract String getEntryPrincipalField();

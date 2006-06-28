@@ -1665,7 +1665,7 @@
 		</jsps>
 	</item>
 
-	<item name="entryView" caption="__file_entry_view_definition" 
+	<item name="fileEntryView" caption="__file_entry_view_definition" 
 			canBeDeleted="false" multipleAllowed="false">
 		<operations>
 			<operation name="addOption" caption="__add" />

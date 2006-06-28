@@ -1,5 +1,6 @@
 package com.sitescape.ef.module.binder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import org.dom4j.Document;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.security.AccessControlException;
@@ -24,6 +26,7 @@ public interface EntryProcessor extends BinderProcessor {
 	throws AccessControlException, WriteFilesException;
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries) throws AccessControlException;
 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries, Document searchFilter) throws AccessControlException;
+	public ArrayList getBinderEntries_entriesArray(Hits hits);
 	public void indexEntries(Binder binder);	
     
     public Long addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 

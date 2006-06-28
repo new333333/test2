@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.lucene.search.Query;
+import org.dom4j.Document;
+import org.dom4j.Element;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -20,6 +23,7 @@ import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.binder.BinderProcessor;
 import com.sitescape.ef.module.binder.EntryProcessor;
@@ -31,10 +35,15 @@ import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.pipeline.Pipeline;
+import com.sitescape.ef.search.LuceneSession;
+import com.sitescape.ef.search.LuceneSessionFactory;
+import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
+import com.sitescape.ef.web.util.FilterHelper;
 /**
  * @author Janet McCann
  *
@@ -307,6 +316,55 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	Tag tag = coreDao.loadTagByOwner(tagId, entry.getEntityIdentifier());
 	   	getCoreDao().delete(tag);
 	}
-  
+	
+	public List executeSearchQuery(Document searchQuery) {
+        List entries = new ArrayList();
+        Hits hits = new Hits(0);
+        
+        if (searchQuery != null) {
+        	Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchQuery);
+        	Element rootElement = qTree.getRootElement();
+        	if (rootElement != null) {
+	        	//Find the first "and" element and add to it
+	        	Element boolElement = (Element) rootElement.selectSingleNode(QueryBuilder.AND_ELEMENT);
+	        	if (boolElement == null) {
+	        		//If there isn't one, then create one.
+	        		boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
+	        	}
+	        	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
+
+	        	//Create the Lucene query
+		    	QueryBuilder qb = new QueryBuilder();
+		    	SearchObject so = qb.buildQuery(qTree);
+		    	
+		    	//Set the sort order
+		    	//SortField[] fields = getBinderEntries_getSortFields(binder); 
+		    	//so.setSortBy(fields);
+		    	
+		    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+		    	
+		    	if(logger.isInfoEnabled()) {
+		    		logger.info("Query is: " + searchQuery.asXML());
+		    		logger.info("Query is: " + soQuery.toString());
+		    	}
+		    	
+		    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+		        
+		        int maxResults = 10;
+		        try {
+			        hits = luceneSession.search(soQuery,so.getSortBy(),0,maxResults);
+		        }
+		        finally {
+		            luceneSession.close();
+		        }
+        	}
+        }
+		EntryProcessor processor = 
+			(EntryProcessor) getProcessorManager().getProcessor("com.sitescape.ef.domain.Folder", 
+						EntryProcessor.PROCESSOR_KEY);
+        entries = (List) processor.getBinderEntries_entriesArray(hits);
+        
+    	return entries; 
+	}
 
 }
