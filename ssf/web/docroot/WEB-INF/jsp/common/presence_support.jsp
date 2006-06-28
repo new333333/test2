@@ -24,6 +24,10 @@ ss_presencePopupGraphics["phone"] = new Image();
 ss_presencePopupGraphics["phone"].src = '<html:imagesPath/>pics/sym_s_gray_phone.gif';
 ss_presencePopupGraphics["sched"] = new Image();
 ss_presencePopupGraphics["sched"].src = '<html:imagesPath/>pics/sym_s_sched.gif';
+</script>
+<c:set var="ss_presence_support_loaded" value="1" scope="request"/>
+</c:if>
+<script type="text/javascript">
 
 function ss_popupPresenceMenu${ssDashboardId}(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current) {
     var obj
@@ -163,5 +167,3 @@ function ss_popupPresenceMenu${ssDashboardId}(x, userId, userTitle, status, scre
 }
 </script>
 <div id="ss_presencePopUp${ssDashboardId}" style="position:absolute; visibility:hidden; z-index:500;"></div>
-<c:set var="ss_presence_support_loaded" value="1" scope="request"/>
-</c:if>
