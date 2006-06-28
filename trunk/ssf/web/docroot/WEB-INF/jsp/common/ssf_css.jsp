@@ -50,7 +50,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
 <c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
 
-<c:set var="ss_linkbutton_background_color" value="#FFFE8" scope="request"/>
+<c:set var="ss_linkbutton_background_color" value="#FFFFE8" scope="request"/>
 <c:set var="ss_linkbutton_text_color" value="#009900" scope="request"/>
 <c:set var="ss_linkbutton_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 <c:set var="ss_linkbutton_border_color_in" value="#d5d5d5" scope="request"/>
@@ -116,7 +116,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
 	<c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
 
-	<c:set var="ss_linkbutton_background_color" value="#FFFE8" scope="request"/>
+	<c:set var="ss_linkbutton_background_color" value="#FFFFE8" scope="request"/>
 	<c:set var="ss_linkbutton_text_color" value="#666666" scope="request"/>
 	<c:set var="ss_linkbutton_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 	<c:set var="ss_linkbutton_border_color_in" value="#dddddd" scope="request"/>
