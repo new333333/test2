@@ -32,7 +32,7 @@ ss_presencePopupGraphics["sched"].src = '<html:imagesPath/>pics/sym_s_sched.gif'
 function ss_popupPresenceMenu${ssDashboardId}(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current) {
     var obj
     var m = ''
-    var imgid = "ppgpres"
+    var imgid = "ppgpres${ssDashboardId}"
     var ostatus = " <ssf:nlt tag="presence.none"/>"
     obj = self.document.getElementById('ss_presencePopUp${ssDashboardId}')
     if (obj.parentNode.tagName.toLowerCase() != 'body') {
@@ -49,14 +49,14 @@ function ss_popupPresenceMenu${ssDashboardId}(x, userId, userTitle, status, scre
         if (status & 1) {
             if (status & 16) {
                 ostatus = ' <ssf:nlt tag="presence.isAway" text="is away"/>';
-                imgid = "ppgpresaway"
+                imgid = "ppgpresaway${ssDashboardId}"
             } else {
                 ostatus = ' <ssf:nlt tag="presence.isOnline" text="is online"/>';
-                imgid = "ppgpreson"
+                imgid = "ppgpreson${ssDashboardId}"
             }
         } else {
             ostatus = ' <ssf:nlt tag="presence.isOffline" text="is offline"/>';
-            imgid = "ppgpresoff"
+            imgid = "ppgpresoff${ssDashboardId}"
         }
     }
     m += '<td class="ss_bglightgray" valign=top><img src="" alt="" id=' +imgid +'></td>';
@@ -69,7 +69,7 @@ function ss_popupPresenceMenu${ssDashboardId}(x, userId, userTitle, status, scre
     if (screenName != '') {
         if (current == '') {
             m += '<tr>';
-            m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgimsg"></td>';
+            m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgimsg${ssDashboardId}"></td>';
             if (status == 0) {
                 m += '<td class="ss_fineprint ss_gray"><ssf:nlt tag="presence.sendIM" text="Send instant message..."/></td>';
             } else {
@@ -78,26 +78,26 @@ function ss_popupPresenceMenu${ssDashboardId}(x, userId, userTitle, status, scre
             m += '</tr>';
         }
         m += '<tr>';
-        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgimtg"></td>';
+        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgimtg${ssDashboardId}"></td>';
         m += '<td><a class="ss_graymenu" href="iic:meetone?screenName=' + screenName + '"><ssf:nlt tag="presence.startIM" text="Start instant meeting..."/></a></td></tr>';
         m += '<tr>';
-        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgsched"></td>';
+        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgsched${ssDashboardId}"></td>';
         m += '<td><a class="ss_graymenu" href="javascript:quickMeetingRPC(\'??? addMeeting schedule\',\'' + userId + '\', \'\', \'\', \'\');"><ssf:nlt tag="presence.scheduleMeeting" text="Schedule a meeting..."/></a></td></tr>';
         m += '<tr>';
 <c:if test="${ss_presence_zonBridge == 'enabled'}">
-        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgphone"></td>';
+        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgphone${ssDashboardId}"></td>';
         m += '<td><a class="ss_graymenu" href="javascript:quickMeetingRPC(\'??? addMeeting call\',\'' + userId + '\', \'\', \'\', \'\');"><ssf:nlt tag="presence.call" text="Call..."/></a></td></tr>';
 </c:if>
 	}
 	if (userId != '' && current == '') {
         if (email != '') {
             m += '<tr>';
-            m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgmail"></td>';
+            m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgmail${ssDashboardId}"></td>';
             bodyText = escape(window.location.href);
             m += '<td><a class="ss_graymenu" href="mailto:' + email + '?body=' + bodyText +'"><ssf:nlt tag="presence.sendMail" text="Send mail"/> (' + email + ')...</a></td></tr>';
         }
         m += '<tr>';
-        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgvcard"></td>';
+        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgvcard${ssDashboardId}"></td>';
         m += '<td><a class="ss_graymenu" href="' + vcard + '"><ssf:nlt tag="presence.addToOutlook" text="Add to Outlook contacts..."/></a></td></tr>';
     }
     m += '</table>'
@@ -108,35 +108,35 @@ function ss_popupPresenceMenu${ssDashboardId}(x, userId, userTitle, status, scre
     obj.innerHTML = m;
 
     ss_activateMenuLayer('ss_presencePopUp${ssDashboardId}');
-    if (self.document.images["ppgpres"]) {
-        self.document.images["ppgpres"].src = ss_presencePopupGraphics["pres"].src;
+    if (self.document.images["ppgpres${ssDashboardId}"]) {
+        self.document.images["ppgpres${ssDashboardId}"].src = ss_presencePopupGraphics["pres"].src;
     }
-    if (self.document.images["ppgpreson"]) {
-        self.document.images["ppgpreson"].src = ss_presencePopupGraphics["preson"].src;
+    if (self.document.images["ppgpreson${ssDashboardId}"]) {
+        self.document.images["ppgpreson${ssDashboardId}"].src = ss_presencePopupGraphics["preson"].src;
     }
-    if (self.document.images["ppgpresoff"]) {
-        self.document.images["ppgpresoff"].src = ss_presencePopupGraphics["presoff"].src;
+    if (self.document.images["ppgpresoff${ssDashboardId}"]) {
+        self.document.images["ppgpresoff${ssDashboardId}"].src = ss_presencePopupGraphics["presoff"].src;
     }
-    if (self.document.images["ppgpresaway"]) {
-        self.document.images["ppgpresaway"].src = ss_presencePopupGraphics["presaway"].src;
+    if (self.document.images["ppgpresaway${ssDashboardId}"]) {
+        self.document.images["ppgpresaway${ssDashboardId}"].src = ss_presencePopupGraphics["presaway"].src;
     }
-    if (self.document.images["ppgimsg"]) {
-        self.document.images["ppgimsg"].src = ss_presencePopupGraphics["imsg"].src;
+    if (self.document.images["ppgimsg${ssDashboardId}"]) {
+        self.document.images["ppgimsg${ssDashboardId}"].src = ss_presencePopupGraphics["imsg"].src;
     }
-    if (self.document.images["ppgimtg"]) {
-        self.document.images["ppgimtg"].src = ss_presencePopupGraphics["imtg"].src;
+    if (self.document.images["ppgimtg${ssDashboardId}"]) {
+        self.document.images["ppgimtg${ssDashboardId}"].src = ss_presencePopupGraphics["imtg"].src;
     }
-    if (self.document.images["ppgmail"]) {
-        self.document.images["ppgmail"].src = ss_presencePopupGraphics["mail"].src;
+    if (self.document.images["ppgmail${ssDashboardId}"]) {
+        self.document.images["ppgmail${ssDashboardId}"].src = ss_presencePopupGraphics["mail"].src;
     }
-    if (self.document.images["ppgvcard"]) {
-        self.document.images["ppgvcard"].src = ss_presencePopupGraphics["vcard"].src;
+    if (self.document.images["ppgvcard${ssDashboardId}"]) {
+        self.document.images["ppgvcard${ssDashboardId}"].src = ss_presencePopupGraphics["vcard"].src;
     }
-    if (self.document.images["ppgphone"]) {
-        self.document.images["ppgphone"].src = ss_presencePopupGraphics["phone"].src;
+    if (self.document.images["ppgphone${ssDashboardId}"]) {
+        self.document.images["ppgphone${ssDashboardId}"].src = ss_presencePopupGraphics["phone"].src;
     }
-    if (self.document.images["ppgsched"]) {
-        self.document.images["ppgsched"].src = ss_presencePopupGraphics["sched"].src;
+    if (self.document.images["ppgsched${ssDashboardId}"]) {
+        self.document.images["ppgsched${ssDashboardId}"].src = ss_presencePopupGraphics["sched"].src;
     }
     // move the div up if it scrolls off the bottom
     var mousePosX = parseInt(ss_getClickPositionX());
