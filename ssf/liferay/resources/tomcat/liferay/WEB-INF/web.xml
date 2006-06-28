@@ -10,13 +10,33 @@
 		<param-name>root_path</param-name>
 		<param-value>/</param-value>
 	</context-param>
-	<context-param>
-		<param-name>contextClass</param-name>
-		<param-value>com.liferay.portal.spring.context.PortalWebApplicationContext</param-value>
-	</context-param>
 	<filter>
 		<filter-name>Compression Filter</filter-name>
 		<filter-class>com.liferay.filters.compression.CompressionFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>Layout Cache Filter - Friendly</filter-name>
+		<filter-class>com.liferay.portal.servlet.filters.layoutcache.LayoutCacheFilter</filter-class>
+		<init-param>
+			<param-name>pattern</param-name>
+			<param-value>0</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<filter-name>Layout Cache Filter - Layout</filter-name>
+		<filter-class>com.liferay.portal.servlet.filters.layoutcache.LayoutCacheFilter</filter-class>
+		<init-param>
+			<param-name>pattern</param-name>
+			<param-value>1</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<filter-name>Layout Cache Filter - Resource</filter-name>
+		<filter-class>com.liferay.portal.servlet.filters.layoutcache.LayoutCacheFilter</filter-class>
+		<init-param>
+			<param-name>pattern</param-name>
+			<param-value>2</param-value>
+		</init-param>
 	</filter>
 	<filter>
 		<filter-name>Secure MainServlet Filter</filter-name>
@@ -27,28 +47,36 @@
 		</init-param>
 	</filter>
 	<filter>
-		<filter-name>Secure AxisServlet Filter</filter-name>
-		<filter-class>com.liferay.filters.secure.SecureFilter</filter-class>
-		<init-param>
-			<param-name>portal_property_prefix</param-name>
-			<param-value>axis.servlet.</param-value>
-		</init-param>
-	</filter>
-	<filter>
-		<filter-name>Secure RemotingServlet Filter</filter-name>
-		<filter-class>com.liferay.filters.secure.SecureFilter</filter-class>
-		<init-param>
-			<param-name>portal_property_prefix</param-name>
-			<param-value>spring.remoting.servlet.</param-value>
-		</init-param>
-	</filter>
-	<filter>
 		<filter-name>Strip Filter</filter-name>
 		<filter-class>com.liferay.filters.strip.StripFilter</filter-class>
 	</filter>
 	<filter-mapping>
+		<filter-name>Layout Cache Filter - Friendly</filter-name>
+		<url-pattern>/group/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Layout Cache Filter - Friendly</filter-name>
+		<url-pattern>/web/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Layout Cache Filter - Layout</filter-name>
+		<url-pattern>/c/portal/layout</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Layout Cache Filter - Resource</filter-name>
+		<url-pattern>/c/portal/css_cached</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Layout Cache Filter - Resource</filter-name>
+		<url-pattern>/c/portal/javascript_cached</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
 		<filter-name>Compression Filter</filter-name>
-		<url-pattern>/c/*</url-pattern>
+		<url-pattern>/c/portal/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Compression Filter</filter-name>
+		<url-pattern>/group/*</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>Compression Filter</filter-name>
@@ -76,19 +104,19 @@
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>Secure MainServlet Filter</filter-name>
+		<url-pattern>/group/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Secure MainServlet Filter</filter-name>
 		<url-pattern>/web/*</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
-		<filter-name>Secure AxisServlet Filter</filter-name>
-		<url-pattern>/services/*</url-pattern>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>Secure RemotingServlet Filter</filter-name>
-		<url-pattern>/remoting/*</url-pattern>
+		<filter-name>Strip Filter</filter-name>
+		<url-pattern>/c/portal/*</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>Strip Filter</filter-name>
-		<url-pattern>/c/*</url-pattern>
+		<url-pattern>/group/*</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>Strip Filter</filter-name>
@@ -112,9 +140,6 @@
 	</filter-mapping>
 	<listener>
 		<listener-class>com.liferay.portal.servlet.PortalSessionListener</listener-class>
-	</listener>
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	<servlet>
 		<servlet-name>InitServlet</servlet-name>
@@ -147,32 +172,44 @@
 		<load-on-startup>3</load-on-startup>
 	</servlet>
 	<servlet>
-		<servlet-name>FriendlyURLServlet</servlet-name>
+		<servlet-name>FriendlyURLPrivateServlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.FriendlyURLServlet</servlet-class>
+		<init-param>
+			<param-name>private</param-name>
+			<param-value>true</param-value>
+		</init-param>
 		<load-on-startup>4</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>FriendlyURLPublicServlet</servlet-name>
+		<servlet-class>com.liferay.portal.servlet.FriendlyURLServlet</servlet-class>
+		<init-param>
+			<param-name>private</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<load-on-startup>5</load-on-startup>
 	</servlet>
 	<servlet>
 		<servlet-name>ImageServlet</servlet-name>
 		<display-name>ImageServlet</display-name>
 		<servlet-class>com.liferay.portal.servlet.ImageServlet</servlet-class>
-		<load-on-startup>5</load-on-startup>
+		<load-on-startup>6</load-on-startup>
 	</servlet>
 	<servlet>
 		<servlet-name>LuceneServlet</servlet-name>
 		<display-name>LuceneServlet</display-name>
 		<servlet-class>com.liferay.portal.servlet.LuceneServlet</servlet-class>
-		<load-on-startup>6</load-on-startup>
+		<load-on-startup>7</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>FCKeditorServlet</servlet-name>
+		<servlet-class>com.liferay.portal.editor.fckeditor.ConnectorServlet</servlet-class>
+		<load-on-startup>8</load-on-startup>
 	</servlet>
 	<servlet>
 		<servlet-name>ResourceProxyServlet</servlet-name>
 		<servlet-class>com.liferay.portal.wsrp.servlet.ResourceProxyServlet</servlet-class>
-		<load-on-startup>7</load-on-startup>
-	</servlet>
-	<servlet>
-		<servlet-name>BlogsServlet</servlet-name>
-		<display-name>BlogsServlet</display-name>
-		<servlet-class>com.liferay.portlet.blogs.servlet.BlogsServlet</servlet-class>
-		<load-on-startup>8</load-on-startup>
+		<load-on-startup>9</load-on-startup>
 	</servlet>
 	<servlet>
 		<servlet-name>ChatServlet</servlet-name>
@@ -186,45 +223,17 @@
 			<param-name>config</param-name>
 			<param-value>nfc/nfc.conf</param-value>
 		</init-param>
-		<load-on-startup>9</load-on-startup>
+		<load-on-startup>10</load-on-startup>
 	</servlet>
 	<servlet>
 		<servlet-name>HttpService</servlet-name>
 		<servlet-class>com.liferay.portlet.httpbridge.servlet.HttpService</servlet-class>
-		<load-on-startup>10</load-on-startup>
+		<load-on-startup>11</load-on-startup>
 	</servlet>
 	<servlet>
 		<servlet-name>UserService</servlet-name>
 		<servlet-class>com.liferay.portlet.httpbridge.servlet.UserService</servlet-class>
-		<load-on-startup>11</load-on-startup>
-	</servlet>
-	<servlet>
-		<servlet-name>JCVSServlet</servlet-name>
-		<display-name>JCVSServlet</display-name>
-		<servlet-class>com.liferay.portlet.jcvs.servlet.JCVSServlet</servlet-class>
-		<init-param>
-			<param-name>JCVSletConfigDirectory</param-name>
-			<param-value>WEB-INF/jcvs/conf</param-value>
-		</init-param>
-		<init-param>
-			<param-name>JCVSletTempDirectory</param-name>
-			<param-value>WEB-INF/jcvs/temp</param-value>
-		</init-param>
-		<init-param>
-			<param-name>JCVSletWorkDirectory</param-name>
-			<param-value>WEB-INF/jcvs/work</param-value>
-		</init-param>
 		<load-on-startup>12</load-on-startup>
-	</servlet>
-	<servlet>
-		<servlet-name>AxisServlet</servlet-name>
-		<servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>
-		<load-on-startup>13</load-on-startup>
-	</servlet>
-	<servlet>
-		<servlet-name>RemotingServlet</servlet-name>
-		<servlet-class>com.liferay.portal.spring.servlet.RemotingServlet</servlet-class>
-		<load-on-startup>14</load-on-startup>
 	</servlet>
 	<!-- SiteScape: Added SiteScapeServlet servlet -->
 	<servlet>
@@ -245,7 +254,11 @@
 		<url-pattern>/captcha/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>FriendlyURLServlet</servlet-name>
+		<servlet-name>FriendlyURLPrivateServlet</servlet-name>
+		<url-pattern>/group/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>FriendlyURLPublicServlet</servlet-name>
 		<url-pattern>/web/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
@@ -253,12 +266,12 @@
 		<url-pattern>/image/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>ResourceProxyServlet</servlet-name>
-		<url-pattern>/wsrp/resource_proxy/*</url-pattern>
+		<servlet-name>FCKeditorServlet</servlet-name>
+		<url-pattern>/html/js/editor/fckeditor/editor/filemanager/browser/liferay/connectors/jsp/connector</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>BlogsServlet</servlet-name>
-		<url-pattern>/blogs/*</url-pattern>
+		<servlet-name>ResourceProxyServlet</servlet-name>
+		<url-pattern>/wsrp/resource_proxy/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>ChatServlet</servlet-name>
@@ -268,18 +281,6 @@
 		<servlet-name>HttpService</servlet-name>
 		<url-pattern>/httpbridge/http</url-pattern>
 	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>JCVSServlet</servlet-name>
-		<url-pattern>/jcvs/*</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>AxisServlet</servlet-name>
-		<url-pattern>/services/*</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>RemotingServlet</servlet-name>
-		<url-pattern>/remoting/*</url-pattern>
-	</servlet-mapping>
 	<session-config>
 		<session-timeout>30</session-timeout>
 	</session-config>
@@ -287,6 +288,10 @@
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
+	<taglib>
+		<taglib-uri>http://ajaxtags.org/tags/ajax</taglib-uri>
+		<taglib-location>/WEB-INF/tld/ajaxtags.tld</taglib-location>
+	</taglib>
 	<taglib>
 		<taglib-uri>http://displaytag.sf.net</taglib-uri>
 		<taglib-location>/WEB-INF/tld/displaytag.tld</taglib-location>
@@ -316,8 +321,20 @@
 		<taglib-location>/WEB-INF/tld/liferay-portlet.tld</taglib-location>
 	</taglib>
 	<taglib>
+		<taglib-uri>http://liferay.com/tld/portlet</taglib-uri>
+		<taglib-location>/WEB-INF/tld/liferay-portlet-ext.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://liferay.com/tld/security</taglib-uri>
+		<taglib-location>/WEB-INF/tld/liferay-security.tld</taglib-location>
+	</taglib>
+	<taglib>
 		<taglib-uri>http://liferay.com/tld/theme</taglib-uri>
 		<taglib-location>/WEB-INF/tld/liferay-theme.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://liferay.com/tld/ui</taglib-uri>
+		<taglib-location>/WEB-INF/tld/liferay-ui.tld</taglib-location>
 	</taglib>
 	<taglib>
 		<taglib-uri>http://liferay.com/tld/util</taglib-uri>
