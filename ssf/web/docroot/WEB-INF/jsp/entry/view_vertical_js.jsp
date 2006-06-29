@@ -46,6 +46,7 @@ function ss_positionEntryDiv() {
     var wObj = self.document.getElementById('ss_showfolder')
     var wObjB = self.document.getElementById('ss_showfolder_bottom')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
+    ss_moveObjectToBody(wObj1)
     var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
     var wObj3 = self.document.getElementById('ss_showentryframe')
     var wObj4 = self.document.getElementById('ss_showentrydiv_place_holder')
@@ -55,6 +56,7 @@ function ss_positionEntryDiv() {
 	ss_setObjectWidth(wObj2, width);
 
     ss_setObjectTop(wObj1, parseInt(parseInt(ss_getDivTop('ss_showfolder_slider')) + <%= sliderDivHeight %>))
+    ss_setObjectLeft(wObj1, parseInt(ss_getDivLeft('ss_showfolder_slider')))
     
     //Keep the entry within the confines of the main window
     //var entryHeight = parseInt(ss_getWindowHeight() - ss_getDivTop('ss_showfolder_slider') - ss_bottomHeight)
