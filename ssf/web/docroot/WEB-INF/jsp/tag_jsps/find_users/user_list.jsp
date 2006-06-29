@@ -206,6 +206,7 @@ function ss_userListInterceptCR(e) {
   ss_DragDrop.makeListContainer( document.getElementById('available_<%= userListElementName %>'));
 
 function ss_saveUserListData_<portlet:namespace/>_${prefix}() {
+	alert('Save data: ' + ss_saveUserListData_<portlet:namespace/>_${prefix})
 	var elementObj = document.getElementById('<%= userListElementName %>');
 	var addedObj = document.getElementById('added_<%= userListElementName %>');
 
