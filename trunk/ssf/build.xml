@@ -213,6 +213,7 @@ app.server.liferay.tomcat.dir=${temp.dir.path}
 		<delete file="${dist.dir}/sitescape-forum-${forum.version}-liferay-tomcat-${liferay.version}.zip" failonerror="false" />
 		<zip destfile="${dist.dir}/sitescape-forum-${forum.version}-liferay-tomcat-${liferay.version}.zip"
 			basedir="${temp.dir}" />
+		<delete file="app.server.${user.name}.properties" />
 		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
 	</target>
 	
@@ -230,6 +231,7 @@ app.server.liferay.jboss-tomcat.dir=${temp.dir.path}
 		<delete file="${dist.dir}/sitescape-forum-${forum.version}-liferay-jboss-tomcat-${liferay.version}.zip" failonerror="false" />
 		<zip destfile="${dist.dir}/sitescape-forum-${forum.version}-liferay-jboss-tomcat-${liferay.version}.zip"
 			basedir="${temp.dir}" />
+		<delete file="app.server.${user.name}.properties" />
 		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
 	</target>
 	
