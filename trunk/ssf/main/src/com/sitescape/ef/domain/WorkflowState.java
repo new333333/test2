@@ -19,6 +19,7 @@ public class WorkflowState {
     protected AnyOwner owner;
     protected long lockVersion;
     protected Long timerId=null;
+    protected HistoryStamp workflowChange;
 	
 	//cached during transaction as needed 
 	protected Map wfAcls=null;
@@ -48,6 +49,16 @@ public class WorkflowState {
     public void setLockVersion(long lockVersion) {
         this.lockVersion = lockVersion;
     } 	 
+	/**
+      * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="wrk_" 
+     */
+    public HistoryStamp getWorkflowChange() {
+        return this.workflowChange;
+    }
+    public void setWorkflowChange(HistoryStamp workflowChange) {
+        this.workflowChange = workflowChange;
+    }
+
     /**
      * @hibernate.component class="com.sitescape.ef.domain.AnyOwner"
      * @return

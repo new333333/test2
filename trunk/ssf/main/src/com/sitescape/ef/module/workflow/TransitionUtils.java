@@ -19,9 +19,11 @@ import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
 import org.jbpm.scheduler.exe.Timer;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Event;
+import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.module.workflow.impl.JbpmContext;
@@ -171,13 +173,10 @@ public class TransitionUtils {
 //		Date currentDate = new Date();
 		Date minDate = new Date(0);
 		GregorianCalendar currentCal = new GregorianCalendar();
+		if (state.getWorkflowChange() == null) state.setWorkflowChange(new HistoryStamp(RequestContextHolder.getRequestContext().getUser(), currentCal.getTime()));
 		boolean debug = true;
 		for (int i=0; i<conditions.size(); ++i) {
 			Element condition = (Element)conditions.get(i);
-//			if ((condition.getEntryDefId() != null) && (entryDef != null)) {
-				//make sure condition applies to fields of this entry
-//				if (!condition.getEntryDefId().equals(entryDef.getId())) continue;
-//			} else if ((condition.getEntryDefId() != null) || (entryDef != null))  continue;
 			//any modify triggers this
 			String toState = WorkflowUtils.getProperty(condition, "toState");
 			if (!Validator.isNull(toState)) {
@@ -274,7 +273,29 @@ public class TransitionUtils {
 											if (!beforeDate(eCondition, e.getDtEnd().getTime(), currentCal, minDate)) currentMatch = false;									
 										}
 									} else {
-										
+										//on repeating events, get the next recurrence since we entered the state
+										Calendar candidate = new GregorianCalendar();
+										candidate.setTime(state.getWorkflowChange().getDate());
+										Calendar next = e.getCandidateStartTime(candidate, true, true);
+										if (next == null) next = e.getCandidateStartTime(candidate, false, true);
+										if (next == null) currentMatch = false;
+										else {
+											if (debugEnabled) logger.info("Candidate:" + candidate.getTime().toString() + " Next:" + next.getTime().toString());
+											if ("beforeStart".equals(operation)) {
+												if (!beforeDate(eCondition, next.getTime(), currentCal, minDate)) currentMatch = false;									
+											} else if ("afterStart".equals(operation)) {
+												if (!afterDate(eCondition, next.getTime(), currentCal, minDate)) currentMatch = false;							
+											} else if ("started".equals(operation)) {
+												if (!passedDate(eCondition, next.getTime(), currentCal, minDate)) currentMatch = false;
+											} else if ("ended".equals(operation)) {
+												if (!passedDate(eCondition, new Date(next.getTime().getTime()+e.getDuration().getInterval()), currentCal, minDate)) currentMatch = false;
+											} else if ("afterEnd".equals(operation)) {
+												if (!afterDate(eCondition, new Date(next.getTime().getTime()+e.getDuration().getInterval()), currentCal, minDate)) currentMatch = false;							
+											} else if ("beforeEnd".equals(operation)) {
+												if (!beforeDate(eCondition, new Date(next.getTime().getTime()+e.getDuration().getInterval()), currentCal, minDate)) currentMatch = false;									
+											}
+										}
+											
 									}
 								} else currentMatch=false;
 
@@ -335,21 +356,23 @@ public class TransitionUtils {
 		//if Time is null, didn't have timeout to process
 		if (minDate.getTime() == 0) return null;
 	   	Long timerId = state.getTimerId();
-    	if (timerId != null) {
+	   	Timer timer = null;
+	   	if (timerId != null) {
     		try {
-	    		Timer timer = (Timer)WorkflowFactory.getSession().getSession().load(Timer.class, timerId);
+	    		timer = (Timer)WorkflowFactory.getSession().getSession().load(Timer.class, timerId);
 	    		if (minDate.getTime() != timer.getDueDate().getTime()) {
 	    			timer.setDueDate(minDate);
 	    		}
     		} catch (Exception ex) {};
     	} else {
-    		Timer timer = new Timer(executionContext.getToken());
+    		timer = new Timer(executionContext.getToken());
     		timer.setDueDate(minDate);
     		timer.setName("onDataValue");
     		WorkflowFactory.getSession().getSession().save(timer);
     		state.setTimerId(timer.getId());
     		timer.setAction(executionContext.getProcessDefinition().getAction("timerAction"));
     	}
+    	if (debugEnabled && timer != null) logger.debug("Timer set for " + timer.getDueDate().toString() +" at state:" + state.getState());
     	return null;
 	}
 	

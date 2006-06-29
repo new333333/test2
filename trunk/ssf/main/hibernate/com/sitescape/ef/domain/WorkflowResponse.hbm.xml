@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
-<hibernate-mapping>
-  <class dynamic-update="true" table="SS_WorkflowStates" name="com.sitescape.ef.domain.WorkflowState">
-    <id name="tokenId">
-      <generator class="assigned"/>
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" lazy="false" table="SS_WorkflowResponses" name="com.sitescape.ef.domain.WorkflowResponse">
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
     </id>
-    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <component name="owner" class="com.sitescape.ef.domain.AnyOwner">
       <many-to-one name="folderEntry"/>
       <many-to-one name="principal"/>
       <many-to-one name="binder"/>
       <any name="entity" id-type="java.lang.Long" meta-type="string">
-         <meta-value class="com.sitescape.ef.domain.FolderEntry" value="folderEntry"/>
+        <meta-value class="com.sitescape.ef.domain.FolderEntry" value="folderEntry"/>
         <meta-value class="com.sitescape.ef.domain.User" value="user"/>
         <meta-value class="com.sitescape.ef.domain.Group" value="group"/>
         <meta-value class="com.sitescape.ef.domain.Folder" value="folder"/>
         <meta-value class="com.sitescape.ef.domain.Workspace" value="workspace"/>
         <meta-value class="com.sitescape.ef.domain.ProfileBinder" value="profileBinder"/>
-       <column name="ownerType" length="16"/>
+        <column name="ownerType" length="16"/>
         <column name="ownerId"/>
       </any>
       <property name="ownerType" update="false" insert="false"/>
@@ -26,17 +26,8 @@
       <property name="owningFolderSortKey" length="512"/>
       <property name="owningBinderId"/>
     </component>
-    <component name="workflowChange" class="com.sitescape.ef.domain.HistoryStamp">
-      <property name="date" column="wrk_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
-        <column name="wrk_principal"/>
-      </many-to-one>
-    </component>
-    <property name="state" length="64"/>
-    <property name="threadName" length="64"/>
-    <property name="timerId"/>
-    <many-to-one name="definition">
-    	<column name="definition" sql-type="char(32)"/>
-    </many-to-one>
-  </class>
+    <property name="name" length="64"/>
+    <property name="response" length="4000"/>
+    <property name="definitionId" length="32"/>
+ </class>
 </hibernate-mapping>

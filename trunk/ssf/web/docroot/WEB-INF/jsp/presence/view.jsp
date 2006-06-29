@@ -53,6 +53,7 @@ type="time" /></span>
 </tr>
 </table>
 </div>
+<table><tr><td>
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
 	<td>
@@ -71,7 +72,9 @@ type="time" /></span>
 					  <td><span id="count_<c:out value="${u1.id}"/>"><ssf:presenceInfo 
 					    user="<%=u1%>"/> </span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
-					  <td><c:out value="${u1.title}"/>
+					  <td><a href="" 
+					  onClick="if (ss_getPresenceEntry) {return ss_getPresenceEntry(<c:out value="${u1.parentBinder.id}"/>,<c:out value="${u1.id}"/>)};return false;">
+		    		   <c:out value="${u1.title}"/></a>
 					  </td>							
 					  </tr>
 					  <%
@@ -91,7 +94,9 @@ type="time" /></span>
 					  <td><span id="count_<c:out value="${u2.id}"/>"><ssf:presenceInfo 
 					    user="<%=(com.sitescape.ef.domain.User)u2%>"/> </span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
-					  <td><c:out value="${u2.title}"/>
+					  <td><a href="" 
+					  onClick="if (ss_getPresenceEntry) {ss_getPresenceEntry(<c:out value="${u2.parentBinder.id}"/>,<c:out value="${u2.id}"/>)};">
+		    		   <c:out value="${u2.title}"/></a>
 					  </td>							
 					  </tr>
 					</c:if>
@@ -110,7 +115,10 @@ type="time" /></span>
 	</td>
 </tr>
 </table>
+</td><td>
+<div id="ss_presence_view_entry"></div>
 
+</td></tr></table>
 <div id="ss_presence_sizer_div"></div>
 </div>
 <script type="text/javascript">
@@ -148,6 +156,51 @@ function ss_postRequest(obj) {
 
 <script type="text/javascript">
 ss_presenceTimer = setTimeout("ss_presenceTimeout()", 300000);
+
+var <portlet:namespace/>presenceState = "<c:out value="${renderRequest.windowState}"/>"
+function ss_getPresenceEntry(binderId, entryId) {
+		var url = "<portlet:renderURL windowState="maximized">
+				  	<portlet:param name="action" value="view_profile_entry" />
+				  	<portlet:param name="operation" value="buddy" />		
+				  	<portlet:param name="binderId" value="ssBinderIdPlaceHolder" />
+					<portlet:param name="entryId" value="ssEntryIdPlaceHolder"/>
+		    		</portlet:renderURL>"
+		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder",  binderId);
+		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
+		self.location.href = url;
+		return false;
+//This doesn't work, cause the viewEntry code pulls in to much stuff 
+ 	if (<portlet:namespace/>presenceState == "maximized") {
+		var url = "<ssf:url 
+   		adapter="true" 
+	    	portletName="ss_profile" 
+	    	action="view_profile_entry"
+	    	operation="buddy"
+	    	folderId="ssBinderIdPlaceHolder"
+	    	entryId="ssEntryIdPlaceHolder"
+	    	actionUrl="false" >
+	    	</ssf:url>"
+		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder",  binderId);
+		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
+		var ajaxRequest = new AjaxRequest(url);
+		ajaxRequest.setEchoDebugInfo();
+		ajaxRequest.setPreRequest(ss_preRequest);
+		ajaxRequest.setPostRequest(ss_postRequest);
+		ajaxRequest.setUsePOST();
+		ajaxRequest.sendRequest();  //Send the request
+		return false;
+	} else {
+		var url = "<portlet:renderURL windowState="maximized">
+				  	<portlet:param name="binderId" value="ssBinderIdPlaceHolder" />
+					<portlet:param name="entryId" value="ssEntryIdPlaceHolder"/>
+		    		</portlet:renderURL>"
+		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder",  binderId);
+		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
+		self.location.href = url;
+		return false;
+ 	}	    				    	
+}
+<c:if test="${!empty binderId and !empty entryId}">
+//ss_getPresenceEntry(<c:out value="${binderId}"/>,<c:out value="${entryId}"/>);
+</c:if>
 </script>
-
-
