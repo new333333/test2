@@ -608,22 +608,31 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 		String selectedItem = (String)data.get("selectedItem");
 		//See if this is an entry definition
 		Element configElementEntry = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='entryForm']");
+		Element configElementFileEntry = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='fileEntryForm']");
 		Element configElementProfile = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='profileEntryForm']");
 		Element configElementFolder = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='folderForm']");
+		Element configElementFileFolder = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='fileFolderForm']");
 		Element configElementWorkspace = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='workspaceForm']");
 		Element configElement = null;
 		if (configElementEntry != null || configElementProfile != null || 
+				configElementFileEntry != null || configElementFileFolder != null ||
 				configElementFolder != null || configElementWorkspace != null) {
 			//This definition has a form definition; so show the form preview
 			String definitionName = (String) ((Document) data.get("sourceDefinition")).getRootElement().attributeValue("caption","");
 			if (configElementEntry != null) {
 				configElement = configElementEntry;
 				request.setAttribute("definitionEntry", new FolderEntry());
+			} else if (configElementFileEntry != null) {
+				configElement = configElementFileEntry;
+				request.setAttribute("definitionEntry", new FolderEntry());
 			} else if (configElementProfile != null) {
 				configElement = configElementProfile;
 				request.setAttribute("definitionEntry", new User());
 			} else if (configElementFolder != null) {
 				configElement = configElementFolder;
+				request.setAttribute("definitionEntry", new Folder());
+			} else if (configElementFileFolder != null) {
+				configElement = configElementFileFolder;
 				request.setAttribute("definitionEntry", new Folder());
 			} else if (configElementWorkspace != null) {
 				configElement = configElementWorkspace;

@@ -106,6 +106,19 @@ function ss_replaceImage(imgName, imgPath) {
     }
 }
 
+//Routines to move an object (or a div) to the "body"
+//  This is usefull for any absolutly positioned div.
+//  The positioning of that div will work correctly when using absolute coordinates.
+function ss_moveDivToBody(name) {
+	if (document.getElementById(name)) ss_moveObjectToBody(document.getElementById(name));
+}
+function ss_moveObjectToBody(obj) {
+    if (obj && obj.parentNode.tagName.toLowerCase() != 'body') {
+    	//move the object to the body tag so it goes to the right x,y
+    	obj.parentNode.removeChild(obj);
+    	document.getElementsByTagName("body").item(0).appendChild(obj);
+    }
+}
 
 //Routines to show or hide an object
 function ss_showObjBlock(objName) {

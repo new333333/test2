@@ -35,11 +35,7 @@ function ss_popupPresenceMenu${ssDashboardId}(x, userId, userTitle, status, scre
     var imgid = "ppgpres${ssDashboardId}"
     var ostatus = " <ssf:nlt tag="presence.none"/>"
     obj = self.document.getElementById('ss_presencePopUp${ssDashboardId}')
-    if (obj.parentNode.tagName.toLowerCase() != 'body') {
-    	//move the pop-up div to the body tag so it goes to the right x,y
-    	obj.parentNode.removeChild(obj);
-    	document.getElementsByTagName("body").item(0).appendChild(obj);
-    }
+    ss_moveObjectToBody(obj)
     m += '<div style="position: relative; background: #666; margin: 4px;">'
     m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1; border: 1px solid #666666; background-color:white">'
 
