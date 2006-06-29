@@ -1665,6 +1665,52 @@
 		</jsps>
 	</item>
 
+	<item name="fileEntryFormForm" caption="__form" canBeDeleted="false" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" 
+				value="form1" setAttribute="formName"/>
+		</properties>
+		<options>
+			<option name="fileEntryTitle" initial="true" />
+			<option name="description" initial="true" />
+			<option name="entryIcon" />
+			<option name="attachFiles" default="true" />
+			<option name="entryFormButtons" initial="true" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
+			<option_select definitionType="10" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="fileEntryTitle" caption="__file_entry_title" type="data" 
+			canBeDeleted="false" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="title" 
+			  readonly="true" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__title"/>
+			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
+			<property name="storage" caption="__storage_media" type="selectbox" default="fileRepositoryService">
+				<option name="fileRepositoryService" caption="__file_system" />
+				<option name="jackrabbitRepository" caption="__jackrabbit_repository" />
+				<option name="internalWebdavRepositoryService" caption="__internal_webdav" />
+				<help>__help_storage_media</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/file_entry_title_form.jsp" />
+		</jsps>
+		<notify summary="true" full="true" 
+			notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderFile" />
+	</item>
+	
 	<item name="fileEntryView" caption="__file_entry_view_definition" 
 			canBeDeleted="false" multipleAllowed="false">
 		<operations>
@@ -1672,7 +1718,7 @@
 		</operations>
 
 		<options optionCaption="__standard_entry_options">
-			<option name="titleView" caption="__title" initial="true" />
+			<option name="fileEntryTitleView" caption="__title" initial="true" />
 			<option name="entryCreatorView" caption="__entry_creator" initial="true" />
 			<option name="entryDateView" caption="__entry_date" initial="true" />
 			<option name="descriptionView" caption="__description" initial="true" />
@@ -1688,5 +1734,15 @@
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/entry_view.jsp" />
 		</jsps>
 	</item>
+
+	<item name="fileEntryTitleView" caption="__title">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__title"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/file_entry_title_view.jsp" />
+		</jsps>
+	</item>
+	
 		
 </definitions>

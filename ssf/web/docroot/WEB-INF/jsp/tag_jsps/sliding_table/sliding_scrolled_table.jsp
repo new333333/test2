@@ -278,6 +278,7 @@ var ss_popUp_sizer_width = 0;
 var ss_slidingTableMosueOverObj = null
 function ss_showMouseOverInfo(obj) {
 	if (obj != ss_slidingTableMosueOverObj) {
+		ss_moveObjectToBody(document.getElementById('ss_info_popup'))
 		var ihtml = obj.innerHTML;
 		if (ihtml != "" && ihtml != "&nbsp;" && ihtml != "&nbsp;&nbsp;" && 
 		    ihtml != "&nbsp;&nbsp;&nbsp;") {
@@ -303,6 +304,7 @@ function ss_showMouseOverInfo(obj) {
 					ss_showHideObj("ss_info_popup", "visible", "block")
 					
 					//See if this is a new maximum width
+					ss_moveObjectToBody(document.getElementById('ss_info_popup_sizer'))
 					var w = parseInt(x + ss_getDivWidth("ss_info_popup"))
 					if (w > ss_popUp_sizer_width) {
 						ss_popUp_sizer_width = w;

@@ -87,6 +87,9 @@ function ss_showForumEntry(url, callbackRoutine) {
 }
 
 function ss_showEntryInDiv(str) {
+    //Make sure the absolute div is in the body
+    self.ss_moveDivToBody('ss_showentrydiv');
+    
     //Keep a high water mark for the page so the scrolling doesn't bounce around
     setWindowHighWaterMark('ss_showentryhighwatermark');
     
