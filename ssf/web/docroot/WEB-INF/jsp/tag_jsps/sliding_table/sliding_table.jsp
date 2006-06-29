@@ -31,7 +31,6 @@
 <!--
 var ss_colWidths = new Array();
 var ss_colWidthsUser = new Array();
-
 <%
 	//Get the row and column data
 	List slidingTableRows = (List) request.getAttribute("ss_slidingTableRows");
@@ -47,16 +46,16 @@ var ss_colWidthsUser = new Array();
 			String[] columnPositions = folderColumnPositions.split(" ");
 			for (int i = 0; i < columnPositions.length; i++) {
 %>
-ss_colWidthsUser['col<%= String.valueOf(i) %>'] = '<%= columnPositions[i] %>';
+ss_colWidthsUser[<%= String.valueOf(i) %>] = '<%= columnPositions[i] %>';
 <%		
 			}
 		}
 	}
 %>
 
-if (self.Event) self.document.captureEvents(Event.MOUSEDOWN);
-if (self.Event) self.document.captureEvents(Event.MOUSEUP);
-if (self.Event) self.document.captureEvents(Event.MOUSEMOVE);
+if (self.Event && self.Event.MOUSEDOWN) self.document.captureEvents(Event.MOUSEDOWN);
+if (self.Event && self.Event.MOUSEUP) self.document.captureEvents(Event.MOUSEUP);
+if (self.Event && self.Event.MOUSEMOVE) self.document.captureEvents(Event.MOUSEMOVE);
 
 var ss_slidingTableDragObj = null
 var ss_slidingTableOffsetX
@@ -100,8 +99,8 @@ function ss_showSlidingTableCols() {
     var widthTotalPercentage = 0
     var widthTotalPixels = 0
     for (var i = 1; i <= ss_columnCount; i++) {
-    	if (ss_colWidths["col"+i]) {
-    		var cw = ss_colWidths["col"+i]
+    	if (ss_colWidths[i]) {
+    		var cw = ss_colWidths[i]
     		if (cw.indexOf("%") > 0) {
     			//This is a percentage; add it to the total percent
     			cw = cw.substr(0, cw.indexOf("%"));
@@ -129,8 +128,8 @@ function ss_showSlidingTableCols() {
 	ss_position_sTableCol("col0", left, top, w)
     for (var i = 1; i <= ss_columnCount; i++) {
 	    //See if the user re-positioned the columns. If so, use those settings.
-	    if (ss_colWidthsUser["col"+i]) {
-	    	deltaLeft = parseInt(ss_colWidthsUser["col"+i])
+	    if (ss_colWidthsUser[i]) {
+	    	deltaLeft = parseInt(ss_colWidthsUser[i])
 	    }
     	//But, always start the first column at the left edge
     	if (i == 1) deltaLeft = 0;
@@ -142,9 +141,9 @@ function ss_showSlidingTableCols() {
 	    if (deltaLeft < 0) deltaLeft = 0
 	    if (deltaLeft > maxColLeftAdjusted) {
 	    	deltaLeft = maxColLeftAdjusted
-	    	if (ss_colWidthsUser["col"+i]) {
+	    	if (ss_colWidthsUser[i]) {
 	    		//Save the adjusted value
-	    		ss_colWidthsUser["col"+i] = deltaLeft
+	    		ss_colWidthsUser[i] = deltaLeft
 	    	}
 	    }
 
@@ -157,9 +156,9 @@ function ss_showSlidingTableCols() {
 	    
 	    //Now, get the position of the next column (using the default width of the current column)
 	    //  This may get overridden (above) if the user has re-positioned the columns
-	    if (!ss_colWidthsUser["col"+i]) {
-	    	if (ss_colWidths["col"+i]) {
-	    		var cw = ss_colWidths["col"+i]
+	    if (!ss_colWidthsUser[i]) {
+	    	if (ss_colWidths[i]) {
+	    		var cw = ss_colWidths[i]
 	    		if (cw.indexOf("%") > 0) {
 	    			cw = cw.substr(0, cw.indexOf("%"));
 	    			//Get the width by taking a percentage of the available pixels 
@@ -403,7 +402,7 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 					if (!columnWidth.equals("")) {
 %>
 <script type="text/javascript">
-ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
+ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 </script>
 <%
 					}
@@ -437,7 +436,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 					if (!columnWidth.equals("")) {
 %>
 <script type="text/javascript">
-ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
+ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 </script>
 <%
 					}
@@ -479,7 +478,7 @@ ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
 					if (!columnWidth.equals("")) {
 %>
 <script type="text/javascript">
-ss_colWidths['col<%= String.valueOf(iCol + 1) %>'] = '<%= columnWidth %>';
+ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 </script>
 <%
 					}
@@ -522,7 +521,7 @@ function ss_saveSlidingTableCoords() {
     for (var i = 0; i <= ss_columnCount; i++) {
     	var colLeft = parseInt(parseInt(self.document.getElementById("col"+i).style.left) - ss_sTableLeft - ss_sTableMarginLeft)
 	    s += colLeft+" "
-	    ss_colWidthsUser["col"+i] = colLeft
+	    ss_colWidthsUser[i] = colLeft
     }
     self.document.forms['ss_columnPositionForm'].column_positions.value = s;
 	var url = "<ssf:url 
