@@ -1,12 +1,3 @@
-<c:if test="${!empty ssf_support_files_loaded}">
-<script type="text/javascript">
-if (!self.ss_common_loaded) {
-	//The portal cached an old copy of a portlet's html code. 
-	//  The cache must get cleared by logging out.
-	alert("<ssf:nlt tag="general.portletCacheProblem"/>")
-}
-</script>
-</c:if>
 <c:if test="${empty ssf_support_files_loaded}">
 <c:set var="ssf_support_files_loaded" value="1" scope="request"/>
 

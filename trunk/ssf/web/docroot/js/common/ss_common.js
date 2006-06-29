@@ -16,22 +16,51 @@
 //
 // browser-specific vars
 
+var undefined;
+var ss_declaredDivs;
+if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "undefined" ) {
+	var isNSN = (navigator.appName == "Netscape");
+	var isNSN4 = isNSN && ((navigator.userAgent.indexOf("Mozilla/4") > -1));
+	var isNSN6 = ((navigator.userAgent.indexOf("Netscape6") > -1));
+	var isMoz5 = ((navigator.userAgent.indexOf("Mozilla/5") > -1) && !isNSN6);
+	var isMacIE = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("Mac") > -1));
+	var isIE = ((navigator.userAgent.indexOf("IE ") > -1));
+
+	var ss_savedOnResizeRoutine = null;
+	var ss_onResizeRoutineLoaded;
+	var ss_savedOnLoadRoutine = null;
+	var ss_onLoadRoutineLoaded;
+
+	var ss_mouseX = 0;
+	var ss_mouseY = 0;
+	var ss_mousePosX = 0;
+	var ss_mousePosY = 0;
+	var ss_divBeingShown = null;
+	var ss_lastDivBeingShown = null;
+	
+	var ss_declaredDivs = new Array();
+	var ss_eventList = new Array();
+	var ss_eventTypeList = new Array();
+	var ss_onLoadList = new Array();
+	var ss_onSubmitList = new Array();
+	var ss_onResizeList = new Array();
+	var ss_onLayoutChangeList = new Array();
+	var ss_menuDivClones = new Array();
+	var divToBeHidden = new Array;
+	var divToBeDelayHidden = new Array;
+	var ss_onErrorList = new Array();
+	var ss_spannedAreasList = new Array();
+	var ss_active_menulayer = '';
+	var ss_lastActive_menulayer = '';
+	var ss_active_menulayer_form = 0;
+	var ss_activateMenuOffsetTop = 6;
+	var ss_layerFlag = 0;
+	var ss_forum_maxBodyWindowHeight = 0;
+	var jsDebug = 0;
+}
 var ss_common_loaded = 1;
-var jsDebug = 0;
-
-var isNSN = (navigator.appName == "Netscape");
-var isNSN4 = isNSN && ((navigator.userAgent.indexOf("Mozilla/4") > -1));
-var isNSN6 = ((navigator.userAgent.indexOf("Netscape6") > -1));
-var isMoz5 = ((navigator.userAgent.indexOf("Mozilla/5") > -1) && !isNSN6);
-var isMacIE = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("Mac") > -1));
-var isIE = ((navigator.userAgent.indexOf("IE ") > -1));
-
-var ss_savedOnResizeRoutine = null;
-var ss_onResizeRoutineLoaded;
 
 //Routine called by the body's onLoad event
-var ss_savedOnLoadRoutine = null;
-var ss_onLoadRoutineLoaded;
 function ss_onLoadInit() {
     //Call any routines that want to be called at onLoad time
     for (var i = 0; i < ss_onLoadList.length; i++) {
@@ -284,7 +313,6 @@ function ss_setDivHtml(divId, value) {
 }
 
 //Routines for the definition builder
-var ss_declaredDivs = new Array();
 function ss_setDeclaredDiv(id) {
 	for (var i = 0; i < ss_declaredDivs.length; i++) {
 		if (ss_declaredDivs[i] == id) return;
@@ -309,8 +337,6 @@ function ss_getContainingForm(obj) {
 	return formObj;
 }
 
-var ss_eventList = new Array();
-var ss_eventTypeList = new Array();
 //Routine to create a new "ss_eventObj" object
 //ss_eventObj objects are set up whenever you want to call a routine on an event.
 //   event_name is the event name (e.g., "MOUSEDOWN")
@@ -376,7 +402,6 @@ function ssf_event_handler(e) {
 }
 
 
-var ss_onLoadList = new Array();
 //Routine to create a new "onLoadObj" object
 //onLoadObj objects are set up whenever you want to call something at onLoad time.
 function ss_createOnLoadObj(name, initName) {
@@ -400,16 +425,18 @@ function m_setInitRoutine(initRoutine) {
     this.initRoutine = initRoutine;
 }
 
-var ss_onSubmitList = new Array();
 //Routine to create a new "onSubmitObj" object
 //onSubmitObj objects are set up whenever you want to call something at form submit time.
 function ss_createOnSubmitObj(name, formName, submitRoutine) {
+    alert('ss_onSubmitList: ' + name + ", formname: " + formName)
     for (var i = 0; i < ss_onSubmitList.length; i++) {
+    	alert(i + ": " + ss_onSubmitList[i].name)
     	if (ss_onSubmitList[i].name == name) return;
     }
     var next = ss_onSubmitList.length;
     ss_onSubmitList[next] = new onSubmitObj(name, formName);
     ss_onSubmitList[next].setSubmitRoutine(submitRoutine);
+    alert('onSubmitList length: ' + ss_onSubmitList.length)
 }
 function onSubmitObj(name, formName) {
     this.name = name;
@@ -429,7 +456,9 @@ function m_setSubmitRoutine(submitRoutine) {
 //  This function will call the desired routines at form submit time
 //  If any routine returns "false", then this routine returns false.
 function ss_onSubmit(obj) {
+    alert('ss_onSubmit: ' + obj.name)
     for (var i = 0; i < ss_onSubmitList.length; i++) {
+        alert(i + ": " + ss_onSubmitList[i].formName)
         if (ss_onSubmitList[i].formName == obj.name) {
             if (!ss_onSubmitList[i].submitRoutine()) {return false;}
         }
@@ -438,7 +467,6 @@ function ss_onSubmit(obj) {
 }
 
 
-var ss_onResizeList = new Array();
 //Routine to create a new "onResizeObj" object
 //onResizeObj objects are set up whenever you want to call something at onResize time.
 function ss_createOnResizeObj(name, resizeName) {
@@ -475,7 +503,6 @@ function ssf_onresize_event_handler() {
     }
 }
 
-var ss_onLayoutChangeList = new Array();
 //Routine to create a new "onLayoutChangeObj" object
 //onLayoutChangeObj objects are set up whenever you want to be called if the layout changes dynamically.
 function ss_createOnLayoutChangeObj(name, layoutRoutine) {
@@ -901,11 +928,6 @@ function smoothScrollInTime(x, y, steps) {
 
 // Pop-up menu support
 // clicking anywhere will hide the div
-var ss_active_menulayer = '';
-var ss_lastActive_menulayer = '';
-var ss_active_menulayer_form = 0;
-var ss_activateMenuOffsetTop = 6;
-var ss_menuDivClones = new Array();
 
 //Create a clone of the menu before showing it; attach it to the "body" outside of any div
 //  This makes sure that the z-index will be on top of everything else (IE fix)
@@ -973,9 +995,8 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
 
 // activate_menulayer tests this flag to make sure the page is
 // loaded before the pulldown menus are clicked.
-var layerFlag = 0;
-function setLayerFlag() {
-    layerFlag = 1;
+function ss_setLayerFlag() {
+    ss_layerFlag = 1;
 }
 
 // Clears (hides) the active menulayer (if any)
@@ -995,51 +1016,42 @@ function ss_clearActive_menulayer() {
 //Enable the event handler
 ss_createEventObj('ss_clearActive_menulayer', 'MOUSEUP')
 
-ss_createOnLoadObj('layerFlag', setLayerFlag);
+ss_createOnLoadObj('ss_layerFlag', ss_setLayerFlag);
 
 
 
 //Support for positioning divs at x,y 
-var ss_mouseX = 0;
-var ss_mouseY = 0;
-var ss_mousePosX = 0;
-var ss_mousePosY = 0;
-var divBeingShown = null;
-var lastDivBeingShown = null;
-var divToBeHidden = new Array;
-var divToBeDelayHidden = new Array;
-
 //Enable the event handler
 ss_createEventObj('captureXY', 'MOUSEUP')
 
 //General routine to show a div given its name and coordinates
 function ss_ShowHideDivXY(divName, x, y) {
-    if (divBeingShown == divName) {
-        ss_hideDiv(divBeingShown)
-        divBeingShown = null;
-        lastDivBeingShown = null;
+    if (ss_divBeingShown == divName) {
+        ss_hideDiv(ss_divBeingShown)
+        ss_divBeingShown = null;
+        ss_lastDivBeingShown = null;
     } else {
-        if (lastDivBeingShown == divName) {
-            lastDivBeingShown = null;
+        if (ss_lastDivBeingShown == divName) {
+            ss_lastDivBeingShown = null;
             return
         }
-        lastDivBeingShown = null;
-        if (divBeingShown != null) {
-            ss_hideDiv(divBeingShown)
+        ss_lastDivBeingShown = null;
+        if (ss_divBeingShown != null) {
+            ss_hideDiv(ss_divBeingShown)
         }
-        divBeingShown = divName;
-        lastDivBeingShown = divName;
-        ss_positionDiv(divBeingShown, x, y)
-        ss_showDiv(divBeingShown)
+        ss_divBeingShown = divName;
+        ss_lastDivBeingShown = divName;
+        ss_positionDiv(ss_divBeingShown, x, y)
+        ss_showDiv(ss_divBeingShown)
     }
 }
 
 //General routine to show a div given its name
 function HideDivIfActivated(divName) {
-    if (divBeingShown == divName) {
-        ss_hideDiv(divBeingShown)
-        divBeingShown = null;
-        lastDivBeingShown = null;
+    if (ss_divBeingShown == divName) {
+        ss_hideDiv(ss_divBeingShown)
+        ss_divBeingShown = null;
+        ss_lastDivBeingShown = null;
     }
 }
 
@@ -1065,8 +1077,8 @@ function ss_showDiv(divName) {
 
 function ss_hideDiv(divName) {
     document.getElementById(divName).style.visibility = "hidden";
-    divToBeDelayHidden[divBeingShown] = null
-    divBeingShown = null;
+    divToBeDelayHidden[ss_divBeingShown] = null
+    ss_divBeingShown = null;
     
     //Show any spanned areas that may have been turned off
     ss_showSpannedAreas()
@@ -1134,14 +1146,14 @@ function captureXY(e) {
     }
 
     //See if there is a div to be hidden
-    lastDivBeingShown = divBeingShown;
-    if (divBeingShown != null) {
-        if (divToBeHidden[divBeingShown]) {
-            if (divToBeDelayHidden[divBeingShown]) {
-                divToBeDelayHidden[divBeingShown] = null
+    ss_lastDivBeingShown = ss_divBeingShown;
+    if (ss_divBeingShown != null) {
+        if (divToBeHidden[ss_divBeingShown]) {
+            if (divToBeDelayHidden[ss_divBeingShown]) {
+                divToBeDelayHidden[ss_divBeingShown] = null
             } else {
-                ss_hideDiv(divBeingShown)
-                divBeingShown = null;
+                ss_hideDiv(ss_divBeingShown)
+                ss_divBeingShown = null;
             }
         }
     }
@@ -1226,7 +1238,6 @@ function getNN4ImgDivObjectObj(divObj, imgObj) {
     return null
 }
 
-var ss_onErrorList = new Array();
 //Routine to create a new "onErrorObj" object
 //onErrorObj objects are set up whenever you want to call something at onError time.
 function ss_createOnErrorObj(name, onErrorName) {
@@ -1258,7 +1269,6 @@ function ssf__onError_event_handler() {
     return ret
 }
 
-var ss_spannedAreasList = new Array();
 //Routine to create a new "spannedArea" object
 //spannedAreaObj objects are set up whenever you need some form elements to be 
 //   blanked when showing the menus
@@ -1348,7 +1358,6 @@ function ss_openUrlInWindow(obj,windowName) {
 }
 
 //Routine to show a div at the bottom of the highest size attained by the window
-var ss_forum_maxBodyWindowHeight = 0;
 function setWindowHighWaterMark(divName) {
 	var currentPageHeight = ss_getBodyHeight()
 	if (parseInt(ss_forum_maxBodyWindowHeight) < parseInt(currentPageHeight)) {
