@@ -29,22 +29,14 @@ var isIE = ((navigator.userAgent.indexOf("IE ") > -1));
 var ss_savedOnResizeRoutine = null;
 var ss_onResizeRoutineLoaded;
 
-//SiteScape's array function (use this instead of "new Array()" to avoid problems with extending the js Array)
-function ssArray() {}
-function ssArrayLength(obj) {
-	var length = 0
-	for (var i in obj) length++;
-	return length;
-}
-
 //Routine called by the body's onLoad event
 var ss_savedOnLoadRoutine = null;
 var ss_onLoadRoutineLoaded;
 function ss_onLoadInit() {
     //Call any routines that want to be called at onLoad time
-    for (var name in ss_onLoadList) {
-        if (ss_onLoadList[name].initRoutine) {
-        	ss_onLoadList[name].initRoutine();
+    for (var i = 0; i < ss_onLoadList.length; i++) {
+        if (ss_onLoadList[i].initRoutine) {
+        	ss_onLoadList[i].initRoutine();
         }
     }
     if (ss_savedOnLoadRoutine != null) {
@@ -279,13 +271,17 @@ function ss_setDivHtml(divId, value) {
 }
 
 //Routines for the definition builder
-var ss_declaredDivs = new ssArray();
+var ss_declaredDivs = new Array();
 function ss_setDeclaredDiv(id) {
-	ss_declaredDivs[id] = id;
+	for (var i = 0; i < ss_declaredDivs.length; i++) {
+		if (ss_declaredDivs[i] == id) return;
+	}
+	var next = ss_declaredDivs.length;
+	ss_declaredDivs[next] = id;
 }
 
 function ss_hideAllDeclaredDivs() {
-	for (var i in ss_declaredDivs) {
+	for (var i = 0; i < ss_declaredDivs.length; i++) {
 		ss_showHideObj(ss_declaredDivs[i], 'hidden', 'none')
 	}
 }
@@ -300,29 +296,40 @@ function ss_getContainingForm(obj) {
 	return formObj;
 }
 
-var ss_eventList = new ssArray();
-var ss_eventTypeList = new ssArray();
+var ss_eventList = new Array();
+var ss_eventTypeList = new Array();
 //Routine to create a new "ss_eventObj" object
 //ss_eventObj objects are set up whenever you want to call a routine on an event.
 //   event_name is the event name (e.g., "MOUSEDOWN")
 function ss_createEventObj(function_name, event_name, function_def) {
-    if (ss_eventList[function_name] == null) {
-        ss_eventList[function_name] = new ss_eventObj(function_name);
-        ss_eventList[function_name].setEventName(event_name);
-        ss_eventList[function_name].setFunctionDef(function_def);
+    var fn = -1;
+    for (var i = 0; i < ss_eventList.length; i++) {
+    	if (ss_eventList[i].functionName == function_name) {
+    		fn = i;
+    		break;
+    	}
     }
-    if (ss_eventTypeList[event_name] == null) {
-        ss_eventTypeList[event_name] = event_name
-        //Enable the event
-        if (isNSN) {
-            eval("self.document.captureEvents(Event."+event_name+")")
-        }
-        if (ss_eventList[function_name].eventName.toLowerCase() == "unload") {
-        	//Add the unload event to the body object
-        	eval("self.document.body.on"+ss_eventList[function_name].eventName.toLowerCase()+" = ssf_event_handler;")
-        } else {
-        	eval("self.document.on"+ss_eventList[function_name].eventName.toLowerCase()+" = ssf_event_handler;")
-        }
+    if (fn == -1) {
+        fn = ss_eventList.length;
+        ss_eventList[fn] = new ss_eventObj(function_name);
+        ss_eventList[fn].setEventName(event_name);
+        ss_eventList[fn].setFunctionDef(function_def);
+    }
+    for (var i = 0; i < ss_eventTypeList.length; i++) {
+    	if (ss_eventTypeList[i] == event_name) return;
+    }
+    next = ss_eventTypeList.length;
+    ss_eventTypeList[next] = event_name;
+    
+    //Enable the event
+    if (isNSN) {
+        eval("self.document.captureEvents(Event."+event_name+")")
+    }
+    if (ss_eventList[fn].eventName.toLowerCase() == "unload") {
+    	//Add the unload event to the body object
+    	eval("self.document.body.on"+ss_eventList[fn].eventName.toLowerCase()+" = ssf_event_handler;")
+    } else {
+    	eval("self.document.on"+ss_eventList[fn].eventName.toLowerCase()+" = ssf_event_handler;")
     }
 }
 function ss_eventObj(function_name) {
@@ -344,26 +351,28 @@ function m_setFunctionDef(function_def) {
 //  This function will call the desired routines on an event
 function ssf_event_handler(e) {
     if (!isNSN) {e = event}
-    for (var n in ss_eventList) {
-        if (e.type.toLowerCase() == ss_eventList[n].eventName) {
-        	if (ss_eventList[n].functionDef != null && ss_eventList[n].functionDef != "undefined") {
-        		ss_eventList[n].functionDef(e);
+    for (var i = 0; i < ss_eventList.length; i++) {
+        if (e.type.toLowerCase() == ss_eventList[i].eventName) {
+        	if (ss_eventList[i].functionDef != null && ss_eventList[i].functionDef != "undefined") {
+        		ss_eventList[i].functionDef(e);
         	} else {
-            	eval(ss_eventList[n].functionName+'(e)');
+            	eval(ss_eventList[i].functionName+'(e)');
             }
         }
     }
 }
 
 
-var ss_onLoadList = new ssArray();
+var ss_onLoadList = new Array();
 //Routine to create a new "onLoadObj" object
 //onLoadObj objects are set up whenever you want to call something at onLoad time.
 function ss_createOnLoadObj(name, initName) {
-    if (ss_onLoadList[name] == null) {
-        ss_onLoadList[name] = new onLoadObj(name);
-        ss_onLoadList[name].setInitRoutine(initName);
+    for (var i = 0; i < ss_onLoadList.length; i++) {
+    	if (ss_onLoadList[i].name == name) return;
     }
+    var next = ss_onLoadList.length;
+    ss_onLoadList[next] = new onLoadObj(name);
+    ss_onLoadList[next].setInitRoutine(initName);
 }
 function onLoadObj(name) {
     this.name = name;
@@ -378,14 +387,16 @@ function m_setInitRoutine(initRoutine) {
     this.initRoutine = initRoutine;
 }
 
-var ss_onSubmitList = new ssArray();
+var ss_onSubmitList = new Array();
 //Routine to create a new "onSubmitObj" object
 //onSubmitObj objects are set up whenever you want to call something at form submit time.
 function ss_createOnSubmitObj(name, formName, submitRoutine) {
-    if (ss_onSubmitList[name] == null) {
-        ss_onSubmitList[name] = new onSubmitObj(name, formName);
-        ss_onSubmitList[name].setSubmitRoutine(submitRoutine);
+    for (var i = 0; i < ss_onSubmitList.length; i++) {
+    	if (ss_onSubmitList[i].name == name) return;
     }
+    var next = ss_onSubmitList.length;
+    ss_onSubmitList[next] = new onSubmitObj(name, formName);
+    ss_onSubmitList[next].setSubmitRoutine(submitRoutine);
 }
 function onSubmitObj(name, formName) {
     this.name = name;
@@ -405,7 +416,7 @@ function m_setSubmitRoutine(submitRoutine) {
 //  This function will call the desired routines at form submit time
 //  If any routine returns "false", then this routine returns false.
 function ss_onSubmit(obj) {
-    for (var i in ss_onSubmitList) {
+    for (var i = 0; i < ss_onSubmitList.length; i++) {
         if (ss_onSubmitList[i].formName == obj.name) {
             if (!ss_onSubmitList[i].submitRoutine()) {return false;}
         }
@@ -414,14 +425,16 @@ function ss_onSubmit(obj) {
 }
 
 
-var ss_onResizeList = new ssArray();
+var ss_onResizeList = new Array();
 //Routine to create a new "onResizeObj" object
 //onResizeObj objects are set up whenever you want to call something at onResize time.
 function ss_createOnResizeObj(name, resizeName) {
-    if (ss_onResizeList[name] == null) {
-        ss_onResizeList[name] = new onResizeObj(name);
-        ss_onResizeList[name].setResizeRoutine(resizeName);
+    for (var i = 0; i < ss_onResizeList.length; i++) {
+    	if (ss_onResizeList[i].name == name) return;
     }
+    var next = ss_onResizeList.length;
+    ss_onResizeList[next] = new onResizeObj(name);
+    ss_onResizeList[next].setResizeRoutine(resizeName);
 }
 function onResizeObj(name) {
     this.name = name;
@@ -437,9 +450,9 @@ function m_setResizeRoutine(resizeRoutine) {
 }
 function ssf_onresize_event_handler() {
     //Call any routines that want to be called at resize time
-    for (var name in ss_onResizeList) {
-        if (ss_onResizeList[name].resizeRoutine) {
-        	ss_onResizeList[name].resizeRoutine();
+    for (var i = 0; i < ss_onResizeList.length; i++) {
+        if (ss_onResizeList[i].resizeRoutine) {
+        	ss_onResizeList[i].resizeRoutine();
         }
     }
     if (ss_savedOnResizeRoutine != null) {
@@ -449,14 +462,16 @@ function ssf_onresize_event_handler() {
     }
 }
 
-var ss_onLayoutChangeList = new ssArray();
+var ss_onLayoutChangeList = new Array();
 //Routine to create a new "onLayoutChangeObj" object
 //onLayoutChangeObj objects are set up whenever you want to be called if the layout changes dynamically.
 function ss_createOnLayoutChangeObj(name, layoutRoutine) {
-    if (ss_onLayoutChangeList[name] == null) {
-        ss_onLayoutChangeList[name] = new onLayoutChangeObj(name);
-        ss_onLayoutChangeList[name].setLayoutRoutine(layoutRoutine);
+    for (var i = 0; i < ss_onLayoutChangeList.length; i++) {
+    	if (ss_onLayoutChangeList[i].name == name) return;
     }
+    var next = ss_onLayoutChangeList.length;
+    ss_onLayoutChangeList[next] = new onLayoutChangeObj(name);
+    ss_onLayoutChangeList[next].setLayoutRoutine(layoutRoutine);
 }
 function onLayoutChangeObj(name) {
     this.name = name;
@@ -474,8 +489,10 @@ function m_setLayoutRoutine(layoutRoutine) {
 //Common onLayoutChange handler
 //  This function will call the layout routines if the layout changes
 function ssf_onLayoutChange(obj) {
-    for (var i in ss_onLayoutChangeList) {
-        ss_onLayoutChangeList[i].layoutRoutine()
+    for (var i = 0; i < ss_onLayoutChangeList.length; i++) {
+        if (ss_onLayoutChangeList[i].layoutRoutine) {
+        	ss_onLayoutChangeList[i].layoutRoutine();
+        }
     }
     return true;
 }
@@ -1196,15 +1213,17 @@ function getNN4ImgDivObjectObj(divObj, imgObj) {
     return null
 }
 
-var ss_onErrorList = new ssArray();
+var ss_onErrorList = new Array();
 //Routine to create a new "onErrorObj" object
 //onErrorObj objects are set up whenever you want to call something at onError time.
 function ss_createOnErrorObj(name, onErrorName) {
-    if (ss_onErrorList[name] == null) {
-        ss_onErrorList[name] = new onErrorObj(name);
-        ss_onErrorList[name].setOnErrorRoutine(onErrorName);
-        window.onerror = ssf__onError_event_handler
+    for (var i = 0; i < ss_onErrorList.length; i++) {
+    	if (ss_onErrorList[i].name == name) return;
     }
+    var next = ss_onErrorList.length;
+    ss_onErrorList[next] = new onErrorObj(name);
+    ss_onErrorList[next].setOnErrorRoutine(onErrorName);
+    window.onerror = ssf__onError_event_handler
 }
 function onErrorObj(name) {
     this.name = name;
@@ -1220,21 +1239,23 @@ function m_setOnErrorRoutine(onErrorRoutine) {
 }
 function ssf__onError_event_handler() {
     var ret = false
-    for (var n in ss_onErrorList) {
-        if (ss_onErrorList[n].onErrorRoutine()) {ret = true}
+    for (var i = 0; i < ss_onErrorList.length; i++) {
+        if (ss_onErrorList[i].onErrorRoutine()) {ret = true}
     }
     return ret
 }
 
-var ss_spannedAreasList = new ssArray();
+var ss_spannedAreasList = new Array();
 //Routine to create a new "spannedArea" object
 //spannedAreaObj objects are set up whenever you need some form elements to be 
 //   blanked when showing the menus
 function ss_createSpannedAreaObj(name) {
-    if (ss_spannedAreasList[name] == null) {
-        ss_spannedAreasList[name] = new spannedAreaObj(name);
-    }
-    return ss_spannedAreasList[name];
+	for (var i = 0; i < ss_spannedAreasList.length; i++) {
+		if (ss_spannedAreasList[i].name == name) return ss_spannedAreasList[i];
+	}
+    var next = ss_spannedAreasList.length;
+    ss_spannedAreasList[next] = new spannedAreaObj(name);
+    return ss_spannedAreasList[next];
 }
 function spannedAreaObj(name) {
     this.name = name;
@@ -1288,15 +1309,15 @@ function ss_toggleSpannedAreas(spanName,newValue) {
 
 function ss_hideSpannedAreas() {
     //Hide any form elements that may be visible
-    for (var name in ss_spannedAreasList) {
-        ss_spannedAreasList[name].hide()
+    for (var i = 0; i < ss_spannedAreasList.length; i++) {
+        ss_spannedAreasList[i].hide()
     }
 }
 
 function ss_showSpannedAreas() {
     //Show any form elements that should be returned to the visible state
-    for (var name in ss_spannedAreasList) {
-        ss_spannedAreasList[name].show()
+    for (var i = 0; i < ss_spannedAreasList.length; i++) {
+        ss_spannedAreasList[i].show()
     }
 }
 

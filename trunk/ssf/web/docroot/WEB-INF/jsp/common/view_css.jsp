@@ -4,7 +4,6 @@ if (!self.ss_common_loaded) {
 	//The portal cached an old copy of a portlet's html code. 
 	//  The cache must get cleared by logging out.
 	alert("<ssf:nlt tag="general.portletCacheProblem"/>")
-	function ssArray() {}
 }
 </script>
 </c:if>
