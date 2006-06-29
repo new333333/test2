@@ -114,9 +114,9 @@ function ss_treeToggleAll(treeName, id, bottom, type) {
     }
 }
 
-var ss_treeIcons = new ssArray();
-var ss_treeIconsClosed = new ssArray();
-var ss_treeIconsOpen = new ssArray();
+var ss_treeIcons = new Array();
+var ss_treeIconsClosed = new Array();
+var ss_treeIconsOpen = new Array();
 function ssTree_defineBasicIcons(imageBase) {
 	// Basic icons
 	
