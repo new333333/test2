@@ -1,8 +1,30 @@
-<!DOCTYPE liferay-portlet-app PUBLIC "-//Liferay//DTD Portlet Application 3.5.0//EN" "http://www.liferay.com/dtd/liferay-portlet-app_3_5_0.dtd">
+<!DOCTYPE liferay-portlet-app PUBLIC "-//Liferay//DTD Portlet Application 4.0.0//EN" "http://www.liferay.com/dtd/liferay-portlet-app_4_0_0.dtd">
 
 <liferay-portlet-app>
 	<portlet>
 		<portlet-name>ss_presence</portlet-name>
-		<narrow>true</narrow>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
 	</portlet>
+	<portlet>
+		<portlet-name>ss_forum</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_profile</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_administration</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_workspacetree</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+	</portlet>
+	
 </liferay-portlet-app>
