@@ -117,7 +117,7 @@
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 		<init-param>
 			<name>contextConfigLocation</name>
-			<value>/WEB-INF/context/portlet/presence.xml</value>
+			<value>/WEB-INF/context/portlet/ssf.xml</value>
 		</init-param>
         <expiration-cache>300</expiration-cache>
         <supports>

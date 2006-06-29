@@ -6,6 +6,8 @@ import java.util.GregorianCalendar;
 import com.sitescape.util.cal.Duration;
 
 import org.dom4j.io.SAXReader;
+import org.jbpm.db.SchedulerSession;
+import org.jbpm.scheduler.exe.Timer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
@@ -25,6 +27,7 @@ import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.module.workflow.impl.JbpmContext;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 import com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl;
 
@@ -331,6 +334,126 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 			checkState(ws, "eventAfterEnd");
 			entry.removeCustomAttribute("eventAfterEnd");
 			wfi.modifyWorkflowState(entry, ws, "doNoRecur");
+	} finally {
+			WorkflowFactory.release();
+		}
+		
+	}
+	public void testEventRecurTransition() {
+		Workspace top = createZone(zoneName);
+		Folder folder = createFolder(top, "testFolder");
+
+		try {
+			Definition commandDef = importCommand("testEntry");
+		
+			Definition workflowDef = importWorkflow("testDateTransitions");
+			FolderEntry entry = createEntry(folder);
+			entry.setEntryDef(commandDef);
+			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
+			WorkflowState ws = checkState(entry, "start");
+			wfi.modifyWorkflowState(entry, ws, "doRecur");
+			checkState(ws, "doRecur");
+			
+			GregorianCalendar cal = new GregorianCalendar();
+			Event event = new Event();
+			cdi.save(event);
+			Date date = new Date();
+			//event started 1 second ago, lasts 1 second and repeats every seconds
+			cal.setTimeInMillis(date.getTime()-1000);
+			event.setDuration(new Duration(0, 0, 1));
+			event.setFrequency("SECONDLY");
+			CustomAttribute attr = entry.addCustomAttribute("eventStarted", event);			
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "eventStarted");
+			entry.removeCustomAttribute("eventStarted");
+			wfi.modifyWorkflowState(entry, ws, "doRecur");
+			checkState(ws, "doRecur");
+
+			//event starts hourly and lasts 30 seconds.  Schedule 1st occurence
+			//2 hours and 2 minutes earlier
+			cal = new GregorianCalendar();
+			date = new Date();
+			//Test 1 hour before trigger
+			cal.setTimeInMillis(date.getTime()-2*60*60*1000-2*60*1000);
+			event = new Event(cal, new Duration(0,0,30));
+			event.setFrequency("HOURLY");
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventBeforeStart", event);			
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "eventBeforeStart");
+			entry.removeCustomAttribute("eventBeforeStart");
+			wfi.modifyWorkflowState(entry, ws, "doRecur");
+
+			//recurring events startout with the next occurance.  
+			//Cannot wait for time to pass, so check that it doesn't reach state
+
+			//event started 1 minute ago and lasted 30 seconds
+			//doesn't repeat for another day.
+			cal = new GregorianCalendar();
+			date = new Date();
+			cal.setTimeInMillis(date.getTime()-60*1000);
+			event = new Event(cal, new Duration(0,0,30));
+			event.setFrequency("DAILY");
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventEnded", event);			
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			if (ws.getTimerId() == null)
+				throw new RuntimeException("Expecting wait for timer at " + ws.getState());		
+			checkState(ws, "doRecur");
+    		WorkflowFactory.getSession().getSession().delete(WorkflowFactory.getSession().getSession().load(Timer.class, ws.getTimerId()));
+    		ws.setTimerId(null);
+    		entry.removeCustomAttribute("eventEnded");
+			wfi.modifyWorkflowState(entry, ws, "doRecur");
+
+			//event started 25 minutes ago, and lasts for 30 minues
+			cal = new GregorianCalendar();
+			date = new Date();
+			//check for 5 minutes before end 
+			cal.setTimeInMillis(date.getTime()-25*60*1000);
+			event = new Event(cal, new Duration(0,30,0));
+			event.setFrequency("HOURLY");
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventBeforeEnd", event);			
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			if (ws.getTimerId() == null)
+				throw new RuntimeException("Expecting wait for timer at " + ws.getState());		
+			checkState(ws, "doRecur");
+    		WorkflowFactory.getSession().getSession().delete(WorkflowFactory.getSession().getSession().load(Timer.class, ws.getTimerId()));
+    		ws.setTimerId(null);
+ 			entry.removeCustomAttribute("eventBeforeEnd");
+			wfi.modifyWorkflowState(entry, ws, "doRecur");
+			
+			//event started 1 day and 1 minute ago and lasted 30 seconds
+			cal = new GregorianCalendar();
+			date = new Date();
+			//test 1 day after trigger
+			cal.setTimeInMillis(date.getTime()-24*61*60*1000);
+			event = new Event(cal, new Duration(0,0,30));
+			event.setFrequency("HOURLY");
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventAfterStart", event);			
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "doRecur");
+    		WorkflowFactory.getSession().getSession().delete(WorkflowFactory.getSession().getSession().load(Timer.class, ws.getTimerId()));
+    		ws.setTimerId(null);
+			entry.removeCustomAttribute("eventAfterStart");
+			wfi.modifyWorkflowState(entry, ws, "doRecur");
+
+			//event started 2 minutes ago and lasted 30 seconds
+			cal = new GregorianCalendar();
+			date = new Date();
+			//test 1 minute after end
+			cal.setTimeInMillis(date.getTime()-2*60*1000);
+			event = new Event(cal, new Duration(0,0,30));
+			event.setFrequency("HOURLY");
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventAfterEnd", event);			
+			wfi.modifyWorkflowStateOnUpdate(entry);
+			checkState(ws, "doRecur");
+    		WorkflowFactory.getSession().getSession().delete(WorkflowFactory.getSession().getSession().load(Timer.class, ws.getTimerId()));
+    		ws.setTimerId(null);
+			entry.removeCustomAttribute("eventAfterEnd");
+			wfi.modifyWorkflowState(entry, ws, "doRecur");
 	} finally {
 			WorkflowFactory.release();
 		}

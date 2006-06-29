@@ -46,6 +46,7 @@ public class ViewEntryController extends SAbstractController {
 		Map model = new HashMap();	
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Principal entry = getProfileModule().getEntry(binderId, entryId);
 		
 		model.put(WebKeys.ENTRY_ID, entryId);
@@ -91,6 +92,8 @@ public class ViewEntryController extends SAbstractController {
 		} catch (AccessControlException ac) {};
     
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, toolbar.getToolbar());
+//		if (operation.equals("buddy")) 
+//			return new ModelAndView("presence/view_entry", model);
 		return new ModelAndView(BinderHelper.getViewListingJsp(), model);
 	}	
 	

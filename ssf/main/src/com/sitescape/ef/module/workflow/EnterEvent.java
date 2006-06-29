@@ -40,11 +40,15 @@ public class EnterEvent extends AbstractActionHandler {
 		WorkflowSupport entry = loadEntry(ctx);
 		WorkflowState ws = entry.getWorkflowState(id);
 		if (ws != null) {
-			HistoryStamp stamp = (HistoryStamp)ctx.getTransientVariable("historyStamp");
-			if (stamp == null) {
-				stamp = new HistoryStamp(RequestContextHolder.getRequestContext().getUser(), new Date());
+			Date current = new Date();
+			HistoryStamp stamp = new HistoryStamp(RequestContextHolder.getRequestContext().getUser(), current);
+			if (entry.getWorkflowChange() == null) {
+				entry.setWorkflowChange(stamp);
+			} else if ((entry.getWorkflowChange().getDate() != null) && current.after(entry.getWorkflowChange().getDate())) {
+				entry.setWorkflowChange(stamp);
 			}
-			entry.setWorkflowChange(stamp);
+			//record when we enter the state
+			ws.setWorkflowChange(stamp);
 			ws.setState(state);
 			if (infoEnabled) logger.info("Workflow event (" + executionContext.getEvent().getEventType() + ") recorded: " + state);
 			List items  = WorkflowUtils.getItems(ws.getDefinition(), state);
