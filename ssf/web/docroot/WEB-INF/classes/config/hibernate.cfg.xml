@@ -45,6 +45,7 @@
 	    <mapping resource="com/sitescape/ef/domain/SeenMap.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/Tag.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/UserProperties.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/WorkflowResponse.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/WorkflowState.hbm.xml"/>
 
 		<!-- JBPM  Mappings -->
