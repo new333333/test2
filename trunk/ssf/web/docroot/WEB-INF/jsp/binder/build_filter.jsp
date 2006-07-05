@@ -34,6 +34,7 @@ function ss_getFilterTypeSelection(obj, op2) {
 	ss_getFilterSelectionBox(divObj, 'typeList', 'get_filter_type', op2)
 }
 function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
+	ss_setupStatusMessageDiv()
 	var formObj = ss_getContainingForm(obj)
 	//Set the term number
 	var nameObj = obj.name
@@ -374,7 +375,6 @@ ss_filterTermNumberMax++;
 <input type="hidden" name="ss_filterTermNumberMax"/>
 <input type="hidden" name="selectedSearchFilter" value="<c:out value="${ss_selectedFilter}"/>"/>
 </form>
-<div id="ss_filter_status_message" style="display:none;"></div>
 </div>
 </div>
 <script type="text/javascript">

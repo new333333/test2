@@ -144,6 +144,7 @@ function ss_moveDivToBody(name) {
 function ss_moveObjectToBody(obj) {
     if (obj && obj.parentNode.tagName.toLowerCase() != 'body') {
     	//move the object to the body tag so it goes to the right x,y
+    	var id = obj.id;
     	obj.parentNode.removeChild(obj);
     	document.getElementsByTagName("body").item(0).appendChild(obj);
     }
@@ -428,15 +429,12 @@ function m_setInitRoutine(initRoutine) {
 //Routine to create a new "onSubmitObj" object
 //onSubmitObj objects are set up whenever you want to call something at form submit time.
 function ss_createOnSubmitObj(name, formName, submitRoutine) {
-    alert('ss_onSubmitList: ' + name + ", formname: " + formName)
     for (var i = 0; i < ss_onSubmitList.length; i++) {
-    	alert(i + ": " + ss_onSubmitList[i].name)
     	if (ss_onSubmitList[i].name == name) return;
     }
     var next = ss_onSubmitList.length;
     ss_onSubmitList[next] = new onSubmitObj(name, formName);
     ss_onSubmitList[next].setSubmitRoutine(submitRoutine);
-    alert('onSubmitList length: ' + ss_onSubmitList.length)
 }
 function onSubmitObj(name, formName) {
     this.name = name;
@@ -456,9 +454,7 @@ function m_setSubmitRoutine(submitRoutine) {
 //  This function will call the desired routines at form submit time
 //  If any routine returns "false", then this routine returns false.
 function ss_onSubmit(obj) {
-    alert('ss_onSubmit: ' + obj.name)
     for (var i = 0; i < ss_onSubmitList.length; i++) {
-        alert(i + ": " + ss_onSubmitList[i].formName)
         if (ss_onSubmitList[i].formName == obj.name) {
             if (!ss_onSubmitList[i].submitRoutine()) {return false;}
         }
@@ -1068,7 +1064,7 @@ function ss_NoHideDivOnNextClick(divName) {
 function ss_showDiv(divName) {
     //Hide any area that has elements that might bleed through
     ss_hideSpannedAreas()
-    
+     
     document.getElementById(divName).style.visibility = "visible";
     if (!document.getElementById(divName).style.display || document.getElementById(divName).style.display != 'inline') {
     	document.getElementById(divName).style.display = "block";
@@ -1460,5 +1456,18 @@ function ss_replaceSubStrAll(str, subStr, newSubStrVal) {
         }
     }
     return newStr;
+}
+
+//Routine to build a status_message div if one doesn't exist yet
+function ss_setupStatusMessageDiv() {
+	var smId = document.getElementById('ss_status_message');
+	if (!smId) {
+		//There isn't a status message div, so go build it
+		var smDiv = document.createElement("div");
+        smDiv.setAttribute("id", "ss_status_message");
+        smDiv.style.visibility = "hidden";
+        smDiv.style.display = "none";
+    	document.getElementsByTagName("body").item(0).appendChild(smDiv);
+	}
 }
 

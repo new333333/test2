@@ -1,6 +1,7 @@
 //Routines to display an expandable/contractable tree
 //
 function ss_treeToggle(treeName, id, bottom, type) {
+	ss_setupStatusMessageDiv()
     var tObj = self.document.getElementById(treeName + "div" + id);
     var jObj = self.document.getElementById(treeName + "join" + id);
     var iObj = self.document.getElementById(treeName + "icon" + id);
@@ -58,8 +59,7 @@ function ss_treeToggle(treeName, id, bottom, type) {
 
 function ss_postTreeDivRequest(obj) {
 	//See if there was an error
-	var statusDiv = "ss_tree_div_status_message" + obj.getData('treeName');
-	if (self.document.getElementById(statusDiv).innerHTML == "error") {
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_treeNotLoggedInMsg);
 	} else {
 		ss_treeOpen(obj.getData('treeName'), obj.getData('id'), obj.getData('bottom'), obj.getData('type'));

@@ -11,35 +11,39 @@ String.prototype.trim = function() {
 function XhtmlToDOMParser(xml){
     var xmlTagName=xml.tagName.toLowerCase();
     var contextNode=document.getElementById(xml.getAttribute("contextNodeID"));
-    this.startParsing = function(){
-    switch (xmlTagName) {
-        case "taconite-append-as-children":
-            getReplaceChildren(contextNode,xml,false);
-            break;
-        case "taconite-delete":
-            getDelete(contextNode,xml);
-            break;
-        case "taconite-append-as-first-child":
-            getAppendAsFirstChild(contextNode,xml);
-            break;                         
-        case "taconite-insert-after":
-            getInsertAfter(contextNode,xml);
-            break;
-        case "taconite-insert-before":
-            getInsertBefore(contextNode,xml);
-            break;                         
-        case "taconite-replace-children":
-            getReplaceChildren(contextNode,xml,true);
-            break;
-        case "taconite-replace":
-            getReplace(contextNode,xml);
-            break;                         
-        case "taconite-set-attributes":
-            xml.removeAttribute("contextNodeID");
-            xml.removeAttribute("parseInBrowser");
-            handleAttributes(contextNode,xml);
-            break;
-        }                      
+    if (!contextNode) {
+    	alert("Ajax error: no such element \"" + xml.getAttribute("contextNodeID") + "\"")
+    } else {
+	    this.startParsing = function(){
+	    switch (xmlTagName) {
+	        case "taconite-append-as-children":
+	            getReplaceChildren(contextNode,xml,false);
+	            break;
+	        case "taconite-delete":
+	            getDelete(contextNode,xml);
+	            break;
+	        case "taconite-append-as-first-child":
+	            getAppendAsFirstChild(contextNode,xml);
+	            break;                         
+	        case "taconite-insert-after":
+	            getInsertAfter(contextNode,xml);
+	            break;
+	        case "taconite-insert-before":
+	            getInsertBefore(contextNode,xml);
+	            break;                         
+	        case "taconite-replace-children":
+	            getReplaceChildren(contextNode,xml,true);
+	            break;
+	        case "taconite-replace":
+	            getReplace(contextNode,xml);
+	            break;                         
+	        case "taconite-set-attributes":
+	            xml.removeAttribute("contextNodeID");
+	            xml.removeAttribute("parseInBrowser");
+	            handleAttributes(contextNode,xml);
+	            break;
+	        }
+	}
 };
     
     function isInlineMode(node) {

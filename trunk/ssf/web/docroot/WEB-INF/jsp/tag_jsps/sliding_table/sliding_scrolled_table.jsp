@@ -304,7 +304,6 @@ function ss_showMouseOverInfo(obj) {
 					ss_showHideObj("ss_info_popup", "visible", "block")
 					
 					//See if this is a new maximum width
-					ss_moveObjectToBody(document.getElementById('ss_info_popup_sizer'))
 					var w = parseInt(x + ss_getDivWidth("ss_info_popup"))
 					if (w > ss_popUp_sizer_width) {
 						ss_popUp_sizer_width = w;
@@ -429,7 +428,8 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 <%
 					}
 %>
-<div id="col<%= String.valueOf(iCol + 1) %>" class="ss_style ss_sliding_table_column1">
+<div id="col<%= String.valueOf(iCol + 1) %>" class="ss_style ss_sliding_table_column1"
+  style="position:absolute;">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 <td class="<%= rowStyle %>" >&nbsp;</td>
@@ -464,7 +464,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 					}
 %>
 <div id="col<%= String.valueOf(iCol + 1) %>" class="ss_style ss_sliding_table_column"  
-  style="z-index:<%= String.valueOf(iCol + 11) %>;">
+  style="position:absolute; z-index:<%= String.valueOf(iCol + 11) %>;">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 <td class="<%= rowStyle %>" ><div style="position:absolute; left:-9; top:0;"><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
@@ -538,6 +538,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 <script type="text/javascript">
 
 function ss_saveSlidingTableCoords() {
+	ss_setupStatusMessageDiv()
     var s = ""
     var ss_sTableLeft = getObjAbsX("<c:out value="${ss_slidingTableId}"/>_2")
     for (var i = 0; i <= ss_columnCount; i++) {
@@ -567,7 +568,7 @@ function ss_preSlidingTableRequest(obj) {
 }
 function ss_postSlidingTableRequest(obj) {
 	//See if there was an error
-	if (self.document.getElementById("ss_sliding_table_status_message").innerHTML == "error") {
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 	} else {
 		ss_showSlidingTableCols200()
@@ -577,6 +578,6 @@ function ss_postSlidingTableRequest(obj) {
 <form class="ss_style ss_form" name="ss_columnPositionForm" id="ss_columnPositionForm" >
 <input type="hidden" name="column_positions">
 </form>
-<div id="ss_sliding_table_status_message" style="visibility:hidden; display:none;"></div>
-<div id="ss_info_popup" class="ss_style ss_sliding_table_info_popup"></div>
+<div id="ss_info_popup" class="ss_style ss_sliding_table_info_popup"
+  style="position:absolute;"></div>
 <div id="ss_info_popup_sizer" style="position:absolute; visibility:hidden;"></div>

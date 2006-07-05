@@ -4,7 +4,7 @@ String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 int sliderDivHeight = 22;
 int sliderDivArrowHeight = 17;    //This is the height of pics/sym_s_arrows_northsouth.gif
 int sliderDivBlankHeight = sliderDivHeight - sliderDivArrowHeight;
-String sliderDivOffset = "-" + String.valueOf(sliderDivHeight);
+String sliderDivOffset = "-" + String.valueOf(sliderDivHeight + 20);
 
 //Get the folder type of this definition (folder, file, or event)
 String folderViewStyle = "folder";
@@ -32,9 +32,9 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
     configJspStyle="${ssConfigJspStyle}" />
 </div>
 <div id="ss_showfolder_slider" onMousedown="ss_startDragDiv();" 
- onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}" width="100%" 
- height="<%= String.valueOf(sliderDivHeight) %>px"
+ onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}" 
  style="position:relative; margin:0px 0px 3px 0px; padding:0px; 
+  width:100%; height:<%= String.valueOf(sliderDivHeight) %>px;
   top:<%= sliderDivOffset %>px;">
   <table class="ss_folder_border" width="100%" 
     style="border: 1px solid black; margin:0px;"
@@ -62,11 +62,10 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <div id="ss_showentrydiv_place_holder" width="100%"
  style="position:relative; margin:0px 0px 3px 0px; padding:0px; 
  top:<%= sliderDivOffset %>px;">
-</div>
 
 <div id="ss_showentrydiv" class="ss_style ss_portlet" 
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
-  style="position:absolute; margin:0px 0px 0px 2px; visibility:hidden; display:none;">
+  style="margin:0px 0px 0px 2px;">
   <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
     <ssf:param name="box_color" value="${ss_folder_border_color}" />
@@ -82,6 +81,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
   </ssf:box>
 </div>
 </div>
+</div>
 <div id="ss_showfolder_bottom" class="ss_style ss_portlet">&nbsp;</div>
 
 <script type="text/javascript">
@@ -93,4 +93,3 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 <form class="ss_style ss_form" name="ss_saveEntryHeightForm" id="ss_saveEntryHeightForm" >
 <input type="hidden" name="entry_height">
 </form>
-<div id="ss_entry_height_status_message" style="visibility:hidden; display:none;"></div>

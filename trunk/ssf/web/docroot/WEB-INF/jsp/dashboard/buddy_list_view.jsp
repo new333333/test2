@@ -33,7 +33,6 @@ function ss_showNotLoggedInMsg() {
 	alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 }
 </script>
-<div id="ss_presence_status_message${ssDashboardId}" class="ss_portlet_style" style="visibility:hidden; display:none;"></div>
 <div class="ss_portlet_style">
 <table style="width:100%;">
 <tr>
@@ -121,6 +120,7 @@ type="time" /></span>
 <script type="text/javascript">
 var count = 0
 function ss_getPresence${ssDashboardId}(timeout) {
+	ss_setupStatusMessageDiv()
 	clearTimeout(ss_presenceTimer${ssDashboardId});
 	var url = "<ssf:url 
     	adapter="true" 
@@ -140,7 +140,7 @@ function ss_getPresence${ssDashboardId}(timeout) {
 function ss_postRequest${ssDashboardId}(obj) {
 	//alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
 	//See if there was an error
-	if (self.document.getElementById("ss_presence_status_message${ssDashboardId}").innerHTML == "error") {
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		if (!obj.getData('treeName')) {
 			//This call wasn't made from a timeout. So, give error message
 			if (self.ss_showNotLoggedInMsg) self.ss_showNotLoggedInMsg();

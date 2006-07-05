@@ -9,8 +9,8 @@
 <%
 	if (ss_ajaxStatus.containsKey("ss_ajaxNotLoggedIn")) {
 %>
-	<taconite-replace contextNodeID="ss_search_form_status_message" parseInBrowser="true">
-		<div id="ss_search_form_status_message">
+	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
+		<div id="ss_status_message">
 		  <script type="text/javascript">
 		    if (self.ss_notLoggedIn) self.ss_notLoggedIn();
 		  </script>
@@ -19,8 +19,8 @@
 <%
 	} else {
 %>
-	<taconite-replace contextNodeID="ss_search_form_status_message" parseInBrowser="true">
-		<div id="ss_search_form_status_message" style="visibility:hidden; display:none;">ok</div>
+	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
+		<div id="ss_status_message" style="visibility:hidden; display:none;">ok</div>
 	</taconite-replace>
 
 	<taconite-replace contextNodeID="elementList<c:out value="${ss_filterTermNumber}"/>" 

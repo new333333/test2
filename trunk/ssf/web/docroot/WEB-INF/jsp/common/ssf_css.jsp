@@ -305,7 +305,7 @@ div.ss_sliding_table_column {
 .ss_sliding_table_column * {
   color: ${ss_sliding_table_text_color};
 }
-div.ss_sliding_table_info_popup {
+.ss_sliding_table_info_popup {
   position: absolute; 
   visibility: hidden;
   display:block; 

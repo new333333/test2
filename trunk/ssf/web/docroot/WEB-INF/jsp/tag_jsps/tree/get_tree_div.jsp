@@ -16,14 +16,14 @@
 <%
 	if (ss_ajaxStatus.containsKey("ss_ajaxNotLoggedIn")) {
 %>
-	<taconite-replace contextNodeID="ss_tree_div_status_message<%= ss_tree_treeName %>" parseInBrowser="true">
-		<div id="ss_tree_div_status_message<%= ss_tree_treeName %>" style="visibility:hidden; display:none;">error</div>
+	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
+		<div id="ss_status_message" style="visibility:hidden; display:none;">error</div>
 	</taconite-replace>
 <%
 	} else {
 %>
-	<taconite-replace contextNodeID="ss_tree_div_status_message<%= ss_tree_treeName %>" parseInBrowser="true">
-		<div id="ss_tree_div_status_message<%= ss_tree_treeName %>" style="visibility:hidden; display:none;">ok</div>
+	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
+		<div id="ss_status_message" style="visibility:hidden; display:none;">ok</div>
 	</taconite-replace>
 	<taconite-insert-after contextNodeID="<%= ss_tree_treeName + "temp" + ss_tree_binderId %>" parseInBrowser="true">
 		<ssf:tree treeName="<%= ss_tree_treeName %>" 

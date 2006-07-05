@@ -3,16 +3,16 @@
 <taconite-root xml:space="preserve">
 <c:if test="${!empty ss_ajaxStatus[ss_ajaxNotLoggedIn]}">
 
-	<taconite-replace contextNodeID="ss_presence_status_message${ssDashboardId}" 
+	<taconite-replace contextNodeID="ss_status_message" 
 	  parseInBrowser="true">
-		<div id="ss_presence_status_message${ssDashboardId}" 
+		<div id="ss_status_message" 
 		  style="visibility:hidden; display:none;">error</div>
 	</taconite-replace>
 </c:if>
 <c:if test="${empty ss_ajaxStatus[ss_ajaxNotLoggedIn]}">
-	<taconite-replace contextNodeID="ss_presence_status_message${ssDashboardId}" 
+	<taconite-replace contextNodeID="ss_status_message" 
 	  parseInBrowser="true">
-		<div id="ss_presence_status_message${ssDashboardId}" 
+		<div id="ss_status_message" 
 		  style="visibility:hidden; display:none;">ok</div>
 	</taconite-replace>
 </c:if>

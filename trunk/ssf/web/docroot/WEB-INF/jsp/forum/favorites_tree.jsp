@@ -6,14 +6,14 @@
 <%
 	if (ss_ajaxStatus.containsKey("ss_ajaxNotLoggedIn")) {
 %>
-	<taconite-replace contextNodeID="ss_favorites_status_message" parseInBrowser="true">
-		<div id="ss_favorites_status_message" style="visibility:hidden; display:none;">error</div>
+	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
+		<div id="ss_status_message" style="visibility:hidden; display:none;">error</div>
 	</taconite-replace>
 <%
 	} else {
 %>
-	<taconite-replace contextNodeID="ss_favorites_status_message" parseInBrowser="true">
-		<div id="ss_favorites_status_message" style="visibility:hidden; display:none;">ok</div>
+	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
+		<div id="ss_status_message" style="visibility:hidden; display:none;">ok</div>
 	</taconite-replace>
 <%
 	}

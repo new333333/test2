@@ -47,6 +47,7 @@ function ss_positionEntryDiv() {
     if (ss_entryWindowWidth < ss_minEntryWindowWidth) ss_entryWindowWidth = ss_minEntryWindowWidth;
 
     var wObj1 = self.document.getElementById('ss_showentrydiv')
+    ss_moveObjectToBody(wObj1)
     var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
     var wObj3 = self.document.getElementById('ss_showentryframe')
 
@@ -156,6 +157,7 @@ function ss_divStopDrag(evt) {
 
 var ss_lastEntryWidth = -1;
 function ss_saveEntryWidth(entryWidth) {
+	ss_setupStatusMessageDiv()
 	if (entryWidth == ss_lastEntryWidth) return;
 	ss_lastEntryWidth = entryWidth;
     self.document.forms['ss_saveEntryWidthForm'].entry_width.value = entryWidth;
@@ -179,7 +181,7 @@ function ss_preRequest(obj) {
 }
 function ss_postEntryWidthRequest(obj) {
 	//See if there was an error
-	if (self.document.getElementById("ss_entry_width_status_message").innerHTML == "error") {
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 	}
 }

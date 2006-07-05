@@ -103,19 +103,19 @@ function ss_toggle_toolbars() {
 		    <c:if test="${component.visible}">
 		      <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
 		        name="_hide" alt="<ssf:nlt tag="button.hide"/>" 
-		        style="hspace:2px;">
+		        style="margin-right:2px;">
 		    </c:if>
 		    <c:if test="${!component.visible}">
 		      <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
 		        name="_show" alt="<ssf:nlt tag="button.show"/>" 
-		        style="hspace:2px;">
+		        style="margin-right:2px;">
 		    </c:if>
 		    <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
 		      name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>" 
-		      style="hspace:2px;">
+		      style="margin-right:2px;">
 		    <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
 		      name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>" 
-		      style="hspace:2px;">
+		      style="margin-right:2px;">
 		  </form></td></tr></table>
 		 </div>
 		 <div align="left" style="margin:0px; padding:2px;">
@@ -178,19 +178,19 @@ function ss_toggle_toolbars() {
 			<c:if test="${component.visible}">
 			  <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
 			    name="_hide" alt="<ssf:nlt tag="button.hide"/>" 
-			    style="hspace:2px;">
+			    style="margin-right:2px;">
 			</c:if>
 			<c:if test="${!component.visible}">
 			  <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
 			    name="_show" alt="<ssf:nlt tag="button.show"/>" 
-			    style="hspace:2px;">
+			    style="margin-right:2px;">
 			</c:if>
 		    <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
 			  name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>" 
-			  style="hspace:2px;">
+			  style="margin-right:2px;">
 			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
 			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>" 
-			  style="hspace:2px;">
+			  style="margin-right:2px;">
 		  
 		  </form>
 		  </td></tr></table>
@@ -260,19 +260,19 @@ function ss_toggle_toolbars() {
 			<c:if test="${component.visible}">
 			  <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
 			    name="_hide" alt="<ssf:nlt tag="button.hide"/>" 
-			    style="hspace:2px;">
+			    style="margin-right:2px;">
 			</c:if>
 			<c:if test="${!component.visible}">
 			  <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
 			    name="_show" alt="<ssf:nlt tag="button.show"/>" 
-			    style="hspace:2px;">
+			    style="margin-right:2px;">
 			</c:if>
 			<input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
 			  name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>" 
-			  style="hspace:2px;">
+			  style="margin-right:2px;">
 			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
 			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>" 
-			  style="hspace:2px;">
+			  style="margin-right:2px;">
 		
 		  </form>
 		  </td></tr></table>
@@ -336,19 +336,19 @@ function ss_toggle_toolbars() {
 			<c:if test="${component.visible}">
 			  <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
 			    name="_hide" alt="<ssf:nlt tag="button.hide"/>" 
-			    style="hspace:2px;">
+			    style="margin-right:2px;">
 			</c:if>
 			<c:if test="${!component.visible}">
 			  <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
 			    name="_show" alt="<ssf:nlt tag="button.show"/>" 
-			    style="hspace:2px;">
+			    style="margin-right:2px;">
 			</c:if>
 			<input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
 			  name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>" 
-			  style="hspace:2px;">
+			  style="margin-right:2px;">
 			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
 			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>" 
-			  style="hspace:2px;">
+			  style="margin-right:2px;">
 
 		  </form>
 		  </td></tr></table>
