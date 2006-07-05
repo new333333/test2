@@ -81,6 +81,19 @@ public class ListFolderController  extends SAbstractForumController {
 		Map formData = request.getParameterMap();
 		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 
+ 		//Check special options in the URL
+		String[] debug = (String[])formData.get(WebKeys.URL_DEBUG);
+		if (debug != null && (debug[0].equals(WebKeys.DEBUG_ON) || debug[0].equals(WebKeys.DEBUG_OFF))) {
+			//The user is requesting debug mode to be turned on or off
+			if (debug[0].equals(WebKeys.DEBUG_ON)) {
+				getProfileModule().setUserProperty(user.getId(), 
+						ObjectKeys.USER_PROPERTY_DEBUG, new Boolean(true));
+			} else if (debug[0].equals(WebKeys.DEBUG_OFF)) {
+				getProfileModule().setUserProperty(user.getId(), 
+						ObjectKeys.USER_PROPERTY_DEBUG, new Boolean(false));
+			}
+		}
+
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.FORUM_OPERATION_RELOAD_LISTING)) {
 			//An action is asking us to build the url

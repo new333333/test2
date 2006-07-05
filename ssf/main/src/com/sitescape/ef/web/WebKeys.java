@@ -38,6 +38,7 @@ public class WebKeys {
     public static final String URL_ATTRIBUTE_ID = "attrId";
     public static final String URL_BINDER_ID="binderId";
     public static final String URL_BINDER_TYPE="binderType";
+    public static final String URL_DEBUG="enableDebug";
     public static final String URL_DOWNLOAD_FILE="download";
 	public static final String URL_ENTRY_ID = "entryId";
     public static final String URL_ENTRY_TYPE="entryType";
@@ -162,6 +163,8 @@ public class WebKeys {
     public static final String DASHBOARD_TITLE="title";
     public static final String DASHBOARD_WORKSPACE_TREE="workspaceTree";
     public static final String DASHBOARD_WORKSPACE_TOPID="topId";
+    public static final String DEBUG_ON="on";
+    public static final String DEBUG_OFF="off";
     public static final String DEFAULT_FOLDER_DEFINITION="ssDefaultFolderDefinition";
     public static final String DEFAULT_FOLDER_DEFINITION_ID="ssDefaultFolderDefinitionId";
     public static final String DEFINITION="ssDefinition";

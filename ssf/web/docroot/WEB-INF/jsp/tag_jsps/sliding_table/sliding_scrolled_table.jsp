@@ -74,6 +74,7 @@ var ss_sTableLastLeft = 0;
 var ss_sTableLastTop = 0;
 function ss_checkSlidingTableLayout() {
 	if (getObjAbsY("<c:out value="${ss_slidingTableId}"/>_2") != ss_sTableLastTop || getObjAbsX("<c:out value="${ss_slidingTableId}"/>_2") != ss_sTableLastLeft) {
+		ss_debug(getObjAbsY("No match: <c:out value="${ss_slidingTableId}"/>_2") + ", " + ss_sTableLastTop + "; " + getObjAbsX("<c:out value="${ss_slidingTableId}"/>_2") +", "+ ss_sTableLastLeft) 
 		//The layout changed, go reposition things
 		ss_sTableLastTop = getObjAbsY("<c:out value="${ss_slidingTableId}"/>_2")
 		ss_sTableLastLeft = getObjAbsX("<c:out value="${ss_slidingTableId}"/>_2")

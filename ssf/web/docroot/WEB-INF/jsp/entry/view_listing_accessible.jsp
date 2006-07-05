@@ -7,7 +7,7 @@
 <c:if test="${!empty ssReloadUrl}">
 <script type="text/javascript">
 	//Open the current url in the opener window
-	ss_reloadOpener('<c:out value="${ssReloadUrl}"/>')
+	ss_reloadOpener('<c:out value="${ssReloadUrl}" escapeXml="false"/>')
 </script>
 
 </c:if>
@@ -31,7 +31,7 @@
   <c:if test="<%= reloadCaller %>">
 <script type="text/javascript">
 	//Open the current url in the opener window
-	ss_reloadOpener('<%= ssReloadUrl %>')
+	ss_reloadOpener('<c:out value="${ssReloadUrl}" escapeXml="false"/>')
 </script>
   </c:if>
 </c:if>

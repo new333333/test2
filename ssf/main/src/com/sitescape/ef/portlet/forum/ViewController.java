@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
 import com.sitescape.ef.util.NLT;
@@ -28,8 +29,10 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.ProfileBinder;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.web.portlet.SAbstractController;
@@ -46,7 +49,7 @@ public class ViewController  extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
-
+ 		
 		//TODO: need to make the display type a config option
 		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
 		String pName = pConfig.getPortletName();
