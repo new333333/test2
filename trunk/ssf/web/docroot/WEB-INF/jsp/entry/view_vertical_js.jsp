@@ -110,7 +110,10 @@ function ss_hideEntryDiv() {
 var ss_lastLayoutEntryHeight = 0;
 function ss_checkLayoutChange() {
 	//Reposition entry div, but only if not in the process of doing it
-	if (ss_positioningEntryDiv != 1) ss_positionEntryDiv();
+	if (ss_positioningEntryDiv != 1) {
+		ss_positionEntryDiv();
+		ss_debug("ss_checkLayoutChange: " + ss_positioningEntryDiv)
+	}
 }
 
 ss_createOnLoadObj("ss_positionEntryDiv", ss_positionEntryDiv);

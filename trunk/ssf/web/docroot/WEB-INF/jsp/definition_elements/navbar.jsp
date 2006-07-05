@@ -1,8 +1,15 @@
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <script type="text/javascript" src="/ssf/js/tree/tree_widget.js"></script>
-<div id="debugLog">
+<c:if test="${ssUserProperties.debugMode}">
+<div style="border:1px solid black;">
+<div style="background-color:#CECECE; border-bottom:1px solid black; width:100%;">Debug window</div>
+<div>
+<textarea id="debugTextarea" style="width:100%;" rows="6"></textarea>
 </div>
+</div>
+<br/>
+</c:if>
 
 <div >
 <table cellspacing="0" cellpadding="0" width="100%">

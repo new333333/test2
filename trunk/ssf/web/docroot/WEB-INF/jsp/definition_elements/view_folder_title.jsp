@@ -3,9 +3,8 @@
 <div class="ss_entryContent">
 <span class="ss_entryTitle">
 <a style="text-decoration: none;" href="<ssf:url 
-    folderId="${ssDefinitionEntry.parentFolder.id}" 
-    action="view_folder_entry"
-    entryId="${ssDefinitionEntry.id}" />">
+    folderId="${ssDefinitionEntry.id}" 
+    action="view_folder_listing" />">
 <c:if test="${empty ssDefinitionEntry.title}" >
 --<ssf:nlt tag="entry.noTitle" />--
 </c:if>

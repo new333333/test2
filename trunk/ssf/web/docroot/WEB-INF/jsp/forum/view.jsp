@@ -40,6 +40,11 @@ function ss_showNotLoggedInMsg() {
 				<c:if test="${empty ssFolderList}">
 				  <ssf:nlt tag="portlet.notConfigured" 
 				   text="The portlet preferences are not set.  Choose the edit button to configure the portlet."/>
+				  <a class="ss_linkButton ss_smallprint" 
+				    href="<portlet:renderURL 
+				      portletMode="edit" 
+				      windowState="maximized" />"
+				    ><ssf:nlt tag="portlet.setPreferences"/></a>
 				 </c:if>
 				<c:if test="${!empty ssFolderList}">
 					<table cellspacing="0" cellpadding="0">

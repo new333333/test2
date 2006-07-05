@@ -177,7 +177,10 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 		if (jsDebug) {alert('Div "'+objName+'" does not exist. (ss_showHideObj)')}
 	}
 	//Signal that the layout changed
-	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	if (!obj.style.position || obj.style.position != "absolute") {
+		ssf_onLayoutChange();
+		ss_debug("ss_showHideObj: " + objName + " = " + visibility)
+	}
 }
 
 // Function by Simon Willison from sitepoint.com
@@ -490,6 +493,7 @@ function ssf_onresize_event_handler() {
     for (var i = 0; i < ss_onResizeList.length; i++) {
         if (ss_onResizeList[i].resizeRoutine) {
         	ss_onResizeList[i].resizeRoutine();
+        	ss_debug("Resize event: " + ss_onResizeList[i].name + "\n");
         }
     }
     if (ss_savedOnResizeRoutine != null) {
@@ -527,6 +531,7 @@ function m_setLayoutRoutine(layoutRoutine) {
 function ssf_onLayoutChange(obj) {
     for (var i = 0; i < ss_onLayoutChangeList.length; i++) {
         if (ss_onLayoutChangeList[i].layoutRoutine) {
+        	ss_debug("ssf_onLayoutChange: " + ss_onLayoutChangeList[i].name)
         	ss_onLayoutChangeList[i].layoutRoutine();
         }
     }
@@ -790,34 +795,14 @@ function ss_setObjectWidth(obj, width) {
 	obj.style.width = width;
 
     //Call the routines that want to be called on layout changes
-    ssf_onLayoutChange();
-	return
-
-    if (isNSN6 || isMoz5) {
-        obj.offsetWidth = width;
-    } else if (isNSN) {
-        obj.clip.width = width;
-    } else {
-        obj.clientWidth = width;
-    }
+    if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
 }
 
 function ss_setObjectHeight(obj, height) {
     obj.style.height = height;
     
     //Call the routines that want to be called on layout changes
-    ssf_onLayoutChange();
-    return
-    
-    if (isNSN6 || isMoz5) {
-        obj.offsetHeight = height;
-    } else if (isNSN) {
-        obj.clip.height = height;
-    } else {
-        obj.clientHeight = height;
-    }
-    //Call the routines that want to be called on layout changes
-    ssf_onLayoutChange();
+    if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
 }
 
 function ss_setObjectLeft(obj, value) {
@@ -829,7 +814,7 @@ function ss_setObjectLeft(obj, value) {
         obj.style.pixelLeft = value;
     }
     //Call the routines that want to be called on layout changes
-    ssf_onLayoutChange();
+    if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
 }
 
 function ss_setObjectTop(obj, value) {
@@ -841,7 +826,7 @@ function ss_setObjectTop(obj, value) {
         obj.style.pixelTop = value;
     }
     //Call the routines that want to be called on layout changes
-    ssf_onLayoutChange();
+    if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
 }
 
 function ss_getWindowWidth() {
@@ -1069,6 +1054,13 @@ function ss_showDiv(divName) {
     if (!document.getElementById(divName).style.display || document.getElementById(divName).style.display != 'inline') {
     	document.getElementById(divName).style.display = "block";
     }
+
+	//Signal that the layout changed
+	if (!document.getElementById(divName) || 
+	    	document.getElementById(divName).style.position != "absolute") {
+		ssf_onLayoutChange();
+		ss_debug("ss_showDiv: " + divName)
+	}
 }
 
 function ss_hideDiv(divName) {
@@ -1078,6 +1070,13 @@ function ss_hideDiv(divName) {
     
     //Show any spanned areas that may have been turned off
     ss_showSpannedAreas()
+
+	//Signal that the layout changed
+	if (!document.getElementById(divName) || 
+	    	document.getElementById(divName).style.position != "absolute") {
+		ssf_onLayoutChange();
+		ss_debug("ss_hideDiv: " + divName)
+	}
 }
 
 function ss_positionDiv(divName, x, y) {
@@ -1468,6 +1467,19 @@ function ss_setupStatusMessageDiv() {
         smDiv.style.visibility = "hidden";
         smDiv.style.display = "none";
     	document.getElementsByTagName("body").item(0).appendChild(smDiv);
+	}
+}
+
+//Routine to write text to the debug window
+function ss_debug(text) {
+	var debugTextarea = document.getElementById('debugTextarea');
+	if (debugTextarea) {
+		var html = debugTextarea.value;
+		if (html.length > 10000) html = html.substring(html.length - 6000, html.length);
+		html +=  "\n";
+		html += text;
+		debugTextarea.value = html;
+		debugTextarea.scrollTop = 10000;
 	}
 }
 
