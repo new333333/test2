@@ -32,6 +32,7 @@ var ss_userListSearchLastText = "";
 var ss_userListSearchLastElement = "";
 var ss_userListSearchLastUserGroupType = "";
 function ss_userListSearch(text, elementName, userGroupType) {
+	ss_setupStatusMessageDiv()
 	//Are we already doing a search?
 	if (ss_userListSearchInProgress == 1) {
 		//Yes, hold this request until the current one finishes
@@ -83,7 +84,7 @@ function ss_userListSearch(text, elementName, userGroupType) {
 }
 function ss_postUserListRequest(obj) {
 	//See if there was an error
-	if (self.document.getElementById("ss_search_status_message").innerHTML == "error") {
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 	} else {
 		//Re-enable the dragable lists
@@ -129,7 +130,6 @@ function ss_userListInterceptCR(e) {
 }
 
 </script>
-<div id="ss_search_status_message"></div>
 <c:set var="ss_user_list_support_stuff_loaded" value="1" scope="request"/>
 </c:if>
 <table class="ss_style" cellspacing="2px" cellpadding="5px">
@@ -206,7 +206,6 @@ function ss_userListInterceptCR(e) {
   ss_DragDrop.makeListContainer( document.getElementById('available_<%= userListElementName %>'));
 
 function ss_saveUserListData_<portlet:namespace/>_${prefix}() {
-	alert('Save data: ' + ss_saveUserListData_<portlet:namespace/>_${prefix})
 	var elementObj = document.getElementById('<%= userListElementName %>');
 	var addedObj = document.getElementById('added_<%= userListElementName %>');
 

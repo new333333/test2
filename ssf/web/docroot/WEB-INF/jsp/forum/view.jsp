@@ -30,7 +30,6 @@ function ss_showNotLoggedInMsg() {
 	alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 }
 </script>
-<div id="ss_status_message" class="ss_portlet_style" style="visibility:hidden; display:none;"></div>
 
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
@@ -75,6 +74,7 @@ function ss_showNotLoggedInMsg() {
 <script type="text/javascript">
 var count = 0
 function ss_getUnseenCounts() {
+	ss_setupStatusMessageDiv()
 	<c:forEach var="folder" items="${ssFolderList}">
 		document.getElementById("count_<c:out value="${folder.id}"/>").style.color = "silver";
 	</c:forEach>

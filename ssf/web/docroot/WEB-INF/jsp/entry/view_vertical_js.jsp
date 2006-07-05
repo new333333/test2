@@ -17,16 +17,18 @@ var ss_scrollTopOffset = 4;
 var ss_positioningEntryDiv = 0;
 var ss_marginLeft = 2
 var ss_marginRight = 2
-var ss_folderDivMarginOffset = 6
+var ss_entryHeightHighWaterMark = 0
 
 function ss_setEntryDivHeight() {
 	if (window.ss_showentryframe && window.ss_showentryframe.document && 
 			window.ss_showentryframe.document.body) {
 	    var wObj3 = self.document.getElementById('ss_showentryframe')
-	    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
-	    var entryHeightPlus2 = parseInt(entryHeight + 2)
-		ss_setObjectHeight(wObj3, ss_minEntryDivHeight);
-		setTimeout("ss_setEntryDivHeight2();", 100);
+		if (ss_minEntryDivHeight > ss_entryHeightHighWaterMark) {
+			ss_entryHeightHighWaterMark = ss_minEntryDivHeight;
+			ss_setObjectHeight(wObj3, ss_minEntryDivHeight);
+		}
+		//setTimeout("ss_setEntryDivHeight2();", 100);
+		setTimeout("ss_positionEntryDiv();", 100);
 	}
 }
 function ss_setEntryDivHeight2() {
@@ -43,10 +45,12 @@ function ss_positionEntryDiv() {
 	ss_positioningEntryDiv = 1
 	ss_showEntryDiv()
 
+    //Make sure the absolute positioned divs are attached to the body itself
+    //ss_moveDivToBody('ss_showentrydiv')
+ 
     var wObj = self.document.getElementById('ss_showfolder')
     var wObjB = self.document.getElementById('ss_showfolder_bottom')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
-    ss_moveObjectToBody(wObj1)
     var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
     var wObj3 = self.document.getElementById('ss_showentryframe')
     var wObj4 = self.document.getElementById('ss_showentrydiv_place_holder')
@@ -55,8 +59,8 @@ function ss_positionEntryDiv() {
 	ss_setObjectWidth(wObj1, width);
 	ss_setObjectWidth(wObj2, width);
 
-    ss_setObjectTop(wObj1, parseInt(parseInt(ss_getDivTop('ss_showfolder_slider')) + <%= sliderDivHeight %>))
-    ss_setObjectLeft(wObj1, parseInt(ss_getDivLeft('ss_showfolder_slider')))
+    //ss_setObjectTop(wObj1, parseInt(parseInt(ss_getDivTop('ss_showfolder_slider')) + <%= sliderDivHeight %>))
+    //ss_setObjectLeft(wObj1, parseInt(ss_getDivLeft('ss_showfolder_slider')))
     
     //Keep the entry within the confines of the main window
     //var entryHeight = parseInt(ss_getWindowHeight() - ss_getDivTop('ss_showfolder_slider') - ss_bottomHeight)
@@ -65,11 +69,14 @@ function ss_positionEntryDiv() {
 	if (window.ss_showentryframe && window.ss_showentryframe.document && 
 			window.ss_showentryframe.document.body) {
 	    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
-	    
 	    if (entryHeight < ss_minEntryDivHeight) entryHeight = ss_minEntryDivHeight;
-		ss_setObjectHeight(wObj1, entryHeight);
+	    if (entryHeight > ss_entryHeightHighWaterMark) {
+		    //Only expand the height. Never shrink it. Otherwise the screen jumps around.
+		    ss_entryHeightHighWaterMark = entryHeight;
+			ss_setObjectHeight(wObj1, entryHeight);
+			//ss_setObjectHeight(wObj4, entryHeight);
+		}
 		ss_setObjectHeight(wObj3, entryHeight);
-		ss_setObjectHeight(wObj4, entryHeight);
 	}
 	
 	ss_positioningEntryDiv = 0
@@ -111,10 +118,14 @@ ss_createOnResizeObj('ss_positionEntryDiv', ss_positionEntryDiv);
 ss_createOnLayoutChangeObj('ss_checkLayoutChange', ss_checkLayoutChange);
 
 function ss_showForumEntryInIframe(url) {
+	if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(null);
 	ss_positionEntryDiv();
     var wObj = self.document.getElementById('ss_showentryframe')
 
- 	ss_setObjectHeight(wObj, ss_minEntryDivHeight);
+	if (ss_minEntryDivHeight > ss_entryHeightHighWaterMark) {
+		ss_setObjectHeight(wObj, ss_minEntryDivHeight);
+		ss_entryHeightHighWaterMark = ss_minEntryDivHeight;
+	}
 
     if (wObj.src && wObj.src == url) {
     	wObj.src = "_blank";
@@ -142,8 +153,8 @@ function ss_startDragDiv() {
 		document.getElementsByTagName( "body" ).item(0).appendChild( tempNode );
 	}
 	ss_divDragObj = document.getElementById('ss_showfolder_slider_abs')
-    ss_setObjectTop(ss_divDragObj, ss_getDivTop('ss_showfolder_slider'))
-    ss_setObjectLeft(ss_divDragObj, ss_getDivLeft('ss_showfolder_slider'));
+    ss_setObjectTop(ss_divDragObj, parseInt(ss_getDivTop('ss_showfolder_slider') + 1))
+    ss_setObjectLeft(ss_divDragObj, parseInt(ss_getDivLeft('ss_showfolder_slider') + 1));
     ss_setObjectWidth(ss_divDragObj, parseInt(ss_getDivWidth('ss_showfolder_slider') - ss_marginRight));
     ss_divDragObj.style.visibility = 'visible';
 	
@@ -218,10 +229,11 @@ function ss_divStopDrag(evt) {
             dObjLeft = evt.clientX - ss_divOffsetX;
             dObjTop = evt.clientY - ss_divOffsetY;
         }
-		var tableDivObj = document.getElementById('<c:out value="${ss_folderTableId}"/>')
-	    ss_folderDivHeight = parseInt(parseInt(dObjTop) - 
-	    		parseInt("<%= sliderDivOffset %>") - ss_folderDivMarginOffset - 
-	    		parseInt(ss_getDivTop('<c:out value="${ss_folderTableId}"/>')));
+		var tableDivObj = document.getElementById('${ss_folderTableId}')
+		var marginOffset = parseInt(parseInt(tableDivObj.style.marginTop) + parseInt(tableDivObj.style.marginBottom))
+	    ss_folderDivHeight = parseInt(parseInt(dObjTop) + 
+	    		ss_getDivHeight('ss_showfolder_slider') - marginOffset - 1 -
+	    		parseInt(ss_getDivTop('${ss_folderTableId}')));
 	    if (ss_folderDivHeight < ss_minFolderDivHeight) ss_folderDivHeight = ss_minFolderDivHeight;
 	    ss_setObjectHeight(tableDivObj, ss_folderDivHeight);
 
@@ -238,6 +250,7 @@ function ss_divStopDrag(evt) {
 
 var ss_lastEntryHeight = -1;
 function ss_saveEntryHeight(entryHeight) {
+	ss_setupStatusMessageDiv()
 	if (entryHeight == ss_lastEntryHeight) return;
 	ss_lastEntryHeight = entryHeight;
     self.document.forms['ss_saveEntryHeightForm'].entry_height.value = entryHeight;
@@ -257,7 +270,7 @@ function ss_saveEntryHeight(entryHeight) {
 }
 function ss_postEntryHeightRequest(obj) {
 	//See if there was an error
-	if (self.document.getElementById("ss_entry_height_status_message").innerHTML == "error") {
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 	}
 }

@@ -288,6 +288,7 @@ function cloneItem(id, name, item) {
 }
 
 function getConditionSelectbox(obj, op, op2) {
+	ss_setupStatusMessageDiv()
 	var formObj = ss_getContainingForm(obj)
 	var nameObj = obj.name
 	if (!obj.name) nameObj = obj.id;
@@ -309,7 +310,7 @@ function getConditionSelectbox(obj, op, op2) {
 
 function ss_postLoadGetConditionRequest() {
 	//See if there was an error
-	if (self.document.getElementById("ss_condition_status_message").innerHTML == "error") {
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 	} else {
 		showDisplayDiv()
@@ -463,6 +464,7 @@ function setSubmitData(formObj) {
 }
 
 function ss_loadNextDiv(option, itemId, itemName) {
+	ss_setupStatusMessageDiv()
 	//alert("load div: " + option + ", " + itemId + ", " + itemName)
 	hideDisplayDiv();
 	var url = "<ssf:url adapter="true" 
@@ -484,7 +486,7 @@ function ss_loadNextDiv(option, itemId, itemName) {
 }
 function ss_postLoadNextDivRequest(obj) {
 	//See if there was an error
-	if (self.document.getElementById("ss_load_div_status_message").innerHTML == "error") {
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 	} else {
 		showDisplayDiv()
@@ -495,8 +497,6 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 
 </script>
 <div class="ss_style ss_portlet">
-<div id="ss_load_div_status_message"></div>
-<div id="ss_condition_status_message"></div>
 <div>
 
 <c:if test="${!empty ss_configErrorMessage}">

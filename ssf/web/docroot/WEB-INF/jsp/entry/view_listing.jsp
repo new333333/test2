@@ -278,6 +278,7 @@ function ss_viewEntryResize() {
 	ss_viewEntryResizeTimeout = setTimeout('ss_viewEntrySaveSize()', 250);
 }
 function ss_viewEntrySaveSize() {
+	ss_setupStatusMessageDiv()
 	clearTimeout(ss_viewEntryResizeTimeout);
 	ss_viewEntryResizeTimeout = null;
 	if (ss_viewEntryResizeHappened == 1) {
@@ -310,7 +311,6 @@ function ss_viewEntrySaveSize() {
 }
 ss_createOnResizeObj('ss_viewEntryResize', ss_viewEntryResize);
 </script>
-<div id="ss_entry_width_status_message" style="visibility:hidden; display:none;"></div>
 <%
 	}
 %>

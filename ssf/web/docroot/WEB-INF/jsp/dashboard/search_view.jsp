@@ -17,7 +17,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<table class="ss_style" style="width:"100%;">
+<table class="ss_style" style="width:100%;">
 <tr>
   <th align="left">Title</th>
   <th align="left">Author</th>

@@ -60,4 +60,3 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 <form class="ss_style ss_form" name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
 <input type="hidden" name="entry_width">
 </form>
-<div id="ss_entry_width_status_message" style="visibility:hidden; display:none;"></div>

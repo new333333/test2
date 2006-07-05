@@ -127,6 +127,7 @@ function ss_unhighlightFavorites() {
 }
 
 function ss_saveFavorites(id) {
+	ss_setupStatusMessageDiv()
 	ss_unhighlightFavorites(id)
 	if (ss_lastDropped == null) return;
 	
@@ -172,6 +173,7 @@ function ss_clickFavorite() {
 }
 
 function ss_addForumToFavorites() {
+	ss_setupStatusMessageDiv()
 	var binderId = '${ssBinder.id}';
 	var action = '${action}';
 	var url = "<ssf:url 
@@ -191,6 +193,7 @@ function ss_addForumToFavorites() {
 }
 
 function ss_addFavoriteCategory() {
+	ss_setupStatusMessageDiv()
 	var formObj = self.document.getElementById('ss_favorites_form');
 	var s = formObj.new_favorites_category.value;
 	if (s == "") return;
@@ -215,7 +218,9 @@ var ss_favoritesPaneLeftOffset = 4;
 var ss_favoritesMarginW = 4;
 var ss_favoritesMarginH = 6;
 function ss_showFavoritesPane() {
+	ss_setupStatusMessageDiv()
 	var fObj = self.document.getElementById("ss_favorites_pane");
+	ss_moveObjectToBody(fObj);
 	fObj.style.visibility = "visible";
 	ss_setOpacity(fObj, 0)
 	fObj.style.display = "none";
@@ -243,7 +248,7 @@ function ss_showFavoritesPane() {
 }
 function ss_postFavoritesRequest(obj) {
 	//See if there was an error
-	if (self.document.getElementById("ss_favorites_status_message").innerHTML == "error") {
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 	}
 	ss_hideObj("ss_favorites_form_div");
@@ -290,7 +295,6 @@ function ss_setFavoritesPaneSize() {
 
 </c:if>
 </div>
-<div id="ss_favorites_status_message"></div>
 <div class="ss_style" id="ss_favorites_pane" 
   style="position:absolute; visibility:hidden; z-index:200;
   border:solid 1px black; height:200px;">

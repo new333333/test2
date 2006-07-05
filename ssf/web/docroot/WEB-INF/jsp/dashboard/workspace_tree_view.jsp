@@ -48,8 +48,6 @@ function wsTreeComponent_showId(id, obj, action) {
 <ssf:tree treeName="wsTreeComponent" treeDocument="${ssDashboard.beans[ssDashboardId].workspaceTree}" 
   topId="${ssDashboard.beans[ssDashboardId].topId}" highlightNode="${ssDefinitionEntry.id}" 
   rootOpen="${rootOpen}" />
-<div id="ss_tree_div_status_messagewsTreeComponent" 
-  style="visibility:hidden; display:none;"></div>
 </c:if>
 </c:if>
 

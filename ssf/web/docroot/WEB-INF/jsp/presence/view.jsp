@@ -38,7 +38,6 @@ function ss_showNotLoggedInMsg() {
 	alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
 }
 </script>
-<div id="ss_presence_status_message" class="ss_portlet_style" style="visibility:hidden; display:none;"></div>
 <div class="ss_toolbar">
 <table cellspacing="0" cellpadding="2" style="width:100%;">
 <tr>
@@ -124,6 +123,7 @@ type="time" /></span>
 <script type="text/javascript">
 var count = 0
 function ss_getPresence() {
+	ss_setupStatusMessageDiv()
 	clearTimeout(ss_presenceTimer);
 	var url = "<ssf:url 
     	adapter="true" 
@@ -145,7 +145,7 @@ function ss_preRequest(obj) {
 function ss_postRequest(obj) {
 	//alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
 	//See if there was an error
-	if (self.document.getElementById("ss_presence_status_message").innerHTML == "error") {
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		if (self.ss_showNotLoggedInMsg) self.ss_showNotLoggedInMsg();
 	}
 }

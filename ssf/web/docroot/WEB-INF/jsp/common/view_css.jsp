@@ -37,7 +37,7 @@ function ss_createStyleSheet(url) {
 	document.getElementsByTagName("head")[0].appendChild(newSS);
 }
 
-var ss_urlBase = self.location.protocol + "//" + self.location.host + "/";
+var ss_urlBase = self.location.protocol + "//" + self.location.host;
 var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
 var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
 var niftyCornersCssUrl = ss_urlBase + "<html:rootPath/>css/nifty_corners.css";
