@@ -3,9 +3,12 @@ package com.sitescape.ef.web.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.portlet.ActionRequest;
 
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
@@ -15,9 +18,11 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.SingletonViolationException;
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.lucene.Hits;
@@ -181,6 +186,12 @@ public class DashboardHelper {
 	}
 	static public Map getDashboardMap(Binder binder, UserProperties userFolderProperties, 
 			Map userProperties, Map model, String scope) {
+		String componentId = "";
+		return getDashboardMap(binder, userFolderProperties, userProperties, 
+				model, scope, componentId);
+	}
+	static public Map getDashboardMap(Binder binder, UserProperties userFolderProperties, 
+			Map userProperties, Map model, String scope, String componentId) {
 		Map dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
 		if (dashboard == null) {
 			dashboard = DashboardHelper.getNewDashboardMap();
@@ -293,7 +304,12 @@ public class DashboardHelper {
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_TITLES, componentTitles);
 
 		//Set up the beans
-		getDashboardBeans(binder, ssDashboard, model);
+		if (componentId.equals("")) {
+			getDashboardBeans(binder, ssDashboard, model);
+		} else {
+			getDashboardBean(binder, ssDashboard, model, componentId);
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_ID, componentId);
+		}
 		model.put(WebKeys.DASHBOARD, ssDashboard);
 		return ssDashboard;
 	}
@@ -393,5 +409,5 @@ public class DashboardHelper {
 			}
 		}
 		return false;
-	}
+	}	
 }

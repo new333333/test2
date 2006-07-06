@@ -360,28 +360,35 @@ function AjaxRequest(url) {
                 echoResponse(ajaxRequest);
             }
 
-            var nodes = ajaxRequest.getXMLHttpRequestObject().responseXML.documentElement.childNodes;
+            var nodes = null;
+            try {
+            	nodes = ajaxRequest.getXMLHttpRequestObject().responseXML.documentElement.childNodes;
+            }
+        	catch(e) {}
+            
             var parser = null;
             var parseInBrowser = "";
-            for(var i = 0; i < nodes.length; i++) {
-                if(nodes[i].nodeType != 1 || !isTaconiteTag(nodes[i])) {
-                    continue;
-                }
-
-                parseInBrowser = nodes[i].getAttribute("parseInBrowser");
-                if(parseInBrowser == "true") {
-                    parser = new XhtmlToDOMParser(nodes[i]);
-                    parser.startParsing();
-                    var js = parser.getJavaScript();
-                    if(debug) {
-                        echoParsedJavaScript(js);
-                    }
-                    eval(parser.getJavaScript());
-                }
-                else {
-                    eval(nodes[i].firstChild.nodeValue);
-                }
-            }
+            if (nodes != null) {
+	            for(var i = 0; i < nodes.length; i++) {
+	                if(nodes[i].nodeType != 1 || !isTaconiteTag(nodes[i])) {
+	                    continue;
+	                }
+	
+	                parseInBrowser = nodes[i].getAttribute("parseInBrowser");
+	                if(parseInBrowser == "true") {
+	                    parser = new XhtmlToDOMParser(nodes[i]);
+	                    parser.startParsing();
+	                    var js = parser.getJavaScript();
+	                    if(debug) {
+	                        echoParsedJavaScript(js);
+	                    }
+	                    eval(parser.getJavaScript());
+	                }
+	                else {
+	                    eval(nodes[i].firstChild.nodeValue);
+	                }
+	            }
+	        }
 
             if(postRequest) {
                 postRequest(ajaxRequest);
@@ -505,6 +512,7 @@ function AjaxRequest(url) {
         echoTextArea.setAttribute("rows", "15");
         echoTextArea.setAttribute("style", "width:100%");
         echoTextArea.style.cssText = "width:100%";
+        echoTextArea.className = "ss_style"
 
         document.getElementsByTagName("body")[0].appendChild(document.createTextNode(label));
         document.getElementsByTagName("body")[0].appendChild(echoTextArea);
@@ -534,6 +542,7 @@ function AjaxRequest(url) {
         textBox.setAttribute("id", id);
         textBox.setAttribute("style", "width:100%");
         textBox.style.cssText = "width:100%";
+        textBox.className = "ss_style";
 
         document.getElementsByTagName("body")[0].appendChild(document.createTextNode(label));
         document.getElementsByTagName("body")[0].appendChild(textBox);
