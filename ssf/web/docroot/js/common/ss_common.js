@@ -1379,8 +1379,9 @@ function getXMLObj() {
     return req;
 }
 
-function fetch_url(url, callbackRoutine) {
+function fetch_url(url, callbackRoutine, callbackData) {
 	if (url == undefined) {return}
+	if (callbackData == undefined) callbackData = "";
 	fetch_url_debug("Request to fetch url: " + url)
 	var x;
 	x = getXMLObj();
@@ -1392,7 +1393,7 @@ function fetch_url(url, callbackRoutine) {
 		fetch_url_debug("status: " + x.status + ", received " + x.responseText);
 		fetch_url_debug("callbackRoutine " + callbackRoutine);
         if (x.status == 200) {
-        	callbackRoutine(x.responseText)        	
+        	callbackRoutine(x.responseText, callbackData)        	
         } else {
         	alert(x.status)
         	alert(x.statusText)
@@ -1479,7 +1480,7 @@ function ss_debug(text) {
 		html +=  "\n";
 		html += text;
 		debugTextarea.value = html;
-		debugTextarea.scrollTop = 10000;
+		debugTextarea.scrollTop = 1000;
 	}
 }
 

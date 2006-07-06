@@ -133,7 +133,7 @@ function ss_getPresence() {
     	</ssf:url>"
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("presenceForm")
-//	ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setEchoDebugInfo();
 //	ajaxRequest.setPreRequest(ss_preRequest);
 	ajaxRequest.setPostRequest(ss_postRequest);
 	ajaxRequest.setUsePOST();

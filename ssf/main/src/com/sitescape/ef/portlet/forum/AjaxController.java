@@ -19,6 +19,7 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.Favorites;
 import com.sitescape.ef.web.util.FilterHelper;
@@ -40,44 +41,51 @@ import com.sitescape.ef.portlet.forum.SAbstractForumController.TreeBuilder;
  *
  */
 public class AjaxController  extends SAbstractController {
-	private Map model;
-	private Map statusMap;
-	private Map unseenCounts;
-	private Map formData;
-	private String op;
-	private String op2;
-	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		if (WebHelper.isUserLoggedIn(request)) {
-			this.formData = request.getParameterMap();
-			this.op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+			Map formData = request.getParameterMap();
+			String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 			if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
-				ajaxSaveColumnPositions(request, response);
+				ajaxSaveColumnPositions(request, response, formData);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITE_BINDER)) {
-				ajaxAddFavoriteBinder(request, response);
+				ajaxAddFavoriteBinder(request, response, formData);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITES_CATEGORY)) {
-				ajaxAddFavoritesCategory(request, response);
+				ajaxAddFavoritesCategory(request, response, formData);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_FAVORITES)) {
-				ajaxSaveFavorites(request, response);
+				ajaxSaveFavorites(request, response, formData);
 			}
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		this.model = new HashMap();
-		this.unseenCounts = new HashMap();
-		this.statusMap = new HashMap();
-		this.formData = request.getParameterMap();
-		this.op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		this.op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
-		
+		Map model = new HashMap();
+		Map unseenCounts = new HashMap();
+		Map statusMap = new HashMap();
+		Map formData = request.getParameterMap();
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+
+		Map context = new HashMap();
+		context.put("model", model);
+		context.put("unseenCounts", unseenCounts);
+		context.put("statusMap", statusMap);
+		context.put("formData", formData);
+		context.put("op", op);
+		context.put("op2", op2);
+
 		if (!WebHelper.isUserLoggedIn(request)) {
 			
 			//Signal that the user is not logged in. 
 			//  The code on the calling page will output the proper translated message.
 			statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
 			model.put(WebKeys.AJAX_STATUS, statusMap);
+			
+			//Check for calls from "fetch_url"
+			if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
+					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT)) {
+				return new ModelAndView("forum/fetch_url_return", model);
+			}
 			
 			response.setContentType("text/xml");			
 			if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_COUNTS)) {
@@ -115,54 +123,60 @@ public class AjaxController  extends SAbstractController {
 			return new ModelAndView("forum/ajax_return", model);
 		}
 		
+		//The user is logged in
 		if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_COUNTS)) {
-			return ajaxGetUnseenCounts(request, response);
+			return ajaxGetUnseenCounts(request, response, context);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITE_BINDER) || 
 				op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITES_CATEGORY) || 
 				op.equals(WebKeys.FORUM_OPERATION_SAVE_FAVORITES)) {
-			return ajaxGetFavoritesTree(request, response);
+			return ajaxGetFavoritesTree(request, response, context);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
-			return ajaxSaveColumnPositions(request, response);
+			return ajaxSaveColumnPositions(request, response, context);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_WIDTH)) {
-			return ajaxSaveEntryWidth(request, response);
+			return ajaxSaveEntryWidth(request, response, context);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_HEIGHT)) {
-			return ajaxSaveEntryHeight(request, response);
+			return ajaxSaveEntryHeight(request, response, context);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_USER_LIST_SEARCH)) {
-			return ajaxUserListSearch(request, response);
+			return ajaxUserListSearch(request, response, context);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FILTER_TYPE) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
-			return ajaxGetFilterData(request, response);
+			return ajaxGetFilterData(request, response, context);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
-			return ajaxGetSearchFormData(request, response);
+			return ajaxGetSearchFormData(request, response, context);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
-			return ajaxGetConditionData(request, response);
+			return ajaxGetConditionData(request, response, context);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_WORKSPACE_TREE)) {
-			return ajaxGetWorkspaceTree(request, response);
+			return ajaxGetWorkspaceTree(request, response, context);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FAVORITES_TREE)) {
-			return ajaxGetFavoritesTree(request, response);
+			return ajaxGetFavoritesTree(request, response, context);
+
+		} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
+				op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT)) {
+			return ajaxGetDashboardComponent(request, response, context);
 		}
 		
-		return ajaxReturn(request, response);
+		return ajaxReturn(request, response, context);
 	} 
 	
-	private void ajaxSaveColumnPositions(ActionRequest request, ActionResponse response) {
+	private void ajaxSaveColumnPositions(ActionRequest request, ActionResponse response, 
+			Map formData) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		//Save the user's placement of columns in this folder
@@ -173,7 +187,8 @@ public class AjaxController  extends SAbstractController {
 		}
 	}
 	
-	private void ajaxAddFavoriteBinder(ActionRequest request, ActionResponse response) {
+	private void ajaxAddFavoriteBinder(ActionRequest request, ActionResponse response,
+			Map formData) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//Add a binder to the favorites list
 		String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
@@ -185,7 +200,8 @@ public class AjaxController  extends SAbstractController {
 		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
 	}
 	
-	private void ajaxAddFavoritesCategory(ActionRequest request, ActionResponse response) {
+	private void ajaxAddFavoritesCategory(ActionRequest request, ActionResponse response,
+			Map formData) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//Add a category to the favorites list
 		String category = ((String[])formData.get("category"))[0];
@@ -196,7 +212,8 @@ public class AjaxController  extends SAbstractController {
 		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
 	}
 	
-	private void ajaxSaveFavorites(ActionRequest request, ActionResponse response) {
+	private void ajaxSaveFavorites(ActionRequest request, ActionResponse response,
+			Map formData) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//Save the order of the favorites list
 		String movedItemId = ((String[])formData.get("movedItemId"))[0];
@@ -209,7 +226,9 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private ModelAndView ajaxGetFavoritesTree(RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map statusMap = (Map) context.get("statusMap");
 		User user = RequestContextHolder.getRequestContext().getUser();
 		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
 		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
@@ -225,7 +244,10 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private ModelAndView ajaxGetUnseenCounts(RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map unseenCounts = (Map) context.get("unseenCounts");
+		Map statusMap = (Map) context.get("statusMap");
 		List folderIds = new ArrayList();
 		String[] forumList = new String[0];
 		if (PortletRequestUtils.getStringParameter(request, "forumList") != null) {
@@ -245,21 +267,28 @@ public class AjaxController  extends SAbstractController {
 	}
 
 	private ModelAndView ajaxReturn(RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map statusMap = (Map) context.get("statusMap");
 		response.setContentType("text/xml");
 		model.put(WebKeys.AJAX_STATUS, statusMap);
 		return new ModelAndView("forum/ajax_return", model);
 	}
 	
 	private ModelAndView ajaxSaveColumnPositions(RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map statusMap = (Map) context.get("statusMap");
 		response.setContentType("text/xml");
 		model.put(WebKeys.AJAX_STATUS, statusMap);
 		return new ModelAndView("forum/save_column_positions_return", model);
 	}
 	
 	private ModelAndView ajaxSaveEntryWidth(RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map formData = (Map) context.get("formData");
+		Map statusMap = (Map) context.get("statusMap");
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//Save the user's selected entry width
 		String entryWidth = ((String[])formData.get("entry_width"))[0];
@@ -273,7 +302,10 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private ModelAndView ajaxSaveEntryHeight(RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map formData = (Map) context.get("formData");
+		Map statusMap = (Map) context.get("statusMap");
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String entryHeight = ((String[])formData.get("entry_height"))[0];
 		if (!entryHeight.equals("")) {
@@ -287,7 +319,9 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private ModelAndView ajaxUserListSearch(RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map statusMap = (Map) context.get("statusMap");
 		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
 		String searchType = PortletRequestUtils.getStringParameter(request, "searchType", "");
 		String userGroupType = PortletRequestUtils.getStringParameter(request, "userGroupType", "");
@@ -336,7 +370,12 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private ModelAndView ajaxGetFilterData(RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map formData = (Map) context.get("formData");
+		Map statusMap = (Map) context.get("statusMap");
+		String op = (String) context.get("op");
+		String op2 = (String) context.get("op2");
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder);
@@ -396,7 +435,12 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private ModelAndView ajaxGetSearchFormData(RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map formData = (Map) context.get("formData");
+		Map statusMap = (Map) context.get("statusMap");
+		String op = (String) context.get("op");
+		String op2 = (String) context.get("op2");
 		String filterTermNumber = ((String[])formData.get(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER))[0];
 		model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, filterTermNumber);
 		String filterTermNumberMax = ((String[])formData.get(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX))[0];
@@ -448,7 +492,11 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private ModelAndView ajaxGetConditionData(RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map formData = (Map) context.get("formData");
+		Map statusMap = (Map) context.get("statusMap");
+		String op = (String) context.get("op");
 		//Get the definition id (if present)
 		if (formData.containsKey(WebKeys.CONDITION_ENTRY_DEF_ID)) {
 			String defId = ((String[])formData.get(WebKeys.CONDITION_ENTRY_DEF_ID))[0];
@@ -484,7 +532,11 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private ModelAndView ajaxGetWorkspaceTree(RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map formData = (Map) context.get("formData");
+		Map statusMap = (Map) context.get("statusMap");
+		String op2 = (String) context.get("op2");
 		if (formData.containsKey("binderId")) {
 			model.put("ss_tree_treeName", ((String[])formData.get("treeName"))[0]);
 			model.put("ss_tree_binderId", ((String[])formData.get("binderId"))[0]);
@@ -528,4 +580,30 @@ public class AjaxController  extends SAbstractController {
 		return new ModelAndView("tag_jsps/tree/get_tree_div", model);
 	}
 	
+	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map statusMap = (Map) context.get("statusMap");
+		String op = (String) context.get("op");
+		String op2 = (String) context.get("op2");
+		String componentId = op2;
+		model.put(WebKeys.AJAX_STATUS, statusMap);
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Binder binder = getBinderModule().getBinder(binderId);
+		String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
+		if (scope.equals("")) scope = DashboardHelper.Local;
+
+		if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT)) {
+			if (!componentId.equals("")) {
+				User user = RequestContextHolder.getRequestContext().getUser();
+				Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+				DashboardHelper.getDashboardMap(binder, userFolderProperties, 
+						userProperties, model, scope, componentId);
+			}
+		} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT)) {
+			return new ModelAndView("forum/fetch_url_return", model);
+		}
+		return new ModelAndView("definition_elements/view_dashboard_component", model);
+	}
 }

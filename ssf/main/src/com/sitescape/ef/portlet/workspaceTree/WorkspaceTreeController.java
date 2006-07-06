@@ -69,7 +69,21 @@ public class WorkspaceTreeController extends SAbstractController  {
 		Map formData = request.getParameterMap();
 		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
 		Binder binder = getBinderModule().getBinder(binderId);
+		User user = RequestContextHolder.getRequestContext().getUser();
 
+ 		//Check special options in the URL
+		String[] debug = (String[])formData.get(WebKeys.URL_DEBUG);
+		if (debug != null && (debug[0].equals(WebKeys.DEBUG_ON) || debug[0].equals(WebKeys.DEBUG_OFF))) {
+			//The user is requesting debug mode to be turned on or off
+			if (debug[0].equals(WebKeys.DEBUG_ON)) {
+				getProfileModule().setUserProperty(user.getId(), 
+						ObjectKeys.USER_PROPERTY_DEBUG, new Boolean(true));
+			} else if (debug[0].equals(WebKeys.DEBUG_OFF)) {
+				getProfileModule().setUserProperty(user.getId(), 
+						ObjectKeys.USER_PROPERTY_DEBUG, new Boolean(false));
+			}
+		}
+		
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
@@ -79,7 +93,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
 		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 	
-		User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = getProfileModule().getUserProperties(user.getId()).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);

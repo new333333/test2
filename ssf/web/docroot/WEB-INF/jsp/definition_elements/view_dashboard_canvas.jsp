@@ -1,9 +1,16 @@
 <% //View dashboard canvas %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_toolbar_count" value="0"/>
+<c:set var="ss_component_count" value="0"/>
 
 <script type="text/javascript">
+var ss_dbrn = Math.round(Math.random()*999999)
 var ss_toolbar_count = 0;
+var ss_componentSrcHide = "<html:imagesPath/>pics/sym_s_hide.gif"
+var ss_componentSrcShow = "<html:imagesPath/>pics/sym_s_show.gif"
+var ss_componentAltHide = "<ssf:nlt tag="button.hide"/>"
+var ss_componentAltShow = "<ssf:nlt tag="button.show"/>"
+
 function ss_toggle_toolbars() {
 	for (var i = 0; i < ss_toolbar_count; i++) {
 		var obj = document.getElementById("ss_dashboard_toolbar_"+i)
@@ -18,6 +25,52 @@ function ss_toggle_toolbars() {
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
+function ss_showHideDashboardComponent(obj, componentId, divId) {
+	ss_debug(obj.alt + ",    " + obj.src)
+	var url = "";
+	var callbackRoutine = ""
+	if (obj.src.match(/sym_s_show.gif/)) {
+		url = "<ssf:url 
+	    	adapter="true" 
+	    	portletName="ss_forum" 
+	    	action="__ajax_request" 
+	    	actionUrl="true" >
+			<ssf:param name="binderId" value="${ssBinder.id}" />
+			<ssf:param name="operation" value="show_component" />
+	    	</ssf:url>"
+	    callbackRoutine = ss_showComponentCallback;
+	    obj.src = ss_componentSrcHide;
+	    obj.alt = ss_componentAltHide;
+	} else if (obj.src.match(/sym_s_hide.gif/)) {
+		url = "<ssf:url 
+	    	adapter="true" 
+	    	portletName="ss_forum" 
+	    	action="__ajax_request" 
+	    	actionUrl="true" >
+			<ssf:param name="binderId" value="${ssBinder.id}" />
+			<ssf:param name="operation" value="hide_component" />
+	    	</ssf:url>"
+	    callbackRoutine = ss_hideComponentCallback;
+	    obj.src = ss_componentSrcShow;
+	    obj.alt = ss_componentAltShow;
+	}
+	if (componentId != "") {url += "\&operation2=" + componentId;}
+	url += "\&rn=" + ss_dbrn++
+	if (callbackRoutine != "") fetch_url(url, callbackRoutine, divId);
+}
+function ss_showComponentCallback(s, divId) {
+	var targetDiv = document.getElementById(divId);
+	if (targetDiv) {
+		targetDiv.innerHTML = s;
+	}
+}
+function ss_hideComponentCallback(s, divId) {
+	var targetDiv = document.getElementById(divId);
+	if (targetDiv) {
+		targetDiv.innerHTML = "";
+	}
+}
+
 </script>
 <div class="ss_indent_medium" style="width:100%;">
 <table cellspacing="0" cellpadding="0" style="width:99%; margin-bottom:2px;">
@@ -71,66 +124,8 @@ function ss_toggle_toolbars() {
       <c:forEach var="component" items="${ssDashboard.wide_top}">
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
-		  <div 
-		   <c:if test="${!component.visible}">
-		    style="visibility:hidden; display:none; margin:0px; padding:0px;"
-		    id="ss_dashboard_toolbar_${ss_toolbar_count}"
-			<c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
-		   </c:if>
-		   <c:if test="${component.visible}">
-		    style="margin:0px; padding:0px;"
-		   </c:if>
-		  >
-		  <div class="ss_shadowbox">
-		  <div class="ss_shadowbox2 ss_dashboard_view">
-		  <div class="ss_dashboard_toolbar ss_dashboard_toolbar_color">
-		  <table class="ss_dashboard_toolbar_color" 
-		    cellspacing="0" cellpadding="1" style="width:100%;">
-		  <tr>
-		  <td><span class="ss_bold"><ssf:dashboard id="${id}"
-		    type="title" configuration="${ssDashboard}"/></span></td>
-		  <td align="right">
-		  <form class="ss_dashboard_toolbar_color" method="post" style="display:inline;"
-		    action="<portlet:actionURL>
-		    <portlet:param name="action" value="modify_dashboard"/>
-		    <portlet:param name="binderId" value="${ssBinder.id}"/>
-		    <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-		    </portlet:actionURL>">
-			<input type="hidden" name="_dashboardList" value="wide_top">
-			<input type="hidden" name="_componentId" value="${id}">
-			<input type="hidden" name="_returnView" value="binder"/>
-			
-		    <c:if test="${component.visible}">
-		      <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
-		        name="_hide" alt="<ssf:nlt tag="button.hide"/>" 
-		        style="margin-right:2px;">
-		    </c:if>
-		    <c:if test="${!component.visible}">
-		      <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
-		        name="_show" alt="<ssf:nlt tag="button.show"/>" 
-		        style="margin-right:2px;">
-		    </c:if>
-		    <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-		      name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>" 
-		      style="margin-right:2px;">
-		    <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-		      name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>" 
-		      style="margin-right:2px;">
-		  </form></td></tr></table>
-		 </div>
-		 <div align="left" style="margin:0px; padding:2px;">
-		 <c:if test="${component.visible}">
-		  <ssf:dashboard id="${id}"
-		    type="view" configuration="${ssDashboard}"/>
-		 </c:if>
-		 <c:if test="${!component.visible}">
-		   <span class="ss_italic"><ssf:nlt tag="dashboard.dataNotVisible"/></span>
-		 </c:if>
-		 </div>
-		</div>
-		</div>
-		<div style="margin:6px; padding:0px;"><img 
-		  src="<html:imagesPath/>pics/1pix.gif"></div>
+		<div style="margin:0px; padding:0px;">
+		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
 		</div>
 	  </c:forEach>
 
@@ -145,71 +140,9 @@ function ss_toggle_toolbars() {
       <c:forEach var="component" items="${ssDashboard.narrow_fixed}">
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
-		  <div 
-		   <c:if test="${!component.visible}">
-		    style="visibility:hidden; display:none; 
-		    margin:0px; padding:0px; width:${ssDashboard.narrowFixedWidth + 5}px;"
-		    id="ss_dashboard_toolbar_${ss_toolbar_count}"
-			<c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
-		   </c:if>
-		   <c:if test="${component.visible}">
-		    style="margin:0px; padding:0px; width:${ssDashboard.narrowFixedWidth + 5}px;"
-		   </c:if>
-		  >
-		  <div class="ss_shadowbox">
-		  <div class="ss_shadowbox2 ss_dashboard_view">
-		  <div class="ss_dashboard_toolbar ss_dashboard_toolbar_color">
-		  <table class="ss_dashboard_toolbar_color" 
-		    cellspacing="0" cellpadding="2" style="width:100%;">
-		  <tr>
-		  <td><span class="ss_bold"><ssf:dashboard id="${id}"
-		    type="title" configuration="${ssDashboard}"/></span></td>
-		  <td align="right">
-		  <form class="ss_dashboard_toolbar_color" method="post" style="display:inline;"
-		    method="post" action="<portlet:actionURL>
-		  <portlet:param name="action" value="modify_dashboard"/>
-		  <portlet:param name="binderId" value="${ssBinder.id}"/>
-		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-		  </portlet:actionURL>">
-			<input type="hidden" name="_dashboardList" value="narrow_fixed">
-			<input type="hidden" name="_componentId" value="${id}">
-			<input type="hidden" name="_returnView" value="binder"/>
-
-			<c:if test="${component.visible}">
-			  <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
-			    name="_hide" alt="<ssf:nlt tag="button.hide"/>" 
-			    style="margin-right:2px;">
-			</c:if>
-			<c:if test="${!component.visible}">
-			  <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
-			    name="_show" alt="<ssf:nlt tag="button.show"/>" 
-			    style="margin-right:2px;">
-			</c:if>
-		    <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-			  name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>" 
-			  style="margin-right:2px;">
-			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>" 
-			  style="margin-right:2px;">
-		  
-		  </form>
-		  </td></tr></table>
-		 </div>
-		 <div align="left" style="margin:0px; padding:2px;"><img 
-		  src="<html:imagesPath/>pics/1pix.gif" 
-	        hspace="${ssDashboard.narrowFixedWidth2}" vspace="0"/><br/>
-		 <c:if test="${component.visible}">
-		  <ssf:dashboard id="${id}"
-		    type="view" configuration="${ssDashboard}"/>
-		 </c:if>
-		 <c:if test="${!component.visible}">
-		   <span class="ss_italic"><ssf:nlt tag="dashboard.dataNotVisible"/></span>
-		 </c:if>
-		 </div>
-		</div>
-		</div>
-		<div style="margin:6px; padding:0px;"><img 
-		  src="<html:imagesPath/>pics/1pix.gif"/></div>
+		<div style="margin:0px; padding:0px; 
+		    width:${ssDashboard.narrowFixedWidth + 5}px;">
+		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
 		</div>
 	  </c:forEach>
 
@@ -228,68 +161,8 @@ function ss_toggle_toolbars() {
       <c:forEach var="component" items="${ssDashboard.narrow_variable}">
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
-		  <div 
-		   <c:if test="${!component.visible}">
-		    style="visibility:hidden; display:none; margin:0px; padding:0px;"
-		    id="ss_dashboard_toolbar_${ss_toolbar_count}"
-			<c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
-		   </c:if>
-		   <c:if test="${component.visible}">
-		    style="margin:0px; padding:0px;"
-		   </c:if>
-		  >
-		  <div class="ss_shadowbox">
-		  <div class="ss_shadowbox2 ss_dashboard_view">
-		  <div class="ss_dashboard_toolbar ss_dashboard_toolbar_color">
-		  <table class="ss_dashboard_toolbar_color" 
-		    cellspacing="0" cellpadding="2" style="width:100%;">
-		  <tr>
-		  <td><span class="ss_bold"><ssf:dashboard id="${id}"
-		    type="title" configuration="${ssDashboard}"/></span></td>
-		  <td align="right">
-		  <form class="ss_dashboard_toolbar_color" method="post" style="display:inline;"
-		    action="<portlet:actionURL>
-		    <portlet:param name="action" value="modify_dashboard"/>
-		    <portlet:param name="binderId" value="${ssBinder.id}"/>
-		    <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-		    </portlet:actionURL>">
-			<input type="hidden" name="_dashboardList" value="narrow_variable">
-			<input type="hidden" name="_componentId" value="${id}">
-			<input type="hidden" name="_returnView" value="binder"/>
-
-			<c:if test="${component.visible}">
-			  <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
-			    name="_hide" alt="<ssf:nlt tag="button.hide"/>" 
-			    style="margin-right:2px;">
-			</c:if>
-			<c:if test="${!component.visible}">
-			  <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
-			    name="_show" alt="<ssf:nlt tag="button.show"/>" 
-			    style="margin-right:2px;">
-			</c:if>
-			<input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-			  name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>" 
-			  style="margin-right:2px;">
-			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>" 
-			  style="margin-right:2px;">
-		
-		  </form>
-		  </td></tr></table>
-		 </div>
-		 <div align="left" style="margin:0px; padding:2px;">
-		 <c:if test="${component.visible}">
-		  <ssf:dashboard id="${id}"
-		    type="view" configuration="${ssDashboard}"/>
-		 </c:if>
-		 <c:if test="${!component.visible}">
-		   <span class="ss_italic"><ssf:nlt tag="dashboard.dataNotVisible"/></span>
-		 </c:if>
-		 </div>
-		</div>
-		</div>
-		<div style="margin:6px; padding:0px;"><img 
-		  src="<html:imagesPath/>pics/1pix.gif"></div>
+		<div style="margin:0px; padding:0px;">
+		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
 		</div>
 	  </c:forEach>
 
@@ -304,68 +177,8 @@ function ss_toggle_toolbars() {
       <c:forEach var="component" items="${ssDashboard.wide_bottom}">
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
-		  <div 
-		   <c:if test="${!component.visible}">
-		    style="visibility:hidden; display:none; margin:0px; padding:0px;"
-		    id="ss_dashboard_toolbar_${ss_toolbar_count}"
-			<c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
-		   </c:if>
-		   <c:if test="${component.visible}">
-		    style="margin:0px; padding:0px;"
-		   </c:if>
-		  >
-		  <div class="ss_shadowbox">
-		  <div class="ss_shadowbox2 ss_dashboard_view">
-		  <div class="ss_dashboard_toolbar ss_dashboard_toolbar_color">
-		  <table class="ss_dashboard_toolbar_color" 
-		    cellspacing="0" cellpadding="2" style="width:100%;">
-		  <tr>
-		  <td><span class="ss_bold"><ssf:dashboard id="${id}"
-		    type="title" configuration="${ssDashboard}"/></span></td>
-		  <td align="right">
-		  <form class="ss_dashboard_toolbar_color" method="post" style="display:inline;"
-		    action="<portlet:actionURL>
-		    <portlet:param name="action" value="modify_dashboard"/>
-		    <portlet:param name="binderId" value="${ssBinder.id}"/>
-		    <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-		    </portlet:actionURL>">
-			<input type="hidden" name="_dashboardList" value="wide_bottom">
-			<input type="hidden" name="_componentId" value="${id}">
-			<input type="hidden" name="_returnView" value="binder"/>
-
-			<c:if test="${component.visible}">
-			  <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
-			    name="_hide" alt="<ssf:nlt tag="button.hide"/>" 
-			    style="margin-right:2px;">
-			</c:if>
-			<c:if test="${!component.visible}">
-			  <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
-			    name="_show" alt="<ssf:nlt tag="button.show"/>" 
-			    style="margin-right:2px;">
-			</c:if>
-			<input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-			  name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>" 
-			  style="margin-right:2px;">
-			<input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-			  name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>" 
-			  style="margin-right:2px;">
-
-		  </form>
-		  </td></tr></table>
-		 </div>
-		 <div align="left" style="margin:0px; padding:2px;">
-		 <c:if test="${component.visible}">
-		  <ssf:dashboard id="${id}"
-		    type="view" configuration="${ssDashboard}"/>
-		 </c:if>
-		 <c:if test="${!component.visible}">
-		   <span class="ss_italic"><ssf:nlt tag="dashboard.dataNotVisible"/></span>
-		 </c:if>
-		 </div>
-		</div>
-		</div>
-		<div style="margin:6px; padding:0px;"><img 
-		  src="<html:imagesPath/>pics/1pix.gif"></div>
+		<div style="margin:0px; padding:0px;">
+		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
 		</div>
 	  </c:forEach>
 

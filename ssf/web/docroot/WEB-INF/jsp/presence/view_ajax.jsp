@@ -15,7 +15,6 @@
 		<div id="ss_status_message" 
 		  style="visibility:hidden; display:none;">ok</div>
 	</taconite-replace>
-</c:if>
 	<taconite-replace contextNodeID="ss_refreshDate${ssDashboardId}" 
 	parseInBrowser="true"><div id="ss_refreshDate${ssDashboardId}">
 <span class="ss_smallprint ss_gray"><ssf:nlt 
@@ -31,4 +30,5 @@ value="<%= new java.util.Date() %>" type="time" /></span>
 	><ssf:presenceInfo user="<%=user%>" componentId="${ssDashboardId}" 
 	/></span></taconite-replace>
 </c:forEach>
+</c:if>
 </taconite-root>
