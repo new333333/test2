@@ -220,7 +220,6 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 	
 	public void saveComponentData(ActionRequest request, Binder binder, String scope) {
 		//Get the dashboard component
-		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
 		String componentScope = "";
 		if (componentId.contains("_")) componentScope = componentId.split("_")[0];
@@ -243,35 +242,25 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 			//Get the component title
 			String componentTitle = PortletRequestUtils.getStringParameter(request, DashboardHelper.Component_Title, "");
 			
-			if (!dashboardListKey.equals("") && dashboard.containsKey(dashboardListKey)) {
-				List dashboardList = (List) dashboard.get(dashboardListKey);
-				Iterator itDashboardList = dashboardList.iterator();
-				while (itDashboardList.hasNext()) {
-					Map component = (Map) itDashboardList.next();
-					String id = (String) component.get(DashboardHelper.Id);
-					if (id.equals(componentId)) {
-						//Get the component config data map
-						Map components = (Map)dashboard.get(DashboardHelper.Components);
-						if (components != null) {
-							Map componentMap = (Map) components.get(id);
-							if (componentMap != null) {
-								//Get any component specific data
-								if (componentMap.get(DashboardHelper.Name).
-										equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH)) {
-									//Get the search query
-									try {
-										Document query = FilterHelper.getSearchFilter(request);
-										componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query);
-									} catch(Exception ex) {}
-								}
-								
-								//Save the title and data map
-								componentMap.put(DashboardHelper.Component_Title, componentTitle);
-								componentMap.put(DashboardHelper.Data, componentData);
-							}						
-						}
+			//Get the component config data map
+			Map components = (Map)dashboard.get(DashboardHelper.Components);
+			if (components != null) {
+				Map componentMap = (Map) components.get(componentId);
+				if (componentMap != null) {
+					//Get any component specific data
+					if (componentMap.get(DashboardHelper.Name).
+							equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH)) {
+						//Get the search query
+						try {
+							Document query = FilterHelper.getSearchFilter(request);
+							componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query);
+						} catch(Exception ex) {}
 					}
-				}
+					
+					//Save the title and data map
+					componentMap.put(DashboardHelper.Component_Title, componentTitle);
+					componentMap.put(DashboardHelper.Data, componentData);
+				}						
 			}
 			//Save the updated dashboard configuration 
 			saveDashboard(binder, componentScope, dashboard);
@@ -307,8 +296,8 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 		}
 	}
 
-	public void showHideComponent(ActionRequest request, Binder binder, String scope, 
-			String action) {
+	public void showHideComponent(ActionRequest request, Binder binder, String componentId, 
+			String scope, String action) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binder.getId());
@@ -319,7 +308,6 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 
 		//Get the dashboard component
 		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
-		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
 
 		if (!dashboardListKey.equals("") && ssDashboard.containsKey(dashboardListKey)) {
 			List dashboardList = (List) ssDashboard.get(dashboardListKey);

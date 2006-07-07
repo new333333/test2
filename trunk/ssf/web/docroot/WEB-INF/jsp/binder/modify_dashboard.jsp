@@ -16,6 +16,7 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
 
 <div class="ss_style ss_portlet">
 <div class="ss_form" style="margin:6px;">
@@ -100,71 +101,11 @@
     
       <c:forEach var="component" items="${ssDashboard.wide_top}">
 		<c:set var="id" value="${component.id}"/>
-		<c:set var="scope" value="${component.scope}"/>
-		<c:if test="${ssDashboard.scope == scope}">
-		  <div class="ss_shadowbox">
-		  <div class="ss_shadowbox2 ss_dashboard_view">
-		  <div class="ss_dashboard_toolbar ss_dashboard_toolbar_color">
-		  <table class="ss_dashboard_toolbar_color" 
-		    cellspacing="0" cellpadding="1" style="width:100%;">
-			  <tr>
-			  <td><span class="ss_bold"><ssf:dashboard id="${id}"
-		    	type="title" configuration="${ssDashboard}"/></span></td>
-			  <td align="right">
-			  <form class="ss_dashboard_toolbar_color" method="post" 
-			    action="<portlet:actionURL>
-			    <portlet:param name="action" value="modify_dashboard"/>
-			    <portlet:param name="binderId" value="${ssBinder.id}"/>
-			    <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-			    </portlet:actionURL>">
-				<input type="hidden" name="_scope" value="${ssDashboard.scope}">
-				<input type="hidden" name="_dashboardList" value="wide_top">
-				<input type="hidden" name="_componentId" value="${id}">
-				<input type="hidden" name="_returnView" value="form"/>
-	
-				<c:if test="${scope == ssDashboard.scope}">
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
-				    name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
-				    name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-				    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-				    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
-				</c:if>
-	
-				<c:if test="${scope != ssDashboard.scope}">
-				  <c:if test="${component.visible}">
-				    <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
-				      name="_hide" alt="<ssf:nlt tag="button.hide"/>">
-				  </c:if>
-				  <c:if test="${!component.visible}">
-				    <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
-				      name="_show" alt="<ssf:nlt tag="button.show"/>">
-				  </c:if>
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-				    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-				    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
-				</c:if>
-	
-			  </form>
-			  </td></tr></table>
-			 </div>
-			<div align="left" style="margin:0px; padding:2px;">
-			<ssf:dashboard id="${id}"
-			  type="view" configuration="${ssDashboard}"/>
-			</div>
-			</div>
-			</div>
-			<div style="margin:2px; padding:0px;"><img 
-			  src="<html:imagesPath/>pics/1pix.gif"></div>
-		</c:if>
+		<c:set var="scope" value="${ssDashboard.scope}"/>
+		<c:set var="dashboardList" value="wide_top"/>
+		<div style="margin:0px; padding:0px;">
+		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
+		</div>
 	  </c:forEach>
 
       <br/>
@@ -191,73 +132,12 @@
     <td valign="top">
       <c:forEach var="component" items="${ssDashboard.narrow_fixed}">
 		<c:set var="id" value="${component.id}"/>
-		<c:set var="scope" value="${component.scope}"/>
-		<c:if test="${ssDashboard.scope == scope}">
-			<div class="ss_shadowbox" style="width:${ssDashboard.narrowFixedWidth}px;">
-			<div class="ss_shadowbox2 ss_dashboard_view" style="width:${ssDashboard.narrowFixedWidth}px;">
-			 <div class="ss_dashboard_toolbar ss_dashboard_toolbar_color" 
-			   style="width:${ssDashboard.narrowFixedWidth}px;">
-			  <table class="ss_dashboard_toolbar_color" 
-			    cellspacing="0" cellpadding="1" style="width:100%;">
-			  <tr>
-			  <td><span class="ss_bold"><ssf:dashboard id="${id}"
-		    	type="title" configuration="${ssDashboard}"/></span></td>
-			  <td align="right">
-			  <form class="ss_dashboard_toolbar_color" style="display:inline;"
-			    method="post" action="<portlet:actionURL>
-			  <portlet:param name="action" value="modify_dashboard"/>
-			  <portlet:param name="binderId" value="${ssBinder.id}"/>
-			  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-			  </portlet:actionURL>">
-				<input type="hidden" name="_scope" value="${ssDashboard.scope}">
-				<input type="hidden" name="_dashboardList" value="narrow_fixed">
-				<input type="hidden" name="_componentId" value="${id}">
-				<input type="hidden" name="_returnView" value="form"/>
-	
-				<c:if test="${scope == ssDashboard.scope}">
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
-				    name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
-				    name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-				    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-				    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
-				</c:if>
-	
-				<c:if test="${scope != ssDashboard.scope}">
-				  <c:if test="${component.visible}">
-				    <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
-				      name="_hide" alt="<ssf:nlt tag="button.hide"/>">
-				  </c:if>
-				  <c:if test="${!component.visible}">
-				    <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
-				      name="_show" alt="<ssf:nlt tag="button.show"/>">
-				  </c:if>
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-				    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-				    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
-				</c:if>
-	
-			  </form>
-			  </td></tr></table>
-			 </div>
-			<div align="left" style="margin:0px; padding:2px;">
-		    <img src="<html:imagesPath/>pics/1pix.gif" 
-		      hspace="${ssDashboard.narrowFixedWidth2}" vspace="0" /><br/>
-			<ssf:dashboard id="${id}"
-			  type="view" configuration="${ssDashboard}"/>
-			</div>
-			</div>
-			</div>
-			<div style="margin:2px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
-		</c:if>
+		<c:set var="scope" value="${ssDashboard.scope}"/>
+		<c:set var="dashboardList" value="narrow_fixed"/>
+		<div style="margin:0px; padding:0px; 
+		    width:${ssDashboard.narrowFixedWidth + 5}px;">
+		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
+		</div>
 	  </c:forEach>
 
         <br/>
@@ -279,72 +159,14 @@
         </form>
     </td>
 
-    <td valign="top">
+    <td valign="top" width="96%">
       <c:forEach var="component" items="${ssDashboard.narrow_variable}">
 		<c:set var="id" value="${component.id}"/>
-		<c:set var="scope" value="${component.scope}"/>
-		<c:if test="${ssDashboard.scope == scope}">
-			<div class="ss_shadowbox">
-			<div class="ss_shadowbox2 ss_dashboard_view" align="left">
-			<div class="ss_dashboard_toolbar ss_dashboard_toolbar_color">
-			<table class="ss_dashboard_toolbar_color" 
-			  cellspacing="0" cellpadding="1" style="width:100%;">
-			  <tr>
-			  <td><span class="ss_bold"><ssf:dashboard id="${id}"
-		    	type="title" configuration="${ssDashboard}"/></span></td>
-			  <td align="right">
-			  <form class="ss_dashboard_toolbar_color" method="post" action="<portlet:actionURL>
-			  <portlet:param name="action" value="modify_dashboard"/>
-			  <portlet:param name="binderId" value="${ssBinder.id}"/>
-			  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-			  </portlet:actionURL>">
-				<input type="hidden" name="_scope" value="${ssDashboard.scope}">
-				<input type="hidden" name="_dashboardList" value="narrow_variable">
-				<input type="hidden" name="_componentId" value="${id}">
-				<input type="hidden" name="_returnView" value="form"/>
-	
-				<c:if test="${scope == ssDashboard.scope}">
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
-				    name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
-				    name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-				    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-				    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
-				</c:if>
-	
-				<c:if test="${scope != ssDashboard.scope}">
-				  <c:if test="${component.visible}">
-				    <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
-				      name="_hide" alt="<ssf:nlt tag="button.hide"/>">
-				  </c:if>
-				  <c:if test="${!component.visible}">
-				    <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
-				      name="_show" alt="<ssf:nlt tag="button.show"/>">
-				  </c:if>
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-				    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-				    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
-				</c:if>
-	
-			  </form>
-			  </td></tr></table>
-			 </div>
-			<div align="left" style="margin:0px; padding:2px;">
-			<ssf:dashboard id="${id}"
-			  type="view" configuration="${ssDashboard}"/>
-			</div>
-			</div>
-			</div>
-			<div style="margin:2px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
-		</c:if>
+		<c:set var="scope" value="${ssDashboard.scope}"/>
+		<c:set var="dashboardList" value="narrow_variable"/>
+		<div style="margin:0px; padding:0px;">
+		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
+		</div>
 	  </c:forEach>
 
         <br/>
@@ -370,70 +192,11 @@
     <td colspan="2">
       <c:forEach var="component" items="${ssDashboard.wide_bottom}">
 		<c:set var="id" value="${component.id}"/>
-		<c:set var="scope" value="${component.scope}"/>
-		<c:if test="${ssDashboard.scope == scope}">
-		  <div class="ss_shadowbox">
-		  <div class="ss_shadowbox2 ss_dashboard_view">
-		  <div class="ss_dashboard_toolbar ss_dashboard_toolbar_color">
-		  <table class="ss_dashboard_toolbar_color" 
-		    cellspacing="0" cellpadding="1" style="width:100%;">
-			  <tr>
-			  <td><span class="ss_bold"><ssf:dashboard id="${id}"
-		    	type="title" configuration="${ssDashboard}"/></span></td>
-			  <td align="right">
-			  <form class="ss_dashboard_toolbar_color" method="post"
-			    action="<portlet:actionURL>
-			    <portlet:param name="action" value="modify_dashboard"/>
-			    <portlet:param name="binderId" value="${ssBinder.id}"/>
-			    <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-			    </portlet:actionURL>">
-				<input type="hidden" name="_scope" value="${ssDashboard.scope}">
-				<input type="hidden" name="_dashboardList" value="wide_bottom">
-				<input type="hidden" name="_componentId" value="${id}">
-				<input type="hidden" name="_returnView" value="form"/>
-	
-				<c:if test="${scope == ssDashboard.scope}">
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
-				    name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
-				    name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-				    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-				    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
-				</c:if>
-	
-				<c:if test="${scope != ssDashboard.scope}">
-				  <c:if test="${component.visible}">
-				    <input type="image" src="<html:imagesPath/>pics/sym_s_hide.gif"
-				      name="_hide" alt="<ssf:nlt tag="button.hide"/>">
-				  </c:if>
-				  <c:if test="${!component.visible}">
-				    <input type="image" src="<html:imagesPath/>pics/sym_s_show.gif"
-				      name="_show" alt="<ssf:nlt tag="button.show"/>">
-				  </c:if>
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-				    name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>">
-				  &nbsp;
-				  <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-				    name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>">
-				</c:if>
-	
-			  </form>
-			  </td></tr></table>
-			 </div>
-			<div align="left" style="margin:0px; padding:2px;">
-			<ssf:dashboard id="${id}"
-			  type="view" configuration="${ssDashboard}"/>
-			</div>
-			</div>
-			</div>
-			<div style="margin:2px; padding:0px;"><img src="<html:imagesPath/>pics/1pix.gif"></div>
-		</c:if>
+		<c:set var="scope" value="${ssDashboard.scope}"/>
+		<c:set var="dashboardList" value="wide_bottom"/>
+		<div style="margin:0px; padding:0px;">
+		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
+		</div>
 	  </c:forEach>
 
         <br/>

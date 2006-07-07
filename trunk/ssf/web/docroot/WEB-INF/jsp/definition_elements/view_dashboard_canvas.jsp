@@ -2,76 +2,8 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_toolbar_count" value="0"/>
 <c:set var="ss_component_count" value="0"/>
+<%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
 
-<script type="text/javascript">
-var ss_dbrn = Math.round(Math.random()*999999)
-var ss_toolbar_count = 0;
-var ss_componentSrcHide = "<html:imagesPath/>pics/sym_s_hide.gif"
-var ss_componentSrcShow = "<html:imagesPath/>pics/sym_s_show.gif"
-var ss_componentAltHide = "<ssf:nlt tag="button.hide"/>"
-var ss_componentAltShow = "<ssf:nlt tag="button.show"/>"
-
-function ss_toggle_toolbars() {
-	for (var i = 0; i < ss_toolbar_count; i++) {
-		var obj = document.getElementById("ss_dashboard_toolbar_"+i)
-		if (obj.style.visibility == 'hidden') {
-			obj.style.visibility = 'visible';
-			obj.style.display = 'inline';
-		} else {
-			obj.style.visibility = 'hidden';
-			obj.style.display = 'none';
-		}
-	}
-	//Signal that the layout changed
-	if (ssf_onLayoutChange) ssf_onLayoutChange();
-}
-function ss_showHideDashboardComponent(obj, componentId, divId) {
-	ss_debug(obj.alt + ",    " + obj.src)
-	var url = "";
-	var callbackRoutine = ""
-	if (obj.src.match(/sym_s_show.gif/)) {
-		url = "<ssf:url 
-	    	adapter="true" 
-	    	portletName="ss_forum" 
-	    	action="__ajax_request" 
-	    	actionUrl="true" >
-			<ssf:param name="binderId" value="${ssBinder.id}" />
-			<ssf:param name="operation" value="show_component" />
-	    	</ssf:url>"
-	    callbackRoutine = ss_showComponentCallback;
-	    obj.src = ss_componentSrcHide;
-	    obj.alt = ss_componentAltHide;
-	} else if (obj.src.match(/sym_s_hide.gif/)) {
-		url = "<ssf:url 
-	    	adapter="true" 
-	    	portletName="ss_forum" 
-	    	action="__ajax_request" 
-	    	actionUrl="true" >
-			<ssf:param name="binderId" value="${ssBinder.id}" />
-			<ssf:param name="operation" value="hide_component" />
-	    	</ssf:url>"
-	    callbackRoutine = ss_hideComponentCallback;
-	    obj.src = ss_componentSrcShow;
-	    obj.alt = ss_componentAltShow;
-	}
-	if (componentId != "") {url += "\&operation2=" + componentId;}
-	url += "\&rn=" + ss_dbrn++
-	if (callbackRoutine != "") fetch_url(url, callbackRoutine, divId);
-}
-function ss_showComponentCallback(s, divId) {
-	var targetDiv = document.getElementById(divId);
-	if (targetDiv) {
-		targetDiv.innerHTML = s;
-	}
-}
-function ss_hideComponentCallback(s, divId) {
-	var targetDiv = document.getElementById(divId);
-	if (targetDiv) {
-		targetDiv.innerHTML = "";
-	}
-}
-
-</script>
 <div class="ss_indent_medium" style="width:100%;">
 <table cellspacing="0" cellpadding="0" style="width:99%; margin-bottom:2px;">
 <tr>
@@ -124,6 +56,7 @@ function ss_hideComponentCallback(s, divId) {
       <c:forEach var="component" items="${ssDashboard.wide_top}">
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
+		<c:set var="dashboardList" value="wide_top"/>
 		<div style="margin:0px; padding:0px;">
 		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
 		</div>
@@ -140,6 +73,7 @@ function ss_hideComponentCallback(s, divId) {
       <c:forEach var="component" items="${ssDashboard.narrow_fixed}">
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
+		<c:set var="dashboardList" value="narrow_fixed"/>
 		<div style="margin:0px; padding:0px; 
 		    width:${ssDashboard.narrowFixedWidth + 5}px;">
 		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
@@ -154,13 +88,14 @@ function ss_hideComponentCallback(s, divId) {
 	  style="visibility:hidden; display:none; 
 	  width:${ssDashboard.narrowFixedWidth}px; height:20px;"></div></td>
   
-  <td valign="top"><div style="width:10px;"><img 
+  <td valign="top" width="4%"><div style="width:10px;"><img 
 	  src="<html:imagesPath/>pics/1pix.gif" /></div></td>
   
-  <td valign="top">
+  <td valign="top" width="96%">
       <c:forEach var="component" items="${ssDashboard.narrow_variable}">
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
+		<c:set var="dashboardList" value="narrow_variable"/>
 		<div style="margin:0px; padding:0px;">
 		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
 		</div>
@@ -177,6 +112,7 @@ function ss_hideComponentCallback(s, divId) {
       <c:forEach var="component" items="${ssDashboard.wide_bottom}">
 		<c:set var="id" value="${component.id}"/>
 		<c:set var="scope" value="${component.scope}"/>
+		<c:set var="dashboardList" value="wide_bottom"/>
 		<div style="margin:0px; padding:0px;">
 		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
 		</div>

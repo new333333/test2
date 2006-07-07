@@ -19,8 +19,8 @@ public interface DashboardModule {
 			String scope);
 	public void saveComponentData(ActionRequest request, Binder binder, String scope);
 	public void deleteComponent(ActionRequest request, Binder binder);
-	public void showHideComponent(ActionRequest request, Binder binder, String scope, 
-			String action);
+	public void showHideComponent(ActionRequest request, Binder binder, String componentId, 
+			String scope, String action);
 	public void moveComponent(ActionRequest request, Binder binder, String scope, 
 			String direction);
 	public Map getDashboard(Binder binder, String scope);

@@ -54,6 +54,9 @@ public class AjaxController  extends SAbstractController {
 				ajaxAddFavoritesCategory(request, response, formData);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_FAVORITES)) {
 				ajaxSaveFavorites(request, response, formData);
+			} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
+					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT)) {
+				ajaxChangeDashboardComponent(request, response);
 			}
 		}
 	}
@@ -580,6 +583,23 @@ public class AjaxController  extends SAbstractController {
 		return new ModelAndView("tag_jsps/tree/get_tree_div", model);
 	}
 	
+	private void ajaxChangeDashboardComponent(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		String componentId = op2;
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Binder binder = getBinderModule().getBinder(binderId);
+		String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
+		if (scope.equals("")) scope = DashboardHelper.Local;
+
+		if (!componentId.equals("") && 
+				op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT)) {
+			getDashboardModule().showHideComponent(request, binder, componentId, scope, "show");
+		} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT)) {
+			getDashboardModule().showHideComponent(request, binder, componentId, scope, "hide");
+		}
+	}
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
 			RenderResponse response, Map context) throws Exception {
 		Map model = (Map) context.get("model");

@@ -68,10 +68,10 @@ public class ModifyDashboardController extends AbstractBinderController {
 			getDashboardModule().deleteComponent(request, binder);
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("_show") || formData.containsKey("_show.x")) {
-			getDashboardModule().showHideComponent(request, binder, scope, "show");
+			getDashboardModule().showHideComponent(request, binder, componentId, scope, "show");
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("_hide") || formData.containsKey("_hide.x")) {
-			getDashboardModule().showHideComponent(request, binder, scope, "hide");
+			getDashboardModule().showHideComponent(request, binder, componentId, scope, "hide");
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("_moveUp") || formData.containsKey("_moveUp.x")) {
 			getDashboardModule().moveComponent(request, binder, scope, "up");
@@ -96,9 +96,16 @@ public class ModifyDashboardController extends AbstractBinderController {
 		
 		String dashboardList = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
-		String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
+		String scope = "";
+		if (scope.equals("")) scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 		if (scope.equals("")) scope = DashboardHelper.Local;
 		String returnView = PortletRequestUtils.getStringParameter(request, "_returnView", "binder");
+		String componentScope = "";
+		if (componentId.contains("_")) componentScope = componentId.split("_")[0];
+		if (scope.equals("") && !componentScope.equals("")) {
+			//The scope wasn't specified, so use the component scope for this operation
+			scope = componentScope;
+		}
 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
