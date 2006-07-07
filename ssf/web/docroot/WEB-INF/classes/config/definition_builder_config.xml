@@ -897,6 +897,7 @@
 				<option name="folder" caption="__folder_folder" />
 				<option name="file" caption="__folder_file" />
 				<option name="event" caption="__folder_event" />
+				<option name="timeline" caption="__folder_timeline" />
 				<help>__help_folder_view_type</help>
 			</property>
 		</properties>
