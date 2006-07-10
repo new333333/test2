@@ -18,7 +18,7 @@
   <td align="right" valign="top">
     <a href="javascript: ;" onClick="ss_toggle_toolbars();return false;"
 	  title="<ssf:nlt tag="dashboard.configure"/>"
-	  ><span class="ss_smallprint ss_gray"><ssf:nlt tag="Configure"/></span></a>
+	  ><span class="ss_smallprint ss_gray"><ssf:nlt tag="dashboard.addContent"/></span></a>
   </td>
 </tr>
 </table>

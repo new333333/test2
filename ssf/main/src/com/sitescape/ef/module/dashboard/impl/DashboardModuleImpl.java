@@ -105,6 +105,7 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
     
     public void getWorkspaceTreeBean(Binder binder, Map ssDashboard, Map model, 
     		String id, Map component) {
+		if (!model.containsKey(WebKeys.DEFINITION_ENTRY)) model.put(WebKeys.DEFINITION_ENTRY, binder);
     	Map data = (Map)component.get(DashboardHelper.Data);
     	if (data == null) data = new HashMap();
     	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
@@ -293,8 +294,7 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binder.getId());
 		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, 
-				userProperties, scope);
-
+				userProperties, new HashMap(), scope, componentId);
 		Map dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_MAP);
 
 		//Get the dashboard component
@@ -324,16 +324,17 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 
 	public void moveComponent(ActionRequest request, Binder binder, String scope, 
 			String direction) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
-		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binder.getId());
-		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, userProperties, scope);
-
-		Map dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_MAP);
-
 		//Get the dashboard component
 		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
+
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binder.getId());
+		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, 
+				userProperties, new HashMap(), scope, componentId);
+
+		Map dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_MAP);
 
 		if (!dashboardListKey.equals("") && ssDashboard.containsKey(dashboardListKey)) {
 			List dashboardList = (List) ssDashboard.get(dashboardListKey);

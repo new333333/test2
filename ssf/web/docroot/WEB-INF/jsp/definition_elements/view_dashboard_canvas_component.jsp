@@ -60,7 +60,8 @@
 		      <td nowrap>
 			      <input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
 			        name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>" 
-			        style="margin-right:2px;">
+			        style="margin-right:2px;"
+			        onClick="return(ss_confirmDeleteComponent(this, '${id}'));">
 		      </td>
 		      </tr>
 		      </table>
