@@ -1,6 +1,5 @@
 package com.sitescape.ef.module.dashboard.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,9 +9,7 @@ import java.util.Set;
 
 import javax.portlet.ActionRequest;
 
-import org.apache.lucene.search.Query;
 import org.dom4j.Document;
-import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -22,7 +19,6 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.dashboard.DashboardModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
@@ -31,9 +27,6 @@ import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
-import com.sitescape.ef.search.LuceneSession;
-import com.sitescape.ef.search.QueryBuilder;
-import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.FilterHelper;
@@ -141,7 +134,7 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 		idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
     }
     
-    public void getSearchResultsBean(Map ssDashboard, Map model, 
+    public void getSearchResultsBean(Binder binder, Map ssDashboard, Map model, 
     		String id, Map component) {
     	Map data = (Map)component.get(DashboardHelper.Data);
     	if (data == null) data = new HashMap();
@@ -168,7 +161,7 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 						elementData));
 		
 		//Do the search and store the search results in the bean
-		List entries = getBinderModule().executeSearchQuery(searchQuery);
+		List entries = getBinderModule().executeSearchQuery(binder, searchQuery);
         searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
     }
     

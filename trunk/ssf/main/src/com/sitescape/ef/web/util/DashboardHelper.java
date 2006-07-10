@@ -152,7 +152,7 @@ public class DashboardHelper {
 					} else if (component.get(Name).equals(
 							ObjectKeys.DASHBOARD_COMPONENT_SEARCH)) {
 						//Set up the search results bean
-						getInstance().dashboardModule.getSearchResultsBean(ssDashboard, 
+						getInstance().dashboardModule.getSearchResultsBean(binder, ssDashboard, 
 								model, id, component);
 					}
 				}

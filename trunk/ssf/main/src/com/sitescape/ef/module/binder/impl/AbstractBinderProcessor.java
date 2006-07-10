@@ -118,6 +118,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
         final Binder binder = addBinder_create(clazz);
         binder.setEntryDef(def);
+        if (def != null) binder.setDefinitionType(Integer.valueOf(def.getType()));
         
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {

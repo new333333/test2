@@ -77,5 +77,6 @@
       </many-to-one>
     </component>
     <property name="lockedFileCount" access="field"/>
+    <property name="definitionType"/>
   </class>
 </hibernate-mapping>

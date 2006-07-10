@@ -14,6 +14,7 @@ import java.util.Date;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
@@ -781,9 +782,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				timer.execute();
 				//re-index for state changes
 				if (entry != null) {
-					EntryProcessor processor = 
-						(EntryProcessor) getProcessorManager().getProcessor(entry.getParentBinder(), 
-        							EntryProcessor.PROCESSOR_KEY);
+					EntryProcessor processor = loadEntryProcessor(entry.getParentBinder()); 
 					processor.reindexEntry(entry);
 				}
 			} else {
@@ -791,9 +790,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				timer.execute();
 				//re-index for state changes
 				if (entry != null) {
-					EntryProcessor processor = 
-						(EntryProcessor) getProcessorManager().getProcessor(entry.getParentBinder(), 
-        							EntryProcessor.PROCESSOR_KEY);
+					EntryProcessor processor = loadEntryProcessor(entry.getParentBinder()); 
 					processor.reindexEntry(entry);
 				}
 				// if there was an exception, just save the timer
@@ -885,5 +882,17 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    	context.close();
 	    }
 	}
-	
+	private EntryProcessor loadEntryProcessor(Binder binder) {
+        // This is nothing but a dispatcher to an appropriate processor. 
+        // Shared logic, if exists, must be put into the corresponding method in 
+        // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
+        // in this method.
+		Definition def = binder.getEntryDef();
+		//in order to support file folders with create a new class we base the key on the definition type.
+		if (def != null) {
+			return (EntryProcessor)getProcessorManager().getProcessor(binder, EntryProcessor.PROCESSOR_KEY, Integer.toString(binder.getEntryDef().getType()));			
+		} else {
+			return (EntryProcessor)getProcessorManager().getProcessor(binder, EntryProcessor.PROCESSOR_KEY);
+		}
+	}	
 }

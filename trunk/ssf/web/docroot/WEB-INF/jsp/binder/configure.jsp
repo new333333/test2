@@ -79,7 +79,7 @@
     <fieldset class="ss_fieldset">
       <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default folder view"/></legend>
 
-      <c:forEach var="item" items="${ssPublicWorkspaceDefinitions}">
+      <c:forEach var="item" items="${ssPublicBinderDefinitions}">
           <c:choose>
 	        <c:when test="${ssDefaultFolderDefinitionId == item.value.id}">
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
@@ -104,7 +104,7 @@
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedViews" text="Allowed folder views"/></legend>
 
     <c:set var="folderViewCount" value=""/>
-    <c:forEach var="item" items="${ssPublicFolderDefinitions}">
+    <c:forEach var="item" items="${ssPublicBinderDefinitions}">
       <c:choose>
         <c:when test="${empty ssFolderDefinitionMap[item.key]}">
   	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
@@ -128,7 +128,7 @@
     <fieldset class="ss_fieldset">
       <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default folder view"/></legend>
 
-      <c:forEach var="item" items="${ssPublicFolderDefinitions}">
+      <c:forEach var="item" items="${ssPublicBinderDefinitions}">
         <c:if test="${!empty ssFolderDefinitionMap[item.key]}">
           <c:choose>
 	        <c:when test="${ssDefaultFolderDefinitionId == item.value.id}">
@@ -153,7 +153,7 @@
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultEntryTypes" text="Default entry types"/></legend>
 
-    <c:forEach var="item" items="${ssPublicEntryDefinitions}">
+    <c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
 	  <c:choose>
 	    <c:when test="${empty ssEntryDefinitionMap[item.key]}">
 	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
@@ -176,7 +176,7 @@
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.workflowAssociations" text="Workflow associations"/></legend>
 
 	<table>
-	<c:forEach var="item" items="${ssPublicEntryDefinitions}">
+	<c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
 	  <c:if test="${!empty ssEntryDefinitionMap[item.key]}">
 	  <tr>
 	    <td><c:out value="${item.value.title}"/></td>
@@ -210,7 +210,7 @@
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileView" text="Profile listing"/></legend>
 
-    <c:forEach var="item" items="${ssPublicProfileDefinitions}">
+    <c:forEach var="item" items="${ssPublicBinderDefinitions}">
       <c:choose>
         <c:when test="${empty ssFolderDefinitionMap[item.key]}">
   	      <input type="radio" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
@@ -232,7 +232,7 @@
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileEntryType" text="Profile type"/></legend>
 
-    <c:forEach var="item" items="${ssPublicProfileEntryDefinitions}">
+    <c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
 	  <c:choose>
 	    <c:when test="${empty ssEntryDefinitionMap[item.key]}">
 	      <input type="radio" name="entryDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>

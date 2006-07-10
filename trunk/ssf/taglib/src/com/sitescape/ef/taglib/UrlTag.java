@@ -170,6 +170,10 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 	    this.binderId = binderId;
 	}
 
+	public void setBinderId(String binderId) {
+	    this.binderId = binderId;
+	}
+	
 	public void setEntryId(String entryId) {
 	    this.entryId = entryId;
 	}

@@ -2,47 +2,39 @@
 package com.sitescape.ef.module.binder.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.lucene.search.Query;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.binder.BinderProcessor;
 import com.sitescape.ef.module.binder.EntryProcessor;
-
 import com.sitescape.ef.module.definition.DefinitionModule;
-import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.ObjectBuilder;
-import com.sitescape.ef.pipeline.Pipeline;
 import com.sitescape.ef.search.LuceneSession;
-import com.sitescape.ef.search.LuceneSessionFactory;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.acl.AccessType;
-import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
+import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.web.util.FilterHelper;
 /**
  * @author Janet McCann
@@ -71,14 +63,26 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         // Shared logic, if exists, must be put into the corresponding method in 
         // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
         // in this method.
-		return (EntryProcessor)getProcessorManager().getProcessor(binder, EntryProcessor.PROCESSOR_KEY);
+
+		//in order to support file folders with create a new class we base the key on the definition type.
+		if (binder.getDefinitionType() != null) {
+			return (EntryProcessor)getProcessorManager().getProcessor(binder, EntryProcessor.PROCESSOR_KEY, binder.getDefinitionType().toString());			
+		} else {
+			return (EntryProcessor)getProcessorManager().getProcessor(binder, EntryProcessor.PROCESSOR_KEY);
+		}
 	}
 	private BinderProcessor loadBinderProcessor(Binder binder) {
         // This is nothing but a dispatcher to an appropriate processor. 
         // Shared logic, if exists, must be put into the corresponding method in 
         // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
         // in this method.
-		return (BinderProcessor)getProcessorManager().getProcessor(binder, BinderProcessor.PROCESSOR_KEY);
+
+		//in order to support file folders with create a new class we base the key on the definition type.
+		if (binder.getDefinitionType() != null) {
+			return (BinderProcessor)getProcessorManager().getProcessor(binder, BinderProcessor.PROCESSOR_KEY, binder.getDefinitionType().toString());	
+		} else {
+			return (BinderProcessor)getProcessorManager().getProcessor(binder, BinderProcessor.PROCESSOR_KEY);
+		}
 	}
 	public Binder getBinderByName(String binderName) 
    			throws NoBinderByTheNameException, AccessControlException {
@@ -317,7 +321,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	getCoreDao().delete(tag);
 	}
 	
-	public List executeSearchQuery(Document searchQuery) {
+	public List executeSearchQuery(Binder binder, Document searchQuery) {
         List entries = new ArrayList();
         Hits hits = new Hits(0);
         
@@ -359,9 +363,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		        }
         	}
         }
-		EntryProcessor processor = 
-			(EntryProcessor) getProcessorManager().getProcessor("com.sitescape.ef.domain.Folder", 
-						EntryProcessor.PROCESSOR_KEY);
+		EntryProcessor processor = loadEntryProcessor(binder); 
         entries = (List) processor.getBinderEntries_entriesArray(hits);
         
     	return entries; 
