@@ -113,65 +113,63 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
     public void getWorkspaceTreeBean(Binder binder, Map ssDashboard, Map model, 
     		String id, Map component) {
     	Map data = (Map)component.get(DashboardHelper.Data);
-    	if (data != null) {
-	    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
-	    	if (beans == null) {
-	    		beans = new HashMap();
-	    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
-	    	}
-	    	Map idData = new HashMap();
-	    	beans.put(id, idData);
-
-	    	Document tree = null;
-	    	if (binder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
-				if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {
-					tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
-				} else {
-					tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsTreeBuilder((Workspace)binder, true, getBinderModule()),1);
-					idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, binder.getId().toString());
-				}
-			} else if (binder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-				Folder topFolder = ((Folder)binder).getTopFolder();
-				if (topFolder == null) topFolder = (Folder)binder;
-				Binder workspace = (Binder)topFolder.getParentBinder();
-				tree = getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new WsTreeBuilder((Workspace)workspace, true, getBinderModule()),1);
-				idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, workspace.getId().toString());
-				
-			}
-			idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
+    	if (data == null) data = new HashMap();
+    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
+    	if (beans == null) {
+    		beans = new HashMap();
+    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
     	}
+    	Map idData = new HashMap();
+    	beans.put(id, idData);
+
+    	Document tree = null;
+    	if (binder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
+			if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {
+				tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
+			} else {
+				tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsTreeBuilder((Workspace)binder, true, getBinderModule()),1);
+				idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, binder.getId().toString());
+			}
+		} else if (binder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
+			Folder topFolder = ((Folder)binder).getTopFolder();
+			if (topFolder == null) topFolder = (Folder)binder;
+			Binder workspace = (Binder)topFolder.getParentBinder();
+			tree = getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new WsTreeBuilder((Workspace)workspace, true, getBinderModule()),1);
+			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, workspace.getId().toString());
+			
+		}
+		idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
     }
     
     public void getSearchResultsBean(Map ssDashboard, Map model, 
     		String id, Map component) {
     	Map data = (Map)component.get(DashboardHelper.Data);
-    	if (data != null) {
-	    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
-	    	if (beans == null) {
-	    		beans = new HashMap();
-	    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
-	    	}
-	    	Map idData = new HashMap();
-	    	beans.put(id, idData);
-
-			Map searchSearchFormData = new HashMap();
-			searchSearchFormData.put("searchFormTermCount", new Integer(0));
-			idData.put(WebKeys.SEARCH_FORM_DATA, searchSearchFormData);
-			
-			Document searchQuery = null;
-			if (data.containsKey(DashboardHelper.SearchFormSavedSearchQuery)) 
-					searchQuery = (Document)data.get(DashboardHelper.SearchFormSavedSearchQuery);
-
-			Map elementData = getFolderModule().getCommonEntryElements();
-			searchSearchFormData.put(WebKeys.SEARCH_FORM_QUERY_DATA, 
-					FilterHelper.buildFilterFormMap(searchQuery,
-							(Map) model.get(WebKeys.PUBLIC_ENTRY_DEFINITIONS),
-							elementData));
-			
-			//Do the search and store the search results in the bean
-			List entries = getBinderModule().executeSearchQuery(searchQuery);
-	        searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
+    	if (data == null) data = new HashMap();
+    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
+    	if (beans == null) {
+    		beans = new HashMap();
+    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
     	}
+    	Map idData = new HashMap();
+    	beans.put(id, idData);
+
+		Map searchSearchFormData = new HashMap();
+		searchSearchFormData.put("searchFormTermCount", new Integer(0));
+		idData.put(WebKeys.SEARCH_FORM_DATA, searchSearchFormData);
+		
+		Document searchQuery = null;
+		if (data.containsKey(DashboardHelper.SearchFormSavedSearchQuery)) 
+				searchQuery = (Document)data.get(DashboardHelper.SearchFormSavedSearchQuery);
+
+		Map elementData = getFolderModule().getCommonEntryElements();
+		searchSearchFormData.put(WebKeys.SEARCH_FORM_QUERY_DATA, 
+				FilterHelper.buildFilterFormMap(searchQuery,
+						(Map) model.get(WebKeys.PUBLIC_ENTRY_DEFINITIONS),
+						elementData));
+		
+		//Do the search and store the search results in the bean
+		List entries = getBinderModule().executeSearchQuery(searchQuery);
+        searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
     }
     
 	public void setTitle(ActionRequest request, Binder binder, String scope) {

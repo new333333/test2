@@ -2,13 +2,30 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <script type="text/javascript" src="/ssf/js/tree/tree_widget.js"></script>
 <c:if test="${ssUserProperties.debugMode}">
-<div style="border:1px solid black;">
-<div style="background-color:#CECECE; border-bottom:1px solid black; width:100%;">Debug window</div>
-<div>
-<textarea id="debugTextarea" style="width:100%;" rows="6"></textarea>
-</div>
-</div>
-<br/>
+  <div style="border:1px solid black;">
+  <div style="background-color:#CECECE; border-bottom:1px solid black; width:100%;">
+    <table cellspacing="0" cellpadding="0" style="background-color:#CECECE; width:100%;">
+    <tr>
+    <td>Debug window</td>
+    <td align="right">
+      <a href="" onClick="ss_turnOffDebugMode();return false;">
+        <img src="<html:imagesPath/>pics/sym_s_delete.gif">
+      </a>
+<script type="text/javascript">
+function ss_turnOffDebugMode() {
+	var url = self.location.href + "&enableDebug=off"
+	self.location.href = url;
+}
+</script>
+    </td>
+    </tr>
+    </table>
+  </div>
+  <div>
+  <textarea id="debugTextarea" style="width:100%;" rows="6"></textarea>
+  </div>
+  </div>
+  <br/>
 </c:if>
 
 <div >

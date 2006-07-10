@@ -20,31 +20,50 @@
 			  <input type="hidden" name="_scope" value="${scope}">
 			  <input type="hidden" name="_returnView" value="binder"/>
 			
-		      <c:if test="${component.visible}"><input type="image" 
-		      	  src="<html:imagesPath/>pics/sym_s_hide.gif"
-		          id="ss_showHideImg_${ss_component_count}"
-		          alt="<ssf:nlt tag="button.hide"/>" 
-		          style="margin-right:2px;"
-			      onClick="ss_showHideDashboardComponent(this, '${id}', 'ss_dashboard_component_${ss_component_count}');return false;"
-			      ></c:if><c:if test="${!component.visible}"><input type="image" 
-		          src="<html:imagesPath/>pics/sym_s_show.gif"
-		          id="ss_showHideImg_${ss_component_count}"
-		          alt="<ssf:nlt tag="button.show"/>" 
-		          style="margin-right:2px;" 
-		          onClick="ss_showHideDashboardComponent(this, '${id}', 'ss_dashboard_component_${ss_component_count}');return false;"
-		          ></c:if>&nbsp;<input 
-		      type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-		        name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>" 
-		        style="margin-right:2px;">&nbsp;<input 
-		      type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-		        name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>" 
-		        style="margin-right:2px;">&nbsp;<input 
-		      type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
-		        name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>" 
-		        style="margin-right:2px;">&nbsp;<input 
-		      type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
-		        name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>" 
-		        style="margin-right:2px;">
+		      <table class="ss_dashboard_toolbar_color" cellspacing="0" cellpadding="0">
+		      <tr>
+		      <td nowrap>
+			      <c:if test="${component.visible}">
+			        <input type="image" 
+			      	  src="<html:imagesPath/>pics/sym_s_hide.gif"
+			          id="ss_showHideImg_${ss_component_count}"
+			          alt="<ssf:nlt tag="button.hide"/>" 
+			          style="margin-right:2px;"
+				      onClick="ss_showHideDashboardComponent(this, '${id}', 'ss_dashboard_component_${ss_component_count}');return false;"
+				      >
+				  </c:if>
+				  <c:if test="${!component.visible}">
+				    <input type="image" 
+			          src="<html:imagesPath/>pics/sym_s_show.gif"
+			          id="ss_showHideImg_${ss_component_count}"
+			          alt="<ssf:nlt tag="button.show"/>" 
+			          style="margin-right:2px;" 
+			          onClick="ss_showHideDashboardComponent(this, '${id}', 'ss_dashboard_component_${ss_component_count}');return false;"
+			          >
+			      </c:if>
+		      </td>
+		      <td nowrap>
+			      <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
+			        name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>" 
+			        style="margin-right:2px;">
+		      </td>
+		      <td nowrap>
+			      <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
+			        name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>" 
+			        style="margin-right:2px;">
+		      </td>
+		      <td nowrap>
+			      <input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
+			        name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>" 
+			        style="margin-right:2px;">
+		      </td>
+		      <td nowrap>
+			      <input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
+			        name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>" 
+			        style="margin-right:2px;">
+		      </td>
+		      </tr>
+		      </table>
 		    </form>
 		  </td>
 		</tr>
