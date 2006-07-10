@@ -363,7 +363,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		        }
         	}
         }
-		EntryProcessor processor = loadEntryProcessor(binder); 
+		EntryProcessor processor = 
+			(EntryProcessor) getProcessorManager().getProcessor("com.sitescape.ef.domain.Folder", 
+						EntryProcessor.PROCESSOR_KEY);
         entries = (List) processor.getBinderEntries_entriesArray(hits);
         
     	return entries; 
