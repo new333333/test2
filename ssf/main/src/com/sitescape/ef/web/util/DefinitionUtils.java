@@ -43,16 +43,19 @@ public class DefinitionUtils {
 		model.put(WebKeys.PUBLIC_DEFINITIONS, defs);
 		Iterator itPublicDefinitions = defs.listIterator();
 		Map publicEntryDefinitions = new HashMap();
-		Map publicForumDefinitions = new HashMap();
+		Map publicFolderDefinitions = new HashMap();
 		Map publicWorkspaceDefinitions = new HashMap();
 		Map publicProfileDefinitions = new HashMap();
 		Map publicProfileEntryDefinitions = new HashMap();
+		Map publicFileDefinitions = new HashMap();
 		while (itPublicDefinitions.hasNext()) {
 			Definition def = (Definition) itPublicDefinitions.next();
 			if (def.getType() == Definition.COMMAND) {
 				publicEntryDefinitions.put(def.getId(), def);
-			} else if (def.getType() == Definition.FOLDER_VIEW) {
-				publicForumDefinitions.put(def.getId(), def);
+			} else if (def.getType() == Definition.FOLDER_VIEW){
+				publicFolderDefinitions.put(def.getId(), def);			
+			} else if (def.getType() == Definition.FILE_FOLDER_VIEW) {
+				publicFileDefinitions.put(def.getId(), def);
 			} else if (def.getType() == Definition.PROFILE_VIEW) {
 				publicProfileDefinitions.put(def.getId(), def);
 			} else if (def.getType() == Definition.PROFILE_ENTRY_VIEW) {
@@ -62,7 +65,8 @@ public class DefinitionUtils {
 			}
 		}
 		model.put(WebKeys.PUBLIC_ENTRY_DEFINITIONS, publicEntryDefinitions);
-		model.put(WebKeys.PUBLIC_FOLDER_DEFINITIONS, publicForumDefinitions);
+		model.put(WebKeys.PUBLIC_FOLDER_DEFINITIONS, publicFolderDefinitions);
+		model.put(WebKeys.PUBLIC_FILE_FOLDER_DEFINITIONS, publicFileDefinitions);
 		model.put(WebKeys.PUBLIC_PROFILE_DEFINITIONS, publicProfileDefinitions);
 		model.put(WebKeys.PUBLIC_PROFILE_ENTRY_DEFINITIONS, publicProfileEntryDefinitions);
 		model.put(WebKeys.PUBLIC_WORKSPACE_DEFINITIONS, publicWorkspaceDefinitions);
@@ -142,7 +146,7 @@ public class DefinitionUtils {
 			if (forumViewDoc != null) {
 				Element forumViewElement ;
 				forumViewElement = forumViewDoc.getRootElement();
-				forumViewElement = (Element) forumViewElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView']");
+				forumViewElement = (Element) forumViewElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='fileFolderView']");
 				model.put(WebKeys.CONFIG_ELEMENT, forumViewElement);
 				model.put(WebKeys.CONFIG_DEFINITION, forumViewDoc);
 			} else {
@@ -154,7 +158,7 @@ public class DefinitionUtils {
 			//model.put(WebKeys.DEFAULT_FOLDER_DEFINITION, null);
 			//model.put(WebKeys.DEFAULT_FOLDER_DEFINITION_ID, "");
 			//model.put(WebKeys.CONFIG_ELEMENT, null);
-			getDefaultBinderDefinition(binder, model, "//item[@name='forumView' or @name='profileView' or @name='workspaceView']");
+			getDefaultBinderDefinition(binder, model, "//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='fileFolderView']");
 		
 		}
 		Map defaultFolderDefinitions = getBinderDefsAsMap(binder);

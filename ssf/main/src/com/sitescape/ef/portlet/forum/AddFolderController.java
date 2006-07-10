@@ -9,7 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
@@ -17,7 +17,6 @@ import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.util.Validator;
 /**
  * @author Janet McCann
  *
@@ -76,20 +75,24 @@ public class AddFolderController extends SAbstractController {
 		}
 		Binder binder = null;
 		Map publicBinderDefs = new HashMap();
-		String itemFormPath = "//item[@name='folderForm']";
 		DefinitionUtils.getDefinitions(model);
+		String itemFormPath = "//item[@name='folderForm']";
 		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
 			binder = getFolderModule().getFolder(binderId);
-			publicBinderDefs = (Map) model.get(WebKeys.PUBLIC_FOLDER_DEFINITIONS);
-			itemFormPath = "//item[@name='folderForm']";
+			if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.FILE_FOLDER_VIEW)) {
+				publicBinderDefs = (Map) model.get(WebKeys.PUBLIC_FILE_FOLDER_DEFINITIONS);
+			} else {
+				publicBinderDefs.putAll((Map) model.get(WebKeys.PUBLIC_FOLDER_DEFINITIONS));
+				publicBinderDefs.putAll((Map) model.get(WebKeys.PUBLIC_FILE_FOLDER_DEFINITIONS));				
+			}
 		} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
 			binder = getWorkspaceModule().getWorkspace(binderId);				
-			publicBinderDefs = (Map) model.get(WebKeys.PUBLIC_FOLDER_DEFINITIONS);
-			itemFormPath = "//item[@name='folderForm']";
+			publicBinderDefs.putAll((Map) model.get(WebKeys.PUBLIC_FOLDER_DEFINITIONS));
+			publicBinderDefs.putAll((Map) model.get(WebKeys.PUBLIC_FILE_FOLDER_DEFINITIONS));
 		} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
 			binder = getWorkspaceModule().getWorkspace(binderId);				
 			publicBinderDefs = (Map) model.get(WebKeys.PUBLIC_WORKSPACE_DEFINITIONS);
-			itemFormPath = "//item[@name='workspaceForm']";
+			itemFormPath = "//item[@name='workspaceForm']";					
 		}
 		
     	model.put(WebKeys.URL_OPERATION, operation);
@@ -104,7 +107,10 @@ public class AddFolderController extends SAbstractController {
 		if (!defId.equals("")) {
 			//Make sure the requested definition is legal
 			if (publicBinderDefs.containsKey(defId)) {
-				DefinitionUtils.getDefinition(getDefinitionModule().getDefinition(defId), model, itemFormPath);
+				Definition def = (Definition)publicBinderDefs.get(defId);
+				if (def.getType() == Definition.FILE_FOLDER_VIEW)
+					itemFormPath = "//item[@name='fileFolderForm']";
+				DefinitionUtils.getDefinition(def, model, itemFormPath);
 			} else {
 				DefinitionUtils.getDefinition(null, model, itemFormPath);
 			}

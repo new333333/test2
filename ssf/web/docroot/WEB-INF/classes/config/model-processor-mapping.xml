@@ -10,6 +10,7 @@
 		<processor class="com.sitescape.ef.jobs.DefaultFailedEmail" spring-bean-type="none"/>
 		<processor class="com.sitescape.ef.jobs.DefaultSendEmail" spring-bean-type="none"/>
 		<processor class="com.sitescape.ef.module.folder.impl.DefaultFolderCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultFolderCoreProcessor"/>
+		<processor class="com.sitescape.ef.module.folder.impl.DefaultFileFolderCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultFileFolderCoreProcessor"/>
 		<processor class="com.sitescape.ef.module.profile.impl.DefaultProfileCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultProfileCoreProcessor"/>
 		<processor class="com.sitescape.ef.module.workspace.impl.DefaultWorkspaceCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultWorkspaceCoreProcessor"/>
 	</processors>
@@ -21,6 +22,8 @@
 		<model-class name="com.sitescape.ef.domain.Folder">
 			<mapping processor-key="processorKey_folderEmailFormatter" processor-class="com.sitescape.ef.mail.impl.DefaultFolderEmailFormatter"/>
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.ef.module.folder.impl.DefaultFolderCoreProcessor"/>
+			<mapping processor-key="processorKey_binderCoreProcessor_5" processor-class="com.sitescape.ef.module.folder.impl.DefaultFolderCoreProcessor"/>
+			<mapping processor-key="processorKey_binderCoreProcessor_9" processor-class="com.sitescape.ef.module.folder.impl.DefaultFileFolderCoreProcessor"/>
 			<mapping processor-key="processorKey_emailNotificationJob" processor-class="com.sitescape.ef.jobs.DefaultEmailNotification"/>
 			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.ef.jobs.DefaultSendEmail"/>
 			<mapping processor-key="processorKey_failedEmailJob" processor-class="com.sitescape.ef.jobs.DefaultFailedEmail"/>

@@ -228,8 +228,10 @@ public class WebKeys {
     public static final String PRESENCE_ZON_BRIDGE="ss_presence_zonBridge";
     public static final String PUBLIC_DEFINITIONS="ssPublicDefinitions";
     public static final String PUBLIC_BINDER_DEFINITIONS="ssPublicBinderDefinitions";
+    public static final String PUBLIC_BINDER_ENTRY_DEFINITIONS="ssPublicBinderEntryDefinitions";
     public static final String PUBLIC_ENTRY_DEFINITIONS="ssPublicEntryDefinitions";
     public static final String PUBLIC_FOLDER_DEFINITIONS="ssPublicFolderDefinitions";
+    public static final String PUBLIC_FILE_FOLDER_DEFINITIONS="ssPublicFileFolderDefinitions";
     public static final String PUBLIC_PROFILE_DEFINITIONS="ssPublicProfileDefinitions";
     public static final String PUBLIC_PROFILE_ENTRY_DEFINITIONS="ssPublicProfileEntryDefinitions";
     public static final String PUBLIC_WORKFLOW_DEFINITIONS="ssPublicWorkflowDefinitions";

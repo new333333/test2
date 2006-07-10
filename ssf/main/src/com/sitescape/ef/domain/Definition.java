@@ -31,6 +31,7 @@ public class Definition extends PersistentTimestampObject implements AclControll
     private String title="";
 
     //type values
+    //types 5 and 9 are used in naming processorKeys.  Kep model-processor-mappings.xml up to date
     public static int COMMAND=1;
 	public static int WORKFLOW=2;
 	public static int REPORT=3;

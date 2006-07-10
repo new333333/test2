@@ -26,6 +26,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected Set iEvents,iAttachments;
     protected Map iCustomAttributes;
     protected String iconName="";
+    protected Integer definitionType=null;
  
     public DefinableEntity() {
     }
@@ -72,6 +73,16 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     
     public void setEntryDef(Definition entryDef) {
         this.entryDef = entryDef;
+    }
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public Integer getDefinitionType() {
+   	 	return definitionType;
+    }
+    public void setDefinitionType(Integer definitionType) {
+   	 	this.definitionType = definitionType;
     }
     
     /**

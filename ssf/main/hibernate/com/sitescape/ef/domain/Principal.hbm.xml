@@ -44,6 +44,7 @@
     </component>
     <property name="title" access="field" length="1024"/>
     <property name="iconName" length="64"/>    
+    <property name="definitionType"/>
     <many-to-one access="field" class="com.sitescape.ef.domain.Definition" name="entryDef">
       <column name="entryDef" sql-type="char(32)"/>
     </many-to-one>

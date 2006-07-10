@@ -65,12 +65,8 @@ type="time" /></span>
 					  <td><span id="count${ssDashboardId}_<c:out value="${u1.id}"/>"
 					  ><ssf:presenceInfo user="<%=u1%>" componentId="${ssDashboardId}"/> </span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
-					  <td><a href="<portlet:renderURL windowState="maximized">
-				  	<portlet:param name="action" value="view_profile_entry" />
-				  	<portlet:param name="binderId" value="${u1.parentBinder.id}" />
-					<portlet:param name="entryId" value="${u1.id}"/>
-					<portlet:param name="operation" value="buddy"/>
-		    		</portlet:renderURL>"><c:out value="${u1.title}"/></a>
+					  <td><a href="<ssf:url action="view_profile_entry" binderId="${u1.parentBinder.id}"
+							entryId="${u1.id}" operation="buddy"/>"><c:out value="${u1.title}"/></a>
 					  </td>							
 					  </tr>
 					  <%
@@ -91,12 +87,8 @@ type="time" /></span>
 					  ><ssf:presenceInfo user="<%=(com.sitescape.ef.domain.User)u2%>"
 					    componentId="${ssDashboardId}"/> </span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
-					  <td><a href="<portlet:renderURL windowState="maximized">
-				  	<portlet:param name="action" value="view_profile_entry" />
-				  	<portlet:param name="binderId" value="${u2.parentBinder.id}" />
-					<portlet:param name="entryId" value="${u2.id}"/>
-					<portlet:param name="operation" value="buddy"/>
-		    		</portlet:renderURL>"><c:out value="${u2.title}"/></a>
+					  <td><a href="<ssf:url action="view_profile_entry" binderId="${u2.parentBinder.id}" 
+					  		entryId="${u2.id}" operation="buddy"/>"><c:out value="${u2.title}"/></a>
 					  </td>							
 					  </tr>
 					</c:if>
