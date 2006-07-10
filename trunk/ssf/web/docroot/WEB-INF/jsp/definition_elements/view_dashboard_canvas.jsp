@@ -55,7 +55,7 @@
   <td colspan="3">
       <c:forEach var="component" items="${ssDashboard.wide_top}">
 		<c:set var="id" value="${component.id}"/>
-		<c:set var="scope" value="${component.scope}"/>
+		<c:set var="scope" value="local"/>
 		<c:set var="dashboardList" value="wide_top"/>
 		<div style="margin:0px; padding:0px;">
 		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
