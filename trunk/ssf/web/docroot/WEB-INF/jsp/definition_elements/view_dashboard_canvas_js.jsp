@@ -69,5 +69,21 @@ function ss_showComponentCallback(s, divId) {
 }
 function ss_hideComponentCallback(s, divId) {
 }
+function ss_confirmDeleteComponent(obj, componentId) {
+	var formObj = ss_getContainingForm(obj)
+	var confirmText = "";
+	if (formObj._scope.value == "local") {
+		confirmText = "<ssf:nlt tag="dashboard.confirmDeleteLocal"/>";
+	} else if (formObj._scope.value == "global") {
+		confirmText = "<ssf:nlt tag="dashboard.confirmDeleteGlobal"/>";
+	} else if (formObj._scope.value == "binder") {
+		confirmText = "<ssf:nlt tag="dashboard.confirmDeleteBinder"/>";
+	} else {
+		confirmText = "<ssf:nlt tag="dashboard.confirmDeleteUnknown"/>";
+	}
+	var confirmText2 = "<ssf:nlt tag="dashboard.confirmDelete"/>";
+	if (confirm(confirmText + "\n" + confirmText2)) return true;
+	return false;
+}
 
 </script>
