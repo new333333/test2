@@ -263,9 +263,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 					return new String[0];
 			}
 			else if(uptoZoneOnly(m)) { // /files/<zonename>
-				// TODO For now the implementation only supports INTERNAL
-				//return new String[] {URI_TYPE_INTERNAL, URI_TYPE_LIBRARY};
-				return new String[] {URI_TYPE_INTERNAL};
+				return new String[] {URI_TYPE_INTERNAL, URI_TYPE_LIBRARY};
 			}
 			else {
 				return client.getChildrenNames(folderUri, m);
