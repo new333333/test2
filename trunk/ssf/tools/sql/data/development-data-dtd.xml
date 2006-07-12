@@ -177,6 +177,7 @@
     modification_date CDATA #IMPLIED
     modification_principal CDATA #IMPLIED
     lockedFileCount CDATA #IMPLIED
+    definitionType CDATA #IMPLIED
 >
 
 <!ELEMENT SS_Forums EMPTY>
@@ -201,6 +202,7 @@
     acl_deleteMembers CDATA #IMPLIED
     acl_changeAclMembers CDATA #IMPLIED
     definitionsInherited CDATA #IMPLIED
+    definitionType CDATA #IMPLIED
     acl_inheritFromParent CDATA #IMPLIED
     acl_widenRead CDATA #IMPLIED
     acl_widenModify CDATA #IMPLIED
@@ -294,6 +296,7 @@
     description_format CDATA #IMPLIED
     title CDATA #IMPLIED
     iconName CDATA #IMPLIED
+    definitionType CDATA #IMPLIED
     entryDef CDATA #IMPLIED
     creation_date CDATA #IMPLIED
     creation_principal CDATA #IMPLIED
@@ -377,6 +380,8 @@
     ownerId CDATA #IMPLIED
     owningFolderSortKey CDATA #IMPLIED
     owningBinderId CDATA #IMPLIED
+    wrk_date CDATA #IMPLIED
+    wrk_principal CDATA #IMPLIED
     state CDATA #IMPLIED
     threadName CDATA #IMPLIED
     timerId CDATA #IMPLIED
