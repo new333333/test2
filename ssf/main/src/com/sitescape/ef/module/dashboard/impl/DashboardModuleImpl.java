@@ -27,6 +27,7 @@ import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
+import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.FilterHelper;
@@ -71,6 +72,15 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 		this.workspaceModule = workspaceModule;
 	}
 
+	public boolean checkModifyBinderAllowed(Binder binder) {
+		try {
+			getBinderModule().checkModifyBinderAllowed(binder);
+		}
+		catch(AccessControlException e) {
+			return false;
+		}
+		return true;
+	}
     public void getBuddyListBean(Map ssDashboard, String id, Map component) {
     	Map data = (Map)component.get(DashboardHelper.Data);
     	if (data != null) {

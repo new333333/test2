@@ -33,8 +33,10 @@ public class MenuTag extends BodyTagSupport {
 	private String _bodyContent;
 	private String title = "";
 	private String titleId = "";
-	private String _class = "";
-	private String openStyle = "slide_down";     //slide_down, slide_right, immediate
+	private String titleClass = "";
+	private String menuClass = "";
+	private String menuWidth = "200px";
+	private String openStyle = "slide_down";     //slide_down, slide_right, immediate, popup
 	private String anchor = "";
 	private String offsetTop = "8";
 	private String offsetLeft = "4";
@@ -60,7 +62,9 @@ public class MenuTag extends BodyTagSupport {
 			Map _params = new HashMap();
 			_params.put("title", new String[] {this.title});
 			_params.put("titleId", new String[] {this.titleId});
-			_params.put("class", new String[] {this._class});
+			_params.put("titleClass", new String[] {this.titleClass});
+			_params.put("menuClass", new String[] {this.menuClass});
+			_params.put("menuWidth", new String[] {this.menuWidth});
 			_params.put("openStyle", new String[] {this.openStyle});
 			_params.put("anchor", new String[] {this.anchor});
 			_params.put("offsetTop", new String[] {this.offsetTop});
@@ -88,6 +92,15 @@ public class MenuTag extends BodyTagSupport {
 	        throw new JspException(e);
 	    }
 		finally {
+			this.title = "";
+			this.titleId = "";
+			this.titleClass = "";
+			this.menuClass = "";
+			this.menuWidth = "200px";
+			this.openStyle = "slide_down";
+			this.anchor = "";
+			this.offsetTop = "8";
+			this.offsetLeft = "4";
 		}
 	}
 
@@ -99,8 +112,16 @@ public class MenuTag extends BodyTagSupport {
 	    this.titleId = titleId;
 	}
 
-	public void setClass(String divClass) {
-	    this._class = divClass;
+	public void setMenuClass(String menuClass) {
+	    this.menuClass = menuClass;
+	}
+
+	public void setMenuWidth(String menuWidth) {
+	    this.menuWidth = menuWidth;
+	}
+
+	public void setTitleClass(String titleClass) {
+	    this.titleClass = titleClass;
 	}
 
 	public void setOpenStyle(String openStyle) {

@@ -24,6 +24,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_coordinates.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/dojo/src/lfx/html.js"></script>
+<script type="text/javascript">dojo.require("dojo.lfx.*");</script>
   <c:if test="0">
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_dragsort.js"></script>
   </c:if>

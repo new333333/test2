@@ -310,6 +310,13 @@ public class DashboardHelper {
 			getDashboardBean(binder, ssDashboard, model, componentId);
 			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_ID, componentId);
 		}
+		
+		//Check the access rights of the user
+		ssDashboard.put(WebKeys.DASHBOARD_SHARED_MODIFICATION_ALLOWED, new Boolean(false));
+		if (getInstance().dashboardModule.checkModifyBinderAllowed(binder)) {
+			ssDashboard.put(WebKeys.DASHBOARD_SHARED_MODIFICATION_ALLOWED, new Boolean(true));
+		}
+		
 		model.put(WebKeys.DASHBOARD, ssDashboard);
 		return ssDashboard;
 	}

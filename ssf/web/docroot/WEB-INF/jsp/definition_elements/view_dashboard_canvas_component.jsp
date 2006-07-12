@@ -2,13 +2,31 @@
 
 <div class="ss_shadowbox">
   <div class="ss_shadowbox2 ss_dashboard_view">
-    <div class="ss_dashboard_toolbar ss_dashboard_toolbar_color">
+    <div class="ss_dashboard_toolbar ss_dashboard_toolbar_color"
+      onMouseOver="ss_debug('fade in');ss_showDivFadeIn('ss_component_toolbuttons_${ss_component_count}', 300);" 
+      onMouseOut="ss_debug('fade out');ss_hideDivFadeOut('ss_component_toolbuttons_${ss_component_count}', 300);">
       <table class="ss_dashboard_toolbar_color" 
-		  cellspacing="0" cellpadding="1" style="width:100%;">
+		  cellspacing="0" cellpadding="0" style="width:100%;">
 		<tr>
-		  <td><span class="ss_bold"><ssf:dashboard id="${id}"
-		    type="title" configuration="${ssDashboard}"/></span></td>
-		  <td align="right">
+		  <td nowrap valign="top" width="10"><div style="display:inline; width:5px;
+			<c:if test="${componentScope == 'local'}">
+		      background-color:red;
+			</c:if>
+			<c:if test="${componentScope == 'global'}">
+		      background-color:blue;
+			</c:if>
+			<c:if test="${componentScope == 'binder'}">
+		      background-color:yellow;
+			</c:if>
+		    margin:0px;"></div><span>&nbsp;</span></td>
+		  <td valign="top">
+		    <span class="ss_bold"><ssf:dashboard id="${id}"
+		      type="title" configuration="${ssDashboard}"/>
+		    </span>
+		  </td>
+		  <td align="right" valign="top">
+		    <div style="display:inline; margin:0px; visibility:hidden;" 
+		      id="ss_component_toolbuttons_${ss_component_count}">
 		    <form class="ss_dashboard_toolbar_color" method="post" style="display:inline;"
 		      action="<portlet:actionURL>
 		      <portlet:param name="action" value="modify_dashboard"/>
@@ -18,7 +36,7 @@
 			  <input type="hidden" name="_dashboardList" value="${dashboardList}">
 			  <input type="hidden" name="_componentId" value="${id}">
 			  <input type="hidden" name="_scope" value="${scope}">
-			  <input type="hidden" name="_returnView" value="binder"/>
+			  <input type="hidden" name="_returnView" value="${returnView}"/>
 			
 		      <table class="ss_dashboard_toolbar_color" cellspacing="0" cellpadding="0">
 		      <tr>
@@ -52,17 +70,20 @@
 			        name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>" 
 			        style="margin-right:2px;">
 		      </td>
-		      <td nowrap>
+		      <c:if test="${ssDashboard.sharedModificationAllowed}">
+		        <td nowrap>
 			      <input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
 			        name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>" 
-			        style="margin-right:2px;">
-		      </td>
-		      <td nowrap>
+			        style="margin-right:2px;" 
+			        onClick="ss_modifyDashboardComponent(this, '${componentScope}');">
+		        </td>
+		        <td nowrap>
 			      <input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
 			        name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>" 
 			        style="margin-right:2px;"
-			        onClick="return(ss_confirmDeleteComponent(this, '${id}'));">
-		      </td>
+			        onClick="ss_modifyDashboardComponent(this, '${componentScope}'); return(ss_confirmDeleteComponent(this, '${id}'));">
+		        </td>
+		      </c:if>
 		      </tr>
 		      </table>
 		    </form>

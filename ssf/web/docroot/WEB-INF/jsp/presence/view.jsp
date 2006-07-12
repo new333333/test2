@@ -22,7 +22,7 @@
 <script language="JavaScript">
 var ss_presenceTimer = null;
 function ss_presenceTimeout() {
-	ss_getPresence(true);
+	ss_getPresence("timeout");
 	ss_presenceTimer = setTimeout("ss_presenceTimeout()", 300000);
 }	
 </script>
@@ -42,7 +42,7 @@ function ss_showNotLoggedInMsg() {
 <table cellspacing="0" cellpadding="2" style="width:100%;">
 <tr>
 <td><a class="ss_linkButton ss_bold ss_smallprint" href=""
-  onClick="if (ss_getPresence) {ss_getPresence(false)};return false;"
+  onClick="if (ss_getPresence) {ss_getPresence('')};return false;"
 ><ssf:nlt tag="general.Refresh"/></a></td>
 <td align="right"><div id="ss_refreshDate">
 <span class="ss_smallprint ss_gray"><ssf:nlt 
@@ -147,7 +147,7 @@ function ss_postRequest(obj) {
 	//alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		if (!obj.getData('timeout')) {
+		if (obj.getData('timeout') != "timeout") {
 			//This call wasn't made from a timeout. So, give error message
 			if (self.ss_showNotLoggedInMsg) self.ss_showNotLoggedInMsg();
 		}

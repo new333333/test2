@@ -22,7 +22,7 @@
 <script language="JavaScript">
 var ss_presenceTimer${ssDashboardId} = null;
 function ss_presenceTimeout${ssDashboardId}() {
-	ss_getPresence${ssDashboardId}(true);
+	ss_getPresence${ssDashboardId}("timeout");
 	ss_presenceTimer${ssDashboardId} = setTimeout("ss_presenceTimeout${ssDashboardId}()", 300000);
 }	
 </script>
@@ -38,7 +38,7 @@ function ss_showNotLoggedInMsg() {
 <tr>
 <td>
 <a class="ss_linkButton ss_bold ss_smallprint" href=""
-  onClick="if (ss_getPresence${ssDashboardId}) {ss_getPresence${ssDashboardId}(false)};return false;"
+  onClick="if (ss_getPresence${ssDashboardId}) {ss_getPresence${ssDashboardId}('')};return false;"
 ><ssf:nlt tag="general.Refresh"/></a>
 </td>
 <td align="right">
@@ -133,7 +133,7 @@ function ss_postRequest${ssDashboardId}(obj) {
 	//alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		if (!obj.getData('timeout')) {
+		if (obj.getData('timeout') != "timeout") {
 			//This call wasn't made from a timeout. So, give error message
 			if (self.ss_showNotLoggedInMsg) self.ss_showNotLoggedInMsg();
 		}

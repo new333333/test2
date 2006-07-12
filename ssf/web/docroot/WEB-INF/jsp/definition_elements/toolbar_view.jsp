@@ -1,4 +1,7 @@
 <% // Toolbar viewer %>
+<%
+String ss_portletNamespace = renderResponse.getNamespace();
+%>
 <script type="text/javascript">
 function ss_toolbarPopupUrl(url) {
 	var width = ss_getWindowWidth();
@@ -8,14 +11,14 @@ function ss_toolbarPopupUrl(url) {
 	self.window.open(url, "_blank", "resizable=yes,scrollbars=yes,width="+width+",height="+height);
 }
 </script>
-
 <div class="ss_toolbar">
 <c:set var="delimiter" value=""/>
 <c:forEach var="toolbarMenu" items="${ss_toolbar}">
     <span class="ss_toolbar_item"><c:out value="${delimiter}" /></span>
     <c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}">
 
-     <ssf:menu title="${toolbarMenu.value.title}" titleId="toolbar_${toolbarMenu.key}">
+     <ssf:menu title="${toolbarMenu.value.title}" 
+       titleId="toolbar_${toolbarMenu.key}">
 	  <c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}">
 	    <c:if test="${empty toolbarMenuCategory.key}">
 	      <span class="ss_bold"><c:out value="${toolbarMenuCategory.key}" /></span>

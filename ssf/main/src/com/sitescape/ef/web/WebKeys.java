@@ -102,6 +102,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_GET_ELEMENT_VALUE_DATA = "get_element_value_data";
 	public static final String FORUM_OPERATION_GET_FAVORITES_TREE = "get_favorites_tree";
 	public static final String FORUM_OPERATION_GET_FILTER_TYPE = "get_filter_type";
+	public static final String FORUM_OPERATION_SET_DASHBOARD_TITLE = "set_dashboard_title";
 	public static final String FORUM_OPERATION_SET_DISPLAY_STYLE = "set_display_style";
 	public static final String FORUM_OPERATION_SET_DISPLAY_DEFINITION = "set_display_definition";
 	public static final String FORUM_OPERATION_VIEW_ENTRY = "view_entry";
@@ -161,6 +162,7 @@ public class WebKeys {
     public static final String DASHBOARD_INCLUDE_BINDER_TITLE="includeBinderTitle";
     public static final String DASHBOARD_NARROW_FIXED_WIDTH="narrowFixedWidth";
     public static final String DASHBOARD_NARROW_FIXED_WIDTH2="narrowFixedWidth2";
+    public static final String DASHBOARD_SHARED_MODIFICATION_ALLOWED="sharedModificationAllowed";
     public static final String DASHBOARD_SCOPE="scope";
     public static final String DASHBOARD_TITLE="title";
     public static final String DASHBOARD_WORKSPACE_TREE="workspaceTree";

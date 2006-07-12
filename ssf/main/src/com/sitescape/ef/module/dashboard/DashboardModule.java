@@ -8,6 +8,7 @@ import com.sitescape.ef.domain.Binder;
 
 public interface DashboardModule {
 
+	public boolean checkModifyBinderAllowed(Binder binder);
 	public void getBuddyListBean(Map ssDashboard, String id, Map component);
 	public void getWorkspaceTreeBean(Binder binder, Map ssDashboard, Map model, 
     		String id, Map component);

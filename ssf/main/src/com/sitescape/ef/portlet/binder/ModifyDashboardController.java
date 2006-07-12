@@ -44,6 +44,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 
 		if (formData.containsKey("set_title")) {
 			getDashboardModule().setTitle(request, binder, scope);
+			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("add_wideTop")) {
 			componentId = getDashboardModule().addComponent(request, binder, DashboardHelper.Wide_Top, scope);
 			response.setRenderParameter("_componentId", componentId);
@@ -90,6 +91,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 
 		Map model = new HashMap();
 		model.put(WebKeys.BINDER, binder);
@@ -107,11 +109,19 @@ public class ModifyDashboardController extends AbstractBinderController {
 			scope = componentScope;
 		}
 
+		String cId = "";
+		if (formData.containsKey("_modifyComponentData") || 
+				formData.containsKey("_modifyComponentData.x") ||
+				formData.containsKey("_deleteComponent") || 
+				formData.containsKey("_deleteComponent.x")) {
+			cId = componentId;
+		}
+
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, 
-				userProperties, model, scope);
+				userProperties, model, scope, cId);
 
 		if (DashboardHelper.checkDashboardLists(ssDashboard)) {
 			//The dashboard was fixed up. Go save it
@@ -126,7 +136,8 @@ public class ModifyDashboardController extends AbstractBinderController {
 		model.put(WebKeys.DASHBOARD, ssDashboard);
 		String view = "binder/modify_dashboard";
 		
-		if (formData.containsKey("set_title")) {
+		if (op.equals(WebKeys.FORUM_OPERATION_SET_DASHBOARD_TITLE)) {
+			view = "binder/modify_dashboard_title";
 		} else if (formData.containsKey("add_wideTop")) {
 			view = "binder/modify_dashboard_component";
 		} else if (formData.containsKey("add_narrowFixed")) {
