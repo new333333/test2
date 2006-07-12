@@ -315,7 +315,6 @@ function ss_setFavoritesPaneSize() {
 </script>
 
 <div id="ss_navbar_bottom"></div>
-<br/>
 
 </c:if>
 </div>

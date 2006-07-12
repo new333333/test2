@@ -53,6 +53,8 @@ function ss_showHideDashboardComponent(obj, componentId, divId) {
 		var targetDiv = document.getElementById(divId);
 		if (targetDiv) {
 			targetDiv.innerHTML = "";
+			//Signal that the layout changed
+			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
 	}
 	if (componentId != "") {url += "\&operation2=" + componentId;}
@@ -65,6 +67,8 @@ function ss_showComponentCallback(s, divId) {
 	var targetDiv = document.getElementById(divId);
 	if (targetDiv) {
 		targetDiv.innerHTML = s;
+		//Signal that the layout changed
+		if (ssf_onLayoutChange) ssf_onLayoutChange();
 	}
 }
 function ss_hideComponentCallback(s, divId) {
@@ -86,4 +90,19 @@ function ss_confirmDeleteComponent(obj, componentId) {
 	return false;
 }
 
+function ss_addDashboardComponent(obj, component) {
+	var formObj = ss_getContainingForm(obj)
+	formObj.name.value = component;
+	formObj.submit();
+}
+
+function ss_modifyDashboardComponent(obj, componentScope) {
+	var formObj = ss_getContainingForm(obj)
+	formObj._scope.value = componentScope;
+}
+
+function ss_hideDashboardMenu(obj) {
+	var formObj = ss_getContainingForm(obj)
+	ss_hideDiv(formObj.parentNode.id)
+}
 </script>

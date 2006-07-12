@@ -330,7 +330,17 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>class</name>
+			<name>titleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>menuClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>menuWidth</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>

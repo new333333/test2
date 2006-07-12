@@ -21,7 +21,6 @@
 <div class="ss_form" style="margin:6px;">
 <div class="ss_rounded">
 <div style="margin:6px;">
-<h3><ssf:nlt tag="dashboard.configure" text="Configure dashboard options"/></h3>
 
 <div class="ss_form">
 <form class="ss_form" method="post">
@@ -37,25 +36,8 @@
 </form>
 </div>
 
-<div class="ss_form">
-<c:if test="${ssDashboard.scope == 'local'}">
-  <span class="ss_largerprint ss_bold"><ssf:nlt tag="dashboard.localDashboard" /></span>
-  <br/>
-</c:if>
-<c:if test="${ssDashboard.scope == 'global'}">
-  <span class="ss_largerprint ss_bold"><ssf:nlt tag="dashboard.globalDashboard" /></span>
-  <br/>
-</c:if>
-<c:if test="${ssDashboard.scope == 'binder'}">
-  <span class="ss_largerprint ss_bold"><ssf:nlt tag="dashboard.binderDashboard" /></span>
-  <br/>
-</c:if>
-<br/>
-</div>
-<br/>
 <br/>
 
-  
 <div style="width:100%;">
 	<span class="ss_bold"><ssf:nlt tag="dashboard.componentLayout" /></span>
 	<br/>
