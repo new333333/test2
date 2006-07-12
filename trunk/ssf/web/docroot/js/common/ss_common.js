@@ -199,7 +199,6 @@ function ss_showDivFadeIn(id, ms) {
 //Routine to fade out a div
 function ss_hideDivFadeOut(id, ms) {
     dojo.lfx.html.fadeOut(id, ms).play();
-    ss_setOpacity(document.getElementById(id),0.1);
 }
 
 

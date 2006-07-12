@@ -25,7 +25,7 @@
 		String ss_dashboardTitle = NLT.get("dashboard.configure");
 	%>
 	<ssf:menu title="<%= ss_dashboardTitle %>" titleClass="ss_smallprint ss_gray" 
-	  titleId="ss_addDashboardContent" menuWidth="350px">
+	  titleId="ss_addDashboardContent" menuWidth="300px">
 		<ul class="ss_dropdownmenu" 
 		  style="list-style: outside; margin:2px 2px 2px 18px; padding:2px;">
 		  <li><a href="" onClick="ss_toggle_toolbars();return false;"><ssf:nlt 
@@ -80,36 +80,38 @@
 	   style="visibility:hidden; display:none;">
 	  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
 	  <ssf:menu title="<%= ss_dashboardAddWide %>" titleClass="ss_linkButton" 
-	    titleId="ss_addDashboardContentWideTop" menuWidth="500px" offsetTop="2"
-	    openStyle="popup">
+	    titleId="ss_addDashboardContentWideTop" menuWidth="400px" offsetTop="2"
+	    menuClass="ss_dashboard_menu" openStyle="popup">
 	  <form method="post" action="<portlet:actionURL>
 		  <portlet:param name="action" value="modify_dashboard"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
 		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 	      </portlet:actionURL>">
-		<div class="ss_form">
-	      <span><ssf:nlt tag="dashboard.componentScope"/></span><br>
+		<div style="margin:10px;">
+	      <span class="ss_bold"><ssf:nlt tag="dashboard.componentScope"/></span><br>
 	      <input type="radio" name="_scope" value="local" checked/><ssf:nlt tag="dashboard.componentScope.local"/><br>
 	      <input type="radio" name="_scope" value="global"/><ssf:nlt tag="dashboard.componentScope.global"/><br>
 	      <c:if test="${ssDashboard.sharedModificationAllowed}">
 	        <input type="radio" name="_scope" value="binder"/><ssf:nlt tag="dashboard.componentScope.binder"/><br>
 	      </c:if>
-	      <span><ssf:nlt tag="dashboard.componentType"/></span><br>
+	      <br/>
+	      <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
 	      <c:forEach var="component" items="${ssDashboard.components_wide}">
 	         <input type="radio" name="name" value="${component}">
 	           <ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/>
 	         <br>
 	      </c:forEach>
-	    </div>
-	  <input class="ss_form" type="submit" name="add_wideTop" 
-	    value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
-	  <input class="ss_form" type="submit" name="cancel" 
-	    value="<ssf:nlt tag="button.cancel"/>" 
-	    onClick="ss_hideDashboardMenu(this);return false;">
-	  <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
-	  <input type="hidden" name="_componentId" value="">
-	  <input type="hidden" name="_returnView" value="binder"/>
-      </form>
+	      <br>
+		  <input class="ss_form" type="submit" name="add_wideTop" 
+		    value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
+		  <input class="ss_form" type="submit" name="cancel" 
+		    value="<ssf:nlt tag="button.cancel"/>" 
+		    onClick="ss_hideDashboardMenu(this);return false;">
+		  <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
+		  <input type="hidden" name="_componentId" value="">
+		  <input type="hidden" name="_returnView" value="binder"/>
+		</div>
+	  </form>
       </ssf:menu>
       <br>
 	</div>
@@ -142,13 +144,13 @@
 	  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
 	  <ssf:menu title="<%= ss_dashboardAddNarrow %>" titleClass="ss_linkButton" 
 	    titleId="ss_addDashboardContentNarrow" menuWidth="400px" offsetTop="2"
-	    openStyle="popup">
+	    menuClass="ss_dashboard_menu" openStyle="popup">
 	  <form method="post" action="<portlet:actionURL>
 		  <portlet:param name="action" value="modify_dashboard"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
 		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 	      </portlet:actionURL>">
-		<div class="ss_form">
+		<div style="margin:10px;">
 	      <span><ssf:nlt tag="dashboard.componentScope"/></span><br>
 	      <input type="radio" name="_scope" value="local" checked/><ssf:nlt tag="dashboard.componentScope.local"/><br>
 	      <input type="radio" name="_scope" value="global"/><ssf:nlt tag="dashboard.componentScope.global"/><br>
@@ -161,15 +163,16 @@
 	           <ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/>
 	         <br>
 	      </c:forEach>
-	    </div>
-	  <input class="ss_form" type="submit" name="add_narrowFixed" 
-	    value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
-	  <input class="ss_form" type="submit" name="cancel" 
-	    value="<ssf:nlt tag="button.cancel"/>" 
-	    onClick="ss_hideDashboardMenu(this);return false;">
-	  <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
-	  <input type="hidden" name="_componentId" value="">
-	  <input type="hidden" name="_returnView" value="binder"/>
+	      <br>
+		  <input class="ss_form" type="submit" name="add_narrowFixed" 
+		    value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
+		  <input class="ss_form" type="submit" name="cancel" 
+		    value="<ssf:nlt tag="button.cancel"/>" 
+		    onClick="ss_hideDashboardMenu(this);return false;">
+		  <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
+		  <input type="hidden" name="_componentId" value="">
+		  <input type="hidden" name="_returnView" value="binder"/>
+		</div>
       </form>
       </ssf:menu>
       <br>
@@ -201,13 +204,13 @@
 	  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
 	  <ssf:menu title="<%= ss_dashboardAddMedium %>" titleClass="ss_linkButton" 
 	    titleId="ss_addDashboardContentNarrowVariable" menuWidth="400px" offsetTop="2"
-	    openStyle="popup">
+	    menuClass="ss_dashboard_menu" openStyle="popup">
 	  <form method="post" action="<portlet:actionURL>
 		  <portlet:param name="action" value="modify_dashboard"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
 		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 	      </portlet:actionURL>">
-		<div class="ss_form">
+		<div style="margin:10px;">
 	      <span><ssf:nlt tag="dashboard.componentScope"/></span><br>
 	      <input type="radio" name="_scope" value="local" checked/><ssf:nlt tag="dashboard.componentScope.local"/><br>
 	      <input type="radio" name="_scope" value="global"/><ssf:nlt tag="dashboard.componentScope.global"/><br>
@@ -220,15 +223,16 @@
 	           <ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/>
 	         <br>
 	      </c:forEach>
-	    </div>
-	  <input class="ss_form" type="submit" name="add_narrowVariable" 
-	    value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
-	  <input class="ss_form" type="submit" name="cancel" 
-	    value="<ssf:nlt tag="button.cancel"/>" 
-	    onClick="ss_hideDashboardMenu(this);return false;">
-	  <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
-	  <input type="hidden" name="_componentId" value="">
-	  <input type="hidden" name="_returnView" value="binder"/>
+	      <br>
+		  <input class="ss_form" type="submit" name="add_narrowVariable" 
+		    value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
+		  <input class="ss_form" type="submit" name="cancel" 
+		    value="<ssf:nlt tag="button.cancel"/>" 
+		    onClick="ss_hideDashboardMenu(this);return false;">
+		  <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
+		  <input type="hidden" name="_componentId" value="">
+		  <input type="hidden" name="_returnView" value="binder"/>
+		</div>
       </form>
       </ssf:menu>
       <br>
@@ -258,13 +262,13 @@
 	  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
 	  <ssf:menu title="<%= ss_dashboardAddWide %>" titleClass="ss_linkButton" 
 	    titleId="ss_addDashboardContentWideBottom" menuWidth="400px" offsetTop="2"
-	    openStyle="popup">
+	    menuClass="ss_dashboard_menu" openStyle="popup">
 	  <form method="post" action="<portlet:actionURL>
 		  <portlet:param name="action" value="modify_dashboard"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
 		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 	      </portlet:actionURL>">
-		<div class="ss_form">
+		<div style="margin:10px;">
 	      <span><ssf:nlt tag="dashboard.componentScope"/></span><br>
 	      <input type="radio" name="_scope" value="local" checked/><ssf:nlt tag="dashboard.componentScope.local"/><br>
 	      <input type="radio" name="_scope" value="global"/><ssf:nlt tag="dashboard.componentScope.global"/><br>
@@ -277,15 +281,16 @@
 	           <ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/>
 	         <br>
 	      </c:forEach>
-	    </div>
-	  <input class="ss_form" type="submit" name="add_wideBottom" 
-	    value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
-	  <input class="ss_form" type="submit" name="cancel" 
-	    value="<ssf:nlt tag="button.cancel"/>" 
-	    onClick="ss_hideDashboardMenu(this);return false;">
-	  <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
-	  <input type="hidden" name="_componentId" value="">
-	  <input type="hidden" name="_returnView" value="binder"/>
+	      <br>
+		  <input class="ss_form" type="submit" name="add_wideBottom" 
+		    value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
+		  <input class="ss_form" type="submit" name="cancel" 
+		    value="<ssf:nlt tag="button.cancel"/>" 
+		    onClick="ss_hideDashboardMenu(this);return false;">
+		  <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
+		  <input type="hidden" name="_componentId" value="">
+		  <input type="hidden" name="_returnView" value="binder"/>
+		</div>
       </form>
       </ssf:menu>
       <br>
