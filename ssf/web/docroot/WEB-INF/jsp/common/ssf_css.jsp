@@ -422,6 +422,20 @@ ul.ss_dropdownmenu li {
   padding-left: 2px;
   color: ${ss_toolbar_dropdown_menu_color};
 } 
+.ss_dashboard_menu {
+  position: absolute;
+  z-index: 100;
+  visibility: hidden;
+  background-color: ${ss_style_background_color}; 
+  color: ${ss_style_text_color};
+  border: 1px ${ss_style_border_color} solid;
+  padding: 0px;
+  width: 300px;
+  }
+.ss_toolbar_menu * {
+  background-color: ${ss_style_background_color}; 
+  color: ${ss_style_text_color};
+  }
 
 .ss_calendar_today {
   background-color: ${ss_calendar_today_background_color};

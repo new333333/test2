@@ -115,15 +115,10 @@ function ss_buttonSelect(btn) {
 }
 function ss_checkFilterForm(obj) {
 	//Set the term numbers into the form
-	alert('${ssSearchFormForm}')
 	var formObj = document.getElementById('${ssSearchFormForm}')
-	alert(formObj.id)
-	alert(formObj.ss_filterTermNumber)
 	formObj.ss_filterTermNumber.value = parseInt(ss_filterTermNumber);
 	formObj.ss_filterTermNumberMax.value = parseInt(ss_filterTermNumberMax);
-	alert(formObj.ss_filterTermNumberMax.value)
 	if (ss_buttonSelected == 'ok' && obj.searchFormName && obj.searchFormName.value == "") {
-		alert("<ssf:nlt tag="searchForm.enterName" text="Please fill in the filter name field."/>")
 		obj.searchFormName.focus()
 		return false;
 	}
