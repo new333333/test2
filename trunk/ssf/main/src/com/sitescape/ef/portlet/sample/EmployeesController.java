@@ -41,7 +41,6 @@ public class EmployeesController extends SAbstractController {
 		// that the Spring's PortalMVC expects.
 		Map models = new HashMap();
 		models.put("employees", getEmployeeModule().getAllEmployees());
-		models.put("rssFeedUrl", UrlUtil.getFeedURL());
 		
 		return new ModelAndView("sample/employeesView", models);
 	}

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletSecurityException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,7 +16,8 @@ import com.sitescape.util.Http;
 
 public class AdaptedPortletURL {
 
-	private HttpServletRequest req;
+	private HttpServletRequest sreq;
+	private PortletRequest preq;
 	private String portletName;
 	private boolean action;
 	private Map params;
@@ -32,7 +34,7 @@ public class AdaptedPortletURL {
 	 * @param action
 	 */
 	public AdaptedPortletURL(HttpServletRequest req, String portletName, boolean action) {
-		this.req = req;
+		this.sreq = req;
 		this.portletName = portletName;
 		this.action = action;
 		this.secure = req.isSecure();
@@ -40,16 +42,51 @@ public class AdaptedPortletURL {
 	}
 	
 	/**
-	 * Construct an adapted portlet URL without using a <code>HttpServletRequest</code>.
+	 * Construct an adapted portlet URL from the information passed in.
+	 * 
+	 * @param req
+	 * @param portletName
+	 * @param action
+	 */
+	public AdaptedPortletURL(PortletRequest req, String portletName, boolean action) {
+		this.preq = req;
+		this.portletName = portletName;
+		this.action = action;
+		this.secure = req.isSecure();
+		this.params = new HashMap();
+	}
+	
+	/**
+	 * Note: The web/portlet controllers serving browser-based client must 
+	 *       *never* use this method. This method is reserved exclusive
+	 *       for other types of clients (eg. email notification, rss, and
+	 *       web services) that need to create valid adapted porlet urls
+	 *       initiated from non web-based interactions. 
+	 * 
+	 * @param portletName
+	 * @param action
+	 * @return
+	 */
+	public static AdaptedPortletURL createAdaptedPortletURLOutOfWebContext
+		(String portletName, boolean action) {
+		return new AdaptedPortletURL(portletName, action);
+	}
+	
+	/**
+	 * Construct an adapted portlet URL without using <code>HttpServletRequest</code>
+	 * or <code>PortletRequest</code>.
 	 * The necessary information such as hostname, port number, etc., are read in
 	 * from the system configuration file (i.e., they are statically configured)
-	 * as opposed to being read from the <code>HttpServletRequest</code>. 
+	 * as opposed to being read from the <code>HttpServletRequest</code>.
+	 * This should be only used by those interactions that do not come from the
+	 * browser client.  
 	 *  
 	 * @param portletName
 	 * @param action
 	 */
-	public AdaptedPortletURL(String portletName, boolean action) {
-		this.req = null;
+	private AdaptedPortletURL(String portletName, boolean action) {
+		this.sreq = null;
+		this.preq = null;
 		this.portletName = portletName;
 		this.action = action;
 		this.secure = false;
@@ -116,7 +153,14 @@ public class AdaptedPortletURL {
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append(WebUrlUtil.getAdapterRootURL(req, secure));
+		String adapterRootURL = null;
+		
+		if(sreq != null)
+			adapterRootURL = WebUrlUtil.getAdapterRootURL(sreq, secure);
+		else
+			adapterRootURL = WebUrlUtil.getAdapterRootURL(preq, secure);
+		
+		sb.append(adapterRootURL);
 		
 		sb.append("do?");
 		
