@@ -96,7 +96,7 @@ public class AddFolderController extends SAbstractController {
 		
 		
 		String view = WebKeys.VIEW_ADD_BINDER_TYPE;
-		if (!Validator.isNull("")) {
+		if (!Validator.isNull(defId)) {
 			Map publicBinderDefs = (Map)model.get(WebKeys.PUBLIC_BINDER_DEFINITIONS);
 			//Make sure the requested definition is legal
 			if (publicBinderDefs.containsKey(defId)) {

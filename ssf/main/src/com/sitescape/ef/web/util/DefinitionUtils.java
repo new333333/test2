@@ -76,7 +76,9 @@ public class DefinitionUtils {
 	public static void getDefinitions(int defType, String key, Map model) {
 		List defs = getInstance().getDefinitionModule().getDefinitions();
 		Iterator itDefinitions = defs.listIterator();
-		Map definitions = new HashMap();
+		
+		Map definitions = (Map)model.get(key);
+		if (definitions == null) definitions = new HashMap();
 		while (itDefinitions.hasNext()) {
 			Definition def = (Definition) itDefinitions.next();
 			if (def.getType() == defType) {

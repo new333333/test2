@@ -25,6 +25,7 @@ import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.SFQuery;
+import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoFolderEntryByTheIdException;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
@@ -304,8 +305,15 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
            	new HibernateCallback() {
            		public Object doInHibernate(Session session) throws HibernateException {
 		   			getCoreDao().deleteEntityAssociations("owningBinderId=" + folder.getId(), FolderEntry.class);
-       	  			session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where parentBinder=:parent")
-       	   				.setLong("parent", folder.getId().longValue())
+		   			//delete ratings/visits for these entries
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId in " + 
+ 			   				"(select p.id from com.sitescape.ef.domain.FolderEntry p where " +
+		   			  			" p.parentBinder=:folder) and entityType=:entityType")
+		   			  	.setEntity("folder", folder)
+		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
+		   				.executeUpdate();
+        	  		session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where parentBinder=:parent")
+       	   				.setEntity("parent", folder)
        	   				.executeUpdate();
        	  			//if these are ever cached in secondary cache, clear them out.
 		   	   		return null;
@@ -331,7 +339,12 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
             			//need to use ownerId, cause attachments/custom sets not indexed by folderEntry
     		   			getCoreDao().deleteEntityAssociations("ownerId in (" + inList.toString() + ") and ownerType='" +
     		   					EntityType.folderEntry.name() + "'", FolderEntry.class);
-        	   			session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where id in (:pList)")
+    		   			//delete ratings/visits for these entries
+     		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId in (:pList) and entityType=:entityType")
+         	   				.setParameterList("pList", ids)
+    		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
+    		   				.executeUpdate();
+            	   		session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where id in (:pList)")
         	   				.setParameterList("pList", ids)
         	   				.executeUpdate();
            	  			//if these are ever cached in secondary cache, clear them out.      	   				

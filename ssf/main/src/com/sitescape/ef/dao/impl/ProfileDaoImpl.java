@@ -110,8 +110,19 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 			   				"(select p.id from com.sitescape.ef.domain.Principal p where " +
 		   			  			" p.parentBinder=" + profiles.getId() + ")")
   				         	.executeUpdate();
-
-	       			session.createQuery("Delete com.sitescape.ef.domain.Principal where parentBinder=" + profiles.getId())
+		   			//delete ratings/visits owned by these users
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where principalId in " + 
+ 			   				"(select p.id from com.sitescape.ef.domain.Principal p where " +
+		   			  			" p.parentBinder=" + profiles.getId() + ")")
+		   				.executeUpdate();
+	       			
+		   			//delete ratings/visits for these principals
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId in " + 
+ 			   				"(select p.id from com.sitescape.ef.domain.Principal p where " +
+		   			  			" p.parentBinder=" + profiles.getId() + ") and entityType in (" + 
+ 		   					EntityIdentifier.EntityType.user.getValue() + "," + EntityIdentifier.EntityType.group.getValue() + ")")
+		   				.executeUpdate();
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Principal where parentBinder=" + profiles.getId())
 	       				.executeUpdate();
 	       			session.getSessionFactory().evict(Principal.class);		
 	       	   		return null;
@@ -172,7 +183,18 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	   					.setParameterList("pList", ids)
 	   					.executeUpdate();
 
-		   			session.createQuery("Delete com.sitescape.ef.domain.Principal where id in (:pList)")
+		   			//delete ratings/visits owned by these users
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where principalId in (:pList)")
+	   					.setParameterList("pList", ids)
+		   				.executeUpdate();
+
+		   			//delete ratings/visits for by these principals
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId in (:pList) and entityType in (" + 
+ 		   					EntityIdentifier.EntityType.user.getValue() + "," + EntityIdentifier.EntityType.group.getValue() + ")")
+	   					.setParameterList("pList", ids)
+		   				.executeUpdate();
+
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Principal where id in (:pList)")
             			.setParameterList("pList", ids)
        	   				.executeUpdate();
 	       			session.getSessionFactory().evict(Principal.class);		
