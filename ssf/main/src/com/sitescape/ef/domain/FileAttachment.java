@@ -116,6 +116,7 @@ public class FileAttachment extends Attachment {
    public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
+		if (!(obj instanceof FileAttachment)) return false;
 		FileAttachment o = (FileAttachment) obj;
 		// Don't use id - may not be saved yet
 		if (getRepositoryServiceName().equals(o.getRepositoryServiceName())

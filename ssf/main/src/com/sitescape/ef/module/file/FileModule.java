@@ -58,7 +58,18 @@ public interface FileModule {
 	 */
 	public FilesErrors deleteFiles(Binder binder, DefinableEntity entity,
 			FilesErrors errors);
-	
+	/**
+	 * see <code>deleteFiles</code>.  If deleteAttachments is false,
+	 * the fileAttachment object is not removed from the entry collection.
+	 * This allows for a bulk delete of hibernate objects.
+	 * @param binder
+	 * @param entity
+	 * @param errors
+	 * @param deleteAttachments
+	 * @return
+	 */
+	public FilesErrors deleteFiles(Binder binder, DefinableEntity entity,
+			FilesErrors errors, boolean deleteAttachments);
 	/**
 	 * Deletes the specified file. If applicable, also delete generated files
 	 * (scaled file and thumbnail file) associated with the primary file. 

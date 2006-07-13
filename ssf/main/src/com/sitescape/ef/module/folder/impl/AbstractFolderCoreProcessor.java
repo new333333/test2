@@ -362,10 +362,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         // database), make sure to run the filter on the uploaded files. 
         FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), fileData);
         
-        final FolderEntry entry = addReply_create();
-        entry.setEntryDef(def);
-        
-        filesErrors = addReply_processFiles(parent, entry, fileData, filesErrors);
+        final FolderEntry entry = addReply_create(def);
         
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
@@ -380,6 +377,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         		return null;
         	}});
         
+        filesErrors = addReply_processFiles(parent, entry, fileData, filesErrors);
         
         addReply_startWorkflow(entry);
          
@@ -409,8 +407,16 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
      * Subclass must implement this.
      * @return
      */
-    protected FolderEntry addReply_create() {
-        return new FolderEntry();
+    protected FolderEntry addReply_create(Definition def) {
+    	try {
+    		FolderEntry entry =  new FolderEntry();
+           	entry.setEntryDef(def);
+        	if (def != null) entry.setDefinitionType(new Integer(def.getType()));
+        	return entry;
+    	} catch (Exception ex) {
+    		return null;
+    	}
+    	
     }
 
     protected FilesErrors addReply_filterFiles(Binder binder, List fileData) throws FilterException {

@@ -1692,7 +1692,7 @@
 	<item name="fileEntryTitle" caption="__file_entry_title" type="data" 
 			canBeDeleted="false" multipleAllowed="false">
 		<properties>
-			<property name="name" caption="__data_name" type="text" value="title" 
+			<property name="name" caption="__data_name" type="text" value="_fileEntryTitle" 
 			  readonly="true" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>

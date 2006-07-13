@@ -1011,10 +1011,22 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									    	if(itemName.equals("graphic")) {
 									    		fui.setGenerateThumbnail(true);
 									    		fui.setThumbnailDirectlyAccessible(true);
-									    	}
+									    	} 
 									    	
 									    	fileData.add(fui);
 										}
+									} else if (itemName.equals("fileEntryTitle")) {
+									    if(fileItems != null && fileItems.containsKey(nameValue)) {
+									    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
+									    	String fileName = myFile.getOriginalFilename();
+									    	if (fileName.equals("")) continue;
+	
+									    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
+									    	String repositoryServiceName = storageElem.attributeValue("value",
+									    			RepositoryUtil.getDefaultRepositoryServiceName());
+									    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, nameValue, myFile, repositoryServiceName);
+									    	fileData.add(fui);
+									    }
 									} else if (itemName.equals("attachFiles")) {
 									    if(fileItems != null) {
 											int number = 1;

@@ -98,7 +98,9 @@ public class AddEntryController extends SAbstractForumController {
 				model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 				//Make sure the requested definition is legal
 				if (folderEntryDefs.containsKey(entryType)) {
-					DefinitionUtils.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@name='entryForm']");
+					DefinitionUtils.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
+				} else if ((folder.getDefinitionType()!=null) && (folder.getDefinitionType().intValue() == Definition.FILE_FOLDER_VIEW)) {
+					DefinitionUtils.getDefinition(null, model, "//item[@name='fileEntryForm']");
 				} else {
 					DefinitionUtils.getDefinition(null, model, "//item[@name='entryForm']");
 				}
@@ -139,7 +141,9 @@ public class AddEntryController extends SAbstractForumController {
 		    	}
 			    	
 				if (replyStyleIsGood) {
-					DefinitionUtils.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@name='entryForm']");
+					DefinitionUtils.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
+				} else if ((entry.getDefinitionType()!=null) && (entry.getDefinitionType().intValue() == Definition.FILE_ENTRY_VIEW)) {
+					DefinitionUtils.getDefinition(null, model, "//item[@name='fileEntryForm']");
 				} else {
 					DefinitionUtils.getDefinition(null, model, "//item[@name='entryForm']");
 				}

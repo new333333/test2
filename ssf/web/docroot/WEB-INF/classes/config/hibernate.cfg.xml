@@ -42,9 +42,11 @@
 	    <mapping resource="com/sitescape/ef/domain/Notification.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/PostingDef.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/Principal.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/Ratings.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/SeenMap.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/Tag.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/UserProperties.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/Visits.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/WorkflowResponse.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/WorkflowState.hbm.xml"/>
 

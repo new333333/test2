@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -24,29 +25,31 @@ import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
-import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.FileAttachment.FileLock;
-import com.sitescape.ef.domain.FileItem;
+import com.sitescape.ef.dao.FolderDao;
+import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.ef.domain.FileAttachment;
+import com.sitescape.ef.domain.FileItem;
 import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.LibraryTitleException;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Reservable;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.VersionAttachment;
+import com.sitescape.ef.domain.FileAttachment.FileLock;
 import com.sitescape.ef.module.file.ContentFilter;
-import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FileModule;
+import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.LockIdMismatchException;
 import com.sitescape.ef.module.file.LockedByAnotherUserException;
-import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.repository.RepositoryServiceException;
-import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.repository.RepositorySession;
 import com.sitescape.ef.repository.RepositorySessionFactoryUtil;
+import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.util.DirPath;
 import com.sitescape.ef.util.FileHelper;
 import com.sitescape.ef.util.FileUploadItem;
@@ -73,7 +76,7 @@ import com.sitescape.ef.util.ThumbnailException;
  * @author jong
  *
  */
-public class FileModuleImpl extends CommonDependencyInjection implements FileModule {
+public class FileModuleImpl implements FileModule {
 
 	private static final String FAILED_FILTER_FILE_DELETE 			= "DELETE";
 	private static final String FAILED_FILTER_FILE_MOVE 			= "MOVE";
@@ -92,6 +95,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	protected Log logger = LogFactory.getLog(getClass());
 
 	private CoreDao coreDao;
+	private FolderDao folderDao;
 	private TransactionTemplate transactionTemplate;
 	private ContentFilter contentFilter;
 	private String failedFilterFile;
@@ -106,6 +110,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		this.coreDao = coreDao;
 	}
 
+	public FolderDao getFolderDao() {
+		return folderDao;
+	}
+	public void setFolderDao(FolderDao folderDao) {
+		this.folderDao = folderDao;
+	}
 	protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
 	}
@@ -168,6 +178,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
 	public FilesErrors deleteFiles(Binder binder, DefinableEntity entry,
 			FilesErrors errors) {
+		return deleteFiles(binder, entry, errors, true);
+	}
+	// optimization : don't delete attachments, only delete the actual file
+	//this allows bulk deletes of attachments
+	public FilesErrors deleteFiles(Binder binder, DefinableEntity entry,
+			FilesErrors errors, boolean deleteAttachment) {
 		if(errors == null)
 			errors = new FilesErrors();
 		
@@ -176,7 +192,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			FileAttachment fAtt = (FileAttachment) fAtts.get(i);
 
 			try {
-				deleteFileInternal(binder, entry, fAtt, errors);
+				deleteFileInternal(binder, entry, fAtt, errors, deleteAttachment);
 			}
 			catch(Exception e) {
 				logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
@@ -200,7 +216,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			errors = new FilesErrors();
 		
 		try {
-			deleteFileInternal(binder, entry, fAtt, errors);
+			deleteFileInternal(binder, entry, fAtt, errors, true);
 		}
 		catch(Exception e) {
 			logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
@@ -364,18 +380,24 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
     	checkReservation(entry);
     	
-    	for(int i = 0; i < fileUploadItems.size(); i++) {
+    	for(int i = 0; i < fileUploadItems.size();) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
     		try {
     			// Unlike deleteFileInternal, writeFileTransactional is transactional.
     			// See the comment in writeFileMetadataTransactional for reason. 
     			this.writeFileTransactional(binder, entry, fui, errors);
+    			//only advance on success
+    			++i;
+    		} catch (LibraryTitleException lx) {
+    			//pass up
+    			throw lx;
     		}
     		catch(Exception e) {
     			logger.error("Error writing file " + fui.getOriginalFilename(), e);
     			errors.addProblem(new FilesErrors.Problem
     					(fui.getRepositoryServiceName(),  fui.getOriginalFilename(), 
     							FilesErrors.Problem.OTHER_PROBLEM, e));
+    			fileUploadItems.remove(i);
     		}
     	}
     	
@@ -394,10 +416,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			errors = new FilesErrors();
 		}
 		
-    	for(int i = 0; i < fileUploadItems.size(); i++) {
+    	for(int i = 0; i < fileUploadItems.size();) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
     		try {
     			getContentFilter().filter(fui);
+    			//Only advance on success
+    			++i;
     		}
     		catch(FilterException e) {
     			if(errors != null) {
@@ -538,7 +562,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void deleteFileInternal(Binder binder, DefinableEntity entry,
-			FileAttachment fAtt, FilesErrors errors) {
+			FileAttachment fAtt, FilesErrors errors, boolean deleteAttachment) {
 		String relativeFilePath = fAtt.getFileItem().getName();
 		String repositoryServiceName = fAtt.getRepositoryServiceName();
 		
@@ -631,7 +655,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 
 		// Remove metadata
-		entry.removeAttachment(fAtt);
+		if (deleteAttachment) entry.removeAttachment(fAtt);
 	}
 
 	private void move(Binder binder, FileUploadItem fui) throws IOException {
@@ -698,7 +722,41 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         			if(isNew) {
         				entry.addAttachment(fAtt);
         			}
-        		}     	
+        		}  else if (fui.getType() == FileUploadItem.TYPE_TITLE) {
+        			// name must be unique
+        			String title = fui.getOriginalFilename();
+        	     	Object[] cfValues = new Object[]{binder, new Integer(1), title.toLowerCase()};
+        	    	// see if title exists for this folder
+        	    	String[] cfAttrs = new String[]{"parentBinder", "HKey.level", "lower(title)"};
+        	    	FilterControls filter = new FilterControls(cfAttrs, cfValues);
+        	     	Iterator result = getFolderDao().queryEntries(filter);
+        	   		if (result.hasNext()) {
+        	   			Object obj = result.next();
+        	   			if (obj instanceof Object[])
+        	   				obj = ((Object [])obj)[0];
+        	   			if (result.hasNext() || !obj.equals(entry))
+        	   				throw new LibraryTitleException(title);
+        	   		}
+       			
+        			CustomAttribute ca = entry.getCustomAttribute(fui.getName());
+        			if (ca != null) {
+        				//exist, move to attachments
+        				Set fAtts = (Set) ca.getValueSet();
+        				for (Iterator iter=fAtts.iterator(); iter.hasNext(); ) {
+        					FileAttachment fa = (FileAttachment)iter.next();
+        					fa.setName(null);
+        					for (Iterator iter2=fa.getFileVersions().iterator(); iter2.hasNext();) {
+        						FileAttachment a = (FileAttachment)iter2.next();
+        						a.setName(null);
+        					}
+        				}
+        			}
+        			if (ca != null)
+        				ca.setValue(fAtt);
+        			else
+        				entry.addCustomAttribute(fui.getName(), fAtt);
+        			entry.setTitle(title);
+        		}
                 return null;
         	}
         });
@@ -734,7 +792,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	/// step4: update metadata in database
     	
 		int type = fui.getType();
-		if(type != FileUploadItem.TYPE_FILE && type != FileUploadItem.TYPE_ATTACHMENT) {
+		if(type != FileUploadItem.TYPE_FILE && type != FileUploadItem.TYPE_ATTACHMENT && type != FileUploadItem.TYPE_TITLE) {
 			logger.error("Unrecognized file processing type " + type + " for ["
 					+ fui.getName() + ","
 					+ fui.getOriginalFilename() + "]");

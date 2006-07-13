@@ -11,11 +11,14 @@ import java.util.Set;
 
 import org.dom4j.Document;
 
+import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.domain.Rating;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.domain.Visits;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.security.AccessControlException;
@@ -70,5 +73,9 @@ public interface ProfileModule {
     public SeenMap getUserSeenMap(Long userId);
     public void setSeen(Long userId, Entry entry);
     public void setSeen(Long userId, List entries);
+	public Visits getVisit(EntityIdentifier entityId);
+    public void setVisit(EntityIdentifier entityId);
+	public Rating getRating(EntityIdentifier entityId);
+    public void setRating(EntityIdentifier entityId, long value);
 
 }

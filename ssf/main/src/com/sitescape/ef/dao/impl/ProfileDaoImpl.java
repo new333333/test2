@@ -29,12 +29,16 @@ import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Group;
 
+import com.sitescape.ef.domain.EntityIdentifier;
+import com.sitescape.ef.domain.Visits;
+import com.sitescape.ef.domain.UserEntityPK;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.UserPropertiesPK;
 import com.sitescape.ef.domain.NoGroupByTheIdException;
 import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.domain.Rating;
 import com.sitescape.ef.domain.Membership;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.NoPrincipalByTheIdException;
@@ -547,5 +551,12 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
    		}
    		return seen;
 	}
-
+	public Visits loadVisit(Long userId, EntityIdentifier entityId) {
+    	UserEntityPK id = new UserEntityPK(userId, entityId);
+        return (Visits)getHibernateTemplate().get(Visits.class, id);	
+	}
+	public Rating loadRating(Long userId, EntityIdentifier entityId) {
+    	UserEntityPK id = new UserEntityPK(userId, entityId);
+        return (Rating)getHibernateTemplate().get(Rating.class, id);	
+	}
 }

@@ -76,50 +76,45 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         Map entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems);
         final Map entryData = (Map) entryDataAll.get("entryData");
         List fileUploadItems = (List) entryDataAll.get("fileData");
+        try {
+        	FilesErrors filesErrors = addEntry_filterFiles(binder, fileUploadItems);
+        	final Entry entry = addEntry_create(def, clazz);
         
-        FilesErrors filesErrors = addEntry_filterFiles(binder, fileUploadItems);
-
-        final Entry entry = addEntry_create(clazz);
-        entry.setEntryDef(def);
+        	// 	The following part requires update database transaction.
+        	getTransactionTemplate().execute(new TransactionCallback() {
+        		public Object doInTransaction(TransactionStatus status) {
+        			//need to set entry/binder information before generating file attachments
+        			//Attachments/Events need binder info for AnyOwner
+        			addEntry_fillIn(binder, entry, inputData, entryData);
+        			addEntry_preSave(binder, entry, inputData, entryData);      
+        			addEntry_save(binder, entry, inputData, entryData);      
+         			addEntry_postSave(binder, entry, inputData, entryData);
+        			return null;
+        		}
+        	});
         
-        // The following part requires update database transaction.
-        getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
-                //need to set entry/binder information before generating file attachments
-                //Attachments/Events need binder info for AnyOwner
-                addEntry_fillIn(binder, entry, inputData, entryData);
-                
-                addEntry_preSave(binder, entry, inputData, entryData);      
+        
+        	// We must save the entry before processing files because it makes use
+        	// of the persistent id of the entry. 
+        	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors);
+        
+        	//After the entry is successfully added, start up any associated workflows
+        	addEntry_startWorkflow(entry);
 
-                addEntry_save(binder, entry, inputData, entryData);      
-                
-                addEntry_postSave(binder, entry, inputData, entryData);
-                
-                return null;
+        	// This must be done in a separate step after persisting the entry,
+        	// because we need the entry's persistent ID for indexing. 
+        	addEntry_indexAdd(binder, entry, inputData, fileUploadItems);
+        
+         	if(filesErrors.getProblems().size() > 0) {
+        		// At least one error occured during the operation. 
+        		throw new WriteFilesException(filesErrors);
         	}
-        });
-        
-        
-        // We must save the entry before processing files because it makes use
-        // of the persistent id of the entry. 
-        filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors);
-        
-        //After the entry is successfully added, start up any associated workflows
-        addEntry_startWorkflow(entry);
-
-        // This must be done in a separate step after persisting the entry,
-        // because we need the entry's persistent ID for indexing. 
-        addEntry_indexAdd(binder, entry, inputData, fileUploadItems);
-        
-        cleanupFiles(fileUploadItems);
-        
-    	if(filesErrors.getProblems().size() > 0) {
-    		// At least one error occured during the operation. 
-    		throw new WriteFilesException(filesErrors);
-    	}
-    	else {
-    		return entry.getId();
-    	}
+        	else {
+        		return entry.getId();
+        	}
+        } finally {
+           	cleanupFiles(fileUploadItems);       	
+        }
     }
    
     protected FilesErrors addEntry_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
@@ -153,9 +148,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
     }
     
-    protected Entry addEntry_create(Class clazz)  {
+    protected Entry addEntry_create(Definition def, Class clazz)  {
     	try {
-    		return (Entry)clazz.newInstance();
+    		Entry entry = (Entry)clazz.newInstance();
+           	entry.setEntryDef(def);
+        	if (def != null) entry.setDefinitionType(new Integer(def.getType()));
+        	return entry;
     	} catch (Exception ex) {
     		return null;
     	}
@@ -224,33 +222,35 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    final Map entryData = (Map) entryDataAll.get("entryData");
 	    List fileUploadItems = (List) entryDataAll.get("fileData");
 	    
-        FilesErrors filesErrors = modifyEntry_filterFiles(binder, fileUploadItems);
+	    try {
+	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, fileUploadItems);
+	    
+	    	// The following part requires update database transaction.
+	    	getTransactionTemplate().execute(new TransactionCallback() {
+	    		public Object doInTransaction(TransactionStatus status) {
+	    			modifyEntry_fillIn(binder, entry, inputData, entryData);
+	                modifyEntry_removeAttachments(binder, entry, deleteAttachments);
+	    			modifyEntry_postFillIn(binder, entry, inputData, entryData);
+	    			return null;
+	    		}});
+	    	filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors);
 
-	    filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors);
-	    
-        // The following part requires update database transaction.
-        getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
-        		modifyEntry_fillIn(binder, entry, inputData, entryData);
-	            modifyEntry_removeAttachments(binder, entry, deleteAttachments);    
-	                
-        		modifyEntry_postFillIn(binder, entry, inputData, entryData);
-        		return null;
-        	}});
-        modifyEntry_startWorkflow(entry);
+	    	modifyEntry_startWorkflow(entry);
 
-        modifyEntry_indexRemoveFiles(binder, entry, deleteAttachments);
-	    modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems);
+	    	modifyEntry_indexRemoveFiles(binder, entry, deleteAttachments);
+	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems);
 	    
-	    cleanupFiles(fileUploadItems);
 	    
-    	if(filesErrors.getProblems().size() > 0) {
-    		// At least one error occured during the operation. 
-    		throw new WriteFilesException(filesErrors);
-    	}
-    	else {
-    		return entry.getId();
-    	}
+	    	if(filesErrors.getProblems().size() > 0) {
+	    		// At least one error occured during the operation. 
+	    		throw new WriteFilesException(filesErrors);
+	    	}
+	    	else {
+	    		return entry.getId();
+	    	} 
+	    }finally {
+		    cleanupFiles(fileUploadItems);
+	    }
 	}
 
     protected FilesErrors modifyEntry_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
@@ -262,7 +262,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	return getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors);
     }
     protected void modifyEntry_removeAttachments(Binder binder, Entry entry, Collection deleteAttachments) {
-    	removeAttachments(binder, entry, deleteAttachments);
+       	removeAttachments(binder, entry, deleteAttachments);
     }
     protected void modifyEntry_indexRemoveFiles(Binder binder, Entry entry, Collection attachments) {
     	removeFilesIndex(entry, attachments);
@@ -333,7 +333,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
     protected Object deleteEntry_processFiles(Binder parentBinder, Entry entry, Object ctx) {
-    	getFileModule().deleteFiles(parentBinder, entry, null);
+    	getFileModule().deleteFiles(parentBinder, entry, null, false);
       	return ctx;
     }
     

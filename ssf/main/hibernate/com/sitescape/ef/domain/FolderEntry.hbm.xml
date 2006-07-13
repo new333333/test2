@@ -78,5 +78,7 @@
     </component>
     <property name="lockedFileCount" access="field"/>
     <property name="definitionType"/>
+    <property name="rating"/>
+    <property name="popularity"/>
   </class>
 </hibernate-mapping>

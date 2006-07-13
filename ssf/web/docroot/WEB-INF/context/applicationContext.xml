@@ -425,6 +425,7 @@
 			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.FolderModuleImpl">
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 				<property name="fileModule"><ref local="fileModule"/></property>
+				<property name="profileModule"><ref local="profileModule"/></property>
 			</bean>
 		</property>
 		<!-- addEntry, addReply, modifyEntry provide transaction semantics at a finer
@@ -433,6 +434,7 @@
 			<props>
 				<prop key="addFolder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modifyWorkflowState">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modifyUserRating">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="moveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -570,6 +572,7 @@
 	<bean id="fileModule" class="com.sitescape.ef.module.file.impl.FileModuleImpl">
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 		<property name="coreDao"><ref local="coreDao"/></property>		
+		<property name="folderDao"><ref local="folderDao"/></property>		
 		<property name="contentFilter">
 			<bean class="com.sitescape.ef.module.file.impl.VirusScanningFilter"/>
 		</property>			

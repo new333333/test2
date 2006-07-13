@@ -206,10 +206,17 @@ public class Folder extends Binder {
     	return null;
     }
     public List getEntryDefinitions() {
-   		return getDefs(Definition.COMMAND);
+    	if ((definitionType != null) && 
+    			(definitionType.intValue() == Definition.FILE_FOLDER_VIEW)) {
+    		return getDefs(Definition.FILE_ENTRY_VIEW);
+    	} else
+    		return getDefs(Definition.COMMAND);
     }
     public List getViewDefinitions() {
-   		return getDefs(Definition.FOLDER_VIEW);
+    	if (definitionType != null) 
+    		return getDefs(definitionType);
+    	else
+    		return getDefs(Definition.FOLDER_VIEW);
     }	    
     
     /*
