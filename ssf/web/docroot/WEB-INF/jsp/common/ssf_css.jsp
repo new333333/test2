@@ -466,6 +466,35 @@ ul.ss_dropdownmenu li {
   background-color: ${ss_style_component_toolbar_background_color} !important;
 }
 
+.ss_dashboard_toolbar_color * {
+  background-color: ${ss_style_component_toolbar_background_color} !important;
+}
+
+.ss_dashboard_display_simple {
+  border: 1px solid ${ss_style_border_color} !important;
+}
+.ss_dashboard_display_simple_toolbar {
+  margin:0px;
+  padding:0px;
+  border-bottom: 1px solid ${ss_style_border_color_light} !important;
+}
+.ss_dashboard_display_simple_toolbar_color {
+  background-color: ${ss_style_component_toolbar_background_color} !important;
+}
+
+.ss_dashboard_display_simple_toolbar_color * {
+  background-color: ${ss_style_component_toolbar_background_color} !important;
+}
+
+.ss_dashboard_display_none {
+}
+.ss_dashboard_display_none_toolbar {
+  margin:0px;
+  padding:0px;
+}
+.ss_dashboard_display_none_toolbar_color {
+}
+
   
 /* highlights */
 .ss_highlightEntry {

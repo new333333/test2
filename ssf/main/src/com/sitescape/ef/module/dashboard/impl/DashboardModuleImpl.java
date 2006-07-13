@@ -242,7 +242,10 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 			}
 			
 			//Get the component title
-			String componentTitle = PortletRequestUtils.getStringParameter(request, DashboardHelper.Component_Title, "");
+			String componentTitle = PortletRequestUtils.getStringParameter(request, 
+					DashboardHelper.Component_Title, "");
+			String displayStyle = PortletRequestUtils.getStringParameter(request, 
+					DashboardHelper.DisplayStyle, DashboardHelper.DisplayStyleDefault);
 			
 			//Get the component config data map
 			Map components = (Map)dashboard.get(DashboardHelper.Components);
@@ -261,6 +264,7 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 					
 					//Save the title and data map
 					componentMap.put(DashboardHelper.Component_Title, componentTitle);
+					componentMap.put(DashboardHelper.DisplayStyle, displayStyle);
 					componentMap.put(DashboardHelper.Data, componentData);
 				}						
 			}

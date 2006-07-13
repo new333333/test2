@@ -64,7 +64,9 @@ public class DashboardTag extends BodyTagSupport {
 						if (_type == null || _type.equals("")) _type = "config";
 						if (_type.equals("config")) {
 							jsp = SPropsUtil.getString("dashboard.configJsp." + name, "");
-						} else if (_type.equals("view")) {
+						} else if (_type.equals("viewComponent")) {
+							jsp = "/WEB-INF/jsp/tag_jsps/dashboard/view_dashboard_canvas_component.jsp";
+						} else if (_type.equals("viewData")) {
 							jsp = SPropsUtil.getString("dashboard.viewJsp." + name, "");
 						}
 						if (_type.equals("title")) {

@@ -65,6 +65,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 		} else if (formData.containsKey("_modifyConfigData") || formData.containsKey("_modifyConfigData.x")) {
 		} else if (formData.containsKey("_saveConfigData") || formData.containsKey("_saveConfigData.x")) {
 			getDashboardModule().saveComponentData(request, binder, scope);
+			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("_deleteComponent") || formData.containsKey("_deleteComponent.x")) {
 			getDashboardModule().deleteComponent(request, binder);
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
