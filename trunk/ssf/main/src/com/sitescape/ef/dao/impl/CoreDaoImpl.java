@@ -120,7 +120,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	/**
 	 * Delete the binder object and its assocations.
 	 * Entries and child binders should already have been deleted
-	 * This is an optimizedd delete.  Deletes associations directly without waiting for hibernate
+	 * This is an optimized delete.  Deletes associations directly without waiting for hibernate
 	 * to query.
 	 */	
 	public void delete(final Binder binder) {
@@ -147,6 +147,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   			} catch (SQLException sq) {
 		   				throw new HibernateException(sq);
 		   			}
+   		   			//delete ratings/visits for these entries
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId=:entityId and entityType=:entityType")
+     	   				.setLong("entityId", binder.getId())
+		   			  	.setParameter("entityType", binder.getEntityIdentifier().getEntityType().getValue())
+		   				.executeUpdate();
 		   			//will this be a problem if the entry is proxied??
 		   			session.createQuery("DELETE com.sitescape.ef.domain.Binder where id=" + binder.getId())
 		   				.executeUpdate();
@@ -195,7 +200,12 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
      	   		String whereClause = "ownerId=" + id.getEntityId() + " and ownerType=" + id.getEntityType().name();
      	   		deleteEntityAssociations(whereClause, entity.getClass());
 
-     	   		//will this be a problem if the entry is proxied??
+	   			//delete ratings/visits for these entries
+	   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId=:entityId and entityType=:entityType")
+	   				.setLong("entityId", entity.getId())
+	   			  	.setParameter("entityType", entity.getEntityIdentifier().getEntityType().getValue())
+	   				.executeUpdate();
+    	   		//will this be a problem if the entry is proxied??
     	   		session.createQuery("DELETE  " + entity.getClass().getName() +   " where id=:id")
     	   			.setLong("id", id.getEntityId().longValue())
     	   			.executeUpdate();
