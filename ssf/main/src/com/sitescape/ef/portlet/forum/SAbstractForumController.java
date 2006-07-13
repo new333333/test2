@@ -141,10 +141,10 @@ public class SAbstractForumController extends SAbstractController {
 				getEvents(folder, entries, model, req, response);
 			}
 		}
-		model.put(WebKeys.FOLDER_TOOLBAR, buildFolderToolbar(response, folder, forumId).getToolbar());
+		model.put(WebKeys.FOLDER_TOOLBAR, buildFolderToolbar(req, response, folder, forumId).getToolbar());
 		return BinderHelper.getViewListingJsp();
 	}  
-	protected Toolbar buildFolderToolbar(RenderResponse response, Folder folder, String forumId) {
+	protected Toolbar buildFolderToolbar(RenderRequest request, RenderResponse response, Folder folder, String forumId) {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		//	The "Add" menu
@@ -162,7 +162,7 @@ public class SAbstractForumController extends SAbstractController {
 				qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
 				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
 					Definition def = (Definition) defaultEntryDefinitions.get(i);
-					AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
 					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
@@ -181,7 +181,7 @@ public class SAbstractForumController extends SAbstractController {
 			if (!addMenuAdded) {
 				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 			}
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
@@ -290,7 +290,7 @@ public class SAbstractForumController extends SAbstractController {
 		toolbar.addToolbarMenuItem("3_display_styles", "styles", NLT.get("toolbar.menu.display_style_popup"), url);
 		
 		//Testing RSS link - the UI designer (Peter) will want to move this to someplace more appropriate.
-		toolbar.addToolbarMenu("RSS", "RSS", UrlUtil.getFeedURL(forumId));
+		toolbar.addToolbarMenu("RSS", "RSS", UrlUtil.getFeedURL(request, forumId));
 		return toolbar;
 	}
 	

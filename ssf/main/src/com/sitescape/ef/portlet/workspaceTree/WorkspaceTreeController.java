@@ -135,10 +135,10 @@ public class WorkspaceTreeController extends SAbstractController  {
 			}
 //		}
 		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
-		model.put(WebKeys.FOLDER_TOOLBAR, buildWorkspaceToolbar(response, ws, ws.getId().toString()).getToolbar());
+		model.put(WebKeys.FOLDER_TOOLBAR, buildWorkspaceToolbar(req, response, ws, ws.getId().toString()).getToolbar());
 		
 	}  
-	protected Toolbar buildWorkspaceToolbar(RenderResponse response, Workspace workspace, String forumId) {
+	protected Toolbar buildWorkspaceToolbar(RenderRequest request, RenderResponse response, Workspace workspace, String forumId) {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		//	The "Add" menu
@@ -150,7 +150,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			getWorkspaceModule().checkAddWorkspaceAllowed(workspace);
 			toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 			addMenuCreated=true;
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
@@ -167,7 +167,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 				addMenuCreated=true;
 			}
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());

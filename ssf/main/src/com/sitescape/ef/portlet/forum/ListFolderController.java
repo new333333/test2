@@ -105,7 +105,7 @@ public class ListFolderController  extends SAbstractForumController {
 		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY)) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			if (!entryId.equals("")) {
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL("ss_forum", true);
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
