@@ -104,7 +104,7 @@ public class QueryBuilder {
 				List elements = element.elements();
 				int elemCount = elements.size();
 				
-				if  (elemCount > 1) {
+				if  (elemCount > 0) {
 					for ( int j = 0; j < elemCount; j++ ) {
 						Node node = (Node)elements.get(j);
 						if ( node instanceof Element ) {
