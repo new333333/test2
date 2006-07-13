@@ -17,6 +17,7 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
+<c:set var="ss_component_count" value="0" scope="request"/>
 
 <div class="ss_style ss_portlet">
 <div class="ss_form" style="margin:6px;">
@@ -95,13 +96,14 @@
     <td colspan="2">
     
       <c:forEach var="component" items="${ssDashboard.wide_top}">
-		<c:set var="id" value="${component.id}"/>
-		<c:set var="scope" value="${ssDashboard.scope}"/>
-		<c:set var="componentScope" value="${component.scope}"/>
-		<c:set var="dashboardList" value="wide_top"/>
-		<c:set var="returnView" value="form"/>
+		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
+		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
+		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
+		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
+		<c:set var="ss_dashboard_dashboardList" value="wide_top" scope="request"/>
+		<c:set var="ss_dashboard_returnView" value="form" scope="request"/>
 		<div style="margin:0px; padding:0px;">
-		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
+		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
 		</div>
 	  </c:forEach>
     </td>
@@ -110,27 +112,29 @@
   <tr>
     <td valign="top">
       <c:forEach var="component" items="${ssDashboard.narrow_fixed}">
-		<c:set var="id" value="${component.id}"/>
-		<c:set var="scope" value="${ssDashboard.scope}"/>
-		<c:set var="componentScope" value="${component.scope}"/>
-		<c:set var="dashboardList" value="narrow_fixed"/>
-		<c:set var="returnView" value="form"/>
+		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
+		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
+		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
+		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
+		<c:set var="ss_dashboard_dashboardList" value="narrow_fixed" scope="request"/>
+		<c:set var="ss_dashboard_returnView" value="form" scope="request"/>
 		<div style="margin:0px; padding:0px; 
 		    width:${ssDashboard.narrowFixedWidth + 5}px;">
-		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
+		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
 		</div>
 	  </c:forEach>
     </td>
 
     <td valign="top" width="96%">
       <c:forEach var="component" items="${ssDashboard.narrow_variable}">
-		<c:set var="id" value="${component.id}"/>
-		<c:set var="scope" value="${ssDashboard.scope}"/>
-		<c:set var="componentScope" value="${component.scope}"/>
-		<c:set var="dashboardList" value="narrow_variable"/>
-		<c:set var="returnView" value="form"/>
+		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
+		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
+		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
+		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
+		<c:set var="ss_dashboard_dashboardList" value="narrow_variable" scope="request"/>
+		<c:set var="ss_dashboard_returnView" value="form" scope="request"/>
 		<div style="margin:0px; padding:0px;">
-		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
+		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
 		</div>
 	  </c:forEach>
     </td>
@@ -138,13 +142,14 @@
   <tr>
     <td colspan="2">
       <c:forEach var="component" items="${ssDashboard.wide_bottom}">
-		<c:set var="id" value="${component.id}"/>
-		<c:set var="scope" value="${ssDashboard.scope}"/>
-		<c:set var="componentScope" value="${component.scope}"/>
-		<c:set var="dashboardList" value="wide_bottom"/>
-		<c:set var="returnView" value="form"/>
+		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
+		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
+		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
+		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
+		<c:set var="ss_dashboard_dashboardList" value="wide_bottom" scope="request"/>
+		<c:set var="ss_dashboard_returnView" value="form" scope="request"/>
 		<div style="margin:0px; padding:0px;">
-		  <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_component.jsp" %>
+		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
 		</div>
 	  </c:forEach>
     </td>

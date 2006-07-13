@@ -23,20 +23,22 @@
 <td valign="top">
 <span class="ss_bold"><ssf:nlt tag="dashboard.startingPoint"/></span>
 <br/>
+<div class="ss_indent_medium">
 <c:set var="checked" value=""/>
 <c:if test="${empty ssDashboard.dashboard.components[ssDashboardId].data.start[0] || 
     ssDashboard.dashboard.components[ssDashboardId].data.start[0]== 'this'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
-&nbsp;&nbsp;&nbsp;<input type="radio" name="data_start" value="this" 
+<input type="radio" name="data_start" value="this" 
   <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="dashboard.startingPoint.current"/><br/>
 
 <c:set var="checked" value=""/>
 <c:if test="${ssDashboard.dashboard.components[ssDashboardId].data.align[0] == 'select'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
-&nbsp;&nbsp;&nbsp;<input type="radio" name="data_start" value="select" 
+<input type="radio" name="data_start" value="select" 
   <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="dashboard.startingPoint.select"/><br/>
+</div>
 </td>
 </tr>
 
@@ -48,20 +50,22 @@
 <td valign="top">
 <span class="ss_bold"><ssf:nlt tag="dashboard.rootOpen"/></span>
 <br/>
+<div class="ss_indent_medium">
 <c:set var="checked" value=""/>
 <c:if test="${empty ssDashboard.dashboard.components[ssDashboardId].data.rootOpen[0] || 
     ssDashboard.dashboard.components[ssDashboardId].data.rootOpen[0]== 'true'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
-&nbsp;&nbsp;&nbsp;<input type="radio" name="data_rootOpen" value="true" 
+<input type="radio" name="data_rootOpen" value="true" 
   <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="yes"/><br/>
 
 <c:set var="checked" value=""/>
 <c:if test="${ssDashboard.dashboard.components[ssDashboardId].data.rootOpen[0] == 'false'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
-&nbsp;&nbsp;&nbsp;<input type="radio" name="data_rootOpen" value="false" 
+<input type="radio" name="data_rootOpen" value="false" 
   <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="no"/><br/>
+</div>
 </td>
 </tr>
 

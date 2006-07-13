@@ -48,8 +48,12 @@ public class DashboardHelper {
 	//Dashboard map keys
 	public final static String Title = "title";
 	public final static String IncludeBinderTitle = "includeBinderTitle";
+	public final static String DisplayStyle = "displayStyle";
 	public final static String NextComponent = "nextComponent";
 	public final static String Components = "components";
+
+	public final static String DisplayStyleDefault = "shadow";
+
 	//Component Order lists
 	public final static String Wide_Top = "wide_top";
 	public final static String Narrow_Fixed = "narrow_fixed";
