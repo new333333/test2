@@ -4,6 +4,7 @@
 	String elementName = (String) request.getAttribute("property_name");
 	String caption = (String) request.getAttribute("property_caption");
 	String width = (String) request.getAttribute("property_width");
+	String inline = (String) request.getAttribute("property_inline");
 	if (width == null || width.equals("")) {
 		width = "";
 	} else {

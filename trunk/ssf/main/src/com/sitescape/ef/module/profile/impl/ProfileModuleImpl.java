@@ -22,15 +22,19 @@ import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.NoGroupByTheIdException;
 import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.ProfileBinder;
+import com.sitescape.ef.domain.Rating;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.domain.Visits;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
@@ -285,6 +289,35 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		Set ids = getProfileDao().explodeGroups(principalIds);
 		return getUsers(ids);
 	}
+	public Visits getVisit(EntityIdentifier entityId) {
+	    User user = RequestContextHolder.getRequestContext().getUser();
+	    Visits visit = getProfileDao().loadVisit(user.getId(), entityId);
+	    return visit;   	
+	 }
+	
+    public void setVisit(EntityIdentifier entityId) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+       	Visits visit = getProfileDao().loadVisit(user.getId(), entityId);
+       	if (visit == null) {
+       		visit = new Visits(user.getId(), entityId);
+       		getCoreDao().save(visit);
+       	}
+        visit.incrReads();   	
+    }
+	public Rating getRating(EntityIdentifier entityId) {
+	    User user = RequestContextHolder.getRequestContext().getUser();
+       	Rating rating = getProfileDao().loadRating(user.getId(), entityId);
+	    return rating;   	
+	 }
+    public void setRating(EntityIdentifier entityId, long value) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+       	Rating rating = getProfileDao().loadRating(user.getId(), entityId);
+       	if (rating == null) {
+       		rating = new Rating(user.getId(), entityId);
+       		getCoreDao().save(rating);
+       	}
+       	rating.setRating(value); 	
+    }
 	public class UserComparator implements Comparator {
 	   	private Collator c;
 		public UserComparator(Locale locale) {

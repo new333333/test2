@@ -58,6 +58,8 @@ public interface CoreDao {
 	public List loadObjects(ObjectControls objs, FilterControls filter);
 	public List findCompanies();
 	public int countObjects(Class clazz, FilterControls filter);
+	public float averageColumn(Class clazz, String column, FilterControls filter);
+	public long sumColumn(Class clazz, String column, FilterControls filter);
     public List loadObjects(Collection ids, Class className, String zoneName);
 
 	public Workspace findTopWorkspace(String zoneName);

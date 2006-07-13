@@ -80,6 +80,7 @@ public class ModifyEntryController extends SAbstractForumController {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());		
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+		response.setRenderParameter(WebKeys.IS_REFRESH, "1");
 	}
 	private void setupViewFolder(ActionResponse response, Long folderId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
@@ -111,7 +112,7 @@ public class ModifyEntryController extends SAbstractForumController {
 				model.put(WebKeys.ENTRY, entry);
 				model.put(WebKeys.FOLDER, entry.getParentFolder());
 				model.put(WebKeys.CONFIG_JSP_STYLE, "form");
-				DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@name='entryForm']");
+				DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
 				path = WebKeys.VIEW_MODIFY_ENTRY;
 			} catch (NoDefinitionByTheIdException nd) {
 				return returnToViewForum(request, response, formData, folderId);

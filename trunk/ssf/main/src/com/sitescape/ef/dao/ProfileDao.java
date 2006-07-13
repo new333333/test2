@@ -1,28 +1,23 @@
 package com.sitescape.ef.dao;
 
 
-import java.util.Set;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.dao.DataAccessException;
 
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.dao.util.SFQuery;
+import com.sitescape.ef.domain.EntityIdentifier;
+import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.ProfileBinder;
+import com.sitescape.ef.domain.Rating;
+import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.domain.Group;
-import com.sitescape.ef.domain.Tag;
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.SeenMap;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.domain.EmailAlias;
-import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.dao.util.ObjectControls;
-import com.sitescape.ef.dao.util.SFQuery;
+import com.sitescape.ef.domain.Visits;
 
 /**
  * @author Jong Kim
@@ -106,6 +101,8 @@ public interface ProfileDao {
 	public Set getAllGroupMembership(Long principalId);
 
     public SeenMap loadSeenMap(Long userId);
+	public Visits loadVisit(Long userId, EntityIdentifier entityId);
+	public Rating loadRating(Long userId, EntityIdentifier entityId);
      
     public SFQuery queryAllPrincipals(FilterControls filter, String zoneName) throws DataAccessException;
  }

@@ -2,43 +2,14 @@ package com.sitescape.ef.web.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.portlet.ActionRequest;
-
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.SortField;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.SingletonViolationException;
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.lucene.Hits;
-import com.sitescape.ef.module.binder.BinderModule;
-import com.sitescape.ef.module.binder.EntryProcessor;
 import com.sitescape.ef.module.dashboard.DashboardModule;
-import com.sitescape.ef.module.definition.DefinitionModule;
-import com.sitescape.ef.module.folder.FolderModule;
-import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.module.profile.ProfileModule;
-import com.sitescape.ef.module.workspace.WorkspaceModule;
-import com.sitescape.ef.portlet.forum.SAbstractForumController.TreeBuilder;
-import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
-import com.sitescape.ef.search.LuceneSession;
-import com.sitescape.ef.search.QueryBuilder;
-import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 

@@ -283,6 +283,61 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        if (result==null) return 0;
 	   return result.intValue();	
 	}
+	
+	public float averageColumn(final Class clazz, final String column, final FilterControls filter) {
+		Float result = (Float)getHibernateTemplate().execute(
+		    new HibernateCallback() {
+		        public Object doInHibernate(Session session) throws HibernateException {
+		        	StringBuffer query = new StringBuffer();
+                  	query.append(" select avg(x." + column + ") from x in class " + clazz.getName());
+                 	filter.appendFilter("x", query);
+                  	Query q = session.createQuery(query.toString());
+            		List filterValues = filter.getFilterValues();
+            		for (int i=0; i<filterValues.size(); ++i) {
+            			q.setParameter(i, filterValues.get(i));
+            		}
+ 	                 List result = q.list();
+                  	 Iterator itr = result.iterator();
+
+                	 if (itr.hasNext()) {
+                		Float count = (Float)itr.next();
+                	 	return count;
+             		}
+                	
+                	return null;
+               }
+            }
+		);
+       if (result==null) return 0;
+	   return result.floatValue();	
+	}
+	public long sumColumn(final Class clazz, final String column, final FilterControls filter) {
+		Long result = (Long)getHibernateTemplate().execute(
+		    new HibernateCallback() {
+		        public Object doInHibernate(Session session) throws HibernateException {
+		        	StringBuffer query = new StringBuffer();
+                  	query.append(" select sum(x." + column + ") from x in class " + clazz.getName());
+                 	filter.appendFilter("x", query);
+                  	Query q = session.createQuery(query.toString());
+            		List filterValues = filter.getFilterValues();
+            		for (int i=0; i<filterValues.size(); ++i) {
+            			q.setParameter(i, filterValues.get(i));
+            		}
+ 	                 List result = q.list();
+                  	 Iterator itr = result.iterator();
+
+                	 if (itr.hasNext()) {
+                	 	Long count = (Long)itr.next();
+                	 	return count;
+             		}
+                	
+                	return null;
+               }
+            }
+		);
+       if (result==null) return 0;
+	   return result.longValue();	
+	}	
 	public List findCompanies() {
 		return (List)getHibernateTemplate().execute(
 		    new HibernateCallback() {

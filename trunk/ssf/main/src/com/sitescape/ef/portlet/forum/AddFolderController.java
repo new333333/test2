@@ -16,7 +16,9 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.util.Validator;
 /**
  * @author Janet McCann
  *
@@ -66,45 +68,36 @@ public class AddFolderController extends SAbstractController {
 		Map model = new HashMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (operation.equals("") && formData.containsKey("_operation")) {
-			operation = ((String[])formData.get("_operation"))[0];
-		}
-		String defId = "";
-		if (formData.containsKey("binderDefinition")) {
-			defId = ((String[])formData.get("binderDefinition"))[0];
-		}
-		Binder binder = null;
-		Map publicBinderDefs = new HashMap();
-		DefinitionUtils.getDefinitions(model);
-		String itemFormPath = "//item[@name='folderForm']";
-		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
-			binder = getFolderModule().getFolder(binderId);
-			if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.FILE_FOLDER_VIEW)) {
-				publicBinderDefs = (Map) model.get(WebKeys.PUBLIC_FILE_FOLDER_DEFINITIONS);
-			} else {
-				publicBinderDefs.putAll((Map) model.get(WebKeys.PUBLIC_FOLDER_DEFINITIONS));
-				publicBinderDefs.putAll((Map) model.get(WebKeys.PUBLIC_FILE_FOLDER_DEFINITIONS));				
-			}
-		} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
-			binder = getWorkspaceModule().getWorkspace(binderId);				
-			publicBinderDefs.putAll((Map) model.get(WebKeys.PUBLIC_FOLDER_DEFINITIONS));
-			publicBinderDefs.putAll((Map) model.get(WebKeys.PUBLIC_FILE_FOLDER_DEFINITIONS));
-		} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
-			binder = getWorkspaceModule().getWorkspace(binderId);				
-			publicBinderDefs = (Map) model.get(WebKeys.PUBLIC_WORKSPACE_DEFINITIONS);
-			itemFormPath = "//item[@name='workspaceForm']";					
-		}
-		
+		if (operation.equals("")) operation = PortletRequestUtils.getStringParameter(request, "_operation", "");
+		String defId = PortletRequestUtils.getStringParameter(request, "binderDefinition", "");
+		Binder binder = getBinderModule().getBinder(binderId);
     	model.put(WebKeys.URL_OPERATION, operation);
 		model.put(WebKeys.BINDER, binder); 
-		model.put(WebKeys.PUBLIC_BINDER_DEFINITIONS, publicBinderDefs);
 
 		DefinitionUtils.getDefinitions(binder, model);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 		model.put(WebKeys.DEFINITION_ID, defId);
 		
+		String itemFormPath = "//item[@name='folderForm']";
+		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
+			if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.FILE_FOLDER_VIEW)) {
+				DefinitionUtils.getDefinitions(Definition.FILE_FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+			} else {
+				DefinitionUtils.getDefinitions(Definition.FILE_FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+				DefinitionUtils.getDefinitions(Definition.FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+			}
+		} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
+			DefinitionUtils.getDefinitions(Definition.FILE_FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+			DefinitionUtils.getDefinitions(Definition.FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+		} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
+			DefinitionUtils.getDefinitions(Definition.WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);			
+			itemFormPath = "//item[@name='workspaceForm']";					
+		}
+		
+		
 		String view = WebKeys.VIEW_ADD_BINDER_TYPE;
-		if (!defId.equals("")) {
+		if (!Validator.isNull("")) {
+			Map publicBinderDefs = (Map)model.get(WebKeys.PUBLIC_BINDER_DEFINITIONS);
 			//Make sure the requested definition is legal
 			if (publicBinderDefs.containsKey(defId)) {
 				Definition def = (Definition)publicBinderDefs.get(defId);

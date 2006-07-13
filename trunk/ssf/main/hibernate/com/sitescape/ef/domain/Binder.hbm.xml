@@ -87,6 +87,8 @@
     </component>
     <property name="definitionsInherited"/>
     <property name="definitionType"/>
+    <property name="rating"/>
+    <property name="popularity"/>
     <property name="inheritAclFromParent" column="acl_inheritFromParent"/>
     <property name="widenRead" column="acl_widenRead"/>
     <property name="widenModify" column="acl_widenModify"/>

@@ -27,6 +27,8 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected Map iCustomAttributes;
     protected String iconName="";
     protected Integer definitionType=null;
+    protected Float rating=null;
+    protected Long popularity=null;
  
     public DefinableEntity() {
     }
@@ -84,7 +86,26 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     public void setDefinitionType(Integer definitionType) {
    	 	this.definitionType = definitionType;
     }
-    
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public Float getRating() {
+   	 	return rating;
+    }
+    public void setRating(Float rating) {
+   	 	this.rating = rating;
+    }
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public Long getPopularity() {
+   	 	return popularity;
+    }
+    public void setPopularity(Long popularity) {
+   	 	this.popularity = popularity;
+    }
     /**
      * @hibernate.property length="64"
      */

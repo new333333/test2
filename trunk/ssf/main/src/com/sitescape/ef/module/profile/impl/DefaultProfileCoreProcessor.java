@@ -246,8 +246,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        			Map entryDataAll = addEntry_toEntryData(binder, definition, inputData, null);
 	        			Map entryData = (Map) entryDataAll.get("entryData");
 	   	        
-	        			Entry entry = addEntry_create(clazz);
-	        			entry.setEntryDef(definition);
+	        			Entry entry = addEntry_create(definition, clazz);
 	        			//	need to set entry/binder information before generating file attachments
 	        			//	Attachments/Events need binder info for AnyOwner
 	        			addEntry_fillIn(binder, entry, inputData, entryData);

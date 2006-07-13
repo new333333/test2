@@ -22,15 +22,18 @@ import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
+import com.sitescape.ef.domain.Rating;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.Visits;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.AccessUtils;
@@ -44,6 +47,7 @@ import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -63,9 +67,11 @@ import com.sitescape.util.Validator;
  * @author Jong Kim
  */
 public class FolderModuleImpl extends CommonDependencyInjection implements FolderModule {
+   	private String[] ratingAttrs = new String[]{"id.entityId", "id.entityType"};
     private String[] entryTypes = {EntryIndexUtils.ENTRY_TYPE_ENTRY};
     protected DefinitionModule definitionModule;
     protected FileModule fileModule;
+    protected ProfileModule profileModule;
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
@@ -81,6 +87,12 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	}
 	public void setFileModule(FileModule fileModule) {
 		this.fileModule = fileModule;
+	}
+	public ProfileModule getProfileModule() {
+		return profileModule;
+	}
+	public void setProfileModule(ProfileModule profileModule) {
+		this.profileModule = profileModule;
 	}
 	
 	private Folder loadFolder(Long folderId)  {
@@ -345,6 +357,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     
     public Map getFolderEntries(Long folderId, int maxChildEntries, Document searchFilter) {
         Folder folder = loadFolder(folderId);
+        //search query does access checks
         return loadProcessor(folder).getBinderEntries(folder, entryTypes, maxChildEntries, searchFilter);
     }
     
@@ -493,8 +506,61 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	   	Tag tag = coreDao.loadTagByOwner(tagId, entry.getEntityIdentifier());
 	   	getCoreDao().delete(tag);
 	}
-    
-    public List<String> getFolderIds() {
+	public void setUserRating(Long folderId, Long entryId, long value) {
+		FolderEntry entry = getEntry(folderId, entryId);
+		EntityIdentifier id = entry.getEntityIdentifier();
+		//set user rating
+       	getProfileModule().setRating(id, value);
+       	//update entry average
+     	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
+    	// see if title exists for this folder
+     	float result = getCoreDao().averageColumn(Rating.class, "rating", new FilterControls(ratingAttrs, cfValues));
+     	entry.setRating(Float.valueOf(result));
+		
+	}
+	public void setUserRating(Long folderId, long value) {
+		Folder folder = loadFolder(folderId);
+		EntityIdentifier id = folder.getEntityIdentifier();
+		//set user rating
+       	getProfileModule().setRating(id, value);
+       	//update folder average
+     	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
+    	// see if title exists for this folder
+     	float result = getCoreDao().averageColumn(Rating.class, "rating", new FilterControls(ratingAttrs, cfValues));
+     	folder.setRating(Float.valueOf(result));
+		
+	}    
+	public void setUserVisit(Long folderId, Long entryId) {
+		FolderEntry entry = getEntry(folderId, entryId);
+		setUserVisit(entry);
+	}
+	public void setUserVisit(FolderEntry entry) {
+		EntityIdentifier id = entry.getEntityIdentifier();
+		//set user rating
+       	getProfileModule().setVisit(id);
+       	//update entry average
+     	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
+    	// see if title exists for this folder
+     	long result = getCoreDao().sumColumn(Visits.class, "reads", new FilterControls(ratingAttrs, cfValues));
+     	entry.setPopularity(Long.valueOf(result));		
+	}
+	
+	public void setUserVisit(Long folderId) {
+		Folder folder = loadFolder(folderId);
+		setUserVisit(folder); 
+	}
+	public void setUserVisit(Folder folder) {
+		EntityIdentifier id = folder.getEntityIdentifier();
+		//set user rating
+       	getProfileModule().setVisit(id);
+       	//update entry average
+     	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
+    	// see if title exists for this folder
+     	long result = getCoreDao().sumColumn(Visits.class, "reads", new FilterControls(ratingAttrs, cfValues));
+     	folder.setPopularity(Long.valueOf(result));
+	}   
+	
+	public List<String> getFolderIds() {
     	// TODO 
     	// NOTE: This implementation utilizes database lookup to fetch the
     	// entire list of folders in the system and then test each one against

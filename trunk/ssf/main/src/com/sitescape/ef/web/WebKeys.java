@@ -215,6 +215,7 @@ public class WebKeys {
     public static final String FUNCTION_MAP="ssFunctionMap";
     public static final String FUNCTION_MEMBERSHIP="ssFunctionMemberships";
     public static final String GROUPS="ssGroups";
+    public static final String IS_REFRESH="ssRefresh";
     public static final String LDAP_CONFIG="ssLdapConfig";
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String AJAX_STATUS="ss_ajaxStatus";

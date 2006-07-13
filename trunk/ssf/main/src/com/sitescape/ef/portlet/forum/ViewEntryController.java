@@ -57,29 +57,43 @@ public class ViewEntryController extends  SAbstractController {
 	        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
 			String toState = PortletRequestUtils.getRequiredStringParameter(request, "toState");
 			getFolderModule().modifyWorkflowState(folderId, replyId, tokenId, toState);
+			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
+		} else if (formData.containsKey("changeRatingBtn")) {
+			Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
+			if (replyId == null) replyId = entryId;
+			long rating = PortletRequestUtils.getRequiredLongParameter(request, "rating");
+			getFolderModule().setUserRating(folderId, replyId, rating);
+			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
 		}
 		response.setRenderParameters(formData);
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 
 		Map formData = request.getParameterMap();
 		String viewPath = BinderHelper.getViewListingJsp();
-		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-		Map model = getShowEntry(entryId, formData, request, response, folderId);
-		entryId = (String)model.get(WebKeys.ENTRY_ID);
-		model.put(WebKeys.URL_ENTRY_ID, entryId);
-		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
-
+		Map model;
 		if (formData.containsKey("ssReloadUrl")) {
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
-			request.setAttribute("ssReloadUrl", reloadUrl.toString());			
+			model = new HashMap();
+			model.put("ssReloadUrl", reloadUrl.toString());			
+			return new ModelAndView(viewPath, model);
 		} else {
+			model = getShowEntry(entryId, formData, request, response, folderId);
+			entryId = (String)model.get(WebKeys.ENTRY_ID);
+			model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+			//only want to update visits when first enter.  Don't want cancels on modifies
+			//to increment count
+			if (!PortletRequestUtils.getStringParameter(request, WebKeys.IS_REFRESH, "0").equals("1")) { 
+				FolderEntry fe = (FolderEntry)model.get(WebKeys.ENTRY);
+				getFolderModule().setUserVisit(fe);
+			}
 			Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 			if ((obj == null) || (obj.equals(""))) 
 				return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
