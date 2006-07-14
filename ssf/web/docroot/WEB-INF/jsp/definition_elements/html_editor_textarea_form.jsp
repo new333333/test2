@@ -1,8 +1,6 @@
 <% // The html editor widget %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<script type="text/javascript">
-    dojo.require("dojo.widget.Editor");
-</script>
+<script type="text/javascript">dojo.require("dojo.widget.Editor");</script>
 <%
 	String formName = (String) request.getAttribute("formName");
 	String elementName = (String) request.getAttribute("property_name");

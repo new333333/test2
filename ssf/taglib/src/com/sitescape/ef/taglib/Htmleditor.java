@@ -66,7 +66,7 @@ public class Htmleditor extends TagSupport {
 			rd.include(req, res);
 			pageContext.getOut().print(res.getString());
 	
-			return EVAL_PAGE;
+			return SKIP_BODY;
 
 		}
 	    catch (Exception e) {

@@ -31,6 +31,7 @@
 	
 
 %>
+<div class="ss_portlet ss_portlet_style">
 
 <center>	You entered: 
 	<table class="ss_style" border="1">
@@ -50,7 +51,7 @@
 	</td>
 	</tr>
 	</table>
-	<p>
+	<br>
 	Care to try again?
 	</center>
 <%
@@ -58,24 +59,24 @@
 %>
 
 <form class="ss_style ss_form" method="POST" action="" name="htmleditortest">
-<span align="center">SiteScape Forum Widget Tester -  HTML Editor widget <p>
+<span align="center">SiteScape Forum Widget Tester -  HTML Editor widget <br/>
 Two HTML Editors on one form. <br>
 First editor has height=150, second one has no size specified, so defaults to 250 (pixels).
 <br />
 </span>
 
 
-	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
+	<table cellpadding="0" cellspacing="0" width="95%">
 	<tr>
 		<td>
-			<table class="ss_style" align=center border="0" cellpadding="3" cellspacing="3">
+			<table align=center border="0" cellpadding="3" cellspacing="3">
 			<tr>
 				<td>
 					First editor:
-					<div>
+					<div >
 					<ssf:htmleditor id="editor1" 
 						formName="editortest"
-						height="150"
+						height="150" color="tan"
 						initText="<%= textfield1 %>" />
 					</div>
 				</td>
@@ -98,3 +99,6 @@ First editor has height=150, second one has no size specified, so defaults to 25
 	<hr>
 	<input type="submit" class="ss_submit" name="OK" value="OK">
 </form>
+
+</div>
+
