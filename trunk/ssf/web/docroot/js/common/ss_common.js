@@ -450,7 +450,7 @@ function ssf_onresize_event_handler() {
     if (ss_savedOnResizeRoutine != null) {
     	window.onresize = ss_savedOnResizeRoutine;
     	if (window.onresize != null) window.onresize();
-		window.onresize = ss_onResize;
+		window.onresize = ssf_onresize_event_handler;
     }
 }
 

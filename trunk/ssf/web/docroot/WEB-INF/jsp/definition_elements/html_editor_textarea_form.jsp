@@ -1,5 +1,8 @@
 <% // The html editor widget %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<script type="text/javascript">
+    dojo.require("dojo.widget.Editor");
+</script>
 <%
 	String formName = (String) request.getAttribute("formName");
 	String elementName = (String) request.getAttribute("property_name");
@@ -34,13 +37,10 @@
 </c:if>
 <div class="ss_entryContent">
   <span class="ss_labelLeft"><%= caption %><%= required %></span>
-    <ssf:htmleditor id="<%= elementName %>" 
-      formName="${formName}" height="<%= height %>" color="${ss_form_element_header_color}"
-      initText="${textValue}" />
-<script type="text/javascript">
-ss_createEventObj('ss_htmlareaUnload_${formName}_${property_name}', "UNLOAD")
-function ss_htmlareaUnload_${formName}_${property_name}() {
-	//alert('ss_htmlareaUnload_${formName}_${property_name}' + document.forms.${formName}.${property_name}.value)
-}
-</script>
+<div style="border:1px solid black; height:<%= height %>;">
+<textarea dojoType="Editor" 
+  items="textGroup;|;colorGroup;|;listGroup;|;indentGroup;|;justifyGroup;"
+  id="<%= elementName %>" 
+  name="<%= elementName %>"><c:out value="${textValue}"/></textarea>
+</div>
 </div>
