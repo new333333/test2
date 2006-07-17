@@ -35,7 +35,6 @@
 	<br/>
 </c:when>
 <c:otherwise>
-<jsp:useBean id="ssFolderDomTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />
 
 <form class="ss_style ss_form" name="<portlet:namespace/>fm" 
@@ -154,7 +153,7 @@ function <portlet:namespace/>_select(alias) {
  <tr align="left"><td class="ss_bold"><ssf:nlt tag="tree.choose_folder"/></td></tr>
  <tr>
   <td>
-	  <ssf:tree treeName="folderTree" treeDocument="<%= ssFolderDomTree %>" 
+	  <ssf:tree treeName="folderTree" treeDocument="${ssFolderDomTree}" 
 	    rootOpen="false" 
 	    nodeOpen="<%= parentFolderId %>" highlightNode="${ssFolder.id}" /></td>
  </tr>
