@@ -246,15 +246,15 @@ function ss_showFavoritesPane() {
 	var fObj = self.document.getElementById("ss_favorites_pane");
 	ss_moveObjectToBody(fObj);
 	fObj.style.visibility = "visible";
-	ss_setOpacity(fObj, 0)
-	fObj.style.display = "none";
+	ss_setOpacity(fObj, 100)
+	//fObj.style.display = "none";
 	fObj.style.display = "block";
 	var fObj2 = self.document.getElementById("ss_favorites_table")
 	var w = ss_getObjectWidth(fObj)
 	ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_bottom") + ss_favoritesPaneTopOffset))
 	ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_bottom")))
 	var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom") + ss_favoritesPaneLeftOffset);
-	ss_showDivFadeIn("ss_favorites_pane", 200);
+	ss_showDiv("ss_favorites_pane");
 	ss_hideObj("ss_favorites_form_div");
 
 	var url = "<ssf:url 

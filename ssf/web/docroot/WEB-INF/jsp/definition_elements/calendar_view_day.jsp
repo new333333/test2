@@ -78,7 +78,7 @@ if (ssSeenMap.checkIfSeen(e)) {
     portletName="ss_forum" 
     folderId="${ssFolder.id}" 
     action="view_folder_entry" 
-    entryId="<%= e.get("_docId").toString() %>" actionUrl="false" />"
+    entryId="<%= e.get("_docId").toString() %>" actionUrl="true" />"
     onClick="ss_loadEntry(this,'<c:out value="${evid.entry._docId}"/>');return false;" 
     ><c:if test="${empty evid.entry.title}"
     ><span class="ss_fineprint">--<ssf:nlt tag="entry.noTitle" text="no title"/>--</span
