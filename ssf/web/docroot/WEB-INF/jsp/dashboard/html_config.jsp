@@ -16,9 +16,14 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<script type="text/javascript">dojo.require("dojo.widget.Editor");</script>
 <br/>
 <span class="ss_bold"><ssf:nlt tag="dashboard.enterHtml"/></span>
 <br/>
-<textarea name="data_html" rows="8" cols="60"><c:out
+<div class="ss_form_color" style="border:1px solid #CECECE; height:150px;">
+<textarea id="data_html" name="data_html" dojoType="Editor"
+  items="textGroup;|;colorGroup;|;listGroup;|;indentGroup;|;justifyGroup;|;linkGroup;"
+><c:out
 value="${ssDashboard.dashboard.components[ssDashboardId].data.html[0]}"/></textarea>
+</div>
 <br/>

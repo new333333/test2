@@ -3,22 +3,22 @@
 
 <c:if test="${empty ssDashboard.dashboard.components[ssDashboardId].displayStyle ||
               ssDashboard.dashboard.components[ssDashboardId].displayStyle == 'shadow'}">
-<div class="ss_shadowbox">
-  <div class="ss_shadowbox2 ss_dashboard_view">
+<div class="ss_shadowbox" id="ss_component2_${ss_component_count}">
+  <div class="ss_shadowbox2 ss_dashboard_view" id="ss_component_${ss_component_count}">
     <div class="ss_dashboard_toolbar ss_dashboard_toolbar_color"
 </c:if>
 <c:if test="${ssDashboard.dashboard.components[ssDashboardId].displayStyle == 'simple'}">
-<div style="margin:0px; padding:0px;">
+<div id="ss_component_${ss_component_count}" style="margin:0px; padding:0px;">
   <div class="ss_dashboard_display_simple ss_dashboard_view">
     <div class="ss_dashboard_display_simple_toolbar ss_dashboard_display_simple_toolbar_color"
 </c:if>
 <c:if test="${ssDashboard.dashboard.components[ssDashboardId].displayStyle == 'none'}">
-<div style="margin:0px; padding:0px;">
+<div id="ss_component_${ss_component_count}" style="margin:0px; padding:0px;">
   <div class="ss_dashboard_display_none">
     <div class="ss_dashboard_display_none_toolbar ss_dashboard_display_none_toolbar_color"
 </c:if>
-      onMouseOver="ss_debug('fade in');ss_showDivFadeIn('ss_component_toolbuttons_${ss_component_count}', 300);" 
-      onMouseOut="ss_debug('fade out');ss_hideDivFadeOut('ss_component_toolbuttons_${ss_component_count}', 300);">
+      onMouseOver="ss_showDivFadeIn('ss_component_toolbuttons_${ss_component_count}');" 
+      onMouseOut="ss_hideDivFadeOut('ss_component_toolbuttons_${ss_component_count}');">
       <table cellspacing="0" cellpadding="0" style="width:98%;">
 		<tr>
 		  <td nowrap valign="top" width="10"><div style="display:inline; width:5px;
@@ -40,7 +40,9 @@
 		  </td>
 		  <td align="right" valign="top">
 		    <div style="display:inline; margin:0px; visibility:hidden;" 
-		      id="ss_component_toolbuttons_${ss_component_count}">
+		      id="ss_component_toolbuttons_${ss_component_count}"
+		      onMouseOver="ss_showDivFadeIn('ss_component_toolbuttons_${ss_component_count}');" 
+              onMouseOut="ss_hideDivFadeOut('ss_component_toolbuttons_${ss_component_count}');">
 		    <form class="ss_dashboard_toolbar_color" method="post" style="display:inline;"
 		      action="<portlet:actionURL>
 		      <portlet:param name="action" value="modify_dashboard"/>
@@ -95,7 +97,7 @@
 			      <input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
 			        name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>" 
 			        style="margin-right:2px;"
-			        onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); return(ss_confirmDeleteComponent(this, '${ss_dashboard_id}'));">
+			        onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', 'ss_component_${ss_component_count}', 'ss_component2_${ss_component_count}'); return false">
 		        </td>
 		      </c:if>
 		      </tr>
