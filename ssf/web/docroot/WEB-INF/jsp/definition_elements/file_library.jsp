@@ -1,4 +1,6 @@
 <% // File library %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
 <script type="text/javascript">
 function ss_loadEntry(obj,id) {
 	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="Loading" text="Loading..."/>");
@@ -16,37 +18,39 @@ function ss_loadEntry(obj,id) {
 <div class="folder">
 <table class="ss_style" width="100%">
 <tr>
-  <th align="left"><img border="0" src="<html:imagesPath/>pics/sym_s_unseen_header.gif"></th>
   <th align="left">Title</th>
   <th align="left">Date</th>
   <th align="left">Author</th>
 </tr>
-<c:forEach var="fileEntry" items="${ssFolderEntries}" >
-<jsp:useBean id="fileEntry" type="com.sitescape.ef.domain.Entry" />
-<tr id="folderLine_<c:out value="${fileEntry.id}"/>">
-  <td align="right" valign="top" width="1%">
+<c:forEach var="entry1" items="${ssFolderEntries}" >
+<jsp:useBean id="entry1" type="java.util.HashMap" />
 <%
-	if (ssSeenMap.checkIfSeen(fileEntry)) {
-%>&nbsp;<%
-	} else {
-%><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
+	String folderLineId = "folderLine_" + (String) entry1.get("_docId");
+	String seenStyle = "";
+	String seenStyleFine = "class=\"ss_finePrint\"";
+	if (!ssSeenMap.checkIfSeen(entry1)) {
+		seenStyle = "class=\"ss_bold\"";
+		seenStyleFine = "class=\"ss_bold ss_fineprint\"";
 	}
 %>
-  </td>
+<tr id="folderLine_${entry1._docId}">
   <td valign="top" width="40%">
     <a href="<ssf:url folderId="${ssFolder.id}" action="view_folder_entry" 
-    entryId="<%= fileEntry.getId().toString() %>" />" 
-    onClick="ss_loadEntry(this,'folderLine_<c:out value="${fileEntry.id}"/>');return false;" >
-    <c:if test="${empty fileEntry.title}">
-    <span class="ss_fineprint"><i>(no title)</i></span>
+    entryId="${entry1._docId}" />" 
+    onClick="ss_loadEntry(this,'folderLine_${entry1._docId}');return false;" >
+    <c:if test="${empty entry1.title}">
+    <span <%= seenStyleFine %> ><i>(no title)</i></span>
     </c:if>
-    <c:out value="${fileEntry.title}"/></a>
+    <span <%= seenStyle %> ><c:out value="${entry1.title}"/></span></a>
   </td>
   <td valign="top" width="20%">
-    <c:out value="${fileEntry.modification.date}"/>
+	<span <%= seenStyle %>><fmt:formatDate 
+      value="${entry1._modificationDate}" type="both" 
+	  pattern="dd MMMM yyyy, HH:mm" /> GMT</span>
   </td>
   <td valign="top" width="30%">
-    <c:out value="${fileEntry.creation.principal.title}"/>
+	<ssf:presenceInfo user="<%=(User)entry1.get("_principal")%>"/> 
+	<span <%= seenStyle %>><c:out value="${entry1._principal.title}"/></span>
   </td>
 </tr>
 </c:forEach>
