@@ -22,35 +22,35 @@ function ss_loadEntry(obj,id) {
   <th align="left">Date</th>
   <th align="left">Author</th>
 </tr>
-<c:forEach var="entry1" items="${ssFolderEntries}" >
-<jsp:useBean id="entry1" type="java.util.HashMap" />
+<c:forEach var="entry2" items="${ssFolderEntries}" >
+<jsp:useBean id="entry2" type="java.util.HashMap" />
 <%
-	String folderLineId = "folderLine_" + (String) entry1.get("_docId");
+	String folderLineId = "folderLine_" + (String) entry2.get("_docId");
 	String seenStyle = "";
 	String seenStyleFine = "class=\"ss_finePrint\"";
-	if (!ssSeenMap.checkIfSeen(entry1)) {
+	if (!ssSeenMap.checkIfSeen(entry2)) {
 		seenStyle = "class=\"ss_bold\"";
 		seenStyleFine = "class=\"ss_bold ss_fineprint\"";
 	}
 %>
-<tr id="folderLine_${entry1._docId}">
+<tr id="folderLine_${entry2._docId}">
   <td valign="top" width="40%">
     <a href="<ssf:url folderId="${ssFolder.id}" action="view_folder_entry" 
-    entryId="${entry1._docId}" />" 
-    onClick="ss_loadEntry(this,'folderLine_${entry1._docId}');return false;" >
-    <c:if test="${empty entry1.title}">
+    entryId="${entry2._docId}" />" 
+    onClick="ss_loadEntry(this,'folderLine_${entry2._docId}');return false;" >
+    <c:if test="${empty entry2.title}">
     <span <%= seenStyleFine %> ><i>(no title)</i></span>
     </c:if>
-    <span <%= seenStyle %> ><c:out value="${entry1.title}"/></span></a>
+    <span <%= seenStyle %> ><c:out value="${entry2.title}"/></span></a>
   </td>
   <td valign="top" width="20%">
 	<span <%= seenStyle %>><fmt:formatDate 
-      value="${entry1._modificationDate}" type="both" 
+      value="${entry2._modificationDate}" type="both" 
 	  pattern="dd MMMM yyyy, HH:mm" /> GMT</span>
   </td>
   <td valign="top" width="30%">
-	<ssf:presenceInfo user="<%=(User)entry1.get("_principal")%>"/> 
-	<span <%= seenStyle %>><c:out value="${entry1._principal.title}"/></span>
+	<ssf:presenceInfo user="<%=(User)entry2.get("_principal")%>"/> 
+	<span <%= seenStyle %>><c:out value="${entry2._principal.title}"/></span>
   </td>
 </tr>
 </c:forEach>
