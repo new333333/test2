@@ -254,7 +254,7 @@ function ss_showFavoritesPane() {
 	ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_bottom") + ss_favoritesPaneTopOffset))
 	ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_bottom")))
 	var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom") + ss_favoritesPaneLeftOffset);
-	ss_showDivFadeIn("ss_favorites_pane", 0);
+	ss_showDivFadeIn("ss_favorites_pane", 200);
 	ss_hideObj("ss_favorites_form_div");
 
 	var url = "<ssf:url 

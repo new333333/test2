@@ -8,11 +8,14 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar_view.jsp" %>
 </c:if>
 <c:if test="${ss_folderViewStyle == 'file'}">
-<%@ include file="/WEB-INF/jsp/definition_elements/file_library.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/file_library.jsp" />
+</c:if>
+<c:if test="${ss_folderViewStyle == 'blog'}">
+<jsp:include page="/WEB-INF/jsp/definition_elements/blog.jsp" />
 </c:if>
 <c:if test="${ss_folderViewStyle == 'timeline'}">
-<%@ include file="/WEB-INF/jsp/definition_elements/timeline.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/timeline.jsp" />
 </c:if>
 <c:if test="${empty ss_folderViewStyle || ss_folderViewStyle == 'folder'}">
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_view.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_view.jsp" />
 </c:if>
