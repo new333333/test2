@@ -98,7 +98,7 @@ public interface FolderModule {
      * 
      * @return
      */
-    public List<String> getFolderIds();
+    public List<String> getFolderIds(int type);
     
     public void reserveEntry(Long folderId, Long entryId)
     	throws AccessControlException, ReservedByAnotherUserException,

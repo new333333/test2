@@ -232,7 +232,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		Binder binder = (Binder) objMap.get(BINDER);
 		if(binder == null) {
 			// Get a list binders
-			List<String> folderIds = getFolderModule().getFolderIds();
+			List<String> folderIds = getFolderModule().getFolderIds(0);
 			return folderIds.toArray(new String[folderIds.size()]);
 		}
 		
