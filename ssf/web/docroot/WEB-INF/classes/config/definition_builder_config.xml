@@ -893,9 +893,9 @@
 	<item name="forumView" caption="__folder_view" 
 		canBeDeleted="false" multipleAllowed="false" >		
 		<properties>
-			<property name="type" caption="__type" type="selectbox" default="folder">
+			<property name="type" caption="__type" type="selectbox" 
+				  default="folder" value="folder">
 				<option name="folder" caption="__folder_folder" />
-				<option name="file" caption="__folder_file" />
 				<option name="event" caption="__folder_event" />
 				<option name="timeline" caption="__folder_timeline" />
 				<help>__help_folder_view_type</help>
@@ -1611,7 +1611,8 @@
 	<item name="fileFolderView" caption="__file_folder_view" 
 		canBeDeleted="false" multipleAllowed="false" >		
 		<properties>
-			<property name="type" caption="__type" type="selectbox" default="file">
+			<property name="type" caption="__type" type="selectbox" 
+				  default="file" value="file">
 				<option name="file" caption="__file_folder" />
 				<option name="event" caption="__folder_event" />
 				<help>__help_folder_view_type</help>
