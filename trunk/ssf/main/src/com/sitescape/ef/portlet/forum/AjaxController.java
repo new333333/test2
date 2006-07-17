@@ -55,7 +55,8 @@ public class AjaxController  extends SAbstractController {
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_FAVORITES)) {
 				ajaxSaveFavorites(request, response, formData);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
-					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT)) {
+					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT) ||
+					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 				ajaxChangeDashboardComponent(request, response);
 			}
 		}
@@ -86,7 +87,8 @@ public class AjaxController  extends SAbstractController {
 			
 			//Check for calls from "fetch_url"
 			if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
-					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT)) {
+					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT) ||
+					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			}
 			
@@ -171,7 +173,8 @@ public class AjaxController  extends SAbstractController {
 			return ajaxGetFavoritesTree(request, response, context);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
-				op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT)) {
+				op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT) || 
+				op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 			return ajaxGetDashboardComponent(request, response, context);
 		}
 		
@@ -593,11 +596,12 @@ public class AjaxController  extends SAbstractController {
 		String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 		if (scope.equals("")) scope = DashboardHelper.Local;
 
-		if (!componentId.equals("") && 
-				op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT)) {
+		if (!componentId.equals("") && op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT)) {
 			getDashboardModule().showHideComponent(request, binder, componentId, scope, "show");
-		} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT)) {
+		} else if (!componentId.equals("") && op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT)) {
 			getDashboardModule().showHideComponent(request, binder, componentId, scope, "hide");
+		} else if (!componentId.equals("") && op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
+			getDashboardModule().deleteComponent(request, binder, componentId, scope);
 		}
 	}
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
@@ -621,7 +625,8 @@ public class AjaxController  extends SAbstractController {
 				DashboardHelper.getDashboardMap(binder, userFolderProperties, 
 						userProperties, model, scope, componentId);
 			}
-		} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT)) {
+		} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) ||
+				op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 			return new ModelAndView("forum/fetch_url_return", model);
 		}
 		return new ModelAndView("definition_elements/view_dashboard_component", model);

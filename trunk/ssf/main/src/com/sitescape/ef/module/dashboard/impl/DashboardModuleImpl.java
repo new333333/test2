@@ -273,10 +273,10 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 		}
 	}
 
-	public void deleteComponent(ActionRequest request, Binder binder) {
+	public void deleteComponent(ActionRequest request, Binder binder, String componentId, 
+			String scope) {
 		//Get the dashboard component
 		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
-		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
 		String componentScope = "";
 		if (componentId.contains("_")) componentScope = componentId.split("_")[0];
 		if (!componentScope.equals("")) {

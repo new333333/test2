@@ -35,9 +35,9 @@
 </c:if>
 <div class="ss_entryContent">
   <span class="ss_labelLeft"><%= caption %><%= required %></span>
-<div style="border:1px solid black; height:<%= height %>;">
+<div style="border:1px solid #CECECE; height:<%= height %>;">
 <textarea dojoType="Editor" 
-  items="textGroup;|;colorGroup;|;listGroup;|;indentGroup;|;justifyGroup;"
+  items="textGroup;|;colorGroup;|;listGroup;|;indentGroup;|;justifyGroup;|;linkGroup;"
   id="<%= elementName %>" 
   name="<%= elementName %>"><c:out value="${textValue}"/></textarea>
 </div>

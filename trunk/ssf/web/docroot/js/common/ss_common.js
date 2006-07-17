@@ -56,6 +56,8 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_activateMenuOffsetTop = 6;
 	var ss_layerFlag = 0;
 	var ss_forum_maxBodyWindowHeight = 0;
+	var ss_divFadeInArray = new Array();
+	var ss_divFadeOutArray = new Array();
 	var jsDebug = 0;
 }
 var ss_common_loaded = 1;
@@ -189,16 +191,26 @@ function ss_setOpacity(obj, opacity) {
 
 //Routine to fade in a div
 function ss_showDivFadeIn(id, ms) {
+    if (!ms || ms == undefined) ms = 300;
+    //Is this already in the process of being shown? If yes, return.
+    if (ss_divFadeInArray[id] && ss_divFadeInArray[id] == 1) return;
+    ss_divFadeInArray[id] = 1;
     if (document.getElementById(id).style.visibility == 'hidden') {
     	ss_setOpacity(document.getElementById(id),0.1);
     	ss_showDiv(id);
     }
     dojo.lfx.html.fadeIn(id, ms).play();
+    //setTimeout("ss_divFadeInArray['" + id + "'] = 0;", 500)
+    ss_divFadeOutArray[id] = 0;
 }
 
 //Routine to fade out a div
 function ss_hideDivFadeOut(id, ms) {
+    if (!ms || ms == undefined) ms = 300;
+    if (ss_divFadeOutArray[id] && ss_divFadeOutArray[id] == 1) return;
+    ss_divFadeOutArray[id] = 1;
     dojo.lfx.html.fadeOut(id, ms).play();
+    ss_divFadeOutArray[id] = 0;
 }
 
 
