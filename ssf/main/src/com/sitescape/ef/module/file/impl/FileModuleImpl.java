@@ -32,6 +32,7 @@ import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FileItem;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.LibraryTitleException;
 import com.sitescape.ef.domain.Principal;
@@ -553,6 +554,25 @@ public class FileModuleImpl implements FileModule {
 		closeExpiredLocksTransactional(binder, entity, true);
 	}
 
+	public FolderEntry findFileFolderEntry(Binder fileFolder, String title) {
+		Object[] cfValues = new Object[]{fileFolder, new Integer(1), title.toLowerCase()};
+		
+		String[] cfAttrs = new String[]{"parentBinder", "HKey.level", "lower(title)"};
+		
+    	FilterControls filter = new FilterControls(cfAttrs, cfValues);
+    	
+     	Iterator result = getFolderDao().queryEntries(filter);
+     	
+     	Object obj = null;
+   		if (result.hasNext()) {
+   			obj = result.next();
+   			if (obj instanceof Object[])
+   				obj = ((Object [])obj)[0];
+   		}
+   		
+   		return (FolderEntry) obj;
+	}
+	
 	private void triggerUpdateTransaction() {
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {  

@@ -21,9 +21,11 @@ import com.sitescape.ef.InternalException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.CustomAttribute;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
@@ -114,7 +116,10 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			throw new AlreadyExistsException("The resource already exists");
 
 		// Write the file with empty content.
-		writeResource(uri, objMap, new ByteArrayInputStream(new byte[0]));
+		if(isInternal(uri))
+			writeResourceInternal(uri, objMap, new ByteArrayInputStream(new byte[0]));
+		else
+			writeResourceLibrary(uri, objMap, new ByteArrayInputStream(new byte[0]), true);
 	}
 
 	public void setResource(Map uri, InputStream content) throws NoAccessException, NoSuchObjectException {
@@ -123,7 +128,10 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			throw new NoSuchObjectException("The resource does not exist");
 		
 		// Write the file with the specified content. 
-		writeResource(uri, objMap, content);
+		if(isInternal(uri))
+			writeResourceInternal(uri, objMap, content);
+		else
+			writeResourceLibrary(uri, objMap, content, false);
 	}
 
 	public void createAndSetResource(Map uri, InputStream content) 
@@ -132,8 +140,11 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		if(objectExists(uri, objMap))
 			throw new AlreadyExistsException("The resource already exists");
 
-		// Write the file with empty content.
-		writeResource(uri, objMap, content);		
+		// Write the file with the specified content.
+		if(isInternal(uri))
+			writeResourceInternal(uri, objMap, content);
+		else
+			writeResourceLibrary(uri, objMap, content, true);
 	}
 	
 	public InputStream getResource(Map uri) throws NoAccessException, NoSuchObjectException {
@@ -165,6 +176,15 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		if(!objectExists(uri, objMap))
 			throw new NoSuchObjectException("The resource does not exist");
 
+		if(isInternal(uri)) {
+			removeResourceInternal(uri, objMap);
+		}
+		else {
+			removeResourceLibrary(uri, objMap);
+		}
+	}
+
+	private void removeResourceInternal(Map uri, Map objMap) throws NoAccessException {
 		FileAttachment fa = (FileAttachment) objMap.get(FILE_ATTACHMENT);
 		
 		List faId = new ArrayList();
@@ -179,7 +199,16 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			throw new RuntimeException(e.getMessage());
 		}
 	}
-
+	
+	private void removeResourceLibrary(Map uri, Map objMap) throws NoAccessException {
+		try {
+			getFolderModule().deleteEntry(getBinderId(uri), ((Entry) objMap.get(ENTRY)).getId());
+		}
+		catch (AccessControlException e) {
+			throw new NoAccessException(e.getLocalizedMessage());			
+		}
+	}
+	
 	public Date getLastModified(Map uri) throws NoAccessException, NoSuchObjectException {
 		Map objMap = new HashMap();
 		if(!objectExists(uri, objMap))
@@ -229,156 +258,10 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		if(!objectExists(uri, objMap))
 			throw new NoSuchObjectException("The resource does not exist");
 		
-		Binder binder = (Binder) objMap.get(BINDER);
-		if(binder == null) {
-			// Get a list binders
-			List<String> folderIds = getFolderModule().getFolderIds(0);
-			return folderIds.toArray(new String[folderIds.size()]);
-		}
-		
-		List<String> children = new ArrayList<String>();
-
-		Entry entry = (Entry) objMap.get(ENTRY);
-		if(entry == null) {
-			// Get a list of entries
-			Map folderEntries = getFolderModule().getFolderEntries(binder.getId(), Integer.MAX_VALUE);
-			List entries = (ArrayList) folderEntries.get(ObjectKeys.ENTRIES);
-			for(int i = 0; i < entries.size(); i++) {
-				Map ent = (Map) entries.get(i);
-				String entryIdString = (String) ent.get(EntryIndexUtils.DOCID_FIELD);
-				if(entryIdString != null && !entryIdString.equals(""))
-					children.add(entryIdString);
-			}
-			return children.toArray(new String[children.size()]);
-		}
-		
-		String itemType = getItemType(uri);
-		if(itemType == null) {
-			// Get a list of relevent item types from the definition
-			Document def = entry.getEntryDef().getDefinition();
-			if(def != null) {
-				Element root = def.getRootElement();
-				if(root.selectNodes("//item[@name='libraryFile' and @type='data']").size() > 0)
-					children.add(CrossContextConstants.URI_ITEM_TYPE_LIBRARY);
-				if(root.selectNodes("//item[@name='file' and @type='data']").size() > 0)
-					children.add(CrossContextConstants.URI_ITEM_TYPE_FILE);
-				if(root.selectNodes("//item[@name='graphic' and @type='data']").size() > 0)
-					children.add(CrossContextConstants.URI_ITEM_TYPE_GRAPHIC);
-				if(root.selectNodes("//item[@name='attachFiles' and @type='data']").size() > 0)
-					children.add(CrossContextConstants.URI_ITEM_TYPE_ATTACH);				
-			}
-			return children.toArray(new String[children.size()]);
-		}
-		
-		if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_LIBRARY)) {
-			if(getFilePath(uri) == null) {
-				CustomAttribute ca = entry.getCustomAttribute((String) objMap.get(ELEMENT_NAME));
-				if(ca != null) {
-					Iterator it = ((Set) ca.getValue()).iterator();
-					if(it.hasNext()) {
-						FileAttachment fa = (FileAttachment) it.next(); // Get the first one
-						if(it.hasNext()) {
-							// Still has more, meaning that the primary element has
-							// more than one file associated with it. This should 
-							// never occur since the system is supposed to never allow
-							// it. However, instead of throwing an exception we log
-							// the error and return the first file so that SSFS client
-							// can still operate (the idea is that we should not
-							// penalize our customers more than necessary simply
-							// because we have a bug in our system). 
-							logger.error("Detected more than one file under primary element for uri [" + getOriginal(uri));
-						}
-						return new String[] { fa.getFileItem().getName() };
-					}
-					else {
-						return new String[0];
-					}
-				}
-				else {
-					// File was never uploaded through this element yet. 
-					return new String[0];
-				}
-			}
-			else {
-				// The uri refers to a leaf file which doesn't have children
-				// because it's not a folder. In this case we must return
-				// null instead of an empty string array to signal the
-				// situation. 
-				return null;
-			}
-		}
-		else if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_FILE) || 
-				itemType.equals(CrossContextConstants.URI_ITEM_TYPE_GRAPHIC)) {
-			if(getElemName(uri) == null) {
-				Document def = (Document) objMap.get(DEFINITION);
-				Element root = def.getRootElement();
-				List items = root.selectNodes("//item[@name='" + toDefItemType(itemType) + "' and @type='data']");
-				for(int i = 0; i < items.size(); i++) {
-					Element item = (Element) items.get(i);
-					Element nameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
-					if(nameProperty != null) {
-						String nameValue = nameProperty.attributeValue("value");
-						if(nameValue != null && !nameValue.equals("")) {
-							children.add(nameValue);
-						}
-					}
-					
-				}
-				return children.toArray(new String[children.size()]);
-			}
-			
-			if(getFilePath(uri) == null) {
-				CustomAttribute ca = entry.getCustomAttribute((String) objMap.get(ELEMENT_NAME));
-				if(ca != null) {
-					Iterator it = ((Set) ca.getValue()).iterator();
-					while(it.hasNext()) {
-						FileAttachment fa = (FileAttachment) it.next();
-						children.add(fa.getFileItem().getName());
-					}
-					return children.toArray(new String[children.size()]);
-				}
-				else {
-					// File was never uploaded through this element yet. 
-					return new String[0];					
-				}
-			}
-			else {
-				return null; // Non-folder resource!
-			}
-			
-		}
-		else if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_ATTACH)) {
-			if(getReposName(uri) == null) {
-				Document def = (Document) objMap.get(DEFINITION);
-				Element root = def.getRootElement();
-				Element attachFilesItem = (Element) root.selectSingleNode("//item[@name='attachFiles' and @type='data']");
-				Iterator it = attachFilesItem.selectNodes("./properties/property[@name='storage']/option").iterator();
-				while(it.hasNext()) {
-					Element optionElem = (Element) it.next();
-					String optionName = optionElem.attributeValue("name");
-					if(optionName != null && !optionName.equals(""))
-						children.add(optionName);
-				}
-				return children.toArray(new String[children.size()]);
-			}
-			
-			if(getFilePath(uri) == null) {
-				Iterator it = entry.getFileAttachments(getReposName(uri)).iterator();
-				while(it.hasNext()) {
-					FileAttachment fa = (FileAttachment) it.next();
-					children.add(fa.getFileItem().getName());
-				}
-				return children.toArray(new String[children.size()]);
-			}
-			else {
-				return null; // Non-folder resource!
-			}
-			
-		}
-		else {
-			// This can not happen
-			throw new InternalException();
-		}
+		if(isInternal(uri))
+			return getChildrenNamesInternal(uri, objMap);
+		else
+			return getChildrenNamesLibrary(uri, objMap);
 	}
 
 	public Map getProperties(Map uri) throws NoAccessException,
@@ -502,6 +385,203 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 				((FileAttachment) objMap.get(FILE_ATTACHMENT)), 
 				lockId);
 	}
+
+	private String[] getChildrenNamesInternal(Map uri, Map objMap)
+			throws NoAccessException, NoSuchObjectException {
+		Binder binder = (Binder) objMap.get(BINDER);
+		if (binder == null) {
+			// Get a list binders (all folders)
+			List<String> folderIds = getFolderModule().getFolderIds(null);
+			return folderIds.toArray(new String[folderIds.size()]);
+		}
+
+		List<String> children = new ArrayList<String>();
+
+		Entry entry = (Entry) objMap.get(ENTRY);
+		if (entry == null) {
+			// Get a list of entries
+			Map folderEntries = getFolderModule().getFolderEntries(
+					binder.getId(), Integer.MAX_VALUE);
+			List entries = (ArrayList) folderEntries.get(ObjectKeys.ENTRIES);
+			for (int i = 0; i < entries.size(); i++) {
+				Map ent = (Map) entries.get(i);
+				String entryIdString = (String) ent
+						.get(EntryIndexUtils.DOCID_FIELD);
+				if (entryIdString != null && !entryIdString.equals(""))
+					children.add(entryIdString);
+			}
+			return children.toArray(new String[children.size()]);
+		}
+
+		String itemType = getItemType(uri);
+		if (itemType == null) {
+			// Get a list of relevent item types from the definition
+			Document def = entry.getEntryDef().getDefinition();
+			if (def != null) {
+				Element root = def.getRootElement();
+				if (root.selectNodes(
+						"//item[@name='libraryFile' and @type='data']").size() > 0)
+					children.add(CrossContextConstants.URI_ITEM_TYPE_LIBRARY);
+				if (root.selectNodes("//item[@name='file' and @type='data']")
+						.size() > 0)
+					children.add(CrossContextConstants.URI_ITEM_TYPE_FILE);
+				if (root
+						.selectNodes("//item[@name='graphic' and @type='data']")
+						.size() > 0)
+					children.add(CrossContextConstants.URI_ITEM_TYPE_GRAPHIC);
+				if (root.selectNodes(
+						"//item[@name='attachFiles' and @type='data']").size() > 0)
+					children.add(CrossContextConstants.URI_ITEM_TYPE_ATTACH);
+			}
+			return children.toArray(new String[children.size()]);
+		}
+
+		if (itemType.equals(CrossContextConstants.URI_ITEM_TYPE_LIBRARY)) {
+			if (getFilePath(uri) == null) {
+				CustomAttribute ca = entry.getCustomAttribute((String) objMap
+						.get(ELEMENT_NAME));
+				if (ca != null) {
+					Iterator it = ((Set) ca.getValue()).iterator();
+					if (it.hasNext()) {
+						FileAttachment fa = (FileAttachment) it.next(); 
+						// Get the first one
+						if (it.hasNext()) {
+							// Still has more, meaning that the primary element
+							// has more than one file associated with it. This
+							// should never occur since the system is supposed 
+							// to never allow it. However, instead of throwing 
+							// an exception we log the error and return the first 
+							// file so that SSFS client can still operate (the 
+							// idea is that we should not penalize our customers 
+							// more than necessary simply because we have a bug 
+							// in our system).
+							logger.error("Detected more than one file under primary element for uri ["
+											+ getOriginal(uri));
+						}
+						return new String[] { fa.getFileItem().getName() };
+					} else {
+						return new String[0];
+					}
+				} else {
+					// File was never uploaded through this element yet.
+					return new String[0];
+				}
+			} else {
+				// The uri refers to a leaf file which doesn't have children
+				// because it's not a folder. In this case we must return
+				// null instead of an empty string array to signal the
+				// situation.
+				return null;
+			}
+		} else if (itemType.equals(CrossContextConstants.URI_ITEM_TYPE_FILE)
+				|| itemType.equals(CrossContextConstants.URI_ITEM_TYPE_GRAPHIC)) {
+			if (getElemName(uri) == null) {
+				Document def = (Document) objMap.get(DEFINITION);
+				Element root = def.getRootElement();
+				List items = root.selectNodes("//item[@name='"
+						+ toDefItemType(itemType) + "' and @type='data']");
+				for (int i = 0; i < items.size(); i++) {
+					Element item = (Element) items.get(i);
+					Element nameProperty = (Element) item
+							.selectSingleNode("./properties/property[@name='name']");
+					if (nameProperty != null) {
+						String nameValue = nameProperty.attributeValue("value");
+						if (nameValue != null && !nameValue.equals("")) {
+							children.add(nameValue);
+						}
+					}
+
+				}
+				return children.toArray(new String[children.size()]);
+			}
+
+			if (getFilePath(uri) == null) {
+				CustomAttribute ca = entry.getCustomAttribute((String) objMap
+						.get(ELEMENT_NAME));
+				if (ca != null) {
+					Iterator it = ((Set) ca.getValue()).iterator();
+					while (it.hasNext()) {
+						FileAttachment fa = (FileAttachment) it.next();
+						children.add(fa.getFileItem().getName());
+					}
+					return children.toArray(new String[children.size()]);
+				} else {
+					// File was never uploaded through this element yet.
+					return new String[0];
+				}
+			} else {
+				return null; // Non-folder resource!
+			}
+
+		} else if (itemType.equals(CrossContextConstants.URI_ITEM_TYPE_ATTACH)) {
+			if (getReposName(uri) == null) {
+				Document def = (Document) objMap.get(DEFINITION);
+				Element root = def.getRootElement();
+				Element attachFilesItem = (Element) root
+						.selectSingleNode("//item[@name='attachFiles' and @type='data']");
+				Iterator it = attachFilesItem.selectNodes(
+						"./properties/property[@name='storage']/option")
+						.iterator();
+				while (it.hasNext()) {
+					Element optionElem = (Element) it.next();
+					String optionName = optionElem.attributeValue("name");
+					if (optionName != null && !optionName.equals(""))
+						children.add(optionName);
+				}
+				return children.toArray(new String[children.size()]);
+			}
+
+			if (getFilePath(uri) == null) {
+				Iterator it = entry.getFileAttachments(getReposName(uri))
+						.iterator();
+				while (it.hasNext()) {
+					FileAttachment fa = (FileAttachment) it.next();
+					children.add(fa.getFileItem().getName());
+				}
+				return children.toArray(new String[children.size()]);
+			} else {
+				return null; // Non-folder resource!
+			}
+
+		} else {
+			// This can not happen
+			throw new InternalException();
+		}
+	}
+
+	private String[] getChildrenNamesLibrary(Map uri, Map objMap)
+	throws NoAccessException, NoSuchObjectException {
+		Binder binder = (Binder) objMap.get(BINDER);
+		if (binder == null) {
+			// Get a list binders (only file folders)
+			List<String> folderIds = getFolderModule().getFolderIds(Definition.FILE_FOLDER_VIEW);
+			return folderIds.toArray(new String[folderIds.size()]);
+		}
+
+		FileAttachment fa = (FileAttachment) objMap.get(FILE_ATTACHMENT);
+
+		if(fa == null) {
+			List<String> children = new ArrayList<String>();
+			
+			// Get a list of entries and build a list of titles of those
+			// entries (each title represents a file path).
+			Map folderEntries = getFolderModule().getFolderEntries(
+					binder.getId(), Integer.MAX_VALUE);
+			List entries = (ArrayList) folderEntries.get(ObjectKeys.ENTRIES);
+			for (int i = 0; i < entries.size(); i++) {
+				Map ent = (Map) entries.get(i);
+				String titleString = (String) ent
+						.get(EntryIndexUtils.TITLE_FIELD);
+				if (titleString != null && !titleString.equals(""))
+					children.add(titleString);
+			}
+			return children.toArray(new String[children.size()]);
+		}
+		else {
+			// The uri represents a non-folder resource. 
+			return null;
+		}
+	}
 	
 	private String getOriginal(Map uri) {
 		return (String) uri.get(CrossContextConstants.URI_ORIGINAL);		
@@ -544,7 +624,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 	
 	private String toDefItemType(String itemType) {
 		if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_LIBRARY)) {
-			return "libraryFile";
+			return "fileEntryTitle";
 		}
 		else if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_FILE)) {
 			return "file";
@@ -569,7 +649,8 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 	 * @param objMap
 	 * @param in
 	 */
-	private void writeResource(Map uri, Map objMap, InputStream in) {
+	private void writeResourceInternal(Map uri, Map objMap, InputStream in) 
+		throws NoAccessException {
 		// Wrap the input stream in a datastructure suitable for our business module. 
 		SsfsMultipartFile mf = new SsfsMultipartFile(getFilePath(uri), in);
 		
@@ -608,157 +689,274 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			throw new RuntimeException(e.getMessage());
 		}		
 	}
-	
-	private boolean objectExists(Map uri, Map objMap) throws NoAccessException {
-		if(isInternal(uri)) {
-			try {
-				// Check folder representing binder id
-				Long binderId = getBinderId(uri);
-				if(binderId == null)
-					return true; // no more checking to do
-				
-				Binder binder = getBinderModule().getBinder(binderId);
-				objMap.put(BINDER, binder);
-				
-				// Check folder representing entry id
-				Long entryId = getEntryId(uri);
-				if(entryId == null)
-					return true; // no more checking to do
-				
-				Entry entry = null;
-				
-				if(binder instanceof Folder)
-					entry = getFolderModule().getEntry(binderId, entryId);
-				else
-					entry = getProfileModule().getEntry(binderId, entryId);
-				objMap.put(ENTRY, entry);
-				
-				// Check folder(s) representing definition item. 
-				String itemType = getItemType(uri);
-				if(itemType == null)
-					return true; // no more checking to do
 
-				Document def = entry.getEntryDef().getDefinition();
-				if(def == null) // No definition - Is this actually possible?
-					return false; // No item type can be recognized
-				objMap.put(DEFINITION, def);
-				
-				// The following call validates the item type (as a side effect).
-				String defItemType = toDefItemType(itemType);
-				if(defItemType == null)
-					return false; // Unrecognized item type
-				
-				Element root = def.getRootElement();
-				List items = root.selectNodes("//item[@name='" + defItemType + "' and @type='data']");
-				if(items.size() == 0)
-					return false; // The item does not exist in the definition.
-				
-				String elementName = null;
-				String reposName = null;
-				
-				// Check definition.
-				if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_FILE) ||
-						itemType.equals(CrossContextConstants.URI_ITEM_TYPE_GRAPHIC)) {
-					// Check folder representing definition element - File or 
-					// graphic type items allows multiples.
-					
-					elementName = getElemName(uri);
-					if(elementName == null)
-						return true; // no more checking to do
-					
-					boolean matchFound = false;
-					Iterator itItems = items.listIterator();
-					while(itItems.hasNext()) {
-						Element item = (Element) itItems.next();
-						Element nameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
-						if(nameProperty != null) {
-							String nameValue = nameProperty.attributeValue("value");
-							if(nameValue != null && nameValue.equals(elementName)) {
-								// Match found
-								matchFound = true;
-								objMap.put(ELEMENT_NAME, elementName);
-								break;
-							}
-						}
-					}
-					if(!matchFound)
-						return false;
-				}
-				else if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_ATTACH)) {
-					// Check repository name.
-					 
-					reposName = getReposName(uri);
-					if(reposName == null)
-						return true; // no more checking to do
-					
-					Element attachFilesItem = (Element) items.get(0); // only one item in there
-					Element nameProperty = (Element) attachFilesItem.selectSingleNode("./properties/property[@name='name']");
-					elementName = nameProperty.attributeValue("value");
-					objMap.put(ELEMENT_NAME, elementName);
-					Element optionElem = (Element) attachFilesItem.selectSingleNode("./properties/property[@name='storage']/option[@name='" + reposName + "']");
-					if(optionElem == null)
-						return false; // The repository name does not appear in the definition.
-				}
-				else { // primary
-					Element primaryItem = (Element) items.get(0); // only one item in there
-					Element nameProperty = (Element) primaryItem.selectSingleNode("./properties/property[@name='name']");
-					elementName = nameProperty.attributeValue("value");
-					objMap.put(ELEMENT_NAME, elementName);
-				}
-				
-				// Finally check file itself. 
-				String filePath = getFilePath(uri);
-				if(filePath == null)
-					return true; // no more checking to do
-				
-				if(itemType.equals(CrossContextConstants.URI_ITEM_TYPE_ATTACH)) {
-					// Use FileAttachment directly
-					FileAttachment fa = entry.getFileAttachment(reposName, filePath);
-					if(fa == null)
-						return false; // No matching file
-					else {
-						objMap.put(FILE_ATTACHMENT, fa);
-						return true; // Match found
-					}
-				}
-				else {
-					// Use CustomAttribute
-					CustomAttribute ca = entry.getCustomAttribute(elementName);
-					if(ca == null) {
-						// This means that no file has ever been uploaded through
-						// this element yet (that is, definition exists, but 
-						// data/file doesn't yet). 
-						return false; // No file exists for the element. 
-					}
-					else {
-						// Since all file attachments in this custom attribute
-						// have the same value for repository name, we only
-						// need to use file name for comparison. 
-						Iterator it = ((Set) ca.getValue()).iterator();
-						while(it.hasNext()) {
-							FileAttachment fa = (FileAttachment) it.next();
-							if(fa.getFileItem().getName().equals(filePath)) {
-								objMap.put(FILE_ATTACHMENT, fa);
-								return true; // File name matches
-							}
-						}
-						return false; // File name didn't match
-					}
-				}
-			}
-			catch(NoBinderByTheIdException e) {
-				return false;
-			}
-			catch(NoFolderByTheIdException e) {
-				return false;
-			}
-			catch(AccessControlException e) {
-				throw new NoAccessException(e.getLocalizedMessage());
+	private Definition getDefaultDefinition(Folder fileFolder) {
+		// Until we have the notion of default definition for a file folder,
+		// we will simply grab the first definition in the folder and use
+		// it to create file entries. 
+		// TODO To use default definition. 
+		List definitions = fileFolder.getEntryDefinitions();
+		if(definitions == null || definitions.size() == 0)
+			throw new InternalException();
+		Definition def = (Definition) definitions.get(0);
+		return def;
+	}
+	
+	private void writeResourceLibrary(Map uri, Map objMap, InputStream in, boolean isNew) 
+		throws NoAccessException {
+		// Wrap the input stream in a datastructure suitable for our business module. 
+		SsfsMultipartFile mf = new SsfsMultipartFile(getFilePath(uri), in);
+		
+		Map fileItems = new HashMap(); // Map of names to file items
+		fileItems.put(objMap.get(ELEMENT_NAME), mf); // single file item
+		
+		InputDataAccessor inputData = new EmptyInputData(); // No non-file input data
+		
+		if(isNew) {
+			// All binders referenced by library urls are file folders.
+			Folder folder = (Folder) objMap.get(BINDER);
+			Definition def = getDefaultDefinition(folder);
+			try {
+				getFolderModule().addEntry(getBinderId(uri), def.getId(), inputData, fileItems);
+			} catch (AccessControlException e) {
+				throw new NoAccessException(e.getLocalizedMessage());			
+			} catch (WriteFilesException e) {
+				throw new RuntimeException(e.getMessage());
 			}
 		}
-		else { // library is not supported yet
-			throw new UnsupportedOperationException();
-		}		
+		else {
+			try {
+				getFolderModule().modifyEntry(getBinderId(uri), 
+						((Entry) objMap.get(ENTRY)).getId(),
+						inputData, fileItems, null);
+			} catch (AccessControlException e) {
+				throw new NoAccessException(e.getLocalizedMessage());			
+			} catch (WriteFilesException e) {
+				throw new RuntimeException(e.getMessage());
+			}
+		}
+	}
+	
+	private boolean objectExists(Map uri, Map objMap) throws NoAccessException {
+		if(isInternal(uri))
+			return objectExistsInternal(uri, objMap);
+		else
+			return objectExistsLibrary(uri, objMap);
 	}
 
+	private boolean objectExistsInternal(Map uri, Map objMap)
+			throws NoAccessException {
+		try {
+			// Check folder representing binder id
+			Long binderId = getBinderId(uri);
+			if (binderId == null)
+				return true; // no more checking to do
+
+			Binder binder = getBinderModule().getBinder(binderId);
+			objMap.put(BINDER, binder);
+
+			// Check folder representing entry id
+			Long entryId = getEntryId(uri);
+			if (entryId == null)
+				return true; // no more checking to do
+
+			Entry entry = null;
+
+			if (binder instanceof Folder)
+				entry = getFolderModule().getEntry(binderId, entryId);
+			else
+				entry = getProfileModule().getEntry(binderId, entryId);
+			objMap.put(ENTRY, entry);
+
+			// Check folder(s) representing definition item. 
+			String itemType = getItemType(uri);
+			if (itemType == null)
+				return true; // no more checking to do
+
+			Document def = entry.getEntryDef().getDefinition();
+			if (def == null) // No definition - Is this actually possible?
+				return false; // No item type can be recognized
+			objMap.put(DEFINITION, def);
+
+			// The following call validates the item type (as a side effect).
+			String defItemType = toDefItemType(itemType);
+			if (defItemType == null)
+				return false; // Unrecognized item type
+
+			Element root = def.getRootElement();
+			List items = root.selectNodes("//item[@name='" + defItemType
+					+ "' and @type='data']");
+			if (items.size() == 0)
+				return false; // The item does not exist in the definition.
+
+			String elementName = null;
+			String reposName = null;
+
+			// Check definition.
+			if (itemType.equals(CrossContextConstants.URI_ITEM_TYPE_FILE)
+					|| itemType
+							.equals(CrossContextConstants.URI_ITEM_TYPE_GRAPHIC)) {
+				// Check folder representing definition element - File or 
+				// graphic type items allows multiples.
+
+				elementName = getElemName(uri);
+				if (elementName == null)
+					return true; // no more checking to do
+
+				boolean matchFound = false;
+				Iterator itItems = items.listIterator();
+				while (itItems.hasNext()) {
+					Element item = (Element) itItems.next();
+					Element nameProperty = (Element) item
+							.selectSingleNode("./properties/property[@name='name']");
+					if (nameProperty != null) {
+						String nameValue = nameProperty.attributeValue("value");
+						if (nameValue != null && nameValue.equals(elementName)) {
+							// Match found
+							matchFound = true;
+							objMap.put(ELEMENT_NAME, elementName);
+							break;
+						}
+					}
+				}
+				if (!matchFound)
+					return false;
+			} else if (itemType
+					.equals(CrossContextConstants.URI_ITEM_TYPE_ATTACH)) {
+				// Check repository name.
+
+				reposName = getReposName(uri);
+				if (reposName == null)
+					return true; // no more checking to do
+
+				Element attachFilesItem = (Element) items.get(0); // only one item in there
+				Element nameProperty = (Element) attachFilesItem
+						.selectSingleNode("./properties/property[@name='name']");
+				elementName = nameProperty.attributeValue("value");
+				objMap.put(ELEMENT_NAME, elementName);
+				Element optionElem = (Element) attachFilesItem
+						.selectSingleNode("./properties/property[@name='storage']/option[@name='"
+								+ reposName + "']");
+				if (optionElem == null)
+					return false; // The repository name does not appear in the definition.
+			} else { // primary
+				Element primaryItem = (Element) items.get(0); // only one item in there
+				Element nameProperty = (Element) primaryItem
+						.selectSingleNode("./properties/property[@name='name']");
+				elementName = nameProperty.attributeValue("value");
+				objMap.put(ELEMENT_NAME, elementName);
+			}
+
+			// Finally check file itself. 
+			String filePath = getFilePath(uri);
+			if (filePath == null)
+				return true; // no more checking to do
+
+			if (itemType.equals(CrossContextConstants.URI_ITEM_TYPE_ATTACH)) {
+				// Use FileAttachment directly
+				FileAttachment fa = entry
+						.getFileAttachment(reposName, filePath);
+				if (fa == null)
+					return false; // No matching file
+				else {
+					objMap.put(FILE_ATTACHMENT, fa);
+					return true; // Match found
+				}
+			} else {
+				// Use CustomAttribute
+				CustomAttribute ca = entry.getCustomAttribute(elementName);
+				if (ca == null) {
+					// This means that no file has ever been uploaded through
+					// this element yet (that is, definition exists, but 
+					// data/file doesn't yet). 
+					return false; // No file exists for the element. 
+				} else {
+					// Since all file attachments in this custom attribute
+					// have the same value for repository name, we only
+					// need to use file name for comparison. 
+					Iterator it = ((Set) ca.getValue()).iterator();
+					while (it.hasNext()) {
+						FileAttachment fa = (FileAttachment) it.next();
+						if (fa.getFileItem().getName().equals(filePath)) {
+							objMap.put(FILE_ATTACHMENT, fa);
+							return true; // File name matches
+						}
+					}
+					return false; // File name didn't match
+				}
+			}
+		} catch (NoBinderByTheIdException e) {
+			return false;
+		} catch (NoFolderByTheIdException e) {
+			return false;
+		} catch (AccessControlException e) {
+			throw new NoAccessException(e.getLocalizedMessage());
+		}
+	}
+	
+	private String getLibraryElementName(Definition definition) {
+		Document defDoc = definition.getDefinition();
+		String itemType = toDefItemType(CrossContextConstants.URI_ITEM_TYPE_LIBRARY);
+		Element root = defDoc.getRootElement();
+		Element item = (Element) root.selectSingleNode("//item[@name='" + itemType
+				+ "' and @type='data']");
+		Element nameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
+		String elementName = nameProperty.attributeValue("value");
+		return elementName;
+	}
+	
+	private boolean objectExistsLibrary(Map uri, Map objMap) throws NoAccessException {
+		try {
+			// File folder id
+			Long binderId = getBinderId(uri);
+			if (binderId == null)
+				return true; // no more checking to do
+
+			Binder binder = getBinderModule().getBinder(binderId);
+			objMap.put(BINDER, binder);
+
+			// File path 
+			String filePath = getFilePath(uri);
+			if (filePath == null)
+				return true; // no more checking to do
+			
+			// Locate file folder entry
+			FolderEntry fileFolderEntry = getFileModule().findFileFolderEntry(binder, filePath);
+			
+			if(fileFolderEntry == null) { // No such file folder entry exists
+				Definition definition = getDefaultDefinition((Folder) binder);
+				
+				String elementName = getLibraryElementName(definition);
+				
+				objMap.put(ELEMENT_NAME, elementName);
+
+				return false; 
+			}
+			else {
+				objMap.put(ENTRY, fileFolderEntry);
+				
+				// Locate file attachment
+				Definition definition = fileFolderEntry.getEntryDef();
+
+				String elementName = getLibraryElementName(definition);
+				
+				objMap.put(ELEMENT_NAME, elementName);
+				
+				CustomAttribute ca = fileFolderEntry.getCustomAttribute(elementName);
+				
+				FileAttachment fa = (FileAttachment) ca.getValueSet().iterator().next();
+				
+				objMap.put(FILE_ATTACHMENT, fa);
+				
+				return true;
+			}
+		} catch (NoBinderByTheIdException e) {
+			return false;
+		} catch (NoFolderByTheIdException e) {
+			return false;
+		} catch (AccessControlException e) {
+			throw new NoAccessException(e.getLocalizedMessage());
+		}
+		
+	}
 }

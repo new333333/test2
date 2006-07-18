@@ -9,6 +9,7 @@ import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
 import com.sitescape.ef.repository.RepositoryServiceException;
 
@@ -363,4 +364,6 @@ public interface FileModule {
      */
     public void RefreshLocks(Binder binder, DefinableEntity entity) 
 	throws RepositoryServiceException, UncheckedIOException;
+    
+	public FolderEntry findFileFolderEntry(Binder fileFolder, String title);
 }
