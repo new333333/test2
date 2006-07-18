@@ -38,7 +38,7 @@
 <div style="border:1px solid #CECECE; height:<%= height %>;">
 <textarea dojoType="Editor" 
   items="textGroup;|;colorGroup;|;listGroup;|;indentGroup;|;justifyGroup;|;linkGroup;"
-  id="<%= elementName %>" 
-  name="<%= elementName %>"><c:out value="${textValue}"/></textarea>
-</div>
+  id="${property_name}" 
+  minHeight="<%= height %>"
+  name="${property_name}"><c:out value="${textValue}"/></textarea>
 </div>
