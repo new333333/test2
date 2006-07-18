@@ -23,6 +23,7 @@
 <div class="ss_form_color" style="border:1px solid #CECECE; height:150px;">
 <textarea id="data_html" name="data_html" dojoType="Editor"
   items="textGroup;|;colorGroup;|;listGroup;|;indentGroup;|;justifyGroup;|;linkGroup;"
+  minHeight="150px"
 ><c:out
 value="${ssDashboard.dashboard.components[ssDashboardId].data.html[0]}"/></textarea>
 </div>

@@ -12,8 +12,7 @@
 	}
 %>
 <div class="ss_entryContent">
-<c:out value="${property_caption}"/>
-<div class="ss_labelAbove"><%= caption %></div>
+<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
 <input type="text" class="ss_text" name="title" <%= width %>
  value="<c:out value="${ssDefinitionEntry.title}"/>" />
 </div>
