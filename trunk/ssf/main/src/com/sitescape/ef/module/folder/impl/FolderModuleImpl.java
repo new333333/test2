@@ -560,7 +560,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
      	folder.setPopularity(Long.valueOf(result));
 	}   
 	
-	public List<String> getFolderIds(int type) {
+	public List<String> getFolderIds(Integer type) {
     	// TODO 
     	// NOTE: This implementation utilizes database lookup to fetch the
     	// entire list of folders in the system and then test each one against
@@ -576,8 +576,16 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	
     	String zoneName = RequestContextHolder.getRequestContext().getZoneName();
     	
-    	List folders = getCoreDao().loadObjects(new ObjectControls(Folder.class),
-    			new FilterControls(new String[]{"zoneName", "definitionType"}, new Object[]{zoneName, Integer.valueOf(type)}));
+    	FilterControls filter = null;
+    	
+    	if(type != null) {
+    		filter = new FilterControls(new String[]{"zoneName", "definitionType"}, new Object[]{zoneName, Integer.valueOf(type)});
+    	}
+    	else {
+    		filter = new FilterControls("zoneName", zoneName);
+    	}
+    	
+    	List folders = getCoreDao().loadObjects(new ObjectControls(Folder.class), filter);
     	
     	List<String> result = new ArrayList<String>(folders.size());
     	for(int i = 0; i < folders.size(); i++) {
