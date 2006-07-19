@@ -4,6 +4,10 @@ package com.sitescape.ef.domain;
 public class EntityIdentifier {
 	protected EntityType entityType=EntityType.none;
 	protected Long entityId;
+	
+	
+	public EntityIdentifier () {}
+	
 	public enum EntityType {
 		none (0),
 		profiles (1),

@@ -122,6 +122,18 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		   			  			" p.parentBinder=" + profiles.getId() + ") and entityType in (" + 
  		   					EntityIdentifier.EntityType.user.getValue() + "," + EntityIdentifier.EntityType.group.getValue() + ")")
 		   				.executeUpdate();
+		   			//delete tags owned by these users
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where principalId in " + 
+ 			   				"(select p.id from com.sitescape.ef.domain.Principal p where " +
+		   			  			" p.parentBinder=" + profiles.getId() + ")")
+		   				.executeUpdate();
+	       			
+		   			//delete tags for these principals
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where entityId in " + 
+ 			   				"(select p.id from com.sitescape.ef.domain.Principal p where " +
+		   			  			" p.parentBinder=" + profiles.getId() + ") and entityType in (" + 
+ 		   					EntityIdentifier.EntityType.user.getValue() + "," + EntityIdentifier.EntityType.group.getValue() + ")")
+		   				.executeUpdate();
  		   			session.createQuery("Delete com.sitescape.ef.domain.Principal where parentBinder=" + profiles.getId())
 	       				.executeUpdate();
 	       			session.getSessionFactory().evict(Principal.class);		

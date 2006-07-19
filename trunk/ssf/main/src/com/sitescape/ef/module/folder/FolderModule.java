@@ -75,7 +75,8 @@ public interface FolderModule {
 	public Map getFolderEntries(Long folderId, int maxNumEntries) throws AccessControlException;
 	public Map getFolderEntries(Long folderId, int maxNumEntries, Document searchFilter) throws AccessControlException;
     public Map getUnseenCounts(List folderIds);
-	public void setUserRating(Long folderId, Long entryId, long value);
+    public List getTags(Long binderId, Long entryId);
+    public void setUserRating(Long folderId, Long entryId, long value);
 	public void setUserRating(Long folderId, long value);
 	public void setUserVisit(Long folderId, Long entryId);
 	public void setUserVisit(Long folderId);
@@ -83,7 +84,8 @@ public interface FolderModule {
 	public void setUserVisit(Folder folder);
 	public void indexFolderTree(Long folderId);
     public void indexEntries(Long folderId);
-
+    public void setTag(Long binderId, Long entryId, String tag);
+    
     public Map getCommonEntryElements();
 
    	  

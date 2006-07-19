@@ -52,6 +52,7 @@ import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.search.LuceneSession;
+//import com.sitescape.ef.search.remote.RemoteInStreamSession;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
@@ -434,9 +435,13 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	System.out.println("Query is: " + so.getQueryString());
     	
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    	//RemoteInStreamSession instreamSession = getInstreamSessionFactory().openSession();
         
         try {
-	        results = luceneSession.search(so.getQuery(),so.getSortBy(),0,0);
+        	results = luceneSession.search(so.getQuery(),so.getSortBy(),0,0);
+        	//results = instreamSession.search(so.getQueryString(),so.getSortBy(),0,0);
+        } catch (Exception e) {
+        	logger.warn("Exception throw while searching in getRecentEntries: " + e.toString());
         }
         finally {
             luceneSession.close();
@@ -482,24 +487,28 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	public List getTags(Long binderId, Long entryId) {
 		FolderEntry entry = getEntry(binderId, entryId);
 		List tags = new ArrayList<Tag>();
-		getCoreDao().loadTagsByOwner(entry.getEntityIdentifier());
+		tags = getCoreDao().loadTagsByEntity(entry.getEntityIdentifier());
+		tags = uniqueTags(tags);
 		return tags;		
 	}
-	public void modifyTag(Long binderId, Long entryId, String tagId, Map updates) {
+	public void modifyTag(Long binderId, Long entryId, String tagId, String newtag) {
 		FolderEntry entry = getEntry(binderId, entryId);
-	   	Tag tag = coreDao.loadTagByOwner(tagId, entry.getEntityIdentifier());
-	   	ObjectBuilder.updateObject(tag, updates);
+	   	Tag tag = coreDao.loadTagById(tagId);
+	   	tag.setName(newtag);
+	   	coreDao.update(tag);
 	}
-	public void addTag(Long binderId, Long entryId, Map updates) {
+	public void setTag(Long binderId, Long entryId, String newtag) {
 		FolderEntry entry = getEntry(binderId, entryId);
 	   	Tag tag = new Tag();
-	   	tag.setOwnerIdentifier(entry.getEntityIdentifier());
-	  	ObjectBuilder.updateObject(tag, updates);
-	  	coreDao.save(tag);   	
+	   	User user = RequestContextHolder.getRequestContext().getUser();
+	   	tag.setOwnerIdentifier(user.getEntityIdentifier());
+	   	tag.setEntityIdentifier(entry.getEntityIdentifier());
+	  	tag.setName(newtag);
+	  	coreDao.save(tag);
 	}
 	public void deleteTag(Long binderId, Long entryId, String tagId) {
 		FolderEntry entry = getEntry(binderId, entryId);
-	   	Tag tag = coreDao.loadTagByOwner(tagId, entry.getEntityIdentifier());
+	   	Tag tag = coreDao.loadTagById(tagId);
 	   	getCoreDao().delete(tag);
 	}
 	public void setUserRating(Long folderId, Long entryId, long value) {
@@ -670,6 +679,24 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	}
     }
 
+    /**
+     * Convenience method to find all the unique tags 
+     * in a set to return to the user.
+     * 
+     * @param allTags
+     * @return
+     */
+    private List uniqueTags(List allTags) {
+    	List newTags = new ArrayList<Tag>();
+    	HashMap tagMap = new HashMap();
+    	for (Iterator iter=allTags.iterator(); iter.hasNext();) {
+			Tag thisTag = (Tag)iter.next();
+			if (tagMap.containsKey(thisTag.getName())) continue;
+			tagMap.put(thisTag.getName(),thisTag);
+			newTags.add(thisTag);
+    	}
+    	return newTags;    	
+    }
     /**
      * Helper classs to return folder unseen counts as an objects
      * @author Janet McCann
