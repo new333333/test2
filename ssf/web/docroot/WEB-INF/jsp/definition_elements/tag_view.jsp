@@ -18,7 +18,7 @@
 		  <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
 		  <input type="text" class="ss_text" name="tag">
 		  <input type="submit" class="ss_submit" name="changeTags" 
-		   value="<ssf:nlt tag="button.ok" text="Add"/>">
+		   value="<ssf:nlt tag="button.add" text="Add"/>">
    </form>
 </td></tr>
 </table>
