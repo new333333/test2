@@ -223,7 +223,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	/**
 	 * Get tags owned by this binder
 	 */
-	public List getTags(Long binderId) {
+	public List getCommunityTags(Long binderId) {
+		Binder binder = loadBinder(binderId);
+		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);    	
+		List tags = new ArrayList<Tag>();		
+		tags = getCoreDao().loadTagsByOwner(binder.getEntityIdentifier());
+		tags = uniqueTags(tags);
+		return tags;		
+	}
+	
+	public List getPersonalTags(Long binderId) {
 		Binder binder = loadBinder(binderId);
 		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);    	
 		List tags = new ArrayList<Tag>();		
@@ -245,13 +254,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	/**
 	 * Add a new tag, owned by this binder
 	 */
-	public void setTag(Long binderId, String newTag) {
+	public void setTag(Long binderId, String newTag, boolean community) {
 		Binder binder = loadBinder(binderId);
 		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);    	
 	   	Tag tag = new Tag();
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 	   	tag.setOwnerIdentifier(user.getEntityIdentifier());
 	   	tag.setEntityIdentifier(binder.getEntityIdentifier());
+	   	tag.setPublic(community);
 	  	tag.setName(newTag);
 	  	coreDao.save(tag);   	
 	}
@@ -265,18 +275,33 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	getCoreDao().delete(tag);
 	}
 	/**
-	 * Get tags owned by the entry
+	 * Get community tags owned by the entry
 	 * @param binderId
 	 * @param entryId
 	 * @return
 	 */
-	public List getTags(Long binderId, Long entryId) {
+	public List getCommunityTags(Long binderId, Long entryId) {
 		Binder binder = loadBinder(binderId);
 		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
 		List tags = new ArrayList<Tag>();
 		tags = getCoreDao().loadTagsByOwner(entry.getEntityIdentifier());
 		return tags;		
 	}
+
+	/**
+	 * Get personal tags owned by the entry
+	 * @param binderId
+	 * @param entryId
+	 * @return
+	 */
+	public List getPersonalTags(Long binderId, Long entryId) {
+		Binder binder = loadBinder(binderId);
+		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
+		List tags = new ArrayList<Tag>();
+		tags = getCoreDao().loadTagsByOwner(entry.getEntityIdentifier());
+		return tags;		
+	}
+
 	/**
 	 * Modify a tag owned by this entry
 	 * @param binderId
@@ -297,13 +322,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 * @param entryId
 	 * @param updates
 	 */
-	public void setTag(Long binderId, Long entryId, String newTag) {
+	public void setTag(Long binderId, Long entryId, String newTag, boolean community) {
 		Binder binder = loadBinder(binderId);
 		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
 	   	Tag tag = new Tag();
 	   	tag.setEntityIdentifier(entry.getEntityIdentifier());
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 	   	tag.setOwnerIdentifier(user.getEntityIdentifier());
+	   	tag.setPublic(community);
 	  	tag.setName(newTag);
 	  	coreDao.save(tag);   	
 	}

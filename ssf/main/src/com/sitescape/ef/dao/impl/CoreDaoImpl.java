@@ -653,6 +653,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	                 	return session.createCriteria(Tag.class)
                  		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
        					.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
+                 		.add(Expression.eq("public",true))
                  		.addOrder(Order.asc("name"))
                   		.list();
 	                }
@@ -680,6 +681,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	                 	return session.createCriteria(Tag.class)
                  		.add(Expression.eq("entityIdentifier.entityId", entityId.getEntityId()))
        					.add(Expression.eq("entityIdentifier.type", entityId.getEntityType().getValue()))
+       					.add(Expression.eq("public", true))
                  		.addOrder(Order.asc("name"))
 	                 	.list();
 	                }
@@ -687,4 +689,36 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        );
 		
 	}
+	public List loadPersonalEntityTags(final EntityIdentifier entityId, final EntityIdentifier ownerId) {
+		return (List)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                 	return session.createCriteria(Tag.class)
+                 		.add(Expression.eq("entityIdentifier.entityId", entityId.getEntityId()))
+       					.add(Expression.eq("entityIdentifier.type", entityId.getEntityType().getValue()))
+                 		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
+       					.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
+       					.add(Expression.eq("public",false))
+                 		.addOrder(Order.asc("name"))
+	                 	.list();
+	                }
+	            }
+	        );
+		
+	}
+	public List loadPersonalTags(final EntityIdentifier ownerId) {
+		return (List)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                 	return session.createCriteria(Tag.class)
+                 		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
+       					.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
+       					.add(Expression.eq("public",false))
+                 		.addOrder(Order.asc("name"))
+	                 	.list();
+	                }
+	            }
+	        );
+		
+	}	
 }
