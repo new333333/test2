@@ -64,12 +64,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
         // in this method.
 
-		//in order to support file folders with create a new class we base the key on the definition type.
-		if (binder.getDefinitionType() != null) {
-			return (EntryProcessor)getProcessorManager().getProcessor(binder, EntryProcessor.PROCESSOR_KEY, binder.getDefinitionType().toString());			
-		} else {
-			return (EntryProcessor)getProcessorManager().getProcessor(binder, EntryProcessor.PROCESSOR_KEY);
-		}
+		return (EntryProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(EntryProcessor.PROCESSOR_KEY));			
 	}
 	private BinderProcessor loadBinderProcessor(Binder binder) {
         // This is nothing but a dispatcher to an appropriate processor. 
@@ -77,12 +72,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
         // in this method.
 
-		//in order to support file folders with create a new class we base the key on the definition type.
-		if (binder.getDefinitionType() != null) {
-			return (BinderProcessor)getProcessorManager().getProcessor(binder, BinderProcessor.PROCESSOR_KEY, binder.getDefinitionType().toString());	
-		} else {
-			return (BinderProcessor)getProcessorManager().getProcessor(binder, BinderProcessor.PROCESSOR_KEY);
-		}
+		return (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+
 	}
 	public Binder getBinderByName(String binderName) 
    			throws NoBinderByTheNameException, AccessControlException {

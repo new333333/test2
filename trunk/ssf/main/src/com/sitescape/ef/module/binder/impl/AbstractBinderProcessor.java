@@ -120,6 +120,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         binder.setEntryDef(def);
         if (def != null) {
         	binder.setDefinitionType(Integer.valueOf(def.getType()));
+        	List defs = new ArrayList();
+        	defs.add(def);
+        	binder.setDefinitions(defs);
         	if ((parent.getDefinitionType() == null) ||
         			(binder.getDefinitionType().intValue() != parent.getDefinitionType().intValue())) {
         		binder.setDefinitionsInherited(false);

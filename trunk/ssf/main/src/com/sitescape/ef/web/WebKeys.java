@@ -34,6 +34,7 @@ public class WebKeys {
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
+    public static final String URL_AJAX = "ajax";
     public static final String URL_ATTRIBUTE = "attr";
     public static final String URL_ATTRIBUTE_ID = "attrId";
     public static final String URL_BINDER_ID="binderId";
@@ -134,6 +135,7 @@ public class WebKeys {
 	public static final String ADMIN_TREE="ssAdminDomTree";
 	public static final String BINDER="ssBinder";
 	public static final String BINDER_ID="ssBinderId";
+	public static final String BINDER_DEFINITION_TYPE="ssBinderDefinitionType";
 	public static final String BINDER_ENTRIES="ssBinderEntries";
 	public static final String CONDITION_ENTRY_DEF_ID="conditionDefinitionId";
 	public static final String CONDITION_ELEMENT_NAME="conditionElementName";
@@ -284,6 +286,8 @@ public class WebKeys {
     public static final String VIEW_ADD_ENTRY = "entry/add_entry";
     public static final String VIEW_ADD_BINDER = "forum/add_binder";
     public static final String VIEW_ADD_BINDER_TYPE = "forum/add_binder_type";
+    public static final String VIEW_ADD_BINDER_DEFINITION = "forum/add_binder_definition";
+    public static final String VIEW_ADD_BINDER_DEFINITION_AJAX="forum/add_binder_definition_ajax";
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
     public static final String VIEW_ADMIN_CONFIGURE_NOTIFICATION="administration/configureNotify";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING="administration/configurePosting";

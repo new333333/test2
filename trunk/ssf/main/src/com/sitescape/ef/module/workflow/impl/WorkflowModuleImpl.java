@@ -887,12 +887,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
         // Shared logic, if exists, must be put into the corresponding method in 
         // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
         // in this method.
-		Definition def = binder.getEntryDef();
-		//in order to support file folders with create a new class we base the key on the definition type.
-		if (def != null) {
-			return (EntryProcessor)getProcessorManager().getProcessor(binder, EntryProcessor.PROCESSOR_KEY, Integer.toString(binder.getEntryDef().getType()));			
-		} else {
-			return (EntryProcessor)getProcessorManager().getProcessor(binder, EntryProcessor.PROCESSOR_KEY);
-		}
+		return (EntryProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(EntryProcessor.PROCESSOR_KEY));			
 	}	
 }

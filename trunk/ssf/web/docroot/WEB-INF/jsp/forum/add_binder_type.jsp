@@ -22,46 +22,65 @@
 </ssf:ifadapter>
 
 <div class="ss_portlet">
-<span class="ss_titlebold"><c:out value="${ssBinder.title}"/></span>
-<br/>
 <br/>
 
 <form class="ss_style ss_form" 
-  name="<portlet:namespace/>fm" 
+  id="<portlet:namespace/>fm" 
   method="post" >
 <input type="hidden" name="_operation" value="${operation}"/>
 
 <fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="workspace.type" 
-    text="Workspace type"/></legend>
-  <br>
-  <span class="ss_bold"><ssf:nlt tag="workspace.selectWorkspace" 
-  text="Select the type of workspace:"/></span>
+  <legend class="ss_legend"><ssf:nlt tag="binder.add.folder.type.legend" 
+    text="Folder type"/></legend>
   <br/>
-  <c:forEach var="item" items="${ssPublicBinderDefinitions}">
-      <c:choose>
-        <c:when test="${ssDefaultWorkspaceDefinitionId == item.value.id}">
-          <input type="radio" name="binderDefinition" value="${item.value.id}" checked>
-          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
-        </c:when>
-        <c:otherwise>
-          <input type="radio" name="binderDefinition" value="${item.value.id}">
-          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
-        </c:otherwise>
-      </c:choose>
-  </c:forEach>
+  <span class="ss_bold"><ssf:nlt tag="binder.add.folder.select.type" 
+  text="Select the type of folder:"/></span>
+  <br/>
+      <input type="radio" name="binderDefinitionType" value="5" onClick="if (ss_getDefinitions) {ss_getDefinitions('5')};" ><ssf:nlt tag="binder.add.folder.select.type.folder" 
+		  text="Folder" /><br/>
+      <input type="radio" name="binderDefinitionType" value="9" onClick="if (ss_getDefinitions) {ss_getDefinitions('9')};" ><ssf:nlt tag="binder.add.folder.select.type.file" 
+		  text="File" />
 
 </fieldset>
+<br/>  <div id="ss_definitions"></div>
 
 <br/>
 
 	
-<input type="submit" class="ss_submit" name="selectTypeBtn" value="<ssf:nlt tag="button.ok"/>">
+<input type="submit" class="ss_submit" name="selectDefBtn" value="<ssf:nlt tag="button.ok"/>">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 
 </form>
 </div>
-
+<script type="text/javascript">
+function ss_getDefinitions(type) {
+	ss_setupStatusMessageDiv()
+	var url = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="add_binder"
+    	actionUrl="false" >
+    	<ssf:param name="binderId" value="${ssBinder.id}"/>
+    	<ssf:param name="operation" value="${operation}"/>
+    	<ssf:param name="ajax" value="true"/> 
+    	</ssf:url>";
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addNamedFormElementsByFormID('<portlet:namespace/>fm','binderDefinitionType');
+	ajaxRequest.setPostRequest(ss_postRequest);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+}
+function ss_preRequest(obj) {
+	alert('preRequest: ' + obj.getQueryString());
+}
+function ss_postRequest(obj) {
+	//alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
+	//See if there was an error
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		if (self.ss_showNotLoggedInMsg) self.ss_showNotLoggedInMsg();
+	}
+}
+</script>
 <ssf:ifadapter>
 </body>
 </html>

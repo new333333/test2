@@ -312,6 +312,9 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public void setProcessorClassName(String processorKey, String processorClassName) {
         setProperty(processorKey, processorClassName);
     }
+    public String getProcessorKey(String processorKey) {
+    	return processorKey;
+    }
     //Support for DefinitionArea interface
     public Long getDefinitionAreaId() {
     	return getId();
@@ -393,7 +396,10 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
      public Definition getEntryDef() {
     	 //Peter wants the currently configured default for binders.
     	 //doesn't care what it was created with
-     	return getDefaultViewDef();
+     	Definition result = getDefaultViewDef();
+     	//return original so have something.
+     	if (result == null) return entryDef;
+     	return result;
      }
        // Setup by hibernate
      public Map getWorkflowAssociations() {
@@ -421,6 +427,13 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     		Map.Entry e =(Map.Entry)iter.next();
     		if (def.equals(e.getValue())) myDefs.remove(e.getKey()); 
     	}
+    }
+    
+    /**
+     * String appended to processorKeys to allow for customizations
+     */   
+    public String getProcessorTag() {
+    	return null;
     }
     public abstract List getEntryDefinitions();
     public abstract List getViewDefinitions();

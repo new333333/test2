@@ -15,7 +15,10 @@ import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.util.Validator;
@@ -45,15 +48,18 @@ public class AddFolderController extends SAbstractController {
 				fileMap = new HashMap();
 			} 
 			MapInputData inputData = new MapInputData(formData);
-
+			Long newId;
 			if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
-				getFolderModule().addFolder(binderId, entryType, inputData, fileMap);
+				newId = getFolderModule().addFolder(binderId, entryType, inputData, fileMap);
+				setupConfigBinder(response, newId, operation);
 			} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
-				getWorkspaceModule().addFolder(binderId, entryType, inputData, fileMap);				
+				newId = getWorkspaceModule().addFolder(binderId, entryType, inputData, fileMap);				
+				setupConfigBinder(response, newId, operation);
 			} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
-				getWorkspaceModule().addWorkspace(binderId, entryType, inputData, fileMap);				
+				newId = getWorkspaceModule().addWorkspace(binderId, entryType, inputData, fileMap);				
+				setupViewBinder(response, newId, operation);
 			}
-			setupViewBinder(response, binderId, operation);
+			
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			setupViewBinder(response, binderId, operation);
 		} else {
@@ -64,52 +70,85 @@ public class AddFolderController extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
-		Map formData = request.getParameterMap();
 		Map model = new HashMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (operation.equals("")) operation = PortletRequestUtils.getStringParameter(request, "_operation", "");
 		String defId = PortletRequestUtils.getStringParameter(request, "binderDefinition", "");
+		Integer binderType = PortletRequestUtils.getIntParameter(request, "binderDefinitionType");
 		Binder binder = getBinderModule().getBinder(binderId);
     	model.put(WebKeys.URL_OPERATION, operation);
 		model.put(WebKeys.BINDER, binder); 
+		if (binderType != null) model.put(WebKeys.BINDER_DEFINITION_TYPE, binderType.toString());
 
-		DefinitionUtils.getDefinitions(binder, model);
-		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
-		model.put(WebKeys.DEFINITION_ID, defId);
-		
-		String itemFormPath = "//item[@name='folderForm']";
+		String view = WebKeys.VIEW_ADD_BINDER_DEFINITION;
 		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
 			if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.FILE_FOLDER_VIEW)) {
+				getFolderModule().checkAddFolderAllowed((Folder)binder);
 				DefinitionUtils.getDefinitions(Definition.FILE_FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+				model.put(WebKeys.BINDER_DEFINITION_TYPE, String.valueOf(Definition.FILE_FOLDER_VIEW));
 			} else {
-				DefinitionUtils.getDefinitions(Definition.FILE_FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
-				DefinitionUtils.getDefinitions(Definition.FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+				if (binderType == null)
+					view = WebKeys.VIEW_ADD_BINDER_TYPE;
+				else {  
+					getFolderModule().checkAddFolderAllowed((Folder)binder);
+					DefinitionUtils.getDefinitions(binderType.intValue(), WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+				}
+				
 			}
 		} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
-			DefinitionUtils.getDefinitions(Definition.FILE_FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
-			DefinitionUtils.getDefinitions(Definition.FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+			if (binderType == null)
+				view = WebKeys.VIEW_ADD_BINDER_TYPE;
+			else {
+				if (binder instanceof Folder)
+					getFolderModule().checkAddFolderAllowed((Folder)binder);
+				else 
+					getWorkspaceModule().checkAddWorkspaceAllowed((Workspace)binder);
+					
+				DefinitionUtils.getDefinitions(binderType.intValue(), WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+			}
 		} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
+			getWorkspaceModule().checkAddWorkspaceAllowed((Workspace)binder);
 			DefinitionUtils.getDefinitions(Definition.WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);			
-			itemFormPath = "//item[@name='workspaceForm']";					
+			model.put(WebKeys.BINDER_DEFINITION_TYPE, String.valueOf(Definition.WORKSPACE_VIEW));
 		}
 		
 		
-		String view = WebKeys.VIEW_ADD_BINDER_TYPE;
-		if (!Validator.isNull(defId)) {
+		boolean ajax = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_AJAX, false);
+		if (ajax) {
+			view = WebKeys.VIEW_ADD_BINDER_DEFINITION_AJAX;
+			Map statusMap = new HashMap();
+			model.put(WebKeys.AJAX_STATUS, statusMap);		
+			response.setContentType("text/xml");
+ 			if (!WebHelper.isUserLoggedIn(request)) {
+ 				//Signal that the user is not logged in. 
+ 				//  The code on the calling page will output the proper translated message.
+ 				statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
+ 			} 
+ 		} else if (!Validator.isNull(defId)) {
+			model.put(WebKeys.CONFIG_JSP_STYLE, "form");
+			model.put(WebKeys.DEFINITION_ID, defId);
 			Map publicBinderDefs = (Map)model.get(WebKeys.PUBLIC_BINDER_DEFINITIONS);
 			//Make sure the requested definition is legal
 			if (publicBinderDefs.containsKey(defId)) {
 				Definition def = (Definition)publicBinderDefs.get(defId);
-				if (def.getType() == Definition.FILE_FOLDER_VIEW)
-					itemFormPath = "//item[@name='fileFolderForm']";
-				DefinitionUtils.getDefinition(def, model, itemFormPath);
+				DefinitionUtils.getDefinition(def, model, "//item[@type='form']");
 			} else {
-				DefinitionUtils.getDefinition(null, model, itemFormPath);
+				DefinitionUtils.getDefinition(null, model, "//item[@type='form']");
 			}
 			view = WebKeys.VIEW_ADD_BINDER;
-		}
+		} 
+		
 		return new ModelAndView(view, model);
+	}
+	protected void setupConfigBinder(ActionResponse response, Long binderId, String operation) {
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_FORUM);	
+		if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
+			response.setRenderParameter(WebKeys.URL_BINDER_TYPE, EntityType.workspace.name());
+		} else {
+			response.setRenderParameter(WebKeys.URL_BINDER_TYPE, EntityType.folder.name());
+		}
 	}
 	protected void setupViewBinder(ActionResponse response, Long binderId, String operation) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
