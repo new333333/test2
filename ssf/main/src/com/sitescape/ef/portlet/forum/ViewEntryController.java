@@ -64,6 +64,12 @@ public class ViewEntryController extends  SAbstractController {
 			long rating = PortletRequestUtils.getRequiredLongParameter(request, "rating");
 			getFolderModule().setUserRating(folderId, replyId, rating);
 			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
+		}else if (formData.containsKey("changeTags")) {
+			Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
+			if (replyId == null) replyId = entryId;
+			String tag = PortletRequestUtils.getRequiredStringParameter(request, "tag");
+			getFolderModule().setTag(folderId, replyId, tag);
+			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
 		}
 		response.setRenderParameters(formData);
 	}
@@ -212,6 +218,7 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.FOLDER, folder);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
+		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getTags(folderId,Long.valueOf(entryId)));
 		if (entry == null) {
 			DefinitionUtils.getDefinition(null, model, "//item[@name='entryView']");
 			return model;

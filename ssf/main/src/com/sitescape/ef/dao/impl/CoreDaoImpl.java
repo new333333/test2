@@ -152,7 +152,14 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
      	   				.setLong("entityId", binder.getId())
 		   			  	.setParameter("entityType", binder.getEntityIdentifier().getEntityType().getValue())
 		   				.executeUpdate();
-		   			//will this be a problem if the entry is proxied??
+   		   			
+ 		   			//delete tags for these entries
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where entityId=:entityId and entityType=:entityType")
+     	   				.setLong("entityId", binder.getId())
+		   			  	.setParameter("entityType", binder.getEntityIdentifier().getEntityType().getValue())
+		   				.executeUpdate();
+
+ 		   			//will this be a problem if the entry is proxied??
 		   			session.createQuery("DELETE com.sitescape.ef.domain.Binder where id=" + binder.getId())
 		   				.executeUpdate();
 		   			session.getSessionFactory().evictCollection("com.sitescape.ef.domain.Binder.binders", binder.getParentBinder().getId());
@@ -638,14 +645,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
            }
         );  
 	}
-	public Tag loadTagByOwner(String id, EntityIdentifier owner) {
-		Tag tag =(Tag)load(Tag.class, id);
-		if (tag == null) throw new NoTagByTheIdException(id);
-	   	if (!tag.isOwner(owner)) 
-	   		throw new NoTagByTheIdException(id);
-	   	return tag;
-
-	}
+	
 	public List loadTagsByOwner(final EntityIdentifier ownerId) {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
@@ -660,6 +660,19 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        );
 		
 	}
+	
+	public Tag loadTagById(final String tagId) {
+		return (Tag)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                 	return session.createCriteria(Tag.class)
+                 		.add(Expression.eq("id", tagId));
+	                }
+	            }
+	        );
+		
+	}
+	
 	public List loadTagsByEntity(final EntityIdentifier entityId) {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
@@ -668,7 +681,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                  		.add(Expression.eq("entityIdentifier.entityId", entityId.getEntityId()))
        					.add(Expression.eq("entityIdentifier.type", entityId.getEntityType().getValue()))
                  		.addOrder(Order.asc("name"))
-                  		.list();
+	                 	.list();
 	                }
 	            }
 	        );

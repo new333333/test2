@@ -60,8 +60,8 @@ public interface BinderModule {
      */
     public Binder setConfiguration(Long binderId, List definitionIds, Map workflowAssociations) throws AccessControlException;
 	public List getTags(Long binderId) throws AccessControlException;
-	public void modifyTag(Long binderId, String tagId, Map updates) throws AccessControlException; 
-	public void addTag(Long binderId, Map updates) throws AccessControlException;
+	public void modifyTag(Long binderId, String tagId, String newTag) throws AccessControlException; 
+	public void setTag(Long binderId, String newtag) throws AccessControlException;
 	public void deleteTag(Long binderId, String tagId) throws AccessControlException;
 
     public boolean hasBinders(Binder binder);

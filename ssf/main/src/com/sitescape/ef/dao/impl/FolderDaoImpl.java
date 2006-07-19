@@ -312,6 +312,13 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		   			  	.setEntity("folder", folder)
 		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
 		   				.executeUpdate();
+		   			//delete tags for these entries
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where entityId in " + 
+ 			   				"(select p.id from com.sitescape.ef.domain.FolderEntry p where " +
+		   			  			" p.parentBinder=:folder) and entityType=:entityType")
+		   			  	.setEntity("folder", folder)
+		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
+		   				.executeUpdate();
         	  		session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where parentBinder=:parent")
        	   				.setEntity("parent", folder)
        	   				.executeUpdate();
@@ -341,6 +348,11 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     		   					EntityType.folderEntry.name() + "'", FolderEntry.class);
     		   			//delete ratings/visits for these entries
      		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId in (:pList) and entityType=:entityType")
+         	   				.setParameterList("pList", ids)
+    		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
+    		   				.executeUpdate();
+    		   			//delete tags for these entries
+     		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where entityId in (:pList) and entityType=:entityType")
          	   				.setParameterList("pList", ids)
     		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
     		   				.executeUpdate();

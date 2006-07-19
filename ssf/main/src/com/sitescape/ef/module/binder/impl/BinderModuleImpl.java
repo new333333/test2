@@ -20,6 +20,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.Tag;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.binder.BinderProcessor;
@@ -226,28 +227,32 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		Binder binder = loadBinder(binderId);
 		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);    	
 		List tags = new ArrayList<Tag>();		
-		getCoreDao().loadTagsByOwner(binder.getEntityIdentifier());
+		tags = getCoreDao().loadTagsByOwner(binder.getEntityIdentifier());
+		tags = uniqueTags(tags);
 		return tags;		
 	}
 	/**
 	 * Modify tag owned by this binder
 	 * @see com.sitescape.ef.module.binder.BinderModule#modifyTag(java.lang.Long, java.lang.String, java.util.Map)
 	 */
-	public void modifyTag(Long binderId, String tagId, Map updates) {
+	public void modifyTag(Long binderId, String tagId, String newTag) {
 		Binder binder = loadBinder(binderId);
 		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);    	
-	   	Tag tag = coreDao.loadTagByOwner(tagId, binder.getEntityIdentifier());
-	   	ObjectBuilder.updateObject(tag, updates);
+	   	Tag tag = coreDao.loadTagById(tagId);
+	   	tag.setName(newTag);
+	   	coreDao.update(tag);
 	}
 	/**
 	 * Add a new tag, owned by this binder
 	 */
-	public void addTag(Long binderId, Map updates) {
+	public void setTag(Long binderId, String newTag) {
 		Binder binder = loadBinder(binderId);
 		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);    	
 	   	Tag tag = new Tag();
-	   	tag.setOwnerIdentifier(binder.getEntityIdentifier());
-	  	ObjectBuilder.updateObject(tag, updates);
+	   	User user = RequestContextHolder.getRequestContext().getUser();
+	   	tag.setOwnerIdentifier(user.getEntityIdentifier());
+	   	tag.setEntityIdentifier(binder.getEntityIdentifier());
+	  	tag.setName(newTag);
 	  	coreDao.save(tag);   	
 	}
 	/**
@@ -256,7 +261,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public void deleteTag(Long binderId, String tagId) {
 		Binder binder = loadBinder(binderId);
 		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);    	
-	   	Tag tag = coreDao.loadTagByOwner(tagId, binder.getEntityIdentifier());
+	   	Tag tag = coreDao.loadTagById(tagId);
 	   	getCoreDao().delete(tag);
 	}
 	/**
@@ -269,7 +274,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		Binder binder = loadBinder(binderId);
 		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
 		List tags = new ArrayList<Tag>();
-		getCoreDao().loadTagsByOwner(entry.getEntityIdentifier());
+		tags = getCoreDao().loadTagsByOwner(entry.getEntityIdentifier());
 		return tags;		
 	}
 	/**
@@ -279,11 +284,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 * @param tagId
 	 * @param updates
 	 */
-	public void modifyTag(Long binderId, Long entryId, String tagId, Map updates) {
+	public void modifyTag(Long binderId, Long entryId, String tagId, String newTag) {
 		Binder binder = loadBinder(binderId);
 		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
-	   	Tag tag = coreDao.loadTagByOwner(tagId, entry.getEntityIdentifier());
-	   	ObjectBuilder.updateObject(tag, updates);
+	   	Tag tag = coreDao.loadTagById(tagId);
+	   	tag.setName(newTag);
+	   	coreDao.update(tag);
 	}
 	/**
 	 * Add a tag owned by this entry
@@ -291,12 +297,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 * @param entryId
 	 * @param updates
 	 */
-	public void addTag(Long binderId, Long entryId, Map updates) {
+	public void setTag(Long binderId, Long entryId, String newTag) {
 		Binder binder = loadBinder(binderId);
 		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
 	   	Tag tag = new Tag();
-	   	tag.setOwnerIdentifier(entry.getEntityIdentifier());
-	  	ObjectBuilder.updateObject(tag, updates);
+	   	tag.setEntityIdentifier(entry.getEntityIdentifier());
+	   	User user = RequestContextHolder.getRequestContext().getUser();
+	   	tag.setOwnerIdentifier(user.getEntityIdentifier());
+	  	tag.setName(newTag);
 	  	coreDao.save(tag);   	
 	}
 	/**
@@ -308,7 +316,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public void deleteTag(Long binderId, Long entryId, String tagId) {
 		Binder binder = loadBinder(binderId);
 		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
-	   	Tag tag = coreDao.loadTagByOwner(tagId, entry.getEntityIdentifier());
+	   	Tag tag = coreDao.loadTagById(tagId);
 	   	getCoreDao().delete(tag);
 	}
 	
@@ -361,5 +369,22 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         
     	return entries; 
 	}
-
+    /**
+     * Convenience method to find all the unique tags 
+     * in a set to return to the user.
+     * 
+     * @param allTags
+     * @return
+     */
+    private List uniqueTags(List allTags) {
+    	List newTags = new ArrayList<Tag>();
+    	HashMap tagMap = new HashMap();
+    	for (Iterator iter=allTags.iterator(); iter.hasNext();) {
+			Tag thisTag = (Tag)iter.next();
+			if (tagMap.containsKey(thisTag.getName())) continue;
+			tagMap.put(thisTag.getName(),thisTag);
+			newTags.add(thisTag);
+    	}
+    	return newTags;    	
+    }
 }

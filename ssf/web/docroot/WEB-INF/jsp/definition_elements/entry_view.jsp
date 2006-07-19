@@ -5,6 +5,8 @@
 <c:set var="ss_toolbar" value="${ssFolderEntryToolbar}" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
+
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}" 
