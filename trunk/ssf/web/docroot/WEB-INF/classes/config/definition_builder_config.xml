@@ -78,6 +78,7 @@
 		<options>
 			<option name="entryForm" initial="true" />
 			<option name="entryView" initial="true" />
+			<option name="entryBlogView" initial="true" />
 		</options>
 	</item>
 	
@@ -116,6 +117,27 @@
 		
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/entry_view.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="entryBlogView" caption="__entry_blog_view_definition" canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+
+		<options optionCaption="__standard_entry_options">
+			<option name="titleBlogView" caption="__title" initial="true" />
+			<option name="descriptionBlogView" caption="__description" initial="true" />
+			<option name="entryBlogDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="entryBlogWorkflow" caption="__entry_workflow" initial="true" />
+			<option name="entryBlogAttachments" caption="__entry_attachments" initial="true" />
+			<option name="entryBlogReplies" caption="__entry_replies" initial="true" />
+			<option_select path="//item[@category='entryLayout']" optionCaption="__entry_layout_options" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/blog_view.jsp" />
 		</jsps>
 	</item>
 	
@@ -192,7 +214,7 @@
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
-			<property name="width" caption="__textboxWidth" type="text" default="60" />
+			<property name="width" caption="__textboxWidth" type="text" default="60" value="60" />
 			<property name="inline" caption="__inline" type="boolean">
 				<help>__help_mark_as_inline</help>
 			</property>
@@ -346,6 +368,68 @@
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/cancel_button_form.jsp" />
+		</jsps>
+	</item>
+		
+<!-- Blog entry view items -->
+	<item name="titleBlogView" caption="__title">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__title"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_title.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="descriptionBlogView" caption="__description">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__description"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_description.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="entryViewData">
+		<properties>
+			<property name="name" caption="__data_item_name" type="selectbox">
+			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" 
+					optionCaption="__data_items_from_the_entry_form">
+					<exclude name="title" />
+					<exclude name="description" />
+				</option_entry_data>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_data.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryBlogAttachments" type="dataView" caption="__entry_attachments" category="entryViewData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_attachments"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_attachments.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryBlogReplies" type="dataView" caption="__entry_replies" category="entryViewData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_replies"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_replies.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryBlogWorkflow" type="dataView" caption="__entry_workflow" category="entryViewData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_workflow"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_workflow.jsp" />
 		</jsps>
 	</item>
 		
@@ -547,7 +631,7 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="ss_attachFile" readonly="true"/>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
+			<property name="width" caption="__browseboxWidth" type="text" default="60" value="60"/>
 			<property name="number" caption="__number_of_file_select_boxes_to_be_shown" type="integer"/>
 			<property name="storage" caption="__storage_media" type="selectbox" default="fileRepositoryService">
 				<!-- 

@@ -333,7 +333,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			//sb.append("</script>\n");
 			sb.append("\n<div id=\"delete_definition_confirm\" ");
 			sb.append("class=\"ss_definitionBuilder\">\n");
-			sb.append("<span class=\"ss_titlebold\">Delete: <span id=\"deleteDefinitionSelection\"></span></span>\n");
+			sb.append("<span class=\"ss_titlebold\">Delete: </span><span id=\"deleteDefinitionSelection\"></span>\n");
 			sb.append("<br/>\n");
 			sb.append("</div>\n");
 			//sb.append("<script type=\"text/javascript\">\n");
@@ -774,7 +774,10 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 							sb.append("\n<br/>\n");
 						}
-						sb.append("<select multiple=\"multiple\" name=\"propertyId_" + propertyId + "\">\n");
+						int size = this.entryDefinitions.keySet().size();
+						if (size <= 0) size = 1;
+						sb.append("<select multiple=\"multiple\" name=\"propertyId_" + 
+								propertyId + "\" size=\"" + String.valueOf(size) + "\">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_reply_styles")).append("</option>\n");
 						Iterator itEntryDefinitions = this.entryDefinitions.keySet().iterator();
 						while (itEntryDefinitions.hasNext()) {
@@ -1036,14 +1039,14 @@ public class BuildDefinitionDivs extends TagSupport {
 			//sb.append("</script>\n");
 			sb.append("\n<div id=\"move_item_confirm\" ");
 			sb.append("class=\"ss_definitionBuilder\">\n");
-			sb.append("<span class=\"ss_titlebold\">Move: <div id=\"moveItemSelection\" style=\"display:inline;\"></div></span>\n");
+			sb.append("<span class=\"ss_titlebold\">Move: </span><div id=\"moveItemSelection\" style=\"display:inline;\"></div>\n");
 			sb.append("<br/>\n");
 			sb.append("<input type=\"radio\" class=\"ss_text\" name=\"moveTo\" value=\"above\"/>");
-			sb.append("<span>Move to above the selected item<br/>");
+			sb.append("<span>Move to above the selected item</span><br/>");
 			sb.append("<input type=\"radio\" class=\"ss_text\" name=\"moveTo\" value=\"below\"/>");
-			sb.append("<span>Move to below the selected item<br/>");
+			sb.append("<span>Move to below the selected item</span><br/>");
 			sb.append("<input type=\"radio\" class=\"ss_text\" name=\"moveTo\" value=\"into\"/>");
-			sb.append("<span>Move into the selected item<br/>");
+			sb.append("<span>Move into the selected item</span><br/>");
 			sb.append("</div>\n");
 			//sb.append("<script type=\"text/javascript\">\n");
 			//sb.append("    self.ss_setDeclaredDiv('move_item_confirm')\n");

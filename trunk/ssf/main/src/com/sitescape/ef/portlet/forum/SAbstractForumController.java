@@ -25,6 +25,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
@@ -109,7 +110,9 @@ public class SAbstractForumController extends SAbstractController {
 		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
 	}
 		
-	protected String getShowFolder(Map formData, RenderRequest req, RenderResponse response, Folder folder, Document searchFilter, Map<String,Object>model) throws PortletRequestBindingException {
+	protected String getShowFolder(Map formData, RenderRequest req, 
+			RenderResponse response, Folder folder, Document searchFilter, 
+			Map<String,Object>model) throws PortletRequestBindingException {
 		Map folderEntries;
 		Long folderId = folder.getId();
 
@@ -139,6 +142,15 @@ public class SAbstractForumController extends SAbstractController {
 			if (viewType != null && viewType.attributeValue("value", "").equals("event")) {
 				//This is a calendar view, so get the event beans
 				getEvents(folder, entries, model, req, response);
+			}
+		}
+		//See if this folder is to be viewed as a blog
+		view = (Element)model.get(WebKeys.CONFIG_ELEMENT);
+		if (view != null) {
+			Element viewType = (Element)view.selectSingleNode("./properties/property[@name='type']");
+			if (viewType != null && viewType.attributeValue("value", "").equals("blog")) {
+				//This is a blog view, so get the extra blog beans
+				getBlogEntries(folder, entries, model, req, response);
 			}
 		}
 		model.put(WebKeys.FOLDER_TOOLBAR, buildFolderToolbar(req, response, folder, forumId).getToolbar());
@@ -677,6 +689,43 @@ public class SAbstractForumController extends SAbstractController {
 		model.put(WebKeys.CALENDAR_VIEWBEAN, monthBean);
 	}
 
+	protected void getBlogEntries(Folder folder, ArrayList entrylist, Map model, RenderRequest req, RenderResponse response) {
+		Map entries = new HashMap();
+		model.put(WebKeys.BLOG_ENTRIES, entries);
+		Map folderEntries = null;
+		Iterator entryIterator = entrylist.listIterator();
+		while (entryIterator.hasNext()) {
+			HashMap e = (HashMap) entryIterator.next();
+			Long entryId = Long.valueOf((String)e.get("_docId"));
+			
+			if (!entryId.equals("")) {
+				folderEntries  = getFolderModule().getEntryTree(folder.getId(), entryId);
+				if (folderEntries != null) {
+					FolderEntry entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
+					Map entryMap = new HashMap();
+					entries.put(entryId, entryMap);
+					entryMap.put("entry", entry);
+					Definition currentDef = entry.getEntryDef();
+					entryMap.put(WebKeys.CONFIG_DEFINITION, null);
+					entryMap.put(WebKeys.CONFIG_ELEMENT, null);
+					if (currentDef != null) {
+						Document configDoc = currentDef.getDefinition();
+						if (configDoc != null) { 
+							Element configRoot = configDoc.getRootElement();
+							if (configRoot != null) {
+								Element configEle = (Element) configRoot.selectSingleNode("//item[@name='entryBlogView']");
+								if (configEle != null) {
+									entryMap.put(WebKeys.CONFIG_ELEMENT, configEle);
+									entryMap.put(WebKeys.CONFIG_DEFINITION, configDoc);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	public static class TreeBuilder implements DomTreeBuilder {
 		
 		public Element setupDomElement(String type, Object source, Element element) {

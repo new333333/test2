@@ -83,6 +83,8 @@ public class DisplayConfiguration extends TagSupport {
 										(HttpServletRequest)pageContext.getRequest());
 									
 									req.setAttribute("item", nextItem);
+									req.setAttribute(WebKeys.CONFIG_DEFINITION, this.configDefinition);
+									req.setAttribute(WebKeys.CONFIG_ELEMENT, this.configElement);
 									
 									//Each item property that has a value is added as a "request attribute". 
 									//  The key name is "property_xxx" where xxx is the property name.
