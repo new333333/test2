@@ -137,6 +137,7 @@ public class WebKeys {
 	public static final String BINDER_ID="ssBinderId";
 	public static final String BINDER_DEFINITION_TYPE="ssBinderDefinitionType";
 	public static final String BINDER_ENTRIES="ssBinderEntries";
+	public static final String BLOG_ENTRIES="ssBlogEntries"; 
 	public static final String COMMUNITY_TAGS="ssCommunityTags";
 	public static final String CONDITION_ENTRY_DEF_ID="conditionDefinitionId";
 	public static final String CONDITION_ELEMENT_NAME="conditionElementName";
