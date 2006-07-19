@@ -484,10 +484,18 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         checkAddEntryAllowed(destination);
         processor.moveEntry(folder, entry, destination);
     }
-	public List getTags(Long binderId, Long entryId) {
+	public List getCommunityTags(Long binderId, Long entryId) {
 		FolderEntry entry = getEntry(binderId, entryId);
 		List tags = new ArrayList<Tag>();
 		tags = getCoreDao().loadTagsByEntity(entry.getEntityIdentifier());
+		tags = uniqueTags(tags);
+		return tags;		
+	}
+	public List getPersonalTags(Long binderId, Long entryId) {
+		FolderEntry entry = getEntry(binderId, entryId);
+		List tags = new ArrayList<Tag>();
+		User user = RequestContextHolder.getRequestContext().getUser();
+		tags = getCoreDao().loadPersonalEntityTags(entry.getEntityIdentifier(),user.getEntityIdentifier());
 		tags = uniqueTags(tags);
 		return tags;		
 	}
@@ -497,12 +505,13 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	   	tag.setName(newtag);
 	   	coreDao.update(tag);
 	}
-	public void setTag(Long binderId, Long entryId, String newtag) {
+	public void setTag(Long binderId, Long entryId, String newtag, boolean community) {
 		FolderEntry entry = getEntry(binderId, entryId);
 	   	Tag tag = new Tag();
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 	   	tag.setOwnerIdentifier(user.getEntityIdentifier());
 	   	tag.setEntityIdentifier(entry.getEntityIdentifier());
+	    tag.setPublic(community);
 	  	tag.setName(newtag);
 	  	coreDao.save(tag);
 	}

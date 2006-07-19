@@ -85,6 +85,8 @@ public interface CoreDao {
     
 	public List loadTagsByEntity(EntityIdentifier entityId);
 	public List loadTagsByOwner(EntityIdentifier ownerId);
+	public List loadPersonalEntityTags(EntityIdentifier entityId, EntityIdentifier ownerId);
+	public List loadPersonalTags(EntityIdentifier ownerId);
 	public Tag loadTagById(String id);
 
  }

@@ -65,10 +65,13 @@ public class ViewEntryController extends  SAbstractController {
 			getFolderModule().setUserRating(folderId, replyId, rating);
 			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
 		}else if (formData.containsKey("changeTags")) {
+			boolean community = true;
 			Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
 			if (replyId == null) replyId = entryId;
 			String tag = PortletRequestUtils.getRequiredStringParameter(request, "tag");
-			getFolderModule().setTag(folderId, replyId, tag);
+			String scope = PortletRequestUtils.getRequiredStringParameter(request,"scope");
+			if (scope.equalsIgnoreCase("Personal")) community = false;
+			getFolderModule().setTag(folderId, replyId, tag, community);
 			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
 		}
 		response.setRenderParameters(formData);
@@ -218,7 +221,8 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.FOLDER, folder);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
-		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getTags(folderId,Long.valueOf(entryId)));
+		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(folderId,Long.valueOf(entryId)));
+		model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(folderId,Long.valueOf(entryId)));
 		if (entry == null) {
 			DefinitionUtils.getDefinition(null, model, "//item[@name='entryView']");
 			return model;

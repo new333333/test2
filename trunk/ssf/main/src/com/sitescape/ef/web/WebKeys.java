@@ -226,6 +226,7 @@ public class WebKeys {
     public static final String AJAX_STATUS="ss_ajaxStatus";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
     public static final String NOTIFICATION="ssNotification";
+    public static final String PERSONAL_TAGS="ssPersonalTags";
     public static final String POSTINGS="ssPostings";
     public static final String PRESENCE_COMPONENT_ID="ss_presence_component_id";
     public static final String PRESENCE_DUDE="ss_presence_dude";
