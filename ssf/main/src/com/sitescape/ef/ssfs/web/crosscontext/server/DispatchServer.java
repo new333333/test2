@@ -105,8 +105,21 @@ public class DispatchServer extends GenericServlet {
 			}
 			catch(NoSuchObjectException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_NO_SUCH_OBJECT);
-				logger.warn(e);
-				throw new ServletException(e.getMessage());
+				// Unfortunately, the way WCK handles "add" request for a new resource
+				// isn't ideal: It first invokes setResource to see if it fails or not.
+				// And if it fails, then it invokes createResource. For that reason,
+				// there is no good way to distinguish this use case from real 
+				// failure situation, and consequently the logging facility ends up 
+				// logging the exception (along with large and ugly stack dump) even 
+				// when the exception thrown should not be considered an error
+				// in that particular context. To alleviate this ugly situation,
+				// we will not throw ServletException. Instead, we simply expect
+				// the client side to be able to decipher the precise situation by 
+				// examining the error code set above even when the method invocation
+				// returns normally without a ServletException. 
+				
+				//logger.warn(e);
+				//throw new ServletException(e.getMessage());
 			}
 			catch(LockException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_LOCK);
