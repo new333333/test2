@@ -22,8 +22,6 @@
 </ssf:ifadapter>
 
 <div class="ss_portlet"> 
-<span class="ss_titlebold"><c:out value="${ssBinder.title}"/></span>
-<br/>
 <br/>
 <form class="ss_style ss_form" 
   name="<portlet:namespace/>fm" 

@@ -245,4 +245,9 @@ public class Folder extends Binder {
     protected String generateFolderRootSortKey(){
     	return generateEntryRootSortKey() + "00001";
     }
+    public String getProcessorKey(String processorKey) {
+    	if (definitionType != null)
+    		return processorKey+"_"+definitionType.toString();
+    	return processorKey;
+    }
 }

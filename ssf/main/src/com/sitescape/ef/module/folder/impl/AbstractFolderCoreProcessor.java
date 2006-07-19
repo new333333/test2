@@ -200,6 +200,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	 
       }
     public void moveFolderToFolder(Folder source, Folder destination) {
+    	checkFolderMoveType(source.getDefinitionType(), destination.getDefinitionType());
     	HKey oldKey = source.getFolderHKey();
     	source.getParentBinder().removeBinder(source);
     	destination.addFolder(source);
@@ -214,6 +215,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	}
     	//TODO: need to reindex binder only??  its parent will be different.
     	
+    }
+    protected void checkFolderMoveType(Integer source, Integer destination) {
+    	if (source == null) source=Integer.valueOf(Definition.FOLDER_VIEW);
+    	if (destination == null) destination=Integer.valueOf(Definition.FOLDER_VIEW);
+    	
+   		if (source.equals(destination)) return;
+   		if (source.intValue() == Definition.FILE_FOLDER_VIEW) return;
+   		throw new NotSupportedException("Cannot move discussion folder to a library folder");    	
     }
     protected void fixupMovedChild(Folder child, HKey oldParent, HKey newParent) {
     	HKey oldKey = child.getFolderHKey();
@@ -248,7 +257,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //***********************************************************************************************************
     public void moveEntry(Binder binder, Entry entry, Binder destination) {
-    	checkMoveType(binder.getDefinitionType(), destination.getDefinitionType());
+    	checkEntryMoveType(binder.getDefinitionType(), destination.getDefinitionType());
     	Folder from = (Folder)binder;
     	if (!(destination instanceof Folder))
     		throw new NotSupportedException("Must move folderEntry to another folder");
@@ -278,16 +287,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	entries.add(fEntry);
     	reindexEntries(entries);
     }
-    protected void checkMoveType(Integer source, Integer destination) {
-    	if (source != null) {
-    		if (source.equals(destination)) return;
-    		if (source.intValue() == Definition.FILE_FOLDER_VIEW) return;
-    		throw new NotSupportedException("Must move folderEntry to another folder of the same type");
-    	}
-    	if (destination == null) return;
-		if (destination.intValue() == Definition.FILE_FOLDER_VIEW) return;
-   		throw new NotSupportedException("Must move folderEntry to another folder of the same type");    	
+    protected void checkEntryMoveType(Integer source, Integer destination) {
+       	if (source == null) source=Integer.valueOf(Definition.FOLDER_VIEW);
+    	if (destination == null) destination=Integer.valueOf(Definition.FOLDER_VIEW);
     	
+   		if (source.equals(destination)) return;
+   		throw new NotSupportedException("Cannot move folderEntry to another folder type");    	    	
     }
     protected void loadEntryHistory(Entry entry) {
     	FolderEntry fEntry = (FolderEntry)entry;
@@ -422,8 +427,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	try {
     		FolderEntry entry =  new FolderEntry();
            	entry.setEntryDef(def);
-        	if (def != null) entry.setDefinitionType(new Integer(def.getType()));
-        	return entry;
+       	return entry;
     	} catch (Exception ex) {
     		return null;
     	}

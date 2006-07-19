@@ -20,7 +20,8 @@
 </ssf:ifadapter>
 <form class="ss_style ss_form" method="post" 
 		  action="<ssf:url
-		 action="move_folder_entry"
+		 action="modify_folder_entry"
+		 operation="move"
 		 folderId="${ssBinder.id}"
 		 entryId="${ssEntry.id}"/>" name="<portlet:namespace />fm">
 <div class="ss_style ss_portlet">

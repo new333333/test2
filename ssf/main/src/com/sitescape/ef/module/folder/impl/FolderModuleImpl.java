@@ -106,11 +106,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         // com.sitescape.ef.module.folder.AbstractfolderCoreProcessor class, not 
         // in this method.
 
-		//in order to support file folders with create a new class we base the key on the definition type.
-		if (folder.getDefinitionType()!= null)
-			return (FolderCoreProcessor)getProcessorManager().getProcessor(folder, FolderCoreProcessor.PROCESSOR_KEY, folder.getDefinitionType().toString());	
-		else
-			return (FolderCoreProcessor)getProcessorManager().getProcessor(folder, FolderCoreProcessor.PROCESSOR_KEY);
+		return (FolderCoreProcessor)getProcessorManager().getProcessor(folder, folder.getProcessorKey(FolderCoreProcessor.PROCESSOR_KEY));	
 	}
 
 	public Folder getFolder(Long folderId)

@@ -44,13 +44,7 @@ public class ProcessorManager {
         return getProcessor(processorClassName);
     }
     
-    public Object getProcessor(Object model, String processorKey, String optionalPrefix) 
-	throws ProcessorNotFoundException {
-    String processorClassName = getProcessorClassName(model, processorKey+"_"+optionalPrefix);
-    if (processorClassName == null)
-    	processorClassName = getProcessorClassName(model, processorKey);
-    return getProcessor(processorClassName);
-}
+
     public Object getProcessor(String modelClassName, String processorKey) 
     	throws ProcessorNotFoundException {
         String processorClassName = getProcessorClassName(modelClassName, processorKey);
