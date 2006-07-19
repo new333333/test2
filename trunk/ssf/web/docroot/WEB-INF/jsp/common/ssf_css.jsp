@@ -50,6 +50,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
 <c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
 
+<c:set var="ss_blog_content_background_color" value="#FFFFAA" scope="request"/>
+<c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
+
 <c:set var="ss_linkbutton_background_color" value="#FFFFE8" scope="request"/>
 <c:set var="ss_linkbutton_text_color" value="#009900" scope="request"/>
 <c:set var="ss_linkbutton_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
@@ -115,6 +118,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 	<c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
 	<c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
+
+	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
 
 	<c:set var="ss_linkbutton_background_color" value="#FFFFE8" scope="request"/>
 	<c:set var="ss_linkbutton_text_color" value="#666666" scope="request"/>
@@ -275,6 +281,18 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   text-decoration: none;
   display: inline;
   }
+
+.ss_blog {
+  border: ${ss_sliding_table_border_color} 1px solid;
+}
+
+.ss_blog_content {
+  background-color:${ss_blog_content_background_color};
+}
+
+.ss_blog_sidebar {
+  background-color:${ss_blog_sidebar_background_color};
+}
 
 /* Sliding tables */
 div.ss_sliding_table_column0 {
