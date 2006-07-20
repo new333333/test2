@@ -23,6 +23,7 @@ import com.sitescape.ef.ssfs.LockException;
 import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystem;
+import com.sitescape.ef.ssfs.server.SiteScapeFileSystemException;
 import com.sitescape.ef.util.SpringContextUtil;
 
 public class DispatchServer extends GenericServlet {
@@ -133,6 +134,10 @@ public class DispatchServer extends GenericServlet {
 			catch(ServletException e) {
 				logger.error(e.getMessage(), e);
 				throw e;				
+			}
+			catch(SiteScapeFileSystemException e) {
+				logger.error(e.getMessage(), e);
+				throw new ServletException(e.getMessage());
 			}
 			catch(Exception e) {
 				logger.error(e.getMessage(), e);
