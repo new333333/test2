@@ -1,7 +1,5 @@
 package com.sitescape.ef.ssfs.wck;
 
-import javax.servlet.ServletException;
-
 import org.apache.slide.simple.authentication.SessionAuthenticationManager;
 
 import com.sitescape.ef.ssfs.CrossContextConstants;
@@ -22,19 +20,20 @@ public class AuthenticationManager implements SessionAuthenticationManager {
 		req.setAttribute(CrossContextConstants.PASSWORD, password);
 		NullServletResponse res = new NullServletResponse();
 		
-		try {
-			DispatchClient.doDispatch(req, res);
-		} 
-		catch (ServletException e) {
-			Throwable cause = e.getCause();
-			if((cause != null) && (cause instanceof Exception))
-				throw (Exception) cause;
-			else
-				throw e;
-		} 
+		DispatchClient.doDispatch(req, res);
 		
-		// We simply use the original user id as session object. 
-		return user; 
+		String errorCode = (String) req.getAttribute(CrossContextConstants.ERROR);
+		
+		if(errorCode != null) { // The authentication failed
+			// It doesn't really matter what kind of Exception object 
+			// we throw from here. So I'll simply use the base class.
+			String errorMessage = (String) req.getAttribute(CrossContextConstants.ERROR_MESSAGE);
+			throw new Exception(errorMessage);
+		}
+		else {
+			// We simply use the original user id as session object. 
+			return user;
+		}
 	}
 
 	public Object getAuthenticationSession(String user) throws Exception {
