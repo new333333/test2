@@ -27,10 +27,14 @@ public class BasicIndexUtils {
     public static final String ALL_TEXT_FIELD = "_allText";
     public static final String READ_ACL_FIELD = "_readAcl";
     public static final String READ_DEF_ACL_FIELD = "_readDefAcl";
-
+    public static final String TAG_FIELD = "_tagField";
+    public static final String ACL_TAG_FIELD = "_aclTagField";
+    
+    
     // Defines field values
     public static final String READ_ACL_ALL = "all";
-
+    public static final String TAG_ACL_PRE = "TAGACL:";
+    
     // The following fields represent valid values for DOC_TYPE_FIELD.
     
     public final static String DOC_TYPE_BINDER 		= "binder";
