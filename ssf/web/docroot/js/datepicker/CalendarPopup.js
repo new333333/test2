@@ -243,7 +243,6 @@ function CalendarPopup() {
 	c.showYearNavigation = CP_showYearNavigation;
 	c.showCalendar = CP_showCalendar;
 	c.hideCalendar = CP_hideCalendar;
-	c.noAutoHide = CP_noAutoHide;
 	c.getStyles = getCalendarStyles;
 	c.refreshCalendar = CP_refreshCalendar;
 	c.getCalendar = CP_getCalendar;
@@ -375,11 +374,6 @@ function CP_hideCalendar() {
 	if (arguments.length > 0) { 
 		if (window.popupWindowObjects[arguments[0]] && window.popupWindowObjects[arguments[0]].hidePopup) window.popupWindowObjects[arguments[0]].hidePopup(); 
 	} else { this.hidePopup(); }
-	}
-
-// Do not auto hide the calendar object 
-function CP_noAutoHide() {
-	//this.noAutoHide();
 	}
 
 // Refresh the contents of the calendar display

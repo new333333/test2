@@ -29,7 +29,7 @@ public class Datepicker extends TagSupport {
     private String altText = "";
     private Date initDate = null;
     private String componentOrder = "mdy";
-    private String callbackRoutine = null;
+    private String callbackRoutine = "";
     private Boolean showSelectors = new Boolean(true);
     private Boolean immediateMode = new Boolean(false);
     private String popupDivId = "";
@@ -410,7 +410,7 @@ public class Datepicker extends TagSupport {
         	calendarDivId = "";
         	initDate = null;
             componentOrder = "mdy";
-            callbackRoutine = null;
+            callbackRoutine = "";
             showSelectors = new Boolean(true);
             immediateMode = new Boolean(false);
         }
