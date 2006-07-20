@@ -44,25 +44,24 @@ public class DispatchServer extends GenericServlet {
 			try {
 				getAuthenticationManager().authenticate(zoneName, userName, password, false);
 			}
-			catch(UserDoesNotExistException e) {
-				logger.warn(e);
-				// Throw ServletException with cause's error message rather
-				// then the cause itself. This is because the class loader
-			    // of the calling app does not have access to the class of 
-				// the cause exception. 
-				throw new ServletException(e.getMessage());
-			}
-			catch(PasswordDoesNotMatchException e) {
-				logger.warn(e);
-				throw new ServletException(e.getMessage());
-			}			
 			catch(Exception e) {
+				// Instead of throwing ServletException to indicate an error, we pass
+				// an error status code to the caller by storing it in the servlet
+				// request object. This error handling mechanism may feel less intuitive 
+				// than using an exception. However, throwing a ServletException causes
+				// servlet container to dump the error in a log file along with its
+				// full stack dump (this depends on the container in use) even before
+				// the control actually returns to the caller. This is because, for
+				// cross-context dispatch operation, servlet container is engaged in the
+				// middle. To avoid creating this huge log entry, we will pass error
+				// status using error code (like in C) across cross-context boundary,
+				// rather than utilizing more typical exception mechanism. 
+				
+				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_AUTHENTICATION_FAILURE);	
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
 				logger.warn(e);
-				if(e instanceof IOException)
-					throw (IOException) e;
-				else
-					throw new ServletException(e.getMessage());
-			}			
+				return;
+			}		
 		}
 		else { 
 			// Must be a SSFS request: This operation requires normal context
@@ -94,15 +93,18 @@ public class DispatchServer extends GenericServlet {
 				// logger. Therefore this is our last chance to log the error
 				// on the SSF side. 
 				logger.warn(e);
-				// Again, do not store the exception object as a cause into
-				// the ServletException for the same reason explained above.
-				// Instead, simply get the message text and return it. 
-				throw new ServletException(e.getMessage());
+				// By the same reason described above, we pass error information
+				// by returning error code and message in the request object
+				// rather than throwing ServletException. This is to avoid 
+				// unwanted additional entries and stack dump in the log file.
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				return;
 			}
 			catch(AlreadyExistsException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_ALREADY_EXISTS);				
 				logger.warn(e);
-				throw new ServletException(e.getMessage());
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				return;
 			}
 			catch(NoSuchObjectException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_NO_SUCH_OBJECT);
@@ -110,38 +112,41 @@ public class DispatchServer extends GenericServlet {
 				// isn't ideal: It first invokes setResource to see if it fails or not.
 				// And if it fails, then it invokes createResource. For that reason,
 				// there is no good way to distinguish this use case from real 
-				// failure situation, and consequently the logging facility ends up 
-				// logging the exception (along with large and ugly stack dump) even 
-				// when the exception thrown should not be considered an error
-				// in that particular context. To alleviate this ugly situation,
-				// we will not throw ServletException. Instead, we simply expect
-				// the client side to be able to decipher the precise situation by 
-				// examining the error code set above even when the method invocation
-				// returns normally without a ServletException. 
-				
-				//logger.warn(e);
-				//throw new ServletException(e.getMessage());
+				// failure situation, and consequently we end up logging the error
+				// no matter what the context is. This can alert our users fasely. 
+				// To alleviate this undesirable situation, we downgrade the logging
+				// level from warning to debug. Of course, this is not a perfect
+				// solution, because it adds the potential risk of not logging a
+				// true error (nothing's perfect).
+				logger.debug(e); // debug level message
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				return;
 			}
 			catch(LockException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_LOCK);
 				logger.warn(e);
-				throw new ServletException(e.getMessage());
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				return;
 			}
 			catch(IOException e) {
 				logger.error(e.getMessage(), e);
-				throw e;
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				return;
 			}
 			catch(ServletException e) {
 				logger.error(e.getMessage(), e);
-				throw e;				
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				return;			
 			}
 			catch(SiteScapeFileSystemException e) {
 				logger.error(e.getMessage(), e);
-				throw new ServletException(e.getMessage());
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				return;
 			}
 			catch(Exception e) {
 				logger.error(e.getMessage(), e);
-				throw new ServletException(e.getMessage());
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				return;
 			}
 		}
 

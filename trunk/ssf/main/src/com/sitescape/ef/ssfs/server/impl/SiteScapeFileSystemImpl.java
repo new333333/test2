@@ -420,7 +420,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			if (def != null) {
 				Element root = def.getRootElement();
 				if (root.selectNodes(
-						"//item[@name='libraryFile' and @type='data']").size() > 0)
+						"//item[@name='fileEntryTitle' and @type='data']").size() > 0)
 					children.add(CrossContextConstants.URI_ITEM_TYPE_LIBRARY);
 				if (root.selectNodes("//item[@name='file' and @type='data']")
 						.size() > 0)
@@ -438,35 +438,12 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 
 		if (itemType.equals(CrossContextConstants.URI_ITEM_TYPE_LIBRARY)) {
 			if (getFilePath(uri) == null) {
-				CustomAttribute ca = entry.getCustomAttribute((String) objMap
-						.get(ELEMENT_NAME));
-				if (ca != null) {
-					Iterator it = ((Set) ca.getValue()).iterator();
-					if (it.hasNext()) {
-						FileAttachment fa = (FileAttachment) it.next(); 
-						// Get the first one
-						if (it.hasNext()) {
-							// Still has more, meaning that the primary element
-							// has more than one file associated with it. This
-							// should never occur since the system is supposed 
-							// to never allow it. However, instead of throwing 
-							// an exception we log the error and return the first 
-							// file so that SSFS client can still operate (the 
-							// idea is that we should not penalize our customers 
-							// more than necessary simply because we have a bug 
-							// in our system).
-							logger.error("Detected more than one file under primary element for uri ["
-											+ getOriginal(uri));
-						}
-						return new String[] { fa.getFileItem().getName() };
-					} else {
-						return new String[0];
-					}
-				} else {
-					// File was never uploaded through this element yet.
-					return new String[0];
-				}
-			} else {
+				// For library type element, the name of the file is the same
+				// as the title of the owning entry. More efficient than 
+				// fetching CustomAttribute and/or FileAttachment.
+				return new String[] { entry.getTitle() };
+			} 
+			else {
 				// The uri refers to a leaf file which doesn't have children
 				// because it's not a folder. In this case we must return
 				// null instead of an empty string array to signal the
@@ -499,7 +476,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 				CustomAttribute ca = entry.getCustomAttribute((String) objMap
 						.get(ELEMENT_NAME));
 				if (ca != null) {
-					Iterator it = ((Set) ca.getValue()).iterator();
+					Iterator it = ((Set) ca.getValueSet()).iterator();
 					while (it.hasNext()) {
 						FileAttachment fa = (FileAttachment) it.next();
 						children.add(fa.getFileItem().getName());
@@ -869,7 +846,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 					// Since all file attachments in this custom attribute
 					// have the same value for repository name, we only
 					// need to use file name for comparison. 
-					Iterator it = ((Set) ca.getValue()).iterator();
+					Iterator it = ((Set) ca.getValueSet()).iterator();
 					while (it.hasNext()) {
 						FileAttachment fa = (FileAttachment) it.next();
 						if (fa.getFileItem().getName().equals(filePath)) {

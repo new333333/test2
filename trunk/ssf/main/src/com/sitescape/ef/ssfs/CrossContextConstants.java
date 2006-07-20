@@ -88,14 +88,20 @@ public abstract class CrossContextConstants {
 	// Key name used for return value.
 	public static final String RETURN = "return"; // value = Object
 	
-	// Key name used for returning error information.
+	// Key name used for returning error status code.
 	public static final String ERROR = "error";
 	
-	// Error values - possible values for ERROR key
+	// Error status codes - for ERROR key for WebDAV authentication
+	public static final String ERROR_AUTHENTICATION_FAILURE = "authFailure";
+	
+	// Error status codes - for ERROR key for WebDAV operations 
 	public static final String ERROR_NO_ACCESS = "noAccess";
 	public static final String ERROR_NO_SUCH_OBJECT = "noSuchObject";
 	public static final String ERROR_ALREADY_EXISTS = "alreadyExists"; 
 	public static final String ERROR_LOCK = "lock";
+	
+	// Key name used for returning error message. 
+	public static final String ERROR_MESSAGE = "errorMessage";
 	
 	// DAV Properties
 	public static final String DAV_PROPERTIES_NAMESPACE = "DAV:";
