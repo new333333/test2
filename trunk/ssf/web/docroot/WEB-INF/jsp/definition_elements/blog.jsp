@@ -116,6 +116,11 @@ function ss_loadEntry(obj,id) {
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
 </div>
 <br>
+<script type="text/javascript">
+function ss_blog_sidebar_date_callback() {
+	alert('callback')
+}
+</script>
 <div class="folder">
   <table class="ss_blog" width="100%">
     <tr>
@@ -133,10 +138,14 @@ function ss_loadEntry(obj,id) {
 	  <td class="ss_blog_sidebar" width="20%" valign="top">
 		<span class="ss_bold"><ssf:nlt tag="blog.calendar"/></span>
 		<br>
-		<ssf:datepicker id="ss_blog_sidebar_date" 
-            popupDivId="ss_blog_sidebar_date_popup"
-            formName="filterData" showSelectors="false" 
-            initDate="<%= new Date() %>" />
+		<div id="ss_blog_sidebar_date_popup"></div>
+		<form name="ss_blog_sidebar_date_form" style="display:inline;">
+		  <ssf:datepicker id="ss_blog_sidebar_date" 
+            calendarDivId="ss_blog_sidebar_date_popup"
+            formName="ss_blog_sidebar_date_form"
+            immediateMode="true" initDate="<%= new Date() %>"
+			callbackRoutine="ss_blog_sidebar_date_callback" />
+        </form>
         <br>
         <br>
 		<span class="ss_bold"><ssf:nlt tag="blog.archives"/></span>
