@@ -49,6 +49,7 @@ import com.sitescape.ef.ssfs.LockException;
 import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystem;
+import com.sitescape.ef.ssfs.server.SiteScapeFileSystemException;
 
 public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 
@@ -195,8 +196,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());						
 		} catch (WriteFilesException e) {
-			// I don't feel like creating another exception class just for this...
-			throw new RuntimeException(e.getMessage());
+			throw new SiteScapeFileSystemException(e.getMessage());
 		}
 	}
 	
@@ -683,45 +683,40 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} catch (WriteFilesException e) {
-			// I don't feel like creating another exception class just for this...
-			// especially given that the exception object itself will not be 
-			// passed back to the client side of SSFS. 
-			throw new RuntimeException(e.getMessage());
+			throw new SiteScapeFileSystemException(e.getMessage());
 		}		
-	}
-
-	private Definition getDefaultDefinition(Folder fileFolder) {
-		// Until we have the notion of default definition for a file folder,
-		// we will simply grab the first definition in the folder and use
-		// it to create file entries. 
-		// TODO To use default definition. 
-		List definitions = fileFolder.getEntryDefinitions();
-		if(definitions == null || definitions.size() == 0)
-			throw new InternalException();
-		Definition def = (Definition) definitions.get(0);
-		return def;
 	}
 	
 	private void writeResourceLibrary(Map uri, Map objMap, InputStream in, boolean isNew) 
 		throws NoAccessException {
+		// Before attempting to write the resource, make sure that we have a 
+		// metadata needed to do so. Specifically, the file folder must
+		// have at least one file entry definition created for it. 
+		// Otherwise we wouldn't know how to create an entry.
+		
+		// All binders referenced by library urls are file folders.
+		Folder folder = (Folder) objMap.get(BINDER);
+		Definition def = folder.getDefaultEntryDef();
+		if(def == null)
+			throw new SiteScapeFileSystemException("The file folder does not have a file entry definition associated with it");
+		
+		String elementName = getLibraryElementName(def);
+		
 		// Wrap the input stream in a datastructure suitable for our business module. 
 		SsfsMultipartFile mf = new SsfsMultipartFile(getFilePath(uri), in);
 		
-		Map fileItems = new HashMap(); // Map of names to file items
-		fileItems.put(objMap.get(ELEMENT_NAME), mf); // single file item
+		Map fileItems = new HashMap(); // Map of names to file items	
+		fileItems.put(elementName, mf); // single file item
 		
 		InputDataAccessor inputData = new EmptyInputData(); // No non-file input data
 		
 		if(isNew) {
-			// All binders referenced by library urls are file folders.
-			Folder folder = (Folder) objMap.get(BINDER);
-			Definition def = getDefaultDefinition(folder);
 			try {
 				getFolderModule().addEntry(getBinderId(uri), def.getId(), inputData, fileItems);
 			} catch (AccessControlException e) {
 				throw new NoAccessException(e.getLocalizedMessage());			
 			} catch (WriteFilesException e) {
-				throw new RuntimeException(e.getMessage());
+				throw new SiteScapeFileSystemException(e.getMessage());
 			}
 		}
 		else {
@@ -732,7 +727,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			} catch (AccessControlException e) {
 				throw new NoAccessException(e.getLocalizedMessage());			
 			} catch (WriteFilesException e) {
-				throw new RuntimeException(e.getMessage());
+				throw new SiteScapeFileSystemException(e.getMessage());
 			}
 		}
 	}
@@ -905,6 +900,19 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		return elementName;
 	}
 	
+	private String getLibraryRepositoryName(Definition definition) {
+		Document defDoc = definition.getDefinition();
+		String itemType = toDefItemType(CrossContextConstants.URI_ITEM_TYPE_LIBRARY);
+		Element root = defDoc.getRootElement();
+		Element item = (Element) root.selectSingleNode("//item[@name='" + itemType
+				+ "' and @type='data']");
+		Element storageElem = (Element) item.selectSingleNode("./properties/property[@name='storage']");
+		String value = storageElem.attributeValue("value");
+		if(value == null)
+			value = storageElem.attributeValue("default");
+		return value;
+	}
+	
 	private boolean objectExistsLibrary(Map uri, Map objMap) throws NoAccessException {
 		try {
 			// File folder id
@@ -923,33 +931,21 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			// Locate file folder entry
 			FolderEntry fileFolderEntry = getFileModule().findFileFolderEntry(binder, filePath);
 			
-			if(fileFolderEntry == null) { // No such file folder entry exists
-				Definition definition = getDefaultDefinition((Folder) binder);
-				
-				String elementName = getLibraryElementName(definition);
-				
-				objMap.put(ELEMENT_NAME, elementName);
-
-				return false; 
-			}
-			else {
-				objMap.put(ENTRY, fileFolderEntry);
-				
-				// Locate file attachment
-				Definition definition = fileFolderEntry.getEntryDef();
-
-				String elementName = getLibraryElementName(definition);
-				
-				objMap.put(ELEMENT_NAME, elementName);
-				
-				CustomAttribute ca = fileFolderEntry.getCustomAttribute(elementName);
-				
-				FileAttachment fa = (FileAttachment) ca.getValueSet().iterator().next();
-				
-				objMap.put(FILE_ATTACHMENT, fa);
-				
-				return true;
-			}
+			if(fileFolderEntry == null)
+				return false;
+			
+			objMap.put(ENTRY, fileFolderEntry);
+			
+			// Locate file attachment
+			Definition definition = fileFolderEntry.getEntryDef();
+			
+			String repositoryName = getLibraryRepositoryName(definition);
+			
+			FileAttachment fa = fileFolderEntry.getFileAttachment(repositoryName, filePath);
+			
+			objMap.put(FILE_ATTACHMENT, fa);
+			
+			return true;
 		} catch (NoBinderByTheIdException e) {
 			return false;
 		} catch (NoFolderByTheIdException e) {
