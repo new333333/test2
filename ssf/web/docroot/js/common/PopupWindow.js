@@ -117,7 +117,7 @@ function PopupWindow_setWindowProperties(props) {
 	}
 // Refresh the displayed contents of the popup
 function PopupWindow_refresh() {
-	if (this.divName != null) {
+	if (this.divName != null && document.getElementById(this.divName) != null) {
 		// refresh the DIV object
 		if (this.use_gebi) {
 			document.getElementById(this.divName).innerHTML = this.contents;
@@ -155,7 +155,7 @@ function PopupWindow_showPopup(anchorname) {
 		this.populated = true;
 		this.refresh();
 		}
-	if (this.divName != null) {
+	if (this.divName != null && document.getElementById(this.divName) != null) {
 		// Show the DIV object
 		if (this.use_gebi) {
 			if (parseInt(this.x) < 0) {
@@ -209,7 +209,7 @@ function PopupWindow_showPopup(anchorname) {
 	}
 // Hide the popup
 function PopupWindow_hidePopup() {
-	if (this.divName != null) {
+	if (this.divName != null && document.getElementById(this.divName) != null) {
 		if (this.use_gebi) {
 			document.getElementById(this.divName).style.visibility = "hidden";
 			}
@@ -229,7 +229,7 @@ function PopupWindow_hidePopup() {
 	}
 // Pass an event and return whether or not it was the popup DIV that was clicked
 function PopupWindow_isClicked(e) {
-	if (this.divName != null) {
+	if (this.divName != null && document.getElementById(this.divName) != null) {
 		if (this.use_layers) {
 			var clickX = e.pageX;
 			var clickY = e.pageY;
@@ -273,6 +273,9 @@ function PopupWindow_hideIfNotClicked(e) {
 // Call this to make the DIV disable automatically when mouse is clicked outside it
 function PopupWindow_autoHide() {
 	this.autoHideEnabled = true;
+	}
+function PopupWindow_noAutoHide() {
+	this.autoHideEnabled = false;
 	}
 // This global function checks all PopupWindow objects onmouseup to see if they should be hidden
 function PopupWindow_hidePopupWindows(e) {
@@ -350,5 +353,6 @@ function PopupWindow() {
 	this.setSize = PopupWindow_setSize;
 	this.isClicked = PopupWindow_isClicked;
 	this.autoHide = PopupWindow_autoHide;
+	this.noAutoHide = PopupWindow_noAutoHide;
 	this.hideIfNotClicked = PopupWindow_hideIfNotClicked;
 	}

@@ -33,11 +33,12 @@ public class Datepicker extends TagSupport {
     private Boolean showSelectors = new Boolean(true);
     private Boolean immediateMode = new Boolean(false);
     private String popupDivId = "";
+    private String calendarDivId = "";
     
     private boolean initDateProvided;
     private String contextPath;
 
-    	public int doStartTag() throws JspException {
+    public int doStartTag() throws JspException {
 	    JspWriter jspOut = pageContext.getOut(); 
 	    if (id == null) {
 	        throw new JspException("ssf:datepicker calls must include a unique id"); 
@@ -59,6 +60,9 @@ public class Datepicker extends TagSupport {
 	    } else {
 	        initDateProvided = true;
 	    }
+	    //If showing the calendar inline, don't also allow the popup div
+	    if (!this.calendarDivId.equals("")) this.popupDivId = "";
+	    
 	    GregorianCalendar cal = new GregorianCalendar();
 	    cal.setTime(initDate);
 	    
@@ -146,7 +150,7 @@ public class Datepicker extends TagSupport {
 			  .append(prefix)
 			  .append(")\n");
 			sb.append("var ").append(varname)
-			  .append(" = new CalendarPopup('"+popupDivId+"');\n");
+			  .append(" = new CalendarPopup('"+popupDivId+calendarDivId+"');\n");
 			sb.append(varname).append(".setYearSelectStartOffset(7);\n");
 			sb.append(varname).append(".setReturnFunction(\"setMultipleValues_")
 			  .append(prefix).append("\");\n");
@@ -155,6 +159,9 @@ public class Datepicker extends TagSupport {
 			sb.append(varname).append(".setOkText('"+ NLT.get("button.ok") +"');\n");
 			sb.append(varname).append(".setCancelText('"+ NLT.get("button.cancel") +"');\n");
 			sb.append(varname).append(".offsetX = -75;\n");
+			if (!this.callbackRoutine.equals("")) {
+				sb.append(varname).append(".noAutoHide();\n");
+			}
 			sb.append(varname).append(".setMonthNames(");
 			for (int i = 0; i <= 11; i++) {
 				sb.append("'" + monthnames[i] + "'");
@@ -181,20 +188,27 @@ public class Datepicker extends TagSupport {
 			  .append(varname)
 			  .append("_year.value=y;\n");
 			if (immediateMode.booleanValue()) {
-			  sb.append("document.").append(formName).append(".")
-			    .append(varname)
-			    .append("_month.value=m;\n");
-			  sb.append("document.").append(formName).append(".")
-			    .append(varname)
-			    .append("_date.value=d;\n");
-			  sb.append("self.document.").append(formName).append(".submit()");
+				sb.append("document.").append(formName).append(".")
+			      .append(varname)
+			      .append("_month.value=m;\n");
+			    sb.append("document.").append(formName).append(".")
+			      .append(varname)
+			      .append("_date.value=d;\n");
+				if (!this.callbackRoutine.equals("")) {
+					sb.append(this.callbackRoutine).append("();\n");
+				} else {
+					sb.append("self.document.").append(formName).append(".submit();");
+				}
 			} else {
-			  sb.append("document.").append(formName).append(".")
-			    .append(varname)
-			    .append("_month.selectedIndex=m;\n");
-			  sb.append("document.").append(formName).append(".")
-			    .append(varname)
-			    .append("_date.selectedIndex=d;\n");
+			    sb.append("document.").append(formName).append(".")
+			      .append(varname)
+			      .append("_month.selectedIndex=m;\n");
+			    sb.append("document.").append(formName).append(".")
+			      .append(varname)
+			      .append("_date.selectedIndex=d;\n");
+			    if (!this.callbackRoutine.equals("")) {
+					sb.append(this.callbackRoutine).append("();\n");
+				}
 			}
 			sb.append("}\n");
 
@@ -254,106 +268,126 @@ public class Datepicker extends TagSupport {
 
 			sb.append("</script>\n");
 			
-			if (this.showSelectors.booleanValue()) {
-				String selected = new String("");
-				for (int cp=0; cp<3; cp++) {
-				    int i;
-				    switch (componentOrder.charAt(cp)) {
-				    	case 'm': 
-					  if (immediateMode.booleanValue()) {
-					    sb.append("<input type=\"hidden\"")
-					      .append(" name=\"").append(prefix).append("_month\"")
-					      .append(" value=\"").append(cal.get(Calendar.MONTH)+1).append("\" />\n");
-					  } else {
-					    sb.append("<select name=\"").append(prefix).append("_month\">\n");
-					    if (!initDateProvided) {
-					      selected = "selected=\"selected\"";
-					    }
-					    sb.append("<option value=\"0\"")
-					      .append(selected)
-					      .append(" >")
-					      .append("---")
-					      .append("</option>\n");
-					    for (i=1; i<13; i++) {
-					      if (cal.get(Calendar.MONTH) == i-1 && initDateProvided) {
-						selected = "selected=\"selected\"";
-					      } else {
-						selected = "";
-					      }
-					      sb.append("<option value=\"").append(i)
-						.append("\" ").append(selected).append(">")
-						.append(monthnames[i-1])
-						.append("</option>\n");
-					    }
-					    sb.append("</select>\n");
-					    sb.append("\n");
-					  }
-					  break;
-				    	case 'd': 
-					  if (immediateMode.booleanValue()) {
-					    sb.append("<input type=\"hidden\"")
-					      .append(" name=\"").append(prefix).append("_date\"")
-					      .append(" value=\"").append(cal.get(Calendar.DATE)).append("\" />\n");
-					  } else {
-					    sb.append("<select name=\"").append(prefix).append("_date\">\n");
-					    if (!initDateProvided) {
-					      selected = "selected=\"selected\"";
-					    }
-					    sb.append("<option value=\"0\"")
-					      .append(selected)
-					      .append(" >")
-					      .append("---")
-					      .append("</option>\n");
-					    selected = "";
-					    for (i=1; i<32; i++) {
-					      if (cal.get(Calendar.DATE) == i && initDateProvided) {
-						selected = "selected=\"selected\"";
-					      } else {
-						selected = "";
-					      }
-					      sb.append("<option value=\"").append(i)
-						.append("\" ").append(selected).append(">").append(i)
-						.append("</option>\n");
-					    }
-					    sb.append("</select>\n");
-					  }
-					  break;
-				    	case 'y': 
-					  if (immediateMode.booleanValue()) {
-					    sb.append("<input type=\"hidden\"")
-					      .append(" name=\"").append(prefix).append("_year\"")
-					      .append(" value=\"").append(cal.get(Calendar.YEAR)).append("\" />\n");
-					  } else {
-					    sb.append("<INPUT TYPE=\"text\" CLASS=\"ss_text\" NAME=\"").append(prefix)
-					      .append("_year\" VALUE=\"");
-					    if (initDateProvided) {
-					      sb.append(cal.get(Calendar.YEAR));
-					    } else {
-					      sb.append("\"\"");
-					    }
-					    sb.append("\" SIZE=\"4\" />\n");
-					  }
-					  break;
+			String selected = new String("");
+			for (int cp=0; cp<3; cp++) {
+			    int i;
+			    switch (componentOrder.charAt(cp)) {
+			    	case 'm': 
+				  if (!this.showSelectors.booleanValue() || 
+						  immediateMode.booleanValue()) {
+				    sb.append("<input type=\"hidden\"")
+				      .append(" name=\"").append(prefix).append("_month\"")
+				      .append(" value=\"").append(cal.get(Calendar.MONTH)+1).append("\" />\n");
+				  } else {
+				    sb.append("<select name=\"").append(prefix).append("_month\">\n");
+				    if (!initDateProvided) {
+				      selected = "selected=\"selected\"";
 				    }
-				}
+				    sb.append("<option value=\"0\"")
+				      .append(selected)
+				      .append(" >")
+				      .append("---")
+				      .append("</option>\n");
+				    for (i=1; i<13; i++) {
+				      if (cal.get(Calendar.MONTH) == i-1 && initDateProvided) {
+					selected = "selected=\"selected\"";
+				      } else {
+					selected = "";
+				      }
+				      sb.append("<option value=\"").append(i)
+					.append("\" ").append(selected).append(">")
+					.append(monthnames[i-1])
+					.append("</option>\n");
+				    }
+				    sb.append("</select>\n");
+				    sb.append("\n");
+				  }
+				  break;
+			    	case 'd': 
+				  if (!this.showSelectors.booleanValue() || 
+						  immediateMode.booleanValue()) {
+				    sb.append("<input type=\"hidden\"")
+				      .append(" name=\"").append(prefix).append("_date\"")
+				      .append(" value=\"").append(cal.get(Calendar.DATE)).append("\" />\n");
+				  } else {
+				    sb.append("<select name=\"").append(prefix).append("_date\">\n");
+				    if (!initDateProvided) {
+				      selected = "selected=\"selected\"";
+				    }
+				    sb.append("<option value=\"0\"")
+				      .append(selected)
+				      .append(" >")
+				      .append("---")
+				      .append("</option>\n");
+				    selected = "";
+				    for (i=1; i<32; i++) {
+				      if (cal.get(Calendar.DATE) == i && initDateProvided) {
+					selected = "selected=\"selected\"";
+				      } else {
+					selected = "";
+				      }
+				      sb.append("<option value=\"").append(i)
+					.append("\" ").append(selected).append(">").append(i)
+					.append("</option>\n");
+				    }
+				    sb.append("</select>\n");
+				  }
+				  break;
+			    	case 'y': 
+				  if (!this.showSelectors.booleanValue() || 
+						  immediateMode.booleanValue()) {
+				    sb.append("<input type=\"hidden\"")
+				      .append(" name=\"").append(prefix).append("_year\"")
+				      .append(" value=\"").append(cal.get(Calendar.YEAR)).append("\" />\n");
+				  } else {
+				    sb.append("<INPUT TYPE=\"text\" CLASS=\"ss_text\" NAME=\"").append(prefix)
+				      .append("_year\" VALUE=\"");
+				    if (initDateProvided) {
+				      sb.append(cal.get(Calendar.YEAR));
+				    } else {
+				      sb.append("\"\"");
+				    }
+				    sb.append("\" SIZE=\"4\" />\n");
+				  }
+				  break;
+			    }
 			}
 			
-			//Show the calendar popup icon
-			sb.append("<A HREF=\"#\" ");
-                        sb.append("onClick=\"").append(prefix);
-			sb.append(".showCalendar('anchor_")
-			  .append(prefix)
-			  .append("', ")
-			  .append("getCurrentDateString_")
-			  .append(prefix)
-			  .append("('mdy')); return false;\" ");
-			sb.append("NAME=\"anchor_").append(prefix).append("\"");
-			sb.append(" ID=\"anchor_").append(prefix)
-			  .append("\"")
-			  .append("><IMG BORDER=\"0\" SRC=\"")
-			  .append(contextPath)
-			  .append("/images/pics/sym_s_cal.gif\" ");
-			sb.append("alt=\"").append(this.altText).append("\" /></A>\n");
+			//Show the calendar itself or show the calendar popup icon
+			if (calendarDivId.equals("")) {
+				sb.append("<A HREF=\"#\" ");
+	            sb.append("onClick=\"");
+	            if (!popupDivId.equals("")) 
+	            		sb.append("ss_moveDivToBody('").append(popupDivId).append("');");
+	            sb.append(prefix);
+				sb.append(".showCalendar('anchor_")
+				  .append(prefix)
+				  .append("', ")
+				  .append("getCurrentDateString_")
+				  .append(prefix)
+				  .append("('mdy')); return false;\" ");
+				sb.append("NAME=\"anchor_").append(prefix).append("\"");
+				sb.append(" ID=\"anchor_").append(prefix)
+				  .append("\"")
+				  .append("><IMG BORDER=\"0\" SRC=\"")
+				  .append(contextPath)
+				  .append("/images/pics/sym_s_cal.gif\" ");
+				sb.append("alt=\"").append(this.altText).append("\" /></A>\n");
+			} else {
+				sb.append("<A NAME=\"anchor_").append(prefix).append("\"");
+				sb.append(" ID=\"anchor_").append(prefix)
+				  .append("\"")
+				  .append("></A>\n");
+				sb.append("<script type=\"text/javascript\">\n");
+	            sb.append(prefix);
+				sb.append(".showCalendar('anchor_")
+				  .append(prefix)
+				  .append("', ")
+				  .append("getCurrentDateString_")
+				  .append(prefix)
+				  .append("('mdy'));\n");
+				sb.append("</script>\n");
+			}
 			sb.append("<input type=\"hidden\" name=\"")
 			  .append(prefix)
 			  .append("_hidden\" value=\"\" />\n");
@@ -366,10 +400,20 @@ public class Datepicker extends TagSupport {
 			  .append("\" />\n");
 			
 			jspOut.print(sb.toString());
-      }
+	    }
         catch (Exception e) {
 	       throw new JspException(e);
-	   }
+	    }
+        finally {
+        	altText = "";
+        	popupDivId = "";
+        	calendarDivId = "";
+        	initDate = null;
+            componentOrder = "mdy";
+            callbackRoutine = null;
+            showSelectors = new Boolean(true);
+            immediateMode = new Boolean(false);
+        }
 	   return SKIP_BODY;
 	}
 	public int doEndTag () throws JspException {
@@ -388,6 +432,10 @@ public class Datepicker extends TagSupport {
 
 	public void setPopupDivId(String id) {
 	    this.popupDivId = id;
+	}
+
+	public void setCalendarDivId(String id) {
+	    this.calendarDivId = id;
 	}
 
 	public void setInitDate(Date initDate) {
