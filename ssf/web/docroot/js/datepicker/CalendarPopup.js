@@ -379,7 +379,7 @@ function CP_hideCalendar() {
 
 // Do not auto hide the calendar object 
 function CP_noAutoHide() {
-	this.noAutoHide();
+	//this.noAutoHide();
 	}
 
 // Refresh the contents of the calendar display
