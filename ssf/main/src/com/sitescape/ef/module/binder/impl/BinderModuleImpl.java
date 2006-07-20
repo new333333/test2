@@ -29,13 +29,13 @@ import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.InputDataAccessor;
-import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.ef.util.TagUtil;
 import com.sitescape.ef.web.util.FilterHelper;
 /**
  * @author Janet McCann
@@ -223,23 +223,22 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	/**
 	 * Get tags owned by this binder
 	 */
+	
 	public List getCommunityTags(Long binderId) {
 		Binder binder = loadBinder(binderId);
-		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);    	
-		List tags = new ArrayList<Tag>();		
-		tags = getCoreDao().loadTagsByOwner(binder.getEntityIdentifier());
-		tags = uniqueTags(tags);
-		return tags;		
+		List tags = new ArrayList<Tag>();
+		tags = getCoreDao().loadCommunityTagsByEntity(binder.getEntityIdentifier());
+		return TagUtil.uniqueTags(tags);		
 	}
 	
 	public List getPersonalTags(Long binderId) {
 		Binder binder = loadBinder(binderId);
-		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);    	
-		List tags = new ArrayList<Tag>();		
-		tags = getCoreDao().loadTagsByOwner(binder.getEntityIdentifier());
-		tags = uniqueTags(tags);
-		return tags;		
+		List tags = new ArrayList<Tag>();
+		User user = RequestContextHolder.getRequestContext().getUser();
+		tags = getCoreDao().loadPersonalEntityTags(binder.getEntityIdentifier(),user.getEntityIdentifier());
+		return TagUtil.uniqueTags(tags);		
 	}
+	
 	/**
 	 * Modify tag owned by this binder
 	 * @see com.sitescape.ef.module.binder.BinderModule#modifyTag(java.lang.Long, java.lang.String, java.util.Map)
@@ -280,14 +279,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 * @param entryId
 	 * @return
 	 */
+	
 	public List getCommunityTags(Long binderId, Long entryId) {
 		Binder binder = loadBinder(binderId);
 		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
 		List tags = new ArrayList<Tag>();
-		tags = getCoreDao().loadTagsByOwner(entry.getEntityIdentifier());
-		return tags;		
+		tags = getCoreDao().loadCommunityTagsByEntity(entry.getEntityIdentifier());
+		return TagUtil.uniqueTags(tags);		
 	}
-
+	
 	/**
 	 * Get personal tags owned by the entry
 	 * @param binderId
@@ -298,8 +298,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		Binder binder = loadBinder(binderId);
 		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
 		List tags = new ArrayList<Tag>();
-		tags = getCoreDao().loadTagsByOwner(entry.getEntityIdentifier());
-		return tags;		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		tags = getCoreDao().loadPersonalEntityTags(entry.getEntityIdentifier(),user.getEntityIdentifier());
+		return TagUtil.uniqueTags(tags);		
 	}
 
 	/**
@@ -395,22 +396,5 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         
     	return entries; 
 	}
-    /**
-     * Convenience method to find all the unique tags 
-     * in a set to return to the user.
-     * 
-     * @param allTags
-     * @return
-     */
-    private List uniqueTags(List allTags) {
-    	List newTags = new ArrayList<Tag>();
-    	HashMap tagMap = new HashMap();
-    	for (Iterator iter=allTags.iterator(); iter.hasNext();) {
-			Tag thisTag = (Tag)iter.next();
-			if (tagMap.containsKey(thisTag.getName())) continue;
-			tagMap.put(thisTag.getName(),thisTag);
-			newTags.add(thisTag);
-    	}
-    	return newTags;    	
-    }
+
 }

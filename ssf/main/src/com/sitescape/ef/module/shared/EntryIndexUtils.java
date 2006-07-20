@@ -3,7 +3,9 @@ package com.sitescape.ef.module.shared;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +17,8 @@ import org.apache.lucene.document.Field;
 import org.dom4j.io.SAXReader;
 import org.dom4j.Element;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
@@ -22,11 +26,14 @@ import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Group;
+import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.ef.util.TagUtil;
 
 /**
  * Index the fields common to all Entry types.
@@ -248,7 +255,47 @@ public class EntryIndexUtils {
         racField = new Field(BasicIndexUtils.READ_ACL_FIELD, pIds.toString(), true, true, true);      
         doc.add(racField);
     }
+
+    public static void addTags(Document doc, Binder binder, DefinableEntity entry) {
+	    
+    	List pubTags = new ArrayList<Tag>();
+    	List privTags = new ArrayList<Tag>();
+    	String indexableTags = "";
+    	String aclTags = "";
+    	
+    	CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
+    	List allTags = coreDao.loadAllTagsByEntity(entry.getEntityIdentifier());
+    	
+    	for (Iterator iter=allTags.iterator(); iter.hasNext();) {
+    		Tag thisTag = (Tag)iter.next();
+    		if (thisTag.isPublic())
+    			pubTags.add(thisTag);
+    		else
+    			privTags.add(thisTag);
+    	}
+    	pubTags = TagUtil.uniqueTags(pubTags);
+    	privTags = TagUtil.uniqueTags(privTags);
+    	
+    	// index all the public tags (allTags field and tag_acl field)
+		for (Iterator iter=pubTags.iterator(); iter.hasNext();) {
+			Tag thisTag = (Tag)iter.next();
+			indexableTags += " " + thisTag.getName();
+			aclTags += " " + BasicIndexUtils.TAG_ACL_PRE + BasicIndexUtils.READ_ACL_ALL + ":" + thisTag.getName() + " ";
+		}
+	
+		// now index the private tags (just the tag_acl field)
+		for (Iterator iter=privTags.iterator(); iter.hasNext();) {
+			Tag thisTag = (Tag)iter.next();
+			aclTags += " " + BasicIndexUtils.TAG_ACL_PRE + thisTag.getOwnerIdentifier().getEntityId() + ":" + thisTag.getName() + " ";
+		}
     
+    	Field tagField = new Field(BasicIndexUtils.TAG_FIELD, indexableTags, true, true, true);
+    	doc.add(tagField);
+
+    	tagField = new Field(BasicIndexUtils.ACL_TAG_FIELD, aclTags, true, true, true);
+    	doc.add(tagField);
+    }
+	
     public static void addFileAttachmentName(Document doc,String filename) {
       	Field fileNameField = Field.Keyword(FILENAME_FIELD, filename);
        	doc.add(fileNameField);

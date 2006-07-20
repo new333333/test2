@@ -646,7 +646,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         );  
 	}
 	
-	public List loadTagsByOwner(final EntityIdentifier ownerId) {
+	public List loadCommunityTagsByOwner(final EntityIdentifier ownerId) {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
@@ -674,7 +674,22 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		
 	}
 	
-	public List loadTagsByEntity(final EntityIdentifier entityId) {
+	public List loadAllTagsByEntity(final EntityIdentifier entityId) {
+		return (List)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                 	return session.createCriteria(Tag.class)
+                 		.add(Expression.eq("entityIdentifier.entityId", entityId.getEntityId()))
+       					.add(Expression.eq("entityIdentifier.type", entityId.getEntityType().getValue()))
+                 		.addOrder(Order.asc("name"))
+	                 	.list();
+	                }
+	            }
+	        );
+		
+	}
+	
+	public List loadCommunityTagsByEntity(final EntityIdentifier entityId) {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {

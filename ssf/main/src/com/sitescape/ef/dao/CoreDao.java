@@ -83,10 +83,11 @@ public interface CoreDao {
 	public EmailAlias loadEmailAlias(String aliasId, String zoneName);
     public void bulkLoadCollections(Collection entries);
     
-	public List loadTagsByEntity(EntityIdentifier entityId);
-	public List loadTagsByOwner(EntityIdentifier ownerId);
+	public List loadCommunityTagsByEntity(EntityIdentifier entityId);
+	public List loadCommunityTagsByOwner(EntityIdentifier ownerId);
 	public List loadPersonalEntityTags(EntityIdentifier entityId, EntityIdentifier ownerId);
 	public List loadPersonalTags(EntityIdentifier ownerId);
+	public List loadAllTagsByEntity(EntityIdentifier entityId);
 	public Tag loadTagById(String id);
 
  }

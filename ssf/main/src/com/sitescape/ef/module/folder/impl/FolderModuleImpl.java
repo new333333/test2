@@ -60,6 +60,7 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.util.TagUtil;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.util.Validator;
@@ -487,17 +488,15 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	public List getCommunityTags(Long binderId, Long entryId) {
 		FolderEntry entry = getEntry(binderId, entryId);
 		List tags = new ArrayList<Tag>();
-		tags = getCoreDao().loadTagsByEntity(entry.getEntityIdentifier());
-		tags = uniqueTags(tags);
-		return tags;		
+		tags = getCoreDao().loadCommunityTagsByEntity(entry.getEntityIdentifier());
+		return TagUtil.uniqueTags(tags);		
 	}
 	public List getPersonalTags(Long binderId, Long entryId) {
 		FolderEntry entry = getEntry(binderId, entryId);
 		List tags = new ArrayList<Tag>();
 		User user = RequestContextHolder.getRequestContext().getUser();
 		tags = getCoreDao().loadPersonalEntityTags(entry.getEntityIdentifier(),user.getEntityIdentifier());
-		tags = uniqueTags(tags);
-		return tags;		
+		return TagUtil.uniqueTags(tags);		
 	}
 	public void modifyTag(Long binderId, Long entryId, String tagId, String newtag) {
 		FolderEntry entry = getEntry(binderId, entryId);
@@ -687,25 +686,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     		}
     	}
     }
-
-    /**
-     * Convenience method to find all the unique tags 
-     * in a set to return to the user.
-     * 
-     * @param allTags
-     * @return
-     */
-    private List uniqueTags(List allTags) {
-    	List newTags = new ArrayList<Tag>();
-    	HashMap tagMap = new HashMap();
-    	for (Iterator iter=allTags.iterator(); iter.hasNext();) {
-			Tag thisTag = (Tag)iter.next();
-			if (tagMap.containsKey(thisTag.getName())) continue;
-			tagMap.put(thisTag.getName(),thisTag);
-			newTags.add(thisTag);
-    	}
-    	return newTags;    	
-    }
+    
     /**
      * Helper classs to return folder unseen counts as an objects
      * @author Janet McCann
