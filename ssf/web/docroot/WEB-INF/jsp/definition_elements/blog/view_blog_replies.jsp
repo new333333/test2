@@ -1,33 +1,31 @@
-<% // View entry replies %>
+<% // View blog reply count %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<% // Process the replies only if this is the top level entry being displayed %>
-<c:if test="${ssEntry == ssDefinitionEntry}" >
- <c:if test="${!empty ssFolderEntryDescendants}">
-<div class="ss_replies">
-<span class="ss_largerprint ss_bold"><c:out value="${property_caption}"/></span>
+<script type="text/javascript">
+var rn = Math.round(Math.random()*999999)
+function ss_showBlogReplies(id) {
+	url = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="true" >
+		<ssf:param name="binderId" value="${ssBinder.id}" />
+		<ssf:param name="entryId" value="${ssDefinitionEntry.id}" />
+		<ssf:param name="operation" value="show_blog_replies" />
+    	</ssf:url>"
+	url += "\&rn=" + rn++
+	fetch_url(url, ss_showBlogRepliesCallback, id);
+}
+function ss_showBlogRepliesCallback(s, id) {
+	var targetDiv = document.getElementById('ss_blog_replies_' + id)
+	if (targetDiv != null) targetDiv.innerHTML = s;
+}
+</script>
 
-<c:forEach var="reply" items="${ssFolderEntryDescendants}">
-<jsp:useBean id="reply" type="com.sitescape.ef.domain.Entry" />
- <div>
-<c:if test="${!empty reply.entryDef}">
- 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-		configElement="<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']") %>" 
-		configJspStyle="${ssConfigJspStyle}" 
-		processThisItem="false" 
-		entry="<%= reply %>" />
-</c:if>
-<c:if test="${empty reply.entryDef}">
- 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-		configElement="${ssConfigElement}" 
-		configJspStyle="${ssConfigJspStyle}" 
-		processThisItem="false" 
-		entry="<%= reply %>" />
-</c:if>
- 
- </div>
- <div class="ss_divider"></div>
-</c:forEach>
+<div>
+<a href="javascript: ;" onClick="ss_showBlogReplies('${ssDefinitionEntry.id}');return false;">
+<span class="ss_bold"><ssf:nlt tag="blog.replyCount"/>: 
+  ${ssDefinitionEntry.totalReplyCount}</span>
+</a>
 </div>
-</c:if>
-</c:if>
+<div id="ss_blog_replies_${ssDefinitionEntry.id}"></div>

@@ -29,6 +29,7 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
@@ -85,10 +86,12 @@ public class AjaxController  extends SAbstractController {
 			statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
 			model.put(WebKeys.AJAX_STATUS, statusMap);
 			
-			//Check for calls from "fetch_url"
+			//Check for calls from "fetch_url" (which don't output in xml format)
 			if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
 					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT) ||
 					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
+				return new ModelAndView("forum/fetch_url_return", model);
+			} else if(op.equals(WebKeys.FORUM_OPERATION_SHOW_BLOG_REPLIES)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			}
 			
@@ -176,6 +179,9 @@ public class AjaxController  extends SAbstractController {
 				op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT) || 
 				op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 			return ajaxGetDashboardComponent(request, response, context);
+
+		} else if(op.equals(WebKeys.FORUM_OPERATION_SHOW_BLOG_REPLIES)) {
+			return ajaxGetBlogReplies(request, response, context);
 		}
 		
 		return ajaxReturn(request, response, context);
@@ -631,5 +637,26 @@ public class AjaxController  extends SAbstractController {
 			return new ModelAndView("forum/fetch_url_return", model);
 		}
 		return new ModelAndView("definition_elements/view_dashboard_component", model);
+	}
+	private ModelAndView ajaxGetBlogReplies(RenderRequest request, 
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map statusMap = (Map) context.get("statusMap");
+		String op = (String) context.get("op");
+		String op2 = (String) context.get("op2");
+		String componentId = op2;
+		model.put(WebKeys.AJAX_STATUS, statusMap);
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		FolderEntry entry = null;
+		Map folderEntries = null;
+		folderEntries  = getFolderModule().getEntryTree(binderId, entryId);
+		if (folderEntries != null) {
+			entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
+			model.put(WebKeys.ENTRY, entry);
+			model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
+			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
+		}
+		return new ModelAndView("definition_elements/blog/view_blog_replies_content", model);
 	}
 }

@@ -3,13 +3,14 @@
   <table class="ss_blog" width="100%">
     <tr>
       <td class="ss_blog_content" width="80%" valign="top">
-		  <c:forEach var="entry" items="${ssBlogEntries}" >
+		  <c:forEach var="entry" items="${ssFolderEntries}" >
 			<div class="ss_blog_content" style="margin:2px 8px 20px 2px;">
-			  <ssf:displayConfiguration configDefinition="${entry.value.ssConfigDefinition}" 
-			    configElement="${entry.value.ssConfigElement}" 
+			  <ssf:displayConfiguration 
+			    configDefinition="${ssBlogEntries[entry._docId].ssConfigDefinition}" 
+			    configElement="${ssBlogEntries[entry._docId].ssConfigElement}" 
 			    configJspStyle="view"
 			    processThisItem="true" 
-			    entry="${entry.value.entry}" />
+			    entry="${ssBlogEntries[entry._docId].entry}" />
 			</div>
 		  </c:forEach>
 	  </td>

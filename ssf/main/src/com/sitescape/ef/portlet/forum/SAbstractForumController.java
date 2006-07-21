@@ -131,6 +131,8 @@ public class SAbstractForumController extends SAbstractController {
 			//This is a blog view, set the default sort order
 			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) 
 				options.put(ObjectKeys.SEARCH_SORT_BY, EntryIndexUtils.CREATION_DATE_FIELD);
+			if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 		}
 		
 		folderEntries = getFolderModule().getFolderEntries(folderId, options);
@@ -694,7 +696,7 @@ public class SAbstractForumController extends SAbstractController {
 	}
 
 	protected void getBlogEntries(Folder folder, ArrayList entrylist, Map model, RenderRequest req, RenderResponse response) {
-		Map entries = new HashMap();
+		Map entries = new TreeMap();
 		model.put(WebKeys.BLOG_ENTRIES, entries);
 		Map folderEntries = null;
 		Iterator entryIterator = entrylist.listIterator();
@@ -707,7 +709,7 @@ public class SAbstractForumController extends SAbstractController {
 				if (folderEntries != null) {
 					FolderEntry entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
 					Map entryMap = new HashMap();
-					entries.put(entryId, entryMap);
+					entries.put(String.valueOf(entryId), entryMap);
 					entryMap.put("entry", entry);
 					Definition currentDef = entry.getEntryDef();
 					entryMap.put(WebKeys.CONFIG_DEFINITION, null);
