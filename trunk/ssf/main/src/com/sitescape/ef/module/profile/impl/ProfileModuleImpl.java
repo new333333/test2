@@ -161,10 +161,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	return result;
     }
  
-    public Map getGroups(Long binderId, int maxEntries, Document searchFilter) {
+    public Map getGroups(Long binderId, Map options) {
         ProfileBinder binder = loadBinder(binderId);
 		getAccessControlManager().checkOperation(binder,  WorkAreaOperation.READ_ENTRIES);
-        return loadProcessor(binder).getBinderEntries(binder, groupDocType, maxEntries, searchFilter);        
+        return loadProcessor(binder).getBinderEntries(binder, groupDocType, options);        
     }
 	public Collection getGroups(Set entryIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -256,16 +256,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
 
     public Map getUsers(Long binderId) {
-    	return getUsers(binderId, DEFAULT_MAX_ENTRIES);
+    	Map options = new HashMap();
+    	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
+    	return getUsers(binderId, options);
     }
-    public Map getUsers(Long binderId, int maxEntries) {
-        return getUsers(binderId, maxEntries, null);        
-   }
- 
-    public Map getUsers(Long binderId, int maxEntries, Document searchFilter) {
+    public Map getUsers(Long binderId, Map options) {
         ProfileBinder binder = loadBinder(binderId);
 		getAccessControlManager().checkOperation(binder,  WorkAreaOperation.READ_ENTRIES);
-        return loadProcessor(binder).getBinderEntries(binder, userDocType, maxEntries, searchFilter);
+        return loadProcessor(binder).getBinderEntries(binder, userDocType, options);
         
    }
  

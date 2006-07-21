@@ -491,16 +491,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    	}
    	
     //***********************************************************************************************************
-    public Map getBinderEntries(Binder binder, String[] entryTypes, int maxChildEntries) {
-    	org.dom4j.Document searchFilter = null;
-    	return getBinderEntries(binder, entryTypes, maxChildEntries, searchFilter);
-    }
-    public Map getBinderEntries(Binder binder, String[] entryTypes, int maxChildEntries, org.dom4j.Document searchFilter) {
+    public Map getBinderEntries(Binder binder, String[] entryTypes, Map options) {
         //search engine will only return entries you have access to
          //validate entry count
-        maxChildEntries = getBinderEntries_maxEntries(maxChildEntries); 
-        //do actual search index query
-        Hits hits = getBinderEntries_doSearch(binder, entryTypes, maxChildEntries, searchFilter);
+    	//do actual search index query
+        Hits hits = getBinderEntries_doSearch(binder, entryTypes, options);
         //iterate through results
         ArrayList childEntries = getBinderEntries_entriesArray(hits);
        	Map model = new HashMap();
@@ -567,7 +562,21 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         return maxChildEntries;
     }
      
-    protected Hits getBinderEntries_doSearch(Binder binder, String [] entryTypes, int maxResults, org.dom4j.Document searchFilter) {
+    protected Hits getBinderEntries_doSearch(Binder binder, String [] entryTypes, 
+    		Map options) {
+    	int maxResults = 0;
+    	if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) 
+    		maxResults = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
+    	maxResults = getBinderEntries_maxEntries(maxResults); 
+        
+    	int searchOffset = 0;
+    	if (options.containsKey(ObjectKeys.SEARCH_OFFSET)) 
+    		searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
+        
+        org.dom4j.Document searchFilter = null;
+    	if (options.containsKey(ObjectKeys.SEARCH_SEARCH_FILTER)) 
+    		searchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
+
        	Hits hits = null;
        	// Build the query
     	if (searchFilter == null) {
@@ -583,7 +592,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	SearchObject so = qb.buildQuery(queryTree);
     	
     	//Set the sort order
-    	SortField[] fields = getBinderEntries_getSortFields(binder); 
+    	SortField[] fields = getBinderEntries_getSortFields(options); 
     	so.setSortBy(fields);
     	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
@@ -595,7 +604,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         
         try {
-	        hits = luceneSession.search(soQuery,so.getSortBy(),0,maxResults);
+	        hits = luceneSession.search(soQuery, so.getSortBy(), searchOffset, maxResults);
         }
         finally {
             luceneSession.close();
@@ -632,10 +641,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	}
     	return qTree;
     }
-   	protected SortField[] getBinderEntries_getSortFields(Binder binder) {
+   	protected SortField[] getBinderEntries_getSortFields(Map options) {
    		SortField[] fields = new SortField[1];
+   		String sortBy = EntryIndexUtils.MODIFICATION_DATE_FIELD;
+    	if (options.containsKey(ObjectKeys.SEARCH_SORT_BY)) 
+    		sortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);
+   		
     	boolean descend = true;
-    	fields[0] = new SortField(EntryIndexUtils.MODIFICATION_DATE_FIELD, descend);
+    	if (options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
+    		descend = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
+    	
+    	fields[0] = new SortField(sortBy, descend);
     	return fields;
    	}
     

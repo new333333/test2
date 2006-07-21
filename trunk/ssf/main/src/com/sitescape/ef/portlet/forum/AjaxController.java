@@ -359,12 +359,13 @@ public class AjaxController  extends SAbstractController {
 		//Do a search to find the first few users who match the search text
     	User u = RequestContextHolder.getRequestContext().getUser();
     	Map users = new HashMap();
+    	Map options = new HashMap();
+    	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
+    	options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
     	if (userGroupType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_GROUP)) {
-    		users = getProfileModule().getGroups(u.getParentBinder().getId(), 
-	    			Integer.parseInt(maxEntries), searchFilter);
+    		users = getProfileModule().getGroups(u.getParentBinder().getId(), options);
     	} else {
-    		users = getProfileModule().getUsers(u.getParentBinder().getId(), 
-	    			Integer.parseInt(maxEntries), searchFilter);
+    		users = getProfileModule().getUsers(u.getParentBinder().getId(), options);
     	}
 		model.put(WebKeys.USERS, users.get(ObjectKeys.ENTRIES));
 		model.put(WebKeys.USER_IDS_TO_SKIP, userIdsToSkip);

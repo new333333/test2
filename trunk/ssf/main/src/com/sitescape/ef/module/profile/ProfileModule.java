@@ -51,11 +51,10 @@ public interface ProfileModule {
     public Principal getEntry(Long binderId, Long userId);
 
     public List getGroups(Long binderId);
-    public Map getGroups(Long binderId, int maxEntries, Document searchFilter);
+    public Map getGroups(Long binderId, Map options);
 	public Collection getGroups(Set groupIds);
     public Map getUsers(Long binderId);
-    public Map getUsers(Long binderId, int maxEntries);
-    public Map getUsers(Long binderId, int maxEntries, Document searchFilter);
+    public Map getUsers(Long binderId, Map options);
 	public Collection getUsers(Set userIds);
 	/**
 	 * Return a collection of user.  The are either in the principal list
