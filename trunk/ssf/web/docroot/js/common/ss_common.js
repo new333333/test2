@@ -1366,7 +1366,7 @@ function fetch_url(url, callbackRoutine, callbackData) {
 }                
 
 function fetch_url_debug(str) {
-    //alert(str);
+    ss_debug(str);
 }
 
 //if (!Array.prototype.push) {
