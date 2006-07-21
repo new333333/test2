@@ -72,9 +72,8 @@ public interface FolderModule {
      */
     public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper);
  	public Map getFolderEntries(Long folderId) throws AccessControlException;
-	public Map getFolderEntries(Long folderId, int maxNumEntries) throws AccessControlException;
-	public Map getFolderEntries(Long folderId, int maxNumEntries, Document searchFilter) throws AccessControlException;
-    public Map getUnseenCounts(List folderIds);
+	public Map getFolderEntries(Long folderId, Map options) throws AccessControlException;
+	public Map getUnseenCounts(List folderIds);
     public List getCommunityTags(Long binderId, Long entryId);
     public List getPersonalTags(Long binderId, Long entryId);
     public void setUserRating(Long folderId, Long entryId, long value);

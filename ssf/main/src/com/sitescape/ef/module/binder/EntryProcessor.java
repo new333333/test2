@@ -22,8 +22,7 @@ import com.sitescape.ef.security.AccessControlException;
  */
 public interface EntryProcessor extends BinderProcessor {
  
- 	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries) throws AccessControlException;
-	public Map getBinderEntries(Binder binder, String[] entryTypes, int maxNumEntries, Document searchFilter) throws AccessControlException;
+ 	public Map getBinderEntries(Binder binder, String[] entryTypes, Map options) throws AccessControlException;
 	public ArrayList getBinderEntries_entriesArray(Hits hits);
 	public void indexEntries(Binder binder);	
     

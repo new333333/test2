@@ -400,8 +400,10 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 		Entry entry = (Entry) objMap.get(ENTRY);
 		if (entry == null) {
 			// Get a list of entries
+			Map options = new HashMap();
+			options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
 			Map folderEntries = getFolderModule().getFolderEntries(
-					binder.getId(), Integer.MAX_VALUE);
+					binder.getId(), options);
 			List entries = (ArrayList) folderEntries.get(ObjectKeys.ENTRIES);
 			for (int i = 0; i < entries.size(); i++) {
 				Map ent = (Map) entries.get(i);
@@ -542,8 +544,10 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			
 			// Get a list of entries and build a list of titles of those
 			// entries (each title represents a file path).
+			Map options = new HashMap();
+			options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
 			Map folderEntries = getFolderModule().getFolderEntries(
-					binder.getId(), Integer.MAX_VALUE);
+					binder.getId(), options);
 			List entries = (ArrayList) folderEntries.get(ObjectKeys.ENTRIES);
 			for (int i = 0; i < entries.size(); i++) {
 				Map ent = (Map) entries.get(i);

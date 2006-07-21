@@ -55,7 +55,8 @@ import org.springframework.web.servlet.ModelAndView;
  *
  */
 public class SAbstractForumController extends SAbstractController {
-	public ModelAndView returnToViewForum(RenderRequest request, RenderResponse response, Map formData, Long binderId) throws Exception {
+	public ModelAndView returnToViewForum(RenderRequest request, 
+			RenderResponse response, Map formData, Long binderId) throws Exception {
 
 		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		Binder binder = getBinderModule().getBinder(binderId);
@@ -87,8 +88,13 @@ public class SAbstractForumController extends SAbstractController {
         UserProperties uProps = getProfileModule().getUserProperties(user.getId(), binderId);
 		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 		DefinitionUtils.getDefinitions(binder, model, userDefaultDef);
+		
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
+
 		String view;
-		view = getShowFolder(formData, request, response, (Folder)binder, searchFilter, model);
+		view = getShowFolder(formData, request, response, (Folder)binder, options, model);
 			
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 
@@ -111,17 +117,24 @@ public class SAbstractForumController extends SAbstractController {
 	}
 		
 	protected String getShowFolder(Map formData, RenderRequest req, 
-			RenderResponse response, Folder folder, Document searchFilter, 
+			RenderResponse response, Folder folder, Map options, 
 			Map<String,Object>model) throws PortletRequestBindingException {
 		Map folderEntries;
 		Long folderId = folder.getId();
+		Element view = (Element)model.get(WebKeys.CONFIG_ELEMENT);
+		Element viewType = null;
+		if (view != null) 
+			viewType = (Element)view.selectSingleNode("./properties/property[@name='type']");
 
-		String forumId = folderId.toString();
-		if (searchFilter != null) {
-			folderEntries = getFolderModule().getFolderEntries(folderId, ObjectKeys.LISTING_MAX_PAGE_SIZE, searchFilter);
-		} else {
-			folderEntries = getFolderModule().getFolderEntries(folderId, ObjectKeys.LISTING_MAX_PAGE_SIZE);
+		//See if this folder is to be viewed as a blog
+		if (viewType != null && viewType.attributeValue("value", "").equals("blog")) {
+			//This is a blog view, set the default sort order
+			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) 
+				options.put(ObjectKeys.SEARCH_SORT_BY, EntryIndexUtils.CREATION_DATE_FIELD);
 		}
+		
+		folderEntries = getFolderModule().getFolderEntries(folderId, options);
+
 		//Build the beans depending on the operation being done
 		model.put(WebKeys.FOLDER, folder);
 		Folder topFolder = folder.getTopFolder();
@@ -135,25 +148,16 @@ public class SAbstractForumController extends SAbstractController {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 				
-		//See if this folder is to be viewed as a calendar
-		Element view = (Element)model.get(WebKeys.CONFIG_ELEMENT);
-		if (view != null) {
-			Element viewType = (Element)view.selectSingleNode("./properties/property[@name='type']");
-			if (viewType != null && viewType.attributeValue("value", "").equals("event")) {
-				//This is a calendar view, so get the event beans
-				getEvents(folder, entries, model, req, response);
-			}
+		//See if this folder is to be viewed as a calendar or a blog
+		if (viewType != null && viewType.attributeValue("value", "").equals("event")) {
+			//This is a calendar view, so get the event beans
+			getEvents(folder, entries, model, req, response);
+		} else if (viewType != null && viewType.attributeValue("value", "").equals("blog")) {
+			//This is a blog view, so get the extra blog beans
+			getBlogEntries(folder, entries, model, req, response);
 		}
-		//See if this folder is to be viewed as a blog
-		view = (Element)model.get(WebKeys.CONFIG_ELEMENT);
-		if (view != null) {
-			Element viewType = (Element)view.selectSingleNode("./properties/property[@name='type']");
-			if (viewType != null && viewType.attributeValue("value", "").equals("blog")) {
-				//This is a blog view, so get the extra blog beans
-				getBlogEntries(folder, entries, model, req, response);
-			}
-		}
-		model.put(WebKeys.FOLDER_TOOLBAR, buildFolderToolbar(req, response, folder, forumId).getToolbar());
+		model.put(WebKeys.FOLDER_TOOLBAR, buildFolderToolbar(req, response, 
+				folder, folderId.toString()).getToolbar());
 		return BinderHelper.getViewListingJsp();
 	}  
 	protected Toolbar buildFolderToolbar(RenderRequest request, RenderResponse response, Folder folder, String forumId) {

@@ -68,12 +68,14 @@ public class ListProfilesController extends   SAbstractController {
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
 		Map users = null;
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(ObjectKeys.LISTING_MAX_PAGE_SIZE));
 		if (searchFilterName != null && !searchFilterName.equals("")) {
 			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
-			Document searchFilter = (Document)searchFilters.get(searchFilterName);
-			users = getProfileModule().getUsers(binderId, ObjectKeys.LISTING_MAX_PAGE_SIZE, searchFilter);
+			options.put(ObjectKeys.SEARCH_SEARCH_FILTER, (Document)searchFilters.get(searchFilterName));
+			users = getProfileModule().getUsers(binderId, options);
 		} else {
-			users = getProfileModule().getUsers(binderId, ObjectKeys.LISTING_MAX_PAGE_SIZE);
+			users = getProfileModule().getUsers(binderId, options);
 		}
 		ProfileBinder binder = (ProfileBinder)users.get(ObjectKeys.BINDER);
 		model.put(WebKeys.BINDER, binder);

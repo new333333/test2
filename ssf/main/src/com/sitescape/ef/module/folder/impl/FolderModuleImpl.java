@@ -346,17 +346,14 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 
    
     public Map getFolderEntries(Long folderId) {
-        return getFolderEntries(folderId, 0);
+        Map options = new HashMap();
+        return getFolderEntries(folderId, options);
     }
 
-    public Map getFolderEntries(Long folderId, int maxChildEntries) {
-    	return getFolderEntries(folderId, 0, null);
-    }
-    
-    public Map getFolderEntries(Long folderId, int maxChildEntries, Document searchFilter) {
+    public Map getFolderEntries(Long folderId, Map options) {
         Folder folder = loadFolder(folderId);
         //search query does access checks
-        return loadProcessor(folder).getBinderEntries(folder, entryTypes, maxChildEntries, searchFilter);
+        return loadProcessor(folder).getBinderEntries(folder, entryTypes, options);
     }
     
 

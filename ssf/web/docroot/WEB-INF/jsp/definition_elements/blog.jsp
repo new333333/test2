@@ -117,39 +117,21 @@ function ss_loadEntry(obj,id) {
 </div>
 <br>
 <script type="text/javascript">
+var rn = Math.round(Math.random()*999999)
 function ss_blog_sidebar_date_callback() {
-	alert('callback')
+	var url = "<ssf:url 
+    folderId="${ssDefinitionEntry.id}" 
+    action="view_folder_listing" >
+    </ssf:url>";
+	var formObj = document.ss_blog_sidebar_date_form
+	url += "\&year=" + formObj.ss_blog_sidebar_date_year.value;
+	url += "\&month=" + formObj.ss_blog_sidebar_date_month.value;
+	url += "\&day=" + formObj.ss_blog_sidebar_date_date.value;
+	url += "\&rn=" + rn++
+	self.location.href = url;
 }
 </script>
-<div class="folder">
-  <table class="ss_blog" width="100%">
-    <tr>
-      <td class="ss_blog_content" width="80%" valign="top">
-		  <c:forEach var="entry" items="${ssBlogEntries}" >
-			<div class="ss_blog_content" style="margin:2px 8px 20px 2px;">
-			  <ssf:displayConfiguration configDefinition="${entry.value.ssConfigDefinition}" 
-			    configElement="${entry.value.ssConfigElement}" 
-			    configJspStyle="view"
-			    processThisItem="true" 
-			    entry="${entry.value.entry}" />
-			</div>
-		  </c:forEach>
-	  </td>
-	  <td class="ss_blog_sidebar" width="20%" valign="top">
-		<span class="ss_bold"><ssf:nlt tag="blog.calendar"/></span>
-		<br>
-		<div id="ss_blog_sidebar_date_popup"></div>
-		<form name="ss_blog_sidebar_date_form" style="display:inline;">
-		  <ssf:datepicker id="ss_blog_sidebar_date" 
-            calendarDivId="ss_blog_sidebar_date_popup"
-            formName="ss_blog_sidebar_date_form"
-            immediateMode="true" initDate="<%= new Date() %>"
-			callbackRoutine="ss_blog_sidebar_date_callback" />
-        </form>
-        <br>
-        <br>
-		<span class="ss_bold"><ssf:nlt tag="blog.archives"/></span>
-	  </td>
-    </tr>
-  </table>
+
+<div class="folder" id="ss_blog_folder_div">
+<%@ include file="/WEB-INF/jsp/definition_elements/blog/blog_folder_listing.jsp" %>
 </div>

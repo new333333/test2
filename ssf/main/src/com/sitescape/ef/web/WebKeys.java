@@ -257,6 +257,7 @@ public class WebKeys {
     public static final String SEARCH_FORM_SEARCH_FILTERS="ss_searchSearchForms";
     public static final String SEARCH_FORM_SEARCH_FILTER_DATA="ss_searchSearchFormData";
     public static final String SEARCH_FORM_SELECTED_FILTER_NAME="ss_selectedSearchForm";
+    public static final String SEARCH_SEARCH_SORT_BY="sortBy";
     public static final String SEEN_MAP="ssSeenMap";
     public static final String SELECTED_GROUPS="ssSelectedGroups";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";

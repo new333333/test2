@@ -199,6 +199,8 @@ function CalendarPopup() {
 	c.offsetX = -152;
 	c.offsetY = 25;
 	c.autoHide();
+	c.showCancelButton = true;
+	c.calendarAlwaysShown = false;
 	// Calendar-specific properties
 	c.monthNames = new Array("January","February","March","April","May","June","July","August","September","October","November","December");
 	c.monthAbbreviations = new Array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
@@ -243,6 +245,8 @@ function CalendarPopup() {
 	c.showYearNavigation = CP_showYearNavigation;
 	c.showCalendar = CP_showCalendar;
 	c.hideCalendar = CP_hideCalendar;
+	c.alwaysShowCalendar = CP_alwaysShowCalendar;
+	c.noShowCancelButton = CP_noShowCancelButton;
 	c.getStyles = getCalendarStyles;
 	c.refreshCalendar = CP_refreshCalendar;
 	c.getCalendar = CP_getCalendar;
@@ -371,6 +375,7 @@ function CP_showYearNavigationInput() { this.isShowYearNavigationInput = (argume
 
 // Hide a calendar object
 function CP_hideCalendar() {
+	if (this.calendarAlwaysShown) return;
 	if (arguments.length > 0) { 
 		if (window.popupWindowObjects[arguments[0]] && window.popupWindowObjects[arguments[0]].hidePopup) window.popupWindowObjects[arguments[0]].hidePopup(); 
 	} else { this.hidePopup(); }
@@ -402,6 +407,13 @@ function CP_showCalendar(anchorname) {
 	this.showPopup(anchorname);
 	}
 
+function CP_alwaysShowCalendar() {
+	this.calendarAlwaysShown = true;
+	this.alwaysShowPopup();
+}
+function CP_noShowCancelButton() {
+	this.showCancelButton = false;
+}
 // Simple method to interface popup calendar with a text-entry box
 function CP_select(inputobj, linkname, format) {
 	var selectedDate=(arguments.length>3)?arguments[3]:null;
@@ -644,10 +656,12 @@ function CP_getCalendar() {
         result += 'HREF="javascript:'+windowref+this.returnFunction
 		result += '('+display_year_current+','+display_month_current+','+display_date_current+');'+windowref+'CP_hideCalendar(\''+this.index+'\');">'
 		result += this.okText+'</A>'
-        result += '&nbsp;&nbsp;&nbsp;'
-        result += '<A CLASS="'+this.cssPrefix+'cpTodayText" '
-        result += 'HREF="javascript:'+windowref+'CP_hideCalendar(\''+this.index+'\');">'
-		result += this.cancelText+'</A>'
+		if (this.showCancelButton) {
+	        result += '&nbsp;&nbsp;&nbsp;'
+	        result += '<A CLASS="'+this.cssPrefix+'cpTodayText" '
+	        result += 'HREF="javascript:'+windowref+'CP_hideCalendar(\''+this.index+'\');">'
+			result += this.cancelText+'</A>'
+		}
         result += '</td></tr>'
         result += '</TABLE>\n';
 	}

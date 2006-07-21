@@ -207,8 +207,13 @@ function PopupWindow_showPopup(anchorname) {
 		this.refresh();
 		}
 	}
+//Always show popup
+function PopupWindow_alwaysShowPopup() {
+	this.popupAlwaysShown = true;
+}
 // Hide the popup
 function PopupWindow_hidePopup() {
+	if (this.popupAlwaysShown) return;
 	if (this.divName != null && document.getElementById(this.divName) != null) {
 		if (this.use_gebi) {
 			document.getElementById(this.divName).style.visibility = "hidden";
@@ -322,6 +327,7 @@ function PopupWindow() {
 	this.populated = false;
 	this.visible = false;
 	this.autoHideEnabled = false;
+	this.popupAlwaysShown = false;
 	
 	this.contents = "";
 	this.url="";
@@ -350,6 +356,7 @@ function PopupWindow() {
 	this.refresh = PopupWindow_refresh;
 	this.showPopup = PopupWindow_showPopup;
 	this.hidePopup = PopupWindow_hidePopup;
+	this.alwaysShowPopup = PopupWindow_alwaysShowPopup;
 	this.setSize = PopupWindow_setSize;
 	this.isClicked = PopupWindow_isClicked;
 	this.autoHide = PopupWindow_autoHide;
