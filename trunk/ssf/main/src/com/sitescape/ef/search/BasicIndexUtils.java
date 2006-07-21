@@ -152,5 +152,11 @@ public class BasicIndexUtils {
         }
         
         doc.add(racField);
-    }    
+    } 
+    
+    public static String buildAclTag(String tag, String aclId)
+    {
+    	String aclTag = BasicIndexUtils.TAG_ACL_PRE + aclId + BasicIndexUtils.TAG + tag;
+    	return aclTag;
+    }
 }

@@ -32,7 +32,7 @@ public class QueryBuilder {
 	public static final String INCLUSIVE_ATTRIBUTE = "inclusive";
 	public static final String DISTANCE_ATTRIBUTE = "distance";
 	public static final String ASCENDING_ATTRIBUTE = "ascending";
-
+	public static final String TAG_NAME_ATTRIBUTE = "tagname";
 	
 	public static final String QUERY_ELEMENT = "QUERY";
 	public static final String AND_ELEMENT = "AND";
@@ -44,11 +44,14 @@ public class QueryBuilder {
 	public static final String RANGE_START = "START";
 	public static final String RANGE_FINISH = "FINISH";
 	public static final String USERACL_ELEMENT = "USERACL";
+	public static final String PERSONALTAGS_ELEMENT = "PERSONALTAGS";
 	public static final String FIELD_ELEMENT = "FIELD";
 	public static final String FIELD_TERMS_ELEMENT = "TERMS";
 	public static final String ASCENDING_TRUE = "TRUE";
 	public static final String INCLUSIVE_TRUE = "TRUE";
 	public static final String EXACT_PHRASE_TRUE = "TRUE";
+	public static final String TAG_ELEMENT = "TAG";
+	
 
     
 	public SearchObject buildQuery(Document domQuery) {
@@ -157,6 +160,9 @@ public class QueryBuilder {
 				}
 				qString += ")";
 			}
+			else if (operator.equals(PERSONALTAGS_ELEMENT)) {
+				qString += "(" + processPERSONALTAGS(element) + ")";
+			}
 			else if (operator.equals(FIELD_ELEMENT)) {
 				qString += processFIELD(element);
 			}
@@ -220,7 +226,31 @@ public class QueryBuilder {
 		so.setSortBy(fields);
 		//return fields;
 	}
-
+	private String processPERSONALTAGS(Element element) {
+		String ptagString = "";	
+		//Always check for aclreaddef
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Set principalIds = user.computePrincipalIds();
+		
+		List children = element.elements();
+		int kidCount = children.size();
+		
+		for (int i = 0; i < kidCount; i++) {
+			Element child = (Element)children.get(i);
+			if (child.getName().equalsIgnoreCase(TAG_ELEMENT)) {
+				String tagName = child.attributeValue(TAG_NAME_ATTRIBUTE);
+				if (tagName == null || tagName.equals("")) continue;
+				// Always check for aclreaddef
+				if (i > 0) ptagString += " OR ";
+				ptagString += " " + BasicIndexUtils.buildAclTag(tagName, BasicIndexUtils.READ_ACL_ALL) + " ";
+				for(Iterator iter = principalIds.iterator(); iter.hasNext();) {
+					ptagString += " OR " + BasicIndexUtils.buildAclTag(tagName, ((String)iter.next()).toString()) + " ";
+				}
+			}
+		}
+		return ptagString;
+	}
+	
 	private String processRANGE(Element element) {
 
 		boolean inclusive = false;
