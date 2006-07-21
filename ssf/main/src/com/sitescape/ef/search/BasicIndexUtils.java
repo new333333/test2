@@ -33,7 +33,9 @@ public class BasicIndexUtils {
     
     // Defines field values
     public static final String READ_ACL_ALL = "all";
-    public static final String TAG_ACL_PRE = "TAGACL:";
+    public static final String TAG = "TAG";
+    public static final String TAG_ACL_PRE = "ACL";
+    
     
     // The following fields represent valid values for DOC_TYPE_FIELD.
     
