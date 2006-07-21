@@ -280,7 +280,7 @@ public class EntryIndexUtils {
 		for (Iterator iter=pubTags.iterator(); iter.hasNext();) {
 			Tag thisTag = (Tag)iter.next();
 			indexableTags += " " + thisTag.getName();
-			aclTags += " " + BasicIndexUtils.TAG_ACL_PRE + BasicIndexUtils.READ_ACL_ALL + ":" + thisTag.getName() + " ";
+			aclTags += " " + BasicIndexUtils.TAG_ACL_PRE + BasicIndexUtils.READ_ACL_ALL + BasicIndexUtils.TAG + thisTag.getName() + " ";
 		}
 	
 		// now index the private tags (just the tag_acl field)
@@ -291,7 +291,10 @@ public class EntryIndexUtils {
     
     	Field tagField = new Field(BasicIndexUtils.TAG_FIELD, indexableTags, true, true, true);
     	doc.add(tagField);
-
+    	
+    	tagField = BasicIndexUtils.allTextField(indexableTags);
+    	doc.add(tagField);
+    	
     	tagField = new Field(BasicIndexUtils.ACL_TAG_FIELD, aclTags, true, true, true);
     	doc.add(tagField);
     }
