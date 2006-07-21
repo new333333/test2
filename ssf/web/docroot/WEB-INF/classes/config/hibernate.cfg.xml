@@ -23,8 +23,8 @@
 		<property name="jdbc.use_scrollable_resultset">true</property>
 		<property name="cglib.use_reflection_optimizer">true</property>
 		<property name="cache.provider_class">com.sitescape.ef.util.EhCacheProvider</property>
+		<!-- Set the following two properties to false when running under production since it affect performance -->
 		<property name="show_sql">true</property>
-		<!-- Set this property to false when running under production since it may affect performance -->
 		<property name="hibernate.generate_statistics">true</property>
 	
 		<!-- Sitescape Mappings -->
