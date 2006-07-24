@@ -672,7 +672,7 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
 			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
-			if (DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
+			if (DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@name='entryBlogView']") == false) {
 				DefinitionUtils.getDefaultEntryView(entry, model);
 			}
 			SeenMap seen = getProfileModule().getUserSeenMap(null);

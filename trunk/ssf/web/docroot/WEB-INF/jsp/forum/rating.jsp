@@ -7,7 +7,8 @@
 	if (rating != null) i_rating = Math.round(rating);
 %>
 <div id="${ss_ratingDivId}" style="margin:0px; padding:0px;">
-<table><tbody><tr><%
+<table style="border-spacing:0px; border-width:thin;"><tbody><tr>
+<%
 	for (int i = 0; i < i_rating; i++) {
 %>
   <td><a style="text-decoration: none;" 

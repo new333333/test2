@@ -16,8 +16,8 @@
 %>
 <div style="display:inline;" id="<portlet:namespace/>ss_filter_select">
 <span class="ss_bold"><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span>
-<div style="display:inline; border:1px solid black;">
-<form name="ss_filterSelect"
+<div style="display:inline; border:1px solid black; padding:2px 0px 1px 0px;">
+<form name="ss_filterSelect" style="display:inline;"
 	action="<portlet:actionURL windowState="maximized">
 		<portlet:param name="action" value="${action}"/>
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
