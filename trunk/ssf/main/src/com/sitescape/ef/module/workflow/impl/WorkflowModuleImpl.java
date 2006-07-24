@@ -339,7 +339,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    	//	Add the standard events (if they aren't there already)
 	    	Action enterNodeEvent = null;
 	    	if (!actions.containsKey("enterNodeEvent")) {
-	    		enterNodeEvent = setupAction(pD, "enterNodeEvent", "com.sitescape.ef.module.workflow.EnterEvent");
+	    		enterNodeEvent = setupAction(pD, "enterNodeEvent", "com.sitescape.ef.module.workflow.EnterExitEvent");
 	    	} else {
 	    		enterNodeEvent = (Action) actions.get("enterNodeEvent");
 	    	}
@@ -347,7 +347,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	       	//	Add the standard events (if they aren't there already)
 	    	Action leaveNodeEvent = null;
 	    	if (!actions.containsKey("leaveNodeEvent")) {
-	    		leaveNodeEvent = setupAction(pD, "leaveNodeEvent", "com.sitescape.ef.module.workflow.ExitEvent");
+	    		leaveNodeEvent = setupAction(pD, "leaveNodeEvent", "com.sitescape.ef.module.workflow.EnterExitEvent");
 	    	} else {
 	    		leaveNodeEvent = (Action) actions.get("leaveNodeEvent");
 	    	}
@@ -422,7 +422,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    			} else {
 	    				nodesMap.remove(stateName);
 	    			}	
-	    			List notifications = (List)state.selectNodes("./item[@name='notifications']/item[@name='entryNotification']");
+	    			List notifications = WorkflowUtils.getEnterNotifications(def, stateName);
 	    			if (!notifications.isEmpty()) {
 	    				//make sure notify action exists
 	    				addEnterEventAction(context, stateNode, notifyAction);
@@ -430,7 +430,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    				// remove any old notifyAction for this node
 	    				removeEnterEventAction(context, stateNode, notifyAction);
 	    			}
-	    			notifications = (List)state.selectNodes("./item[@name='notifications']/item[@name='exitNotification']");
+	    			notifications = WorkflowUtils.getExitNotifications(def, stateName);
 	    			if (!notifications.isEmpty()) {
 	    				//make sure notify action exists
 	    				addExitEventAction(context, stateNode, notifyAction);

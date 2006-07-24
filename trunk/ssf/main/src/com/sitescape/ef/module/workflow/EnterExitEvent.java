@@ -1,62 +1,73 @@
 package com.sitescape.ef.module.workflow;
-import java.util.Date;
-import java.util.List;
-
-import org.dom4j.Element;
-
-import org.jbpm.graph.def.Node;
-import org.jbpm.graph.def.ProcessDefinition;
-import org.jbpm.graph.exe.ExecutionContext;
-import org.jbpm.graph.exe.ProcessInstance;
-import org.jbpm.graph.exe.Token;
-import org.jbpm.context.exe.ContextInstance;
-import org.jbpm.db.JbpmSession;
-
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.WorkflowSupport;
-import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
-import com.sitescape.util.Validator;
 /**
  * Handle setting variables, starting/stoping threads and recording the state when
- * a new node is entered.  This is done as part on one action so we can maintain the ordering
+ * a new node is entered or cancelling timers when a node is exitted.
+ * This is done as part on one action so we can maintain the ordering
  * specified in the definition and reduce the amount of synchronization needed between the
  * JBPM definition and the Sitescape definition.
  * @author Janet McCann
  *
  */
-public class EnterEvent extends AbstractActionHandler {
+import java.util.Date;
+import java.util.List;
+
+import org.dom4j.Element;
+import org.jbpm.context.exe.ContextInstance;
+import org.jbpm.db.JbpmSession;
+import org.jbpm.graph.def.Event;
+import org.jbpm.graph.def.Node;
+import org.jbpm.graph.def.ProcessDefinition;
+import org.jbpm.graph.exe.ExecutionContext;
+import org.jbpm.graph.exe.ProcessInstance;
+import org.jbpm.graph.exe.Token;
+
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.domain.WorkflowSupport;
+import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
+import com.sitescape.util.Validator;
+
+public class EnterExitEvent extends AbstractActionHandler {
 	private static final long serialVersionUID = 1L;
 	  
-	//Indexing the entry is handled by the code that initiates a transition/nodeEnter
+	//Indexing the entry is handled by the code that initiates a transition/nodeEnter/nodeExit
 	//Because mutiple states can be effected, we don't want to re-index
 	//each time.  Only need one at the end of the transaction
-	public void execute( ExecutionContext executionContext ) throws Exception {
+
+	public void execute(ExecutionContext executionContext) throws Exception {
 		ContextInstance ctx = executionContext.getContextInstance();
 		Token token = executionContext.getToken();
 		Long id = new Long(token.getId());
 		String state = token.getNode().getName();
 		WorkflowSupport entry = loadEntry(ctx);
 		WorkflowState ws = entry.getWorkflowState(id);
+		if (infoEnabled) logger.info("Workflow event (" + executionContext.getEvent().getEventType() + ")");
 		if (ws != null) {
-			Date current = new Date();
-			HistoryStamp stamp = new HistoryStamp(RequestContextHolder.getRequestContext().getUser(), current);
-			if (entry.getWorkflowChange() == null) {
-				entry.setWorkflowChange(stamp);
-			} else if ((entry.getWorkflowChange().getDate() != null) && current.after(entry.getWorkflowChange().getDate())) {
-				entry.setWorkflowChange(stamp);
+			List items;
+			if (Event.EVENTTYPE_NODE_ENTER.equals(executionContext.getEvent().getEventType())) {
+				Date current = new Date();
+				HistoryStamp stamp = new HistoryStamp(RequestContextHolder.getRequestContext().getUser(), current);
+				if (entry.getWorkflowChange() == null) {
+					entry.setWorkflowChange(stamp);
+				} else if ((entry.getWorkflowChange().getDate() != null) && current.after(entry.getWorkflowChange().getDate())) {
+					entry.setWorkflowChange(stamp);
+				}
+				//	record when we enter the state
+				ws.setWorkflowChange(stamp);
+				ws.setState(state);
+				if (infoEnabled) logger.info("Workflow event (" + executionContext.getEvent().getEventType() + ") recorded: " + state);
+				items  = WorkflowUtils.getOnEntry(ws.getDefinition(), state);
+			} else {
+				//cancel timers associated with this state.
+				token.getProcessInstance().getSchedulerInstance().cancel("onDataValue", token);
+				items  = WorkflowUtils.getOnExit(ws.getDefinition(), state);				
 			}
-			//record when we enter the state
-			ws.setWorkflowChange(stamp);
-			ws.setState(state);
-			if (infoEnabled) logger.info("Workflow event (" + executionContext.getEvent().getEventType() + ") recorded: " + state);
-			List items  = WorkflowUtils.getItems(ws.getDefinition(), state);
 			boolean check = false;
 			for (int i=0; i<items.size(); ++i) {
 				Element item = (Element)items.get(i);
 	   			String name = item.attributeValue("name","");
-	   			if ("onEntry".equals(name)) {
+	   			if ("variable".equals(name)) {
 	   				if (TransitionUtils.setVariables(item, executionContext, entry, ws)) {
 	   					check = true;
 	   				}
@@ -72,7 +83,7 @@ public class EnterEvent extends AbstractActionHandler {
 			
 		}
 	}
-	  
+
 	protected void startThread(Element item, ExecutionContext executionContext, WorkflowSupport entry, WorkflowState currentWs) {
 		//Get the "startState" property
 		Element threadEle = (Element)item.selectSingleNode("./properties/property[@name='name']");
@@ -141,4 +152,3 @@ public class EnterEvent extends AbstractActionHandler {
 		return false;
 	}
 }
-

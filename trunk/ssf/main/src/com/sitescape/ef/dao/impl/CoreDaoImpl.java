@@ -154,11 +154,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   				.executeUpdate();
    		   			
  		   			//delete tags for these entries
- 		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where entityId=:entityId and entityType=:entityType")
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where entity_id=:entityId and entity_type=:entityType")
      	   				.setLong("entityId", binder.getId())
 		   			  	.setParameter("entityType", binder.getEntityIdentifier().getEntityType().getValue())
 		   				.executeUpdate();
 
+		   			//delete tags owned by these entries
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where owner_id=:entityId and owner_type=:entityType")
+     	   				.setLong("entityId", binder.getId())
+		   			  	.setParameter("entityType", binder.getEntityIdentifier().getEntityType().getValue())
+		   				.executeUpdate();
  		   			//will this be a problem if the entry is proxied??
 		   			session.createQuery("DELETE com.sitescape.ef.domain.Binder where id=" + binder.getId())
 		   				.executeUpdate();
@@ -210,6 +215,17 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	   			//delete ratings/visits for these entries
 	   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId=:entityId and entityType=:entityType")
 	   				.setLong("entityId", entity.getId())
+	   			  	.setParameter("entityType", entity.getEntityIdentifier().getEntityType().getValue())
+	   				.executeUpdate();
+		   		//delete tags for these entries
+		   		session.createQuery("Delete com.sitescape.ef.domain.Tag where entity_id=:entityId and entity_type=:entityType")
+ 	   				.setLong("entityId", entity.getId())
+	   			  	.setParameter("entityType", entity.getEntityIdentifier().getEntityType().getValue())
+	   				.executeUpdate();
+
+	   			//delete tags owned by these entries
+		   		session.createQuery("Delete com.sitescape.ef.domain.Tag where owner_id=:entityId and owner_type=:entityType")
+ 	   				.setLong("entityId", entity.getId())
 	   			  	.setParameter("entityType", entity.getEntityIdentifier().getEntityType().getValue())
 	   				.executeUpdate();
     	   		//will this be a problem if the entry is proxied??

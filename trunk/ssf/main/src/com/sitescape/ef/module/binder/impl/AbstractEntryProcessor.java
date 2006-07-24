@@ -500,7 +500,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         ArrayList childEntries = getBinderEntries_entriesArray(hits);
        	Map model = new HashMap();
         model.put(ObjectKeys.BINDER, binder);      
-        model.put(ObjectKeys.ENTRIES, childEntries);
+        model.put(ObjectKeys.SEARCH_ENTRIES, childEntries);
         model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.length()));
         return model;
    }

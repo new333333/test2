@@ -57,7 +57,6 @@ import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.TagUtil;
@@ -343,19 +342,58 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
  
  
  
-
-   
-    public Map getFolderEntries(Long folderId) {
-        Map options = new HashMap();
-        return getFolderEntries(folderId, options);
+  
+    public Map getEntries(Long folderId) {
+        return getEntries(folderId, new HashMap());
     }
 
-    public Map getFolderEntries(Long folderId, Map options) {
+    public Map getEntries(Long folderId, Map options) {
         Folder folder = loadFolder(folderId);
         //search query does access checks
         return loadProcessor(folder).getBinderEntries(folder, entryTypes, options);
     }
     
+    public Map getFullEntries(Long folderId) {
+    	return getFullEntries(folderId, new HashMap());
+    }
+    
+    public Map getFullEntries(Long folderId, Map options) {
+        //search query does access checks
+        Map result =  getEntries(folderId, options);
+        //now load the full database object
+        List childEntries = (List)result.get(ObjectKeys.SEARCH_ENTRIES);
+        ArrayList ids = new ArrayList();
+        for (int i=0; i<childEntries.size();) {
+        	Map searchEntry = (Map)childEntries.get(i);
+        	String docId = (String)searchEntry.get(EntryIndexUtils.DOCID_FIELD);
+        	try {
+        		Long id = Long.valueOf(docId);
+        		ids.add(id);
+        		++i;
+        	} catch (Exception ex) {
+        		childEntries.remove(i);
+        	}
+        }
+        List entries = getCoreDao().loadObjects(ids, FolderEntry.class, null);
+        //return them in the same order
+        List fullEntries = new ArrayList(entries.size());
+        for (int i=0; i<childEntries.size(); ++i) {
+        	Map searchEntry = (Map)childEntries.get(i);
+        	String docId = (String)searchEntry.get(EntryIndexUtils.DOCID_FIELD);
+       		Long id = Long.valueOf(docId);
+       		for (int j=0; j<entries.size(); ++j) {
+       			FolderEntry fe = (FolderEntry)entries.get(j);
+       			if (id.equals(fe.getId())) {
+       				fullEntries.add(fe);
+       				entries.remove(j);
+       				break;
+       			}
+       		}
+        }
+        	
+        result.put(ObjectKeys.FULL_ENTRIES, fullEntries);
+        return result;
+    }
 
     public Map getUnseenCounts(List folderIds) {
     	//search engine will do acl checks

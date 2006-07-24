@@ -313,9 +313,15 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
 		   				.executeUpdate();
 		   			//delete tags for these entries
- 		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where entityId in " + 
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where entity_id in " + 
  			   				"(select p.id from com.sitescape.ef.domain.FolderEntry p where " +
-		   			  			" p.parentBinder=:folder) and entityType=:entityType")
+		   			  			" p.parentBinder=:folder) and entity_type=:entityType")
+		   			  	.setEntity("folder", folder)
+		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
+		   				.executeUpdate();
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where owner_id in " + 
+ 			   				"(select p.id from com.sitescape.ef.domain.FolderEntry p where " +
+		   			  			" p.parentBinder=:folder) and owner_type=:entityType")
 		   			  	.setEntity("folder", folder)
 		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
 		   				.executeUpdate();
@@ -352,11 +358,16 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
     		   				.executeUpdate();
     		   			//delete tags for these entries
-     		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where entityId in (:pList) and entityType=:entityType")
+     		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where entity_id in (:pList) and entity_type=:entityType")
          	   				.setParameterList("pList", ids)
     		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
     		   				.executeUpdate();
-            	   		session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where id in (:pList)")
+     		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where owner_id in (:pList) and owner_type=:entityType")
+     	   					.setParameterList("pList", ids)
+     	   					.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
+     	   					.executeUpdate();
+
+     		   			session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where id in (:pList)")
         	   				.setParameterList("pList", ids)
         	   				.executeUpdate();
            	  			//if these are ever cached in secondary cache, clear them out.      	   				

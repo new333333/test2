@@ -18,6 +18,7 @@ import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.util.Validator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -454,31 +455,10 @@ public class BuildDefinitionDivs extends TagSupport {
 					Element optionItem = (Element) this.configDocument.getRootElement().selectSingleNode("item[@name='"+optionName+"']");
 					if (optionItem != null) {
 						//See if multiple are allowed
-						if (!optionItem.attributeValue("multipleAllowed", "").equalsIgnoreCase("false") || 
-								sourceRoot.selectSingleNode("//item[@name='"+optionName+"']") == null) {
-							if (!optionsSeen.containsKey(optionName)) {
-								sb.append("<li>");
-								sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+optionId+"', '"+optionName+"');return false;\">");
-								sb.append(NLT.getDef(optionItem.attributeValue("caption", optionName)));
-								sb.append("</a>");
-								//See if this item has any help
-								Element help = (Element) optionItem.selectSingleNode("./help");
-								if (help != null) {
-									helpDivCount++;
-									hb.append("<div id=\"help_div_" + rootElementId);
-									hb.append(Integer.toString(helpDivCount));
-									hb.append("\" class=\"ss_helpPopUp\">\n");
-									hb.append("<span>");
-									hb.append(NLT.getDef(help.getText()));
-									hb.append("</span>\n</div>\n");
-									sb.append(" <a name=\"help_div_" + rootElementId);
-									sb.append(Integer.toString(helpDivCount));
-									sb.append("_a\" onClick=\"ss_activateMenuLayer('help_div_ + rootElementId");
-									sb.append(Integer.toString(helpDivCount));
-									sb.append("');return false;\"><img src=\""+helpImgUrl+"\"/></a>\n");
-								}
-								sb.append("</li>\n");
-								optionsSeen.put(optionName, optionName);
+						if (!optionsSeen.containsKey(optionName)) {
+							if (testOption(optionItem, sourceRoot, optionName)) {
+								addOption(sb, hb, optionItem, optionId, optionName);
+								optionsSeen.put(optionName, optionName);								
 							}
 						}
 					}
@@ -508,30 +488,9 @@ public class BuildDefinitionDivs extends TagSupport {
 						String optionSelectId = optionSelect.attributeValue("id", optionSelect.attributeValue("name"));
 						String optionSelectName = optionSelect.attributeValue("name");
 						//See if multiple are allowed
-						if (!optionSelect.attributeValue("multipleAllowed", "").equalsIgnoreCase("false") ||
-								sourceRoot.selectSingleNode("//item[@name='"+optionSelectName+"']") == null) {
-							if (!optionsSeen.containsKey(optionSelectName)) {
-								sb.append("<li>");
-								sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+optionSelectId+"', '"+optionSelectName+"');return false;\">");
-								sb.append(NLT.getDef(optionSelect.attributeValue("caption", optionSelectName)));
-								sb.append("</a>");
-								//See if this item has any help
-								Element help = (Element) optionSelect.selectSingleNode("./help");
-								if (help != null) {
-									helpDivCount++;
-									hb.append("<div id=\"help_div_" + rootElementId);
-									hb.append(Integer.toString(helpDivCount));
-									hb.append("\" class=\"ss_helpPopUp\">\n");
-									hb.append("<span>");
-									hb.append(NLT.getDef(help.getText()));
-									hb.append("</span>\n</div>\n");
-									sb.append(" <a name=\"help_div_" + rootElementId);
-									sb.append(Integer.toString(helpDivCount));
-									sb.append("_a\" onClick=\"ss_activateMenuLayer('help_div_" + rootElementId);
-									sb.append(Integer.toString(helpDivCount));
-									sb.append("');return false;\"><img src=\""+helpImgUrl+"\"/></a>\n");
-								}
-								sb.append("</li>\n");
+						if (!optionsSeen.containsKey(optionSelectName)) {
+							if (testOption(optionSelect, sourceRoot, optionSelectName)) {
+								addOption(sb, hb, optionSelect, optionSelectId, optionSelectName);
 								optionsSeen.put(optionSelectName, optionSelectName);
 							}
 						}
@@ -548,6 +507,44 @@ public class BuildDefinitionDivs extends TagSupport {
 				//sb.append("</script>\n");
 			}
 		}
+	}
+	//see if new item will meet uniqueness constaints
+	protected boolean testOption(Element item, Element sourceRoot, String name) {
+		if (item.attributeValue("multipleAllowed", "").equalsIgnoreCase("false") && 
+				sourceRoot.selectSingleNode("//item[@name='"+name+"']") != null) return false;
+		
+		if (rootElement == null) return true;
+		
+		String unq = item.attributeValue("unique");
+		if (Validator.isNull(unq)) return true; 
+		List results = rootElement.selectNodes(unq);
+		if ((results == null) || results.isEmpty()) return true;
+		return false;
+		
+	}
+	protected void addOption(StringBuffer sb, StringBuffer hb, Element item, String id, String name) {
+		sb.append("<li>");
+		sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+id+"', '"+name+"');return false;\">");
+		sb.append(NLT.getDef(item.attributeValue("caption", name)));
+		sb.append("</a>");
+		//See if this item has any help
+		Element help = (Element) item.selectSingleNode("./help");
+		if (help != null) {
+			helpDivCount++;
+			hb.append("<div id=\"help_div_" + rootElementId);
+			hb.append(Integer.toString(helpDivCount));
+			hb.append("\" class=\"ss_helpPopUp\">\n");
+			hb.append("<span>");
+			hb.append(NLT.getDef(help.getText()));
+			hb.append("</span>\n</div>\n");
+			sb.append(" <a name=\"help_div_" + rootElementId);
+			sb.append(Integer.toString(helpDivCount));
+			sb.append("_a\" onClick=\"ss_activateMenuLayer('help_div_" + rootElementId);
+			sb.append(Integer.toString(helpDivCount));
+			sb.append("');return false;\"><img src=\""+helpImgUrl+"\"/></a>\n");
+		}
+		sb.append("</li>\n");
+		
 	}
 	private void buildPropertiesDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		//Build the properties div

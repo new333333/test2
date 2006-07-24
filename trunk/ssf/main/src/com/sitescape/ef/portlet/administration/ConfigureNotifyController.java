@@ -1,41 +1,41 @@
 package com.sitescape.ef.portlet.administration;
-import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletMode;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.PortletRequest;
 import javax.portlet.WindowState;
-import javax.portlet.PortletMode;
-import javax.portlet.PortletURL;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.module.shared.DomTreeBuilder;
-import com.sitescape.ef.module.shared.ObjectBuilder;
-import com.sitescape.util.StringUtil;
-import com.sitescape.util.Validator;
-import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.web.util.ScheduleHelper;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.Notification;
+import com.sitescape.ef.domain.NotificationDef;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.NotificationDef;
-import com.sitescape.ef.domain.Notification;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.jobs.ScheduleInfo;
+import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.ef.web.util.ScheduleHelper;
+import com.sitescape.util.StringUtil;
+import com.sitescape.util.Validator;
 public class ConfigureNotifyController extends  SAbstractController  {
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
@@ -76,22 +76,24 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			model.put(WebKeys.FOLDER, folder);
 	       	User u = RequestContextHolder.getRequestContext().getUser();
 
-			List groups = getProfileModule().getGroups(u.getParentBinder().getId());
-			model.put(WebKeys.GROUPS, groups);
+			Map groups = getProfileModule().getGroups(u.getParentBinder().getId());
+			List groupEntries = (List)groups.get(ObjectKeys.SEARCH_ENTRIES);
+			model.put(WebKeys.GROUPS, groupEntries);
 			ScheduleInfo config = getAdminModule().getNotificationConfig(folderId);
 			model.put(WebKeys.SCHEDULE_INFO, config);
 			NotificationDef notify = folder.getNotificationDef();
 			model.put(WebKeys.NOTIFICATION, notify); 
 			Map users = getProfileModule().getUsers(u.getParentBinder().getId());
 			//list of search results = map
-			List userEntries = (List)users.get(ObjectKeys.ENTRIES);
+			List userEntries = (List)users.get(ObjectKeys.SEARCH_ENTRIES);
 			model.put(WebKeys.USERS, userEntries);
 			List defaultDistribution = folder.getNotificationDef().getDefaultDistribution();
 			Map gList = new HashMap();
 			Map uList = new HashMap();
 			for (int i=0; i<defaultDistribution.size(); ++i) {
 				Principal id = ((Notification)defaultDistribution.get(i)).getSendTo();
-				if (groups.contains(id)) gList.put(id.getId(), Boolean.TRUE); 
+				if (id.getEntityIdentifier().getEntityType().name().equals(EntityType.group.name()))
+						 gList.put(id.getId(), Boolean.TRUE); 
 				else uList.put(id.getId().toString(), Boolean.TRUE);
 			}
 		

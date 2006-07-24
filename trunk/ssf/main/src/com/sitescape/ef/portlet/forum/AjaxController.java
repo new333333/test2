@@ -388,7 +388,7 @@ public class AjaxController  extends SAbstractController {
     	} else {
     		users = getProfileModule().getUsers(u.getParentBinder().getId(), options);
     	}
-		model.put(WebKeys.USERS, users.get(ObjectKeys.ENTRIES));
+		model.put(WebKeys.USERS, users.get(ObjectKeys.SEARCH_ENTRIES));
 		model.put(WebKeys.USER_IDS_TO_SKIP, userIdsToSkip);
 		model.put(WebKeys.USER_SEARCH_USER_GROUP_TYPE, userGroupType);
 		model.put("listDivId", listDivId);

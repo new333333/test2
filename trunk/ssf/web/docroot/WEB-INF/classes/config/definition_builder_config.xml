@@ -1074,18 +1074,15 @@
 			<property name="description" caption="__description" type="textarea" />
 		</properties>
 		<options>
+			<option name="onEntry"/>
 			<option name="transitions" initial="true" />
 			<option name="accessControls" initial="true" />
-			<option name="notifications" initial="true" />
-			<option name="onEntry" />
-			<option name="onExit" />
+			<option name="onExit"/>
 			<option name="workflowQuestion" />
-			<option name="startParallelThread" />
-			<option name="stopParallelThread" />
 		</options>
 	</item>
 	
-	<item name="transitions" caption="__transitions" canBeDeleted="false" multipleAllowed="false">
+	<item name="transitions" caption="__transitions" canBeDeleted="false" unique="./item[@name='transitions']">
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
@@ -1227,7 +1224,7 @@
 		</properties>
 	</item>
 	
-	<item name="accessControls" caption="__accessControls" canBeDeleted="false" multipleAllowed="false">
+	<item name="accessControls" caption="__accessControls" canBeDeleted="false" unique="./item[@name='accessControls']">
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
@@ -1276,16 +1273,35 @@
 		</properties>
 	</item>
 	
-	<item name="notifications" caption="__notifications" canBeDeleted="false" multipleAllowed="false">
+
+	
+	<item name="onEntry" caption="__onEntry" unique="./item[@name='onEntry']">
 		<operations>
 			<operation name="addOption" caption="__add" />
+			<operation name="deleteItem" caption="__delete" />
 		</operations>
 		<options>
-			<option_select path="//item[@category='notificationsLayout']" />
+			<option name="variable" caption="__workflow_variable_set" />
+			<option name="startParallelThread" />
+			<option name="stopParallelThread" />
+			<option name="notifications" />
 		</options>
 	</item>
 	
-	<item name="entryNotification" caption="__entry_notification" category="notificationsLayout">
+	<item name="onExit" caption="__onExit" unique="./item[@name='onExit']">
+		<operations>
+			<operation name="addOption" caption="__add" />
+			<operation name="deleteItem" caption="__delete" />
+		</operations>
+		<options>
+			<option name="variable" caption="__workflow_variable_set" />
+			<option name="startParallelThread" />
+			<option name="stopParallelThread" />
+			<option name="notifications" />
+		</options>
+	</item>
+	
+	<item name="notifications" caption="__notifications">
 		<properties>
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
 			<property name="userGroupNotification" caption="__userGroup" type="userGroupSelect" />
@@ -1296,32 +1312,7 @@
 		</properties>
 	</item>
 	
-	<item name="exitNotification" caption="__exit_notification" category="notificationsLayout">
-		<properties>
-			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
-			<property name="userGroupNotification" caption="__userGroup" type="userGroupSelect" />
-			<property name="subjText" caption="__notification_subject_text" type="text" />
-			<property name="appendTitle" caption="__notification_append_title" type="checkbox" />
-			<property name="bodyText" caption="__notification_body_text" type="text" />
-			<property name="appendBody" caption="__notification_append_Body" type="checkbox" />
-		</properties>
-	</item>
-	
-	<item name="onEntry" caption="__onEntry" canBeDeleted="true" multipleAllowed="false">
-		<options>
-			<option name="variable" caption="__workflow_variable_set" />
-			<option_select path="//item[@category='onEntryExitLayout']" />
-		</options>
-	</item>
-	
-	<item name="onExit" caption="__onExit" canBeDeleted="true" multipleAllowed="false">
-		<options>
-			<option name="variable" caption="__workflow_variable_set" />
-			<option_select path="//item[@category='onEntryExitLayout']" />
-		</options>
-	</item>
-	
-	<item name="startParallelThread" type="parallelThread" caption="__startParallelThread" >
+	<item name="startParallelThread" type="parallelThread" caption="__startParallelThread">
 		<properties>
 			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" />
 		</properties>
@@ -1334,7 +1325,7 @@
 		</properties>
 	</item>
 	
-	<item name="stopParallelThread" caption="__stopParallelThread" >
+	<item name="stopParallelThread" caption="__stopParallelThread">
 		<properties>
 			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" />
 		</properties>

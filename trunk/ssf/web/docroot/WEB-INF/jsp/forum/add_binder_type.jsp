@@ -36,13 +36,14 @@
   <span class="ss_bold"><ssf:nlt tag="binder.add.folder.select.type" 
   text="Select the type of folder:"/></span>
   <br/>
-      <input type="radio" name="binderDefinitionType" value="5" onClick="if (ss_getDefinitions) {ss_getDefinitions('5')};" ><ssf:nlt tag="binder.add.folder.select.type.folder" 
+      <input type="radio" name="binderDefinitionType" value="5" onClick="if (<portlet:namespace/>_getDefinitions) {<portlet:namespace/>_getDefinitions('5')};" ><ssf:nlt tag="binder.add.folder.select.type.folder" 
 		  text="Folder" /><br/>
-      <input type="radio" name="binderDefinitionType" value="9" onClick="if (ss_getDefinitions) {ss_getDefinitions('9')};" ><ssf:nlt tag="binder.add.folder.select.type.file" 
+      <input type="radio" name="binderDefinitionType" value="9" onClick="if (<portlet:namespace/>_getDefinitions) {<portlet:namespace/>_getDefinitions('9')};" ><ssf:nlt tag="binder.add.folder.select.type.file" 
 		  text="File" />
 
 </fieldset>
-<br/>  <div id="ss_definitions"></div>
+<br/>  
+<div id="ss_definitions"></div>
 
 <br/>
 
@@ -53,7 +54,7 @@
 </form>
 </div>
 <script type="text/javascript">
-function ss_getDefinitions(type) {
+function <portlet:namespace/>_getDefinitions(type) {
 	ss_setupStatusMessageDiv()
 	var url = "<ssf:url 
     	adapter="true" 
@@ -65,21 +66,12 @@ function ss_getDefinitions(type) {
     	<ssf:param name="ajax" value="true"/> 
     	</ssf:url>";
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addNamedFormElementsByFormID('<portlet:namespace/>fm','binderDefinitionType');
+	ajaxRequest.setQueryString("binderDefinitionType=" + type);
+	ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postRequest);
-	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 }
-function ss_preRequest(obj) {
-	alert('preRequest: ' + obj.getQueryString());
-}
-function ss_postRequest(obj) {
-	//alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
-	//See if there was an error
-	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		if (self.ss_showNotLoggedInMsg) self.ss_showNotLoggedInMsg();
-	}
-}
+
 </script>
 <ssf:ifadapter>
 </body>
