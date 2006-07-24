@@ -16,7 +16,7 @@ function ss_loadEntry(obj,id) {
 </div>
 <br>
 <div class="folder">
-<table class="ss_style" width="100%">
+<table border="1" class="ss_style" width="100%">
 <tr>
   <th align="left">Title</th>
   <th align="left">Date</th>

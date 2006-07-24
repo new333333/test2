@@ -14,6 +14,9 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
 
+<% // Navigation links %>
+<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+
 <% // Toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
 <c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
