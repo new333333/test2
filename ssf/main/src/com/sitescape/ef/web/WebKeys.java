@@ -118,6 +118,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_SAVE_COLUMN_POSITIONS = "save_column_positions";
 	public static final String FORUM_OPERATION_SAVE_ENTRY_WIDTH = "save_entry_width";
 	public static final String FORUM_OPERATION_SAVE_ENTRY_HEIGHT = "save_entry_height";
+	public static final String FORUM_OPERATION_SAVE_RATING = "save_rating";
 	public static final String FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE = "get_search_form_filter_type";
 	public static final String FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS = "get_searchForm_entry_elements";
 	public static final String FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES = "get_searchForm_element_values";
@@ -246,6 +247,7 @@ public class WebKeys {
     public static final String PUBLIC_PROFILE_ENTRY_DEFINITIONS="ssPublicProfileEntryDefinitions";
     public static final String PUBLIC_WORKFLOW_DEFINITIONS="ssPublicWorkflowDefinitions";
     public static final String PUBLIC_WORKSPACE_DEFINITIONS="ssPublicWorkspaceDefinitions";
+    public static final String RATING_DIV_ID="ss_ratingDivId";
     public static final String RELOAD_URL="ss_reloadUrl";
     public static final String SCHEDULE="ssSchedule";
     public static final String SCHEDULE_INFO="ssScheduleInfo";

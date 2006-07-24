@@ -28,8 +28,10 @@ import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
@@ -55,6 +57,8 @@ public class AjaxController  extends SAbstractController {
 				ajaxAddFavoritesCategory(request, response, formData);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_FAVORITES)) {
 				ajaxSaveFavorites(request, response, formData);
+			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_RATING)) {
+				ajaxSaveRating(request, response, formData);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
 					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT) ||
 					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
@@ -182,6 +186,8 @@ public class AjaxController  extends SAbstractController {
 
 		} else if(op.equals(WebKeys.FORUM_OPERATION_SHOW_BLOG_REPLIES)) {
 			return ajaxGetBlogReplies(request, response, context);
+		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_RATING)) {
+			return ajaxGetEntryRating(request, response, context);
 		}
 		
 		return ajaxReturn(request, response, context);
@@ -235,6 +241,15 @@ public class AjaxController  extends SAbstractController {
 		Favorites f = new Favorites(favorites);
 		favorites = f.saveOrder(movedItemId, favoritesList);
 		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
+	}
+	
+	private void ajaxSaveRating(ActionRequest request, ActionResponse response,
+			Map formData) {
+		//Save the order of the favorites list
+		String rating = ((String[])formData.get("rating"))[0];
+		String entryId = ((String[])formData.get("entryId"))[0];
+		String binderId = ((String[])formData.get("binderId"))[0];
+		getFolderModule().setUserRating(new Long(binderId), new Long(entryId), new Long(rating));
 	}
 	
 	private ModelAndView ajaxGetFavoritesTree(RenderRequest request, 
@@ -642,6 +657,7 @@ public class AjaxController  extends SAbstractController {
 			RenderResponse response, Map context) throws Exception {
 		Map model = (Map) context.get("model");
 		Map statusMap = (Map) context.get("statusMap");
+		Map formData = (Map) context.get("formData");
 		String op = (String) context.get("op");
 		String op2 = (String) context.get("op2");
 		String componentId = op2;
@@ -656,7 +672,46 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
 			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
+			if (DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
+				DefinitionUtils.getDefaultEntryView(entry, model);
+			}
+			SeenMap seen = getProfileModule().getUserSeenMap(null);
+			model.put(WebKeys.SEEN_MAP, seen);
+			List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
+			if (replies != null)  {
+				replies.add(entry);
+				for (int i=0; i<replies.size(); i++) {
+					FolderEntry reply = (FolderEntry)replies.get(i);
+					//if any reply is not seen, add it to list - try to avoid update transaction
+					if (!seen.checkIfSeen(reply)) {
+						getProfileModule().setSeen(null, replies);
+						break;
+					}
+				}
+			} else if (!seen.checkIfSeen(entry)) {
+				getProfileModule().setSeen(null, entry);
+			}
 		}
 		return new ModelAndView("definition_elements/blog/view_blog_replies_content", model);
+	}
+	private ModelAndView ajaxGetEntryRating(RenderRequest request, 
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map statusMap = (Map) context.get("statusMap");
+		Map formData = (Map) context.get("formData");
+		String op = (String) context.get("op");
+		String op2 = (String) context.get("op2");
+		String componentId = op2;
+		String ratingDivId = ((String[])formData.get("ratingDivId"))[0];
+		model.put(WebKeys.RATING_DIV_ID, ratingDivId);
+		model.put(WebKeys.AJAX_STATUS, statusMap);
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		Entry entry = getFolderModule().getEntry(binderId, entryId);
+		if (entry != null) {
+			model.put(WebKeys.DEFINITION_ENTRY, entry);
+		}
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/rating_return", model);
 	}
 }
