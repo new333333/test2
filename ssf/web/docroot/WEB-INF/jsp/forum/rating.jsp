@@ -3,8 +3,10 @@
   scope="request" />
 <%
 	int i_rating = 0;
-	Float rating = ssDefinitionEntry.getRating();
-	if (rating != null) i_rating = Math.round(rating);
+	if (ssDefinitionEntry.getAverageRating() != null) {
+		Float rating = ssDefinitionEntry.getAverageRating().getAverage();
+		if (rating != null) i_rating = Math.round(rating);
+	}
 %>
 <div id="${ss_ratingDivId}" style="margin:0px; padding:0px;">
 <table style="border-spacing:0px; border-width:thin;"><tbody><tr>
@@ -32,12 +34,14 @@
 <%
 	}
 %>
-<c:if test="${!empty ssDefinitionEntry.rating}">
+<c:if test="${!empty ssDefinitionEntry.averageRating}">
 <td><span class="ss_italic ss_smallprint"> (<ssf:nlt 
   tag="popularity.rating.average" 
-  />: <c:out value="${ssDefinitionEntry.rating}"/>)</span></td>
+  />: <c:out value="${ssDefinitionEntry.averageRating.average}"/>) <ssf:nlt 
+  tag="popularity.rating.count" 
+  />: <c:out value="${ssDefinitionEntry.averageRating.count}"/></span></td>
 </c:if>
-<c:if test="${empty ssDefinitionEntry.rating}">
+<c:if test="${empty ssDefinitionEntry.averageRating}">
 <td><span class="ss_italic ss_smallprint"> (<ssf:nlt 
   tag="popularity.rating.none" />)</span></td>
 </c:if>

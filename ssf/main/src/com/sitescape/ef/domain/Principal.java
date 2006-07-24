@@ -14,6 +14,7 @@ import java.util.Set;
 
 import com.sitescape.util.Validator;
 import com.sitescape.ef.util.CollectionUtil;
+import com.sitescape.ef.NotSupportedException;
 
 /**
 * @hibernate.class table="SS_Principals" dynamic-update="true" node="Principal"
@@ -156,6 +157,20 @@ public abstract class Principal extends Entry  {
 		}
      } 	
 
+    //overload 
+    public AverageRating getAverageRating() {
+   	 	return null;
+    }
+    public void setAverageRating(AverageRating rating) {
+    	throw new NotSupportedException();
+    }
+    //overload 
+    public Long getPopularity() {
+   	 	return null;
+    }
+    public void setPopularity(Long popularity) {
+       	throw new NotSupportedException();
+    }
  
     public String toString() {
     	return zoneName + ":" + name;

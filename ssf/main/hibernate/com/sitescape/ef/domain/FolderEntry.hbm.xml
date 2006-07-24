@@ -78,7 +78,10 @@
     </component>
     <property name="lockedFileCount" access="field"/>
     <property name="definitionType"/>
-    <property name="rating"/>
+    <component name="averageRating" class="com.sitescape.ef.domain.AverageRating">
+      <property name="average" column="rating_average"/>
+      <property name="count" column="rating_count"/>
+    </component>
     <property name="popularity"/>
   </class>
 </hibernate-mapping>

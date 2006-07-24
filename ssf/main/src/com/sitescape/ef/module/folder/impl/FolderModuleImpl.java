@@ -20,8 +20,10 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.domain.Attachment;
+import com.sitescape.ef.domain.AverageRating;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Folder;
@@ -556,28 +558,37 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	}
 	public void setUserRating(Long folderId, Long entryId, long value) {
 		FolderEntry entry = getEntry(folderId, entryId);
-		EntityIdentifier id = entry.getEntityIdentifier();
-		//set user rating
-       	getProfileModule().setRating(id, value);
-       	//update entry average
-     	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
-    	// see if title exists for this folder
-     	float result = getCoreDao().averageColumn(Rating.class, "rating", new FilterControls(ratingAttrs, cfValues));
-     	entry.setRating(Float.valueOf(result));
-		
+		setRating(entry, value);
 	}
 	public void setUserRating(Long folderId, long value) {
 		Folder folder = loadFolder(folderId);
-		EntityIdentifier id = folder.getEntityIdentifier();
-		//set user rating
-       	getProfileModule().setRating(id, value);
-       	//update folder average
+		setRating(folder, value);
+	} 
+	private void setRating(DefinableEntity entity, long value) {
+		EntityIdentifier id = entity.getEntityIdentifier();
+		//update entity average
      	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
+		Rating rating = getProfileModule().getRating(id);
+		if (rating == null) {
+		   	User user = RequestContextHolder.getRequestContext().getUser();
+      		rating = new Rating(user.getId(), id);
+			getCoreDao().save(rating);
+		} 
+		//set user rating
+		rating.setRating(value);
     	// see if title exists for this folder
-     	float result = getCoreDao().averageColumn(Rating.class, "rating", new FilterControls(ratingAttrs, cfValues));
-     	folder.setRating(Float.valueOf(result));
-		
-	}    
+		FilterControls filter = new FilterControls(ratingAttrs, cfValues);
+     	float result = getCoreDao().averageColumn(Rating.class, "rating", filter);
+     	int count = getCoreDao().countObjects(Rating.class,filter);
+     	AverageRating avg = entity.getAverageRating();
+     	if (avg == null) {
+     		avg = new AverageRating();
+     		entity.setAverageRating(avg);
+     	}
+     	avg.setAverage(result);
+   		avg.setCount(count);
+ 			
+	}
 	public void setUserVisit(Long folderId, Long entryId) {
 		FolderEntry entry = getEntry(folderId, entryId);
 		setUserVisit(entry);
