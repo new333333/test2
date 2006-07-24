@@ -19,6 +19,7 @@ import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Folder;
@@ -215,10 +216,12 @@ public class ViewEntryController extends  SAbstractController {
 		}
 		SeenMap seen = getProfileModule().getUserSeenMap(null);
 		model.put(WebKeys.ENTRY_ID, entryId);
+		model.put(WebKeys.BINDER_ID, folder.getId().toString());
 		model.put(WebKeys.SEEN_MAP, seen);
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.FOLDER, folder);
+		model.put(WebKeys.BINDER, (Binder) folder);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
 		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(folderId,Long.valueOf(entryId)));
