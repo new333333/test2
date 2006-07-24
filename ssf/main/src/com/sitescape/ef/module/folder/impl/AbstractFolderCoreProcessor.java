@@ -359,6 +359,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         // Add Doc number
         IndexUtils.addDocNumber(indexDoc, (FolderEntry)entry);
 
+        // Add sortable Doc number
+        IndexUtils.addSortNumber(indexDoc, (FolderEntry)entry);
+
         // Add the folder Id
         IndexUtils.addFolderId(indexDoc, (Folder)binder);
                

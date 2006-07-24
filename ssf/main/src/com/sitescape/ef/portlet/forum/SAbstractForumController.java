@@ -28,6 +28,7 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
@@ -121,22 +122,31 @@ public class SAbstractForumController extends SAbstractController {
 			Map<String,Object>model) throws PortletRequestBindingException {
 		Map folderEntries;
 		Long folderId = folder.getId();
-		Element view = (Element)model.get(WebKeys.CONFIG_ELEMENT);
-		Element viewType = null;
-		if (view != null) 
-			viewType = (Element)view.selectSingleNode("./properties/property[@name='type']");
+		String forumId = folderId.toString();
 
-		//See if this folder is to be viewed as a blog
-		if (viewType != null && viewType.attributeValue("value", "").equals("blog")) {
+		String viewType = "";
+		Element view = (Element)model.get(WebKeys.CONFIG_ELEMENT);
+		if (view != null) {
+			Element viewElement = (Element)view.selectSingleNode("./properties/property[@name='type']");
+			if (viewElement != null)
+				viewType = viewElement.attributeValue("value", "");
+		}
+		if (viewType.equals("blog")) {
 			//This is a blog view, set the default sort order
 			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) 
 				options.put(ObjectKeys.SEARCH_SORT_BY, EntryIndexUtils.CREATION_DATE_FIELD);
 			if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
 				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
-		}
-		
-		folderEntries = getFolderModule().getFolderEntries(folderId, options);
+			folderEntries = getFolderModule().getFullEntries(folderId, options);
 
+		} else {
+			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) { 
+				options.put(ObjectKeys.SEARCH_SORT_BY, IndexUtils.SORTNUMBER_FIELD);
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+			} else if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+			folderEntries = getFolderModule().getEntries(folderId, options);
+		}
 		//Build the beans depending on the operation being done
 		model.put(WebKeys.FOLDER, folder);
 		Folder topFolder = folder.getTopFolder();
@@ -145,21 +155,22 @@ public class SAbstractForumController extends SAbstractController {
 		} else {
 			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder()));			
 		}
-		ArrayList entries = (ArrayList) folderEntries.get(ObjectKeys.ENTRIES);
+		List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		model.put(WebKeys.FOLDER_ENTRIES, entries);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 				
-		//See if this folder is to be viewed as a calendar or a blog
-		if (viewType != null && viewType.attributeValue("value", "").equals("event")) {
+		//See if this folder is to be viewed as a calendar
+		if (viewType.equals("event")) {
 			//This is a calendar view, so get the event beans
 			getEvents(folder, entries, model, req, response);
-		} else if (viewType != null && viewType.attributeValue("value", "").equals("blog")) {
-			//This is a blog view, so get the extra blog beans
-			getBlogEntries(folder, entries, model, req, response);
 		}
-		model.put(WebKeys.FOLDER_TOOLBAR, buildFolderToolbar(req, response, 
-				folder, folderId.toString()).getToolbar());
+		//See if this folder is to be viewed as a blog
+		if (viewType.equals("blog")) {
+			//This is a blog view, so get the extra blog beans
+			getBlogEntries(folder, (List)folderEntries.get(ObjectKeys.FULL_ENTRIES), model, req, response);
+		}
+		model.put(WebKeys.FOLDER_TOOLBAR, buildFolderToolbar(req, response, folder, forumId).getToolbar());
 		return BinderHelper.getViewListingJsp();
 	}  
 	protected Toolbar buildFolderToolbar(RenderRequest request, RenderResponse response, Folder folder, String forumId) {
@@ -318,7 +329,7 @@ public class SAbstractForumController extends SAbstractController {
 	 * Returns: side-effects the bean "model" and adds a key called CALENDAR_EVENTDATES which is a
 	 * hashMap whose keys are dates and whose values are lists of events that occur on the given day.
 	 */
-	protected void getEvents(Folder folder, ArrayList entrylist, Map model, RenderRequest req, RenderResponse response) {
+	protected void getEvents(Folder folder, List entrylist, Map model, RenderRequest req, RenderResponse response) {
         User user = RequestContextHolder.getRequestContext().getUser();
 		String folderId = folder.getId().toString();
 		Iterator entryIterator = entrylist.listIterator();
@@ -695,36 +706,27 @@ public class SAbstractForumController extends SAbstractController {
 		model.put(WebKeys.CALENDAR_VIEWBEAN, monthBean);
 	}
 
-	protected void getBlogEntries(Folder folder, ArrayList entrylist, Map model, RenderRequest req, RenderResponse response) {
+	protected void getBlogEntries(Folder folder, List entrylist, Map model, RenderRequest req, RenderResponse response) {
 		Map entries = new TreeMap();
 		model.put(WebKeys.BLOG_ENTRIES, entries);
-		Map folderEntries = null;
 		Iterator entryIterator = entrylist.listIterator();
 		while (entryIterator.hasNext()) {
-			HashMap e = (HashMap) entryIterator.next();
-			Long entryId = Long.valueOf((String)e.get("_docId"));
-			
-			if (!entryId.equals("")) {
-				folderEntries  = getFolderModule().getEntryTree(folder.getId(), entryId);
-				if (folderEntries != null) {
-					FolderEntry entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
-					Map entryMap = new HashMap();
-					entries.put(String.valueOf(entryId), entryMap);
-					entryMap.put("entry", entry);
-					Definition currentDef = entry.getEntryDef();
-					entryMap.put(WebKeys.CONFIG_DEFINITION, null);
-					entryMap.put(WebKeys.CONFIG_ELEMENT, null);
-					if (currentDef != null) {
-						Document configDoc = currentDef.getDefinition();
-						if (configDoc != null) { 
-							Element configRoot = configDoc.getRootElement();
-							if (configRoot != null) {
-								Element configEle = (Element) configRoot.selectSingleNode("//item[@name='entryBlogView']");
-								if (configEle != null) {
-									entryMap.put(WebKeys.CONFIG_ELEMENT, configEle);
-									entryMap.put(WebKeys.CONFIG_DEFINITION, configDoc);
-								}
-							}
+			FolderEntry entry  = (FolderEntry) entryIterator.next();
+			Map entryMap = new HashMap();
+			entries.put(entry.getId().toString(), entryMap);
+			entryMap.put("entry", entry);
+			Definition currentDef = entry.getEntryDef();
+			entryMap.put(WebKeys.CONFIG_DEFINITION, null);
+			entryMap.put(WebKeys.CONFIG_ELEMENT, null);
+			if (currentDef != null) {
+				Document configDoc = currentDef.getDefinition();
+				if (configDoc != null) { 
+					Element configRoot = configDoc.getRootElement();
+					if (configRoot != null) {
+						Element configEle = (Element) configRoot.selectSingleNode("//item[@name='entryBlogView']");
+						if (configEle != null) {
+							entryMap.put(WebKeys.CONFIG_ELEMENT, configEle);
+							entryMap.put(WebKeys.CONFIG_DEFINITION, configDoc);
 						}
 					}
 				}

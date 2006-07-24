@@ -1443,4 +1443,14 @@ function ss_debug(text) {
 		debugTextarea.scrollTop = 1000;
 	}
 }
-
+//common processing for callback after ajax call
+function ss_postRequest(obj) {
+	// alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
+	//See if there was an error
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		if (obj.getData('timeout') != "timeout") {
+			//This call wasn't made from a timeout. So, give error message
+			if (self.ss_showNotLoggedInMsg) self.ss_showNotLoggedInMsg();
+		}
+	}
+}

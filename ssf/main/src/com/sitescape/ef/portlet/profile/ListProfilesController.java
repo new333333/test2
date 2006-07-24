@@ -19,6 +19,7 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
@@ -26,6 +27,7 @@ import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
+import com.sitescape.util.Validator;
 
 public class ListProfilesController extends   SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
@@ -70,7 +72,9 @@ public class ListProfilesController extends   SAbstractController {
 		Map users = null;
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(ObjectKeys.LISTING_MAX_PAGE_SIZE));
-		if (searchFilterName != null && !searchFilterName.equals("")) {
+		options.put(ObjectKeys.SEARCH_SORT_BY, EntryIndexUtils.TITLE1_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+		if (!Validator.isNull(searchFilterName)) {
 			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 			options.put(ObjectKeys.SEARCH_SEARCH_FILTER, (Document)searchFilters.get(searchFilterName));
 			users = getProfileModule().getUsers(binderId, options);
@@ -80,7 +84,7 @@ public class ListProfilesController extends   SAbstractController {
 		ProfileBinder binder = (ProfileBinder)users.get(ObjectKeys.BINDER);
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FOLDER, binder);
-		model.put(WebKeys.ENTRIES, users.get(ObjectKeys.ENTRIES));
+		model.put(WebKeys.ENTRIES, users.get(ObjectKeys.SEARCH_ENTRIES));
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, userProperties);

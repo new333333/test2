@@ -189,72 +189,6 @@ public class WorkflowUtils {
 		return conditions;
     }
    
-    public static List getParallelThreadStarts(Definition wfDef, String stateName) {
-		List parallelExecutions = new ArrayList();
-		Document wfDoc = wfDef.getDefinition();
-		Element wfRoot = wfDoc.getRootElement();
-		//Find the current state in the definition
-		Element stateEle = getState(wfRoot, stateName);
-		if (stateEle != null) {
-			//Build a list of all parallel executions for this state
-			List startParallelExecutions = stateEle.selectNodes(
-					"./item[@name='startParallelThread']");
-			if (startParallelExecutions != null) {
-				for (int j = 0; j < startParallelExecutions.size(); j++) {
-					//Get the "startState" property
-					Element startParallelThreadEle = (Element) ((Element) 
-							startParallelExecutions.get(j)).selectSingleNode(
-							"./properties/property[@name='name']");
-					String parallelThreadName = startParallelThreadEle.attributeValue("value", "");
-            		if (!parallelThreadName.equals("")) {
-            			Element parallelThreadEle = (Element) wfRoot.selectSingleNode("//item[@name='parallelThread']/properties/property[@name='name' and @value='"+parallelThreadName+"']");
-            			if (parallelThreadEle != null) {
-            				parallelThreadEle = parallelThreadEle.getParent().getParent();
-            				Element startStateEle = (Element) parallelThreadEle.selectSingleNode("./properties/property[@name='startState']");
-        					if (startStateEle != null && parallelThreadEle != null) {
-        						String startStateValue = startStateEle.attributeValue("value", "");
-        						if (!startStateValue.equals("") && !parallelThreadName.equals("")) {
-        							//We have a start state. 
-        							//TODO Check that the user has the right to execute this transition
-        							
-        							//Ok, add this transition to the map
-        							Map parallelThread = new HashMap();
-        							parallelThread.put(ObjectKeys.WORKFLOW_PARALLEL_THREAD_NAME, parallelThreadName);
-        							parallelThread.put(ObjectKeys.WORKFLOW_PARALLEL_THREAD_START_STATE, startStateValue);
-        							parallelExecutions.add(parallelThread);
-        						}
-            				}
-            			}
-            		}
-				}
-			}
-		}
-		return parallelExecutions;
-    }
-    public static List getParallelThreadStops(Definition wfDef, String stateName) {
-		List parallelExecutions = new ArrayList();
-		Document wfDoc = wfDef.getDefinition();
-		Element wfRoot = wfDoc.getRootElement();
-		//Find the current state in the definition
-		Element stateEle = getState(wfRoot, stateName);
-		if (stateEle != null) {
-			//Build a list of all parallel executions for this state
-			List stopParallelExecutions = stateEle.selectNodes(
-					"./item[@name='stopParallelThread']");
-			if (stopParallelExecutions != null) {
-				for (int j = 0; j < stopParallelExecutions.size(); j++) {
-					Element startParallelThreadEle = (Element) ((Element) 
-							stopParallelExecutions.get(j)).selectSingleNode(
-							"./properties/property[@name='name']");
-					String parallelThreadName = startParallelThreadEle.attributeValue("value", "");
-            		if (!parallelThreadName.equals("")) {
-            			parallelExecutions.add(parallelThreadName);
-            		}
-				}
-			}
-		}
-		return parallelExecutions;
-    }    
 
     public static String getInitialState(Definition wfDef) {
 		Document workflowDoc = wfDef.getDefinition();
@@ -377,7 +311,7 @@ public class WorkflowUtils {
 		//Find the current state in the definition
 		Element stateEle = getState(wfDoc.getRootElement(), stateName);
 		if (stateEle != null) {  	
-			List notifications = (List)stateEle.selectNodes("./item[@name='notifications']/item[@name='entryNotification']");
+			List notifications = (List)stateEle.selectNodes("./item[@name='onEntry']/item[@name='notifications']");
 			return getNotifications(notifications);
 		}
 		return new ArrayList();
@@ -388,7 +322,7 @@ public class WorkflowUtils {
 		//Find the current state in the definition
 		Element stateEle = getState(wfDoc.getRootElement(), stateName);
 		if (stateEle != null) {  	
-			List notifications = (List)stateEle.selectNodes("./item[@name='notifications']/item[@name='exitNotification']");
+			List notifications = (List)stateEle.selectNodes("./item[@name='onExit']/item[@name='notifications']");
 			return getNotifications(notifications);
 		}
 		return new ArrayList();
@@ -426,7 +360,28 @@ public class WorkflowUtils {
     	return result;
     	
     }
- 
+    public static List getOnEntry(Definition wfDef, String stateName) {
+    	Document wfDoc = wfDef.getDefinition();
+		//Find the current state in the definition
+		Element stateEle = getState(wfDoc.getRootElement(), stateName);
+		if (stateEle != null) {  	
+			List items = (List)stateEle.selectNodes("./item[@name='onEntry']/item");
+			return items;
+		}
+		return new ArrayList();
+
+    }
+    public static List getOnExit(Definition wfDef, String stateName) {
+    	Document wfDoc = wfDef.getDefinition();
+		//Find the current state in the definition
+		Element stateEle = getState(wfDoc.getRootElement(), stateName);
+		if (stateEle != null) {  	
+			List items = (List)stateEle.selectNodes("./item[@name='onExit']/item");
+			return items;
+		}
+		return new ArrayList();
+
+    } 
     private static Element getState(Element wfRoot, String stateName) {
 		//Find the current state in the definition
 		Element statePropertyEle = (Element) wfRoot.selectSingleNode(

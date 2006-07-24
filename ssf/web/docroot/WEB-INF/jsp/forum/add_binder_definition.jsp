@@ -28,42 +28,9 @@
   name="<portlet:namespace/>fm" 
   method="post" >
 <input type="hidden" name="_operation" value="${operation}"/>
-<fieldset class="ss_fieldset">
 <input type="hidden" name="binderDefinitionType" value="${ssBinderDefinitionType}"/>
-<c:choose>
-<c:when test="${ssBinderDefinitionType == 8}">
-  <legend class="ss_legend"><ssf:nlt tag="binder.add.workspace.definition.legend" 
-    text="Workspace definition"/></legend>
-  <br>
-  <span class="ss_bold"><ssf:nlt tag="binder.add.workspace.select.definition" 
-  text="Select the workspace definition:"/></span>
-</c:when>
-<c:otherwise>
-  <legend class="ss_legend"><ssf:nlt tag="binder.add.folder.definition.legend" 
-    text="Folder definition"/></legend>
-  <br>
-  <span class="ss_bold"><ssf:nlt tag="binder.add.folder.select.definition" 
-  text="Select the folder definition:"/></span>
-</c:otherwise>
-</c:choose>
-  <br/>
-  <c:forEach var="item" items="${ssPublicBinderDefinitions}">
-      <c:choose>
-        <c:when test="${ssDefaultWorkspaceDefinitionId == item.value.id}">
-          <input type="radio" name="binderDefinition" value="${item.value.id}" checked/>
-          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
-        </c:when>
-        <c:otherwise>
-          <input type="radio" name="binderDefinition" value="${item.value.id}"/>
-          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
-        </c:otherwise>
-      </c:choose>
-  </c:forEach>
-
-</fieldset>
-
+<%@ include file="/WEB-INF/jsp/forum/add_binder_definition_common.jsp" %>
 <br/>
-
 	
 <input type="submit" class="ss_submit" name="selectDefBtn" value="<ssf:nlt tag="button.ok"/>">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">

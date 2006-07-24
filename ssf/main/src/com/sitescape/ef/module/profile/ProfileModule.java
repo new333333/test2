@@ -50,7 +50,7 @@ public interface ProfileModule {
      */
     public Principal getEntry(Long binderId, Long userId);
 
-    public List getGroups(Long binderId);
+    public Map getGroups(Long binderId);
     public Map getGroups(Long binderId, Map options);
 	public Collection getGroups(Set groupIds);
     public Map getUsers(Long binderId);

@@ -71,8 +71,8 @@ function <portlet:namespace/>setEnable() {
 <br /><select name="sendToGroups" id="sendToGroups" multiple size="6">
 <option value="" <c:if test="${empty ssSelectedGroups}">selected</c:if>><ssf:nlt tag="selected.none"/></option>
 <c:forEach var="group" items="${ssGroups}">
-<c:set var="id" value="${group.id}"/>
-<option value="${group.id}" <c:if test="${ssSelectedGroups[id] == true}">selected</c:if>>${group.title} (${group.name})</option>
+<c:set var="id" value="${group._docId}"/>
+<option value="${group._docId}" <c:if test="${ssSelectedGroups[id] == true}">selected</c:if>>${group.title} (${group._userName})</option>
 </c:forEach>
 </select>
 <br><br>

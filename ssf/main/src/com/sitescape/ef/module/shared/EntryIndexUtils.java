@@ -77,6 +77,9 @@ public class EntryIndexUtils {
     // Defines field values
     public static final String READ_ACL_ALL = "all";
     
+    public static final String SORT_ASC="asc";
+    public static final String SORT_DESC="descend";
+    
     public static void addTitle(Document doc, DefinableEntity entry) {
         // Add the title field
     	if (entry.getTitle() != null) {

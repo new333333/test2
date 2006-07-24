@@ -14,7 +14,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Set;
-import org.dom4j.Document;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -24,7 +23,6 @@ import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.NoGroupByTheIdException;
 import com.sitescape.ef.domain.NoUserByTheIdException;
@@ -152,14 +150,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    		}
    }  	
   
-    public List getGroups(Long binderId) {
-        ProfileBinder binder = loadBinder(binderId);
-		getAccessControlManager().checkOperation(binder,  WorkAreaOperation.READ_ENTRIES);
- 		FilterControls filter = new FilterControls();
-    	filter.setOrderBy(new OrderBy("title"));
-    	List result = getProfileDao().loadGroups(filter, RequestContextHolder.getRequestContext().getZoneName());
-    	return result;
-    }
+   public Map getGroups(Long binderId) {
+	   Map options = new HashMap();
+	   options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
+	   return getGroups(binderId, options);
+   }
  
     public Map getGroups(Long binderId, Map options) {
         ProfileBinder binder = loadBinder(binderId);

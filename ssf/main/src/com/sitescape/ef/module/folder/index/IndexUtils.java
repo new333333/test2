@@ -13,6 +13,7 @@ public class IndexUtils  {
     
     // Defines field names
     public static final String DOCNUMBER_FIELD = "_docNum";
+    public static final String SORTNUMBER_FIELD = "_sortNum";
     public static final String PARENT_FOLDERID_FIELD = "_parentFolderId";
     public static final String TOP_FOLDERID_FIELD = "_topFolderId";
     public static final String RESERVEDBYID_FIELD = "_reservedById";
@@ -25,7 +26,11 @@ public class IndexUtils  {
         Field docNumField = Field.Keyword(DOCNUMBER_FIELD, entry.getDocNumber());
         doc.add(docNumField);
     }    
-
+    public static void addSortNumber(Document doc, FolderEntry entry) {
+    	//Add the id of the creator (no, not that one...)
+        Field docNumField = Field.Keyword(SORTNUMBER_FIELD, entry.getHKey().getSortKey());
+        doc.add(docNumField);
+    } 
     public static void addFolderId(Document doc, Folder folder) {
         
     	//Add the folder parentage to the document in the index

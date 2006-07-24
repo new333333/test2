@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import org.dom4j.Document;
-
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Definition;
