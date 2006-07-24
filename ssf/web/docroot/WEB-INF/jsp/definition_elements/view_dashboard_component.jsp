@@ -19,4 +19,4 @@
 <c:set var="ssf_support_files_loaded" value="1" scope="request"/>
 
 <ssf:dashboard id="${ssDashboard.ssComponentId}"
-  type="view" configuration="${ssDashboard}"/>
+  type="viewData" configuration="${ssDashboard}"/>
