@@ -2,7 +2,6 @@ package com.sitescape.ef.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -12,7 +11,6 @@ import java.util.Set;
 
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.util.CollectionUtil;
-import com.sitescape.ef.InternalException;
 
 public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected String title="";
@@ -27,7 +25,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected Map iCustomAttributes;
     protected String iconName="";
     protected Integer definitionType=null;
-    protected Float rating=null;
+    protected AverageRating rating=null;
     protected Long popularity=null;
  
     public DefinableEntity() {
@@ -87,13 +85,13 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
    	 	this.definitionType = definitionType;
     }
     /**
-     * @hibernate.property
+     * @hibernate.component prefix="rating_"
      * @return
      */
-    public Float getRating() {
+    public AverageRating getAverageRating() {
    	 	return rating;
     }
-    public void setRating(Float rating) {
+    public void setAverageRating(AverageRating rating) {
    	 	this.rating = rating;
     }
     /**
