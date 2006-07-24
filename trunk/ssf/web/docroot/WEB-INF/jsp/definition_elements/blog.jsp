@@ -130,6 +130,34 @@ function ss_blog_sidebar_date_callback() {
 	url += "\&rn=" + rn++
 	self.location.href = url;
 }
+function ss_showBlogReplies(id) {
+	var targetDiv = document.getElementById('ss_blog_replies_' + id)
+	if (targetDiv != null) {
+		if (targetDiv.style.visibility == 'visible') {
+			targetDiv.style.visibility = 'hidden'
+			targetDiv.style.display = 'none'
+		} else {
+			targetDiv.innerHTML = "<ssf:nlt tag="Loading"/><br/>";
+			targetDiv.style.visibility = 'visible';
+			targetDiv.style.display = 'block';
+			url = "<ssf:url 
+		    	adapter="true" 
+		    	portletName="ss_forum" 
+		    	action="__ajax_request" 
+		    	actionUrl="true" >
+				<ssf:param name="binderId" value="${ssBinder.id}" />
+				<ssf:param name="operation" value="show_blog_replies" />
+		    	</ssf:url>"
+			url += "\&entryId=" + id
+			url += "\&rn=" + rn++
+			fetch_url(url, ss_showBlogRepliesCallback, id);
+		}
+	}
+}
+function ss_showBlogRepliesCallback(s, id) {
+	var targetDiv = document.getElementById('ss_blog_replies_' + id)
+	if (targetDiv != null) targetDiv.innerHTML = s;
+}
 </script>
 
 <div class="folder" id="ss_blog_folder_div">

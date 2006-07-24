@@ -50,6 +50,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
 <c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
 
+<c:set var="ss_blog_title_background_color" value="#AAAAFF" scope="request"/>
 <c:set var="ss_blog_content_background_color" value="#FFFFAA" scope="request"/>
 <c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
 
@@ -119,6 +120,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
 	<c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
 
+	<c:set var="ss_blog_title_background_color" value="#AACCFF" scope="request"/>
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
 
@@ -286,11 +288,15 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   border: ${ss_sliding_table_border_color} 1px solid;
 }
 
-.ss_blog_content {
+.ss_blog_content, .ss_blog_content table {
   background-color:${ss_blog_content_background_color};
 }
 
-.ss_blog_sidebar {
+.ss_blog_title, .ss_blog_title table {
+  background-color:${ss_blog_title_background_color};
+}
+
+.ss_blog_sidebar, .ss_blog_sidebar table {
   background-color:${ss_blog_sidebar_background_color};
 }
 
