@@ -322,11 +322,11 @@ function ss_setFavoritesPaneSize() {
   style="position:absolute; visibility:hidden; z-index:200;
   border:solid 1px black; height:200px;">
   <div>
-  <div class="ss_style" id="ss_favorites">
+  <div class="ss_style" id="ss_favorites" align="left">
 	<table id="ss_favorites_table" cellspacing="0" cellpadding="0">
 	<tbody>
 	<tr>
-	  <td class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
+	  <td align="left" class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
 	  <td align="right"><a onClick="ss_hideFavoritesPane();return false;"
         ><img border="0" src="<html:imagesPath/>box/close_off.gif"/></a></td>
 	</tr>
