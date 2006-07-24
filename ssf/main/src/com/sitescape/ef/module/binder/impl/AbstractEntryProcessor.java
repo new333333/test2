@@ -790,6 +790,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         // Add the events
         EntryIndexUtils.addEvents(indexDoc, entry);
         
+        // Add the tags for this entry
+        EntryIndexUtils.addTags(indexDoc, binder, entry);
+        
         // Add the workflows
         EntryIndexUtils.addWorkflow(indexDoc, entry);
         
