@@ -729,7 +729,18 @@ public class WebdavStoreAdapter extends AbstractXAServiceBase implements Service
                             descriptor.setResourceType(NodeRevisionDescriptor.COLLECTION_TYPE);
                             descriptor.setContentLength(0);
                         } else {
-                            descriptor.removeProperty(NodeRevisionDescriptor.RESOURCE_TYPE);
+                        	// 7/24/06 JK - Instead of removing resourcetype property to indicate
+                        	// that the uri does not represent a folder, set it to an empty
+                        	// element. This is to work around the problem seen in create method
+                        	// in ContentImpl.java (line number 565 and below). The code uses
+                        	// "merged" properties for the revision descriptor, and the absence
+                        	// of resourcetype property in new descriptor results in the default
+                        	// resourcetype property value (which is <collection/>) being remained
+                        	// in the merged map, which then subsequently causes the newly 
+                        	// created resource to be removed erroneously (see line number 788
+                        	// in storeRevisionDescriptor method of WebdavStoreAdapter class). 
+                            descriptor.setResourceType("</>");                        	
+                            //descriptor.removeProperty(NodeRevisionDescriptor.RESOURCE_TYPE);
                             long length = store.getResourceLength(uri.toString());
                             if (length != -1) {
                                 descriptor.setContentLength(length);
