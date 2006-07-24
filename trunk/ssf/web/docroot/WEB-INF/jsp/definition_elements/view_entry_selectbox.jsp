@@ -14,6 +14,3 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<div class="ss_entryContent">
-<span class="ss_gray">[ view entry textbox: this is nav and should be in the nav bar! ]</span>
-</div>
