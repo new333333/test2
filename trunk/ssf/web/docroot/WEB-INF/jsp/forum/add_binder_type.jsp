@@ -67,7 +67,7 @@ function <portlet:namespace/>_getDefinitions(type) {
     	</ssf:url>";
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.setQueryString("binderDefinitionType=" + type);
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postRequest);
 	ajaxRequest.sendRequest();  //Send the request
 }

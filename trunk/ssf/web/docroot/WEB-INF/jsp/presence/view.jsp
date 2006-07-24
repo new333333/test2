@@ -187,7 +187,7 @@ function ss_getPresenceEntry(binderId, entryId) {
 		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder",  binderId);
 		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
 		var ajaxRequest = new AjaxRequest(url);
-		ajaxRequest.setEchoDebugInfo();
+		//ajaxRequest.setEchoDebugInfo();
 		ajaxRequest.setPreRequest(ss_preRequest);
 		ajaxRequest.setPostRequest(ss_postRequest);
 		ajaxRequest.setUsePOST();
