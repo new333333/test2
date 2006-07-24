@@ -160,6 +160,23 @@ function ss_showBlogRepliesCallback(s, id) {
 }
 </script>
 
+<div style="margin:0px;">
+<div class="ss_folder_border" style="position:relative; top:2; margin:0px; 
+  border-top:solid #666666 1px; 
+  border-right:solid #666666 1px; 
+  border-left:solid #666666 1px;">
+<table cellspacing="0" cellpadding="0" width="95%">
+<tr>
+<td align="left">
+</td>
+<td align="center">
+<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
+</td>
+<td align="right">&nbsp;</td>
+</tr>
+</table>
+</div>
+</div>
 <div class="folder" id="ss_blog_folder_div">
 <%@ include file="/WEB-INF/jsp/definition_elements/blog/blog_folder_listing.jsp" %>
 </div>
