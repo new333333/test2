@@ -203,7 +203,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
   background-color: ${ss_form_background_color};
   }
     
-.ss_replies {
+.ss_replies, .ss_replies table * {
   color: ${ss_replies_text_color};
   background-color: ${ss_replies_background_color};
   }
@@ -373,7 +373,7 @@ div.ss_sliding_table_column {
 
 
 /* Folder */
-.ss_folder_border, .ss_folder_border table {
+.ss_folder_border, .ss_folder_border table , .ss_folder_border form {
   background-color: ${ss_folder_border_color} !important;
   }
 

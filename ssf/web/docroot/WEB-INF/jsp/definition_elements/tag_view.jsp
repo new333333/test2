@@ -1,6 +1,6 @@
-<div id="<portlet:namespace/>tags">
+<div align="right">
 <table>
-<tr><td>
+<tr><td align="right">
 <span><b><ssf:nlt tag="tags.tag" text="Community Tags"/>:</b></span>
 <c:if test="${!empty ssCommunityTags}">
 <b><font color="blue">
@@ -10,7 +10,7 @@
 </c:forEach>
 </c:if>
 <c:if test="${empty ssCommunityTags}">
-<ssf:nlt tag="tags.none" text="untagged"/>
+<ssf:nlt tag="tags.none" text="--none--"/>
 </c:if>
 </font></b>
 </td><td rowspan="2" >
@@ -38,7 +38,7 @@
 </c:forEach>
 </c:if>
 <c:if test="${empty ssPersonalTags}">
-<ssf:nlt tag="tags.none" text="untagged"/>
+<ssf:nlt tag="tags.none" text="--none--"/>
 </c:if>
 </font></b>
 </td></tr></table>

@@ -161,7 +161,7 @@ function ss_showBlogRepliesCallback(s, id) {
 </script>
 
 <div style="margin:0px;">
-<div class="ss_folder_border" style="position:relative; top:2; margin:0px; 
+<div class="ss_folder_border" style="position:relative; top:2; margin:0px; padding:2px 0px; 
   border-top:solid #666666 1px; 
   border-right:solid #666666 1px; 
   border-left:solid #666666 1px;">
