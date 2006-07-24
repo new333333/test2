@@ -30,6 +30,14 @@
 <span class="ss_bold"><ssf:nlt tag="forum.selectIndexForums" text="Select the forums to be re-indexed:"/></span>
 <br>
 <br>
+<a class="ss_linkButton ss_smallprint" 
+  href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', true);"
+>Select all</a>
+&nbsp;&nbsp;&nbsp;
+<a class="ss_linkButton ss_smallprint" 
+  href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', false);"
+>Clear all</a>
+<br>
 <script type="text/javascript">
 function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
 	if (self.document.<portlet:namespace />fm["id_"+forum] && self.document.<portlet:namespace />fm["id_"+forum].checked) {
@@ -39,16 +47,35 @@ function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
 	}
 	return false
 }
+function ss_selectAll(formName, prefix, newState) {
+    var totalElements = self.document[formName].elements.length;
+    for ( var i=0; i < totalElements; i++) {
+        var namestring = self.document.forms[formName].elements[i].name.substring(0,prefix.length)
+        ss_debug("namestring="+namestring)
+        if (namestring == prefix) {
+            var e = self.document.forms[formName].elements[i];
+            e.checked = newState;
+        }
+    }
+}
 </script>
 <ssf:tree treeName="wsTree" treeDocument="<%= ssWsDomTree %>"  
   rootOpen="true" multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id_" />
 
+<br>
+<a class="ss_linkButton ss_smallprint" 
+  href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', true);"
+>Select all</a>
+&nbsp;&nbsp;&nbsp;
+<a class="ss_linkButton ss_smallprint" 
+  href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', false);"
+>Clear all</a>
+<br>
 <br>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
 </form>
 <br>
-
 </td></tr></table>
 
