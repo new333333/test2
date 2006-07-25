@@ -43,8 +43,9 @@ public interface DocSink {
 	
 	/**
 	 * Use the file as resource. The value of transferOwnership specifies 
-	 * whether it is the caller or the sink object that is responsible for the 
-	 * disposal of the file resource after use.  
+	 * whether it is the caller (which is almost always the pipeline user)
+	 * or the pipeline framework that is responsible for the disposal of 
+	 * the file resource after use.  
 	 * 
 	 * @param data
 	 * @param transferOwnership if <code>true</code> the sink is responsible

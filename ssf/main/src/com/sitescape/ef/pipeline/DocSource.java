@@ -8,24 +8,32 @@ import com.sitescape.ef.UncheckedIOException;
 public interface DocSource {
 
 	/**
-	 * Returns input data as byte array if it was stored that way or 
-	 * <code>null</code> otherwise. 
+	 * Returns input data as byte array if it was stored that way (that is,
+	 * the data was stored via <code>setByteArray</code> method on the
+	 * corresponding <code>DocSink</code> object) or <code>null</code> 
+	 * otherwise. 
 	 * 
 	 * @return
 	 */
 	public byte[] getByteArray();
 	
 	/**
-	 * Returns input data as string if it was stored that way or 
-	 * <code>null</code> otherwise. 
+	 * Returns input data as string if it was stored that way (that is,
+	 * the data was stored via <code>setString</code> method on the
+	 * corresponding <code>DocSink</code> object) or <code>null</code> 
+	 * otherwise. 
 	 * 
 	 * @return
 	 */
 	public String getString();
 	
 	/**
-	 * Returns input data as file if it was stored that way or 
-	 * <code>null</code> otherwise. 
+	 * Returns input data as file if it was stored that way (that is,
+	 * the data was stored via <code>setFile</code> method on the
+	 * corresponding <code>DocSink</code> object)or <code>null</code> 
+	 * otherwise. 
+	 * <p>
+	 * The caller should not modify or delete the returned file.
 	 * 
 	 * @return
 	 */
@@ -33,8 +41,8 @@ public interface DocSource {
 	
 	/**
 	 * Returns input data as InputStream if the resource was specified
-	 * via setOutputStream method on the corresponding DocSink object,
-	 * or <code>null</code> otherwise,  
+	 * via <code>setInputStream</code> method on the corresponding 
+	 * <code>DocSink</code> object, or <code>null</code> otherwise,  
 	 * 
 	 * @return
 	 */
@@ -42,9 +50,9 @@ public interface DocSource {
 	
 	/**
 	 * Returns <code>InputStream</code> from which to read. This is meaningful
-	 * only if corresponding <code>setBuiltinOutputStream</code> method was
-	 * used on the <code>DocSink</code> object associated with this source 
-	 * object. Otherwise, it returns <code>null</code>.
+	 * only if the data was put into the <code>DocSink</code> object associated
+	 * with this source object by use of <code>getBuiltinOutputStream</code>
+	 * method. Otherwise, this method returns <code>null</code>.
 	 * <p>
 	 * The type of the backing storage (eg. RAM, file, socket, db, etc.) 
 	 * associated with the returned input stream is implementation specific.

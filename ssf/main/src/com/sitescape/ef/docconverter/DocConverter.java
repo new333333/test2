@@ -135,9 +135,9 @@ public class DocConverter implements InitializingBean, DisposableBean {
         return new ClassPathResource(filePath);
     }
 
-	public void convert(File ifp, File ofp, long timeout)
+	public boolean convert(File ifp, File ofp, long timeout)
 	{
-		convert(ifp.getAbsolutePath(), ofp.getAbsolutePath(),timeout);
+		return convert(ifp.getAbsolutePath(), ofp.getAbsolutePath(),timeout);
 	}
 	
 	/**
@@ -146,8 +146,9 @@ public class DocConverter implements InitializingBean, DisposableBean {
 	 *  @param ifp     Input path.
 	 *  @param ofp     Output path.
 	 *  @param timeout Export process timeout in milliseconds.
+	 *  @return <code>true</code> if successful, <code>false</code> otherwise
 	 */
-	public void convert(String ifp, String ofp, long timeout)
+	public boolean convert(String ifp, String ofp, long timeout)
 	{
 		String oid = configProps.getProperty(OUTPUTIDKEY);
 
@@ -162,10 +163,11 @@ public class DocConverter implements InitializingBean, DisposableBean {
         if (result.getCode() == ExportStatusCode.SCCERR_OK.getCode())
         {
 			   logger.info("Conversion Successful!" + ifp + ":" + ofp);
+			   return true;
         }
         else {
-           logger.info("Conversion Error: " + result);
-           System.out.println("Conversion Error: " + result );
+           logger.warn("Conversion Error: " + result);
+           return false; 
         }
 	}
 	
@@ -177,10 +179,10 @@ public class DocConverter implements InitializingBean, DisposableBean {
 	 *  @param ofp     Output path.
 	 */
 
-	public void convert(String ifp, String ofp)
+	public boolean convert(String ifp, String ofp)
 	{
 		// default the timeout value to 0
-		convert(ifp,ofp,0);
+		return convert(ifp,ofp,0);
 	}
 	
 }

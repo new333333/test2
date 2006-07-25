@@ -10,6 +10,7 @@
 
 	<target name="zip" depends="init-release">
 		<delete file="../${dist.dir}/${zip.name}-${docconverter.version}.zip" failonerror="false" />
+		<mkdir dir="../${dist.dir}"/>
 		<zip destfile="../${dist.dir}/${zip.name}-${docconverter.version}.zip"
 			basedir="."
 			includes="sitescape/**/*"
