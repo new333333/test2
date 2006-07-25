@@ -29,8 +29,6 @@ value="${ssDashboard.dashboard.components[ssDashboardId].data.html[0]}"/></texta
 </div>
 <br/>
 <script type="text/javascript">
-	var editorObj = dojo.widget.createWidget('data_html');
-
 function ss_htmlConfigUnload() {
 	document.getElementById('data_html').value = editorObj.getEditorContent();
 }

@@ -27,9 +27,9 @@
 
 <div class="ss_form ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="closeBtn" 
-  value="<ssf:nlt tag="button.close" text="Close"/>">
-<input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
-<input type="hidden" name="_componentId" value="">
+  value="<ssf:nlt tag="button.close" text="Close"/>"/>
+<input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}"/>
+<input type="hidden" name="_componentId" value=""/>
 <input type="hidden" name="_scope" value="${ssDashboard.scope}"/>
 <input type="hidden" name="_returnView" value="${ssDashboard.returnView}"/>
 </div>
@@ -56,7 +56,7 @@
 		<span class="ss_bold"><ssf:nlt tag="dashboard.componentTitle"/></span>
 		<br/>
 		<input type="text" name="title" size="80" 
-		  value="${ssDashboard.dashboard.components[id].title}">
+		  value="${ssDashboard.dashboard.components[id].title}"/>
 		<br/>
 		<span class="ss_bold"><ssf:nlt tag="dashboard.componentStyle"/></span>
 		<br/>
@@ -64,29 +64,29 @@
 		<c:set var="checked" value=""/>
 		<c:if test="${empty ssDashboard.dashboard.components[id].displayStyle || 
 		              ssDashboard.dashboard.components[id].displayStyle == 'shadow'}">
-		  <c:set var="checked" value="checked"/>
+		  <c:set var="checked" value="checked=\"checked\""/>
 		</c:if>
 		<input type="radio" name="displayStyle" value="shadow" ${checked}>
 		<span><ssf:nlt tag="dashboard.componentStyle.shadow"/></span>
 		<br>
 		<c:set var="checked" value=""/>
 		<c:if test="${ssDashboard.dashboard.components[id].displayStyle == 'simple'}">
-		  <c:set var="checked" value="checked"/>
+		  <c:set var="checked" value="checked=\"checked\""/>
 		</c:if>
 		<input type="radio" name="displayStyle" value="simple" ${checked}>
 		<span><ssf:nlt tag="dashboard.componentStyle.simple"/></span>
 		<br>
 		<c:set var="checked" value=""/>
 		<c:if test="${ssDashboard.dashboard.components[id].displayStyle == 'none'}">
-		  <c:set var="checked" value="checked"/>
+		  <c:set var="checked" value="checked=\"checked\""/>
 		</c:if>
 		<input type="radio" name="displayStyle" value="none" ${checked}>
 		<span><ssf:nlt tag="dashboard.componentStyle.none"/></span>
 		</div>
 		<br/>
 		<ssf:dashboard id="${id}" type="config" configuration="${ssDashboard}"/>
-		<input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
-		<input type="hidden" name="_componentId" value="${id}">
+		<input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}"/>
+		<input type="hidden" name="_componentId" value="${id}"/>
 		<input type="hidden" name="_scope" value="${ssDashboard.scope}"/>
 		<input type="hidden" name="_returnView" value="${ssDashboard.returnView}"/>
 	</div>
@@ -99,9 +99,10 @@
 <div class="ss_buttonBarLeft">
 <input type="submit" name="_saveConfigData" value="<ssf:nlt tag="button.ok"/>">
 &nbsp;&nbsp;
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="submit" class="ss_submit" name="cancelBtn" 
+  value="<ssf:nlt tag="button.cancel" text="Cancel"/>"/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="submit" name="_deleteComponent" value="<ssf:nlt tag="button.delete"/>">
+<input type="submit" name="_deleteComponent" value="<ssf:nlt tag="button.delete"/>"/>
 </form>
 </div>
 

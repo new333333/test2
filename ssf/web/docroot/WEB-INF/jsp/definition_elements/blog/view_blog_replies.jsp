@@ -4,7 +4,7 @@
 <% // Only show the replies if this is the top entry %>
 <c:if test="${empty ssDefinitionEntry.topEntry}" >
 <c:if test="${ssDefinitionEntry.totalReplyCount > 0}">
-<div>
+<div class="ss_rounded">
 <a href="javascript: ;" onClick="ss_showBlogReplies('${ssDefinitionEntry.id}');return false;">
 <span class="ss_bold"><ssf:nlt tag="blog.replyCount"/>: 
   ${ssDefinitionEntry.totalReplyCount}</span>
