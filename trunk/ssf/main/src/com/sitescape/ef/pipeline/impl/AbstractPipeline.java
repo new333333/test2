@@ -11,6 +11,10 @@ import com.sitescape.ef.pipeline.Pipeline;
 public abstract class AbstractPipeline implements Pipeline, InitializingBean, 
 	DisposableBean {
 
+	// Conduit factories and doc handlers are created and initialized only
+	// once while each invocation on the pipeline creates new conduit 
+	// instances and a pipeline invocation instance. 
+	
 	protected ConduitFactory[] conduitFactories;	// N
 	protected DocHandler[] docHandlers;			// N+1
 	

@@ -69,12 +69,16 @@ public class DocConverterHandler extends AbstractDocHandler {
 		File inputTempFile = null;
 		// Get source file, if any, handed over by the pipeline. 
 		File inputFile = source.getFile();
-		// Input data doesn't come in the form of a file. Since our doc converter
-		// can only work with a file, we must create a temporary file and store
-		// the input data in it before invoking the actual doc converter function. 
 		if(inputFile == null) {
-			inputFile = inputTempFile = TempFileUtil.createTempFile("docconverinput", SPropsUtil.getFile("temp.dir"));
-			FileCopyUtils.copy(source.getDataAsInputStream(), new BufferedOutputStream(new FileOutputStream(inputFile)));
+			// Input data doesn't come in the form of a file. Since our doc converter
+			// can only work with a file, we must create a temporary file and store
+			// the input data in it before invoking the actual doc converter function.
+			// Note: One might legitimately argue that DocSource should have offered
+			// a convenient method like getDataAsFile. However, providing such an 
+			// API makes it more complex to decide who is responsible for disposing
+			// of the file returned from such method. 
+			inputFile = inputTempFile = TempFileUtil.createTempFileWithContent
+				("docconverinput", SPropsUtil.getFile("temp.dir"), source.getDataAsInputStream());
 		}
 		
 		try {
@@ -84,25 +88,29 @@ public class DocConverterHandler extends AbstractDocHandler {
 			
 			try {
 				// Invoke the actual converter function giving it timeout value.
-				docConverter.convert(inputFile, outputTextFile, timeout);
+				boolean result = docConverter.convert(inputFile, outputTextFile, timeout);
 				
-				if(outputTextFile.length() > 0) {
-					// Create a dom object from the output file containing xml text.
-					org.dom4j.Document document = getDomDocument(outputTextFile);
-					
-					if(document != null) {
-						// Run the stylesheet to extract text from the xml. 
-						String text = getTextFromXML(document, docConverter.getNullTransformFile());
-						// Note: Roy, for some reason, the text coming out of the transformer
-						// always contain <?xml version="1.0" encoding="UTF-8"?> prefix??
+				String text = null;
+				
+				if(result) {
+					if(outputTextFile.length() > 0) {
+						// Create a dom object from the output file containing xml text.
+						org.dom4j.Document document = getDomDocument(outputTextFile);
 						
-						if(text != null) {
-							// Put the text data (result of conversion) into the sink 
-							// so that it can be consumed by the next guy in the chain.
-							sink.setString(text, "UTF-8");
+						if(document != null) {
+							// Run the stylesheet to extract text from the xml. 
+							text = getTextFromXML(document, docConverter.getNullTransformFile());
+							// Note: Roy, for some reason, the text coming out of the transformer
+							// always contain <?xml version="1.0" encoding="UTF-8"?> prefix??
 						}
 					}
 				}
+				
+				// Put the text data (result of conversion) into the sink 
+				// so that it can be consumed by the next guy in the chain.
+				if(text == null)
+					text = "";
+				sink.setString(text, "UTF-8");
 			}
 			finally {
 				try {
