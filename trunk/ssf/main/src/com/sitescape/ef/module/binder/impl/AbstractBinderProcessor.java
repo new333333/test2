@@ -500,9 +500,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	
     	String text = null;
     	
-    	// In this case, initial input into pipeline always comes in the form
-    	// of a local file (this is because "we" know the first handler in the
-    	// pipeline is a converter that expects input as a file... just details).
     	Conduit firstConduit = new RAMConduit();
     	
     	try {
@@ -516,18 +513,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				}
 	    	}
 	    	else {
-	    		// We must retrieve the file content from repository and create a
-	    		// temporary file. 
-	    		File tempFile = TempFileUtil.createTempFile("repositoryfile", SPropsUtil.getFile("temp.dir"));
-	    		
-				firstConduit.getSink().setFile(tempFile, true, false, null);    		
-
-				try {
-	    			getFileModule().readFile(binder, entity, fa, new BufferedOutputStream(new FileOutputStream(tempFile)));
-	    		}
-	    		catch(IOException e) {
-	    			throw new UncheckedIOException(e);
-	    		}
+		    	firstConduit.getSink().setInputStream(getFileModule().readFile(binder, entity, fa), false, null);
 	    	}
     	
 	    	Conduit lastConduit = new RAMConduit();
