@@ -425,8 +425,36 @@ public class WorkflowViewer extends JApplet implements ActionListener {
                         }
             		}
             	}
-            	//Get the list of parallel thread starts by this state
-            	String startThreadPath = "item[@name='startParallelThread']/properties/property[@name='name']";
+            	//Get the list of parallel thread onEntry starts by this state
+            	String startThreadPath = "item[@name='onEntry']/item[@name='startParallelThread']/properties/property[@name='name']";
+            	itTransitions = state.selectNodes(startThreadPath).iterator();
+            	while (itTransitions.hasNext()) {
+            		Element thread = (Element) itTransitions.next();
+            		String threadName = thread.attributeValue("value", "");
+                    System.out.println("startParallelThread name: " + threadName);
+            		if (!threadName.equals("")) {
+            			Element pThread = (Element) workflowRoot.selectSingleNode("//item[@name='parallelThread']/" + 
+            					"properties/property[@name='name' and @value='"+threadName+"']");
+            			if (pThread != null) {
+            				pThread = pThread.getParent().getParent();
+            				Element sThreadStartState = (Element) pThread.selectSingleNode("./properties/property[@name='startState']");
+            				if (sThreadStartState != null) {
+            					String toState = sThreadStartState.attributeValue("value", "");
+                        		if (!toState.equals("")) {
+                                    if (nameVertex.containsKey(name) && nameVertex.containsKey(toState)) {
+                                    	Edge newEdge = g.addEdge(new DirectedSparseEdge((Vertex)nameVertex.get(name), 
+                                    			(Vertex)nameVertex.get(toState)));
+                                    	//Mark the starting of a parallel thread with a different edge color
+                                    	newEdge.setUserDatum(COLORKEY, Color.GREEN, UserData.REMOVE);
+                                    	newEdge.setUserDatum(THICKNESSKEY, PluggableRenderer.DOTTED, UserData.REMOVE);
+                                    }
+                        		}
+            				}
+            			}
+            		}
+            	}
+            	//Get the list of parallel thread onExit starts by this state
+            	startThreadPath = "item[@name='onExit']/item[@name='startParallelThread']/properties/property[@name='name']";
             	itTransitions = state.selectNodes(startThreadPath).iterator();
             	while (itTransitions.hasNext()) {
             		Element thread = (Element) itTransitions.next();
@@ -691,11 +719,11 @@ public class WorkflowViewer extends JApplet implements ActionListener {
 			xmlPostUrl = getParameter("xmlPostUrl");
 			nltSaveLayout = getParameter("nltSaveLayout");
 		} catch(Exception e) {
-			xmlGetUrl = "file:///ss/wfp1";
+			xmlGetUrl = "file:///ss/ptest1";
 			xmlPostUrl = "";
 			nltSaveLayout = "Save layout";			
 		}
-		if (xmlGetUrl == null) xmlGetUrl = "file:///ss/wfp1";
+		if (xmlGetUrl == null) xmlGetUrl = "file:///ss/ptest1";
 		if (xmlPostUrl == null) xmlPostUrl = "";
 		if (nltSaveLayout == null) nltSaveLayout = "Save layout";			
 		

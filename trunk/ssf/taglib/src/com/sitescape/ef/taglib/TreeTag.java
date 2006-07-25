@@ -147,7 +147,7 @@ public class TreeTag extends TagSupport {
 							
 							//Make sure the parents are all open, too
 							Element parentElement = nextTreeElement2.getParent();
-							while (parentElement != null || !parentElement.isRootElement()) {
+							while (parentElement != null && !parentElement.isRootElement()) {
 								parentElement.addAttribute("treeOpen", "1");
 								if (parentElement.isRootElement()) {break;}
 								parentElement = parentElement.getParent();

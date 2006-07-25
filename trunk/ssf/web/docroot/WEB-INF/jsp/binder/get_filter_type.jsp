@@ -44,6 +44,12 @@
 		          value="${item.value.title}"/></option>
 		      </c:if>
 		    </c:forEach>
+		    <c:forEach var="item" items="${ssPublicProfileEntryDefinitions}">
+		      <c:if test="${!empty ssEntryDefinitionMap[item.key]}">
+		        <option value="<c:out value="${item.value.id}"/>"><c:out 
+		          value="${item.value.title}"/></option>
+		      </c:if>
+		    </c:forEach>
     	</select>
 	  </c:if>
 	  <c:if test="${ss_filterType == 'workflow'}">

@@ -740,6 +740,7 @@
 			<option name="descriptionView" caption="__description" />
 			<option name="entryWorkflow" caption="__entry_workflow" />
 			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option name="entryReplies" caption="__entry_replies" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
@@ -769,6 +770,7 @@
 			<option name="descriptionView" caption="__description" />
 			<option name="entryWorkflow" caption="__entry_workflow" />
 			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option name="entryReplies" caption="__entry_replies" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
@@ -822,6 +824,7 @@
 			<option name="descriptionView" caption="__description" />
 			<option name="entryWorkflow" caption="__entry_workflow" />
 			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option name="entryReplies" caption="__entry_replies" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__form_elements" />
@@ -851,6 +854,7 @@
 			<option name="descriptionView" caption="__description" />
 			<option name="entryWorkflow" caption="__entry_workflow" />
 			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option name="entryReplies" caption="__entry_replies" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements"/>
@@ -879,6 +883,7 @@
 			<option name="descriptionView" caption="__description" />
 			<option name="entryWorkflow" caption="__entry_workflow" />
 			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option name="entryReplies" caption="__entry_replies" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements"/>
@@ -905,6 +910,7 @@
 			<option name="descriptionView" caption="__description" />
 			<option name="entryWorkflow" caption="__entry_workflow" />
 			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option name="entryReplies" caption="__entry_replies" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
