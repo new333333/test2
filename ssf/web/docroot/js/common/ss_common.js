@@ -186,31 +186,40 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 }
 
 function ss_setOpacity(obj, opacity) {
-	dojo.style.setOpacity(obj, opacity)
+	//ss_debug("ss_setOpacity " + opacity)
+	dojo.style.setOpacity(obj, opacity);
 }
 
 //Routine to fade in a div
 function ss_showDivFadeIn(id, ms) {
+	if (ss_divFadeInArray[id] == null || ss_divFadeInArray[id] < 0) {
+		ss_divFadeInArray[id] = 0;
+	}
+	ss_divFadeInArray[id]++;
+    //Is this already being shown? If yes, return.
+	if (ss_divFadeInArray[id] > 1) return;
     if (!ms || ms == undefined) ms = 300;
     if (document.getElementById(id).style.visibility == 'hidden') {
     	ss_setOpacity(document.getElementById(id),0.1);
     	ss_showDiv(id);
     }
-    //Is this already in the process of being shown? If yes, return.
-    if (ss_divFadeInArray[id] && ss_divFadeInArray[id] == 1) return;
-    ss_divFadeInArray[id] = 1;
     dojo.lfx.html.fadeIn(id, ms).play();
-    ss_divFadeInArray[id] = 0;
 }
 
 //Routine to fade out a div
 function ss_hideDivFadeOut(id, ms) {
-    if (!ms || ms == undefined) ms = 500;
-    ss_divFadeInArray[id] = 0;
-    dojo.lfx.html.fadeOut(id, ms).play();
+	if (ss_divFadeInArray[id] == null || ss_divFadeInArray[id] < 1) {
+		ss_divFadeInArray[id] = 1;
+	}
+	ss_divFadeInArray[id]--;
+    //Is this still being shown? If yes, return.
+	if (ss_divFadeInArray[id] > 1) return;
+    if (!ms || ms == undefined) ms = 300;
+    dojo.lfx.html.fadeOut(id, ms, null, function(){
+    	ss_hideDiv(id);
+    	return true;
+    }).play();
 }
-
-
 
 //Routine to add the innerHMTL of one div to another div
 function ss_addToDiv(target, source) {

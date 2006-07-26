@@ -134,6 +134,15 @@ var ss_dashboardComponentToolbar = {
 
 	fadeIn : function (id) {
 		var bar = document.getElementById(id);
+	    if (bar.style.visibility == 'hidden') {
+	    	//ss_setOpacity(document.getElementById(id),0.1);
+	    	//ss_setOpacity(bar, 0.01)
+	    	ss_dashboardComponentToolbar.changeOpacity(bar, 0.01)
+	    	ss_showDiv(id);
+			if (!bar.opac || bar.opac < 0) {
+				bar.opac = 0;
+			}
+	    }
 		
 		// component has been removed.  exit.
 		if (bar == null)
@@ -142,16 +151,15 @@ var ss_dashboardComponentToolbar = {
 		if (bar.startOut) {
 			// stop fadeOut prematurely
 			clearTimeout(bar.timerOut);
-			//debug_div.innerHTML += bar.timerOut + " stop OUT prematurely<br/>";
+			ss_debug(bar.timerOut + " stop OUT prematurely");
 			bar.timerOut = 0;
 		}
 		bar.startOut = false;		
 		bar.startIn = true;		
 
 		bar.opac += 20;
-		//debug_div.innerHTML += "IN "+bar.opac+"<br/>";
-		ss_setOpacity(bar, bar.opac);
-		bar.style.display = "block";
+		ss_debug("IN "+parseFloat(parseFloat(bar.opac) / 100.0));
+		ss_dashboardComponentToolbar.changeOpacity(bar, parseFloat(parseFloat(bar.opac) / 100.0));
 		
 		if (bar.opac < 100) {
 			bar.timerIn = setTimeout("ss_dashboardComponentToolbar.fadeIn(\"" + id + "\")", 50);
@@ -172,21 +180,20 @@ var ss_dashboardComponentToolbar = {
 		if (bar.startIn) {
 			// stop fadeIn prematurely
 			clearTimeout(bar.timerIn);
-			//debug_div.innerHTML += + bar.timerIn + " stop IN prematurely<br/>";
+			ss_debug(bar.timerIn + " stop IN prematurely");
 			bar.timerIn = 0;
 		}
 		bar.startIn = false;
 		bar.startOut = true;		
 		
 		bar.opac -= 20;
-		//debug_div.innerHTML += "OUT "+bar.opac+"<br/>";
-		ss_setOpacity(bar, bar.opac);
-		bar.style.display = "block";
+		ss_debug("OUT "+parseFloat(parseFloat(bar.opac) / 100.0));
+		ss_dashboardComponentToolbar.changeOpacity(bar, parseFloat(parseFloat(bar.opac) / 100.0));
 		if (bar.opac > 0) {
 			bar.timerOut = setTimeout("ss_dashboardComponentToolbar.fadeOut(\"" + id + "\")", 50);
 		}
 		else {
-			bar.style.display = "none";
+			bar.style.visibility = "hidden";
 			bar.timerOut = 0;
 			bar.startOut = false;
 		}
@@ -197,12 +204,12 @@ var ss_dashboardComponentToolbar = {
 	
 	hide : function (id) {
 		var bar = document.getElementById(id);
-		//debug_div.innerHTML += "<br/>hide " + bar.timerIn + " " + bar.startIn + " <br/>";
+		ss_debug("hide " + bar.timerIn + " " + bar.startIn);
 		
 		// If fadeIn timer has been set, but hasn't started, cancel it
 		if (bar.timerIn && !bar.startIn) {
 			// cancel unstarted fadeIn
-			//debug_div.innerHTML +=  "cancel unstarted IN<br/>";
+			ss_debug("cancel unstarted IN");
 			clearTimeout(bar.timerIn);
 			bar.timerIn = 0;
 		}	
@@ -211,24 +218,24 @@ var ss_dashboardComponentToolbar = {
 			if (bar.timerOut) {
 				// reset unstarted fadeOut timer
 				clearTimeout(bar.timerOut);
-				//debug_div.innerHTML += "Out restarted<br/>";
+				ss_debug("Out restarted");
 				bar.timerOut = 0;
 			}
 
 			this.init(bar);
 			bar.timerOut = setTimeout("ss_dashboardComponentToolbar.fadeOut(\"" + id + "\")", 150);
-			//debug_div.innerHTML += bar.timerOut + " hide OUT<br/>";
+			ss_debug(bar.timerOut + " hide OUT");
 		}
 	},
 	
 	show : function (id) {
-		//debug_div.innerHTML += "<br/>show<br/>";
+		ss_debug("show");
 		var bar = document.getElementById(id);
 		
 		// If fadeOut timer has been set, but hasn't started, cancel it
 		if (bar.timerOut && !bar.startOut) {
 			// cancel unstarted fadeOut
-			//debug_div.innerHTML +=  "cancel unstarted OUT<br/>";
+			ss_debug("cancel unstarted OUT");
 			clearTimeout(bar.timerOut);
 			bar.timerOut = 0;
 		}
@@ -241,15 +248,27 @@ var ss_dashboardComponentToolbar = {
 			if (bar.timerIn) {
 				// reset unstarted fadeIn timer
 				clearTimeout(bar.timerIn);
-				//debug_div.innerHTML += "In restarted<br/>";
+				ss_debug("In restarted");
 				bar.timerIn = 0;
 			}
 
 			this.init(bar);
 			bar.timerIn = setTimeout("ss_dashboardComponentToolbar.fadeIn(\"" + id + "\")", 150);
-			//debug_div.innerHTML += bar.timerIn + " show IN<br/>";
+			ss_debug(bar.timerIn + " show IN");
 		}
+	},
+	
+	changeOpacity : function (object, opacity) {
+		opacity = (opacity >= 1.0) ? 0.999 : opacity;
+		opacity = (opacity < 0) ? 0 : opacity;
+	    
+		ss_debug("change opacity = " + opacity)
+		object.style.opacity = (opacity);
+		object.style.MozOpacity = (opacity);
+		object.style.KhtmlOpacity = (opacity);
+		object.style.filter = "alpha(opacity=" + opacity * 100.0 + ")";
 	}
+	
 }
 
 </script>

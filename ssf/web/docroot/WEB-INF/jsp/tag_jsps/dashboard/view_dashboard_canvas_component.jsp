@@ -17,10 +17,14 @@
   <div class="ss_dashboard_display_none">
     <div class="ss_dashboard_display_none_toolbar ss_dashboard_display_none_toolbar_color"
 </c:if>
-      onMouseOver="ss_showDivFadeIn('ss_component_toolbuttons_${ss_component_count}');" 
-      onMouseOut="ss_hideDivFadeOut('ss_component_toolbuttons_${ss_component_count}');">
+      >
       <table cellspacing="0" cellpadding="0" style="width:98%;">
-		<tr>
+	   <tbody onMouseOver="//ss_showDiv('ss_component_toolbuttons_${ss_component_count}');" 
+		      onMouseOut="//ss_hideDiv('ss_component_toolbuttons_${ss_component_count}');">
+	    <tr
+		      onMouseOver="ss_dashboardComponentToolbar.fadeIn('ss_component_toolbuttons_${ss_component_count}');"
+		      onMouseOut="ss_dashboardComponentToolbar.fadeOut('ss_component_toolbuttons_${ss_component_count}');"
+	    >
 		  <td nowrap valign="top" width="10"><div style="display:inline; width:5px;
 			<c:if test="${!empty ssDashboard.dashboard.components[ssDashboardId].title}">
 			 <c:if test="${ss_dashboard_componentScope == 'local'}">
@@ -40,9 +44,7 @@
 		  </td>
 		  <td align="right" valign="top">
 		    <div style="display:inline; margin:0px; visibility:hidden;" 
-		      id="ss_component_toolbuttons_${ss_component_count}"
-		      onMouseOver="ss_showDivFadeIn('ss_component_toolbuttons_${ss_component_count}');" 
-              onMouseOut="ss_hideDivFadeOut('ss_component_toolbuttons_${ss_component_count}');">
+		      id="ss_component_toolbuttons_${ss_component_count}">
 		    <form class="ss_dashboard_toolbar_color" method="post" style="display:inline;"
 		      action="<portlet:actionURL>
 		      <portlet:param name="action" value="modify_dashboard"/>
@@ -106,6 +108,7 @@
 		    </div>
 		  </td>
 		</tr>
+	   </tbody>
       </table>
 	</div>
 	<div id="ss_dashboard_component_${ss_component_count}" 
