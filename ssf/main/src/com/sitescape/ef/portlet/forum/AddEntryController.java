@@ -17,7 +17,7 @@ import java.util.Map;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Folder;
@@ -91,18 +91,18 @@ public class AddEntryController extends SAbstractForumController {
 				model = new HashMap();
 				Folder folder = getFolderModule().getFolder(folderId);
 				//Adding an entry; get the specific definition
-				Map folderEntryDefs = DefinitionUtils.getEntryDefsAsMap(folder);
+				Map folderEntryDefs = DefinitionHelper.getEntryDefsAsMap(folder);
 				String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 				model.put(WebKeys.FOLDER, folder);
 				model.put(WebKeys.ENTRY_DEFINTION_MAP, folderEntryDefs);
 				model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 				//Make sure the requested definition is legal
 				if (folderEntryDefs.containsKey(entryType)) {
-					DefinitionUtils.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
+					DefinitionHelper.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
 				} else if ((folder.getDefinitionType()!=null) && (folder.getDefinitionType().intValue() == Definition.FILE_FOLDER_VIEW)) {
-					DefinitionUtils.getDefinition(null, model, "//item[@name='fileEntryForm']");
+					DefinitionHelper.getDefinition(null, model, "//item[@name='fileEntryForm']");
 				} else {
-					DefinitionUtils.getDefinition(null, model, "//item[@name='entryForm']");
+					DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
 				}
 			} else {
 		    	Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
@@ -126,7 +126,7 @@ public class AddEntryController extends SAbstractForumController {
 				}
 		   	
 		    	//Adding an entry; get the specific definition
-				Map folderEntryDefs = DefinitionUtils.getEntryDefsAsMap(folder);
+				Map folderEntryDefs = DefinitionHelper.getEntryDefsAsMap(folder);
 		    	String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 		    	model.put(WebKeys.ENTRY_DEFINTION_MAP, folderEntryDefs);
 		    	model.put(WebKeys.CONFIG_JSP_STYLE, "form");
@@ -141,11 +141,11 @@ public class AddEntryController extends SAbstractForumController {
 		    	}
 			    	
 				if (replyStyleIsGood) {
-					DefinitionUtils.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
+					DefinitionHelper.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
 				} else if ((entry.getDefinitionType()!=null) && (entry.getDefinitionType().intValue() == Definition.FILE_ENTRY_VIEW)) {
-					DefinitionUtils.getDefinition(null, model, "//item[@name='fileEntryForm']");
+					DefinitionHelper.getDefinition(null, model, "//item[@name='fileEntryForm']");
 				} else {
-					DefinitionUtils.getDefinition(null, model, "//item[@name='entryForm']");
+					DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
 				}
 			}
 		} catch (NoDefinitionByTheIdException nd) {

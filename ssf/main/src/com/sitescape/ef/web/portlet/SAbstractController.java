@@ -11,7 +11,6 @@ import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.admin.AdminModule;
-import com.sitescape.ef.module.dashboard.DashboardModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.binder.BinderModule;
@@ -32,7 +31,6 @@ public abstract class SAbstractController extends AbstractController {
 	private LdapModule ldapModule;
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;
-	private DashboardModule dashboardModule;
 	
 	/**
 	 * @return Returns the rssGenerator.
@@ -127,11 +125,5 @@ public abstract class SAbstractController extends AbstractController {
 		return fileModule;
 	}
 
-	protected DashboardModule getDashboardModule() {
-		return dashboardModule;
-	}
 
-	public void setDashboardModule(DashboardModule dashboardModule) {
-		this.dashboardModule = dashboardModule;
-	}
 }

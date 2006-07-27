@@ -1,25 +1,24 @@
 package com.sitescape.ef.module.workflow;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.util.Validator;
-import com.sitescape.ef.domain.WfNotify;
 import com.sitescape.ef.domain.WfAcl;
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.util.GetterUtil;
+import com.sitescape.ef.domain.WfNotify;
+import com.sitescape.ef.module.definition.DefinitionUtils;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.util.GetterUtil;
+import com.sitescape.util.Validator;
 
 
 /**
@@ -43,7 +42,7 @@ public class WorkflowUtils {
 			List transitions = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionManual']");
 			if (transitions != null) {
 				for (int j = 0; j < transitions.size(); j++) {
-					String toStateValue = getProperty((Element)transitions.get(j), "toState");
+					String toStateValue = DefinitionUtils.getPropertyValue((Element)transitions.get(j), "toState");
 					String toStateCaption = "";
 					if (!Validator.isNull(toStateValue)) {
 						//We have a transition. get the caption;
@@ -80,16 +79,16 @@ public class WorkflowUtils {
 			if (questions != null) {
 				for (int j = 0; j < questions.size(); j++) {
 					Map questionData = new LinkedHashMap();
-					String questionName = getProperty((Element)questions.get(j), "name");
-					String questionText = getProperty((Element)questions.get(j), "question");
+					String questionName = DefinitionUtils.getPropertyValue((Element)questions.get(j), "name");
+					String questionText = DefinitionUtils.getPropertyValue((Element)questions.get(j), "question");
 					Map responseData = new LinkedHashMap();
 					questionData.put(WebKeys.WORKFLOW_QUESTION_TEXT, questionText);
 					questionData.put(WebKeys.WORKFLOW_QUESTION_RESPONSES, responseData);
 					List responses = ((Element)questions.get(j)).selectNodes("./item[@name='workflowResponse']");
 					if (responses != null) {
 						for (int k = 0; k < responses.size(); k++) {
-							String responseName = getProperty((Element)responses.get(j), "name");
-							String responseText = getProperty((Element)responses.get(j), "response");
+							String responseName = DefinitionUtils.getPropertyValue((Element)responses.get(j), "name");
+							String responseText = DefinitionUtils.getPropertyValue((Element)responses.get(j), "response");
 							responseData.put(responseName, responseText);
 						}
 					}
@@ -401,18 +400,5 @@ public class WorkflowUtils {
 		if (items == null) return new ArrayList();
 		return items;
     }
-    public static String getProperty(Element element, String name) {
-		Element variableEle = (Element)element.selectSingleNode("./properties/property[@name='" + name + "']");
-		if (variableEle == null) return null;
-		return variableEle.attributeValue("value");   	
-    }
-    public static List getPropertyList(Element element, String name) {
-		List resultElements = element.selectNodes("./properties/property[@name='" + name + "']");
-    	List results = new ArrayList();
-    	for (int i=0; i<resultElements.size(); ++i) {
-    		Element variableEle = (Element)resultElements.get(i);
-    		results.add(variableEle.attributeValue("value",  ""));
-    	}
-		return results;   	
-    }
+ 
 }

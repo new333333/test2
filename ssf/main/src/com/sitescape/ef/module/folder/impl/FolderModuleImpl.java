@@ -644,7 +644,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     		filter = new FilterControls("zoneName", zoneName);
     	}
     	
-    	List folders = getCoreDao().loadObjects(new ObjectControls(Folder.class), filter);
+    	List folders = getCoreDao().loadObjects(Folder.class, filter);
     	
     	List<String> result = new ArrayList<String>(folders.size());
     	for(int i = 0; i < folders.size(); i++) {

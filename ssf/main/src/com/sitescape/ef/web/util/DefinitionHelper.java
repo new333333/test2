@@ -16,20 +16,21 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.ProfileBinder;
+import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.util.Validator;
 
-public class DefinitionUtils {
-	private static DefinitionUtils instance; // A singleton instance
+public class DefinitionHelper {
+	private static DefinitionHelper instance; // A singleton instance
 	private DefinitionModule definitionModule;
-	public DefinitionUtils() {
+	public DefinitionHelper() {
 		if(instance != null)
-			throw new SingletonViolationException(DefinitionUtils.class);
+			throw new SingletonViolationException(DefinitionHelper.class);
 		
 		instance = this;
 	}
-    public static DefinitionUtils getInstance() {
+    public static DefinitionHelper getInstance() {
     	return instance;
     }
     public void setDefinitionModule(DefinitionModule definitionModule) {
@@ -38,55 +39,40 @@ public class DefinitionUtils {
     public DefinitionModule getDefinitionModule() {
     	return definitionModule;
     }
-    public static void getDefinitions(Map model) {
-		List defs = getInstance().getDefinitionModule().getDefinitions();
-		model.put(WebKeys.PUBLIC_DEFINITIONS, defs);
-		Iterator itPublicDefinitions = defs.listIterator();
-		Map publicEntryDefinitions = new HashMap();
-		Map publicFolderDefinitions = new HashMap();
-		Map publicWorkspaceDefinitions = new HashMap();
-		Map publicProfileDefinitions = new HashMap();
-		Map publicProfileEntryDefinitions = new HashMap();
-		Map publicFileDefinitions = new HashMap();
-		while (itPublicDefinitions.hasNext()) {
-			Definition def = (Definition) itPublicDefinitions.next();
-			if (def.getType() == Definition.COMMAND) {
-				publicEntryDefinitions.put(def.getId(), def);
-			} else if (def.getType() == Definition.FOLDER_VIEW){
-				publicFolderDefinitions.put(def.getId(), def);			
-			} else if (def.getType() == Definition.FILE_FOLDER_VIEW) {
-				publicFileDefinitions.put(def.getId(), def);
-			} else if (def.getType() == Definition.PROFILE_VIEW) {
-				publicProfileDefinitions.put(def.getId(), def);
-			} else if (def.getType() == Definition.PROFILE_ENTRY_VIEW) {
-				publicProfileEntryDefinitions.put(def.getId(), def);
-			} else if (def.getType() == Definition.WORKSPACE_VIEW) {
-				publicWorkspaceDefinitions.put(def.getId(), def);
-			}
-		}
-		model.put(WebKeys.PUBLIC_ENTRY_DEFINITIONS, publicEntryDefinitions);
-		model.put(WebKeys.PUBLIC_FOLDER_DEFINITIONS, publicFolderDefinitions);
-		model.put(WebKeys.PUBLIC_FILE_FOLDER_DEFINITIONS, publicFileDefinitions);
-		model.put(WebKeys.PUBLIC_PROFILE_DEFINITIONS, publicProfileDefinitions);
-		model.put(WebKeys.PUBLIC_PROFILE_ENTRY_DEFINITIONS, publicProfileEntryDefinitions);
-		model.put(WebKeys.PUBLIC_WORKSPACE_DEFINITIONS, publicWorkspaceDefinitions);
-
-	}
 	
 	public static void getDefinitions(int defType, String key, Map model) {
-		List defs = getInstance().getDefinitionModule().getDefinitions();
+		List defs = getInstance().getDefinitionModule().getDefinitions(defType);
 		Iterator itDefinitions = defs.listIterator();
 		
+		//if already setup, add to it
 		Map definitions = (Map)model.get(key);
 		if (definitions == null) definitions = new HashMap();
 		while (itDefinitions.hasNext()) {
 			Definition def = (Definition) itDefinitions.next();
-			if (def.getType() == defType) {
-				definitions.put(def.getId(), def);
-			}
+			definitions.put(def.getId(), def);
 		}
 		model.put(key, definitions);
 	}
+	/**
+	 * Helper to get definition for other helpers
+	 * @param id
+	 */
+	public static Definition getDefinition(String id) {
+		try {
+			return getInstance().getDefinitionModule().getDefinition(id);
+		} catch (NoDefinitionByTheIdException nd) {
+			return null;
+		}
+		
+	}
+	/**
+	 * Helper to get definitions for other helpers
+	 * @param defType
+	 */	
+	public static List getDefinitions(int defType) {
+		return  getInstance().getDefinitionModule().getDefinitions(defType);
+	}
+	
 	/**
 	 * Fill in the model values for a definition.  Return false if definition isn't
 	 * complete, true otherwise
@@ -190,17 +176,12 @@ public class DefinitionUtils {
 	}
 	//Routine to build a definition file on the fly for viewing entries with no definition
 	public static void getDefaultEntryView(Entry entry, Map model) {
-		String path = "//item[@name='entryView' or @name='profileEntryView']";
+		String path = "//item[@name='entryView' or @name='profileEntryView' or @name='fileEntryView']";
 		getDefaultEntryView(entry, model, path);
 	}
 	public static void getDefaultEntryView(Entry entry, Map model, String path) {
 		//Create an empty entry definition
-		Map formData = new HashMap();
-		int definitionType = Definition.COMMAND;
-		if (entry instanceof Principal) {
-			definitionType = Definition.PROFILE_ENTRY_VIEW;
-		}
-		Document defDoc = getInstance().getDefinitionModule().getDefaultDefinition("ss_default_entry_view","__definition_default_entry_view", definitionType, formData);
+		Document defDoc = getInstance().getDefinitionModule().getDefaultEntryDefinition(entry);
 		
 		//Add the "default viewer" item
 		Element entryView = (Element) defDoc.getRootElement().selectSingleNode(path);
@@ -210,18 +191,7 @@ public class DefinitionUtils {
 		
 	//Routine to build a definition file on the fly for viewing binders with no definition
 	public static Document getDefaultBinderDefinition(Binder binder, Map model, String viewPath) {
-		//Create an empty binder definition
-		Map formData = new HashMap();
-		int definitionType = Definition.WORKSPACE_VIEW;
-		String definitionTitle = "__definition_default_workspace";
-		if (binder instanceof Folder) {
-			definitionType = Definition.FOLDER_VIEW;
-			definitionTitle = "__definition_default_folder";
-		} else if (binder instanceof ProfileBinder) {
-			definitionType = Definition.PROFILE_VIEW;
-			definitionTitle = "__definition_default_profile";
-		}
-		Document defDoc = getInstance().getDefinitionModule().getDefaultDefinition("ss_default_binder_def", definitionTitle, definitionType, formData);
+		Document defDoc = getInstance().getDefinitionModule().getDefaultBinderDefinition(binder);
 		
 		//Add the "default viewer" item
 		Element entryView = (Element) defDoc.getRootElement().selectSingleNode(viewPath);

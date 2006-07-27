@@ -19,7 +19,7 @@ import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 
 /**
@@ -112,7 +112,7 @@ public class ModifyEntryController extends SAbstractForumController {
 				model.put(WebKeys.ENTRY, entry);
 				model.put(WebKeys.FOLDER, entry.getParentFolder());
 				model.put(WebKeys.CONFIG_JSP_STYLE, "form");
-				DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
+				DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
 				path = WebKeys.VIEW_MODIFY_ENTRY;
 			} catch (NoDefinitionByTheIdException nd) {
 				return returnToViewForum(request, response, formData, folderId);

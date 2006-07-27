@@ -56,11 +56,12 @@ public interface CoreDao {
 	public Object load(Class className, String id);
 	public Object load(Class className, Long id);
 	public List loadObjects(ObjectControls objs, FilterControls filter);
+	public List loadObjects(Class className, FilterControls filter);
+    public List loadObjects(Collection ids, Class className, String zoneName);
 	public List findCompanies();
 	public int countObjects(Class clazz, FilterControls filter);
 	public float averageColumn(Class clazz, String column, FilterControls filter);
 	public long sumColumn(Class clazz, String column, FilterControls filter);
-    public List loadObjects(Collection ids, Class className, String zoneName);
 
 	public Workspace findTopWorkspace(String zoneName);
 	/**
@@ -75,8 +76,8 @@ public interface CoreDao {
     public Binder findBinderByName(String binderName, String zoneName);
 
 	public Definition loadDefinition(String defId, String zoneName);   
-    public List loadDefinitions(Binder binder, ObjectControls objectDesc, FilterControls filter);       
-    public List loadDefinitions(String ZoneName);
+    public List loadDefinitions(String zoneName);
+    public List loadDefinitions(String zoneName, int type);
     
 	public List loadPostings(String zoneName);
 	public List loadEmailAliases(String zoneName);

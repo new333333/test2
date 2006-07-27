@@ -31,7 +31,7 @@ import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.DashboardHelper;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
 
@@ -109,7 +109,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		//See if the user has selected a specific view to use
         UserProperties uProps = getProfileModule().getUserProperties(user.getId(), binderId);
 		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
-		DefinitionUtils.getDefinitions(binder, model, userDefaultDef);
+		DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
 		getShowWorkspace(formData, request, response, (Workspace)binder, searchFilter, model);
 			
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);

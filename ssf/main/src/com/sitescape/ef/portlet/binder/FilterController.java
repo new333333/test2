@@ -18,7 +18,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 
@@ -106,10 +106,6 @@ public class FilterController extends AbstractBinderController {
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
 			
-		DefinitionUtils.getDefinitions(model);
-		DefinitionUtils.getDefinitions(binder, model);
-		DefinitionUtils.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
-
 		UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 		model.put(WebKeys.FILTER_SEARCH_FILTERS, searchFilters);
@@ -125,7 +121,6 @@ public class FilterController extends AbstractBinderController {
 				Map elementData = getFolderModule().getCommonEntryElements();
 				searchFilterData = FilterHelper.buildFilterFormMap(
 						(Document)searchFilters.get(selectedSearchFilter),
-						(Map) model.get(WebKeys.PUBLIC_ENTRY_DEFINITIONS),
 						elementData);
 				model.put(WebKeys.FILTER_SEARCH_FILTER_DATA, searchFilterData);
 			}

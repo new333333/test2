@@ -13,7 +13,7 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.domain.Binder;
@@ -85,14 +85,14 @@ public class AddFolderController extends SAbstractController {
 		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
 			if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.FILE_FOLDER_VIEW)) {
 				getFolderModule().checkAddFolderAllowed((Folder)binder);
-				DefinitionUtils.getDefinitions(Definition.FILE_FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+				DefinitionHelper.getDefinitions(Definition.FILE_FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
 				model.put(WebKeys.BINDER_DEFINITION_TYPE, String.valueOf(Definition.FILE_FOLDER_VIEW));
 			} else {
 				if (binderType == null)
 					view = WebKeys.VIEW_ADD_BINDER_TYPE;
 				else {  
 					getFolderModule().checkAddFolderAllowed((Folder)binder);
-					DefinitionUtils.getDefinitions(binderType.intValue(), WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+					DefinitionHelper.getDefinitions(binderType.intValue(), WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
 				}
 				
 			}
@@ -105,11 +105,11 @@ public class AddFolderController extends SAbstractController {
 				else 
 					getWorkspaceModule().checkAddWorkspaceAllowed((Workspace)binder);
 					
-				DefinitionUtils.getDefinitions(binderType.intValue(), WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+				DefinitionHelper.getDefinitions(binderType.intValue(), WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
 			}
 		} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
 			getWorkspaceModule().checkAddWorkspaceAllowed((Workspace)binder);
-			DefinitionUtils.getDefinitions(Definition.WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);			
+			DefinitionHelper.getDefinitions(Definition.WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);			
 			model.put(WebKeys.BINDER_DEFINITION_TYPE, String.valueOf(Definition.WORKSPACE_VIEW));
 		}
 		
@@ -132,9 +132,9 @@ public class AddFolderController extends SAbstractController {
 			//Make sure the requested definition is legal
 			if (publicBinderDefs.containsKey(defId)) {
 				Definition def = (Definition)publicBinderDefs.get(defId);
-				DefinitionUtils.getDefinition(def, model, "//item[@type='form']");
+				DefinitionHelper.getDefinition(def, model, "//item[@type='form']");
 			} else {
-				DefinitionUtils.getDefinition(null, model, "//item[@type='form']");
+				DefinitionHelper.getDefinition(null, model, "//item[@type='form']");
 			}
 			view = WebKeys.VIEW_ADD_BINDER;
 		} 

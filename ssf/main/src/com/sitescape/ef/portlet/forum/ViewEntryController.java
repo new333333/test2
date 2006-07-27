@@ -34,7 +34,7 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
@@ -227,11 +227,11 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(folderId,Long.valueOf(entryId)));
 		model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(folderId,Long.valueOf(entryId)));
 		if (entry == null) {
-			DefinitionUtils.getDefinition(null, model, "//item[@name='entryView']");
+			DefinitionHelper.getDefinition(null, model, "//item[@name='entryView']");
 			return model;
 		}
-		if (DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
-			DefinitionUtils.getDefaultEntryView(entry, model);
+		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView' or @name='fileEntryView']") == false) {
+			DefinitionHelper.getDefaultEntryView(entry, model);
 		}
 		if (!entryId.equals("")) {
 			model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, buildEntryToolbar(response, model, folderId.toString(), entryId).getToolbar());

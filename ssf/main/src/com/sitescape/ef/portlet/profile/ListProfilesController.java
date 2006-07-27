@@ -24,7 +24,7 @@ import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DashboardHelper;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.util.Validator;
@@ -90,7 +90,7 @@ public class ListProfilesController extends   SAbstractController {
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		DashboardHelper.getDashboardMap(binder, userFolderProperties, 
 				userProperties, model);
-		DefinitionUtils.getDefinitions(binder, model);
+		DefinitionHelper.getDefinitions(binder, model);
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);

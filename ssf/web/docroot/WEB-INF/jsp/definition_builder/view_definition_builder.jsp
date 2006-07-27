@@ -24,7 +24,6 @@
 
 <jsp:useBean id="definitionTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="data" type="java.util.Map" scope="request" />
-<jsp:useBean id="ssPublicEntryDefinitions" type="java.util.Map" scope="request" />
 <%@ page import="com.sitescape.ef.domain.FolderEntry" %>
 <%@ page import="com.sitescape.ef.domain.User" %>
 <%@ page import="com.sitescape.ef.domain.Folder" %>
@@ -586,8 +585,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 	if (!data.containsKey("selectedItem") || data.get("selectedItem").equals("")) {
 %>
 <ssf:buildDefinitionDivs title="<%= ssSelectItemText %>" 
-  sourceDocument="${ssConfigDefinition}" configDocument="${ssConfigDefinition}"
-  entryDefinitions="<%= ssPublicEntryDefinitions %>"/>
+  sourceDocument="${ssConfigDefinition}" configDocument="${ssConfigDefinition}"/>
 <%
 	
 	} else {
@@ -595,8 +593,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 %>
 <ssf:buildDefinitionDivs title="<%= ssSelectItemText %>" 
   sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
-  configDocument="${ssConfigDefinition}"
-  entryDefinitions="<%= ssPublicEntryDefinitions %>"/>
+  configDocument="${ssConfigDefinition}" />
 <%
 	}
 %>

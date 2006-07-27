@@ -1,29 +1,15 @@
 package com.sitescape.ef.module.definition.impl;
 
-import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.module.definition.DefinitionModule;
-import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
-import com.sitescape.ef.module.definition.notify.NotifyBuilderUtil;
-import com.sitescape.ef.module.definition.notify.Notify;
-import com.sitescape.ef.repository.RepositoryUtil;
-import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.util.FileUploadItem;
-import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
-import com.sitescape.ef.util.NLT;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Description;
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.domain.CommaSeparatedValue;
-import com.sitescape.util.Validator;
-
-import com.sitescape.ef.web.util.DateHelper;
-import com.sitescape.ef.web.util.EventHelper;
-import com.sitescape.ef.module.shared.InputDataAccessor;
-import com.sitescape.ef.module.workflow.WorkflowModule;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.lucene.document.Field;
 import org.dom4j.Attribute;
@@ -32,18 +18,37 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.TreeMap;
-
+import com.sitescape.ef.ConfigurationException;
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.CommaSeparatedValue;
+import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinitionInvalidException;
+import com.sitescape.ef.domain.Description;
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Event;
+import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.domain.ProfileBinder;
+import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.module.definition.DefinitionUtils;
+import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
+import com.sitescape.ef.module.definition.notify.Notify;
+import com.sitescape.ef.module.definition.notify.NotifyBuilderUtil;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.ef.module.shared.MapInputData;
+import com.sitescape.ef.module.workflow.WorkflowModule;
+import com.sitescape.ef.repository.RepositoryUtil;
+import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
+import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.web.util.DateHelper;
+import com.sitescape.ef.web.util.EventHelper;
+import com.sitescape.util.GetterUtil;
+import com.sitescape.util.Validator;
 
 /**
  * @author hurley
@@ -97,7 +102,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
         this.definitionBuilderConfig = definitionBuilderConfig;
     }
     
-	public Definition addDefinition(String name, String title, int type, Map formData) {
+	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 
 		Definition newDefinition = new Definition();
@@ -106,7 +111,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		newDefinition.setType(type);
 		newDefinition.setZoneName(zoneName);
 		getCoreDao().save(newDefinition);
-		Document doc = getDefaultDefinition(name, title, type, formData);
+		Document doc = getDefaultDefinition(name, title, type, inputData);
 		Element root = doc.getRootElement();
 		root.addAttribute("databaseId", newDefinition.getId());
 		setDefinition(newDefinition, doc);
@@ -171,17 +176,17 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    }
 
 	
-	public void modifyDefinitionProperties(String id, Map formData) {
+	public void modifyDefinitionProperties(String id, InputDataAccessor inputData) {
 		Definition def = getDefinition(id);
 		if (def != null) {			
 			String definitionName = "";
-			if (formData.containsKey("propertyId_name")) {
-				definitionName = ((String[]) formData.get("propertyId_name"))[0];
+			if (inputData.exists("propertyId_name")) {
+				definitionName = inputData.getSingleValue("propertyId_name");
 			}
 			if (definitionName.equals("")) definitionName = def.getName();
 			String definitionCaption = "";
-			if (formData.containsKey("propertyId_caption")) {
-				definitionCaption = ((String[]) formData.get("propertyId_caption"))[0];
+			if (inputData.exists("propertyId_caption")) {
+				definitionCaption = inputData.getSingleValue("propertyId_caption");
 			}
 			if (definitionCaption.equals("")) definitionCaption = def.getTitle();
 			modifyDefinitionName(id, definitionName, definitionCaption);
@@ -193,12 +198,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			String type = String.valueOf(def.getType());
 			Element definition = (Element) configRoot.selectSingleNode("item[@definitionType='"+type+"']");
 			if (definition != null) {
-				//Make sure the definition name and caption remain consistent
-				Map formData2 = new HashMap(formData);
-				formData2.put("propertyId_name", new String[]{def.getName()});
-				formData2.put("propertyId_caption", new String[]{def.getTitle()});
 				//Add the properties
-				processProperties(def.getId(), definition, defDoc.getRootElement(), formData2);
+				processProperties(def.getId(), definition, defDoc.getRootElement(), inputData);
+				//Make sure the definition name and caption remain consistent
+				Element newPropertiesEle = (Element)defDoc.getRootElement().selectSingleNode("./properties/property[@name='name']");
+				if (newPropertiesEle != null) newPropertiesEle.addAttribute("value", def.getName());
+				newPropertiesEle = (Element)defDoc.getRootElement().selectSingleNode("./properties/property[@name='caption']");
+				if (newPropertiesEle != null) newPropertiesEle.addAttribute("value", def.getTitle());
 			}
 			setDefinition(def, defDoc);
 			
@@ -241,14 +247,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return defChanged;
 	}
 	
-	public void saveDefinitionLayout(String id, Map formData) {
+	public void saveDefinitionLayout(String id, InputDataAccessor inputData) {
 		Definition def = getDefinition(id);
 		Document defDoc = def.getDefinition();
 		
-		if (formData.containsKey("xmlData") && def != null) {
+		if (inputData.exists("xmlData") && def != null) {
 			Document appletDef;
 			try {
-				appletDef = DocumentHelper.parseText(((String[])formData.get("xmlData"))[0]);
+				appletDef = DocumentHelper.parseText(inputData.getSingleValue("xmlData"));
 			} catch(Exception e) {
 				return;
 			}
@@ -290,7 +296,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		} 
 	}
 
-	public Document getDefaultDefinition(String name, String title, int type, Map formData) {
+	public Document getDefaultDefinition(String name, String title, int type, InputDataAccessor inputData) {
 		this.getDefinitionConfig();
 		Element configRoot = definitionConfig.getRootElement();
 		Element definition = (Element) configRoot.selectSingleNode("item[@definitionType='"+type+"']");
@@ -307,14 +313,51 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		ntRoot.addAttribute("nextId", Integer.toString(id));
 		
 		//Add the properties
-		processProperties("0", definition, ntRoot, formData);
+		processProperties("0", definition, ntRoot, inputData);
 
 		//Copy any additional attributes from the configuration file
 		updateDefinitionAttributes(newTree);
 		
 		return newTree;
 	}
-	
+	public Document getDefaultBinderDefinition(Binder binder) {
+		//Create an empty binder definition
+		int definitionType;
+		String definitionTitle;
+		if (binder instanceof Workspace) {
+			definitionType = Definition.WORKSPACE_VIEW;
+			definitionTitle = "__definition_default_workspace";
+		} else if (binder instanceof ProfileBinder) {
+			definitionType = Definition.PROFILE_VIEW;
+			definitionTitle = "__definition_default_profile";
+		} else {
+			if ((binder.getDefinitionType() == null) ||
+					(binder.getDefinitionType().intValue() == Definition.FOLDER_VIEW)) {
+				definitionType = Definition.FOLDER_VIEW;
+				definitionTitle = "__definition_default_folder";
+			} else {
+				definitionType = Definition.FILE_FOLDER_VIEW;
+				definitionTitle = "__definition_default_file_folder";
+				
+			}
+			
+		}
+		return getDefaultDefinition("ss_default_binder_def", definitionTitle, definitionType, new MapInputData(new HashMap()));
+	}
+	public Document getDefaultEntryDefinition(Entry entry) {
+		//Create an empty entry definition
+		int definitionType = Definition.COMMAND;
+		if (entry instanceof Principal) {
+			definitionType = Definition.PROFILE_ENTRY_VIEW;
+		} else {
+			Binder binder = entry.getParentBinder();
+			if (binder.getDefinitionType() != null) {
+				definitionType = binder.getDefinitionType().intValue();
+			} 
+		}
+				
+		return getDefaultDefinition("ss_default_entry_view","__definition_default_entry_view", definitionType, new MapInputData(new HashMap()));
+	}
 	/**
 	 * Adds an item to an item in a definition tree.
 	 *
@@ -329,11 +372,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	 * @return the next element in the iteration.
 	 * @exception NoSuchElementException iteration has no more elements.
 	 */
-	public Element addItem(String defId, String itemId, String itemNameToAdd, Map formData) throws DefinitionInvalidException {
+	public Element addItem(String defId, String itemId, String itemNameToAdd, InputDataAccessor inputData) throws DefinitionInvalidException {
 		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneName());
 		this.getDefinitionConfig();
 		Document definitionTree = def.getDefinition();
-		Element newItem = addItemToDefinitionDocument(def.getId(), definitionTree, itemId, itemNameToAdd, formData);
+		Element newItem = addItemToDefinitionDocument(def.getId(), definitionTree, itemId, itemNameToAdd, inputData);
 		if (newItem != null) {
 			//Save the updated document
 			setDefinition(def, definitionTree);
@@ -342,15 +385,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return newItem;
 	}
 	
-	public Element addItemToDefinitionDocument(String defId, Document definitionTree, String itemId, String itemNameToAdd, Map formData) throws DefinitionInvalidException {
+	public Element addItemToDefinitionDocument(String defId, Document definitionTree, String itemId, String itemNameToAdd, InputDataAccessor inputData) throws DefinitionInvalidException {
 		this.getDefinitionConfig();
 		Element configRoot = this.definitionConfig.getRootElement();
 		Element newItem = null;
 		if (definitionTree != null) {
 			Element root = definitionTree.getRootElement();
 			Map uniqueNames = getUniqueNameMap(configRoot, root, itemNameToAdd);
-			if (formData.containsKey("propertyId_name")) {
-				String name = ((String[]) formData.get("propertyId_name"))[0];
+			if (inputData.exists("propertyId_name")) {
+				String name = inputData.getSingleValue("propertyId_name");
 				if (uniqueNames.containsKey(name)) {
 					//This name is not unique
 					throw new DefinitionInvalidException(defId, NLT.get("definition.error.nameNotUnique")+ " ("+name+")");
@@ -378,7 +421,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					root.addAttribute("nextId", (String) Integer.toString(++nextId));
 					
 					//Process the properties (if any)
-					processProperties(defId, itemEleToAdd, newItem, formData);
+					processProperties(defId, itemEleToAdd, newItem, inputData);
 					
 					//Copy the jsps (if any)
 					Element configJsps = itemEleToAdd.element("jsps");
@@ -386,39 +429,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						Element newJspsEle = configJsps.createCopy();
 						newItem.add(newJspsEle);
 					}
-					
-					
+										
 					//See if this is a "dataView" type
 					if (newItem.attributeValue("type", "").equals("dataView")) {
-						//This item is shadowing one of the form data items. Capture its form item name
-						Element newItemNameProperty = (Element) newItem.selectSingleNode("./properties/property[@name='name']");
-						if (newItemNameProperty != null) {
-							String newItemNamePropertyValue = newItemNameProperty.attributeValue("value", "");
-							if (!newItemNamePropertyValue.equals("")) {
-								//Find the form item with this name
-								Iterator itFormItems = root.selectNodes("//item/properties/property[@value='"+newItemNamePropertyValue+"']").iterator();
-								while (itFormItems.hasNext()) {
-									//Look for the form item with a "name" property
-									Element formItemProperty = (Element) itFormItems.next();
-									if (formItemProperty.attributeValue("name", "").equals("name")) {
-										//This is a "name" property. Now see if it under the form tree
-										Element parentElement = formItemProperty.getParent();
-										while (parentElement != null) {
-											if (parentElement.getName().equals("item") && parentElement.attributeValue("type", "").equals("form")) {
-												//Found it. This item is part of the "form" tree.
-												break;
-											}
-											parentElement = parentElement.getParent();
-										}
-										if (parentElement != null) {
-											//Get the type of the item that is being shadowed
-											String shodowItemName = formItemProperty.getParent().getParent().attributeValue("name", "");
-											newItem.addAttribute("formItem", shodowItemName);
-										}
-									}
-								}
-							}
-						}
+						checkDataView(root, newItem);
 					}
 					int nextItemId = Integer.valueOf(root.attributeValue("nextId")).intValue();;
 					nextItemId = populateNewDefinitionTree(itemEleToAdd, newItem, configRoot, nextItemId, false);
@@ -429,7 +443,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return newItem;
 	}
 	
-	private void processProperties(String defId, Element configEle, Element newItem, Map formData) {
+	private void processProperties(String defId, Element configEle, Element newItem, InputDataAccessor inputData) {
 		//Check to see if there are new attributes from the config file that should be copied into the definition
 		Iterator itAttributes = configEle.attributeIterator();
 		while (itAttributes.hasNext()) {
@@ -457,8 +471,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				String attrName = configProperty.attributeValue("name");
 				String type = configProperty.attributeValue("type", "");
 				String characterMask = configProperty.attributeValue("characterMask", "");
-				if (formData.containsKey("propertyId_"+attrName)) {
-					String[] values = (String[]) formData.get("propertyId_"+attrName);
+				if (inputData.exists("propertyId_"+attrName)) {
+					String[] values = (String[]) inputData.getValues("propertyId_"+attrName);
 					for (int i = 0; i < values.length; i++) { 
 						String value = values[i];
 						if (!characterMask.equals("")) {
@@ -497,27 +511,27 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				} else if (type.equals("workflowCondition")) {
 					//Workflow conditions typically have 4 bits of data to capture: 
 					//  the definition id, the element name, the operation, and the operand value
-					if (formData.containsKey("conditionDefinitionId") && 
-							formData.containsKey("conditionElementName") &&
-							formData.containsKey("conditionElementOperation")) {
+					if (inputData.exists("conditionDefinitionId") && 
+							inputData.exists("conditionElementName") &&
+							inputData.exists("conditionElementOperation")) {
 						Element newPropertyEle = configProperty.createCopy();
 						newPropertiesEle.add(newPropertyEle);
-						String conditionDefinitionId = ((String[]) formData.get("conditionDefinitionId"))[0];
-						String conditionElementName = ((String[]) formData.get("conditionElementName"))[0];
-						String conditionElementOperation = ((String[]) formData.get("conditionElementOperation"))[0];
+						String conditionDefinitionId = inputData.getSingleValue("conditionDefinitionId");
+						String conditionElementName = inputData.getSingleValue("conditionElementName");
+						String conditionElementOperation = inputData.getSingleValue("conditionElementOperation");
 						Element workflowCondition = newPropertyEle.addElement("workflowCondition");
 						workflowCondition.addAttribute("definitionId", conditionDefinitionId);
 						workflowCondition.addAttribute("elementName", conditionElementName);
 						workflowCondition.addAttribute("operation", conditionElementOperation);
-						if (formData.containsKey("operationDuration") && 
-								formData.containsKey("operationDurationType")) {
-							String operationDuration = ((String[]) formData.get("operationDuration"))[0];
-							String operationDurationType = ((String[]) formData.get("operationDurationType"))[0];
+						if (inputData.exists("operationDuration") && 
+								inputData.exists("operationDurationType")) {
+							String operationDuration = inputData.getSingleValue("operationDuration");
+							String operationDurationType = inputData.getSingleValue("operationDurationType");
 							workflowCondition.addAttribute("duration", operationDuration);
 							workflowCondition.addAttribute("durationType", operationDurationType);
 						}
-						if (formData.containsKey("conditionElementValue")) {
-							String[] conditionValues = (String[]) formData.get("conditionElementValue");
+						if (inputData.exists("conditionElementValue")) {
+							String[] conditionValues = (String[])inputData.getValues("conditionElementValue");
 							for (int j = 0; j < conditionValues.length; j++) { 
 								String conditionValue = conditionValues[j];
 								workflowCondition.addElement("value").setText(conditionValue);
@@ -537,7 +551,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}		
 	}
 	
-	public void modifyItem(String defId, String itemId, Map formData) throws DefinitionInvalidException {
+	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException {
 		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneName());
 		Document definitionTree = def.getDefinition();
 		this.getDefinitionConfig();
@@ -548,15 +562,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			//Find the element to modify
 			Element item = (Element) root.selectSingleNode("//item[@id='"+itemId+"']");
 			if (item != null) {
-				Element itemNameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
-				String itemNamePropertyValue = "";
-				if (itemNameProperty != null) itemNamePropertyValue = itemNameProperty.attributeValue("value", "");
+				String itemNamePropertyValue = DefinitionUtils.getPropertyValue(item, "name");
+				if (itemNamePropertyValue == null) itemNamePropertyValue="";
 
 				//Find the selected item type in the configuration document
 				String itemType = item.attributeValue("name", "");
 				Map uniqueNames = getUniqueNameMap(configRoot, root, itemType);
-				if (formData.containsKey("propertyId_name")) {
-					String name = ((String[]) formData.get("propertyId_name"))[0];
+				if (inputData.exists("propertyId_name")) {
+					String name = inputData.getSingleValue("propertyId_name");
 					//See if the item name is being changed
 					if (!name.equals("") && 
 							!name.equals(itemNamePropertyValue) && 
@@ -579,39 +592,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				Element itemTypeEle = (Element) configRoot.selectSingleNode("item[@name='"+itemType+"']");
 				if (itemTypeEle != null) {
 					//Set the values of each property from the form data
-					processProperties(defId, itemTypeEle, item, formData);
+					processProperties(defId, itemTypeEle, item, inputData);
 										
 					//See if this is a "dataView" type
 					if (item.attributeValue("type", "").equals("dataView")) {
-						//This item is shadowing one of the form data items. Capture its form item name
-						itemNameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
-						if (itemNameProperty != null) {
-							itemNamePropertyValue = itemNameProperty.attributeValue("value", "");
-							if (!itemNamePropertyValue.equals("")) {
-								//Find the form item with this name
-								Iterator itFormItems = root.selectNodes("//item/properties/property[@value='"+itemNamePropertyValue+"']").iterator();
-								while (itFormItems.hasNext()) {
-									//Look for the entryForm item with a "name" property
-									Element formItemProperty = (Element) itFormItems.next();
-									if (formItemProperty.attributeValue("name", "").equals("name")) {
-										//This is a "name" property. Now see if it under the "form" tree
-										Element parentElement = formItemProperty.getParent();
-										while (parentElement != null) {
-											if (parentElement.getName().equals("item") && parentElement.attributeValue("type", "").equals("form")) {
-												//Found it. This item is part of the "form" tree.
-												break;
-											}
-											parentElement = parentElement.getParent();
-										}
-										if (parentElement != null) {
-											//Get the type of the item that is being shadowed
-											String shodowItemName = formItemProperty.getParent().getParent().attributeValue("name", "");
-											item.addAttribute("formItem", shodowItemName);
-										}
-									}
-								}
-							}
-						}
+						checkDataView(root, item);
 					}
 					setDefinition(def, definitionTree);
 					//definitionTree.asXML();
@@ -619,7 +604,35 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 		}
 	}
-	
+	private void checkDataView(Element root, Element item) {
+		//This item is shadowing one of the form data items. Capture its form item name
+		String newItemNamePropertyValue = DefinitionUtils.getPropertyValue(item, "name");
+		if (!Validator.isNull(newItemNamePropertyValue)) {
+			//Find the form item with this name
+			Iterator itFormItems = root.selectNodes("//item/properties/property[@value='"+newItemNamePropertyValue+"']").iterator();
+			while (itFormItems.hasNext()) {
+				//Look for the form item with a "name" property
+				Element formItemProperty = (Element) itFormItems.next();
+				if (formItemProperty.attributeValue("name", "").equals("name")) {
+					//This is a "name" property. Now see if it under the form tree
+					Element parentElement = formItemProperty.getParent();
+					while (parentElement != null) {
+						if (parentElement.getName().equals("item") && parentElement.attributeValue("type", "").equals("form")) {
+							//Found it. This item is part of the "form" tree.
+							break;
+						}
+						parentElement = parentElement.getParent();
+					}
+					if (parentElement != null) {
+						//Get the type of the item that is being shadowed
+						String shadowItemName = formItemProperty.getParent().getParent().attributeValue("name", "");
+						item.addAttribute("formItem", shadowItemName);
+					}
+				}
+			}
+		}
+		
+	}
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException {
 		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneName());
 		this.getDefinitionConfig();
@@ -711,7 +724,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							List sourceParentContent = sourceParent.content();
 							int i = sourceParentContent.indexOf(targetItem);
 							sourceParentContent.add(i+1,sourceItem);
-							List sourceParentContent2 = sourceParent.content();
 						}
 						//Write the new document back into the definition
 						setDefinition(def, definitionTree);
@@ -854,21 +866,17 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
 		Element itemTypeEle = (Element) configRoot.selectSingleNode("item[@name='"+itemType+"']");
 		if (itemTypeEle != null) {
-			Element itemTypeName = (Element) itemTypeEle.selectSingleNode("properties/property[@name='name']");
-			if (itemTypeName != null) {
-				//See if this item requires a unique name
-				String uniquePath = itemTypeName.attributeValue("unique", "");
-				if (!uniquePath.equals("")) {
-					//There is a request for uniqueness, so get the list from the definition file
-					Iterator itNames = definitionTree.selectNodes(uniquePath).iterator();
-					while (itNames.hasNext()) {
-						//Find the name property of all items in the specified path
-						Element itemEleName = (Element)((Element) itNames.next()).selectSingleNode("properties/property[@name='name']");
-						String itemEleNameValue = itemEleName.attributeValue("value", "");
-						if (!itemEleNameValue.equals("")) {
-							//We found a name, so add it to the map
-							uniqueNames.put(itemEleNameValue, itemEleNameValue);
-						}
+			//See if this item requires a unique name
+			String uniquePath = DefinitionUtils.getPropertyValue(itemTypeEle, "name", "unique");
+			if (!Validator.isNull(uniquePath)) {
+				//There is a request for uniqueness, so get the list from the definition file
+				Iterator itNames = definitionTree.selectNodes(uniquePath).iterator();
+				while (itNames.hasNext()) {
+					//Find the name property of all items in the specified path
+					String itemEleNameValue = DefinitionUtils.getPropertyValue((Element)itNames.next(), "name");
+					if (!Validator.isNull(itemEleNameValue)) {
+						//We found a name, so add it to the map
+						uniqueNames.put(itemEleNameValue, itemEleNameValue);
 					}
 				}
 			}
@@ -890,9 +898,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     }
     
     public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems) {
-		this.getDefinitionConfig();
 		//Get the base configuration definition file root (i.e., not the entry's definition file)
-		Element configRoot = this.definitionConfig.getRootElement();
+		Element configRoot = getDefinitionConfig().getRootElement();
 		
     	// entryData will contain the Map of entry data as gleaned from the input data
 		Map entryDataAll = new HashMap();
@@ -915,152 +922,121 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						Element nextItem = (Element) itItems.next();
 						String itemName = (String) nextItem.attributeValue("name", "");
 						
-						//Get the form element name (property name)
-						Element nameProperty = (Element) nextItem.selectSingleNode("./properties/property[@name='name']");
-						if (nameProperty != null) {
-							//Find the item in the base configuration definition to see if it is a data item
-							Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "']");
-							if (configItem != null) {
-								if (configItem.attributeValue("type", "").equals("data")) {
-									String nameValue = nameProperty.attributeValue("value", "");									
-									if (nameValue.equals("")) {nameValue = nextItem.attributeValue("name");}
+						//Find the item in the base configuration definition to see if it is a data item
+						Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
+						if (configItem != null) {
+							//Get the form element name (property name)
+							String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");									
+							if (Validator.isNull(nameValue)) {nameValue = nextItem.attributeValue("name");}
 									
-									//We have the element name, see if it has a value in the input data
-									if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
-										//Use the helper routine to parse the date into a date object
-										Description description = new Description();
-										if (inputData.exists(nameValue)) {
-											description.setText(inputData.getSingleValue(nameValue));
-											description.setFormat(Description.FORMAT_HTML);
-											entryData.put(nameValue, description);
-										}
-									} else if (itemName.equals("date")) {
-										//Use the helper routine to parse the date into a date object
-										Date date = DateHelper.getDateFromInput(inputData, nameValue);
-										if (date != null) {entryData.put(nameValue, date);}
-									} else if (itemName.equals("event")) {
-									    //Ditto for event helper routine
-									    Element hasDurElem = (Element) nextItem.selectSingleNode("./properties/property[@name='hasDuration']");
-									    Boolean hasDur = new Boolean(true);
-									    if (hasDurElem != null && hasDurElem.attributeValue("value", "").equals("false")) {
-									        hasDur = Boolean.FALSE;
-									    }
-									    Element hasRecurElem = (Element) nextItem.selectSingleNode("./properties/property[@name='hasRecurrence']");
-									    Boolean hasRecur = new Boolean(true);
-									    if (hasRecurElem != null && hasRecurElem.attributeValue("value", "").equals("false")) {
-									        hasRecur = Boolean.FALSE;
-									    }
-									    Event event = EventHelper.getEventFromMap(inputData, nameValue, hasDur, hasRecur);
-									    if (event != null) {
-									        event.setName(nameValue);
-									        entryData.put(nameValue, event);
-									    }
-									} else if (itemName.equals("user_list")) {
-										if (inputData.exists(nameValue)) {
-											String[] userIds = inputData.getSingleValue(nameValue).trim().split(" ");
-											Set users = new HashSet();
-											for (int i = 0; i < userIds.length; i++) {
-												try {
-													Long.parseLong(userIds[i]);
-													users.add(userIds[i]);
-												} catch (NumberFormatException ne) {}
-											}
-											if (!users.isEmpty()) {
-												CommaSeparatedValue v = new CommaSeparatedValue();
-												v.setValue((String[])users.toArray(userIds));
-												entryData.put(nameValue, v);
-											}
-										}
-									} else if (itemName.equals("selectbox")) {
-										if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getValues(nameValue));
-									} else if (itemName.equals("checkbox")) {
-										if (inputData.exists(nameValue) && inputData.getSingleValue(nameValue).equals("on")) {
-											entryData.put(nameValue, new Boolean(true));
-										} else {
-											entryData.put(nameValue, new Boolean(false));
-										}
-									} else if (itemName.equals("file") || itemName.equals("graphic")) {
-									    if(fileItems != null && fileItems.containsKey(nameValue)) {
-									    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
-									    	String fileName = myFile.getOriginalFilename();
-									    	if (fileName.equals("")) continue;
-	
-									    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
-									    	String repositoryServiceName = storageElem.attributeValue("value",
-									    			RepositoryUtil.getDefaultRepositoryServiceName());
-									    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryServiceName);
-	
-									    	//See if there is a scaling request for this graphic file. If yes, pass along the hieght and width
-									    	Element maxWidthEle = (Element) nextItem.selectSingleNode("./properties/property[@name='maxWidth']");
-									    	if (maxWidthEle != null) {
-									    		String maxWidth = maxWidthEle.attributeValue("value", "");
-									    		if (!maxWidth.equals("")) {
-									    			fui.setMaxWidth(Integer.parseInt(maxWidth));
-									    		}
-									    	}
-									    	Element maxHeightEle = (Element) nextItem.selectSingleNode("./properties/property[@name='maxHeight']");
-									    	if (maxHeightEle != null) {
-									    		String maxHeight = maxHeightEle.attributeValue("value", "");
-									    		if (!maxHeight.equals("")) {
-									    			fui.setMaxHeight(Integer.parseInt(maxHeight));
-									    		}
-									    	}
-									    	// TODO The following piece of code may need a better conditional
-									    	// statement than this, since we probably do not want to generate
-									    	// thumbnails for all graphic-type file uploads. Or do we? 
-									    	if(itemName.equals("graphic")) {
-									    		fui.setGenerateThumbnail(true);
-									    		fui.setThumbnailDirectlyAccessible(true);
-									    	} 
-									    	
-									    	fileData.add(fui);
-										}
-									} else if (itemName.equals("fileEntryTitle")) {
-									    if(fileItems != null && fileItems.containsKey(nameValue)) {
-									    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
-									    	String fileName = myFile.getOriginalFilename();
-									    	if (fileName.equals("")) continue;
-	
-									    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
-									    	String repositoryServiceName = storageElem.attributeValue("value",
-									    			RepositoryUtil.getDefaultRepositoryServiceName());
-									    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, nameValue, myFile, repositoryServiceName);
-									    	fileData.add(fui);
-									    }
-									} else if (itemName.equals("attachFiles")) {
-									    if(fileItems != null) {
-											int number = 1;
-											Element attachmentNumber = (Element) nextItem.selectSingleNode("./properties/property[@name='number']");
-											if (attachmentNumber != null) {
-												if (!attachmentNumber.attributeValue("value", "").equals("")) {
-													number = Integer.parseInt(attachmentNumber.attributeValue("value"));
-												}
-											}
-											for (int i=1;i <= number;i++) {
-												String fileEleName = nameValue + Integer.toString(i);
-												if (fileItems.containsKey(fileEleName)) {												
-											    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
-											    	String fileName = myFile.getOriginalFilename();
-											    	if (fileName.equals("")) continue;
-											    	// Different repository can be specified for each file uploaded.
-											    	// If not specified, use the statically selected one.  
-											    	String repositoryServiceName = null;
-											    	if (inputData.exists(nameValue + "_repos" + Integer.toString(i))) 
-											    		repositoryServiceName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(i));
-											    	if (repositoryServiceName == null) {
-												    	Element storageElem = (Element) nextItem.selectSingleNode("./properties/property[@name='storage']");
-												    	repositoryServiceName = storageElem.attributeValue("value",
-												    			RepositoryUtil.getDefaultRepositoryServiceName());
-											    	}
-											    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryServiceName);
-											    	fileData.add(fui);
-												}
-											}
-									    }
-									} else {
-										if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getSingleValue(nameValue));
+							//We have the element name, see if it has a value in the input data
+							if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
+								//Use the helper routine to parse the date into a date object
+								Description description = new Description();
+								if (inputData.exists(nameValue)) {
+									description.setText(inputData.getSingleValue(nameValue));
+									description.setFormat(Description.FORMAT_HTML);
+									entryData.put(nameValue, description);
+								}
+							} else if (itemName.equals("date")) {
+								//Use the helper routine to parse the date into a date object
+								Date date = DateHelper.getDateFromInput(inputData, nameValue);
+								if (date != null) {entryData.put(nameValue, date);}
+							} else if (itemName.equals("event")) {
+							    //Ditto for event helper routine
+							    Boolean hasDur = Boolean.FALSE;
+							    if (GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "hasDuration"), false)) {
+							    	hasDur = Boolean.TRUE;
+							    }
+							    Boolean hasRecur = Boolean.FALSE;
+							    if (GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "hasRecurrence"), false)) {
+							    	hasRecur = Boolean.TRUE;
+							    }
+							    Event event = EventHelper.getEventFromMap(inputData, nameValue, hasDur, hasRecur);
+							    if (event != null) {
+							        event.setName(nameValue);
+							        entryData.put(nameValue, event);
+							    }
+							} else if (itemName.equals("user_list")) {
+								if (inputData.exists(nameValue)) {
+									String[] userIds = inputData.getSingleValue(nameValue).trim().split(" ");
+									Set users = new HashSet();
+									for (int i = 0; i < userIds.length; i++) {
+										try {
+											Long.parseLong(userIds[i]);
+											users.add(userIds[i]);
+										} catch (NumberFormatException ne) {}
+									}
+									if (!users.isEmpty()) {
+										CommaSeparatedValue v = new CommaSeparatedValue();
+										v.setValue((String[])users.toArray(userIds));
+										entryData.put(nameValue, v);
 									}
 								}
+							} else if (itemName.equals("selectbox")) {
+								if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getValues(nameValue));
+							} else if (itemName.equals("checkbox")) {
+								if (inputData.exists(nameValue) && inputData.getSingleValue(nameValue).equals("on")) {
+									entryData.put(nameValue, Boolean.TRUE);
+								} else {
+									entryData.put(nameValue, Boolean.FALSE);
+								}
+							} else if (itemName.equals("file") || itemName.equals("graphic")) {
+							    if(fileItems != null && fileItems.containsKey(nameValue)) {
+							    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
+							    	String fileName = myFile.getOriginalFilename();
+							    	if (fileName.equals("")) continue;
+							    	String repositoryServiceName = DefinitionUtils.getPropertyValue(nextItem, "storage");
+							    	if (Validator.isNull(repositoryServiceName)) repositoryServiceName = RepositoryUtil.getDefaultRepositoryServiceName();
+							    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryServiceName);
+								    	//See if there is a scaling request for this graphic file. If yes, pass along the hieght and width
+					    			fui.setMaxWidth(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxWidth"), 0));
+					    			fui.setMaxHeight(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxHeight"), 0));
+							    	// TODO The following piece of code may need a better conditional
+							    	// statement than this, since we probably do not want to generate
+							    	// thumbnails for all graphic-type file uploads. Or do we? 
+							    	if(itemName.equals("graphic")) {
+							    		fui.setGenerateThumbnail(true);
+							    		fui.setThumbnailDirectlyAccessible(true);
+							    	} 
+							    	
+							    	fileData.add(fui);
+								}
+							} else if (itemName.equals("fileEntryTitle")) {
+							    if(fileItems != null && fileItems.containsKey(nameValue)) {
+							    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
+							    	String fileName = myFile.getOriginalFilename();
+							    	if (fileName.equals("")) continue;
+							    	String repositoryServiceName = DefinitionUtils.getPropertyValue(nextItem, "storage");
+							    	if (Validator.isNull(repositoryServiceName)) repositoryServiceName = RepositoryUtil.getDefaultRepositoryServiceName();
+							    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, nameValue, myFile, repositoryServiceName);
+							    	fileData.add(fui);
+							    }
+							} else if (itemName.equals("attachFiles")) {
+							    if(fileItems != null) {
+									int number = GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "number"), 1);
+									for (int i=1;i <= number;i++) {
+										String fileEleName = nameValue + Integer.toString(i);
+										if (fileItems.containsKey(fileEleName)) {												
+									    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
+									    	String fileName = myFile.getOriginalFilename();
+									    	if (fileName.equals("")) continue;
+									    	// Different repository can be specified for each file uploaded.
+									    	// If not specified, use the statically selected one.  
+									    	String repositoryServiceName = null;
+									    	if (inputData.exists(nameValue + "_repos" + Integer.toString(i))) 
+									    		repositoryServiceName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(i));
+									    	if (repositoryServiceName == null) {
+										    	repositoryServiceName = DefinitionUtils.getPropertyValue(nextItem, "storage");
+										    	if (Validator.isNull(repositoryServiceName)) repositoryServiceName = RepositoryUtil.getDefaultRepositoryServiceName();
+									    	}
+									    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryServiceName);
+									    	fileData.add(fui);
+										}
+									}
+							    }
+							} else {
+								if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getSingleValue(nameValue));
 							}
 						}
 					}
@@ -1073,9 +1049,16 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     public List getDefinitions() {
     	String companyId = RequestContextHolder.getRequestContext().getZoneName();
     	List defs = coreDao.loadDefinitions(companyId);
+    	//TODO: acl check
     	return defs;
     }
     
+    public List getDefinitions(int type) {
+    	String companyId = RequestContextHolder.getRequestContext().getZoneName();
+    	List defs = coreDao.loadDefinitions(companyId, type);
+    	//TODO: acl check
+    	return defs;
+    }
 	public void addIndexFieldsForEntity(
             org.apache.lucene.document.Document indexDoc,
             DefinableEntity entry) {
@@ -1099,72 +1082,37 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	                    while (itItems.hasNext()) {
 	                        Element nextItem = (Element) itItems.next();
 	
-	                        //Get the form element name (property name)
-	                        Element nameProperty = (Element) nextItem
-	                                .selectSingleNode("./properties/property[@name='name']");
-	                        if (nameProperty != null) {
-	                            //Find the item in the configuration definition
-	                            // to see if it is a data item
-	                            String itemName = (String) nextItem
-	                                    .attributeValue("name");
-	                            Element configItem = (Element) configRoot
-	                                    .selectSingleNode("//item[@name='"
-	                                            + itemName + "']");
-	                            if (configItem != null) {
-	                                if (configItem.attributeValue("type", "")
-	                                        .equals("data")) {
-	                                    String nameValue = nameProperty
-	                                            .attributeValue("value", "");
-	                                    if (nameValue.equals("")) {
-	                                        nameValue = nextItem
-	                                                .attributeValue("name");
-	                                    }
+							String itemName = (String) nextItem.attributeValue("name", "");
+							
+							//Find the item in the base configuration definition to see if it is a data item
+							Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
+							if (configItem != null) {
+								//Get the form element name (property name)
+								String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");									
+								if (Validator.isNull(nameValue)) {nameValue = nextItem.attributeValue("name");}
 	
-	                                    boolean applyIndexing = false;
+                                Element indexingElem = (Element) nextItem.selectSingleNode("./index");
+	                            if (indexingElem == null) {
+	                                // The current item in the entry definition does not contain
+	                                // indexing information. Check the corresponding item in the default
+	                                // config definition to see if it has it.
+	                                // This two level mechanism allows entry definition (more specific
+	                                // one) to override the settings in the default config definition
+	                                // (more general one). This overriding works in its entirity only, 
+	                            	// that is, partial overriding is not supported.
+	                                indexingElem = (Element) configItem.selectSingleNode("./index");
+	                            }
 	
-	                                    Element indexingElem = (Element) nextItem
-	                                            .selectSingleNode("./index");
-	                                    if (indexingElem == null) {
-	                                        // The current item in the entry
-	                                        // definition does not contain
-	                                        // indexing information. Check the
-	                                        // corresponding item in the default
-	                                        // config definition to see if it
-	                                        // has it.
-	                                        // This two level mechanism allows
-	                                        // entry definition (more specific
-	                                        // one) to override the settings
-	                                        // in the default config definition
-	                                        // (more general one). This
-	                                        // overriding
-	                                        // works in its entirity only, that
-	                                        // is, partial overriding is not
-	                                        // supported.
-	                                        indexingElem = (Element) configItem
-	                                                .selectSingleNode("./index");
-	                                    }
-	
-	                                    if (indexingElem == null)
-	                                        continue;
-	
-	                                    if (indexingElem.attributeValue("apply")
-	                                            .equals("true"))
-	                                        applyIndexing = true;
-	
-	                                    if (!applyIndexing)
-	                                        continue;
-	
-	                                    String fieldBuilder = indexingElem
-	                                            .attributeValue("fieldBuilder");
-	                                    Map indexingArgs = getOptionalArgs(indexingElem);
-	                                    fields = FieldBuilderUtil.buildField(entry,
-	                                            nameValue, fieldBuilder,
-	                                            indexingArgs);
-	                                    if (fields != null) {
-	                                        for (int i = 0; i < fields.length; i++) {
-	                                            indexDoc.add(fields[i]);
-	                                        }
-	                                    }
+	                            if (indexingElem == null) continue;
+	                            if (indexingElem.attributeValue("apply").equals("true")) {
+	                            	String fieldBuilder = indexingElem.attributeValue("fieldBuilder");
+	                            	Map indexingArgs = getOptionalArgs(indexingElem);
+	                            	fields = FieldBuilderUtil.buildField(entry,
+	                                     nameValue, fieldBuilder, indexingArgs);
+	                            	if (fields != null) {
+	                            		for (int i = 0; i < fields.length; i++) {
+	                            			indexDoc.add(fields[i]);
+	                            		}
 	                                }
 	                            }
 	                        }
@@ -1224,90 +1172,53 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                 if (itItems != null) {
                     while (itItems.hasNext()) {
                         Element nextItem = (Element) itItems.next();
+						String itemName = (String) nextItem.attributeValue("name", "");
+						
+						//Find the item in the base configuration definition to see if it is a data item
+						Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
+						if (configItem != null) {
+							//Get the form element name (property name)
+							String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");									
+							if (Validator.isNull(nameValue)) {nameValue = nextItem.attributeValue("name");}
 
-                        //Get the form element name (property name)
-                        Element nameProperty = (Element) nextItem
-                                .selectSingleNode("./properties/property[@name='name']");
-                        if (nameProperty != null) {
-                            //Find the item in the configuration definition
-                            // to see if it is a data item
-                            String itemName = (String) nextItem
-                                    .attributeValue("name");
-                            Element configItem = (Element) configRoot
-                                    .selectSingleNode("//item[@name='"
-                                            + itemName + "']");
-                            if (configItem != null) {
-                            	if (configItem.attributeValue("type", "").equals("data")) {
-                                    String nameValue = nameProperty
-                                            .attributeValue("value", "");
-                                    if (nameValue.equals("")) {
-                                        nameValue = nextItem
-                                                .attributeValue("name");
-                                    }
+                            boolean applyNotify = false;
 
-                                    boolean applyNotify = false;
-
-                                    Element notifyElem = (Element) nextItem
-                                            .selectSingleNode("./notify");
-                                    if (notifyElem == null) {
-                                        // The current item in the entry
-                                        // definition does not contain
-                                        // indexing information. Check the
-                                        // corresponding item in the default
-                                        // config definition to see if it
-                                        // has it.
-                                        // This two level mechanism allows
-                                        // entry definition (more specific
-                                        // one) to override the settings
-                                        // in the default config definition
-                                        // (more general one). This
-                                        // overriding
-                                        // works in its entirity only, that
-                                        // is, partial overriding is not
-                                        // supported.
-                                    	notifyElem = (Element) configItem
-                                                .selectSingleNode("./notify");
-                                    }
-
-                                    if (notifyElem == null)
-                                        continue;
-
-                                    if (notifyDef.isFull() && notifyElem.attributeValue("full")
-                                            .equals("true"))
-                                        applyNotify = true;
-                                    else if (notifyDef.isSummary() && notifyElem.attributeValue("summary")
-                                            .equals("true"))
-                                        applyNotify = true;
-
-                                    if (!applyNotify)
-                                        continue;
-
-                                    String fieldBuilder = notifyElem
-                                            .attributeValue("notifyBuilder");
-                                    
-                               
-                                    Map notifyArgs = getOptionalArgs(notifyElem);
-                                    String captionValue = null;
-                                    if (!notifyArgs.containsKey("caption")) {
-                                    	Element captionProperty = (Element) nextItem
-                                    		.selectSingleNode("./properties/property[@name='caption']");
-                                    	captionValue = captionProperty
-                                    		.attributeValue("value", "");
-                                    	if (captionValue.equals("")) {
-                                    		captionValue = nextItem
-                                    			.attributeValue("caption");
-                                    	} 
-                                    }
-                                    else {
-                                    	captionValue = (String) notifyArgs.get("caption");
-                                    }
-                                	notifyArgs.put("_caption", NLT.getDef(captionValue));
-                                	notifyArgs.put("_itemName", itemName);
-                                    NotifyBuilderUtil.buildElement(element, notifyDef, entry,
-                                            nameValue, fieldBuilder,
-                                            notifyArgs);
-                                }
+                            Element notifyElem = (Element) nextItem.selectSingleNode("./notify");
+                            if (notifyElem == null) {
+                                // The current item in the entry definition does not contain
+                                // indexing information. Check the corresponding item in the default
+                                // config definition to see if it has it.
+                                // This two level mechanism allows entry definition (more specific
+                                // one) to override the settings in the default config definition
+                                // (more general one). This overriding works in its 
+                                // entirity only, that is, partial overriding is not supported.
+                                notifyElem = (Element) configItem.selectSingleNode("./notify");
                             }
+
+                            if (notifyElem == null) continue;
+
+                            if (notifyDef.isFull() && notifyElem.attributeValue("full").equals("true"))
+                                applyNotify = true;
+                            else if (notifyDef.isSummary() && notifyElem.attributeValue("summary").equals("true"))
+                                applyNotify = true;
+
+                            if (!applyNotify) continue;
+
+                            String fieldBuilder = notifyElem.attributeValue("notifyBuilder");
+                            Map notifyArgs = getOptionalArgs(notifyElem);
+                            String captionValue;
+                            if (!notifyArgs.containsKey("caption")) {
+                                captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");
+                               	if (Validator.isNull(captionValue)) {
+                                    	captionValue = nextItem.attributeValue("caption");
+                                }
+                            } else {
+                               	captionValue = (String) notifyArgs.get("caption");
+                            }
+                            notifyArgs.put("_caption", NLT.getDef(captionValue));
+                            notifyArgs.put("_itemName", itemName);
+                            NotifyBuilderUtil.buildElement(element, notifyDef, entry,
+                                            nameValue, fieldBuilder, notifyArgs);
                         }
                     }
                 }
@@ -1350,68 +1261,54 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					String itemName = (String) nextItem.attributeValue("name", "");
 					itemData.put("type", itemName);
 					
-					//Get the element name (property name)
-					Element nameProperty = (Element) nextItem.selectSingleNode("./properties/property[@name='name']");
-					Element captionProperty = (Element) nextItem.selectSingleNode("./properties/property[@name='caption']");
-					if (nameProperty != null && captionProperty != null) {
-						//Find the item in the base configuration definition to see if it is a data item
-						Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "']");
-						if (configItem != null) {
-							if (configItem.attributeValue("type", "").equals("data")) {
-								String nameValue = nameProperty.attributeValue("value", "");									
-								if (nameValue.equals("")) {nameValue = nextItem.attributeValue("name");}
-								String captionValue = captionProperty.attributeValue("value", "");									
-								if (captionValue.equals("")) {captionValue = nameValue;}
-								itemData.put("caption", NLT.getDef(captionValue));
+					//Find the item in the base configuration definition to see if it is a data item
+					Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
+					if (configItem != null) {
+						String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");	
+						if (Validator.isNull(nameValue)) nameValue = itemName;
+						
+						String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");							
+						if (Validator.isNull(captionValue)) captionValue = nameValue;							
+						itemData.put("caption", NLT.getDef(captionValue));
 								
-								//We have the element name, see if it has option values
-								if (itemName.equals("selectbox")) {
-									Map valueMap = new TreeMap();
-									Iterator itSelectionItems = nextItem.selectNodes("item[@name='selectboxSelection']").iterator();
-									while (itSelectionItems.hasNext()) {
-										Element selection = (Element) itSelectionItems.next();
-										//Get the element name (property name)
-										Element selectionNameProperty = (Element) selection.selectSingleNode("./properties/property[@name='name']");
-										Element selectionCaptionProperty = (Element) selection.selectSingleNode("./properties/property[@name='caption']");
-										if (selectionNameProperty != null && selectionCaptionProperty != null) {
-											String selectionNameValue = selectionNameProperty.attributeValue("value", "");									
-											if (!selectionNameValue.equals("")) {
-												String selectionCaptionValue = selectionCaptionProperty.attributeValue("value", "");									
-												if (selectionCaptionValue.equals("")) {selectionCaptionValue = selectionNameValue;}
-												valueMap.put(selectionNameValue, NLT.getDef(selectionCaptionValue));
-											}
-										}
-									}
-									itemData.put("length", new Integer(valueMap.size()).toString());
-									if (valueMap.size() > 10) itemData.put("length", "10");
-									itemData.put("values", valueMap);
-								
-								} else if (itemName.equals("radio")) {
-									Map valueMap = new TreeMap();
-									Iterator itSelectionItems = nextItem.selectNodes("item[@name='radioSelection']").iterator();
-									while (itSelectionItems.hasNext()) {
-										Element selection = (Element) itSelectionItems.next();
-										//Get the element name (property name)
-										Element selectionNameProperty = (Element) selection.selectSingleNode("./properties/property[@name='name']");
-										Element selectionCaptionProperty = (Element) selection.selectSingleNode("./properties/property[@name='caption']");
-										if (selectionNameProperty != null && selectionCaptionProperty != null) {
-											String selectionNameValue = selectionNameProperty.attributeValue("value", "");									
-											if (!selectionNameValue.equals("")) {
-												String selectionCaptionValue = selectionCaptionProperty.attributeValue("value", "");									
-												if (selectionCaptionValue.equals("")) {selectionCaptionValue = selectionNameValue;}
-												valueMap.put(selectionNameValue, NLT.getDef(selectionCaptionValue));
-											}
-										}
-									}
-									itemData.put("length", new Integer(valueMap.size()).toString());
-									if (valueMap.size() > 10) itemData.put("length", "10");
-									itemData.put("values", valueMap);
+						//We have the element name, see if it has option values
+						if (itemName.equals("selectbox")) {
+							Map valueMap = new TreeMap();
+							Iterator itSelectionItems = nextItem.selectNodes("item[@name='selectboxSelection']").iterator();
+							while (itSelectionItems.hasNext()) {
+								Element selection = (Element) itSelectionItems.next();
+								//Get the element name (property name)
+								String selectionNameValue = DefinitionUtils.getPropertyValue(selection, "name");
+								String selectionCaptionValue = DefinitionUtils.getPropertyValue(selection, "caption");
+								if (Validator.isNotNull(selectionNameValue)) {
+									if (Validator.isNull(selectionCaptionValue)) {selectionCaptionValue = selectionNameValue;}
+									valueMap.put(selectionNameValue, NLT.getDef(selectionCaptionValue));
 								}
-								
-								//Add this element to the results
-								dataElements.put(nameValue, itemData);
 							}
+							itemData.put("length", new Integer(valueMap.size()).toString());
+							if (valueMap.size() > 10) itemData.put("length", "10");
+							itemData.put("values", valueMap);
+						
+						} else if (itemName.equals("radio")) {
+							Map valueMap = new TreeMap();
+							Iterator itSelectionItems = nextItem.selectNodes("item[@name='radioSelection']").iterator();
+							while (itSelectionItems.hasNext()) {
+								Element selection = (Element) itSelectionItems.next();
+								//Get the element name (property name)
+								String selectionNameValue = DefinitionUtils.getPropertyValue(selection, "name");
+								String selectionCaptionValue = DefinitionUtils.getPropertyValue(selection, "caption");
+								if (Validator.isNotNull(selectionNameValue)) {
+									if (Validator.isNull(selectionCaptionValue)) {selectionCaptionValue = selectionNameValue;}
+									valueMap.put(selectionNameValue, NLT.getDef(selectionCaptionValue));
+								}
+							}
+							itemData.put("length", new Integer(valueMap.size()).toString());
+							if (valueMap.size() > 10) itemData.put("length", "10");
+							itemData.put("values", valueMap);
 						}
+						
+						//Add this element to the results
+						dataElements.put(nameValue, itemData);
 					}
 				}
 			}

@@ -973,7 +973,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
             set attrs(creation_principal) [mapName [aval  -name $forum createdBy $entry]] 
             set attrs(creation_date) [aval -name $forum createdOn $entry]
             set attrs(modification_principal) [mapName [aval -name $forum modifiedBy $entry]] 
-            set attrs(modification_date) [aval -name $forum modifiedOn $entry]
+            set attrs(modification_date) [aval -name $forum modifiedOn $en]
  			checkDates attrs(creation_date) attrs(modification_date)
             set attrs(title) [aval -name $forum title $entry]
             set attrs(replyCount) [aval -name $forum docLeafCount $entry]
@@ -984,7 +984,9 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
             set attrs(allowEdits) [aval -name $forum allowEdits $entry]
             set attrs(lastActivity) [aval -name $forum lastActivity $entry]
             set attrs(totalReplyCount) [aval -name $forum replyCount $entry]
-            set attrs(reserved_principal) [mapName [aval -name $forum reserveDoc $entry]]
+            try {
+                set attrs(reserved_principal) [mapName [aval -name $forum reserveDoc $entry] 0]
+            }
             set attrs(sendMail) [aval -name $forum sendMail $entry]
             set attrs(owningFolderSortKey) $folderSortKey
  			set abstract [read_abstract  -name $forum $entry]

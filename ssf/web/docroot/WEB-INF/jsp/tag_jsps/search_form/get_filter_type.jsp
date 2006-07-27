@@ -38,11 +38,9 @@
     	    tag="searchForm.selectElement" text="--select an entry type--"/></option>
     	  <option value="_common"><ssf:nlt 
     	    tag="searchForm.commonElements" text="--common elements (e.g., title)--"/></option>
-		    <c:forEach var="item" items="${ssPublicEntryDefinitions}">
-		      <c:if test="${!empty ssEntryDefinitionMap[item.key]}">
+		    <c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
 		        <option value="<c:out value="${item.value.id}"/>"><c:out 
 		          value="${item.value.title}"/></option>
-		      </c:if>
 		    </c:forEach>
     	</select>
 	  </c:if>

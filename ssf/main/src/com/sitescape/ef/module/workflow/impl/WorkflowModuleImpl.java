@@ -29,6 +29,7 @@ import com.sitescape.util.Validator;
 import com.sitescape.ef.jobs.WorkflowTimeout;
 import com.sitescape.ef.module.binder.EntryProcessor;
 import com.sitescape.ef.module.workflow.TransitionUtils;
+import com.sitescape.ef.module.definition.DefinitionUtils;
 
 
 import org.dom4j.Document;
@@ -409,7 +410,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    	Iterator itStates = stateNodes.iterator();
 	    	while (itStates.hasNext()) {
 	    		Element state = (Element) itStates.next();
-	    		String stateName = WorkflowUtils.getProperty(state, "name");
+	    		String stateName = DefinitionUtils.getPropertyValue(state, "name");
 	    		if (!Validator.isNull(stateName)) {
 	    			//determine type of node needed
 	    			Node stateNode = (Node)nodesMap.get(stateName);
@@ -440,16 +441,16 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    			}
 	    			Element timer = (Element)state.selectSingleNode("./item[@name='transitions']/item[@name='transitionOnElapsedTime']");
 	    			if (timer != null) {
-	    				String toState = WorkflowUtils.getProperty(timer, "toState");
+	    				String toState = DefinitionUtils.getPropertyValue(timer, "toState");
 	    				long total = 0;
 	    			    //get days and convert to minutes
-	    				String val=WorkflowUtils.getProperty(timer, "days");
+	    				String val=DefinitionUtils.getPropertyValue(timer, "days");
 	    				if (!Validator.isNull(val)) total += Long.parseLong(val)*24*60;
 	    				
-	    				val=WorkflowUtils.getProperty(timer, "hours");
+	    				val=DefinitionUtils.getPropertyValue(timer, "hours");
 	    				if (!Validator.isNull(val)) total += Long.parseLong(val)*60;				    	
 	    				
-	    				val=WorkflowUtils.getProperty(timer, "mins");
+	    				val=DefinitionUtils.getPropertyValue(timer, "mins");
     					if (!Validator.isNull(val)) total += Long.parseLong(val);
 	    				addTimer(context, stateNode, "onElapsedTime", String.valueOf(total) + " minutes", toState);
 	    			} else {

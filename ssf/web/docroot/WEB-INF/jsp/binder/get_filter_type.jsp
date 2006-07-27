@@ -38,11 +38,9 @@
     	    tag="filter.selectElement" text="--select an entry type--"/></option>
     	  <option value="_common"><ssf:nlt 
     	    tag="filter.commonElements" text="--common elements (e.g., title)--"/></option>
-		    <c:forEach var="item" items="${ssPublicEntryDefinitions}">
-		      <c:if test="${!empty ssEntryDefinitionMap[item.key]}">
+		    <c:forEach var="item" items="${ssEntryDefinitionMap}">
 		        <option value="<c:out value="${item.value.id}"/>"><c:out 
 		          value="${item.value.title}"/></option>
-		      </c:if>
 		    </c:forEach>
 		    <c:forEach var="item" items="${ssPublicProfileEntryDefinitions}">
 		      <c:if test="${!empty ssEntryDefinitionMap[item.key]}">

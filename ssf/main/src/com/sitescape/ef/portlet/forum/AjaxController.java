@@ -20,7 +20,7 @@ import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DashboardHelper;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.Favorites;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
@@ -436,17 +436,14 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.FILTER_ENTRY_ELEMENT_NAME, elementName);
 		}
 
-		Map defaultEntryDefinitions = DefinitionUtils.getEntryDefsAsMap(binder);
-		model.put(WebKeys.ENTRY_DEFINTION_MAP, defaultEntryDefinitions);
-
-		DefinitionUtils.getDefinitions(model);
-		DefinitionUtils.getDefinitions(binder, model);
-    	DefinitionUtils.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 		
     	model.put(WebKeys.AJAX_STATUS, statusMap);
 		response.setContentType("text/xml");
 		if (op.equals(WebKeys.FORUM_OPERATION_GET_FILTER_TYPE)) {
 			model.put(WebKeys.FILTER_TYPE, op2);
+			Map defaultEntryDefinitions = DefinitionHelper.getEntryDefsAsMap(binder);
+			model.put(WebKeys.ENTRY_DEFINTION_MAP, defaultEntryDefinitions);
+	    	DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 			return new ModelAndView("binder/get_filter_type", model);
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS)) {
 			return new ModelAndView("binder/get_entry_elements", model);
@@ -497,13 +494,14 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.FILTER_ENTRY_ELEMENT_NAME, elementName);
 		}
 
-		DefinitionUtils.getDefinitions(model);
-    	DefinitionUtils.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 		
     	model.put(WebKeys.AJAX_STATUS, statusMap);
 		response.setContentType("text/xml");
 		if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE)) {
 			model.put(WebKeys.FILTER_TYPE, op2);
+			DefinitionHelper.getDefinitions(Definition.COMMAND, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
+			DefinitionHelper.getDefinitions(Definition.FILE_ENTRY_VIEW, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
+	    	DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 			return new ModelAndView("tag_jsps/search_form/get_filter_type", model);
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS)) {
 			return new ModelAndView("tag_jsps/search_form/get_entry_elements", model);
@@ -619,11 +617,11 @@ public class AjaxController  extends SAbstractController {
 		if (scope.equals("")) scope = DashboardHelper.Local;
 
 		if (!componentId.equals("") && op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT)) {
-			getDashboardModule().showHideComponent(request, binder, componentId, scope, "show");
+			DashboardHelper.showHideComponent(request, binder, componentId, scope, "show");
 		} else if (!componentId.equals("") && op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT)) {
-			getDashboardModule().showHideComponent(request, binder, componentId, scope, "hide");
+			DashboardHelper.showHideComponent(request, binder, componentId, scope, "hide");
 		} else if (!componentId.equals("") && op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
-			getDashboardModule().deleteComponent(request, binder, componentId, scope);
+			DashboardHelper.deleteComponent(request, binder, componentId, scope);
 		}
 	}
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
@@ -672,8 +670,8 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
 			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
-			if (DefinitionUtils.getDefinition(entry.getEntryDef(), model, "//item[@name='entryBlogView']") == false) {
-				DefinitionUtils.getDefaultEntryView(entry, model);
+			if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryBlogView']") == false) {
+				DefinitionHelper.getDefaultEntryView(entry, model);
 			}
 			SeenMap seen = getProfileModule().getUserSeenMap(null);
 			model.put(WebKeys.SEEN_MAP, seen);

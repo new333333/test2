@@ -56,6 +56,7 @@ import com.sitescape.ef.domain.PostingDef;
 
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
+import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.util.Constants;
 import com.sitescape.util.Validator;
 /**
@@ -265,6 +266,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        }
 	     );
 	}
+	public List loadObjects(Class className, FilterControls filter) {
+		return loadObjects(new ObjectControls(className), filter);
+	}
 	/**
 	 * Load a list of objects, OR'ing ids
 	 * @param ids
@@ -441,29 +445,21 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         if (!def.getZoneName().equals(zoneName)) {throw new NoDefinitionByTheIdException(defId);}
   		return def;
 	}
-	/**
-	 * Get definitions for the specified binder
-	 * @param binder
-	 * @param objectDesc - only the attributes are used
-	 * @param filter
-	 * @return
-	 */
-	public List loadDefinitions(final Binder binder, final ObjectControls objectDesc, final FilterControls filter) {      
-		return (List)getHibernateTemplate().execute(
-            new HibernateCallback() {
-                public Object doInHibernate(Session session) throws HibernateException {
-                    StringBuffer query = objectDesc.getSelect("this");
-                	filter.appendFilter("this", query);
-                    List results = session.createFilter(binder.getDefinitions(),
-                            query.toString()) 
-					.list();
-                    return results;                           
-                }
-            }
-        );                
-	}
+
 	public List loadDefinitions(String zoneName) {
-    	return loadObjects(new ObjectControls(Definition.class), new FilterControls("zoneName", zoneName));
+		OrderBy order = new OrderBy();
+		order.addColumn("type");
+		order.addColumn("name");
+		FilterControls filter = new FilterControls("zoneName", zoneName);
+		filter.setOrderBy(order);
+    	return loadObjects(new ObjectControls(Definition.class), filter);
+	}
+	public List loadDefinitions(String zoneName, int type) {
+		OrderBy order = new OrderBy();
+		order.addColumn("name");
+		FilterControls filter = new FilterControls(new String[]{"zoneName", "type"}, new Object[]{zoneName, Integer.valueOf(type)});
+		filter.setOrderBy(order);
+    	return loadObjects(new ObjectControls(Definition.class), filter);
 	}
 	//associations not maintained from definition to binders, only from
 	//binders to definitions

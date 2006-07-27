@@ -32,6 +32,7 @@ import com.sitescape.ef.util.InvokeUtil;
 import com.sitescape.ef.util.ObjectPropertyNotFoundException;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.ef.module.definition.DefinitionUtils;
 
 public class TransitionUtils {
 	protected static Log logger = LogFactory.getLog(TransitionUtils.class);
@@ -75,7 +76,7 @@ public class TransitionUtils {
 	    	List manuals = WorkflowUtils.getManualElements(ws.getDefinition(), ws.getState());
 			for (int i=0; i<manuals.size(); ++i) {
 				Element transition = (Element)manuals.get(i);
-				String toState = WorkflowUtils.getProperty(transition, "toState");
+				String toState = DefinitionUtils.getPropertyValue(transition, "toState");
 				if (!Validator.isNull(toState)) {
 					if (toState.equals(newState)) {
 						Token t = context.loadTokenForUpdate(ws.getTokenId().longValue());
@@ -110,9 +111,9 @@ public class TransitionUtils {
 		if ((variables == null) || variables.isEmpty()) return false;
 		for (int i=0; i<variables.size(); ++i) {
 			Element variableEle = (Element)variables.get(i);
-			String name = WorkflowUtils.getProperty(variableEle, "name");
+			String name = DefinitionUtils.getPropertyValue(variableEle, "name");
 			if (name == null) continue;
-			String value = WorkflowUtils.getProperty(variableEle, "value");
+			String value = DefinitionUtils.getPropertyValue(variableEle, "value");
 
 			ContextInstance cI = executionContext.getContextInstance();
 			cI.setVariable(name, value);
@@ -178,7 +179,7 @@ public class TransitionUtils {
 		for (int i=0; i<conditions.size(); ++i) {
 			Element condition = (Element)conditions.get(i);
 			//any modify triggers this
-			String toState = WorkflowUtils.getProperty(condition, "toState");
+			String toState = DefinitionUtils.getPropertyValue(condition, "toState");
 			if (!Validator.isNull(toState)) {
 				String type = condition.attributeValue("name", "");
 				if (type.equals("transitionOnModify")) {
@@ -204,7 +205,7 @@ public class TransitionUtils {
 					Object currentVal=null;
 					DefinableEntity dEntry = null;
 					if (entry instanceof DefinableEntity) dEntry = (DefinableEntity)entry;
-					boolean allMatch = GetterUtil.getBoolean(WorkflowUtils.getProperty(condition, "allMustMatch"));
+					boolean allMatch = GetterUtil.getBoolean(DefinitionUtils.getPropertyValue(condition, "allMustMatch"));
 					List entryConditions = condition.selectNodes(".//workflowCondition");
 					if (entryConditions == null) continue;
 					boolean currentMatch = true;
@@ -317,7 +318,7 @@ public class TransitionUtils {
 						
 				} else if (type.equals("waitForParallelThread")) {
 					//	get names of threads we are waiting for
-					List threads = WorkflowUtils.getPropertyList(condition, "name");
+					List threads = DefinitionUtils.getPropertyValueList(condition, "name");
 					boolean done = true;
 					for (int j=0; j<threads.size(); ++j) {
 						String threadName = (String)threads.get(j);
@@ -337,9 +338,9 @@ public class TransitionUtils {
 						return toState;
 					}
 				} if (type.equals("transitionOnVariable")) {
-					String name = WorkflowUtils.getProperty(condition, "name");
+					String name = DefinitionUtils.getPropertyValue(condition, "name");
 					if (!Validator.isNull(name)) {
-						String value = WorkflowUtils.getProperty(condition, "value");
+						String value = DefinitionUtils.getPropertyValue(condition, "value");
 						Object currentVal = executionContext.getVariable(name);
 						if (((currentVal != null) && currentVal.equals(value)) ||
 								(currentVal == value)) {

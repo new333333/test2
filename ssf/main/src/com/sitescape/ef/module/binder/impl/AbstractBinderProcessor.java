@@ -44,7 +44,7 @@ import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.TempFileUtil;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
@@ -282,7 +282,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	if (def == null) {
     		//There is no definition for this binder. Get the default definition.
     		Map model = new HashMap();
-    		defDoc = DefinitionUtils.getDefaultBinderDefinition(binder, model, "//item[@type='form']");
+    		defDoc = DefinitionHelper.getDefaultBinderDefinition(binder, model, "//item[@type='form']");
     	} else {
     		defDoc = def.getDefinition();
     	}
@@ -604,6 +604,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         
         // Add Doc title
         EntryIndexUtils.addTitle(indexDoc, entity);
+        
+        //Add Rating
+        EntryIndexUtils.addRating(indexDoc, entity);
         
         // Add data fields driven by the entry's definition object. 
         getDefinitionModule().addIndexFieldsForEntity(indexDoc, entity);

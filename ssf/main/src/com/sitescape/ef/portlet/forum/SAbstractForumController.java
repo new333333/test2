@@ -23,6 +23,7 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
@@ -41,7 +42,7 @@ import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.DateHelper;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.security.AccessControlException;
@@ -88,7 +89,7 @@ public class SAbstractForumController extends SAbstractController {
 		//See if the user has selected a specific view to use
         UserProperties uProps = getProfileModule().getUserProperties(user.getId(), binderId);
 		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
-		DefinitionUtils.getDefinitions(binder, model, userDefaultDef);
+		DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
 		
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
@@ -715,21 +716,8 @@ public class SAbstractForumController extends SAbstractController {
 			Map entryMap = new HashMap();
 			entries.put(entry.getId().toString(), entryMap);
 			entryMap.put("entry", entry);
-			Definition currentDef = entry.getEntryDef();
-			entryMap.put(WebKeys.CONFIG_DEFINITION, null);
-			entryMap.put(WebKeys.CONFIG_ELEMENT, null);
-			if (currentDef != null) {
-				Document configDoc = currentDef.getDefinition();
-				if (configDoc != null) { 
-					Element configRoot = configDoc.getRootElement();
-					if (configRoot != null) {
-						Element configEle = (Element) configRoot.selectSingleNode("//item[@name='entryBlogView']");
-						if (configEle != null) {
-							entryMap.put(WebKeys.CONFIG_ELEMENT, configEle);
-							entryMap.put(WebKeys.CONFIG_DEFINITION, configDoc);
-						}
-					}
-				}
+			if (DefinitionHelper.getDefinition(entry.getEntryDef(), entryMap, "//item[@name='entryBlogView']") == false) {
+				DefinitionHelper.getDefaultEntryView(entry, entryMap, "//item[@name='entryBlogView']");				
 			}
 		}
 	}
