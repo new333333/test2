@@ -11,6 +11,7 @@ import com.sitescape.ef.domain.DefinitionInvalidException;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 
@@ -20,15 +21,18 @@ import com.sitescape.ef.module.shared.InputDataAccessor;
  */
 public interface DefinitionModule {
 	public Definition getDefinition(String id);
-	public Definition addDefinition(String name, String title, int type, Map formData);
+	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData);
 	public String addDefinition(Document doc);
 	public void deleteDefinition(String id);
-	public Document getDefaultDefinition(String name, String title, int type, Map formData);
+	public Document getDefaultBinderDefinition(Binder binder);
+	public Document getDefaultEntryDefinition(Entry entry);
+	
+	public Document getDefaultDefinition(String name, String title, int type, InputDataAccessor inputData);
 	public Document getDefinitionConfig();
 	public void modifyDefinitionName(String id, String name, String caption);
 	public void modifyDefinitionAttribute(String id, String key, String value);
-	public void modifyDefinitionProperties(String id, Map formData);
-	public void saveDefinitionLayout(String id, Map formData);
+	public void modifyDefinitionProperties(String id, InputDataAccessor inputData);
+	public void saveDefinitionLayout(String id, InputDataAccessor inputData);
 
 	/**
 	 * Adds an item to an item in a definition tree.
@@ -44,9 +48,9 @@ public interface DefinitionModule {
 	 * @return the next element in the iteration.
 	 * @exception NoSuchElementException iteration has no more elements.
 	 */
-	public Element addItem(String defId, String itemId, String itemName, Map formData) throws DefinitionInvalidException;
-	public Element addItemToDefinitionDocument(String defId, Document definitionTree, String itemId, String itemNameToAdd, Map formData) throws DefinitionInvalidException;
-	public void modifyItem(String defId, String itemId, Map formData) throws DefinitionInvalidException;
+	public Element addItem(String defId, String itemId, String itemName, InputDataAccessor inputData) throws DefinitionInvalidException;
+	public Element addItemToDefinitionDocument(String defId, Document definitionTree, String itemId, String itemNameToAdd, InputDataAccessor inputData) throws DefinitionInvalidException;
+	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException;
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException;
 	public void moveItem(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException;
 	
@@ -59,6 +63,7 @@ public interface DefinitionModule {
 	 */
 	public Map getEntryData(Document def, InputDataAccessor inputData, Map fileItems);
 	public List getDefinitions();
+	public List getDefinitions(int type);
 	
 	public void addIndexFieldsForEntity(org.apache.lucene.document.Document indexDoc, DefinableEntity entity);
 	public void addNotifyElementForEntity(Element element, Notify notifyDef, DefinableEntity entity);

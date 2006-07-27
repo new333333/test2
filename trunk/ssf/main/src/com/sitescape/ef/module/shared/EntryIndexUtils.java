@@ -19,6 +19,7 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
+import com.sitescape.ef.domain.AverageRating;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
@@ -74,12 +75,10 @@ public class EntryIndexUtils {
     public static final String FILE_EXT_FIELD = "_fileExt";
     public static final String FILE_TYPE_FIELD = "_fileType";
     public static final String FILE_ID_FIELD = "_fileID";
+    public static final String RATING_FIELD="_rating";
     // Defines field values
     public static final String READ_ACL_ALL = "all";
-    
-    public static final String SORT_ASC="asc";
-    public static final String SORT_DESC="descend";
-    
+        
     public static void addTitle(Document doc, DefinableEntity entry) {
         // Add the title field
     	if (entry.getTitle() != null) {
@@ -96,7 +95,14 @@ public class EntryIndexUtils {
             }
     	}
     }
-    
+    public static void addRating(Document doc, DefinableEntity entry) {
+    	//rating may not exist or not be supported
+    	try {
+        	Field rateField = Field.Keyword(RATING_FIELD, entry.getAverageRating().getAverage().toString());
+        	doc.add(rateField);
+        } catch (Exception ex) {};
+   	
+    }
     public static void addEntryType(Document doc, DefinableEntity entry) {
         // Add the entry type (entry or reply)
     	if (entry instanceof FolderEntry) {

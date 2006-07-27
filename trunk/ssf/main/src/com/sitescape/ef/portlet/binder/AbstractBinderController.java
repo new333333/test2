@@ -22,7 +22,7 @@ public abstract class AbstractBinderController extends SAbstractController {
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
-		} else throw new IllegalArgumentException("Unknow binderyType" + binderType);		
+		} else throw new IllegalArgumentException("Unknown binderType" + binderType);		
 	}
 	protected void setupViewOnDelete(ActionResponse response, Binder binder, String binderType) {
 		if (binderType.equals(EntityIdentifier.EntityType.folder.name())) {

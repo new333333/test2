@@ -24,29 +24,6 @@
   enctype="<%= enctype %>" name="<%= formName %>" 
   id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this);">
 
-<fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="folder.type" 
-    text="Folder type"/></legend>
-  <span class="ss_bold"><ssf:nlt tag="folder.selectFolderType" 
-  text="Select the type of folder:"/></span>
-  <br/>
-  <c:forEach var="item" items="${ssPublicFolderDefinitions}">
-      <c:choose>
-        <c:when test="${ssDefaultFolderDefinitionId == item.value.id}">
-          <input type="radio" name="binderDefinition" value="${item.value.id}" checked>
-          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
-        </c:when>
-        <c:otherwise>
-          <input type="radio" name="binderDefinition" value="${item.value.id}">
-          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
-        </c:otherwise>
-      </c:choose>
-  </c:forEach>
-
-</fieldset>
-
-<br/>
-
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" />

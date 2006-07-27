@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
@@ -43,7 +43,7 @@ public class DisplayConfiguration extends TagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
-			this.configDefaultDefinition = DefinitionUtils.getInstance().getDefinitionModule().getDefinitionConfig();
+			this.configDefaultDefinition = DefinitionHelper.getInstance().getDefinitionModule().getDefinitionConfig();
 			
 			if (this.configDefinition == null) {
 					throw new JspException("No configuration definition available for this item.");

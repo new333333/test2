@@ -1,32 +1,29 @@
 package com.sitescape.ef.portlet.definitionBuilder;
 
-import java.lang.Integer;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Iterator;
-
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.springframework.web.servlet.ModelAndView;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinitionInvalidException;
 import com.sitescape.ef.domain.DefinitionInvalidOperation;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
-
+import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.web.util.DefinitionUtils;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.util.Validator;
@@ -41,7 +38,6 @@ public class ViewController extends SAbstractController {
 		response.setRenderParameters(request.getParameterMap());
 
 		Map formData = request.getParameterMap();
-
 		String selectedItem = PortletRequestUtils.getStringParameter(request,"sourceDefinitionId", "");
 			
 		//See if there is an operation to perform
@@ -59,7 +55,7 @@ public class ViewController extends SAbstractController {
 					String operationItem = PortletRequestUtils.getStringParameter(request, "operationItem", "");
 					Integer type = PortletRequestUtils.getIntParameter(request, "definitionType_"+operationItem);
 					if (!name.equals("") && type != null) {
-						Definition def = getDefinitionModule().addDefinition(name, caption, type.intValue(), formData);							
+						Definition def = getDefinitionModule().addDefinition(name, caption, type.intValue(),  new MapInputData(formData));			
 						selectedItem = def.getId();
 					}
 					
@@ -67,7 +63,7 @@ public class ViewController extends SAbstractController {
 					//Modify the name of the selected item
 					selectedItem = PortletRequestUtils.getStringParameter(request, "selectedId", "");
 					if (!selectedItem.equals("")) {
-						getDefinitionModule().modifyDefinitionProperties(selectedItem, formData);
+						getDefinitionModule().modifyDefinitionProperties(selectedItem,  new MapInputData(formData));
 					}
 					
 				} else if (operation.equals("deleteDefinition")) {
@@ -88,7 +84,7 @@ public class ViewController extends SAbstractController {
 						//Add the new item
 						String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
 						String itemToAdd = PortletRequestUtils.getStringParameter(request, "operationItem", "");
-						getDefinitionModule().addItem(selectedItem, itemId, itemToAdd, formData);
+						getDefinitionModule().addItem(selectedItem, itemId, itemToAdd,  new MapInputData(formData));
 					}
 						
 				} else if (operation.equals("modifyItem")) {
@@ -96,7 +92,7 @@ public class ViewController extends SAbstractController {
 					if (!selectedItem.equals("")) {
 						//Modify the item
 						String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
-						getDefinitionModule().modifyItem(selectedItem, itemId, formData);
+						getDefinitionModule().modifyItem(selectedItem, itemId, new MapInputData(formData));
 					}
 					
 				} else if (operation.equals("deleteItem")) {
@@ -153,7 +149,6 @@ public class ViewController extends SAbstractController {
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.CONFIG_DEFINITION, getDefinitionModule().getDefinitionConfig());
 			
-		DefinitionUtils.getDefinitions(model);
 		if (!selectedItem.equals("")) {
 			model.put(WebKeys.DEFINITION, getDefinitionModule().getDefinition(selectedItem));
 		}
@@ -208,7 +203,7 @@ public class ViewController extends SAbstractController {
 			
 		} else {
 			//No definition is selected. Show the initial tree
-			List currentDefinitions = (List)model.get(WebKeys.PUBLIC_DEFINITIONS);
+			List currentDefinitions = getDefinitionModule().getDefinitions();
 			
 			//Build the definition tree
 			definitionTree = DocumentHelper.createDocument();

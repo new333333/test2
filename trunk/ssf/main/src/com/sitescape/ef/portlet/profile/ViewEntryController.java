@@ -18,7 +18,7 @@ import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
 
@@ -59,11 +59,11 @@ public class ViewEntryController extends SAbstractController {
 		//Get the definition used to view this entry
 		Definition entryDef = entry.getEntryDef();
 		if (entryDef == null) {
-			DefinitionUtils.getDefaultEntryView(entry, model);
+			DefinitionHelper.getDefaultEntryView(entry, model);
 		} else {
 			//Set up the definition used to show this profile entry
-			if (!DefinitionUtils.getDefinition(entryDef, model, "//item[@name='profileEntryView']")) {
-				DefinitionUtils.getDefaultEntryView(entry, model);
+			if (!DefinitionHelper.getDefinition(entryDef, model, "//item[@name='profileEntryView']")) {
+				DefinitionHelper.getDefaultEntryView(entry, model);
 			}
 		}
 		//	Build the toolbar array

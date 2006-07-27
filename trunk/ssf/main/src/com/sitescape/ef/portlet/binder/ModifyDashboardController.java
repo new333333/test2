@@ -43,43 +43,43 @@ public class ModifyDashboardController extends AbstractBinderController {
 		String returnView = PortletRequestUtils.getStringParameter(request, "_returnView", "binder");
 
 		if (formData.containsKey("set_title")) {
-			getDashboardModule().setTitle(request, binder, scope);
+			DashboardHelper.setTitle(request, binder, scope);
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("add_wideTop")) {
-			componentId = getDashboardModule().addComponent(request, binder, DashboardHelper.Wide_Top, scope);
+			componentId = DashboardHelper.addComponent(request, binder, DashboardHelper.Wide_Top, scope);
 			response.setRenderParameter("_componentId", componentId);
 			response.setRenderParameter("_dashboardList", DashboardHelper.Wide_Top);
 		} else if (formData.containsKey("add_narrowFixed")) {
-			componentId = getDashboardModule().addComponent(request, binder, DashboardHelper.Narrow_Fixed, scope);
+			componentId = DashboardHelper.addComponent(request, binder, DashboardHelper.Narrow_Fixed, scope);
 			response.setRenderParameter("_componentId", componentId);
 			response.setRenderParameter("_dashboardList", DashboardHelper.Narrow_Fixed);
 		} else if (formData.containsKey("add_narrowVariable")) {
-			componentId = getDashboardModule().addComponent(request, binder, DashboardHelper.Narrow_Variable, scope);
+			componentId = DashboardHelper.addComponent(request, binder, DashboardHelper.Narrow_Variable, scope);
 			response.setRenderParameter("_componentId", componentId);
 			response.setRenderParameter("_dashboardList", DashboardHelper.Narrow_Variable);
 		} else if (formData.containsKey("add_wideBottom")) {
-			componentId = getDashboardModule().addComponent(request, binder, DashboardHelper.Wide_Bottom, scope);
+			componentId = DashboardHelper.addComponent(request, binder, DashboardHelper.Wide_Bottom, scope);
 			response.setRenderParameter("_componentId", componentId);
 			response.setRenderParameter("_dashboardList", DashboardHelper.Wide_Bottom);
 		} else if (formData.containsKey("_modifyComponentData") || formData.containsKey("_modifyComponentData.x")) {
 		} else if (formData.containsKey("_modifyConfigData") || formData.containsKey("_modifyConfigData.x")) {
 		} else if (formData.containsKey("_saveConfigData") || formData.containsKey("_saveConfigData.x")) {
-			getDashboardModule().saveComponentData(request, binder, scope);
+			DashboardHelper.saveComponentData(request, binder, scope);
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("_deleteComponent") || formData.containsKey("_deleteComponent.x")) {
-			getDashboardModule().deleteComponent(request, binder, componentId, scope);
+			DashboardHelper.deleteComponent(request, binder, componentId, scope);
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("_show") || formData.containsKey("_show.x")) {
-			getDashboardModule().showHideComponent(request, binder, componentId, scope, "show");
+			DashboardHelper.showHideComponent(request, binder, componentId, scope, "show");
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("_hide") || formData.containsKey("_hide.x")) {
-			getDashboardModule().showHideComponent(request, binder, componentId, scope, "hide");
+			DashboardHelper.showHideComponent(request, binder, componentId, scope, "hide");
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("_moveUp") || formData.containsKey("_moveUp.x")) {
-			getDashboardModule().moveComponent(request, binder, scope, "up");
+			DashboardHelper.moveComponent(request, binder, scope, "up");
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("_moveDown") || formData.containsKey("_moveDown.x")) {
-			getDashboardModule().moveComponent(request, binder, scope, "down");
+			DashboardHelper.moveComponent(request, binder, scope, "down");
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
@@ -126,7 +126,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 
 		if (DashboardHelper.checkDashboardLists(ssDashboard)) {
 			//The dashboard was fixed up. Go save it
-			getDashboardModule().saveDashboards(binder, ssDashboard);
+			DashboardHelper.saveDashboards(binder, ssDashboard);
 		}
 		
 		ssDashboard.put(WebKeys.DASHBOARD_LIST, dashboardList);

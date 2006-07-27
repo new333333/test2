@@ -49,7 +49,6 @@
 		<property name="workspaceModule"><ref bean="workspaceModule"/></property>
 		<property name="fileModule"><ref bean="fileModule"/></property>
 		<property name="rssGenerator"><ref bean="rssGenerator"/></property>	
-		<property name="dashboardModule"><ref bean="dashboardModule"/></property>	
 	</bean>
 
 	<!-- add support for lobhandler to support hibernate UserType to handle different db clob implementations -->
@@ -176,7 +175,7 @@
 	</bean>
 	
 	<bean id="nlt" class="com.sitescape.ef.util.NLT"/>
-	<bean id="definitionUtils" class="com.sitescape.ef.web.util.DefinitionUtils">
+	<bean id="definitionHelper" class="com.sitescape.ef.web.util.DefinitionHelper">
 		<property name="definitionModule"><ref bean="definitionModule"/> </property>
 	</bean>
 	
@@ -583,24 +582,12 @@
 	</bean>
 
 	<bean id="dashboardHelper" class="com.sitescape.ef.web.util.DashboardHelper">
-		<property name="dashboardModule"><ref bean="dashboardModule"/> </property>
-	</bean>
-	
-	<bean id="dashboardModule"  parent="baseTransactionProxy">
-		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.dashboard.impl.DashboardModuleImpl">
-				<property name="folderModule"><ref local="folderModule"/></property>
-				<property name="binderModule"><ref local="binderModule"/></property>
-				<property name="definitionModule"><ref local="definitionModule"/></property>
-				<property name="profileModule"><ref local="profileModule"/></property>
-				<property name="workspaceModule"><ref local="workspaceModule"/></property>
-			</bean>
-		</property>
-		<property name="transactionAttributes">
-			<props>
-			</props>
-		</property>
-	</bean>		
+		<property name="folderModule"><ref local="folderModule"/></property>
+		<property name="binderModule"><ref local="binderModule"/></property>
+		<property name="definitionModule"><ref local="definitionModule"/></property>
+		<property name="profileModule"><ref local="profileModule"/></property>
+		<property name="workspaceModule"><ref local="workspaceModule"/></property>
+	</bean>	
 		
 	<bean id="ssfs" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target">

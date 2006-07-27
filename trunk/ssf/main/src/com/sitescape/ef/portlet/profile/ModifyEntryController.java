@@ -19,7 +19,7 @@ import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.ProfileBinder;
@@ -87,9 +87,9 @@ public class ModifyEntryController extends SAbstractController {
 		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 		Definition entryDef = entry.getEntryDef();
 		if (entryDef == null) {
-			DefinitionUtils.getDefaultEntryView(entry, model, "//item[@name='entryForm' or @name='profileEntryForm']");
+			DefinitionHelper.getDefaultEntryView(entry, model, "//item[@name='entryForm' or @name='profileEntryForm']");
 		} else {
-			DefinitionUtils.getDefinition(entryDef, model, "//item[@type='form']");
+			DefinitionHelper.getDefinition(entryDef, model, "//item[@type='form']");
 		}
 		
 		return new ModelAndView(WebKeys.VIEW_MODIFY_ENTRY, model);

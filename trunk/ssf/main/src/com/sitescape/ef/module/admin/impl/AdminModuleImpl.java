@@ -330,7 +330,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     		List current = getWorkAreaFunctionMembershipsInherited(workArea);
     		for (int i=0; i<current.size(); ++i) {
     			WorkAreaFunctionMembership wf = (WorkAreaFunctionMembership)current.get(i);
-    			addWorkAreaFunctionMembership(workArea, wf.getFunctionId(), wf.getMemberIds());
+    			addWorkAreaFunctionMembership(workArea, wf.getFunctionId(), new HashSet(wf.getMemberIds()));
     		}
     	}
     	workArea.setFunctionMembershipInherited(inherit);

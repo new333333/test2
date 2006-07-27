@@ -118,7 +118,7 @@ public class FilterHelper {
 		return searchFilter;
 	}
    	
-   	static public Map buildFilterFormMap(Document searchFilter, Map entryDefs, Map commonElements) {
+   	static public Map buildFilterFormMap(Document searchFilter, Map commonElements) {
    		Map searchFilterData = new HashMap();
    		if (searchFilter == null) {
    			//Create an empty filter
@@ -153,16 +153,16 @@ public class FilterHelper {
     				}
     			} else {
     				//Get the definition title
-    				if (entryDefs.containsKey(defId)) {
-    					def = (Definition)entryDefs.get(defId);
-    					defIdCaption = def.getTitle();
+    				try {
+    					def = DefinitionHelper.getDefinition(defId);
+     					defIdCaption = def.getTitle();
     					Document defDoc = def.getDefinition();
     					Element item = (Element)defDoc.getRootElement().selectSingleNode("//item/properties/property[@name='name' and @value='"+elementName+"']");
     					if (item != null) {
     						Element captionEle = (Element) item.selectSingleNode("../property[@name='caption']");
     						if (captionEle != null) elementNameCaption = NLT.getDef(captionEle.attributeValue("value", elementName));
     					}
-    				}
+    				} catch (Exception ex) {/*skip*/}
     			}
     			
     			searchFilterData.put(FilterTypeField + String.valueOf(i+1), FilterTypeEntry);

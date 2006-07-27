@@ -17,7 +17,7 @@ import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.util.Validator;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class BuildDefinitionDivs extends TagSupport {
     private Document configDocument;
     private Document sourceDocument;
     private Map divNames;
-    private Map entryDefinitions;
+//    private Map entryDefinitions;
     private String option = "";
     private String itemId = "";
     private String itemName = "";
@@ -771,15 +771,22 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 							sb.append("\n<br/>\n");
 						}
-						int size = this.entryDefinitions.keySet().size();
+					
+						String eType = sourceRoot.attributeValue("definitionType");
+						List definitions;
+						if (!Validator.isNull(eType)) {
+							definitions = DefinitionHelper.getDefinitions(Integer.parseInt(eType));
+						} else {
+							definitions = new ArrayList();
+						}
+						int size = definitions.size();
 						if (size <= 0) size = 1;
 						sb.append("<select multiple=\"multiple\" name=\"propertyId_" + 
 								propertyId + "\" size=\"" + String.valueOf(size) + "\">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_reply_styles")).append("</option>\n");
-						Iterator itEntryDefinitions = this.entryDefinitions.keySet().iterator();
-						while (itEntryDefinitions.hasNext()) {
+						for (int i=0; i<definitions.size(); ++i) {
 							//Build a list of the entry definitions
-							Definition entryDef = (Definition) this.entryDefinitions.get((String) itEntryDefinitions.next());
+							Definition entryDef = (Definition)definitions.get(i);
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
 							Iterator itReplyStyles = sourceRoot.selectNodes("properties/property[@name='replyStyle']").iterator();
 							while (itReplyStyles.hasNext()) {
@@ -817,9 +824,6 @@ public class BuildDefinitionDivs extends TagSupport {
 						}
 					
 					} else if (type.equals("workflowCondition")) {
-						Map definitions = new HashMap();
-						DefinitionUtils.getDefinitions(definitions);
-						Map publicEntryDefinitions = (Map) definitions.get(WebKeys.PUBLIC_ENTRY_DEFINITIONS);
 						Element workflowConditionProperty = (Element)rootElement.selectSingleNode("properties/property[@name='condition']");
 						if (workflowConditionProperty != null) {
 							Element workflowConditionEle = (Element) workflowConditionProperty.selectSingleNode("workflowCondition");
@@ -831,8 +835,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								String duration = workflowConditionEle.attributeValue("duration", "");
 								String durationType = workflowConditionEle.attributeValue("durationType", "");
 								//Get the entry definition itself
-								DefinitionModule definitionModule = (DefinitionModule)SpringContextUtil.getBean("definitionModule");
-								Definition def = definitionModule.getDefinition(definitionId);
+								Definition def = DefinitionHelper.getDefinition(definitionId);
 								if (def != null) {
 									
 									sb.append("<span class=\"ss_bold\">");
@@ -953,10 +956,12 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append("onChange=\"getConditionSelectbox(this, 'get_condition_entry_elements')\" ");
 						sb.append(">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
-						Iterator itEntryDefinitions = publicEntryDefinitions.keySet().iterator();
-						while (itEntryDefinitions.hasNext()) {
+						//GET both entry and file Entry definitions
+						List defs = DefinitionHelper.getDefinitions(Definition.COMMAND);
+						defs.addAll(DefinitionHelper.getDefinitions(Definition.FILE_ENTRY_VIEW));
+						for (int i=0; i<defs.size(); ++i) {
 							//Build a list of the entry definitions
-							Definition entryDef = (Definition) this.entryDefinitions.get((String) itEntryDefinitions.next());
+							Definition entryDef = (Definition)defs.get(i);
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
 							sb.append(">").append(entryDef.getTitle()).append(" (").append(entryDef.getName()).append(")</option>\n");
 						}
@@ -1181,9 +1186,6 @@ public class BuildDefinitionDivs extends TagSupport {
 	    this.sourceDocument = sourceDocument;
 	}
 
-	public void setEntryDefinitions(Map entryDefinitions) {
-	    this.entryDefinitions = entryDefinitions;
-	}
 
 	public void setOption(String option) {
 	    this.option = option;

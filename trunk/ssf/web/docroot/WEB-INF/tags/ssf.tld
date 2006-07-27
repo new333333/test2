@@ -44,12 +44,6 @@
 			<type>org.dom4j.Document</type>
 		</attribute>		
 		<attribute>
-			<name>entryDefinitions</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>java.util.Map</type>
-		</attribute>		
-		<attribute>
 			<name>option</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

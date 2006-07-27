@@ -19,7 +19,7 @@ import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.DefinitionUtils;
+import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 
 /**
@@ -89,28 +89,28 @@ public class ModifyBinderController extends AbstractBinderController {
 			path = WebKeys.VIEW_MOVE_BINDER;
 		} else {
 			Binder binder = getBinderModule().getBinder(binderId);
-			String binderType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_TYPE, "");
+//			String binderType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_TYPE, "");
 
-			Map publicBinderDefs = new HashMap();
-			DefinitionUtils.getDefinitions(model);
-			if (binderType.equals(EntityIdentifier.EntityType.folder.name())) {
-				publicBinderDefs = (Map) model.get(WebKeys.PUBLIC_FOLDER_DEFINITIONS);
-			} else if (binderType.equals(EntityIdentifier.EntityType.workspace.name())) {
-				publicBinderDefs = (Map) model.get(WebKeys.PUBLIC_WORKSPACE_DEFINITIONS);
-			}
+//			Map publicBinderDefs = new HashMap();
+//			DefinitionUtils.getDefinitions(model);
+//			if (binderType.equals(EntityIdentifier.EntityType.folder.name())) {
+//				publicBinderDefs = (Map) model.get(WebKeys.PUBLIC_FOLDER_DEFINITIONS);
+//			} else if (binderType.equals(EntityIdentifier.EntityType.workspace.name())) {
+//				publicBinderDefs = (Map) model.get(WebKeys.PUBLIC_WORKSPACE_DEFINITIONS);
+//			}
 			
-			model.put(WebKeys.PUBLIC_BINDER_DEFINITIONS, publicBinderDefs);
+//			model.put(WebKeys.PUBLIC_BINDER_DEFINITIONS, publicBinderDefs);
 
-			DefinitionUtils.getDefinitions(binder, model);
+//			DefinitionUtils.getDefinitions(binder, model);
 			
 			model.put(WebKeys.BINDER, binder);
-			model.put(WebKeys.ENTRY, binder);
+//			model.put(WebKeys.ENTRY, binder);
 			model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 			Definition binderDef = binder.getEntryDef();
 			if (binderDef == null) {
-				DefinitionUtils.getDefaultBinderDefinition(binder, model, "//item[@type='form']");
+				DefinitionHelper.getDefaultBinderDefinition(binder, model, "//item[@type='form']");
 			} else {
-				DefinitionUtils.getDefinition(binderDef, model, "//item[@type='form']");
+				DefinitionHelper.getDefinition(binderDef, model, "//item[@type='form']");
 			}
 			path = WebKeys.VIEW_MODIFY_BINDER;
 		} 
