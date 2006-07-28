@@ -1,11 +1,14 @@
 <% //View dashboard canvas (javascript) %>
 <script type="text/javascript">
-var ss_dbrn = Math.round(Math.random()*999999)
-var ss_toolbar_count = 0;
-var ss_componentSrcHide = "<html:imagesPath/>pics/sym_s_hide.gif"
-var ss_componentSrcShow = "<html:imagesPath/>pics/sym_s_show.gif"
-var ss_componentAltHide = "<ssf:nlt tag="button.hide"/>"
-var ss_componentAltShow = "<ssf:nlt tag="button.show"/>"
+//Initialize the variables only once
+if (!ss_dbrn) {
+	var ss_dbrn = Math.round(Math.random()*999999)
+	var ss_toolbar_count = 0;
+	var ss_componentSrcHide = "<html:imagesPath/>pics/sym_s_hide.gif"
+	var ss_componentSrcShow = "<html:imagesPath/>pics/sym_s_show.gif"
+	var ss_componentAltHide = "<ssf:nlt tag="button.hide"/>"
+	var ss_componentAltShow = "<ssf:nlt tag="button.show"/>"
+}
 
 function ss_toggle_toolbars() {
 	for (var i = 0; i < ss_toolbar_count; i++) {
@@ -22,7 +25,7 @@ function ss_toggle_toolbars() {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 function ss_showHideDashboardComponent(obj, componentId, divId) {
-	ss_debug(obj.alt + ",    " + obj.src)
+	//ss_debug(obj.alt + ",    " + obj.src)
 	var formObj = ss_getContainingForm(obj)
 	var url = "";
 	var callbackRoutine = ""
@@ -135,8 +138,6 @@ var ss_dashboardComponentToolbar = {
 	fadeIn : function (id) {
 		var bar = document.getElementById(id);
 	    if (bar.style.visibility == 'hidden') {
-	    	//ss_setOpacity(document.getElementById(id),0.1);
-	    	//ss_setOpacity(bar, 0.01)
 	    	ss_dashboardComponentToolbar.changeOpacity(bar, 0.01)
 	    	ss_showDiv(id);
 			if (!bar.opac || bar.opac < 0) {
@@ -151,14 +152,14 @@ var ss_dashboardComponentToolbar = {
 		if (bar.startOut) {
 			// stop fadeOut prematurely
 			clearTimeout(bar.timerOut);
-			ss_debug(bar.timerOut + " stop OUT prematurely");
+			//ss_debug(bar.timerOut + " stop OUT prematurely");
 			bar.timerOut = 0;
 		}
 		bar.startOut = false;		
 		bar.startIn = true;		
 
 		bar.opac += 20;
-		ss_debug("IN "+parseFloat(parseFloat(bar.opac) / 100.0));
+		//ss_debug("IN "+parseFloat(parseFloat(bar.opac) / 100.0));
 		ss_dashboardComponentToolbar.changeOpacity(bar, parseFloat(parseFloat(bar.opac) / 100.0));
 		
 		if (bar.opac < 100) {
@@ -180,14 +181,14 @@ var ss_dashboardComponentToolbar = {
 		if (bar.startIn) {
 			// stop fadeIn prematurely
 			clearTimeout(bar.timerIn);
-			ss_debug(bar.timerIn + " stop IN prematurely");
+			//ss_debug(bar.timerIn + " stop IN prematurely");
 			bar.timerIn = 0;
 		}
 		bar.startIn = false;
 		bar.startOut = true;		
 		
 		bar.opac -= 20;
-		ss_debug("OUT "+parseFloat(parseFloat(bar.opac) / 100.0));
+		//ss_debug("OUT "+parseFloat(parseFloat(bar.opac) / 100.0));
 		ss_dashboardComponentToolbar.changeOpacity(bar, parseFloat(parseFloat(bar.opac) / 100.0));
 		if (bar.opac > 0) {
 			bar.timerOut = setTimeout("ss_dashboardComponentToolbar.fadeOut(\"" + id + "\")", 50);
@@ -204,12 +205,12 @@ var ss_dashboardComponentToolbar = {
 	
 	hide : function (id) {
 		var bar = document.getElementById(id);
-		ss_debug("hide " + bar.timerIn + " " + bar.startIn);
+		//ss_debug("hide " + bar.timerIn + " " + bar.startIn);
 		
 		// If fadeIn timer has been set, but hasn't started, cancel it
 		if (bar.timerIn && !bar.startIn) {
 			// cancel unstarted fadeIn
-			ss_debug("cancel unstarted IN");
+			//ss_debug("cancel unstarted IN");
 			clearTimeout(bar.timerIn);
 			bar.timerIn = 0;
 		}	
@@ -218,24 +219,24 @@ var ss_dashboardComponentToolbar = {
 			if (bar.timerOut) {
 				// reset unstarted fadeOut timer
 				clearTimeout(bar.timerOut);
-				ss_debug("Out restarted");
+				//ss_debug("Out restarted");
 				bar.timerOut = 0;
 			}
 
 			this.init(bar);
 			bar.timerOut = setTimeout("ss_dashboardComponentToolbar.fadeOut(\"" + id + "\")", 150);
-			ss_debug(bar.timerOut + " hide OUT");
+			//ss_debug(bar.timerOut + " hide OUT");
 		}
 	},
 	
 	show : function (id) {
-		ss_debug("show");
+		//ss_debug("show");
 		var bar = document.getElementById(id);
 		
 		// If fadeOut timer has been set, but hasn't started, cancel it
 		if (bar.timerOut && !bar.startOut) {
 			// cancel unstarted fadeOut
-			ss_debug("cancel unstarted OUT");
+			//ss_debug("cancel unstarted OUT");
 			clearTimeout(bar.timerOut);
 			bar.timerOut = 0;
 		}
@@ -248,13 +249,13 @@ var ss_dashboardComponentToolbar = {
 			if (bar.timerIn) {
 				// reset unstarted fadeIn timer
 				clearTimeout(bar.timerIn);
-				ss_debug("In restarted");
+				//ss_debug("In restarted");
 				bar.timerIn = 0;
 			}
 
 			this.init(bar);
 			bar.timerIn = setTimeout("ss_dashboardComponentToolbar.fadeIn(\"" + id + "\")", 150);
-			ss_debug(bar.timerIn + " show IN");
+			//ss_debug(bar.timerIn + " show IN");
 		}
 	},
 	
@@ -262,7 +263,7 @@ var ss_dashboardComponentToolbar = {
 		opacity = (opacity >= 1.0) ? 0.999 : opacity;
 		opacity = (opacity < 0) ? 0 : opacity;
 	    
-		ss_debug("change opacity = " + opacity)
+		//ss_debug("change opacity = " + opacity)
 		object.style.opacity = (opacity);
 		object.style.MozOpacity = (opacity);
 		object.style.KhtmlOpacity = (opacity);

@@ -50,6 +50,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
 <c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
 
+<c:set var="ss_help_spot_background_color" value="#ffff00" scope="request"/>
+<c:set var="ss_help_panel_background_color" value="#ffffff" scope="request"/>
+<c:set var="ss_help_lightBox_background_color" value="#cecece" scope="request"/>
+
 <c:set var="ss_blog_title_background_color" value="#AAAAFF" scope="request"/>
 <c:set var="ss_blog_content_background_color" value="#FFFFAA" scope="request"/>
 <c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
@@ -119,6 +123,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 	<c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
 	<c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
+
+	<c:set var="ss_help_spot_background_color" value="#ffff00" scope="request"/>
+	<c:set var="ss_help_panel_background_color" value="#ffffff" scope="request"/>
+	<c:set var="ss_help_lightBox_background_color" value="#cecece" scope="request"/>
 
 	<c:set var="ss_blog_title_background_color" value="#AACCFF" scope="request"/>
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
@@ -284,6 +292,31 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   display: inline;
   }
 
+/* Help system */
+.ss_helpSpot {
+  position:absolute;
+  width:30px;
+  height:30px;
+  align:center;
+  visibility:hidden;
+  display:none;
+  z-index:2001 !important;
+}
+.ss_helpPanel {
+  position:absolute;
+  visibility:hidden;
+  display:none;
+  background-color:${ss_help_panel_background_color} !important;
+  border:2px solid black;
+  z-index:2001 !important;
+}
+.ss_helpLightBox {
+  position:absolute;
+  background-color:${ss_help_lightBox_background_color};
+  z-index:2000;
+}
+
+/* Blogs */
 .ss_blog {
   border: ${ss_sliding_table_border_color} 1px solid;
 }
@@ -595,53 +628,75 @@ ul.ss_dropdownmenu li {
   background-image: url(<html:imagesPath/>pics/sym_s_minus.gif);
   border:none;
   }
+
+/* Tree widget styles */
 .ss_twDiv {
+  }
+.ss_twSpan, ss_twA {
+  margin:0px;
+  padding:0px;
   }
 .ss_twImg {
   width:19px;
   height:20px;
   border:none;
+  margin:0px;
+  padding:0px;
   }
 .ss_twIcon {
   width:16px;
   height:16px;
   border:none;
+  margin:0px;
+  padding:0px;
   }
 .ss_twPlus {
   width:19px;
   height:20px;
   background-image: url(<html:imagesPath/>trees/plus.gif);
   border:none;
+  margin:0px;
+  padding:0px;
   }
 .ss_twMinus {
   width:19px;
   height:20px;
   background-image: url(<html:imagesPath/>trees/minus.gif);
   border:none;
+  margin:0px;
+  padding:0px;
   }
 .ss_twPlusBottom {
   width:19px;
   height:20px;
   background-image: url(<html:imagesPath/>trees/plus_bottom.gif);
   border:none;
+  margin:0px;
+  padding:0px;
   }
 .ss_twMinusBottom {
   width:19px;
   height:20px;
   background-image: url(<html:imagesPath/>trees/minus_bottom.gif);
   border:none;
+  margin:0px;
+  padding:0px;
   }
 .ss_twJoin {
   width:19px;
   height:20px;
   background-image: url(<html:imagesPath/>trees/join.gif);
   border:none;
+  margin:0px;
+  padding:0px;
   }
 .ss_twJoinBottom {
   width:19px;
   height:20px;
   background-image: url(<html:imagesPath/>trees/join_bottom.gif);
   border:none;
+  margin:0px;
+  padding:0px;
   }
 
 /* htmlarea overrides */
