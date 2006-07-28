@@ -19,11 +19,9 @@
 </c:if>
       >
       <table cellspacing="0" cellpadding="0" style="width:98%;">
-	   <tbody onMouseOver="//ss_showDiv('ss_component_toolbuttons_${ss_component_count}');" 
-		      onMouseOut="//ss_hideDiv('ss_component_toolbuttons_${ss_component_count}');">
 	    <tr
-		      onMouseOver="ss_dashboardComponentToolbar.fadeIn('ss_component_toolbuttons_${ss_component_count}');"
-		      onMouseOut="ss_dashboardComponentToolbar.fadeOut('ss_component_toolbuttons_${ss_component_count}');"
+		  onMouseOver="ss_dashboardComponentToolbar.fadeIn('ss_component_toolbuttons_${ss_component_count}');"
+		  onMouseOut="ss_dashboardComponentToolbar.fadeOut('ss_component_toolbuttons_${ss_component_count}');"
 	    >
 		  <td nowrap valign="top" width="10"><div style="display:inline; width:5px;
 			<c:if test="${!empty ssDashboard.dashboard.components[ssDashboardId].title}">
@@ -36,14 +34,14 @@
 			 <c:if test="${ss_dashboard_componentScope == 'binder'}">
 		      background-color:yellow !important;
 			 </c:if>
-		    margin:0px;"></div><span>&nbsp;</span>
 		    </c:if>
+		    margin:0px;"></div><span>&nbsp;</span>
 		  </td>
 		  <td valign="top">
 		    <span class="ss_bold">${ssDashboard.dashboard.components[ssDashboardId].title}</span>
 		  </td>
 		  <td align="right" valign="top">
-		    <div style="display:inline; margin:0px; visibility:hidden;" 
+		    <div width="60" style="display:inline; margin:0px; visibility:hidden; width:60px;" 
 		      id="ss_component_toolbuttons_${ss_component_count}">
 		    <form class="ss_dashboard_toolbar_color" method="post" style="display:inline;"
 		      action="<portlet:actionURL>
@@ -108,7 +106,6 @@
 		    </div>
 		  </td>
 		</tr>
-	   </tbody>
       </table>
 	</div>
 	<div id="ss_dashboard_component_${ss_component_count}" 

@@ -1,7 +1,5 @@
 <% // The main forum view - for viewing folder listings and for viewing entries %>
-
 <%
-
 String op = (String) renderRequest.getAttribute(WebKeys.ACTION);
 String displayStyle = ssUser.getDisplayStyle();
 if (displayStyle == null || displayStyle.equals("")) {

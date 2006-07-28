@@ -577,8 +577,13 @@ public class TreeTag extends TagSupport {
 	
 			//id
 			String s_id = e.attributeValue("id", "");
-			String titleClass = className;
-			if (!s_id.equals("") && s_id.equals(this.highlightNode)) titleClass = "ss_tree_highlight";
+			
+			String titleClass = "class=\"ss_twSpan\"";
+			if (!s_id.equals("") && s_id.equals(this.highlightNode)) {
+				titleClass = "class=\"ss_twSpan ss_tree_highlight\"";
+			} else {
+				if (!className.equals("")) titleClass = "class=\"ss_twSpan "+className+"\"";
+			}
 	
 			//Image
 			String s_image = getImage(e.attributeValue("image"));
@@ -627,7 +632,7 @@ public class TreeTag extends TagSupport {
 			}
 	
 			// Write out join icons
-			if (hcn || hhcn) {
+			if (hhcn) {
 				if (ls) {
 					jspOut.print("<img id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 	
@@ -674,8 +679,8 @@ public class TreeTag extends TagSupport {
 	
 			//jspOut.print("&nbsp;");
 			if (!displayOnly) {
-				String classField = "";
-				if (!className.equals("")) classField = "class=\""+className+"\"";
+				String classField = "ss_twA";
+				if (!className.equals("")) classField = "class=\"ss_twA "+className+"\"";
 				jspOut.print("<a "+classField+" href=\"" + s_url + "\" ");
 				if (s_id != null && !s_id.equals("")) {
 					jspOut.print("onClick=\"if (self."+this.treeName+"_showId) {return "+this.treeName+"_showId('"+s_id+"', this);}\" ");
@@ -692,7 +697,7 @@ public class TreeTag extends TagSupport {
 			// Recurse if node has children
 	
 			if (hcn) {
-				jspOut.print("\n<div id=\"" + this.treeName + "div" + s_id + "\">\n");
+				jspOut.print("\n<div id=\"" + this.treeName + "div" + s_id + "\" class=\"ss_twDiv\">\n");
 	
 				ListIterator it2 = e.elements("child").listIterator();
 				while (it2.hasNext()) {
@@ -700,7 +705,7 @@ public class TreeTag extends TagSupport {
 				}
 				jspOut.print("</div>\n");
 			} else if (hhcn) {
-				jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
+				jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\" class=\"ss_twDiv\"></div>\n");
 			}
 	
 			// Pop last line or empty icon

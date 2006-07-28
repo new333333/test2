@@ -58,6 +58,8 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_forum_maxBodyWindowHeight = 0;
 	var ss_divFadeInArray = new Array();
 	var ss_divFadeOutArray = new Array();
+	var ss_helpSystemNextNodeId = 1;
+	var ss_helpSystemNodes = new Array();
 	var jsDebug = 0;
 }
 var ss_common_loaded = 1;
@@ -185,8 +187,9 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 	}
 }
 
+//Routine to set the opacity of a div
+//  (Note: this may not work if "width" is not explicitly set on the div)
 function ss_setOpacity(obj, opacity) {
-	//ss_debug("ss_setOpacity " + opacity)
 	dojo.style.setOpacity(obj, opacity);
 }
 
@@ -1463,3 +1466,167 @@ function ss_postRequest(obj) {
 		}
 	}
 }
+
+//Support routines for the help system
+var ss_help_position_topOffset = 10;
+var ss_help_position_bottomOffset = 20;
+var ss_help_position_rightOffset = 20;
+var ss_help_position_leftOffset = 10;
+var ss_helpSystem = {
+
+	run : function() {
+		this.show();
+		this.showHelpSpots()
+	},
+	
+	show : function() {
+		ss_debug('ss_helpSystem');
+		var lightBox = document.getElementById('ss_help_light_box')
+		if (!lightBox) {
+			var bodyObj = document.getElementsByTagName("body").item(0)
+			lightBox = document.createElement("div");
+	        lightBox.setAttribute("id", "ss_help_light_box");
+	        lightBox.className = "ss_helpLightBox";
+	        bodyObj.appendChild(lightBox);
+		}
+	    ss_debug(lightBox.id)
+	    lightBox.style.visibility = "hidden";
+	    lightBox.style.display = "none";
+	    lightBox.onclick = function(e) {if (ss_helpSystem) ss_helpSystem.hide();};
+	    lightBox.style.top = 0;
+	    lightBox.style.left = 0;
+	    lightBox.style.width = ss_getBodyWidth();
+	    lightBox.style.height = ss_getBodyHeight();
+	    dojo.style.setOpacity(lightBox, 0);
+	    lightBox.className = "ss_helpLightBox";
+	    lightBox.style.visibility = "visible";
+	    lightBox.style.display = "block";
+	    dojo.fx.html.fade(lightBox, 150, 0, .5)
+	    
+		ss_moveDivToBody('ss_help_welcome');
+		var welcomeDiv = document.getElementById('ss_help_welcome');
+		if (welcomeDiv) {
+	    	welcomeDiv.style.visibility = "visible";
+	    	welcomeDiv.style.display = "block";
+	    	welcomeDiv.style.zIndex = 2001;
+	        welcomeDiv.style.top = this.getPositionTop(welcomeDiv);
+	        welcomeDiv.style.left = this.getPositionLeft(welcomeDiv);
+	    	dojo.style.setOpacity(welcomeDiv, 0);
+	    	dojo.fx.html.fade(welcomeDiv, 150, 0, 1.0)
+		}
+	},
+	
+	hide : function() {
+		var bodyObj = document.getElementsByTagName("body").item(0)
+		var lightBox = document.getElementById('ss_help_light_box')
+		if (!lightBox) return;
+		var welcomeDiv = document.getElementById('ss_help_welcome');
+		if (welcomeDiv) {
+	    	welcomeDiv.style.visibility = "hidden";
+	    	welcomeDiv.style.display = "none";
+		}
+		ss_debug(lightBox.style.visibility)
+		if (lightBox.style.visibility && lightBox.style.visibility == 'visible') {
+    		for (var i = 1; i < ss_helpSystemNextNodeId; i++) {
+    			//Delete all of the help spots that were added during the help session
+    			if (ss_helpSystemNodes[i] != null) {
+    				bodyObj.removeChild(ss_helpSystemNodes[i]);
+    				ss_helpSystemNodes[i] = null;
+    			}
+    		}
+    		ss_helpSystemNextNodeId = 1;
+    		dojo.fx.html.fade(lightBox, 150, .5, 0, function() {
+    			var lightBox2 = document.getElementById('ss_help_light_box');
+		    	lightBox.style.visibility = "hidden";
+		    	lightBox.style.display = "none";
+		    	ss_debug('lightBox hidden\n');
+    		})
+    		return
+		}
+	},
+	
+	showPanel : function(id, location) {
+	},
+	
+	showHelpSpots : function() {
+		var bodyObj = document.getElementsByTagName("body").item(0)
+		var nodes = new Array();
+		//var time = new Date().getTime();
+		nodes = document.getElementsByTagName("ssHelpSpot");
+		//ss_debug('Time: '+ parseInt(new Date().getTime() - time))
+		for (var i = 0; i < nodes.length; i++) {
+			ss_debug(nodes[i].getAttribute("helpId") + " = " + ss_helpSystemNextNodeId)
+			var helpSpotNode = document.createElement("div");
+	        helpSpotNode.className = "ss_helpSpot";
+	        helpSpotNode.setAttribute('class', 'ss_helpSpot');
+	        helpSpotNode.style.visibility = "visible";
+	        helpSpotNode.style.display = "block";
+			helpSpotNode.setAttribute('width', '30');
+			helpSpotNode.setAttribute('height', '30');
+			var helpSpotA = document.createElement("a");
+			helpSpotA.style.backgroundImage = "url(" + ss_helpSpotGifSrc + ")";
+			helpSpotA.style.backgroundRepeat = "no-repeat";
+			//var helpSpotGif = document.createElement("img");
+			//helpSpotGif.src = ss_helpSpotGifSrc;
+			//helpSpotA.appendChild(helpSpotGif);
+			helpSpotA.appendChild(document.createTextNode(i));
+			helpSpotNode.appendChild(helpSpotA);
+			ss_helpSystemNodes[ss_helpSystemNextNodeId] = helpSpotNode;
+	        helpSpotNode.setAttribute("id", "ss_help_spot" + ss_helpSystemNextNodeId);
+	        //helpSpotNode.style.position = "absolute";
+	        helpSpotNode.style.top = ss_getObjectTopAbs(nodes[i]) + "px";
+	        helpSpotNode.style.left = ss_getObjectLeftAbs(nodes[i]) + "px";
+	        helpSpotNode.style.visibility = "visible";
+	        helpSpotNode.style.display = "block";
+	        //helpSpotNode.style.zIndex = 2001;
+	        ss_debug('ss_help_position = '+nodes[i].getAttribute("ss_help_position"))
+	        ss_debug('align = '+nodes[i].getAttribute("align"))
+	        ss_debug('z-index = '+helpSpotNode.style.zIndex)
+	        bodyObj.appendChild(helpSpotNode);
+			ss_helpSystemNextNodeId++;
+		}
+	},
+	
+	getPositionLeft : function(obj) {
+		var x = 0;
+		switch(obj.getAttribute("positionX")) {
+			case "left" : 
+				x = ss_help_position_leftOffset
+				break
+			case "center" :
+				x = parseInt((ss_getWindowWidth() - ss_getObjectWidth(obj)) / 2)
+				if (x < 0) x = 0;
+				break
+			case "right" :
+				x = parseInt(ss_getWindowWidth() - ss_getObjectWidth(obj) - ss_help_position_rightOffset)
+				if (x < 0) x = 0;
+			 	break
+			default :
+				x = parseInt((ss_getWindowWidth() - ss_getObjectWidth(obj)) / 2)
+				if (x < 0) x = 0;
+		}
+		return x;
+	},
+	
+	getPositionTop : function(obj) {
+		var y = 0;
+		switch(obj.getAttribute("positionY")) {
+			case "top" : 
+				y = ss_help_position_topOffset
+				break
+			case "middle" :
+				y = parseInt((ss_getWindowHeight() - ss_getObjectHeight(obj)) / 2)
+				if (y < 0) y = 0;
+				break
+			case "bottom" :
+				y = parseInt(ss_getWindowHeight() - ss_getObjectHeight(obj) - ss_help_position_bottomOffset)
+				if (y < 0) y = 0;
+			 	break
+			default :
+				y = parseInt((ss_getWindowHeight() - ss_getObjectHeight(obj)) / 2)
+				if (y < 0) y = 0;
+		}
+		return y;
+	}
+}
+

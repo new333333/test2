@@ -30,7 +30,7 @@ value="${ssDashboard.dashboard.components[ssDashboardId].data.html[0]}"/></texta
 <br/>
 <script type="text/javascript">
 function ss_htmlConfigUnload() {
-	document.getElementById('data_html').value = editorObj.getEditorContent();
+	//document.getElementById('data_html').value = editorObj.getEditorContent();
 }
 ss_createEventObj('htmlConfigUnload', 'unload', ss_htmlConfigUnload);
 </script>
