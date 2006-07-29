@@ -48,9 +48,9 @@ public class SsfsUtil {
 			DefinableEntity entity) {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL();
 		
-		return sb.append("files/"). // follow Slide's convention
+		return sb.append("files/internal/"). // follow Slide's convention
 		append(RequestContextHolder.getRequestContext().getZoneName()). // zone name 
-		append("/internal/"). // All urls generated this way are internal ones
+		append("/").
 		append(binder.getId()).
 		append("/").
 		append(entity.getId()).
