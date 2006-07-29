@@ -257,13 +257,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				// shown in the WebdavFileStore reference implementation.
 			}
 			else if(filesOnly(m)) { // /files
+				return new String[] {URI_TYPE_INTERNAL, URI_TYPE_LIBRARY};				
+			}
+			else if(uptoTypeOnly(m)) { // /files/{internal or library}
 				if(zoneName != null)
 					return new String[] {zoneName};
 				else
-					return new String[0];
-			}
-			else if(uptoZoneOnly(m)) { // /files/<zonename>
-				return new String[] {URI_TYPE_INTERNAL, URI_TYPE_LIBRARY};
+					return new String[0];				
 			}
 			else {
 				return client.getChildrenNames(folderUri, m);
@@ -546,25 +546,27 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		if(u.length == 1)
 			return returnMap(map, true);
 		
-		String zname = u[1];
+		String type = u[1];
+		
+		if(!type.equals(URI_TYPE_INTERNAL) && !type.equals(URI_TYPE_LIBRARY))
+			return null;
+		
+		map.put(URI_TYPE, type);
+
+		if(u.length == 2)
+			return returnMap(map, true);
+		
+		String zname = u[2];
 		
 		if(!zname.equals(this.zoneName))
 			throw new ZoneMismatchException("No access to the specified zone");
 		
 		map.put(URI_ZONENAME, zname);
 		
-		if(u.length == 2)
-			return returnMap(map, true);
-		
-		if(!u[2].equals(URI_TYPE_INTERNAL) && !u[2].equals(URI_TYPE_LIBRARY))
-			return null;
-		
-		map.put(URI_TYPE, u[2]);
-		
 		if(u.length == 3)
 			return returnMap(map, true);
 		
-		if(u[2].equals(URI_TYPE_INTERNAL)) { // internal
+		if(type.equals(URI_TYPE_INTERNAL)) { // internal
 			try {
 				map.put(URI_BINDER_ID, Long.valueOf(u[3]));
 			}
@@ -674,8 +676,8 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		return (m.size() == 2); // contains URI_IS_FOLDER and URI_ORIGINAL only
 	}
 	
-	private boolean uptoZoneOnly(Map m) {
-		return (m.size() == 3); // contains URI_IS_FOLDER, URI_ORIGINAL and <zonename>
+	private boolean uptoTypeOnly(Map m) {
+		return (m.size() == 3); // contains URI_IS_FOLDER, URI_ORIGINAL and URI_TYPE
 	}
 	
 	private boolean representsFolder(Map m) {
