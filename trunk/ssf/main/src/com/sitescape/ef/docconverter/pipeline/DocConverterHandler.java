@@ -134,6 +134,8 @@ public class DocConverterHandler extends AbstractDocHandler {
 				}				
 			}
 		}
+		
+		invocation.proceed(); // Proceed to the next handler in the chain
 	}
 	
 	private org.dom4j.Document getDomDocument(File textFile) {
