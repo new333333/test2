@@ -1,15 +1,12 @@
 package com.sitescape.ef.module.binder.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Collection;
 
 import org.apache.lucene.index.Term;
 import org.dom4j.Document;
@@ -17,49 +14,51 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.sitescape.ef.InternalException;
+import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.security.acl.AclControlled;
+import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.InternalException;
-import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.ef.domain.TitleException;
+import com.sitescape.ef.module.binder.AccessUtils;
+import com.sitescape.ef.module.binder.BinderProcessor;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.WriteFilesException;
-import com.sitescape.ef.search.BasicIndexUtils;
-import com.sitescape.ef.module.binder.BinderProcessor;
-import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.search.IndexSynchronizationManager;
-import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.util.FileUploadItem;
-import com.sitescape.ef.util.SPropsUtil;
-import com.sitescape.ef.util.TempFileUtil;
-import com.sitescape.ef.web.util.DefinitionHelper;
-import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.pipeline.Conduit;
 import com.sitescape.ef.pipeline.Pipeline;
 import com.sitescape.ef.pipeline.PipelineException;
 import com.sitescape.ef.pipeline.impl.RAMConduit;
-
+import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.search.IndexSynchronizationManager;
+import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.ef.security.acl.AclControlled;
+import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.ef.web.util.DefinitionHelper;
+import com.sitescape.util.Validator;
 /**
  *
  * 
  */
 public abstract class AbstractBinderProcessor extends CommonDependencyInjection 
 	implements BinderProcessor {
+   protected String[] titleAttrs = new String[]{"parentBinder", "lower(title)"};
     
    protected DefinitionModule definitionModule;
  
@@ -115,19 +114,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         final Map entryData = (Map) entryDataAll.get("entryData");
         List fileUploadItems = (List) entryDataAll.get("fileData");
         
-
-        final Binder binder = addBinder_create(clazz);
-        binder.setEntryDef(def);
-        if (def != null) {
-        	binder.setDefinitionType(Integer.valueOf(def.getType()));
-        	List defs = new ArrayList();
-        	defs.add(def);
-        	binder.setDefinitions(defs);
-        	if ((parent.getDefinitionType() == null) ||
-        			(binder.getDefinitionType().intValue() != parent.getDefinitionType().intValue())) {
-        		binder.setDefinitionsInherited(false);
-        	}
-        } 
+        final Binder binder = addBinder_create(def, clazz);
+    	if (def != null) {
+    		if ((parent.getDefinitionType() == null) ||
+    				(binder.getDefinitionType().intValue() != parent.getDefinitionType().intValue())) {
+    			binder.setDefinitionsInherited(false);
+    		}
+    	}
+        String title = (String)entryData.get("title");
+        checkUniqueBinderTitle(parent, title);
+        binder.setPathName(parent.getPathName() + "/" + title);
         
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
@@ -145,8 +141,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
                 return null;
         	}
         });
-        
-        
+           
         //Need to do filter here after binder is saved cause it makes use of
         // the id of binder
         FilesErrors filesErrors = addBinder_filterFiles(binder, fileUploadItems);
@@ -169,6 +164,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     }
 
+    protected void checkUniqueBinderTitle(Binder binder, String title) {
+    	//ensure title is unique
+        if (Validator.isNull(title)) throw new TitleException("");
+    	
+    	Object[] cfValues = new Object[]{binder, title.toLowerCase()};	
+    	FilterControls filter = new FilterControls(titleAttrs, cfValues);
+	
+    	if (!getCoreDao().loadObjects(new ObjectControls(Binder.class, new String[]{"id"}), filter).isEmpty()) {
+    		 throw new TitleException(title);
+    	}
+    }
         
     protected FilesErrors addBinder_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
     	return getFileModule().filterFiles(binder, fileUploadItems);
@@ -187,9 +193,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     }
     
-    protected Binder addBinder_create(Class clazz)  {
+    protected Binder addBinder_create(Definition def, Class clazz)  {
     	try {
-    		return (Binder)clazz.newInstance();
+    		Binder binder = (Binder)clazz.newInstance();
+            binder.setEntryDef(def);
+            if (def != null) {
+            	binder.setDefinitionType(Integer.valueOf(def.getType()));
+            	List defs = new ArrayList();
+            	defs.add(def);
+            	binder.setDefinitions(defs);
+            } 
+            return binder;
     	} catch (Exception ex) {
     		return null;
     	}
@@ -240,17 +254,42 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    Map entryDataAll = modifyBinder_toEntryData(binder, inputData, fileItems);
 	    final Map entryData = (Map) entryDataAll.get("entryData");
 	    List fileUploadItems = (List) entryDataAll.get("fileData");
-	    
-        FilesErrors filesErrors = modifyBinder_filterFiles(binder, fileUploadItems);
+
+	    String newTitle = null;
+	    if (entryData.containsKey("title")) {
+	    	newTitle = (String)entryData.get("title");
+	    	if (!newTitle.equals(binder.getTitle())) checkUniqueBinderTitle(binder.getParentBinder(), newTitle);
+	    	else newTitle = null;
+	    		
+	    }
+	    FilesErrors filesErrors = modifyBinder_filterFiles(binder, fileUploadItems);
 
 	    filesErrors = modifyBinder_processFiles(binder, fileUploadItems, filesErrors);
 	    
+	    final String title = newTitle;
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
         		modifyBinder_fillIn(binder, inputData, entryData);
 	            modifyBinder_removeAttachments(binder, deleteAttachments);    
         		modifyBinder_postFillIn(binder, inputData, entryData);
+        		//if title changed, must update path infor for all child folders
+        		if (title != null) {
+        			if (binder.getParentBinder() != null) {
+        				binder.setPathName(binder.getParentBinder().getPathName() + "/" + title);
+        			} else {
+        				//must be top
+        				binder.setPathName("/" + title);
+        			}
+         			List children = new ArrayList(binder.getBinders());
+        			//if we index the path, need to reindex all these folders
+        			while (!children.isEmpty()) {
+        				Binder child = (Binder)children.get(0);
+        				child.setPathName(child.getParentBinder().getPathName() + "/" + child.getTitle());
+        				children.remove(0);
+        				children.addAll(child.getBinders());
+        			}
+        		}
         		return null;
         	}});
         modifyBinder_indexRemoveFiles(binder, deleteAttachments);

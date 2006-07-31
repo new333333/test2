@@ -2,11 +2,10 @@ package com.sitescape.ef.domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
 
-import com.sitescape.util.Validator;
 import com.sitescape.ef.modelprocessor.InstanceLevelProcessorSupport;
 import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.security.acl.AclSet;
@@ -34,6 +33,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     protected Integer upgradeVersion;   
     protected String zoneName; 
     protected String type;
+    protected String pathName;
     protected List definitions;	//initialized by hiberate access=field
     protected Definition defaultPostingDef;//initialized by hiberate access=field
     protected List binders;//initialized by hibernate access="field"
@@ -54,8 +54,17 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public String getZoneName() {
     	return this.zoneName;
     }
-    public void setZoneName(String id) {
-    	this.zoneName = id;
+    public void setZoneName(String zoneName) {
+    	this.zoneName = zoneName;
+    }
+    /**
+     * @hibernate.property length="1024" 
+     */
+    public String getPathName() {
+    	return this.pathName;
+    }
+    public void setPathName(String pathName) {
+    	this.pathName = pathName;
     }
     /**
      * @hibernate.many-to-one

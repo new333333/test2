@@ -27,6 +27,7 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
@@ -34,7 +35,7 @@ import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FileItem;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.LibraryTitleException;
+import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Reservable;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
@@ -389,7 +390,7 @@ public class FileModuleImpl implements FileModule {
     			this.writeFileTransactional(binder, entry, fui, errors);
     			//only advance on success
     			++i;
-    		} catch (LibraryTitleException lx) {
+    		} catch (TitleException lx) {
     			//pass up
     			throw lx;
     		}
@@ -556,21 +557,16 @@ public class FileModuleImpl implements FileModule {
 
 	public FolderEntry findFileFolderEntry(Binder fileFolder, String title) {
 		Object[] cfValues = new Object[]{fileFolder, new Integer(1), title.toLowerCase()};
-		
 		String[] cfAttrs = new String[]{"parentBinder", "HKey.level", "lower(title)"};
 		
     	FilterControls filter = new FilterControls(cfAttrs, cfValues);
     	
-     	Iterator result = getFolderDao().queryEntries(filter);
-     	
-     	Object obj = null;
-   		if (result.hasNext()) {
-   			obj = result.next();
-   			if (obj instanceof Object[])
-   				obj = ((Object [])obj)[0];
+	   	List result = getCoreDao().loadObjects(FolderEntry.class, filter);
+   		if (!result.isEmpty()) {
+   			return (FolderEntry)result.get(0);
    		}
    		
-   		return (FolderEntry) obj;
+   		return null;
 	}
 	
 	private void triggerUpdateTransaction() {
@@ -749,13 +745,11 @@ public class FileModuleImpl implements FileModule {
         	    	// see if title exists for this folder
         	    	String[] cfAttrs = new String[]{"parentBinder", "HKey.level", "lower(title)"};
         	    	FilterControls filter = new FilterControls(cfAttrs, cfValues);
-        	     	Iterator result = getFolderDao().queryEntries(filter);
-        	   		if (result.hasNext()) {
-        	   			Object obj = result.next();
-        	   			if (obj instanceof Object[])
-        	   				obj = ((Object [])obj)[0];
-        	   			if (result.hasNext() || !obj.equals(entry))
-        	   				throw new LibraryTitleException(title);
+        		   	List result = getCoreDao().loadObjects(entry.getClass(), filter);
+        	   		if (!result.isEmpty()) {
+        	   			//if more than 1 match or not this entry - error
+        	   			if (result.size()>1 || !result.get(0).equals(entry))
+        	   				throw new TitleException(title);
         	   		}
        			
         			CustomAttribute ca = entry.getCustomAttribute(fui.getName());
@@ -764,10 +758,13 @@ public class FileModuleImpl implements FileModule {
         				Set fAtts = (Set) ca.getValueSet();
         				for (Iterator iter=fAtts.iterator(); iter.hasNext(); ) {
         					FileAttachment fa = (FileAttachment)iter.next();
-        					fa.setName(null);
-        					for (Iterator iter2=fa.getFileVersions().iterator(); iter2.hasNext();) {
-        						FileAttachment a = (FileAttachment)iter2.next();
-        						a.setName(null);
+        					//if not the same - move it
+        					if (!fAtt.equals(fa)) {
+        						fa.setName(null);
+        						for (Iterator iter2=fa.getFileVersions().iterator(); iter2.hasNext();) {
+        							FileAttachment a = (FileAttachment)iter2.next();
+        							a.setName(null);
+        						}
         					}
         				}
         			}

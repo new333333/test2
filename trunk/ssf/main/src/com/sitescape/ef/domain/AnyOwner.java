@@ -1,7 +1,6 @@
 
 package com.sitescape.ef.domain;
 
-import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 
 /**
  * @author Janet McCann

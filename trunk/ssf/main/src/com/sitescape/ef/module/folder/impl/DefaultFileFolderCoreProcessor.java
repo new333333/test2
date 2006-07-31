@@ -13,7 +13,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.LibraryTitleException;
+import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
@@ -38,7 +38,7 @@ public class DefaultFileFolderCoreProcessor extends DefaultFolderCoreProcessor {
     		FileUploadItem fui = (FileUploadItem)fileUploadItems.get(i);
     		if (fui.getType() == FileUploadItem.TYPE_TITLE) return errors;
     	}
-    	throw new LibraryTitleException("");
+    	throw new TitleException("");
     }
 	/*
 	 * If file failed to be copied, delete entire entry
@@ -53,7 +53,7 @@ public class DefaultFileFolderCoreProcessor extends DefaultFolderCoreProcessor {
     		if (fui.getType() == FileUploadItem.TYPE_TITLE) return errors;
     	}
 	   	deleteEntry(binder,entry);
-    	throw new LibraryTitleException("");
+    	throw new TitleException("");
     }
  
     protected Map addBinder_toEntryData(Binder parent, Definition def, InputDataAccessor inputData, Map fileItems) {
@@ -73,7 +73,7 @@ public class DefaultFileFolderCoreProcessor extends DefaultFolderCoreProcessor {
 	   for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
    			Attachment a = (Attachment)iter.next();
    			if ((a instanceof FileAttachment) && (!(a instanceof VersionAttachment)) &&
-   				("_fileEntryTitle".equals(a.getName()))) throw new LibraryTitleException("");
+   				("_fileEntryTitle".equals(a.getName()))) throw new TitleException("");
 	   }
    }
    
