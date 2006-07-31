@@ -18,6 +18,7 @@ import java.util.Map;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
 import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.DefinitionHelper;
@@ -131,6 +132,8 @@ public class AjaxController  extends SAbstractController {
 				return new ModelAndView("forum/favorites_return", model);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FAVORITES_TREE)) {
 				return new ModelAndView("forum/favorites_tree", model);
+			} else if (op.equals(WebKeys.FORUM_OPERATION_SHOW_HELP_PANEL)) {
+				return new ModelAndView("forum/ajax_return", model);
 			}
 			return new ModelAndView("forum/ajax_return", model);
 		}
@@ -188,6 +191,9 @@ public class AjaxController  extends SAbstractController {
 			return ajaxGetBlogReplies(request, response, context);
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_RATING)) {
 			return ajaxGetEntryRating(request, response, context);
+		
+		} else if (op.equals(WebKeys.FORUM_OPERATION_SHOW_HELP_PANEL)) {
+			return ajaxShowHelpPanel(request, response, context);
 		}
 		
 		return ajaxReturn(request, response, context);
@@ -655,10 +661,6 @@ public class AjaxController  extends SAbstractController {
 			RenderResponse response, Map context) throws Exception {
 		Map model = (Map) context.get("model");
 		Map statusMap = (Map) context.get("statusMap");
-		Map formData = (Map) context.get("formData");
-		String op = (String) context.get("op");
-		String op2 = (String) context.get("op2");
-		String componentId = op2;
 		model.put(WebKeys.AJAX_STATUS, statusMap);
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
@@ -697,9 +699,6 @@ public class AjaxController  extends SAbstractController {
 		Map model = (Map) context.get("model");
 		Map statusMap = (Map) context.get("statusMap");
 		Map formData = (Map) context.get("formData");
-		String op = (String) context.get("op");
-		String op2 = (String) context.get("op2");
-		String componentId = op2;
 		String ratingDivId = ((String[])formData.get("ratingDivId"))[0];
 		model.put(WebKeys.RATING_DIV_ID, ratingDivId);
 		model.put(WebKeys.AJAX_STATUS, statusMap);
@@ -711,5 +710,19 @@ public class AjaxController  extends SAbstractController {
 		}
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/rating_return", model);
+	}
+	private ModelAndView ajaxShowHelpPanel(RenderRequest request, 
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map statusMap = (Map) context.get("statusMap");
+		model.put(WebKeys.AJAX_STATUS, statusMap);
+		String helpPanelId = PortletRequestUtils.getStringParameter(request, 
+				WebKeys.HELP_PANEL_ID, "ss_help_panel");
+		model.put(WebKeys.HELP_PANEL_ID, helpPanelId);
+		String op2 = (String) context.get("op2");
+		String jsp = SPropsUtil.getString("help_system." + op2);
+		response.setContentType("text/xml");
+		model.put(WebKeys.HELP_PANEL_JSP, "help/" + jsp);
+		return new ModelAndView("forum/help_panel", model);
 	}
 }

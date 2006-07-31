@@ -119,6 +119,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_SAVE_ENTRY_WIDTH = "save_entry_width";
 	public static final String FORUM_OPERATION_SAVE_ENTRY_HEIGHT = "save_entry_height";
 	public static final String FORUM_OPERATION_SAVE_RATING = "save_rating";
+	public static final String FORUM_OPERATION_SHOW_HELP_PANEL = "show_help_panel";
 	public static final String FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE = "get_search_form_filter_type";
 	public static final String FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS = "get_searchForm_entry_elements";
 	public static final String FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES = "get_searchForm_element_values";
@@ -222,6 +223,8 @@ public class WebKeys {
     public static final String FUNCTION_MAP="ssFunctionMap";
     public static final String FUNCTION_MEMBERSHIP="ssFunctionMemberships";
     public static final String GROUPS="ssGroups";
+    public static final String HELP_PANEL_ID="ss_help_panel_id";
+    public static final String HELP_PANEL_JSP="ss_help_panel_jsp";
     public static final String IS_REFRESH="ssRefresh";
     public static final String LDAP_CONFIG="ssLdapConfig";
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";

@@ -60,7 +60,9 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_divFadeOutArray = new Array();
 	var ss_helpSystemNextNodeId = 1;
 	var ss_helpSystemNodes = new Array();
-	var jsDebug = 0;
+	var ss_helpSystemPanels = new Array();
+	var ss_helpSystemTOC = new Array();
+	var ss_helpSystemTOCindex = -1;
 }
 var ss_common_loaded = 1;
 
@@ -178,7 +180,7 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 		    obj.style.display = displayStyle;
 		}
 	} else {
-		if (jsDebug) {alert('Div "'+objName+'" does not exist. (ss_showHideObj)')}
+		ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
 	}
 	//Signal that the layout changed
 	if (!obj.style.position || obj.style.position != "absolute") {
@@ -587,21 +589,13 @@ function ss_getDivScrollLeft(divName) {
 }
 
 function ss_getDivHeight(divName) {
-    if (isNSN || isNSN6 || isMoz5) {
-        var obj = self.document.getElementById(divName)
-    } else {
-        var obj = self.document.all[divName]
-    }
+    var obj = self.document.getElementById(divName)
     if (!obj) return 0;
     return parseInt(obj.offsetHeight);
 }
 
 function ss_getDivWidth(divName) {
-    if (isNSN || isNSN6 || isMoz5) {
-        var obj = self.document.getElementById(divName)
-    } else {
-        var obj = self.document.all[divName]
-    }
+    var obj = self.document.getElementById(divName)
     if (!obj) return 0;
     return parseInt(obj.offsetWidth);
 }
@@ -1535,6 +1529,15 @@ var ss_helpSystem = {
     			}
     		}
     		ss_helpSystemNextNodeId = 1;
+
+    		//Delete all of the help panels that were added during the help session
+			for (var i = ss_helpSystemPanels.length; --i >= 0;) {
+				ss_debug("panelObj = " + ss_helpSystemPanels[i])
+				var pObj = document.getElementById(ss_helpSystemPanels[i]);
+				if (pObj != null && pObj.parentNode != null) pObj.parentNode.removeChild(pObj);
+			}
+			ss_helpSystemPanels = new Array();
+
     		dojo.fx.html.fade(lightBox, 150, .5, 0, function() {
     			var lightBox2 = document.getElementById('ss_help_light_box');
 		    	lightBox.style.visibility = "hidden";
@@ -1549,6 +1552,7 @@ var ss_helpSystem = {
 	},
 	
 	showHelpSpots : function() {
+		this.clearTOC()
 		var bodyObj = document.getElementsByTagName("body").item(0)
 		var nodes = new Array();
 		//var time = new Date().getTime();
@@ -1556,34 +1560,76 @@ var ss_helpSystem = {
 		//ss_debug('Time: '+ parseInt(new Date().getTime() - time))
 		for (var i = 0; i < nodes.length; i++) {
 			ss_debug(nodes[i].getAttribute("helpId") + " = " + ss_helpSystemNextNodeId)
+			var helpSpotNodeId = nodes[i].getAttribute("helpId");
+			var helpSpotTitle = "";
+			if (nodes[i].getAttribute("title")) {
+				helpSpotTitle = nodes[i].getAttribute("title");
+			}
+			if (helpSpotTitle != "") this.addTOC(helpSpotNodeId, helpSpotTitle);
 			var helpSpotNode = document.createElement("div");
 	        helpSpotNode.className = "ss_helpSpot";
-	        helpSpotNode.setAttribute('class', 'ss_helpSpot');
-	        helpSpotNode.style.visibility = "visible";
 	        helpSpotNode.style.display = "block";
-			helpSpotNode.setAttribute('width', '30');
-			helpSpotNode.setAttribute('height', '30');
+			
 			var helpSpotA = document.createElement("a");
-			helpSpotA.style.backgroundImage = "url(" + ss_helpSpotGifSrc + ")";
-			helpSpotA.style.backgroundRepeat = "no-repeat";
-			//var helpSpotGif = document.createElement("img");
-			//helpSpotGif.src = ss_helpSpotGifSrc;
-			//helpSpotA.appendChild(helpSpotGif);
-			helpSpotA.appendChild(document.createTextNode(i));
+			var helpSpotTable = document.createElement("table");
+			var helpSpotTbody = document.createElement("tbody");
+			var helpSpotTr = document.createElement("tr");
+			var helpSpotTd1 = document.createElement("td");
+			var helpSpotTd2 = document.createElement("td");
+			helpSpotTd2.className = "ss_helpSpotTitle";
+			var helpSpotGif = document.createElement("img");
+			helpSpotGif.src = ss_helpSpotGifSrc;
+			var helpSpotTitle = "";
+			if (nodes[i].getAttribute("title")) {
+				helpSpotTitle = nodes[i].getAttribute("title");
+			}
+			
+			//Build a table containing the image and the title
 			helpSpotNode.appendChild(helpSpotA);
+			helpSpotA.appendChild(helpSpotTable);
+			helpSpotTable.appendChild(helpSpotTbody);
+			helpSpotTbody.appendChild(helpSpotTr);
+			helpSpotTr.appendChild(helpSpotTd1);
+			helpSpotTr.appendChild(helpSpotTd2);
+			helpSpotTd1.appendChild(helpSpotGif);
+			var aObj = document.createElement("a");
+			aObj.setAttribute("href", "javascript: ss_helpSystem.showHelpSpotInfo('" + helpSpotNodeId + "');");
+			//aObj.setAttribute("onClick", "ss_helpSystem.showHelpSpotInfo('" + helpSpotNodeId + "');return false;");
+			aObj.appendChild(document.createTextNode(helpSpotTitle));
+			helpSpotTd2.appendChild(aObj);
+			
 			ss_helpSystemNodes[ss_helpSystemNextNodeId] = helpSpotNode;
 	        helpSpotNode.setAttribute("id", "ss_help_spot" + ss_helpSystemNextNodeId);
-	        //helpSpotNode.style.position = "absolute";
-	        helpSpotNode.style.top = ss_getObjectTopAbs(nodes[i]) + "px";
-	        helpSpotNode.style.left = ss_getObjectLeftAbs(nodes[i]) + "px";
-	        helpSpotNode.style.visibility = "visible";
-	        helpSpotNode.style.display = "block";
-	        //helpSpotNode.style.zIndex = 2001;
-	        ss_debug('ss_help_position = '+nodes[i].getAttribute("ss_help_position"))
-	        ss_debug('align = '+nodes[i].getAttribute("align"))
-	        ss_debug('z-index = '+helpSpotNode.style.zIndex)
+	        helpSpotNode.setAttribute("helpId", helpSpotNodeId);
+	        
+	        var offsetY = nodes[i].getAttribute("offsetY");
+	        if (!offsetY) offsetY = 0;
+	        offsetY = parseInt(offsetY);
+	        var top = parseInt(dojo.style.getAbsolutePosition(nodes[i], true).y + offsetY);
+	        if (nodes[i].getAttribute("align")) {
+	        	if (nodes[i].getAttribute("valign") == "middle") {
+	        		top += parseInt(ss_getObjectHeight(nodes[i]) / 2);
+	        	} else if (nodes[i].getAttribute("valign") == "bottom") {
+	        		top += ss_getObjectHeight(nodes[i]);
+	        	}
+	        }
+	        var offsetX = nodes[i].getAttribute("offsetX");
+	        if (!offsetX) offsetX = 0;
+	        offsetX = parseInt(offsetX);
+	        var left = parseInt(dojo.style.getAbsolutePosition(nodes[i], true).x + offsetX);
+	        if (nodes[i].getAttribute("align")) {
+	        	if (nodes[i].getAttribute("align") == "center") {
+	        		left += parseInt(dojo.style.getMarginBoxWidth(nodes[i]) / 2);
+	        	} else if (nodes[i].getAttribute("align") == "right") {
+	        		left += dojo.style.getMarginBoxWidth(nodes[i]);
+	        	}
+	        }
+	        helpSpotNode.style.top = top + "px";
+	        helpSpotNode.style.left = left + "px";
 	        bodyObj.appendChild(helpSpotNode);
 			ss_helpSystemNextNodeId++;
+	        helpSpotNode.style.visibility = "visible";
+			ss_debug("nodes[i] width = "+dojo.style.getMarginBoxWidth(nodes[i]))
 		}
 	},
 	
@@ -1594,15 +1640,15 @@ var ss_helpSystem = {
 				x = ss_help_position_leftOffset
 				break
 			case "center" :
-				x = parseInt((ss_getWindowWidth() - ss_getObjectWidth(obj)) / 2)
+				x = parseInt((ss_getWindowWidth() - dojo.style.getMarginBoxWidth(obj)) / 2)
 				if (x < 0) x = 0;
 				break
 			case "right" :
-				x = parseInt(ss_getWindowWidth() - ss_getObjectWidth(obj) - ss_help_position_rightOffset)
+				x = parseInt(ss_getWindowWidth() - dojo.style.getMarginBoxWidth(obj) - ss_help_position_rightOffset)
 				if (x < 0) x = 0;
 			 	break
 			default :
-				x = parseInt((ss_getWindowWidth() - ss_getObjectWidth(obj)) / 2)
+				x = parseInt((ss_getWindowWidth() - dojo.style.getMarginBoxWidth(obj)) / 2)
 				if (x < 0) x = 0;
 		}
 		return x;
@@ -1627,6 +1673,176 @@ var ss_helpSystem = {
 				if (y < 0) y = 0;
 		}
 		return y;
+	},
+	
+	addTOC : function(id, title) {
+		ss_debug("addToc " + id + ", " + title)
+		var tocDiv = document.getElementById('ss_help_toc');
+		if (!tocDiv) return;
+		var uls = tocDiv.getElementsByTagName("ul");
+		var ulObj = null;
+		if (uls == null || uls.length <= 0) {
+			ulObj = document.createElement("ul");
+			tocDiv.appendChild(ulObj);
+		} else {
+			ulObj = uls.item(0);
+		}
+		var liObj = document.createElement("li");
+		var aObj = document.createElement("a");
+		aObj.setAttribute("href", "javascript: ss_helpSystem.hideTOC();ss_helpSystem.showHelpSpotInfo('" + id + "');");
+		//aObj.setAttribute("onClick", "ss_helpSystem.hideTOC();ss_helpSystem.showHelpSpotInfo('" + id + "');return false;");
+		aObj.appendChild(document.createTextNode(title));
+		liObj.appendChild(aObj);
+		ulObj.appendChild(liObj);
+		ss_helpSystemTOC[ss_helpSystemTOC.length] = id;
+	},
+	
+	clearTOC : function() {
+		var tocDiv = document.getElementById('ss_help_toc');
+		if (tocDiv) {
+			var uls = tocDiv.getElementsByTagName("ul");
+			for (var i = uls.length; --i >= 0;) {
+				tocDiv.removeChild(uls[i]);
+			}
+		}
+		ss_helpSystemTOCindex = -1;
+		ss_helpSystemTOC = new Array();
+	},
+	
+	toggleTOC : function() {
+		var tocDiv = document.getElementById('ss_help_toc');
+		if (!tocDiv) return;
+    	if (tocDiv.style.visibility == "visible") {
+    		this.hideTOC();
+    	} else {
+    		this.showTOC();
+    	}
+	},
+	
+	showTOC : function() {
+		var tocDiv = document.getElementById('ss_help_toc');
+		if (!tocDiv) return;
+    	tocDiv.style.visibility = "visible";
+    	tocDiv.style.display = "block";
+    	tocDiv.style.zIndex = 2001;
+	},
+	
+	hideTOC : function() {
+		var tocDiv = document.getElementById('ss_help_toc');
+		if (!tocDiv) return;
+    	tocDiv.style.visibility = "hidden";
+    	tocDiv.style.display = "none";
+	},
+	
+	showNextHelpSpot : function(id) {
+		ss_helpSystemTOCindex++;
+		if (ss_helpSystemTOCindex < 0) ss_helpSystemTOCindex = 0;
+		if (ss_helpSystemTOCindex >= ss_helpSystemTOC.length) ss_helpSystemTOCindex = 0;
+		if (ss_helpSystemTOCindex < ss_helpSystemTOC.length) {
+			this.hideTOC();
+			this.showHelpSpotInfo(ss_helpSystemTOC[ss_helpSystemTOCindex]);
+		}
+	},
+	
+	showPreviousHelpSpot : function(id) {
+		ss_helpSystemTOCindex--;
+		if (ss_helpSystemTOCindex < 0) ss_helpSystemTOCindex = ss_helpSystemTOC.length-1;
+		if (ss_helpSystemTOCindex >= ss_helpSystemTOC.length) ss_helpSystemTOCindex = 0;
+		if (ss_helpSystemTOCindex >= 0 && ss_helpSystemTOCindex < ss_helpSystemTOC.length) {
+			this.hideTOC();
+			this.showHelpSpotInfo(ss_helpSystemTOC[ss_helpSystemTOCindex]);
+		}
+	},
+	
+	showHelpSpotInfo : function(id) {
+		for (var i = 0; i < ss_helpSystemTOC.length; i++) {
+			if (id == ss_helpSystemTOC[i]) {
+				ss_helpSystemTOCindex = i;
+				break;
+			}
+		}
+		//Find the help spot node
+		var helpSpot = null;
+		for (var i = 0; i < ss_helpSystemNodes.length; i++) {
+			if (ss_helpSystemNodes[i] != null && ss_helpSystemNodes[i].getAttribute("helpId") == id) {
+				helpSpot = ss_helpSystemNodes[i];
+				break;
+			}
+		}
+		ss_debug("showHelpSpotInfo helpSpot: " + helpSpot)
+		if (helpSpot != null) {
+		    var top = parseInt(dojo.style.getAbsolutePosition(helpSpot, true).y);
+		    var left = parseInt(dojo.style.getAbsolutePosition(helpSpot, true).x);
+		    var width = parseInt(dojo.style.getContentBoxWidth(helpSpot));
+		    var height = parseInt(dojo.style.getContentBoxHeight(helpSpot));
+			this.showHelpPanel(id, "ss_help_panel", parseInt(left + width/2), parseInt(top + height + 5))
+		}
+	},
+	
+	showHelpPanel : function(id, panelId, x, y) {
+		ss_setupStatusMessageDiv()
+		ss_debug("showHelpPanel " + id)
+		var pObj = self.document.getElementById(panelId);
+		if (!pObj) {
+			//There is no help panel, so create it on-the-fly
+			var bodyObj = document.getElementsByTagName("body").item(0)
+			pObj = document.createElement("div");
+	        pObj.setAttribute("id", panelId);
+	        pObj.setAttribute("helpId", id);
+	        pObj.className = "ss_helpPanel";
+	        bodyObj.appendChild(pObj);
+	        ss_helpSystemPanels[ss_helpSystemPanels.length] = panelId;
+		} else {
+			//See if this is a request for the same panel. If so, toggle it off.
+			ss_debug("id = " + pObj.getAttribute("id") + ", helpId = " + pObj.getAttribute("helpId"))
+			if (pObj.getAttribute("helpId") == id && pObj.style.visibility == "visible") {
+				//On the second click to the same help spot, turn the panel off
+				pObj.style.visibility = "hidden"
+				pObj.style.display = "none"
+				return
+			}
+		}
+		var url = ss_helpSystemUrl;
+		url = ss_replaceSubStr(url, "ss_help_panel_id_place_holder",  id);
+		var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+		ajaxRequest.addKeyValue("operation2", id)
+		ajaxRequest.addKeyValue("ss_help_panel_id", panelId)
+		ajaxRequest.setData("id", id)
+		ajaxRequest.setData("panelId", panelId)
+		ajaxRequest.setData("x", x)
+		ajaxRequest.setData("y", y)
+		ajaxRequest.setEchoDebugInfo();
+		ajaxRequest.setPostRequest(ss_helpSystem.postShowPanel);
+		ajaxRequest.setUsePOST();
+		ajaxRequest.sendRequest();  //Send the request
+	},
+	
+	postShowPanel : function(obj) {
+		//See if there was an error
+		if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+			alert(ss_not_logged_in);
+		}
+		var panelId = obj.getData("panelId");
+		var pObj = self.document.getElementById(panelId);
+		pObj.setAttribute("helpId", obj.getData("id"));
+		var x = obj.getData("x");
+		var y = obj.getData("y");
+		var top = 0;
+		var left = 0;
+		if (!isNaN(parseInt(x)) && !isNaN(parseInt(y))) {
+			top = parseInt(y);
+			left = parseInt(x);
+		}
+		pObj.style.display = "block"
+		var width = parseInt(dojo.style.getMarginBoxWidth(pObj));
+		var windowWidth = parseInt(ss_getWindowWidth());
+		if (parseInt(left + width) > windowWidth - ss_help_position_rightOffset) {
+			left = parseInt(windowWidth - width - ss_help_position_rightOffset);
+		}
+		if (left < 0) left = 0;
+		pObj.style.top = top + "px";
+		pObj.style.left = left + "px";
+		pObj.style.visibility = "visible"
 	}
 }
 
