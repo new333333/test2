@@ -11,27 +11,27 @@
 .ss_rounded {}
     
 .ss_largestprint {
-  font-size: 16px; 
+  font-size: 16px !important; 
   }
   
 .ss_largerprint {
-  font-size: 14px; 
+  font-size: 14px !important; 
   }
   
 .ss_smallprint {
-  font-size: 11px; 
+  font-size: 11px !important; 
   }
   
 .ss_fineprint {
-  font-size: 9px; 
+  font-size: 9px !important; 
   }
 
 .ss_bold {
-  font-weight: bold;
+  font-weight: bold !important;
   }
   
 .ss_italic {
-  font-style: italic;
+  font-style: italic !important;
   }
   
 .ss_indent_small {

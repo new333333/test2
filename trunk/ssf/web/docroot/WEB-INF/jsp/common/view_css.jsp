@@ -62,6 +62,18 @@ if (document.createStyleSheet) {
 	ss_createStyleSheet(htmlareaCssUrl);
 }
 
+//Help system url (used to request a help panel to be shown).
+var ss_helpSystemUrl = "<ssf:url 
+	adapter="true" 
+	portletName="ss_forum" 
+	action="__ajax_request" 
+	actionUrl="true" >
+	<ssf:param name="operation" value="show_help_panel" />
+	<ssf:param name="operation2" value="ss_help_panel_id_place_holder" />
+	</ssf:url>"
+
+//Not logged in message
+var ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
 </script>
 
 <c:set var="ss_color_theme" value="debug" scope="request"/>

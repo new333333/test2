@@ -297,9 +297,21 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   position:absolute;
   width:30px;
   height:30px;
-  align:center;
   visibility:hidden;
   display:none;
+  z-index:2001 !important;
+}
+.ss_helpSpotTitle {
+  background-color:${ss_help_spot_background_color} !important;
+}
+.ss_helpWelcome {
+  position:absolute;
+  visibility:hidden;
+  display:none;
+  background-color:${ss_help_panel_background_color} !important;
+  border:2px solid black;
+  margin:2px;
+  padding:2px;
   z-index:2001 !important;
 }
 .ss_helpPanel {
@@ -308,12 +320,26 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   display:none;
   background-color:${ss_help_panel_background_color} !important;
   border:2px solid black;
+  margin:2px;
+  padding:2px;
+  width:300px;
   z-index:2001 !important;
 }
 .ss_helpLightBox {
   position:absolute;
   background-color:${ss_help_lightBox_background_color};
   z-index:2000;
+}
+
+.ss_helpToc {
+  border: 1px solid #cecece;
+  background-color:${ss_help_spot_background_color} !important;
+  visibility:hidden;
+  display:none;
+  z-index:2001;
+}
+.ss_helpToc li {
+  list-style-type: square;
 }
 
 /* Blogs */

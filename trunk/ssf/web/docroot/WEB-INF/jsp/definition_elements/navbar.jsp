@@ -33,24 +33,33 @@ function ss_turnOffDebugMode() {
 <tr>
 
 <% // Favorites link %>
-<td align="center"><a href="javascript: ;"
+<td align="center">
+  <ssHelpSpot helpId="helpPanel.favoritesButton" align="left" offsetX="-6" offsetY="10"
+    title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
+  <a href="javascript: ;"
   onClick="ss_showFavoritesPane();return false;"
   ><img border="0" src="<html:imagesPath/>icons/favorites.png" 
   alt="<ssf:nlt tag="navigation.favorites" text="Favorites"/>" /></a>
   <br/>
   <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites" text="Favorites"/></span>
+  </ssHelpSpot>
 </td>
 
 <% // History %>
-<td align="center"><img border="0" src="<html:imagesPath/>icons/history.png" 
-  alt="<ssf:nlt tag="navigation.history" text="History"/>" />
+<td align="center">
+  <ssHelpSpot helpId="helpPanel.historyButton" align="left" offsetX="-6" offsetY="45"
+    title="<ssf:nlt tag="helpSpot.historyButton"/>">
+  <img border="0" src="<html:imagesPath/>icons/history.png" 
+    alt="<ssf:nlt tag="navigation.history" text="History"/>" />
   <br>
   <span class="ss_fineprint"><ssf:nlt tag="navigation.history" text="History"/></span>
+  </ssHelpSpot>
 </td>
 
 <% // Search form %>
 <td align="center" nowrap="nowrap">
-  <ssHelpSpot helpId="ssHelpSpot1" align="center">
+  <ssHelpSpot helpId="helpPanel.searchButton" align="left" offsetX="-6" offsetY="15"
+    title="<ssf:nlt tag="helpSpot.searchButton"/>">
     <img border="0" src="<html:imagesPath/>icons/find.png" 
       alt="<ssf:nlt tag="navigation.search" text="Search"/>" /><input
       type="text" size="20"/><input type="submit" value="Go"/>
@@ -60,10 +69,14 @@ function ss_turnOffDebugMode() {
 </td>
 
 <% // Clipboard %>
-<td align="center"><img border="0" src="<html:imagesPath/>icons/clipboard.png" 
-  alt="<ssf:nlt tag="navigation.clipboard" text="Clipboard"/>" />
+<td align="center">
+  <ssHelpSpot helpId="helpPanel.clipboardButton" align="left" offsetX="-6" offsetY="15"
+    title="<ssf:nlt tag="helpSpot.clipboardButton"/>">
+  <img border="0" src="<html:imagesPath/>icons/clipboard.png" 
+    alt="<ssf:nlt tag="navigation.clipboard" text="Clipboard"/>" />
   <br>
   <span class="ss_fineprint"><ssf:nlt tag="navigation.clipboard" text="Clipboard"/></span>
+  </ssHelpSpot>
 </td>
 
 <% // Help toggle %>
@@ -384,15 +397,18 @@ function ss_setFavoritesPaneSize() {
 <script type="text/javascript">
 var ss_helpSpotGifSrc = "<html:imagesPath/>pics/help_spot.gif";
 </script>
-<div id="ss_help_welcome" class="ss_helpPanel" positionX="center" positionY="top"
-  align="center">
+<div id="ss_help_welcome" class="ss_style ss_helpWelcome" 
+  positionX="center" positionY="top" align="center">
   <span class="ss_style ss_bold ss_largestprint"><ssf:nlt tag="help.welcome"/></span>
   <br>
-  <table>
+  <table width="350">
   <tr>
-  <td align="left"><ssf:nlt tag="general.Previous"/></td>
-  <td align="center"><ssf:nlt tag="help.toc"/></td>
-  <td align="right"><ssf:nlt tag="general.Next"/></td>
+  <td><a href="#" onClick="ss_helpSystem.showPreviousHelpSpot();return false;"
+    >&lt;&lt;&lt; <ssf:nlt tag="general.Previous"/></a></td>
+  <td><a href="#" 
+    onClick="ss_helpSystem.toggleTOC();return false;"><ssf:nlt tag="help.toc"/></a></td>
+  <td align="right"><a href="#" onClick="ss_helpSystem.showNextHelpSpot();return false;"
+    ><ssf:nlt tag="general.Next"/> &gt;&gt;&gt;</a></td>
   </tr>
   <tr>
   <td align="center" colspan="3">
@@ -401,4 +417,12 @@ var ss_helpSpotGifSrc = "<html:imagesPath/>pics/help_spot.gif";
   </td>
   </tr>
   </table>
+  <table>
+  <tr>
+  <td>&nbsp;</td>
+  <td align="center"><div id="ss_help_toc" class="ss_helpToc" align="left"></td>
+  <td>&nbsp;</td>
+  </tr>
+  </table>
+  </div>
 </div>
