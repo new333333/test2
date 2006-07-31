@@ -41,6 +41,7 @@ array set ::j2ee_Forum_class_MAP {
    type         {type "varchar 16"}
    name         {name "maxfname"}
    title        {title "varchar 1024"}
+   pathName     {pathName "varchar 1024"}
    creation_date {creation_date timestamp}
    creation_principal      {creation_principal int32}
    modification_date {modification_date timestamp}
@@ -646,26 +647,31 @@ proc doZone {zoneName {cName {liferay.com}}} {
         if {[isnull $class]} {continue}
         
         set ::forumIds($forum) [new_forum_uuid]
+        set title [wim property get -aca $zoneName -name $forum -meta title]
+        if {[isnull $title]} {set title $forum}
+        if {[strequal $forum _admin]} {
+ 			set rootTitle "/$title"  
+        } 
         if {[strequal $class _admin] || [strequal $class summit]} {
             set type "workspace"
         } else {
             set type "BINDER"
         }
 	    if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {    
-        	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, functionMembershipInherited, acl_inheritFromParent, definitionsInherited, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',B'1',B'1',B'1','[sql_quote_value $::zoneName]');"
+        	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, functionMembershipInherited, acl_inheritFromParent, definitionsInherited, zoneName, title) VALUES ($::forumIds($forum),1, '$forum', '$type',B'1',B'1',B'1','[sql_quote_value $::zoneName]','[sql_quote_value $title]');"
 		} else {
-    	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, functionMembershipInherited, acl_inheritFromParent, definitionsInherited, zoneName) VALUES ($::forumIds($forum),1, '$forum', '$type',1,1,1,'[sql_quote_value $::zoneName]');"
+    	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, functionMembershipInherited, acl_inheritFromParent, definitionsInherited, zoneName, title) VALUES ($::forumIds($forum),1, '$forum', '$type',1,1,1,'[sql_quote_value $::zoneName]','[sql_quote_value $title]');"
 		}
      }
 	set ::_profileId [new_forum_uuid]
     if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {    
-  	   wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, functionMembershipInherited, acl_inheritFromParent,definitionsInherited, zoneName) VALUES ($::_profileId, 1, '_profiles', 'profiles', 'Users/Groups',B'1',B'1',B'0','[sql_quote_value $::zoneName]');"
+  	   	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, functionMembershipInherited, acl_inheritFromParent,definitionsInherited, zoneName, pathName) VALUES ($::_profileId, 1, '_profiles', 'profiles', 'Users/Groups',B'1',B'1',B'0','[sql_quote_value $::zoneName], '[sql_quote_value "${rootTitle}/Users & Groups"]');"
 	    wimsql_rw "Update SS_Forums set parentBinder=$::forumIds(_admin) where not name='_admin';"
-   		wimsql_rw "Update SS_Forums set parentBinder=null,name='[sql_quote_value $::zoneName]',functionMembershipInherited=B'0',acl_inheritFromParent=B'0',definitionsInherited=B'0' where name='_admin';"
+   		wimsql_rw "Update SS_Forums set parentBinder=null,name='[sql_quote_value $::zoneName]',functionMembershipInherited=B'0',acl_inheritFromParent=B'0',definitionsInherited=B'0',pathName='/' where name='_admin';"
  	} else {
-    	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, functionMembershipInherited, acl_inheritFromParent, definitionsInherited, zoneName) VALUES ($::_profileId, 1, '_profiles', 'profiles','Users/Groups',1,1,0,'[sql_quote_value $::zoneName]');"
+    	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, functionMembershipInherited, acl_inheritFromParent, definitionsInherited, zoneName, pathName) VALUES ($::_profileId, 1, '_profiles', 'profiles','Users & Groups',1,1,0,'[sql_quote_value $::zoneName]', '[sql_quote_value "${rootTitle}/Users & Groups"]');"
 	    wimsql_rw "Update SS_Forums set parentBinder=$::forumIds(_admin) where not name='_admin';"
- 	    wimsql_rw "Update SS_Forums set parentBinder=null,name='[sql_quote_value $::zoneName]',functionMembershipInherited=0,acl_inheritFromParent=0,definitionsInherited=0 where name='_admin';"
+ 	    wimsql_rw "Update SS_Forums set parentBinder=null,name='[sql_quote_value $::zoneName]',functionMembershipInherited=0,acl_inheritFromParent=0,definitionsInherited=0, pathName='/' where name='_admin';"
     }
     wimsql_rw commit
     if {$::dialect == "mssql"} {
@@ -727,7 +733,6 @@ proc doZone {zoneName {cName {liferay.com}}} {
             puts "--Converting forum $forum"
             set attrs(creation_principal) [mapName [wim property get -aca $zoneName -name $forum owner]] 
             set attrs(modification_principal) $attrs(creation_principal)
-            set attrs(title) [wim property get -aca $zoneName -name $forum -meta title]
           #should this be the teamId?? how is it different them creation_principal?
             set attrs(owner_principal) $attrs(creation_principal)
             set wsName [string trim [wim property get -aca $zoneName -name $forum parentSummit]]
@@ -844,7 +849,18 @@ proc doZone {zoneName {cName {liferay.com}}} {
 		wimsql_rw "update SS_Principals set reserved=1 where name='wf_admin' or name='avf_admin';"
 #		wimsql_rw "update SS_Forums set notify_enabled=0 where notify_enabled is null;"
  	}
+	doPathNames $rootTitle $::forumIds(_admin)
     wimsql_rw commit
+}
+proc doPathNames {path parentId} {
+	foreach {x}	[wimsql_rw "select title,id from SS_Forums where parentBinder=$parentId;"] {
+	    set title [lindex $x 0]
+	    set id [lindex $x 1]
+		set myPath "${path}/${title}"
+		wimsql_rw "update SS_Forums set pathName='[sql_quote_value $myPath]' where id=$id;"
+		doPathNames $myPath $id
+	}
+	
 }
 proc setupAccess {} {
     if {$::dialect == "mssql"} {
@@ -973,7 +989,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
             set attrs(creation_principal) [mapName [aval  -name $forum createdBy $entry]] 
             set attrs(creation_date) [aval -name $forum createdOn $entry]
             set attrs(modification_principal) [mapName [aval -name $forum modifiedBy $entry]] 
-            set attrs(modification_date) [aval -name $forum modifiedOn $en]
+            set attrs(modification_date) [aval -name $forum modifiedOn $entry]
  			checkDates attrs(creation_date) attrs(modification_date)
             set attrs(title) [aval -name $forum title $entry]
             set attrs(replyCount) [aval -name $forum docLeafCount $entry]
