@@ -12,7 +12,7 @@
  <div>
 <c:if test="${!empty reply.entryDef}">
  	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-		configElement="<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']") %>" 
+		configElement="<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView' or @name='profileEntryView' or @name='fileEntryView']") %>" 
 		configJspStyle="${ssConfigJspStyle}" 
 		processThisItem="false" 
 		entry="<%= reply %>" />

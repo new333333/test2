@@ -782,7 +782,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						int size = definitions.size();
 						if (size <= 0) size = 1;
 						sb.append("<select multiple=\"multiple\" name=\"propertyId_" + 
-								propertyId + "\" size=\"" + String.valueOf(size) + "\">\n");
+								propertyId + "\" size=\"" + String.valueOf(size+1) + "\">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_reply_styles")).append("</option>\n");
 						for (int i=0; i<definitions.size(); ++i) {
 							//Build a list of the entry definitions
