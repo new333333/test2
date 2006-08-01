@@ -303,6 +303,7 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
 }
 .ss_helpSpotTitle {
   background-color:${ss_help_spot_background_color} !important;
+  border:1px solid black;
 }
 .ss_helpWelcome {
   position:absolute;

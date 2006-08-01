@@ -49,10 +49,12 @@ function ss_turnOffDebugMode() {
 <td align="center">
   <ssHelpSpot helpId="helpPanel.historyButton" align="left" offsetX="-6" offsetY="45"
     title="<ssf:nlt tag="helpSpot.historyButton"/>">
+  <div id="ss_navbarHistoryButton">
   <img border="0" src="<html:imagesPath/>icons/history.png" 
     alt="<ssf:nlt tag="navigation.history" text="History"/>" />
   <br>
   <span class="ss_fineprint"><ssf:nlt tag="navigation.history" text="History"/></span>
+  </div>
   </ssHelpSpot>
 </td>
 
@@ -60,11 +62,13 @@ function ss_turnOffDebugMode() {
 <td align="center" nowrap="nowrap">
   <ssHelpSpot helpId="helpPanel.searchButton" align="left" offsetX="-6" offsetY="15"
     title="<ssf:nlt tag="helpSpot.searchButton"/>">
+    <div id="ss_navbarSearchButton">
     <img border="0" src="<html:imagesPath/>icons/find.png" 
       alt="<ssf:nlt tag="navigation.search" text="Search"/>" /><input
       type="text" size="20"/><input type="submit" value="Go"/>
     <br>
     <span class="ss_fineprint"><ssf:nlt tag="navigation.search" text="Search"/></span>
+    </div>
   </ssHelpSpot>
 </td>
 
