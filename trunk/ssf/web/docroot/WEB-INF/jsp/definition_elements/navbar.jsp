@@ -34,7 +34,7 @@ function ss_turnOffDebugMode() {
 
 <% // Favorites link %>
 <td align="center">
-  <ssHelpSpot helpId="helpPanel.favoritesButton" align="left" offsetX="-6" offsetY="10"
+  <ssHelpSpot helpId="favorites_button" align="left" offsetX="-6" offsetY="10"
     title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
   <a href="javascript: ;"
   onClick="ss_showFavoritesPane();return false;"
@@ -47,7 +47,7 @@ function ss_turnOffDebugMode() {
 
 <% // History %>
 <td align="center">
-  <ssHelpSpot helpId="helpPanel.historyButton" align="left" offsetX="-6" offsetY="45"
+  <ssHelpSpot helpId="history_button" align="left" offsetX="-6" offsetY="45"
     title="<ssf:nlt tag="helpSpot.historyButton"/>">
   <div id="ss_navbarHistoryButton">
   <img border="0" src="<html:imagesPath/>icons/history.png" 
@@ -60,7 +60,7 @@ function ss_turnOffDebugMode() {
 
 <% // Search form %>
 <td align="center" nowrap="nowrap">
-  <ssHelpSpot helpId="helpPanel.searchButton" align="left" offsetX="-6" offsetY="15"
+  <ssHelpSpot helpId="search_button" align="left" offsetX="-6" offsetY="15"
     title="<ssf:nlt tag="helpSpot.searchButton"/>">
     <div id="ss_navbarSearchButton">
     <img border="0" src="<html:imagesPath/>icons/find.png" 
@@ -74,7 +74,7 @@ function ss_turnOffDebugMode() {
 
 <% // Clipboard %>
 <td align="center">
-  <ssHelpSpot helpId="helpPanel.clipboardButton" align="left" offsetX="-6" offsetY="15"
+  <ssHelpSpot helpId="clipboard_button" align="left" offsetX="-6" offsetY="15"
     title="<ssf:nlt tag="helpSpot.clipboardButton"/>">
   <img border="0" src="<html:imagesPath/>icons/clipboard.png" 
     alt="<ssf:nlt tag="navigation.clipboard" text="Clipboard"/>" />

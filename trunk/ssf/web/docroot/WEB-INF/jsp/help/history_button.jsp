@@ -11,6 +11,6 @@ Yada yada...<br/>
 ss_helpSystem.highlight('ss_navbarHistoryButton');
 </script>
 <div align="right">
-<a href="javascript: ss_helpSystem.showHelpPanel('helpPanel.clipboardButton', 'ss_help_panel', 'left', 'top');"
+<a href="javascript: ss_helpSystem.showHelpPanel('clipboard_button', 'ss_help_panel', 'left', 'top');"
 >Next &gt;&gt;&gt;</a>
 </div>

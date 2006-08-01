@@ -720,9 +720,14 @@ public class AjaxController  extends SAbstractController {
 				WebKeys.HELP_PANEL_ID, "ss_help_panel");
 		model.put(WebKeys.HELP_PANEL_ID, helpPanelId);
 		String op2 = (String) context.get("op2");
-		String jsp = SPropsUtil.getString("help_system." + op2);
+		//See if the site has overridden the mapping for this help page
+		String jsp = SPropsUtil.getString("help_system." + op2, "");
+		if (jsp.equals("")) {
+			//There is no override; use the id as the jsp name directly
+			jsp = "/WEB-INF/jsp/help/" + op2 + ".jsp";
+		}
 		response.setContentType("text/xml");
-		model.put(WebKeys.HELP_PANEL_JSP, "help/" + jsp);
+		model.put(WebKeys.HELP_PANEL_JSP, jsp);
 		return new ModelAndView("forum/help_panel", model);
 	}
 }
