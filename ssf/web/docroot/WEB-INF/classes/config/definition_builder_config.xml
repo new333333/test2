@@ -1758,7 +1758,6 @@
 			<option name="fileEntryTitle" initial="true" />
 			<option name="description" initial="true" />
 			<option name="entryIcon" />
-			<option name="attachFiles" default="true" />
 			<option name="entryFormButtons" initial="true" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
 			<option_select definitionType="10" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
@@ -1808,7 +1807,6 @@
 			<option name="descriptionView" caption="__description" initial="true" />
 			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
 			<option name="entryWorkflow" caption="__entry_workflow" initial="true" />
-			<option name="entryAttachments" caption="__entry_attachments" initial="true" />
 			<option name="entryReplies" caption="__entry_replies" initial="true" />
 			<option_select path="//item[@category='entryLayout']" optionCaption="__entry_layout_options" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />

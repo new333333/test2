@@ -1,4 +1,5 @@
 <% //File entry title view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <div class="ss_entryContent">
 <span class="ss_entryTitle">
 <c:if test="${!empty ssDefinitionEntry.docNumber}">
