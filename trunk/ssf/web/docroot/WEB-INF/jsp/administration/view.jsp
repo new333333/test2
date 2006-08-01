@@ -20,10 +20,14 @@
 String adminTreeName = renderResponse.getNamespace() + "_adminDomTree";
 %>
   <div class="ss_portlet_style ss_portlet">
-	<table border="0" width="95%">
+	<table border="0" width="100%">
 	<tr>
-		<td>
-		</td>
+	  <td>
+	    <ssHelpSpot helpId="admin_portlet/admin_portlet" 
+	      title="<ssf:nlt tag="helpSpot.adminPortlet"/>"
+	      offsetY="-40">
+	    </ssHelpSpot>
+	  </td>
 	</tr>
 	<tr>
 		<td>
@@ -37,6 +41,12 @@ String adminTreeName = renderResponse.getNamespace() + "_adminDomTree";
 			</tr>
 			</table>
 		</td>
+		<td align="right" width="30" valign="top">
+		<a href="#" onClick="ss_helpSystem.run();return false;"><img border="0" 
+  		  src="<html:imagesPath/>icons/help.png" 
+  		  alt="<ssf:nlt tag="navigation.help" text="Help"/>" /></a>
+		</td>
 	</tr>
 	</table>
   </div>
+<jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />

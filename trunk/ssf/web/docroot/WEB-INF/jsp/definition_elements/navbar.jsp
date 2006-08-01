@@ -398,35 +398,4 @@ function ss_setFavoritesPaneSize() {
   </div>
   </div>
 </div>
-<script type="text/javascript">
-var ss_helpSpotGifSrc = "<html:imagesPath/>pics/help_spot.gif";
-</script>
-<div id="ss_help_welcome" class="ss_style ss_helpWelcome" 
-  positionX="center" positionY="top" align="center">
-  <span class="ss_style ss_bold ss_largestprint"><ssf:nlt tag="help.welcome"/></span>
-  <br>
-  <table width="350">
-  <tr>
-  <td><a href="#" onClick="ss_helpSystem.showPreviousHelpSpot();return false;"
-    >&lt;&lt;&lt; <ssf:nlt tag="general.Previous"/></a></td>
-  <td><a href="#" 
-    onClick="ss_helpSystem.toggleTOC();return false;"><ssf:nlt tag="help.toc"/></a></td>
-  <td align="right"><a href="#" onClick="ss_helpSystem.showNextHelpSpot();return false;"
-    ><ssf:nlt tag="general.Next"/> &gt;&gt;&gt;</a></td>
-  </tr>
-  <tr>
-  <td align="center" colspan="3">
-    <a class="ss_linkButton ss_smallprint" href="#" 
-      onClick="ss_helpSystem.hide(); return false;"><ssf:nlt tag="button.close"/></a>
-  </td>
-  </tr>
-  </table>
-  <table>
-  <tr>
-  <td>&nbsp;</td>
-  <td align="center"><div id="ss_help_toc" class="ss_helpToc" align="left"></td>
-  <td>&nbsp;</td>
-  </tr>
-  </table>
-  </div>
-</div>
+<jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
