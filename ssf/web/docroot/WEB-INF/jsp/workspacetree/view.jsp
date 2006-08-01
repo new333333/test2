@@ -38,8 +38,12 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <div class="ss_portlet_style ss_portlet">
 <table width="100%">
 	<tr>
-		<td>
-		</td>
+	  <td colspan="2">
+	    <ssHelpSpot helpId="workspace_tree_portlet/workspace_tree_portlet" 
+	      title="<ssf:nlt tag="helpSpot.workspaceTreePortlet"/>"
+	      offsetY="-40">
+	    </ssHelpSpot>
+	  </td>
 	</tr>
 	<tr>
 		<td align="left">
@@ -55,6 +59,12 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 			</div>
 		</td>
+		<td align="right" width="30" valign="top">
+		<a href="#" onClick="ss_helpSystem.run();return false;"><img border="0" 
+  		  src="<html:imagesPath/>icons/help.png" 
+  		  alt="<ssf:nlt tag="navigation.help" text="Help"/>" /></a>
+		</td>
 	</tr>
 </table>
 </div>
+<jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
