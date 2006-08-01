@@ -61,8 +61,16 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_helpSystemNextNodeId = 1;
 	var ss_helpSystemNodes = new Array();
 	var ss_helpSystemPanels = new Array();
+	var ss_helpSystemHighlights = new Array();
+	var ss_helpSystemHighlightsBorder = new Array();
+	var ss_helpSystemHighlightsBorderTimer = new Array();
 	var ss_helpSystemTOC = new Array();
 	var ss_helpSystemTOCindex = -1;
+	var ss_helpSystemQueuedId = "";
+	var ss_helpSystemQueuedPanelId = "";
+	var ss_helpSystemQueuedX = "";
+	var ss_helpSystemQueuedY = "";
+	var ss_helpSystemRequestInProgress = 0;
 }
 var ss_common_loaded = 1;
 
@@ -1536,7 +1544,8 @@ var ss_helpSystem = {
 				var pObj = document.getElementById(ss_helpSystemPanels[i]);
 				if (pObj != null && pObj.parentNode != null) pObj.parentNode.removeChild(pObj);
 			}
-			ss_helpSystemPanels = new Array();
+    		//Delete all of the highlighted nodes
+    		this.clearHighlights();
 
     		dojo.fx.html.fade(lightBox, 150, .5, 0, function() {
     			var lightBox2 = document.getElementById('ss_help_light_box');
@@ -1576,6 +1585,7 @@ var ss_helpSystem = {
 			var helpSpotTr = document.createElement("tr");
 			var helpSpotTd1 = document.createElement("td");
 			var helpSpotTd2 = document.createElement("td");
+			helpSpotTd2.setAttribute("nowrap", "nowrap");
 			helpSpotTd2.className = "ss_helpSpotTitle";
 			var helpSpotGif = document.createElement("img");
 			helpSpotGif.src = ss_helpSpotGifSrc;
@@ -1594,7 +1604,6 @@ var ss_helpSystem = {
 			helpSpotTd1.appendChild(helpSpotGif);
 			var aObj = document.createElement("a");
 			aObj.setAttribute("href", "javascript: ss_helpSystem.showHelpSpotInfo('" + helpSpotNodeId + "');");
-			//aObj.setAttribute("onClick", "ss_helpSystem.showHelpSpotInfo('" + helpSpotNodeId + "');return false;");
 			aObj.appendChild(document.createTextNode(helpSpotTitle));
 			helpSpotTd2.appendChild(aObj);
 			
@@ -1690,7 +1699,6 @@ var ss_helpSystem = {
 		var liObj = document.createElement("li");
 		var aObj = document.createElement("a");
 		aObj.setAttribute("href", "javascript: ss_helpSystem.hideTOC();ss_helpSystem.showHelpSpotInfo('" + id + "');");
-		//aObj.setAttribute("onClick", "ss_helpSystem.hideTOC();ss_helpSystem.showHelpSpotInfo('" + id + "');return false;");
 		aObj.appendChild(document.createTextNode(title));
 		liObj.appendChild(aObj);
 		ulObj.appendChild(liObj);
@@ -1755,6 +1763,7 @@ var ss_helpSystem = {
 	},
 	
 	showHelpSpotInfo : function(id) {
+		this.hideTOC();
 		for (var i = 0; i < ss_helpSystemTOC.length; i++) {
 			if (id == ss_helpSystemTOC[i]) {
 				ss_helpSystemTOCindex = i;
@@ -1780,9 +1789,20 @@ var ss_helpSystem = {
 	},
 	
 	showHelpPanel : function(id, panelId, x, y) {
+		if (ss_helpSystemRequestInProgress == 1) {
+			ss_helpSystemQueuedId = id;
+			ss_helpSystemQueuedPanelId = panelId;
+			ss_helpSystemQueuedX = x;
+			ss_helpSystemQueuedY = y;
+			return;
+		}
 		ss_setupStatusMessageDiv()
+		this.clearHighlights();
 		ss_debug("showHelpPanel " + id)
 		var pObj = self.document.getElementById(panelId);
+		var startTop = -1;
+		var startLeft = -1;
+		var startVisibility = "";
 		if (!pObj) {
 			//There is no help panel, so create it on-the-fly
 			var bodyObj = document.getElementsByTagName("body").item(0)
@@ -1801,6 +1821,10 @@ var ss_helpSystem = {
 				pObj.style.display = "none"
 				return
 			}
+			startTop = parseInt(dojo.style.getAbsolutePosition(pObj, true).y);
+			startLeft = parseInt(dojo.style.getAbsolutePosition(pObj, true).x);
+			if (pObj.style && pObj.style.visibility) 
+					startVisibility = pObj.style.visibility;
 		}
 		var url = ss_helpSystemUrl;
 		url = ss_replaceSubStr(url, "ss_help_panel_id_place_holder",  id);
@@ -1811,7 +1835,10 @@ var ss_helpSystem = {
 		ajaxRequest.setData("panelId", panelId)
 		ajaxRequest.setData("x", x)
 		ajaxRequest.setData("y", y)
-		ajaxRequest.setEchoDebugInfo();
+		ajaxRequest.setData("startTop", startTop)
+		ajaxRequest.setData("startLeft", startLeft)
+		ajaxRequest.setData("startVisibility", startVisibility)
+		//ajaxRequest.setEchoDebugInfo();
 		ajaxRequest.setPostRequest(ss_helpSystem.postShowPanel);
 		ajaxRequest.setUsePOST();
 		ajaxRequest.sendRequest();  //Send the request
@@ -1825,24 +1852,140 @@ var ss_helpSystem = {
 		var panelId = obj.getData("panelId");
 		var pObj = self.document.getElementById(panelId);
 		pObj.setAttribute("helpId", obj.getData("id"));
+		pObj.style.display = "block"
+		var width = parseInt(dojo.style.getMarginBoxWidth(pObj));
+		var height = parseInt(dojo.style.getMarginBoxHeight(pObj));
 		var x = obj.getData("x");
 		var y = obj.getData("y");
+		var startTop = obj.getData("startTop");
+		var startLeft = obj.getData("startLeft");
+		var startVisibility = obj.getData("startVisibility");
 		var top = 0;
 		var left = 0;
 		if (!isNaN(parseInt(x)) && !isNaN(parseInt(y))) {
 			top = parseInt(y);
 			left = parseInt(x);
+		} else if (x == "" || y == "") {
+		    top = startTop;
+		    left = startLeft;
+			ss_debug("top = " + top);
+			ss_debug("left = " + left);
+		} else {
+			switch(x) {
+				case "left" : 
+					left = ss_help_position_leftOffset;
+					break
+				case "center" :
+					left = parseInt((ss_getWindowWidth() - width) / 2)
+					if (left < ss_help_position_leftOffset) left = ss_help_position_leftOffset;
+					break
+				case "right" :
+					left = parseInt(ss_getWindowWidth() - width - ss_help_position_rightOffset)
+				 	if (left < ss_help_position_leftOffset) left = ss_help_position_leftOffset;
+				 	break
+				default :
+					left = parseInt((ss_getWindowWidth() - width) / 2)
+					if (left < ss_help_position_leftOffset) left = ss_help_position_leftOffset;
+			}
+			switch(y) {
+				case "top" : 
+					top = ss_help_position_topOffset;
+					break
+				case "middle" :
+					top = parseInt((ss_getWindowHeight() - height) / 2);
+					if (top < ss_help_position_topOffset) top = ss_help_position_topOffset;
+					break
+				case "bottom" :
+					top = parseInt(ss_getWindowHeight() - ss_help_position_bottomOffset - height)
+				 	if (top < ss_help_position_topOffset) top = ss_help_position_topOffset;
+				 	break
+				default :
+					top = parseInt(ss_getWindowHeight() - ss_help_position_bottomOffset - height)
+					if (top < ss_help_position_topOffset) top = ss_help_position_topOffset;
+			}
 		}
-		pObj.style.display = "block"
-		var width = parseInt(dojo.style.getMarginBoxWidth(pObj));
 		var windowWidth = parseInt(ss_getWindowWidth());
 		if (parseInt(left + width) > windowWidth - ss_help_position_rightOffset) {
 			left = parseInt(windowWidth - width - ss_help_position_rightOffset);
 		}
-		if (left < 0) left = 0;
-		pObj.style.top = top + "px";
-		pObj.style.left = left + "px";
-		pObj.style.visibility = "visible"
+		if (left < ss_help_position_leftOffset) left = ss_help_position_leftOffset;
+		
+		ss_debug("["+startLeft+", "+startTop+"], ["+left+", "+top+"]")
+		if (startTop >= 0 && startLeft >= 0 && startVisibility == "visible") {
+			dojo.fx.html.slide(panelId, 300, [startLeft, startTop], [left, top]);
+		} else {
+			pObj.style.top = top + "px";
+			pObj.style.left = left + "px";
+		}
+		pObj.style.visibility = "visible";
+		
+		ss_helpSystemRequestInProgress = 0;
+		
+		//Is there another request queued?
+		if (ss_helpSystemQueuedId != "") {
+			ss_debug("\nLaunching queued request to show " + ss_helpSystemQueuedId)
+			var id = ss_helpSystemQueuedId;
+			var panelId = ss_helpSystemQueuedPanelId;
+			var x = ss_helpSystemQueuedX;
+			var y = ss_helpSystemQueuedY;
+			ss_helpSystemQueuedId = "";
+			ss_helpSystemQueuedPanelId = "";
+			ss_helpSystemQueuedX = "";
+			ss_helpSystemQueuedY = "";
+			ss_helpSystem.showHelpPanel(id, panelId, x, y);
+		}
+	},
+
+	highlight : function(id) {
+		ss_debug("Highlight " + id)
+		var obj = document.getElementById(id);
+		if (obj != null) {
+			ss_helpSystemHighlights[ss_helpSystemHighlights.length] = id;
+			ss_helpSystemHighlightsBorder[id] = obj.style.border;
+			obj.style.border = "red 3px solid";
+			if (ss_helpSystemHighlightsBorderTimer[id]) 
+			    clearTimeout(ss_helpSystemHighlightsBorderTimer[id]);
+			ss_helpSystemHighlightsBorderTimer[id] = setTimeout("ss_helpSystem.blinkHighlight('"+id+"', 4)", 200);
+		}
+	},
+	
+	clearHighlights : function() {
+		for (var i = ss_helpSystemHighlights.length; --i >= 0;) {
+			ss_debug("highlightObj = " + ss_helpSystemHighlights[i])
+			var id = ss_helpSystemHighlights[i];
+			var hObj = document.getElementById(id);
+			hObj.style.border = ss_helpSystemHighlightsBorder[id];
+			ss_helpSystemHighlights[i] = null;
+			if (ss_helpSystemHighlightsBorderTimer[id]) {
+				clearTimeout(ss_helpSystemHighlightsBorderTimer[id])
+				ss_helpSystemHighlightsBorderTimer[id] = null;
+			}
+		}
+		ss_helpSystemHighlights = new Array();
+	},
+	
+	blinkHighlight : function(id, count) {
+		ss_debug("blinkHighlight " + id)
+		if (ss_helpSystemHighlightsBorderTimer[id] != null) {
+			ss_debug("clearTimeout " + id)
+			clearTimeout(ss_helpSystemHighlightsBorderTimer[id])
+			ss_helpSystemHighlightsBorderTimer[id] = null;
+		} else {
+			//There is no timer value. The user must have moved on. Don't blink any more.
+			ss_debug("Stopped blinking!")
+			return;
+		}
+		var obj = document.getElementById(id);
+		ss_debug("  border color: " + obj.style.borderTopColor)
+		if (obj.style.borderTopColor == "red") {
+			obj.style.border = "white 3px solid";
+		} else {
+			obj.style.border = "red 3px solid";
+		}
+		if (count-- >= 0) {
+			ss_helpSystemHighlightsBorderTimer[id] = setTimeout("ss_helpSystem.blinkHighlight('"+id+"', "+count+")", 200);
+		}
 	}
+	
 }
 
