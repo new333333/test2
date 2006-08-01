@@ -10,6 +10,6 @@ The text will be positioned at the bottom center of the window.<br/><br/>
 <br/>
 <div align="right">
 
-<a href="javascript: ss_helpSystem.showHelpPanel('helpPanel.searchButton', 'ss_help_panel', 'center', 'bottom');"
+<a href="javascript: ss_helpSystem.showHelpPanel('search_button', 'ss_help_panel', 'center', 'bottom');"
 >Next &gt;&gt;&gt;</a>
 </div>

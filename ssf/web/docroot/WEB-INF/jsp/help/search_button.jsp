@@ -20,6 +20,6 @@ However, the text will not change position this time.
 ss_helpSystem.highlight('ss_navbarSearchButton');
 </script>
 <div align="right">
-<a href="javascript: ss_helpSystem.showHelpPanel('helpPanel.historyButton', 'ss_help_panel', '', '');"
+<a href="javascript: ss_helpSystem.showHelpPanel('history_button', 'ss_help_panel', '', '');"
 >Next &gt;&gt;&gt;</a>
 </div>

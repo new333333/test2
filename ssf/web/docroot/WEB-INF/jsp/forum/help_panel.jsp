@@ -24,7 +24,7 @@
 	</taconite-replace>
 	<taconite-replace contextNodeID="${ss_help_panel_id}" parseInBrowser="true">
 <div id="${ss_help_panel_id}" class="ss_helpPanel">
-<jsp:include page="/WEB-INF/jsp/${ss_help_panel_jsp}" />
+<jsp:include page="${ss_help_panel_jsp}" />
 </div>
 	</taconite-replace>
 <%

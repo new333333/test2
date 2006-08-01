@@ -1615,7 +1615,7 @@ var ss_helpSystem = {
 	        if (!offsetY) offsetY = 0;
 	        offsetY = parseInt(offsetY);
 	        var top = parseInt(dojo.style.getAbsolutePosition(nodes[i], true).y + offsetY);
-	        if (nodes[i].getAttribute("align")) {
+	        if (nodes[i].getAttribute("valign")) {
 	        	if (nodes[i].getAttribute("valign") == "middle") {
 	        		top += parseInt(ss_getObjectHeight(nodes[i]) / 2);
 	        	} else if (nodes[i].getAttribute("valign") == "bottom") {

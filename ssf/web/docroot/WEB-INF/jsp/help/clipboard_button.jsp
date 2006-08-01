@@ -15,6 +15,6 @@ This will take you back to the favorites button text.
 </div>
 <br/>
 <div align="right">
-<a href="javascript: ss_helpSystem.showHelpPanel('helpPanel.favoritesButton', 'ss_help_panel', 'left', 'middle');"
+<a href="javascript: ss_helpSystem.showHelpPanel('favorites_button', 'ss_help_panel', 'left', 'middle');"
 >Next &gt;&gt;&gt;</a>
 </div>
