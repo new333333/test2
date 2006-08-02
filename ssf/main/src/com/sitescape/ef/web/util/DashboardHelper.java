@@ -38,10 +38,12 @@ public class DashboardHelper {
 	public final static String Title = "title";
 	public final static String IncludeBinderTitle = "includeBinderTitle";
 	public final static String DisplayStyle = "displayStyle";
+	public final static String ControlStyle = "controlStyle";
 	public final static String NextComponent = "nextComponent";
 	public final static String Components = "components";
 
 	public final static String DisplayStyleDefault = "shadow";
+	public final static String ControlStyleDefault = "hover";
 
 	//Component Order lists
 	public final static String Wide_Top = "wide_top";
@@ -563,6 +565,8 @@ public class DashboardHelper {
 					DashboardHelper.Component_Title, "");
 			String displayStyle = PortletRequestUtils.getStringParameter(request, 
 					DashboardHelper.DisplayStyle, DashboardHelper.DisplayStyleDefault);
+			String controlStyle = PortletRequestUtils.getStringParameter(request, 
+					DashboardHelper.ControlStyle, DashboardHelper.ControlStyleDefault);
 			
 			//Get the component config data map
 			Map components = (Map)dashboard.get(DashboardHelper.Components);
@@ -582,6 +586,7 @@ public class DashboardHelper {
 					//Save the title and data map
 					componentMap.put(DashboardHelper.Component_Title, componentTitle);
 					componentMap.put(DashboardHelper.DisplayStyle, displayStyle);
+					componentMap.put(DashboardHelper.ControlStyle, controlStyle);
 					componentMap.put(DashboardHelper.Data, componentData);
 				}						
 			}

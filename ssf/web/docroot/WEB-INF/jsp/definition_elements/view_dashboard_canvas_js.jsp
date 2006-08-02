@@ -4,21 +4,46 @@
 if (!ss_dbrn) {
 	var ss_dbrn = Math.round(Math.random()*999999)
 	var ss_toolbar_count = 0;
+	var ss_dashboard_control_count = 0;
 	var ss_componentSrcHide = "<html:imagesPath/>pics/sym_s_hide.gif"
 	var ss_componentSrcShow = "<html:imagesPath/>pics/sym_s_show.gif"
 	var ss_componentAltHide = "<ssf:nlt tag="button.hide"/>"
 	var ss_componentAltShow = "<ssf:nlt tag="button.show"/>"
+	var ss_toolbarAddContent = "<ssf:nlt tag="dashboard.addContent"/>"
+	var ss_toolbarHideContent = "<ssf:nlt tag="dashboard.addContentOff"/>"
+	var ss_toolbarShowControls = "<ssf:nlt tag="dashboard.showHiddenControls"/>"
+	var ss_toolbarHideControls = "<ssf:nlt tag="dashboard.showHiddenControlsOff"/>"
 }
 
 function ss_toggle_toolbars() {
+	var toolbarOption = document.getElementById("ss_dashboard_menu_content");
 	for (var i = 0; i < ss_toolbar_count; i++) {
 		var obj = document.getElementById("ss_dashboard_toolbar_"+i)
 		if (obj.style.visibility == 'hidden') {
 			obj.style.visibility = 'visible';
 			obj.style.display = 'inline';
+			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarHideContent;
 		} else {
 			obj.style.visibility = 'hidden';
 			obj.style.display = 'none';
+			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarAddContent;
+		}
+	}
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
+function ss_toggle_hidden_controls() {
+	var toolbarOption = document.getElementById("ss_dashboard_menu_controls");
+	for (var i = 0; i < ss_dashboard_control_count; i++) {
+		var obj = document.getElementById("ss_dashboard_control_"+i)
+		if (obj.style.visibility == 'hidden') {
+			obj.style.visibility = 'visible';
+			obj.style.display = 'inline';
+			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarHideControls;
+		} else {
+			obj.style.visibility = 'hidden';
+			obj.style.display = 'none';
+			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarShowControls;
 		}
 	}
 	//Signal that the layout changed
@@ -56,6 +81,8 @@ function ss_showHideDashboardComponent(obj, componentId, divId) {
 		var targetDiv = document.getElementById(divId);
 		if (targetDiv) {
 			targetDiv.innerHTML = "";
+			targetDiv.style.visibility = "hidden";
+			targetDiv.style.display = "none";
 			//Signal that the layout changed
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
@@ -72,6 +99,8 @@ function ss_showHideDashboardComponent(obj, componentId, divId) {
 		var targetDiv = document.getElementById(divId);
 		if (targetDiv) {
 			targetDiv.innerHTML = "";
+			targetDiv.style.visibility = "hidden";
+			targetDiv.style.display = "none";
 			//Signal that the layout changed
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
@@ -90,6 +119,8 @@ function ss_showComponentCallback(s, divId) {
 	var targetDiv = document.getElementById(divId);
 	if (targetDiv) {
 		targetDiv.innerHTML = s;
+		targetDiv.style.visibility = "visible";
+		targetDiv.style.display = "block";
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
 	}

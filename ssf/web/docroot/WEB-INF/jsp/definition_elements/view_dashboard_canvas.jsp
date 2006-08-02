@@ -1,6 +1,7 @@
 <% //View dashboard canvas %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_toolbar_count" value="0"/>
+<c:set var="ss_dashboard_control_count" value="0" scope="request"/>
 <c:set var="ss_component_count" value="0" scope="request"/>
 <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
 <%
@@ -28,8 +29,12 @@
 	  titleId="ss_addDashboardContent" menuClass="ss_dashboard_menu" menuWidth="300px">
 		<ul class="ss_dropdownmenu" 
 		  style="list-style: outside; margin:2px 2px 2px 18px; padding:2px;">
-		  <li><a href="" onClick="ss_toggle_toolbars();return false;"><ssf:nlt 
-		    tag="dashboard.addContent"/></a></li>
+		  <li><a href="#" onClick="ss_toggle_toolbars();return false;"><span
+		    id="ss_dashboard_menu_content"><ssf:nlt 
+		    tag="dashboard.addContent"/></span></a></li>
+		  <li><a href="#" onClick="ss_toggle_hidden_controls();return false;"><span
+		    id="ss_dashboard_menu_controls"><ssf:nlt 
+		    tag="dashboard.showHiddenControls"/></span></a></li>
 		  <li><a href="<portlet:renderURL>
 		  <portlet:param name="action" value="modify_dashboard"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -317,4 +322,5 @@
 </div>
 <script type="text/javascript">
 ss_toolbar_count = <c:out value="${ss_toolbar_count}"/>;
+ss_dashboard_control_count = <c:out value="${ss_dashboard_control_count}"/>;
 </script>

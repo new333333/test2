@@ -58,9 +58,13 @@
 		<input type="text" name="title" size="80" 
 		  value="${ssDashboard.dashboard.components[id].title}"/>
 		<br/>
+		<br/>
 		<span class="ss_bold"><ssf:nlt tag="dashboard.componentStyle"/></span>
 		<br/>
 		<div class="ss_indent_medium">
+		<table cellspacing="0" cellpadding="0">
+		<tr>
+		<td valign="top" nowrap>
 		<c:set var="checked" value=""/>
 		<c:if test="${empty ssDashboard.dashboard.components[id].displayStyle || 
 		              ssDashboard.dashboard.components[id].displayStyle == 'shadow'}">
@@ -82,6 +86,26 @@
 		</c:if>
 		<input type="radio" name="displayStyle" value="none" ${checked}>
 		<span><ssf:nlt tag="dashboard.componentStyle.none"/></span>
+		</td>
+		<td><img style="margin:0px 30px 0px 0px;" src="<html:imagesPath/>pics/1pix.gif"></td>
+		<td valign="top" nowrap>
+		  <c:set var="checked" value=""/>
+		  <c:if test="${empty ssDashboard.dashboard.components[id].controlStyle || 
+		              ssDashboard.dashboard.components[id].controlStyle == 'hover'}">
+		    <c:set var="checked" value="checked=\"checked\""/>
+		  </c:if>
+		  <input type="radio" name="controlStyle" value="hover" ${checked}>
+		  <span><ssf:nlt tag="dashboard.componentControlStyle.hover"/></span>
+		  <br>
+		  <c:set var="checked" value=""/>
+		  <c:if test="${ssDashboard.dashboard.components[id].controlStyle == 'hide'}">
+		    <c:set var="checked" value="checked=\"checked\""/>
+		  </c:if>
+		  <input type="radio" name="controlStyle" value="hide" ${checked}>
+		  <span><ssf:nlt tag="dashboard.componentControlStyle.hide"/></span>
+		</td>
+		</tr>
+		</table>
 		</div>
 		<br/>
 		<ssf:dashboard id="${id}" type="config" configuration="${ssDashboard}"/>
