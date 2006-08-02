@@ -60,7 +60,7 @@
 		      background-color:blue !important;
 			 </c:if>
 			 <c:if test="${ss_dashboard_componentScope == 'binder'}">
-		      background-color:green !important;
+		      background-color:yellow !important;
 			 </c:if>
 		    </c:if>
 		    margin:0px 2px 0px 0px;"><div 
