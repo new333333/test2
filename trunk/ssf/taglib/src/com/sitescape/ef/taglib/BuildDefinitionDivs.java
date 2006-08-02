@@ -10,13 +10,9 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.SPropsUtil;
-import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.util.Validator;
 
@@ -557,7 +553,6 @@ public class BuildDefinitionDivs extends TagSupport {
 			}
 
 			//Add the list of properties
-			Element property;
 			Element propertiesConfig = rootConfigElement.element("properties");
 			Element properties = rootElement.element("properties");
 			if (propertiesConfig != null) {
@@ -736,35 +731,42 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 							sb.append("\n<br/>\n");
 						}
-						String multiple = "";
-						if (propertyConfig.attributeValue("multipleAllowed", "").equalsIgnoreCase("true")) multiple = "multiple=\"multiple\"";
-						sb.append("<select name=\"propertyId_" + propertyId + "\" " + multiple + ">\n");
-						sb.append("<option value=\"\">").append(NLT.get("definition.select_item_select")).append("</option>\n");
-						
 						//Get the list of items in this definition
 						String itemSelectPath = propertyConfig.attributeValue("path", "");
 						if (!itemSelectPath.equals("")) {
-							Iterator itItems = this.sourceDocument.getRootElement().selectNodes(itemSelectPath).iterator();
-							while (itItems.hasNext()) {
-								//Build a list of the items
-								Element selectedItem = (Element) itItems.next();
-								Element selectedItemNameEle = (Element)selectedItem.selectSingleNode("properties/property[@name='name']");
-								if (selectedItemNameEle == null) {continue;}
-								Element selectedItemCaptionEle = (Element)selectedItem.selectSingleNode("properties/property[@name='caption']");
-								if (selectedItemCaptionEle == null) {continue;}
-								String selectedItemName = selectedItemNameEle.attributeValue("value", "");
-								String selectedItemCaption = selectedItemCaptionEle.attributeValue("value", "");
-								sb.append("<option value=\"").append(selectedItemName).append("\"");
-								for (int i = 0; i < propertyValues.size(); i++) {
-									if (((String)propertyValues.get(i)).equals(selectedItemName)) {
-										sb.append(" selected=\"selected\"");
-										break;
+							int size = this.sourceDocument.getRootElement().selectNodes(itemSelectPath).size();
+							if (size > 0) {
+								if (size > 10) size = 10;
+								String sizeAttr = " size=\"" + String.valueOf(size+1) + "\" ";
+								Iterator itItems = this.sourceDocument.getRootElement().selectNodes(itemSelectPath).iterator();
+								String multiple = "";
+								if (propertyConfig.attributeValue("multipleAllowed", "").equalsIgnoreCase("true")) multiple = "multiple=\"multiple\"";
+								sb.append("<select name=\"propertyId_" + propertyId + "\" " + multiple + sizeAttr + ">\n");
+								sb.append("<option value=\"\">").append(NLT.get("definition.select_item_select")).append("</option>\n");
+								
+								while (itItems.hasNext()) {
+									//Build a list of the items
+									Element selectedItem = (Element) itItems.next();
+									Element selectedItemNameEle = (Element)selectedItem.selectSingleNode("properties/property[@name='name']");
+									if (selectedItemNameEle == null) {continue;}
+									Element selectedItemCaptionEle = (Element)selectedItem.selectSingleNode("properties/property[@name='caption']");
+									if (selectedItemCaptionEle == null) {continue;}
+									String selectedItemName = selectedItemNameEle.attributeValue("value", "");
+									String selectedItemCaption = selectedItemCaptionEle.attributeValue("value", "");
+									sb.append("<option value=\"").append(selectedItemName).append("\"");
+									for (int i = 0; i < propertyValues.size(); i++) {
+										if (((String)propertyValues.get(i)).equals(selectedItemName)) {
+											sb.append(" selected=\"selected\"");
+											break;
+										}
 									}
+									sb.append(">").append(selectedItemCaption).append(" (").append(selectedItemName).append(")</option>\n");
 								}
-								sb.append(">").append(selectedItemCaption).append(" (").append(selectedItemName).append(")</option>\n");
+								sb.append("</select>\n<br/><br/>\n");
+							} else {
+								sb.append("<i>").append(NLT.get("definition.selectNoneDefined")).append("</i>\n<br/><br/>");
 							}
 						}
-						sb.append("</select>\n<br/><br/>\n");
 					
 					} else if (type.equals("replyStyle")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
