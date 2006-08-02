@@ -35,11 +35,22 @@
 	}
 %>
 <c:if test="${!empty ssDefinitionEntry.averageRating}">
-<td><span class="ss_italic ss_smallprint"> (<ssf:nlt 
-  tag="popularity.rating.average" 
-  />: <c:out value="${ssDefinitionEntry.averageRating.average}"/>) <ssf:nlt 
-  tag="popularity.rating.count" 
-  />: <c:out value="${ssDefinitionEntry.averageRating.count}"/></span></td>
+<td>
+<c:if test="${ssDefinitionEntry.averageRating.count == 1}">
+  <span class="ss_italic ss_smallprint"> (<ssf:nlt tag="popularity.rating.average">
+    <ssf:param name="value" value="${ssDefinitionEntry.averageRating.average}"/>
+    <ssf:param name="value" value="${ssDefinitionEntry.averageRating.count}"/>
+    </ssf:nlt>)
+  </span>
+</c:if>
+<c:if test="${ssDefinitionEntry.averageRating.count != 1}">
+  <span class="ss_italic ss_smallprint"> (<ssf:nlt tag="popularity.rating.averages">
+    <ssf:param name="value" value="${ssDefinitionEntry.averageRating.average}"/>
+    <ssf:param name="value" value="${ssDefinitionEntry.averageRating.count}"/>
+    </ssf:nlt>)
+  </span>
+</c:if>
+</td>
 </c:if>
 <c:if test="${empty ssDefinitionEntry.averageRating}">
 <td><span class="ss_italic ss_smallprint"> (<ssf:nlt 

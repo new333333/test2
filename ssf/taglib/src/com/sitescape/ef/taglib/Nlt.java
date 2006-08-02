@@ -1,44 +1,59 @@
 package com.sitescape.ef.taglib;
 
-import javax.servlet.jsp.JspException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.tagext.TagSupport;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.web.WebKeys;
 
 
 /**
  * @author Peter Hurley
  *
  */
-public class Nlt extends TagSupport {
+public class Nlt extends BodyTagSupport implements ParamAncestorTag {
     private String tag;
     private String text;
     private Boolean checkIfTag;
+	private List _values;
     
-	public int doStartTag() throws JspException {
+	public int doStartTag() {
+		return EVAL_BODY_BUFFERED;
+	}
+
+	public int doAfterBody() {
+		return SKIP_BODY; 
+	}
+
+	public int doEndTag() throws JspTagException {
 		if (this.checkIfTag == null) this.checkIfTag = false;
 		try {
 			JspWriter jspOut = pageContext.getOut();
 			StringBuffer sb = new StringBuffer();
+			if (_values == null) {
+				_values = new ArrayList();
+			}
 			if (this.checkIfTag) {
 				//This is a request to see if the tag itself is text or a tag
 				sb.append(NLT.getDef(this.tag));
 			} else if (this.text == null) {
-				sb.append(NLT.get(this.tag));
+				sb.append(NLT.get(this.tag, this._values.toArray()));
 			} else {
-				sb.append(NLT.get(this.tag, this.text));
+				sb.append(NLT.get(this.tag, this._values.toArray(), this.text));
 			}
 			jspOut.print(sb.toString());
 		}
-	    catch(Exception e) {
-	        throw new JspException(e);
-	    }
+		catch (Exception e) {
+			throw new JspTagException(e.getMessage());
+		}
+		finally {
+			_values = null;
+		}
 	    
-		return SKIP_BODY;
-	}
-
-	public int doEndTag() throws JspException {
 		return EVAL_PAGE;
 	}
 	
@@ -52,6 +67,13 @@ public class Nlt extends TagSupport {
 
 	public void setCheckIfTag(Boolean value) {
 	    this.checkIfTag = value;
+	}
+
+	public void addParam(String name, String value) {
+		if (_values == null) {
+			_values = new ArrayList();
+		}
+		if (name.equals(WebKeys.NLT_VALUE)) _values.add(value);
 	}
 
 }
