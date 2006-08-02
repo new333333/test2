@@ -577,6 +577,7 @@ ul.ss_dropdownmenu li {
   padding:0px;
 }
 .ss_dashboard_display_none_toolbar_color {
+  background-color: ${ss_style_background_color} !important;
 }
 
   
