@@ -216,7 +216,7 @@ function ss_showDivFadeIn(id, ms) {
     	ss_setOpacity(document.getElementById(id),0.1);
     	ss_showDiv(id);
     }
-    dojo.lfx.html.fadeIn(id, ms).play();
+    dojo.fx.html.fadeIn(id, ms);
 }
 
 //Routine to fade out a div
@@ -228,10 +228,10 @@ function ss_hideDivFadeOut(id, ms) {
     //Is this still being shown? If yes, return.
 	if (ss_divFadeInArray[id] > 1) return;
     if (!ms || ms == undefined) ms = 300;
-    dojo.lfx.html.fadeOut(id, ms, null, function(){
+    dojo.fx.html.fadeOut(id, ms, function(){
     	ss_hideDiv(id);
     	return true;
-    }).play();
+    });
 }
 
 //Routine to add the innerHMTL of one div to another div
