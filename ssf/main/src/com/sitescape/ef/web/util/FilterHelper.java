@@ -12,7 +12,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.util.NLT;
@@ -224,7 +224,7 @@ public class FilterHelper {
     	    			if (!defId.equals("")) {
     	    				andField = orField.addElement(QueryBuilder.AND_ELEMENT);
         	    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
-        	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntryIndexUtils.COMMAND_DEFINITION_FIELD);
+        	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
         	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
         	    	    	child.setText(defId);
     	    			}

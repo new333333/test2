@@ -38,7 +38,7 @@ import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.EntryBuilder;
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.pipeline.Conduit;
@@ -492,14 +492,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         
     	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder);
 
-    	// Add document type
+    	// Add search document type
         BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_BINDER);
         
         // Add command definition
-        EntryIndexUtils.addCommandDefinition(indexDoc, binder); 
+        EntityIndexUtils.addCommandDefinition(indexDoc, binder); 
         
         // Add the events
-        EntryIndexUtils.addEvents(indexDoc, binder);
+        EntityIndexUtils.addEvents(indexDoc, binder);
         
         
         return indexDoc;
@@ -576,10 +576,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ATTACHMENT);
         
         // Add UID of attachment file (FUID)
-        EntryIndexUtils.addFileAttachmentUid(indexDoc, fa);
+        EntityIndexUtils.addFileAttachmentUid(indexDoc, fa);
         
         // Add the filename
-        EntryIndexUtils.addFileAttachmentName(indexDoc,fui.getOriginalFilename());        
+        EntityIndexUtils.addFileAttachmentName(indexDoc,fui.getOriginalFilename());        
         
         if(text != null)
         	BasicIndexUtils.addAllText(indexDoc, text);
@@ -587,13 +587,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // TBD Add the filetype and Extension
         //EntryIndexUtils.addFileType(indexDoc,tempFile);
 
-        EntryIndexUtils.addFileExtension(indexDoc,fui.getOriginalFilename());
+        EntityIndexUtils.addFileExtension(indexDoc,fui.getOriginalFilename());
                 
         return indexDoc;
     }
     protected void fillInIndexDocWithCommonPartFromBinder(org.apache.lucene.document.Document indexDoc, 
     		Binder binder) {
-    	EntryIndexUtils.addReadAcls(indexDoc,AccessUtils.getReadAclIds(binder));
+    	EntityIndexUtils.addReadAcls(indexDoc,AccessUtils.getReadAclIds(binder));
     	fillInIndexDocWithCommonPart(indexDoc, binder.getParentBinder(), binder);
     }
 
@@ -612,30 +612,33 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         BasicIndexUtils.addUid(indexDoc, entity.getIndexDocumentUid());
 
         // Add creation-date
-        EntryIndexUtils.addCreationDate(indexDoc, entity);
+        EntityIndexUtils.addCreationDate(indexDoc, entity);
         
         // Add modification-date
-        EntryIndexUtils.addModificationDate(indexDoc,entity);
+        EntityIndexUtils.addModificationDate(indexDoc,entity);
         
         // Add creator id
-        EntryIndexUtils.addCreationPrincipalId(indexDoc,entity);
+        EntityIndexUtils.addCreationPrincipalId(indexDoc,entity);
         
         // Add Modification Principal Id
-        EntryIndexUtils.addModificationPrincipalId(indexDoc,entity);
+        EntityIndexUtils.addModificationPrincipalId(indexDoc,entity);
         
         // Add ReservedBy Principal Id
-        EntryIndexUtils.addModificationPrincipalId(indexDoc,entity);
+        EntityIndexUtils.addModificationPrincipalId(indexDoc,entity);
         
         // Add Doc Id
-        EntryIndexUtils.addDocId(indexDoc, entity);
+        EntityIndexUtils.addDocId(indexDoc, entity);
         
         // Add Doc title
-        EntryIndexUtils.addTitle(indexDoc, entity);
+        EntityIndexUtils.addTitle(indexDoc, entity);
         
         //Add Rating
-        EntryIndexUtils.addRating(indexDoc, entity);
+        EntityIndexUtils.addRating(indexDoc, entity);
         
-        // Add data fields driven by the entry's definition object. 
+        // Add EntityType
+        EntityIndexUtils.addEntityType(indexDoc, entity);
+        
+       // Add data fields driven by the entry's definition object. 
         getDefinitionModule().addIndexFieldsForEntity(indexDoc, entity);
         
     }
@@ -665,6 +668,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     protected void removeFileFromIndex(FileAttachment fa) {
     	IndexSynchronizationManager.deleteDocuments(new Term(
-    			EntryIndexUtils.FILE_ID_FIELD, fa.getId()));  	
+    			EntityIndexUtils.FILE_ID_FIELD, fa.getId()));  	
     }
 }

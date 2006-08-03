@@ -6,7 +6,7 @@ import java.util.Set;
 import org.apache.lucene.document.Field;
 
 import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.search.BasicIndexUtils;
 
 public class FieldBuilderEvent extends AbstractFieldBuilder {
@@ -23,8 +23,8 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 	            return new Field[0];
 
 			// range check to see if this event is in range
-	    	Field evDtStartField = Field.Keyword(makeFieldName(dataElemName,EntryIndexUtils.EVENT_FIELD_START_DATE), ev.getDtStart().getTime());
-		    Field evDtEndField = Field.Keyword(makeFieldName(dataElemName,EntryIndexUtils.EVENT_FIELD_END_DATE), ev.getDtEnd().getTime());
+	    	Field evDtStartField = Field.Keyword(makeFieldName(dataElemName,EntityIndexUtils.EVENT_FIELD_START_DATE), ev.getDtStart().getTime());
+		    Field evDtEndField = Field.Keyword(makeFieldName(dataElemName,EntityIndexUtils.EVENT_FIELD_END_DATE), ev.getDtEnd().getTime());
 	        
 	        return new Field[] {evDtStartField, evDtEndField};
 	    }

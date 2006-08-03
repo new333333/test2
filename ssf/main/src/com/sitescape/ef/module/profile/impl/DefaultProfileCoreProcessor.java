@@ -30,7 +30,7 @@ import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
 import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
 import com.sitescape.ef.module.shared.EntryBuilder;
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.InternalException;
 /**
@@ -92,14 +92,14 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	//Look only for entryType=entry
     	if (entryTypes.length == 1) {
     		field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.ENTRY_TYPE_FIELD);
+    		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
     		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
     		child.setText(entryTypes[0]);
     	} else {
     		Element orField = boolElement.addElement(QueryBuilder.OR_ELEMENT);
     		for (int i=0; i<entryTypes.length; ++i) {
     			field = orField.addElement(QueryBuilder.FIELD_ELEMENT);
-    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.ENTRY_TYPE_FIELD);
+    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
     			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
     			child.setText(entryTypes[i]);
     		}
@@ -108,7 +108,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
       	
     	//Look only for binderId=binder and type = entry
        	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.BINDER_ID_FIELD);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
     	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
     	child.setText(binder.getId().toString());
        	
@@ -273,6 +273,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	}
 
     protected String getEntryPrincipalField() {
-    	return EntryIndexUtils.DOCID_FIELD;
+    	return EntityIndexUtils.DOCID_FIELD;
     }
 }

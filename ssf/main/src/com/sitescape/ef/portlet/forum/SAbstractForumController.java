@@ -31,7 +31,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 
 import com.sitescape.ef.rss.util.UrlUtil;
@@ -135,7 +135,7 @@ public class SAbstractForumController extends SAbstractController {
 		if (viewType.equals("blog")) {
 			//This is a blog view, set the default sort order
 			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) 
-				options.put(ObjectKeys.SEARCH_SORT_BY, EntryIndexUtils.CREATION_DATE_FIELD);
+				options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.CREATION_DATE_FIELD);
 			if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
 				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 			folderEntries = getFolderModule().getFullEntries(folderId, options);
@@ -421,7 +421,7 @@ public class SAbstractForumController extends SAbstractController {
 			//Entry e = (Entry) entryIterator.next();
 			
 			//Add the modification date as an event
-			Date modifyDate = (Date)e.get(EntryIndexUtils.MODIFICATION_DATE_FIELD);
+			Date modifyDate = (Date)e.get(EntityIndexUtils.MODIFICATION_DATE_FIELD);
 			long thisDateMillis = modifyDate.getTime();
 			if (thisDateMillis < endMillis && startMillis < thisDateMillis) {
 				Event ev = new Event();
@@ -449,16 +449,16 @@ public class SAbstractForumController extends SAbstractController {
 			
 			//Add the events 
 			int count = 0;
-			String ec = (String)e.get(EntryIndexUtils.EVENT_COUNT_FIELD);
+			String ec = (String)e.get(EntityIndexUtils.EVENT_COUNT_FIELD);
 			if (ec == null || ec.equals("")) ec = "0";
 			count = new Integer(ec).intValue();
 			// look through the custom attrs of this entry for any of type EVENT
 			for (int j = 0; j < count; j++) {
-				String name = (String)e.get(EntryIndexUtils.EVENT_FIELD + j);
+				String name = (String)e.get(EntityIndexUtils.EVENT_FIELD + j);
 				Date evStartDate = (Date)e.get(name + BasicIndexUtils.DELIMITER + 
-						EntryIndexUtils.EVENT_FIELD_START_DATE);
+						EntityIndexUtils.EVENT_FIELD_START_DATE);
 				Date evEndDate = (Date)e.get(name + BasicIndexUtils.DELIMITER + 
-						EntryIndexUtils.EVENT_FIELD_END_DATE);
+						EntityIndexUtils.EVENT_FIELD_END_DATE);
 				Event ev = new Event();
 				GregorianCalendar gcal = new GregorianCalendar();
 				gcal.setTime(evStartDate);

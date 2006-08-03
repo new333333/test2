@@ -19,7 +19,7 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
@@ -72,7 +72,7 @@ public class ListProfilesController extends   SAbstractController {
 		Map users = null;
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(ObjectKeys.LISTING_MAX_PAGE_SIZE));
-		options.put(ObjectKeys.SEARCH_SORT_BY, EntryIndexUtils.TITLE1_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.TITLE1_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
 		if (!Validator.isNull(searchFilterName)) {
 			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);

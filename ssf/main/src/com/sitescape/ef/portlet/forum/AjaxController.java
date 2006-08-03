@@ -17,7 +17,7 @@ import java.util.Map;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DashboardHelper;
@@ -371,7 +371,7 @@ public class AjaxController  extends SAbstractController {
     	if (searchType.equals("firstName")) nameType = ProfileIndexUtils.FIRSTNAME_FIELD;
     	if (searchType.equals("loginName")) nameType = ProfileIndexUtils.LOGINNAME_FIELD;
     	if (searchType.equals("groupName")) nameType = ProfileIndexUtils.GROUPNAME_FIELD;
-    	if (searchType.equals("title")) nameType = EntryIndexUtils.TITLE_FIELD;
+    	if (searchType.equals("title")) nameType = EntityIndexUtils.TITLE_FIELD;
 
     	//Build the search query
 		Document searchFilter = DocumentHelper.createDocument();

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.lucene.document.Field;
 
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.search.BasicIndexUtils;
 
 /**
@@ -24,9 +24,9 @@ public class FieldBuilderName extends AbstractFieldBuilder {
          else {
 	         Field allTextField = BasicIndexUtils.allTextField(val);
 	
-	         Field nameField = new Field(EntryIndexUtils.NAME_FIELD, val, true, true, true); 
+	         Field nameField = new Field(EntityIndexUtils.NAME_FIELD, val, true, true, true); 
 	            
-	         Field name1Field = Field.Keyword(EntryIndexUtils.NAME1_FIELD, val.substring(0, 1));
+	         Field name1Field = Field.Keyword(EntityIndexUtils.NAME1_FIELD, val.substring(0, 1));
 	        
 	         return new Field[] {allTextField, nameField, name1Field};
          }
