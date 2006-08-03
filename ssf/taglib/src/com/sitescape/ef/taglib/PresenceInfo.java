@@ -21,7 +21,8 @@ import com.sitescape.util.servlet.StringServletResponse;
  *
  */
 public class PresenceInfo extends BodyTagSupport {
-    private User user;
+    private User user = null;
+    private String zonName=null;
     private String componentId;
     private int userStatus=-1;
     
@@ -39,7 +40,13 @@ public class PresenceInfo extends BodyTagSupport {
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
 			if (this.componentId == null) this.componentId = "";
-			userStatus = PresenceServiceUtils.getPresence(user);
+			if (zonName != null) {
+				userStatus = PresenceServiceUtils.getPresence(zonName);
+			} else if (user != null) {
+				userStatus = PresenceServiceUtils.getPresence(user);
+			} else {
+				userStatus = -99;
+			}
 			if (userStatus != -99) {
 				String dudeGif = "sym_s_white_dude.gif"; 
 				String altText = NLT.get("presence.none");
@@ -81,6 +88,8 @@ public class PresenceInfo extends BodyTagSupport {
 		finally {
 			userStatus = -1;
 			componentId = "";
+			user = null;
+			zonName = null;
 		}
 	    
 		return EVAL_PAGE;
@@ -92,6 +101,9 @@ public class PresenceInfo extends BodyTagSupport {
 
 	public void setUser(User user) {
 	    this.user = user;
+	}
+	public void setZonName(String zonName) {
+	    this.zonName = zonName;
 	}
 
 }
