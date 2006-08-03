@@ -74,6 +74,16 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 		}
 	}
 	
+	public int getPresenceInfo(String zonName) {
+		if (!enable) 
+			return -99;
+		if (presenceMap.containsKey(zonName)) {
+			return ((Integer)presenceMap.get(zonName)).intValue();
+		} else {
+			return -1;
+		}
+	}
+	
 
 	private class PresenceListener extends Thread {
 
