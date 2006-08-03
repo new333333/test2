@@ -14,12 +14,17 @@
 	</bean>
 
 	<!-- Message source for this context, loaded from localized "messages_xx" files -->
-	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
 		<property name="basenames">
 			<list>
-				<value>content.messages</value>
+				<value>/WEB-INF/messages/messages</value>
+				<value>/WEB-INF/messages/help-messages</value>
 			</list>
-		</property>										
+		</property>	
+		<!-- The factory setting for this property is -1, which indicates to cache forever.
+		     Change it to a positive number (eg. 1) to enable automatic reloading, which
+		     should not be used in a production environment. -->
+		<property name="cacheSeconds"><value>-1</value></property>									
 	</bean>
 
 	<!-- Default View Resolver -->
