@@ -104,7 +104,7 @@ public class ConfigureController extends AbstractBinderController {
 				DefinitionHelper.getDefinitions(Definition.FILE_ENTRY_VIEW, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);				
 			} else {
 				DefinitionHelper.getDefinitions(Definition.FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
-				DefinitionHelper.getDefinitions(Definition.COMMAND, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);				
+				DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);				
 			} 
 		}
 		DefinitionHelper.getDefinitions(binder, model);

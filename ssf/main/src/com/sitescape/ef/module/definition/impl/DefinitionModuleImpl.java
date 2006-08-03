@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.CommaSeparatedValue;
 import com.sitescape.ef.domain.DefinableEntity;
@@ -67,26 +68,67 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return workflowModule;
 	}
 	public String addDefinition(Document doc) {
-		Definition def = new Definition();
 		Element root = doc.getRootElement();
-		def.setName(root.attributeValue("name"));
-		def.setTitle(root.attributeValue("caption"));
+		String name = root.attributeValue("name");
+		String caption = root.attributeValue("caption");
 		String type = root.attributeValue("type");
-		def.setType(Integer.parseInt(type));
-		def.setZoneName(RequestContextHolder.getRequestContext().getZoneName());
+		String zone = RequestContextHolder.getRequestContext().getZoneName();
 		String id = root.attributeValue("databaseId", "");
 		if (Validator.isNull(id)) {
-			//doesn't have an it, so generate one
+			//doesn't have an id, so generate one
+			Definition def = new Definition();
+			def.setZoneName(zone);
+			def.setName(name);
+			def.setTitle(caption);
+			def.setType(Integer.parseInt(type));
 			getCoreDao().save(def);
 			root.addAttribute("databaseId", def.getId());
 			setDefinition(def,doc);
+			id = def.getId();
 		} else {
 			//import - try reusing existing guid
-			def.setId(id);
-			setDefinition(def,doc);
-			getCoreDao().replicate(def);
+			// see if already exist in any zone
+			List oldDefs = getCoreDao().loadObjects(Definition.class, new FilterControls("id", id));
+			if (oldDefs.isEmpty()) {
+				Definition def = new Definition();
+				def.setId(id);
+				def.setZoneName(zone);
+				def.setName(name);
+				def.setTitle(caption);
+				def.setType(Integer.parseInt(type));
+				root.addAttribute("databaseId", def.getId());
+				setDefinition(def,doc);
+				getCoreDao().replicate(def);				
+			} else {
+				//see if matches zone
+				boolean found=false;
+				for (int i=0; i<oldDefs.size(); ++i) {
+					Definition oldDef = (Definition)oldDefs.get(i);
+					if (oldDef.getZoneName().equals(zone)) {
+						found=true;
+						//update it
+						oldDef.setName(name);
+						oldDef.setTitle(caption);
+						oldDef.setType(Integer.parseInt(type));
+						setDefinition(oldDef, doc);
+						break;
+					}
+				}
+				if (!found) {
+					//generate a new one
+					Definition def = new Definition();
+					def.setZoneName(zone);
+					def.setName(name);
+					def.setTitle(caption);
+					def.setType(Integer.parseInt(type));
+					getCoreDao().save(def);
+					root.addAttribute("databaseId", def.getId());
+					setDefinition(def,doc);
+					id = def.getId();						
+				}
+			}			
 		}
-		return def.getId();
+		return id;
 	}
 	public Definition getDefinition(String id) {
 		String companyId = RequestContextHolder.getRequestContext().getZoneName();
@@ -346,7 +388,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 	public Document getDefaultEntryDefinition(Entry entry) {
 		//Create an empty entry definition
-		int definitionType = Definition.COMMAND;
+		int definitionType = Definition.FOLDER_ENTRY;
 		if (entry instanceof Principal) {
 			definitionType = Definition.PROFILE_ENTRY_VIEW;
 		} else {

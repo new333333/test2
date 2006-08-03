@@ -15,7 +15,10 @@ import java.util.Set;
 import java.text.ParseException;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.ProfileBinder;
@@ -366,5 +369,17 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		members.add(user.getId());
 		ms.setMemberIds(members);		
 
+	}
+	public void initConfigCategories(String zoneName) {
+		//build mappings
+		
+		Object[] cfValues = new Object[]{"__discussionFolder", zoneName, Integer.valueOf(Definition.FOLDER_VIEW)};
+		String[] cfAttrs = new String[]{"name", "zoneName", "type"};
+		
+	   	List result = getCoreDao().loadObjects(Definition.class, new FilterControls(cfAttrs, cfValues));
+	   	if (result.isEmpty()) {
+	   		
+	   	}
+ 		
 	}
 }

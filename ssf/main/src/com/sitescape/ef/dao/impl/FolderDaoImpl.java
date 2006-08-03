@@ -1,40 +1,39 @@
 package com.sitescape.ef.dao.impl;
 
-import java.util.Date;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Criteria;
-import org.hibernate.Query;
+import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
-import org.hibernate.FetchMode;
 import org.hibernate.criterion.Order;
-
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-
 
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.SFQuery;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.NoFolderEntryByTheIdException;
-import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.EntityIdentifier.EntityType;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HKey;
 import com.sitescape.ef.domain.HistoryMap;
-
+import com.sitescape.ef.domain.NoFolderByTheIdException;
+import com.sitescape.ef.domain.NoFolderEntryByTheIdException;
+import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.UserPerFolderPK;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.util.Constants;
 /**
  * @author Jong Kim
@@ -44,7 +43,8 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	private String[] cfAttrs = new String[]{"parentBinder", "HKey.level"};
 	private OrderBy cfOrder = new OrderBy("HKey.sortKey", OrderBy.DESCENDING);
 	private CoreDao coreDao;
-	
+	protected String[] entryTitleAttrs = new String[]{"parentBinder", "HKey.level", "lower(title)"};
+
 	public void setCoreDao(CoreDao coreDao) {
 	   this.coreDao = coreDao;
 	}
@@ -562,4 +562,15 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	    	 );    	
    	
     }
+    public void validateTitle(Folder folder, String title) throws TitleException {
+   		//ensure title is unique
+       	getCoreDao().validateTitle(folder, title);
+       	if (Integer.valueOf(Definition.FILE_FOLDER_VIEW).equals(folder.getDefinitionType())) {
+       		// second check that no entries have the same title - cannot have directory and file with same name in webdav
+       		FilterControls filter = new FilterControls(entryTitleAttrs, new Object[]{folder, new Integer(1), title.toLowerCase()});
+       		if (!getCoreDao().loadObjects(FolderEntry.class, filter).isEmpty()) {
+       			throw new TitleException(title);
+       		}
+       	}
+   }    
 }

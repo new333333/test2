@@ -1,27 +1,22 @@
 package com.sitescape.ef.dao;
 
 
-import java.util.Set;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
+
 import org.springframework.dao.DataAccessException;
 
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.ProfileBinder;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.domain.Group;
-import com.sitescape.ef.domain.Tag;
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.SeenMap;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.domain.EmailAlias;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
-import com.sitescape.ef.dao.util.SFQuery;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.EmailAlias;
+import com.sitescape.ef.domain.EntityIdentifier;
+import com.sitescape.ef.domain.NoFolderByTheIdException;
+import com.sitescape.ef.domain.Tag;
+import com.sitescape.ef.domain.TitleException;
+import com.sitescape.ef.domain.Workspace;
 
 /**
  * @author Jong Kim
@@ -58,7 +53,8 @@ public interface CoreDao {
 	public List loadObjects(ObjectControls objs, FilterControls filter);
 	public List loadObjects(Class className, FilterControls filter);
     public List loadObjects(Collection ids, Class className, String zoneName);
-	public List findCompanies();
+    public void validateTitle(Binder binder, String title) throws TitleException;
+   	public List findCompanies();
 	public int countObjects(Class clazz, FilterControls filter);
 	public float averageColumn(Class clazz, String column, FilterControls filter);
 	public long sumColumn(Class clazz, String column, FilterControls filter);

@@ -533,7 +533,7 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 	private Definition importCommand(String name) {
 		Definition def = new Definition();
 		def.setZoneName(zoneName);
-		def.setType(Definition.COMMAND);
+		def.setType(Definition.FOLDER_ENTRY);
 		def.setName(name);
 		def.setTitle(name);
 	   	try {

@@ -27,12 +27,12 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FileItem;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.TitleException;
@@ -741,17 +741,12 @@ public class FileModuleImpl implements FileModule {
         		}  else if (fui.getType() == FileUploadItem.TYPE_TITLE) {
         			// name must be unique
         			String title = fui.getOriginalFilename();
-        	     	Object[] cfValues = new Object[]{binder, new Integer(1), title.toLowerCase()};
-        	    	// see if title exists for this folder
-        	    	String[] cfAttrs = new String[]{"parentBinder", "HKey.level", "lower(title)"};
-        	    	FilterControls filter = new FilterControls(cfAttrs, cfValues);
-        		   	List result = getCoreDao().loadObjects(entry.getClass(), filter);
-        	   		if (!result.isEmpty()) {
-        	   			//if more than 1 match or not this entry - error
-        	   			if (result.size()>1 || !result.get(0).equals(entry))
-        	   				throw new TitleException(title);
-        	   		}
-       			
+        			if (!title.equalsIgnoreCase(entry.getTitle())) {
+        				if (binder instanceof Folder) 
+        					getFolderDao().validateTitle((Folder)binder, title);
+        				else
+        					getCoreDao().validateTitle(binder, title);
+        			}       			
         			CustomAttribute ca = entry.getCustomAttribute(fui.getName());
         			if (ca != null) {
         				//exist, move to attachments

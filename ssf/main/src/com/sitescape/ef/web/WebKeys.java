@@ -81,6 +81,8 @@ public class WebKeys {
 	public static final String FOLDER_INDEX_ACTION_CONFIGURE="configure_folder_index";
 	public static final String PROFILE_INDEX_ACTION_CONFIGURE="configure_profile_index";
 	public static final String DEFINITION_ACTION_IMPORT="import_definition";
+	public static final String DEFINITION_ACTION_EXPORT="export_definition";
+	
 	//operations
  	public static final String FORUM_OPERATION_ADD_FAVORITE_BINDER = "add_favorite_binder";
  	public static final String FORUM_OPERATION_ADD_FAVORITES_CATEGORY = "add_favorites_category";
@@ -183,6 +185,8 @@ public class WebKeys {
     public static final String DEFINITION_ID="ssDefinitionId";
     public static final String DEFINITION_BINDER="ssDefinitionBinder";
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
+    public static final String DOM_TREE="ssDomTree";
+    public static final String ERROR_LIST="ssErrorList";
     public static final String EMAIL_ALIASES="ssEmailAliases";
     public static final String ENTRY="ssEntry";
     public static final String ENTRIES="ssEntries";
@@ -305,6 +309,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_CONFIGURE_POSTING_JOB="administration/configurePostingJob";
     public static final String VIEW_ADMIN_CONFIGURE_SEARCH_INDEX="administration/configureSearchIndex";
     public static final String VIEW_ADMIN_IMPORT_DEFINITIONS ="administration/importDefinitions"; 
+    public static final String VIEW_ADMIN_EXPORT_DEFINITIONS ="administration/exportDefinitions"; 
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
     public static final String VIEW_BUILD_FILTER = "binder/build_filter";
     public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";

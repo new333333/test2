@@ -9,7 +9,6 @@ import java.util.Map;
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
-
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileAttachment;
@@ -76,5 +75,5 @@ public class DefaultFileFolderCoreProcessor extends DefaultFolderCoreProcessor {
    				("_fileEntryTitle".equals(a.getName()))) throw new TitleException("");
 	   }
    }
-   
+
 }

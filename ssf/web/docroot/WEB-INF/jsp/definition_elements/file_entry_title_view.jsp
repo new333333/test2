@@ -2,7 +2,6 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <div class="ss_entryContent">
 <span class="ss_entryTitle">
-<c:if test="${!empty ssDefinitionEntry.docNumber}">
 <c:set var="title_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="title_entry" type="com.sitescape.ef.domain.Entry" />
 
@@ -18,7 +17,6 @@
     folderId="${ssDefinitionEntry.parentFolder.id}" 
     action="view_folder_entry"
     entryId="${ssDefinitionEntry.id}"/>">
-</c:if>
 <c:if test="${empty ssDefinitionEntry.title}">
     <span class="ss_gray">--<ssf:nlt tag="entry.noTitle"/>--</span>
 </c:if><c:out value="${ssDefinitionEntry.title}"/></a></span>

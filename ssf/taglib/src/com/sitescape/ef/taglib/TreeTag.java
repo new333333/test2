@@ -398,7 +398,7 @@ public class TreeTag extends TagSupport {
 				//The normal tree view
 				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
 					if (this.multiSelect != null) {
-						if (s_id.equals("")) {
+						if (s_id.equals("") || displayOnly) {
 							jspOut.print("<img src=\"" + this.commonImg + "/pics/1pix.gif\" width=\"15px\"/>");
 						} else {
 							String checked = "";

@@ -210,7 +210,7 @@ public class Folder extends Binder {
     			(definitionType.intValue() == Definition.FILE_FOLDER_VIEW)) {
     		return getDefs(Definition.FILE_ENTRY_VIEW);
     	} else
-    		return getDefs(Definition.COMMAND);
+    		return getDefs(Definition.FOLDER_ENTRY);
     }
     public List getViewDefinitions() {
     	if (definitionType != null) 

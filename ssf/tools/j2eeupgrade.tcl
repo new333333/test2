@@ -667,11 +667,11 @@ proc doZone {zoneName {cName {liferay.com}}} {
     if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {    
   	   	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, functionMembershipInherited, acl_inheritFromParent,definitionsInherited, zoneName, pathName) VALUES ($::_profileId, 1, '_profiles', 'profiles', 'Users/Groups',B'1',B'1',B'0','[sql_quote_value $::zoneName], '[sql_quote_value "${rootTitle}/Users & Groups"]');"
 	    wimsql_rw "Update SS_Forums set parentBinder=$::forumIds(_admin) where not name='_admin';"
-   		wimsql_rw "Update SS_Forums set parentBinder=null,name='[sql_quote_value $::zoneName]',functionMembershipInherited=B'0',acl_inheritFromParent=B'0',definitionsInherited=B'0',pathName='/' where name='_admin';"
+   		wimsql_rw "Update SS_Forums set parentBinder=null,name='[sql_quote_value $::zoneName]',functionMembershipInherited=B'0',acl_inheritFromParent=B'0',definitionsInherited=B'0',pathName='[sql_quote_value $rootTitle]' where name='_admin';"
  	} else {
     	wimsql_rw "INSERT INTO SS_Forums (id, lockVersion, name, type, title, functionMembershipInherited, acl_inheritFromParent, definitionsInherited, zoneName, pathName) VALUES ($::_profileId, 1, '_profiles', 'profiles','Users & Groups',1,1,0,'[sql_quote_value $::zoneName]', '[sql_quote_value "${rootTitle}/Users & Groups"]');"
 	    wimsql_rw "Update SS_Forums set parentBinder=$::forumIds(_admin) where not name='_admin';"
- 	    wimsql_rw "Update SS_Forums set parentBinder=null,name='[sql_quote_value $::zoneName]',functionMembershipInherited=0,acl_inheritFromParent=0,definitionsInherited=0, pathName='/' where name='_admin';"
+ 	    wimsql_rw "Update SS_Forums set parentBinder=null,name='[sql_quote_value $::zoneName]',functionMembershipInherited=0,acl_inheritFromParent=0,definitionsInherited=0, pathName='[sql_quote_value $rootTitle]' where name='_admin';"
     }
     wimsql_rw commit
     if {$::dialect == "mssql"} {
