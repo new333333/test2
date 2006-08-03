@@ -22,6 +22,7 @@ import org.dom4j.io.OutputFormat;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.util.FileHelper;
@@ -37,7 +38,8 @@ public class ExportDefinitionController extends  SAbstractController {
 		if (formData.containsKey("okBtn")) {
 			List errors = new ArrayList();
 			//Get the forums to be indexed
-			String dirPath = SPropsUtil.getDirPath("data.root.dir") + File.separator + "definitions";
+			String dirPath = SPropsUtil.getDirPath("data.root.dir") + File.separator + RequestContextHolder.getRequestContext().getZoneName() +
+				File.separator + "definitions";
 			FileHelper.mkdirsIfNecessary(dirPath);
 			Iterator itFormData = formData.entrySet().iterator();
 			while (itFormData.hasNext()) {
