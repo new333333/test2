@@ -393,10 +393,15 @@
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>user</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>com.sitescape.ef.domain.User</type>
 		</attribute>		
+		<attribute>
+			<name>zonName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 		<attribute>
 			<name>componentId</name>
 			<required>false</required>
