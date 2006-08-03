@@ -16,6 +16,25 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<c:if test="${empty ssErrorList}">
 <script type="text/javascript">
 self.location.replace('<portlet:renderURL windowState="normal" portletMode="view"/>')
 </script>
+</c:if>
+<c:if test="${!empty ssErrorList}">
+<form class="ss_style ss_form" action="<portlet:renderURL windowState="normal" portletMode="view"/>"
+		 method="post" name="<portlet:namespace />fm">
+<br/>
+<br/>
+<span class="ss_bold"><ssf:nlt tag="administration.errors"/></span>
+<br/>
+<br/>
+<ul>
+<c:forEach var="err" items="${ssErrorList}">
+	<li>${err}</li>
+</c:forEach>
+</ul>
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+
+</form>
+</c:if>

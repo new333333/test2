@@ -55,7 +55,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.COMMAND));
+		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FOLDER_ENTRY));
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
@@ -223,11 +223,20 @@ public class ViewController extends  SAbstractController {
 
 		//Definition import
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
-		element.addAttribute("title", NLT.get("administration.importDefinitions"));
+		element.addAttribute("title", NLT.get("administration.import.definitions"));
 		element.addAttribute("image", "bullet");
 		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.DEFINITION_ACTION_IMPORT);
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
+
+		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", NLT.get("administration.export.definitions"));
+		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.DEFINITION_ACTION_EXPORT);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 

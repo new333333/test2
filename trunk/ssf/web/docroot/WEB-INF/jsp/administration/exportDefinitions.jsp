@@ -22,12 +22,12 @@
 <table class="ss_style" width="100%"><tr><td>
 
 <form class="ss_style ss_form" action="<portlet:actionURL>
-			  <portlet:param name="action" value="configure_folder_index"/>
+			  <portlet:param name="action" value="export_definition"/>
 		      </portlet:actionURL>" method="post" name="<portlet:namespace />fm">
 
 <br>
 <br>
-<span class="ss_bold"><ssf:nlt tag="forum.selectIndexForums" text="Select the forums to be re-indexed:"/></span>
+<span class="ss_bold"><ssf:nlt tag="administration.export.definitions.select"/></span>
 <br>
 <br>
 <a class="ss_linkButton ss_smallprint" 
@@ -39,7 +39,7 @@
 >Clear all</a>
 <br>
 <script type="text/javascript">
-function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
+function t_<portlet:namespace/>_tree_showId(forum, obj) {
 	if (self.document.<portlet:namespace />fm["id_"+forum] && self.document.<portlet:namespace />fm["id_"+forum].checked) {
 		self.document.<portlet:namespace />fm["id_"+forum].checked=false
 	} else {
@@ -59,7 +59,7 @@ function ss_selectAll(formName, prefix, newState) {
     }
 }
 </script>
-<ssf:tree treeName="<%= "t_" + renderResponse.getNamespace()+ "_wsTree" %>" treeDocument="<%= ssDomTree %>"  
+<ssf:tree treeName="<%= "t_" + renderResponse.getNamespace()+ "_tree" %>" treeDocument="<%= ssDomTree %>"  
   rootOpen="true" multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id_" />
 
 <br>

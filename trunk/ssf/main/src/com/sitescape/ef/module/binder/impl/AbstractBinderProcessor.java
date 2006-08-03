@@ -58,7 +58,6 @@ import com.sitescape.util.Validator;
  */
 public abstract class AbstractBinderProcessor extends CommonDependencyInjection 
 	implements BinderProcessor {
-   protected String[] titleAttrs = new String[]{"parentBinder", "lower(title)"};
     
    protected DefinitionModule definitionModule;
  
@@ -122,7 +121,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		}
     	}
         String title = (String)entryData.get("title");
-        checkUniqueBinderTitle(parent, title);
+        getCoreDao().validateTitle(parent, title);
         binder.setPathName(parent.getPathName() + "/" + title);
         
         // The following part requires update database transaction.
@@ -164,18 +163,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     }
 
-    protected void checkUniqueBinderTitle(Binder binder, String title) {
-    	//ensure title is unique
-        if (Validator.isNull(title)) throw new TitleException("");
-    	
-    	Object[] cfValues = new Object[]{binder, title.toLowerCase()};	
-    	FilterControls filter = new FilterControls(titleAttrs, cfValues);
-	
-    	if (!getCoreDao().loadObjects(new ObjectControls(Binder.class, new String[]{"id"}), filter).isEmpty()) {
-    		 throw new TitleException(title);
-    	}
-    }
-        
+         
     protected FilesErrors addBinder_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
     	return getFileModule().filterFiles(binder, fileUploadItems);
     }
@@ -255,31 +243,31 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    final Map entryData = (Map) entryDataAll.get("entryData");
 	    List fileUploadItems = (List) entryDataAll.get("fileData");
 
-	    String newTitle = null;
 	    if (entryData.containsKey("title")) {
-	    	newTitle = (String)entryData.get("title");
-	    	if (!newTitle.equals(binder.getTitle())) checkUniqueBinderTitle(binder.getParentBinder(), newTitle);
-	    	else newTitle = null;
+	    	String newTitle = (String)entryData.get("title");
+	    	if (!newTitle.equalsIgnoreCase(binder.getTitle())) getCoreDao().validateTitle(binder.getParentBinder(), newTitle);
 	    		
 	    }
 	    FilesErrors filesErrors = modifyBinder_filterFiles(binder, fileUploadItems);
 
 	    filesErrors = modifyBinder_processFiles(binder, fileUploadItems, filesErrors);
 	    
-	    final String title = newTitle;
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
+        		String oldTitle = binder.getTitle();
         		modifyBinder_fillIn(binder, inputData, entryData);
 	            modifyBinder_removeAttachments(binder, deleteAttachments);    
         		modifyBinder_postFillIn(binder, inputData, entryData);
         		//if title changed, must update path infor for all child folders
-        		if (title != null) {
+        		String newTitle = binder.getTitle();
+        		//case matters here
+        		if ((oldTitle == null) || !oldTitle.equals(newTitle)) {
         			if (binder.getParentBinder() != null) {
-        				binder.setPathName(binder.getParentBinder().getPathName() + "/" + title);
+        				binder.setPathName(binder.getParentBinder().getPathName() + "/" + newTitle);
         			} else {
         				//must be top
-        				binder.setPathName("/" + title);
+        				binder.setPathName("/" + newTitle);
         			}
          			List children = new ArrayList(binder.getBinders());
         			//if we index the path, need to reindex all these folders

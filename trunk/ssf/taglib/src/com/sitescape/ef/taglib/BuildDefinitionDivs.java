@@ -777,7 +777,11 @@ public class BuildDefinitionDivs extends TagSupport {
 						String eType = sourceRoot.attributeValue("definitionType");
 						List definitions;
 						if (!Validator.isNull(eType)) {
-							definitions = DefinitionHelper.getDefinitions(Integer.parseInt(eType));
+							int t = Integer.parseInt(eType);
+							//File entries can only have folder entries as replies
+							if (t == Definition.FILE_ENTRY_VIEW) t=Definition.FOLDER_ENTRY;
+							
+							definitions = DefinitionHelper.getDefinitions(t);
 						} else {
 							definitions = new ArrayList();
 						}
@@ -959,7 +963,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append(">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
 						//GET both entry and file Entry definitions
-						List defs = DefinitionHelper.getDefinitions(Definition.COMMAND);
+						List defs = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
 						defs.addAll(DefinitionHelper.getDefinitions(Definition.FILE_ENTRY_VIEW));
 						for (int i=0; i<defs.size(); ++i) {
 							//Build a list of the entry definitions

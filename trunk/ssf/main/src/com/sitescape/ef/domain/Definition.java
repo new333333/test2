@@ -1,13 +1,13 @@
 
 package com.sitescape.ef.domain;
-import java.io.FileWriter;
-import java.io.FileInputStream;
-import java.util.List;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 
 import org.dom4j.Document;
-import org.dom4j.io.XMLWriter;
 import org.dom4j.io.SAXReader;
-import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
+
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AclSet;
 
@@ -21,7 +21,7 @@ import com.sitescape.ef.security.acl.AclSet;
  */
 public class Definition extends PersistentTimestampObject implements AclControlled {
     private String name="";
-	private int type=COMMAND;
+	private int type=FOLDER_ENTRY;
 	private int visibility=PUBLIC;
     private byte[] xmlencoding;
     private Document doc;
@@ -32,7 +32,7 @@ public class Definition extends PersistentTimestampObject implements AclControll
 
     //type values
     //types 5 and 9 are used in naming processorKeys.  Kep model-processor-mappings.xml up to date
-    public static int COMMAND=1;
+    public static int FOLDER_ENTRY=1;
 	public static int WORKFLOW=2;
 	public static int REPORT=3;
 	public static int ENTRY_FILTER=4;
@@ -123,8 +123,6 @@ public class Definition extends PersistentTimestampObject implements AclControll
  
     protected void setEncoding(byte[] definition) {
  
-   //     doc = ForumUtils.XmlDecodeByteArrayToDocument(definition);
-
         xmlencoding=definition;
     }
     /**
@@ -133,29 +131,30 @@ public class Definition extends PersistentTimestampObject implements AclControll
      * @return
      */
     public Document getDefinition() {
-    	//temp - store in file till db settles down
+    	if (doc != null) return doc;
     	try {
-    		FileInputStream fIn = new FileInputStream("c:/ss/" + getName());
+    		InputStream ois = new ByteArrayInputStream(xmlencoding);
+    		if (ois == null) return null;
     		SAXReader xIn = new SAXReader();
-    		doc = xIn.read(fIn);   
-    		fIn.close();
+    		doc = xIn.read(ois);   
+    		ois.close();
     	} catch (Exception fe) {
     		fe.printStackTrace();
     	}
-    	return doc;
+        return doc;
     }
     public void setDefinition(Document doc) {
        	try {
-    		FileWriter fOut = new FileWriter("c:/ss/" + getName());
-    		XMLWriter xOut = new XMLWriter(fOut, OutputFormat.createPrettyPrint());
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+       		if (baos == null) return;
+    		XMLWriter xOut = new XMLWriter(baos);
     		xOut.write(doc);
     		xOut.close();
-    	
+    		xmlencoding = baos.toByteArray(); 
     	} catch (Exception fe) {
     		fe.printStackTrace();
     	}
     	this.doc = doc;
- //   	xmlencoding = ForumUtils.XmlEncodeObjectToByteArray(doc);
     }
 
  

@@ -31,6 +31,7 @@ import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Tag;
+import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
@@ -65,6 +66,7 @@ import com.sitescape.util.Validator;
  */
 public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	protected Log logger = LogFactory.getLog(getClass());
+    protected String[] binderTitleAttrs = new String[]{"parentBinder", "lower(title)"};
 
 	public boolean isDirty() {
 		return getSession().isDirty();
@@ -375,6 +377,17 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        if (result==null) return 0;
 	   return result.longValue();	
 	}	
+    public void validateTitle(Binder binder, String title) throws TitleException {
+    	//ensure title is unique
+        if (Validator.isNull(title)) throw new TitleException("");
+    	
+    	Object[] cfValues = new Object[]{binder, title.toLowerCase()};	
+    	FilterControls filter = new FilterControls(binderTitleAttrs, cfValues);
+	
+    	if (!loadObjects(new ObjectControls(Binder.class, new String[]{"id"}), filter).isEmpty()) {
+    		 throw new TitleException(title);
+    	}
+    }	
 	public List findCompanies() {
 		return (List)getHibernateTemplate().execute(
 		    new HibernateCallback() {

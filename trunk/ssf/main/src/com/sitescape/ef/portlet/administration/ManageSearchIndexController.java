@@ -73,7 +73,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 		Map model = new HashMap();
 		
 		Document wsTree = getWorkspaceModule().getDomWorkspaceTree(new WSTreeHelper(response));
-		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+		model.put(WebKeys.DOM_TREE, wsTree);
 			
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_SEARCH_INDEX, model);
 	}

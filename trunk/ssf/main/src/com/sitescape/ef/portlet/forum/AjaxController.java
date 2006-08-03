@@ -505,7 +505,7 @@ public class AjaxController  extends SAbstractController {
 		response.setContentType("text/xml");
 		if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE)) {
 			model.put(WebKeys.FILTER_TYPE, op2);
-			DefinitionHelper.getDefinitions(Definition.COMMAND, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
+			DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
 			DefinitionHelper.getDefinitions(Definition.FILE_ENTRY_VIEW, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
 	    	DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 			return new ModelAndView("tag_jsps/search_form/get_filter_type", model);

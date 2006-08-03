@@ -1,19 +1,18 @@
 package com.sitescape.ef.dao;
-import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.dao.util.OrderBy;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.HKey;
-import com.sitescape.ef.domain.HistoryMap;
-import com.sitescape.ef.domain.UserProperties;
-
-import org.springframework.dao.DataAccessException;
-
-import com.sitescape.ef.domain.NoFolderByTheIdException;
-
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import org.springframework.dao.DataAccessException;
+
+import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.dao.util.OrderBy;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.HistoryMap;
+import com.sitescape.ef.domain.NoFolderByTheIdException;
+import com.sitescape.ef.domain.TitleException;
 
 /**
  * @author Jong Kim
@@ -63,5 +62,6 @@ public interface FolderDao {
     public void deleteEntryWorkflows(Folder folder, List ids);
     public void moveEntries(Folder folder);
     public void moveEntries(Folder folder, List ids);
-
+    public void validateTitle(Folder folder, String title) throws TitleException;
+    	 
 }
