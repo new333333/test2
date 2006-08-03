@@ -209,6 +209,13 @@ app.server.type=tomcat
 app.server.liferay.tomcat.dir=${temp.dir.path}
 		</echo>
 		<ant dir="liferay" target="full-deploy" inheritAll="false" />
+		
+		<!-- The following hack is needed to fix the parser-related problem
+		     reported in the Aspen issue database (issue #116). -->
+		<mkdir dir="${temp.dir}/common/endorsed" />
+		<copy file="lib/xalan.jar" todir="${temp.dir}/common/endorsed" />
+		<delete file="temp/liferay/WEB-INF/lib/xercesImpl.java" />
+		
 		<mkdir dir="${dist.dir}" />
 		<delete file="${dist.dir}/sitescape-forum-${forum.version}-liferay-tomcat-${liferay.version}.zip" failonerror="false" />
 		<zip destfile="${dist.dir}/sitescape-forum-${forum.version}-liferay-tomcat-${liferay.version}.zip"
