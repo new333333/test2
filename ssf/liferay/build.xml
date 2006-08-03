@@ -130,8 +130,11 @@
 		     onto contains earlier version (beta 8?) of jdom. We should remove
 		     this line once we upgarde to a later version of Liferay that contains
 		     v1.0 of jdom. -->
-		<copy file="${project.dir}/lib/jdom.jar" todir="${app.server.ssf.dir}/WEB-INF/lib" />
+		<!-- No longer necessary, since Liferay 4.0 changed deployment archivecture
+		     completely, and we no longer share archives with them. -->
+		<!--<copy file="${project.dir}/lib/jdom.jar" todir="${app.server.ssf.dir}/WEB-INF/lib" />-->
 		<!--<copy file="${project.dir}/lib/xalan.jar" todir="${app.server.dir}/common/endorsed" />-->
+		<delete file="${app.server.ssf.dir}/WEB-INF/lib/xercesImpl.jar" />
 		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.dir}/common/lib" />
 	</target>
 		
