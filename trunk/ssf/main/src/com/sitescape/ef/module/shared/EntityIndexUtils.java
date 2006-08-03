@@ -1,36 +1,32 @@
 package com.sitescape.ef.module.shared;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.List;
-
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.dom4j.io.SAXReader;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
-import com.sitescape.ef.domain.AverageRating;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Tag;
-import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.util.SpringContextUtil;
@@ -41,7 +37,7 @@ import com.sitescape.ef.util.TagUtil;
  *
  * @author Jong Kim
  */
-public class EntryIndexUtils {
+public class EntityIndexUtils {
     
     // Defines field names
     
@@ -76,6 +72,7 @@ public class EntryIndexUtils {
     public static final String FILE_TYPE_FIELD = "_fileType";
     public static final String FILE_ID_FIELD = "_fileID";
     public static final String RATING_FIELD="_rating";
+    public static final String ENTITY_FIELD="_entityType"; 
     // Defines field values
     public static final String READ_ACL_ALL = "all";
         
@@ -87,8 +84,8 @@ public class EntryIndexUtils {
             
             if(title.length() > 0) {
     	        Field allTextField = BasicIndexUtils.allTextField(title);
-    	        Field titleField = new Field(EntryIndexUtils.TITLE_FIELD, title, true, true, true); 
-    	        Field title1Field = Field.Keyword(EntryIndexUtils.TITLE1_FIELD, title.substring(0, 1));
+    	        Field titleField = new Field(EntityIndexUtils.TITLE_FIELD, title, true, true, true); 
+    	        Field title1Field = Field.Keyword(EntityIndexUtils.TITLE1_FIELD, title.substring(0, 1));
                 doc.add(titleField);
                 doc.add(title1Field);
                 doc.add(allTextField);
@@ -103,21 +100,25 @@ public class EntryIndexUtils {
         } catch (Exception ex) {};
    	
     }
+    public static void addEntityType(Document doc, DefinableEntity entry) {
+      	Field eField = Field.Keyword(ENTITY_FIELD, entry.getEntityIdentifier().getEntityType().name());
+       	doc.add(eField);
+    }
     public static void addEntryType(Document doc, DefinableEntity entry) {
         // Add the entry type (entry or reply)
     	if (entry instanceof FolderEntry) {
 	        if (((FolderEntry)entry).getTopEntry() == null || ((FolderEntry)entry).getTopEntry() == entry) {
-	        	Field entryTypeField = Field.Keyword(EntryIndexUtils.ENTRY_TYPE_FIELD, EntryIndexUtils.ENTRY_TYPE_ENTRY);
+	        	Field entryTypeField = Field.Keyword(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_ENTRY);
 	        	doc.add(entryTypeField);
 	        } else {
-	        	Field entryTypeField = Field.Keyword(EntryIndexUtils.ENTRY_TYPE_FIELD, EntryIndexUtils.ENTRY_TYPE_REPLY);
+	        	Field entryTypeField = Field.Keyword(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_REPLY);
 	        	doc.add(entryTypeField);
 	        }
     	} else if (entry instanceof User) {
-        	Field entryTypeField = Field.Keyword(EntryIndexUtils.ENTRY_TYPE_FIELD, EntryIndexUtils.ENTRY_TYPE_USER);
+        	Field entryTypeField = Field.Keyword(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_USER);
         	doc.add(entryTypeField);
     	} else if (entry instanceof Group) {
-    		Field entryTypeField = Field.Keyword(EntryIndexUtils.ENTRY_TYPE_FIELD, EntryIndexUtils.ENTRY_TYPE_GROUP);
+    		Field entryTypeField = Field.Keyword(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_GROUP);
     		doc.add(entryTypeField);
     	} 
    }

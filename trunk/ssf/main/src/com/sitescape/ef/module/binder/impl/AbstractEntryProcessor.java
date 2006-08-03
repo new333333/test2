@@ -55,7 +55,7 @@ import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.shared.EntryBuilder;
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 /**
@@ -473,7 +473,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
     protected Term indexEntries_getDeleteEntriesTerm(Binder binder) {
-        return new Term(EntryIndexUtils.BINDER_ID_FIELD, binder.getId().toString());
+        return new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString());
     }
    	protected abstract SFQuery indexEntries_getQuery(Binder binder);
    	protected void indexEntries_postIndex(Binder binder, Entry entry) {
@@ -630,7 +630,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	//Look only for binderId=binder and doctype = entry (not attachement)
     	if (binder != null) {
     		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.BINDER_ID_FIELD);
+        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
         	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
         	child.setText(binder.getId().toString());
         	
@@ -643,7 +643,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
    	protected SortField[] getBinderEntries_getSortFields(Map options) {
    		SortField[] fields = new SortField[1];
-   		String sortBy = EntryIndexUtils.MODIFICATION_DATE_FIELD;
+   		String sortBy = EntityIndexUtils.MODIFICATION_DATE_FIELD;
     	if (options.containsKey(ObjectKeys.SEARCH_SORT_BY)) 
     		sortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);
    		
@@ -688,11 +688,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         HashMap entry;
         while (iter.hasNext()) {
             entry = (HashMap)iter.next();
-            if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
-            	try {ids.add(new Long(entry.get(EntryIndexUtils.CREATORID_FIELD).toString()));
+            if (entry.get(EntityIndexUtils.CREATORID_FIELD) != null)
+            	try {ids.add(new Long(entry.get(EntityIndexUtils.CREATORID_FIELD).toString()));
         	    } catch (Exception ex) {}
-            if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
-        		try {ids.add(new Long(entry.get(EntryIndexUtils.MODIFICATIONID_FIELD).toString()));
+            if (entry.get(EntityIndexUtils.MODIFICATIONID_FIELD) != null) 
+        		try {ids.add(new Long(entry.get(EntityIndexUtils.MODIFICATIONID_FIELD).toString()));
         		} catch (Exception ex) {}
         }
         return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
@@ -785,16 +785,16 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ENTRY);
         
         // Add command definition
-        EntryIndexUtils.addCommandDefinition(indexDoc, entry); 
+        EntityIndexUtils.addCommandDefinition(indexDoc, entry); 
         
         // Add the events
-        EntryIndexUtils.addEvents(indexDoc, entry);
+        EntityIndexUtils.addEvents(indexDoc, entry);
         
         // Add the tags for this entry
-        EntryIndexUtils.addTags(indexDoc, binder, entry);
+        EntityIndexUtils.addTags(indexDoc, binder, entry);
         
         // Add the workflows
-        EntryIndexUtils.addWorkflow(indexDoc, entry);
+        EntityIndexUtils.addWorkflow(indexDoc, entry);
         
         return indexDoc;
     }
@@ -818,17 +818,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      */
     protected void fillInIndexDocWithCommonPartFromEntry(org.apache.lucene.document.Document indexDoc, 
     		Binder binder, Entry entry) {
-      	EntryIndexUtils.addEntryType(indexDoc, entry);       
+      	EntityIndexUtils.addEntryType(indexDoc, entry);       
         // Add ACL field. We only need to index ACLs for read access.
       	if (entry instanceof AclControlled)
-      		EntryIndexUtils.addReadAcls(indexDoc,AccessUtils.getReadAclIds(entry));
+      		EntityIndexUtils.addReadAcls(indexDoc,AccessUtils.getReadAclIds(entry));
       	else 
       		BasicIndexUtils.addReadAcls(indexDoc, binder, entry, getAclManager());
       		
         //add parent binder - this isn't added for binders because it is used
         //in delete terms for entries in a binder. 
         //
-        EntryIndexUtils.addBinder(indexDoc, binder);
+        EntityIndexUtils.addBinder(indexDoc, binder);
 
         fillInIndexDocWithCommonPart(indexDoc, binder, entry);
     }

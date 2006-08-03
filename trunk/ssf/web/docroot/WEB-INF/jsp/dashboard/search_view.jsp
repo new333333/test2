@@ -24,12 +24,32 @@
   <th align="left">Date</th>
 </tr>
 <c:forEach var="fileEntry" items="${ssDashboard.beans[ssDashboardId].ssSearchFormData.searchResults}" >
-<tr id="folderLine_<c:out value="${fileEntry._docId}"/>">
+<tr>
   <td valign="top" width="35%">
+  	<c:choose>
+  	<c:when test="${fileEntry._entityType == 'folderEntry'}">
     <a target="_blank" href="<ssf:url action="view_folder_entry" 
     folderId="${fileEntry._binderId}"
-    entryId="${fileEntry._docId}" />" 
-    >
+    entryId="${fileEntry._docId}" />" >
+    </c:when>
+    <c:when test="${fileEntry._entityType == 'user' || fileEntry._entityType == 'group'}">
+    <a target="_blank" href="<ssf:url action="view_profile_entry" 
+    folderId="${fileEntry._binderId}"
+    entryId="${fileEntry._docId}" />" >
+    </c:when>
+    <c:when test="${fileEntry._entityType == 'folder'}">
+    <a target="_blank" href="<ssf:url action="view_folder_listing" 
+    folderId="${fileEntry._docId}" />" >
+    </c:when>
+    <c:when test="${fileEntry._entityType == 'workspace'}">
+    <a target="_blank" href="<ssf:url action="view_ws_listing" 
+    folderId="${fileEntry._docId}" />" >
+    </c:when>
+    <c:when test="{fileEntry._entityType == 'profiles'}">
+    <a target="_blank" href="<ssf:url action="view_profile_listing" 
+    folderId="${fileEntry._docId}" />" >
+    </c:when>
+ 	</c:choose>
     <c:if test="${empty fileEntry.title}">
     <span class="ss_fineprint"><i>(no title)</i></span>
     </c:if>

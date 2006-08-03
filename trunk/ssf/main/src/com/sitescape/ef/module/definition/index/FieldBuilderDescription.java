@@ -7,7 +7,7 @@ import org.apache.lucene.document.Field;
 
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.search.BasicIndexUtils;
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 
 /**
  *
@@ -30,7 +30,7 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
             
         Field allTextField = BasicIndexUtils.allTextField(text);
         
-        Field descField = new Field(EntryIndexUtils.DESC_FIELD, text, true, true, true); 
+        Field descField = new Field(EntityIndexUtils.DESC_FIELD, text, true, true, true); 
 
         
         return new Field[] {allTextField, descField};

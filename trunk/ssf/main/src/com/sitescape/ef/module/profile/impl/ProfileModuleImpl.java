@@ -38,7 +38,7 @@ import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.profile.ProfileModule;
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
@@ -46,8 +46,8 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
 
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
-	private String[] userDocType = {EntryIndexUtils.ENTRY_TYPE_USER};
-	private String[] groupDocType = {EntryIndexUtils.ENTRY_TYPE_GROUP};
+	private String[] userDocType = {EntityIndexUtils.ENTRY_TYPE_USER};
+	private String[] groupDocType = {EntityIndexUtils.ENTRY_TYPE_GROUP};
 	
 	private ProfileCoreProcessor loadProcessor(ProfileBinder binder) {
         // This is nothing but a dispatcher to an appropriate processor. 

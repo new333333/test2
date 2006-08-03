@@ -51,7 +51,7 @@ import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.search.LuceneSession;
 //import com.sitescape.ef.search.remote.RemoteInStreamSession;
@@ -71,7 +71,7 @@ import com.sitescape.util.Validator;
  */
 public class FolderModuleImpl extends CommonDependencyInjection implements FolderModule {
    	private String[] ratingAttrs = new String[]{"id.entityId", "id.entityType"};
-    private String[] entryTypes = {EntryIndexUtils.ENTRY_TYPE_ENTRY};
+    private String[] entryTypes = {EntityIndexUtils.ENTRY_TYPE_ENTRY};
     protected DefinitionModule definitionModule;
     protected FileModule fileModule;
     protected ProfileModule profileModule;
@@ -367,7 +367,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         ArrayList ids = new ArrayList();
         for (int i=0; i<childEntries.size();) {
         	Map searchEntry = (Map)childEntries.get(i);
-        	String docId = (String)searchEntry.get(EntryIndexUtils.DOCID_FIELD);
+        	String docId = (String)searchEntry.get(EntityIndexUtils.DOCID_FIELD);
         	try {
         		Long id = Long.valueOf(docId);
         		ids.add(id);
@@ -381,7 +381,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         List fullEntries = new ArrayList(entries.size());
         for (int i=0; i<childEntries.size(); ++i) {
         	Map searchEntry = (Map)childEntries.get(i);
-        	String docId = (String)searchEntry.get(EntryIndexUtils.DOCID_FIELD);
+        	String docId = (String)searchEntry.get(EntityIndexUtils.DOCID_FIELD);
        		Long id = Long.valueOf(docId);
        		for (int j=0; j<entries.size(); ++j) {
        			FolderEntry fe = (FolderEntry)entries.get(j);
@@ -413,12 +413,12 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	        Map unseenCounts = new HashMap();
 	        for (int i = 0; i < hits.length(); i++) {
 				String folderIdString = hits.doc(i).getField(IndexUtils.TOP_FOLDERID_FIELD).stringValue();
-				String entryIdString = hits.doc(i).getField(EntryIndexUtils.DOCID_FIELD).stringValue();
+				String entryIdString = hits.doc(i).getField(EntityIndexUtils.DOCID_FIELD).stringValue();
 				Long entryId = null;
 				if (entryIdString != null && !entryIdString.equals("")) {
 					entryId = new Long(entryIdString);
 				}
-				Date modifyDate = DateField.stringToDate(hits.doc(i).getField(EntryIndexUtils.MODIFICATION_DATE_FIELD).stringValue());
+				Date modifyDate = DateField.stringToDate(hits.doc(i).getField(EntityIndexUtils.MODIFICATION_DATE_FIELD).stringValue());
 				Counter cnt = (Counter)unseenCounts.get(folderIdString);
 				if (cnt == null) {
 					cnt = new Counter();
@@ -446,14 +446,14 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	Element andElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
     	andElement.addElement(QueryBuilder.USERACL_ELEMENT);
     	Element rangeElement = andElement.addElement(QueryBuilder.RANGE_ELEMENT);
-    	rangeElement.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntryIndexUtils.MODIFICATION_DAY_FIELD);
+    	rangeElement.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.MODIFICATION_DAY_FIELD);
     	rangeElement.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, QueryBuilder.INCLUSIVE_TRUE);
     	Element startRange = rangeElement.addElement(QueryBuilder.RANGE_START);
     	Date now = new Date();
     	Date startDate = new Date(now.getTime() - ObjectKeys.SEEN_MAP_TIMEOUT);
-    	startRange.addText(EntryIndexUtils.formatDayString(startDate));
+    	startRange.addText(EntityIndexUtils.formatDayString(startDate));
     	Element finishRange = rangeElement.addElement(QueryBuilder.RANGE_FINISH);
-    	finishRange.addText(EntryIndexUtils.formatDayString(now));
+    	finishRange.addText(EntityIndexUtils.formatDayString(now));
     	Element orElement = andElement.addElement(QueryBuilder.OR_ELEMENT);
     	Iterator itFolders = folders.iterator();
     	while (itFolders.hasNext()) {

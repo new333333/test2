@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.ArrayList;
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 
 /**
  * @hibernate.class table="SS_SeenMap" dynamic-update="true"
@@ -94,8 +94,8 @@ public class SeenMap {
 		return checkAndSetSeen(entry.getId(), entry.getModification().getDate(), setIt);
 	}
     public boolean checkIfSeen(HashMap entry) {
-      	Long id = new Long((String)entry.get(EntryIndexUtils.DOCID_FIELD));
-		Date modDate = (Date)entry.get(EntryIndexUtils.MODIFICATION_DATE_FIELD);		
+      	Long id = new Long((String)entry.get(EntityIndexUtils.DOCID_FIELD));
+		Date modDate = (Date)entry.get(EntityIndexUtils.MODIFICATION_DATE_FIELD);		
     	return checkAndSetSeen(id, modDate, false);
     }   
     

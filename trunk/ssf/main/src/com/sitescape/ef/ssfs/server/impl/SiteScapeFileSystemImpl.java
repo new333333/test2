@@ -39,7 +39,7 @@ import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.EmptyInputData;
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.security.AccessControlException;
@@ -408,7 +408,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			for (int i = 0; i < entries.size(); i++) {
 				Map ent = (Map) entries.get(i);
 				String entryIdString = (String) ent
-						.get(EntryIndexUtils.DOCID_FIELD);
+						.get(EntityIndexUtils.DOCID_FIELD);
 				if (entryIdString != null && !entryIdString.equals(""))
 					children.add(entryIdString);
 			}
@@ -552,7 +552,7 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			for (int i = 0; i < entries.size(); i++) {
 				Map ent = (Map) entries.get(i);
 				String titleString = (String) ent
-						.get(EntryIndexUtils.TITLE_FIELD);
+						.get(EntityIndexUtils.TITLE_FIELD);
 				if (titleString != null && !titleString.equals(""))
 					children.add(titleString);
 			}

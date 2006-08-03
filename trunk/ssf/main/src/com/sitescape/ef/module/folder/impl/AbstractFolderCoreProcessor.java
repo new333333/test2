@@ -45,7 +45,7 @@ import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.shared.EntryBuilder;
-import com.sitescape.ef.module.shared.EntryIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 /**
  *
@@ -113,9 +113,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  
     	//Look only for entryType=entry
        	Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-       	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.ENTRY_TYPE_FIELD);
+       	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
        	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-       	child.setText(EntryIndexUtils.ENTRY_TYPE_ENTRY);
+       	child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
  
        	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
     	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
@@ -124,7 +124,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
     	//Look only for binderId=binder
     	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntryIndexUtils.BINDER_ID_FIELD);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
     	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
     	child.setText(binder.getId().toString());
     	return qTree;
@@ -308,11 +308,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
     protected void loadEntryHistory(HashMap entry) {
         Set ids = new HashSet();
-        if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
-    	    try {ids.add(new Long((String)entry.get(EntryIndexUtils.CREATORID_FIELD)));
+        if (entry.get(EntityIndexUtils.CREATORID_FIELD) != null)
+    	    try {ids.add(new Long((String)entry.get(EntityIndexUtils.CREATORID_FIELD)));
     	    } catch (Exception ex) {};
-    	if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
-    		try {ids.add(new Long((String)entry.get(EntryIndexUtils.MODIFICATIONID_FIELD)));
+    	if (entry.get(EntityIndexUtils.MODIFICATIONID_FIELD) != null) 
+    		try {ids.add(new Long((String)entry.get(EntityIndexUtils.MODIFICATIONID_FIELD)));
     		} catch (Exception ex) {};
         if (entry.get(IndexUtils.RESERVEDBYID_FIELD) != null) 
     		try {ids.add(new Long((String)entry.get(IndexUtils.RESERVEDBYID_FIELD)));
@@ -325,11 +325,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         HashMap entry;
         while (iter.hasNext()) {
             entry = (HashMap)iter.next();
-            if (entry.get(EntryIndexUtils.CREATORID_FIELD) != null)
-        	    try {ids.add(new Long((String)entry.get(EntryIndexUtils.CREATORID_FIELD)));
+            if (entry.get(EntityIndexUtils.CREATORID_FIELD) != null)
+        	    try {ids.add(new Long((String)entry.get(EntityIndexUtils.CREATORID_FIELD)));
            	    } catch (Exception ex) {};
-           if (entry.get(EntryIndexUtils.MODIFICATIONID_FIELD) != null) 
-        		try {ids.add(new Long((String)entry.get(EntryIndexUtils.MODIFICATIONID_FIELD)));
+           if (entry.get(EntityIndexUtils.MODIFICATIONID_FIELD) != null) 
+        		try {ids.add(new Long((String)entry.get(EntityIndexUtils.MODIFICATIONID_FIELD)));
         		} catch (Exception ex) {};
    	       if (entry.get(IndexUtils.RESERVEDBYID_FIELD) != null) 
         		try {ids.add(new Long((String)entry.get(IndexUtils.RESERVEDBYID_FIELD)));
@@ -520,6 +520,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************   
 
     protected String getEntryPrincipalField() {
-    	return EntryIndexUtils.CREATORID_FIELD;
+    	return EntityIndexUtils.CREATORID_FIELD;
     }
 }
