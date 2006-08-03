@@ -18,6 +18,10 @@ public class PresenceServiceUtils {
     	PresenceService ps = (PresenceService)SpringContextUtil.getBean("presenceService");
     	return ps.getPresenceInfo(user);
     }
+    public static int getPresence(String user) {
+    	PresenceService ps = (PresenceService)SpringContextUtil.getBean("presenceService");
+    	return ps.getPresenceInfo(user);
+    }
     public static boolean getScreenNameExists(String zonname) {
     	PresenceBroker pb = (PresenceBroker)SpringContextUtil.getBean("presenceBroker");
     	return pb.getScreenNameExists(zonname);   	
