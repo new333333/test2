@@ -32,7 +32,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <script type="text/javascript">
 	dojo.require("dojo.fx.*");
 	dojo.require("dojo.math");
-	dojo.require("dojo.lfx.*");
+	//dojo.require("dojo.lfx.*");
 </script>
   <c:if test="0">
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_dragsort.js"></script>
