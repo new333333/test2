@@ -80,7 +80,18 @@ function highlightLineById(id) {
 <ssf:slidingTableRow id="<%= folderLineId %>">
 
   <ssf:slidingTableColumn>
-	<ssf:presenceInfo user="<%=(User)entry.get("_principal")%>"/> 
+<%
+	if (entry.containsKey("_zonName")) {
+%>
+	<ssf:presenceInfo zonName="<%=(String)entry.get("_zonName")%>"/> 
+<%
+	} else {
+		//No zon name; output a white dude.
+%>
+	<ssf:presenceInfo zonName=""/> 
+<%
+	}
+%>
     <a href="<ssf:url     
     adapter="true" 
     portletName="ss_profile" 

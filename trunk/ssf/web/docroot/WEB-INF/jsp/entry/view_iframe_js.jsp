@@ -9,7 +9,13 @@ var ss_entryDivTopDelta = 25;
 var ss_entryDivBottomDelta = 50;
 var ss_scrollTopOffset = 4;
 var ss_nextUrl = ""
+var ss_minEntryDivHeight = 100;
+var ss_scrollTopOffset = 4;
+var ss_entryHeightHighWaterMark = 0
 
+function ss_setEntryDivHeight() {
+	setTimeout("ss_positionEntryDiv();", 100);
+}
 function ss_showForumEntryInIframe(url) {
 	ss_positionEntryDiv();
     var wObj = self.document.getElementById('ss_showentryframe')
@@ -18,7 +24,7 @@ function ss_showForumEntryInIframe(url) {
     ss_hideSpannedAreas();
     wObj1.style.display = "block";
     wObj1.style.visibility = "visible";
-    wObj.style.height = parseInt(wObj1.style.height) - ss_entryDivBottomDelta + "px";
+    //wObj.style.height = parseInt(wObj1.style.height) - ss_entryDivBottomDelta + "px";
 
     if (wObj.src && wObj.src == url) {
     	ss_nextUrl = url
@@ -61,9 +67,26 @@ function ss_positionEntryDiv() {
     ss_setObjectWidth(wObj1, ss_entryWindowWidth);
     ss_setObjectWidth(wObj2, ss_entryWindowWidth);
     //ss_setObjectWidth(wObj3, ss_entryWindowWidth);
-    ss_setObjectHeight(wObj1, height);
+    
+    
+    //ss_setObjectHeight(wObj1, height);
     wObj1.style.background = "#ffffff"
     wObj1.style.visibility = "visible";
+
+    //Allow the entry section to grow to as large as needed to show the entry
+	if (window.ss_showentryframe && window.ss_showentryframe.document && 
+			window.ss_showentryframe.document.body) {
+	    ss_debug('setting the height')
+	    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
+	    if (entryHeight < ss_minEntryDivHeight) entryHeight = ss_minEntryDivHeight;
+	    if (entryHeight > ss_entryHeightHighWaterMark) {
+		    //Only expand the height. Never shrink it. Otherwise the screen jumps around.
+		    ss_entryHeightHighWaterMark = entryHeight;
+			ss_setObjectHeight(wObj1, entryHeight);
+		}
+		ss_setObjectHeight(wObj3, entryHeight);
+	}
+
 }
 
 function ss_hideEntryDiv() {

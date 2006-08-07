@@ -54,15 +54,12 @@ boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", false);
 boolean showCloseIcon = ParamUtil.get(request, "box_show_close_icon", false);
 String showCloseRoutine = ParamUtil.get(request, "box_show_close_routine", "");
 
-boolean showMoveIcon = ParamUtil.get(request, "box_show_move_icon", false);
-String showMoveRoutine = ParamUtil.get(request, "box_show_move_routine", "");
-
 boolean showResizeIcon = ParamUtil.get(request, "box_show_resize_icon", false);
 String showResizeRoutine = ParamUtil.get(request, "box_show_resize_routine", "");
 String showResizeGif = ParamUtil.get(request, "box_show_resize_gif", "box/resize.gif");
 
 boolean decorateBox = false;
-if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == true)) {
+if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	decorateBox = true;
 }
 %>
@@ -75,33 +72,23 @@ if (Validator.isNotNull(title) || (showCloseIcon == true) || (showMoveIcon == tr
 	  <table cellspacing="0" cellpaddng="0" width="100%" 
 	    style="margin:0px; padding:0px; background-color:${boxColor};">
 	  <tr>
-	  <c:if test="<%= showMoveIcon %>">
-		<td align="left" width="45%"><div style="margin:0px; display:inline;" 
-		  onMouseDown="<%= showMoveRoutine %>"
-		  ><img style="cursor:move;"
-			 border="0" height="14" hspace="0" 
-			 name="p_<portlet:namespace/>_move" 
-			 src="<html:imagesPath/>box/move.gif" 
-			 title="<ssf:nlt tag="icon.move" text="Move" />" 
-			 vspace="0" width="14" ></div></td>
-	  </c:if>
 	  <c:if test="<%= showResizeIcon %>">
-		<td align="left" width="45%"><div style="display:inline; width:30px; 
+		<td align="left" width="10%"><div style="display:inline; width:20px; 
 		    background-position:center left;
             background-image:url(<html:imagesPath/><%= showResizeGif %>);
             background-repeat:no-repeat;" onMouseDown="<%= showResizeRoutine %>"
 		  ><span class="ss_box_small_icon" align="left" 
-		  style="cursor:w-resize; width:30px;"><img src="<html:imagesPath/>pics/1pix.gif" 
-		  style="margin:4px 30px;"></span></div></td>
+		  style="cursor:w-resize; width:20px;"><img src="<html:imagesPath/>pics/1pix.gif" 
+		  style="margin:4px 20px;"></span></div></td>
 	  </c:if>
 
 	  <c:if test="<%= Validator.isNotNull(title) %>">
-	    <td align="center" width="10%"><div
+	    <td align="center" width="80%"><div align="center"
 	      style="margin:0px; padding:0px;"><%= title %></div></td>
 	  </c:if>
 	
 	  <c:if test="<%= showCloseIcon %>">
-		<td align="right" width="45%"><span class="ss_box_small_icon"><a 
+		<td align="right" width="10%"><span class="ss_box_small_icon"><a 
 			 href="javascript: <%= showCloseRoutine %>;"><img 
 			 border="0" height="14" hspace="0" 
 			 name="p_<portlet:namespace/>_close" 
