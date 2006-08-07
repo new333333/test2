@@ -102,7 +102,8 @@ public class ViewController  extends SAbstractController {
 	 		//if action in the url, assume this is an ajax update call
 	 		if (!Validator.isNull(action)) {
 				Map statusMap = new HashMap();
-				model.put(WebKeys.AJAX_STATUS, statusMap);		
+				model.put(WebKeys.AJAX_STATUS, statusMap);	
+				model.put(WebKeys.NAMING_PREFIX, PortletRequestUtils.getStringParameter(request, WebKeys.NAMING_PREFIX, ""));
 				model.put(WebKeys.DASHBOARD_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DASHBOARD_ID, ""));
 				response.setContentType("text/xml");
 	 			if (!WebHelper.isUserLoggedIn(request)) {
@@ -117,8 +118,6 @@ public class ViewController  extends SAbstractController {
 					return new ModelAndView(WebKeys.VIEW_PRESENCE_AJAX, model);
 	 			}
 			} else {
-	 			//Build the toolbar and add it to the model
-	 			buildPresenceToolbar(model);
 	 			Set ids = new HashSet();		
 	 			ids.addAll(getIds(request.getPreferences().getValues(WebKeys.PRESENCE_PREF_USER_LIST, new String[0])));
 	 			ids.addAll(getIds(request.getPreferences().getValues(WebKeys.PRESENCE_PREF_GROUP_LIST, new String[0])));
@@ -173,19 +172,6 @@ public class ViewController  extends SAbstractController {
 		return groupIds;
 		
 	}
-	protected void buildPresenceToolbar(Map<String,Object> model) {
-		//Build the toolbar array
-		Toolbar toolbar = new Toolbar();
-
-		//The "Show unseen" menu
-		String url = "javascript: ;";
-		Map<String,Object> qualifiers = new HashMap<String,Object>();
-		qualifiers.put("onClick", "if (ss_getPresence) {ss_getPresence()};return false;");
-		toolbar.addToolbarMenu("1_showunseen", NLT.get("toolbar.presence"), url, qualifiers);
-
-		model.put(WebKeys.FORUM_TOOLBAR, toolbar.getToolbar());
-	}
-
 	
 	protected void buildForumToolbar(Map<String,Object> model) {
 		//Build the toolbar array

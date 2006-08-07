@@ -234,6 +234,7 @@ public class WebKeys {
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String AJAX_STATUS="ss_ajaxStatus";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
+    public static final String NAMING_PREFIX="ssNamespace";
     public static final String NOTIFICATION="ssNotification";
     public static final String NLT_VALUE="value";
     public static final String PERSONAL_TAGS="ssPersonalTags";

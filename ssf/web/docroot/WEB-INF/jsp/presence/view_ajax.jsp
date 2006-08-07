@@ -15,8 +15,8 @@
 		<div id="ss_status_message" 
 		  style="visibility:hidden; display:none;">ok</div>
 	</taconite-replace>
-	<taconite-replace contextNodeID="ss_refreshDate${ssDashboardId}" 
-	parseInBrowser="true"><div id="ss_refreshDate${ssDashboardId}">
+	<taconite-replace contextNodeID="${ssNamespace}_refreshDate" 
+	parseInBrowser="true"><div id="${ssNamespace}_refreshDate">
 <span class="ss_smallprint ss_gray"><ssf:nlt 
 tag="presence.last.refresh"/> <fmt:formatDate 
 value="<%= new java.util.Date() %>" type="time" /></span>
@@ -25,8 +25,8 @@ value="<%= new java.util.Date() %>" type="time" /></span>
 <c:forEach var="user" items="${ssUsers}">
 <jsp:useBean id="user" type="com.sitescape.ef.domain.User" />
 
-	<taconite-replace contextNodeID="count${ssDashboardId}_${user.id}" 
-	parseInBrowser="true"><span id="count${ssDashboardId}_${user.id}"
+	<taconite-replace contextNodeID="${ssNamespace}_user_${user.id}" 
+	parseInBrowser="true"><span id="${ssNamespace}_user_${user.id}"
 	><ssf:presenceInfo user="<%=user%>" componentId="${ssDashboardId}" 
 	/></span></taconite-replace>
 </c:forEach>
