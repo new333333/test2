@@ -413,24 +413,23 @@ public class DashboardHelper {
 	    	}
 	    	Map idData = new HashMap();
 	    	beans.put(id, idData);
-	    	String[] users = new String[0];
-	    	if (data.containsKey("users")) users = (String[])data.get("users");
-	    	if (users.length > 0) users = users[0].split(" ");
-	    	String[] groups = new String[0];
-	    	if (data.containsKey("groups")) groups = (String[])data.get("groups");
-	    	if (groups.length > 0) groups = groups[0].split(" ");
-		
 			Set ids = new HashSet();		
-			for (int i = 0; i < users.length; i++) {
-				if (!users[i].trim().equals("")) ids.add(new Long(users[i].trim()));
-			}
+	    	if (data.containsKey("users")) {
+		    	String[] users = (String[])data.get("users");
+		    	for (int i = 0; i < users.length; i++) {
+		    		ids.add(new Long(users[i].trim()));
+		    	}
+	    	}
 			//Get the configured list of principals to show
 			idData.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
 		
 			Set gids = new HashSet();		
-			for (int i = 0; i < groups.length; i++) {
-				if (!groups[i].trim().equals("")) gids.add(new Long(groups[i].trim()));
-			}
+	    	if (data.containsKey("groups")) {
+		    	String[] groups = (String[])data.get("groups");
+		    	for (int i = 0; i < groups.length; i++) {
+		    		gids.add(new Long(groups[i].trim()));
+		    	}
+	    	}
 			idData.put(WebKeys.GROUPS, getProfileModule().getGroups(gids));
 	   	}
 	}
@@ -581,7 +580,37 @@ public class DashboardHelper {
 							Document query = FilterHelper.getSearchFilter(request);
 							componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query);
 						} catch(Exception ex) {}
+					} else if (componentMap.get(DashboardHelper.Name).
+							equals(ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
+						if (componentData.containsKey("users")) {
+							String ids[] = (String[])componentData.get("users");
+							Set userIds = new HashSet();
+							if (ids != null) {
+								for (int i = 0; i < ids.length; i++) {
+									String[] uIds = ids[i].split(" ");
+									for (int j = 0; j < uIds.length; j++) {
+										if (uIds[j].length() > 0) userIds.add(uIds[j].trim());
+									}
+								}								
+							}
+							componentData.put("users", userIds.toArray(new String[userIds.size()]));
+						}
+						if (componentData.containsKey("groups")) {
+							String ids[] = (String[])componentData.get("groups");
+							Set groupIds = new HashSet();
+							if (ids != null) {
+								for (int i = 0; i < ids.length; i++) {
+									String[] uIds = ids[i].split(" ");
+									for (int j = 0; j < uIds.length; j++) {
+										if (uIds[j].length() > 0) groupIds.add(uIds[j].trim());
+									}
+								}
+								
+							}
+							componentData.put("groups", groupIds.toArray(new String[groupIds.size()]));
+						}
 					}
+
 					
 					//Save the title and data map
 					componentMap.put(DashboardHelper.Component_Title, componentTitle);

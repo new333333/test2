@@ -1464,9 +1464,12 @@ function ss_postRequest(obj) {
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		if (obj.getData('timeout') != "timeout") {
 			//This call wasn't made from a timeout. So, give error message
-			if (self.ss_showNotLoggedInMsg) self.ss_showNotLoggedInMsg();
+			ss_showNotLoggedInMsg();
 		}
 	}
+}
+function ss_showNotLoggedInMsg() {
+	alert(ss_not_logged_in);
 }
 
 //Support routines for the help system
