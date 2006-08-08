@@ -2,16 +2,27 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <script type="text/javascript">
+<c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
+var ss_entryWindowTop = ${ss_entryWindowTop};
+var ss_entryWindowLeft = ${ss_entryWindowLeft};
+</c:if>
+<c:if test="${empty ss_entryWindowTop || empty ss_entryWindowLeft}">
+var ss_entryWindowTop = -1;
+var ss_entryWindowLeft = -1;
+</c:if>
+
 var ss_entryWindowWidth = ${ss_entryWindowWidth};
 var ss_minEntryWindowWidth = 200;
+var ss_minEntryWindowHeight = 200;
+var ss_entryWindowHeight = ss_minEntryWindowHeight;
 var ss_scrollbarWidth = 25;
 var ss_entryDivTopDelta = 25;
 var ss_entryDivBottomDelta = 50;
 var ss_scrollTopOffset = 4;
 var ss_nextUrl = ""
-var ss_minEntryDivHeight = 100;
 var ss_scrollTopOffset = 4;
 var ss_entryHeightHighWaterMark = 0
+	ss_debug("init: "+ss_entryWindowLeft)
 
 function ss_setEntryDivHeight() {
 	setTimeout("ss_positionEntryDiv();", 100);
@@ -42,6 +53,7 @@ function ss_showForumEntryInIframe(url) {
 }
 
 function ss_positionEntryDiv() {
+	ss_debug("ss_positionEntryDiv: "+ss_entryWindowLeft)
 	var maxEntryWidth = parseInt(ss_getWindowWidth() - ss_scrollbarWidth);
 	
     var wObj = self.document.getElementById('ss_showfolder')
@@ -51,26 +63,30 @@ function ss_positionEntryDiv() {
     //Make sure the entry width is within the window
     if (ss_entryWindowWidth > maxEntryWidth) ss_entryWindowWidth = maxEntryWidth;
     if (ss_entryWindowWidth < ss_minEntryWindowWidth) ss_entryWindowWidth = ss_minEntryWindowWidth;
+    if (ss_entryWindowHeight < ss_minEntryWindowHeight) ss_entryWindowHeight = ss_minEntryWindowHeight;
 
     var wObj1 = self.document.getElementById('ss_showentrydiv')
     ss_moveObjectToBody(wObj1)
     var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
     var wObj3 = self.document.getElementById('ss_showentryframe')
 
-    var top = parseInt(ss_getDivTop('ss_showfolder') + ss_entryDivTopDelta);
-    if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);} 
-    var left = parseInt(maxEntryWidth - ss_entryWindowWidth);
-    if (left < 0) left = 0;
-    var height = parseInt(ss_getWindowHeight() + self.document.body.scrollTop - top - ss_entryDivTopDelta );
-    ss_setObjectTop(wObj1, top)
-    ss_setObjectLeft(wObj1, left);
+    if (ss_entryWindowTop < 0 || ss_entryWindowLeft < 0) {
+    	ss_debug("initial setting of top and left " + ss_entryWindowWidth)
+    	ss_entryWindowTop = parseInt(ss_getDivTop('ss_showfolder') + ss_entryDivTopDelta);
+    	ss_entryWindowLeft = parseInt(maxEntryWidth - ss_entryWindowWidth);
+    }
+	if (ss_entryWindowTop < parseInt(self.document.body.scrollTop)) {
+		ss_entryWindowTop = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);
+	}
+    if (ss_entryWindowLeft < 0) ss_entryWindowLeft = 0;
+
+    ss_setObjectTop(wObj1, ss_entryWindowTop)
+    ss_setObjectLeft(wObj1, ss_entryWindowLeft);
     ss_setObjectWidth(wObj1, ss_entryWindowWidth);
     ss_setObjectWidth(wObj2, ss_entryWindowWidth);
     //ss_setObjectWidth(wObj3, ss_entryWindowWidth);
     
-    
-    //ss_setObjectHeight(wObj1, height);
-    wObj1.style.background = "#ffffff"
+    wObj1.style.background = "${ss_style_background_color}"
     wObj1.style.visibility = "visible";
 
     //Allow the entry section to grow to as large as needed to show the entry
@@ -78,7 +94,7 @@ function ss_positionEntryDiv() {
 			window.ss_showentryframe.document.body) {
 	    ss_debug('setting the height')
 	    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
-	    if (entryHeight < ss_minEntryDivHeight) entryHeight = ss_minEntryDivHeight;
+	    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
 	    if (entryHeight > ss_entryHeightHighWaterMark) {
 		    //Only expand the height. Never shrink it. Otherwise the screen jumps around.
 		    ss_entryHeightHighWaterMark = entryHeight;
@@ -116,9 +132,14 @@ var ss_divOffsetX
 var ss_divOffsetY
 
 var ss_startingToDragDiv = null;
+var ss_draggingDiv = false;
+var ss_divDragMoveType = '';
 var ss_divDragSavedMouseMove = '';
 var ss_divDragSavedMouseUp = '';
-function ss_startDragDiv() {
+var ss_divDragSavedMouseOut = '';
+function ss_startDragDiv(type) {
+	if (ss_draggingDiv) return;
+	ss_divDragMoveType = type;
 	if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(null);
 	
 	ss_divDragObj = document.getElementById('ss_showentrydiv')
@@ -132,6 +153,11 @@ function ss_startDragDiv() {
     if (self.document.onmouseup) ss_divDragSavedMouseUp = self.document.onmouseup;
     self.document.onmousemove = ss_divDrag
     self.document.onmouseup = ss_divStopDrag
+    if (ss_divDragMoveType == 'move') {
+    	if (self.document.onmouseout) ss_divDragSavedMouseOut = self.document.onmouseout;
+    	self.document.onmouseout = ss_divDrag
+    }
+    ss_draggingDiv = true;
 
     return false
 }
@@ -149,17 +175,29 @@ function ss_divDrag(evt) {
             ss_startingToDragDiv = 0
         }
         var dObjLeft
+        var dObjTop
         if (isNSN || isNSN6 || isMoz5) {
             dObjLeft = evt.pageX - ss_divOffsetX;
+            dObjTop = evt.pageY - ss_divOffsetY;
         } else {
             dObjLeft = evt.clientX - ss_divOffsetX;
+            dObjTop = evt.clientY - ss_divOffsetY;
         }
-        var deltaW = parseInt(parseInt(dObjLeft) - parseInt(ss_divDragObj.style.left))
-        ss_entryWindowWidth = parseInt(parseInt(ss_divDragObj.style.width) - deltaW)
-        if (ss_entryWindowWidth >= ss_minEntryWindowWidth) {
+        if (ss_divDragMoveType == 'resize') {
+	        var deltaW = parseInt(parseInt(dObjLeft) - parseInt(ss_divDragObj.style.left))
+	        ss_entryWindowWidth = parseInt(parseInt(ss_divDragObj.style.width) - deltaW)
+	        if (ss_entryWindowWidth >= ss_minEntryWindowWidth) {
+		        ss_entryWindowLeft = dObjLeft;
+		        ss_divDragObj.style.left = dObjLeft
+		        ss_positionEntryDiv()
+		    }
+		} else if (ss_divDragMoveType == 'move') {
+	        ss_entryWindowTop = dObjTop;
+	        ss_entryWindowLeft = dObjLeft;
 	        ss_divDragObj.style.left = dObjLeft
+	        ss_divDragObj.style.top = dObjTop
 	        ss_positionEntryDiv()
-	    }
+		}
         return false
     
     } else {
@@ -174,6 +212,10 @@ function ss_divStopDrag(evt) {
     }
     self.document.onmousemove = ss_divDragSavedMouseMove;
     self.document.onmouseup = ss_divDragSavedMouseUp;
+    if (ss_divDragMoveType == 'move') {
+    	self.document.onmouseout = ss_divDragSavedMouseOut;
+    }
+    ss_draggingDiv = false;
     setTimeout("ss_saveEntryWidth(ss_entryWindowWidth);", 500)
     return false
 }

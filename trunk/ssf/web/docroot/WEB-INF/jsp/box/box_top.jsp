@@ -58,6 +58,9 @@ boolean showResizeIcon = ParamUtil.get(request, "box_show_resize_icon", false);
 String showResizeRoutine = ParamUtil.get(request, "box_show_resize_routine", "");
 String showResizeGif = ParamUtil.get(request, "box_show_resize_gif", "box/resize.gif");
 
+boolean showMoveIcon = ParamUtil.get(request, "box_show_move_icon", false);
+String showMoveRoutine = ParamUtil.get(request, "box_show_move_routine", "");
+
 boolean decorateBox = false;
 if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	decorateBox = true;
@@ -82,10 +85,15 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 		  style="margin:4px 20px;"></span></div></td>
 	  </c:if>
 
-	  <c:if test="<%= Validator.isNotNull(title) %>">
-	    <td align="center" width="80%"><div align="center"
-	      style="margin:0px; padding:0px;"><%= title %></div></td>
+	  <td align="center" width="80%"><div align="center"
+	  <c:if test="<%= showMoveIcon %>">
+	    onMouseDown="<%= showMoveRoutine %>"
 	  </c:if>
+	    style="margin:0px; 
+	  <c:if test="<%= showMoveIcon %>">
+	    cursor:move; 
+	  </c:if>
+	      padding:0px;"><%= title %></div></td>
 	
 	  <c:if test="<%= showCloseIcon %>">
 		<td align="right" width="10%"><span class="ss_box_small_icon"><a 

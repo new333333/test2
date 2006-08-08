@@ -225,6 +225,7 @@ public class TreeTag extends TagSupport {
 	
 			//Text
 			String s_text = e.attributeValue("title");
+			s_text = s_text.replaceAll("&", "&amp;");
 			if (this.nowrap) s_text = "<nobr>" + s_text + "</nobr>";
 	
 			//id
