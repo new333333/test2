@@ -44,8 +44,10 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 </div>
     </ssf:param>
     <ssf:param name="box_show_resize_icon" value="true" />
-    <ssf:param name="box_show_resize_routine" value="ss_startDragDiv()" />
+    <ssf:param name="box_show_resize_routine" value="ss_startDragDiv('resize')" />
     <ssf:param name="box_show_resize_gif" value="box/resize_east_west.gif" />
+    <ssf:param name="box_show_move_icon" value="true" />
+    <ssf:param name="box_show_move_routine" value="ss_startDragDiv('move')" />
     <ssf:param name="box_show_close_icon" value="true" />
     <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
   <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; display:block;"
