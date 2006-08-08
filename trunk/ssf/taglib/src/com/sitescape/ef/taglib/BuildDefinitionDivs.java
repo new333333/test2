@@ -14,6 +14,7 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.util.DefinitionHelper;
+import com.sitescape.util.Html;
 import com.sitescape.util.Validator;
 
 import java.util.ArrayList;
@@ -305,11 +306,11 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append(sourceRoot.attributeValue("name", ""));
 			sb.append("\" disabled=\"true\"/>\n");
 			sb.append("<input type=\"hidden\" name=\"modifyDefinitionName\" value=\"");
-			sb.append(sourceRoot.attributeValue("name", "").replaceAll("\"", "&quot;"));
+			sb.append(Html.formatTo(sourceRoot.attributeValue("name", "")));
 			sb.append("\" />\n<br/><br/>\n");
 			sb.append("<span>Caption</span><br/>\n");
 			sb.append("<input type=\"text\" class=\"ss_text\" name=\"modifyDefinitionCaption\" size=\"40\" value=\"");
-			sb.append(sourceRoot.attributeValue("caption", "").replaceAll("\"", "&quot;"));
+			sb.append(Html.formatTo(sourceRoot.attributeValue("caption", "")));
 			sb.append("\"/><br/><br/>\n");
 
 			//Append the properties form elements
@@ -983,7 +984,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("\n<br/>\n");
 						}
 						sb.append("<input type=\"text\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" size=\"40\" ");
-						sb.append("value=\""+propertyValue0.replaceAll("\"", "&quot;")+"\" "+readonly+"/>\n");
+						sb.append("value=\""+Html.formatTo(propertyValue0)+"\" "+readonly+"/>\n");
 					}
 					//See if this property has any help
 					Element help = (Element) propertyConfig.selectSingleNode("./help");
@@ -1003,7 +1004,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					}
 					
 					sb.append("<input type=\"hidden\" name=\"propertyName_" + propertyId + "\" ");
-					sb.append("value=\""+propertyName.replaceAll("\"", "&quot;")+"\"/>\n");
+					sb.append("value=\""+Html.formatTo(propertyName)+"\"/>\n");
 					sb.append("<br/><br/>\n");
 				}
 			}
