@@ -211,6 +211,8 @@ public class WebKeys {
     public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";
     public static final String FOLDER_DEFINTION_MAP="ssFolderDefinitionMap";
     public static final String FOLDER_ENTRY_WIDTH="folderEntryWidth";
+    public static final String FOLDER_ENTRY_TOP="folderEntryTop";
+    public static final String FOLDER_ENTRY_LEFT="folderEntryLeft";
     public static final String FOLDER_ENTRY_HEIGHT="folderEntryHeight";
     public static final String FOLDER_LIST = "ssFolderList";
     public static final String FOLDER_ID_LIST = "ssFolderIdList";

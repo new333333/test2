@@ -26,12 +26,22 @@ int entryWindowWidth = 0;
 if (ssUserProperties.containsKey("folderEntryWidth")) {
 	entryWindowWidth = Integer.parseInt((String) ssUserProperties.get("folderEntryWidth"));
 }
+int entryWindowTop = 0;
+if (ssUserProperties.containsKey("folderEntryTop")) {
+	entryWindowTop = Integer.parseInt((String) ssUserProperties.get("folderEntryTop"));
+}
+int entryWindowLeft = 0;
+if (ssUserProperties.containsKey("folderEntryLeft")) {
+	entryWindowLeft = Integer.parseInt((String) ssUserProperties.get("folderEntryLeft"));
+}
 int entryWindowHeight = 0;
 if (ssUserProperties.containsKey("folderEntryHeight")) {
 	entryWindowHeight = Integer.parseInt((String) ssUserProperties.get("folderEntryHeight"));
 }
 String autoScroll = "true";
 renderRequest.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth));
+renderRequest.setAttribute("ss_entryWindowTop", new Integer(entryWindowTop));
+renderRequest.setAttribute("ss_entryWindowLeft", new Integer(entryWindowLeft));
 renderRequest.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight));
 %>
 <c:if test="<%= !isViewEntry %>">

@@ -70,7 +70,7 @@ function ss_positionEntryDiv() {
     var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
     var wObj3 = self.document.getElementById('ss_showentryframe')
 
-    if (ss_entryWindowTop < 0 || ss_entryWindowLeft < 0) {
+    if (ss_entryWindowTop <= 0 || ss_entryWindowLeft <= 0) {
     	ss_debug("initial setting of top and left " + ss_entryWindowWidth)
     	ss_entryWindowTop = parseInt(ss_getDivTop('ss_showfolder') + ss_entryDivTopDelta);
     	ss_entryWindowLeft = parseInt(maxEntryWidth - ss_entryWindowWidth);
@@ -216,16 +216,22 @@ function ss_divStopDrag(evt) {
     	self.document.onmouseout = ss_divDragSavedMouseOut;
     }
     ss_draggingDiv = false;
-    setTimeout("ss_saveEntryWidth(ss_entryWindowWidth);", 500)
+    setTimeout("ss_saveEntryWidth(ss_entryWindowWidth, ss_entryWindowTop, ss_entryWindowLeft);", 500)
     return false
 }
 
 var ss_lastEntryWidth = -1;
-function ss_saveEntryWidth(entryWidth) {
+var ss_lastEntryTop = -1;
+var ss_lastEntryLeft = -1;
+function ss_saveEntryWidth(entryWidth, entryTop, entryLeft) {
 	ss_setupStatusMessageDiv()
-	if (entryWidth == ss_lastEntryWidth) return;
+	if (entryWidth == ss_lastEntryWidth && entryTop == ss_lastEntryTop && entryLeft == ss_lastEntryLeft) return;
 	ss_lastEntryWidth = entryWidth;
+	ss_lastEntryTop = entryTop;
+	ss_lastEntryLeft = entryLeft;
     self.document.forms['ss_saveEntryWidthForm'].entry_width.value = entryWidth;
+    self.document.forms['ss_saveEntryWidthForm'].entry_top.value = entryTop;
+    self.document.forms['ss_saveEntryWidthForm'].entry_left.value = entryLeft;
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
