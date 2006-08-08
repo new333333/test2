@@ -52,12 +52,6 @@ public class Html {
 			return null;
 		}
 
-		int pos = text.indexOf("& ");
-
-		if (pos != -1) {
-			text = StringUtil.replace(text, "& ", "&amp; ");
-		}
-
 		StringBuffer sb = new StringBuffer();
 		char c;
 
@@ -65,22 +59,26 @@ public class Html {
 			c = text.charAt(i);
 
 			switch (c) {
+				case '&':
+					sb.append("&amp;");
+					break;
+	
 				case '<':
 					sb.append("&lt;");
 					break;
-
+	
 				case '>':
 					sb.append("&gt;");
 					break;
-
+	
 				case '\'':
 					sb.append("&#39;");
 					break;
-
+	
 				case '\"':
 					sb.append("&quot;");
 					break;
-
+	
 				default:
 					if (((int)c) > 255) {
 						sb.append("&#").append(((int)c)).append(";");

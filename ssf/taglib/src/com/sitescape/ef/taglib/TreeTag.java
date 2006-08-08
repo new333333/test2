@@ -28,6 +28,7 @@ import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.util.GetterUtil;
+import com.sitescape.util.Html;
 
 
 
@@ -224,8 +225,7 @@ public class TreeTag extends TagSupport {
 			String s_ls = e.attributeValue("treeLS");
 	
 			//Text
-			String s_text = e.attributeValue("title");
-			s_text = s_text.replaceAll("&", "&amp;");
+			String s_text = Html.formatTo(e.attributeValue("title"));
 			if (this.nowrap) s_text = "<nobr>" + s_text + "</nobr>";
 	
 			//id
@@ -573,7 +573,7 @@ public class TreeTag extends TagSupport {
 			String s_ls = e.attributeValue("treeLS");
 	
 			//Text
-			String s_text = e.attributeValue("title");
+			String s_text = Html.formatTo(e.attributeValue("title"));
 			if (this.nowrap) s_text = "<nobr>" + s_text + "</nobr>";
 	
 			//id
