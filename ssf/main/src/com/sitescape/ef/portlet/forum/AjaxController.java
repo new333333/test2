@@ -325,9 +325,13 @@ public class AjaxController  extends SAbstractController {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//Save the user's selected entry width
 		String entryWidth = ((String[])formData.get("entry_width"))[0];
-		if (!entryWidth.equals("")) {
+		String entryTop = ((String[])formData.get("entry_top"))[0];
+		String entryLeft = ((String[])formData.get("entry_left"))[0];
+		if (!entryWidth.equals("") && !entryTop.equals("") && !entryLeft.equals("")) {
 			//Save the entry width
 		   	getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);
+		   	getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_TOP, entryTop);
+		   	getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_LEFT, entryLeft);
 		}
 		response.setContentType("text/xml");
 		model.put(WebKeys.AJAX_STATUS, statusMap);

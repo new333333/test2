@@ -64,4 +64,6 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 
 <form class="ss_style ss_form" name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
 <input type="hidden" name="entry_width">
+<input type="hidden" name="entry_top">
+<input type="hidden" name="entry_left">
 </form>
