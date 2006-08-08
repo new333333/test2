@@ -34,7 +34,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
     configElement="${ssConfigElement}" 
     configJspStyle="${ssConfigJspStyle}" />
 </div>
-<div id="ss_showfolder_slider" onMousedown="ss_startDragDiv();" 
+<div id="ss_showfolder_slider" onMousedown="ss_startDragDiv();"
  onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}" 
  style="position:relative; margin:0px 0px 3px 0px; padding:0px; 
   width:100%; height:<%= String.valueOf(sliderDivHeight) %>px;
