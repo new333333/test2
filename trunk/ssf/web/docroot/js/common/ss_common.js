@@ -24,6 +24,18 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var isNSN6 = ((navigator.userAgent.indexOf("Netscape6") > -1));
 	var isMoz5 = ((navigator.userAgent.indexOf("Mozilla/5") > -1) && !isNSN6);
 	var isMacIE = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("Mac") > -1));
+	
+	//zIndex map
+	var ssHelpZ = 2000;
+	var ssHelpSpotZ = 2001;
+	var ssHelpPanelZ = 2003;
+	var ssHelpWelcomeZ = 2002;
+	var ssMenuZ = 100;
+	var ssDragOnTopZ = 100000;
+	var ssEntryZ = 50;
+	var ssDragEntryZ = 400;
+	var ssSlidingTableInfoZ = 40;
+	
 	var isIE = ((navigator.userAgent.indexOf("IE ") > -1));
 
 	var ss_savedOnResizeRoutine = null;
@@ -895,6 +907,7 @@ function ss_activateMenuLayerClone(divId, parentDivId, offsetLeft, offsetTop, op
 	if (!ss_menuDivClones[divId]) {
 		ss_menuDivClones[divId] = divId;
 		var tempNode = divObj.cloneNode( true );
+		tempNode.style.zIndez = ssMenuZ;
 		divObj.parentNode.removeChild(divObj)
 		document.getElementsByTagName( "body" ).item(0).appendChild( tempNode );
 		divObj = document.getElementById(divId);
@@ -908,7 +921,8 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
 	if (!openStyle || openStyle == null || openStyle == 'undefined') {openStyle=""}
 
     // don't do anything if the divs aren't loaded yet
-    if (self.document.getElementById(divId) == null) {return}
+    var menuObj = self.document.getElementById(divId);
+    if (menuObj == null) {return}
 
 	var x = 0;
 	var y = 0;
@@ -944,6 +958,10 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
   
     //alert('divId: ' + divId + ', x: ' + x + ', y: ' + y)
     //alert(document.getElementById(divId).innerHTML)
+    if (!menuObj.style || !menuObj.style.zIndex || menuObj.style.zIndex == 0) {
+    	menuObj.style.zIndex = ssMenuZ;
+    }
+    
     ss_ShowHideDivXY(divId, x, y);
     if (openStyle != "popup") ss_HideDivOnSecondClick(divId);
 }
@@ -1504,16 +1522,17 @@ var ss_helpSystem = {
 	    lightBox.style.height = ss_getBodyHeight();
 	    dojo.style.setOpacity(lightBox, 0);
 	    lightBox.className = "ss_helpLightBox";
-	    lightBox.style.visibility = "visible";
 	    lightBox.style.display = "block";
+	    lightBox.style.zIndex = ssHelpZ;
+	    lightBox.style.visibility = "visible";
 	    dojo.fx.html.fade(lightBox, 150, 0, .5)
 	    
 		ss_moveDivToBody('ss_help_welcome');
 		var welcomeDiv = document.getElementById('ss_help_welcome');
 		if (welcomeDiv) {
 	    	welcomeDiv.style.visibility = "visible";
+	    	welcomeDiv.style.zIndex = ssHelpWelcomeZ;
 	    	welcomeDiv.style.display = "block";
-	    	welcomeDiv.style.zIndex = 2001;
 	        welcomeDiv.style.top = this.getPositionTop(welcomeDiv);
 	        welcomeDiv.style.left = this.getPositionLeft(welcomeDiv);
 	    	dojo.style.setOpacity(welcomeDiv, 0);
@@ -1580,6 +1599,7 @@ var ss_helpSystem = {
 			if (helpSpotTitle != "") this.addTOC(helpSpotNodeId, helpSpotTitle);
 			var helpSpotNode = document.createElement("div");
 	        helpSpotNode.className = "ss_helpSpot";
+	        helpSpotNode.style.zIndex = ssHelpSpotZ;
 	        helpSpotNode.style.display = "block";
 			
 			var helpSpotA = document.createElement("a");
@@ -1735,7 +1755,7 @@ var ss_helpSystem = {
 		if (!tocDiv) return;
     	tocDiv.style.visibility = "visible";
     	tocDiv.style.display = "block";
-    	tocDiv.style.zIndex = 2001;
+    	tocDiv.style.zIndex = parseInt(ssHelpWelcomeZ + 1);
 	},
 	
 	hideTOC : function() {
@@ -1813,6 +1833,7 @@ var ss_helpSystem = {
 	        pObj.setAttribute("id", panelId);
 	        pObj.setAttribute("helpId", id);
 	        pObj.className = "ss_helpPanel";
+	        pObj.style.zIndex = ssHelpPanelZ;
 	        bodyObj.appendChild(pObj);
 	        ss_helpSystemPanels[ss_helpSystemPanels.length] = panelId;
 		} else {
@@ -1920,6 +1941,7 @@ var ss_helpSystem = {
 			pObj.style.top = top + "px";
 			pObj.style.left = left + "px";
 		}
+	    pObj.style.zIndex = ssHelpPanelZ;
 		pObj.style.visibility = "visible";
 		
 		ss_helpSystemRequestInProgress = 0;
