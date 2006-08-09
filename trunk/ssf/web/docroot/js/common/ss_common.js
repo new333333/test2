@@ -24,6 +24,7 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var isNSN6 = ((navigator.userAgent.indexOf("Netscape6") > -1));
 	var isMoz5 = ((navigator.userAgent.indexOf("Mozilla/5") > -1) && !isNSN6);
 	var isMacIE = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("Mac") > -1));
+	var isIE = ((navigator.userAgent.indexOf("IE ") > -1));
 	
 	//zIndex map
 	var ssHelpZ = 2000;
@@ -36,8 +37,6 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ssDragEntryZ = 400;
 	var ssSlidingTableInfoZ = 40;
 	
-	var isIE = ((navigator.userAgent.indexOf("IE ") > -1));
-
 	var ss_savedOnResizeRoutine = null;
 	var ss_onResizeRoutineLoaded;
 	var ss_savedOnLoadRoutine = null;
