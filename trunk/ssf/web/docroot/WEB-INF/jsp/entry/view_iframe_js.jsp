@@ -93,7 +93,6 @@ function ss_positionEntryDiv() {
     //Allow the entry section to grow to as large as needed to show the entry
 	if (window.ss_showentryframe && window.ss_showentryframe.document && 
 			window.ss_showentryframe.document.body) {
-	    ss_debug('setting the height')
 	    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
 	    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
 	    if (entryHeight > ss_entryHeightHighWaterMark) {
@@ -101,7 +100,6 @@ function ss_positionEntryDiv() {
 		    ss_entryHeightHighWaterMark = entryHeight;
 			ss_setObjectHeight(wObj1, entryHeight);
 		}
-	    ss_debug('setting the height to ' + entryHeight)
 		ss_setObjectHeight(wObj3, entryHeight);
 	}
 
@@ -139,12 +137,34 @@ var ss_divDragMoveType = '';
 var ss_divDragSavedMouseMove = '';
 var ss_divDragSavedMouseUp = '';
 var ss_divDragSavedMouseOut = '';
+
 function ss_startDragDiv(type) {
 	if (ss_draggingDiv) return;
 	ss_divDragMoveType = type;
 	if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(null);
+
+	var lightBox = document.getElementById('ss_entry_light_box')
+	if (!lightBox) {
+		var bodyObj = document.getElementsByTagName("body").item(0)
+		lightBox = document.createElement("div");
+        lightBox.setAttribute("id", "ss_entry_light_box");
+        lightBox.style.position = "absolute";
+        bodyObj.appendChild(lightBox);
+	}
+	dojo.style.setOpacity(lightBox, 1);
+    lightBox.onclick = "ss_entryClearDrag();";
+    lightBox.style.top = 0;
+    lightBox.style.left = 0;
+    lightBox.style.width = ss_getBodyWidth();
+    lightBox.style.height = ss_getBodyHeight();
+    lightBox.style.display = "block";
+    lightBox.style.zIndex = parseInt(ssDragEntryZ - 1);
+    lightBox.style.visibility = "visible";
 	
 	ss_divDragObj = document.getElementById('ss_showentrydiv')
+	ss_divDragObj.parentNode.removeChild(ss_divDragObj);
+	lightBox.appendChild(ss_divDragObj);
+	
     if (isNSN || isNSN6 || isMoz5) {
     } else {
         ss_divOffsetX = window.event.offsetX
@@ -185,6 +205,8 @@ function ss_divDrag(evt) {
             dObjLeft = evt.clientX - ss_divOffsetX;
             dObjTop = evt.clientY - ss_divOffsetY;
         }
+        if (dObjLeft <= 0) dObjLeft = 1;
+        if (dObjTop <= 0) dObjTop = 1;
         if (ss_divDragMoveType == 'resize') {
 	        var deltaW = parseInt(parseInt(dObjLeft) - parseInt(ss_divDragObj.style.left))
 	        ss_entryWindowWidth = parseInt(parseInt(ss_divDragObj.style.width) - deltaW)
@@ -217,9 +239,20 @@ function ss_divStopDrag(evt) {
     if (ss_divDragMoveType == 'move') {
     	self.document.onmouseout = ss_divDragSavedMouseOut;
     }
+    ss_entryClearDrag();
     ss_draggingDiv = false;
     setTimeout("ss_saveEntryWidth(ss_entryWindowWidth, ss_entryWindowTop, ss_entryWindowLeft);", 500)
     return false
+}
+
+function ss_entryClearDrag() {
+	ss_debug('clear drag')
+	ss_moveDivToBody('ss_showentrydiv')
+	var lightBox = document.getElementById('ss_entry_light_box')
+	if (lightBox != null) {
+		ss_debug('remove lightbox')
+		lightBox.parentNode.removeChild(lightBox);
+	}
 }
 
 var ss_lastEntryWidth = -1;
