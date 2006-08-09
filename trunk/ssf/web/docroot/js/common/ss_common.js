@@ -200,12 +200,12 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 		    obj.style.display = displayStyle;
 		}
 	} else {
-		ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
+		//ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
 	}
 	//Signal that the layout changed
 	if (!obj.style.position || obj.style.position != "absolute") {
 		ssf_onLayoutChange();
-		ss_debug("ss_showHideObj: " + objName + " = " + visibility)
+		//ss_debug("ss_showHideObj: " + objName + " = " + visibility)
 	}
 }
 
@@ -525,7 +525,7 @@ function m_setLayoutRoutine(layoutRoutine) {
 function ssf_onLayoutChange(obj) {
     for (var i = 0; i < ss_onLayoutChangeList.length; i++) {
         if (ss_onLayoutChangeList[i].layoutRoutine) {
-        	ss_debug("ssf_onLayoutChange: " + ss_onLayoutChangeList[i].name)
+        	//ss_debug("ssf_onLayoutChange: " + ss_onLayoutChangeList[i].name)
         	ss_onLayoutChangeList[i].layoutRoutine();
         }
     }
@@ -1051,7 +1051,7 @@ function ss_showDiv(divName) {
 	if (!document.getElementById(divName) || 
 	    	document.getElementById(divName).style.position != "absolute") {
 		ssf_onLayoutChange();
-		ss_debug("ss_showDiv: " + divName)
+		//ss_debug("ss_showDiv: " + divName)
 	}
 }
 
@@ -1067,7 +1067,7 @@ function ss_hideDiv(divName) {
 	if (!document.getElementById(divName) || 
 	    	document.getElementById(divName).style.position != "absolute") {
 		ssf_onLayoutChange();
-		ss_debug("ss_hideDiv: " + divName)
+		//ss_debug("ss_hideDiv: " + divName)
 	}
 }
 
@@ -1503,7 +1503,7 @@ var ss_helpSystem = {
 	},
 	
 	show : function() {
-		ss_debug('ss_helpSystem');
+		//ss_debug('ss_helpSystem');
 		var lightBox = document.getElementById('ss_help_light_box')
 		if (!lightBox) {
 			var bodyObj = document.getElementsByTagName("body").item(0)
@@ -1512,7 +1512,7 @@ var ss_helpSystem = {
 	        lightBox.className = "ss_helpLightBox";
 	        bodyObj.appendChild(lightBox);
 		}
-	    ss_debug(lightBox.id)
+	    //ss_debug(lightBox.id)
 	    lightBox.style.visibility = "hidden";
 	    lightBox.style.display = "none";
 	    lightBox.onclick = function(e) {if (ss_helpSystem) ss_helpSystem.hide();};
@@ -1549,7 +1549,6 @@ var ss_helpSystem = {
 	    	welcomeDiv.style.visibility = "hidden";
 	    	welcomeDiv.style.display = "none";
 		}
-		ss_debug(lightBox.style.visibility)
 		if (lightBox.style.visibility && lightBox.style.visibility == 'visible') {
     		for (var i = 1; i < ss_helpSystemNextNodeId; i++) {
     			//Delete all of the help spots that were added during the help session
@@ -1562,7 +1561,7 @@ var ss_helpSystem = {
 
     		//Delete all of the help panels that were added during the help session
 			for (var i = ss_helpSystemPanels.length; --i >= 0;) {
-				ss_debug("panelObj = " + ss_helpSystemPanels[i])
+				//ss_debug("panelObj = " + ss_helpSystemPanels[i])
 				var pObj = document.getElementById(ss_helpSystemPanels[i]);
 				if (pObj != null && pObj.parentNode != null) pObj.parentNode.removeChild(pObj);
 			}
@@ -1573,8 +1572,7 @@ var ss_helpSystem = {
     			var lightBox2 = document.getElementById('ss_help_light_box');
 		    	lightBox.style.visibility = "hidden";
 		    	lightBox.style.display = "none";
-		    	ss_debug('lightBox hidden\n');
-    		})
+   		})
     		return
 		}
 	},
@@ -1590,7 +1588,7 @@ var ss_helpSystem = {
 		nodes = document.getElementsByTagName("ssHelpSpot");
 		//ss_debug('Time: '+ parseInt(new Date().getTime() - time))
 		for (var i = 0; i < nodes.length; i++) {
-			ss_debug(nodes[i].getAttribute("helpId") + " = " + ss_helpSystemNextNodeId)
+			//ss_debug(nodes[i].getAttribute("helpId") + " = " + ss_helpSystemNextNodeId)
 			var helpSpotNodeId = nodes[i].getAttribute("helpId");
 			var helpSpotTitle = "";
 			if (nodes[i].getAttribute("title")) {
@@ -1661,7 +1659,7 @@ var ss_helpSystem = {
 	        bodyObj.appendChild(helpSpotNode);
 			ss_helpSystemNextNodeId++;
 	        helpSpotNode.style.visibility = "visible";
-			ss_debug("nodes[i] width = "+dojo.style.getMarginBoxWidth(nodes[i]))
+			//ss_debug("nodes[i] width = "+dojo.style.getMarginBoxWidth(nodes[i]))
 		}
 	},
 	
@@ -1708,7 +1706,7 @@ var ss_helpSystem = {
 	},
 	
 	addTOC : function(id, title) {
-		ss_debug("addToc " + id + ", " + title)
+		//ss_debug("addToc " + id + ", " + title)
 		var tocDiv = document.getElementById('ss_help_toc');
 		if (!tocDiv) return;
 		var uls = tocDiv.getElementsByTagName("ul");
@@ -1801,7 +1799,7 @@ var ss_helpSystem = {
 				break;
 			}
 		}
-		ss_debug("showHelpSpotInfo helpSpot: " + helpSpot)
+		//ss_debug("showHelpSpotInfo helpSpot: " + helpSpot)
 		if (helpSpot != null) {
 		    var top = parseInt(dojo.style.getAbsolutePosition(helpSpot, true).y);
 		    var left = parseInt(dojo.style.getAbsolutePosition(helpSpot, true).x);
@@ -1821,7 +1819,7 @@ var ss_helpSystem = {
 		}
 		ss_setupStatusMessageDiv()
 		this.clearHighlights();
-		ss_debug("showHelpPanel " + id)
+		//ss_debug("showHelpPanel " + id)
 		var pObj = self.document.getElementById(panelId);
 		var startTop = -1;
 		var startLeft = -1;
@@ -1838,7 +1836,7 @@ var ss_helpSystem = {
 	        ss_helpSystemPanels[ss_helpSystemPanels.length] = panelId;
 		} else {
 			//See if this is a request for the same panel. If so, toggle it off.
-			ss_debug("id = " + pObj.getAttribute("id") + ", helpId = " + pObj.getAttribute("helpId"))
+			//ss_debug("id = " + pObj.getAttribute("id") + ", helpId = " + pObj.getAttribute("helpId"))
 			if (pObj.getAttribute("helpId") == id && pObj.style.visibility == "visible") {
 				//On the second click to the same help spot, turn the panel off
 				pObj.style.visibility = "hidden"
@@ -1892,8 +1890,6 @@ var ss_helpSystem = {
 		} else if (x == "" || y == "") {
 		    top = startTop;
 		    left = startLeft;
-			ss_debug("top = " + top);
-			ss_debug("left = " + left);
 		} else {
 			switch(x) {
 				case "left" : 
@@ -1934,7 +1930,6 @@ var ss_helpSystem = {
 		}
 		if (left < ss_help_position_leftOffset) left = ss_help_position_leftOffset;
 		
-		ss_debug("["+startLeft+", "+startTop+"], ["+left+", "+top+"]")
 		if (startTop >= 0 && startLeft >= 0 && startVisibility == "visible") {
 			dojo.fx.html.slide(panelId, 300, [startLeft, startTop], [left, top]);
 		} else {
@@ -1948,7 +1943,7 @@ var ss_helpSystem = {
 		
 		//Is there another request queued?
 		if (ss_helpSystemQueuedId != "") {
-			ss_debug("\nLaunching queued request to show " + ss_helpSystemQueuedId)
+			//ss_debug("\nLaunching queued request to show " + ss_helpSystemQueuedId)
 			var id = ss_helpSystemQueuedId;
 			var panelId = ss_helpSystemQueuedPanelId;
 			var x = ss_helpSystemQueuedX;
@@ -1976,7 +1971,7 @@ var ss_helpSystem = {
 	
 	clearHighlights : function() {
 		for (var i = ss_helpSystemHighlights.length; --i >= 0;) {
-			ss_debug("highlightObj = " + ss_helpSystemHighlights[i])
+			//ss_debug("highlightObj = " + ss_helpSystemHighlights[i])
 			var id = ss_helpSystemHighlights[i];
 			var hObj = document.getElementById(id);
 			hObj.style.border = ss_helpSystemHighlightsBorder[id];
@@ -1992,7 +1987,7 @@ var ss_helpSystem = {
 	blinkHighlight : function(id, count) {
 		ss_debug("blinkHighlight " + id)
 		if (ss_helpSystemHighlightsBorderTimer[id] != null) {
-			ss_debug("clearTimeout " + id)
+			//ss_debug("clearTimeout " + id)
 			clearTimeout(ss_helpSystemHighlightsBorderTimer[id])
 			ss_helpSystemHighlightsBorderTimer[id] = null;
 		} else {
@@ -2001,7 +1996,7 @@ var ss_helpSystem = {
 			return;
 		}
 		var obj = document.getElementById(id);
-		ss_debug("  border color: " + obj.style.borderTopColor)
+		//ss_debug("  border color: " + obj.style.borderTopColor)
 		if (obj.style.borderTopColor == "red") {
 			obj.style.border = "white 3px solid";
 		} else {

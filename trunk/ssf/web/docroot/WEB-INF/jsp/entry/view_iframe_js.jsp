@@ -54,7 +54,7 @@ function ss_showForumEntryInIframe(url) {
 }
 
 function ss_positionEntryDiv() {
-	ss_debug("ss_positionEntryDiv: "+ss_entryWindowLeft)
+	//ss_debug("ss_positionEntryDiv: "+ss_entryWindowLeft)
 	var maxEntryWidth = parseInt(ss_getWindowWidth() - ss_scrollbarWidth);
 	
     var wObj = self.document.getElementById('ss_showfolder')
@@ -101,6 +101,7 @@ function ss_positionEntryDiv() {
 		    ss_entryHeightHighWaterMark = entryHeight;
 			ss_setObjectHeight(wObj1, entryHeight);
 		}
+	    ss_debug('setting the height to ' + entryHeight)
 		ss_setObjectHeight(wObj3, entryHeight);
 	}
 

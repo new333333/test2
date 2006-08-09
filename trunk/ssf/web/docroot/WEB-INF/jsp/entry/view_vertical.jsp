@@ -1,10 +1,10 @@
 <% //view a folder forum with the entry at the bottom in an iframe %>
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
-int sliderDivHeight = 22;
+int sliderDivHeight = 18;
 int sliderDivArrowHeight = 17;    //This is the height of pics/sym_s_arrows_northsouth.gif
-int sliderDivBlankHeight = sliderDivHeight - sliderDivArrowHeight;
-String sliderDivOffset = "-" + String.valueOf(sliderDivHeight + 20);
+int sliderDivBlankHeight = sliderDivHeight - sliderDivArrowHeight + 4;
+String sliderDivOffset = "-" + String.valueOf(sliderDivHeight);
 
 //Get the folder type of this definition (folder, file, or event)
 String folderViewStyle = "folder";
@@ -35,28 +35,26 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
     configJspStyle="${ssConfigJspStyle}" />
 </div>
 <div id="ss_showfolder_slider" onMousedown="ss_startDragDiv();"
- onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}" 
- style="position:relative; margin:0px 0px 3px 0px; padding:0px; 
-  width:100%; height:<%= String.valueOf(sliderDivHeight) %>px;
+  onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}" 
+  style="position:relative; margin:0px 0px 3px 0px; padding:0px; width:100%; 
   top:<%= sliderDivOffset %>px;">
   <table class="ss_folder_border" width="100%" 
     style="border: 1px solid black; margin:0px;"
     cellpadding="0" cellspacing="0">
     <tr>
-      <td align="center" width="100%">
-        <div style="display:inline; 
-          background-image:url(<html:imagesPath/>pics/sym_s_arrows_northsouth.gif);
-          background-repeat:no-repeat;">
-        &nbsp;&nbsp;&nbsp;
-        </div>
+      <td width="1%">
+        <div style="display:inline;"><img src="<html:imagesPath/>pics/1pix.gif" 
+          style="height:<%= String.valueOf(sliderDivHeight) %>px;"></div>
       </td>
-    </tr>
-  </table>
-  <table width="100%" 
-    cellpadding="0" cellspacing="0">
-    <tr>
-      <td width="1"><img src="<html:imagesPath/>pics/1pix.gif" 
-        style="height:<%= String.valueOf(sliderDivBlankHeight) %>px;"></td>
+      <td align="center" width="99%">
+        <div style="display:inline; width:100%;
+          background-image:url(<html:imagesPath/>pics/sym_s_arrows_northsouth.gif);
+          background-position: 50%;
+          background-repeat:no-repeat;">&nbsp;&nbsp;&nbsp;</div>
+      </td>
+      <td align="right" width="1%">
+        <div style="display:inline;"><img src="<html:imagesPath/>pics/1pix.gif" 
+          style="height:<%= String.valueOf(sliderDivHeight) %>px;"></div>
       </td>
     </tr>
   </table>

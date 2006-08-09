@@ -1,13 +1,6 @@
 <% //Supporting javascript routines for view_vertical.jsp %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<%
-int sliderDivHeight = 22;
-int sliderDivArrowHeight = 17;    //This is the height of pics/sym_s_arrows_northsouth.gif
-int sliderDivBlankHeight = sliderDivHeight - sliderDivArrowHeight;
-String sliderDivOffset = "-" + String.valueOf(sliderDivHeight);
-%>
-
 <script type="text/javascript">
 var ss_folderDivHeight = 400;
 var ss_bottomHeight = 100;
@@ -45,26 +38,18 @@ function ss_positionEntryDiv() {
 	ss_positioningEntryDiv = 1
 	ss_showEntryDiv()
 
-    //Make sure the absolute positioned divs are attached to the body itself
-    //ss_moveDivToBody('ss_showentrydiv')
- 
     var wObj = self.document.getElementById('ss_showfolder')
     var wObjB = self.document.getElementById('ss_showfolder_bottom')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
     var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
     var wObj3 = self.document.getElementById('ss_showentryframe')
     var wObj4 = self.document.getElementById('ss_showentrydiv_place_holder')
+    var sliderDiv = self.document.getElementById('ss_showfolder_slider')
         
     var width = parseInt(parseInt(ss_getObjectWidth(wObj)) - ss_marginLeft - ss_marginRight);
 	ss_setObjectWidth(wObj1, width);
 	ss_setObjectWidth(wObj2, width);
 
-    //ss_setObjectTop(wObj1, parseInt(parseInt(ss_getDivTop('ss_showfolder_slider')) + <%= sliderDivHeight %>))
-    //ss_setObjectLeft(wObj1, parseInt(ss_getDivLeft('ss_showfolder_slider')))
-    
-    //Keep the entry within the confines of the main window
-    //var entryHeight = parseInt(ss_getWindowHeight() - ss_getDivTop('ss_showfolder_slider') - ss_bottomHeight)
-    
     //Allow the entry section to grow to as large as needed to show the entry
 	if (window.ss_showentryframe && window.ss_showentryframe.document && 
 			window.ss_showentryframe.document.body) {
@@ -112,7 +97,6 @@ function ss_checkLayoutChange() {
 	//Reposition entry div, but only if not in the process of doing it
 	if (ss_positioningEntryDiv != 1) {
 		ss_positionEntryDiv();
-		ss_debug("ss_checkLayoutChange: " + ss_positioningEntryDiv)
 	}
 }
 
@@ -157,7 +141,7 @@ function ss_startDragDiv() {
 	}
 	ss_divDragObj = document.getElementById('ss_showfolder_slider_abs')
     ss_setObjectTop(ss_divDragObj, parseInt(ss_getDivTop('ss_showfolder_slider') + 1))
-    ss_setObjectLeft(ss_divDragObj, parseInt(ss_getDivLeft('ss_showfolder_slider') + 1));
+    ss_setObjectLeft(ss_divDragObj, parseInt(ss_getDivLeft('ss_showfolder_slider') + 0));
     ss_setObjectWidth(ss_divDragObj, parseInt(ss_getDivWidth('ss_showfolder_slider') - ss_marginRight));
     ss_divDragObj.style.visibility = 'visible';
 	
@@ -231,11 +215,13 @@ function ss_divStopDrag(evt) {
         } else {
             dObjLeft = evt.clientX - ss_divOffsetX;
             dObjTop = evt.clientY - ss_divOffsetY;
+    		//IE requires fix-up if wndow is scrolled
+    		dObjTop += parseInt(self.document.body.scrollTop)
         }
 		var tableDivObj = document.getElementById('${ss_folderTableId}')
 		var marginOffset = parseInt(parseInt(tableDivObj.style.marginTop) + parseInt(tableDivObj.style.marginBottom))
 	    ss_folderDivHeight = parseInt(parseInt(dObjTop) + 
-	    		ss_getDivHeight('ss_showfolder_slider') - marginOffset - 1 -
+	    		ss_getDivHeight('ss_showfolder_slider') - marginOffset - 3 -
 	    		parseInt(ss_getDivTop('${ss_folderTableId}')));
 	    if (ss_folderDivHeight < ss_minFolderDivHeight) ss_folderDivHeight = ss_minFolderDivHeight;
 	    ss_setObjectHeight(tableDivObj, ss_folderDivHeight);
