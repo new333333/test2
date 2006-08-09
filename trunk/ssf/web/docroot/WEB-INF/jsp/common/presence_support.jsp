@@ -162,4 +162,4 @@ function ss_popupPresenceMenu${ssDashboardId}(x, userId, userTitle, status, scre
     }
 }
 </script>
-<div id="ss_presencePopUp${ssDashboardId}" style="position:absolute; visibility:hidden; z-index:500;"></div>
+<div id="ss_presencePopUp${ssDashboardId}" style="position:absolute; visibility:hidden;"></div>

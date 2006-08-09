@@ -49,7 +49,6 @@ function ss_createStyleSheet(url) {
 
 var ss_urlBase = self.location.protocol + "//" + self.location.host;
 var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
-var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
 var niftyCornersCssUrl = ss_urlBase + "<html:rootPath/>css/nifty_corners.css";
 var htmlareaCssUrl = ss_urlBase + "<html:rootPath/>js/htmlarea/htmlarea.css";
 if (document.createStyleSheet) {

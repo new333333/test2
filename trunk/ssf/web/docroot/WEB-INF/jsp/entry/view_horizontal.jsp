@@ -12,7 +12,7 @@ String ssfBoxId = renderResponse.getNamespace() + "_ssf_box_div";
   configJspStyle="${ssConfigJspStyle}" />
 </div>
 
-<div id="ss_showentrydiv" style="position:absolute; visibility:hidden; x:0; y:0; z-index:50;
+<div id="ss_showentrydiv" style="position:absolute; visibility:hidden; x:0; y:0;
   width:${ss_entryWindowWidth}; height:80%; display:none;">
   <ssf:box>
     <ssf:param name="box_id" value="<%= ssfBoxId %>" />
@@ -63,6 +63,7 @@ function ss_positionEntryDiv() {
     ss_setObjectWidth(wObj2, ss_entryWindowWidth);
     ss_setObjectHeight(wObj1, "");
     wObj1.style.background = "#ffffff"
+    wObj1.style.zIndex = ssEntryZ;
     wObj1.style.visibility = "visible";
 }
 

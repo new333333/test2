@@ -299,7 +299,6 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   height:30px;
   visibility:hidden;
   display:none;
-  z-index:2001 !important;
 }
 .ss_helpSpotTitle {
   background-color:${ss_help_spot_background_color} !important;
@@ -313,7 +312,6 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   border:2px solid black;
   margin:2px;
   padding:2px;
-  z-index:2001 !important;
 }
 .ss_helpPanel {
   position:absolute;
@@ -324,12 +322,10 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   margin:2px;
   padding:2px;
   width:300px;
-  z-index:2001 !important;
 }
 .ss_helpLightBox {
   position:absolute;
   background-color:${ss_help_lightBox_background_color};
-  z-index:2000;
 }
 
 .ss_helpToc {
@@ -337,7 +333,6 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   background-color:${ss_help_spot_background_color} !important;
   visibility:hidden;
   display:none;
-  z-index:2001;
 }
 .ss_helpToc li {
   list-style-type: square;
@@ -395,7 +390,6 @@ div.ss_sliding_table_column {
   display:block; 
   border-left: ${ss_sliding_table_border_color} solid 1px;
   margin: 0px;
-  z-index: 40;
 }
 .ss_sliding_table_row0 {
   background-color: ${ss_sliding_table_row0_background_color}; 
@@ -465,24 +459,19 @@ div.ss_sliding_table_column {
   
 .ss_toolbar_menu {
   position: absolute;
-  z-index: 100;
   visibility: hidden;
-  background-color: ${ss_toolbar_background_color}; 
   color: ${ss_toolbar_text_color};
   border: 1px ${ss_toolbar_border_color} solid;
-  padding: 0px;
+  padding: 4px;
   width: 300px;
   }
 .ss_toolbar_menu * {
-  background-color: ${ss_toolbar_background_color}; 
   color: ${ss_toolbar_text_color};
   }
 .ss_toolbar_item * {
-  background-color: ${ss_toolbar_background_color}; 
   color: ${ss_toolbar_text_color};
   }
 .ss_toolbar_item a {
-  background-color: ${ss_toolbar_background_color}; 
   color: ${ss_toolbar_text_color};
   }
 .ss_toolbar a, .ss_toolbar a:visited {
@@ -492,10 +481,8 @@ div.ss_sliding_table_column {
   color: ${ss_toolbar_link_hover_color};
 }
 ul.ss_dropdownmenu {
-  margin-left: 0px;
-  margin-right: 0px;
-  margin-top: 0px;
-  margin-bottom: 2px;
+  list-style: outside;
+  margin:2px 2px 2px 13px;
   padding: 2px;
 }
 
@@ -504,21 +491,15 @@ ul.ss_dropdownmenu li {
   margin-left: 0px;
   margin-bottom: 2px;
   padding-left: 2px;
-  color: ${ss_toolbar_dropdown_menu_color};
 } 
 .ss_dashboard_menu {
   position: absolute;
-  z-index: 100;
   visibility: hidden;
   background-color: ${ss_style_background_color}; 
   color: ${ss_style_text_color};
   border: 1px ${ss_style_border_color} solid;
   padding: 0px;
   width: 300px;
-  }
-.ss_toolbar_menu * {
-  background-color: ${ss_style_background_color}; 
-  color: ${ss_style_text_color};
   }
 
 .ss_calendar_today {

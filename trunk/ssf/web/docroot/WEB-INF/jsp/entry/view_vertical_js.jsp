@@ -152,7 +152,7 @@ function ss_startDragDiv() {
 		var tempNode = sliderObj.cloneNode( true );
 		tempNode.id = 'ss_showfolder_slider_abs';
 		tempNode.style.position = 'absolute';
-		tempNode.style.zIndex = 400;
+		tempNode.style.zIndex = ssDragEntryZ;
 		document.getElementsByTagName( "body" ).item(0).appendChild( tempNode );
 	}
 	ss_divDragObj = document.getElementById('ss_showfolder_slider_abs')
