@@ -32,7 +32,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 
 <div id="ss_showentrydiv" onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
   style="position:absolute; visibility:hidden;
-  width:600; height:80%; display:none; z-index:50;">
+  width:600; height:80%; display:none;">
   <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
     <ssf:param name="box_width" value="400" />

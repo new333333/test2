@@ -34,6 +34,7 @@ function ss_showForumEntryInIframe(url) {
 
     ss_hideSpannedAreas();
     wObj1.style.display = "block";
+    wObj1.style.zIndex = ssEntryZ;
     wObj1.style.visibility = "visible";
     //wObj.style.height = parseInt(wObj1.style.height) - ss_entryDivBottomDelta + "px";
 

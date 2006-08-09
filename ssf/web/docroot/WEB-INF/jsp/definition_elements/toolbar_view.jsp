@@ -18,7 +18,7 @@ function ss_toolbarPopupUrl(url) {
     <c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}">
 
      <ssf:menu title="${toolbarMenu.value.title}" 
-       titleId="toolbar_${toolbarMenu.key}">
+       titleId="toolbar_${toolbarMenu.key}" menuClass="ss_toolbar_menu" >
 	  <c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}">
 	    <c:if test="${empty toolbarMenuCategory.key}">
 	      <span class="ss_bold"><c:out value="${toolbarMenuCategory.key}" /></span>

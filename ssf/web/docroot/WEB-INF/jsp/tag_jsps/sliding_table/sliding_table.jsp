@@ -15,6 +15,11 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%
+	//Define the z-index offset for table columns to handle the overlays
+	int slidingTableColumnZ = 11;
+	int slidingTableInfoZ = 40;
+%>
 
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
@@ -287,6 +292,7 @@ function ss_showMouseOverInfo(obj) {
 		    } else if (ihtml.length == 3 && ihtml.charCodeAt(0) == 160 && ihtml.charCodeAt(1) == 160 && ihtml.charCodeAt(2) == 160) {
 		    	ss_showHideObj("ss_info_popup", "hidden", "none");
 		    } else {
+		    	ss_showHideObj("ss_info_popup", "hidden", "none");
 				var s = "<table cellspacing='0' cellpadding='0' style='border: solid black 1px;'>"
 				s += "<tr><td class='" + obj.className + "' nowrap>"
 				s += obj.innerHTML
@@ -447,7 +453,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 					}
 %>
 <div id="col<%= String.valueOf(iCol + 1) %>" class="ss_style ss_sliding_table_column"  
-  style="position:absolute; z-index:<%= String.valueOf(iCol + 11) %>;">
+  style="position:absolute; z-index:<%= String.valueOf(iCol + slidingTableColumnZ) %>;">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 <td class="<%= rowStyle %>" ><div style="position:absolute; left:-9; top:0;"><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
@@ -561,5 +567,5 @@ function ss_postSlidingTableRequest(obj) {
 <form class="ss_style ss_form" name="ss_columnPositionForm" id="ss_columnPositionForm" >
 <input type="hidden" name="column_positions">
 </form>
-<div id="ss_info_popup" class="ss_style ss_sliding_table_info_popup"></div>
+<div id="ss_info_popup" class="ss_style ss_sliding_table_info_popup" style="z-index: <%= slidingTableInfoZ %>;"></div>
 <div id="ss_info_popup_sizer" style="position:absolute; visibility:hidden;"></div>

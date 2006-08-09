@@ -232,7 +232,7 @@ _ss_ToolManDragGroup.prototype = {
 	},
 
 	onTopWhileDragging : function(zIndex) {
-		var zIndex = typeof(zIndex) != "undefined" ? zIndex : 100000;
+		var zIndex = typeof(zIndex) != "undefined" ? zIndex : ssDragOnTopZ;
 		var originalZIndex = ss_ToolMan.css().readStyle(this.element, "z-index")
 
 		this.register('dragstart', function(dragEvent) {

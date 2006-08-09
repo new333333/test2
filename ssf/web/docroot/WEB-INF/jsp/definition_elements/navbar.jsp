@@ -266,6 +266,7 @@ function ss_showFavoritesPane() {
 	ss_setupStatusMessageDiv()
 	var fObj = self.document.getElementById("ss_favorites_pane");
 	ss_moveObjectToBody(fObj);
+	fObj.style.zIndex = ssMenuZ;
 	fObj.style.visibility = "visible";
 	ss_setOpacity(fObj, 100)
 	//fObj.style.display = "none";
@@ -340,7 +341,7 @@ function ss_setFavoritesPaneSize() {
 </c:if>
 </div>
 <div class="ss_style" id="ss_favorites_pane" 
-  style="position:absolute; visibility:hidden; z-index:200;
+  style="position:absolute; visibility:hidden;
   border:solid 1px black; height:200px;">
   <div>
   <div class="ss_style" id="ss_favorites" align="left">

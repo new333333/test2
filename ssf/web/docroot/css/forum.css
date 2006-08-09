@@ -317,7 +317,6 @@ div.ss_widgetContent {
 
 .ss_helpPopUp {
   position: absolute;
-  z-index: 10;
   visibility: hidden;
   display: none;
   background-color: #FFFFFF; 
