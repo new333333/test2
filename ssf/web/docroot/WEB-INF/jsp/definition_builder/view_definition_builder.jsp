@@ -681,22 +681,35 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
   </span>
 
 <br/>
-	<applet archive="workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.0.jar,lib/dom4j.jar,lib/jaxen.jar" 
-	  code="com.sitescape.ef.applets.workflowviewer.WorkflowViewer" 
-	  codebase="<html:rootPath/>applets" height="600" width="100%" >
-	  <param name="xmlGetUrl" value="<ssf:url 
+<script language="JavaScript" type="text/javascript">
+    if (isIE) document.writeln('<object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" WIDTH = "100%" HEIGHT = "600"  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3"><noembed><xmp>');
+</script>
+<applet CODE = "com.sitescape.ef.applets.workflowviewer.WorkflowViewer" 
+  JAVA_CODEBASE = "<html:rootPath/>applets" 
+  ARCHIVE = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.0.jar,lib/dom4j.jar,lib/jaxen.jar" 
+  WIDTH = "100%" HEIGHT = "600"></xmp>
+    <PARAM NAME = CODE VALUE = "com.sitescape.ef.applets.workflowviewer.WorkflowViewer" >
+    <PARAM NAME = CODEBASE VALUE = "<html:rootPath/>applets" >
+    <PARAM NAME = ARCHIVE VALUE = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.0.jar,lib/dom4j.jar,lib/jaxen.jar" >
+    <param name="type" value="application/x-java-applet;version=1.5">
+    <param name="scriptable" value="false">
+	<param name="xmlGetUrl" value="<ssf:url 
     		webPath="viewDefinitionXml" >
 			<ssf:param name="id" value="<%= selectedItem %>" />
     		</ssf:url>"/>
-	  <param name="xmlPostUrl" value="<ssf:url 
+	<param name="xmlPostUrl" value="<ssf:url 
 		    adapter="true" 
 		    portletName="ss_administration" 
 		    action="viewDefinitionXml" 
 		    actionUrl="true" >
 			<ssf:param name="id" value="<%= selectedItem %>" />
 		    </ssf:url>"/>
-	  <param name="nltSaveLayout" value="<ssf:nlt tag="definition.workflow_save_layout" text="Save layout"/>"/>
-	</applet>
+	<param name="nltSaveLayout" value="<ssf:nlt tag="definition.workflow_save_layout" text="Save layout"/>"/>
+</applet>
+</noembed>
+</embed>
+</object>
+
 </div>
 <br/>
 </div>
