@@ -25,6 +25,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/dojo/src/style.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/dojo/src/fx/html.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/dojo/src/math/Math.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/dojo/src/math/curves.js"></script>
