@@ -22,12 +22,13 @@ var ss_scrollTopOffset = 4;
 var ss_nextUrl = ""
 var ss_scrollTopOffset = 4;
 var ss_entryHeightHighWaterMark = 0
-	ss_debug("init: "+ss_entryWindowLeft)
+	//ss_debug("init: "+ss_entryWindowLeft)
 
 function ss_setEntryDivHeight() {
 	setTimeout("ss_positionEntryDiv();", 100);
 }
 function ss_showForumEntryInIframe(url) {
+	//ss_debug('show url in frame = '+url)
 	ss_positionEntryDiv();
     var wObj = self.document.getElementById('ss_showentryframe')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
@@ -72,12 +73,12 @@ function ss_positionEntryDiv() {
     var wObj3 = self.document.getElementById('ss_showentryframe')
 
     if (ss_entryWindowTop <= 0 || ss_entryWindowLeft <= 0) {
-    	ss_debug("initial setting of top and left " + ss_entryWindowWidth)
+    	//ss_debug("initial setting of top and left " + ss_entryWindowWidth)
     	ss_entryWindowTop = parseInt(ss_getDivTop('ss_showfolder') + ss_entryDivTopDelta);
     	ss_entryWindowLeft = parseInt(maxEntryWidth - ss_entryWindowWidth);
     }
 	if (ss_entryWindowTop < parseInt(self.document.body.scrollTop)) {
-		ss_entryWindowTop = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);
+		//ss_entryWindowTop = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);
 	}
     if (ss_entryWindowLeft < 0) ss_entryWindowLeft = 0;
 
@@ -117,6 +118,7 @@ function ss_hideEntryDiv() {
 }
 
 function ss_repositionEntryDiv() {
+    //ss_debug('reposition div')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
     if (wObj1.style.visibility == "visible") {
     	//The entry div is visible, so reposition it to the new size
@@ -143,33 +145,13 @@ function ss_startDragDiv(type) {
 	ss_divDragMoveType = type;
 	if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(null);
 
-	var lightBox = document.getElementById('ss_entry_light_box')
-	if (!lightBox) {
-		var bodyObj = document.getElementsByTagName("body").item(0)
-		lightBox = document.createElement("div");
-        lightBox.setAttribute("id", "ss_entry_light_box");
-        lightBox.style.position = "absolute";
-        bodyObj.appendChild(lightBox);
-	}
-	dojo.style.setOpacity(lightBox, 1);
-    lightBox.onclick = "ss_entryClearDrag();";
-    lightBox.style.top = 0;
-    lightBox.style.left = 0;
-    lightBox.style.width = ss_getBodyWidth();
-    lightBox.style.height = ss_getBodyHeight();
-    lightBox.style.display = "block";
-    lightBox.style.zIndex = parseInt(ssDragEntryZ - 1);
-    lightBox.style.visibility = "visible";
-	
-	ss_divDragObj = document.getElementById('ss_showentrydiv')
-	ss_divDragObj.parentNode.removeChild(ss_divDragObj);
-	lightBox.appendChild(ss_divDragObj);
-	
     if (isNSN || isNSN6 || isMoz5) {
     } else {
         ss_divOffsetX = window.event.offsetX
         ss_divOffsetY = window.event.offsetY
     }
+	ss_divDragObj = document.getElementById('ss_showentrydiv')
+	
     ss_startingToDragDiv = 1;
     if (self.document.onmousemove) ss_divDragSavedMouseMove = self.document.onmousemove;
     if (self.document.onmouseup) ss_divDragSavedMouseUp = self.document.onmouseup;
@@ -195,7 +177,28 @@ function ss_divDrag(evt) {
                 }
             }
             ss_startingToDragDiv = 0
+
+			var lightBox = document.getElementById('ss_entry_light_box')
+			if (!lightBox) {
+				var bodyObj = document.getElementsByTagName("body").item(0)
+				lightBox = document.createElement("div");
+		        lightBox.setAttribute("id", "ss_entry_light_box");
+		        lightBox.style.position = "absolute";
+		        bodyObj.appendChild(lightBox);
+			}
+			dojo.style.setOpacity(lightBox, 1);
+		    lightBox.onclick = "ss_entryClearDrag();";
+		    lightBox.style.top = 0;
+		    lightBox.style.left = 0;
+		    lightBox.style.width = ss_getBodyWidth();
+		    lightBox.style.height = ss_getBodyHeight();
+		    lightBox.style.display = "block";
+		    lightBox.style.zIndex = parseInt(ssDragEntryZ - 1);
+		    lightBox.style.visibility = "visible";			
+			//ss_divDragObj.parentNode.removeChild(ss_divDragObj);
+			//lightBox.appendChild(ss_divDragObj);
         }
+        
         var dObjLeft
         var dObjTop
         if (isNSN || isNSN6 || isMoz5) {
@@ -204,7 +207,11 @@ function ss_divDrag(evt) {
         } else {
             dObjLeft = evt.clientX - ss_divOffsetX;
             dObjTop = evt.clientY - ss_divOffsetY;
+    		//IE requires fix-up if wndow is scrolled
+    		dObjTop += parseInt(self.document.body.scrollTop)
+    		dObjLeft += parseInt(self.document.body.scrollLeft)
         }
+        //ss_debug('left = ' + dObjLeft + ', top = '+dObjTop)
         if (dObjLeft <= 0) dObjLeft = 1;
         if (dObjTop <= 0) dObjTop = 1;
         if (ss_divDragMoveType == 'resize') {
@@ -239,18 +246,18 @@ function ss_divStopDrag(evt) {
     if (ss_divDragMoveType == 'move') {
     	self.document.onmouseout = ss_divDragSavedMouseOut;
     }
-    ss_entryClearDrag();
+    setTimeout("ss_entryClearDrag();",100);
     ss_draggingDiv = false;
     setTimeout("ss_saveEntryWidth(ss_entryWindowWidth, ss_entryWindowTop, ss_entryWindowLeft);", 500)
     return false
 }
 
 function ss_entryClearDrag() {
-	ss_debug('clear drag')
-	ss_moveDivToBody('ss_showentrydiv')
+	//ss_debug('clear drag')
+	//ss_moveDivToBody('ss_showentrydiv')
 	var lightBox = document.getElementById('ss_entry_light_box')
 	if (lightBox != null) {
-		ss_debug('remove lightbox')
+		//ss_debug('remove lightbox')
 		lightBox.parentNode.removeChild(lightBox);
 	}
 }
@@ -261,6 +268,7 @@ var ss_lastEntryLeft = -1;
 function ss_saveEntryWidth(entryWidth, entryTop, entryLeft) {
 	ss_setupStatusMessageDiv()
 	if (entryWidth == ss_lastEntryWidth && entryTop == ss_lastEntryTop && entryLeft == ss_lastEntryLeft) return;
+	//ss_debug(entryWidth+', '+ss_lastEntryWidth+', '+entryTop+', '+ss_lastEntryTop+', '+entryLeft+', '+ss_lastEntryLeft) 
 	ss_lastEntryWidth = entryWidth;
 	ss_lastEntryTop = entryTop;
 	ss_lastEntryLeft = entryLeft;
