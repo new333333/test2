@@ -13,12 +13,12 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.jbpm.JbpmContext;
 import org.jbpm.graph.def.Node;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.def.Transition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
-import com.sitescape.ef.module.workflow.impl.JbpmContext;
 import org.jbpm.jpdl.xml.JpdlXmlWriter;
 
 import org.springframework.web.servlet.ModelAndView;

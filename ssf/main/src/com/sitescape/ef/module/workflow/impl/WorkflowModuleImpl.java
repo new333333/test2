@@ -35,10 +35,11 @@ import com.sitescape.ef.module.definition.DefinitionUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.hibernate.HibernateException;
+
+import org.jbpm.JbpmContext;
 import org.jbpm.calendar.BusinessCalendar;
 import org.jbpm.calendar.Duration;
 import org.jbpm.context.exe.ContextInstance;
-import com.sitescape.ef.module.workflow.impl.JbpmContext;
 import org.jbpm.db.SchedulerSession;
 import org.jbpm.graph.def.Action;
 import org.jbpm.graph.def.Event;

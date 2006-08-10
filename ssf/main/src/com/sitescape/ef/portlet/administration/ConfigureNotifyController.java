@@ -155,7 +155,7 @@ public class ConfigureNotifyController extends  SAbstractController  {
 				element.addAttribute("image", icon);
 				element.addAttribute("imageClass", "ss_twIcon");
 				url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.NOTIFY_ACTION_CONFIGURE);
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_NOTIFY_CONFIGURE);
 				url.setParameter(WebKeys.URL_BINDER_ID, f.getId().toString());
 				try {
 					url.setWindowState(WindowState.MAXIMIZED);

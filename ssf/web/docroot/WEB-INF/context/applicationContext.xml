@@ -78,7 +78,6 @@
 	
 	<bean id="workflowFactory" class="com.sitescape.ef.module.workflow.impl.WorkflowFactory">
 		<property name="hibernateSessionFactory"><ref local="sessionFactory"/></property>
-		<property name="hibernateConfiguration"><ref local="hibernateConfiguration"/></property>
 	</bean> 
 
 	<bean id="springContextUtil" class="com.sitescape.ef.util.SpringContextUtil" />

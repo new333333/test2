@@ -167,7 +167,7 @@ public class ConfigurePostingController extends  SAbstractController  {
 				element.addAttribute("image", icon);
 				element.addAttribute("imageClass", "ss_twIcon");
 				url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.POSTING_ACTION_CONFIGURE);
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_POSTING_CONFIGURE);
 				url.setParameter(WebKeys.URL_BINDER_ID, f.getId().toString());
 				try {
 					url.setWindowState(WindowState.MAXIMIZED);

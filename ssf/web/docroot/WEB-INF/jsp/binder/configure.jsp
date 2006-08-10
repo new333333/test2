@@ -81,7 +81,7 @@
 
       <c:forEach var="item" items="${ssPublicBinderDefinitions}">
           <c:choose>
-	        <c:when test="${ssDefaultFolderDefinitionId == item.value.id}">
+	        <c:when test="${ssDefaultFolderDefinition.id == item.value.id}">
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
 	          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
 	        </c:when>
@@ -131,7 +131,7 @@
       <c:forEach var="item" items="${ssPublicBinderDefinitions}">
         <c:if test="${!empty ssFolderDefinitionMap[item.key]}">
           <c:choose>
-	        <c:when test="${ssDefaultFolderDefinitionId == item.value.id}">
+	        <c:when test="${ssDefaultFolderDefinition.id == item.value.id}">
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
 	          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
 	        </c:when>

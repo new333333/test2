@@ -3,8 +3,6 @@ package com.sitescape.ef.web.portlet.handler;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
-import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
-
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -26,7 +24,6 @@ public class OpenSessionInViewInterceptor extends
 			PortletRequest request, PortletResponse response, Object handler, Exception ex)
 			throws DataAccessException {
 		super.afterCompletion(request, response, handler, ex);
-		WorkflowFactory.releaseSession();
 		
 	}
 

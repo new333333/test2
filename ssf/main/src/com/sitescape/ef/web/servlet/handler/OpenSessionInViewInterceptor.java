@@ -5,8 +5,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.dao.DataAccessException;
 
-import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
-
 /**
  * See com.sitescape.ef.web.portlet.handler.OpenSessionInViewInterceptor for 
  * explanation
@@ -21,7 +19,6 @@ public class OpenSessionInViewInterceptor extends
 		throws DataAccessException {
 		
 		super.afterCompletion(request, response, handler, ex);
-		WorkflowFactory.releaseSession();
 		
 	}
 }

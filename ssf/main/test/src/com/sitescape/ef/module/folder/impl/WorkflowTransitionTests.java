@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import com.sitescape.util.cal.Duration;
 
 import org.dom4j.io.SAXReader;
+import org.jbpm.JbpmContext;
 import org.jbpm.db.SchedulerSession;
 import org.jbpm.scheduler.exe.Timer;
 import org.springframework.core.io.ClassPathResource;
@@ -27,7 +28,6 @@ import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.module.workflow.impl.JbpmContext;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 import com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl;
 
@@ -86,7 +86,7 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 			wfi.modifyWorkflowState(entry, ws, "end");
 			checkState(ws, "end");
 		} finally {
-			WorkflowFactory.release();
+			
 		}
 		
 	}
@@ -122,7 +122,7 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 			wfi.modifyWorkflowState(entry, ws, "state3");
 			checkState(ws, "end");
 		} finally {
-			WorkflowFactory.release();
+			
 		}
 		
 	}
@@ -191,7 +191,7 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 
 			wfi.modifyWorkflowState(entry, ws, "end");
 		} finally {
-			WorkflowFactory.release();
+			
 		}
 		
 	}
@@ -238,7 +238,6 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "dateAfter");
 	} finally {
-			WorkflowFactory.release();
 		}
 		
 	}
@@ -335,14 +334,13 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 			entry.removeCustomAttribute("eventAfterEnd");
 			wfi.modifyWorkflowState(entry, ws, "doNoRecur");
 	} finally {
-			WorkflowFactory.release();
 		}
 		
 	}
 	public void testEventRecurTransition() {
 		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
-
+		
 		try {
 			Definition commandDef = importCommand("testEntry");
 		
@@ -400,8 +398,11 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 			if (ws.getTimerId() == null)
 				throw new RuntimeException("Expecting wait for timer at " + ws.getState());		
 			checkState(ws, "doRecur");
-    		WorkflowFactory.getSession().getSession().delete(WorkflowFactory.getSession().getSession().load(Timer.class, ws.getTimerId()));
-    		ws.setTimerId(null);
+			JbpmContext c = WorkflowFactory.getContext();
+			try {
+				c.getSession().delete(c.getSession().load(Timer.class, ws.getTimerId()));
+			} finally {c.close();};
+     		ws.setTimerId(null);
     		entry.removeCustomAttribute("eventEnded");
 			wfi.modifyWorkflowState(entry, ws, "doRecur");
 
@@ -418,7 +419,10 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 			if (ws.getTimerId() == null)
 				throw new RuntimeException("Expecting wait for timer at " + ws.getState());		
 			checkState(ws, "doRecur");
-    		WorkflowFactory.getSession().getSession().delete(WorkflowFactory.getSession().getSession().load(Timer.class, ws.getTimerId()));
+			c = WorkflowFactory.getContext();
+			try {
+				c.getSession().delete(c.getSession().load(Timer.class, ws.getTimerId()));
+			} finally {c.close();};
     		ws.setTimerId(null);
  			entry.removeCustomAttribute("eventBeforeEnd");
 			wfi.modifyWorkflowState(entry, ws, "doRecur");
@@ -434,7 +438,7 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 			attr = entry.addCustomAttribute("eventAfterStart", event);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "doRecur");
-    		WorkflowFactory.getSession().getSession().delete(WorkflowFactory.getSession().getSession().load(Timer.class, ws.getTimerId()));
+			WorkflowFactory.getContext().getSession().delete(WorkflowFactory.getContext().getSession().load(Timer.class, ws.getTimerId()));
     		ws.setTimerId(null);
 			entry.removeCustomAttribute("eventAfterStart");
 			wfi.modifyWorkflowState(entry, ws, "doRecur");
@@ -450,12 +454,12 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 			attr = entry.addCustomAttribute("eventAfterEnd", event);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "doRecur");
-    		WorkflowFactory.getSession().getSession().delete(WorkflowFactory.getSession().getSession().load(Timer.class, ws.getTimerId()));
+			WorkflowFactory.getContext().getSession().delete(WorkflowFactory.getContext().getSession().load(Timer.class, ws.getTimerId()));
     		ws.setTimerId(null);
 			entry.removeCustomAttribute("eventAfterEnd");
 			wfi.modifyWorkflowState(entry, ws, "doRecur");
 	} finally {
-			WorkflowFactory.release();
+			
 		}
 		
 	}

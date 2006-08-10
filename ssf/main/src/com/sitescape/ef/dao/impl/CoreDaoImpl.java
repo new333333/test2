@@ -483,9 +483,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	            	//see if in use
 	            	List results;
 	               	if (def.getType() != Definition.WORKFLOW) {
-	               		int count = countObjects(com.sitescape.ef.domain.FolderEntry.class, new FilterControls("entryDef", def.getId()));
+	               		int count = countObjects(com.sitescape.ef.domain.FolderEntry.class, new FilterControls("entryDef", def));
 	               		if (count > 0) throw new DefinitionInvalidOperation("Definition in use");
-	               		count = countObjects(com.sitescape.ef.domain.Principal.class, new FilterControls("entryDef", def.getId()));
+	               		count = countObjects(com.sitescape.ef.domain.Principal.class, new FilterControls("entryDef", def));
 	               		if (count > 0) throw new DefinitionInvalidOperation("Definition in use");
 	               		results = session.createCriteria(Binder.class)
 	               			.createCriteria("definitions")
@@ -498,7 +498,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		               		b.removeDefinition(def);
 		               	}
 	               	} else {
-	               		int count = countObjects(com.sitescape.ef.domain.WorkflowState.class, new FilterControls("definition", def.getId()));
+	               		int count = countObjects(com.sitescape.ef.domain.WorkflowState.class, new FilterControls("definition", def));
 	               		if (count > 0) throw new DefinitionInvalidOperation("Definition in use");
 
 	               		results = session.createCriteria(Binder.class)

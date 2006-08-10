@@ -13,7 +13,6 @@ import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.sitescape.ef.InternalException;
-import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 
 /**
  * This class implements functionality effectively identical to 
@@ -148,7 +147,6 @@ implements MethodInterceptor {
 			SessionFactoryUtils.processDeferredClose(getSessionFactory());
 		}
 		
-		WorkflowFactory.releaseSession();
 	}
 
 }
