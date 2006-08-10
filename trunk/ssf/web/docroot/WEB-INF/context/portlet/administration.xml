@@ -15,6 +15,7 @@
 	<bean id="adminConfigureProfileIndexController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ManageProfileIndexController" />
 	<bean id="adminImportDefinitionController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ImportDefinitionController" />
 	<bean id="adminExportDefinitionController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ExportDefinitionController" />
+	<bean id="adminConfigureConfigurationController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigureConfigurationController" />
 	<!-- Handlers -->
 
 	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
@@ -31,6 +32,7 @@
 						<entry key="configure_posting"><ref bean="adminConfigurePostingController"/></entry>
 						<entry key="configure_folder_index"><ref bean="adminConfigureSearchIndexController"/></entry>
 						<entry key="configure_profile_index"><ref bean="adminConfigureProfileIndexController"/></entry>
+						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
 						<entry key="import_definition"><ref bean="adminImportDefinitionController"/></entry>
 						<entry key="export_definition"><ref bean="adminExportDefinitionController"/></entry>
 					</map>

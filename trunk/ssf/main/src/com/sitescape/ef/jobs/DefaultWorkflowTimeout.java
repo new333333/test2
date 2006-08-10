@@ -4,7 +4,7 @@ package com.sitescape.ef.jobs;
 import java.util.Iterator;
 import java.util.Date;
 
-import com.sitescape.ef.module.workflow.impl.JbpmContext;
+import org.jbpm.JbpmContext;
 import org.jbpm.db.SchedulerSession;
 import org.jbpm.scheduler.exe.Timer;
 import org.quartz.JobDataMap;

@@ -74,15 +74,15 @@ public class WebKeys {
 	public static final String ACTION_VIEW_FOLDER_ENTRY = "view_folder_entry";
 	public static final String ACTION_VIEW_PROFILE_ENTRY = "view_profile_entry";
 	public static final String FORUM_AJAX_REQUEST = "__ajax_request";
-	public static final String LDAP_ACTION_CONFIGURE="configure_ldap";
-	public static final String NOTIFY_ACTION_CONFIGURE="configure_notify";
-	public static final String POSTING_ACTION_CONFIGURE="configure_posting";
-	public static final String POSTINGJOB_ACTION_CONFIGURE="configure_posting_job";
-	public static final String FOLDER_INDEX_ACTION_CONFIGURE="configure_folder_index";
-	public static final String PROFILE_INDEX_ACTION_CONFIGURE="configure_profile_index";
-	public static final String DEFINITION_ACTION_IMPORT="import_definition";
-	public static final String DEFINITION_ACTION_EXPORT="export_definition";
-	
+	public static final String ACTION_LDAP_CONFIGURE="configure_ldap";
+	public static final String ACTION_NOTIFY_CONFIGURE="configure_notify";
+	public static final String ACTION_POSTING_CONFIGURE="configure_posting";
+	public static final String ACTION_POSTINGJOB_CONFIGURE="configure_posting_job";
+	public static final String ACTION_FOLDER_INDEX_CONFIGURE="configure_folder_index";
+	public static final String ACTION_PROFILE_INDEX_CONFIGURE="configure_profile_index";
+	public static final String ACTION_DEFINITION_IMPORT="import_definition";
+	public static final String ACTION_DEFINITION_EXPORT="export_definition";
+	public static final String ACTION_CONFIGURATION="configure_configuration";
 	//operations
  	public static final String FORUM_OPERATION_ADD_FAVORITE_BINDER = "add_favorite_binder";
  	public static final String FORUM_OPERATION_ADD_FAVORITES_CATEGORY = "add_favorites_category";
@@ -94,7 +94,9 @@ public class WebKeys {
     public static final String OPERATION_DELETE="delete";
     public static final String OPERATION_MODIFY="modify";
     public static final String OPERATION_MOVE="move";
-       
+    public static final String OPERATION_ADD_CONFIGURATION="add_configuration";
+    public static final String OPERATION_MODIFY_CONFIGURATION="modify_configuration";
+      
     public static final String FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT="delete_component";
     public static final String FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT="hide_component";
     public static final String FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT="show_component";
@@ -180,7 +182,6 @@ public class WebKeys {
     public static final String DEBUG_ON="on";
     public static final String DEBUG_OFF="off";
     public static final String DEFAULT_FOLDER_DEFINITION="ssDefaultFolderDefinition";
-    public static final String DEFAULT_FOLDER_DEFINITION_ID="ssDefaultFolderDefinitionId";
     public static final String DEFINITION="ssDefinition";
     public static final String DEFINITION_ID="ssDefinitionId";
     public static final String DEFINITION_BINDER="ssDefinitionBinder";

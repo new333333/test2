@@ -129,7 +129,6 @@ public class DefinitionHelper {
 			}
 
 			model.put(WebKeys.DEFAULT_FOLDER_DEFINITION, defaultForumDefinition);
-			model.put(WebKeys.DEFAULT_FOLDER_DEFINITION_ID, defaultForumDefinition.getId());
 			Document forumViewDoc = defaultForumDefinition.getDefinition();
 			if (forumViewDoc != null) {
 				Element forumViewElement ;
@@ -181,8 +180,8 @@ public class DefinitionHelper {
 	}
 	public static void getDefaultEntryView(Entry entry, Map model, String path) {
 		//Create an empty entry definition
-		Document defDoc = getInstance().getDefinitionModule().getDefaultEntryDefinition(entry);
-		
+		Definition def = getInstance().getDefinitionModule().setDefaultEntryDefinition(entry);
+		Document defDoc = def.getDefinition();
 		//Add the "default viewer" item
 		Element entryView = (Element) defDoc.getRootElement().selectSingleNode(path);
 		model.put(WebKeys.CONFIG_ELEMENT, entryView);
@@ -191,7 +190,8 @@ public class DefinitionHelper {
 		
 	//Routine to build a definition file on the fly for viewing binders with no definition
 	public static Document getDefaultBinderDefinition(Binder binder, Map model, String viewPath) {
-		Document defDoc = getInstance().getDefinitionModule().getDefaultBinderDefinition(binder);
+		Definition def = getInstance().getDefinitionModule().setDefaultBinderDefinition(binder);
+		Document defDoc = def.getDefinition();
 		
 		//Add the "default viewer" item
 		Element entryView = (Element) defDoc.getRootElement().selectSingleNode(viewPath);

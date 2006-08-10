@@ -305,15 +305,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected Map modifyBinder_toEntryData(Binder binder, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
     	Definition def = binder.getEntryDef();
-    	Document defDoc = null;
     	if (def == null) {
     		//There is no definition for this binder. Get the default definition.
-    		Map model = new HashMap();
-    		defDoc = DefinitionHelper.getDefaultBinderDefinition(binder, model, "//item[@type='form']");
-    	} else {
-    		defDoc = def.getDefinition();
-    	}
-        return getDefinitionModule().getEntryData(defDoc, inputData, fileItems);
+     		def = getDefinitionModule().setDefaultBinderDefinition(binder);
+    	} 
+        return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
     }
     protected void modifyBinder_fillIn(Binder binder, InputDataAccessor inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();

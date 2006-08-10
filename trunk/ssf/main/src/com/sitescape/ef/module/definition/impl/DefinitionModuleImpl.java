@@ -1,5 +1,7 @@
 package com.sitescape.ef.module.definition.impl;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,6 +18,9 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.ConfigurationException;
@@ -58,9 +63,18 @@ import com.sitescape.util.Validator;
 public class DefinitionModuleImpl extends CommonDependencyInjection implements DefinitionModule {
 	private Document definitionConfig;
 	private MergeableXmlClassPathConfigFiles definitionBuilderConfig;
-	
+	private static final String[] defaultDefAttrs = new String[]{"internalId", "zoneName", "type"};
+
 	private WorkflowModule workflowModule;
-	    
+	private static final String default_folder="402883b90cc53079010cc539bf260001";
+	private static final String default_folder_entry="402883b90cc53079010cc539bf260002";
+	private static final String default_file_folder="402883b90cc53079010cc539bf260003";
+	private static final String default_file_entry="402883b90cc53079010cc539bf260004";
+	private static final String default_workspace="402883b90cc53079010cc539bf260005";
+	private static final String default_profiles="402883b90cc53079010cc539bf260006";
+	private static final String default_user="402883b90cc53079010cc539bf260007";
+	private static final String default_group="402883b90cc53079010cc539bf260008";
+	
 	public void setWorkflowModule(WorkflowModule workflowModule) {
 		this.workflowModule = workflowModule;
 	}
@@ -153,7 +167,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		newDefinition.setType(type);
 		newDefinition.setZoneName(zoneName);
 		getCoreDao().save(newDefinition);
-		Document doc = getDefaultDefinition(name, title, type, inputData);
+		Document doc = getInitialDefinition(name, title, type, inputData);
 		Element root = doc.getRootElement();
 		root.addAttribute("databaseId", newDefinition.getId());
 		setDefinition(newDefinition, doc);
@@ -337,8 +351,109 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			getWorkflowModule().deleteProcessDefinition(def.getId());
 		} 
 	}
+	/**
+	 * Load the default definition for a definition type.  If it doesn't exist, create it
+	 * @param type
+	 * @return
+	 */
+	public Definition createDefaultDefinition(int type) {
+		Definition def = null;
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		String definitionTitle=null;
+		String internalId=null;
+		String definitionName=null;
+		switch (type) {
+			case Definition.FOLDER_VIEW: {
+				List result = getCoreDao().loadObjects(Definition.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{default_folder, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (Definition)result.get(0);
+				definitionTitle = "__definition_default_folder";
+				definitionName="Folder";
+				internalId = default_folder;
+				break;
+			}
+			case Definition.FOLDER_ENTRY: {
+				List result = getCoreDao().loadObjects(Definition.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{default_folder_entry, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (Definition)result.get(0);
+				definitionTitle = "__definition_default_folder_entry";
+				internalId = default_folder_entry;
+				definitionName="Folder entry";
+				break;
+			}
+			case Definition.FILE_FOLDER_VIEW: {
+				List result = getCoreDao().loadObjects(Definition.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{default_file_folder, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (Definition)result.get(0);
+				definitionTitle = "__definition_default_file_folder";				
+				internalId = default_file_folder;
+				definitionName="File folder";
+				break;
+				
+			}
+			case Definition.FILE_ENTRY_VIEW: {
+				List result = getCoreDao().loadObjects(Definition.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{default_file_entry, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (Definition)result.get(0);
+				internalId = default_file_entry;
+				definitionTitle = "__definition_default_file_entry";
+				definitionName="File entry";
+				break;
+				
+			}
+			case Definition.WORKSPACE_VIEW: {
+				List result = getCoreDao().loadObjects(Definition.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{default_workspace, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (Definition)result.get(0);
+				definitionTitle = "__definition_default_workspace";
+				internalId = default_workspace;
+				definitionName="Workspace";
+				break;				
+			}
+			
+			case Definition.PROFILE_VIEW: {
+				List result = getCoreDao().loadObjects(Definition.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{default_profiles, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (Definition)result.get(0);
+				internalId = default_profiles;
+				definitionTitle = "__definition_default_profiles";
+				definitionName="Profiles";
+				break;				
+			}
+			case Definition.PROFILE_ENTRY_VIEW: {
+				List result = getCoreDao().loadObjects(Definition.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{default_user, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (Definition)result.get(0);
+				internalId = default_user;
+				definitionTitle = "__definition_default_user";
+				definitionName="User";
+				break;				
+			}
+		}
+		Document doc = getInitialDefinition(definitionName, definitionTitle, type, new MapInputData(new HashMap()));
+		String id = addDefinition(doc);
+		def = getCoreDao().loadDefinition(id, zoneName);
+		def.setInternalId(internalId);	
+		return def;
+	}
+	private Definition loadDef(String key, String internalId, String zoneName) {
+		try {
+	        Resource resource =  new ClassPathResource("config"  + File.separator +  key);
+			InputStream fIn = resource.getInputStream();
+	        SAXReader xIn = new SAXReader();
+			Document doc = xIn.read(fIn);   
+			fIn.close();
+			String id = addDefinition(doc);
+			Definition def = getCoreDao().loadDefinition(id, zoneName);
+			def.setInternalId(internalId);
+			return def;
+		} catch (Exception ex) {
+			logger.error("Error creating default definition:" + ex.getLocalizedMessage());
+			return null;
+		}
 
-	public Document getDefaultDefinition(String name, String title, int type, InputDataAccessor inputData) {
+	}
+	public Document getInitialDefinition(String name, String title, int type, InputDataAccessor inputData) {
 		this.getDefinitionConfig();
 		Element configRoot = definitionConfig.getRootElement();
 		Element definition = (Element) configRoot.selectSingleNode("item[@definitionType='"+type+"']");
@@ -362,43 +477,42 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		
 		return newTree;
 	}
-	public Document getDefaultBinderDefinition(Binder binder) {
+	public Definition setDefaultBinderDefinition(Binder binder) {
 		//Create an empty binder definition
 		int definitionType;
-		String definitionTitle;
-		if (binder instanceof Workspace) {
+		if (binder instanceof Workspace) {			
 			definitionType = Definition.WORKSPACE_VIEW;
-			definitionTitle = "__definition_default_workspace";
 		} else if (binder instanceof ProfileBinder) {
 			definitionType = Definition.PROFILE_VIEW;
-			definitionTitle = "__definition_default_profile";
 		} else {
 			if ((binder.getDefinitionType() == null) ||
 					(binder.getDefinitionType().intValue() == Definition.FOLDER_VIEW)) {
 				definitionType = Definition.FOLDER_VIEW;
-				definitionTitle = "__definition_default_folder";
 			} else {
 				definitionType = Definition.FILE_FOLDER_VIEW;
-				definitionTitle = "__definition_default_file_folder";
-				
 			}
-			
 		}
-		return getDefaultDefinition("ss_default_binder_def", definitionTitle, definitionType, new MapInputData(new HashMap()));
+		Definition def = createDefaultDefinition(definitionType);
+		binder.setEntryDef(def);
+		return def;
 	}
-	public Document getDefaultEntryDefinition(Entry entry) {
+	public Definition setDefaultEntryDefinition(Entry entry) {
 		//Create an empty entry definition
-		int definitionType = Definition.FOLDER_ENTRY;
+		int definitionType;
 		if (entry instanceof Principal) {
 			definitionType = Definition.PROFILE_ENTRY_VIEW;
 		} else {
 			Binder binder = entry.getParentBinder();
-			if (binder.getDefinitionType() != null) {
-				definitionType = binder.getDefinitionType().intValue();
-			} 
+			if ((binder.getDefinitionType() == null) ||
+					(binder.getDefinitionType().intValue() == Definition.FOLDER_VIEW)) {
+				definitionType = Definition.FOLDER_ENTRY;
+			} else {
+				definitionType = Definition.FILE_ENTRY_VIEW;
+			}
 		}
-				
-		return getDefaultDefinition("ss_default_entry_view","__definition_default_entry_view", definitionType, new MapInputData(new HashMap()));
+		Definition def = createDefaultDefinition(definitionType);
+		entry.setEntryDef(def);
+		return def;
 	}
 	/**
 	 * Adds an item to an item in a definition tree.

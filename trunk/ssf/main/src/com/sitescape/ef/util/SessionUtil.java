@@ -8,7 +8,6 @@ import org.hibernate.engine.SessionImplementor;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 /**
  * Helper class to setup hibernate.  Simulates openSessionInView for
  * non-web users, ie) scheduled jobs.
@@ -49,7 +48,6 @@ public class SessionUtil {
 			(SessionHolder) TransactionSynchronizationManager.unbindResource(sessionFactory);
 	   	 		SessionFactoryUtils.releaseSession(sessionHolder.getSession(), sessionFactory);
 	   	}
-	   	WorkflowFactory.releaseSession();
 	}
 	public static boolean sessionActive() {
 	   	if (TransactionSynchronizationManager.hasResource(getSessionFactory())) return true;

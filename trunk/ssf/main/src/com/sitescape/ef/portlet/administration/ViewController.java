@@ -150,7 +150,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("image", "bullet");
 		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.LDAP_ACTION_CONFIGURE);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LDAP_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
@@ -172,7 +172,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("image", "bullet");
 		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.NOTIFY_ACTION_CONFIGURE);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_NOTIFY_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
@@ -183,7 +183,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("image", "bullet");
 		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.POSTING_ACTION_CONFIGURE);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_POSTING_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
@@ -194,7 +194,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("image", "bullet");
 		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.POSTINGJOB_ACTION_CONFIGURE);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_POSTINGJOB_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
@@ -205,7 +205,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("image", "bullet");
 		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.FOLDER_INDEX_ACTION_CONFIGURE);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_FOLDER_INDEX_CONFIGURE);
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
@@ -216,7 +216,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("image", "bullet");
 		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.PROFILE_INDEX_ACTION_CONFIGURE);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_PROFILE_INDEX_CONFIGURE);
 		url.setWindowState(WindowState.NORMAL);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
@@ -227,7 +227,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("image", "bullet");
 		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.DEFINITION_ACTION_IMPORT);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_IMPORT);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 
@@ -236,10 +236,20 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("image", "bullet");
 		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.DEFINITION_ACTION_EXPORT);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_EXPORT);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 
+		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", NLT.get("administration.configuration_builder"));
+		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+		url.setWindowState(WindowState.MAXIMIZED);
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
+		
 		return new ModelAndView("administration/view", WebKeys.ADMIN_TREE, adminTree);
 	}
 }

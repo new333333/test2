@@ -78,7 +78,7 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 		model.put(WebKeys.EMAIL_ALIASES, getAdminModule().getEmailAliases());
 		Toolbar toolbar = new Toolbar();
 		PortletURL url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.POSTING_ACTION_CONFIGURE);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_POSTING_CONFIGURE);
 		toolbar.addToolbarMenu("ss_scheduleLink", NLT.get("incoming.toolbar_forums"), url);
 		model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_POSTING_JOB, model); 

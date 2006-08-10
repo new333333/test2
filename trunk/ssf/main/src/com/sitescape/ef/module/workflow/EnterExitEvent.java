@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.dom4j.Element;
 import org.jbpm.context.exe.ContextInstance;
-import org.jbpm.db.JbpmSession;
 import org.jbpm.graph.def.Event;
 import org.jbpm.graph.def.Node;
 import org.jbpm.graph.def.ProcessDefinition;
@@ -25,7 +24,6 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowSupport;
-import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 import com.sitescape.util.Validator;
 
 public class EnterExitEvent extends AbstractActionHandler {
@@ -60,7 +58,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 				items  = WorkflowUtils.getOnEntry(ws.getDefinition(), state);
 			} else {
 				//cancel timers associated with this state.
-				token.getProcessInstance().getSchedulerInstance().cancel("onDataValue", token);
+				executionContext.getJbpmContext().getSchedulerSession().cancelTimersByName("onDataValue", token);
 				items  = WorkflowUtils.getOnExit(ws.getDefinition(), state);				
 			}
 			boolean check = false;
@@ -68,7 +66,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 				Element item = (Element)items.get(i);
 	   			String name = item.attributeValue("name","");
 	   			if ("variable".equals(name)) {
-	   				if (TransitionUtils.setVariables(item, executionContext, entry, ws)) {
+	   				if (TransitionUtils.setVariable(item, executionContext, entry, ws)) {
 	   					check = true;
 	   				}
 	   			} else if ("startParallelThread".equals(name)) {
@@ -100,12 +98,10 @@ public class EnterExitEvent extends AbstractActionHandler {
 
 		if (infoEnabled) logger.info("Starting thread: " + threadName);
 		
-		JbpmSession session = WorkflowFactory.getSession();
 		//	if thread exists, terminate it
 		WorkflowState thread = entry.getWorkflowStateByThread(currentWs.getDefinition(), threadName);
 		if (thread != null) {
-//			Token childToken = executionContext.getJbpmContext().loadToken(thread.getTokenId().longValue());
-			Token childToken = session.getGraphSession().loadToken(thread.getTokenId().longValue());
+			Token childToken = executionContext.getJbpmContext().loadToken(thread.getTokenId().longValue());
 			childToken.end(false);
 			entry.removeWorkflowState(thread);
 		}
@@ -116,8 +112,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 		//This also implies we cannot look child tokens up by name cause we don't know it
 		//the 'real' thread name is kept in WorkflowState
 		Token subToken = new Token(pI.getRootToken(), threadName + "-" + new Date());
-//		executionContext.getJbpmContext().getSession().save(subToken);
-		session.getSession().save(subToken);
+		executionContext.getJbpmContext().getSession().save(subToken);
 		//Track state of thread
 		thread = (WorkflowState) new WorkflowState();
 		thread.setThreadName(threadName);
@@ -142,8 +137,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 		WorkflowState thread = entry.getWorkflowStateByThread(currentWs.getDefinition(), threadName);
 		if (thread != null) {
 			//child is active, end it
-//			Token childToken = executionContext.getJbpmContext().loadToken(thread.getTokenId().longValue());
-			Token childToken = WorkflowFactory.getSession().getGraphSession().loadToken(thread.getTokenId().longValue());
+			Token childToken = executionContext.getJbpmContext().loadToken(thread.getTokenId().longValue());
 			if (childToken != null)	childToken.end();
 			entry.removeWorkflowState(thread);
 			if (infoEnabled) logger.info("Stoping thread: " + threadName);

@@ -12,6 +12,7 @@ import java.util.GregorianCalendar;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.jbpm.JbpmContext;
 import org.jbpm.calendar.BusinessCalendar;
 import org.jbpm.calendar.Duration;
 import org.jbpm.context.exe.ContextInstance;
@@ -26,7 +27,6 @@ import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowSupport;
-import com.sitescape.ef.module.workflow.impl.JbpmContext;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 import com.sitescape.ef.util.InvokeUtil;
 import com.sitescape.ef.util.ObjectPropertyNotFoundException;
@@ -111,14 +111,19 @@ public class TransitionUtils {
 		if ((variables == null) || variables.isEmpty()) return false;
 		for (int i=0; i<variables.size(); ++i) {
 			Element variableEle = (Element)variables.get(i);
-			String name = DefinitionUtils.getPropertyValue(variableEle, "name");
-			if (name == null) continue;
-			String value = DefinitionUtils.getPropertyValue(variableEle, "value");
-
-			ContextInstance cI = executionContext.getContextInstance();
-			cI.setVariable(name, value);
-			if (infoEnabled) logger.info("Set variable " + name + "=" + value);
+			setVariable(variableEle, executionContext, entry, currentWs);
 		}
+		return true;
+
+	}	
+	public static boolean setVariable(Element variableEle, ExecutionContext executionContext, WorkflowSupport entry, WorkflowState currentWs) {
+		String name = DefinitionUtils.getPropertyValue(variableEle, "name");
+		if (name == null) return false;
+		String value = DefinitionUtils.getPropertyValue(variableEle, "value");
+
+		ContextInstance cI = executionContext.getContextInstance();
+		cI.setVariable(name, value);
+		if (infoEnabled) logger.info("Set variable " + name + "=" + value);
 		return true;
 
 	}	
@@ -360,7 +365,7 @@ public class TransitionUtils {
 	   	Timer timer = null;
 	   	if (timerId != null) {
     		try {
-	    		timer = (Timer)WorkflowFactory.getSession().getSession().load(Timer.class, timerId);
+    			timer = (Timer)executionContext.getJbpmContext().getSession().load(Timer.class, timerId);
 	    		if (minDate.getTime() != timer.getDueDate().getTime()) {
 	    			timer.setDueDate(minDate);
 	    		}
@@ -369,7 +374,7 @@ public class TransitionUtils {
     		timer = new Timer(executionContext.getToken());
     		timer.setDueDate(minDate);
     		timer.setName("onDataValue");
-    		WorkflowFactory.getSession().getSession().save(timer);
+    		executionContext.getJbpmContext().getSession().save(timer);
     		state.setTimerId(timer.getId());
     		timer.setAction(executionContext.getProcessDefinition().getAction("timerAction"));
     	}

@@ -29,24 +29,24 @@ public class Definition extends PersistentTimestampObject implements AclControll
     private PersistentAclSet aclSet; //initialized by hiberate access=field
     private boolean inheritAclFromParent = false;
     private String title="";
-
+    private String iId;
     //type values
     //types 5 and 9 are used in naming processorKeys.  Kep model-processor-mappings.xml up to date
-    public static int FOLDER_ENTRY=1;
-	public static int WORKFLOW=2;
-	public static int REPORT=3;
-	public static int ENTRY_FILTER=4;
-	public static int FOLDER_VIEW=5;
-	public static int PROFILE_VIEW=6;
-	public static int PROFILE_ENTRY_VIEW=7;
-	public static int WORKSPACE_VIEW=8;
-	public static int FILE_FOLDER_VIEW=9;
-	public static int FILE_ENTRY_VIEW=10;
+    public static final int FOLDER_ENTRY=1;
+	public static final int WORKFLOW=2;
+	public static final int REPORT=3;
+	public static final int ENTRY_FILTER=4;
+	public static final int FOLDER_VIEW=5;
+	public static final int PROFILE_VIEW=6;
+	public static final int PROFILE_ENTRY_VIEW=7;
+	public static final int WORKSPACE_VIEW=8;
+	public static final int FILE_FOLDER_VIEW=9;
+	public static final int FILE_ENTRY_VIEW=10;
 	
 	//visibility values
-	public static int PUBLIC=1;
-	public static int LOCAL=2;
-	public static int PERSONAL=3;
+	public static final int PUBLIC=1;
+	public static final int LOCAL=2;
+	public static final int PERSONAL=3;
 	
 	public Definition() {
 		
@@ -113,6 +113,19 @@ public class Definition extends PersistentTimestampObject implements AclControll
     }
     public void setZoneName(String id) {
     	this.zoneName = id;
+    }
+    
+    /**
+     * Internal id used to identify default definitions.  This id plus
+     * the zoneName are used to locate default definitions.  If we just used the primary key id
+     * the zones would need the same default and that may not be desirable.
+     * @hibernate.property length="32"
+     */
+    public String getInternalId() {
+    	return this.iId;
+    }
+    public void setInternalId(String iId) {
+    	this.iId = iId;
     }
     /**
      * @hibernate.property type="org.springframework.orm.hibernate3.support.BlobByteArrayType"

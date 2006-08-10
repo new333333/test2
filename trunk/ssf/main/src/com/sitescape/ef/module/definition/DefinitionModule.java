@@ -24,10 +24,18 @@ public interface DefinitionModule {
 	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData);
 	public String addDefinition(Document doc);
 	public void deleteDefinition(String id);
-	public Document getDefaultBinderDefinition(Binder binder);
-	public Document getDefaultEntryDefinition(Entry entry);
-	
-	public Document getDefaultDefinition(String name, String title, int type, InputDataAccessor inputData);
+	public Definition createDefaultDefinition(int type);
+	public Definition setDefaultBinderDefinition(Binder binder);
+	public Definition setDefaultEntryDefinition(Entry entry);
+	/**
+	 * Get 
+	 * @param name
+	 * @param title
+	 * @param type
+	 * @param inputData
+	 * @return
+	 */
+	public Document getInitialDefinition(String name, String title, int type, InputDataAccessor inputData);
 	public Document getDefinitionConfig();
 	public void modifyDefinitionName(String id, String name, String caption);
 	public void modifyDefinitionAttribute(String id, String key, String value);
