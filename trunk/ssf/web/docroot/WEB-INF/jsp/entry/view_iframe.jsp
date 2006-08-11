@@ -13,6 +13,12 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
+<script type="text/javascript">
+var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
+</script>
+
+<jsp:include page="/WEB-INF/jsp/entry/view_iframe_js.jsp" />
+
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
 
@@ -55,12 +61,6 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
     onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="no" >xxx</iframe>
   </ssf:box>
 </div>
-
-<script type="text/javascript">
-var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
-</script>
-
-<jsp:include page="/WEB-INF/jsp/entry/view_iframe_js.jsp" />
 
 <form class="ss_style ss_form" name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
 <input type="hidden" name="entry_width">

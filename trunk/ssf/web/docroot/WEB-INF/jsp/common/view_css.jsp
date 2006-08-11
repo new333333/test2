@@ -74,6 +74,10 @@ var ss_helpSystemUrl = "<ssf:url
 
 //Not logged in message
 var ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
+function ss_notLoggedIn() {
+	alert(ss_not_logged_in);
+}
+
 </script>
 
 <c:set var="ss_color_theme" value="debug" scope="request"/>

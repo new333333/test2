@@ -17,6 +17,22 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
+<script type="text/javascript">
+//Set up variables needed by the javascript routines
+var ss_saveEntryHeightUrl = "<ssf:url 
+	adapter="true" 
+	portletName="ss_forum" 
+	action="__ajax_request" 
+	actionUrl="true" >
+	<ssf:param name="operation" value="save_entry_height" />
+	<ssf:param name="binderId" value="${ssFolder.id}" />
+	</ssf:url>";
+var ss_folderTableId = 'ss_folder_table';
+var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
+</script>
+
+<jsp:include page="/WEB-INF/jsp/entry/view_vertical_js.jsp" />
+
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
 
@@ -84,12 +100,6 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 </div>
 </div>
 <div id="ss_showfolder_bottom" class="ss_style ss_portlet">&nbsp;</div>
-
-<script type="text/javascript">
-var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
-</script>
-
-<jsp:include page="/WEB-INF/jsp/entry/view_vertical_js.jsp" />
 
 <form class="ss_style ss_form" name="ss_saveEntryHeightForm" id="ss_saveEntryHeightForm" >
 <input type="hidden" name="entry_height">

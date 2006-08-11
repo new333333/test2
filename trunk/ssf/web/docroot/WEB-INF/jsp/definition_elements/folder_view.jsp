@@ -115,7 +115,6 @@ function highlightLineById(id) {
 </table>
 </div>
 </div>
-<c:set var="ss_folderTableId" value="ss_folder_table" scope="request"/>
 <ssf:slidingTable id="ss_folder_table" type="<%= slidingTableStyle %>" 
  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}">
 

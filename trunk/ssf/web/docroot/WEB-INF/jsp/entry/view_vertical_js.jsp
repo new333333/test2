@@ -230,11 +230,11 @@ function ss_divStopDrag(evt) {
     		//IE requires fix-up if wndow is scrolled
     		dObjTop += parseInt(self.document.body.scrollTop)
         }
-		var tableDivObj = document.getElementById('${ss_folderTableId}')
+		var tableDivObj = document.getElementById(ss_folderTableId)
 		var marginOffset = parseInt(parseInt(tableDivObj.style.marginTop) + parseInt(tableDivObj.style.marginBottom))
 	    ss_folderDivHeight = parseInt(parseInt(dObjTop) + 
 	    		ss_getDivHeight('ss_showfolder_slider') - marginOffset - 3 -
-	    		parseInt(ss_getDivTop('${ss_folderTableId}')));
+	    		parseInt(ss_getDivTop(ss_folderTableId)));
 	    if (ss_folderDivHeight < ss_minFolderDivHeight) ss_folderDivHeight = ss_minFolderDivHeight;
 	    ss_setObjectHeight(tableDivObj, ss_folderDivHeight);
 
@@ -255,14 +255,7 @@ function ss_saveEntryHeight(entryHeight) {
 	if (entryHeight == ss_lastEntryHeight) return;
 	ss_lastEntryHeight = entryHeight;
     self.document.forms['ss_saveEntryHeightForm'].entry_height.value = entryHeight;
-	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true" >
-		<ssf:param name="operation" value="save_entry_height" />
-		<ssf:param name="binderId" value="${ssFolder.id}" />
-    	</ssf:url>"
+	var url = ss_saveEntryHeightUrl;
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("ss_saveEntryHeightForm")
 	ajaxRequest.setPostRequest(ss_postEntryHeightRequest);
@@ -272,7 +265,7 @@ function ss_saveEntryHeight(entryHeight) {
 function ss_postEntryHeightRequest(obj) {
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+		alert(ss_not_logged_in);
 	}
 }
 

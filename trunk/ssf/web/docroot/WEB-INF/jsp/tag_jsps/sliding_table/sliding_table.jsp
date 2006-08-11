@@ -558,7 +558,7 @@ function ss_preSlidingTableRequest(obj) {
 function ss_postSlidingTableRequest(obj) {
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+		alert(ss_not_logged_in);
 	} else {
 		ss_showSlidingTableCols200()
 	}
