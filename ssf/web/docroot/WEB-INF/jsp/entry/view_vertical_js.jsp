@@ -13,25 +13,33 @@ var ss_marginRight = 2
 var ss_entryHeightHighWaterMark = 0
 
 function ss_setEntryDivHeight() {
-	if (window.ss_showentryframe && window.ss_showentryframe.document && 
-			window.ss_showentryframe.document.body) {
-	    var wObj3 = self.document.getElementById('ss_showentryframe')
-		if (ss_minEntryDivHeight > ss_entryHeightHighWaterMark) {
-			ss_entryHeightHighWaterMark = ss_minEntryDivHeight;
-			ss_setObjectHeight(wObj3, ss_minEntryDivHeight);
+	try {
+		if (window.ss_showentryframe && window.ss_showentryframe.document && 
+				window.ss_showentryframe.document.body) {
+		    var wObj3 = self.document.getElementById('ss_showentryframe')
+			if (ss_minEntryDivHeight > ss_entryHeightHighWaterMark) {
+				ss_entryHeightHighWaterMark = ss_minEntryDivHeight;
+				ss_setObjectHeight(wObj3, ss_minEntryDivHeight);
+			}
+			//setTimeout("ss_setEntryDivHeight2();", 100);
+			setTimeout("ss_positionEntryDiv();", 100);
 		}
-		//setTimeout("ss_setEntryDivHeight2();", 100);
-		setTimeout("ss_positionEntryDiv();", 100);
+	} catch(e) {
+		ss_debug('ss_setEntryDivHeight failed: ' + e.message)
 	}
 }
 function ss_setEntryDivHeight2() {
-	if (window.ss_showentryframe && window.ss_showentryframe.document && 
-			window.ss_showentryframe.document.body) {
-	    var wObj3 = self.document.getElementById('ss_showentryframe')
-	    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
-	    var entryHeightPlus2 = parseInt(entryHeight + 2)
-		ss_setObjectHeight(wObj3, entryHeightPlus2);
-		setTimeout("ss_positionEntryDiv();", 100);
+	try {
+		if (window.ss_showentryframe && window.ss_showentryframe.document && 
+				window.ss_showentryframe.document.body) {
+		    var wObj3 = self.document.getElementById('ss_showentryframe')
+		    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
+		    var entryHeightPlus2 = parseInt(entryHeight + 2)
+			ss_setObjectHeight(wObj3, entryHeightPlus2);
+			setTimeout("ss_positionEntryDiv();", 100);
+		}
+	} catch(e) {
+		ss_debug('ss_setEntryDivHeight2 failed: ' + e.message)
 	}
 }
 function ss_positionEntryDiv() {
@@ -51,17 +59,21 @@ function ss_positionEntryDiv() {
 	ss_setObjectWidth(wObj2, width);
 
     //Allow the entry section to grow to as large as needed to show the entry
-	if (window.ss_showentryframe && window.ss_showentryframe.document && 
-			window.ss_showentryframe.document.body) {
-	    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
-	    if (entryHeight < ss_minEntryDivHeight) entryHeight = ss_minEntryDivHeight;
-	    if (entryHeight > ss_entryHeightHighWaterMark) {
-		    //Only expand the height. Never shrink it. Otherwise the screen jumps around.
-		    ss_entryHeightHighWaterMark = entryHeight;
-			ss_setObjectHeight(wObj1, entryHeight);
-			//ss_setObjectHeight(wObj4, entryHeight);
+    try {
+		if (window.ss_showentryframe && window.ss_showentryframe.document && 
+				window.ss_showentryframe.document.body) {
+		    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
+		    if (entryHeight < ss_minEntryDivHeight) entryHeight = ss_minEntryDivHeight;
+		    if (entryHeight > ss_entryHeightHighWaterMark) {
+			    //Only expand the height. Never shrink it. Otherwise the screen jumps around.
+			    ss_entryHeightHighWaterMark = entryHeight;
+				ss_setObjectHeight(wObj1, entryHeight);
+				//ss_setObjectHeight(wObj4, entryHeight);
+			}
+			ss_setObjectHeight(wObj3, entryHeight);
 		}
-		ss_setObjectHeight(wObj3, entryHeight);
+	} catch(e) {
+		ss_debug('ss_setEntryDivHeight failed: ' + e.message)
 	}
 	
 	ss_positioningEntryDiv = 0

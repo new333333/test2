@@ -52,7 +52,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
     <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
   <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; display:block;"
     src="<html:rootPath/>js/forum/null.html" height="95%" width="100%" 
-    onLoad="ss_setEntryDivHeight()" frameBorder="no" >xxx</iframe>
+    onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="no" >xxx</iframe>
   </ssf:box>
 </div>
 
