@@ -1,17 +1,5 @@
-<% //Supporting javascript routines for view_iframe.jsp %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+//Routines that support the iframe folder style
 
-<script type="text/javascript">
-<c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
-var ss_entryWindowTop = ${ss_entryWindowTop};
-var ss_entryWindowLeft = ${ss_entryWindowLeft};
-</c:if>
-<c:if test="${empty ss_entryWindowTop || empty ss_entryWindowLeft}">
-var ss_entryWindowTop = -1;
-var ss_entryWindowLeft = -1;
-</c:if>
-
-var ss_entryWindowWidth = ${ss_entryWindowWidth};
 var ss_minEntryWindowWidth = 200;
 var ss_minEntryWindowHeight = 200;
 var ss_entryWindowHeight = ss_minEntryWindowHeight;
@@ -41,9 +29,9 @@ function ss_showForumEntryInIframe(url) {
 
     if (wObj.src && wObj.src == url) {
     	ss_nextUrl = url
-    	wObj.src = "<html:rootPath/>js/forum/refresh.html";
-    } else if (wObj.src && wObj.src == "<html:rootPath/>js/forum/refresh.html" && ss_nextUrl == url) {
-    	wObj.src = "<html:rootPath/>js/forum/refresh.html";
+    	wObj.src = ss_forumRefreshUrl;
+    } else if (wObj.src && wObj.src == ss_forumRefreshUrl && ss_nextUrl == url) {
+    	wObj.src = ss_forumRefreshUrl;
     } else {
     	wObj.src = url
     }
@@ -88,7 +76,7 @@ function ss_positionEntryDiv() {
     ss_setObjectWidth(wObj2, ss_entryWindowWidth);
     //ss_setObjectWidth(wObj3, ss_entryWindowWidth);
     
-    wObj1.style.background = "${ss_style_background_color}"
+    wObj1.style.background = ss_entryBackgroundColor;
     wObj1.style.visibility = "visible";
 
     //Allow the entry section to grow to as large as needed to show the entry
@@ -275,13 +263,7 @@ function ss_saveEntryWidth(entryWidth, entryTop, entryLeft) {
     self.document.forms['ss_saveEntryWidthForm'].entry_width.value = entryWidth;
     self.document.forms['ss_saveEntryWidthForm'].entry_top.value = entryTop;
     self.document.forms['ss_saveEntryWidthForm'].entry_left.value = entryLeft;
-	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true" >
-		<ssf:param name="operation" value="save_entry_width" />
-    	</ssf:url>"
+	var url = ss_saveEntryWidthUrl;
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("ss_saveEntryWidthForm")
 	//ajaxRequest.setEchoDebugInfo();
@@ -300,4 +282,3 @@ function ss_postEntryWidthRequest(obj) {
 	}
 }
 
-</script>

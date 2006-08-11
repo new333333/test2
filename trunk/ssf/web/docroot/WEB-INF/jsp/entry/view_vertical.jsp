@@ -30,8 +30,7 @@ var ss_saveEntryHeightUrl = "<ssf:url
 var ss_folderTableId = 'ss_folder_table';
 var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 </script>
-
-<jsp:include page="/WEB-INF/jsp/entry/view_vertical_js.jsp" />
+<script type="text/javascript" src="<html:rootPath/>js/forum/view_vertical.js"></script>
 
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>

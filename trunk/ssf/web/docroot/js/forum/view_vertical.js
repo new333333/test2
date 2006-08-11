@@ -1,7 +1,5 @@
-<% //Supporting javascript routines for view_vertical.jsp %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+//Javascript routines for viewing vertical style folders
 
-<script type="text/javascript">
 var ss_folderDivHeight = 400;
 var ss_bottomHeight = 100;
 var ss_minFolderDivHeight = 100;
@@ -268,5 +266,3 @@ function ss_postEntryHeightRequest(obj) {
 		alert(ss_not_logged_in);
 	}
 }
-
-</script>
