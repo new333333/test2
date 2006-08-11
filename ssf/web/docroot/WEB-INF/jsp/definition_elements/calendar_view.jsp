@@ -25,27 +25,6 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 </c:if>
 
-<script type="text/javascript">
-function highlightLineById(id) {
-    if (id == "") {return;}
-    var obj = null
-    if (isNSN || isNSN6 || isMoz5) {
-        obj = self.document.getElementById(id)
-    } else {
-        obj = self.document.all[id]
-    }
- 
-	if (highlightedLine != null) {
-		highlightedLine.className = savedHighlightClassName;
-	}
-	if (obj != null) {
-		highlightedLine = obj;
-		savedHighlightedLineClassName = highlightClassName;
-		highlightedLine.className = highlightClassName;
-	}
-}
-</script>
-
 <div class="ss_folder">
 
 <% // First include the folder tree %>

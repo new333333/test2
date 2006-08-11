@@ -150,14 +150,14 @@ function ss_showEntryInDiv(str) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-var highlightBgColor = "${ss_folder_line_highlight_color}"
-var highlightedLine = null;
-var highlightedColLine = null;
-var savedHighlightedLineBgColor = null;
-var highlightClassName = "ss_highlightEntry";
-var savedHighlightClassName = null;
-var highlightColClassName = "ss_highlightEntry";
-var savedHighlightColClassName = null;
+var ss_highlightBgColor = "${ss_folder_line_highlight_color}"
+var ss_highlightedLine = null;
+var ss_highlightedColLine = null;
+var ss_savedHighlightedLineBgColor = null;
+var ss_highlightClassName = "ss_highlightEntry";
+var ss_savedHighlightClassName = null;
+var ss_highlightColClassName = "ss_highlightEntry";
+var ss_savedHighlightColClassName = null;
 
 //Called when one of the "Add entry" toolbar menu options is selected
 function ss_addEntry(obj) {
@@ -175,8 +175,8 @@ function ss_loadEntry(obj,id) {
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
 	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="Loading" text="Loading..."/>");
-	if (window.highlightLineById) {
-		highlightLineById(folderLine);
+	if (window.ss_highlightLineById) {
+		ss_highlightLineById(folderLine);
 		if (window.swapImages && window.restoreImages) {
 			restoreImages(id);
 		}
@@ -194,8 +194,8 @@ function ss_loadEntryUrl(url,id) {
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
 	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="Loading" text="Loading..."/>");
-	if (window.highlightLineById) {
-		highlightLineById(folderLine);
+	if (window.ss_highlightLineById) {
+		ss_highlightLineById(folderLine);
 	}
 	ss_showForumEntry(url, <c:out value="${showEntryCallbackRoutine}"/>);
 	return false;
@@ -213,8 +213,8 @@ function ss_loadEntryUrl(url,id) {
 <c:if test="<%= !reloadCaller %>">
   <c:if test="<%= isViewEntry %>">
 <script type="text/javascript">
-if (self.parent && self.parent.highlightLineById) {
-	self.parent.highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
+if (self.parent && self.parent.ss_highlightLineById) {
+	self.parent.ss_highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
 }
 </script>
 

@@ -137,29 +137,9 @@ function showEntryInDiv(str) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-var highlightBgColor = "${ss_folder_line_highlight_color}"
-var highlightedLine = null;
-var savedHighlightedLineBgColor = null;
-
-function highlightLineById(id) {
-    if (id == "") {return;}
-    var obj = null
-    if (isNSN || isNSN6 || isMoz5) {
-        obj = self.document.getElementById(id)
-    } else {
-        obj = self.document.all[id]
-    }
-    
-	if (highlightedLine != null) {
-		highlightedLine.bgColor = savedHighlightedLineBgColor;
-	}
-	if (obj != null) {
-		highlightedLine = obj;
-		savedHighlightedLineBgColor = highlightedLine.bgColor;
-		highlightedLine.bgColor = highlightBgColor;
-	}
-}
-
+var ss_highlightBgColor = "${ss_folder_line_highlight_color}"
+var ss_highlightedLine = null;
+var ss_savedHighlightedLineBgColor = null;
 
 </script>
 </c:if>
@@ -181,8 +161,8 @@ function ss_loadEntry(obj,id) {
   
   <c:if test="<%= statePopUp %>">
 <script type="text/javascript">
-if (self.parent && self.parent.highlightLineById) {
-	self.parent.highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
+if (self.parent && self.parent.ss_highlightLineById) {
+	self.parent.ss_highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
 }
 </script>
 <%

@@ -3,6 +3,8 @@
 <jsp:useBean id="ssUserFolderProperties" type="com.sitescape.ef.domain.UserProperties" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
 
+<script type="text/javascript" src="<html:rootPath/>js/forum/ss_folder.js"></script>
+
 <%
 	String slidingTableStyle = "sliding";
 	if (ssUser.getDisplayStyle() != null && 
@@ -18,27 +20,6 @@
 			ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
 %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-
-<script type="text/javascript">
-function highlightLineById(id) {
-    if (id == "") {return;}
-    var obj = null
-    if (isNSN || isNSN6 || isMoz5) {
-        obj = self.document.getElementById(id)
-    } else {
-        obj = self.document.all[id]
-    }
-
-	if (highlightedLine != null) {
-		highlightedLine.className = savedHighlightClassName;
-	}
-	if (obj != null) {
-		highlightedLine = obj;
-		savedHighlightedLineClassName = highlightClassName;
-		highlightedLine.className = highlightClassName;
-	}
-}
-</script>
 
 <div class="ss_folder">
 <br />
