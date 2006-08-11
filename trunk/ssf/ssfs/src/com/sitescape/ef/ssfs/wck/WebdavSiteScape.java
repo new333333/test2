@@ -25,12 +25,24 @@ import com.sitescape.ef.ssfs.AlreadyExistsException;
 import com.sitescape.ef.ssfs.LockException;
 import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
+import com.sitescape.ef.ssfs.TypeMismatchException;
 
 import static com.sitescape.ef.ssfs.CrossContextConstants.*;
 
 public class WebdavSiteScape implements BasicWebdavStore, 
 	WebdavStoreBulkPropertyExtension, WebdavStoreLockExtension {
-
+	
+	private static final String URI_SYNTACTIC_TYPE = "synType";
+	// Syntactically the URI refers to a folder
+	private static final Integer URI_SYNTACTIC_TYPE_FOLDER 	= new Integer(1);
+	// Syntactically the URI refers to a file
+	private static final Integer URI_SYNTACTIC_TYPE_FILE 	= new Integer(2);
+	// Syntactically the URI could refer to either a folder or a file.
+	// In other words, information about whether it is a folder or a file can
+	// not be derived from the structural/syntactic analysis of the URI alone
+	// since it could be either. 
+	private static final Integer URI_SYNTACTIC_TYPE_EITHER 	= new Integer(3);
+	
 	private Service service;
 	private LoggerFacade logger;
 	private String zoneName;
@@ -67,7 +79,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		try {
 			Map m = parseUri(uri);
 		
-			return objectExists(uri, m);
+			return(!objectInfo(uri, m).equals(OBJECT_INFO_NON_EXISTING));
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
@@ -80,12 +92,14 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		}
 	}
 	
+	// Returns true ONLY IF the uri represents a folder AND the resource
+	// it refers to actually exists. 
 	public boolean isFolder(String uri) throws ServiceAccessException, 
 	AccessDeniedException, ObjectLockedException {
 		try {
 			Map m = parseUri(uri);
 		
-			return (representsFolder(m) && objectExists(uri, m));
+			return(objectInfo(uri, m).equals(OBJECT_INFO_FOLDER));
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
@@ -98,12 +112,14 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		}
 	}
 
+	// Returns true ONLY IF the uri represents a file (non-folder) AND
+	// the resource it refers to actually exists. 
 	public boolean isResource(String uri) throws ServiceAccessException, 
 		AccessDeniedException, ObjectLockedException {
 		try {
 			Map m = parseUri(uri);
 		
-			return (!representsFolder(m) && objectExists(uri, m));
+			return(objectInfo(uri, m).equals(OBJECT_INFO_FILE));
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
@@ -116,9 +132,35 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		}
 	}
 
-	public void createFolder(String folderUri) throws ServiceAccessException, 
+	public void createFolder(String uri) throws ServiceAccessException, 
 	AccessDeniedException, ObjectAlreadyExistsException, ObjectLockedException {
-		throw new AccessDeniedException(folderUri, "Creating folder is not supported", "create");	
+		try {
+			Map m = parseUri(uri);
+		
+			if(representsAbstractFolder(m))
+				throw new ObjectAlreadyExistsException(uri); // Abstract folders always exist
+			else if(URI_TYPE_INTERNAL.equals(m.get(URI_TYPE)))
+				throw new AccessDeniedException(uri, "Creating folder is not supported for internal uri", "create");
+			else
+				client.createFolder(uri, m);
+		}
+		catch(ZoneMismatchException e) {
+			throw new AccessDeniedException(uri, e.getMessage(), "create");
+		}		
+		catch (NoAccessException e) {
+			throw new AccessDeniedException(uri, e.getMessage(), "create");
+		}
+		catch (CCClientException e) {
+			throw new ServiceAccessException(service, e.getMessage());
+		} 
+		catch(AlreadyExistsException e) {
+			throw new ObjectAlreadyExistsException(uri);
+		}
+		catch(TypeMismatchException e) {
+			// This indicates that the folder uri is already used in the system
+			// to refer to a file (ie, non-folder type object). 
+			throw new ServiceAccessException(service, e.getMessage());
+		}
 	}
 
 	public void createResource(String uri) throws ServiceAccessException, 
@@ -126,7 +168,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		try {
 			Map m = parseUri(uri);
 		
-			if(representsFolder(m))
+			if(getUriSyntacticType(m) == URI_SYNTACTIC_TYPE_FOLDER)
 				throw new ServiceAccessException(service, "The position refers to a folder");
 			else
 				client.createResource(uri, m);
@@ -143,6 +185,10 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		catch (AlreadyExistsException e) {
 			throw new ObjectAlreadyExistsException(uri);
 		}		
+		catch(TypeMismatchException e) {
+			// The position refers to a folder
+			throw new ServiceAccessException(service, e.getMessage());
+		}
 	}
 
 	public void setResourceContent(String uri, InputStream content, 
@@ -151,7 +197,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		try {
 			Map m = parseUri(uri);
 		
-			if(representsFolder(m))
+			if(getUriSyntacticType(m) == URI_SYNTACTIC_TYPE_FOLDER)
 				throw new ObjectNotFoundException(uri);
 			else
 				client.setResource(uri, m, content); // we don't use contentType and characterEncoding
@@ -167,7 +213,10 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(uri);
-		}				
+		}	
+		catch(TypeMismatchException e) {
+			throw new ObjectNotFoundException(uri);
+		}
 	}
 
 	public void createAndSetResource(String uri, InputStream content, 
@@ -176,7 +225,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		try {
 			Map m = parseUri(uri);
 		
-			if(representsFolder(m))
+			if(getUriSyntacticType(m) == URI_SYNTACTIC_TYPE_FOLDER)
 				throw new ServiceAccessException(service, "The position refers to a folder");
 			else
 				client.createAndSetResource(uri, m, content); // Discard contentType and characterEncoding
@@ -193,6 +242,10 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		catch (AlreadyExistsException e) {
 			throw new ObjectAlreadyExistsException(uri);
 		}		
+		catch(TypeMismatchException e) {
+			// The position refers to a folder
+			throw new ServiceAccessException(service, e.getMessage());
+		}
 	}
 
 	public Date getLastModified(String uri) throws ServiceAccessException, 
@@ -248,22 +301,23 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		try {
 			Map m = parseUri(folderUri);
 
-			if(!representsFolder(m)) {
+			if(filesOnly(m)) { // /files
+				return new String[] {URI_TYPE_INTERNAL, URI_TYPE_LIBRARY};				
+			}
+			else if(uptoUriTypeOnly(m)) { // /files/{internal or library}
+				if(zoneName != null)
+					return new String[] {zoneName};
+				else
+					return new String[0];				
+			}
+			else if(getUriSyntacticType(m) == URI_SYNTACTIC_TYPE_FILE ) {
 				return null; 
 				// Not very consistent with the way we handled this condition. 
 			    // In other places we throw ObjectNotFoundException when a
 			    // folder uri refers to a non-folder resource. In this case,
 				// we return null. This is simply to follow the convention
-				// shown in the WebdavFileStore reference implementation.
-			}
-			else if(filesOnly(m)) { // /files
-				return new String[] {URI_TYPE_INTERNAL, URI_TYPE_LIBRARY};				
-			}
-			else if(uptoTypeOnly(m)) { // /files/{internal or library}
-				if(zoneName != null)
-					return new String[] {zoneName};
-				else
-					return new String[0];				
+				// shown in the WebdavFileStore reference implementation
+				// and make WCK framework happy. 
 			}
 			else {
 				return client.getChildrenNames(folderUri, m);
@@ -280,14 +334,20 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(folderUri);
-		}				
+		}	
+		catch(TypeMismatchException e) {
+			// For the exact same reason described above, this return null
+			// as opposed to throwing an exception.
+			return null;
+		}
 	}
 
-	public InputStream getResourceContent(String uri) throws ServiceAccessException, AccessDeniedException, ObjectNotFoundException, ObjectLockedException {
+	public InputStream getResourceContent(String uri) throws ServiceAccessException, 
+	AccessDeniedException, ObjectNotFoundException, ObjectLockedException {
 		try {
 			Map m = parseUri(uri);
 		
-			if(representsFolder(m))
+			if(getUriSyntacticType(m) == URI_SYNTACTIC_TYPE_FOLDER)
 				throw new ObjectNotFoundException(uri);
 			else
 				return client.getResource(uri, m); 
@@ -303,7 +363,10 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(uri);
-		}				
+		}		
+		catch(TypeMismatchException e) {
+			throw new ObjectNotFoundException(uri);
+		}
 	}
 
 	public long getResourceLength(String uri) throws ServiceAccessException, 
@@ -311,7 +374,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		try {
 			Map m = parseUri(uri);
 		
-			if(representsFolder(m))
+			if(getUriSyntacticType(m) == URI_SYNTACTIC_TYPE_FOLDER)
 				throw new ObjectNotFoundException(uri);
 			else
 				return client.getResourceLength(uri, m); 
@@ -328,6 +391,9 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(uri);
 		}				
+		catch(TypeMismatchException e) {
+			throw new ObjectNotFoundException(uri);
+		}
 	}
 
 	public void removeObject(String uri) throws ServiceAccessException, 
@@ -335,10 +401,20 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		try {
 			Map m = parseUri(uri);
 		
-			if(representsFolder(m))
-				throw new AccessDeniedException(uri, "Removing folder is not supported", "create");
-			else
-				client.removeResource(uri, m); 
+			if(representsAbstractFolder(m)) { // abstract folder
+				throw new AccessDeniedException(uri, "Can not remove the folder", "delete");
+			}
+			else { // concrete folder or file
+				if(URI_TYPE_INTERNAL.equals(m.get(URI_TYPE))) { // internal uri
+					if(getUriSyntacticType(m) == URI_SYNTACTIC_TYPE_FOLDER)
+						throw new AccessDeniedException(uri, "Removing folder is not supported for internal uri", "delete");
+					else
+						client.removeObject(uri, m); // remove file
+				}
+				else { // library uri
+					client.removeObject(uri, m); // remove folder or file
+				}
+			}			
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "delete");
@@ -427,7 +503,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		try {
 			Map m = parseUri(uri);
 		
-			if(representsFolder(m))
+			if(getUriSyntacticType(m) == URI_SYNTACTIC_TYPE_FOLDER)
 				throw new AccessDeniedException(uri, "Locking of folder is not supported", "lock");
 			else
 				client.lockResource(uri, m, new SimpleLock(lockId, subject, expiration)); 
@@ -459,6 +535,10 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			// trying to edit the same files... (again, very unlikely). 
 			throw new AccessDeniedException(uri, "Failed to lock the resource", "lock");
 		}
+		catch(TypeMismatchException e) {
+			// The object is not a file but a folder. 
+			throw new AccessDeniedException(uri, "Locking of folder is not supported", "lock");
+		}
 	}
 
 	public void unlockObject(String uri, String lockId) 
@@ -468,7 +548,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		
 			// If the uri represents a folder, we haven't locked the object since
 			// we don't support locking of folder. Silently return in that case.
-			if(!representsFolder(m))
+			if(getUriSyntacticType(m) != URI_SYNTACTIC_TYPE_FOLDER)
 				client.unlockResource(uri, m, lockId); 
 		}
 		catch(ZoneMismatchException e) {
@@ -483,16 +563,20 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		catch (NoSuchObjectException e) {
 			// The specified object does not exist. This means nothing to 
 			// unlock, so return silently.
-		}				
+		}		
+		catch(TypeMismatchException e) {
+			// The object is not a file but a folder. Return silently. 
+		}
 	}
 
-	public Lock[] getLockInfo(String uri) throws ServiceAccessException, AccessDeniedException {
+	public Lock[] getLockInfo(String uri) throws ServiceAccessException, 
+	AccessDeniedException {
 		try {
 			Map m = parseUri(uri);
 		
 			// If the uri represents a folder, we haven't locked the object since
 			// we don't support locking of folder. Return null in that case.
-			if(representsFolder(m))
+			if(getUriSyntacticType(m) == URI_SYNTACTIC_TYPE_FOLDER)
 				return null;
 			else
 				return client.getLockInfo(uri, m); 
@@ -510,13 +594,14 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			// The specified object does not exist. 
 			return null;
 		}	
+		catch(TypeMismatchException e) {
+			// The object is not a file but a folder. return null. 
+			return null;
+		}
 	}
 	
-	private Map returnMap(Map map, boolean isFolder) {
-		if(isFolder)
-			map.put(URI_IS_FOLDER, Boolean.TRUE);
-		else
-			map.put(URI_IS_FOLDER, Boolean.FALSE);
+	private Map returnMap(Map map, Integer uriSyntacticType) {
+		map.put(URI_SYNTACTIC_TYPE, uriSyntacticType);
 		return map;
 	}
 	
@@ -544,7 +629,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		map.put(URI_ORIGINAL, uri);
 		
 		if(u.length == 1)
-			return returnMap(map, true);
+			return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
 		
 		String type = u[1];
 		
@@ -554,7 +639,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		map.put(URI_TYPE, type);
 
 		if(u.length == 2)
-			return returnMap(map, true);
+			return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
 		
 		String zname = u[2];
 		
@@ -564,7 +649,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		map.put(URI_ZONENAME, zname);
 		
 		if(u.length == 3)
-			return returnMap(map, true);
+			return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
 		
 		if(type.equals(URI_TYPE_INTERNAL)) { // internal
 			try {
@@ -575,12 +660,12 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			}
 			
 			if(u.length == 4)
-				return returnMap(map, true);
+				return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
 			
 			map.put(URI_ENTRY_ID, Long.valueOf(u[4]));
 			
 			if(u.length == 5)
-				return returnMap(map, true);
+				return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
 			
 			String itemType = u[5];
 			
@@ -593,64 +678,63 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			map.put(URI_ITEM_TYPE, itemType);
 			
 			if(u.length == 6)
-				return returnMap(map, true);
+				return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
 			
 			if(itemType.equals(URI_ITEM_TYPE_LIBRARY)) {
 				map.put(URI_FILEPATH, makeFilepath(u, 6));
 				
-				return returnMap(map, false);
+				return returnMap(map, URI_SYNTACTIC_TYPE_FILE);
 			}
 			else if(itemType.equals(URI_ITEM_TYPE_ATTACH)) {
 				map.put(URI_REPOS_NAME, u[6]);
 				
 				if(u.length == 7)
-					return returnMap(map, true);
+					return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
 				
 				map.put(URI_FILEPATH, makeFilepath(u, 7));
 				
-				return returnMap(map, false);			
+				return returnMap(map, URI_SYNTACTIC_TYPE_FILE);			
 			}
 			else { // file or graphic
 				map.put(URI_ELEMNAME, u[6]);
 				
 				if(u.length == 7)
-					return returnMap(map, true);
+					return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
 				
 				map.put(URI_FILEPATH, makeFilepath(u, 7));
 				
-				return returnMap(map, false);
+				return returnMap(map, URI_SYNTACTIC_TYPE_FILE);
 			}
 		}
 		else { // library
-			try {
-				map.put(URI_BINDER_ID, Long.valueOf(u[3]));
-			}
-			catch(NumberFormatException e) {
-				return null;
-			}
+			String libpath = makeLibpath(u, 3);
 			
-			if(u.length == 4)
-				return returnMap(map, true);
+			map.put(URI_LIBPATH, libpath);
 			
-			map.put(URI_FILEPATH, makeFilepath(u, 4));
-			
-			return returnMap(map, false);
+			return returnMap(map, URI_SYNTACTIC_TYPE_EITHER);
 		}
 	}
 	
-	private boolean objectExists(String uri, Map m) throws NoAccessException, CCClientException {
+	private String makeLibpath(String[] sa, int startIndex) {
+		// Not particularly efficient...
+		StringBuffer sb  = new StringBuffer();
+		for(int i = startIndex; i < sa.length; i++) {
+			sb.append(Util.URI_DELIM).
+			append(sa[i]);
+		}
+		String s = sb.toString();
+		if(s.endsWith(Util.URI_DELIM))
+			s = s.substring(0, s.length()-1);
+		return s;
+	}
+	
+	private String objectInfo(String uri, Map m) throws NoAccessException, CCClientException {
 		if(m == null)
-			return false;
-		
-		// 1. /files always exist
-		// 2. /files/<zonename> always exist AS LONG AS the zonename matches that of the user
-		// 3. /files/<zonename>/internal always exist AS LONG AS the zonename matches that of the user
-		// 4. /files/<zonename>/library always exist AS LONG AS the zonename matches that of the user
-		
-		if(representsAbstractFolder(m))
-			return true;  // /files/<zonename>/<internal or library>
+			return OBJECT_INFO_NON_EXISTING;
+		else if(representsAbstractFolder(m))
+			return OBJECT_INFO_FOLDER;
 		else
-			return client.objectExists(uri, m);		
+			return client.objectInfo(uri, m);
 	}
 
 	/**
@@ -658,30 +742,31 @@ public class WebdavSiteScape implements BasicWebdavStore,
 	 * Abstract folder is one of the following:
 	 * <p>
 	 *	/files
-	 *  /files/<zonename>
-	 *  /files/<zonename>/internal
-	 *  /files/<zonename>/library  
+	 *  /files/internal
+	 *  /files/internal/<zonename>
+	 *  /files/library
+	 *  /files/library/<zonename> 
 	 * 
 	 * @param m
 	 * @return
 	 */
 	private boolean representsAbstractFolder(Map m) {
-		// Map does not contain 'files'. So including URI_IS_FOLDER and
+		// Map does not contain 'files'. So including RESOURCE_TYPE and
 		// URI_ORIGINAL entries, maximum of four entries indicates an 
 		// abstract folder.
 		return (m.size() <= 4);
 	}
 	
 	private boolean filesOnly(Map m) {
-		return (m.size() == 2); // contains URI_IS_FOLDER and URI_ORIGINAL only
+		return (m.size() == 2); // contains RESOURCE_TYPE and URI_ORIGINAL only
 	}
 	
-	private boolean uptoTypeOnly(Map m) {
-		return (m.size() == 3); // contains URI_IS_FOLDER, URI_ORIGINAL and URI_TYPE
+	private boolean uptoUriTypeOnly(Map m) {
+		return (m.size() == 3); // contains RESOURCE_TYPE, URI_ORIGINAL and URI_TYPE
 	}
 	
-	private boolean representsFolder(Map m) {
-		return ((Boolean) m.get(URI_IS_FOLDER)).booleanValue();
+	private Integer getUriSyntacticType(Map m) {
+		return (Integer) m.get(URI_SYNTACTIC_TYPE);
 	}
 
 	private String makeFilepath(String[] input, int startIndex) {

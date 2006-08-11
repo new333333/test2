@@ -21,19 +21,16 @@ public abstract class CrossContextConstants {
 	// Note: For better efficiency in comparison expressions, we use Integer
 	// rather than usual String as the values of these symbols. 
 	public static final Integer OPERATION_AUTHENTICATE = new Integer(1);
-	public static final Integer OPERATION_OBJECT_EXISTS = new Integer(2);
+	public static final Integer OPERATION_CREATE_FOLDER = new Integer(2);
 	public static final Integer OPERATION_CREATE_RESOURCE = new Integer(3);
 	public static final Integer OPERATION_SET_RESOURCE = new Integer(4);
 	public static final Integer OPERATION_GET_RESOURCE = new Integer(5);
-	public static final Integer OPERATION_GET_RESOURCE_LENGTH = new Integer(6);
-	public static final Integer OPERATION_REMOVE_RESOURCE = new Integer(7);
-	public static final Integer OPERATION_GET_LAST_MODIFIED = new Integer(8);
-	public static final Integer OPERATION_GET_CREATION_DATE = new Integer(9);
-	public static final Integer OPERATION_GET_CHILDREN_NAMES = new Integer(10);
-	public static final Integer OPERATION_GET_PROPERTIES = new Integer(11);
-	public static final Integer OPERATION_CREATE_SET_RESOURCE = new Integer(12);
-	public static final Integer OPERATION_LOCK_RESOURCE = new Integer(13);
-	public static final Integer OPERATION_UNLOCK_RESOURCE = new Integer(14);
+	public static final Integer OPERATION_REMOVE_OBJECT = new Integer(6);
+	public static final Integer OPERATION_GET_CHILDREN_NAMES = new Integer(7);
+	public static final Integer OPERATION_GET_PROPERTIES = new Integer(8);
+	public static final Integer OPERATION_CREATE_SET_RESOURCE = new Integer(9);
+	public static final Integer OPERATION_LOCK_RESOURCE = new Integer(10);
+	public static final Integer OPERATION_UNLOCK_RESOURCE = new Integer(11);
 	/*
 	public static final String OPERATION_AUTHENTICATE = "authenticate";
 	public static final String OPERATION_OBJECT_EXISTS = "objectExists";
@@ -60,9 +57,13 @@ public abstract class CrossContextConstants {
 	public static final String URI = "uri";
 	
 	// Key names for URI parts - These are keys for the entries in the URI map.
+	
+	// The following keys are used for both internal and library URLs.
 	public static final String URI_ORIGINAL = "original"; // value = String
-	public static final String URI_ZONENAME = "zonename"; // value = String
 	public static final String URI_TYPE = "type";	// value = String
+	public static final String URI_ZONENAME = "zonename"; // value = String
+	
+	// The following keys are used for internal URLs only.
 	public static final String URI_BINDER_ID = "binderId";	// value = Long
 	public static final String URI_FILEPATH = "filepath";	// value = String
 	public static final String URI_ENTRY_ID = "entryId";	// value = Long
@@ -70,7 +71,8 @@ public abstract class CrossContextConstants {
 	public static final String URI_ELEMNAME = "elemname";	// value = String
 	public static final String URI_REPOS_NAME = "reposname"; // value = String
 	 
-	public static final String URI_IS_FOLDER = "isFolder"; // value = Boolean
+	// The following keys are used for library URLs only.
+	public static final String URI_LIBPATH = "libpath"; 	// value = String
 	
 	// URI type values (values for URI_TYPE key) - Do NOT abbreviate the 
 	// string value since it is actually used as part of the WebDAV URI. 
@@ -85,6 +87,21 @@ public abstract class CrossContextConstants {
 	public static final String URI_ITEM_TYPE_GRAPHIC = "graphic";
 	public static final String URI_ITEM_TYPE_ATTACH  = "attach";
 
+	// Basic information about the object that tells whether the object
+	// exists or not. If it exists whether it is a folder or a file.
+	
+	// Key name used for returning quick object info
+	public static final String OBJECT_INFO = "objInfo";
+	
+	// Possible object info values - value of OBJECT_INFO key
+	
+	// The object exists and it is a folder
+	public static final String OBJECT_INFO_FOLDER 		= "fo";
+	// The object exists and it is a file (non-folder)
+	public static final String OBJECT_INFO_FILE			= "fi";
+	// The object does not exist
+	public static final String OBJECT_INFO_NON_EXISTING = "ne";
+	
 	// Key name used for return value.
 	public static final String RETURN = "return"; // value = Object
 	
@@ -99,6 +116,7 @@ public abstract class CrossContextConstants {
 	public static final String ERROR_NO_SUCH_OBJECT = "noSuchObject";
 	public static final String ERROR_ALREADY_EXISTS = "alreadyExists"; 
 	public static final String ERROR_LOCK = "lock";
+	public static final String ERROR_GENERAL = "generalError";
 	
 	// Key name used for returning error message. 
 	public static final String ERROR_MESSAGE = "errorMessage";

@@ -13,6 +13,7 @@ import com.sitescape.ef.ssfs.LockException;
 import com.sitescape.ef.ssfs.CrossContextConstants;
 import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
+import com.sitescape.ef.ssfs.TypeMismatchException;
 
 import org.apache.slide.simple.store.WebdavStoreLockExtension.Lock;
 
@@ -31,30 +32,31 @@ public class CCClient {
 		// this object instance, hence short-lived (relatively speaking).
 		this.cache = new HashMap<String,Object>();
 	}
-	
-	public boolean objectExists(String resourceUri, Map uri) throws CCClientException,
+		
+	public String objectInfo(String objUri, Map uri) throws CCClientException,
 	NoAccessException {
 		try {
-			getPropertiesCached(resourceUri, uri);
+			Map props = getPropertiesCached(objUri, uri);
+			
 			// If still here, the object exists.
-			return true;
+			return (String) props.get(CrossContextConstants.OBJECT_INFO);
 		}
 		catch(NoSuchObjectException e) {
 			// This exception indicates that the specified resource does not exist.
-			return false;
+			return CrossContextConstants.OBJECT_INFO_NON_EXISTING;
 		}
-		
-		/*
-		Boolean returnObj = (Boolean) CCExecutionTemplate.execute(
-				zoneName, userName, uri, 
-				CrossContextConstants.OPERATION_OBJECT_EXISTS, 
-				defaultCallback);
-		return returnObj.booleanValue();
-		*/
 	}
 	
+	public void createFolder(String folderUri, Map uri) throws CCClientException,
+	NoAccessException, AlreadyExistsException, TypeMismatchException {
+		CCExecutionTemplate.execute(
+				zoneName, userName, uri,
+				CrossContextConstants.OPERATION_CREATE_FOLDER,
+				defaultCallback);
+	}
+
 	public void createResource(String resourceUri, Map uri) throws CCClientException,
-	NoAccessException, AlreadyExistsException {
+	NoAccessException, AlreadyExistsException, TypeMismatchException {
 		CCExecutionTemplate.execute(
 				zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_CREATE_RESOURCE, 
@@ -62,7 +64,7 @@ public class CCClient {
 	}
 	
 	public void createAndSetResource(String resourceUri, Map uri, final InputStream content) 
-	throws CCClientException, NoAccessException, AlreadyExistsException {
+	throws CCClientException, NoAccessException, AlreadyExistsException, TypeMismatchException {
 		CCExecutionTemplate.execute(
 				zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_CREATE_SET_RESOURCE, 
@@ -75,7 +77,7 @@ public class CCClient {
 	}
 	
 	public void setResource(String resourceUri, Map uri, final InputStream content) 
-	throws CCClientException, NoAccessException, NoSuchObjectException {	
+	throws CCClientException, NoAccessException, NoSuchObjectException, TypeMismatchException {	
 		CCExecutionTemplate.execute(zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_SET_RESOURCE, 
 			new CCClientCallback() {
@@ -87,7 +89,7 @@ public class CCClient {
 	}
 	
 	public InputStream getResource(String resourceUri, Map uri) throws CCClientException,
-	NoAccessException, NoSuchObjectException {
+	NoAccessException, NoSuchObjectException, TypeMismatchException {
 		InputStream returnObj = (InputStream) CCExecutionTemplate.execute(
 				zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_GET_RESOURCE, 
@@ -96,7 +98,7 @@ public class CCClient {
 	}
 	
 	public long getResourceLength(String resourceUri, Map uri) throws CCClientException,
-	NoAccessException, NoSuchObjectException {
+	NoAccessException, NoSuchObjectException, TypeMismatchException {
 		Map props = getPropertiesCached(resourceUri, uri);
 		
 		Long length = (Long) props.get(CrossContextConstants.DAV_PROPERTIES_GET_CONTENT_LENGTH);
@@ -112,16 +114,16 @@ public class CCClient {
 		*/
 	}
 	
-	public void removeResource(String resourceUri, Map uri) throws CCClientException,
+	public void removeObject(String objUri, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
 		CCExecutionTemplate.execute(
-				zoneName, userName, uri, CrossContextConstants.OPERATION_REMOVE_RESOURCE, 
+				zoneName, userName, uri, CrossContextConstants.OPERATION_REMOVE_OBJECT, 
 				defaultCallback);		
 	}
 	
-	public Date getLastModified(String resourceUri, Map uri) throws CCClientException,
+	public Date getLastModified(String objUri, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
-		Map props = getPropertiesCached(resourceUri, uri);
+		Map props = getPropertiesCached(objUri, uri);
 
 		return (Date) props.get(CrossContextConstants.DAV_PROPERTIES_GET_LAST_MODIFIED);
 
@@ -134,9 +136,9 @@ public class CCClient {
 		*/
 	}
 	
-	public Date getCreationDate(String resourceUri, Map uri) throws CCClientException,
+	public Date getCreationDate(String objUri, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
-		Map props = getPropertiesCached(resourceUri, uri);
+		Map props = getPropertiesCached(objUri, uri);
 
 		return (Date) props.get(CrossContextConstants.DAV_PROPERTIES_CREATION_DATE);
 
@@ -149,8 +151,22 @@ public class CCClient {
 		*/
 	}
 	
-	public String[] getChildrenNames(String resourceUri, Map uri) throws CCClientException,
-	NoAccessException, NoSuchObjectException {
+	/**
+	 * If the object doesn't represent a folder, it returns <code>null</code>.
+	 * <p>
+	 * Note: Unlike other methods, this method returns <code>null</code> instead
+	 * of throwing <code>TypeMismatchException</code>, if the referenced object
+	 * is not a folder. This discrepency is there merely to make WCK happy.  
+	 * 
+	 * @param resourceUri
+	 * @param uri
+	 * @return
+	 * @throws CCClientException
+	 * @throws NoAccessException
+	 * @throws NoSuchObjectException
+	 */
+	public String[] getChildrenNames(String objUri, Map uri) throws CCClientException,
+	NoAccessException, NoSuchObjectException  {
 		String[] returnObj = (String[]) CCExecutionTemplate.execute(
 				zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_GET_CHILDREN_NAMES, 
@@ -158,9 +174,9 @@ public class CCClient {
 		return returnObj;
 	}
 	
-	public Map getDAVProperties(String resourceUri, Map uri) throws CCClientException,
+	public Map getDAVProperties(String objUri, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
-		Map props = getPropertiesCached(resourceUri, uri);
+		Map props = getPropertiesCached(objUri, uri);
 
 		// Implementation Note:
 		// Returns only a subset of the entries where the value is of String
@@ -201,7 +217,7 @@ public class CCClient {
 	 */
 	public void lockResource(String resourceUri, Map uri, final Lock lock) 
 	throws CCClientException, NoAccessException, NoSuchObjectException,
-	LockException {
+	LockException, TypeMismatchException {
 		CCExecutionTemplate.execute(zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_LOCK_RESOURCE, 
 			new CCClientCallback() {
@@ -225,7 +241,7 @@ public class CCClient {
 	 * it. In all other conditions, it is noop and returns silently.  
 	 */
 	public void unlockResource(String resourceUri, Map uri, final String lockId)
-	throws CCClientException, NoAccessException, NoSuchObjectException {
+	throws CCClientException, NoAccessException, NoSuchObjectException, TypeMismatchException {
 		CCExecutionTemplate.execute(zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_UNLOCK_RESOURCE, 
 			new CCClientCallback() {
@@ -249,7 +265,8 @@ public class CCClient {
 	 * @throws NoSuchObjectException
 	 */
 	public Lock[] getLockInfo(String resourceUri, Map uri)
-	throws CCClientException, NoAccessException, NoSuchObjectException {
+	throws CCClientException, NoAccessException, NoSuchObjectException,
+	TypeMismatchException {
 		Map props = getPropertiesCached(resourceUri, uri);
 		
 		String lockId = (String) props.get(CrossContextConstants.LOCK_PROPERTIES_ID);
@@ -274,9 +291,9 @@ public class CCClient {
 		*/
 	}
 	
-	private Map getPropertiesCached(String resourceUri, Map uri) throws CCClientException,
+	private Map getPropertiesCached(String objUri, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
-		Object value = cache.get(resourceUri);
+		Object value = cache.get(objUri);
 		
 		if(value == null) {
 			// Request never made for the uri. 
@@ -285,15 +302,15 @@ public class CCClient {
 						zoneName, userName, uri, 
 						CrossContextConstants.OPERATION_GET_PROPERTIES, 
 						defaultCallback);
-				cache.put(resourceUri, props);
+				cache.put(objUri, props);
 				return props;
 			}
 			catch(NoAccessException e) {
-				cache.put(resourceUri, e);
+				cache.put(objUri, e);
 				throw e;
 			}
 			catch(NoSuchObjectException e) {
-				cache.put(resourceUri, e);
+				cache.put(objUri, e);
 				throw e;
 			}
 		}

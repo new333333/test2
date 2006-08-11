@@ -129,21 +129,25 @@ public class DispatchServer extends GenericServlet {
 				return;
 			}
 			catch(IOException e) {
+				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
 				logger.error(e.getMessage(), e);
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
 				return;
 			}
 			catch(ServletException e) {
+				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
 				logger.error(e.getMessage(), e);
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
 				return;			
 			}
 			catch(SiteScapeFileSystemException e) {
+				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
 				logger.error(e.getMessage(), e);
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
 				return;
 			}
 			catch(Exception e) {
+				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
 				logger.error(e.getMessage(), e);
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
 				return;
@@ -159,12 +163,11 @@ public class DispatchServer extends GenericServlet {
 
 		SiteScapeFileSystem ssfs = getSiteScapeFileSystem();
 		
-		if(operation.equals(CrossContextConstants.OPERATION_OBJECT_EXISTS)) {
-			boolean result = ssfs.objectExists(uri);
-			req.setAttribute(CrossContextConstants.RETURN, Boolean.valueOf(result));
-		}
-		else if(operation.equals(CrossContextConstants.OPERATION_CREATE_RESOURCE)) {
+		if(operation.equals(CrossContextConstants.OPERATION_CREATE_RESOURCE)) {
 			ssfs.createResource(uri);
+		}
+		else if(operation.equals(CrossContextConstants.OPERATION_CREATE_FOLDER)) {
+			ssfs.createFolder(uri);
 		}
 		else if(operation.equals(CrossContextConstants.OPERATION_SET_RESOURCE)) {
 			InputStream content = (InputStream) req.getAttribute(CrossContextConstants.INPUT_STREAM);
@@ -174,20 +177,8 @@ public class DispatchServer extends GenericServlet {
 			InputStream resource = ssfs.getResource(uri);
 			req.setAttribute(CrossContextConstants.RETURN, resource);
 		}
-		else if(operation.equals(CrossContextConstants.OPERATION_GET_RESOURCE_LENGTH)) {
-			long length = ssfs.getResourceLength(uri);
-			req.setAttribute(CrossContextConstants.RETURN, new Long(length));
-		}
-		else if(operation.equals(CrossContextConstants.OPERATION_REMOVE_RESOURCE)) {
-			ssfs.removeResource(uri);
-		}
-		else if(operation.equals(CrossContextConstants.OPERATION_GET_LAST_MODIFIED)) {
-			Date date = ssfs.getLastModified(uri);
-			req.setAttribute(CrossContextConstants.RETURN, date);
-		}
-		else if(operation.equals(CrossContextConstants.OPERATION_GET_CREATION_DATE)) {
-			Date date = ssfs.getCreationDate(uri);
-			req.setAttribute(CrossContextConstants.RETURN, date);			
+		else if(operation.equals(CrossContextConstants.OPERATION_REMOVE_OBJECT)) {
+			ssfs.removeObject(uri);
 		}
 		else if(operation.equals(CrossContextConstants.OPERATION_GET_CHILDREN_NAMES)) {
 			String[] names = ssfs.getChildrenNames(uri);

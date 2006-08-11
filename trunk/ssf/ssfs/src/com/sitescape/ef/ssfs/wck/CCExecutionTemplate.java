@@ -20,7 +20,7 @@ public class CCExecutionTemplate {
 	public static Object execute(String zoneName, String userName, Map uri, 
 			Integer operationName, CCClientCallback action) 
 	throws AlreadyExistsException, CCClientException, NoAccessException, 
-	NoSuchObjectException {
+	NoSuchObjectException, LockException {
 		AttributesAndParamsOnlyServletRequest req = 
 			new AttributesAndParamsOnlyServletRequest(Util.getSsfContextPath());
 
@@ -53,7 +53,7 @@ public class CCExecutionTemplate {
 	
 	private static void checkError(HttpServletRequest req)
 		throws NoAccessException, NoSuchObjectException, 
-		AlreadyExistsException, LockException {
+		AlreadyExistsException, LockException, CCClientException {
 		String statusCode = (String) req.getAttribute(CrossContextConstants.ERROR);
 		String message = (String) req.getAttribute(CrossContextConstants.ERROR_MESSAGE);
 		if(statusCode != null) {
@@ -65,6 +65,8 @@ public class CCExecutionTemplate {
 				throw new AlreadyExistsException(message);
 			else if(statusCode.equals(CrossContextConstants.ERROR_LOCK))
 				throw new LockException(message);
+			else if(statusCode.equals(CrossContextConstants.ERROR_GENERAL))
+				throw new CCClientException(message);			
 			// Unrecognized status code - simply return normally
 		}
 		// No error code - normal completion 

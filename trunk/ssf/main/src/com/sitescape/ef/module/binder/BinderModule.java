@@ -43,6 +43,17 @@ public interface BinderModule {
     public Binder getBinder(Long binderId)
 		throws NoBinderByTheIdException, AccessControlException;
 
+    /**
+     * Finds a binder by path name. If no binder exists with the path name,
+     * it returns <code>null</code>. If a matching binder exists but the
+     * user has no access to it, it throws <code>AccessControlException</code>.
+     * 
+     * @param pathName
+     * @return
+     * @throws AccessControlException
+     */
+    public Binder getBinderByPathName(String pathName) throws AccessControlException;
+    
 	public Binder setConfiguration(Long binderId, boolean inheritFromParent)  throws AccessControlException;
     /**
      * Modify the list of definitions assocated with a binder

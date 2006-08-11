@@ -13,6 +13,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
@@ -397,4 +398,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	return entries; 
 	}
 
+    public Binder getBinderByPathName(String pathName) throws AccessControlException {
+    	List binders = getCoreDao().loadObjects(Binder.class, new FilterControls("lower(pathName)", pathName.toLowerCase()));
+    	
+    	if(binders.size() > 0) {
+    		Binder binder = (Binder) binders.get(0); // only one matching binder
+    		
+    		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);		
+	
+    		return binder;
+    	}
+    	else {
+    		return null;
+    	}
+    }
 }
