@@ -324,9 +324,12 @@ public class AjaxController  extends SAbstractController {
 		Map statusMap = (Map) context.get("statusMap");
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//Save the user's selected entry width
-		String entryWidth = ((String[])formData.get("entry_width"))[0];
-		String entryTop = ((String[])formData.get("entry_top"))[0];
-		String entryLeft = ((String[])formData.get("entry_left"))[0];
+		String entryWidth = "";
+		if (formData.containsKey("entry_width")) entryWidth = ((String[])formData.get("entry_width"))[0];
+		String entryTop = "";
+		if (formData.containsKey("entry_top")) entryTop = ((String[])formData.get("entry_top"))[0];
+		String entryLeft = "";
+		if (formData.containsKey("entry_left")) entryLeft = ((String[])formData.get("entry_left"))[0];
 		if (!entryWidth.equals("") && !entryTop.equals("") && !entryLeft.equals("")) {
 			//Save the entry width
 		   	getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);

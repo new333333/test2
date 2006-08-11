@@ -1,5 +1,8 @@
 <% // Folder listing - select the style that the folder should be displayed in %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+
+<script type="text/javascript" src="<html:rootPath/>js/forum/ss_folder.js"></script>
+
 <c:if test="${ss_folderViewStyle == 'event'}">
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar_view.jsp" %>
 </c:if>
