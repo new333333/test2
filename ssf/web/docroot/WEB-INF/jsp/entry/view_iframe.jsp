@@ -14,10 +14,31 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
 <script type="text/javascript">
+//Define the variables needed by the javascript routines
 var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
-</script>
 
-<jsp:include page="/WEB-INF/jsp/entry/view_iframe_js.jsp" />
+<c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
+var ss_entryWindowTop = ${ss_entryWindowTop};
+var ss_entryWindowLeft = ${ss_entryWindowLeft};
+</c:if>
+<c:if test="${empty ss_entryWindowTop || empty ss_entryWindowLeft}">
+var ss_entryWindowTop = -1;
+var ss_entryWindowLeft = -1;
+</c:if>
+
+var ss_saveEntryWidthUrl = "<ssf:url 
+	adapter="true" 
+	portletName="ss_forum" 
+	action="__ajax_request" 
+	actionUrl="true" >
+	<ssf:param name="operation" value="save_entry_width" />
+	</ssf:url>"
+
+var ss_forumRefreshUrl = "<html:rootPath/>js/forum/refresh.html";
+var ss_entryWindowWidth = ${ss_entryWindowWidth};
+var ss_entryBackgroundColor = "${ss_style_background_color}";
+</script>
+<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
