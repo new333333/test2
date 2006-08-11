@@ -3,7 +3,11 @@ package com.sitescape.ef.module.folder;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import org.dom4j.Document;
+
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
@@ -107,4 +111,19 @@ public interface FolderModule {
     public void reserveEntry(Long folderId, Long entryId)
     	throws AccessControlException, ReservedByAnotherUserException,
     	FilesLockedByOtherUsersException;
+    
+    /**
+     * Finds file folder entry by title. If no matching entry is found
+     * it returns <code>null</code>. If matching entry is found but the
+     * user has no access to it, it throws <code>AccessControlException</code>.
+     *  
+     * @param fileFolder
+     * @param title
+     * @return
+     * @throws AccessControlException
+     */
+    public FolderEntry getFileFolderEntryByTitle(Folder fileFolder, String title)
+    	throws AccessControlException;
+    
+    public Set<String> getSubfoldersTitles(Folder folder);
 }

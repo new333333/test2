@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.Collection;
 
@@ -733,6 +734,54 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	}
     }
     
+    public FolderEntry getFileFolderEntryByTitle(Folder fileFolder, String title)
+	throws AccessControlException {
+    	FolderEntry entry = getFileModule().findFileFolderEntry(fileFolder, title);
+
+    	if(entry == null)
+    		return null;
+    	
+        AccessUtils.readCheck(entry);
+
+    	return entry;
+    }
+ 
+    public Set<String> getSubfoldersTitles(Folder folder) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+
+    	TreeSet<String> titles = new TreeSet<String>();
+   		
+    	for(Object o : folder.getFolders()) {
+    		Folder f = (Folder) o;
+    		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
+    			titles.add(f.getTitle());
+    	}
+    	
+    	return titles;    	
+    }
+    
+    /*
+    public Collection getFolderTree(Long folderId) throws AccessControlException {
+   		Folder top = loadFolder(folderId);
+        getAccessControlManager().checkOperation(top, WorkAreaOperation.READ_ENTRIES);
+        return getFolderTree(top);
+   	}
+   	
+   	public Collection getFolderTree(Folder folder) {        
+        User user = RequestContextHolder.getRequestContext().getUser();
+    	Comparator c = new BinderComparator(user.getLocale());
+
+    	TreeSet<Folder> folders = new TreeSet<Folder>(c);
+   		
+    	for(Object o : folder.getFolders()) {
+    		Folder f = (Folder) o;
+    		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
+    			folders.add(f);
+    	}
+    	
+    	return folders;
+   	}*/
+
     /**
      * Helper classs to return folder unseen counts as an objects
      * @author Janet McCann

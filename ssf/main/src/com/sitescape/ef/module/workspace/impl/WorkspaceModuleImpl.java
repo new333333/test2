@@ -4,6 +4,7 @@ package com.sitescape.ef.module.workspace.impl;
 import java.util.Iterator;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.Collection;
 import java.util.List;
@@ -89,20 +90,58 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         else top = (Workspace)getCoreDao().loadBinder(id, user.getZoneName());
 		// Check if the user has "read" access to the workspace
         getAccessControlManager().checkOperation(top, WorkAreaOperation.READ_ENTRIES);
+        return getWorkspaceTree(top);
+    }
+   	
+   	public Collection getWorkspaceTree(Workspace top) {
+        User user = RequestContextHolder.getRequestContext().getUser();
       	//order result
         Comparator c = new BinderComparator(user.getLocale());
        	TreeSet<Binder> tree = new TreeSet<Binder>(c);
      	for (Iterator iter=top.getBinders().iterator(); iter.hasNext();) {
     		Binder b = (Binder)iter.next();
+    		// To make this method consistent with the Dom construction counterpart
+    		// (ie, getDomWorkspaceTree), the following additional check is necessary 
+    		// before testing its access control.
+    		if(b instanceof Folder) {
+    			if(((Folder) b).getTopFolder() != null)
+    				continue;
+    		}
+    		else if(!(b instanceof Workspace)) {
+    			// If neither folder nor workspace, discard it.
+    			continue;
+    		}
         	// Check if the user has "read" access to the binder.
             if(getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES))
                 tree.add(b);
-            else
-               	continue;
         }
      	return tree;
-    }
-    	    	     	    	 
+   	}
+    	 
+   	public Set<String> getChildrenTitles(Workspace top) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+       	TreeSet<String> titles = new TreeSet<String>();
+     	for (Iterator iter=top.getBinders().iterator(); iter.hasNext();) {
+    		Binder b = (Binder)iter.next();
+    		// To make this method consistent with the Dom construction counterpart
+    		// (ie, getDomWorkspaceTree), the following additional check is necessary 
+    		// before testing its access control.
+    		if(b instanceof Folder) {
+    			if(((Folder) b).getTopFolder() != null)
+    				continue;
+    		}
+    		else if(!(b instanceof Workspace)) {
+    			// If neither folder nor workspace, discard it.
+    			continue;
+    		}
+        	// Check if the user has "read" access to the binder.
+            if(getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES))
+            	titles.add(b.getTitle());
+        }
+     	return titles;
+   		
+   	}
+   	
     public org.dom4j.Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper) throws AccessControlException {
        	return getDomWorkspaceTree(null, domTreeHelper, -1);
     }

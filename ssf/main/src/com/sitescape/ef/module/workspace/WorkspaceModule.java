@@ -2,6 +2,7 @@ package com.sitescape.ef.module.workspace;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.NoWorkspaceByTheIdException;
@@ -34,6 +35,7 @@ public interface WorkspaceModule {
   	 * @throws AccessControlException
   	 */
 	public Collection getWorkspaceTree(Long id) throws AccessControlException; 
+   	public Set<String> getChildrenTitles(Workspace top);
   	public Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper) throws AccessControlException;
     /**
      * Traverse the workspace tree  returing a DOM structure containing workspaces and

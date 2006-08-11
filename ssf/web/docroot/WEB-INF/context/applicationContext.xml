@@ -601,6 +601,7 @@
 				<property name="binderModule"><ref local="binderModule"/></property>
 				<property name="profileModule"><ref local="profileModule"/></property>
 				<property name="fileModule"><ref local="fileModule"/></property>
+				<property name="workspaceModule"><ref local="workspaceModule"/></property>
 				<property name="mimeTypes"><ref local="mimeTypes"/></property>
 			</bean>
 		</property>

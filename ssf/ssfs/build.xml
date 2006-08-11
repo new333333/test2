@@ -37,6 +37,7 @@
 				<include name="com/sitescape/ef/ssfs/NoAccessException.class"/>
 				<include name="com/sitescape/ef/ssfs/NoSuchObjectException.class"/>
 				<include name="com/sitescape/ef/ssfs/LockException.class"/>
+				<include name="com/sitescape/ef/ssfs/TypeMismatchException.class"/>
 	        	<include name="com/sitescape/ef/web/util/AttributesAndParamsOnlyServletRequest.class"/>
 	        	<include name="com/sitescape/ef/web/util/NullServletResponse.class"/>
 			</fileset>
