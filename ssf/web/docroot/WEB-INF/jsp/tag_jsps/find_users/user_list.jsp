@@ -85,7 +85,7 @@ function ss_userListSearch(text, elementName, userGroupType) {
 function ss_postUserListRequest(obj) {
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+		alert(ss_not_logged_in);
 	} else {
 		//Re-enable the dragable lists
 		ss_DragDrop.initializeListContainer();
@@ -138,7 +138,7 @@ function ss_userListInterceptCR(e) {
 <div>
   <div style="border:solid black 1px;">
     <ul id="added_<%= userListElementName %>" class="ss_dragable ss_userlist">
-      <c:forEach var="item" items="<%= com.sitescape.ef.util.ResolveIds.getPrincipals(userList) %>">
+      <c:forEach var="item" items="${userList}">
         <li id="<c:out value="${item.id}"/>" 
           onDblClick="ss_userListMoveItem(this);" 
           class="ss_dragable ss_userlist"><c:out value="${item.title}"/></li>

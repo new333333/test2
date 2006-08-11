@@ -417,7 +417,10 @@ public class DashboardHelper {
 	    	if (data.containsKey("users")) {
 		    	String[] users = (String[])data.get("users");
 		    	for (int i = 0; i < users.length; i++) {
-		    		ids.add(new Long(users[i].trim()));
+		    		String[] users2 = users[i].split(" ");
+		    		for (int j = 0; j < users2.length; j++) {
+			    		if (!users2[j].trim().equals("")) ids.add(new Long(users2[j].trim()));
+		    		}
 		    	}
 	    	}
 			//Get the configured list of principals to show
@@ -427,7 +430,10 @@ public class DashboardHelper {
 	    	if (data.containsKey("groups")) {
 		    	String[] groups = (String[])data.get("groups");
 		    	for (int i = 0; i < groups.length; i++) {
-		    		gids.add(new Long(groups[i].trim()));
+		    		String[] groups2 = groups[i].split(" ");
+		    		for (int j = 0; j < groups2.length; j++) {
+			    		if (!groups2[j].trim().equals("")) gids.add(new Long(groups2[j].trim()));
+		    		}
 		    	}
 	    	}
 			idData.put(WebKeys.GROUPS, getProfileModule().getGroups(gids));

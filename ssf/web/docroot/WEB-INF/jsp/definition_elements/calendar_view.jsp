@@ -70,7 +70,6 @@ function highlightLineById(id) {
 </div>
 </div>
 
-<c:set var="ss_folderTableId" value="ss_folder_table" scope="request"/>
 <%
 	if (ssUser.getDisplayStyle() != null && 
 	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {

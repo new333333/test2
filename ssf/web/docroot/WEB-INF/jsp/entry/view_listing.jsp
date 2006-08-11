@@ -219,10 +219,6 @@ function ss_loadEntryUrl(url,id) {
 	return false;
 }
 
-function ss_notLoggedIn() {
-	alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
-}
-
 </script>
 </c:if>
 

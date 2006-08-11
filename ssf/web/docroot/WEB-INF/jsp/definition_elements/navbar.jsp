@@ -295,7 +295,7 @@ function ss_showFavoritesPane() {
 function ss_postFavoritesRequest(obj) {
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+		alert(ss_not_logged_in);
 	}
 	ss_hideObj("ss_favorites_form_div");
 	ss_setFavoritesPaneSize();

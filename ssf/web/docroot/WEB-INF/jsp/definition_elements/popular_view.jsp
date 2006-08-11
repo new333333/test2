@@ -34,7 +34,7 @@ function ss_saveRating(rating, id) {
 function ss_postSaveRatingRequest(obj) {
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		alert("<ssf:nlt tag="general.notLoggedIn" text="Your session has timed out. Please log in again."/>");
+		alert(ss_not_logged_in);
 	}
 	if (obj.getData('entryId') == ss_currentRatingInfoId) {
 		var infoDiv = document.getElementById("ss_rating_info_div")
