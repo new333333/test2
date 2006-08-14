@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EmailAlias;
@@ -75,7 +76,11 @@ public interface CoreDao {
     public List loadDefinitions(String zoneName);
     public List loadDefinitions(String zoneName, int type);
     
-	public List loadPostings(String zoneName);
+	public BinderConfig loadConfiguration(String defId, String zoneName);   
+    public List loadConfigurations(String zoneName);
+    public List loadConfigurations(String zoneName, int type);
+ 
+    public List loadPostings(String zoneName);
 	public List loadEmailAliases(String zoneName);
 	public EmailAlias loadEmailAlias(String aliasId, String zoneName);
     public void bulkLoadCollections(Collection entries);

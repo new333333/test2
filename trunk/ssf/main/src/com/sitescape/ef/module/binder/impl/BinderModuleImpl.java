@@ -12,14 +12,17 @@ import org.apache.lucene.search.Query;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.ef.InvalidArgumentException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
+import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.lucene.Hits;
@@ -30,6 +33,8 @@ import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.ef.module.shared.ObjectBuilder;
+import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
@@ -43,7 +48,10 @@ import com.sitescape.ef.web.util.FilterHelper;
  *
  */
 public class BinderModuleImpl extends CommonDependencyInjection implements BinderModule {
-	private WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
+	private static final String[] defaultDefAttrs = new String[]{"internalId", "zoneName", "definitionType"};
+	private static final String default_folder="402883b90d0de1f3010d0df5582b0001";
+	private static final String default_workspace="402883b90d0de1f3010d0df5582b0002";
+	private static final String default_file_folder="402883b90d0de1f3010d0df5582b0003";
     protected DefinitionModule definitionModule;
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
@@ -194,8 +202,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		for (Iterator iter=workflowAssociations.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry me = (Map.Entry)iter.next();
 			//	TODO:	getAccessControlManager().checkAcl(def, AccessType.READ);
-			def = getCoreDao().loadDefinition((String)me.getValue(), companyId);
-			wf.put(me.getKey(), def);
+			try {
+				def = getCoreDao().loadDefinition((String)me.getValue(), companyId);
+				wf.put(me.getKey(), def);
+			} catch (NoDefinitionByTheIdException nd) {}
 		}
 		binder.setWorkflowAssociations(wf);
 		binder.setDefinitionsInherited(false);
@@ -210,9 +220,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		//	Build up new set - domain object will handle associations
 		if (definitionIds != null) {
 			for (int i=0; i<definitionIds.size(); ++i) {
-				def = getCoreDao().loadDefinition((String)definitionIds.get(i), companyId);
-				//	TODO:	getAccessControlManager().checkAcl(def, AccessType.READ);
-				definitions.add(def);
+				try {
+					def = getCoreDao().loadDefinition((String)definitionIds.get(i), companyId);
+					//	TODO:	getAccessControlManager().checkAcl(def, AccessType.READ);
+					definitions.add(def);
+				} catch (NoDefinitionByTheIdException nd) {}
 			}
 		}
 	
@@ -398,18 +410,111 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	return entries; 
 	}
 
-    public Binder getBinderByPathName(String pathName) throws AccessControlException {
-    	List binders = getCoreDao().loadObjects(Binder.class, new FilterControls("lower(pathName)", pathName.toLowerCase()));
-    	
-    	if(binders.size() > 0) {
-    		Binder binder = (Binder) binders.get(0); // only one matching binder
-    		
-    		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);		
+	public Binder getBinderByPathName(String pathName) throws AccessControlException {
+	   	List binders = getCoreDao().loadObjects(Binder.class, new FilterControls("lower(pathName)", pathName.toLowerCase()));
+	    	
+	   	if(binders.size() > 0) {
+	   		Binder binder = (Binder) binders.get(0); // only one matching binder
+	   		
+	   		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);		
 	
-    		return binder;
-    	}
-    	else {
-    		return null;
-    	}
-    }
+	   		return binder;
+	   	}
+	   	else {
+	   		return null;
+	   	}
+	 }
+	public BinderConfig createDefaultConfiguration(int type) {
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		String title=null;
+		String internalId=null;
+		switch (type) {
+			case Definition.FOLDER_VIEW: {
+				List result = getCoreDao().loadObjects(BinderConfig.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{default_folder, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (BinderConfig)result.get(0);
+				title = "__configuration_default_folder";
+				internalId = default_folder;
+				break;
+			}
+
+			case Definition.WORKSPACE_VIEW: {
+				List result = getCoreDao().loadObjects(BinderConfig.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{default_workspace, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (BinderConfig)result.get(0);
+				title = "__configuration_default_workspace";
+				internalId = default_workspace;
+				break;
+			}
+			case Definition.FILE_FOLDER_VIEW: {
+				List result = getCoreDao().loadObjects(BinderConfig.class, 
+					new FilterControls(defaultDefAttrs, new Object[]{default_file_folder, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (BinderConfig)result.get(0);
+				title = "__configuration_default_file_folder";
+				internalId = default_file_folder;
+				break;
+			}
+		default: {
+			throw new InvalidArgumentException("Invalid type:" + type);
+			}
+		}
+		String id = addConfiguration(type, title);
+		BinderConfig cfg = getCoreDao().loadConfiguration(id, zoneName);
+		cfg.setInternalId(internalId);
+		return cfg;
+
+	}
+	 public String addConfiguration(int type, String title) {
+		List defs = new ArrayList();
+		defs.add(getDefinitionModule().createDefaultDefinition(type).getId());
+		BinderConfig config = new BinderConfig();
+		switch (type) {
+			case Definition.WORKSPACE_VIEW: {
+				break;
+			}
+			case Definition.FOLDER_VIEW: {
+				defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY).getId());
+				break;
+			}
+			case Definition.FILE_FOLDER_VIEW: {
+				defs.add(getDefinitionModule().createDefaultDefinition(Definition.FILE_ENTRY_VIEW).getId());
+				break;
+			}
+			default: {
+				throw new InvalidArgumentException("Invalid type:" + type);
+			}
+		}
+		
+		config.setTitle(title);
+		config.setZoneName(RequestContextHolder.getRequestContext().getZoneName());
+		config.setDefinitionIds(defs);
+		config.setDefinitionType(type);
+		getCoreDao().save(config);
+		return config.getId();
+		
+	}
+	public void deleteConfiguration(String id) {
+		BinderConfig config = getCoreDao().loadConfiguration(id, RequestContextHolder.getRequestContext().getZoneName());
+		getCoreDao().delete(config);
+	}
+	public void modifyConfiguration(String id, Map updates) {
+		BinderConfig config = getCoreDao().loadConfiguration(id, RequestContextHolder.getRequestContext().getZoneName());
+		ObjectBuilder.updateObject(config, updates);
+	}
+	public BinderConfig getConfiguration(String id) {
+		BinderConfig config = getCoreDao().loadConfiguration(id, RequestContextHolder.getRequestContext().getZoneName());
+		//TODO: access check
+		return config;
+		
+	}
+	public List getConfigurations() {
+		List result = getCoreDao().loadConfigurations(RequestContextHolder.getRequestContext().getZoneName());
+		//TODO: access check
+		return result;
+	}
+	public List getConfigurations(int type) {
+		List result = getCoreDao().loadConfigurations( RequestContextHolder.getRequestContext().getZoneName(), type);
+		//TODO: access check
+		return result;
+	}
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.DefinitionInvalidException;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinableEntity;
@@ -76,4 +77,7 @@ public interface DefinitionModule {
 	public void addIndexFieldsForEntity(org.apache.lucene.document.Document indexDoc, DefinableEntity entity);
 	public void addNotifyElementForEntity(Element element, Notify notifyDef, DefinableEntity entity);
 	public Map getEntryDefinitionElements(String id);
+
+
+
 }

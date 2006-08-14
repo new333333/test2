@@ -324,6 +324,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public String getProcessorKey(String processorKey) {
     	return processorKey;
     }
+    
     //Support for DefinitionArea interface
     public Long getDefinitionAreaId() {
     	return getId();

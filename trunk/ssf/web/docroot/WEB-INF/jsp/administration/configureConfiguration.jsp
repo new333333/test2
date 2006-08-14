@@ -14,68 +14,82 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-
+<%@ page import="com.sitescape.ef.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
 <div class="ss_style ss_portlet">
 <div class="ss_form" style="margin:6px;">
 <div class="ss_rounded">
 <div style="margin:6px;">
-<h3><ssf:nlt tag="binder.configure.definitions" text="Configure views/entries/workflows"/></h3>
-<c:if test="${ssBinder.definitionInheritanceSupported}">
-<fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="binder.configure.definitions.inheritance" 
-    text="Definition inheritance"/></legend>
-<br>
-<c:set var="yes_checked" value=""/>
-<c:set var="no_checked" value=""/>
-<c:if test="${ssBinder.definitionsInherited}">
-<span class="ss_bold"><ssf:nlt tag="binder.configure.definitions.inheriting" 
- text="Inheriting definition settings."/></span>
-<c:set var="yes_checked" value="checked"/>
-<c:set var="disabled" value="disabled"/>
+<c:if test="${empty ssBinderConfig}">
+<script type="text/javascript">
 
+function <portlet:namespace/>_onsub(obj) {
+	if (obj.cfgTitle.value == '') {
+		alert('<ssf:nlt tag="general.required.title"/>');
+		return false;
+	}
+	return true;
+}
+</script>
+
+<h3><ssf:nlt tag="administration.configure_cfg" text="Configurations"/></h3>
+<ssf:expandableArea title="<%= NLT.get("administration.configure_cfg.add") %>">
+<form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
+			<portlet:param name="action" value="configure_configuration"/>
+		</portlet:actionURL>" onSubmit="return(<portlet:namespace/>_onsub(this))">
+		
+	<span><b><ssf:nlt tag="administration.configure_cfg.title" text="Title"/></b></span>
+	<input type="text" class="ss_text" size="70" name="cfgTitle"><br>
+	
+	<br/>
+	 <input type="radio" name="cfgType" value="8"><ssf:nlt tag="general.type.workspace" 
+		  text="Workspace" /><br/>
+	 <input type="radio" name="cfgType" value="5" checked><ssf:nlt tag="general.type.folder" 
+		  text="Folder" /><br/>
+     <input type="radio" name="cfgType" value="9"><ssf:nlt tag="general.type.file" 
+		  text="File" />
+	<br/><br/>
+	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
+</form>
+</ssf:expandableArea>
+
+<br>
+<hr>
+<br>
+<h3><ssf:nlt tag="administration.configure_cfg.existing" text="Currently defined configurations"/></h3>
+<c:if test="${!empty ssBinderConfigs}">
+<ssf:expandableArea title='<%= NLT.get("administration.configure_cfg.modify") %>'>
+<c:forEach var="cfg" items="${ssBinderConfigs}">
+<a href="<portlet:renderURL>
+			<portlet:param name="action" value="configure_configuration"/>
+			<portlet:param name="objectId" value="${cfg.id}"/>
+			</portlet:renderURL>"><ssf:nlt tag="${cfg.title}" checkIfTag="true"/></a>
+<br/>
+</c:forEach>
+</ssf:expandableArea>
 </c:if>
-<c:if test="${!ssBinder.definitionsInherited}">
-<span class="ss_bold"><ssf:nlt tag="binder.configure.definitions.notInheriting" 
- text="Not inheriting definition settings."/></span>
-<c:set var="no_checked" value="checked"/>
+<br/>
+
+<form class="ss_style ss_form" name="<portlet:namespace/>rolesForm" method="post" 
+	action="<portlet:renderURL windowState="normal" portletMode="view">
+		</portlet:renderURL>">
+
+	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+</form>
+</c:if>
+<c:if test="${!empty ssBinderConfig}">
 <c:set var="disabled" value=""/>
 
-</c:if>
-<br><br>
-
-<form name="inheritanceForm" method="post" 
-  onSubmit="return ss_onSubmit(this);"
-  action="<portlet:actionURL>
-		  <portlet:param name="action" value="configure_forum"/>
-		  <portlet:param name="binderId" value="${ssBinder.id}"/>
-		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-		  </portlet:actionURL>">
-<ssf:nlt tag="binder.configure.definitions.inherit"
- text="Inherit definitions :"/>
-<br>
-&nbsp;&nbsp;&nbsp;<input type="radio" name="inherit" value="yes" ${yes_checked}>
-<ssf:nlt tag="yes" text="yes"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="radio" name="inherit" value="no" ${no_checked}>
-<ssf:nlt tag="no" text="no"/>&nbsp;&nbsp;&nbsp;
-<input type="submit" class="ss_submit" name="inheritanceBtn"
- value="<ssf:nlt tag="button.apply" text="Apply"/>">
-</form>
-</fieldset>
-<br>
-</c:if>
 <form method="post" action="<portlet:actionURL>
-					<portlet:param name="action" value="configure_forum"/>
-					<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-					<portlet:param name="binderId" value="${ssBinder.id}"/>
-					</portlet:actionURL>" >
+			<portlet:param name="action" value="configure_configuration"/>
+			<portlet:param name="objectId" value="${ssBinderConfig.id}"/>
+			</portlet:actionURL>" >
 
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
  
-<c:if test="${ssBinder.type == 'workspace'}">
+<c:if test="${ssBinderConfig.definitionType == 8}">
     <fieldset class="ss_fieldset">
       <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default folder view"/></legend>
 
@@ -83,23 +97,21 @@
           <c:choose>
 	        <c:when test="${ssDefaultFolderDefinition.id == item.value.id}">
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
 	        </c:when>
 	        <c:otherwise>
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
 	        </c:otherwise>
           </c:choose>
       </c:forEach>
       <br>
-<c:if test="${!ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
-</c:if>
     </fieldset>
     <br>
  </c:if>
 
-<c:if test="${ssBinder.type == 'folder'}">
+<c:if test="${ssBinderConfig.definitionType != 8}">
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedViews" text="Allowed folder views"/></legend>
 
@@ -108,19 +120,17 @@
       <c:choose>
         <c:when test="${empty ssFolderDefinitionMap[item.key]}">
   	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
- 	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
- 	    </c:when>
+  	      <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
+  	    </c:when>
 	    <c:otherwise>
 	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	      <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
 	      <c:set var="folderViewCount" value="1"/>
 	    </c:otherwise>
       </c:choose>
     </c:forEach>
     <br>
-<c:if test="${!ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
-</c:if>
   </fieldset>
   <br>
 
@@ -133,19 +143,17 @@
           <c:choose>
 	        <c:when test="${ssDefaultFolderDefinition.id == item.value.id}">
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
 	        </c:when>
 	        <c:otherwise>
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
 	        </c:otherwise>
           </c:choose>
         </c:if>
       </c:forEach>
       <br>
-<c:if test="${!ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
-</c:if>
     </fieldset>
     <br>
   </c:if>
@@ -157,18 +165,16 @@
 	  <c:choose>
 	    <c:when test="${empty ssEntryDefinitionMap[item.key]}">
 	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	      <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
 	    </c:when>
 	    <c:otherwise>
 	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	      <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
 	    </c:otherwise>
 	  </c:choose>
     </c:forEach>
     <br>
-<c:if test="${!ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
-</c:if>
   </fieldset>
   <br>
 
@@ -179,19 +185,20 @@
 	<c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
 	  <c:if test="${!empty ssEntryDefinitionMap[item.key]}">
 	  <tr>
-	    <td><ssf:nlt tag="${item.value.title}" checkIfTag="true"/></td>
+	    <td><c:out value="${item.value.title}"/></td>
 		<td>
 		  <select name="workflow_<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
 		    <option value=""><ssf:nlt tag="common.select.none" text="--none--"/></option>
 	          <c:forEach var="wfp" items="${ssPublicWorkflowDefinitions}">
-	            <c:if test="${ssBinder.workflowAssociations[item.value.id] eq wfp.value}">
+	            <c:if test="${ssBinderConfig.workflowIds[item.value.id] == wfp.key}">
 	              <option value="<c:out value="${wfp.value.id}"/>" selected>
-		          <ssf:nlt tag="${wfp.value.title}" checkIfTag="true"/>(${wfp.value.name})</option>
+	              <c:out value="${wfp.value.title}"/> (<c:out value="${wfp.value.name}"/>)</option>
 	            </c:if>
-	            <c:if test="${ssBinder.workflowAssociations[item.value.id] != wfp.value}">
+	            <c:if test="${ssBinderConfig.workflowIds[item.value.id] != wfp.key}">
 	              <option value="<c:out value="${wfp.value.id}"/>">
-		          <ssf:nlt tag="${wfp.value.title}" checkIfTag="true"/>(${wfp.value.name})</option>
+	              <c:out value="${wfp.value.title}"/> (<c:out value="${wfp.value.name}"/>)</option>
 	            </c:if>
+	            
 	          </c:forEach>
 		  </select>
 		</td>
@@ -200,56 +207,8 @@
 	</c:forEach>
 	</table>
 	<br>
-<c:if test="${!ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
-</c:if>
   </fieldset>
-</c:if>
-
-<c:if test="${ssBinder.type == 'profiles'}">
-  <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileView" text="Profile listing"/></legend>
-
-    <c:forEach var="item" items="${ssPublicBinderDefinitions}">
-      <c:choose>
-        <c:when test="${empty ssFolderDefinitionMap[item.key]}">
-  	      <input type="radio" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
- 	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
- 	    </c:when>
-	    <c:otherwise>
-	      <input type="radio" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
-	    </c:otherwise>
-      </c:choose>
-    </c:forEach>
-    <br>
-<c:if test="${!ssBinder.definitionsInherited}">
-      <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
-</c:if>
-  </fieldset>
-  <br>
-  
-  <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileEntryType" text="Profile type"/></legend>
-
-    <c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
-	  <c:choose>
-	    <c:when test="${empty ssEntryDefinitionMap[item.key]}">
-	      <input type="radio" name="entryDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
-	    </c:when>
-	    <c:otherwise>
-	      <input type="radio" name="entryDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
-	    </c:otherwise>
-	  </c:choose>
-    </c:forEach>
-    <br>
-<c:if test="${!ssBinder.definitionsInherited}">
-      <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
-</c:if>
-  </fieldset>
-  
 </c:if>
 
 <div class="ss_formBreak"/>
@@ -259,6 +218,7 @@
 </div>
 
 </form>
+</c:if>
 </div>
 </div>
 </div>
