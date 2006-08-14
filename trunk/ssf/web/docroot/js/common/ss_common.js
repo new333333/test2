@@ -790,14 +790,14 @@ function ss_getObjectTopAbs(obj) {
 }
 
 function ss_setObjectWidth(obj, width) {
-	obj.style.width = width;
+	obj.style.width = parseInt(width) + 'px';
 
     //Call the routines that want to be called on layout changes
     if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
 }
 
 function ss_setObjectHeight(obj, height) {
-    obj.style.height = height;
+    obj.style.height = parseInt(height) + 'px';
     
     //Call the routines that want to be called on layout changes
     if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();

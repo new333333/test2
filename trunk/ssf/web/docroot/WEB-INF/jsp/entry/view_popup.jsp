@@ -33,12 +33,9 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
 var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
 function ss_showForumEntryInIframe(url) {
-    var wObj = null
-    if (isNSN || isNSN6 || isMoz5) {
-        wObj = self.document.getElementById('ss_showfolder')
-    } else {
-        wObj = self.document.all['ss_showfolder']
-    }
+    ss_debug('popup width = ' + ss_viewEntryPopupWidth)
+    ss_debug('popup height = ' + ss_viewEntryPopupHeight)
+    var wObj = self.document.getElementById('ss_showfolder')
 	if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
 	if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
     self.window.open(url, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars');

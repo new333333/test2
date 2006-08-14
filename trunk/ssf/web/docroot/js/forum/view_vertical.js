@@ -125,8 +125,8 @@ function ss_startDragDiv(evt) {
     lightBox.onclick = "ss_divStopDrag();";
     lightBox.style.top = 0;
     lightBox.style.left = 0;
-    lightBox.style.width = ss_getBodyWidth();
-    lightBox.style.height = ss_getBodyHeight();
+    lightBox.style.width = parseInt(ss_getBodyWidth()) + 'px';
+    lightBox.style.height = parseInt(ss_getBodyHeight()) + 'px';
     lightBox.style.display = "block";
     lightBox.style.zIndex = ssDragEntryZ;
     lightBox.style.visibility = "visible";			
@@ -180,9 +180,11 @@ function ss_divDrag(evt) {
 		//Set the new height of the folder table
 		var tableDivObj = document.getElementById(ss_folderTableId)
 		var marginOffset = parseInt(parseInt(tableDivObj.style.marginTop) + 
-		        parseInt(tableDivObj.style.marginBottom) +
-		        parseInt(tableDivObj.style.borderTopWidth) +
-		        parseInt(tableDivObj.style.borderBottomWidth))
+		        parseInt(tableDivObj.style.marginBottom))
+		if (parseInt(tableDivObj.style.borderTopWidth)) 
+			marginOffset += parseInt(tableDivObj.style.borderTopWidth);
+		if (parseInt(tableDivObj.style.borderTopWidth)) 
+			marginOffset += parseInt(tableDivObj.style.borderBottomWidth);
 	    //ss_debug('marginOffset='+marginOffset)
 	    ss_folderDivHeight = parseInt(parseInt(dObjTop) - marginOffset + 
 	    		ss_scrollbarHeight -
@@ -190,19 +192,19 @@ function ss_divDrag(evt) {
 	    if (ss_folderDivHeight < 0) {
 	    	//The initialization of the event was bad. Just stop the drag.
 	    	//ss_debug('Bad ss_folderDivHeight = ' + ss_folderDivHeight)
+	        //ss_debug('  dObjTop = '+dObjTop+', ss_getDivTop(ss_folderTableId) = '+ss_getDivTop(ss_folderTableId) +', ss_divOffsetY='+ss_divOffsetY)
 	    	setTimeout('ss_divStopDrag()', 100);
 	    	return false;
 	    }
 	    if (ss_folderDivHeight < ss_minFolderDivHeight) {
-	        //ss_debug('ss_folderDivHeight = ' + ss_folderDivHeight)
-	        //ss_debug('  dObjTop = '+dObjTop+', ss_getDivTop(ss_folderTableId) = '+ss_getDivTop(ss_folderTableId) +', ss_divOffsetY='+ss_divOffsetY)
 	        ss_folderDivHeight = ss_minFolderDivHeight;
 	    }
 	    ss_setObjectHeight(tableDivObj, ss_folderDivHeight);
 	    
-	    //ss_divDragObj.style.top = ss_getDivTop('ss_showfolder_slider');
-	    //ss_debug('slider.style.top = ' + ss_divDragObj.style.top)
-
+	    var lightBox = document.getElementById('ss_entry_light_box')
+    	lightBox.style.width = parseInt(ss_getBodyWidth()) + 'px';
+    	lightBox.style.height = parseInt(ss_getBodyHeight()) + 'px';
+	    
         return false
     
     } else {
@@ -239,7 +241,6 @@ function ss_entryClearDrag() {
 		//ss_debug('remove lightbox')
 		dojo.style.setOpacity(lightBox, 1);
 		lightBox.style.visibility = "hidden"
-		//lightBox.parentNode.removeChild(lightBox);
 	}
 	ss_slidingTableMouseOverInfoDisabled = false;
 	self.document.onmousemove = ss_divDragSavedMouseMove;

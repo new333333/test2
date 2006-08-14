@@ -491,7 +491,6 @@ table.ss_borderTable tr.ss_headerRow th {
 /* used for event (calendar) views */
 table.ss_ruledTable {
   border-top: 1px #666666 solid;
-  border-left: 1px #666666 solid;
   margin: 0px;
 }
 

@@ -51,7 +51,8 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 <div id="ss_showfolder_slider" align="center" onMousedown="ss_startDragDiv();"
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}" 
   style="position:relative; margin:0px 2px 0px 2px; padding:0px; 
-    border-top:1px solid #666666; background-color:${ss_style_background_color};
+    border-top:1px solid #666666; 
+    background-color:${ss_style_background_color};
     cursor:n-resize; top:<%= sliderDivOffset %>px;"
 ><table cellspacing="0" cellpadding="0" style="width:95%">
 <tr>
