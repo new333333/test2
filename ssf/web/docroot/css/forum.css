@@ -326,9 +326,6 @@ div.ss_widgetContent {
   width: 300px;
   }
 
-.ss_treeWidget {
-  background: url("/html/pics/1pix.gif") fixed no-repeat;
-  }
 .ss_treeWidget img {
   border:none;
   margin:0px;

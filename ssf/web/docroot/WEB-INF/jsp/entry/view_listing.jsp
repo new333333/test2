@@ -67,7 +67,6 @@ renderRequest.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight
 <jsp:useBean id="ss_entryWindowHeight" type="java.lang.Integer" scope="request" />
 <c:if test="<%= !isViewEntry %>">
 <c:set var="showEntryCallbackRoutine" value="ss_showEntryInDiv" scope="request"/>
-<c:set var="showEntryMessageRoutine" value="ss_showMessageInDiv" scope="request"/>
 <script type="text/javascript">
 
 //Define the url of this page in case the entry needs to reload this page
@@ -86,21 +85,6 @@ ss_createOnLoadObj('ss_showEntryOnLoad', ss_showEntryOnLoad);
 <%
 	}
 %>
-
-function ss_showMessageInDiv(str) {
-	if (ss_displayStyle == "accessible") {return false;}
-    
-<%
-	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
-		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ||
-		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
-%>
-	return false
-<%
-	}
-%>
-	ss_showEntryInDiv(str)
-}
 
 function ss_showForumEntry(url, callbackRoutine) {
 <%
@@ -192,7 +176,6 @@ function ss_loadEntry(obj,id) {
 	if (id == "") return false;
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
-	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="Loading" text="Loading..."/>");
 	if (window.ss_highlightLineById) {
 		ss_highlightLineById(folderLine);
 		if (window.swapImages && window.restoreImages) {
@@ -211,7 +194,6 @@ function ss_loadEntryUrl(url,id) {
 	if (id == "") return false;
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
-	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="Loading" text="Loading..."/>");
 	if (window.ss_highlightLineById) {
 		ss_highlightLineById(folderLine);
 	}

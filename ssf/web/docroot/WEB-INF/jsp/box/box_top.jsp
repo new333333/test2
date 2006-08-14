@@ -48,6 +48,8 @@ try {
 catch (Exception e) {
 }
 
+String boxClass = ParamUtil.get(request, "box_class", "ss_box_top_rounded");
+
 boolean boldTitle = ParamUtil.get(request, "box_bold_title", true);
 boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", false);
 
@@ -66,7 +68,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	decorateBox = true;
 }
 %>
-<div class="ss_box_top_rounded" id="<%= divId %>" 
+<div class="<%= boxClass %>" id="<%= divId %>" 
   style="width: <%= width %>; background-color:${boxColor};">
 <%@ include file="/WEB-INF/jsp/box/box_top-ext.jsp" %>
 	<div class="ss_box_small_icon_bar" 

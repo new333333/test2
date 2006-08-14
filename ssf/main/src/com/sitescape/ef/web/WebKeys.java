@@ -325,7 +325,6 @@ public class WebKeys {
     public static final String VIEW_EDIT="forum/edit";
     public static final String VIEW_ENTRY="entry/view_entry";
     public static final String VIEW_FORUM="forum/view";
-    public static final String VIEW_LISTING="entry/view_listing";
     public static final String VIEW_LISTING_IFRAME="entry/view_listing_iframe";
     public static final String VIEW_LISTING_POPUP="entry/view_listing_popup";
     public static final String VIEW_LISTING_ACCESSIBLE="entry/view_listing_accessible";

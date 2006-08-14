@@ -3,7 +3,6 @@
 <jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
 <script type="text/javascript">
 function ss_loadEntry(obj,id) {
-	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="Loading" text="Loading..."/>");
 	ss_highlightLineById(id);
 	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
 	return false;

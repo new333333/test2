@@ -51,15 +51,15 @@ function ss_createStyleSheet(url) {
 var ss_urlBase = self.location.protocol + "//" + self.location.host;
 var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
 var niftyCornersCssUrl = ss_urlBase + "<html:rootPath/>css/nifty_corners.css";
-var htmlareaCssUrl = ss_urlBase + "<html:rootPath/>js/htmlarea/htmlarea.css";
+//var htmlareaCssUrl = ss_urlBase + "<html:rootPath/>js/htmleditor/htmlarea.css";
 if (document.createStyleSheet) {
 	document.createStyleSheet(ss_forumCssUrl);
 	document.createStyleSheet(niftyCornersCssUrl);
-	document.createStyleSheet(htmlareaCssUrl);
+	//document.createStyleSheet(htmlareaCssUrl);
 } else {
 	ss_createStyleSheet(ss_forumCssUrl);
 	ss_createStyleSheet(niftyCornersCssUrl);
-	ss_createStyleSheet(htmlareaCssUrl);
+	//ss_createStyleSheet(htmlareaCssUrl);
 }
 
 //Help system url (used to request a help panel to be shown).
