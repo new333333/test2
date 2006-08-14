@@ -174,7 +174,8 @@ function ss_divDrag(evt) {
 		        lightBox.style.position = "absolute";
 		        bodyObj.appendChild(lightBox);
 			}
-			dojo.style.setOpacity(lightBox, 1);
+			lightBox.style.backgroundColor = "#ffffff";
+			dojo.style.setOpacity(lightBox, .1);
 		    lightBox.onclick = "ss_entryClearDrag();";
 		    lightBox.style.top = 0;
 		    lightBox.style.left = 0;
@@ -183,8 +184,6 @@ function ss_divDrag(evt) {
 		    lightBox.style.display = "block";
 		    lightBox.style.zIndex = parseInt(ssDragEntryZ - 1);
 		    lightBox.style.visibility = "visible";			
-			//ss_divDragObj.parentNode.removeChild(ss_divDragObj);
-			//lightBox.appendChild(ss_divDragObj);
         }
         
         var dObjLeft
@@ -217,6 +216,10 @@ function ss_divDrag(evt) {
 	        ss_divDragObj.style.top = dObjTop
 	        ss_positionEntryDiv()
 		}
+	    var lightBox = document.getElementById('ss_entry_light_box')
+    	lightBox.style.width = ss_getBodyWidth();
+    	lightBox.style.height = ss_getBodyHeight();
+	    
         return false
     
     } else {
@@ -246,7 +249,8 @@ function ss_entryClearDrag() {
 	var lightBox = document.getElementById('ss_entry_light_box')
 	if (lightBox != null) {
 		//ss_debug('remove lightbox')
-		lightBox.parentNode.removeChild(lightBox);
+		dojo.style.setOpacity(lightBox, 1);
+		lightBox.style.visibility = "hidden"
 	}
 }
 

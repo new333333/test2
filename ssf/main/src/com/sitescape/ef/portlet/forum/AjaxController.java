@@ -334,7 +334,7 @@ public class AjaxController  extends SAbstractController {
 		if (formData.containsKey("entry_left")) entryLeft = ((String[])formData.get("entry_left"))[0];
 		
 		if (!entryWidth.equals("")) getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);
-		if (!entryHeight.equals("")) getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_WIDTH, entryHeight);
+		if (!entryHeight.equals("")) getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
 		if (!entryTop.equals("")) getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_TOP, entryTop);
 		if (!entryLeft.equals("")) getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_LEFT, entryLeft);
 		

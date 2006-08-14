@@ -8,7 +8,7 @@ function setFilteredEntry(id) {
 }
 </script>
 <c:set var="delimiter" value=" | "/>
-<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_ruledTable">
+<table border="0" cellpadding="2" cellspacing="0" class="ss_ruledTable">
 <tr class="ss_toolbar_color">
 <td colspan="2"><span>
 <fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
@@ -74,7 +74,7 @@ if (ssSeenMap.checkIfSeen(e)) {
     <c:out value="${evid.cal_starttimestring}"/>-<c:out value="${evid.cal_endtimestring}"/>: 
     </c:if>
     <a href="<ssf:url 
-    adapter="true" 
+    adapter="<%= useAdaptor %>" 
     portletName="ss_forum" 
     folderId="${ssFolder.id}" 
     action="view_folder_entry" 

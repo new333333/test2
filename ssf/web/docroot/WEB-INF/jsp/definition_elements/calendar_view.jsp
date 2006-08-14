@@ -15,15 +15,13 @@
 	}
 	if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
 			ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
+
+	boolean useAdaptor = true;
+	if (ssUser.getDisplayStyle() != null && 
+	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+		useAdaptor = false;
+	}
 %>
-
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-
-<% // Toolbar %>
-<c:if test="${!empty ssFolderToolbar}">
-<c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
-</c:if>
 
 <div class="ss_folder">
 
@@ -32,7 +30,7 @@
 
 <% // Then include the navigation widgets for this view %>
 <div style="margin:0px;">
-<div class="ss_folder_border" style="position:relative; top:2px; margin:0px; 
+<div class="ss_folder_border" style="position:relative; top:2px; margin:2px; 
   border-top:solid #666666 1px; 
   border-right:solid #666666 1px; 
   border-left:solid #666666 1px;">
@@ -54,11 +52,13 @@
 	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 %>
 <div id="ss_folder_table" 
-  style="position:relative; overflow:scroll; height:<%= ssFolderTableHeight %>;">
+  style="position:relative; overflow:scroll; height:<%= ssFolderTableHeight %>;
+  margin:2px; border-right:solid #666666 1px; 
+  border-left:solid #666666 1px;">
 <%
 	} else {
 %>
-<div id="ss_folder_table">
+<div id="ss_folder_table" style="margin:2px; border-left:solid #666666 1px;">
 <%
 	}
 %>
