@@ -82,6 +82,19 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_helpSystemQueuedX = "";
 	var ss_helpSystemQueuedY = "";
 	var ss_helpSystemRequestInProgress = 0;
+	
+	var ss_favoritesListArray = new Array();
+	var ss_favoritesListCount = 0;
+	var ss_lastDropped = null;
+	var ss_savedFavoriteClassNames = new Array();
+	var ss_lastHighlightedFavorite = null;
+	var ss_pauseFavoriteClick = 0;
+	var ss_pauseFavoriteClickTimer = null;
+	var ss_favoritesPaneTopOffset = 10;
+	var ss_favoritesPaneLeftOffset = 4;
+	var ss_favoritesMarginW = 4;
+	var ss_favoritesMarginH = 6;
+	
 }
 var ss_common_loaded = 1;
 
@@ -2004,7 +2017,509 @@ var ss_helpSystem = {
 		if (count-- >= 0) {
 			ss_helpSystemHighlightsBorderTimer[id] = setTimeout("ss_helpSystem.blinkHighlight('"+id+"', "+count+")", 200);
 		}
+	},
+	
+	outputHelpWelcomeHtml : function() {
+		var undefined;
+		if (!ss_helpSpotGifSrc || ss_helpSpotGifSrc == undefined || ss_helpSpotGifSrc == "undefined") {
+			var s = "";	
+			s += "<div id=\"ss_help_welcome\" class=\"ss_style ss_helpWelcome\" \n";
+			s += "  positionX=\"center\" positionY=\"top\" align=\"center\">\n";
+			s += "  <span class=\"ss_style ss_bold ss_largestprint\">"+ss_helpWelcomeText+"</span>\n";
+			s += "  <br>\n";
+			s += "  <table width=\"350\">\n";
+			s += "  <tr>\n";
+			s += "  <td><a href=\"#\" onClick=\"ss_helpSystem.showPreviousHelpSpot();return false;\"\n";
+			s += "    >&lt;&lt;&lt; "+ss_helpPreviousText+"</a></td>\n";
+			s += "  <td><a href=\"#\" \n";
+			s += "    onClick=\"ss_helpSystem.toggleTOC();return false;\">"+ss_helpTocText+"</a></td>\n";
+			s += "  <td align=\"right\"><a href=\"#\" onClick=\"ss_helpSystem.showNextHelpSpot();return false;\"\n";
+			s += "    >"+ss_helpNextText+" &gt;&gt;&gt;</a></td>\n";
+			s += "  </tr>\n";
+			s += "  <tr>\n";
+			s += "  <td align=\"center\" colspan=\"3\">\n";
+			s += "    <a class=\"ss_linkButton ss_smallprint\" href=\"#\" \n";
+			s += "      onClick=\"ss_helpSystem.hide(); return false;\">"+ss_helpCloseButtonText+"</a>\n";
+			s += "  </td>\n";
+			s += "  </tr>\n";
+			s += "  </table>\n";
+			s += "  <table>\n";
+			s += "  <tr>\n";
+			s += "  <td>&nbsp;</td>\n";
+			s += "  <td align=\"center\"><div id=\"ss_help_toc\" class=\"ss_helpToc\" align=\"left\"></td>\n";
+			s += "  <td>&nbsp;</td>\n";
+			s += "  </tr>\n";
+			s += "  </table>\n";
+			s += "  </div>\n";
+			s += "</div>\n";
+			//alert(s)
+			document.writeln(s);
+		}
+	}
+}
+
+//Dashboard routines
+
+function ss_toggle_toolbars() {
+	var toolbarOption = document.getElementById("ss_dashboard_menu_content");
+	for (var i = 0; i < ss_toolbar_count; i++) {
+		var obj = document.getElementById("ss_dashboard_toolbar_"+i)
+		if (obj.style.visibility == 'hidden') {
+			obj.style.visibility = 'visible';
+			obj.style.display = 'inline';
+			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarHideContent;
+		} else {
+			obj.style.visibility = 'hidden';
+			obj.style.display = 'none';
+			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarAddContent;
+		}
+	}
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
+function ss_toggle_hidden_controls() {
+	var toolbarOption = document.getElementById("ss_dashboard_menu_controls");
+	for (var i = 0; i < ss_dashboard_control_count; i++) {
+		var obj = document.getElementById("ss_dashboard_control_"+i)
+		if (obj.style.visibility == 'hidden') {
+			obj.style.visibility = 'visible';
+			obj.style.display = 'inline';
+			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarHideControls;
+		} else {
+			obj.style.visibility = 'hidden';
+			obj.style.display = 'none';
+			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarShowControls;
+		}
+	}
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
+function ss_showHideDashboardComponent(obj, componentId, divId) {
+	//ss_debug(obj.alt + ",    " + obj.src)
+	var formObj = ss_getContainingForm(obj)
+	var url = "";
+	var callbackRoutine = ""
+	if (obj.src.match(/sym_s_show.gif/)) {
+		url = ss_showDashboardComponentUrl;
+	    callbackRoutine = ss_showComponentCallback;
+	    obj.src = ss_componentSrcHide;
+	    obj.alt = ss_componentAltHide;
+	} else if (obj.src.match(/sym_s_hide.gif/)) {
+		url = ss_hideDashboardComponentUrl;
+	    callbackRoutine = ss_hideComponentCallback;
+	    obj.src = ss_componentSrcShow;
+	    obj.alt = ss_componentAltShow;
+		var targetDiv = document.getElementById(divId);
+		if (targetDiv) {
+			targetDiv.innerHTML = "";
+			targetDiv.style.visibility = "hidden";
+			targetDiv.style.display = "none";
+			//Signal that the layout changed
+			if (ssf_onLayoutChange) ssf_onLayoutChange();
+		}
+	} else if (obj.src.match(/sym_s_delete.gif/)) {
+		url = ss_deleteDashboardComponentUrl;
+	    callbackRoutine = ss_hideComponentCallback;
+		var targetDiv = document.getElementById(divId);
+		if (targetDiv) {
+			targetDiv.innerHTML = "";
+			targetDiv.style.visibility = "hidden";
+			targetDiv.style.display = "none";
+			//Signal that the layout changed
+			if (ssf_onLayoutChange) ssf_onLayoutChange();
+		}
+	}
+	if (componentId != "") {url += "\&operation2=" + componentId;}
+	if (formObj._dashboardList && formObj._dashboardList.value != "") {
+		url += "\&_dashboardList=" + formObj._dashboardList.value;
+	}
+	if (formObj._scope && formObj._scope.value != "") {
+		url += "\&_scope=" + formObj._scope.value;
+	}
+	url += "\&rn=" + ss_dbrn++
+	if (callbackRoutine != "") fetch_url(url, callbackRoutine, divId);
+}
+function ss_showComponentCallback(s, divId) {
+	var targetDiv = document.getElementById(divId);
+	if (targetDiv) {
+		targetDiv.innerHTML = s;
+		targetDiv.style.visibility = "visible";
+		targetDiv.style.display = "block";
+		//Signal that the layout changed
+		if (ssf_onLayoutChange) ssf_onLayoutChange();
+	}
+}
+function ss_hideComponentCallback(s, divId) {
+}
+function ss_confirmDeleteComponent(obj, componentId, divId, divId2) {
+	var formObj = ss_getContainingForm(obj)
+	var confirmText = "";
+	if (formObj._scope.value == "local") {
+		confirmText = ss_dashboardConfirmDeleteLocal;
+	} else if (formObj._scope.value == "global") {
+		confirmText = ss_dashboardConfirmDeleteGlobal;
+	} else if (formObj._scope.value == "binder") {
+		confirmText = ss_dashboardConfirmDeleteBinder;
+	} else {
+		confirmText = ss_dashboardConfirmDeleteUnknown;
+	}
+	var confirmText2 = ss_dashboardConfirmDelete;
+	if (!confirm(confirmText + "\n" + confirmText2)) return;
+	ss_showHideDashboardComponent(obj, componentId, divId)
+	if (divId2 && document.getElementById(divId2)) {
+		ss_hideDiv(divId2)
+	}
+}
+
+function ss_addDashboardComponent(obj, component) {
+	var formObj = ss_getContainingForm(obj)
+	formObj.name.value = component;
+	formObj.submit();
+}
+
+function ss_modifyDashboardComponent(obj, componentScope) {
+	var formObj = ss_getContainingForm(obj)
+	formObj._scope.value = componentScope;
+}
+
+function ss_hideDashboardMenu(obj) {
+	var formObj = ss_getContainingForm(obj)
+	ss_hideDiv(formObj.parentNode.id)
+}
+
+//This routine was ported from Liferay portal.js
+var ss_dashboardComponentToolbar = {
+
+	fadeIn : function (id) {
+		var bar = document.getElementById(id);
+	    if (bar.style.visibility == 'hidden') {
+	    	ss_dashboardComponentToolbar.changeOpacity(bar, 0.01)
+	    	ss_showDiv(id);
+			if (!bar.opac || bar.opac < 0) {
+				bar.opac = 0;
+			}
+	    }
+		
+		// component has been removed.  exit.
+		if (bar == null)
+			return;
+			
+		if (bar.startOut) {
+			// stop fadeOut prematurely
+			clearTimeout(bar.timerOut);
+			//ss_debug(bar.timerOut + " stop OUT prematurely");
+			bar.timerOut = 0;
+		}
+		bar.startOut = false;		
+		bar.startIn = true;		
+
+		bar.opac += 20;
+		//ss_debug("IN "+parseFloat(parseFloat(bar.opac) / 100.0));
+		ss_dashboardComponentToolbar.changeOpacity(bar, parseFloat(parseFloat(bar.opac) / 100.0));
+		
+		if (bar.opac < 100) {
+			bar.timerIn = setTimeout("ss_dashboardComponentToolbar.fadeIn(\"" + id + "\")", 50);
+		}
+		else {
+			bar.timerIn = 0;
+			bar.startIn = false;
+		}
+	},
+	
+	fadeOut : function (id) {
+		var bar = document.getElementById(id);
+		
+		// component has been removed.  exit.
+		if (bar == null)
+			return;
+		
+		if (bar.startIn) {
+			// stop fadeIn prematurely
+			clearTimeout(bar.timerIn);
+			//ss_debug(bar.timerIn + " stop IN prematurely");
+			bar.timerIn = 0;
+		}
+		bar.startIn = false;
+		bar.startOut = true;		
+		
+		bar.opac -= 20;
+		//ss_debug("OUT "+parseFloat(parseFloat(bar.opac) / 100.0));
+		ss_dashboardComponentToolbar.changeOpacity(bar, parseFloat(parseFloat(bar.opac) / 100.0));
+		if (bar.opac > 0) {
+			bar.timerOut = setTimeout("ss_dashboardComponentToolbar.fadeOut(\"" + id + "\")", 50);
+		}
+		else {
+			bar.style.visibility = "hidden";
+			bar.timerOut = 0;
+			bar.startOut = false;
+		}
+	},
+	
+	init : function (bar) {
+	},
+	
+	hide : function (id) {
+		var bar = document.getElementById(id);
+		//ss_debug("hide " + bar.timerIn + " " + bar.startIn);
+		
+		// If fadeIn timer has been set, but hasn't started, cancel it
+		if (bar.timerIn && !bar.startIn) {
+			// cancel unstarted fadeIn
+			//ss_debug("cancel unstarted IN");
+			clearTimeout(bar.timerIn);
+			bar.timerIn = 0;
+		}	
+		
+		if (!bar.startOut && bar.opac > 0) {
+			if (bar.timerOut) {
+				// reset unstarted fadeOut timer
+				clearTimeout(bar.timerOut);
+				//ss_debug("Out restarted");
+				bar.timerOut = 0;
+			}
+
+			this.init(bar);
+			bar.timerOut = setTimeout("ss_dashboardComponentToolbar.fadeOut(\"" + id + "\")", 150);
+			//ss_debug(bar.timerOut + " hide OUT");
+		}
+	},
+	
+	show : function (id) {
+		//ss_debug("show");
+		var bar = document.getElementById(id);
+		
+		// If fadeOut timer has been set, but hasn't started, cancel it
+		if (bar.timerOut && !bar.startOut) {
+			// cancel unstarted fadeOut
+			//ss_debug("cancel unstarted OUT");
+			clearTimeout(bar.timerOut);
+			bar.timerOut = 0;
+		}
+		
+		if (!bar.startIn && (!bar.opac || bar.opac < 100)){
+			if (!bar.opac) {
+				bar.opac = 0;
+			}
+
+			if (bar.timerIn) {
+				// reset unstarted fadeIn timer
+				clearTimeout(bar.timerIn);
+				//ss_debug("In restarted");
+				bar.timerIn = 0;
+			}
+
+			this.init(bar);
+			bar.timerIn = setTimeout("ss_dashboardComponentToolbar.fadeIn(\"" + id + "\")", 150);
+			//ss_debug(bar.timerIn + " show IN");
+		}
+	},
+	
+	changeOpacity : function (object, opacity) {
+		opacity = (opacity >= 1.0) ? 0.999 : opacity;
+		opacity = (opacity < 0) ? 0 : opacity;
+	    
+		//ss_debug("change opacity = " + opacity)
+		object.style.opacity = (opacity);
+		object.style.MozOpacity = (opacity);
+		object.style.KhtmlOpacity = (opacity);
+		object.style.filter = "alpha(opacity=" + opacity * 100.0 + ")";
 	}
 	
+}
+
+//Routine to go to a favorite when it is clicked
+function favTree_showId(id, obj, action) {
+	if (ss_pauseFavoriteClick == 1) return false;
+	//Get the binderId from the elementId ("ss_favorites_xxx")
+	var binderData = id.substr(13).split("_");
+	binderId = binderData[2];
+	
+	//Build a url to go to
+	var url = ss_favoritesShowIdUrl;
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	self.location.href = url;
+	return false;
+}
+
+function ss_enableFavoritesList(id) {
+	ss_favoritesListArray[ss_favoritesListCount] = id;
+	ss_favoritesListCount++;
+
+    var idObj = document.getElementById(id)
+	ss_DragDrop.makeListContainer(idObj);
+    eval("idObj.onDragOver = function() {ss_highlightFavorites('"+idObj.id+"');}");
+    eval("idObj.onDragOut = function() {ss_unhighlightFavorites('"+idObj.id+"');}");
+    eval("idObj.onDragDrop = function() {ss_saveFavorites('"+idObj.id+"');}");
+
+    var items = idObj.getElementsByTagName( "li" );
+	for (var i = 0; i < items.length; i++) {
+		eval("items[i].onDragEndCallback = function() {ss_saveDragId('"+items[i].id+"');}");
+	}
+}
+
+function ss_saveDragId(id) {
+    ss_lastDropped = id
+    return false;
+}
+
+function ss_highlightFavorites(id) {
+	ss_unhighlightFavorites();
+	var idObj = document.getElementById(id);
+	//document.getElementById('debugLog').innerHTML += 'Highlight '+idObj.id+'  '
+	if (!ss_savedFavoriteClassNames[idObj.id] || 
+			ss_savedFavoriteClassNames[idObj.id] == "undefined" || 
+			ss_savedFavoriteClassNames[idObj.id] == "") {
+		ss_savedFavoriteClassNames[idObj.id] = idObj.className;
+	}
+	idObj.className = ss_savedFavoriteClassNames[idObj.id] + " ss_sortableHighlighted"
+	//document.getElementById('debugLog').innerHTML += ' ('+idObj.className+') '
+	ss_lastHighlightedFavorite = idObj;
+}
+
+function ss_unhighlightFavorites() {
+	if (ss_lastHighlightedFavorite != null) {
+		//document.getElementById('debugLog').innerHTML += ' unHighlight '+ss_lastHighlightedFavorite.id+'  '
+		var id = ss_lastHighlightedFavorite.id;
+		if (ss_savedFavoriteClassNames[id] && 
+				ss_savedFavoriteClassNames[id] != "undefined" && 
+				ss_savedFavoriteClassNames[id] != "") {
+			var idObj = document.getElementById(id);
+			idObj.className = ss_savedFavoriteClassNames[id];
+			//document.getElementById('debugLog').innerHTML += ' ok '
+		}
+	}
+	ss_lastHighlightedFavorite = null;
+}
+
+function ss_saveFavorites(id) {
+	ss_setupStatusMessageDiv()
+	ss_unhighlightFavorites(id)
+	if (ss_lastDropped == null) return;
+	
+	//The list was sorted, so turn off the click
+	ss_noClickFavorite();
+	
+	var s = "";
+	for (var i = 0; i < ss_favoritesListCount; i++) {
+		var ulObj = self.document.getElementById(ss_favoritesListArray[i]);
+    	var items = ulObj.getElementsByTagName( "li" );
+		for (var j = 0; j < items.length; j++) {
+			s += items[j].id + " "
+		}
+	}
+	var url = ss_saveFavoritesUrl;
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addKeyValue("movedItemId", ss_lastDropped)
+	ss_lastDropped = null;
+	ajaxRequest.addKeyValue("favorites", s)
+	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+}
+
+function ss_noClickFavorite() {
+	ss_pauseFavoriteClick = 1;
+	if (ss_pauseFavoriteClickTimer != null) clearTimeout(ss_pauseFavoriteClickTimer);
+	ss_pauseFavoriteClickTimer = setTimeout("ss_clickFavorite();", 500)
+}
+function ss_clickFavorite() {
+	ss_pauseFavoriteClick = 0;
+	if (ss_pauseFavoriteClickTimer != null) clearTimeout(ss_pauseFavoriteClickTimer);
+	ss_pauseFavoriteClickTimer = null;
+}
+
+function ss_addForumToFavorites() {
+	ss_setupStatusMessageDiv()
+	var binderId = '${ssBinder.id}';
+	var action = '${action}';
+	var url = ss_addFavoriteBinderUrl;
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+}
+
+function ss_addFavoriteCategory() {
+	ss_setupStatusMessageDiv()
+	var formObj = self.document.getElementById('ss_favorites_form');
+	var s = formObj.new_favorites_category.value;
+	if (s == "") return;
+	formObj.new_favorites_category.value = "";
+	var url = ss_addFavoritesCategoryUrl;
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addKeyValue("category", s)
+	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+}
+
+function ss_showFavoritesPane() {
+	ss_setupStatusMessageDiv()
+	var fObj = self.document.getElementById("ss_favorites_pane");
+	ss_moveObjectToBody(fObj);
+	fObj.style.zIndex = ssMenuZ;
+	fObj.style.visibility = "visible";
+	ss_setOpacity(fObj, 100)
+	//fObj.style.display = "none";
+	fObj.style.display = "block";
+	var fObj2 = self.document.getElementById("ss_favorites_table")
+	var w = ss_getObjectWidth(fObj)
+	ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_bottom") + ss_favoritesPaneTopOffset))
+	ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_bottom")))
+	var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom") + ss_favoritesPaneLeftOffset);
+	ss_showDiv("ss_favorites_pane");
+	ss_hideObj("ss_favorites_form_div");
+
+	var url = ss_getFavoritesTreeUrl;
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+}
+function ss_postFavoritesRequest(obj) {
+	//See if there was an error
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		alert(ss_not_logged_in);
+	}
+	ss_hideObj("ss_favorites_form_div");
+	ss_setFavoritesPaneSize();
+
+	ss_favoritesListArray = new Array();
+	ss_favoritesListCount = 0;
+	var uls = self.document.getElementsByTagName("ul");
+	for (var i = 0; i < uls.length; i++) {
+		if (uls[i].id.indexOf("ul_ss_favorites") == 0) {
+			ss_enableFavoritesList(uls[i].id)
+		}
+	}
+	if (document.getElementById("ul_ss_delete") != null) ss_enableFavoritesList("ul_ss_delete");
+}
+
+function ss_hideFavoritesPane() {
+	ss_hideDivFadeOut('ss_favorites_pane', 0);
+}
+
+function ss_setFavoritesPaneSize() {
+	var fObj = self.document.getElementById("ss_favorites_pane")
+	var fObj2 = self.document.getElementById("ss_favorites")
+	var fObj22 = self.document.getElementById("ss_favorites2")
+	ss_setObjectWidth(fObj, parseInt(ss_getObjectWidth(fObj2) + ss_favoritesMarginW));
+	var height = parseInt(ss_getObjectHeight(fObj2) + ss_getObjectHeight(fObj22) + ss_favoritesMarginH * 2);
+	if (height < 400) height = "400px";
+	ss_setObjectHeight(fObj, height);
+	var fObj3 = self.document.getElementById("ss_favorites_table")
+	var fObj4 = self.document.getElementById("ss_favorites_table2")
+	var tableWidth = ss_getObjectWidth(fObj3);
+	var table2Width = ss_getObjectWidth(fObj4);
+	if (tableWidth > table2Width) {
+		ss_setObjectWidth(fObj4, ss_getObjectWidth(fObj3));
+	} else {
+		ss_setObjectWidth(fObj3, ss_getObjectWidth(fObj4));
+	}
 }
 

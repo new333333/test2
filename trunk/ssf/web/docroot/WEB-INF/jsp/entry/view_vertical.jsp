@@ -1,10 +1,9 @@
 <% //view a folder forum with the entry at the bottom in an iframe %>
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
-int sliderDivHeight = 18;
-int sliderDivArrowHeight = 17;    //This is the height of pics/sym_s_arrows_northsouth.gif
-int sliderDivBlankHeight = sliderDivHeight - sliderDivArrowHeight + 4;
-String sliderDivOffset = "-" + String.valueOf(sliderDivHeight);
+//int sliderDivHeight = 18;
+int sliderDivHeight = 6;
+String sliderDivOffset = "-20";
 
 //Get the folder type of this definition (folder, file, or event)
 String folderViewStyle = "folder";
@@ -49,41 +48,23 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
     configElement="${ssConfigElement}" 
     configJspStyle="${ssConfigJspStyle}" />
 </div>
-<div id="ss_showfolder_slider" onMousedown="ss_startDragDiv();"
+<div id="ss_showfolder_slider" align="center" onMousedown="ss_startDragDiv();"
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}" 
-  style="position:relative; margin:0px 0px 3px 0px; padding:0px; width:100%; 
-  top:<%= sliderDivOffset %>px;">
-  <table class="ss_folder_border" width="100%" 
-    style="border: 1px solid black; margin:0px;"
-    cellpadding="0" cellspacing="0">
-    <tr>
-      <td width="1%">
-        <div style="display:inline;"><img src="<html:imagesPath/>pics/1pix.gif" 
-          style="height:<%= String.valueOf(sliderDivHeight) %>px;"></div>
-      </td>
-      <td align="center" width="99%">
-        <div style="display:inline; width:100%;
-          background-image:url(<html:imagesPath/>pics/sym_s_arrows_northsouth.gif);
-          background-position: 50%;
-          background-repeat:no-repeat;">&nbsp;&nbsp;&nbsp;</div>
-      </td>
-      <td align="right" width="1%">
-        <div style="display:inline;"><img src="<html:imagesPath/>pics/1pix.gif" 
-          style="height:<%= String.valueOf(sliderDivHeight) %>px;"></div>
-      </td>
-    </tr>
-  </table>
-</div>
-
-<div id="ss_showentrydiv_place_holder" width="100%"
- style="position:relative; margin:0px 0px 3px 0px; padding:0px; 
- top:<%= sliderDivOffset %>px;">
+  style="position:relative; margin:0px 2px 0px 2px; padding:0px; 
+    border-top:1px solid #666666; background-color:${ss_style_background_color};
+    cursor:n-resize; top:<%= sliderDivOffset %>px;"
+><table cellspacing="0" cellpadding="0" style="width:95%">
+<tr>
+<td><img style="visibility:hidden; height:<%= String.valueOf(sliderDivHeight) %>px;" src="<html:imagesPath/>pics/1pix.gif"></td>
+</tr></table></div>
 
 <div id="ss_showentrydiv" class="ss_style ss_portlet" 
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
-  style="margin:0px 0px 0px 2px;">
+  style="position:relative; margin:0px 0px 0px 2px; 
+    top:<%= sliderDivOffset %>px;">
   <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
+    <ssf:param name="box_class" value="ss_style" />
     <ssf:param name="box_color" value="${ss_folder_border_color}" />
     <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
     <ssf:param name="box_title" useBody="true">
@@ -95,7 +76,6 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
     src="<html:rootPath/>js/forum/null.html" height="400" width="100%" 
     onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="no" >xxx</iframe>
   </ssf:box>
-</div>
 </div>
 </div>
 <div id="ss_showfolder_bottom" class="ss_style ss_portlet">&nbsp;</div>

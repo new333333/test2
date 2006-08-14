@@ -13,7 +13,7 @@ public class BinderHelper {
 		if (displayStyle == null || displayStyle.equals("")) {
 			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
 		}
-		String viewListingJspName = WebKeys.VIEW_LISTING;
+		String viewListingJspName;
 		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {

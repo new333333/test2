@@ -639,6 +639,9 @@ ul.ss_dropdownmenu li {
   }
 
 /* Tree widget styles */
+.ss_treeWidget {
+  background: url("<html:imagesPath/>pics/1pix.gif") fixed no-repeat;
+  }
 .ss_twDiv {
   }
 .ss_twSpan, ss_twA {

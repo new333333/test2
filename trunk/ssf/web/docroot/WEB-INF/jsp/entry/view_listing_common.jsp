@@ -46,7 +46,6 @@ renderRequest.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight
 %>
 <c:if test="<%= !isViewEntry %>">
 <c:set var="showEntryCallbackRoutine" value="ss_showEntryInDiv" scope="request"/>
-<c:set var="showEntryMessageRoutine" value="ss_showMessageInDiv" scope="request"/>
 <script type="text/javascript">
 
 //Define the url of this page in case the entry needs to reload this page
@@ -66,21 +65,6 @@ ss_createOnLoadObj('ss_showEntryOnLoad', ss_showEntryOnLoad);
 	}
 %>
 
-function ss_showMessageInDiv(str) {
-	if (ss_displayStyle == "accessible") {return false;}
-    
-<%
-	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
-		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ||
-		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
-%>
-	return false
-<%
-	}
-%>
-	ss_showEntryInDiv(str)
-}
-
 function ss_showForumEntry(url, callbackRoutine) {
 <%
 	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
@@ -92,62 +76,6 @@ function ss_showForumEntry(url, callbackRoutine) {
 	}
 %>
 	fetch_url(url, callbackRoutine);
-}
-
-function ss_showEntryInDiv(str) {
-    //Make sure the absolute div is in the body
-    self.ss_moveDivToBody('ss_showentrydiv');
-    
-    //Keep a high water mark for the page so the scrolling doesn't bounce around
-    setWindowHighWaterMark('ss_showentryhighwatermark');
-    
-    var wObj1 = null
-    var wObj2 = null
-    if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('ss_showentrydiv')
-        wObj2 = self.document.getElementById('ss_showentry')
-    } else {
-        wObj1 = self.document.all['ss_showentrydiv']
-        wObj2 = self.document.all['ss_showentry']
-    }
-    
-    if (str.indexOf('<body onLoad="self.location =') >= 0) {self.loaction.reload();}
-    wObj1.style.display = "block";
-    wObj2.innerHTML = str;
-    wObj1.style.visibility = "visible";
-
-    //If the entry div needs dynamic positioning after adding the entry, do it now
-    if (self.ss_positionEntryDiv) {ss_positionEntryDiv();}
-        
-    //Keep a high water mark for the page so the scrolling doesn't bounce around
-    setWindowHighWaterMark('ss_showentryhighwatermark');
-    
-    //Get the position of the div displaying the entry
-    if (autoScroll == "true") {
-	    var entryY = ss_getDivTop('ss_showentrydiv')
-	    var entryH = ss_getDivHeight('ss_showentrydiv')
-	    var bodyY = self.document.body.scrollTop
-	    var windowH = ss_getWindowHeight()
-	    if (entryY >= bodyY) {
-	    	if (entryY >= parseInt(bodyY + windowH)) {
-	    		if (entryH > windowH) {
-	    			smoothScroll(0,entryY)
-	    		} else {
-	    			var newY = parseInt(entryY - (windowH - entryH))
-	    			smoothScroll(0,newY)
-	    		}
-	    	} else if (parseInt(entryY + entryH) > parseInt(bodyY + windowH)) {
-	    		var overhang = parseInt((entryY + entryH) - (bodyY + windowH))
-	    		var newY = parseInt(bodyY + overhang)
-	    		if (newY > entryY) {newY = entryY}
-	    		smoothScroll(0,newY)
-	    	}
-	    } else {
-	    	smoothScroll(0,entryY)
-	    }
-	}
-	//Signal that the layout changed
-	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
 var ss_highlightBgColor = "${ss_folder_line_highlight_color}"
@@ -174,7 +102,6 @@ function ss_loadEntry(obj,id) {
 	if (id == "") return false;
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
-	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="Loading" text="Loading..."/>");
 	if (window.ss_highlightLineById) {
 		ss_highlightLineById(folderLine);
 		if (window.swapImages && window.restoreImages) {
@@ -193,7 +120,6 @@ function ss_loadEntryUrl(url,id) {
 	if (id == "") return false;
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
-	<c:out value="${showEntryMessageRoutine}"/>("<ssf:nlt tag="Loading" text="Loading..."/>");
 	if (window.ss_highlightLineById) {
 		ss_highlightLineById(folderLine);
 	}
@@ -213,6 +139,13 @@ function ss_loadEntryUrl(url,id) {
 <c:if test="<%= !reloadCaller %>">
   <c:if test="<%= isViewEntry %>">
 <script type="text/javascript">
+var ss_saveViewEntryWidthUrl = "<ssf:url 
+	adapter="true" 
+	portletName="ss_forum" 
+	action="__ajax_request" 
+	actionUrl="true" >
+	<ssf:param name="operation" value="save_entry_width" />
+	</ssf:url>";
 if (self.parent && self.parent.ss_highlightLineById) {
 	self.parent.ss_highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
 }
@@ -255,13 +188,7 @@ function ss_viewEntrySaveSize() {
 			self.opener.ss_viewEntryPopupHeight = ss_getWindowHeight()
 			self.opener.ss_viewEntryPopupWidth = ss_getWindowWidth()
 		}
-	 	var url = "<ssf:url 
-	    	adapter="true" 
-	    	portletName="ss_forum" 
-	    	action="__ajax_request" 
-	    	actionUrl="false" >
-			<ssf:param name="operation" value="save_entry_width" />
-	    	</ssf:url>"
+	 	var url = ss_saveViewEntryWidthUrl;
 		var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.addKeyValue("entry_height", ss_getWindowHeight())
 		ajaxRequest.addKeyValue("entry_width", ss_getWindowWidth())

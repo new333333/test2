@@ -56,21 +56,8 @@ request.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight));
 <jsp:useBean id="ss_entryWindowHeight" type="java.lang.Integer" scope="request" />
 <c:if test="<%= !op.equals(WebKeys.ACTION_VIEW_ENTRY) %>">
 <c:set var="showEntryCallbackRoutine" value="showEntryInDiv" scope="request"/>
-<c:set var="showEntryMessageRoutine" value="ss_showMessageInDiv" scope="request"/>
 <script type="text/javascript">
 var autoScroll = "<%= autoScroll %>";
-
-function ss_showMessageInDiv(str) {
-<%
-	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
-		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
-%>
-	return false
-<%
-	}
-%>
-	showEntryInDiv(str)
-}
 
 function ss_showForumEntry(url, callbackRoutine) {
 <%

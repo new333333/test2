@@ -5,6 +5,7 @@ var ss_bottomHeight = 100;
 var ss_minFolderDivHeight = 100;
 var ss_minEntryDivHeight = 100;
 var ss_scrollTopOffset = 4;
+var ss_scrollbarHeight = 20;
 var ss_positioningEntryDiv = 0;
 var ss_marginLeft = 2
 var ss_marginRight = 2
@@ -19,27 +20,13 @@ function ss_setEntryDivHeight() {
 				ss_entryHeightHighWaterMark = ss_minEntryDivHeight;
 				ss_setObjectHeight(wObj3, ss_minEntryDivHeight);
 			}
-			//setTimeout("ss_setEntryDivHeight2();", 100);
 			setTimeout("ss_positionEntryDiv();", 100);
 		}
 	} catch(e) {
 		ss_debug('ss_setEntryDivHeight failed: ' + e.message)
 	}
 }
-function ss_setEntryDivHeight2() {
-	try {
-		if (window.ss_showentryframe && window.ss_showentryframe.document && 
-				window.ss_showentryframe.document.body) {
-		    var wObj3 = self.document.getElementById('ss_showentryframe')
-		    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
-		    var entryHeightPlus2 = parseInt(entryHeight + 2)
-			ss_setObjectHeight(wObj3, entryHeightPlus2);
-			setTimeout("ss_positionEntryDiv();", 100);
-		}
-	} catch(e) {
-		ss_debug('ss_setEntryDivHeight2 failed: ' + e.message)
-	}
-}
+
 function ss_positionEntryDiv() {
 	ss_positioningEntryDiv = 1
 	ss_showEntryDiv()
@@ -49,8 +36,6 @@ function ss_positionEntryDiv() {
     var wObj1 = self.document.getElementById('ss_showentrydiv')
     var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
     var wObj3 = self.document.getElementById('ss_showentryframe')
-    var wObj4 = self.document.getElementById('ss_showentrydiv_place_holder')
-    var sliderDiv = self.document.getElementById('ss_showfolder_slider')
         
     var width = parseInt(parseInt(ss_getObjectWidth(wObj)) - ss_marginLeft - ss_marginRight);
 	ss_setObjectWidth(wObj1, width);
@@ -66,7 +51,6 @@ function ss_positionEntryDiv() {
 			    //Only expand the height. Never shrink it. Otherwise the screen jumps around.
 			    ss_entryHeightHighWaterMark = entryHeight;
 				ss_setObjectHeight(wObj1, entryHeight);
-				//ss_setObjectHeight(wObj4, entryHeight);
 			}
 			ss_setObjectHeight(wObj3, entryHeight);
 		}
@@ -83,26 +67,8 @@ function ss_showEntryDiv() {
     var wObj1 = self.document.getElementById('ss_showentrydiv')
     wObj1.style.visibility = "visible";
     wObj1.style.display = "block";
-
-    var wObj2 = self.document.getElementById('ss_showfolder_slider')
-    if (ss_savedSliderClassName != "") wObj2.className = ss_savedSliderClassName;
-    if (ss_savedSliderBorder != "") wObj2.style.border = ss_savedSliderBorder;
 }
 
-function ss_hideEntryDiv() {
-	//Mark that we are positioning the entry div so dragging doesn't do layout changes
-	ss_positioningEntryDiv = 1
-	
-    var wObj1 = self.document.getElementById('ss_showentrydiv')
-    wObj1.style.visibility = "hidden";
-    var wObj2 = self.document.getElementById('ss_showfolder_slider')
-    if (ss_savedSliderClassName == "") ss_savedSliderClassName = wObj2.className;
-    wObj2.className = "ss_style ss_bgwhite";
-    if (ss_savedSliderBorder == "") ss_savedSliderBorder = wObj2.style.border;
-    wObj2.style.border = "1px solid white";
-}
-
-var ss_lastLayoutEntryHeight = 0;
 function ss_checkLayoutChange() {
 	//Reposition entry div, but only if not in the process of doing it
 	if (ss_positioningEntryDiv != 1) {
@@ -137,23 +103,35 @@ var ss_divOffsetX
 var ss_divOffsetY
 
 var ss_startingToDragDiv = null;
+var ss_draggingDragDiv = false;
 var ss_divDragSavedMouseMove = '';
 var ss_divDragSavedMouseUp = '';
-function ss_startDragDiv() {
+function ss_startDragDiv(evt) {
+    //ss_debug('start drag')
 	if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(null);
-	var sliderObj = document.getElementById('ss_showfolder_slider')
-	if (!document.getElementById('ss_showfolder_slider_abs')) {
-		var tempNode = sliderObj.cloneNode( true );
-		tempNode.id = 'ss_showfolder_slider_abs';
-		tempNode.style.position = 'absolute';
-		tempNode.style.zIndex = ssDragEntryZ;
-		document.getElementsByTagName( "body" ).item(0).appendChild( tempNode );
+	ss_divDragObj = document.getElementById('ss_showfolder_slider')
+	ss_divDragObj.style.zIndex = parseInt(ssDragEntryZ + 1);
+
+	var lightBox = document.getElementById('ss_entry_light_box')
+	if (!lightBox) {
+		var bodyObj = document.getElementsByTagName("body").item(0)
+		lightBox = document.createElement("div");
+        lightBox.setAttribute("id", "ss_entry_light_box");
+        lightBox.style.position = "absolute";
+        bodyObj.appendChild(lightBox);
 	}
-	ss_divDragObj = document.getElementById('ss_showfolder_slider_abs')
-    ss_setObjectTop(ss_divDragObj, parseInt(ss_getDivTop('ss_showfolder_slider') + 1))
-    ss_setObjectLeft(ss_divDragObj, parseInt(ss_getDivLeft('ss_showfolder_slider') + 0));
-    ss_setObjectWidth(ss_divDragObj, parseInt(ss_getDivWidth('ss_showfolder_slider') - ss_marginRight));
-    ss_divDragObj.style.visibility = 'visible';
+	lightBox.style.backgroundColor = "#ffffff";
+	dojo.style.setOpacity(lightBox, .1);
+    lightBox.onclick = "ss_divStopDrag();";
+    lightBox.style.top = 0;
+    lightBox.style.left = 0;
+    lightBox.style.width = ss_getBodyWidth();
+    lightBox.style.height = ss_getBodyHeight();
+    lightBox.style.display = "block";
+    lightBox.style.zIndex = ssDragEntryZ;
+    lightBox.style.visibility = "visible";			
+
+	ss_divDragObj = document.getElementById('ss_showfolder_slider');
 	
     if (isNSN || isNSN6 || isMoz5) {
     } else {
@@ -161,24 +139,23 @@ function ss_startDragDiv() {
         ss_divOffsetY = window.event.offsetY
     }
     ss_startingToDragDiv = 1;
-    if (self.document.onmousemove) ss_divDragSavedMouseMove = self.document.onmousemove;
-    if (self.document.onmouseup) ss_divDragSavedMouseUp = self.document.onmouseup;
+    if (self.document.onmousemove != '' && ss_divDragSavedMouseMove == '') 
+    		ss_divDragSavedMouseMove = self.document.onmousemove;
+    if (self.document.onmouseup != '' && ss_divDragSavedMouseUp == '') 
+    		ss_divDragSavedMouseUp = self.document.onmouseup;
     self.document.onmousemove = ss_divDrag
     self.document.onmouseup = ss_divStopDrag
 
-	//Hide the entry divs so dragging doesn't do lots of layout changes
-	ss_hideEntryDiv();
 	if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(null);
+	ss_slidingTableMouseOverInfoDisabled = true;
+	ss_draggingDragDiv = true;
 		
     return false
 }
 
 function ss_divDrag(evt) {
     if (!evt) evt = window.event;
-    if (ss_divDragObj) {
-		//Hide the entry div so dragging doesn't do lots of layout changes
-		ss_hideEntryDiv();
-		
+    if (ss_draggingDragDiv && ss_divDragObj) {
         if (ss_startingToDragDiv == 1) {
             if (evt.layerX) {
                 if (isNSN || isNSN6 || isMoz5) {
@@ -199,8 +176,33 @@ function ss_divDrag(evt) {
     		//IE requires fix-up if wndow is scrolled
     		dObjTop += parseInt(self.document.body.scrollTop)
         }
-    	//Move the slider div
-    	ss_setObjectTop(ss_divDragObj, dObjTop)
+
+		//Set the new height of the folder table
+		var tableDivObj = document.getElementById(ss_folderTableId)
+		var marginOffset = parseInt(parseInt(tableDivObj.style.marginTop) + 
+		        parseInt(tableDivObj.style.marginBottom) +
+		        parseInt(tableDivObj.style.borderTopWidth) +
+		        parseInt(tableDivObj.style.borderBottomWidth))
+	    //ss_debug('marginOffset='+marginOffset)
+	    ss_folderDivHeight = parseInt(parseInt(dObjTop) - marginOffset + 
+	    		ss_scrollbarHeight -
+	    		parseInt(ss_getDivTop(ss_folderTableId)));
+	    if (ss_folderDivHeight < 0) {
+	    	//The initialization of the event was bad. Just stop the drag.
+	    	//ss_debug('Bad ss_folderDivHeight = ' + ss_folderDivHeight)
+	    	setTimeout('ss_divStopDrag()', 100);
+	    	return false;
+	    }
+	    if (ss_folderDivHeight < ss_minFolderDivHeight) {
+	        //ss_debug('ss_folderDivHeight = ' + ss_folderDivHeight)
+	        //ss_debug('  dObjTop = '+dObjTop+', ss_getDivTop(ss_folderTableId) = '+ss_getDivTop(ss_folderTableId) +', ss_divOffsetY='+ss_divOffsetY)
+	        ss_folderDivHeight = ss_minFolderDivHeight;
+	    }
+	    ss_setObjectHeight(tableDivObj, ss_folderDivHeight);
+	    
+	    //ss_divDragObj.style.top = ss_getDivTop('ss_showfolder_slider');
+	    //ss_debug('slider.style.top = ' + ss_divDragObj.style.top)
+
         return false
     
     } else {
@@ -209,42 +211,39 @@ function ss_divDrag(evt) {
 }
 
 function ss_divStopDrag(evt) {
-    if (!evt) evt = window.event;
+	//ss_debug('stop drag')
+	ss_startingToDragDiv = 0;
+    if (!evt && window.event) evt = window.event;
     if (ss_divDragObj) {
-    	ss_divDragObj.style.visibility = 'hidden';
-        ss_divDragObj = null
+        ss_slidingTableMouseOverInfoDisabled = false;;
 
 	    self.document.onmousemove = ss_divDragSavedMouseMove;
 	    self.document.onmouseup = ss_divDragSavedMouseUp;
         
-        var dObjLeft
-        var dObjTop
-        if (isNSN || isNSN6 || isMoz5) {
-            dObjLeft = evt.pageX - ss_divOffsetX;
-            dObjTop = evt.pageY - ss_divOffsetY;
-        } else {
-            dObjLeft = evt.clientX - ss_divOffsetX;
-            dObjTop = evt.clientY - ss_divOffsetY;
-    		//IE requires fix-up if wndow is scrolled
-    		dObjTop += parseInt(self.document.body.scrollTop)
-        }
-		var tableDivObj = document.getElementById(ss_folderTableId)
-		var marginOffset = parseInt(parseInt(tableDivObj.style.marginTop) + parseInt(tableDivObj.style.marginBottom))
-	    ss_folderDivHeight = parseInt(parseInt(dObjTop) + 
-	    		ss_getDivHeight('ss_showfolder_slider') - marginOffset - 3 -
-	    		parseInt(ss_getDivTop(ss_folderTableId)));
-	    if (ss_folderDivHeight < ss_minFolderDivHeight) ss_folderDivHeight = ss_minFolderDivHeight;
-	    ss_setObjectHeight(tableDivObj, ss_folderDivHeight);
-
-		//Reposition the entry div to fit in the new space
-		ss_positionEntryDiv()
-
+        ss_draggingDragDiv = false;
+        
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
+    	
+    	setTimeout("ss_entryClearDrag();",100);
     	
 	    setTimeout("ss_saveEntryHeight(ss_folderDivHeight);", 500)
     }
     return false
+}
+
+function ss_entryClearDrag() {
+	//ss_debug('ss_entryClearDrag')
+	var lightBox = document.getElementById('ss_entry_light_box')
+	if (lightBox != null) {
+		//ss_debug('remove lightbox')
+		dojo.style.setOpacity(lightBox, 1);
+		lightBox.style.visibility = "hidden"
+		//lightBox.parentNode.removeChild(lightBox);
+	}
+	ss_slidingTableMouseOverInfoDisabled = false;
+	self.document.onmousemove = ss_divDragSavedMouseMove;
+	self.document.onmouseup = ss_divDragSavedMouseUp;
 }
 
 var ss_lastEntryHeight = -1;

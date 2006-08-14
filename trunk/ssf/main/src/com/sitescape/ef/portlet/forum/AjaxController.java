@@ -323,19 +323,21 @@ public class AjaxController  extends SAbstractController {
 		Map formData = (Map) context.get("formData");
 		Map statusMap = (Map) context.get("statusMap");
 		User user = RequestContextHolder.getRequestContext().getUser();
-		//Save the user's selected entry width
+		//Save the user's selected entry width, etc.
 		String entryWidth = "";
 		if (formData.containsKey("entry_width")) entryWidth = ((String[])formData.get("entry_width"))[0];
+		String entryHeight = "";
+		if (formData.containsKey("entry_height")) entryHeight = ((String[])formData.get("entry_height"))[0];
 		String entryTop = "";
 		if (formData.containsKey("entry_top")) entryTop = ((String[])formData.get("entry_top"))[0];
 		String entryLeft = "";
 		if (formData.containsKey("entry_left")) entryLeft = ((String[])formData.get("entry_left"))[0];
-		if (!entryWidth.equals("") && !entryTop.equals("") && !entryLeft.equals("")) {
-			//Save the entry width
-		   	getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);
-		   	getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_TOP, entryTop);
-		   	getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_LEFT, entryLeft);
-		}
+		
+		if (!entryWidth.equals("")) getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);
+		if (!entryHeight.equals("")) getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_WIDTH, entryHeight);
+		if (!entryTop.equals("")) getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_TOP, entryTop);
+		if (!entryLeft.equals("")) getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_LEFT, entryLeft);
+		
 		response.setContentType("text/xml");
 		model.put(WebKeys.AJAX_STATUS, statusMap);
 		return new ModelAndView("forum/save_entry_width_return", model);
