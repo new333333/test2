@@ -27,6 +27,7 @@ import java.sql.SQLException;
 
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.EntityIdentifier;
@@ -49,6 +50,7 @@ import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
+import com.sitescape.ef.domain.NoConfigurationByTheIdException;
 import com.sitescape.ef.domain.NoTagByTheIdException;
 import com.sitescape.ef.domain.NoEmailAliasByTheIdException;
 import com.sitescape.ef.domain.Workspace;
@@ -473,6 +475,30 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		FilterControls filter = new FilterControls(new String[]{"zoneName", "type"}, new Object[]{zoneName, Integer.valueOf(type)});
 		filter.setOrderBy(order);
     	return loadObjects(new ObjectControls(Definition.class), filter);
+	}
+	
+	public BinderConfig loadConfiguration(String defId, String zoneName) {
+		BinderConfig def = (BinderConfig)load(BinderConfig.class, defId);
+        if (def == null) {throw new NoConfigurationByTheIdException(defId);}
+        //make sure from correct zone
+        if (!def.getZoneName().equals(zoneName)) {throw new NoConfigurationByTheIdException(defId);}
+  		return def;
+	}
+
+	public List loadConfigurations(String zoneName) {
+		OrderBy order = new OrderBy();
+		order.addColumn("definitionType");
+		order.addColumn("title");
+		FilterControls filter = new FilterControls("zoneName", zoneName);
+		filter.setOrderBy(order);
+    	return loadObjects(new ObjectControls(BinderConfig.class), filter);
+	}
+	public List loadConfigurations(String zoneName, int type) {
+		OrderBy order = new OrderBy();
+		order.addColumn("title");
+		FilterControls filter = new FilterControls(new String[]{"zoneName", "definitionType"}, new Object[]{zoneName, Integer.valueOf(type)});
+		filter.setOrderBy(order);
+    	return loadObjects(new ObjectControls(BinderConfig.class), filter);
 	}
 	//associations not maintained from definition to binders, only from
 	//binders to definitions

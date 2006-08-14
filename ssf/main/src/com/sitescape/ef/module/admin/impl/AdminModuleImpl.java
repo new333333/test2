@@ -370,16 +370,5 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		ms.setMemberIds(members);		
 
 	}
-	public void initConfigCategories(String zoneName) {
-		//build mappings
-		
-		Object[] cfValues = new Object[]{"__discussionFolder", zoneName, Integer.valueOf(Definition.FOLDER_VIEW)};
-		String[] cfAttrs = new String[]{"name", "zoneName", "type"};
-		
-	   	List result = getCoreDao().loadObjects(Definition.class, new FilterControls(cfAttrs, cfValues));
-	   	if (result.isEmpty()) {
-	   		
-	   	}
- 		
-	}
+
 }

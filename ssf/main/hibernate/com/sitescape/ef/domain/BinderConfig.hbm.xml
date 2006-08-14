@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_Configs" name="com.sitescape.ef.domain.BinderConfig">
+    <id unsaved-value="null" name="id" node="@id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <component name="aclSet" class="com.sitescape.ef.domain.PersistentAclSet">
+      <property name="readMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+        <column name="acl_readMembers"/>
+      </property>
+      <property name="writeMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+        <column name="acl_writeMembers"/>
+      </property>
+      <property name="deleteMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+        <column name="acl_deleteMembers"/>
+      </property>
+      <property name="changeAclMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+        <column name="acl_changeAclMembers"/>
+      </property>
+    </component>
+    <property name="title" length="128"/>
+    <property name="definitionType"/>
+    <property name="internalId" length="32"/>
+    <property name="zoneName" length="100" not-null="true"/>
+ 	<property name="definitions" access="field" length="128"/>
+ 	<property name="workflowAssociations" access="field" length="256"/>
+    <component name="creation" class="com.sitescape.ef.domain.HistoryStamp">
+      <property name="date" column="creation_date" type="timestamp"/>
+      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+        <column name="creation_principal"/>
+      </many-to-one>
+    </component>
+    <component name="modification" class="com.sitescape.ef.domain.HistoryStamp">
+      <property name="date" column="modification_date" type="timestamp"/>
+      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+        <column name="modification_principal"/>
+      </many-to-one>
+    </component>
+  </class>
+</hibernate-mapping>

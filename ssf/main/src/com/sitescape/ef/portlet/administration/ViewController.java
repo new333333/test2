@@ -241,7 +241,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("url", url.toString());
 
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
-		element.addAttribute("title", NLT.get("administration.configuration_builder"));
+		element.addAttribute("title", NLT.get("administration.configure_configurations"));
 		element.addAttribute("image", "bullet");
 		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();

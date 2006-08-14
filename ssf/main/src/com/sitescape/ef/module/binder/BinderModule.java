@@ -7,7 +7,9 @@ import java.util.Collection;
 
 import org.dom4j.Document;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
@@ -15,6 +17,7 @@ import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.search.LuceneSessionFactory;
 import com.sitescape.ef.security.AccessControlException;
 
@@ -90,4 +93,12 @@ public interface BinderModule {
     public void moveBinder(Long fromId, Long toId);
     public void checkMoveBinderAllowed(Binder binder);
     public List executeSearchQuery(Binder binder, Document searchQuery);
+    
+	public BinderConfig createDefaultConfiguration(int type);
+	public String addConfiguration(int type, String title);
+	public void modifyConfiguration(String id, Map updates);
+	public void deleteConfiguration(String id);
+	public BinderConfig getConfiguration(String id); 
+	public List getConfigurations();
+	public List getConfigurations(int type);
 }

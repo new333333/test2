@@ -50,7 +50,7 @@ public class WebKeys {
     public static final String URL_OPERATION2="operation2";
 	public static final String URL_RANDOM = "random";
 	public static final String URL_VALUE = "value";
-
+	public static final String URL_OBJECT_ID="objectId";
     //Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "forumIdList";
 	public static final String PRESENCE_PREF_USER_LIST = "com.sitescape.presence.user.list";
@@ -142,10 +142,14 @@ public class WebKeys {
 	public static final String ADMIN_TREE="ssAdminDomTree";
 	public static final String BINDER="ssBinder";
 	public static final String BINDER_ID="ssBinderId";
+	public static final String BINDER_CONFIG="ssBinderConfig";
+	public static final String BINDER_CONFIGS="ssBinderConfigs";
 	public static final String BINDER_DEFINITION_TYPE="ssBinderDefinitionType";
 	public static final String BINDER_ENTRIES="ssBinderEntries";
 	public static final String BLOG_ENTRIES="ssBlogEntries"; 
 	public static final String COMMUNITY_TAGS="ssCommunityTags";
+	public static final String CONFIGURATIONS="ssConfigurations";
+	public static final String CONFIGURATION="ssConfiguration";
 	public static final String CONDITION_ENTRY_DEF_ID="conditionDefinitionId";
 	public static final String CONDITION_ELEMENT_NAME="conditionElementName";
 	public static final String CONDITION_ELEMENT_OPERATION="conditionElementOperation";
@@ -303,10 +307,8 @@ public class WebKeys {
     //View names
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
     public static final String VIEW_ADD_ENTRY = "entry/add_entry";
-    public static final String VIEW_ADD_BINDER = "forum/add_binder";
-    public static final String VIEW_ADD_BINDER_TYPE = "forum/add_binder_type";
-    public static final String VIEW_ADD_BINDER_DEFINITION = "forum/add_binder_definition";
-    public static final String VIEW_ADD_BINDER_DEFINITION_AJAX="forum/add_binder_definition_ajax";
+    public static final String VIEW_ADD_BINDER = "binder/add_binder";
+    public static final String VIEW_ADD_BINDER_TYPE = "binder/add_binder_type";
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
     public static final String VIEW_ADMIN_CONFIGURE_NOTIFICATION="administration/configureNotify";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING="administration/configurePosting";
@@ -331,7 +333,7 @@ public class WebKeys {
     public static final String VIEW_LISTING_VERTICAL="entry/view_listing_vertical";
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
     public static final String VIEW_MOVE_ENTRY="entry/move_entry";
-    public static final String VIEW_MODIFY_BINDER="forum/modify_binder";
+    public static final String VIEW_MODIFY_BINDER="binder/modify_binder";
     public static final String VIEW_MOVE_BINDER="binder/move_binder";
     public static final String VIEW_NO_DEFINITION="forum/view_default";
     public static final String VIEW_NO_ENTRY="entry/view_no_entry";

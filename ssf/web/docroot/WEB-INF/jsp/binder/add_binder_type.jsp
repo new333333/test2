@@ -21,22 +21,26 @@
 <body>
 </ssf:ifadapter>
 
-<div class="ss_portlet"> 
+<div class="ss_portlet">
 <br/>
+
 <form class="ss_style ss_form" 
-  name="<portlet:namespace/>fm" 
-  method="post" onSubmit="return ss_onSubmit(this);" >
+  id="<portlet:namespace/>fm" 
+  method="post" >
 <input type="hidden" name="_operation" value="${operation}"/>
-<input type="hidden" name="_definitionId" value="${ssDefinitionId}">
 
-<% // Show the workspace according to its definition %>
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${ssConfigElement}" 
-  configJspStyle="${ssConfigJspStyle}" />
+<fieldset class="ss_fieldset">
+  <legend class="ss_legend"><ssf:nlt tag="binder.add.binder.select.legend"/></legend>
+  <br/>
+  <span class="ss_bold"><ssf:nlt tag="binder.add.binder.select.config"/></span>
+  <br/>
+  <c:forEach var="config" items="${ssConfigurations}">
+      <input type="radio" name="binderConfigId" value="${config.id}" ><ssf:nlt tag="${config.title}" checkIfTag="true"/><br/>
+  </c:forEach>
+</fieldset>
+<br/>  
 
-<br/>
-	
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+<input type="submit" class="ss_submit" name="selectCfgBtn" value="<ssf:nlt tag="button.ok"/>">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 
 </form>

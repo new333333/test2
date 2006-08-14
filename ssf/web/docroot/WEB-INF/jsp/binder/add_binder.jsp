@@ -21,18 +21,23 @@
 <body>
 </ssf:ifadapter>
 
-<div class="ss_portlet">
+<div class="ss_portlet"> 
 <br/>
-
 <form class="ss_style ss_form" 
   name="<portlet:namespace/>fm" 
-  method="post" >
-<input type="hidden" name="_operation" value="${operation}"/>
-<input type="hidden" name="binderDefinitionType" value="${ssBinderDefinitionType}"/>
-<%@ include file="/WEB-INF/jsp/forum/add_binder_definition_common.jsp" %>
+  method="post" onSubmit="return ss_onSubmit(this);" >
+<input type="hidden" name="operation" value="${operation}"/>
+<input type="hidden" name="definitionId" value="${ssDefinition.id}">
+<input type="hidden" name="binderConfigId" value="${ssConfiguration.id}">
+
+<% // Show the workspace according to its definition %>
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="${ssConfigElement}" 
+  configJspStyle="${ssConfigJspStyle}" />
+
 <br/>
 	
-<input type="submit" class="ss_submit" name="selectDefBtn" value="<ssf:nlt tag="button.ok"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 
 </form>
