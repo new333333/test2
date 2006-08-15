@@ -46,12 +46,14 @@ function ss_positionEntryDiv() {
 		if (window.ss_showentryframe && window.ss_showentryframe.document && 
 				window.ss_showentryframe.document.body) {
 		    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
+		    ss_debug('entryHeight = '+entryHeight)
 		    if (entryHeight < ss_minEntryDivHeight) entryHeight = ss_minEntryDivHeight;
 		    if (entryHeight > ss_entryHeightHighWaterMark) {
 			    //Only expand the height. Never shrink it. Otherwise the screen jumps around.
 			    ss_entryHeightHighWaterMark = entryHeight;
 				ss_setObjectHeight(wObj1, entryHeight);
 			}
+		    ss_debug(' set entryHeight = '+entryHeight)
 			ss_setObjectHeight(wObj3, entryHeight);
 		}
 	} catch(e) {

@@ -88,8 +88,8 @@ function ss_positionEntryDiv() {
 		    //Only expand the height. Never shrink it. Otherwise the screen jumps around.
 		    ss_entryHeightHighWaterMark = entryHeight;
 			ss_setObjectHeight(wObj1, entryHeight);
+			ss_setObjectHeight(wObj3, entryHeight);
 		}
-		ss_setObjectHeight(wObj3, entryHeight);
 	}
 
 }

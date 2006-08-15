@@ -71,7 +71,7 @@
 <tr >
   <td colspan="3">
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
-	   style="visibility:hidden; display:none;">
+	   style="position:relative; visibility:hidden; display:none;">
 	  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
 	  <ssf:menu title="<%= ss_dashboardAddWide %>" titleClass="ss_linkButton" 
 	    titleId="ss_addDashboardContentWideTop" menuWidth="400px" offsetTop="2"
@@ -123,7 +123,7 @@
 	</c:forEach>
 
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
-	  style="visibility:hidden; display:none; width:1px; height:20px;"><img 
+	  style="position:relative; visibility:hidden; display:none; width:1px; height:20px;"><img 
   src="<html:imagesPath/>pics/1pix.gif"></div>
 	<c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
   </td>
@@ -135,10 +135,10 @@
 	  src="<html:imagesPath/>pics/1pix.gif" /></div>
 
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
-	   style="visibility:hidden; display:none;">
+	   style="position:relative; visibility:hidden; display:none;">
 	  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
 	  <ssf:menu title="<%= ss_dashboardAddNarrow %>" titleClass="ss_linkButton" 
-	    titleId="ss_addDashboardContentNarrow" menuWidth="400px" offsetTop="2"
+	    titleId="ss_addDashboardContentNarrow" menuWidth="400px" offsetTop="2" 
 	    menuClass="ss_dashboard_menu" openStyle="popup">
 	  <form method="post" action="<portlet:actionURL>
 		  <portlet:param name="action" value="modify_dashboard"/>
@@ -200,7 +200,7 @@
   
   <td valign="top" width="98%">
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
-	   style="visibility:hidden; display:none;">
+	   style="position:relative; visibility:hidden; display:none;">
 	  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
 	  <ssf:menu title="<%= ss_dashboardAddMedium %>" titleClass="ss_linkButton" 
 	    titleId="ss_addDashboardContentNarrowVariable" menuWidth="400px" offsetTop="2"

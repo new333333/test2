@@ -27,6 +27,7 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var isIE = ((navigator.userAgent.indexOf("IE ") > -1));
 	
 	//zIndex map
+	var ssLightboxZ = 2000;
 	var ssHelpZ = 2000;
 	var ssHelpSpotZ = 2001;
 	var ssHelpPanelZ = 2003;
@@ -1521,6 +1522,43 @@ function ss_showNotLoggedInMsg() {
 	alert(ss_not_logged_in);
 }
 
+function ss_showLightbox(id, zIndex, opacity, className) {
+	if (id == null) id = "ss_light_box";
+	if (zIndex == null) zIndex = ssLightboxZ;
+	if (opacity == null) opacity = .5;
+	if (className == null) className = "ss_lightBox";
+	var lightBox = document.getElementById(id)
+	if (!lightBox) {
+		var bodyObj = document.getElementsByTagName("body").item(0)
+		lightBox = document.createElement("div");
+        lightBox.setAttribute("id", id);
+        lightBox.className = className;
+        bodyObj.appendChild(lightBox);
+	}
+    lightBox.style.visibility = "hidden";
+    lightBox.style.display = "none";
+    lightBox.style.top = 0;
+    lightBox.style.left = 0;
+    lightBox.style.width = ss_getBodyWidth();
+    lightBox.style.height = ss_getBodyHeight();
+    dojo.style.setOpacity(lightBox, 0);
+    lightBox.className = className;
+    lightBox.style.display = "block";
+    lightBox.style.zIndex = zIndex;
+    lightBox.style.visibility = "visible";
+    dojo.fx.html.fade(lightBox, 150, 0, opacity)
+    return lightBox;
+}
+function ss_hideLightbox(id) {
+	if (id == null) id = "ss_light_box";
+	var lightBox = document.getElementById(id)
+	if (lightBox) {
+		lightBox.style.visibility = "hidden";
+		lightBox.style.display = "none";
+		lightBox.parentNode.removeChild(lightBox);
+	}
+}
+
 //Support routines for the help system
 var ss_help_position_topOffset = 10;
 var ss_help_position_bottomOffset = 20;
@@ -1535,28 +1573,8 @@ var ss_helpSystem = {
 	
 	show : function() {
 		//ss_debug('ss_helpSystem');
-		var lightBox = document.getElementById('ss_help_light_box')
-		if (!lightBox) {
-			var bodyObj = document.getElementsByTagName("body").item(0)
-			lightBox = document.createElement("div");
-	        lightBox.setAttribute("id", "ss_help_light_box");
-	        lightBox.className = "ss_helpLightBox";
-	        bodyObj.appendChild(lightBox);
-		}
-	    //ss_debug(lightBox.id)
-	    lightBox.style.visibility = "hidden";
-	    lightBox.style.display = "none";
+		var lightBox = ss_showLightbox("ss_help_light_box", ssHelpZ)
 	    lightBox.onclick = function(e) {if (ss_helpSystem) ss_helpSystem.hide();};
-	    lightBox.style.top = 0;
-	    lightBox.style.left = 0;
-	    lightBox.style.width = ss_getBodyWidth();
-	    lightBox.style.height = ss_getBodyHeight();
-	    dojo.style.setOpacity(lightBox, 0);
-	    lightBox.className = "ss_helpLightBox";
-	    lightBox.style.display = "block";
-	    lightBox.style.zIndex = ssHelpZ;
-	    lightBox.style.visibility = "visible";
-	    dojo.fx.html.fade(lightBox, 150, 0, .5)
 	    
 		ss_moveDivToBody('ss_help_welcome');
 		var welcomeDiv = document.getElementById('ss_help_welcome');
@@ -2082,17 +2100,19 @@ var ss_helpSystem = {
 function ss_toggle_dashboard_toolbars() {
 	var toolbarOption = document.getElementById("ss_dashboard_menu_content");
 	for (var i = 0; i < ss_toolbar_count; i++) {
-		var dashboardClassNameFrom
-		var dashboardClassNameTo
 		var obj = document.getElementById("ss_dashboard_toolbar_"+i)
 		if (obj.style.visibility == 'hidden') {
 			obj.style.visibility = 'visible';
 			obj.style.display = 'inline';
+			obj.style.zIndex = parseInt(ssLightboxZ + 1);
 			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarHideContent;
+			var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
+			lightBox.onclick = function(e) {ss_toggle_dashboard_toolbars();};
 		} else {
 			obj.style.visibility = 'hidden';
 			obj.style.display = 'none';
 			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarAddContent;
+			ss_hideLightbox()
 		}
 	}
 	
