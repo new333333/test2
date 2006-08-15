@@ -74,7 +74,7 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
       </div>
     </ssf:param>
   <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; display:block;"
-    src="<html:rootPath/>js/forum/null.html" height="400" width="100%" 
+    src="<html:rootPath/>js/forum/null.html" height="100" width="100%" 
     onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="no" >xxx</iframe>
   </ssf:box>
 </div>

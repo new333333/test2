@@ -52,7 +52,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 <c:set var="ss_help_spot_background_color" value="#ffff00" scope="request"/>
 <c:set var="ss_help_panel_background_color" value="#ffffff" scope="request"/>
-<c:set var="ss_help_lightBox_background_color" value="#cecece" scope="request"/>
+
+<c:set var="ss_lightBox_background_color" value="#e5e5e5" scope="request"/>
 
 <c:set var="ss_dashboard_border_color" value="red" scope="request"/>
 
@@ -128,7 +129,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	<c:set var="ss_help_spot_background_color" value="#ffff00" scope="request"/>
 	<c:set var="ss_help_panel_background_color" value="#ffffff" scope="request"/>
-	<c:set var="ss_help_lightBox_background_color" value="#cecece" scope="request"/>
+
+	<c:set var="ss_lightBox_background_color" value="#e5e5e5" scope="request"/>
 
 	<c:set var="ss_dashboard_border_color" value="red" scope="request"/>
 
@@ -327,11 +329,6 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   padding:2px;
   width:300px;
 }
-.ss_helpLightBox {
-  position:absolute;
-  background-color:${ss_help_lightBox_background_color};
-}
-
 .ss_helpToc {
   border: 1px solid #cecece;
   background-color:${ss_help_spot_background_color} !important;
@@ -340,6 +337,11 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
 }
 .ss_helpToc li {
   list-style-type: square;
+}
+
+.ss_lightBox {
+  position:absolute;
+  background-color:${ss_lightBox_background_color};
 }
 
 /* Blogs */
