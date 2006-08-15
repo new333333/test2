@@ -905,6 +905,25 @@ function smoothScrollInTime(x, y, steps) {
     }
 }
 
+function ss_getElementsByClass(classPattern, node, tag) {
+	var classElements = new Array();
+	if (node == null)
+		node = document;
+	if (tag == null)
+		tag = '*';
+	var els = node.getElementsByTagName(tag);
+	var elsLen = els.length;
+	var pattern = new RegExp("(^|\\s)"+classPattern+"(\\s|$)");
+	for (i = 0, j = 0; i < elsLen; i++) {
+		if (pattern.test(els[i].className) ) {
+			classElements[j] = els[i];
+		j++;
+	}
+	}
+	return classElements;
+}
+
+
 // Pop-up menu support
 // clicking anywhere will hide the div
 
@@ -2060,9 +2079,11 @@ var ss_helpSystem = {
 
 //Dashboard routines
 
-function ss_toggle_toolbars() {
+function ss_toggle_dashboard_toolbars() {
 	var toolbarOption = document.getElementById("ss_dashboard_menu_content");
 	for (var i = 0; i < ss_toolbar_count; i++) {
+		var dashboardClassNameFrom
+		var dashboardClassNameTo
 		var obj = document.getElementById("ss_dashboard_toolbar_"+i)
 		if (obj.style.visibility == 'hidden') {
 			obj.style.visibility = 'visible';
@@ -2074,10 +2095,11 @@ function ss_toggle_toolbars() {
 			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarAddContent;
 		}
 	}
+	
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
-function ss_toggle_hidden_controls() {
+function ss_toggle_dashboard_hidden_controls() {
 	var toolbarOption = document.getElementById("ss_dashboard_menu_controls");
 	for (var i = 0; i < ss_dashboard_control_count; i++) {
 		var obj = document.getElementById("ss_dashboard_control_"+i)

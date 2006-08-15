@@ -9,7 +9,7 @@
 	String ss_dashboardAddNarrow = NLT.get("dashboard.addComponents.narrow");
 	String ss_dashboardAddMedium = NLT.get("dashboard.addComponents.medium");
 %>
-<div class="ss_indent_medium" style="width:100%;">
+<div style="width:100%;">
 <table cellspacing="0" cellpadding="0" style="width:99%; margin-bottom:2px;">
 <tr>
   <td align="left" valign="top" nowrap width="2%">
@@ -29,10 +29,10 @@
 	  titleId="ss_addDashboardContent" menuClass="ss_dashboard_menu" menuWidth="300px">
 		<ul class="ss_dropdownmenu" 
 		  style="list-style: outside; margin:2px 2px 2px 18px; padding:2px;">
-		  <li><a href="#" onClick="ss_toggle_toolbars();return false;"><span
+		  <li><a href="#" onClick="ss_toggle_dashboard_toolbars();return false;"><span
 		    id="ss_dashboard_menu_content"><ssf:nlt 
 		    tag="dashboard.addContent"/></span></a></li>
-		  <li><a href="#" onClick="ss_toggle_hidden_controls();return false;"><span
+		  <li><a href="#" onClick="ss_toggle_dashboard_hidden_controls();return false;"><span
 		    id="ss_dashboard_menu_controls"><ssf:nlt 
 		    tag="dashboard.showHiddenControls"/></span></a></li>
 		  <li><a href="<portlet:renderURL>
@@ -68,20 +68,8 @@
 </div>
 
 <table cellspacing="0" cellpadding="0" style="width:100%;">
-<tr>
+<tr >
   <td colspan="3">
-      <c:forEach var="component" items="${ssDashboard.wide_top}">
-		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
-		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
-		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
-		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
-		<c:set var="ss_dashboard_dashboardList" value="wide_top" scope="request"/>
-		<c:set var="ss_dashboard_returnView" value="binder" scope="request"/>
-		<div style="margin:0px; padding:0px;">
-		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
-		</div>
-	  </c:forEach>
-
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
 	   style="visibility:hidden; display:none;">
 	  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
@@ -122,6 +110,18 @@
       <br>
 	</div>
 	
+    <c:forEach var="component" items="${ssDashboard.wide_top}">
+  	  <c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
+	  <c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
+	  <c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
+	  <c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
+	  <c:set var="ss_dashboard_dashboardList" value="wide_top" scope="request"/>
+	  <c:set var="ss_dashboard_returnView" value="binder" scope="request"/>
+	  <div style="margin:0px; padding:0px;">
+	    <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
+	  </div>
+	</c:forEach>
+
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
 	  style="visibility:hidden; display:none; width:1px; height:20px;"><img 
   src="<html:imagesPath/>pics/1pix.gif"></div>
@@ -131,19 +131,6 @@
 
 <tr>
   <td valign="top">
-      <c:forEach var="component" items="${ssDashboard.narrow_fixed}">
-		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
-		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
-		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
-		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
-		<c:set var="ss_dashboard_dashboardList" value="narrow_fixed" scope="request"/>
-		<c:set var="ss_dashboard_returnView" value="binder" scope="request"/>
-		<div style="margin:0px; padding:0px; 
-		    width:${ssDashboard.narrowFixedWidth + 5}px;">
-		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
-		</div>
-	  </c:forEach>
-
 	<div style="width:${ssDashboard.narrowFixedWidth}px;"><img 
 	  src="<html:imagesPath/>pics/1pix.gif" /></div>
 
@@ -187,6 +174,19 @@
       <br>
 	</div>
 	
+      <c:forEach var="component" items="${ssDashboard.narrow_fixed}">
+		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
+		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
+		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
+		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
+		<c:set var="ss_dashboard_dashboardList" value="narrow_fixed" scope="request"/>
+		<c:set var="ss_dashboard_returnView" value="binder" scope="request"/>
+		<div style="margin:0px; padding:0px; 
+		    width:${ssDashboard.narrowFixedWidth + 5}px;">
+		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
+		</div>
+	  </c:forEach>
+
 	<div 
 	  id="ss_dashboard_toolbar_${ss_toolbar_count}"
 	<c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
@@ -194,22 +194,11 @@
 	  width:${ssDashboard.narrowFixedWidth}px; height:20px;"><img 
   src="<html:imagesPath/>pics/1pix.gif"></div></td>
   
-  <td valign="top" width="2%"><div><img style="margin:0px 0px 0px 15px;"
+  <td valign="top" width="2%"><div><img 
+      style="margin:0px 0px 0px 15px;"
 	  src="<html:imagesPath/>pics/1pix.gif" /></div></td>
   
   <td valign="top" width="98%">
-      <c:forEach var="component" items="${ssDashboard.narrow_variable}">
-		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
-		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
-		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
-		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
-		<c:set var="ss_dashboard_dashboardList" value="narrow_variable" scope="request"/>
-		<c:set var="ss_dashboard_returnView" value="binder" scope="request"/>
-		<div style="margin:0px; padding:0px;">
-		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
-		</div>
-	  </c:forEach>
-
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
 	   style="visibility:hidden; display:none;">
 	  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
@@ -250,6 +239,18 @@
       <br>
 	</div>
 	
+      <c:forEach var="component" items="${ssDashboard.narrow_variable}">
+		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
+		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
+		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
+		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
+		<c:set var="ss_dashboard_dashboardList" value="narrow_variable" scope="request"/>
+		<c:set var="ss_dashboard_returnView" value="binder" scope="request"/>
+		<div style="margin:0px; padding:0px;">
+		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
+		</div>
+	  </c:forEach>
+
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
 	  style="visibility:hidden; display:none; width:1px; height:20px;"><img 
   src="<html:imagesPath/>pics/1pix.gif"></div>
@@ -259,18 +260,6 @@
 
 <tr>
   <td colspan="3">
-      <c:forEach var="component" items="${ssDashboard.wide_bottom}">
-		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
-		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
-		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
-		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
-		<c:set var="ss_dashboard_dashboardList" value="wide_bottom" scope="request"/>
-		<c:set var="ss_dashboard_returnView" value="binder" scope="request"/>
-		<div style="margin:0px; padding:0px;">
-		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
-		</div>
-	  </c:forEach>
-
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
 	   style="visibility:hidden; display:none;">
 	  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
@@ -311,6 +300,18 @@
       <br>
 	</div>
 	
+      <c:forEach var="component" items="${ssDashboard.wide_bottom}">
+		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
+		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
+		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
+		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
+		<c:set var="ss_dashboard_dashboardList" value="wide_bottom" scope="request"/>
+		<c:set var="ss_dashboard_returnView" value="binder" scope="request"/>
+		<div style="margin:0px; padding:0px;">
+		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
+		</div>
+	  </c:forEach>
+
 	<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
 	  style="visibility:hidden; display:none; width:1px; height:20px;"><img 
   src="<html:imagesPath/>pics/1pix.gif"></div>
@@ -318,6 +319,7 @@
   </td>
 </tr>
 
+</tbody>
 </table>
 </div>
 <script type="text/javascript">
