@@ -54,6 +54,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_help_panel_background_color" value="#ffffff" scope="request"/>
 <c:set var="ss_help_lightBox_background_color" value="#cecece" scope="request"/>
 
+<c:set var="ss_dashboard_border_color" value="red" scope="request"/>
+
 <c:set var="ss_blog_title_background_color" value="#AAAAFF" scope="request"/>
 <c:set var="ss_blog_content_background_color" value="#FFFFAA" scope="request"/>
 <c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
@@ -127,6 +129,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_help_spot_background_color" value="#ffff00" scope="request"/>
 	<c:set var="ss_help_panel_background_color" value="#ffffff" scope="request"/>
 	<c:set var="ss_help_lightBox_background_color" value="#cecece" scope="request"/>
+
+	<c:set var="ss_dashboard_border_color" value="red" scope="request"/>
 
 	<c:set var="ss_blog_title_background_color" value="#AACCFF" scope="request"/>
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
@@ -492,6 +496,15 @@ ul.ss_dropdownmenu li {
   margin-bottom: 2px;
   padding-left: 2px;
 } 
+
+.ss_calendar_today {
+  background-color: ${ss_calendar_today_background_color};
+}
+
+.ss_calendar_notInView {
+  background-color: ${ss_calendar_today_background_color};
+}
+
 .ss_dashboard_menu {
   position: absolute;
   visibility: hidden;
@@ -501,14 +514,6 @@ ul.ss_dropdownmenu li {
   padding: 0px;
   width: 300px;
   }
-
-.ss_calendar_today {
-  background-color: ${ss_calendar_today_background_color};
-}
-
-.ss_calendar_notInView {
-  background-color: ${ss_calendar_today_background_color};
-}
 
 .ss_dashboard_config {
   margin: 10px;
