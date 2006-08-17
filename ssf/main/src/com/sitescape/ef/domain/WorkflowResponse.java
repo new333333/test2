@@ -12,6 +12,7 @@ public class WorkflowResponse {
 	protected String name;
 	protected String response;
 	protected AnyOwner owner;
+	protected Long responderId;
    //no versioning on custom attributes
 	/**
 	 * @hibernate.id generator-class="uuid.hex" unsaved-value="null"
@@ -30,10 +31,10 @@ public class WorkflowResponse {
     public AnyOwner getOwner() {
    		return owner;
    	}
-   	protected void setOwner(AnyOwner owner) {
+    public void setOwner(AnyOwner owner) {
    		this.owner = owner;
    	}
- 	protected void setOwner(DefinableEntity entity) {
+    public void setOwner(DefinableEntity entity) {
    		owner = new AnyOwner(entity); 		
   	}   	
     /**
@@ -60,10 +61,46 @@ public class WorkflowResponse {
    /**
      * @hibernate.property length="4000"
      */
-    private String getResponse() {
+    public String getResponse() {
         return this.response;
     }
-    private void setResponse(String value) {
+    public void setResponse(String response) {
         this.response = response;
-    }    
+    }  
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public Long getResponderId() {
+    	return responderId;
+    }
+    public void setResponderId(Long responderId) {
+    	this.responderId = responderId;
+    }
+    /**
+     * Compares objects using the database Id.  This implies objects must be
+     * persisted prior to making this call.
+     */
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+
+        //objects can be proxied so don't compare classes.  UUIDS are unique 
+        if (obj == null) 
+            return false;
+        
+        if (!(obj instanceof WorkflowResponse)) return false;
+        WorkflowResponse o = (WorkflowResponse) obj;
+        //assume not persisted yet
+        if (o.getId() == null) return false;
+        if (getId() == null) return false;
+        if (this.id.equals(o.getId()))
+            return true;
+                
+        return false;
+    }
+    public int hashCode() {
+    	return id.hashCode();
+    }
+
 }

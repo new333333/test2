@@ -88,7 +88,7 @@ function <portlet:namespace/>_onsub(obj) {
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
- 
+<ssf:nlt tag="${ssBinderConfig.title}" checkIfTag="true"/><br/>
 <c:if test="${ssBinderConfig.definitionType == 8}">
     <fieldset class="ss_fieldset">
       <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default folder view"/></legend>
@@ -215,6 +215,7 @@ function <portlet:namespace/>_onsub(obj) {
 
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>">
 </div>
 
 </form>

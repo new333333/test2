@@ -29,5 +29,6 @@
     <property name="name" length="64"/>
     <property name="response" length="4000"/>
     <property name="definitionId" length="32"/>
+    <property name="responderId"/>
  </class>
 </hibernate-mapping>

@@ -412,7 +412,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     private void workflowDelete(Set tokenIds, Session session) {
 		//now get process instances 
 		if (tokenIds.isEmpty()) return;
-    	Set pIs = new HashSet(session.createQuery("select p.id from org.jbpm.graph.exe.ProcessInstance p where p.rootToken in (:pList)")
+    	Set pIs = new HashSet(session.createQuery("select p.id from org.jbpm.graph.exe.ProcessInstance p where p.rootToken.id in (:pList)")
  				.setParameterList("pList", tokenIds)
 			.list());
 		
@@ -422,13 +422,13 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		List subPIs = new ArrayList(pIs);
 		while (true) {
   			//start down tree from here
-			subTokens = session.createQuery("select t.id from org.jbpm.graph.exe.Token t where t.processInstance in (:pList)")
+			subTokens = session.createQuery("select t.id from org.jbpm.graph.exe.Token t where t.processInstance.id in (:pList)")
    				.setParameterList("pList", subPIs)
   				.list();
   			if (subTokens.isEmpty()) break;
   			tokenIds.addAll(subTokens);
 
-   			subPIs = session.createQuery("select p.id from org.jbpm.graph.exe.ProcessInstance p where p.superProcessToken in (:pList)")
+   			subPIs = session.createQuery("select p.id from org.jbpm.graph.exe.ProcessInstance p where p.superProcessToken.id in (:pList)")
 						.setParameterList("pList", subTokens)
 						.list();
    			if (subPIs.isEmpty()) break;
@@ -437,29 +437,29 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		}
 			
 		//delete logs
-		session.createQuery("Delete org.jbpm.logging.log.ProcessLog where token in (:pList)")
+		session.createQuery("Delete org.jbpm.logging.log.ProcessLog where token.id in (:pList)")
   			.setParameterList("pList", tokenIds)
   			.executeUpdate();
 		//delete comments
-		session.createQuery("Delete org.jbpm.graph.exe.Comment where token in (:pList)")
+		session.createQuery("Delete org.jbpm.graph.exe.Comment where token.id in (:pList)")
    			.setParameterList("pList", tokenIds)
    			.executeUpdate();
 		//delete variables
-		session.createQuery("Delete org.jbpm.context.exe.VariableInstance where token in (:pList)")
+		session.createQuery("Delete org.jbpm.context.exe.VariableInstance where token.id in (:pList)")
 			.setParameterList("pList", tokenIds)
 			.executeUpdate();
-		session.createQuery("Delete org.jbpm.context.exe.TokenVariableMap where token in (:pList)")
+		session.createQuery("Delete org.jbpm.context.exe.TokenVariableMap where token.id in (:pList)")
   			.setParameterList("pList", tokenIds)
    			.executeUpdate();
 		
-		session.createQuery("Delete org.jbpm.graph.exe.RuntimeAction where processInstance in (:pList)")
+		session.createQuery("Delete org.jbpm.graph.exe.RuntimeAction where processInstance.id in (:pList)")
 			.setParameterList("pList", pIs)
    			.executeUpdate();
-		session.createQuery("Delete org.jbpm.module.exe.ModuleInstance where processInstance in (:pList)")
+		session.createQuery("Delete org.jbpm.module.exe.ModuleInstance where processInstance.id in (:pList)")
 			.setParameterList("pList", pIs)
 			.executeUpdate();
 
-		session.createQuery("Delete org.jbpm.scheduler.exe.Timer where processInstance in (:pList)")
+		session.createQuery("Delete org.jbpm.scheduler.exe.Timer where processInstance.id in (:pList)")
 			.setParameterList("pList", pIs)
 			.executeUpdate();
 

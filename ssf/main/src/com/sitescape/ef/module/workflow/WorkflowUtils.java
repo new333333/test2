@@ -87,8 +87,8 @@ public class WorkflowUtils {
 					List responses = ((Element)questions.get(j)).selectNodes("./item[@name='workflowResponse']");
 					if (responses != null) {
 						for (int k = 0; k < responses.size(); k++) {
-							String responseName = DefinitionUtils.getPropertyValue((Element)responses.get(j), "name");
-							String responseText = DefinitionUtils.getPropertyValue((Element)responses.get(j), "response");
+							String responseName = DefinitionUtils.getPropertyValue((Element)responses.get(k), "name");
+							String responseText = DefinitionUtils.getPropertyValue((Element)responses.get(k), "response");
 							responseData.put(responseName, responseText);
 						}
 					}

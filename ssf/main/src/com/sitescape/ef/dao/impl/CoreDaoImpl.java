@@ -196,6 +196,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	       	   			if (clazz.newInstance() instanceof WorkflowSupport) {
 	       	   			session.createQuery("DELETE com.sitescape.ef.domain.WorkflowState where " + whereClause)
 	       	   				.executeUpdate();
+	       	   			session.createQuery("DELETE com.sitescape.ef.domain.WorkflowResponse where " + whereClause)
+       	   				.executeUpdate();
 	       	   			}
 	       	   		} catch (Exception ex) {};
 	       	   		return null;

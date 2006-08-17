@@ -1,16 +1,16 @@
 package com.sitescape.ef.module.folder.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Collection;
 
 import org.apache.lucene.document.DateField;
 import org.dom4j.Document;
@@ -18,13 +18,13 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.AverageRating;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Folder;
@@ -54,17 +54,14 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.search.LuceneSession;
-//import com.sitescape.ef.search.remote.RemoteInStreamSession;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.TagUtil;
-
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.util.Validator;
 /**
  *
@@ -249,6 +246,15 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		//TODO - Check if user is allowed to respond (add a user list property to the workflowQuestion item)
 		return questions;
     }		
+
+    public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData) {
+        Folder folder = loadFolder(folderId);       
+        FolderCoreProcessor processor=loadProcessor(folder);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+        //TODO - Check some access
+        processor.setWorkflowResponse(folder, entry, stateId, inputData);
+
+    }
 
     public List applyEntryFilter(Definition entryFilter) {
         // TODO Auto-generated method stub
@@ -619,7 +625,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
      	long result = getCoreDao().sumColumn(Visits.class, "reads", new FilterControls(ratingAttrs, cfValues));
      	folder.setPopularity(Long.valueOf(result));
 	}   
-	
+
 	public List<String> getFolderIds(Integer type) {
     	// TODO 
     	// NOTE: This implementation utilizes database lookup to fetch the

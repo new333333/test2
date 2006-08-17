@@ -36,7 +36,6 @@ public class EditController extends SAbstractController implements DomTreeBuilde
 	throws Exception {
 
         //Make the prefs available to the jsp
-        Map model = new HashMap();
 		Map formData = request.getParameterMap();
 		PortletPreferences prefs= request.getPreferences();
 		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
@@ -57,15 +56,19 @@ public class EditController extends SAbstractController implements DomTreeBuilde
 			prefs.setValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, (String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
 		} else if ("ss_presence".equals(pName)) {
 			if (formData.containsKey("applyBtn")) {
-				Set userIds = new HashSet();
-				Set groupIds = new HashSet();
+				
+				StringBuffer userIds = new StringBuffer();
+				StringBuffer groupIds = new StringBuffer();
 				if (formData.containsKey("users")) {
 					String ids[] = (String[])formData.get("users");
 					if (ids != null) {
 						for (int i = 0; i < ids.length; i++) {
 							String[] uIds = ids[i].split(" ");
 							for (int j = 0; j < uIds.length; j++) {
-								if (uIds[j].length() > 0) userIds.add(uIds[j].trim());
+								if (uIds[j].length() > 0) {
+									userIds.append(uIds[j].trim());
+									userIds.append(",");
+								}
 							}
 						}
 						
@@ -77,15 +80,17 @@ public class EditController extends SAbstractController implements DomTreeBuilde
 						for (int i = 0; i < ids.length; i++) {
 							String[] uIds = ids[i].split(" ");
 							for (int j = 0; j < uIds.length; j++) {
-								if (uIds[j].length() > 0) groupIds.add(uIds[j].trim());
+								if (uIds[j].length() > 0) {
+									groupIds.append(uIds[j].trim());
+									groupIds.append(",");
+								}
 							}
 						}
 						
 					}
 				}
-		
-				prefs.setValues(WebKeys.PRESENCE_PREF_USER_LIST, (String[]) userIds.toArray(new String[userIds.size()]));
-				prefs.setValues(WebKeys.PRESENCE_PREF_GROUP_LIST, (String[]) groupIds.toArray(new String[groupIds.size()]));
+				prefs.setValue(WebKeys.PRESENCE_PREF_USER_LIST, userIds.toString());
+				prefs.setValue(WebKeys.PRESENCE_PREF_GROUP_LIST, groupIds.toString());
 			} 			
 		}
 		prefs.store();
@@ -122,16 +127,9 @@ public class EditController extends SAbstractController implements DomTreeBuilde
 			return new ModelAndView(WebKeys.VIEW_EDIT, model);
 		} else if ("ss_presence".equals(pName)) {
 			//This is the portlet view; get the configured list of principals to show
-			String[] uIds = request.getPreferences().getValues(WebKeys.PRESENCE_PREF_USER_LIST, new String[0]);
-			String[] gIds = request.getPreferences().getValues(WebKeys.PRESENCE_PREF_GROUP_LIST, new String[0]);
-
 			Set<Long> userIds = new HashSet<Long>();
-			for (int i = 0; i < uIds.length; i++) {
-				userIds.add(new Long(uIds[i]));
-			}
-			for (int i = 0; i < gIds.length; i++) {
-				userIds.add(new Long(gIds[i]));
-			}
+			userIds.addAll(getIds(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
+			userIds.addAll(getIds(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
 
 			model.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(userIds));
 			//Build the jsp bean (sorted by folder title)
@@ -149,6 +147,17 @@ public class EditController extends SAbstractController implements DomTreeBuilde
 			return new ModelAndView(WebKeys.VIEW_PRESENCE_EDIT, model);
 		}
 		return null;
+	}
+	private Set getIds(String ids) {
+		String [] sIds = ids.split(",");
+		Set<Long> idSet = new HashSet<Long>();
+		for (int i = 0; i < sIds.length; i++) {
+			try  {
+				idSet.add(new Long(sIds[i]));
+			} catch (Exception ex) {};
+		}
+		return idSet;
+		
 	}
 	public Element setupDomElement(String type, Object source, Element element) {
 		if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {

@@ -16,7 +16,6 @@ public interface WorkflowSupport extends AclControlled {
      * @return Returns a list of <code>WorkflowStates</code>.
      */
     public Set getWorkflowStates();
-    public void setWorkflowStates(Set workflowStates);   
     public void addWorkflowState(WorkflowState workflowState);
     public void removeWorkflowState(WorkflowState workflowState);
     public WorkflowState getWorkflowState(Long id);
@@ -25,6 +24,8 @@ public interface WorkflowSupport extends AclControlled {
 	public boolean checkWorkArea(AccessType type);
 	public boolean checkOwner(AccessType type);
 	public Set getStateMembers(AccessType type);
-
+	public Set getWorkflowResponses();
+	public void addWorkflowResponse(WorkflowResponse workflowResponse);
+    public void removeWorkflowResponse(WorkflowResponse workflowResponse);
 	 
 }

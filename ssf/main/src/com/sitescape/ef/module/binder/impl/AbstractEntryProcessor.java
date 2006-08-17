@@ -34,6 +34,7 @@ import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.domain.WorkflowResponse;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowState;
@@ -70,7 +71,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	//***********************************************************************************************************	
     public Long addEntry(final Binder binder, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems) 
-    	throws AccessControlException, WriteFilesException {
+    	throws WriteFilesException {
         // This default implementation is coded after template pattern. 
         
         Map entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems);
@@ -216,7 +217,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    //***********************************************************************************************************
     public Long modifyEntry(final Binder binder, final Entry entry, 
     		final InputDataAccessor inputData, Map fileItems, final Collection deleteAttachments)  
-    		throws AccessControlException, WriteFilesException {
+    		throws WriteFilesException {
 	
 	    Map entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
 	    final Map entryData = (Map) entryDataAll.get("entryData");
@@ -385,6 +386,62 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		}
     }
  
+    public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData)  {
+		if (!(entry instanceof WorkflowSupport)) return;
+ 		WorkflowSupport wEntry = (WorkflowSupport)entry;
+        User user = RequestContextHolder.getRequestContext().getUser();
+
+ 		WorkflowState ws = wEntry.getWorkflowState(stateId);
+		Definition def = ws.getDefinition();
+		//TODO: what access check belongs here??
+		Map questions = WorkflowUtils.getQuestions(def, ws.getState());
+		for (Iterator iter=questions.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry me = (Map.Entry)iter.next();
+			String question = (String)me.getKey();
+			if (!inputData.exists(question)) continue;
+			String response = inputData.getSingleValue(question);
+			Map qData = (Map)me.getValue();
+			Map rData = (Map)qData.get(WebKeys.WORKFLOW_QUESTION_RESPONSES);
+			if (!rData.containsKey(response)) {
+				throw new IllegalArgumentException("Illegal workflow response: " + response);
+			}
+			//now see if response to this question from this user exists
+			Set responses = wEntry.getWorkflowResponses();
+			boolean found=false;
+			WorkflowResponse wr=null;
+			for (Iterator iter2=responses.iterator(); iter2.hasNext();) {
+				wr = (WorkflowResponse)iter2.next();
+				if (def.getId().equals(wr.getDefinitionId()) && 
+						question.equals(wr.getName()) &&
+						user.getId().equals(wr.getResponderId())) {
+					found = true;
+					break;
+				}			
+			}
+			if (found) {
+				wr.setResponse(response);
+			} else {
+				wr = new WorkflowResponse();
+				wr.setResponderId(user.getId());
+				wr.setDefinitionId(def.getId());
+				wr.setName(question);
+				wr.setResponse(response);
+				wr.setOwner(entry);
+				getCoreDao().save(wr);
+				wEntry.addWorkflowResponse(wr);
+			}
+		}
+		if (getWorkflowModule().modifyWorkflowStateOnResponse(wEntry)) {
+			// Do NOT use reindexEntry(entry) since it reindexes attached
+			// files as well. We want workflow state change to be lightweight
+			// and reindexing all attachments will be unacceptably costly.
+			// TODO (Roy, I believe this was your design idea, so please 
+			// verify that this strategy will indeed work). 
+			
+			indexEntry(binder, entry, new ArrayList(), null, false);
+		}
+    	
+    }
 
     //***********************************************************************************************************
     /**

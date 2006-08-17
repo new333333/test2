@@ -37,6 +37,10 @@
       <key column="folderEntry"/>
       <one-to-many class="com.sitescape.ef.domain.WorkflowState"/>
     </set>
+    <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="workflowResponses">
+      <key column="folderEntry"/>
+      <one-to-many class="com.sitescape.ef.domain.WorkflowResponse"/>
+    </set>
     <component name="HKey" class="com.sitescape.ef.domain.HKey">
       <property name="level" column="entry_level"/>
       <property name="sortKey" length="512" column="entry_sortKey"/>

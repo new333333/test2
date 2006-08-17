@@ -413,31 +413,31 @@ public class DashboardHelper {
 	    	}
 	    	Map idData = new HashMap();
 	    	beans.put(id, idData);
-			Set ids = new HashSet();		
 	    	if (data.containsKey("users")) {
-		    	String[] users = (String[])data.get("users");
-		    	for (int i = 0; i < users.length; i++) {
-		    		String[] users2 = users[i].split(" ");
-		    		for (int j = 0; j < users2.length; j++) {
-			    		if (!users2[j].trim().equals("")) ids.add(new Long(users2[j].trim()));
-		    		}
-		    	}
+	    		Set ids = getIds(data.get("users"));
+				//Get the configured list of principals to show
+				idData.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
 	    	}
-			//Get the configured list of principals to show
-			idData.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
 		
-			Set gids = new HashSet();		
 	    	if (data.containsKey("groups")) {
-		    	String[] groups = (String[])data.get("groups");
-		    	for (int i = 0; i < groups.length; i++) {
-		    		String[] groups2 = groups[i].split(" ");
-		    		for (int j = 0; j < groups2.length; j++) {
-			    		if (!groups2[j].trim().equals("")) gids.add(new Long(groups2[j].trim()));
-		    		}
-		    	}
+	    		Set ids = getIds(data.get("groups"));
+				idData.put(WebKeys.GROUPS, getProfileModule().getGroups(ids));
 	    	}
-			idData.put(WebKeys.GROUPS, getProfileModule().getGroups(gids));
 	   	}
+	}
+	private Set getIds(Object ids) {
+		Set<Long> idSet = new HashSet<Long>();
+		//handle bad data
+		if (ids instanceof String) {
+			String [] sIds = ((String)ids).split(",");
+			for (int i = 0; i < sIds.length; i++) {
+				try  {
+					idSet.add(new Long(sIds[i]));
+				} catch (Exception ex) {};
+			}
+		}
+		return idSet;
+		
 	}
 	protected void getWorkspaceTreeBean(Binder binder, Map ssDashboard, Map model, 
 	    		String id, Map component) {
@@ -589,31 +589,35 @@ public class DashboardHelper {
 					} else if (componentMap.get(DashboardHelper.Name).
 							equals(ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
 						if (componentData.containsKey("users")) {
+							StringBuffer userIds = new StringBuffer();
 							String ids[] = (String[])componentData.get("users");
-							Set userIds = new HashSet();
 							if (ids != null) {
 								for (int i = 0; i < ids.length; i++) {
 									String[] uIds = ids[i].split(" ");
 									for (int j = 0; j < uIds.length; j++) {
-										if (uIds[j].length() > 0) userIds.add(uIds[j].trim());
+										if (uIds[j].length() > 0) {
+											userIds.append(uIds[j].trim());
+											userIds.append(",");
+										}
 									}
 								}								
 							}
-							componentData.put("users", userIds.toArray(new String[userIds.size()]));
+							componentData.put("users", userIds.toString());
 						}
 						if (componentData.containsKey("groups")) {
+							StringBuffer groupIds = new StringBuffer();
 							String ids[] = (String[])componentData.get("groups");
-							Set groupIds = new HashSet();
 							if (ids != null) {
 								for (int i = 0; i < ids.length; i++) {
 									String[] uIds = ids[i].split(" ");
 									for (int j = 0; j < uIds.length; j++) {
-										if (uIds[j].length() > 0) groupIds.add(uIds[j].trim());
+										groupIds.append(uIds[j].trim());
+										groupIds.append(",");
 									}
 								}
 								
 							}
-							componentData.put("groups", groupIds.toArray(new String[groupIds.size()]));
+							componentData.put("groups", groupIds.toString());
 						}
 					}
 
