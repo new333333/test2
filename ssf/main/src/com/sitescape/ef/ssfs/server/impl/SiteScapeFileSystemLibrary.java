@@ -428,6 +428,8 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		}
 		else { // Target doesn't exist
 			// Make sure that the target's parent binder exists.
+			// This check also covers the situation where user tries to copy
+			// something into "abstract" folder.
 			if(getParentBinder(targetMap) == null)
 				throw new NoSuchObjectException("The target's parent binder does not exist");
 		}
@@ -477,6 +479,8 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		}
 		else { // Target doesn't exist
 			// Make sure that the target's parent binder exists.
+			// This check also covers the situation where user tries to copy
+			// something into "abstract" folder.
 			if(getParentBinder(targetMap) == null)
 				throw new NoSuchObjectException("The target's parent binder does not exist");
 		}
@@ -862,7 +866,9 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private void moveFolder(Map sourceUri, Map sourceMap, Map targetUri, 
 			Map targetMap) throws NoAccessException {
 		try {
-			Binder sourceParentBinder = getParentBinder(sourceMap);
+			// Do NOT use getParentBinder on the source, since it is not
+			// pre-fetched when the leaf represents an existing binder.
+			Binder sourceParentBinder = getLeafBinder(sourceMap).getParentBinder();
 			Binder targetParentBinder = getParentBinder(targetMap);
 
 			if(sourceParentBinder.equals(targetParentBinder)) {
