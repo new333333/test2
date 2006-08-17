@@ -33,6 +33,7 @@ import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
+import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
@@ -74,8 +75,14 @@ public class ViewEntryController extends  SAbstractController {
 			if (scope.equalsIgnoreCase("Personal")) community = false;
 			getFolderModule().setTag(folderId, replyId, tag, community);
 			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
+		}else if (formData.containsKey("respondBtn")) {
+			Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
+			if (replyId == null) replyId = entryId;
+	        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
+	        getFolderModule().setWorkflowResponse(folderId, replyId, tokenId, new MapInputData(formData));
+	        //force reload of listing for state change
+	        response.setRenderParameter("ssReloadUrl", "");
 		}
-		response.setRenderParameters(formData);
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {

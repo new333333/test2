@@ -25,6 +25,7 @@ import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.WorkflowResponse;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
@@ -67,8 +68,8 @@ public class TransitionUtils {
 	 * @param isModify
 	 * @param isReply
 	 */
-	public static void processConditions(WorkflowSupport entry, boolean isModify, boolean isReply) {
-		processConditions(entry, (Token)null, isModify, isReply);
+	public static boolean processConditions(WorkflowSupport entry, boolean isModify, boolean isReply) {
+		return processConditions(entry, (Token)null, isModify, isReply);
 	}
 	public static void processManualTransition(WorkflowSupport entry, WorkflowState ws, String newState) {
 		JbpmContext context=WorkflowFactory.getContext();
@@ -127,9 +128,10 @@ public class TransitionUtils {
 		return true;
 
 	}	
-	private static void processConditions(WorkflowSupport entry, Token current, boolean isModify, boolean isReply) {
+	private static boolean processConditions(WorkflowSupport entry, Token current, boolean isModify, boolean isReply) {
 
 		boolean found = true;
+		boolean stateChange=false;
 		//loop until we get through states without any changes occuring.  Each change could trigger another
 		JbpmContext context=WorkflowFactory.getContext();
 //JbpmContext context = executionContext.getJbpmContext();
@@ -152,6 +154,7 @@ public class TransitionUtils {
 					if (toState != null) {
 						ctx.leaveNode(ws.getState() + "." + toState);
 						context.save(t);
+						stateChange=true;
 						found = true;
 					}
 				}
@@ -162,6 +165,7 @@ public class TransitionUtils {
 		} finally {
 			context.close();
 		}
+		return stateChange;
 	}
 	/**
 	 * Look for the first condition that is met and return the state to transition to.  If
@@ -201,10 +205,19 @@ public class TransitionUtils {
 						return toState;
 					}
 				} else if (type.equals("transitionOnResponse")) {
-					if (false) {
-						setVariables(condition, executionContext, entry, state);
-						if (infoEnabled) logger.info("Take conditional transition(" + type + ") " + state.getState() + "." + toState);
-						return toState;
+					String question = DefinitionUtils.getPropertyValue(condition, "question");
+					String response = DefinitionUtils.getPropertyValue(condition, "response");
+					if (!Validator.isNull(question) && !Validator.isNull(response)) {
+						Set responses = entry.getWorkflowResponses();
+						for (Iterator iter=responses.iterator(); iter.hasNext(); ) {
+							WorkflowResponse wr = (WorkflowResponse)iter.next();
+							if (state.getDefinition().getId().equals(wr.getDefinitionId()) &&
+									question.equals(wr.getName()) && response.equals(wr.getResponse())) {
+								setVariables(condition, executionContext, entry, state);
+								if (infoEnabled) logger.info("Take conditional transition(" + type + ") " + state.getState() + "." + toState);
+								return toState;
+							}
+						}
 					}
 				} else if (type.equals("transitionOnEntryData")) {
 					Object currentVal=null;

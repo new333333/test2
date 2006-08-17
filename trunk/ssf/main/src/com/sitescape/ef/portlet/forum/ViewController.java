@@ -119,8 +119,8 @@ public class ViewController  extends SAbstractController {
 	 			}
 			} else {
 	 			Set ids = new HashSet();		
-	 			ids.addAll(getIds(request.getPreferences().getValues(WebKeys.PRESENCE_PREF_USER_LIST, new String[0])));
-	 			ids.addAll(getIds(request.getPreferences().getValues(WebKeys.PRESENCE_PREF_GROUP_LIST, new String[0])));
+	 			ids.addAll(getIds(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
+	 			ids.addAll(getIds(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
 	 			//This is the portlet view; get the configured list of principals to show
 	 			model.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
 	 			//if we list groups, then we have issues when a user appears in multiple groups??
@@ -162,14 +162,15 @@ public class ViewController  extends SAbstractController {
 		return getProfileModule().getGroups(groupIds);
 		
 	}
-	private Set getIds(String [] ids) {
-		Set<Long> groupIds = new HashSet<Long>();
-		for (int i = 0; i < ids.length; i++) {
+	private Set getIds(String ids) {
+		String [] sIds = ids.split(",");
+		Set<Long> idSet = new HashSet<Long>();
+		for (int i = 0; i < sIds.length; i++) {
 			try  {
-				groupIds.add(new Long(ids[i]));
+				idSet.add(new Long(sIds[i]));
 			} catch (Exception ex) {};
 		}
-		return groupIds;
+		return idSet;
 		
 	}
 	

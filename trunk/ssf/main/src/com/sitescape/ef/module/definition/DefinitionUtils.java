@@ -17,7 +17,7 @@ public class DefinitionUtils {
    public static String getPropertyValue(Element element, String name, String attribute) {
 		Element variableEle = (Element)element.selectSingleNode("./properties/property[@name='" + name + "']");
 		if (variableEle == null) return null;
-		return variableEle.attributeValue("attribute");   	
+		return variableEle.attributeValue(attribute);   	
    }
     public static List getPropertyValueList(Element element, String name) {
 		List resultElements = element.selectNodes("./properties/property[@name='" + name + "']");

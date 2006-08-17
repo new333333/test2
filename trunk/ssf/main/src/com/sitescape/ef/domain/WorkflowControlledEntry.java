@@ -20,6 +20,7 @@ public abstract class WorkflowControlledEntry extends Entry
     protected Set workflowStates; //initialized by hiberate access=field  
 	protected Set iWorkflowStates;
     protected HistoryStamp workflowChange;
+    protected Set workflowResponses; //initialized by hiberate access=field  
 	/**
       * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="wrk_" 
      */
@@ -30,15 +31,20 @@ public abstract class WorkflowControlledEntry extends Entry
         this.workflowChange = workflowChange;
     }
 
+    public Set getWorkflowResponses() {
+    	if (workflowResponses == null) workflowResponses = new HashSet();
+   	 	return workflowResponses;  
+     }
+    public void addWorkflowResponse(WorkflowResponse workflowResponse) {
+    	getWorkflowResponses().add(workflowResponse);
+    }
+    public void removeWorkflowResponse(WorkflowResponse workflowResponse) {
+    	getWorkflowResponses().remove(workflowResponse);
+    }
     public Set getWorkflowStates() {
     	if (iWorkflowStates != null) return iWorkflowStates;
     	if (workflowStates == null) workflowStates = new HashSet();
    	 	return workflowStates;  
-     }
-     public void setWorkflowStates(Set workflowStates) {
-    	 //Since ids are assigned on WorkflowState, don't need to do anything
-    	 //special to reduce updates.
-    	 this.workflowStates = workflowStates;
      }
      public WorkflowState getWorkflowState(Long id) {
      	//Make sure initialized

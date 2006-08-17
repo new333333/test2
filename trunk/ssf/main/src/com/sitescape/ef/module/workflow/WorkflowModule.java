@@ -30,7 +30,9 @@ public interface WorkflowModule {
 	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef);
 	public void deleteEntryWorkflow(WorkflowSupport entry);
 	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, String toState);
-	public void modifyWorkflowStateOnReply(WorkflowSupport entry);
-	public void modifyWorkflowStateOnUpdate(WorkflowSupport entry);
+	public boolean modifyWorkflowStateOnReply(WorkflowSupport entry);
+	public boolean modifyWorkflowStateOnUpdate(WorkflowSupport entry);
 	public void modifyWorkflowStateOnTimeout(Long timerId);
+	public boolean modifyWorkflowStateOnResponse(WorkflowSupport entry);
+
 }

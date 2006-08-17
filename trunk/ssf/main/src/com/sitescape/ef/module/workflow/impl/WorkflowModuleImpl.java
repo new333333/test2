@@ -515,11 +515,11 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    } finally {
 	    	context.close();
 	    }
-    	Writer writer = new StringWriter();
-	    JpdlXmlWriter jpdl = new JpdlXmlWriter(writer);
-	    jpdl.write(pD);
+//    	Writer writer = new StringWriter();
+//	    JpdlXmlWriter jpdl = new JpdlXmlWriter(writer);
+//	    jpdl.write(pD);
 	    logger.info("Workflow process definition created: " + pD.getName());
-	    logger.info(writer.toString());
+//	    logger.info(writer.toString());
 	}
 	private Event addTimer(JbpmContext context, Node node, String name, String timeout, String toState) {
 		//	make sure start threads event exits
@@ -836,17 +836,25 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	 * updating the index.
 	 * @param entry
 	 */
-	public void modifyWorkflowStateOnUpdate(WorkflowSupport entry) {
-		TransitionUtils.processConditions(entry, true, false);
+	public boolean modifyWorkflowStateOnUpdate(WorkflowSupport entry) {
+		return TransitionUtils.processConditions(entry, true, false);
 	}
-
+	/**
+	 * See if any conditions have been met for a transition to a new state.
+	 * This would be triggered by workflow response.  The caller is responsible for
+	 * updating the index.
+	 * @param entry
+	 */
+	public boolean modifyWorkflowStateOnResponse(WorkflowSupport entry) {
+		return TransitionUtils.processConditions(entry, false, false);
+	}
 	/**
 	 * See if reply will trigger a transition to a new state.
 	 * The caller is responsible for updating the index.
 	 * @param entry
 	 */
-	public void modifyWorkflowStateOnReply(WorkflowSupport entry) {
-		TransitionUtils.processConditions(entry, false, true);	
+	public boolean modifyWorkflowStateOnReply(WorkflowSupport entry) {
+		return TransitionUtils.processConditions(entry, false, true);	
 	}	
 	public void deleteEntryWorkflow(WorkflowSupport entry) {
 		//Delete all JBPM tokens and process instances associated with this entry
