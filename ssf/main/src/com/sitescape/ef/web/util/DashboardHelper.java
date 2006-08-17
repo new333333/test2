@@ -426,18 +426,11 @@ public class DashboardHelper {
 	   	}
 	}
 	private Set getIds(Object ids) {
-		Set<Long> idSet = new HashSet<Long>();
 		//handle bad data
 		if (ids instanceof String) {
-			String [] sIds = ((String)ids).split(",");
-			for (int i = 0; i < sIds.length; i++) {
-				try  {
-					idSet.add(new Long(sIds[i]));
-				} catch (Exception ex) {};
-			}
-		}
-		return idSet;
-		
+			return FindIdsHelper.getIdsAsLongSet((String)ids);
+		} else return new HashSet<Long>();
+
 	}
 	protected void getWorkspaceTreeBean(Binder binder, Map ssDashboard, Map model, 
 	    		String id, Map component) {
@@ -589,35 +582,10 @@ public class DashboardHelper {
 					} else if (componentMap.get(DashboardHelper.Name).
 							equals(ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
 						if (componentData.containsKey("users")) {
-							StringBuffer userIds = new StringBuffer();
-							String ids[] = (String[])componentData.get("users");
-							if (ids != null) {
-								for (int i = 0; i < ids.length; i++) {
-									String[] uIds = ids[i].split(" ");
-									for (int j = 0; j < uIds.length; j++) {
-										if (uIds[j].length() > 0) {
-											userIds.append(uIds[j].trim());
-											userIds.append(",");
-										}
-									}
-								}								
-							}
-							componentData.put("users", userIds.toString());
+							componentData.put("users", FindIdsHelper.getIdsAsString((String[])componentData.get("users")));
 						}
 						if (componentData.containsKey("groups")) {
-							StringBuffer groupIds = new StringBuffer();
-							String ids[] = (String[])componentData.get("groups");
-							if (ids != null) {
-								for (int i = 0; i < ids.length; i++) {
-									String[] uIds = ids[i].split(" ");
-									for (int j = 0; j < uIds.length; j++) {
-										groupIds.append(uIds[j].trim());
-										groupIds.append(",");
-									}
-								}
-								
-							}
-							componentData.put("groups", groupIds.toString());
+							componentData.put("groups", FindIdsHelper.getIdsAsString((String[])componentData.get("groups")));
 						}
 					}
 

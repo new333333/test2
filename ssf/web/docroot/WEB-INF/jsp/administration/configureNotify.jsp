@@ -35,68 +35,76 @@
 </c:when>
 <c:otherwise>
 
-<form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" 
+<form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 
+  onSubmit="return ss_onSubmit(this);"
+
     action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_notify"/>
 			<portlet:param name="binderId" value="${ssFolder.id}"/>
 		</portlet:actionURL>">
-<script type="text/javascript">
-function <portlet:namespace/>setEnable() {
-	if (document.<portlet:namespace/>fm.disabled.checked) {
-		document.<portlet:namespace/>fm.enabled.value = "false";
-	} else {
-		document.<portlet:namespace/>fm.enabled.value = "true";
-	}
-}
-</script>
-<input type="hidden" id="enabled" name="enabled" value="${ssScheduleInfo.enabled}"/>
-<span class="ss_bold"><ssf:nlt tag="notify.folder.label"/> ${ssFolder.title}</span>
-<div class="ss_divider"></div>
-<table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
+
+<span class="ss_bold"><ssf:nlt tag="notify.forum.label"/> ${ssFolder.title}</span>
+<div class="ss_buttonBarRight">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+</div>
+
+
+<fieldset class="ss_fieldset">
+  <legend class="ss_legend"><ssf:nlt tag="notify.schedule" /></legend>
+<table class="ss_style" border ="0" cellspacing="0" cellpadding="3" width="100%">
 <tr><td> 
-<input type="checkbox" id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssScheduleInfo.enabled}">checked</c:if>/>
-<ssf:nlt tag="notify.disable"/><br/>
-</td></tr></table>
-
-<div class="ss_divider"></div>
-<span class="ss_bold"><ssf:nlt tag="notify.schedule"/></span>
-
+<input type="checkbox" id="disabled" name="disabled" <c:if test="${!ssScheduleInfo.enabled}">checked</c:if>/>
+<ssf:nlt tag="notify.disable"/>
+</td>
+</tr>
+</table><br/>
 <c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
-<div class="ss_divider"></div>
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
+</fieldset>
 
-<span class="ss_bold"><ssf:nlt tag="notify.distributionlist"/></span>
-<br><br>
-<span class="ss_bold"><ssf:nlt tag="notify.groups"/></span>
-<br /><select name="sendToGroups" id="sendToGroups" multiple size="6">
-<option value="" <c:if test="${empty ssSelectedGroups}">selected</c:if>><ssf:nlt tag="selected.none"/></option>
-<c:forEach var="group" items="${ssGroups}">
-<c:set var="id" value="${group._docId}"/>
-<option value="${group._docId}" <c:if test="${ssSelectedGroups[id] == true}">selected</c:if>>${group.title} (${group._userName})</option>
-</c:forEach>
-</select>
-<br><br>
+<fieldset class="ss_fieldset">
+  <legend class="ss_legend"><ssf:nlt tag="notify.distributionlist" /></legend>
 
-<span class="ss_bold"><ssf:nlt tag="notify.selected.users"/></span><br />
-<select name="sendToUsers" id="sendToUsers" multiple size="11">
-<option value="" <c:if test="${empty ssSelectedUsers}">selected</c:if>><ssf:nlt tag="selected.none"/></option>
-<c:forEach var="user" items="${ssUsers}">
-<c:set var="id" value="${user._docId}"/>
-<option value="${user._docId}" <c:if test="${ssSelectedUsers[id] == true}">selected</c:if>>${user.title} (${user._userName})</option>
-</c:forEach>
-</select>
-<br><br>
-<span class="ss_bold"><ssf:nlt tag="notify.addresses"/></span><span class="ss_fineprint"><ssf:nlt tag="notify.addresses.instructions"/>
+<table cellspacing="10px" cellpadding="10px">
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
+<td valign="top">
+${renderResponse.namespace}fm
+  <ssf:findUsers formName="${renderResponse.namespace}fm" formElement="users" 
+    type="user" userList="${ssUsers}"/>
+</td>
+</tr>
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" 
+ text="Groups"/></td>
+<td valign="top">
+  <ssf:findUsers formName="${renderResponse.namespace}fm" formElement="groups" 
+    type="group" userList="${ssGroups}"/>
+</td>
+</tr>
+
+</table>
+<br/>
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
+</fieldset>
+
+<fieldset class="ss_fieldset">
+  <legend class="ss_legend"><ssf:nlt tag="notify.addresses" /></legend>
+<br />
+<span class="ss_bold"><ssf:nlt tag="notify.addresses.instructions"/>
 </span><br />
-
-<textarea name="emailAddress" rows=4 cols=50 >
-<c:forEach var="addr" items="${ssNotification.emailAddress}"><c:out value="${addr}"/>
+<textarea name="emailAddress" rows="4" cols="50" >
+<c:forEach var="addr" items="${ssNotification.emailAddress}">
+<c:out value="${addr}"/>
 </c:forEach>
 </textarea>
-<br><br>
-<div class="ss_divider"></div>
 <br/>
-	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
+</fieldset>
+
+
+<br/>
 	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 </form>
 

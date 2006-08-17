@@ -1,5 +1,14 @@
 package com.sitescape.ef.portlet.forum;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
@@ -11,20 +20,12 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
-import java.util.Set;
-
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.FindIdsHelper;
 import com.sitescape.util.Validator;
 
 /**
@@ -56,41 +57,8 @@ public class EditController extends SAbstractController implements DomTreeBuilde
 			prefs.setValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, (String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
 		} else if ("ss_presence".equals(pName)) {
 			if (formData.containsKey("applyBtn")) {
-				
-				StringBuffer userIds = new StringBuffer();
-				StringBuffer groupIds = new StringBuffer();
-				if (formData.containsKey("users")) {
-					String ids[] = (String[])formData.get("users");
-					if (ids != null) {
-						for (int i = 0; i < ids.length; i++) {
-							String[] uIds = ids[i].split(" ");
-							for (int j = 0; j < uIds.length; j++) {
-								if (uIds[j].length() > 0) {
-									userIds.append(uIds[j].trim());
-									userIds.append(",");
-								}
-							}
-						}
-						
-					}
-				}
-				if (formData.containsKey("groups")) {
-					String ids[] = (String[])formData.get("groups");
-					if (ids != null) {
-						for (int i = 0; i < ids.length; i++) {
-							String[] uIds = ids[i].split(" ");
-							for (int j = 0; j < uIds.length; j++) {
-								if (uIds[j].length() > 0) {
-									groupIds.append(uIds[j].trim());
-									groupIds.append(",");
-								}
-							}
-						}
-						
-					}
-				}
-				prefs.setValue(WebKeys.PRESENCE_PREF_USER_LIST, userIds.toString());
-				prefs.setValue(WebKeys.PRESENCE_PREF_GROUP_LIST, groupIds.toString());
+				prefs.setValue(WebKeys.PRESENCE_PREF_USER_LIST, FindIdsHelper.getIdsAsString(request.getParameterValues("users")));
+				prefs.setValue(WebKeys.PRESENCE_PREF_GROUP_LIST, FindIdsHelper.getIdsAsString(request.getParameterValues("groups")));
 			} 			
 		}
 		prefs.store();
@@ -128,8 +96,8 @@ public class EditController extends SAbstractController implements DomTreeBuilde
 		} else if ("ss_presence".equals(pName)) {
 			//This is the portlet view; get the configured list of principals to show
 			Set<Long> userIds = new HashSet<Long>();
-			userIds.addAll(getIds(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
-			userIds.addAll(getIds(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
+			userIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
+			userIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
 
 			model.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(userIds));
 			//Build the jsp bean (sorted by folder title)
@@ -148,17 +116,7 @@ public class EditController extends SAbstractController implements DomTreeBuilde
 		}
 		return null;
 	}
-	private Set getIds(String ids) {
-		String [] sIds = ids.split(",");
-		Set<Long> idSet = new HashSet<Long>();
-		for (int i = 0; i < sIds.length; i++) {
-			try  {
-				idSet.add(new Long(sIds[i]));
-			} catch (Exception ex) {};
-		}
-		return idSet;
-		
-	}
+
 	public Element setupDomElement(String type, Object source, Element element) {
 		if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {
 			Workspace ws = (Workspace)source;

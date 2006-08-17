@@ -18,8 +18,6 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.ObjectKeys;
-
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Notification;
@@ -32,6 +30,7 @@ import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.FindIdsHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.ScheduleHelper;
 import com.sitescape.util.StringUtil;
@@ -43,14 +42,8 @@ public class ConfigureNotifyController extends  SAbstractController  {
 		if (formData.containsKey("okBtn")) {
 			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 			Set userList = new HashSet();
-			long [] gIds = PortletRequestUtils.getLongParameters(request, "sendToGroups");
-			for (int i=0; i<gIds.length; ++i) {
-				userList.add(new Long(gIds[i]));
-			}
-			long [] uIds = PortletRequestUtils.getLongParameters(request, "sendToUsers");
-			for (int i=0; i<uIds.length; ++i) {
-				userList.add(new Long(uIds[i]));
-			}
+			if (formData.containsKey("users")) userList.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
+			if (formData.containsKey("groups")) userList.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
 			ScheduleInfo config = getAdminModule().getNotificationConfig(folderId);
 			getScheduleData(request, config);
 			getAdminModule().setNotificationConfig(folderId, config);
@@ -76,29 +69,22 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			model.put(WebKeys.FOLDER, folder);
 	       	User u = RequestContextHolder.getRequestContext().getUser();
 
-			Map groups = getProfileModule().getGroups(u.getParentBinder().getId());
-			List groupEntries = (List)groups.get(ObjectKeys.SEARCH_ENTRIES);
-			model.put(WebKeys.GROUPS, groupEntries);
 			ScheduleInfo config = getAdminModule().getNotificationConfig(folderId);
 			model.put(WebKeys.SCHEDULE_INFO, config);
 			NotificationDef notify = folder.getNotificationDef();
 			model.put(WebKeys.NOTIFICATION, notify); 
-			Map users = getProfileModule().getUsers(u.getParentBinder().getId());
-			//list of search results = map
-			List userEntries = (List)users.get(ObjectKeys.SEARCH_ENTRIES);
-			model.put(WebKeys.USERS, userEntries);
 			List defaultDistribution = folder.getNotificationDef().getDefaultDistribution();
-			Map gList = new HashMap();
-			Map uList = new HashMap();
+			Set gList = new HashSet();
+			Set uList = new HashSet();
 			for (int i=0; i<defaultDistribution.size(); ++i) {
 				Principal id = ((Notification)defaultDistribution.get(i)).getSendTo();
 				if (id.getEntityIdentifier().getEntityType().name().equals(EntityType.group.name()))
-						 gList.put(id.getId(), Boolean.TRUE); 
-				else uList.put(id.getId().toString(), Boolean.TRUE);
+						 gList.add(id); 
+				else uList.add(id);
 			}
 		
-			model.put(WebKeys.SELECTED_USERS, uList);
-			model.put(WebKeys.SELECTED_GROUPS, gList);
+			model.put(WebKeys.USERS, uList);
+			model.put(WebKeys.GROUPS, gList);
 		
 			return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_NOTIFICATION, model);		
 			
@@ -119,7 +105,7 @@ public class ConfigureNotifyController extends  SAbstractController  {
 		
 	}
 	private void getScheduleData(PortletRequest request, ScheduleInfo config) {
-		config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));
+		config.setEnabled(!PortletRequestUtils.getBooleanParameter(request,  "disabled", false));
 		config.setSchedule(ScheduleHelper.getSchedule(request));
 
 	}

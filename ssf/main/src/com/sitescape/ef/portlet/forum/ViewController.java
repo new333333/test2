@@ -1,41 +1,38 @@
 package com.sitescape.ef.portlet.forum;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.PortletSession;
-import javax.portlet.PortletURL;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
-import javax.portlet.PortletConfig;
-
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.springframework.web.servlet.ModelAndView;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sitescape.ef.ObjectKeys;
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletSession;
+import javax.portlet.PortletURL;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
+
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.ProfileBinder;
+import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.FindIdsHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.ProfileBinder;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.Workspace;
 import com.sitescape.util.Validator;
-import com.sitescape.ef.web.portlet.SAbstractController;
 
 
 /**
@@ -113,14 +110,17 @@ public class ViewController  extends SAbstractController {
 	 				statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
 	 				return new ModelAndView(WebKeys.VIEW_PRESENCE_AJAX, model);
 	 			} else {
-	 				model.put(WebKeys.USERS, getUsers(PortletRequestUtils.getStringParameter(request, "userList", "").split(" ")));
-					model.put(WebKeys.GROUPS, getGroups(PortletRequestUtils.getStringParameter(request, "groupList", "").split(" ")));
+	 				//refresh call
+	 				Set p = FindIdsHelper.getIdsAsLongSet(request.getParameterValues("userList"));
+	 				model.put(WebKeys.USERS, getProfileModule().getUsers(p));
+	 				p = FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groupList"));
+	 				model.put(WebKeys.GROUPS, getProfileModule().getGroups(p));
 					return new ModelAndView(WebKeys.VIEW_PRESENCE_AJAX, model);
 	 			}
 			} else {
 	 			Set ids = new HashSet();		
-	 			ids.addAll(getIds(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
-	 			ids.addAll(getIds(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
+	 			ids.addAll(FindIdsHelper.getIdsAsLongSet(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
+	 			ids.addAll(FindIdsHelper.getIdsAsLongSet(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
 	 			//This is the portlet view; get the configured list of principals to show
 	 			model.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
 	 			//if we list groups, then we have issues when a user appears in multiple groups??
@@ -142,38 +142,7 @@ public class ViewController  extends SAbstractController {
 		return null;
 	}
 
-	private Collection getUsers(String [] ids) {
-		Set<Long> userIds = new HashSet<Long>();
-		for (int i = 0; i < ids.length; i++) {
-			try {
-				userIds.add(new Long(ids[i]));
-			} catch (Exception ex) {};
-		}
-		return getProfileModule().getUsers(userIds);
-		
-	}
-	private Collection getGroups(String [] ids) {
-		Set<Long> groupIds = new HashSet<Long>();
-		for (int i = 0; i < ids.length; i++) {
-			try  {
-				groupIds.add(new Long(ids[i]));
-			} catch (Exception ex) {};
-		}
-		return getProfileModule().getGroups(groupIds);
-		
-	}
-	private Set getIds(String ids) {
-		String [] sIds = ids.split(",");
-		Set<Long> idSet = new HashSet<Long>();
-		for (int i = 0; i < sIds.length; i++) {
-			try  {
-				idSet.add(new Long(sIds[i]));
-			} catch (Exception ex) {};
-		}
-		return idSet;
-		
-	}
-	
+
 	protected void buildForumToolbar(Map<String,Object> model) {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
@@ -188,7 +157,6 @@ public class ViewController  extends SAbstractController {
 	}
 	protected class WsTopOnly implements DomTreeBuilder {
 		public Element setupDomElement(String type, Object source, Element element) {
-			Element url;
 			Binder binder = (Binder) source;
 			String icon = binder.getIconName();
 			String imageClass = "ss_twIcon";
