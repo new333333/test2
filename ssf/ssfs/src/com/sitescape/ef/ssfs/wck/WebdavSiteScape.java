@@ -18,6 +18,8 @@ import org.apache.slide.security.UnauthenticatedException;
 import org.apache.slide.simple.store.BasicWebdavStore;
 import org.apache.slide.simple.store.WebdavStoreBulkPropertyExtension;
 import org.apache.slide.simple.store.WebdavStoreLockExtension;
+import org.apache.slide.simple.store.WebdavStoreMacroCopyExtension;
+import org.apache.slide.simple.store.WebdavStoreMacroMoveExtension;
 import org.apache.slide.structure.ObjectAlreadyExistsException;
 import org.apache.slide.structure.ObjectNotFoundException;
 
@@ -30,7 +32,8 @@ import com.sitescape.ef.ssfs.TypeMismatchException;
 import static com.sitescape.ef.ssfs.CrossContextConstants.*;
 
 public class WebdavSiteScape implements BasicWebdavStore, 
-	WebdavStoreBulkPropertyExtension, WebdavStoreLockExtension {
+	WebdavStoreBulkPropertyExtension, WebdavStoreLockExtension,
+	WebdavStoreMacroCopyExtension, WebdavStoreMacroMoveExtension{
 	
 	private static final String URI_SYNTACTIC_TYPE = "synType";
 	// Syntactically the URI refers to a folder
@@ -599,7 +602,91 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			return null;
 		}
 	}
-	
+
+	public void macroCopy(String sourceUri, String targetUri, 
+			boolean overwrite, boolean recursive) 
+	throws ServiceAccessException, AccessDeniedException, 
+	ObjectNotFoundException, ObjectAlreadyExistsException, 
+	ObjectLockedException {
+		Map sm = null;
+		Map tm = null;
+		
+		try {
+			sm = parseUri(sourceUri);
+		}
+		catch(ZoneMismatchException e) {
+			throw new AccessDeniedException(sourceUri, e.getMessage(), "/actions/write");
+		}
+		
+		try {
+			tm = parseUri(targetUri);
+		}
+		catch(ZoneMismatchException e) {
+			throw new AccessDeniedException(targetUri, e.getMessage(), "/actions/write");
+		}		
+		
+		try {
+			client.copyObject(sm, tm, overwrite, recursive);
+		}
+		catch (NoAccessException e) {
+			throw new AccessDeniedException(targetUri, e.getMessage(), "/actions/write");
+		}
+		catch (CCClientException e) {
+			throw new ServiceAccessException(service, e.getMessage());
+		} 
+		catch (NoSuchObjectException e) {
+			throw new ObjectNotFoundException(sourceUri);
+		}	
+		catch (AlreadyExistsException e) {
+			throw new ObjectAlreadyExistsException(targetUri);
+		}		
+		catch(TypeMismatchException e) {
+			// Perhaps we should throw AccessDeniedException instead?
+			throw new ServiceAccessException(service, e.getMessage());
+		}
+	}
+
+	public void macroMove(String sourceUri, String targetUri, boolean overwrite) 
+	throws ServiceAccessException, AccessDeniedException, ObjectNotFoundException, 
+	ObjectAlreadyExistsException, ObjectLockedException {
+		Map sm = null;
+		Map tm = null;
+		
+		try {
+			sm = parseUri(sourceUri);
+		}
+		catch(ZoneMismatchException e) {
+			throw new AccessDeniedException(sourceUri, e.getMessage(), "/actions/write");
+		}
+		
+		try {
+			tm = parseUri(targetUri);
+		}
+		catch(ZoneMismatchException e) {
+			throw new AccessDeniedException(targetUri, e.getMessage(), "/actions/write");
+		}		
+		
+		try {
+			client.moveObject(sm, tm, overwrite);
+		}
+		catch (NoAccessException e) {
+			throw new AccessDeniedException(targetUri, e.getMessage(), "/actions/write");
+		}
+		catch (CCClientException e) {
+			throw new ServiceAccessException(service, e.getMessage());
+		} 
+		catch (NoSuchObjectException e) {
+			throw new ObjectNotFoundException(sourceUri);
+		}	
+		catch (AlreadyExistsException e) {
+			throw new ObjectAlreadyExistsException(targetUri);
+		}		
+		catch(TypeMismatchException e) {
+			// Perhaps we should throw AccessDeniedException instead?
+			throw new ServiceAccessException(service, e.getMessage());
+		}
+	}
+
 	private Map returnMap(Map map, Integer uriSyntacticType) {
 		map.put(URI_SYNTACTIC_TYPE, uriSyntacticType);
 		return map;

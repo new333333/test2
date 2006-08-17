@@ -19,7 +19,6 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Entry;
@@ -371,6 +370,19 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 				lockId);
 	}
 
+	public void copyObject(Map sourceUri, Map targetUri, boolean overwrite, 
+			boolean recursive) throws  
+			NoAccessException, NoSuchObjectException, AlreadyExistsException, 
+			TypeMismatchException {
+		throw new UnsupportedOperationException();
+	}
+	
+	public void moveObject(Map sourceUri, Map targetUri, boolean overwrite) 
+	throws NoAccessException, NoSuchObjectException, 
+	AlreadyExistsException, TypeMismatchException {
+		throw new UnsupportedOperationException();
+	}
+	
 	private void removeResourceInternal(Map uri, Map objMap) throws NoAccessException {
 		FileAttachment fa = (FileAttachment) objMap.get(FILE_ATTACHMENT);
 		

@@ -166,7 +166,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		else if(info.equals(CrossContextConstants.OBJECT_INFO_FOLDER))
 			throw new AlreadyExistsException("A folder with the same name already eixsts");
 		
-		createFolder(uri, objMap);
+		createFileFolder(uri, objMap);
 	}
 
 	public InputStream getResource(Map uri) throws NoAccessException, 
@@ -178,14 +178,9 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		else if(info.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING))
 			throw new NoSuchObjectException("The resource does not exist");
 		
-		FileAttachment fa = getFileAttachment(objMap);
-		
-		// Because objectInfo always performs "read" access check for the
-		// user, we can safely request the file module for the content of
-		// the file. 
-		return getFileModule().readFile(getParentBinder(objMap), getFileFolderEntry(objMap), fa);
+		return getResource(uri, objMap);
 	}
-
+	
 	/*
 	public long getResourceLength(Map uri) throws NoAccessException, 
 	NoSuchObjectException, TypeMismatchException {
@@ -382,6 +377,119 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				getFileAttachment(objMap), lockId);
 	}
 
+	public void copyObject(Map sourceUri, Map targetUri, boolean overwrite, 
+			boolean recursive) throws  
+			NoAccessException, NoSuchObjectException, AlreadyExistsException, 
+			TypeMismatchException {
+		Map sourceMap = new HashMap();
+		String sourceInfo = objectInfo(sourceUri, sourceMap);
+		if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
+			throw new NoSuchObjectException("The source object does not exist");
+		}
+		// I am not sure if this constraint makes sense. Because file folder
+		// can contain sub-folder that is not file folder, even copying 
+		// file folder can not escape the issue of having to deal with 
+		// non-file folder type folders. One strategy might be to stop 
+		// copying the sub-branch when encounted a non-file folder type
+		// folder. But even that seems too arbitrary to me. To make things
+		// consistent, we may need to allow copying non-file folder type
+		// folders (including workspace). But then the question becomes - 
+		// how much should we copy? Do we copy all the attributes associated
+		// with, say, the workspace? All metadata including definitions? 
+		// All the entries of various kinds stored in that binder? These 
+		// are tricky questions to answer. The best solution might simply 
+		// be to disallow copying of objects all together, with possible 
+		// exception of file entries.
+		/*
+		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_FOLDER)) {
+			Binder binder = getLeafBinder(sourceMap);
+			if(!isFileFolder(binder))
+				throw new NoAccessException("Only folders of file folder type can be copied");
+		}*/
+		
+		Map targetMap = new HashMap();
+		String targetInfo = objectInfo(targetUri, targetMap);
+		if(!targetInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
+			// Target exists
+			if(!overwrite)
+				throw new AlreadyExistsException("The target object already exists");
+			
+			// Make sure that both the source and the target are same type. 
+			if(!sourceInfo.equals(targetInfo))
+				throw new TypeMismatchException("The source and target types do not match");
+			
+			// First, remove the existing target object.
+			if(targetInfo.equals(CrossContextConstants.OBJECT_INFO_FOLDER)) {
+				removeFolder(targetUri, targetMap);
+			}
+			else {
+				removeResource(targetUri, targetMap);
+			}
+		}
+		else { // Target doesn't exist
+			// Make sure that the target's parent binder exists.
+			if(getParentBinder(targetMap) == null)
+				throw new NoSuchObjectException("The target's parent binder does not exist");
+		}
+		
+		// Copy the source.
+		if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_FOLDER)) {
+			copyFolder(sourceUri, sourceMap, targetUri, targetMap, recursive);
+		}
+		else {
+			copyResource(sourceUri, sourceMap, targetUri, targetMap, recursive);
+		}
+	}
+	
+	public void moveObject(Map sourceUri, Map targetUri, boolean overwrite) 
+	throws NoAccessException, NoSuchObjectException, 
+	AlreadyExistsException, TypeMismatchException {
+		Map sourceMap = new HashMap();
+		String sourceInfo = objectInfo(sourceUri, sourceMap);
+		if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
+			throw new NoSuchObjectException("The source object does not exist");
+		}
+		/*
+		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_FOLDER)) {
+			Binder binder = getLeafBinder(sourceMap);
+			if(!isFileFolder(binder))
+				throw new NoAccessException("Only folders of file folder type can be moved");
+		}*/
+		
+		Map targetMap = new HashMap();
+		String targetInfo = objectInfo(targetUri, targetMap);
+		if(!targetInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
+			// Target exists
+			if(!overwrite)
+				throw new AlreadyExistsException("The target object already exists");
+			
+			// Make sure that both the source and the target are same type. 
+			if(!sourceInfo.equals(targetInfo))
+				throw new TypeMismatchException("The source and target types do not match");
+			
+			// First, remove the existing target object.
+			if(targetInfo.equals(CrossContextConstants.OBJECT_INFO_FOLDER)) {
+				removeFolder(targetUri, targetMap);
+			}
+			else {
+				removeResource(targetUri, targetMap);
+			}
+		}
+		else { // Target doesn't exist
+			// Make sure that the target's parent binder exists.
+			if(getParentBinder(targetMap) == null)
+				throw new NoSuchObjectException("The target's parent binder does not exist");
+		}
+		
+		// Move the source.
+		if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_FOLDER)) {
+			moveFolder(sourceUri, sourceMap, targetUri, targetMap);
+		}
+		else {
+			moveResource(sourceUri, sourceMap, targetUri, targetMap);
+		}	
+	}
+	
 	private String objectInfo(Map uri, Map objMap) throws NoAccessException {
 		try {
 			String libpath = getLibpath(uri);
@@ -572,7 +680,14 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		}
 	}
 	
-	private void createFolder(Map uri, Map objMap) throws NoAccessException {
+	/**
+	 * Create a file folder. It is not possible to create a folder of any other type. 
+	 * 
+	 * @param uri
+	 * @param objMap
+	 * @throws NoAccessException
+	 */
+	private void createFileFolder(Map uri, Map objMap) throws NoAccessException {
 		// We can create a file folder only if its parent already exists.
 		// More specifically:
 		// 1) We can not create top-level container (ie, workspace)
@@ -658,6 +773,13 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		return titles.toArray(new String[titles.size()]);
 	}
 	
+	/**
+	 * Remove a folder. The folder could be any type.
+	 * 
+	 * @param uri
+	 * @param objMap
+	 * @throws NoAccessException
+	 */
 	private void removeFolder(Map uri, Map objMap) throws NoAccessException {
 		try {
 			getBinderModule().deleteBinder(getLeafBinder(objMap).getId());
@@ -721,5 +843,97 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		Element nameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
 		String elementName = nameProperty.attributeValue("value");
 		return elementName;
+	}
+	
+	private void copyFolder(Map sourceUri, Map sourceMap, Map targetUri, 
+			Map targetMap, boolean recursive) throws NoAccessException {
+		// See the comment in copyObject method to understand why it is not
+		// as straightforward to implement this as you might think.
+		throw new UnsupportedOperationException();
+	}
+	
+	private void copyResource(Map sourceUri, Map sourceMap, Map targetUri, 
+			Map targetMap, boolean recursive) throws NoAccessException {
+		InputStream in = getResource(sourceUri, sourceMap);
+		
+		writeResource(targetUri, targetMap, in, true);
+	}
+	
+	private void moveFolder(Map sourceUri, Map sourceMap, Map targetUri, 
+			Map targetMap) throws NoAccessException {
+		try {
+			Binder sourceParentBinder = getParentBinder(sourceMap);
+			Binder targetParentBinder = getParentBinder(targetMap);
+
+			if(sourceParentBinder.equals(targetParentBinder)) {
+				// This is a mere "renaming" situation: Changes name but not parent.
+				Map data = new HashMap();
+				data.put("title", getLastElemName(targetMap));
+				
+				getBinderModule().modifyBinder(getLeafBinder(sourceMap).getId(), new MapInputData(data), null, null);
+			}
+			else {
+				// Changes parent. In this case, we expect the name of the
+				// folder to remain unchanged (if not, we could presumably
+				// apply "renaming" after move... but that should not happen)
+				
+				if(!getLastElemName(sourceMap).equals(getLastElemName(targetMap)))
+					throw new SiteScapeFileSystemException("Unsupported use case");
+
+				getBinderModule().moveBinder(getLeafBinder(sourceMap).getId(), 
+					getParentBinder(targetMap).getId());
+			}
+		}
+		catch(AccessControlException e) {
+			throw new NoAccessException(e.getLocalizedMessage());
+		} 
+		catch (WriteFilesException e) {
+			throw new SiteScapeFileSystemException(e.getMessage());
+		}
+	}
+	
+	private void moveResource(Map sourceUri, Map sourceMap, Map targetUri, 
+			Map targetMap) throws NoAccessException {
+		try {
+			Binder sourceParentBinder = getParentBinder(sourceMap);
+			Binder targetParentBinder = getParentBinder(targetMap);
+			
+			if(sourceParentBinder.equals(targetParentBinder)) {
+				// This is a mere "renaming" situation: Changes name but not parent.
+				
+				Map data = new HashMap();
+				data.put("title", getLastElemName(targetMap));
+				
+				getFolderModule().modifyEntry(sourceParentBinder.getId(), 
+						getFileFolderEntry(sourceMap).getId(), new MapInputData(data), null, null);
+			}
+			else {
+				// Changes parent. In this case, we expect the name of the
+				// resource to remain unchanged (if not, we could presumably
+				// apply "renaming" after move... but that should not happen)
+				if(!getLastElemName(sourceMap).equals(getLastElemName(targetMap)))
+					throw new SiteScapeFileSystemException("Unsupported use case");
+				
+				getFolderModule().moveEntry(sourceParentBinder.getId(), 
+					getFileFolderEntry(sourceMap).getId(), 
+					targetParentBinder.getId());
+			}
+		}
+		catch(AccessControlException e) {
+			throw new NoAccessException(e.getLocalizedMessage());
+		} 
+		catch (WriteFilesException e) {
+			throw new SiteScapeFileSystemException(e.getMessage());
+		}
+	}
+
+	private InputStream getResource(Map uri, Map objMap) {
+		FileAttachment fa = getFileAttachment(objMap);
+		
+		// We assume that "read" access check was performed by the caller. 
+		// So we can safely request the file module for the content of
+		// the file. 
+		return getFileModule().readFile(getParentBinder(objMap), 
+				getFileFolderEntry(objMap), fa);	
 	}
 }

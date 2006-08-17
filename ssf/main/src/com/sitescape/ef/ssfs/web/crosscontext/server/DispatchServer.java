@@ -15,19 +15,19 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
-import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
-import com.sitescape.ef.security.authentication.UserDoesNotExistException;
 import com.sitescape.ef.ssfs.AlreadyExistsException;
 import com.sitescape.ef.ssfs.CrossContextConstants;
 import com.sitescape.ef.ssfs.LockException;
 import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
+import com.sitescape.ef.ssfs.TypeMismatchException;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystem;
-import com.sitescape.ef.ssfs.server.SiteScapeFileSystemException;
 import com.sitescape.ef.util.SpringContextUtil;
 
 public class DispatchServer extends GenericServlet {
 
+	private static final long serialVersionUID = 1L;
+	
 	private static final Log logger = LogFactory.getLog(DispatchServer.class);
 
 	@Override
@@ -128,6 +128,12 @@ public class DispatchServer extends GenericServlet {
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
 				return;
 			}
+			catch(TypeMismatchException e) {
+				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_TYPE_MISMATCH);				
+				logger.warn(e);
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				return;
+			}
 			catch(IOException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
 				logger.error(e.getMessage(), e);
@@ -139,12 +145,6 @@ public class DispatchServer extends GenericServlet {
 				logger.error(e.getMessage(), e);
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
 				return;			
-			}
-			catch(SiteScapeFileSystemException e) {
-				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
-				logger.error(e.getMessage(), e);
-				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
-				return;
 			}
 			catch(Exception e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
@@ -158,8 +158,10 @@ public class DispatchServer extends GenericServlet {
 
 	private void doSsfsRequest(Integer operation, ServletRequest req, ServletResponse res) 
 	throws ServletException, IOException, NoAccessException, AlreadyExistsException,
-	NoSuchObjectException {
+	NoSuchObjectException, LockException, TypeMismatchException {
 		Map uri = (Map) req.getAttribute(CrossContextConstants.URI);
+		Map sourceUri = (Map) req.getAttribute(CrossContextConstants.SOURCE_URI);
+		Map targetUri = (Map) req.getAttribute(CrossContextConstants.TARGET_URI);
 
 		SiteScapeFileSystem ssfs = getSiteScapeFileSystem();
 		
@@ -201,6 +203,15 @@ public class DispatchServer extends GenericServlet {
 		else if(operation.equals(CrossContextConstants.OPERATION_UNLOCK_RESOURCE)) {
 			String lockId = (String) req.getAttribute(CrossContextConstants.LOCK_PROPERTIES_ID);
 			ssfs.unlockResource(uri, lockId);
+		}
+		else if(operation.equals(CrossContextConstants.OPERATION_COPY_OBJECT)) {
+			boolean overwrite = ((Boolean) req.getAttribute(CrossContextConstants.OVERWRITE)).booleanValue();
+			boolean recursive = ((Boolean) req.getAttribute(CrossContextConstants.OVERWRITE)).booleanValue();
+			ssfs.copyObject(sourceUri, targetUri, overwrite, recursive);
+		}
+		else if(operation.equals(CrossContextConstants.OPERATION_MOVE_OBJECT)) {
+			boolean overwrite = ((Boolean) req.getAttribute(CrossContextConstants.OVERWRITE)).booleanValue();
+			ssfs.moveObject(sourceUri, targetUri, overwrite);
 		}
 		else {
 			throw new ServletException("Invalid operation " + operation);

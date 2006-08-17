@@ -69,7 +69,7 @@ public class CCClient {
 				zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_CREATE_SET_RESOURCE, 
 				new CCClientCallback() {
-					public void additionalInput(HttpServletRequest req, Map m) {
+					public void additionalInput(HttpServletRequest req) {
 						req.setAttribute(CrossContextConstants.INPUT_STREAM, content);
 					}
 				}
@@ -81,7 +81,7 @@ public class CCClient {
 		CCExecutionTemplate.execute(zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_SET_RESOURCE, 
 			new CCClientCallback() {
-				public void additionalInput(HttpServletRequest req, Map uri) {
+				public void additionalInput(HttpServletRequest req) {
 					req.setAttribute(CrossContextConstants.INPUT_STREAM, content);
 				}
 			}
@@ -221,7 +221,7 @@ public class CCClient {
 		CCExecutionTemplate.execute(zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_LOCK_RESOURCE, 
 			new CCClientCallback() {
-				public void additionalInput(HttpServletRequest req, Map uri) {
+				public void additionalInput(HttpServletRequest req) {
 					req.setAttribute(CrossContextConstants.LOCK_PROPERTIES_ID, lock.getId());
 					req.setAttribute(CrossContextConstants.LOCK_PROPERTIES_SUBJECT, lock.getSubject());
 					req.setAttribute(CrossContextConstants.LOCK_PROPERTIES_EXPIRATION_DATE, lock.getExpirationDate());
@@ -245,7 +245,7 @@ public class CCClient {
 		CCExecutionTemplate.execute(zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_UNLOCK_RESOURCE, 
 			new CCClientCallback() {
-				public void additionalInput(HttpServletRequest req, Map uri) {
+				public void additionalInput(HttpServletRequest req) {
 					req.setAttribute(CrossContextConstants.LOCK_PROPERTIES_ID, lockId);
 				}
 			}
@@ -291,6 +291,36 @@ public class CCClient {
 		*/
 	}
 	
+	public void copyObject(Map sourceMap, Map targetMap, 
+			final boolean overwrite, final boolean recursive)
+	throws CCClientException, NoAccessException,
+	NoSuchObjectException, AlreadyExistsException, TypeMismatchException {
+		CCExecutionTemplate.execute(
+				zoneName, userName, sourceMap, targetMap,
+				CrossContextConstants.OPERATION_COPY_OBJECT,
+				new CCClientCallback() {
+					public void additionalInput(HttpServletRequest req) {
+						req.setAttribute(CrossContextConstants.OVERWRITE, Boolean.valueOf(overwrite));
+						req.setAttribute(CrossContextConstants.RECURSIVE, Boolean.valueOf(recursive));
+					}
+				}
+		);
+	}
+	
+	public void moveObject(Map sourceMap, Map targetMap, final boolean overwrite)
+	throws CCClientException, NoAccessException,
+	NoSuchObjectException, AlreadyExistsException, TypeMismatchException {
+		CCExecutionTemplate.execute(
+				zoneName, userName, sourceMap, targetMap,
+				CrossContextConstants.OPERATION_MOVE_OBJECT,
+				new CCClientCallback() {
+					public void additionalInput(HttpServletRequest req) {
+						req.setAttribute(CrossContextConstants.OVERWRITE, Boolean.valueOf(overwrite));
+					}
+				}
+		);
+	}
+	
 	private Map getPropertiesCached(String objUri, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
 		Object value = cache.get(objUri);
@@ -333,7 +363,7 @@ public class CCClient {
 	}
 	
 	static class DefaultCCClientCallback implements CCClientCallback {
-		public void additionalInput(HttpServletRequest req, Map uri) {
+		public void additionalInput(HttpServletRequest req) {
 		}
 	}
 }
