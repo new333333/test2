@@ -9,7 +9,6 @@ import javax.activation.FileTypeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.FileModule;
@@ -173,6 +172,24 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 			ssfsInt.unlockResource(uri, lockId);
 		else
 			ssfsLib.unlockResource(uri, lockId);
+	}
+	
+	public void copyObject(Map sourceUri, Map targetUri, boolean overwrite, boolean recursive)
+	throws NoAccessException, NoSuchObjectException, 
+	AlreadyExistsException, TypeMismatchException {
+		if(isInternal(sourceUri))
+			ssfsInt.copyObject(sourceUri, targetUri, overwrite, recursive);
+		else
+			ssfsLib.copyObject(sourceUri, targetUri, overwrite, recursive);
+	}
+	
+	public void moveObject(Map sourceUri, Map targetUri, boolean overwrite)
+	throws NoAccessException, NoSuchObjectException, 
+	AlreadyExistsException, TypeMismatchException {
+		if(isInternal(sourceUri))
+			ssfsInt.moveObject(sourceUri, targetUri, overwrite);
+		else
+			ssfsLib.moveObject(sourceUri, targetUri, overwrite);		
 	}
 	
 	private boolean isInternal(Map uri) {

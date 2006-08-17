@@ -31,6 +31,8 @@ public abstract class CrossContextConstants {
 	public static final Integer OPERATION_CREATE_SET_RESOURCE = new Integer(9);
 	public static final Integer OPERATION_LOCK_RESOURCE = new Integer(10);
 	public static final Integer OPERATION_UNLOCK_RESOURCE = new Integer(11);
+	public static final Integer OPERATION_COPY_OBJECT = new Integer(12);
+	public static final Integer OPERATION_MOVE_OBJECT = new Integer(13);
 	/*
 	public static final String OPERATION_AUTHENTICATE = "authenticate";
 	public static final String OPERATION_OBJECT_EXISTS = "objectExists";
@@ -52,9 +54,17 @@ public abstract class CrossContextConstants {
 	// Argument key for OPERATION_SET_RESOURCE operation.
 	public static final String INPUT_STREAM = "inputStream";
 	
+	// Argument keys for OPERATION_COPY_OBJECT and OPERATION_MOVE_OBJECT
+	public static final String OVERWRITE = "overwrite";
+	public static final String RECURSIVE = "recursive";
+	
 	// Argument key for URI (whose value is a map). - This argument is used for
-	// all operations.
+	// all operations that take single uri. 
 	public static final String URI = "uri";
+	
+	// Argument keys for URIs - Used for operations that take two URIs.
+	public static final String SOURCE_URI = "suri";
+	public static final String TARGET_URI = "turi";
 	
 	// Key names for URI parts - These are keys for the entries in the URI map.
 	
@@ -116,6 +126,7 @@ public abstract class CrossContextConstants {
 	public static final String ERROR_NO_SUCH_OBJECT = "noSuchObject";
 	public static final String ERROR_ALREADY_EXISTS = "alreadyExists"; 
 	public static final String ERROR_LOCK = "lock";
+	public static final String ERROR_TYPE_MISMATCH = "typeMismatch";
 	public static final String ERROR_GENERAL = "generalError";
 	
 	// Key name used for returning error message. 
