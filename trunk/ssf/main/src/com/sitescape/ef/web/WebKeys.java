@@ -120,6 +120,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_UNSEEN_COUNTS = "unseen_counts";
 	public static final String FORUM_OPERATION_RELOAD_LISTING = "reload_listing";
 	public static final String FORUM_OPERATION_SAVE_COLUMN_POSITIONS = "save_column_positions";
+	public static final String FORUM_OPERATION_SAVE_DASHBOARD_LAYOUT = "save_dashboard_layout";
 	public static final String FORUM_OPERATION_SAVE_ENTRY_WIDTH = "save_entry_width";
 	public static final String FORUM_OPERATION_SAVE_ENTRY_HEIGHT = "save_entry_height";
 	public static final String FORUM_OPERATION_SAVE_RATING = "save_rating";
