@@ -80,8 +80,8 @@
 	          ></c:if></div></div></div><c:if 
 	          test="${hideDashboardControls}"></div></c:if>
 	      </td>
-		  <td valign="middle" width="100%">
-		    <span class="ss_bold">${ssDashboard.dashboard.components[ssDashboardId].title}</span>
+		  <td class="ss_dashboard_dragHandle" valign="middle" width="100%">
+		    <span class="ss_bold ss_dashboard_component_title">${ssDashboard.dashboard.components[ssDashboardId].title}</span>
 		  </td>
 		  <td align="right" valign="middle">
 		    <c:if test="${hideDashboardControls}">
@@ -146,4 +146,3 @@
 </div>
 <div style="margin:6px; padding:0px;"><img 
   src="<html:imagesPath/>pics/1pix.gif"></div>
-</div>

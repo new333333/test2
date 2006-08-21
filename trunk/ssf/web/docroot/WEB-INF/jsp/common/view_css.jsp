@@ -30,10 +30,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <script type="text/javascript" src="<html:rootPath/>js/dojo/src/math/Math.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/dojo/src/math/curves.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/dojo/src/lfx/html.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_dashboard_drag_and_drop.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.fx.*");
 	dojo.require("dojo.math");
 	//dojo.require("dojo.lfx.*");
+	dojo.require("dojo.dnd.*");
+	dojo.require("dojo.event.*");
 </script>
   <c:if test="0">
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_dragsort.js"></script>
@@ -96,6 +99,11 @@ function ss_rounded() {
 }
 ss_createOnLoadObj('ss_rounded', ss_rounded);
 
+function ss_defineColorValues() {
+	ss_style_background_color = '${ss_style_background_color}';
+	ss_dashboard_table_border_color = '${ss_dashboard_table_border_color}';
+}
+ss_createOnLoadObj('ss_defineColorValues', ss_defineColorValues);
 </script>
 
 </c:if>
