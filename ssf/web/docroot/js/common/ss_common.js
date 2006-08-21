@@ -37,7 +37,17 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ssEntryZ = 50;
 	var ssDragEntryZ = 400;
 	var ssSlidingTableInfoZ = 40;
+	var ssDashboardTargetZ = 1000;
 	
+	//colors (defined at onLoad time by ss_defineColorValues)
+	var ss_style_background_color = "";
+	var ss_dashboard_table_border_color = "";
+	
+	var ss_dashboardDropTargetHeight = "10px";
+	var ss_dashboardDropTargetTopOffset = -4;
+	var ss_dashboardTopDropTargetHeight = "20px";
+	var ss_dashboardTableBorderColor = "";
+
 	var ss_savedOnResizeRoutine = null;
 	var ss_onResizeRoutineLoaded;
 	var ss_savedOnLoadRoutine = null;
@@ -95,7 +105,12 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_favoritesPaneLeftOffset = 4;
 	var ss_favoritesMarginW = 4;
 	var ss_favoritesMarginH = 6;
-	
+
+	var ss_dashboardClones = new Array();
+	var ss_dashboardSliderObj = null;
+	var ss_dashboardSliderTargetObj = null;
+	var ss_dashboardSliderObjEndCoords = null;
+		
 }
 var ss_common_loaded = 1;
 
@@ -2106,13 +2121,13 @@ function ss_toggle_dashboard_toolbars() {
 			obj.style.display = 'inline';
 			obj.style.zIndex = parseInt(ssLightboxZ + 1);
 			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarHideContent;
-			var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
-			lightBox.onclick = function(e) {ss_toggle_dashboard_toolbars();};
+			//var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
+			//lightBox.onclick = function(e) {ss_toggle_dashboard_toolbars();};
 		} else {
 			obj.style.visibility = 'hidden';
 			obj.style.display = 'none';
 			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarAddContent;
-			ss_hideLightbox()
+			//ss_hideLightbox()
 		}
 	}
 	
@@ -2565,3 +2580,142 @@ function ss_setFavoritesPaneSize() {
 	}
 }
 
+function ss_dashboardInitialization() {
+	//Turn off ie's 3d table look
+	var dashboardTable = document.getElementById('ss_dashboardTable');
+	dashboardTable.setAttribute('borderColorDark', ss_style_background_color);
+	dashboardTable.setAttribute('borderColorLight', ss_style_background_color);
+
+	var penlets = ss_getElementsByClass('ss_dashboard_component', dashboardTable, 'div')
+	for (var i = 0; i < penlets.length; i++) {
+		new dojo.dnd.ss_dashboard_source(penlets[i], "penlet");
+	}
+
+	var bodyObj = document.getElementsByTagName("body").item(0);
+	var targets = ss_getElementsByClass('ss_dashboardProtoDropTarget.*', dashboardTable, 'div')
+	for (var i = 0; i < targets.length; i++) {
+		ss_dashboardClones[i] = targets[i].cloneNode(true);
+		ss_dashboardClones[i].className = "ss_dashboardDropTarget";
+		ss_dashboardClones[i].style.visibility = "hidden";
+		bodyObj.appendChild(ss_dashboardClones[i])
+		new dojo.dnd.ss_dashboard_target(ss_dashboardClones[i], ["penlet"]);
+	}
+}
+
+function ss_clearDashboardSlider() {
+	var bodyObj = document.getElementsByTagName("body").item(0);
+	if (ss_dashboardSliderObj != null) {
+		bodyObj.removeChild(ss_dashboardSliderObj);
+		dojo.style.setOpacity(ss_dashboardSliderTargetObj, 1)
+	}
+	ss_dashboardSliderObj = null;
+}
+
+function ss_enableDashboardDropTargets() {
+	//ss_debug('enable drop targets')
+	var dashboardTable = document.getElementById('ss_dashboardTable');
+	ss_dashboardTableBorderColor = dashboardTable.style.borderColor;
+	//ss_debug('dashboardTable.borderColor = '+dashboardTable.style.borderColor)
+	dashboardTable.className = "ss_dashboardTable_on";
+	var tableElements = ss_getElementsByClass('ss_dashboardTable_.*', dashboardTable, 'td')
+	for (var i = 0; i < tableElements.length; i++) tableElements[i].className = "ss_dashboardTable_on";
+
+	var narrowFixedObj = document.getElementById('narrowFixed')
+	var narrowFixedHeight = parseInt(dojo.style.getContentBoxHeight(narrowFixedObj));
+	var narrowVariableObj = document.getElementById('narrowVariable')
+	var narrowVariableHeight = parseInt(dojo.style.getContentBoxHeight(narrowVariableObj));
+	var targets = ss_getElementsByClass('ss_dashboardProtoDropTarget', null, 'div')
+	for (var i = 0; i < targets.length; i++) {
+		ss_dashboardClones[i].style.left = parseInt(dojo.style.getAbsolutePosition(targets[i], true).x) + "px";
+		ss_dashboardClones[i].style.top = parseInt(dojo.style.getAbsolutePosition(targets[i], true).y) + "px";
+		dojo.style.setContentBoxWidth(ss_dashboardClones[i], dojo.style.getContentBoxWidth(targets[i]))
+		ss_dashboardClones[i].className = "ss_dashboardDropTarget";
+		ss_dashboardClones[i].style.height = ss_dashboardDropTargetHeight;
+		ss_dashboardClones[i].style.visibility = "visible";
+		ss_dashboardClones[i].style.zIndex = ssDashboardTargetZ;
+		ss_setOpacity(ss_dashboardClones[i], .5);
+		//ss_debug('  position: '+ss_dashboardClones[i].style.left+', '+ss_dashboardClones[i].style.top)
+		
+		//See if the drop target needs to be enlarged
+		var sourceNode = targets[i];
+		var children = sourceNode.parentNode.getElementsByTagName('div');
+		//ss_debug('sourceNode parent id = '+sourceNode.parentNode.id)
+		if (sourceNode.parentNode.id == "wideTop") {
+			//The top target gets enlarged upward
+			if (children[0] == sourceNode) {
+				ss_dashboardClones[i].style.height = ss_dashboardTopDropTargetHeight;
+				var top = parseInt(dojo.style.getAbsolutePosition(targets[i], true).y);
+				top += parseInt(dojo.style.getContentBoxHeight(targets[i]));
+				top = top - parseInt(ss_dashboardDropTargetTopOffset);
+				top = top - parseInt(ss_dashboardDropTargetTopOffset);
+				top = top - parseInt(ss_dashboardTopDropTargetHeight);
+				ss_dashboardClones[i].style.top = top + "px";
+			}
+		
+		} else if (sourceNode.parentNode.id == "wideBottom") {
+			if (children[children.length - 1] == sourceNode) {
+				ss_dashboardClones[i].style.height = ss_dashboardTopDropTargetHeight;
+				var top = parseInt(dojo.style.getAbsolutePosition(targets[i], true).y);
+				ss_dashboardClones[i].style.top = top + "px";
+			}
+
+		} else if (sourceNode.parentNode.id == "narrowFixed") {
+			//See if this is the last target in this group
+			if (children[children.length - 1] == sourceNode && narrowFixedHeight < narrowVariableHeight) {
+				var height = parseInt(narrowVariableHeight - narrowFixedHeight);
+				if (height < parseInt(ss_dashboardDropTargetHeight)) height = parseInt(ss_dashboardDropTargetHeight);
+				ss_dashboardClones[i].style.height = height + "px";
+			}
+		
+		} else if (sourceNode.parentNode.id == "narrowVariable") {
+			//See if this is the last target in this group
+			if (children[children.length - 1] == sourceNode && narrowVariableHeight < narrowFixedHeight) {
+				var height = parseInt(narrowFixedHeight - narrowVariableHeight);
+				if (height < parseInt(ss_dashboardDropTargetHeight)) height = parseInt(ss_dashboardDropTargetHeight);
+				ss_dashboardClones[i].style.height = height + "px";
+			}
+		}
+	}
+}
+
+function ss_disableDashboardDropTargets() {
+	//ss_debug('disable drop targets')
+	var dashboardTable = document.getElementById('ss_dashboardTable');
+	dashboardTable.className = "ss_dashboardTable_off";
+	var tableElements = ss_getElementsByClass('ss_dashboardTable_.*', dashboardTable, 'td')
+	for (var i = 0; i < tableElements.length; i++) tableElements[i].className = "ss_dashboardTable_off";
+
+	var targets = ss_getElementsByClass('ss_dashboardProtoDropTarget', null, 'div')
+	for (var i = 0; i < targets.length; i++) {
+		ss_dashboardClones[i].style.visibility = "hidden"
+	}
+}
+
+function ss_savePenletLayout() {
+	ss_debug('Save the penlet order:')
+
+	var dashboardTable = document.getElementById('ss_dashboardTable');
+	var dashboardLayoutForm = document.getElementById('ss_dashboard_layout_form');
+	var layout = "";
+	var penlets = ss_getElementsByClass('ss_dashboard_component', dashboardTable, 'div')
+	for (var i = 0; i < penlets.length; i++) {
+		layout += penlets[i].id + ',' + penlets[i].parentNode.id + ';';
+	}
+	ss_debug('Dashboard layout: ' + layout)
+	dashboardLayoutForm.dashboard_layout.value = layout;
+
+	ss_setupStatusMessageDiv()
+
+	var url = ss_saveDashboardLayoutUrl;
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addFormElements("ss_dashboard_layout_form");
+	ajaxRequest.setPostRequest(ss_postSavePenletLayoutRequest);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+}
+function ss_postSavePenletLayoutRequest(obj) {
+	//See if there was an error
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		alert(ss_not_logged_in);
+	}
+}

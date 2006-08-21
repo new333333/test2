@@ -55,7 +55,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 <c:set var="ss_lightBox_background_color" value="#e5e5e5" scope="request"/>
 
-<c:set var="ss_dashboard_border_color" value="red" scope="request"/>
+<c:set var="ss_dashboard_table_border_color" value="blue" scope="request"/>
 
 <c:set var="ss_blog_title_background_color" value="#AAAAFF" scope="request"/>
 <c:set var="ss_blog_content_background_color" value="#FFFFAA" scope="request"/>
@@ -132,7 +132,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	<c:set var="ss_lightBox_background_color" value="#e5e5e5" scope="request"/>
 
-	<c:set var="ss_dashboard_border_color" value="red" scope="request"/>
+	<c:set var="ss_dashboard_table_border_color" value="blue" scope="request"/>
 
 	<c:set var="ss_blog_title_background_color" value="#AACCFF" scope="request"/>
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
@@ -505,6 +505,50 @@ ul.ss_dropdownmenu li {
 
 .ss_calendar_notInView {
   background-color: ${ss_calendar_today_background_color};
+}
+
+.ss_dashboard_component {
+}
+.ss_dashboard_component_title {
+}
+.ss_dashboard_dragHandle {
+  cursor:move;
+}
+.ss_dashboard_dragHandle_clone {
+  background-color: ${ss_style_component_toolbar_background_color} !important;
+  border:1px solid black;
+  padding:2px 2px 2px 20px;
+  height:18px;
+}
+table.ss_dashboardTable_off {
+  border-top:1px solid #ffffff;	
+  border-left:1px solid #ffffff;	
+}
+td.ss_dashboardTable_off {
+  border-right:1px solid #ffffff;	
+  border-bottom:1px solid #ffffff;	
+}
+table.ss_dashboardTable_on {
+  border-top:1px solid blue;	
+  border-left:1px solid blue;	
+}
+td.ss_dashboardTable_on {
+  border-right:1px solid blue;	
+  border-bottom:1px solid blue;	
+}
+div.ss_dashboardDropTarget {
+  position:absolute;
+  height:15px;
+}
+div.ss_dashboardDropTarget_over {
+  position:absolute;
+  background-color:blue;
+  height:15px;
+}
+div.ss_dashboardProtoDropTarget {
+  position:relative;
+  height:4px;
+  top:-4px;
 }
 
 .ss_dashboard_menu {

@@ -60,6 +60,8 @@ public class AjaxController  extends SAbstractController {
 				ajaxSaveFavorites(request, response, formData);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_RATING)) {
 				ajaxSaveRating(request, response, formData);
+			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_DASHBOARD_LAYOUT)) {
+				ajaxSaveDashboardLayout(request, response, formData);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
 					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT) ||
 					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
@@ -256,6 +258,14 @@ public class AjaxController  extends SAbstractController {
 		String entryId = ((String[])formData.get("entryId"))[0];
 		String binderId = ((String[])formData.get("binderId"))[0];
 		getFolderModule().setUserRating(new Long(binderId), new Long(entryId), new Long(rating));
+	}
+	
+	private void ajaxSaveDashboardLayout(ActionRequest request, ActionResponse response,
+			Map formData) {
+		//Save the order of the dashboard components
+		String layout = ((String[])formData.get("dashboard_layout"))[0];
+		String binderId = ((String[])formData.get("binderId"))[0];
+		//getFolderModule().setUserRating(new Long(binderId), new Long(entryId), new Long(rating));
 	}
 	
 	private ModelAndView ajaxGetFavoritesTree(RenderRequest request, 
