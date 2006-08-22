@@ -14,10 +14,6 @@ function ss_navigation_goto(url) {
 <div class="ss_smallprint">
 <table>
 <tr>
-<c:if test="${!empty ssDefinitionEntry.parentBinder.iconName}">
-<td valign="middle"><img 
-  src="<html:imagesPath/>${ssDefinitionEntry.parentBinder.iconName}"/></td>
-</c:if>
 <td valign="middle">
 <a style="text-decoration: none;" 
 <c:if test="${ssDefinitionEntry.parentBinder.entityIdentifier.entityType == 'folder'}">
@@ -35,7 +31,27 @@ function ss_navigation_goto(url) {
 <c:if test="${empty ssDefinitionEntry.title}" >
 --<ssf:nlt tag="entry.noTitle" />--
 </c:if>
-<c:out value="${ssDefinitionEntry.parentBinder.title}" /></a></td>
+<c:out value="${ssDefinitionEntry.parentBinder.title}" /></a>&nbsp;&nbsp;//&nbsp;&nbsp;</td>
+
+<td valign="middle">
+<a style="text-decoration: none;" 
+<c:if test="${ssDefinitionEntry.entityIdentifier.entityType == 'folder'}">
+  href="<ssf:url 
+  folderId="${ssDefinitionEntry.id}" 
+  action="view_folder_listing"/>"
+</c:if>
+<c:if test="${ssDefinitionEntry.entityIdentifier.entityType == 'workspace'}">
+  href="<ssf:url 
+  folderId="${ssDefinitionEntry.id}" 
+  action="view_ws_listing"/>"
+</c:if>
+  onClick="return(ss_navigation_goto(this.href));"
+>
+<c:if test="${empty ssDefinitionEntry.title}" >
+--<ssf:nlt tag="entry.noTitle" />--
+</c:if>
+<c:out value="${ssDefinitionEntry.title}" /></a></td>
+
 </tr>
 </table>
 </div>

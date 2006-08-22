@@ -28,12 +28,12 @@ function ss_turnOffDebugMode() {
   <br/>
 </c:if>
 
-<div >
-<table cellspacing="0" cellpadding="0" width="100%">
+<div align="right">
+<table cellspacing="0" cellpadding="0" >
 <tr>
 
 <% // Favorites link %>
-<td align="center">
+<td align="center" style="padding:0px 0px 0px 20px;">
   <ssHelpSpot helpId="favorites_button" align="left" offsetX="-6" offsetY="10"
     title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
   <a href="javascript: ;"
@@ -45,27 +45,27 @@ function ss_turnOffDebugMode() {
   </ssHelpSpot>
 </td>
 
-<% // History %>
-<td align="center">
-  <ssHelpSpot helpId="history_button" align="left" offsetX="-6" offsetY="45"
-    title="<ssf:nlt tag="helpSpot.historyButton"/>">
-  <div id="ss_navbarHistoryButton">
-  <img border="0" src="<html:imagesPath/>icons/history.png" 
-    alt="<ssf:nlt tag="navigation.history" text="History"/>" />
+<% // My workspace %>
+<td align="center" style="padding:0px 0px 0px 20px;">
+  <ssHelpSpot helpId="my_workspace_button" align="left" offsetX="-6" offsetY="45"
+    title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
+  <div id="ss_navbarMyWorkspaceButton">
+  <img border="0" src="<html:imagesPath/>icons/workspace.gif" 
+    alt="<ssf:nlt tag="navigation.myWorkspace"/>" />
   <br>
-  <span class="ss_fineprint"><ssf:nlt tag="navigation.history" text="History"/></span>
+  <span class="ss_fineprint"><ssf:nlt tag="navigation.myWorkspace"/></span>
   </div>
   </ssHelpSpot>
 </td>
 
 <% // Search form %>
-<td align="center" nowrap="nowrap">
+<td align="center" nowrap="nowrap" style="padding:0px 0px 0px 20px;">
   <ssHelpSpot helpId="search_button" align="left" offsetX="-6" offsetY="15"
     title="<ssf:nlt tag="helpSpot.searchButton"/>">
     <div id="ss_navbarSearchButton">
-    <img border="0" src="<html:imagesPath/>icons/find.png" 
+    <img border="0" src="<html:imagesPath/>pics/sym_s_search.gif" 
       alt="<ssf:nlt tag="navigation.search" text="Search"/>" /><input
-      type="text" size="20"/><input type="submit" value="Go"/>
+      type="text" size="25"/><input type="submit" value="Go"/>
     <br>
     <span class="ss_fineprint"><ssf:nlt tag="navigation.search" text="Search"/></span>
     </div>
@@ -73,7 +73,7 @@ function ss_turnOffDebugMode() {
 </td>
 
 <% // Clipboard %>
-<td align="center">
+<td align="center" style="padding:0px 0px 0px 20px;">
   <ssHelpSpot helpId="clipboard_button" align="left" offsetX="-6" offsetY="15"
     title="<ssf:nlt tag="helpSpot.clipboardButton"/>">
   <img border="0" src="<html:imagesPath/>icons/clipboard.png" 
@@ -84,7 +84,7 @@ function ss_turnOffDebugMode() {
 </td>
 
 <% // Help toggle %>
-<td align="center"><a href="#" onClick="ss_helpSystem.run();return false;"><img border="0" 
+<td align="center" style="padding:0px 0px 0px 20px;"><a href="#" onClick="ss_helpSystem.run();return false;"><img border="0" 
   src="<html:imagesPath/>icons/help.png" 
   alt="<ssf:nlt tag="navigation.help" text="Help"/>" /></a>
   <br>

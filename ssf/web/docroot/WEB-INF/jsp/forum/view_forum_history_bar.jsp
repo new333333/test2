@@ -76,7 +76,7 @@ if (false) {
           alt="<ssf:nlt tag="nav.prevEntry" text="Previous entry"/>" id="ss_prev"
           border="0" src="<html:imagesPath/>pics/sym_s_arrow_down.gif"></a></td>
           
-     <td><span>Entries</span></td>
+     <td><span><ssf:nlt tag="nav.view"/></span></td>
      
      <td><a href="<ssf:url
           adapter="true"
