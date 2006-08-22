@@ -26,15 +26,19 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
 
-<% // Navigation links %>
-<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+<% // Tabs %>
+<%@ include file="/WEB-INF/jsp/definition_elements/tabbar.jsp" %>
 
-<% // Toolbar %>
+<% // Workspace toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
 <c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
 <c:set var="ss_toolbar_style" value="ss_toolbar" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 </c:if>
+
+<% // Navigation links %>
+<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+<br/>
 
 <% // Show the workspace according to its definition %>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

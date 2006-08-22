@@ -34,11 +34,20 @@
   border-top:solid #666666 1px; 
   border-right:solid #666666 1px; 
   border-left:solid #666666 1px;">
-<table cellspacing="0" cellpadding="0" width="95%">
-<tr><td align="left">
+<table cellspacing="0" cellpadding="2" width="95%">
+<tr><td align="left" width="20%">
+<% // Then include the navigation widgets for this view %>
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
 </td>
-<td>
+<td align="left" width="50%">
+<% // Entry toolbar %>
+<c:if test="${!empty ssEntryToolbar}">
+<c:set var="ss_toolbar" value="${ssEntryToolbar}" scope="request" />
+<c:set var="ss_toolbar_style" value="ss_entry_toolbar" scope="request" />
+<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+</c:if>
+</td>
+<td width="30%" nowarp>
 <%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
 </td>
 <td align="right">&nbsp;</td>

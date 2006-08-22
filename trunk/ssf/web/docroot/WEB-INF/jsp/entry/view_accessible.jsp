@@ -15,15 +15,19 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
 
-<% // Navigation links %>
-<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+<% // Tabs %>
+<%@ include file="/WEB-INF/jsp/definition_elements/tabbar.jsp" %>
 
-<% // Toolbar %>
+<% // Folder toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
 <c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
 <c:set var="ss_toolbar_style" value="ss_toolbar" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 </c:if>
+
+<% // Navigation links %>
+<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+<br/>
 
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 
@@ -31,10 +35,16 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 </div>
 
 <script type="text/javascript">
-
 function ss_showForumEntryInIframe(url) {
     self.location.href = url;
     return false;
 }
-
 </script>
+
+<% // Footer toolbar %>
+<c:if test="${!empty ssFooterToolbar}">
+<c:set var="ss_toolbar" value="${ssFooterToolbar}" scope="request" />
+<c:set var="ss_toolbar_style" value="ss_footer_toolbar" scope="request" />
+<br/>
+<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+</c:if>
