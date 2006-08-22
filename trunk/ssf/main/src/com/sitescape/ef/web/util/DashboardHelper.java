@@ -342,6 +342,12 @@ public class DashboardHelper {
 		};
 		
 		model.put(WebKeys.DASHBOARD, ssDashboard);
+
+		//See if the components are shown or hidden
+		Boolean showAllComponents = (Boolean) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD_SHOW_ALL);
+		if (showAllComponents == null) showAllComponents = true;
+		model.put(WebKeys.DASHBOARD_SHOW_ALL, showAllComponents);
+
 		return ssDashboard;
 	}
 
