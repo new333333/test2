@@ -8,10 +8,11 @@ var ss_helpTocText = "<ssf:nlt tag="help.toc"/>";
 var ss_helpPreviousText = "<ssf:nlt tag="general.Previous"/>";
 var ss_helpNextText = "<ssf:nlt tag="general.Next"/>";
 var ss_helpCloseButtonText = "<ssf:nlt tag="button.close"/>";
+var ss_helpInstructions ="<ssf:nlt tag="help.instructions"/>";
 
 ss_helpSystem.outputHelpWelcomeHtml();
 
-var ss_helpSpotGifSrc = "<html:imagesPath/>pics/help_spot.gif";
+var ss_helpSpotGifSrc = "<html:imagesPath/>icons/help.png";
 
 </script>
 
