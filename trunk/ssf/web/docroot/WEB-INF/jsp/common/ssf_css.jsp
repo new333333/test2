@@ -23,6 +23,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_style_border_color" value="#999999" scope="request"/>
 <c:set var="ss_style_border_color_light" value="#cecece" scope="request"/>
 <c:set var="ss_style_text_color" value="#009900" scope="request"/>
+<c:set var="ss_style_footer_text_color" value="blue" scope="request"/>
 <c:set var="ss_style_link_color" value="#009900" scope="request"/>
 <c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
 <c:set var="ss_style_gray_color" value="#999999" scope="request"/>
@@ -100,6 +101,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_border_color" value="#999999" scope="request"/>
 	<c:set var="ss_style_border_color_light" value="#cecece" scope="request"/>
 	<c:set var="ss_style_text_color" value="#000000" scope="request"/>
+    <c:set var="ss_style_footer_text_color" value="blue" scope="request"/>
 	<c:set var="ss_style_link_color" value="#000000" scope="request"/>
 	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
 	<c:set var="ss_style_gray_color" value="#999999" scope="request"/>
@@ -486,6 +488,91 @@ div.ss_sliding_table_column {
 .ss_toolbar a:hover {
   color: ${ss_toolbar_link_hover_color};
 }
+
+.ss_entry_toolbar {
+  display:inline;
+  background-color: ${ss_toolbar_background_color};
+  color: ${ss_toolbar_text_color};
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top:0px;
+  padding-bottom:0px;
+  }
+.ss_entry_toolbar * {
+  background-color: ${ss_toolbar_background_color};
+  color: ${ss_toolbar_text_color};
+  }
+.ss_entry_toolbar_color {
+  background-color: ${ss_toolbar_background_color};
+  color: ${ss_toolbar_text_color};
+  }
+  
+.ss_entry_toolbar_menu {
+  position: absolute;
+  visibility: hidden;
+  color: ${ss_toolbar_text_color};
+  border: 1px ${ss_toolbar_border_color} solid;
+  padding: 4px;
+  width: 300px;
+  }
+.ss_entry_toolbar_menu * {
+  color: ${ss_toolbar_text_color};
+  }
+.ss_entry_toolbar_item * {
+  color: ${ss_toolbar_text_color};
+  }
+.ss_entry_toolbar_item a {
+  color: ${ss_toolbar_text_color};
+  }
+.ss_entry_toolbar a, .ss_toolbar a:visited {
+  color: ${ss_toolbar_text_color};
+}
+.ss_entry_toolbar a:hover {
+  color: ${ss_toolbar_link_hover_color};
+}
+
+
+.ss_footer_toolbar {
+  width: 100%; 
+  background-color: ${ss_style_background_color};
+  color: ${ss_style_footer_text_color};
+  font-size:10px;
+  font-weight:normal;
+  text-align:center;
+  margin-top: 0px;
+  margin-bottom: 8px;
+  padding-top:2px;
+  padding-bottom:2px;
+  }
+.ss_footer_toolbar * {
+  background-color: ${ss_style_background_color};
+  color: ${ss_style_text_color};
+  }
+
+.ss_footer_toolbar_menu {
+  position: absolute;
+  visibility: hidden;
+  color: ${ss_style_footer_text_color};
+  border: 1px ${ss_style_border_color} solid;
+  padding: 4px;
+  width: 300px;
+  }
+.ss_footer_toolbar_menu * {
+  color: ${ss_style_footer_text_color};
+  }
+.ss_footer_toolbar_item * {
+  color: ${ss_style_footer_text_color};
+  }
+.ss_footer_toolbar_item a {
+  color: ${ss_style_footer_text_color};
+  }
+.ss_footer_toolbar a, .ss_toolbar a:visited {
+  color: ${ss_style_footer_text_color};
+}
+.ss_footer_toolbar a:hover {
+  color: ${ss_style_link_hover_color};
+}
+
 ul.ss_dropdownmenu {
   list-style: outside;
   margin:2px 2px 2px 13px;
@@ -766,4 +853,96 @@ div.ss_dashboardProtoDropTarget {
 .htmlarea { 
     background: ${ss_form_element_color}; 
 }
+
+/* Tab div styling */
+
+div.ss_activeTabcontainer {
+  margin-right: 0px;
+  margin-left: 0px;
+  margin-top: 4px;
+  margin-bottom: 0px;
+  background-color: #ceddf2;
+  float: left;
+  border-bottom: #ceddf2 1px solid;
+  }  
+  
+div.ss_inactiveTabcontainer {
+  margin-right: 0px;
+  margin-left: 0px;
+  margin-top: 4px;
+  margin-bottom: 0px;
+  background-color: #e5e5e5;
+  float: left;
+  border-bottom: #c1c1c1 1px solid;
+  }  
+
+div.ss_disabledTabcontainer {
+  margin-right: 0px;
+  margin-left: 0px;
+  margin-top: 4px;
+  margin-bottom: 0px;
+  background-color: #e5e5e5;
+  float: left;
+  text-align: center;
+  color: #666666;
+  font-weight: bold; 
+  font-size: 12px;
+  border-bottom: #c1c1c1 1px solid;
+  }  
+
+div.ss_upperleft {
+  background: url(<html:imagesPath/>pics/sym_s_upperleft.gif) no-repeat top left;
+}
+
+div.ss_upperright { 
+  background: url(<html:imagesPath/>pics/sym_s_upperright.gif) no-repeat top right;
+  }
+
+div.ss_inactiveTab, div.ss_disabledTab {
+  padding-left: 7px;
+  padding-right: 7px;
+  padding-top: 4px;
+  padding-bottom: 3px;
+  }
+
+div.ss_activeTab {
+  padding-left: 7px;
+  padding-right: 7px;
+  padding-top: 4px;
+  padding-bottom: 3px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #3366cc;
+  }
+  
+div.ss_activeTab a:link, div.ss_activeTab a:visited {
+  font-size: 12px;
+  font-weight: bold;
+  color: #3366cc;
+  text-decoration: none;
+  }
+
+div.ss_activeTab a:focus, div.ss_activeTab a:hover, div.ss_activeTab a:active {
+  font-size: 12px;
+  font-weight: bold;
+  color: #ff0000;
+  text-decoration: none;
+  }
+
+div.ss_inactiveTab a:link, div.ss_inactiveTab a:visited {
+  font-size: 12px;
+  font-weight: bold;
+  color: #3366cc;
+  text-decoration: none;
+  }
+
+div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:active { 
+  font-size: 12px;
+  font-weight: bold;
+  color: #ff0000;
+  text-decoration: none;
+  } 
+
+/* end of Tab div styling */
+
 
