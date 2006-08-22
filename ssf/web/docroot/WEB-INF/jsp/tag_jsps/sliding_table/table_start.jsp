@@ -33,4 +33,6 @@
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
 
-<table width="100%" border="0" cellpadding="2" cellspacing="0" class="ss_style ss_borderTable">
+<div style="margin:0px 0px 0px 2px;">
+<table border="0" cellpadding="0" cellspacing="0" class="ss_style ss_borderTable">
+</div>

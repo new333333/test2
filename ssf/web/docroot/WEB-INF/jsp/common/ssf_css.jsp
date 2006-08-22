@@ -808,10 +808,26 @@ div.ss_dashboardProtoDropTarget {
   margin:0px;
   padding:0px;
   }
+.ss_twPlusTop {
+  width:19px;
+  height:20px;
+  background-image: url(<html:imagesPath/>trees/plus_top.gif);
+  border:none;
+  margin:0px;
+  padding:0px;
+  }
 .ss_twMinus {
   width:19px;
   height:20px;
   background-image: url(<html:imagesPath/>trees/minus.gif);
+  border:none;
+  margin:0px;
+  padding:0px;
+  }
+.ss_twMinusTop {
+  width:19px;
+  height:20px;
+  background-image: url(<html:imagesPath/>trees/minus_top.gif);
   border:none;
   margin:0px;
   padding:0px;
@@ -824,10 +840,26 @@ div.ss_dashboardProtoDropTarget {
   margin:0px;
   padding:0px;
   }
+.ss_twPlusTopBottom {
+  width:19px;
+  height:20px;
+  background-image: url(<html:imagesPath/>trees/plus_top_bottom.gif);
+  border:none;
+  margin:0px;
+  padding:0px;
+  }
 .ss_twMinusBottom {
   width:19px;
   height:20px;
   background-image: url(<html:imagesPath/>trees/minus_bottom.gif);
+  border:none;
+  margin:0px;
+  padding:0px;
+  }
+.ss_twMinusTopBottom {
+  width:19px;
+  height:20px;
+  background-image: url(<html:imagesPath/>trees/minus_top_bottom.gif);
   border:none;
   margin:0px;
   padding:0px;

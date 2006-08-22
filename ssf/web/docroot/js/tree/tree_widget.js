@@ -1,6 +1,6 @@
 //Routines to display an expandable/contractable tree
 //
-function ss_treeToggle(treeName, id, bottom, type) {
+function ss_treeToggle(treeName, id, parentId, bottom, type) {
 	ss_setupStatusMessageDiv()
     var tObj = self.document.getElementById(treeName + "div" + id);
     var jObj = self.document.getElementById(treeName + "join" + id);
@@ -19,6 +19,7 @@ function ss_treeToggle(treeName, id, bottom, type) {
 		ajaxRequest.addKeyValue("treeName", treeName)
 		ajaxRequest.setData("treeName", treeName)
 		ajaxRequest.setData("id", id)
+		ajaxRequest.setData("parentId", parentId)
 		ajaxRequest.setData("bottom", bottom)
 		ajaxRequest.setData("type", type)
 		//ajaxRequest.setEchoDebugInfo();
@@ -31,22 +32,46 @@ function ss_treeToggle(treeName, id, bottom, type) {
 	        tObj.style.display = "block";
 	        tObj.style.visibility = 'visible';
 			if (bottom == 0) {
-				jObj.className = "ss_twMinus";	       // minus.gif
+				if (parentId == "") {
+					jObj.className = "ss_twMinusTop";	   // minus_top.gif
+				} else {
+					jObj.className = "ss_twMinus";	       // minus.gif
+				}
 			} else if (bottom == 1) {
-				jObj.className = "ss_twMinusBottom";   // minus_bottom.gif
+				if (parentId == "") {
+					jObj.className = "ss_twMinusTopBottom";   // minus_top_bottom.gif
+				} else {
+					jObj.className = "ss_twMinusBottom";      // minus_bottom.gif
+				}
 			} else {
-				jObj.className = "ss_minus";           // minus.gif (no join lines)
+				if (parentId == "") {
+					jObj.className = "ss_minusTop";        // minus_top.gif (no join lines)
+				} else {
+					jObj.className = "ss_minus";           // minus.gif (no join lines)
+				}
 			}
 			if (iObj != null && ss_treeIconsOpen[type]) iObj.src = ss_treeIconsOpen[type];
 	    } else {
 	        tObj.style.display = "none";
 	        tObj.style.visibility = 'hidden';
 			if (bottom == 0) {
-				jObj.className = "ss_twPlus";	      // plus.gif
+				if (parentId == "") {
+					jObj.className = "ss_twPlusTop";	  // plus_top.gif
+				} else {
+					jObj.className = "ss_twPlus";	      // plus.gif
+				}
 			} else if (bottom == 1) {
-				jObj.className = "ss_twPlusBottom";	  // plus_bottom.gif
+				if (parentId == "") {
+					jObj.className = "ss_twPlusTopBottom";	  // plus_top_bottom.gif
+				} else {
+					jObj.className = "ss_twPlusBottom";	      // plus_bottom.gif
+				}
 			} else {
-				jObj.className = "ss_plus";           // plus.gif (no join lines)
+				if (parentId == "") {
+					jObj.className = "ss_plusTop";        // plus_top.gif (no join lines)
+				} else {
+					jObj.className = "ss_plus";           // plus.gif (no join lines)
+				}
 			}
 			if (iObj != null && ss_treeIconsClosed[type]) iObj.src = ss_treeIconsClosed[type];
 	    }
@@ -62,11 +87,11 @@ function ss_postTreeDivRequest(obj) {
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_treeNotLoggedInMsg);
 	} else {
-		ss_treeOpen(obj.getData('treeName'), obj.getData('id'), obj.getData('bottom'), obj.getData('type'));
+		ss_treeOpen(obj.getData('treeName'), obj.getData('id'), obj.getData('parentId'), obj.getData('bottom'), obj.getData('type'));
 	}
 }
 
-function ss_treeOpen(treeName, id, bottom, type) {
+function ss_treeOpen(treeName, id, parentId, bottom, type) {
     var tObj = self.document.getElementById(treeName + "div" + id);
     var jObj = self.document.getElementById(treeName + "join" + id);
     var iObj = self.document.getElementById(treeName + "icon" + id);
@@ -81,11 +106,23 @@ function ss_treeOpen(treeName, id, bottom, type) {
         tObj.style.display = "block";
         tObj.style.visibility = 'visible';
 		if (bottom == 0) {
-			jObj.className = "ss_twMinus";	         // minus.gif
+			if (parentId == "") {
+				jObj.className = "ss_twMinusTop";	     // minus_top.gif
+			} else {
+				jObj.className = "ss_twMinus";	         // minus.gif
+			}
 		} else if (bottom == 1) {
-			jObj.className = "ss_twMinusBottom";	 // minus_bottom.gif
+			if (parentId == "") {
+				jObj.className = "ss_twMinusTopBottom";	 // minus_top_bottom.gif
+			} else {
+				jObj.className = "ss_twMinusBottom";	 // minus_bottom.gif
+			}
 		} else {
-			jObj.className = "ss_minus";             // minus.gif (no join lines)
+			if (parentId == "") {
+				jObj.className = "ss_minus_top";         // minus_top.gif (no join lines)
+			} else {
+				jObj.className = "ss_minus";             // minus.gif (no join lines)
+			}
 		}
 		if (iObj != null && ss_treeIconsOpen[type]) iObj.src = ss_treeIconsOpen[type];
 
@@ -96,10 +133,10 @@ function ss_treeOpen(treeName, id, bottom, type) {
 	}
 }
 
-function ss_treeToggleAll(treeName, id, bottom, type) {
+function ss_treeToggleAll(treeName, id, parentId, bottom, type) {
     var tObj = self.document.getElementById(treeName + "div" + id);
 	if (tObj.style.display == "none") {
-		ss_treeToggle(treeName, id, bottom, type)
+		ss_treeToggle(treeName, id, parentId, bottom, type)
 	}
     var children = tObj.childNodes;
     for (var i = 0; i < children.length; i++) {
@@ -107,9 +144,9 @@ function ss_treeToggleAll(treeName, id, bottom, type) {
 			var nodeRoot = treeName + "div";
 			var childnode = children[i].id.substr(nodeRoot.length)
     		if (children[i].style.display == "none") {
-    			ss_treeToggle(treeName, childnode, bottom, type)
+    			ss_treeToggle(treeName, childnode, id, bottom, type)
     		}
-    		ss_treeToggleAll(treeName, childnode, bottom, type)
+    		ss_treeToggleAll(treeName, childnode, id, bottom, type)
     	}
     }
 }
