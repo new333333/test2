@@ -34,7 +34,7 @@ function ss_turnOffDebugMode() {
 
 <% // Favorites link %>
 <td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/favorites_button" align="bottom" offsetX="-8" offsetY="18"
+  <ssHelpSpot helpId="personal_toolbar/favorites_button" align="bottom" offsetX="0" offsetY="0"
     title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
   <a href="javascript: ;"
   onClick="ss_showFavoritesPane();return false;"
@@ -47,7 +47,7 @@ function ss_turnOffDebugMode() {
 
 <% // My workspace %>
 <td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="my_workspace_button" align="left" offsetX="-10" offsetY="18"
+  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" align="left" offsetX="0" offsetY="0"
     title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
   <div id="ss_navbarMyWorkspaceButton">
   <img border="0" src="<html:imagesPath/>icons/workspace.gif" 
@@ -60,7 +60,7 @@ function ss_turnOffDebugMode() {
 
 <% // Search form %>
 <td align="center" nowrap="nowrap" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/search_button" align="left" offsetX="-6" offsetY="11"
+  <ssHelpSpot helpId="personal_toolbar/search_button" align="left" offsetX="0" offsetY="0"
     title="<ssf:nlt tag="helpSpot.searchButton"/>">
     <div id="ss_navbarSearchButton">
     <img border="0" src="<html:imagesPath/>pics/sym_s_search.gif" 
@@ -74,7 +74,7 @@ function ss_turnOffDebugMode() {
 
 <% // Clipboard %>
 <td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/clipboard_button" align="left" offsetX="-6" offsetY="15"
+  <ssHelpSpot helpId="personal_toolbar/clipboard_button" align="left" offsetX="0" offsetY="0"
     title="<ssf:nlt tag="helpSpot.clipboardButton"/>">
   <img border="0" src="<html:imagesPath/>icons/clipboard.png" 
     alt="<ssf:nlt tag="navigation.clipboard" text="Clipboard"/>" />
@@ -84,11 +84,15 @@ function ss_turnOffDebugMode() {
 </td>
 
 <% // Help toggle %>
-<td align="center" style="padding:0px 0px 0px 20px;"><a href="#" onClick="ss_helpSystem.run();return false;"><img border="0" 
+<td align="center" style="padding:0px 0px 0px 20px;">
+  <ssHelpSpot helpId="personal_toolbar/help_button" align="left" offsetX="0" offsetY="0"
+    title="<ssf:nlt tag="helpSpot.helpButton"/>">
+  <a href="#" onClick="ss_helpSystem.run();return false;"><img border="0" 
   src="<html:imagesPath/>icons/help.png" 
   alt="<ssf:nlt tag="navigation.help" text="Help"/>" /></a>
   <br>
   <span class="ss_fineprint"><ssf:nlt tag="navigation.help" text="Help"/></span>
+  </ssHelpSpot>
 </td>
 
 </tr>
