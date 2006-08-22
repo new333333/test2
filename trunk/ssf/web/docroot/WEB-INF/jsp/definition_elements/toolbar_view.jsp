@@ -2,6 +2,9 @@
 <%
 String ss_portletNamespace = renderResponse.getNamespace();
 %>
+<c:if test="${empty ss_toolbar_style}">
+  <c:set var="ss_toolbar_style" value="ss_toolbar"/>
+</c:if>
 <script type="text/javascript">
 function ss_toolbarPopupUrl(url) {
 	var width = ss_getWindowWidth();
@@ -11,14 +14,14 @@ function ss_toolbarPopupUrl(url) {
 	self.window.open(url, "_blank", "resizable=yes,scrollbars=yes,width="+width+",height="+height);
 }
 </script>
-<div class="ss_toolbar">
+<div class="${ss_toolbar_style}">
 <c:set var="delimiter" value=""/>
 <c:forEach var="toolbarMenu" items="${ss_toolbar}">
-    <span class="ss_toolbar_item"><c:out value="${delimiter}" /></span>
+    <span class="${ss_toolbar_style}_item"><c:out value="${delimiter}" /></span>
     <c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}">
 
      <ssf:menu title="${toolbarMenu.value.title}" 
-       titleId="toolbar_${toolbarMenu.key}" menuClass="ss_toolbar_menu" >
+       titleId="toolbar_${toolbarMenu.key}" menuClass="${ss_toolbar_style}_menu" >
 	  <c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}">
 	    <c:if test="${empty toolbarMenuCategory.key}">
 	      <span class="ss_bold"><c:out value="${toolbarMenuCategory.key}" /></span>
@@ -70,8 +73,8 @@ function ss_toolbarPopupUrl(url) {
       </c:if>
 	  <c:choose>
 	    <c:when test="${!empty toolbarMenu.value.url}">
-	      <span><a 
-	        class="ss_toolbar_item" 
+	      <a 
+	        class="${ss_toolbar_style}_item" 
 	        href="${toolbarMenu.value.url}"
     	    <c:if test="${empty toolbarMenu.value.qualifiers.onClick}">
     	    	<c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
@@ -81,11 +84,12 @@ function ss_toolbarPopupUrl(url) {
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
     	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
-	      ><c:out value="${toolbarMenu.value.title}" /></a></span>
+	      ><span class="${ss_toolbar_style}_item"><c:out 
+	        value="${toolbarMenu.value.title}" /></span></a>
 	    </c:when>
 	    <c:when test="${!empty toolbarMenu.value.urlParams}">
-	      <span id=""><a 
-	        class="ss_toolbar_item"
+	      <a 
+	        class="${ss_toolbar_style}_item"
 	        href="<ssf:url>
 	        <c:forEach var="p2" items="${toolbarMenu.value.urlParams}">
 			  <c:set var="key2" value="${p2.key}"/>
@@ -101,10 +105,12 @@ function ss_toolbarPopupUrl(url) {
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
     	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
-	 	  ><c:out value="${toolbarMenu.value.title}" /></a></span>
+	 	  ><span class="${ss_toolbar_style}_item"><c:out 
+	 	    value="${toolbarMenu.value.title}" /></span></a>
 	    </c:when>
 	    <c:otherwise>
-	      <a href=""><c:out value="${toolbarMenu.value.title}" /></a></span>
+	      <a class="${ss_toolbar_style}_item" href=""><span class="${ss_toolbar_style}_item"
+	        ><c:out value="${toolbarMenu.value.title}" /></span></a>
 	    </c:otherwise>
 	  </c:choose>
     </c:if>

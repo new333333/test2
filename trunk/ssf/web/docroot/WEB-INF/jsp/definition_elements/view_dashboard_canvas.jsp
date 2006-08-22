@@ -12,6 +12,23 @@
 <div style="width:100%;">
 <table cellspacing="0" cellpadding="0" style="width:99%; margin-bottom:2px;">
 <tr>
+  <td valign="middle" nowrap width="2%">
+      <form "style="display:inline;">
+        <c:if test="${ss_show_all_dashboard_components}"><input 
+	      type="image" 
+      	  src="<html:imagesPath/>pics/sym_s_hide.gif"
+          id="ss_showHideImg_all"
+          alt="<ssf:nlt tag="button.hide"/>" 
+          style="margin:2px;"
+	      onClick="ss_showHideAllDashboardComponents(this);return false;"
+	      ></c:if><c:if test="${!ss_show_all_dashboard_components}"><input type="image" 
+          src="<html:imagesPath/>pics/sym_s_show.gif"
+          id="ss_showHideImg_all"
+          alt="<ssf:nlt tag="button.show"/>" 
+          style="margin:2px;" 
+          onClick="ss_showHideAllDashboardComponents(this);return false;"
+          ></c:if></form>
+  </td>
   <td align="left" valign="top" nowrap width="2%">
     <span class="ss_bold"><c:out value="${ssDashboard.title}"/> 
       <c:if test="${ssDashboard.includeBinderTitle}">
@@ -67,6 +84,14 @@
   <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
 </div>
 
+<div id="ss_dashboardComponentCanvas" style="
+<c:if test="${ss_show_all_dashboard_components}">
+  visibility:visible; display:block;
+</c:if>
+<c:if test="${!ss_show_all_dashboard_components}">
+  visibility:hidden; display:none;
+</c:if>
+">
 <table id="ss_dashboardTable" class="ss_dashboardTable_off" cellspacing="0" cellpadding="0" 
   frame="border" rules="all" width="100%">
 <tr>
@@ -324,6 +349,7 @@
 <input type="hidden" name="dashboard_layout"/>
 </form>
 </div>
+</div>
 <script type="text/javascript">
 ss_toolbar_count = <c:out value="${ss_toolbar_count}"/>;
 ss_dashboard_control_count = <c:out value="${ss_dashboard_control_count}"/>;
@@ -334,5 +360,12 @@ var ss_saveDashboardLayoutUrl = "<ssf:url
 	action="__ajax_request" 
 	actionUrl="true" >
 	<ssf:param name="operation" value="save_dashboard_layout" />
+	</ssf:url>";
+var ss_showHideAllDashboardComponentsUrl = "<ssf:url 
+	adapter="true" 
+	portletName="ss_forum" 
+	action="__ajax_request" 
+	actionUrl="true" >
+	<ssf:param name="binderId" value="${ssBinder.id}" />
 	</ssf:url>";
 </script>

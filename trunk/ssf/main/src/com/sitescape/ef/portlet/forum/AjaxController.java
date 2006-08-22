@@ -62,6 +62,9 @@ public class AjaxController  extends SAbstractController {
 				ajaxSaveRating(request, response, formData);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_DASHBOARD_LAYOUT)) {
 				ajaxSaveDashboardLayout(request, response, formData);
+			} else if (op.equals(WebKeys.FORUM_OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS) || 
+					op.equals(WebKeys.FORUM_OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS)) {
+				ajaxShowHideAllDashboardComponents(request, response);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
 					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT) ||
 					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
@@ -260,6 +263,17 @@ public class AjaxController  extends SAbstractController {
 		getFolderModule().setUserRating(new Long(binderId), new Long(entryId), new Long(rating));
 	}
 	
+	private void ajaxShowHideAllDashboardComponents(ActionRequest request,
+			ActionResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+
+		Boolean showAllComponents = new Boolean(true);
+		if (op.equals(WebKeys.FORUM_OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS)) showAllComponents = false;
+		getProfileModule().setUserProperty(user.getId(), binderId, 
+				ObjectKeys.USER_PROPERTY_DASHBOARD_SHOW_ALL, showAllComponents);
+	}
 	private void ajaxSaveDashboardLayout(ActionRequest request, ActionResponse response,
 			Map formData) {
 		//Save the order of the dashboard components

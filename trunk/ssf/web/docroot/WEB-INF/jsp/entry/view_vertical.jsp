@@ -34,14 +34,18 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
 
-<% // Navigation links %>
-<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+<% // Tabs %>
+<%@ include file="/WEB-INF/jsp/definition_elements/tabbar.jsp" %>
 
-<% // Toolbar %>
+<% // Folder toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
 <c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
+<c:set var="ss_toolbar_style" value="ss_toolbar" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 </c:if>
+
+<% // Navigation links %>
+<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 
 <div id="ss_folder">
   <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
@@ -84,3 +88,11 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 <form class="ss_style ss_form" name="ss_saveEntryHeightForm" id="ss_saveEntryHeightForm" >
 <input type="hidden" name="entry_height">
 </form>
+
+<% // Footer toolbar %>
+<c:if test="${!empty ssFooterToolbar}">
+<c:set var="ss_toolbar" value="${ssFooterToolbar}" scope="request" />
+<c:set var="ss_toolbar_style" value="ss_footer_toolbar" scope="request" />
+<br/>
+<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+</c:if>
