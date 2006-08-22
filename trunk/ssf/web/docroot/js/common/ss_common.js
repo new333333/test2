@@ -2077,17 +2077,21 @@ var ss_helpSystem = {
 			var s = "";	
 			s += "<div id=\"ss_help_welcome\" class=\"ss_style ss_helpWelcome\" \n";
 			s += "  positionX=\"center\" positionY=\"top\" align=\"center\">\n";
-			s += "  <span class=\"ss_style ss_bold ss_largestprint\">"+ss_helpWelcomeText+"</span>\n";
-			s += "  <br>\n";
-			s += "  <table width=\"350\">\n";
+			s += "  <table width=\"400\">\n";
 			s += "  <tr>\n";
 			s += "  <td><a href=\"#\" onClick=\"ss_helpSystem.showPreviousHelpSpot();return false;\"\n";
 			s += "    >&lt;&lt;&lt; "+ss_helpPreviousText+"</a></td>\n";
-			s += "  <td><a href=\"#\" \n";
-			s += "    onClick=\"ss_helpSystem.toggleTOC();return false;\">"+ss_helpTocText+"</a></td>\n";
+			s += "  <td><span class=\"ss_style ss_bold ss_largestprint\">"+ss_helpWelcomeText+"</span></td>\n";
 			s += "  <td align=\"right\"><a href=\"#\" onClick=\"ss_helpSystem.showNextHelpSpot();return false;\"\n";
 			s += "    >"+ss_helpNextText+" &gt;&gt;&gt;</a></td>\n";
 			s += "  </tr>\n";
+			s += "  <tr>\n";
+			s += "  <td align=\"center\" colspan=\"3\">"+ss_helpInstructions+"<br /></td>";
+			s += "  </tr>\n";
+			s += "  <tr>\n";
+			s += "  <td align=\"center\" colspan=\"3\"><a href=\"#\" \n";
+			s += "    onClick=\"ss_helpSystem.toggleTOC();return false;\">"+ss_helpTocText+"</a></td>\n";
+			s += "  </tr>\n"
 			s += "  <tr>\n";
 			s += "  <td align=\"center\" colspan=\"3\">\n";
 			s += "    <a class=\"ss_linkButton ss_smallprint\" href=\"#\" \n";
