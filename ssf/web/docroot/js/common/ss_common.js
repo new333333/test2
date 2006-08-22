@@ -515,7 +515,7 @@ function ssf_onresize_event_handler() {
     for (var i = 0; i < ss_onResizeList.length; i++) {
         if (ss_onResizeList[i].resizeRoutine) {
         	ss_onResizeList[i].resizeRoutine();
-        	ss_debug("Resize event: " + ss_onResizeList[i].name + "\n");
+        	//ss_debug("Resize event: " + ss_onResizeList[i].name + "\n");
         }
     }
     if (ss_savedOnResizeRoutine != null) {
@@ -2021,7 +2021,7 @@ var ss_helpSystem = {
 	},
 
 	highlight : function(id) {
-		ss_debug("Highlight " + id)
+		//ss_debug("Highlight " + id)
 		var obj = document.getElementById(id);
 		if (obj != null) {
 			ss_helpSystemHighlights[ss_helpSystemHighlights.length] = id;
@@ -2049,14 +2049,14 @@ var ss_helpSystem = {
 	},
 	
 	blinkHighlight : function(id, count) {
-		ss_debug("blinkHighlight " + id)
+		//ss_debug("blinkHighlight " + id)
 		if (ss_helpSystemHighlightsBorderTimer[id] != null) {
 			//ss_debug("clearTimeout " + id)
 			clearTimeout(ss_helpSystemHighlightsBorderTimer[id])
 			ss_helpSystemHighlightsBorderTimer[id] = null;
 		} else {
 			//There is no timer value. The user must have moved on. Don't blink any more.
-			ss_debug("Stopped blinking!")
+			//ss_debug("Stopped blinking!")
 			return;
 		}
 		var obj = document.getElementById(id);
@@ -2111,6 +2111,43 @@ var ss_helpSystem = {
 }
 
 //Dashboard routines
+
+function ss_addDashboardComponents() {
+	alert('Add dashboard components...')
+}
+
+function ss_showHideAllDashboardComponents(obj) {
+	var formObj = ss_getContainingForm(obj)
+	var op = 'show_all_dashboard_components';
+	if (obj.src.match(/sym_s_show.gif/)) {
+	    op = 'show_all_dashboard_components';
+	    obj.src = ss_componentSrcHide;
+	    obj.alt = ss_componentAltHide;
+	} else if (obj.src.match(/sym_s_hide.gif/)) {
+	    op = 'hide_all_dashboard_components';
+	    obj.src = ss_componentSrcShow;
+	    obj.alt = ss_componentAltShow;
+	}
+	var canvas = document.getElementById("ss_dashboardComponentCanvas");
+	if (op == 'hide_all_dashboard_components') {
+		canvas.style.visibility = 'hidden';
+		canvas.style.display = 'none';
+	} else if (op == 'show_all_dashboard_components') {
+		canvas.style.visibility = 'visible';
+		canvas.style.display = 'block';
+	}
+	
+	ss_setupStatusMessageDiv()
+	var url = ss_showHideAllDashboardComponentsUrl;
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addKeyValue("operation", op)
+	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
 
 function ss_toggle_dashboard_toolbars() {
 	var toolbarOption = document.getElementById("ss_dashboard_menu_content");
