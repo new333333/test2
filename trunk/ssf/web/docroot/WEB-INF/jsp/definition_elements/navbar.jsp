@@ -34,7 +34,7 @@ function ss_turnOffDebugMode() {
 
 <% // Favorites link %>
 <td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="favorites_button" align="left" offsetX="-6" offsetY="10"
+  <ssHelpSpot helpId="personal_toolbar/favorites_button" align="bottom" offsetX="-8" offsetY="18"
     title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
   <a href="javascript: ;"
   onClick="ss_showFavoritesPane();return false;"
@@ -47,7 +47,7 @@ function ss_turnOffDebugMode() {
 
 <% // My workspace %>
 <td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="my_workspace_button" align="left" offsetX="-6" offsetY="45"
+  <ssHelpSpot helpId="my_workspace_button" align="left" offsetX="-10" offsetY="18"
     title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
   <div id="ss_navbarMyWorkspaceButton">
   <img border="0" src="<html:imagesPath/>icons/workspace.gif" 
@@ -60,7 +60,7 @@ function ss_turnOffDebugMode() {
 
 <% // Search form %>
 <td align="center" nowrap="nowrap" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="search_button" align="left" offsetX="-6" offsetY="15"
+  <ssHelpSpot helpId="personal_toolbar/search_button" align="left" offsetX="-6" offsetY="11"
     title="<ssf:nlt tag="helpSpot.searchButton"/>">
     <div id="ss_navbarSearchButton">
     <img border="0" src="<html:imagesPath/>pics/sym_s_search.gif" 
@@ -74,7 +74,7 @@ function ss_turnOffDebugMode() {
 
 <% // Clipboard %>
 <td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="clipboard_button" align="left" offsetX="-6" offsetY="15"
+  <ssHelpSpot helpId="personal_toolbar/clipboard_button" align="left" offsetX="-6" offsetY="15"
     title="<ssf:nlt tag="helpSpot.clipboardButton"/>">
   <img border="0" src="<html:imagesPath/>icons/clipboard.png" 
     alt="<ssf:nlt tag="navigation.clipboard" text="Clipboard"/>" />
