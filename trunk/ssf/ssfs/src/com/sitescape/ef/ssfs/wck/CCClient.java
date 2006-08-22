@@ -49,6 +49,10 @@ public class CCClient {
 	
 	public void createFolder(String folderUri, Map uri) throws CCClientException,
 	NoAccessException, AlreadyExistsException, TypeMismatchException {
+		// Since this is state-changing operation, we must invalidate corresponding
+		// cache entry.
+		cache.remove(folderUri);
+		
 		CCExecutionTemplate.execute(
 				zoneName, userName, uri,
 				CrossContextConstants.OPERATION_CREATE_FOLDER,
@@ -57,6 +61,8 @@ public class CCClient {
 
 	public void createResource(String resourceUri, Map uri) throws CCClientException,
 	NoAccessException, AlreadyExistsException, TypeMismatchException {
+		cache.remove(resourceUri);
+		
 		CCExecutionTemplate.execute(
 				zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_CREATE_RESOURCE, 
@@ -65,6 +71,8 @@ public class CCClient {
 	
 	public void createAndSetResource(String resourceUri, Map uri, final InputStream content) 
 	throws CCClientException, NoAccessException, AlreadyExistsException, TypeMismatchException {
+		cache.remove(resourceUri);
+		
 		CCExecutionTemplate.execute(
 				zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_CREATE_SET_RESOURCE, 
@@ -78,6 +86,8 @@ public class CCClient {
 	
 	public void setResource(String resourceUri, Map uri, final InputStream content) 
 	throws CCClientException, NoAccessException, NoSuchObjectException, TypeMismatchException {	
+		cache.remove(resourceUri);
+		
 		CCExecutionTemplate.execute(zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_SET_RESOURCE, 
 			new CCClientCallback() {
@@ -116,6 +126,8 @@ public class CCClient {
 	
 	public void removeObject(String objUri, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
+		cache.remove(objUri);
+		
 		CCExecutionTemplate.execute(
 				zoneName, userName, uri, CrossContextConstants.OPERATION_REMOVE_OBJECT, 
 				defaultCallback);		
@@ -218,6 +230,8 @@ public class CCClient {
 	public void lockResource(String resourceUri, Map uri, final Lock lock) 
 	throws CCClientException, NoAccessException, NoSuchObjectException,
 	LockException, TypeMismatchException {
+		cache.remove(resourceUri);
+		
 		CCExecutionTemplate.execute(zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_LOCK_RESOURCE, 
 			new CCClientCallback() {
@@ -242,6 +256,8 @@ public class CCClient {
 	 */
 	public void unlockResource(String resourceUri, Map uri, final String lockId)
 	throws CCClientException, NoAccessException, NoSuchObjectException, TypeMismatchException {
+		cache.remove(resourceUri);
+		
 		CCExecutionTemplate.execute(zoneName, userName, uri, 
 				CrossContextConstants.OPERATION_UNLOCK_RESOURCE, 
 			new CCClientCallback() {
@@ -291,10 +307,12 @@ public class CCClient {
 		*/
 	}
 	
-	public void copyObject(Map sourceMap, Map targetMap, 
-			final boolean overwrite, final boolean recursive)
+	public void copyObject(String sourceUri, Map sourceMap, String targetUri, 
+			Map targetMap, final boolean overwrite, final boolean recursive)
 	throws CCClientException, NoAccessException,
 	NoSuchObjectException, AlreadyExistsException, TypeMismatchException {
+		cache.remove(targetUri);
+		
 		CCExecutionTemplate.execute(
 				zoneName, userName, sourceMap, targetMap,
 				CrossContextConstants.OPERATION_COPY_OBJECT,
@@ -307,9 +325,13 @@ public class CCClient {
 		);
 	}
 	
-	public void moveObject(Map sourceMap, Map targetMap, final boolean overwrite)
+	public void moveObject(String sourceUri, Map sourceMap, String targetUri, 
+			Map targetMap, final boolean overwrite)
 	throws CCClientException, NoAccessException,
 	NoSuchObjectException, AlreadyExistsException, TypeMismatchException {
+		cache.remove(sourceUri);
+		cache.remove(targetUri);
+		
 		CCExecutionTemplate.execute(
 				zoneName, userName, sourceMap, targetMap,
 				CrossContextConstants.OPERATION_MOVE_OBJECT,
@@ -323,7 +345,7 @@ public class CCClient {
 	
 	private Map getPropertiesCached(String objUri, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException {
-		Object value = cache.get(objUri);
+		Object value = cache.get(objUri); 
 		
 		if(value == null) {
 			// Request never made for the uri. 

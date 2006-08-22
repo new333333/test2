@@ -626,7 +626,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		}		
 		
 		try {
-			client.copyObject(sm, tm, overwrite, recursive);
+			client.copyObject(sourceUri, sm, targetUri, tm, overwrite, recursive);
 		}
 		catch (NoAccessException e) {
 			throw new AccessDeniedException(targetUri, e.getMessage(), "/actions/write");
@@ -667,7 +667,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		}		
 		
 		try {
-			client.moveObject(sm, tm, overwrite);
+			client.moveObject(sourceUri, sm, targetUri, tm, overwrite);
 		}
 		catch (NoAccessException e) {
 			throw new AccessDeniedException(targetUri, e.getMessage(), "/actions/write");
