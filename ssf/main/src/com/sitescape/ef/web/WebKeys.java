@@ -108,6 +108,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_GET_ELEMENT_VALUE_DATA = "get_element_value_data";
 	public static final String FORUM_OPERATION_GET_FAVORITES_TREE = "get_favorites_tree";
 	public static final String FORUM_OPERATION_GET_FILTER_TYPE = "get_filter_type";
+	public static final String FORUM_OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS = "hide_all_dashboard_components";
 	public static final String FORUM_OPERATION_SET_DASHBOARD_TITLE = "set_dashboard_title";
 	public static final String FORUM_OPERATION_SET_DISPLAY_STYLE = "set_display_style";
 	public static final String FORUM_OPERATION_SET_DISPLAY_DEFINITION = "set_display_definition";
@@ -124,6 +125,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_SAVE_ENTRY_WIDTH = "save_entry_width";
 	public static final String FORUM_OPERATION_SAVE_ENTRY_HEIGHT = "save_entry_height";
 	public static final String FORUM_OPERATION_SAVE_RATING = "save_rating";
+	public static final String FORUM_OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS = "show_all_dashboard_components";
 	public static final String FORUM_OPERATION_SHOW_HELP_PANEL = "show_help_panel";
 	public static final String FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE = "get_search_form_filter_type";
 	public static final String FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS = "get_searchForm_entry_elements";
@@ -179,8 +181,9 @@ public class WebKeys {
     public static final String DASHBOARD_INCLUDE_BINDER_TITLE="includeBinderTitle";
     public static final String DASHBOARD_NARROW_FIXED_WIDTH="narrowFixedWidth";
     public static final String DASHBOARD_NARROW_FIXED_WIDTH2="narrowFixedWidth2";
-    public static final String DASHBOARD_SHARED_MODIFICATION_ALLOWED="sharedModificationAllowed";
     public static final String DASHBOARD_SCOPE="scope";
+    public static final String DASHBOARD_SHARED_MODIFICATION_ALLOWED="sharedModificationAllowed";
+    public static final String DASHBOARD_SHOW_ALL="ss_show_all_dashboard_components";
     public static final String DASHBOARD_TITLE="title";
     public static final String DASHBOARD_WORKSPACE_TREE="workspaceTree";
     public static final String DASHBOARD_WORKSPACE_TOPID="topId";
@@ -200,6 +203,7 @@ public class WebKeys {
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
     public static final String ENTRY_ID = "ssEntryId";
+    public static final String ENTRY_TOOLBAR="ssEntryToolbar";
     public static final String FAVORITES_TREE = "ss_favoritesTree";
     public static final String FAVORITES_TREE_DELETE = "ss_favoritesTreeDelete";
     public static final String FILE_VIEW_TYPE_SCALED = "scaled";
@@ -229,6 +233,7 @@ public class WebKeys {
     public static final String FOLDER_ENTRY_ANCESTORS="ssFolderEntryAncestors";
     public static final String FOLDER_ENTRY_TOOLBAR="ssFolderEntryToolbar";
     public static final String FOLDER_TOOLBAR="ssFolderToolbar";
+    public static final String FOOTER_TOOLBAR="ssFooterToolbar";
     public static final String FORUM_ID_LIST = "ssForumIdList";
     public static final String FORUM_TOOLBAR="ssForumToolbar";
     public static final String FUNCTIONS="ssFunctions";
