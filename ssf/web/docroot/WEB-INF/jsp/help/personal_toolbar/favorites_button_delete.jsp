@@ -23,7 +23,7 @@ style="color:#0000ff;">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">
-<a href="javascript: ss_helpSystem.showHelpSpotInfo('personal_toolbar/history_button');"
+<a href="javascript: ss_helpSystem.showHelpSpotInfo('personal_toolbar/my_workspace_button');"
 style="color:#0000ff;"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
 </div>
 </div>
