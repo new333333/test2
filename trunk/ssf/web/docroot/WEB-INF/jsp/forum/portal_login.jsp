@@ -25,13 +25,25 @@
 
 <script type="text/javascript">
 
+//This parameter needs to be set to the number of screens that the user sees 
+//  before the login screen appears (including the login screen itself).
+//For example, in Liferay, the user gets a general page. Then he clicks "sign-in".
+//  This takes the user to the actual login page. Thus the number of screens is 2.
+var ss_screens_to_login_screen = 2;
+
+
+//This parameter counts the number of screens that come up after logging in,
+//  but before the user is actually logged in. Liferay takes 2 screens.
+var ss_screens_after_login_screen_to_logged_in = 2;
+
 var ss_targetUrlLoadCount = 0;
 function ss_loadTargetUrl() {
 	ss_targetUrlLoadCount++;
-	if (ss_targetUrlLoadCount > 1) {
+	//alert(ss_targetUrlLoadCount)
+	if (ss_targetUrlLoadCount > ss_screens_to_login_screen) {
 		ss_showHideObj('iframe_window', 'hidden', 'block');
 	}
-	if (ss_targetUrlLoadCount > 2) {
+	if (ss_targetUrlLoadCount > ss_screens_to_login_screen + ss_screens_after_login_screen_to_logged_in) {
 		self.location.reload(true);
 	}
 }
