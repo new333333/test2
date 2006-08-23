@@ -142,6 +142,16 @@ if (!ss_onLoadRoutineLoaded) {
 	window.onload = ss_onLoadInit;
 }
 
+//Routine to navigate to a point on the navigation list
+function ss_navigation_goto(url) {
+	if (self.window != self.top) {
+		parent.location.reload(true);
+		return false;
+	} else {
+		return(ss_openUrlInPortlet(url));
+	}
+}
+
 //Routine to open a url in the portlet. This routine determines if the current code is
 //  running inside an iframe. It it is, then the url is opened in the parent of the iframe.
 //This routine returns "true" without opening the url if the caller is not inside a frame.
