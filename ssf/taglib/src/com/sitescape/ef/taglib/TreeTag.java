@@ -132,12 +132,13 @@ public class TreeTag extends TagSupport {
 				treeElements.remove(0);
 
 				//If this branch has children, add those to the front of the processing list
-				// Then, loop back to process the children befroe continuing with the other branches
+				// Then, loop back to process the children before continuing with the other branches
 				List treeElements2 = (List) currentTreeElement.elements("child");
 				if (treeElements2.size() > 0) {
 					ListIterator it = treeElements2.listIterator();
 					while (it.hasNext()) {
 						Element nextTreeElement2 = (Element) it.next();
+						nextTreeElement2.addAttribute("parentId", nextTreeElement2.getParent().attributeValue("id", ""));
 						if (it.hasNext()) {
 							nextTreeElement2.addAttribute("treeLS","0");
 						} else {
