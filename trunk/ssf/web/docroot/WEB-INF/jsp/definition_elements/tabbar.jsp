@@ -10,7 +10,8 @@
 <c:if test="${!empty ssBinder.iconName}">
 	   <img src="<html:imagesPath/>${ssBinder.iconName}">
 </c:if>
-	   <span style="height:20px;">${ssBinder.title}</span></a></td>
+	   <span>${ssBinder.title}</span></a><img style="height:20px;" 
+	     src="<html:imagesPath/>pics/1pix.gif"></td>
 	   </tr></table>
     </div></div></div></div>
 
@@ -18,10 +19,11 @@
   <div class="ss_upperleft">
    <div class="ss_upperright">
     <div class="ss_inactiveTab">
-      <table style="display:inline" cellspacing="0" cellpadding="0">
+      <table style="display:inline;" cellspacing="0" cellpadding="0">
       <tr><td valign="bottom"><a title="Search results" 
       href="#"><img src="<html:imagesPath/>pics/sym_s_search.gif">
-      <span style="height:20px;">Hot topics</span></a>&nbsp;</td>
+      <span>Hot topics</span></a><img 
+      style="height:20px;" src="<html:imagesPath/>pics/1pix.gif"></td>
       <td valign="top"><img src="<html:imagesPath/>pics/sym_s_hide.gif"></td>
       </tr></table>
     </div></div></div></div>
