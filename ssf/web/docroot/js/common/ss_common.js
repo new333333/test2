@@ -2127,12 +2127,15 @@ var ss_helpSystem = {
 //Dashboard routines
 
 function ss_addDashboardComponents() {
-	alert('Add dashboard components...')
+	var panel = document.getElementById('ss_dashboardAddContentPanel');
+	ss_moveObjectToBody(panel);
+	panel.style.zIndex = parseInt(ssLightboxZ + 1);
+	ss_activateMenuLayer('ss_dashboardAddContentPanel', null, null, null, "popup")
 }
 
-function ss_showHideAllDashboardComponents(obj) {
+function ss_showHideAllDashboardComponents(obj, op) {
 	var formObj = ss_getContainingForm(obj)
-	var op = 'show_all_dashboard_components';
+	if (op == null) op = 'show_all_dashboard_components';
 	if (obj.src.match(/sym_s_show.gif/)) {
 	    op = 'show_all_dashboard_components';
 	    obj.src = ss_componentSrcHide;

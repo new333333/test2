@@ -332,7 +332,12 @@ public class SAbstractForumController extends SAbstractController {
 		//The "Footer" menu
 		//RSS link 
 		footerToolbar.addToolbarMenu("subscribeToFolder", NLT.get("toolbar.menu.subscribeToFolder"), UrlUtil.getFeedURL(request, forumId));
-		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.permalink"), UrlUtil.getFeedURL(request, forumId));
+		
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.permalink"), adapterUrl.toString());
+		
 		footerToolbar.addToolbarMenu("RSS", NLT.get("toolbar.menu.rss"), UrlUtil.getFeedURL(request, forumId));
 		
 		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());

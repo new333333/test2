@@ -645,7 +645,7 @@ div.ss_dashboardProtoDropTarget {
   color: ${ss_style_text_color};
   border: 1px ${ss_style_border_color} solid;
   padding: 0px;
-  width: 300px;
+  width: 400px;
   }
 
 .ss_dashboard_config {

@@ -37,6 +37,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	//dojo.require("dojo.lfx.*");
 	dojo.require("dojo.dnd.*");
 	dojo.require("dojo.event.*");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TaskBar");
+	dojo.require("dojo.widget.LayoutContainer");
+	dojo.require("dojo.widget.FloatingPane");
+	dojo.require("dojo.widget.ResizeHandle");
 </script>
   <c:if test="0">
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_dragsort.js"></script>
